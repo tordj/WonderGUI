@@ -36,16 +36,16 @@ typedef	WgWeakPtr<WgKnob,WgWidgetWeakPtr>	WgKnobWeakPtr;
 class WgKnob : public WgWidget
 {
 public:
-	static WgKnobPtr	Create() { return WgKnobPtr(new WgKnob()); }
+	static WgKnobPtr	create() { return WgKnobPtr(new WgKnob()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKnobPtr	Cast( const WgObjectPtr& pObject );
+	static WgKnobPtr	cast( const WgObjectPtr& pObject );
 
-    void    SetValue( float value );
+    void    setValue( float value );
     
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgKnob();

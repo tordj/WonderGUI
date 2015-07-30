@@ -201,9 +201,9 @@ void WgColor::getCMYK( float* _c, float* _m, float* _y, float* _k )
 
 
 
-//____ Blend() ________________________________________________________________
+//____ blend() ________________________________________________________________
 
-WgColor WgColor::Blend( const WgColor& start, const WgColor& dest, float grade )
+WgColor WgColor::blend( const WgColor& start, const WgColor& dest, float grade )
 {
 	WgColor col;
 

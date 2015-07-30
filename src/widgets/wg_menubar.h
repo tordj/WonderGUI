@@ -84,11 +84,11 @@ public:
 	virtual ~WgMenuBarItem();
 	LINK_METHODS( WgMenuBarItem );
 
-	inline bool	IsEnabled() { return m_bEnabled; }
-	inline bool IsVisible() { return m_bVisible; }
+	inline bool	isEnabled() { return m_bEnabled; }
+	inline bool isVisible() { return m_bVisible; }
 
-	void	SetEnabled( bool bEnabled );
-	void	SetVisible( bool bVisible );
+	void	setEnabled( bool bEnabled );
+	void	setVisible( bool bVisible );
 
 	WgChar *		m_pText;
 	Uint16			m_navKey;
@@ -110,30 +110,30 @@ class WgMenubar:public WgWidget
 	friend class WgMenuBarItem;
 
 public:
-	static WgMenubarPtr	Create() { return WgMenubarPtr(new WgMenubar()); }
+	static WgMenubarPtr	create() { return WgMenubarPtr(new WgMenubar()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenubarPtr	Cast( const WgObjectPtr& pObject );
+	static WgMenubarPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
-	bool			SetEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties );
+	bool			setEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties );
 	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 	WgTextpropPtr	TextProp() const { return m_pTextProp; }
 
 	bool			AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 navKey = 0 );
 	bool			RemoveMenu( const WgMenuPtr& pMenu );
 
-	WgMenuBarItem*	FirstMenuBarItem() { return m_items.First(); }
+	WgMenuBarItem*	FirstMenuBarItem() { return m_items.first(); }
 
 	WgChar *		MenuTitle(const WgMenuPtr& pMenu) const;
 
 	bool			ShowMenu(const WgMenuPtr& pMenu);
 	bool			HideMenu(const WgMenuPtr& pMenu);
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 
 
 protected:

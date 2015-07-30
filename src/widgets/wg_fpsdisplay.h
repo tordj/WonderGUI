@@ -41,12 +41,12 @@ typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
 class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgFpsDisplayPtr	Create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
+	static WgFpsDisplayPtr	create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFpsDisplayPtr	Cast( const WgObjectPtr& pObject );
+	static WgFpsDisplayPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -56,7 +56,7 @@ public:
 	//____ Methods __________________________________________
 
 	void	SetTextProperties( const WgTextpropPtr& pProp );
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgFpsDisplay();

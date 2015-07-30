@@ -22,17 +22,17 @@ typedef	WgWeakPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
 class WgRulerLabels : public WgWidget, protected WgTextHolder
 {
 public:
-	static WgRulerLabelsPtr	Create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
+	static WgRulerLabelsPtr	create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRulerLabelsPtr	Cast( const WgObjectPtr& pObject );
+	static WgRulerLabelsPtr	cast( const WgObjectPtr& pObject );
 	
 	//____ Methods __________________________________________
 	
 	void			AddLabel( const WgCharSeq& text, const WgTextStylePtr& pStyle, float offset );
- 	WgSize			PreferredSize() const;
+ 	WgSize			preferredSize() const;
 	void			SetDirection( WgDirection direction );
 	WgModTextPtr	GetLabel(int index);
 

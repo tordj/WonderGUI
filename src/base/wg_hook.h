@@ -76,25 +76,25 @@ class WgHook
 	friend class WgModalLayer;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgHookPtr		Cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
+	static WgHookPtr		cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
 
-	virtual WgCoord			Pos() const = 0;							///< Get the local position of the widget.
-	virtual WgSize			Size() const = 0;							///< Get the size of the widget.
-	virtual WgRect			Geo() const = 0;							///< Get the local geometry of the widget.
-	virtual WgCoord			GlobalPos() const = 0;
-	virtual WgRect			GlobalGeo() const = 0;
+	virtual WgCoord			pos() const = 0;							///< Get the local position of the widget.
+	virtual WgSize			size() const = 0;							///< Get the size of the widget.
+	virtual WgRect			geo() const = 0;							///< Get the local geometry of the widget.
+	virtual WgCoord			globalPos() const = 0;
+	virtual WgRect			globalGeo() const = 0;
 
-	WgHookPtr			Prev() const { return _prevHook(); }
-	WgHookPtr			Next() const { return _nextHook(); }
+	WgHookPtr			prev() const { return _prevHook(); }
+	WgHookPtr			next() const { return _nextHook(); }
 
-	WgWidgetPtr			Widget() const;
-	WgContainerPtr 		Parent() const;
+	WgWidgetPtr			widget() const;
+	WgContainerPtr 		parent() const;
 
-	WgRootPanelPtr		Root() const;
-	WgMsgRouterPtr	MsgRouter() const;
+	WgRootPanelPtr		root() const;
+	WgMsgRouterPtr	msgRouter() const;
 
 protected:
 
@@ -115,7 +115,7 @@ protected:
 	virtual bool	_requestFocus();
 	virtual bool	_releaseFocus();
 
-	virtual WgRect	_windowSection() const { return Geo(); }			// Returns the window section within the canvas.
+	virtual WgRect	_windowSection() const { return geo(); }			// Returns the window section within the canvas.
 
 	//
 

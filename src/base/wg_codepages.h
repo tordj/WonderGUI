@@ -41,7 +41,7 @@
 class WgCodePages
 {
 public:
-	static inline Uint16* GetCodePage( WgCodePage codePage ) { return LookupTable[codePage]; }
+	static inline Uint16* getCodePage( WgCodePage codePage ) { return LookupTable[codePage]; }
 		
 private:		
 	static Uint16* LookupTable[WG_NB_CODEPAGES];

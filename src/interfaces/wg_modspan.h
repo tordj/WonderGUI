@@ -37,22 +37,22 @@ class WgModSpan : public WgSlideSpan
 public:
 	WgModSpan(WgSpanItem* pItem) : WgSlideSpan(pItem) {}
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgModSpanPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgModSpanPtr		Ptr() { return WgModSpanPtr(_object(),this); }
+	static WgModSpanPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgModSpanPtr		ptr() { return WgModSpanPtr(_object(),this); }
 
 
-	inline bool	SetMin( int min ) { return m_pItem->SetMin(min); }
-	inline bool	SetMax( int max ) { return m_pItem->SetMax(max); }
-	inline bool	SetRange( int min, int max ) { return m_pItem->SetRange(min,max); }
+	inline bool	setMin( int min ) { return m_pItem->setMin(min); }
+	inline bool	setMax( int max ) { return m_pItem->setMax(max); }
+	inline bool	setRange( int min, int max ) { return m_pItem->setRange(min,max); }
 
-	inline void	SetSpan( int begin, int length ) { m_pItem->SetSpan(begin,length); }
-	inline void	SetLength( int length ) { m_pItem->SetLength(length); }
+	inline void	setSpan( int begin, int length ) { m_pItem->setSpan(begin,length); }
+	inline void	setLength( int length ) { m_pItem->setLength(length); }
 
-	inline void	SetRelativeSpan( float begin, float length ) { m_pItem->SetRelativeSpan(begin,length); }
-	inline void	SetRelativeLength( float length ) { m_pItem->SetRelativeLength(length); }
+	inline void	setRelativeSpan( float begin, float length ) { m_pItem->setRelativeSpan(begin,length); }
+	inline void	setRelativeLength( float length ) { m_pItem->setRelativeLength(length); }
 
 };
 

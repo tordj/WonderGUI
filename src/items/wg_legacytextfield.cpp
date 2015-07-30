@@ -98,9 +98,9 @@ WgLegacyTextField::~WgLegacyTextField()
 }
 
 
-//____ SetCursorSkin() _______________________________________________________
+//____ setCursorSkin() _______________________________________________________
 
-void WgLegacyTextField::SetCursorSkin( const WgCaretPtr& pCursor )
+void WgLegacyTextField::setCursorSkin( const WgCaretPtr& pCursor )
 {
 	if( pCursor != m_pCursorStyle )
 	{
@@ -116,7 +116,7 @@ void WgLegacyTextField::SetCursorSkin( const WgCaretPtr& pCursor )
 
 void WgLegacyTextField::_regenHardLines()
 {
-	int nLines = WgTextTool::countLines( m_buffer.Chars() );
+	int nLines = WgTextTool::countLines( m_buffer.chars() );
 
 	if( m_nHardLines != nLines )
 	{
@@ -131,13 +131,13 @@ void WgLegacyTextField::_regenHardLines()
 
 	int		line = 0;
 	int		ofs = 0;
-	const WgChar * p = m_buffer.Chars();
+	const WgChar * p = m_buffer.chars();
 
 	m_pHardLines[line].ofs = ofs;
 
-	while( !p[ofs].IsEndOfText() )
+	while( !p[ofs].isEndOfText() )
 	{
-		if( p[ofs].IsEndOfLine() )
+		if( p[ofs].isEndOfLine() )
 		{
 			m_pHardLines[line].nChars = ofs - m_pHardLines[line].ofs;
 			line++;
@@ -149,11 +149,11 @@ void WgLegacyTextField::_regenHardLines()
 }
 
 
-//_____ Clear() _______________________________________________________________
+//_____ clear() _______________________________________________________________
 
-void WgLegacyTextField::Clear()
+void WgLegacyTextField::clear()
 {
-	m_buffer.Reset();
+	m_buffer.reset();
 
 	if( m_pSoftLines != m_pHardLines )
 		delete [] m_pSoftLines;
@@ -173,7 +173,7 @@ void WgLegacyTextField::Clear()
 	m_nSoftLines = 1;
 
 	_refreshAllLines();
-	ClearSelection();
+	clearSelection();
 
 	if( m_pCursor )
 		m_pCursor->gotoHardPos(m_pCursor->line(), m_pCursor->column());
@@ -181,43 +181,43 @@ void WgLegacyTextField::Clear()
 	_onResize();
 }
 
-//____ Set() __________________________________________________________________
+//____ set() __________________________________________________________________
 
-void WgLegacyTextField::Set( const WgCharSeq& seq )
+void WgLegacyTextField::set( const WgCharSeq& seq )
 {
-	m_buffer.Clear();
+	m_buffer.clear();
 
-	if( seq.Length() <= m_maxChars )
-		m_buffer.PushBack( seq );
+	if( seq.length() <= m_maxChars )
+		m_buffer.pushBack( seq );
 	else
-		m_buffer.PushBack( WgCharSeq(seq, 0, m_maxChars) );
+		m_buffer.pushBack( WgCharSeq(seq, 0, m_maxChars) );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
-	ClearSelection();
+	clearSelection();
 
 	_onResize();
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
-void WgLegacyTextField::Set( const WgCharBuffer * buffer )
+void WgLegacyTextField::set( const WgCharBuffer * buffer )
 {
 	m_buffer = * buffer;
-	if( (int) m_buffer.Length() > m_maxChars )
-		m_buffer.Delete( m_maxChars, INT_MAX );
+	if( (int) m_buffer.length() > m_maxChars )
+		m_buffer.remove( m_maxChars, INT_MAX );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
-	ClearSelection();
+	clearSelection();
 
 	_onResize();
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
-void WgLegacyTextField::Set( const WgString& str )
+void WgLegacyTextField::set( const WgString& str )
 {
-	if( (int) str.Length() <= m_maxChars )
+	if( (int) str.length() <= m_maxChars )
 		m_buffer = str;
 	else
 		m_buffer = WgCharSeq(str,0,m_maxChars);
@@ -225,7 +225,7 @@ void WgLegacyTextField::Set( const WgString& str )
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
-	ClearSelection();
+	clearSelection();
 	_onResize();
 }
 
@@ -235,13 +235,13 @@ void WgLegacyTextField::setText( const WgLegacyTextField * pText )
 	// TODO: Optimize, we can simply copy the hardlines array. Softlines needs to be generated though.
 
 	m_buffer = * pText->getBuffer();
-	if( (int) m_buffer.Length() > m_maxChars )
-		m_buffer.Delete( m_maxChars, INT_MAX );
+	if( (int) m_buffer.length() > m_maxChars )
+		m_buffer.remove( m_maxChars, INT_MAX );
 
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
-	ClearSelection();
+	clearSelection();
 	_onResize();
 }
 
@@ -261,11 +261,11 @@ void WgLegacyTextField::selectText( int startLine, int startCol, int endLine, in
 		std::swap(endCol, startCol);
 	}
 
-	if(startLine >= Lines())
-		startLine = Lines() - 1;
+	if(startLine >= lines())
+		startLine = lines() - 1;
 
-	if(endLine >= Lines())
-		endLine = Lines() - 1;
+	if(endLine >= lines())
+		endLine = lines() - 1;
 
 	if(startCol > m_pHardLines[startLine].nChars)
 		startCol = m_pHardLines[startLine].nChars;
@@ -297,26 +297,26 @@ bool WgLegacyTextField::getSelection( int& startLine, int& startCol, int& endLin
 //_________________________________________________________
 WgRange WgLegacyTextField::getSelection() const
 {
-	int beg = LineColToOffset(m_selStartLine,m_selStartCol);
-	int end = LineColToOffset(m_selEndLine,m_selEndCol);
+	int beg = lineColToOffset(m_selStartLine,m_selStartCol);
+	int end = lineColToOffset(m_selEndLine,m_selEndCol);
 
 	return WgRange(beg,end-beg);
 }
 
 //_________________________________________________________
-int WgLegacyTextField::SelectionStart() const
+int WgLegacyTextField::selectionStart() const
 {
-	return LineColToOffset(m_selStartLine,m_selStartCol);
+	return lineColToOffset(m_selStartLine,m_selStartCol);
 }
 
 //_________________________________________________________
-int WgLegacyTextField::SelectionLength() const
+int WgLegacyTextField::selectionLength() const
 {
-	return LineColToOffset(m_selEndLine,m_selEndCol);
+	return lineColToOffset(m_selEndLine,m_selEndCol);
 }
 
 //_________________________________________________________
-void WgLegacyTextField::ClearSelection( )
+void WgLegacyTextField::clearSelection( )
 {
 	m_selStartLine = 0;
 	m_selEndLine = 0;
@@ -340,7 +340,7 @@ int WgLegacyTextField::getSoftLineWidth( int line ) const
 
 int WgLegacyTextField::getSoftLineWidthPart( int _line, int startCol, int nCol ) const
 {
-	if( _line < 0 || _line >= nbSoftLines() || !m_pBaseProp->Font() )
+	if( _line < 0 || _line >= nbSoftLines() || !m_pBaseProp->font() )
 		return 0;
 
 	const WgLegacyTextLine * pLine = getSoftLine(_line);
@@ -349,7 +349,7 @@ int WgLegacyTextField::getSoftLineWidthPart( int _line, int startCol, int nCol )
 		nCol = pLine->nChars-startCol;
 
 
-	const WgChar * pString = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pString = m_buffer.chars() + pLine->ofs;
 
 	WgPen pen;
 	Uint16 hProp = 0xFFFF;
@@ -358,21 +358,21 @@ int WgLegacyTextField::getSoftLineWidthPart( int _line, int startCol, int nCol )
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
-		if( pString->IsEndOfLine() )
+		if( pString->isEndOfLine() )
 			break;
 
-		if( pString->PropHandle() != hProp )
+		if( pString->propHandle() != hProp )
 		{
-			GetCharAttr( attr, pLine->ofs + i );
-			pen.SetAttributes( attr );
+			getCharAttr( attr, pLine->ofs + i );
+			pen.setAttributes( attr );
 		}
-		pen.SetChar( pString->Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
+		pen.setChar( pString->getGlyph() );
+		pen.applyKerning();
+		pen.advancePos();
 		pString++;
 	}
 
-	return pen.GetPosX();
+	return pen.getPosX();
 
 }
 
@@ -381,7 +381,7 @@ int WgLegacyTextField::getSoftLineWidthPart( int _line, int startCol, int nCol )
 
 int WgLegacyTextField::getLineWidth( int line ) const
 {
-	if( line >= Lines() )
+	if( line >= lines() )
 		return 0;
 
 	return m_pHardLines[line].width;
@@ -435,9 +435,9 @@ WgSize WgLegacyTextField::unwrappedSize() const
 }
 
 
-//____ Width() ________________________________________________________________
+//____ width() ________________________________________________________________
 
-int WgLegacyTextField::Width() const
+int WgLegacyTextField::width() const
 {
 	int		width = 0;
 
@@ -450,9 +450,9 @@ int WgLegacyTextField::Width() const
 	return width;
 }
 
-//____ Height()________________________________________________________________
+//____ height()________________________________________________________________
 
-int WgLegacyTextField::Height() const
+int WgLegacyTextField::height() const
 {
 	int height = 0;
 	for( int i = 0 ; i < m_nSoftLines-1 ; i++ )
@@ -473,7 +473,7 @@ int WgLegacyTextField::heightForWidth( int width ) const
 		WgLegacyTextLine		lineArray[maxLines];
 		WgLegacyTextLine *	pLines = lineArray;
 
-		int nSoftLines = _countWriteSoftLines( width, m_buffer.Chars(), pLines, maxLines );
+		int nSoftLines = _countWriteSoftLines( width, m_buffer.chars(), pLines, maxLines );
 
 		// If the TextLines didn't fit in our little array we need to allocate a bigger one
 		// and regenerate
@@ -481,7 +481,7 @@ int WgLegacyTextField::heightForWidth( int width ) const
 		if( nSoftLines > maxLines )
 		{
 			pLines = new WgLegacyTextLine[nSoftLines];
-			_countWriteSoftLines( width, m_buffer.Chars(), pLines, nSoftLines );
+			_countWriteSoftLines( width, m_buffer.chars(), pLines, nSoftLines );
 		}
 
 		// Generate line-info, so height-member is filled in.
@@ -505,7 +505,7 @@ int WgLegacyTextField::heightForWidth( int width ) const
 		return height;
 	}
 	else
-		return Height();
+		return height();
 }
 
 //____ softLineHeight() _______________________________________________________
@@ -527,7 +527,7 @@ int WgLegacyTextField::softLineSpacing( int line )
 }
 
 
-void WgLegacyTextField::SetLinkProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setLinkProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pLinkProp != pProp )
 	{
@@ -538,7 +538,7 @@ void WgLegacyTextField::SetLinkProperties( const WgTextpropPtr& pProp )
 	}
 }
 
-void WgLegacyTextField::ClearLinkProperties()
+void WgLegacyTextField::clearLinkProperties()
 {
 	if( m_pLinkProp )
 	{
@@ -549,7 +549,7 @@ void WgLegacyTextField::ClearLinkProperties()
 	}
 }
 
-void WgLegacyTextField::SetSelectionProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setSelectionProperties( const WgTextpropPtr& pProp )
 {
 	if( m_pSelectionProp != pProp )
 	{
@@ -560,7 +560,7 @@ void WgLegacyTextField::SetSelectionProperties( const WgTextpropPtr& pProp )
 	}
 }
 
-void WgLegacyTextField::ClearSelectionProperties()
+void WgLegacyTextField::clearSelectionProperties()
 {
 	if( m_pSelectionProp )
 	{
@@ -575,13 +575,13 @@ void WgLegacyTextField::ClearSelectionProperties()
 void WgLegacyTextField::setSelectionBgColor(WgColor color )
 {
 	WgTextprop	prop = * m_pSelectionProp;
-	prop.SetBgColor(color);
-	m_pSelectionProp = prop.Register();
+	prop.setBgColor(color);
+	m_pSelectionProp = prop.reg();
 	_onResize();
 }
 
 
-void WgLegacyTextField::SetProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setProperties( const WgTextpropPtr& pProp )
 {
 	m_pBaseProp = pProp;
 	_regenSoftLines();
@@ -590,7 +590,7 @@ void WgLegacyTextField::SetProperties( const WgTextpropPtr& pProp )
 }
 
 
-void WgLegacyTextField::ClearProperties()
+void WgLegacyTextField::clearProperties()
 {
 	if( m_pBaseProp )
 	{
@@ -721,11 +721,11 @@ int WgLegacyTextField::compareTo( const WgLegacyTextField * _pOther, bool bCheck
 			do
 			{
 				ofs++;
-				diff = pMine[ofs].GetGlyph() - pOther[ofs].GetGlyph();
+				diff = pMine[ofs].getGlyph() - pOther[ofs].getGlyph();
 				if( diff != 0 )
 					return diff;
 
-			} while( pMine[ofs].GetGlyph() != 0 ); // Both lines must be terminated for a termination to occur but not create a diff, so we only have to compare against one...
+			} while( pMine[ofs].getGlyph() != 0 ); // Both lines must be terminated for a termination to occur but not create a diff, so we only have to compare against one...
 
 
 			line++;
@@ -744,11 +744,11 @@ int WgLegacyTextField::compareTo( const WgLegacyTextField * _pOther, bool bCheck
 			do
 			{
 				ofs++;
-				diff = towlower( pMine[ofs].GetGlyph() ) - towlower( pOther[ofs].GetGlyph() );	// this is the only difference from above
+				diff = towlower( pMine[ofs].getGlyph() ) - towlower( pOther[ofs].getGlyph() );	// this is the only difference from above
 				if( diff != 0 )
 					return diff;
 
-			} while( pMine[ofs].GetGlyph() != 0 ); // Both lines must be terminated for a termination to occur but not create a diff, so we only have to compare against one...
+			} while( pMine[ofs].getGlyph() != 0 ); // Both lines must be terminated for a termination to occur but not create a diff, so we only have to compare against one...
 
 
 			line++;
@@ -774,8 +774,8 @@ int WgLegacyTextField::compareTo( const WgLegacyTextField * _pOther, bool bCheck
 void WgLegacyTextField::setValue( double value, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseValue( value, pFormat.RawPtr(), str );
-	Set( pStr );
+	WgChar * pStr = _parseValue( value, pFormat.rawPtr(), str );
+	set( pStr );
 }
 
 //____ setScaledValue() _______________________________________________________
@@ -783,8 +783,8 @@ void WgLegacyTextField::setValue( double value, const WgValueFormatPtr& pFormat 
 void WgLegacyTextField::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat )
 {
 	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseScaledValue( value, scale, pFormat.RawPtr(), str );
-	Set( pStr );
+	WgChar * pStr = _parseScaledValue( value, scale, pFormat.rawPtr(), str );
+	set( pStr );
 }
 
 
@@ -807,13 +807,13 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 
 			if( pF->bForceDecimals || decPart != 0. )
 			{
-				p->SetGlyph(pF->period);
+				p->setGlyph(pF->period);
 				p++;
 
 				for( int i = pF->decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-					p->SetGlyph((Uint16)decPart + 0x30);
+					p->setGlyph((Uint16)decPart + 0x30);
 					p++;
 					decPart = decPart - (int) decPart;
 				}
@@ -823,14 +823,14 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 
 	// Add suffix
 
-	const WgChar * pSuffix = pF->suffix.Chars();
+	const WgChar * pSuffix = pF->suffix.chars();
 
-	for( int i = 0 ; i < pF->suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < pF->suffix.length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
 
-	p->SetGlyph(0);
+	p->setGlyph(0);
 	p++;
 
 	// Write integer part to temp area (backwards)
@@ -854,7 +854,7 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 		for( int i = 0 ; i < n ; i++ )
 		{
 			p--;
-			p->SetGlyph(temp2[i]);
+			p->setGlyph(temp2[i]);
 		}
 	}
 	else
@@ -864,11 +864,11 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 			if( i != 0 && (i % pF->grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(pF->separator);
+				p->setGlyph(pF->separator);
 			}
 
 			p--;
-			p->SetGlyph(temp2[i]);
+			p->setGlyph(temp2[i]);
 		}
 	}
 
@@ -881,20 +881,20 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 			if( i != 0 && (i % pF->grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(pF->separator);
+				p->setGlyph(pF->separator);
 			}
 
 			p--;
-			p->SetGlyph(0x30);
+			p->setGlyph(0x30);
 		}
 
 	}
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = pF->prefix.Chars();
+	const WgChar * pPrefix = pF->prefix.chars();
 
-	for( int i = pF->prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = pF->prefix.length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign before prefix.
@@ -902,18 +902,18 @@ WgChar * WgLegacyTextField::_parseValue( double value, const WgValueFormat * pF,
 	if( value < 0 )
 	{
 		p--;
-		p->SetGlyph('-');
+		p->setGlyph('-');
 	}
 	else if( pF->bPlus )
 	{
 		p--;
-		p->SetGlyph('+');
+		p->setGlyph('+');
 	}
 
 	// Set character attributes
 
 	if( pF->bSetTextprop )
-		WgTextTool::SetProperties( pF->pTextProperties, tempstring, s_parseBufLen );
+		WgTextTool::setProperties( pF->pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
@@ -940,26 +940,26 @@ WgChar * WgLegacyTextField::_parseScaledValue( Sint64 value, Uint32 scale, const
 		{
 			if( pF->bForceDecimals || decPart != 0 )
 			{
-				p++->SetGlyph(pF->period);
+				p++->setGlyph(pF->period);
 
 				for( int i = pF->decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-					p++->SetGlyph(((Uint16)(decPart/scale)) + 0x30);
+					p++->setGlyph(((Uint16)(decPart/scale)) + 0x30);
 					decPart = decPart % scale;
 				}
 			}
 		}
 	}
 
-	const WgChar * pSuffix = pF->suffix.Chars();
+	const WgChar * pSuffix = pF->suffix.chars();
 
-	for( int i = 0 ; i < pF->suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < pF->suffix.length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
 
-	p++->SetGlyph(0);						// Just to be sure, might already have been terminated as part of suffix.
+	p++->setGlyph(0);						// Just to be sure, might already have been terminated as part of suffix.
 
 	// Write integer part to temp area (backwards)
 
@@ -979,16 +979,16 @@ WgChar * WgLegacyTextField::_parseScaledValue( Sint64 value, Uint32 scale, const
 	if( pF->grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
-			(--p)->SetGlyph(temp2[i]);
+			(--p)->setGlyph(temp2[i]);
 	}
 	else
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
 			if( i != 0 && (i % pF->grouping) == 0 )
-				(--p)->SetGlyph(pF->separator);
+				(--p)->setGlyph(pF->separator);
 
-			(--p)->SetGlyph(temp2[i]);
+			(--p)->setGlyph(temp2[i]);
 		}
 	}
 
@@ -999,37 +999,37 @@ WgChar * WgLegacyTextField::_parseScaledValue( Sint64 value, Uint32 scale, const
 		for( int i = n ; i < pF->integers ; i++ )
 		{
 			if( i != 0 && (i % pF->grouping) == 0 )
-				(--p)->SetGlyph(pF->separator);
+				(--p)->setGlyph(pF->separator);
 
-			(--p)->SetGlyph(0x30);
+			(--p)->setGlyph(0x30);
 		}
 
 	}
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = pF->prefix.Chars();
+	const WgChar * pPrefix = pF->prefix.chars();
 
-	for( int i = pF->prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = pF->prefix.length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign at the very start.
 
 	if( value < 0 || (value == 0 && pF->bZeroIsNegative) )
-		(--p)->SetGlyph((short) '-');
+		(--p)->setGlyph((short) '-');
 	else if( pF->bPlus )
-		(--p)->SetGlyph((short) '+');
+		(--p)->setGlyph((short) '+');
 
 	// Set character attributes
 
 	if( pF->bSetTextprop )
-		WgTextTool::SetProperties(pF->pTextProperties, tempstring, s_parseBufLen );
+		WgTextTool::setProperties(pF->pTextProperties, tempstring, s_parseBufLen );
 
 	return p;
 }
 
 
-//____ Length() ________________________________________________________________
+//____ length() ________________________________________________________________
 /**
 	Returns number of characters in text, including any linebreak, excluding
 	the zero terminating the string.
@@ -1039,9 +1039,9 @@ WgChar * WgLegacyTextField::_parseScaledValue( Sint64 value, Uint32 scale, const
 
 */
 
-int WgLegacyTextField::Length() const
+int WgLegacyTextField::length() const
 {
-	return m_buffer.Length();
+	return m_buffer.length();
 }
 
 //____ refresh() ______________________________________________________________
@@ -1062,10 +1062,10 @@ void WgLegacyTextField::refresh()
 
 int WgLegacyTextField::addChar( const WgChar& character )
 {
-	if( m_buffer.Length() == m_maxChars )
+	if( m_buffer.length() == m_maxChars )
 		return 0;
 
-	int nAdded = m_buffer.PushBack( character );
+	int nAdded = m_buffer.pushBack( character );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1074,15 +1074,15 @@ int WgLegacyTextField::addChar( const WgChar& character )
 }
 
 
-//____ Append() ______________________________________________________________
+//____ append() ______________________________________________________________
 
-int WgLegacyTextField::Append( const WgCharSeq& seq )
+int WgLegacyTextField::append( const WgCharSeq& seq )
 {
 	int nAdded;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
-		nAdded = m_buffer.PushBack( WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() )
+		nAdded = m_buffer.pushBack( WgCharSeq( seq, 0, m_maxChars - m_buffer.length() ) );
 	else
-		nAdded = m_buffer.PushBack( seq );
+		nAdded = m_buffer.pushBack( seq );
 
 	_regenHardLines();
 	_regenSoftLines();
@@ -1093,15 +1093,15 @@ int WgLegacyTextField::Append( const WgCharSeq& seq )
 	return nAdded;
  }
 
-//____ Insert() ___________________________________________________________
+//____ insert() ___________________________________________________________
 
-int WgLegacyTextField::Insert( int ofs, const WgCharSeq& seq )
+int WgLegacyTextField::insert( int ofs, const WgCharSeq& seq )
 {
 	int nInserted;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
-		nInserted = m_buffer.Insert( ofs, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() )
+		nInserted = m_buffer.insert( ofs, WgCharSeq( seq, 0, m_maxChars - m_buffer.length() ) );
 	else
-		nInserted = m_buffer.Insert( ofs, seq );
+		nInserted = m_buffer.insert( ofs, seq );
 
 	_regenHardLines();
 	_regenSoftLines();
@@ -1111,15 +1111,15 @@ int WgLegacyTextField::Insert( int ofs, const WgCharSeq& seq )
 	return nInserted;
 }
 
-//____ Replace() __________________________________________________________
+//____ replace() __________________________________________________________
 
-int WgLegacyTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
+int WgLegacyTextField::replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	int nInserted;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() - nDelete )
-		nInserted = m_buffer.Replace( ofs, nDelete, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() - nDelete ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() - nDelete )
+		nInserted = m_buffer.replace( ofs, nDelete, WgCharSeq( seq, 0, m_maxChars - m_buffer.length() - nDelete ) );
 	else
-		nInserted = m_buffer.Replace( ofs, nDelete, seq );
+		nInserted = m_buffer.replace( ofs, nDelete, seq );
 
 	_regenHardLines();
 	_regenSoftLines();
@@ -1129,11 +1129,11 @@ int WgLegacyTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 	return nInserted;
 }
 
-//____ Delete() ___________________________________________________________
+//____ delete() ___________________________________________________________
 
-int WgLegacyTextField::Delete( int ofs, int nChars )
+int WgLegacyTextField::remove( int ofs, int nChars )
 {
-	int nDeleted = m_buffer.Delete( ofs, nChars );
+	int nDeleted = m_buffer.remove( ofs, nChars );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1146,7 +1146,7 @@ int WgLegacyTextField::Delete( int ofs, int nChars )
 
 int WgLegacyTextField::replaceChar( int ofs, const WgChar& character )
 {
-	int nReplaced = m_buffer.Replace( ofs, character );
+	int nReplaced = m_buffer.replace( ofs, character );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1159,10 +1159,10 @@ int WgLegacyTextField::replaceChar( int ofs, const WgChar& character )
 
 int WgLegacyTextField::insertChar( int ofs, const WgChar& character )
 {
-	if( m_buffer.Length() == m_maxChars )
+	if( m_buffer.length() == m_maxChars )
 		return 0;
 
-	int nInserted = m_buffer.Insert( ofs, character );
+	int nInserted = m_buffer.insert( ofs, character );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1174,25 +1174,25 @@ int WgLegacyTextField::insertChar( int ofs, const WgChar& character )
 
 int WgLegacyTextField::deleteChar( int ofs )
 {
-	int nDeleted = m_buffer.Delete( ofs, 1 );
+	int nDeleted = m_buffer.remove( ofs, 1 );
 	_regenHardLines();
 	_regenSoftLines();
 	_refreshAllLines();
 	return nDeleted;
 }
 
-//____ DeleteSelected() ___________________________________________________
+//____ deleteSelected() ___________________________________________________
 
-void WgLegacyTextField::DeleteSelected()
+void WgLegacyTextField::deleteSelected()
 {
 	int line = m_selStartLine;
 	int column = m_selStartCol;
 
-	int start = LineColToOffset( m_selStartLine, m_selStartCol );
-	int end = LineColToOffset( m_selEndLine, m_selEndCol );
+	int start = lineColToOffset( m_selStartLine, m_selStartCol );
+	int end = lineColToOffset( m_selEndLine, m_selEndCol );
 
 
-	Delete( start, end-start );
+	remove( start, end-start );
 	if(m_pCursor)
 	{
 		m_pCursor->setSelectionMode(false);
@@ -1202,9 +1202,9 @@ void WgLegacyTextField::DeleteSelected()
 	_onResize();
 }
 
-//____ Lines() ______________________________________________________________
+//____ lines() ______________________________________________________________
 
-int WgLegacyTextField::Lines() const
+int WgLegacyTextField::lines() const
 {
 	return m_nHardLines;
 }
@@ -1268,7 +1268,7 @@ const WgChar * WgLegacyTextField::getLineText( int line ) const
 	if( line < 0 || line >= m_nHardLines )
 		return 0;
 
-	return m_buffer.Chars() + m_pHardLines[line].ofs;
+	return m_buffer.chars() + m_pHardLines[line].ofs;
 }
 
 //____ getSoftLineText() ______________________________________________________
@@ -1278,12 +1278,12 @@ const WgChar * WgLegacyTextField::getSoftLineText( int line ) const
 	if( line < 0 || line >= m_nSoftLines )
 		return 0;
 
-	return m_buffer.Chars() + m_pSoftLines[line].ofs;
+	return m_buffer.chars() + m_pSoftLines[line].ofs;
 }
 
-//____ SetWrap() ______________________________________________________________
+//____ setWrap() ______________________________________________________________
 
-void WgLegacyTextField::SetWrap( bool bWrap )
+void WgLegacyTextField::setWrap( bool bWrap )
 {
 	if( m_bWrap != bWrap )
 	{
@@ -1294,9 +1294,9 @@ void WgLegacyTextField::SetWrap( bool bWrap )
 	}
 }
 
-//____ SetAutoEllipsis() ______________________________________________________
+//____ setAutoEllipsis() ______________________________________________________
 
-void WgLegacyTextField::SetAutoEllipsis( bool bAutoEllipsis )
+void WgLegacyTextField::setAutoEllipsis( bool bAutoEllipsis )
 {
 	if( m_bAutoEllipsis != bAutoEllipsis )
 	{
@@ -1307,9 +1307,9 @@ void WgLegacyTextField::SetAutoEllipsis( bool bAutoEllipsis )
 	}
 }
 
-//____ SetMaxChars() __________________________________________________________
+//____ setMaxChars() __________________________________________________________
 
-bool WgLegacyTextField::SetMaxChars( int max )
+bool WgLegacyTextField::setMaxChars( int max )
 {
 	if( max <= 0 )
 		return false;
@@ -1317,22 +1317,22 @@ bool WgLegacyTextField::SetMaxChars( int max )
 	if( max != m_maxChars )
 	{
 		m_maxChars = max;
-		if( m_maxChars > (int) m_buffer.Length() )
-			Delete(m_maxChars, INT_MAX);
+		if( m_maxChars > (int) m_buffer.length() )
+			remove(m_maxChars, INT_MAX);
 	}
 	return true;
 }
 
-//____ SetEditMode() __________________________________________________________
+//____ setEditMode() __________________________________________________________
 
-void WgLegacyTextField::SetEditMode(WgTextEditMode mode)
+void WgLegacyTextField::setEditMode(WgTextEditMode mode)
 {
 	if( mode == m_editMode )
 		return;
 
 	m_editMode = mode;
 
-	if( IsEditable() )
+	if( isEditable() )
 	{
 		m_pCursor = new WgCaretInstance(*this);
 	}
@@ -1374,7 +1374,7 @@ void WgLegacyTextField::posSoft2Hard( int &line, int &col ) const
 
 	WgLegacyTextLine * pLine = &m_pSoftLines[line];
 
-	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pOfs = m_buffer.chars() + pLine->ofs;
 
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
@@ -1384,11 +1384,11 @@ void WgLegacyTextField::posSoft2Hard( int &line, int &col ) const
 	// Convert character pointer to hard line/col
 
 	int ln = 0;
-	while( pOfs > m_buffer.Chars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
+	while( pOfs > m_buffer.chars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.Chars() + m_pHardLines[ln].ofs);
+	col = pOfs - (m_buffer.chars() + m_pHardLines[ln].ofs);
 	return;
 }
 
@@ -1403,7 +1403,7 @@ void WgLegacyTextField::posHard2Soft( int &line, int &col ) const
 
 	WgLegacyTextLine * pLine = &m_pHardLines[line];
 
-	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pOfs = m_buffer.chars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1412,11 +1412,11 @@ void WgLegacyTextField::posHard2Soft( int &line, int &col ) const
 	// Convert character pointer to soft line/col
 
 	int ln = line;							// Corresponding soft line needs to be same or higher...
-	while( pOfs > m_buffer.Chars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
+	while( pOfs > m_buffer.chars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.Chars() + m_pSoftLines[ln].ofs);
+	col = pOfs - (m_buffer.chars() + m_pSoftLines[ln].ofs);
 	return;
 }
 
@@ -1447,21 +1447,21 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 
 			// Update if textproperties have changed.
 
-			if( p->PropHandle() != hProp )
+			if( p->propHandle() != hProp )
 			{
-				GetCharAttr(attr, p - m_buffer.Chars());
-				pen.SetAttributes(attr);
-				hProp = p->PropHandle();
+				getCharAttr(attr, p - m_buffer.chars());
+				pen.setAttributes(attr);
+				hProp = p->propHandle();
 			}
 
 			// Break if this is end of line or end of text
 
-			if( p->Glyph() == '\n' )
+			if( p->getGlyph() == '\n' )
 			{
 				bBreakSkips = true;
 				break;
 			}
-			else if( p->Glyph() == 0 )
+			else if( p->getGlyph() == 0 )
 			{
 				bEndOfText = true;
 				bBreakSkips = false;
@@ -1490,13 +1490,13 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 
 			case WG_BREAK_ON:
 
-				if( p->Glyph() == WG_HYPHEN_BREAK_PERMITTED )
+				if( p->getGlyph() == WG_HYPHEN_BREAK_PERMITTED )
 				{
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					WgGlyphPtr pHyphen = pen.GetGlyphset()->GetGlyph( '-', pen.GetSize() );
-					if( !pHyphen || (pen.GetPosX() + pHyphen->Advance()) > maxWidth )
+					WgGlyphPtr pHyphen = pen.getGlyphset()->getGlyph( '-', pen.getSize() );
+					if( !pHyphen || (pen.getPosX() + pHyphen->advance()) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 
@@ -1520,14 +1520,14 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 
 			// Increase line length
 
-			pen.SetChar( p->Glyph() );
-			pen.ApplyKerning();
+			pen.setChar( p->getGlyph() );
+			pen.applyKerning();
 
 
 			// Check if we need to put a softbreak.
 
-//			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
-			int len = pen.GetPosX() + pen.GetGlyph()->Advance();
+//			Uint32 len = pen.getBlitPosX() + pen.getGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+			int len = pen.getPosX() + pen.getGlyph()->advance();
 			if( len > maxWidth )
 			{
 				if( pbp != 0 && pbp != pLineStart )
@@ -1544,7 +1544,7 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 				}
 			}
 			else
-				pen.AdvancePos();
+				pen.advancePos();
 
 			//
 
@@ -1561,8 +1561,8 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 			p++;				// Skip the break-point or newline character, it doesn't belong to any line.
 
 		nSoftLines++;
-		pen.SetPosX(0);			// Reset position
-		pen.FlushChar();		// Flush current character so it won't affect kerning for first character of next line.
+		pen.setPosX(0);			// Reset position
+		pen.flushChar();		// Flush current character so it won't affect kerning for first character of next line.
 	}
 	return nSoftLines;
 }
@@ -1575,7 +1575,7 @@ void WgLegacyTextField::_regenSoftLines()
 
 	// If we don't wrap, we have no softlines...
 
-	if( !m_bWrap || m_buffer.Length() == 0 )
+	if( !m_bWrap || m_buffer.length() == 0 )
 	{
 		if( bHasSoftLineArray )
 			delete [] m_pSoftLines;
@@ -1588,9 +1588,9 @@ void WgLegacyTextField::_regenSoftLines()
 	int nSoftLines;
 
 	if( bHasSoftLineArray )
-		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.chars(), m_pSoftLines, m_nSoftLines );
 	else
-		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), 0, 0 );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.chars(), 0, 0 );
 
 	// If we don't have any softbreaks we can just point at
 	// the hardlines since they are the same.
@@ -1626,7 +1626,7 @@ void WgLegacyTextField::_regenSoftLines()
 
 	// Fill in the softlines-array.
 
-	_countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+	_countWriteSoftLines( m_lineWidth, m_buffer.chars(), m_pSoftLines, m_nSoftLines );
 }
 
 //____ _refreshAllLines() _________________________________________________________
@@ -1656,7 +1656,7 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 	int maxDescend = 0;
 	int maxLineDescend = 0;
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pChars = m_buffer.chars() + pLine->ofs;
 	int		nChars = pLine->nChars;
 	Uint16	hProp = 0xFFFF;
 
@@ -1667,14 +1667,14 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 	if( nChars == 0 )
 	{
 		WgTextAttr	attr;
-		GetBaseAttr( attr );
-		pen.SetAttributes( attr );
+		getBaseAttr( attr );
+		pen.setAttributes( attr );
 
-		if( pen.GetGlyphset() )
+		if( pen.getGlyphset() )
 		{
-			int height		= pen.GetLineHeight();
-			int baseline	= pen.GetBaseline();
-			int spacing		= pen.GetLineSpacing();
+			int height		= pen.getLineHeight();
+			int baseline	= pen.getBaseline();
+			int spacing		= pen.getLineSpacing();
 
 			maxAscend = baseline;
 			maxDescend = height - baseline;
@@ -1687,20 +1687,20 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 
 		for( int i = 0 ; i < nChars ; i++ )
 		{
-			if( pChars[i].PropHandle() != hProp )
+			if( pChars[i].propHandle() != hProp )
 			{
 				WgTextAttr	attr;
-				GetCharAttr( attr, pLine->ofs + i );
-				pen.SetAttributes( attr );
+				getCharAttr( attr, pLine->ofs + i );
+				pen.setAttributes( attr );
 
-				hProp = pChars[i].PropHandle();
+				hProp = pChars[i].propHandle();
 
-				if( !pen.GetGlyphset() )
+				if( !pen.getGlyphset() )
 					break;									// Bail out instead of crashing.
 
-				int height		= pen.GetLineHeight();
-				int baseline	= pen.GetBaseline();
-				int spacing		= pen.GetLineSpacing();
+				int height		= pen.getLineHeight();
+				int baseline	= pen.getBaseline();
+				int spacing		= pen.getLineSpacing();
 
 				if( baseline > maxAscend )
 					maxAscend = baseline;
@@ -1712,15 +1712,15 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 					maxLineDescend = spacing - baseline;
 			}
 
-			pen.SetChar( pChars[i].Glyph() );
-			pen.ApplyKerning();
-			pen.AdvancePos();
+			pen.setChar( pChars[i].getGlyph() );
+			pen.applyKerning();
+			pen.advancePos();
 		}
 	}
 
 	// Fill in line struct.
 
-	pLine->width		= pen.GetPosX() + _cursorMaxWidth();
+	pLine->width		= pen.getPosX() + _cursorMaxWidth();
 	pLine->height		= maxAscend + maxDescend;
 	pLine->lineSpacing	= (int) ((maxAscend + maxLineDescend)*m_lineSpaceAdj);
 	pLine->baseline		= maxAscend;
@@ -1731,13 +1731,13 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 
 int WgLegacyTextField::_cursorMaxWidth() const
 {
-	WgCaretPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::GetDefaultCursor();
+	WgCaretPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::getDefaultCursor();
 
 	if( p && m_editMode == WG_TEXT_EDITABLE )
 	{
-		int lenInsert = p->Advance(WgCaret::INS);
-		int lenOvr = p->Advance(WgCaret::OVR);
-		int lenEOL = p->BearingX(WgCaret::EOL) + p->Width(WgCaret::EOL);
+		int lenInsert = p->advance(WgCaret::INS);
+		int lenOvr = p->advance(WgCaret::OVR);
+		int lenEOL = p->bearingX(WgCaret::EOL) + p->width(WgCaret::EOL);
 
 		return WgMax( lenEOL, WgMax(lenInsert,lenOvr) );
 	}
@@ -1746,20 +1746,20 @@ int WgLegacyTextField::_cursorMaxWidth() const
 }
 
 
-//____ CursorGotoCoord() ________________________________________________________
+//____ cursorGotoCoord() ________________________________________________________
 
-void WgLegacyTextField::CursorGotoCoord( const WgCoord& coord, const WgRect& container )
+void WgLegacyTextField::cursorGotoCoord( const WgCoord& coord, const WgRect& container )
 {
 	if( !m_pCursor )
 		return;
 
-	WgTextPos pos = CoordToPos( coord, container, true );
+	WgTextPos pos = coordToPos( coord, container, true );
 	gotoSoftPos(pos.line,pos.col);
 }
 
-//____ CursorGotoLine() _________________________________________________________
+//____ cursorGotoLine() _________________________________________________________
 
-void WgLegacyTextField::CursorGotoLine( int line, const WgRect& container )
+void WgLegacyTextField::cursorGotoLine( int line, const WgRect& container )
 {
 	if( !m_pCursor )
 		return;
@@ -1767,9 +1767,9 @@ void WgLegacyTextField::CursorGotoLine( int line, const WgRect& container )
 	m_pCursor->gotoSoftLine(line, container );
 }
 
-//____ CursorGoUp() _________________________________________________________
+//____ cursorGoUp() _________________________________________________________
 
-void WgLegacyTextField::CursorGoUp( int nbLines, const WgRect& container )
+void WgLegacyTextField::cursorGoUp( int nbLines, const WgRect& container )
 {
 	if( !m_pCursor || nbLines == 0 )
 		return;
@@ -1784,9 +1784,9 @@ void WgLegacyTextField::CursorGoUp( int nbLines, const WgRect& container )
 	m_pCursor->gotoSoftLine(line, container );
 }
 
-//____ CursorGoDown() _________________________________________________________
+//____ cursorGoDown() _________________________________________________________
 
-void WgLegacyTextField::CursorGoDown( int nbLines, const WgRect& container )
+void WgLegacyTextField::cursorGoDown( int nbLines, const WgRect& container )
 {
 	if( !m_pCursor || nbLines == 0 )
 		return;
@@ -1802,15 +1802,15 @@ void WgLegacyTextField::CursorGoDown( int nbLines, const WgRect& container )
 }
 
 
-//____ LineStartY() ______________________________________________________________
+//____ lineStartY() ______________________________________________________________
 
-int WgLegacyTextField::LineStartY( int line, const WgRect& container ) const
+int WgLegacyTextField::lineStartY( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
 
 	if( m_alignment != WG_NORTHWEST && m_alignment != WG_NORTH && m_alignment != WG_NORTHEAST )
 	{
-		ofs = WgUtil::OrigoToRect( m_alignment, container.Size(), WgSize(0,Height() )).y;
+		ofs = WgUtil::origoToRect( m_alignment, container.size(), WgSize(0,height() )).y;
 		if( ofs < 0 )
 			ofs = 0;
 	}
@@ -1823,15 +1823,15 @@ int WgLegacyTextField::LineStartY( int line, const WgRect& container ) const
 	return ofs + container.y;
 }
 
-//____ LineStartX() ______________________________________________________________
+//____ lineStartX() ______________________________________________________________
 
-int WgLegacyTextField::LineStartX( int line, const WgRect& container ) const
+int WgLegacyTextField::lineStartX( int line, const WgRect& container ) const
 {
 	int		ofs = 0;
 
 	if( m_alignment != WG_NORTHWEST && m_alignment != WG_WEST && m_alignment != WG_SOUTHWEST )
 	{
-		ofs = WgUtil::OrigoToRect( m_alignment, container.Size(), WgSize(getSoftLineWidth(line),0 )).x;
+		ofs = WgUtil::origoToRect( m_alignment, container.size(), WgSize(getSoftLineWidth(line),0 )).x;
 		if( ofs < 0 )
 			ofs = 0;
 	}
@@ -1839,11 +1839,11 @@ int WgLegacyTextField::LineStartX( int line, const WgRect& container ) const
 	return ofs + container.x;
 }
 
-//____ CoordToLine() __________________________________________________________
+//____ coordToLine() __________________________________________________________
 
-int WgLegacyTextField::CoordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
+int WgLegacyTextField::coordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
-	int y = coord.y - LineStartY( 0, container );
+	int y = coord.y - lineStartY( 0, container );
 
 	WgLegacyTextLine * pLine = m_pSoftLines;
 	for( int i = 0 ; i < m_nSoftLines ; i++ )
@@ -1870,9 +1870,9 @@ int WgLegacyTextField::CoordToLine( const WgCoord& coord, const WgRect& containe
 		return -1;				// Below last line.
 }
 
-//____ CoordToColumn() ___________________________________________________________
+//____ coordToColumn() ___________________________________________________________
 
-int WgLegacyTextField::CoordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
+int WgLegacyTextField::coordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
 	//TODO: Take cursor and selection into account!!!
 
@@ -1881,7 +1881,7 @@ int WgLegacyTextField::CoordToColumn( int line, const WgCoord& coord, const WgRe
 
 	WgLegacyTextLine * pLine = &m_pSoftLines[line];
 
-	int xStart = LineStartX( line, container );
+	int xStart = lineStartX( line, container );
 
 	if( coord.x < xStart )
 		return bCursorMode?0:-1;
@@ -1889,32 +1889,32 @@ int WgLegacyTextField::CoordToColumn( int line, const WgCoord& coord, const WgRe
 	if( coord.x >= xStart + pLine->width )
 		return bCursorMode?pLine->nChars:-1;
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pChars = m_buffer.chars() + pLine->ofs;
 	Uint16	hProp = 0xFFFF;
 	WgPen pen;
-	pen.SetOrigo( WgCoord(xStart,0) );
-	pen.SetPosX(xStart);
+	pen.setOrigo( WgCoord(xStart,0) );
+	pen.setPosX(xStart);
 
 	for( int i = 0 ; i < pLine->nChars ; i++ )
 	{
-		if( pChars[i].PropHandle()!= hProp )
+		if( pChars[i].propHandle()!= hProp )
 		{
 			WgTextAttr	attr;
-			GetCharAttr( attr, pLine->ofs + i );
-			pen.SetAttributes( attr );
+			getCharAttr( attr, pLine->ofs + i );
+			pen.setAttributes( attr );
 
-			hProp = pChars[i].PropHandle();
+			hProp = pChars[i].propHandle();
 		}
 /*
 		if( cursColumn == 0 )
-			pen.AdvancePosCursor( * pCursor );
+			pen.advancePosCursor( * pCursor );
 		cursColumn--;
 */
-		int charStartX = pen.GetPosX();
-		pen.SetChar( pChars[i].Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
-		int charEndX = pen.GetPosX();
+		int charStartX = pen.getPosX();
+		pen.setChar( pChars[i].getGlyph() );
+		pen.applyKerning();
+		pen.advancePos();
+		int charEndX = pen.getPosX();
 
 		if( charEndX > coord.x )
 		{
@@ -1928,50 +1928,50 @@ int WgLegacyTextField::CoordToColumn( int line, const WgCoord& coord, const WgRe
 	return bCursorMode?pLine->nChars:-1;			// We should never get here...
 }
 
-//_____ CoordToPos() __________________________________________________________
+//_____ coordToPos() __________________________________________________________
 
-WgTextPos WgLegacyTextField::CoordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
+WgTextPos WgLegacyTextField::coordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
-	int line = CoordToLine( coord, container, bCursorMode );
+	int line = coordToLine( coord, container, bCursorMode );
 	if( line == -1 )
 		return WgTextPos(-1,-1);
 
-	int col = CoordToColumn( line, coord, container, bCursorMode );
+	int col = coordToColumn( line, coord, container, bCursorMode );
 	if( col == -1 )
 		return WgTextPos(-1,-1);
 
 	return WgTextPos(line,col);
 }
 
-//____ CoordToOfs() ___________________________________________________________
+//____ coordToOfs() ___________________________________________________________
 
-int WgLegacyTextField::CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
+int WgLegacyTextField::coordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode ) const
 {
-	WgTextPos pos = CoordToPos( coord, container, bCursorMode );
+	WgTextPos pos = coordToPos( coord, container, bCursorMode );
 
 	if( pos.line == -1 || pos.col == -1 )
 		return -1;
 	else
-		return PosToOfs( pos );
+		return posToOfs( pos );
 }
 
 
-//____ CoordToLink() __________________________________________________________
+//____ coordToLink() __________________________________________________________
 
-WgTextLinkPtr WgLegacyTextField::CoordToLink( const WgCoord& coord, const WgRect& container ) const
+WgTextLinkPtr WgLegacyTextField::coordToLink( const WgCoord& coord, const WgRect& container ) const
 {
-	int ofs = CoordToOfs( coord, container );
+	int ofs = coordToOfs( coord, container );
 	if( ofs >= 0 )
-		return GetCharLink( ofs );
+		return getCharLink( ofs );
 	else
 		return 0;
 }
 
-//____ OfsToCoordY() _________________________________________________________
+//____ ofsToCoordY() _________________________________________________________
 
-int WgLegacyTextField::OfsToCoordY( int ofs, const WgRect& container ) const
+int WgLegacyTextField::ofsToCoordY( int ofs, const WgRect& container ) const
 {
-	int y = LineStartY( OfsToPos(ofs).line, container );
+	int y = lineStartY( ofsToPos(ofs).line, container );
 
 	for( int i = 0 ; i < m_nSoftLines ; i++ )
 	{
@@ -1983,28 +1983,28 @@ int WgLegacyTextField::OfsToCoordY( int ofs, const WgRect& container ) const
 	return y;
 }
 
-//____ OfsToCoordX() _________________________________________________________
+//____ ofsToCoordX() _________________________________________________________
 
-int WgLegacyTextField::OfsToCoordX( int ofs, const WgRect& container ) const
+int WgLegacyTextField::ofsToCoordX( int ofs, const WgRect& container ) const
 {
-	return PosToCoordX( OfsToPos(ofs), container );
+	return posToCoordX( ofsToPos(ofs), container );
 }
 
-//____ OfsToCoord() ___________________________________________________________
+//____ ofsToCoord() ___________________________________________________________
 
-WgCoord WgLegacyTextField::OfsToCoord( int ofs, const WgRect& container ) const
+WgCoord WgLegacyTextField::ofsToCoord( int ofs, const WgRect& container ) const
 {
-	return PosToCoord( OfsToPos(ofs), container );
+	return posToCoord( ofsToPos(ofs), container );
 }
 
-//____ OfsToPos() _____________________________________________________________
+//____ ofsToPos() _____________________________________________________________
 
-WgTextPos WgLegacyTextField::OfsToPos( int ofs ) const
+WgTextPos WgLegacyTextField::ofsToPos( int ofs ) const
 {
 	if( ofs < 0 )
 		return WgTextPos(0,0);
 
-	if( ofs >= (int) m_buffer.Length() )
+	if( ofs >= (int) m_buffer.length() )
 		return WgTextPos(m_nSoftLines-1, m_pSoftLines[m_nSoftLines-1].nChars);
 
 	int ln = 0;
@@ -2014,73 +2014,73 @@ WgTextPos WgLegacyTextField::OfsToPos( int ofs ) const
 	return WgTextPos(ln, ofs - m_pSoftLines[ln].ofs);
 }
 
-//____ PosToCoordX() __________________________________________________________
+//____ posToCoordX() __________________________________________________________
 
-int WgLegacyTextField::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
+int WgLegacyTextField::posToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 {
 	//TODO: Take cursor and selection into account!!!
 
-	WgTextPos	pos = ClampPos(_pos);
+	WgTextPos	pos = clampPos(_pos);
 
 	WgLegacyTextLine * pLine = &m_pSoftLines[pos.line];
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
+	const WgChar * pChars = m_buffer.chars() + pLine->ofs;
 	Uint16	hProp = 0xFFFF;
 	WgPen pen;
 	
-	int startX = LineStartX( pos.line, container );
-	pen.SetOrigo( WgCoord(startX,0) );
-	pen.SetPosX(startX);
+	int startX = lineStartX( pos.line, container );
+	pen.setOrigo( WgCoord(startX,0) );
+	pen.setPosX(startX);
 
 	for( int i = 0 ; i < pos.col ; i++ )
 	{
-		if( pChars[i].PropHandle()!= hProp )
+		if( pChars[i].propHandle()!= hProp )
 		{
 			WgTextAttr	attr;
-			GetCharAttr( attr, pLine->ofs + i );
-			pen.SetAttributes( attr );
+			getCharAttr( attr, pLine->ofs + i );
+			pen.setAttributes( attr );
 
-			hProp = pChars[i].PropHandle();
+			hProp = pChars[i].propHandle();
 		}
 /*
 		if( cursColumn == 0 )
-			pen.AdvancePosCursor( * pCursor );
+			pen.advancePosCursor( * pCursor );
 		cursColumn--;
 */
 
-		pen.SetChar( pChars[i].Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
+		pen.setChar( pChars[i].getGlyph() );
+		pen.applyKerning();
+		pen.advancePos();
 	}
 
-	return pen.GetPosX();
+	return pen.getPosX();
 }
 
-//____ PosToCoordY() __________________________________________________________
+//____ posToCoordY() __________________________________________________________
 
-int WgLegacyTextField::PosToCoordY( const WgTextPos& pos, const WgRect& container ) const
+int WgLegacyTextField::posToCoordY( const WgTextPos& pos, const WgRect& container ) const
 {
-	return LineStartY( pos.line, container );
+	return lineStartY( pos.line, container );
 }
 
-//____ PosToCoord() ___________________________________________________________
+//____ posToCoord() ___________________________________________________________
 
-WgCoord WgLegacyTextField::PosToCoord( const WgTextPos& pos, const WgRect& container ) const
+WgCoord WgLegacyTextField::posToCoord( const WgTextPos& pos, const WgRect& container ) const
 {
-	return WgCoord( PosToCoordX(pos, container), PosToCoordY(pos, container) );
+	return WgCoord( posToCoordX(pos, container), posToCoordY(pos, container) );
 }
 
-//____ PosToOfs() _____________________________________________________________
+//____ posToOfs() _____________________________________________________________
 
-int WgLegacyTextField::PosToOfs( const WgTextPos& _pos ) const
+int WgLegacyTextField::posToOfs( const WgTextPos& _pos ) const
 {
-	WgTextPos pos = ClampPos(_pos);
+	WgTextPos pos = clampPos(_pos);
 	return m_pSoftLines[pos.line].ofs + pos.col;
 }
 
-//____ ClampPos() _____________________________________________________________
+//____ clampPos() _____________________________________________________________
 
-WgTextPos WgLegacyTextField::ClampPos( WgTextPos pos ) const
+WgTextPos WgLegacyTextField::clampPos( WgTextPos pos ) const
 {
 	if( pos.line < 0 )
 		return WgTextPos(0,0);
@@ -2099,10 +2099,10 @@ WgTextPos WgLegacyTextField::ClampPos( WgTextPos pos ) const
 
 //____ FocusRange() ___________________________________________________________
 
-WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRect& _window, WgRange range ) const
+WgCoord WgLegacyTextField::focusWindowOnRange( const WgSize& canvas, const WgRect& _window, WgRange range ) const
 {
 	if( _window == canvas )
-		return _window.Pos();
+		return _window.pos();
 
 	// Move view so that range stays visible with:
 	// 1. At least one character displayed before and (if possible) after the range.
@@ -2111,14 +2111,14 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 
 	// Get rectangle we want to focus
 
-	WgTextPos	posBeg = OfsToPos(range.Begin());
-	WgTextPos	posEnd = OfsToPos(range.End());
+	WgTextPos	posBeg = ofsToPos(range.begin());
+	WgTextPos	posEnd = ofsToPos(range.end());
 
 	posBeg.col--;							// We want at least one empty character before the range.
 	posEnd.col++;							// We want at least one empty character after the range.
 
-	WgCoord	rangeBegin = PosToCoord(posBeg,canvas);
-	WgCoord	rangeEnd = PosToCoord(posEnd,canvas);
+	WgCoord	rangeBegin = posToCoord(posBeg,canvas);
+	WgCoord	rangeEnd = posToCoord(posEnd,canvas);
 
 	rangeEnd.y += m_pSoftLines[posEnd.line].height;
 
@@ -2134,7 +2134,7 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 	{
 		// Include beginning of all lines except the first.
 
-		int beg = LineStartX( i, canvas );
+		int beg = lineStartX( i, canvas );
 		if( i != posBeg.line && beg < rangeBegin.x )
 			rangeBegin.x = beg;
 
@@ -2153,11 +2153,11 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 
 	WgRect window = _window;
 
-	if( rangeRect.Right() > window.Right() )
-		window.x = rangeRect.Right() - window.w;
+	if( rangeRect.right() > window.right() )
+		window.x = rangeRect.right() - window.w;
 
-	if( rangeRect.Bottom() > window.Bottom() )
-		window.x = rangeRect.Bottom() - window.h;
+	if( rangeRect.bottom() > window.bottom() )
+		window.x = rangeRect.bottom() - window.h;
 
 	if( rangeRect.x < window.x )
 		window.x = rangeRect.x;
@@ -2183,7 +2183,7 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 	else if( window.y + window.h > canvas.h )
 		window.y = canvas.h - window.h;
 
-	return window.Pos();
+	return window.pos();
 
 /*
 	// Possibly move viewOfs so that:
@@ -2193,30 +2193,30 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 
 	if( m_bFocused && m_pText->getFont() )
 	{
-		WgCaret * pCursor = WgTextTool::GetCursor( m_pText );
+		WgCaret * pCursor = WgTextTool::getCursor( m_pText );
 		if( !pCursor )
 			return;
 
 		int cursCol	= m_pText->column();
 
 		WgTextAttr	attr;
-		m_pText->GetBaseAttr( attr );
+		m_pText->getBaseAttr( attr );
 
 		WgPen	pen;
-		pen.SetAttributes( attr );
-		pen.SetChar(m_pwGlyph);
-		pen.AdvancePos();
+		pen.setAttributes( attr );
+		pen.setChar(m_pwGlyph);
+		pen.advancePos();
 
-		int pwAdvance	= pen.GetPosX();
-		int cursAdvance	= pCursor->Advance(m_pText->cursorMode() );
-		int cursBearing	= pCursor->BearingX(m_pText->cursorMode() );
-		int cursWidth	= pCursor->Width(m_pText->cursorMode() );
+		int pwAdvance	= pen.getPosX();
+		int cursAdvance	= pCursor->advance(m_pText->cursorMode() );
+		int cursBearing	= pCursor->bearingX(m_pText->cursorMode() );
+		int cursWidth	= pCursor->width(m_pText->cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
 		int minOfs;			// Min allowed view offset in pixels.
 
-		int geoWidth = Size().w;
+		int geoWidth = size().w;
 		int	lineWidth = m_pText->getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
 		// Calculate cursOfs
@@ -2271,32 +2271,32 @@ WgCoord WgLegacyTextField::FocusWindowOnRange( const WgSize& canvas, const WgRec
 }
 
 
-//____ LineColToOffset() ______________________________________________________
+//____ lineColToOffset() ______________________________________________________
 
-int WgLegacyTextField::LineColToOffset(int line, int col) const
+int WgLegacyTextField::lineColToOffset(int line, int col) const
 {
 	return m_pHardLines[line].ofs + col;
 }
 
 
-//____ OnMsg() _____________________________________________________________
+//____ onMsg() _____________________________________________________________
 
-bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container )
+bool WgLegacyTextField::onMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container )
 {
 	bool bRefresh = false;
 
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_MOUSE_ENTER:
 		case WG_MSG_MOUSE_MOVE:
 		{
 /*
-			WgCoord pointerOfs = pMsg->PointerPos();
+			WgCoord pointerOfs = pMsg->pointerPos();
 			
-			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
+			WgTextLinkPtr pLink = coordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pMsgRouter->Post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
+				pMsgRouter->post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2305,7 +2305,7 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pMsgRouter->Post( new WgLinkMouseEnterMsg( pLink ));
+					pMsgRouter->post( new WgLinkMouseEnterMsg( pLink ));
 
 					m_pMarkedLink = pLink;
 					m_markedLinkState = WG_STATE_HOVERED;
@@ -2321,7 +2321,7 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 		{
 			if( m_pMarkedLink )
 			{
-				pMsgRouter->Post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
+				pMsgRouter->post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2332,7 +2332,7 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 		{
 			if( m_pMarkedLink )
 			{
-				pMsgRouter->Post( new WgLinkMousePressMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
+				pMsgRouter->post( new WgLinkMousePressMsg( m_pMarkedLink, WgMouseButtonMsg::cast(pMsg)->button() ));
 				m_markedLinkState = WG_STATE_PRESSED;
 				bRefresh = true;
 			}
@@ -2343,7 +2343,7 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 		{
 			if( m_pMarkedLink )
 			{
-				pMsgRouter->Post( new WgLinkMouseRepeatMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
+				pMsgRouter->post( new WgLinkMouseRepeatMsg( m_pMarkedLink, WgMouseButtonMsg::cast(pMsg)->button() ));
 			}
 			break;
 		}
@@ -2352,12 +2352,12 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 		{
 			if( m_pMarkedLink )
 			{
-				pMsgRouter->Post( new WgLinkMouseReleaseMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
+				pMsgRouter->post( new WgLinkMouseReleaseMsg( m_pMarkedLink, WgMouseButtonMsg::cast(pMsg)->button() ));
 
 				if( m_markedLinkState == WG_STATE_PRESSED )
 				{
-					pMsgRouter->Post( new WgLinkMouseClickMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
-					pMsgRouter->Post( new WgLinkSelectMsg( m_pMarkedLink ));				
+					pMsgRouter->post( new WgLinkMouseClickMsg( m_pMarkedLink, WgMouseButtonMsg::cast(pMsg)->button() ));
+					pMsgRouter->post( new WgLinkSelectMsg( m_pMarkedLink ));				
 				}
 				m_markedLinkState = WG_STATE_HOVERED;
 				bRefresh = true;
@@ -2367,7 +2367,7 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 
 		case WG_MSG_MOUSE_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pMsgRouter->Post( new WgLinkMouseDoubleClickMsg( m_pMarkedLink, WgMouseButtonMsg::Cast(pMsg)->Button() ));
+				pMsgRouter->post( new WgLinkMouseDoubleClickMsg( m_pMarkedLink, WgMouseButtonMsg::cast(pMsg)->button() ));
 			break;
 
 		default:
@@ -2383,9 +2383,9 @@ bool WgLegacyTextField::OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 }
 
 
-//____ OnAction() _____________________________________________________________
+//____ onAction() _____________________________________________________________
 /*
-bool WgLegacyTextField::OnAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCoord& pointerOfs )
+bool WgLegacyTextField::onAction( WgInput::UserAction action, int button_key, const WgRect& container, const WgCoord& pointerOfs )
 {
 	bool bRefresh = false;
 	WgTextLinkHandler * pHandler;
@@ -2402,7 +2402,7 @@ bool WgLegacyTextField::OnAction( WgInput::UserAction action, int button_key, co
 		case WgInput::POINTER_ENTER:
 		case WgInput::POINTER_OVER:
 		{
-			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
+			WgTextLinkPtr pLink = coordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
 				if( pHandler )
@@ -2503,55 +2503,55 @@ bool WgLegacyTextField::OnAction( WgInput::UserAction action, int button_key, co
 }
 */
 
-//____ GetBaseAttr() __________________________________________________________
+//____ getBaseAttr() __________________________________________________________
 
-void WgLegacyTextField::GetBaseAttr( WgTextAttr& attr ) const
+void WgLegacyTextField::getBaseAttr( WgTextAttr& attr ) const
 {
-	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_state );
-//	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_state );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_state );
+	attr.clear();
+	WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), m_state );
+//	WgTextTool::setAttrColor( attr, m_pBgBlockColors, m_state );
+	WgTextTool::addPropAttributes( attr, m_pBaseProp, m_state );
 }
 
-//____ GetCharAttr() __________________________________________________________
+//____ getCharAttr() __________________________________________________________
 
-bool WgLegacyTextField::GetCharAttr( WgTextAttr& attr, int charOfs ) const
+bool WgLegacyTextField::getCharAttr( WgTextAttr& attr, int charOfs ) const
 {
-	if( charOfs >= (int) m_buffer.Length() )
+	if( charOfs >= (int) m_buffer.length() )
 		return false;
 
-	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_state );
-//	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_state );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_state );
+	attr.clear();
+	WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), m_state );
+//	WgTextTool::setAttrColor( attr, m_pBgBlockColors, m_state );
+	WgTextTool::addPropAttributes( attr, m_pBaseProp, m_state );
 
 	// Add selection properties if character is selected
 
 	if( m_selStartLine != m_selEndLine || m_selStartCol != m_selEndCol )
 	{
-		int selStart = LineColToOffset( m_selStartLine, m_selStartCol );
-		int selEnd = LineColToOffset( m_selEndLine, m_selEndCol );
+		int selStart = lineColToOffset( m_selStartLine, m_selStartCol );
+		int selEnd = lineColToOffset( m_selEndLine, m_selEndCol );
 
 		if( charOfs >= selStart && charOfs < selEnd )
 		{
 			if( m_pSelectionProp )
-				WgTextTool::AddPropAttributes( attr, m_pSelectionProp, m_state );
+				WgTextTool::addPropAttributes( attr, m_pSelectionProp, m_state );
 			else
-				WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultSelectionProp(), m_state );
+				WgTextTool::addPropAttributes( attr, WgBase::getDefaultSelectionProp(), m_state );
 		}
 	}
 
 	// Add link properties if character is part of a link
 
-	WgTextpropPtr pCharProp = m_buffer.Chars()[charOfs].Properties();
+	WgTextpropPtr pCharProp = m_buffer.chars()[charOfs].getProperties();
 
-	WgTextLinkPtr pLink = pCharProp->Link();
+	WgTextLinkPtr pLink = pCharProp->link();
 	if( !pLink )
-		pLink = m_pBaseProp->Link();
+		pLink = m_pBaseProp->link();
 
 	if( pLink )
 	{
-		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::GetDefaultLinkProp();
+		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::getDefaultLinkProp();
 
 		WgState	state;
 
@@ -2563,91 +2563,91 @@ bool WgLegacyTextField::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 		{
 			if( m_state == WG_STATE_DISABLED )
 				state = WG_STATE_DISABLED;
-			else if( pLink->HasBeenAccessed() )
+			else if( pLink->hasBeenAccessed() )
 				state = WG_STATE_SELECTED;
 			else
 				state = WG_STATE_NORMAL;
 		}
 
 
-		WgTextTool::AddPropAttributes( attr, pProp, state );
+		WgTextTool::addPropAttributes( attr, pProp, state );
 	}
 
 	// Add characters own properties
 
-	WgTextTool::AddPropAttributes( attr, pCharProp, m_state );
+	WgTextTool::addPropAttributes( attr, pCharProp, m_state );
 
 	return true;
 }
 
-bool WgLegacyTextField::IsCharUnderlined( int charOfs ) const
+bool WgLegacyTextField::isCharUnderlined( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.bUnderlined;
 }
 
-WgColor WgLegacyTextField::GetCharColor( int charOfs ) const
+WgColor WgLegacyTextField::getCharColor( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.color;
 }
 
-WgColor WgLegacyTextField::GetCharBgColor( int charOfs ) const
+WgColor WgLegacyTextField::getCharBgColor( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.bgColor;
 }
 
-WgFontAlt WgLegacyTextField::GetCharStyle( int charOfs ) const
+WgFontAlt WgLegacyTextField::getCharStyle( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.style;
 }
 
-int WgLegacyTextField::GetCharSize( int charOfs ) const
+int WgLegacyTextField::getCharSize( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.size;
 }
 
-WgFontPtr WgLegacyTextField::GetCharFont( int charOfs ) const
+WgFontPtr WgLegacyTextField::getCharFont( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.pFont;
 }
 
-int WgLegacyTextField::GetCharBreakLevel( int charOfs ) const
+int WgLegacyTextField::getCharBreakLevel( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.breakLevel;
 }
 
-WgTextLinkPtr WgLegacyTextField::GetCharLink( int charOfs ) const
+WgTextLinkPtr WgLegacyTextField::getCharLink( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.pLink;
 }
 
-bool WgLegacyTextField::IsCharLink( int charOfs ) const
+bool WgLegacyTextField::isCharLink( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
+	getCharAttr(attr,charOfs);
 	return attr.pLink?true:false;
 }

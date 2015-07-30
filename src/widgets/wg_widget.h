@@ -104,22 +104,22 @@ public:
 	WgWidget();
 	virtual ~WgWidget();
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgWidgetPtr	Cast( const WgObjectPtr& pObject );
+	static WgWidgetPtr	cast( const WgObjectPtr& pObject );
 
 	inline int			Id() const { return m_id; }
-	inline void			SetId( int id ) { m_id = id; }
+	inline void			setId( int id ) { m_id = id; }
 
-	virtual WgString	Tooltip() const { return m_tooltip; }
+	virtual WgString	tooltip() const { return m_tooltip; }
 	inline void			SetTooltip( const WgString& str ) { m_tooltip = str; }
 
 	inline void			Refresh() { _onRefresh(); }
-	void				SetEnabled(bool bEnabled);
-	inline bool			IsEnabled() const { return m_state.IsEnabled(); }
+	void				setEnabled(bool bEnabled);
+	inline bool			isEnabled() const { return m_state.isEnabled(); }
 
-	inline WgState		State() const { return m_state; }
+	inline WgState		state() const { return m_state; }
 
 	bool				CloneContent( const WgWidgetPtr& _pOrg );
 
@@ -131,30 +131,30 @@ public:
 
 	void				SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
 	int					MarkOpacity() const { return m_markOpacity; }
-	bool				MarkTest( const WgCoord& ofs );
+	bool				markTest( const WgCoord& ofs );
 
-	virtual void		SetSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr			Skin( ) const	{ return m_pSkin; }
+	virtual void		setSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			skin( ) const	{ return m_pSkin; }
 
 
-	WgHookPtr			Hook() const { return m_pHook; }
+	WgHookPtr			hook() const { return m_pHook; }
 
 	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
-	void 				OnMsg( const WgMsgPtr& pMsg );
+	void 				onMsg( const WgMsgPtr& pMsg );
 
 
 	// Convenient calls to hook
 
-	inline WgCoord		Pos() const;
-	inline WgSize		Size() const;
-	inline WgRect		Geo() const;
-	inline WgCoord		GlobalPos() const;
-	inline WgRect		GlobalGeo() const;
+	inline WgCoord		pos() const;
+	inline WgSize		size() const;
+	inline WgRect		geo() const;
+	inline WgCoord		globalPos() const;
+	inline WgRect		globalGeo() const;
 	inline bool			GrabFocus();
 	inline bool			ReleaseFocus();
-	inline bool			IsFocused();
-	WgContainerPtr		Parent() const;
+	inline bool			isFocused();
+	WgContainerPtr		parent() const;
 
 	inline WgWidgetPtr	NextSibling() const;
 	inline WgWidgetPtr	PrevSibling() const;
@@ -164,18 +164,18 @@ public:
 	
 	// To be overloaded by Widget
 
-	virtual int		MatchingHeight( int width ) const;
-	virtual int		MatchingWidth( int height ) const;
+	virtual int		matchingHeight( int width ) const;
+	virtual int		matchingWidth( int height ) const;
 
-	virtual WgSize	PreferredSize() const;	
-	virtual WgSize	MinSize() const;
-	virtual WgSize	MaxSize() const;
+	virtual WgSize	preferredSize() const;	
+	virtual WgSize	minSize() const;
+	virtual WgSize	maxSize() const;
 
 	virtual bool	IsContainer() const { return false; }		///< @brief Check if this widget is a container.
 																///<
 																///< Check if widget is a container.
 																///< This method is a quicker way to check if the widget
-																///< is a container than calling IsInstanceOf(WgContainer::CLASS).
+																///< is a container than calling isInstanceOf(WgContainer::CLASS).
 																///< @return True if the widget is a subclass of WgContainer.
 
 protected:
@@ -252,10 +252,10 @@ typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
  * 
  * @return Local position in pixels. 
  */
-WgCoord WgWidget::Pos() const 
+WgCoord WgWidget::pos() const 
 { 
 	if( m_pHook ) 
-		return m_pHook->Pos(); 
+		return m_pHook->pos(); 
 	return WgCoord(0,0); 
 }
 
@@ -267,10 +267,10 @@ WgCoord WgWidget::Pos() const
  * 
  * @return Width and height in pixels.
  */
-WgSize WgWidget::Size() const 
+WgSize WgWidget::size() const 
 { 
 	if( m_pHook ) 
-		return m_pHook->Size(); 
+		return m_pHook->size(); 
 	return WgSize(256,256); 
 }
 
@@ -283,10 +283,10 @@ WgSize WgWidget::Size() const
  * 
  * @return Local geometry in pixels. 
  */
-WgRect WgWidget::Geo() const 
+WgRect WgWidget::geo() const 
 { 
 	if( m_pHook ) 
-		return m_pHook->Geo(); 
+		return m_pHook->geo(); 
 	return WgRect(0,0,256,256); 
 }
 
@@ -297,10 +297,10 @@ WgRect WgWidget::Geo() const
  * 
  * @return Global position in pixels. 
  */
-WgCoord WgWidget::GlobalPos() const 
+WgCoord WgWidget::globalPos() const 
 { 
 	if( m_pHook ) 
-		return m_pHook->GlobalPos(); 
+		return m_pHook->globalPos(); 
 	return WgCoord(0,0); 
 }
 
@@ -313,10 +313,10 @@ WgCoord WgWidget::GlobalPos() const
  *
  * @return Global geometry in pixels. 
  */
-WgRect WgWidget::GlobalGeo() const 
+WgRect WgWidget::globalGeo() const 
 { 
 	if( m_pHook ) 
-		return m_pHook->GlobalGeo(); 
+		return m_pHook->globalGeo(); 
 	return WgRect(0,0,256,256); 
 }
 
@@ -342,9 +342,9 @@ bool WgWidget::ReleaseFocus()
  * @return True if widget has focus, otherwise false.
  */
 
-bool WgWidget::IsFocused() 
+bool WgWidget::isFocused() 
 { 
-	return m_state.IsFocused(); 
+	return m_state.isFocused(); 
 }
 
 /** @brief Get next sibling.

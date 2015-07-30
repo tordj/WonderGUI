@@ -48,20 +48,20 @@ class WgListHook : public WgHook
 {
 	friend class WgList;
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgListHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgListHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgListHookPtr	Prev() const { return static_cast<WgListHook*>(_prevHook()); }
-	WgListHookPtr	Next() const { return static_cast<WgListHook*>(_nextHook()); }
-	WgListPtr		Parent() const;
+	WgListHookPtr	prev() const { return static_cast<WgListHook*>(_prevHook()); }
+	WgListHookPtr	next() const { return static_cast<WgListHook*>(_nextHook()); }
+	WgListPtr		parent() const;
 
-	virtual bool	SetVisible( bool bVisible );
-	bool			IsVisible() { return m_bVisible; }
+	virtual bool	setVisible( bool bVisible );
+	bool			isVisible() { return m_bVisible; }
 
-	virtual bool	SetSelected( bool bSelected );
-	bool			IsSelected() { return m_pWidget->State().IsSelected(); }
+	virtual bool	setSelected( bool bSelected );
+	bool			isSelected() { return m_pWidget->state().isSelected(); }
 
 
 protected:
@@ -79,26 +79,26 @@ class WgList : public WgContainer
 {
 	friend class WgListHook;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgListPtr	Cast( const WgObjectPtr& pObject );
+	static WgListPtr	cast( const WgObjectPtr& pObject );
 
-	virtual void		SetEntrySkin( const WgSkinPtr& pSkin );
-	virtual bool		SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
-	WgSkinPtr			OddEntrySkin() const { return m_pEntrySkin[0]; }
-	WgSkinPtr			EvenEntrySkin() const { return m_pEntrySkin[1]; }
+	virtual void		setEntrySkin( const WgSkinPtr& pSkin );
+	virtual bool		setEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin );
+	WgSkinPtr			oddEntrySkin() const { return m_pEntrySkin[0]; }
+	WgSkinPtr			evenEntrySkin() const { return m_pEntrySkin[1]; }
 
-	virtual void		SetLassoSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr			LassoSkin() const { return m_pLassoSkin; }
+	virtual void		setLassoSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr			lassoSkin() const { return m_pLassoSkin; }
 
-	virtual bool		SetSelectMode( WgSelectMode mode );
-	WgSelectMode		SelectMode() const { return m_selectMode; }
+	virtual bool		setSelectMode( WgSelectMode mode );
+	WgSelectMode		selectMode() const { return m_selectMode; }
 
 
 
-	inline WgListHookPtr	FirstHook() const { return static_cast<WgListHook*>(_firstHook()); }
-	inline WgListHookPtr	LastHook() const { return static_cast<WgListHook*>(_lastHook()); }
+	inline WgListHookPtr	firstHook() const { return static_cast<WgListHook*>(_firstHook()); }
+	inline WgListHookPtr	lastHook() const { return static_cast<WgListHook*>(_lastHook()); }
 
 protected:
 

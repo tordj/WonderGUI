@@ -49,8 +49,8 @@ public:
 
 	//____ Methods _____________________________________
 
-	void				SetSkin( const WgSkinPtr& pSkin );
-	inline WgSkinPtr	Skin() const { return m_pSkin; }
+	void				setSkin( const WgSkinPtr& pSkin );
+	inline WgSkinPtr	skin() const { return m_pSkin; }
 
 	WgObject * 			_object() { return m_pHolder->_object(); };
 //private:

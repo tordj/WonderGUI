@@ -42,57 +42,57 @@ WgSurface::~WgSurface()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSurface::IsInstanceOf( const char * pClassName ) const
+bool WgSurface::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSurface::ClassName( void ) const
+const char * WgSurface::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSurfacePtr WgSurface::Cast( const WgObjectPtr& pObject )
+WgSurfacePtr WgSurface::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSurfacePtr( static_cast<WgSurface*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSurfacePtr( static_cast<WgSurface*>(pObject.rawPtr()) );
 
 	return 0;
 } 
 
-//____ Width() ________________________________________________________________
+//____ width() ________________________________________________________________
 /**
  * Get the width of the surface.
  *
  * @return The width of the surface, measured in pixels.
  **/
-int WgSurface::Width() const
+int WgSurface::width() const
 {
-	return Size().w;
+	return size().w;
 }
 
-//____ Height() _______________________________________________________________
+//____ height() _______________________________________________________________
 /**
  * Get the height of the surface.
  *
  * @return The height of the surface, measured in pixels.
  **/
-int WgSurface::Height() const
+int WgSurface::height() const
 {
-	return Size().h;
+	return size().h;
 }
 
 
-//____ ColorToPixel() ____________________________________________________________
+//____ colorToPixel() ____________________________________________________________
 /**
  * Convert specified color to a pixel in surface's native format.
  *
@@ -108,7 +108,7 @@ int WgSurface::Height() const
  * @return Pixel value in surface's native format that closest resembles specified color.
  *
  **/
-Uint32 WgSurface::ColorToPixel( const WgColor& col ) const
+Uint32 WgSurface::colorToPixel( const WgColor& col ) const
 {
 	Uint32 pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
 				 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
@@ -118,7 +118,7 @@ Uint32 WgSurface::ColorToPixel( const WgColor& col ) const
 	return pix;
 }
 
-//____ PixelToColor() ____________________________________________________________
+//____ pixelToColor() ____________________________________________________________
 /**
  * Get the color and alpha values of a pixel
  *
@@ -133,7 +133,7 @@ Uint32 WgSurface::ColorToPixel( const WgColor& col ) const
  * @return WgColor structure with RGBA values for the specified pixel value.
  *
  **/
-WgColor WgSurface::PixelToColor( Uint32 pixel ) const
+WgColor WgSurface::pixelToColor( Uint32 pixel ) const
 {
 	WgColor col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
 				 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
@@ -149,19 +149,19 @@ WgRect WgSurface::_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& r
 {
 	if( m_accessMode == WG_NO_ACCESS )
 	{
-		Lock( modeNeeded );
+		lock( modeNeeded );
 		return region;
 	}
 	else if( m_accessMode != WG_READ_WRITE && m_accessMode != modeNeeded )
 		return WgRect(0,0,0,0);
 
-	if( !m_lockRegion.Contains( region ) )
+	if( !m_lockRegion.contains( region ) )
 		return WgRect(0,0,0,0);
 
-	return region - m_lockRegion.Pos();
+	return region - m_lockRegion.pos();
 }
 
-//____ Fill() _________________________________________________________________
+//____ fill() _________________________________________________________________
 /**
  * Fill the surface with the specified color.
  *
@@ -177,9 +177,9 @@ WgRect WgSurface::_lockAndAdjustRegion( WgAccessMode modeNeeded, const WgRect& r
  *
  **/
 
-bool WgSurface::Fill( WgColor col )
+bool WgSurface::fill( WgColor col )
 {
-	return Fill( col, WgRect(0,0,Size()) );
+	return fill( col, WgRect(0,0,size()) );
 }
 
 /**
@@ -197,7 +197,7 @@ bool WgSurface::Fill( WgColor col )
  * pixel value most closely resembling the one specified.
  *
  **/
-bool WgSurface::Fill( WgColor col, const WgRect& region )
+bool WgSurface::fill( WgColor col, const WgRect& region )
 {
 
 	WgAccessMode oldMode = m_accessMode;
@@ -209,29 +209,29 @@ bool WgSurface::Fill( WgColor col, const WgRect& region )
 	//
 
 
-	Uint32 pixel = ColorToPixel( col );
-	int width = Width();
-	int height = Height();
-	int pitch = Pitch();
+	Uint32 pixel = colorToPixel( col );
+	int w = width();
+	int h = height();
+	int p = pitch();
 	Uint8 * pDest = m_pPixels;
 
 	bool ret = true;
 	switch( m_pixelFormat.bits )
 	{
 		case 8:
-			for( int y = 0 ; y < height ; y++ )
+			for( int y = 0 ; y < h ; y++ )
 			{
-				for( int x = 0 ; x < width ; x++ )
+				for( int x = 0 ; x < w ; x++ )
 					pDest[x] = (Uint8) pixel;
-				pDest += pitch;
+				pDest += p;
 			}
 			break;
 		case 16:
-			for( int y = 0 ; y < height ; y++ )
+			for( int y = 0 ; y < h ; y++ )
 			{
-				for( int x = 0 ; x < width ; x++ )
+				for( int x = 0 ; x < w ; x++ )
 					((Uint16*)pDest)[x] = (Uint16) pixel;
-				pDest += pitch;
+				pDest += p;
 			}
 			break;
 		case 24:
@@ -240,24 +240,24 @@ bool WgSurface::Fill( WgColor col, const WgRect& region )
 			Uint8 two = (Uint8) (pixel>>8);
 			Uint8 three = (Uint8) (pixel>>16);
 
-			for( int y = 0 ; y < height ; y++ )
+			for( int y = 0 ; y < h ; y++ )
 			{
-				for( int x = 0 ; x < width ; x++ )
+				for( int x = 0 ; x < w ; x++ )
 				{
 					pDest[x++] = one;
 					pDest[x++] = two;
 					pDest[x++] = three;
 				}
-				pDest += pitch - width*3;
+				pDest += p - w*3;
 			}
 			break;
 		}
 		case 32:
-			for( int y = 0 ; y < height ; y++ )
+			for( int y = 0 ; y < h ; y++ )
 			{
-				for( int x = 0 ; x < width ; x++ )
+				for( int x = 0 ; x < w ; x++ )
 					((Uint32*)pDest)[x] = pixel;
-				pDest += pitch;
+				pDest += p;
 			}
 			break;
 		default:
@@ -267,12 +267,12 @@ bool WgSurface::Fill( WgColor col, const WgRect& region )
 	//
 
 	if( oldMode == WG_NO_ACCESS )
-		Unlock();
+		unlock();
 
 	return ret;
 }
 
-//_____ CopyFrom() _____________________________________________________________
+//_____ copyFrom() _____________________________________________________________
 /**
  * Copy the content of the specified surface to given coordinate of this surface
  *
@@ -288,12 +288,12 @@ bool WgSurface::Fill( WgColor col, const WgRect& region )
  *
  * @return True if successful, otherwise false.
  **/
-bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
+bool WgSurface::copyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
 {
 	if( !pSrcSurface )
 		return false;
 
-	return CopyFrom( pSrcSurface, WgRect(0,0,pSrcSurface->Size()), dst );
+	return copyFrom( pSrcSurface, WgRect(0,0,pSrcSurface->size()), dst );
 }
 
 /**
@@ -312,7 +312,7 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
  *
  * @return True if successful, otherwise false.
  **/
-bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
+bool WgSurface::copyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
 {
 	if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
 		return false;
@@ -320,7 +320,7 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRec
 	// Save old locks and lock the way we want.
 
 	WgAccessMode 	dstOldMode 		= m_accessMode;
-	WgAccessMode 	srcOldMode 		= pSrcSurface->LockStatus();
+	WgAccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
 
 	WgRect srcRect = pSrcSurface->_lockAndAdjustRegion( WG_READ_ONLY, _srcRect );
 	WgRect dstRect = _lockAndAdjustRegion( WG_WRITE_ONLY, WgRect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
@@ -332,10 +332,10 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRec
 		const WgPixelFormat * pSrcFormat = pSrcSurface->PixelFormat();
 		const WgPixelFormat * pDstFormat = &m_pixelFormat;
 
-		int		srcPitch = pSrcSurface->Pitch();
+		int		srcPitch = pSrcSurface->pitch();
 		int		dstPitch = m_pitch;
 
-		unsigned char *	pSrc = (unsigned char*) pSrcSurface->Pixels();
+		unsigned char *	pSrc = (unsigned char*) pSrcSurface->pixels();
 		unsigned char *	pDst = (unsigned char*) m_pPixels;
 
 		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
@@ -565,10 +565,10 @@ bool WgSurface::CopyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRec
 	// Release any temporary locks
 
 	if( dstOldMode == WG_NO_ACCESS )
-		Unlock();
+		unlock();
 
 	if( srcOldMode == WG_NO_ACCESS )
-		pSrcSurface->Unlock();
+		pSrcSurface->unlock();
 
 	return true;
 }

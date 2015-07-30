@@ -40,22 +40,22 @@
 WgBase::Data *			WgBase::s_pData = 0;
 
 
-//____ Init() __________________________________________________________________
+//____ init() __________________________________________________________________
 
-void WgBase::Init()
+void WgBase::init()
 {
 	assert( s_pData == 0 );
 	assert( sizeof( WgWeakPtrHub ) == sizeof( WgHookPtrHub ) );			// Need to be same as we are sharing object stack!
 	s_pData = new Data;
 
-	s_pData->pMsgRouter = WgMsgRouter::Create();
+	s_pData->pMsgRouter = WgMsgRouter::create();
 
 	s_pData->pDefaultCursor = 0;
 	s_pData->pPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 	s_pData->pMemStack = new WgMemStack( 4096 );
 
-	s_pData->pDefaultPresenter = WgStandardPresenter::Create();
-	s_pData->pDefaultStyle = WgTextStyle::Create();
+	s_pData->pDefaultPresenter = WgStandardPresenter::create();
+	s_pData->pDefaultStyle = WgTextStyle::create();
 
 	s_pData->doubleClickTimeTreshold 		= 250;
 	s_pData->doubleClickDistanceTreshold 	= 2;
@@ -74,24 +74,24 @@ void WgBase::Init()
 	WgTextTool::setDefaultBreakRules();
 }
 
-//____ Exit() __________________________________________________________________
+//____ exit() __________________________________________________________________
 
-int WgBase::Exit()
+int WgBase::exit()
 {
 	
 	if( s_pData == 0 )
 		return -1;					// Base already exited or not intialized.
 
-	if( !s_pData->pPtrPool->IsEmpty() )
+	if( !s_pData->pPtrPool->isEmpty() )
 		return -2;					// There are weak pointers or hook pointers left.
 
-	if( !s_pData->pMemStack->IsEmpty() )
+	if( !s_pData->pMemStack->isEmpty() )
 		return -3;					// There is data left in memstack.
 
 #ifdef WG_USE_FREETYPE
 
-	WgVectorGlyphs::SetSurfaceFactory(0);
-	WgVectorGlyphs::ClearCache();
+	WgVectorGlyphs::setSurfaceFactory(0);
+	WgVectorGlyphs::clearCache();
 
 	if( s_pData->bFreeTypeInitialized )
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
@@ -106,42 +106,42 @@ int WgBase::Exit()
 	return 0;
 }
 
-//____ AllocWeakPtrHub() ______________________________________________________
+//____ allocWeakPtrHub() ______________________________________________________
 
-WgWeakPtrHub * WgBase::AllocWeakPtrHub()
+WgWeakPtrHub * WgBase::allocWeakPtrHub()
 {
 	assert( s_pData != 0 );
-	return (WgWeakPtrHub*) s_pData->pPtrPool->AllocEntry();
+	return (WgWeakPtrHub*) s_pData->pPtrPool->allocEntry();
 }
 
-//____ FreeWeakPtrHub() _______________________________________________________
+//____ freeWeakPtrHub() _______________________________________________________
 
-void WgBase::FreeWeakPtrHub( WgWeakPtrHub * pHub )
+void WgBase::freeWeakPtrHub( WgWeakPtrHub * pHub )
 {
 	assert( s_pData != 0 );
-	s_pData->pPtrPool->FreeEntry( pHub );
+	s_pData->pPtrPool->freeEntry( pHub );
 }
 
-//____ AllocHookPtrHub() ______________________________________________________
+//____ allocHookPtrHub() ______________________________________________________
 
-WgHookPtrHub * WgBase::AllocHookPtrHub()
+WgHookPtrHub * WgBase::allocHookPtrHub()
 {
 	assert( s_pData != 0 );
-	return (WgHookPtrHub*) s_pData->pPtrPool->AllocEntry();
+	return (WgHookPtrHub*) s_pData->pPtrPool->allocEntry();
 }
 
-//____ FreeHookPtrHub() _______________________________________________________
+//____ freeHookPtrHub() _______________________________________________________
 
-void WgBase::FreeHookPtrHub( WgHookPtrHub * pHub )
+void WgBase::freeHookPtrHub( WgHookPtrHub * pHub )
 {
 	assert( s_pData != 0 );
-	s_pData->pPtrPool->FreeEntry( pHub );
+	s_pData->pPtrPool->freeEntry( pHub );
 }
 
-//____ InitFreeType() _________________________________________________________
+//____ initFreeType() _________________________________________________________
 
 #ifdef WG_USE_FREETYPE
-bool WgBase::InitFreeType()
+bool WgBase::initFreeType()
 {
 	assert( s_pData != 0 );
 	if( s_pData->bFreeTypeInitialized )
@@ -160,41 +160,41 @@ bool WgBase::InitFreeType()
 
 
 
-//____ SetDefaultTextManager() _________________________________________________
+//____ setDefaultTextManager() _________________________________________________
 
-/*void WgBase::SetDefaultTextManager( const WgTextMgrPtr& pManager )
+/*void WgBase::setDefaultTextManager( const WgTextMgrPtr& pManager )
 {
 	m_pDefTextMgr = pManager;
 }
 
 
-//____ GetDefaultTextManager() _________________________________________________
+//____ getDefaultTextManager() _________________________________________________
 
-const WgTextMgrPtr& WgBase::GetDefaultTextManager()
+const WgTextMgrPtr& WgBase::getDefaultTextManager()
 {
 	return m_pDefTextMgr;
 }
 */
 
-//____ SetDefaultCaret() _______________________________________________________
+//____ setDefaultCaret() _______________________________________________________
 
-void WgBase::SetDefaultCaret( const WgCaret2Ptr& pCaret )
+void WgBase::setDefaultCaret( const WgCaret2Ptr& pCaret )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCaret = pCaret;	
 }
 
-//____ SetDefaultPresenter() ___________________________________________________
+//____ setDefaultPresenter() ___________________________________________________
 
-void WgBase::SetDefaultPresenter( const WgTextPresenterPtr& pPresenter )
+void WgBase::setDefaultPresenter( const WgTextPresenterPtr& pPresenter )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultPresenter = pPresenter;	
 }
 
-//____ SetDefaultStyle() _______________________________________________________
+//____ setDefaultStyle() _______________________________________________________
 
-void WgBase::SetDefaultStyle( const WgTextStylePtr& pStyle )
+void WgBase::setDefaultStyle( const WgTextStylePtr& pStyle )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultStyle = pStyle;	
@@ -202,42 +202,42 @@ void WgBase::SetDefaultStyle( const WgTextStylePtr& pStyle )
 
 
 
-//____ SetDefaultTextprop() ___________________________________________________
+//____ setDefaultTextprop() ___________________________________________________
 
-void WgBase::SetDefaultTextprop( const WgTextpropPtr& pProp )
+void WgBase::setDefaultTextprop( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultTextprop = pProp;
 }
 
-//____ SetDefaultSelectionProp() ___________________________________________________
+//____ setDefaultSelectionProp() ___________________________________________________
 
-void WgBase::SetDefaultSelectionProp( const WgTextpropPtr& pProp )
+void WgBase::setDefaultSelectionProp( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultSelectionProp = pProp;
 }
 
-//____ SetDefaultLinkProp() ___________________________________________________
+//____ setDefaultLinkProp() ___________________________________________________
 
-void WgBase::SetDefaultLinkProp( const WgTextpropPtr& pProp )
+void WgBase::setDefaultLinkProp( const WgTextpropPtr& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultLinkProp = pProp;
 }
 
 
-//____ SetDefaultCursor() ___________________________________________________
+//____ setDefaultCursor() ___________________________________________________
 
-void WgBase::SetDefaultCursor( const WgCaretPtr& pCursor )
+void WgBase::setDefaultCursor( const WgCaretPtr& pCursor )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCursor = pCursor;
 }
 
-//____ SetDoubleClickTresholds() _______________________________________________
+//____ setDoubleClickTresholds() _______________________________________________
 
-bool WgBase::SetDoubleClickTresholds( int time, int distance )
+bool WgBase::setDoubleClickTresholds( int time, int distance )
 {
 	assert( s_pData != 0 );
 	if( time <= 0 || distance <= 0 )
@@ -248,9 +248,9 @@ bool WgBase::SetDoubleClickTresholds( int time, int distance )
 	return true;
 }
 
-//____ SetMouseButtonRepeat() ______________________________________________________
+//____ setMouseButtonRepeat() ______________________________________________________
 
-bool WgBase::SetMouseButtonRepeat( int delay, int rate )
+bool WgBase::setMouseButtonRepeat( int delay, int rate )
 {
 	assert( s_pData != 0 );
 	if( delay <= 0 || rate <= 0 )
@@ -261,9 +261,9 @@ bool WgBase::SetMouseButtonRepeat( int delay, int rate )
 	return true;
 }
 
-//____ SetKeyRepeat() _________________________________________________________
+//____ setKeyRepeat() _________________________________________________________
 
-bool WgBase::SetKeyRepeat( int delay, int rate )
+bool WgBase::setKeyRepeat( int delay, int rate )
 {
 	assert( s_pData != 0 );
 	if( delay <= 0 || rate <= 0 )
@@ -274,18 +274,18 @@ bool WgBase::SetKeyRepeat( int delay, int rate )
 	return true;
 }
 
-//____ MapKey() _______________________________________________________________
+//____ mapKey() _______________________________________________________________
 
-void WgBase::MapKey( WgKey translated_keycode, int native_keycode )
+void WgBase::mapKey( WgKey translated_keycode, int native_keycode )
 {
 	assert( s_pData != 0 );
 	s_pData->keycodeMap[native_keycode] = translated_keycode;
 }
 
 
-//____ UnmapKey() _____________________________________________________________
+//____ unmapKey() _____________________________________________________________
 
-void WgBase::UnmapKey( WgKey translated_keycode )
+void WgBase::unmapKey( WgKey translated_keycode )
 {
 	assert( s_pData != 0 );
 	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.begin();
@@ -302,17 +302,17 @@ void WgBase::UnmapKey( WgKey translated_keycode )
 	}
 }
 
-//____ ClearKeyMap() __________________________________________________________
+//____ clearKeyMap() __________________________________________________________
 
-void WgBase::ClearKeyMap()
+void WgBase::clearKeyMap()
 {
 	assert( s_pData != 0 );
 	s_pData->keycodeMap.clear();
 }
 
-//____ TranslateKey() __________________________________________________________
+//____ translateKey() __________________________________________________________
 
-WgKey WgBase::TranslateKey( int native_keycode )
+WgKey WgBase::translateKey( int native_keycode )
 {
 	assert( s_pData != 0 );
 	std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
@@ -322,17 +322,17 @@ WgKey WgBase::TranslateKey( int native_keycode )
 		return WG_KEY_UNMAPPED;
 }
 
-//____ MemStackAlloc() ________________________________________________________
+//____ memStackAlloc() ________________________________________________________
 
-char * WgBase::MemStackAlloc( int bytes )
+char * WgBase::memStackAlloc( int bytes )
 { 
 	assert(s_pData!=0); 
-	return s_pData->pMemStack->Alloc(bytes);
+	return s_pData->pMemStack->alloc(bytes);
 }
 
-//____ MemStackRelease() ______________________________________________________
+//____ memStackRelease() ______________________________________________________
 
-void WgBase::MemStackRelease( int bytes )
+void WgBase::memStackRelease( int bytes )
 {	assert(s_pData!=0); 
-	return s_pData->pMemStack->Release(bytes); 
+	return s_pData->pMemStack->release(bytes); 
 }

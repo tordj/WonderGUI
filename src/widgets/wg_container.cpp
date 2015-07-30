@@ -39,29 +39,29 @@ WgContainer::WgContainer() : m_bSiblingsOverlap(true)
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgContainer::IsInstanceOf( const char * pClassName ) const
+bool WgContainer::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);	
+	return WgWidget::isInstanceOf(pClassName);	
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgContainer::ClassName( void ) const
+const char * WgContainer::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgContainerPtr WgContainer::Cast( const WgObjectPtr& pObject )
+WgContainerPtr WgContainer::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgContainerPtr( static_cast<WgContainer*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgContainerPtr( static_cast<WgContainer*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -112,13 +112,13 @@ WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	while( pHook && !pResult )
 	{
-		if( pHook->_isVisible() && childGeo.Contains( ofs ) )
+		if( pHook->_isVisible() && childGeo.contains( ofs ) )
 		{
 			if( pHook->_widget()->IsContainer() )
 			{
-				pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.Pos(), mode );
+				pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 			}
-			else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->MarkTest( ofs - childGeo.Pos() ) )
+			else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
 			{
 					pResult = pHook->_widget();
 			}
@@ -128,7 +128,7 @@ WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	// Check against ourselves
 
-	if( !pResult && ( mode == WG_SEARCH_GEOMETRY || MarkTest(ofs)) )
+	if( !pResult && ( mode == WG_SEARCH_GEOMETRY || markTest(ofs)) )
 		pResult = this;
 		
 	return pResult;
@@ -189,25 +189,25 @@ void WgContainer::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != m_state.IsEnabled() )
+	if( oldState.isEnabled() != m_state.isEnabled() )
 	{
-		bool bEnabled = m_state.IsEnabled();
+		bool bEnabled = m_state.isEnabled();
 		WgWidget * p = _firstWidget();
 		while( p )
 		{
-			p->SetEnabled(bEnabled);
+			p->setEnabled(bEnabled);
 			p = p->_nextSibling();
 		}
 	}
 
-	if( oldState.IsSelected() != m_state.IsSelected() )
+	if( oldState.isSelected() != m_state.isSelected() )
 	{
-		bool bSelected = m_state.IsSelected();
+		bool bSelected = m_state.isSelected();
 		WgWidget * p = _firstWidget();
 		while( p )
 		{
 			WgState old = p->m_state;
-			p->m_state.SetSelected(bSelected);
+			p->m_state.setSelected(bSelected);
 			p->_onStateChanged( old );
 			p = p->_nextSibling();
 		}
@@ -233,24 +233,24 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 	// We start by eliminating dirt outside our geometry
 
-	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
+	WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
-		if( _canvas.IntersectsWith( *pRect ) )
-			patches.Push( WgRect(*pRect,_canvas) );
+		if( _canvas.intersectsWith( *pRect ) )
+			patches.push( WgRect(*pRect,_canvas) );
 	}
 
 
 	// Render container itself
 	
-	for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+	for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 		_onRender(pDevice, _canvas, _window, *pRect );
 		
 	
 	// Render children
 
-	WgRect	dirtBounds = patches.Union();
+	WgRect	dirtBounds = patches.getUnion();
 	
 	if( m_bSiblingsOverlap )
 	{
@@ -263,9 +263,9 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		WgHook * p = _firstHookWithGeo( childGeo );
 		while(p)
 		{
-			WgRect geo = childGeo + _canvas.Pos();
+			WgRect geo = childGeo + _canvas.pos();
 
-			if( p->_isVisible() && geo.IntersectsWith( dirtBounds ) )
+			if( p->_isVisible() && geo.intersectsWith( dirtBounds ) )
 				renderList.push_back( WidgetRenderContext(p->_widget(), geo ) );
 
 			p = _nextHookWithGeo( childGeo, p );
@@ -277,11 +277,11 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			p->patches.Push( &patches );
+			p->patches.push( &patches );
 
-			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->GetBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->getBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
-			if( patches.IsEmpty() )
+			if( patches.isEmpty() )
 				break;
 		}
 
@@ -301,8 +301,8 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 		while(p)
 		{
-			WgRect canvas = childGeo + _canvas.Pos();
-			if( p->_isVisible() && canvas.IntersectsWith( dirtBounds ) )
+			WgRect canvas = childGeo + _canvas.pos();
+			if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
 				p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 			p = _nextHookWithGeo( childGeo, p );
 		}
@@ -322,7 +322,7 @@ void WgContainer::_onCloneContent( const WgContainer * _pOrg )
 void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_pSkin )
-		container.Add( WgRect( geo, clip ) );
+		container.add( WgRect( geo, clip ) );
 	else
 	{
 		WgRect childGeo;
@@ -331,7 +331,7 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 		while(p)
 		{
 			if( p->_isVisible() )
-				p->_widget()->_onCollectPatches( container, childGeo + geo.Pos(), clip );
+				p->_widget()->_onCollectPatches( container, childGeo + geo.pos(), clip );
 			p = _nextHookWithGeo( childGeo, p );
 		}
 	}
@@ -341,9 +341,9 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 
 void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-	//TODO: Don't just check IsOpaque() globally, check rect by rect.
+	//TODO: Don't just check isOpaque() globally, check rect by rect.
 	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
-		patches.Sub( WgRect(geo,clip) );
+		patches.sub( WgRect(geo,clip) );
 	else
 	{
 		WgRect childGeo;
@@ -352,7 +352,7 @@ void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const W
 		while(p)
 		{
 			if( p->_isVisible() )
-				p->_widget()->_onMaskPatches( patches, childGeo + geo.Pos(), clip, blendMode );
+				p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
 			p = _nextHookWithGeo( childGeo, p );
 		}
 	}

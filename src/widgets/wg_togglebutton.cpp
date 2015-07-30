@@ -54,41 +54,41 @@ WgToggleButton::~WgToggleButton()
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgToggleButton::IsInstanceOf( const char * pClassName ) const
+bool WgToggleButton::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgToggleButton::ClassName( void ) const
+const char * WgToggleButton::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgToggleButtonPtr WgToggleButton::Cast( const WgObjectPtr& pObject )
+WgToggleButtonPtr WgToggleButton::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetSelected() __________________________________________________________
+//____ setSelected() __________________________________________________________
 
-bool WgToggleButton::SetSelected( bool bSelected )
+bool WgToggleButton::setSelected( bool bSelected )
 {
-	if( m_state.IsSelected() != bSelected )
+	if( m_state.isSelected() != bSelected )
 	{
 		WgState oldState = m_state;
-		m_state.SetSelected(bSelected);
+		m_state.setSelected(bSelected);
 		_onStateChanged(oldState);
 	}
 	return true;
@@ -101,29 +101,29 @@ void WgToggleButton::SetFlipOnRelease( bool bFlipOnRelease )
 	m_bFlipOnRelease = bFlipOnRelease;
 }
 
-//____ PreferredSize() __________________________________________________
+//____ preferredSize() __________________________________________________
 
-WgSize WgToggleButton::PreferredSize() const
+WgSize WgToggleButton::preferredSize() const
 {
 	WgSize iconPreferredSize;
 	WgSize textPreferredSize;
 
-	if( !m_label.IsEmpty() )
-		textPreferredSize = m_label.PreferredSize();
+	if( !m_label.isEmpty() )
+		textPreferredSize = m_label.preferredSize();
 
-	if( !m_icon.IsEmpty() )
+	if( !m_icon.isEmpty() )
 	{
-		iconPreferredSize = m_icon.Skin()->PreferredSize() + m_icon.Padding().Size();
+		iconPreferredSize = m_icon.skin()->preferredSize() + m_icon.padding().size();
 
 		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
 	}
 
 	// Apply the skin
 
-	WgSize preferredSize = WgSize::Max( iconPreferredSize, textPreferredSize );
+	WgSize preferredSize = WgSize::max( iconPreferredSize, textPreferredSize );
 
 	if( m_pSkin )
-		preferredSize = m_pSkin->SizeForContent( preferredSize );
+		preferredSize = m_pSkin->sizeForContent( preferredSize );
 
 	return preferredSize;
 }
@@ -145,62 +145,62 @@ void WgToggleButton::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_KEY_PRESS:
-			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 
 		case WG_MSG_KEY_REPEAT:
-			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
-				_pMsg->Swallow();
+			if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				_pMsg->swallow();
 			break;
 
 		case WG_MSG_KEY_RELEASE:
-			if( WgKeyMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 	
 		case WG_MSG_MOUSE_ENTER:
-			m_state.SetHovered(true);
+			m_state.setHovered(true);
 			break;
 		case WG_MSG_MOUSE_LEAVE:
-			m_state.SetHovered(false);
+			m_state.setHovered(false);
 			break;
 		case WG_MSG_MOUSE_PRESS:
-			if( WgMousePressMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( WgMousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_RELEASE:
-			if( WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( WgMouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_CLICK:
 		case WG_MSG_MOUSE_DOUBLE_CLICK:
 		case WG_MSG_MOUSE_REPEAT:
 		case WG_MSG_MOUSE_DRAG:
-			if( WgMouseButtonMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
-				_pMsg->Swallow();
+			if( WgMouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				_pMsg->swallow();
 			break;
 
 		case WG_MSG_FOCUS_GAINED:
-			m_state.SetFocused(true);
+			m_state.setFocused(true);
 			break;
 		case WG_MSG_FOCUS_LOST:
-			m_state.SetFocused(false);
+			m_state.setFocused(false);
 			m_bReturnPressed = false;
 			m_bPressed = false;
 			break;
@@ -208,17 +208,17 @@ void WgToggleButton::_onMsg( const WgMsgPtr& _pMsg )
 
 	// Set pressed if return or mouse button 1 is pressed
 
-	if( m_bReturnPressed || (m_bPressed && m_state.IsHovered()) )
-		m_state.SetPressed(true);
+	if( m_bReturnPressed || (m_bPressed && m_state.isHovered()) )
+		m_state.setPressed(true);
 	else
-		m_state.SetPressed(false);
+		m_state.setPressed(false);
 
 	// Possibly flip selected
 
-	if( m_state.IsPressed() != oldState.IsPressed() )
+	if( m_state.isPressed() != oldState.isPressed() )
 	{
-		if( m_state.IsPressed() != m_bFlipOnRelease )
-			m_state.SetSelected( !m_state.IsSelected() );
+		if( m_state.isPressed() != m_bFlipOnRelease )
+			m_state.setSelected( !m_state.isSelected() );
 	}
 
 	//
@@ -233,23 +233,23 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 {
 	// If state has changed from selected to unselected we need to check with Togglegroup
 	
-	if( !m_state.IsSelected() && oldState.IsSelected() && m_pToggleGroup && !m_pToggleGroup->_unselect(this) )
-		m_state.SetSelected(true);
+	if( !m_state.isSelected() && oldState.isSelected() && m_pToggleGroup && !m_pToggleGroup->_unselect(this) )
+		m_state.setSelected(true);
 	
 	//
 	
 	WgWidget::_onStateChanged(oldState);
 
-	m_label.SetState( m_state );
+	m_label.setState( m_state );
 
-	if( !m_icon.IsEmpty() && !m_icon.Skin()->IsStateIdentical(m_state, oldState) )
+	if( !m_icon.isEmpty() && !m_icon.skin()->isStateIdentical(m_state, oldState) )
 		_requestRender();		//TODO: Just request render on icon?
 
-	if( m_state.IsSelected() != oldState.IsSelected() )
+	if( m_state.isSelected() != oldState.isSelected() )
 	{
-		WgBase::MsgRouter()->Post( new WgToggleMsg(this, m_state.IsSelected() ) );
+		WgBase::msgRouter()->post( new WgToggleMsg(this, m_state.isSelected() ) );
 
-		if( m_pToggleGroup && m_state.IsSelected() )
+		if( m_pToggleGroup && m_state.isSelected() )
 			m_pToggleGroup->_select(this);
 	}
 }
@@ -272,21 +272,21 @@ void WgToggleButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	WgRect contentRect	= _canvas;
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(_canvas, m_state );
+		contentRect = m_pSkin->contentRect(_canvas, m_state );
 
-	WgRect iconRect		= m_icon.GetIconRect( contentRect );
+	WgRect iconRect		= m_icon.getIconRect( contentRect );
 
 	// Blit icon
 
-	if( m_icon.IsEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	if( m_icon.isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
+		m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
- 	if( !m_label.IsEmpty() )
+ 	if( !m_label.isEmpty() )
 	{
-		WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect );
-		m_label.OnRender( pDevice, textRect, _clip );
+		WgRect	textRect = m_icon.getTextRect( contentRect, iconRect );
+		m_label.onRender( pDevice, textRect, _clip );
 	}
 }
 
@@ -305,9 +305,9 @@ void WgToggleButton::_onNewSize( const WgSize& size )
 {
 	WgRect contentRect	= WgRect(0,0,size);
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(contentRect, m_state );
+		contentRect = m_pSkin->contentRect(contentRect, m_state );
 
-	m_label.OnNewSize( m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect )) );
+	m_label.onNewSize( m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect )) );
 }
 
 
@@ -320,20 +320,20 @@ void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
 	m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 	m_clickArea			= pOrg->m_clickArea;
 
-	m_icon.OnCloneContent( &pOrg->m_icon );
+	m_icon.onCloneContent( &pOrg->m_icon );
 }
 
 //____ _markTestTextArea() ______________________________________________________
 
 bool WgToggleButton::_markTestTextArea( int _x, int _y )
 {
-	WgRect contentRect	= WgRect(0,0,Size());
+	WgRect contentRect	= WgRect(0,0,size());
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(contentRect, m_state );
+		contentRect = m_pSkin->contentRect(contentRect, m_state );
 
-	contentRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
+	contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
-	if( m_label.CoordToChar( WgCoord(_x,_y) - contentRect.Pos() ) != -1 )
+	if( m_label.coordToChar( WgCoord(_x,_y) - contentRect.pos() ) != -1 )
 		return true;
 
 	return false;
@@ -343,13 +343,13 @@ bool WgToggleButton::_markTestTextArea( int _x, int _y )
 
 bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 {
-	WgSize	bgSize		= Size();
+	WgSize	bgSize		= size();
 
 	WgRect	contentRect = WgRect(0,0,bgSize);
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect( contentRect, m_state );
+		contentRect = m_pSkin->contentRect( contentRect, m_state );
 
-	WgRect	iconRect	= m_icon.GetIconRect( contentRect );
+	WgRect	iconRect	= m_icon.getIconRect( contentRect );
 
 	switch( m_clickArea )
 	{
@@ -357,29 +357,29 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 		{
 			// Extend iconRect so it connects with textArea before we compare
 
-			WgRect	textRect = m_icon.GetTextRect( contentRect, iconRect);
+			WgRect	textRect = m_icon.getTextRect( contentRect, iconRect);
 
 			if( iconRect.x + iconRect.w < textRect.x )
 				iconRect.w = textRect.x - iconRect.x;
 
-			if( iconRect.x > textRect.Right() )
+			if( iconRect.x > textRect.right() )
 			{
-				iconRect.w += iconRect.x - textRect.Right();
-				iconRect.x = textRect.Right();
+				iconRect.w += iconRect.x - textRect.right();
+				iconRect.x = textRect.right();
 			}
 
 			if( iconRect.y + iconRect.h < textRect.y )
 				iconRect.h = textRect.y - iconRect.y;
 
-			if( iconRect.y > textRect.Bottom() )
+			if( iconRect.y > textRect.bottom() )
 			{
-				iconRect.h += iconRect.y - textRect.Bottom();
-				iconRect.y = textRect.Bottom();
+				iconRect.h += iconRect.y - textRect.bottom();
+				iconRect.y = textRect.bottom();
 			}
 
 			//
 
-			if( WgWidget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.Contains( ofs ) )
+			if( WgWidget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.contains( ofs ) )
 				return true;
 
 			return false;
@@ -387,7 +387,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 		case ALPHA:			// Alpha test on background and icon.
 		{
 			if( WgWidget::_onAlphaTest( ofs, bgSize ) ||
-				( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity )) )
+				( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity )) )
 				return true;
 
 			return false;
@@ -396,7 +396,7 @@ bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( !m_icon.IsEmpty() && m_icon.Skin()->MarkTest( ofs, iconRect, m_state, m_markOpacity ) )
+			if( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity ) )
 				return true;
 
 			return false;

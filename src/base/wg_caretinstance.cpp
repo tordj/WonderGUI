@@ -49,7 +49,7 @@ WgCaretInstance::WgCaretInstance( WgLegacyTextField& text )
 
 	m_time 			= 0;
 
-	m_line 			= text.Lines()-1;
+	m_line 			= text.lines()-1;
 	m_column 		= text.getLine(m_line)->nChars;
 	m_selStartLine	= m_line;
 	m_selStartColumn= m_column;
@@ -112,7 +112,7 @@ void WgCaretInstance::gotoSoftLine( int line, const WgRect& container )
 	// Set our line and convert to hard
 
 	int ln = line;
-	int col = m_pText->CoordToColumn( line, WgCoord( m_wantedOfsX+container.x, 0), container, true );
+	int col = m_pText->coordToColumn( line, WgCoord( m_wantedOfsX+container.x, 0), container, true );
 
 
 	m_pText->posSoft2Hard( ln, col );
@@ -125,7 +125,7 @@ void WgCaretInstance::gotoSoftLine( int line, const WgRect& container )
 void WgCaretInstance::gotoColumn( int col )
 {
 	const int minLine = 0;
-	const int maxLine = m_pText->Lines()-1;
+	const int maxLine = m_pText->lines()-1;
 
 	int line = m_line;
 
@@ -187,15 +187,15 @@ void WgCaretInstance::gotoPrevWord()
 	int line = m_line;
 	int col = m_column;
 
-	if(line > m_pText->Lines() - 1)
-		line = m_pText->Lines() - 1;
+	if(line > m_pText->lines() - 1)
+		line = m_pText->lines() - 1;
 
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
 	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
-	while( !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
+	while( !isspace(pText->getGlyph()) && !ispunct(pText->getGlyph()) )
 	{
 		if(col == 0)
 		{
@@ -226,15 +226,15 @@ void WgCaretInstance::gotoBeginningOfWord()
 	int line = m_line;
 	int col = m_column;
 
-	if(line > m_pText->Lines() - 1)
-		line = m_pText->Lines() - 1;
+	if(line > m_pText->lines() - 1)
+		line = m_pText->lines() - 1;
 
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
 	const WgChar* pText = m_pText->getLineText(line) + col - 1;
 
-	while( isspace(pText->Glyph()) || ispunct(pText->Glyph()) )
+	while( isspace(pText->getGlyph()) || ispunct(pText->getGlyph()) )
 	{
 		if(col == 0)
 		{
@@ -265,17 +265,17 @@ void WgCaretInstance::gotoNextWord()
 	int line = m_line;
 	int col = m_column;
 
-	if(line > m_pText->Lines() - 1)
-		line = m_pText->Lines() - 1;
+	if(line > m_pText->lines() - 1)
+		line = m_pText->lines() - 1;
 
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
 	const WgChar* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && (isspace(pText->Glyph()) || ispunct(pText->Glyph())) )
+	while( !pText->isEndOfText() && (isspace(pText->getGlyph()) || ispunct(pText->getGlyph())) )
 	{
-		if(pText->IsEndOfLine())
+		if(pText->isEndOfLine())
 			line++, col = 0;
 		else
 			col++;
@@ -292,17 +292,17 @@ void WgCaretInstance::gotoEndOfWord()
 	int line = m_line;
 	int col = m_column;
 
-	if(line > m_pText->Lines() - 1)
-		line = m_pText->Lines() - 1;
+	if(line > m_pText->lines() - 1)
+		line = m_pText->lines() - 1;
 
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
 	const WgChar* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
+	while( !pText->isEndOfText() && !isspace(pText->getGlyph()) && !ispunct(pText->getGlyph()) )
 	{
-		if(pText->IsEndOfLine())
+		if(pText->isEndOfLine())
 			line++, col = 0;
 		else
 			col++;
@@ -326,7 +326,7 @@ void WgCaretInstance::gotoHardPos( int line, int col )
 
 void WgCaretInstance::_gotoPos( int line, int col )
 {
-	int maxLine = m_pText->Lines()-1;
+	int maxLine = m_pText->lines()-1;
 	if( line > maxLine )
 		line = maxLine;
 
@@ -371,7 +371,7 @@ bool WgCaretInstance::putChar( Uint16 character )
 	int line = m_line;
 	int column = m_column;
 
-	int ofs = m_pText->LineColToOffset( line, column );
+	int ofs = m_pText->lineColToOffset( line, column );
 
 	if( m_bInsert )
 		ret = m_pText->insertChar( ofs, character );
@@ -401,16 +401,16 @@ int	WgCaretInstance::putText( const WgCharSeq& seq )
 	m_wantedOfsX = -1;
 
 	int nInserted;
-	int nLines = m_pText->Lines();
+	int nLines = m_pText->lines();
 
-	int ofs = m_pText->LineColToOffset( m_line, m_column );
+	int ofs = m_pText->lineColToOffset( m_line, m_column );
 
 	if( m_bInsert )
-		nInserted = m_pText->Insert( ofs, seq );
+		nInserted = m_pText->insert( ofs, seq );
 	else
-		nInserted = m_pText->Replace( ofs, seq.Length(), seq );
+		nInserted = m_pText->replace( ofs, seq.length(), seq );
 
-	nLines = m_pText->Lines() - nLines;
+	nLines = m_pText->lines() - nLines;
 
 	_updateLocation(m_line + nLines, m_column + nInserted);
 
@@ -431,21 +431,21 @@ void WgCaretInstance::unputText( int nChar )
 //_____________________________________________________________________
 void WgCaretInstance::delPrevWord()
 {
-	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
+	int	ofs1 = m_pText->lineColToOffset( m_line, m_column );
 	gotoPrevWord();
-	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
-	m_pText->Delete( ofs2, ofs1-ofs2 );
+	int ofs2 = m_pText->lineColToOffset( m_line, m_column );
+	m_pText->remove( ofs2, ofs1-ofs2 );
 }
 
 //_____________________________________________________________________
 void WgCaretInstance::delNextWord()
 {
-	int	ofs1 = m_pText->LineColToOffset( m_line, m_column );
+	int	ofs1 = m_pText->lineColToOffset( m_line, m_column );
 	int line = m_line;
 	int column = m_column;
 	gotoNextWord();
-	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
-	m_pText->Delete(ofs1, ofs2-ofs1);
+	int ofs2 = m_pText->lineColToOffset( m_line, m_column );
+	m_pText->remove(ofs1, ofs2-ofs1);
 	_updateLocation(line, column);
 }
 
@@ -470,7 +470,7 @@ bool WgCaretInstance::delPrevChar()
 		column--;
 
 
-	int ret = m_pText->deleteChar( m_pText->LineColToOffset( m_line, m_column ) -1 );
+	int ret = m_pText->deleteChar( m_pText->lineColToOffset( m_line, m_column ) -1 );
 	_updateLocation(line, column);
 	return ret==1?true:false;
 }
@@ -481,7 +481,7 @@ bool WgCaretInstance::delNextChar()
 {
 	m_wantedOfsX = -1;
 
-	int ofs = m_pText->LineColToOffset( m_line, m_column );
+	int ofs = m_pText->lineColToOffset( m_line, m_column );
 	int nDel = m_pText->deleteChar( ofs );
 
 	if( nDel )
@@ -519,7 +519,7 @@ int WgCaretInstance::ofsY() const
 
 WgCaret::Mode WgCaretInstance::cursorMode() const
 {
-	if( m_line >= m_pText->Lines() || m_pText->getLine(m_line)->nChars == m_column )
+	if( m_line >= m_pText->lines() || m_pText->getLine(m_line)->nChars == m_column )
 		return WgCaret::EOL;
 
 	if( m_bInsert )
@@ -604,9 +604,9 @@ void WgCaretInstance::delSelection()
 		std::swap(column, m_selStartColumn);
 	}
 
-	int ofs1 = m_pText->LineColToOffset(line, column);
-	int ofs2 = m_pText->LineColToOffset(m_selStartLine, m_selStartColumn );
-	m_pText->Delete(ofs1, ofs2-ofs1);
+	int ofs1 = m_pText->lineColToOffset(line, column);
+	int ofs2 = m_pText->lineColToOffset(m_selStartLine, m_selStartColumn );
+	m_pText->remove(ofs1, ofs2-ofs1);
 
 	m_selStartLine = line;
 	m_selStartColumn = column;
@@ -617,17 +617,17 @@ void WgCaretInstance::delSelection()
 
 void WgCaretInstance::clearSelection()
 {
-	m_pText->ClearSelection();
+	m_pText->clearSelection();
 	m_selStartLine = m_line;
 	m_selStartColumn = m_column;
 }
 
 void WgCaretInstance::selectRange( WgRange range )
 {
-	WgTextPos beg = m_pText->OfsToPos( range.ofs );
-	WgTextPos end = m_pText->OfsToPos( range.ofs + range.len );
+	WgTextPos beg = m_pText->ofsToPos( range.ofs );
+	WgTextPos end = m_pText->ofsToPos( range.ofs + range.len );
 
-	m_pText->ClearSelection();
+	m_pText->clearSelection();
 	setSelectionMode(true);
 	m_selStartLine = beg.line;
 	m_selStartColumn = beg.col;
@@ -637,10 +637,10 @@ void WgCaretInstance::selectRange( WgRange range )
 
 void WgCaretInstance::selectAll()
 {
-	m_pText->ClearSelection();
+	m_pText->clearSelection();
 	setSelectionMode(true);
 	m_selStartLine = 0;
 	m_selStartColumn = 0;
-	gotoHardPos(m_pText->Lines(), INT_MAX);
+	gotoHardPos(m_pText->lines(), INT_MAX);
 	setSelectionMode(false);
 }

@@ -37,21 +37,21 @@ class WgSlideSpan : public WgSpan
 public:
 	WgSlideSpan(WgSpanItem* pItem) : WgSpan(pItem) {}
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSlideSpanPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgSlideSpanPtr		Ptr() { return WgSlideSpanPtr(_object(),this); }
+	static WgSlideSpanPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgSlideSpanPtr		ptr() { return WgSlideSpanPtr(_object(),this); }
 
 
-	inline void	SetBegin( int begin ) { m_pItem->SetBegin(begin); }
-	inline void	SetRelativePos( float pos ) { m_pItem->SetRelativePos(pos); }
-	inline void	SetRelativeBegin( float begin ) { m_pItem->SetRelativeBegin(begin); }
+	inline void	setBegin( int begin ) { m_pItem->setBegin(begin); }
+	inline void	setRelativePos( float pos ) { m_pItem->setRelativePos(pos); }
+	inline void	setRelativeBegin( float begin ) { m_pItem->setRelativeBegin(begin); }
 
-	inline bool	StepForward() { return m_pItem->StepForward(); }
-	inline bool	StepBackward() { return m_pItem->StepBackward(); }
-	inline bool	SkipForward() { return m_pItem->SkipForward(); }
-	inline bool	SkipBackward() { return m_pItem->SkipBackward(); }
+	inline bool	stepForward() { return m_pItem->stepForward(); }
+	inline bool	stepBackward() { return m_pItem->stepBackward(); }
+	inline bool	skipForward() { return m_pItem->skipForward(); }
+	inline bool	skipBackward() { return m_pItem->skipBackward(); }
 
 };
 

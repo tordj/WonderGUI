@@ -29,29 +29,29 @@
 
 const char WgGlyphset::CLASSNAME[] = {"Glyphset"};
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgGlyphset::IsInstanceOf( const char * pClassName ) const
+bool WgGlyphset::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgGlyphset::ClassName( void ) const
+const char * WgGlyphset::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgGlyphsetPtr WgGlyphset::Cast( const WgObjectPtr& pObject )
+WgGlyphsetPtr WgGlyphset::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.rawPtr()) );
 
 	return 0;
 }

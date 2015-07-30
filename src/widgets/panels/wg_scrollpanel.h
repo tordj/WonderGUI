@@ -51,22 +51,22 @@ class WgScrollHook : public WgPanelHook
 {
 	friend class WgScrollPanel;
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgScrollHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgScrollHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgCoord			Pos() const;
-	WgSize			Size() const;
-	WgRect			Geo() const;
-	WgCoord			GlobalPos() const;
-	WgRect			GlobalGeo() const;
+	WgCoord			pos() const;
+	WgSize			size() const;
+	WgRect			geo() const;
+	WgCoord			globalPos() const;
+	WgRect			globalGeo() const;
 
-	WgScrollHookPtr 	Prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
-	WgScrollHookPtr 	Next() const { return static_cast<WgScrollHook*>(_nextHook()); }
+	WgScrollHookPtr 	prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
+	WgScrollHookPtr 	next() const { return static_cast<WgScrollHook*>(_nextHook()); }
 
-	bool			SetVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
-	WgScrollPanelPtr 	Parent() const { return m_pView; }
+	bool			setVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
+	WgScrollPanelPtr 	parent() const { return m_pView; }
 
 protected:
 	WgScrollHook() : m_pView(0) {};				// So we can make them members and then make placement new...
@@ -95,133 +95,133 @@ class WgScrollPanel : public WgPanel
 {
 	friend class WgScrollHook;
 public:
-	static WgScrollPanelPtr	Create() { return WgScrollPanelPtr(new WgScrollPanel()); }
+	static WgScrollPanelPtr	create() { return WgScrollPanelPtr(new WgScrollPanel()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgScrollPanelPtr	Cast( const WgObjectPtr& pObject );
+	static WgScrollPanelPtr	cast( const WgObjectPtr& pObject );
 
-	bool		StepUp();
-	bool		StepDown();
-	bool		StepLeft();
-	bool		StepRight();
+	bool		stepUp();
+	bool		stepDown();
+	bool		stepLeft();
+	bool		stepRight();
 
-	bool		JumpUp();
-	bool		JumpDown();
-	bool		JumpLeft();
-	bool		JumpRight();
+	bool		jumpUp();
+	bool		jumpDown();
+	bool		jumpLeft();
+	bool		jumpRight();
 
-	void		SetStepSize( int pixX, int pixY ) { m_stepSizeX = pixX; m_stepSizeY = pixY; };
-	void		SetStepSizeX( int pixels ) { m_stepSizeX = pixels; };
-	void		SetStepSizeY( int pixels ) { m_stepSizeY = pixels; };
+	void		setStepSize( int pixX, int pixY ) { m_stepSizeX = pixX; m_stepSizeY = pixY; };
+	void		setStepSizeX( int pixels ) { m_stepSizeX = pixels; };
+	void		setStepSizeY( int pixels ) { m_stepSizeY = pixels; };
 
-	int 		StepSizeX() { return m_stepSizeX; };
-	int 		StepSizeY() { return m_stepSizeY; };
+	int 		stepSizeX() { return m_stepSizeX; };
+	int 		stepSizeY() { return m_stepSizeY; };
 
-	void		SetJumpSize( float viewFractionX, float viewFractionY ) { SetJumpSizeX(viewFractionX); SetJumpSizeY(viewFractionY); };
-	void		SetJumpSizeX( float viewFraction );
-	void		SetJumpSizeY( float viewFraction );
-	float		JumpSizeX( ) const { return m_jumpSizeX; }
-	float		JumpSizeY( ) const { return m_jumpSizeY; }
+	void		setJumpSize( float viewFractionX, float viewFractionY ) { setJumpSizeX(viewFractionX); setJumpSizeY(viewFractionY); };
+	void		setJumpSizeX( float viewFraction );
+	void		setJumpSizeY( float viewFraction );
+	float		jumpSizeX( ) const { return m_jumpSizeX; }
+	float		jumpSizeY( ) const { return m_jumpSizeY; }
 
-	int			ContentWidth() { return m_contentSize.w; };
-	int			ContentHeight() { return m_contentSize.h; };
-	WgSize		ContentSize() { return m_contentSize; };
+	int			contentWidth() { return m_contentSize.w; };
+	int			contentHeight() { return m_contentSize.h; };
+	WgSize		contentSize() { return m_contentSize; };
 
-	void		SetContentOrigo( WgOrigo origo );
-	WgOrigo ContentOrigo() const { return m_contentOrigo; }
+	void		setContentOrigo( WgOrigo origo );
+	WgOrigo contentOrigo() const { return m_contentOrigo; }
 
-	void		SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
-	WgSizePolicy	ContentWidthPolicy() const { return m_widthPolicy; }
-	WgSizePolicy	ContentHeightPolicy() const { return m_heightPolicy; }
+	void		setContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolicy heightPolicy );
+	WgSizePolicy	contentWidthPolicy() const { return m_widthPolicy; }
+	WgSizePolicy	contentHeightPolicy() const { return m_heightPolicy; }
 
 
-	int			ViewPixelOfsX() { return m_viewPixOfs.x; };
-	int			ViewPixelOfsY() { return m_viewPixOfs.y; };
-	WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
+	int			viewPixelOfsX() { return m_viewPixOfs.x; };
+	int			viewPixelOfsY() { return m_viewPixOfs.y; };
+	WgCoord		viewPixelOfs() { return m_viewPixOfs; };
 
-	int			ViewPixelLenX();
-	int			ViewPixelLenY();
+	int			viewPixelLenX();
+	int			viewPixelLenY();
 
-	float		ViewOfsX();
-	float		ViewOfsY();
-	float		ViewLenX();
-	float		ViewLenY();
+	float		viewOfsX();
+	float		viewOfsY();
+	float		viewLenX();
+	float		viewLenY();
 
-	bool		SetViewPixelOfs( int x, int y );
-	bool		SetViewPixelOfsX( int x );
-	bool		SetViewPixelOfsY( int y );
+	bool		setViewPixelOfs( int x, int y );
+	bool		setViewPixelOfsX( int x );
+	bool		setViewPixelOfsY( int y );
 
-	bool		SetViewOfs( float x, float y );
-	bool		SetViewOfsX( float x );
-	bool		SetViewOfsY( float y );
+	bool		setViewOfs( float x, float y );
+	bool		setViewOfsX( float x );
+	bool		setViewOfsY( float y );
 
 /*
-	bool	ViewCenterOnPixel( int x, int y );
-	bool	ViewCenterOnPixelX( int x );
-	bool	ViewCenterOnPixelY( int y );
+	bool	viewCenterOnPixel( int x, int y );
+	bool	viewCenterOnPixelX( int x );
+	bool	viewCenterOnPixelY( int y );
 
-	bool	ViewInclude( WgRect& rect );
-	bool	ViewIncludeX( WgRect& rect );
-	bool	ViewIncludeY( WgRect& rect );
+	bool	viewInclude( WgRect& rect );
+	bool	viewIncludeX( WgRect& rect );
+	bool	viewIncludeY( WgRect& rect );
 */
 
-	bool		SetScrollWheels( int wheelForX, int wheelForY );
-	int			ScrollWheelX() const { return m_wheelForScrollX; }
-	int			ScrollWheelY() const { return m_wheelForScrollY; }
+	bool		setScrollWheels( int wheelForX, int wheelForY );
+	int			scrollWheelX() const { return m_wheelForScrollX; }
+	int			scrollWheelY() const { return m_wheelForScrollY; }
 
 
 
-	bool		SetAutoscroll( bool bAutoX, bool bAutoY	);
-	bool		AutoScrollX() const { return m_bAutoScrollX; }
-	bool		AutoScrollY() const { return m_bAutoScrollY; }
+	bool		setAutoscroll( bool bAutoX, bool bAutoY	);
+	bool		autoScrollX() const { return m_bAutoScrollX; }
+	bool		autoScrollY() const { return m_bAutoScrollY; }
 
-	WgScrollHookPtr SetHorizontalScrollbar( const WgScrollbarPtr& pScrollbar );
-	void			RemoveHorizontalScrollbar() {SetHorizontalScrollbar(0);}
-	WgScrollbarPtr	HorizontalScrollbar() const;
+	WgScrollHookPtr setHorizontalScrollbar( const WgScrollbarPtr& pScrollbar );
+	void			removeHorizontalScrollbar() {setHorizontalScrollbar(0);}
+	WgScrollbarPtr	horizontalScrollbar() const;
 
-	WgScrollHookPtr	SetVerticalScrollbar( const WgScrollbarPtr& pScrollbar );
-	void			RemoveVerticalScrollbar() {SetVerticalScrollbar(0);}
-	WgScrollbarPtr	VerticalScrollbar() const;
+	WgScrollHookPtr	setVerticalScrollbar( const WgScrollbarPtr& pScrollbar );
+	void			removeVerticalScrollbar() {setVerticalScrollbar(0);}
+	WgScrollbarPtr	verticalScrollbar() const;
 
-	WgScrollHookPtr	SetContent( const WgWidgetPtr& pContent );
-	void			RemoveContent() {SetContent(0); }
-	WgWidgetPtr		Content() const;
+	WgScrollHookPtr	setContent( const WgWidgetPtr& pContent );
+	void			removeContent() {setContent(0); }
+	WgWidgetPtr		content() const;
 
-	bool		RemoveWidget( const WgWidgetPtr& pWidget );
-	bool		Clear();
+	bool		removeWidget( const WgWidgetPtr& pWidget );
+	bool		clear();
 
-	void		SetScrollbarAutoHide( bool bHideVerticalScrollbar, bool bHideHorizontalScrollbar );
-	bool		GetHScrollbarAutoHide() const { return m_bAutoHideScrollbarX; }
-	bool		GetVScrollbarAutoHide() const { return m_bAutoHideScrollbarY; }
+	void		setScrollbarAutoHide( bool bHideVerticalScrollbar, bool bHideHorizontalScrollbar );
+	bool		getHScrollbarAutoHide() const { return m_bAutoHideScrollbarX; }
+	bool		getVScrollbarAutoHide() const { return m_bAutoHideScrollbarY; }
 
-	void		SetHandlePositions( bool bBottom, bool bRight );
-	bool		IsScrollbarAtBottom() const { return m_bScrollbarBottom; }
-	bool		IsScrollbarAtRight() const { return m_bScrollbarRight; }
+	void		setHandlePositions( bool bBottom, bool bRight );
+	bool		isScrollbarAtBottom() const { return m_bScrollbarBottom; }
+	bool		isScrollbarAtRight() const { return m_bScrollbarRight; }
 
-	bool		IsVerticalScrollbarVisible();
-	bool		IsHorizontalScrollbarVisible();
+	bool		isVerticalScrollbarVisible();
+	bool		isHorizontalScrollbarVisible();
 
-	void		SetOverlayScrollbars( bool bOverlay );
-	bool		OverlayScrollbars() const { return m_bOverlayScrollbars; }
+	void		setOverlayScrollbars( bool bOverlay );
+	bool		overlayScrollbars() const { return m_bOverlayScrollbars; }
 
-	void		SetCornerSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr	CornerSkin() const { return m_pCornerSkin; }
+	void		setCornerSkin( const WgSkinPtr& pSkin );
+	WgSkinPtr	cornerSkin() const { return m_pCornerSkin; }
 
-	virtual void SetSkin( const WgSkinPtr& pSkin );
+	virtual void setSkin( const WgSkinPtr& pSkin );
 
 	// Overloaded from Widget
 
-	WgSize				PreferredSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
+	WgSize				preferredSize() const;				// = preferred size of dragbars in the geometry, fixed value if dragbars are missing.
 
 
 
 /*
 	NEED TO BE IMPLEMENTED!!!
 
-	int		MatchingHeight( int width ) const;	//
-	int		MatchingWidth( int height ) const;
+	int		matchingHeight( int width ) const;	//
+	int		matchingWidth( int height ) const;
 
 */
 

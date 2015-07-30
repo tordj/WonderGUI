@@ -40,25 +40,25 @@ typedef	WgWeakPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsuleWeakPtr;
 class WgSizeCapsule : public WgCapsule, public WgScalable
 {
 public:
-	static WgSizeCapsulePtr	Create() { return WgSizeCapsulePtr(new WgSizeCapsule()); }
+	static WgSizeCapsulePtr	create() { return WgSizeCapsulePtr(new WgSizeCapsule()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSizeCapsulePtr	Cast( const WgObjectPtr& pObject );
+	static WgSizeCapsulePtr	cast( const WgObjectPtr& pObject );
 
-	void	SetSizes( WgSize min, WgSize preferred, WgSize max );
+	void	setSizes( WgSize min, WgSize preferred, WgSize max );
 
-	void	SetPreferredSize( WgSize size );
-	void	SetMinSize( WgSize size );
-	void	SetMaxSize( WgSize size );
+	void	setPreferredSize( WgSize size );
+	void	setMinSize( WgSize size );
+	void	setMaxSize( WgSize size );
 
-	WgSize	PreferredSize() const;
-	WgSize	MinSize() const;
-	WgSize	MaxSize() const;
+	WgSize	preferredSize() const;
+	WgSize	minSize() const;
+	WgSize	maxSize() const;
 
-	int		MatchingHeight( int width ) const;
-	int		MatchingWidth( int height ) const;
+	int		matchingHeight( int width ) const;
+	int		matchingWidth( int height ) const;
 
 protected:
 	WgSizeCapsule();

@@ -69,58 +69,58 @@ struct WgTextAttr2
 class WgTextStyle : public WgObject
 {
 public:
-	static WgTextStylePtr	Create() { return WgTextStylePtr(new WgTextStyle()); }
+	static WgTextStylePtr	create() { return WgTextStylePtr(new WgTextStyle()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextStylePtr	Cast( const WgObjectPtr& pObject );
+	static WgTextStylePtr	cast( const WgObjectPtr& pObject );
 
-	bool			SetParent( const WgTextStylePtr& pParent );
-	void			Cascade();
+	bool			setParent( const WgTextStylePtr& pParent );
+	void			cascade();
 
-	void			SetFont( const WgFontPtr& pFont );
-	void			SetLink( const WgTextLinkPtr& pLink );
+	void			setFont( const WgFontPtr& pFont );
+	void			setLink( const WgTextLinkPtr& pLink );
 
-	void			SetColor( WgColor color );
-	void			SetBgColor( WgColor color );
-	void			SetSize( int size );
-	void			SetDecoration( WgTextDecoration decoration );
+	void			setColor( WgColor color );
+	void			setBgColor( WgColor color );
+	void			setSize( int size );
+	void			setDecoration( WgTextDecoration decoration );
 
-	void			SetColor( WgColor color, WgState state );
-	void			SetBgColor( WgColor color, WgState state );
-	void			SetSize( int size, WgState state );
-	void			SetDecoration( WgTextDecoration decoration, WgState state );
+	void			setColor( WgColor color, WgState state );
+	void			setBgColor( WgColor color, WgState state );
+	void			setSize( int size, WgState state );
+	void			setDecoration( WgTextDecoration decoration, WgState state );
 
-	void			ClearFont();
-	void			ClearLink();
+	void			clearFont();
+	void			clearLink();
 
-	void			ClearColor();
-	void			ClearBgColor();
-	void			ClearSize();
-	void			ClearDecoration();
+	void			clearColor();
+	void			clearBgColor();
+	void			clearSize();
+	void			clearDecoration();
 
-	void			ClearColor( WgState state );
-	void			ClearBgColor( WgState state );
-	void			ClearSize( WgState state );
-	void			ClearDecoration( WgState state );
+	void			clearColor( WgState state );
+	void			clearBgColor( WgState state );
+	void			clearSize( WgState state );
+	void			clearDecoration( WgState state );
 
-	inline WgFontPtr		Font() const;
-	inline WgTextLinkPtr	Link() const;
-	inline WgColor			Color( WgState state ) const;
-	inline 	WgColor			BgColor( WgState state ) const;
-	inline int				Size( WgState state ) const;
-	inline WgTextDecoration Decoration( WgState state ) const;
+	inline WgFontPtr		font() const;
+	inline WgTextLinkPtr	link() const;
+	inline WgColor			color( WgState state ) const;
+	inline 	WgColor			bgColor( WgState state ) const;
+	inline int				size( WgState state ) const;
+	inline WgTextDecoration decoration( WgState state ) const;
 
-	inline WgFontPtr		CombFont() const;
-	inline WgTextLinkPtr	CombLink() const;
-	inline WgColor			CombColor( WgState state ) const;
-	inline WgColor			CombBgColor( WgState state ) const;
-	inline int				CombSize( WgState state ) const;
-	inline WgTextDecoration CombDecoration( WgState state ) const;
+	inline WgFontPtr		combFont() const;
+	inline WgTextLinkPtr	combLink() const;
+	inline WgColor			combColor( WgState state ) const;
+	inline WgColor			combBgColor( WgState state ) const;
+	inline int				combSize( WgState state ) const;
+	inline WgTextDecoration combDecoration( WgState state ) const;
 
-	void			ExportAttr( WgState state, WgTextAttr2 * pDest ) const;
-	void			AddToAttr( WgState state, WgTextAttr2 * pDest ) const;
+	void			exportAttr( WgState state, WgTextAttr2 * pDest ) const;
+	void			addToAttr( WgState state, WgTextAttr2 * pDest ) const;
 
 
 
@@ -156,74 +156,74 @@ protected:
 
 
 //______________________________________________________________________________
-inline WgFontPtr WgTextStyle::Font() const
+inline WgFontPtr WgTextStyle::font() const
 {
 	return m_specAttr.pFont;
 }
 
 //______________________________________________________________________________
-inline WgTextLinkPtr WgTextStyle::Link() const
+inline WgTextLinkPtr WgTextStyle::link() const
 {
 	return m_specAttr.pLink;
 }
 
 //______________________________________________________________________________
-inline WgColor WgTextStyle::Color( WgState state ) const
+inline WgColor WgTextStyle::color( WgState state ) const
 {
 	return m_specAttr.color[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline 	WgColor WgTextStyle::BgColor( WgState state ) const
+inline 	WgColor WgTextStyle::bgColor( WgState state ) const
 {
 	return m_specAttr.bgColor[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline int WgTextStyle::Size( WgState state ) const
+inline int WgTextStyle::size( WgState state ) const
 {
 	return m_specAttr.size[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline WgTextDecoration WgTextStyle::Decoration( WgState state ) const
+inline WgTextDecoration WgTextStyle::decoration( WgState state ) const
 {
 	return m_specAttr.decoration[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
 
-inline WgFontPtr WgTextStyle::CombFont() const
+inline WgFontPtr WgTextStyle::combFont() const
 {
 	return m_combAttr.pFont;
 }
 
 //______________________________________________________________________________
-inline WgTextLinkPtr WgTextStyle::CombLink() const
+inline WgTextLinkPtr WgTextStyle::combLink() const
 {
 	return m_combAttr.pLink;
 }
 
 //______________________________________________________________________________
-inline WgColor WgTextStyle::CombColor( WgState state ) const
+inline WgColor WgTextStyle::combColor( WgState state ) const
 {
 	return m_combAttr.color[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline WgColor WgTextStyle::CombBgColor( WgState state ) const
+inline WgColor WgTextStyle::combBgColor( WgState state ) const
 {
 	return m_combAttr.bgColor[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline int WgTextStyle::CombSize( WgState state ) const
+inline int WgTextStyle::combSize( WgState state ) const
 {
 	return m_combAttr.size[WgUtil::_stateToIndex(state)];
 }
 
 //______________________________________________________________________________
-inline WgTextDecoration WgTextStyle::CombDecoration( WgState state ) const
+inline WgTextDecoration WgTextStyle::combDecoration( WgState state ) const
 {
 	return m_combAttr.decoration[WgUtil::_stateToIndex(state)];
 }

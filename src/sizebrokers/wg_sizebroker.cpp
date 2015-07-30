@@ -35,36 +35,36 @@ WgSizeBroker::~WgSizeBroker()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSizeBroker::IsInstanceOf( const char * pClassName ) const
+bool WgSizeBroker::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSizeBroker::ClassName( void ) const
+const char * WgSizeBroker::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSizeBrokerPtr WgSizeBroker::Cast( const WgObjectPtr& pObject )
+WgSizeBrokerPtr WgSizeBroker::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSizeBrokerPtr( static_cast<WgSizeBroker*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSizeBrokerPtr( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
 /*
-int WgSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int _totalLength ) const
+int WgSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int _totalLength ) const
 {
 	int totalLength = 0;
 	for( int i = 0 ; i < nItems ; i++ )
@@ -75,7 +75,7 @@ int WgSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int _to
 	return totalLength;
 }
 
-int WgSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
+int WgSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
 {
 	int totalLength = 0;
 	for( int i = 0 ; i < nItems ; i++ )
@@ -86,7 +86,7 @@ int WgSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) c
 	return totalLength;
 }
 
-bool WgSizeBroker::MayAlterPreferredLengths() const
+bool WgSizeBroker::mayAlterPreferredLengths() const
 {
 	return false;
 }

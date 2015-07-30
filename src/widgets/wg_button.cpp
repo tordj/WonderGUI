@@ -46,51 +46,51 @@ WgButton::~WgButton()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgButton::IsInstanceOf( const char * pClassName ) const
+bool WgButton::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgButton::ClassName( void ) const
+const char * WgButton::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgButtonPtr WgButton::Cast( const WgObjectPtr& pObject )
+WgButtonPtr WgButton::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgButtonPtr( static_cast<WgButton*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgButtonPtr( static_cast<WgButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 
-int WgButton::MatchingHeight( int width ) const
+int WgButton::matchingHeight( int width ) const
 {
 	int height = 0;
 
 	if( m_pSkin )
-		height = m_pSkin->PreferredSize().h;
+		height = m_pSkin->preferredSize().h;
 
-	if( !m_text.IsEmpty() )
+	if( !m_text.isEmpty() )
 	{
 		WgSize padding;
 
 		if( m_pSkin )
-			padding = m_pSkin->ContentPadding();
+			padding = m_pSkin->contentPadding();
 
-		int heightForText = m_text.MatchingHeight(width-padding.w) + padding.h;
+		int heightForText = m_text.matchingHeight(width-padding.w) + padding.h;
 		if( heightForText > height )
 			height = heightForText;
 	}
@@ -101,17 +101,17 @@ int WgButton::MatchingHeight( int width ) const
 }
 
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgButton::PreferredSize() const
+WgSize WgButton::preferredSize() const
 {
 	WgSize preferred;
 
-	if( !m_text.IsEmpty() )
-		preferred = m_text.PreferredSize();
+	if( !m_text.isEmpty() )
+		preferred = m_text.preferredSize();
 	
 	if( m_pSkin )
-		preferred = m_pSkin->SizeForContent(preferred);
+		preferred = m_pSkin->sizeForContent(preferred);
 
 	//TODO: Take icon into account.
 
@@ -124,10 +124,10 @@ void WgButton::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if(m_icon.Skin() && !m_icon.Skin()->IsStateIdentical(m_state,oldState))
+	if(m_icon.skin() && !m_icon.skin()->isStateIdentical(m_state,oldState))
 			_requestRender();
 
-	m_text.SetState(m_state);
+	m_text.setState(m_state);
 }
 
 //____ _onSkinChanged() _______________________________________________________
@@ -140,16 +140,16 @@ void WgButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewS
 
 //____ _onNewSize() ____________________________________________________________
 
-void WgButton::_onNewSize( const WgSize& size )
+void WgButton::_onNewSize( const WgSize& _size )
 {
-	WgRect	contentRect(0,0,Size());
+	WgRect	contentRect(0,0,_size);
 
 	if( m_pSkin )
-		contentRect -= m_pSkin->ContentPadding();
+		contentRect -= m_pSkin->contentPadding();
 
-	WgRect textRect = m_icon.GetTextRect( contentRect, m_icon.GetIconRect( contentRect ) );
+	WgRect textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
-	m_text.OnNewSize( textRect );
+	m_text.onNewSize( textRect );
 }
 
 
@@ -162,22 +162,22 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 	WgRect	contentRect = _canvas;
 
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(_canvas, m_state);
+		contentRect = m_pSkin->contentRect(_canvas, m_state);
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = m_icon.GetIconRect( contentRect );
-	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
+	WgRect iconRect = m_icon.getIconRect( contentRect );
+	WgRect textRect = m_icon.getTextRect( contentRect, iconRect );
 
 	// Render icon
 
-	if( m_icon.Skin() )
-		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	if( m_icon.skin() )
+		m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
- 	if( !m_text.IsEmpty() )
-		m_text.OnRender( pDevice, textRect, _clip );
+ 	if( !m_text.isEmpty() )
+		m_text.onRender( pDevice, textRect, _clip );
 }
 
 //____ _onMsg() ______________________________________________________________
@@ -185,81 +185,81 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 void WgButton::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
-	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
+	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_KEY_PRESS:
-			if( WgKeyPressMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyPressMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = true;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 
 		case WG_MSG_KEY_REPEAT:
-			if( WgKeyRepeatMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
-				_pMsg->Swallow();
+			if( WgKeyRepeatMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				_pMsg->swallow();
 			break;
 
 		case WG_MSG_KEY_RELEASE:
-			if( WgKeyReleaseMsg::Cast(_pMsg)->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( WgKeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 			{
 				m_bReturnPressed = false;
-				pHandler->Post( new WgSelectMsg(this) );
-				_pMsg->Swallow();
+				pHandler->post( new WgSelectMsg(this) );
+				_pMsg->swallow();
 			}
 			break;
 	
 		case WG_MSG_MOUSE_ENTER:
-			m_state.SetHovered(true);
+			m_state.setHovered(true);
 			break;
 		case WG_MSG_MOUSE_LEAVE:
-			m_state.SetHovered(false);
+			m_state.setHovered(false);
 			break;
 		case WG_MSG_MOUSE_PRESS:
-			if( WgMousePressMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( WgMousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = true;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_RELEASE:
-			if( WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( WgMouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
 				m_bPressed = false;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_CLICK:
-			if( WgMouseClickMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( WgMouseClickMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
-				pHandler->Post( new WgSelectMsg(this) );
-				_pMsg->Swallow();
+				pHandler->post( new WgSelectMsg(this) );
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_DOUBLE_CLICK:
 		case WG_MSG_MOUSE_REPEAT:
 		case WG_MSG_MOUSE_DRAG:
-			if( WgMouseButtonMsg::Cast(_pMsg)->Button() ==WG_BUTTON_LEFT )
-				_pMsg->Swallow();
+			if( WgMouseButtonMsg::cast(_pMsg)->button() ==WG_BUTTON_LEFT )
+				_pMsg->swallow();
 			break;
 
 		case WG_MSG_FOCUS_GAINED:
-			m_state.SetFocused(true);
+			m_state.setFocused(true);
 			break;
 		case WG_MSG_FOCUS_LOST:
-			m_state.SetFocused(false);
+			m_state.setFocused(false);
 			m_bReturnPressed = false;
 			m_bPressed = false;
 			break;
 	}
 
 
-	if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || m_state.IsHovered() )) )
-		m_state.SetPressed(true);
+	if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || m_state.isHovered() )) )
+		m_state.setPressed(true);
 	else
-		m_state.SetPressed(false);
+		m_state.setPressed(false);
 
 	if( m_state != oldState )
 		_onStateChanged(oldState);
@@ -271,7 +271,7 @@ void WgButton::_onMsg( const WgMsgPtr& _pMsg )
 void WgButton::_onRefresh( void )
 {
 	WgWidget::_onRefresh();
-	m_text.OnRefresh();
+	m_text.onRefresh();
 
 	//TODO: Handling of icon and text.
 }
@@ -310,7 +310,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgButton * pOrg = (WgButton *) _pOrg;
 
-	m_icon.OnCloneContent( &pOrg->m_icon );
+	m_icon.onCloneContent( &pOrg->m_icon );
 
 	//TODO: Support cloning for text items.
 //	m_text.clone(&pOrg->m_text);
@@ -322,7 +322,7 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	if( m_icon.Skin() )
+	if( m_icon.skin() )
 	{
 		//TODO: Test against icon.
 	}

@@ -49,35 +49,35 @@ class WgEditText : public WgLegacyModText
 public:
 	WgEditText( WgLegacyTextField * pField ) : WgLegacyModText(pField) {};
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgEditTextPtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgEditTextPtr	Ptr() { return WgEditTextPtr(_object(),this); }
+	static WgEditTextPtr	cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgEditTextPtr	ptr() { return WgEditTextPtr(_object(),this); }
 
-	inline void			SetEditMode(WgTextEditMode mode) { m_pField->SetEditMode(mode); }
-	inline WgTextEditMode	EditMode() const { return m_pField->EditMode(); }
+	inline void			setEditMode(WgTextEditMode mode) { m_pField->setEditMode(mode); }
+	inline WgTextEditMode	editMode() const { return m_pField->editMode(); }
 
-	inline bool			IsEditable() const { return m_pField->IsEditable(); }
-	inline bool			IsSelectable() const { return m_pField->IsSelectable(); }
+	inline bool			isEditable() const { return m_pField->isEditable(); }
+	inline bool			isSelectable() const { return m_pField->isSelectable(); }
 
-	inline void			SetCursorSkin( const WgCaretPtr& pCursor ) { m_pField->SetCursorSkin(pCursor); }
-	inline WgCaretPtr	CursorSkin() const { return m_pField->CursorSkin(); }
+	inline void			setCursorSkin( const WgCaretPtr& pCursor ) { m_pField->setCursorSkin(pCursor); }
+	inline WgCaretPtr	cursorSkin() const { return m_pField->cursorSkin(); }
 
-	inline int			InsertAtCursor( const WgCharSeq& str ) { return m_pField->InsertAtCursor(str); }
-	inline bool			InsertAtCursor( Uint16 c ) { return m_pField->InsertAtCursor(c); }
+	inline int			insertAtCursor( const WgCharSeq& str ) { return m_pField->insertAtCursor(str); }
+	inline bool			insertAtCursor( Uint16 c ) { return m_pField->insertAtCursor(c); }
 
-	inline void			GoBOL() { m_pField->GoBOL(); }
-	inline void			GoEOL() { m_pField->GoEOL(); }
-	inline void			GoBOT() { m_pField->GoBOT(); }
-	inline void			GoEOT() { m_pField->GoEOT(); }
+	inline void			goBol() { m_pField->goBol(); }
+	inline void			goEol() { m_pField->goEol(); }
+	inline void			goBot() { m_pField->goBot(); }
+	inline void			goEot() { m_pField->goEot(); }
 
-	inline void			Select( int ofs, int len ) { m_pField->Select(ofs,len); }
-	inline void			SelectAll() { m_pField->SelectAll(); }
-	inline int			SelectionStart() const { return m_pField->SelectionStart(); }
-	inline int			SelectionLength() const { return m_pField->SelectionLength(); }
-	inline void			ClearSelection() { m_pField->ClearSelection(); }
-	inline void			DeleteSelected() { m_pField->DeleteSelected(); }
+	inline void			select( int ofs, int len ) { m_pField->select(ofs,len); }
+	inline void			selectAll() { m_pField->selectAll(); }
+	inline int			selectionStart() const { return m_pField->selectionStart(); }
+	inline int			selectionLength() const { return m_pField->selectionLength(); }
+	inline void			clearSelection() { m_pField->clearSelection(); }
+	inline void			deleteSelected() { m_pField->deleteSelected(); }
 };
 
 

@@ -44,39 +44,39 @@ WgWidget::~WgWidget()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgWidget::IsInstanceOf( const char * pClassName ) const
+bool WgWidget::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgReceiver::IsInstanceOf(pClassName);
+	return WgReceiver::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgWidget::ClassName( void ) const
+const char * WgWidget::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgWidgetPtr WgWidget::Cast( const WgObjectPtr& pObject )
+WgWidgetPtr WgWidget::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgWidgetPtr( static_cast<WgWidget*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgWidgetPtr( static_cast<WgWidget*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ Parent() _______________________________________________________________
+//____ parent() _______________________________________________________________
 
-WgContainerPtr WgWidget::Parent() const
+WgContainerPtr WgWidget::parent() const
 { 
 	if( m_pHook ) 
-		return m_pHook->Parent(); 
+		return m_pHook->parent(); 
 	return 0; 
 }
 
@@ -87,19 +87,19 @@ WgPointerStyle WgWidget::PointerStyle() const
 	return m_pointerStyle;
 }
 
-//____ SetEnabled() _______________________________________________________________
+//____ setEnabled() _______________________________________________________________
 
-void WgWidget::SetEnabled( bool bEnabled )
+void WgWidget::setEnabled( bool bEnabled )
 {
-	if( m_state.IsEnabled() != bEnabled || IsContainer() )
+	if( m_state.isEnabled() != bEnabled || IsContainer() )
 	{
 		WgState old = m_state;
-		m_state.SetEnabled(bEnabled);
+		m_state.setEnabled(bEnabled);
 		_onStateChanged(old);
 	}
 }
 
-//____ MarkTest() _____________________________________________________________
+//____ markTest() _____________________________________________________________
 /**
  * @brief Check if specified coordinate is inside or outside of widget.
  *
@@ -121,12 +121,12 @@ void WgWidget::SetEnabled( bool bEnabled )
  * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
  */
 
-bool WgWidget::MarkTest( const WgCoord& ofs )
+bool WgWidget::markTest( const WgCoord& ofs )
 {
 	if( m_markOpacity <= 0 || ofs.x < 0 || ofs.y < 0 )
 		return false;
 		
-	WgSize sz = Size();
+	WgSize sz = size();
 
 	if( ofs.x >= sz.w || ofs.y >= sz.h )
 		return false;
@@ -137,9 +137,9 @@ bool WgWidget::MarkTest( const WgCoord& ofs )
 	return _onAlphaTest(ofs,sz);
 }
 
-//____ SetSkin() ______________________________________________________________
+//____ setSkin() ______________________________________________________________
 
-void WgWidget::SetSkin( const WgSkinPtr& pSkin )
+void WgWidget::setSkin( const WgSkinPtr& pSkin )
 {
 	WgSkinPtr pOldSkin = m_pSkin;
 	m_pSkin = pSkin;
@@ -152,10 +152,10 @@ void WgWidget::SetSkin( const WgSkinPtr& pSkin )
 
 bool WgWidget::CloneContent( const WgWidgetPtr& _pOrg )
 {
-	if( _pOrg->ClassName() != ClassName() )
+	if( _pOrg->className() != className() )
 		return false;
 
-	WgWidget * pOrg = _pOrg.RawPtr();
+	WgWidget * pOrg = _pOrg.rawPtr();
 
 	m_id			= pOrg->m_id;
 
@@ -205,7 +205,7 @@ void WgWidget::_onNewRoot( WgRootPanel * pRoot )
  
  WgCoord WgWidget::ToGlobal( const WgCoord& coord ) const
 {
-	WgCoord c = GlobalPos();
+	WgCoord c = globalPos();
 	c.x += coord.x;
 	c.y += coord.y;
 	return c;
@@ -229,11 +229,11 @@ void WgWidget::_onNewRoot( WgRootPanel * pRoot )
 
 WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
 {
-	WgCoord c = GlobalPos();
+	WgCoord c = globalPos();
 	return WgCoord( coord.x - c.x, coord.y - c.y );
 }
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 /**
  * @brief Get the widgets preferred height for the specified width.
  *
@@ -247,12 +247,12 @@ WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
  * @return The preferred height for the given width in pixels.
  */
 
-int WgWidget::MatchingHeight( int width ) const
+int WgWidget::matchingHeight( int width ) const
 {
-	return PreferredSize().h;		// Default is to stick with best height no matter what width.
+	return preferredSize().h;		// Default is to stick with best height no matter what width.
 }
 
-//____ MatchingWidth() _______________________________________________________
+//____ matchingWidth() _______________________________________________________
 /**
  * @brief Get the widgets preferred width for the specified height.
  *
@@ -266,12 +266,12 @@ int WgWidget::MatchingHeight( int width ) const
  * @return The preferred width for the given height in pixels.
  */
 
-int WgWidget::MatchingWidth( int height ) const
+int WgWidget::matchingWidth( int height ) const
 {
-	return PreferredSize().w;		// Default is to stick with best width no matter what height.
+	return preferredSize().w;		// Default is to stick with best width no matter what height.
 }
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 /**
  * @brief Get the widgets preferred size.
  *
@@ -283,21 +283,21 @@ int WgWidget::MatchingWidth( int height ) const
  * A container holding a widget will strive to give the widget its preferred size, given
  * the constraints and limitations the container needs to work with. If a container can't
  * give a widget its preferred size, it is likely to decide the closest width or height
- * that it can provide and then make a second call to either MatchingWidth() or MatchingHeight()
+ * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
  * after which it will decide the size of the child and notify it.
  * 
  * @return The preferred size of the widget in pixels.
  */
 
-WgSize WgWidget::PreferredSize() const
+WgSize WgWidget::preferredSize() const
 {
 	if( m_pSkin )
-		return m_pSkin->PreferredSize();
+		return m_pSkin->preferredSize();
 	else
 		return WgSize(0,0);
 }
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 /**
  * @brief Get the widgets recommended minimum size.
  *
@@ -313,21 +313,21 @@ WgSize WgWidget::PreferredSize() const
  * @return The minimum size of the widget in pixels.
  */
 
-WgSize WgWidget::MinSize() const
+WgSize WgWidget::minSize() const
 {
 	if( m_pSkin )
-		return m_pSkin->MinSize();
+		return m_pSkin->minSize();
 	else
 		return WgSize(0,0);
 }
 
-//____ OnMsg() _______________________________________________________________
+//____ onMsg() _______________________________________________________________
 
-void WgWidget::OnMsg( const WgMsgPtr& pMsg )
+void WgWidget::onMsg( const WgMsgPtr& pMsg )
 {
 	// SetRepost before _onMsg() so that subclasses can swallow the respost.
 	
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_MOUSE_MOVE:
 		case WG_MSG_MOUSE_POSITION:
@@ -342,9 +342,9 @@ void WgWidget::OnMsg( const WgMsgPtr& pMsg )
 		case WG_MSG_KEY_RELEASE:
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWidgetPtr pParent = Parent();
+			WgWidgetPtr pParent = parent();
 			if( pParent )
-				pMsg->SetRepost(pParent,pParent);
+				pMsg->setRepost(pParent,pParent);
 			break;
 		}
 		default:
@@ -353,7 +353,7 @@ void WgWidget::OnMsg( const WgMsgPtr& pMsg )
 	_onMsg( pMsg );
 }
 
-//____ MaxSize() ______________________________________________________________
+//____ maxSize() ______________________________________________________________
 /**
  * @brief Get the widgets recommended maximum size.
  *
@@ -369,7 +369,7 @@ void WgWidget::OnMsg( const WgMsgPtr& pMsg )
  * @return The maximum size of the widget in pixels.
  */
 
-WgSize WgWidget::MaxSize() const
+WgSize WgWidget::maxSize() const
 {
 	return WgSize(2<<24,2<<24);
 }
@@ -389,7 +389,7 @@ WgBlendMode WgWidget::_getBlendMode() const
 
 void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		WgRect clip( _window, *pRect );
 		if( clip.w > 0 && clip.h > 0 )
@@ -401,7 +401,7 @@ void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-		container.Add( WgRect( geo, clip ) );
+		container.add( WgRect( geo, clip ) );
 }
 
 //____ _onMaskPatches() _______________________________________________________
@@ -410,7 +410,7 @@ void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRe
 {
 	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 	{
-		patches.Sub( WgRect( geo, clip ) );
+		patches.sub( WgRect( geo, clip ) );
 	}
 }
 
@@ -419,7 +419,7 @@ void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRe
 void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	if( m_pSkin )
-		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
+		m_pSkin->render( pDevice, _canvas, m_state, _clip );
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -433,7 +433,7 @@ void WgWidget::_onNewSize( const WgSize& size )
 
 void WgWidget::_onRefresh()
 {
-	if( m_pSkin && m_pSkin->IsOpaque(m_state) )
+	if( m_pSkin && m_pSkin->isOpaque(m_state) )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
@@ -446,14 +446,14 @@ void WgWidget::_onRefresh()
 
 void WgWidget::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
-	if( !pOldSkin || !pNewSkin || pOldSkin->ContentPadding() != pNewSkin->ContentPadding() ||
-		pOldSkin->PreferredSize() != pNewSkin->PreferredSize() ||
-		pOldSkin->MinSize() != pNewSkin->MinSize() )
+	if( !pOldSkin || !pNewSkin || pOldSkin->contentPadding() != pNewSkin->contentPadding() ||
+		pOldSkin->preferredSize() != pNewSkin->preferredSize() ||
+		pOldSkin->minSize() != pNewSkin->minSize() )
 	{
 		_requestResize();
 	}
 
-	if( pNewSkin && pNewSkin->IsOpaque(m_state) )
+	if( pNewSkin && pNewSkin->isOpaque(m_state) )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
@@ -465,9 +465,9 @@ void WgWidget::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewS
 
 void WgWidget::_onStateChanged( WgState oldState )
 {
-	if( m_pSkin && !m_pSkin->IsStateIdentical(m_state, oldState) )
+	if( m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState) )
 	{
-		m_bOpaque = m_pSkin->IsOpaque(m_state);
+		m_bOpaque = m_pSkin->isOpaque(m_state);
 		_requestRender();
 	}
 }
@@ -478,24 +478,24 @@ void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_MOUSE_ENTER:
 			if( m_bPressed )
-				m_state.SetPressed(true);
+				m_state.setPressed(true);
 			else
-				m_state.SetHovered(true);
+				m_state.setHovered(true);
 			break;
 		case WG_MSG_MOUSE_LEAVE:
-			m_state.SetHovered(false);			// Also clears any pressed flag.
+			m_state.setHovered(false);			// Also clears any pressed flag.
 			break;
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
-			if( pMsg->Button() == WG_BUTTON_LEFT )
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
-				if( m_state.IsHovered() )
-					m_state.SetPressed(true);
+				if( m_state.isHovered() )
+					m_state.setPressed(true);
 
 				m_bPressed = true;
 			}
@@ -503,21 +503,21 @@ void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::Cast(_pMsg);
-			if( pMsg->Button() == WG_BUTTON_LEFT )
+			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
-				if( m_state.IsHovered() )
-					m_state.SetPressed(false);
+				if( m_state.isHovered() )
+					m_state.setPressed(false);
 
 				m_bPressed = false;
 			}
 			break;
 		}
 		case WG_MSG_FOCUS_GAINED:
-			m_state.SetFocused(true);
+			m_state.setFocused(true);
 			break;
 		case WG_MSG_FOCUS_LOST:
-			m_state.SetFocused(false);
+			m_state.setFocused(false);
 			break;
 	}
 
@@ -530,7 +530,7 @@ void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 bool WgWidget::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
 	if( m_pSkin )
-		return m_pSkin->MarkTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
+		return m_pSkin->markTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
 
 	return false;
 }

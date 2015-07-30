@@ -41,14 +41,14 @@ typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgSoftSurfaceFac
 class WgSoftSurfaceFactory : public WgSurfaceFactory
 {
 public:
-	static WgSoftSurfaceFactoryPtr	Create() { return WgSoftSurfaceFactoryPtr(new WgSoftSurfaceFactory()); }
+	static WgSoftSurfaceFactoryPtr	create() { return WgSoftSurfaceFactoryPtr(new WgSoftSurfaceFactory()); }
 
-	bool							IsInstanceOf( const char * pClassName ) const;
-	const char *					ClassName( void ) const;
+	bool							isInstanceOf( const char * pClassName ) const;
+	const char *					className( void ) const;
 	static const char				CLASSNAME[];
-	static WgSoftSurfaceFactoryPtr	Cast( const WgObjectPtr& pObject );
+	static WgSoftSurfaceFactoryPtr	cast( const WgObjectPtr& pObject );
 
-	virtual WgSurfacePtr CreateSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
+	virtual WgSurfacePtr createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 protected:
 	virtual ~WgSoftSurfaceFactory() {}
 };

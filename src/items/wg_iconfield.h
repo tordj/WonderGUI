@@ -57,30 +57,30 @@ public:
 	virtual ~WgIconField() {};
 
 
-	bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
+	bool			set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
 								float _scale = 0.f, bool _bOverlap = false );
-	void			Clear();
+	void			clear();
 
-	inline bool		IsEmpty() const { return !m_pSkin; }
+	inline bool		isEmpty() const { return !m_pSkin; }
 
-	bool			SetScale( float scaleFactor );
-	void			SetOrigo( WgOrigo origo );
-	void			SetPadding( WgBorder borders );
-	void			SetOverlap( bool bOverlap );
-	void			SetSkin( const WgSkinPtr& pSkin );
+	bool			setScale( float scaleFactor );
+	void			setOrigo( WgOrigo origo );
+	void			setPadding( WgBorder borders );
+	void			setOverlap( bool bOverlap );
+	void			setSkin( const WgSkinPtr& pSkin );
 
-	float			Scale() const { return m_scale; }
-	WgOrigo			Origo() const { return m_origo; }
-	WgBorder		Padding() const { return m_padding; }
-	bool			Overlap() const { return m_bOverlap; }
-	WgSkinPtr		Skin() const { return  m_pSkin; }
+	float			scale() const { return m_scale; }
+	WgOrigo			origo() const { return m_origo; }
+	WgBorder		padding() const { return m_padding; }
+	bool			overlap() const { return m_bOverlap; }
+	WgSkinPtr		skin() const { return  m_pSkin; }
 
 
-	WgRect			GetIconRect( const WgRect& contentRect ) const;
-	WgRect			GetIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
-	WgRect			GetTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
-	void			OnCloneContent( const WgIconField * _pOrg );
-	WgSize			PreferredSize() const;
+	WgRect			getIconRect( const WgRect& contentRect ) const;
+	WgRect			getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
+	WgRect			getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
+	void			onCloneContent( const WgIconField * _pOrg );
+	WgSize			preferredSize() const;
 
 protected:
 

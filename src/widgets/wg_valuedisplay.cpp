@@ -39,42 +39,42 @@ WgValueDisplay::~WgValueDisplay()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgValueDisplay::IsInstanceOf( const char * pClassName ) const
+bool WgValueDisplay::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgValueDisplay::ClassName( void ) const
+const char * WgValueDisplay::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgValueDisplayPtr WgValueDisplay::Cast( const WgObjectPtr& pObject )
+WgValueDisplayPtr WgValueDisplay::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ PreferredSize() __________________________________________________________
+//____ preferredSize() __________________________________________________________
 
-WgSize WgValueDisplay::PreferredSize() const
+WgSize WgValueDisplay::preferredSize() const
 {
-	WgSize size = m_field.PreferredSize();
+	WgSize size = m_field.preferredSize();
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(size);
+		return m_pSkin->sizeForContent(size);
 	else
 		return size;
 }
@@ -84,7 +84,7 @@ WgSize WgValueDisplay::PreferredSize() const
 
 void WgValueDisplay::_onRefresh( void )
 {
-	m_field.OnRefresh();
+	m_field.onRefresh();
 	WgWidget::_onRefresh();
 }
 
@@ -93,7 +93,7 @@ void WgValueDisplay::_onRefresh( void )
 void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
-	m_field.OnRender(pDevice, _canvas, _clip);
+	m_field.onRender(pDevice, _canvas, _clip);
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -108,7 +108,7 @@ void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
 void WgValueDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
-	m_field.SetState(m_state);
+	m_field.setState(m_state);
 }
 
 //____ _onSkinChanged() _______________________________________________________
@@ -116,7 +116,7 @@ void WgValueDisplay::_onStateChanged( WgState oldState )
 void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-//	m_text.SetColorSkin(pNewSkin);
+//	m_text.setColorSkin(pNewSkin);
 }
 
 //____ _onFieldDirty() _________________________________________________________

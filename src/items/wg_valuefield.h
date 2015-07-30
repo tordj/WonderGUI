@@ -45,16 +45,16 @@ class WgValueField : public WgPresentableField
 public:
 	WgValueField(WgValueHolder * pHolder);
 
-	void				SetFormatter( const WgValueFormatterPtr& pFormatter );
-	void				ClearFormatter();
-	inline WgValueFormatterPtr	Formatter() const { return m_pFormatter; }
+	void				setFormatter( const WgValueFormatterPtr& pFormatter );
+	void				clearFormatter();
+	inline WgValueFormatterPtr	formatter() const { return m_pFormatter; }
 
-	virtual void		Clear();
-	virtual bool		Set( Sint64 value, int scale );
+	virtual void		clear();
+	virtual bool		set( Sint64 value, int scale );
 	
-	void				OnRefresh();
-	inline Sint64		Value() const { return m_value; }
-	inline int			Scale() const { return m_scale; }
+	void				onRefresh();
+	inline Sint64		value() const { return m_value; }
+	inline int			scale() const { return m_scale; }
 
 protected:
 	void				_regenText();

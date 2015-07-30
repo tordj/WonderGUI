@@ -59,16 +59,16 @@ typedef	WgWeakPtr<WgFont,WgObjectWeakPtr>	WgFontWeakPtr;
 class WgFont : public WgObject
 {
 public:
-	static WgFontPtr	Create() { return WgFontPtr(new WgFont()); }
+	static WgFontPtr	create() { return WgFontPtr(new WgFont()); }
 #ifdef WG_USE_FREETYPE
-	static WgFontPtr	Create( const WgVectorGlyphsPtr& pNormal ) { return WgFontPtr(new WgFont(pNormal)); }
+	static WgFontPtr	create( const WgVectorGlyphsPtr& pNormal ) { return WgFontPtr(new WgFont(pNormal)); }
 #endif
-	static WgFontPtr	Create( const WgBitmapGlyphsPtr& pNormal, int size ) { return WgFontPtr(new WgFont(pNormal,size)); }
+	static WgFontPtr	create( const WgBitmapGlyphsPtr& pNormal, int size ) { return WgFontPtr(new WgFont(pNormal,size)); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFontPtr	Cast( const WgObjectPtr& pObject );
+	static WgFontPtr	cast( const WgObjectPtr& pObject );
 
 	enum GlyphProvided
 	{
@@ -81,31 +81,31 @@ public:
 
 
 
-	WgGlyphsetPtr		GetGlyphset( WgFontAlt style, int size ) const;
-	WgGlyphPtr			GetGlyph( Uint32 chr, WgFontAlt style, int size ) const;
-	GlyphProvided		IsGlyphProvided( Uint32 chr, WgFontAlt style, int size ) const;
+	WgGlyphsetPtr		getGlyphset( WgFontAlt style, int size ) const;
+	WgGlyphPtr			getGlyph( Uint32 chr, WgFontAlt style, int size ) const;
+	GlyphProvided		isGlyphProvided( Uint32 chr, WgFontAlt style, int size ) const;
 
 #ifdef	WG_USE_FREETYPE
-	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style  );
-	bool				SetVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style, int size );
-	bool				SetDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs );
+	bool				setVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style  );
+	bool				setVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs, WgFontAlt style, int size );
+	bool				setDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs );
 
-	inline WgVectorGlyphsPtr	GetVectorGlyphs( WgFontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
-	inline WgVectorGlyphsPtr	GetDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
+	inline WgVectorGlyphsPtr	getVectorGlyphs( WgFontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
+	inline WgVectorGlyphsPtr	getDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
 
-	int					ReplaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew );
+	int					replaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew );
 #endif
 
-	int					ReplaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew );
+	int					replaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew );
 
 
-	bool				SetBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, int size );
-	bool				SetDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size = 0 );
+	bool				setBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, int size );
+	bool				setDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size = 0 );
 
-	WgBitmapGlyphsPtr			GetBitmapGlyphs( WgFontAlt style, int size );
-	inline WgBitmapGlyphsPtr	GetDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
+	WgBitmapGlyphsPtr			getBitmapGlyphs( WgFontAlt style, int size );
+	inline WgBitmapGlyphsPtr	getDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
 
-	const WgUnderline *	GetUnderline( int size );
+	const WgUnderline *	getUnderline( int size );
 
 
 protected:

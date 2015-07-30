@@ -31,282 +31,282 @@
 #include <wg_menu.h>
 
 
-//____ Tick() _________________________________________________________________
+//____ tick() _________________________________________________________________
 
-WgMsgFilter	WgMsgFilter::Tick()
+WgMsgFilter	WgMsgFilter::tick()
 {
 	return WgMsgFilter( WG_MSG_TICK, _filterType );
 }
 
-//____ PointerChange() _________________________________________________________________
+//____ pointerChange() _________________________________________________________________
 
-WgMsgFilter	WgMsgFilter::PointerChange()
+WgMsgFilter	WgMsgFilter::pointerChange()
 {
 	return WgMsgFilter( WG_MSG_POINTER_CHANGE, _filterType );
 }
 
-//____ FocusGained() __________________________________________________________
+//____ focusGained() __________________________________________________________
 
-WgMsgFilter	WgMsgFilter::FocusGained()
+WgMsgFilter	WgMsgFilter::focusGained()
 {
 	return WgMsgFilter( WG_MSG_FOCUS_GAINED, _filterType );
 }
 
-//____ FocusGained() __________________________________________________________
+//____ focusGained() __________________________________________________________
 
-WgMsgFilter	WgMsgFilter::FocusLost()
+WgMsgFilter	WgMsgFilter::focusLost()
 {
 	return WgMsgFilter( WG_MSG_FOCUS_LOST, _filterType );
 }
 
-//____ MouseEnter() _________________________________________________________
+//____ mouseEnter() _________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseEnter()
+WgMsgFilter	WgMsgFilter::mouseEnter()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_ENTER, _filterType );
 }
 
-//____ MouseLeave() _________________________________________________________
+//____ mouseLeave() _________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseLeave()
+WgMsgFilter	WgMsgFilter::mouseLeave()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_LEAVE, _filterType );
 }
 
-//____ MouseMove() _________________________________________________________
+//____ mouseMove() _________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseMove()
+WgMsgFilter	WgMsgFilter::mouseMove()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_MOVE, _filterType );
 }
 
-//____ MousePress() _________________________________________________________
+//____ mousePress() _________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MousePress()
+WgMsgFilter	WgMsgFilter::mousePress()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_PRESS, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MousePress( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mousePress( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_PRESS, _filterMouseButtonMsgs, button );
 }
 
-//____ MouseRelease() ________________________________________________________
+//____ mouseRelease() ________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseRelease()
+WgMsgFilter	WgMsgFilter::mouseRelease()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_RELEASE, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MouseRelease( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mouseRelease( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_RELEASE, _filterMouseButtonMsgs, button );
 }
 
-//____ MouseDrag() ___________________________________________________________
+//____ mouseDrag() ___________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseDrag()
+WgMsgFilter	WgMsgFilter::mouseDrag()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_DRAG, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MouseDrag( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mouseDrag( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_DRAG, _filterMouseButtonMsgs, button );
 }
 
-//____ MouseRepeat() ________________________________________________________
+//____ mouseRepeat() ________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseRepeat()
+WgMsgFilter	WgMsgFilter::mouseRepeat()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_REPEAT, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MouseRepeat( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mouseRepeat( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_REPEAT, _filterMouseButtonMsgs, button );
 }
 
-//____ MouseClick() ________________________________________________________
+//____ mouseClick() ________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseClick()
+WgMsgFilter	WgMsgFilter::mouseClick()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_CLICK, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MouseClick( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mouseClick( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_CLICK, _filterMouseButtonMsgs, button );
 }
 
-//____ MouseDoubleClick() ________________________________________________________
+//____ mouseDoubleClick() ________________________________________________________
 
-WgMsgFilter	WgMsgFilter::MouseDoubleClick()
+WgMsgFilter	WgMsgFilter::mouseDoubleClick()
 {
 	return WgMsgFilter( WG_MSG_MOUSE_CLICK, _filterMouseButtonMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::MouseDoubleClick( WgMouseButton button)
+WgMsgFilter	WgMsgFilter::mouseDoubleClick( WgMouseButton button)
 {
 	return WgMsgFilter( WG_MSG_MOUSE_CLICK, _filterMouseButtonMsgs, button );
 }
 
-//____ KeyPress() _____________________________________________________________
+//____ keyPress() _____________________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyPress()
+WgMsgFilter	WgMsgFilter::keyPress()
 {
 	return WgMsgFilter( WG_MSG_KEY_PRESS, _filterKeyMsgs, WG_KEY_UNMAPPED );
 }
 
-WgMsgFilter	WgMsgFilter::KeyPress( WgKey keycode )
+WgMsgFilter	WgMsgFilter::keyPress( WgKey keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_PRESS, _filterKeyMsgs, keycode );
 }
 
-//____ KeyRelease() ___________________________________________________________
+//____ keyRelease() ___________________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyRelease()
+WgMsgFilter	WgMsgFilter::keyRelease()
 {
 	return WgMsgFilter( WG_MSG_KEY_RELEASE, _filterKeyMsgs, WG_KEY_UNMAPPED );
 }
 
-WgMsgFilter	WgMsgFilter::KeyRelease( WgKey keycode )
+WgMsgFilter	WgMsgFilter::keyRelease( WgKey keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_RELEASE, _filterKeyMsgs, keycode );
 }
 
-//____ KeyRepeat() ____________________________________________________________
+//____ keyRepeat() ____________________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyRepeat()
+WgMsgFilter	WgMsgFilter::keyRepeat()
 {
 	return WgMsgFilter( WG_MSG_KEY_REPEAT, _filterKeyMsgs, WG_KEY_UNMAPPED );
 }
 
-WgMsgFilter	WgMsgFilter::KeyRepeat( WgKey keycode )
+WgMsgFilter	WgMsgFilter::keyRepeat( WgKey keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_REPEAT, _filterKeyMsgs, keycode );
 }
 
-//____ KeyPressNative() _______________________________________________________
+//____ keyPressNative() _______________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyPressNative( int native_keycode )
+WgMsgFilter	WgMsgFilter::keyPressNative( int native_keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_PRESS, _filterNativeKeyMsgs, native_keycode );
 }
 
-//____ KeyReleaseNative() _____________________________________________________
+//____ keyReleaseNative() _____________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyReleaseNative( int native_keycode )
+WgMsgFilter	WgMsgFilter::keyReleaseNative( int native_keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_RELEASE, _filterNativeKeyMsgs, native_keycode );
 }
 
-//____ KeyRepeatNative() ______________________________________________________
+//____ keyRepeatNative() ______________________________________________________
 
-WgMsgFilter	WgMsgFilter::KeyRepeatNative( int native_keycode )
+WgMsgFilter	WgMsgFilter::keyRepeatNative( int native_keycode )
 {
 	return WgMsgFilter( WG_MSG_KEY_REPEAT, _filterNativeKeyMsgs, native_keycode );
 }
 
-//____ Character() ____________________________________________________________
+//____ character() ____________________________________________________________
 
-WgMsgFilter	WgMsgFilter::Character()
+WgMsgFilter	WgMsgFilter::character()
 {
 	return WgMsgFilter( WG_MSG_CHARACTER, _filterCharacterMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::Character( unsigned short character)
+WgMsgFilter	WgMsgFilter::character( unsigned short character)
 {
 	return WgMsgFilter( WG_MSG_CHARACTER, _filterCharacterMsgs, character );
 }
 
-//____ WheelRoll() ____________________________________________________________
+//____ wheelRoll() ____________________________________________________________
 
-WgMsgFilter	WgMsgFilter::WheelRoll()
+WgMsgFilter	WgMsgFilter::wheelRoll()
 {
 	return WgMsgFilter( WG_MSG_WHEEL_ROLL, _filterWheelRollMsgs, 0 );
 }
 
-WgMsgFilter	WgMsgFilter::WheelRoll( int wheel )
+WgMsgFilter	WgMsgFilter::wheelRoll( int wheel )
 {
 	return WgMsgFilter( WG_MSG_WHEEL_ROLL, _filterWheelRollMsgs, wheel );
 }
 
-//____ Select() __________________________________________________________
+//____ select() __________________________________________________________
 
-WgMsgFilter	WgMsgFilter::Select()
+WgMsgFilter	WgMsgFilter::select()
 {
 	return WgMsgFilter( WG_MSG_SELECT, _filterType );
 }
 
-//____ Toggle() __________________________________________________________
+//____ toggle() __________________________________________________________
 
-WgMsgFilter	WgMsgFilter::Toggle()
+WgMsgFilter	WgMsgFilter::toggle()
 {
 	return WgMsgFilter( WG_MSG_TOGGLE, _filterType );
 }
 
-//____ ValueUpdate() _______________________________________________________
+//____ valueUpdate() _______________________________________________________
 
-WgMsgFilter	WgMsgFilter::ValueUpdate()
+WgMsgFilter	WgMsgFilter::valueUpdate()
 {
 	return WgMsgFilter( WG_MSG_VALUE_UPDATE, _filterType );
 }
 
-//____ RangeUpdate() __________________________________________________________
+//____ rangeUpdate() __________________________________________________________
 
-WgMsgFilter	WgMsgFilter::RangeUpdate()
+WgMsgFilter	WgMsgFilter::rangeUpdate()
 {
 	return WgMsgFilter( WG_MSG_RANGE_UPDATE, _filterType );
 }
 
-//____ TextEdit() _______________________________________________________
+//____ textEdit() _______________________________________________________
 
-WgMsgFilter	WgMsgFilter::TextEdit()
+WgMsgFilter	WgMsgFilter::textEdit()
 {
 	return WgMsgFilter( WG_MSG_TEXT_EDIT, _filterType );
 }
 
-//____ ItemToggle() ___________________________________________________________
+//____ itemToggle() ___________________________________________________________
 
-WgMsgFilter WgMsgFilter::ItemToggle()
+WgMsgFilter WgMsgFilter::itemToggle()
 {
 	return WgMsgFilter( WG_MSG_ITEM_TOGGLE, _filterType );
 }
 
-WgMsgFilter WgMsgFilter::ItemToggle( int id )
+WgMsgFilter WgMsgFilter::itemToggle( int id )
 {
 	return WgMsgFilter( WG_MSG_ITEM_TOGGLE, _filterItemToggleMsgs, id, 0 );
 }
 
-//____ ItemMousePress() _______________________________________________________
+//____ itemMousePress() _______________________________________________________
 
-WgMsgFilter WgMsgFilter::ItemMousePress()
+WgMsgFilter WgMsgFilter::itemMousePress()
 {
 	return WgMsgFilter( WG_MSG_ITEM_MOUSE_PRESS, _filterType );
 }
 
-WgMsgFilter WgMsgFilter::ItemMousePress( WgMouseButton button )
+WgMsgFilter WgMsgFilter::itemMousePress( WgMouseButton button )
 {
 	return WgMsgFilter( WG_MSG_ITEM_MOUSE_PRESS, _filterItemMousePressMsgs, -1, button );
 }
 
-WgMsgFilter WgMsgFilter::ItemMousePress( WgMouseButton button, int id )
+WgMsgFilter WgMsgFilter::itemMousePress( WgMouseButton button, int id )
 {
 	return WgMsgFilter( WG_MSG_ITEM_MOUSE_PRESS, _filterItemMousePressMsgs, id, button );
 }
 
-//____ ItemsSelect() __________________________________________________________
+//____ itemsSelect() __________________________________________________________
 
-WgMsgFilter WgMsgFilter::ItemsSelect()
+WgMsgFilter WgMsgFilter::itemsSelect()
 {
 	return WgMsgFilter( WG_MSG_ITEMS_SELECT, _filterType );
 }
 
-//____ ItemsUnselect() ________________________________________________________
+//____ itemsUnselect() ________________________________________________________
 
-WgMsgFilter WgMsgFilter::ItemsUnselect()
+WgMsgFilter WgMsgFilter::itemsUnselect()
 {
 	return WgMsgFilter( WG_MSG_ITEMS_UNSELECT, _filterType );
 }
@@ -326,12 +326,12 @@ WgMsgFilter	WgMsgFilter::MenuitemSelect( int itemId )
 
 WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidgetPtr& pWidget )
 {
-	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.RawPtr(), _filterMenuitemMsg );
+	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.rawPtr(), _filterMenuitemMsg );
 }
 
 WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidgetPtr& pWidget, int itemId )
 {
-	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.RawPtr(), _filterMenuitemMsg, itemId );
+	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.rawPtr(), _filterMenuitemMsg, itemId );
 }
 */
 
@@ -344,7 +344,7 @@ bool WgMsgFilter::_filterDummy( const WgMsgPtr& pMsg, const WgMsgFilter& filter 
 
 bool WgMsgFilter::_filterType( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 		return true;
 
 	return false;
@@ -352,15 +352,15 @@ bool WgMsgFilter::_filterType( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 
 bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
 		else
 		{
-			WgMouseButtonMsgPtr p = WgMouseButtonMsg::Cast(pMsg);
+			WgMouseButtonMsgPtr p = WgMouseButtonMsg::cast(pMsg);
 
-			if( p->Button() == filter.m_data1 )
+			if( p->button() == filter.m_data1 )
 				return true;
 		}
 	}
@@ -369,15 +369,15 @@ bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilte
 
 bool WgMsgFilter::_filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
 		else
 		{
-			WgKeyMsgPtr p = WgKeyMsg::Cast(pMsg);
+			WgKeyMsgPtr p = WgKeyMsg::cast(pMsg);
 
-			if( p->TranslatedKeyCode() == filter.m_data1 )
+			if( p->translatedKeyCode() == filter.m_data1 )
 				return true;
 		}
 	}
@@ -386,11 +386,11 @@ bool WgMsgFilter::_filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filte
 
 bool WgMsgFilter::_filterNativeKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
-		WgKeyMsgPtr p = WgKeyMsg::Cast(pMsg);
+		WgKeyMsgPtr p = WgKeyMsg::cast(pMsg);
 
-		if( p->NativeKeyCode() == filter.m_data1 )
+		if( p->nativeKeyCode() == filter.m_data1 )
 			return true;
 	}
 	return false;
@@ -398,9 +398,9 @@ bool WgMsgFilter::_filterNativeKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 
 bool WgMsgFilter::_filterCharacterMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
-		int chr = WgCharacterMsg::Cast(pMsg)->Char();
+		int chr = WgCharacterMsg::cast(pMsg)->character();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -410,9 +410,9 @@ bool WgMsgFilter::_filterCharacterMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 
 bool WgMsgFilter::_filterWheelRollMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
-		int chr = WgWheelRollMsg::Cast(pMsg)->Wheel();
+		int chr = WgWheelRollMsg::cast(pMsg)->wheel();
 
 		if( chr == filter.m_data1 )
 			return true;
@@ -422,9 +422,9 @@ bool WgMsgFilter::_filterWheelRollMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 
 bool WgMsgFilter::_filterItemToggleMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
-		int itemId = WgItemToggleMsg::Cast(pMsg)->ItemId();
+		int itemId = WgItemToggleMsg::cast(pMsg)->itemId();
 
 		if( itemId == filter.m_data1 )
 			return true;
@@ -435,12 +435,12 @@ bool WgMsgFilter::_filterItemToggleMsgs( const WgMsgPtr& pMsg, const WgMsgFilter
 
 bool WgMsgFilter::_filterItemMousePressMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
-		WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::Cast(pMsg);
+		WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::cast(pMsg);
 
-		if( (filter.m_data1 == -1 || pMsg->ItemId() == filter.m_data1) ||
-			(filter.m_data2 == -1 || pMsg->Button() == filter.m_data2) )
+		if( (filter.m_data1 == -1 || pMsg->itemId() == filter.m_data1) ||
+			(filter.m_data2 == -1 || pMsg->button() == filter.m_data2) )
 			return true;
 	}
 	return false;
@@ -451,7 +451,7 @@ bool WgMsgFilter::_filterItemMousePressMsgs( const WgMsgPtr& pMsg, const WgMsgFi
 /*
 bool WgMsgFilter::_filterMenuitemMsg( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 {
-	if( pMsg->Type() == filter.MsgType() )
+	if( pMsg->type() == filter.msgType() )
 	{
 		if( filter.m_data1 == 0 )
 			return true;
@@ -459,7 +459,7 @@ bool WgMsgFilter::_filterMenuitemMsg( const WgMsgPtr& pMsg, const WgMsgFilter& f
 		{
 			const WgMsg::MenuitemMsg * p = static_cast<const WgMsg::MenuitemMsg*>(pMsg);
 
-			if( p->ItemId() == filter.m_data1 )
+			if( p->itemId() == filter.m_data1 )
 				return true;
 		}
 	}

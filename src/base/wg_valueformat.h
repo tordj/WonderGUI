@@ -54,17 +54,17 @@ class WgValueFormat : public WgObject
 {
 	friend class WgLegacyTextField;
 	public:
-		static WgValueFormatPtr	Create() { return WgValueFormatPtr(new WgValueFormat()); }
-		static WgValueFormatPtr	Create( const WgCharSeq& format )  { return WgValueFormatPtr(new WgValueFormat(format)); }
-		static WgValueFormatPtr	Create( const WgValueFormatPtr& pIn ) { return WgValueFormatPtr(new WgValueFormat(pIn)); }
-		static WgValueFormatPtr	Create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+		static WgValueFormatPtr	create() { return WgValueFormatPtr(new WgValueFormat()); }
+		static WgValueFormatPtr	create( const WgCharSeq& format )  { return WgValueFormatPtr(new WgValueFormat(format)); }
+		static WgValueFormatPtr	create( const WgValueFormatPtr& pIn ) { return WgValueFormatPtr(new WgValueFormat(pIn)); }
+		static WgValueFormatPtr	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
 		{ return WgValueFormatPtr(new WgValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
 
-		bool		IsInstanceOf( const char * pClassName ) const;
-		const char *ClassName( void ) const;
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgValueFormatPtr	Cast( const WgObjectPtr& pObject );
+		static WgValueFormatPtr	cast( const WgObjectPtr& pObject );
 
 		void setFormat( const WgCharSeq& format );
 		void setFormat( const WgValueFormatPtr& pFormat );
@@ -178,14 +178,14 @@ public:
 	WgValueFormatter( const WgCharSeq& format );
 	~WgValueFormatter();
 
-	void SetFormat( const WgCharSeq& format );
+	void setFormat( const WgCharSeq& format );
 
-	WgString Prefix() const;
-	WgString Suffix() const;
-	int		 Decimals() const { return m_format.decimals; }
+	WgString prefix() const;
+	WgString suffix() const;
+	int		 decimals() const { return m_format.decimals; }
 
-	WgString Format( Sint64 value ) const;
-	WgString FormatNoPreSuffix( Sint64 value ) const;
+	WgString format( Sint64 value ) const;
+	WgString formatNoPreSuffix( Sint64 value ) const;
 
 private:
 

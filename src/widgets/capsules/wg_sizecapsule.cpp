@@ -36,37 +36,37 @@ WgSizeCapsule::~WgSizeCapsule()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSizeCapsule::IsInstanceOf( const char * pClassName ) const
+bool WgSizeCapsule::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgCapsule::IsInstanceOf(pClassName);
+	return WgCapsule::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSizeCapsule::ClassName( void ) const
+const char * WgSizeCapsule::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSizeCapsulePtr WgSizeCapsule::Cast( const WgObjectPtr& pObject )
+WgSizeCapsulePtr WgSizeCapsule::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSizeCapsulePtr( static_cast<WgSizeCapsule*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSizeCapsulePtr( static_cast<WgSizeCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetPreferredSize() _____________________________________________________
+//____ setPreferredSize() _____________________________________________________
 
-void WgSizeCapsule::SetPreferredSize( WgSize size )
+void WgSizeCapsule::setPreferredSize( WgSize size )
 {
 	if( size != m_preferred )
 	{
@@ -75,9 +75,9 @@ void WgSizeCapsule::SetPreferredSize( WgSize size )
 	}
 }
 
-//____ SetSizes() _____________________________________________________________
+//____ setSizes() _____________________________________________________________
 
-void WgSizeCapsule::SetSizes( WgSize min, WgSize preferred, WgSize max )
+void WgSizeCapsule::setSizes( WgSize min, WgSize preferred, WgSize max )
 {
 	m_min = min;
 	m_preferred = preferred;
@@ -85,9 +85,9 @@ void WgSizeCapsule::SetSizes( WgSize min, WgSize preferred, WgSize max )
 	_requestResize();
 }
 
-//____ SetMinSize() ___________________________________________________________
+//____ setMinSize() ___________________________________________________________
 
-void WgSizeCapsule::SetMinSize( WgSize size )
+void WgSizeCapsule::setMinSize( WgSize size )
 {
 	if( size != m_min )
 	{
@@ -96,9 +96,9 @@ void WgSizeCapsule::SetMinSize( WgSize size )
 	}
 }
 
-//____ SetMaxSize() ___________________________________________________________
+//____ setMaxSize() ___________________________________________________________
 
-void WgSizeCapsule::SetMaxSize( WgSize size )
+void WgSizeCapsule::setMaxSize( WgSize size )
 {
 	if( size != m_max )
 	{
@@ -107,44 +107,44 @@ void WgSizeCapsule::SetMaxSize( WgSize size )
 	}
 }
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 
-WgSize WgSizeCapsule::PreferredSize() const 
+WgSize WgSizeCapsule::preferredSize() const 
 {
 	if( m_hook._widget() )
 	{
-		WgSize pref = m_hook._widget()->PreferredSize();
+		WgSize pref = m_hook._widget()->preferredSize();
 
 		if( m_preferred.w != 0 )
 		{
 			pref.w = m_preferred.w;
 			if( m_pScaler )
-				pref.w = (int) (pref.w * m_pScaler->ScaleX());
+				pref.w = (int) (pref.w * m_pScaler->scaleX());
 		}
 		if( m_preferred.h != 0 )
 		{
 			pref.h = m_preferred.h;
 			if( m_pScaler )
-				pref.h = (int) (pref.h * m_pScaler->ScaleY());
+				pref.h = (int) (pref.h * m_pScaler->scaleY());
 		}
 
 		// Constrain against min/max, taking MatchingWidth/MatchingHeight into account.
 		//TODO: Check so we don't have any corner cases that breaks the constraints and
 		// and that priorities between preferred height/width are reasonable.
 
-		WgSize min = MinSize();
-		WgSize max = MaxSize();
+		WgSize min = minSize();
+		WgSize max = maxSize();
 
 		if( pref.w < min.w )
 		{
 			pref.w = min.w;
-			pref.h = MatchingHeight(pref.w);
+			pref.h = matchingHeight(pref.w);
 		}
 
 		if( pref.h < min.h )
 		{
 			pref.h = min.h;
-			pref.w = MatchingWidth(pref.h);
+			pref.w = matchingWidth(pref.h);
 			if( pref.w < min.w )
 				pref.w = min.w;
 		}
@@ -156,7 +156,7 @@ WgSize WgSizeCapsule::PreferredSize() const
 			else
 			{
 				pref.w = max.w;
-				pref.h = MatchingHeight(pref.w);
+				pref.h = matchingHeight(pref.w);
 				if( pref.h > max.h )
 					pref.h = max.h;
 			}
@@ -168,7 +168,7 @@ WgSize WgSizeCapsule::PreferredSize() const
 			else
 			{
 				pref.h = max.h;
-				pref.w = MatchingWidth(pref.h);
+				pref.w = matchingWidth(pref.h);
 				if( pref.w > max.w )
 					pref.w = max.w;
 			}
@@ -180,86 +180,86 @@ WgSize WgSizeCapsule::PreferredSize() const
 		WgSize pref = m_preferred;
 		if( m_pScaler )
 		{
-			pref.w = (int) (pref.w * m_pScaler->ScaleX());
-			pref.h = (int) (pref.h * m_pScaler->ScaleY());
+			pref.w = (int) (pref.w * m_pScaler->scaleX());
+			pref.h = (int) (pref.h * m_pScaler->scaleY());
 		}
 		return pref;
 	}
 }
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 
-WgSize WgSizeCapsule::MinSize() const 
+WgSize WgSizeCapsule::minSize() const 
 {
 
 	if( m_hook._widget() )
-		return WgSize::Max(m_min,m_hook._widget()->MinSize());
+		return WgSize::max(m_min,m_hook._widget()->minSize());
 	else
 		return m_min;
 }
 
-//____ MaxSize() ______________________________________________________________
+//____ maxSize() ______________________________________________________________
 
-WgSize WgSizeCapsule::MaxSize() const 
+WgSize WgSizeCapsule::maxSize() const 
 {
 	if( m_hook._widget() )
-		return WgSize::Min(m_max,m_hook._widget()->MaxSize());
+		return WgSize::min(m_max,m_hook._widget()->maxSize());
 	else
 		return m_max; 
 }
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 
-int WgSizeCapsule::MatchingHeight( int width ) const
+int WgSizeCapsule::matchingHeight( int width ) const
 {
 	if( m_preferred.h != 0 )
 	{
 		int h = m_preferred.h;
 		
 		if( m_pScaler )
-			h = (int) (h * m_pScaler->ScaleY() );
+			h = (int) (h * m_pScaler->scaleY() );
 
 		if( m_hook._widget() )
 		{
-			int max = m_hook._widget()->MaxSize().h;
-			int min = m_hook._widget()->MinSize().h;
-			WG_LIMIT( h, min, max );
+			int max = m_hook._widget()->maxSize().h;
+			int min = m_hook._widget()->minSize().h;
+			LIMIT( h, min, max );
 		}
 		return h;
 	}
 	else if( m_hook._widget() )
 	{
-		int h = m_hook._widget()->MatchingHeight(width);
-		WG_LIMIT( h, m_min.h, m_max.h );
+		int h = m_hook._widget()->matchingHeight(width);
+		LIMIT( h, m_min.h, m_max.h );
 		return h;
 	}
 	else
 		return m_min.h;
 }
 
-//____ MatchingWidth() _______________________________________________________
+//____ matchingWidth() _______________________________________________________
 
-int WgSizeCapsule::MatchingWidth( int height ) const
+int WgSizeCapsule::matchingWidth( int height ) const
 {
 	if( m_preferred.w != 0 )
 	{
 		int w = m_preferred.w;		
 
 		if( m_pScaler )
-			w = (int) (w * m_pScaler->ScaleX() );
+			w = (int) (w * m_pScaler->scaleX() );
 
 		if( m_hook._widget() )
 		{
-			int max = m_hook._widget()->MaxSize().w;
-			int min = m_hook._widget()->MinSize().w;
-			WG_LIMIT( w, min, max );
+			int max = m_hook._widget()->maxSize().w;
+			int min = m_hook._widget()->minSize().w;
+			LIMIT( w, min, max );
 		}
 		return w;
 	}
 	else if( m_hook._widget() )
 	{
-		int w = m_hook._widget()->MatchingWidth(height);
-		WG_LIMIT( w, m_min.w, m_max.w );
+		int w = m_hook._widget()->matchingWidth(height);
+		LIMIT( w, m_min.w, m_max.w );
 		return w;
 	}
 	else

@@ -43,37 +43,37 @@ WgHook::~WgHook()
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgHook::IsInstanceOf( const char * pClassName ) const
+bool WgHook::isInstanceOf( const char * pClassName ) const
 { 
 	return (pClassName==CLASSNAME);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgHook::ClassName( void ) const
+const char * WgHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgHookPtr WgHook::Cast( const WgHookPtr& pHook )
+WgHookPtr WgHook::cast( const WgHookPtr& pHook )
 {
 	return pHook;
 }
 
-//____ Widget() _______________________________________________________________
+//____ widget() _______________________________________________________________
 
-WgWidgetPtr WgHook::Widget() const
+WgWidgetPtr WgHook::widget() const
 { 
 	return m_pWidget; 
 }
 
-//____ Parent() _______________________________________________________________
+//____ parent() _______________________________________________________________
 
-WgContainerPtr WgHook::Parent() const 
+WgContainerPtr WgHook::parent() const 
 { 
 	return _parent(); 
 }
@@ -113,19 +113,19 @@ void WgHook::_relinkWidget()
 
 bool WgHook::_requestFocus()
 {
-	return Parent()->_focusRequested(this, m_pWidget);
+	return parent()->_focusRequested(this, m_pWidget);
 }
 
 //____ _releaseFocus() _________________________________________________________
 
 bool WgHook::_releaseFocus()
 {
-	return Parent()->_focusReleased(this, m_pWidget);
+	return parent()->_focusReleased(this, m_pWidget);
 }
 
-//____ Root() _________________________________________________________________
+//____ root() _________________________________________________________________
 
-WgRootPanelPtr WgHook::Root() const
+WgRootPanelPtr WgHook::root() const
 {
 	return _root();
 }

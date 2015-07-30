@@ -45,9 +45,9 @@ class WgKeyFrame : public WgLink
 {
 	friend class WgAnim;
 public:
-	bool	SetDuration( int ticks );
-	int		Duration( void ) { return m_duration; };
-	int		Timestamp( void ) { return m_timestamp; };
+	bool	setDuration( int ticks );
+	int		duration( void ) { return m_duration; };
+	int		timestamp( void ) { return m_timestamp; };
 
 protected:
 	int		m_timestamp;
@@ -66,23 +66,23 @@ class WgAnim : public WgObject
 	friend class WgKeyFrame;
 
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgAnimPtr	Cast( const WgObjectPtr& pObject );
+	static WgAnimPtr	cast( const WgObjectPtr& pObject );
 
-	bool				SetPlayMode( WgAnimMode mode );
-	bool				SetTimeScaler( float scale );
+	bool				setPlayMode( WgAnimMode mode );
+	bool				setTimeScaler( float scale );
 
-	bool				DeleteKeyFrame( int pos );
-	bool				DeleteKeyFrame( WgKeyFrame * pKeyFrame );
-	void				Clear( void ) { m_keyframes.Clear(); };
+	bool				deleteKeyFrame( int pos );
+	bool				deleteKeyFrame( WgKeyFrame * pKeyFrame );
+	void				clear( void ) { m_keyframes.clear(); };
 
-	int					Duration( void ) { return m_duration; };
-	WgAnimMode			PlayMode( void ) { return m_playMode; };
-	float				TimeScaler( void ) { return m_scale; };
-	int					DurationScaled( void ) { return (int) (m_duration * m_scale); };
-	int					TimeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
+	int					duration( void ) { return m_duration; };
+	WgAnimMode			playMode( void ) { return m_playMode; };
+	float				timeScaler( void ) { return m_scale; };
+	int					durationScaled( void ) { return (int) (m_duration * m_scale); };
+	int					timeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
 
 protected:
 	WgAnim();
@@ -97,8 +97,8 @@ protected:
 
 	// Meant to be overloaded with public methods returning right type.
 
-	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.First();};
-	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.Last();};
+	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.first();};
+	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.last();};
 
 	//
 

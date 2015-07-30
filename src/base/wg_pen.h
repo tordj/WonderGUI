@@ -57,62 +57,62 @@ public:
 	WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
 	~WgPen() {}
 
-	void					SetClipRect( const WgRect& clip );
-	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
+	void					setClipRect( const WgRect& clip );
+	inline void				setDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
 
-	void					SetOrigo( const WgCoord& pos ) { m_origo = pos; }
+	void					setOrigo( const WgCoord& pos ) { m_origo = pos; }
 
-	bool					SetAttributes( const WgTextAttr& attr );
-	bool					SetSize( int size );
-	void					SetFont( const WgFontPtr& pFont );
-	void					SetStyle( WgFontAlt style );
-	void					SetColor( WgColor color );
-//	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
-
-
-	inline void				SetPos( const WgCoord& pos ) { m_pos = pos; }
-	inline void				SetPosX( int x ) { m_pos.x = x; }
-	inline void				SetPosY( int y ) { m_pos.y = y; }
-
-	inline void				Move( const WgCoord& pos ) { m_pos += pos; }
-	inline void				MoveX( int x ) { m_pos.x += x; }
-	inline void				MoveY( int y ) { m_pos.y += y; }
+	bool					setAttributes( const WgTextAttr& attr );
+	bool					setSize( int size );
+	void					setFont( const WgFontPtr& pFont );
+	void					setStyle( WgFontAlt style );
+	void					setColor( WgColor color );
+//	void					setCharVisibility( int visibilityFlags );		// We need something better here...
 
 
-	void					SetTab( int width ) { m_tabWidth = width; }
-	bool					SetChar( Uint32 chr );
-	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.SetAdvance(0); }
-	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->GetKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
+	inline void				setPos( const WgCoord& pos ) { m_pos = pos; }
+	inline void				setPosX( int x ) { m_pos.x = x; }
+	inline void				setPosY( int y ) { m_pos.y = y; }
 
-	inline void				AdvancePos() { m_pos.x += m_pGlyph->Advance(); }							///< Advances position past current character.
-	inline void				AdvancePosMonospaced() { m_pos.x += m_pGlyphs->GetMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
-	void					AdvancePosCursor( const WgCaretInstance& instance );
-
-	inline WgGlyphPtr		GetGlyph() const { return m_pGlyph; }
-	inline WgCoord			GetPos() const { return m_pos; }
-	inline int				GetPosX() const { return m_pos.x; }
-	inline int				GetPosY() const { return m_pos.y; }
-
-//	inline WgCoord			GetBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
-//	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
-//	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
-
-	inline const WgRect&	GetClipRect() const { return m_clipRect; }
-	inline bool				HasClipRect() const { return m_bClip; }
-
-	inline WgFontPtr		GetFont() const { return m_pFont; }
-	inline int				GetSize() const { return m_size; }
-	inline WgFontAlt		GetStyle() const { return m_style; }
-	inline WgColor			GetColor() const { return m_color; }
-	inline WgGlyphsetPtr	GetGlyphset() const { return m_pGlyphs; }
+	inline void				move( const WgCoord& pos ) { m_pos += pos; }
+	inline void				moveX( int x ) { m_pos.x += x; }
+	inline void				moveY( int y ) { m_pos.y += y; }
 
 
-	inline int				GetLineSpacing() const { return m_pGlyphs->GetLineSpacing(m_size); }
-	inline int				GetLineHeight() const { return m_pGlyphs->GetHeight(m_size); }
-	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
+	void					setTab( int width ) { m_tabWidth = width; }
+	bool					setChar( Uint32 chr );
+	void					flushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.setAdvance(0); }
+	void					applyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->getKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
 
-	void					BlitChar() const;
-	bool					BlitCursor( const WgCaretInstance& instance ) const;
+	inline void				advancePos() { m_pos.x += m_pGlyph->advance(); }							///< Advances position past current character.
+	inline void				advancePosMonospaced() { m_pos.x += m_pGlyphs->getMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
+	void					advancePosCursor( const WgCaretInstance& instance );
+
+	inline WgGlyphPtr		getGlyph() const { return m_pGlyph; }
+	inline WgCoord			getPos() const { return m_pos; }
+	inline int				getPosX() const { return m_pos.x; }
+	inline int				getPosY() const { return m_pos.y; }
+
+//	inline WgCoord			getBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->bearingX(), m_pos.y + m_pGlyph->bearingY() ); }
+//	inline int				getBlitPosX() const { return m_pos.x + m_pGlyph->bearingX(); }
+//	inline int				getBlitPosY() const { return m_pos.y + m_pGlyph->bearingY(); }
+
+	inline const WgRect&	getClipRect() const { return m_clipRect; }
+	inline bool				hasClipRect() const { return m_bClip; }
+
+	inline WgFontPtr		getFont() const { return m_pFont; }
+	inline int				getSize() const { return m_size; }
+	inline WgFontAlt		getStyle() const { return m_style; }
+	inline WgColor			getColor() const { return m_color; }
+	inline WgGlyphsetPtr	getGlyphset() const { return m_pGlyphs; }
+
+
+	inline int				getLineSpacing() const { return m_pGlyphs->getLineSpacing(m_size); }
+	inline int				getLineHeight() const { return m_pGlyphs->getHeight(m_size); }
+	inline int				getBaseline() const { return m_pGlyphs->getBaseline(m_size); }
+
+	void					blitChar() const;
+	bool					blitCursor( const WgCaretInstance& instance ) const;
 
 private:
 	void _init();
@@ -123,9 +123,9 @@ private:
 	{
 	public:
 		DummyGlyph() : WgGlyph( 0, 0, 0 ) {}
-		const WgGlyphBitmap * GetBitmap() { return 0; }
+		const WgGlyphBitmap * getBitmap() { return 0; }
 
-		void SetAdvance( int advance ) { m_advance = advance; }
+		void setAdvance( int advance ) { m_advance = advance; }
 	};
 
 	//
@@ -156,7 +156,7 @@ private:
 	WgGfxDevice *	m_pDevice;		// Device used for blitting.
 
 	bool			m_bClip;		// Set if we have a clipping rectangle.
-	WgRect			m_clipRect;		// Clipping rectangle used for ClipBlit().
+	WgRect			m_clipRect;		// Clipping rectangle used for clipBlit().
 
 
 };

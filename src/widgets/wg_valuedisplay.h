@@ -39,12 +39,12 @@ typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
 class WgValueDisplay : public WgWidget, protected WgModValueHolder
 {
 public:
-	static WgValueDisplayPtr	Create() { return WgValueDisplayPtr(new WgValueDisplay()); }
+	static WgValueDisplayPtr	create() { return WgValueDisplayPtr(new WgValueDisplay()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueDisplayPtr	Cast( const WgObjectPtr& pObject );
+	static WgValueDisplayPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces _______________________________________
 
@@ -52,7 +52,7 @@ public:
 
 	//____ Methods __________________________________________
 
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgValueDisplay();

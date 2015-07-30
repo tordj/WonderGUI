@@ -44,65 +44,65 @@ WgTextDisplay::~WgTextDisplay()
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgTextDisplay::IsInstanceOf( const char * pClassName ) const
+bool WgTextDisplay::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgTextDisplay::ClassName( void ) const
+const char * WgTextDisplay::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTextDisplayPtr WgTextDisplay::Cast( const WgObjectPtr& pObject )
+WgTextDisplayPtr WgTextDisplay::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ MatchingWidth() _______________________________________________________
+//____ matchingWidth() _______________________________________________________
 
-int WgTextDisplay::MatchingWidth( int height ) const
+int WgTextDisplay::matchingWidth( int height ) const
 {
-	int textWidth = m_text.MatchingWidth( height );
+	int textWidth = m_text.matchingWidth( height );
 
 	if( m_pSkin )
-		textWidth += m_pSkin->ContentPadding().w;
+		textWidth += m_pSkin->contentPadding().w;
 
 	return textWidth;
 }
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 
-int WgTextDisplay::MatchingHeight( int width ) const
+int WgTextDisplay::matchingHeight( int width ) const
 {
-	int textHeight = m_text.MatchingHeight( width );
+	int textHeight = m_text.matchingHeight( width );
 
 	if( m_pSkin )
-		textHeight += m_pSkin->ContentPadding().h;
+		textHeight += m_pSkin->contentPadding().h;
 
 	return textHeight;
 }
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgTextDisplay::PreferredSize() const
+WgSize WgTextDisplay::preferredSize() const
 {
-	WgSize contentSize = m_text.PreferredSize();
+	WgSize contentSize = m_text.preferredSize();
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(contentSize);
+		return m_pSkin->sizeForContent(contentSize);
 	else
 		return contentSize;
 }
@@ -111,7 +111,7 @@ WgSize WgTextDisplay::PreferredSize() const
 
 WgPointerStyle WgTextDisplay::PointerStyle() const
 {
-	if( m_text.GetMarkedLink() )
+	if( m_text.getMarkedLink() )
 		return WG_POINTER_HAND;
 
 	return m_pointerStyle;
@@ -121,10 +121,10 @@ WgPointerStyle WgTextDisplay::PointerStyle() const
 
 WgString WgTextDisplay::TooltipString() const
 {
-	if( !m_tooltip.IsEmpty() )
+	if( !m_tooltip.isEmpty() )
 		return m_tooltip;
 	else
-		return m_text.Tooltip();
+		return m_text.tooltip();
 }
 
 //____ _onRender() ________________________________________________________
@@ -135,11 +135,11 @@ void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas, m_state);
+		canvas = m_pSkin->contentRect(_canvas, m_state);
 	else
 		canvas = _canvas;
 
-	m_text.OnRender(pDevice, canvas, _clip);
+	m_text.onRender(pDevice, canvas, _clip);
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -156,7 +156,7 @@ void WgTextDisplay::_onRefresh( void )
 void WgTextDisplay::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
-	m_text.SetState(m_state);
+	m_text.setState(m_state);
 	_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 }
 
@@ -167,11 +167,11 @@ void WgTextDisplay::_onMsg( const WgMsgPtr& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 /*
-	WgRect canvas = Geo();
+	WgRect canvas = geo();
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(canvas, m_state);
+		canvas = m_pSkin->contentRect(canvas, m_state);
 
-	m_text.OnMsg( pMsg, pHandler, canvas );
+	m_text.onMsg( pMsg, pHandler, canvas );
 */
 }
 
@@ -200,9 +200,9 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 
 	WgSize textSize = size;
 	if( m_pSkin )
-		textSize -= m_pSkin->ContentPadding();
+		textSize -= m_pSkin->contentPadding();
 
-	m_text.OnNewSize( textSize );
+	m_text.onNewSize( textSize );
 }
 
 //____ _onFieldDirty() _________________________________________________________

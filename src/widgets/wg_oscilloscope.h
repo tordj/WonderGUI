@@ -40,12 +40,12 @@ typedef	WgWeakPtr<WgOscilloscope,WgWidgetWeakPtr>	WgOscilloscopeWeakPtr;
 class WgOscilloscope : public WgWidget
 {
 public:
-	static WgOscilloscopePtr	Create() { return WgOscilloscopePtr(new WgOscilloscope()); }
+	static WgOscilloscopePtr	create() { return WgOscilloscopePtr(new WgOscilloscope()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgOscilloscopePtr	Cast( const WgObjectPtr& pObject );
+	static WgOscilloscopePtr	cast( const WgObjectPtr& pObject );
 
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
@@ -60,7 +60,7 @@ public:
 	void	AddMarker( int xOfs, float yOfs );
 	void	SetMarkerSkin( const WgSkinPtr& pSkin );
 
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgOscilloscope();

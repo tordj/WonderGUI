@@ -5,15 +5,15 @@
 #include <wg_widget.h>
 #include <wg_panel.h>
 
-//____ MarkTestStretchRect() __________________________________________________
+//____ markTestStretchRect() __________________________________________________
 
-bool WgUtil::MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
+bool WgUtil::markTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
 {
 	// Sanity check & shortcuts.
-	if( !pSurface || !area.Contains(ofs.x,ofs.y) || source.IsEmpty() || area.IsEmpty() || opacityTreshold > 255 )
+	if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
 		return false;
 
-	if( pSurface->IsOpaque() || opacityTreshold <= 0 )
+	if( pSurface->isOpaque() || opacityTreshold <= 0 )
 		return true;
 
 	// Make cordinates relative area.
@@ -28,16 +28,16 @@ bool WgUtil::MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, con
 
 	// Do alpha test
 
-	int alpha = pSurface->Alpha(source.x+ofs.x, source.y+ofs.y);
+	int alpha = pSurface->alpha(source.x+ofs.x, source.y+ofs.y);
 
 	return (alpha >= opacityTreshold);
 }
 
 
 
-//____ PixelTypeToFormat() _____________________________________________________
+//____ pixelTypeToFormat() _____________________________________________________
 
-bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
+bool WgUtil::pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 {
 	switch( type )
 	{
@@ -103,9 +103,9 @@ bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
 	}
 }
 
-//____ SizeFromPolicy() __________________________________________________________
+//____ sizeFromPolicy() __________________________________________________________
 
-int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy )
+int WgUtil::sizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy )
 {
 	switch( policy )
 	{
@@ -123,9 +123,9 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 	return defaultSize;
 }
 
-//____ Checksum8::Add() ________________________________________________________
+//____ Checksum8::add() ________________________________________________________
 
-void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )
+void WgUtil::Checksum8::add( const void * pData, Uint32 nBytes )
 {
 	Uint32 x = remainder;
 
@@ -137,9 +137,9 @@ void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )
 
 
 
-//____ DecodeBase64() _________________________________________________________
+//____ decodeBase64() _________________________________________________________
 
-Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
+Uint32 WgUtil::decodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 {
 	const static unsigned char conv[256] =
 					{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -218,9 +218,9 @@ Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
 	return nChar;
 }
 
-//____ OrigoToOfs() ________________________________________________________
+//____ origoToOfs() ________________________________________________________
 
-WgCoord WgUtil::OrigoToOfs( WgOrigo origo, WgSize base )
+WgCoord WgUtil::origoToOfs( WgOrigo origo, WgSize base )
 {
 	switch( origo )
 	{
@@ -254,9 +254,9 @@ WgCoord WgUtil::OrigoToOfs( WgOrigo origo, WgSize base )
 	}
 }
 
-//____ OrigoToRect() ________________________________________________________
+//____ origoToRect() ________________________________________________________
 
-WgRect WgUtil::OrigoToRect( WgOrigo origo, WgSize base, WgSize rect )
+WgRect WgUtil::origoToRect( WgOrigo origo, WgSize base, WgSize rect )
 {
 	switch( origo )
 	{

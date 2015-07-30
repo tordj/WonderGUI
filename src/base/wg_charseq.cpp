@@ -128,13 +128,13 @@ WgCharSeq::WgCharSeq( const WgChar * pChar, int len )
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
 {
 	m_type		= WGCHAR;
-	m_pChar		= (void *) pBuffer->Chars();
-	m_nbChars	= pBuffer->NbChars();
+	m_pChar		= (void *) pBuffer->chars();
+	m_nbChars	= pBuffer->nbChars();
 }
 
 WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
 {
-	int realNbChars = (int) pBuffer->NbChars();
+	int realNbChars = (int) pBuffer->nbChars();
 	if( ofs + len > realNbChars )
 	{
 		if( ofs > realNbChars )
@@ -143,20 +143,20 @@ WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
 	}
 
 	m_type		= WGCHAR;
-	m_pChar		= (void *)  (pBuffer->Chars() + ofs);
+	m_pChar		= (void *)  (pBuffer->chars() + ofs);
 	m_nbChars	= len;
 }
 
 WgCharSeq::WgCharSeq( const WgString& str )
 {
 	m_type		= WGCHAR;
-	m_pChar		= (void *) str.Chars();
-	m_nbChars	= str.Length();
+	m_pChar		= (void *) str.chars();
+	m_nbChars	= str.length();
 }
 
 WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
 {
-	int realNbChars = (int) str.Length();
+	int realNbChars = (int) str.length();
 	if( ofs + len > realNbChars )
 	{
 		if( ofs > realNbChars )
@@ -165,7 +165,7 @@ WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
 	}
 
 	m_type		= WGCHAR;
-	m_pChar		= (void *) (str.Chars() + ofs);
+	m_pChar		= (void *) (str.chars() + ofs);
 	m_nbChars	= len;
 }
 
@@ -222,9 +222,9 @@ WgCharSeq::WgCharSeq( const WgCharSeq& seq, int ofs, int len )
 
 
 
-//____ LengthUTF8() ___________________________________________________________
+//____ lengthUtf8() ___________________________________________________________
 
-int WgCharSeq::LengthUTF8() const
+int WgCharSeq::lengthUtf8() const
 {
 	switch( m_type )
 	{
@@ -250,9 +250,9 @@ int WgCharSeq::LengthUTF8() const
 }
 
 
-//____ GetNbLines() ____________________________________________________________
+//____ getNbLines() ____________________________________________________________
 
-int WgCharSeq::GetNbLines() const
+int WgCharSeq::getNbLines() const
 {
 	int nbLines = 1;		// We always have at least one line...
 
@@ -260,7 +260,7 @@ int WgCharSeq::GetNbLines() const
 	{
 		case WGCHAR:
 			for( int i = 0 ; i < m_nbChars ; i++ )
-				if( ((const WgChar*)m_pChar)[i].IsEndOfLine() )
+				if( ((const WgChar*)m_pChar)[i].isEndOfLine() )
 					nbLines++;
 			break;
 		case UTF8:
@@ -292,21 +292,21 @@ int WgCharSeq::GetNbLines() const
 }
 
 
-//___ CopyTo() _________________________________________________________________
+//___ copyTo() _________________________________________________________________
 
-void WgCharSeq::CopyTo( WgChar * pDest ) const
+void WgCharSeq::copyTo( WgChar * pDest ) const
 {
 	switch( m_type )
 	{
 		case WGCHAR:
-			WgTextTool::CopyChars( (WgChar*) m_pChar, pDest, m_nbChars );
+			WgTextTool::copyChars( (WgChar*) m_pChar, pDest, m_nbChars );
 			break;
 
 		case UTF8:
 		{
 			const char * pSrc = (const char*) m_pChar;
 
-			WgTextTool::DerefProps( pDest, m_nbChars );
+			WgTextTool::derefProps( pDest, m_nbChars );
 			WgTextTool::readString( pSrc, pDest, m_nbChars );
 			break;
 		}
@@ -314,28 +314,28 @@ void WgCharSeq::CopyTo( WgChar * pDest ) const
 		{
 			const Uint16 * pSrc = (const Uint16*) m_pChar;
 
-			WgTextTool::DerefProps( pDest, m_nbChars );
+			WgTextTool::derefProps( pDest, m_nbChars );
 			WgTextTool::readString( pSrc, pDest, m_nbChars );
 			break;
 		}
 		case ESCAPED_UTF8:
 		{
 			const char * pSrc = (const char*) m_pChar;
-			WgTextTool::DerefProps( pDest, m_nbChars );
+			WgTextTool::derefProps( pDest, m_nbChars );
 			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars );
 			break;
 		}
 		case ESCAPED_UTF16:
 		{
 			const Uint16 * pSrc = (const Uint16*) m_pChar;
-			WgTextTool::DerefProps( pDest, m_nbChars );
+			WgTextTool::derefProps( pDest, m_nbChars );
 			WgTextTool::readFormattedString( pSrc, pDest, m_nbChars );
 			break;
 		}
 		case MAP8:
 		{
 			const char * pSrc = (const char*) m_pChar;
-			WgTextTool::DerefProps( pDest, m_nbChars );
+			WgTextTool::derefProps( pDest, m_nbChars );
 			WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, pDest, m_nbChars );
 			break;
 		}
@@ -345,9 +345,9 @@ void WgCharSeq::CopyTo( WgChar * pDest ) const
 	}
 }
 
-//____ GetWgChars() ______________________________________________________________
+//____ getWgChars() ______________________________________________________________
 
-const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
+const WgCharSeq::WgCharBasket WgCharSeq::getWgChars() const
 {
 	WgCharBasket	basket;
 
@@ -443,9 +443,9 @@ const WgCharSeq::WgCharBasket WgCharSeq::GetWgChars() const
 
 
 
-//____ GetUnicode() ____________________________________________________________
+//____ getUnicode() ____________________________________________________________
 
-const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
+const WgCharSeq::UnicodeBasket WgCharSeq::getUnicode() const
 {
 	UnicodeBasket	basket;
 
@@ -455,7 +455,7 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 		{
 			Uint16 * p = new Uint16[m_nbChars];
 			for( int i = 0 ; i < m_nbChars ; i++ )
-				p[i] = ((WgChar*)m_pChar)[i].Glyph();
+				p[i] = ((WgChar*)m_pChar)[i].getGlyph();
 			basket.ptr = p;
 			basket.length = m_nbChars;
 			basket.bIsOwner = true;
@@ -518,9 +518,9 @@ const WgCharSeq::UnicodeBasket WgCharSeq::GetUnicode() const
 	}
 }
 
-//____ GetStdWstring() ____________________________________________________________
+//____ getStdWstring() ____________________________________________________________
 
-std::wstring WgCharSeq::GetStdWstring() const
+std::wstring WgCharSeq::getStdWstring() const
 {
 	std::wstring str;
 
@@ -530,7 +530,7 @@ std::wstring WgCharSeq::GetStdWstring() const
 		{
 			Uint16 * p = new Uint16[m_nbChars];
 			for( int i = 0 ; i < m_nbChars ; i++ )
-				p[i] = ((WgChar*)m_pChar)[i].Glyph();
+				p[i] = ((WgChar*)m_pChar)[i].getGlyph();
 			str.assign( (const wchar_t *)p, m_nbChars );
 			delete [] p;
 			return str;
@@ -583,9 +583,9 @@ std::wstring WgCharSeq::GetStdWstring() const
 	}
 }
 
-//____ GetUTF8() _______________________________________________________________
+//____ getUtf8() _______________________________________________________________
 
-const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
+const WgCharSeq::UTF8Basket WgCharSeq::getUtf8() const
 {
 	UTF8Basket	basket;
 
@@ -662,9 +662,9 @@ const WgCharSeq::UTF8Basket WgCharSeq::GetUTF8() const
 	}
 }
 
-//____ GetStdString() _________________________________________________________
+//____ getStdString() _________________________________________________________
 
-std::string WgCharSeq::GetStdString() const
+std::string WgCharSeq::getStdString() const
 {
 //	char	temp[512];
 
@@ -738,7 +738,7 @@ WgCharSeq::WgCharBasket::~WgCharBasket()
 {
 	if( bIsOwner )
 	{
-		WgTextTool::DerefProps( (WgChar*) ptr, length );
+		WgTextTool::derefProps( (WgChar*) ptr, length );
 		delete [] (char*) ptr;
 	}
 }

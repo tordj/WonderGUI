@@ -29,47 +29,47 @@ const char WgInputHandler::CLASSNAME[] = {"InputHandler"};
 
 WgInputHandler::WgInputHandler()
 {
-	m_tickRoute = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );		
+	m_tickRoute = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );		
 }
 
 //____ Destructor _____________________________________________________________
 
 WgInputHandler::~WgInputHandler()
 {
-	WgBase::MsgRouter()->DeleteRoute(m_tickRoute);
+	WgBase::msgRouter()->deleteRoute(m_tickRoute);
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgInputHandler::IsInstanceOf( const char * pClassName ) const
+bool WgInputHandler::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgInputHandler::ClassName( void ) const
+const char * WgInputHandler::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgInputHandlerPtr WgInputHandler::Cast( const WgObjectPtr& pObject )
+WgInputHandlerPtr WgInputHandler::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgInputHandlerPtr( static_cast<WgInputHandler*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgInputHandlerPtr( static_cast<WgInputHandler*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetPointer() ___________________________________________________________
+//____ setPointer() ___________________________________________________________
 
 
-void WgInputHandler::SetPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
+void WgInputHandler::setPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
 {
 	WgCoord	prevPointerPos = m_pointerPos;
 	
@@ -79,10 +79,10 @@ void WgInputHandler::SetPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
 	WgWidgetPtr pNowMarked = 0;
 	WgWidgetPtr pWidgetTarget = 0;
 
-	if( pRoot && pRoot->Geo().Contains( pos ) )
+	if( pRoot && pRoot->geo().contains( pos ) )
 	{
-		m_pMarkedRoot = pRoot.RawPtr();
-		pWidgetTarget = pRoot->FindWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
+		m_pMarkedRoot = pRoot.rawPtr();
+		pWidgetTarget = pRoot->findWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 	}
 
 	// Figure out which button of currently pressed has been pressed the longest.
@@ -91,42 +91,42 @@ void WgInputHandler::SetPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
 	int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
 	for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
-		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressMsgs[i]->Timestamp() < m_pLatestPressMsgs[button]->Timestamp()) )
+		if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressMsgs[i]->timestamp() < m_pLatestPressMsgs[button]->timestamp()) )
 			button = i;
 	}
 
 	// We are only marking the Widget if no mouse button is pressed or the first pressed button
 	// was pressed on it.
 
-	if( button == 0 || pWidgetTarget == m_latestPressWidgets[button].RawPtr() )
+	if( button == 0 || pWidgetTarget == m_latestPressWidgets[button].rawPtr() )
 		pNowMarked = pWidgetTarget;
 
 	// Post Leave events for widgets no longer marked,
 	// Post Enter events for new marked widgets
 	// and Move events for those already marked
 
-	WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.RawPtr() );
+	WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.rawPtr() );
 	
 	if( pFirstAlreadyMarked )
-		WgBase::MsgRouter()->Post( new WgMouseMoveMsg( pFirstAlreadyMarked ) );
+		WgBase::msgRouter()->post( new WgMouseMoveMsg( pFirstAlreadyMarked ) );
 
 	// Copy content of pNowMarked to m_pMarkedWidget
 
-	m_pMarkedWidget = pNowMarked.RawPtr();
+	m_pMarkedWidget = pNowMarked.rawPtr();
 
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 	{
 		if( m_bButtonPressed[i] )
-			WgBase::MsgRouter()->Post( new WgMouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->PointerPos(), prevPointerPos, m_pointerPos ) );
+			WgBase::msgRouter()->post( new WgMouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->pointerPos(), prevPointerPos, m_pointerPos ) );
 	}
 	
 	// Update PointerStyle
 	
 	WgPointerStyle newStyle;
 	
-	if( pNowMarked && pNowMarked->IsEnabled() )
+	if( pNowMarked && pNowMarked->isEnabled() )
 		newStyle = pNowMarked->PointerStyle();
 	else if( button != 0 )
 		newStyle = m_pointerStyle;
@@ -135,7 +135,7 @@ void WgInputHandler::SetPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
 
 	if( newStyle != m_pointerStyle )
 	{
-		WgBase::MsgRouter()->Post( new WgPointerChangeMsg( newStyle ) );
+		WgBase::msgRouter()->post( new WgPointerChangeMsg( newStyle ) );
 		m_pointerStyle = newStyle;
 	}	
 }
@@ -160,14 +160,14 @@ WgWidget * WgInputHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 			m_vEnteredWidgets[ofs] = 0;			
 		}
 		else
-			WgBase::MsgRouter()->Post( new WgMouseEnterMsg( pWidget ) );		
+			WgBase::msgRouter()->post( new WgMouseEnterMsg( pWidget ) );		
 	}
 
 	// Send MouseLeave to those that were left.
 
 	for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
 		if(m_vEnteredWidgets[i] )
-			WgBase::MsgRouter()->Post( new WgMouseLeaveMsg( m_vEnteredWidgets[i].RawPtr()) );
+			WgBase::msgRouter()->post( new WgMouseLeaveMsg( m_vEnteredWidgets[i].rawPtr()) );
 	
 	// Replace the old list with a new one.
 	
@@ -185,7 +185,7 @@ WgWidget * WgInputHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 int WgInputHandler::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
-		if( list[i].RawPtr() == pWidget )
+		if( list[i].rawPtr() == pWidget )
 			return i;
 
 	return -1;
@@ -193,9 +193,9 @@ int WgInputHandler::_widgetPosInList( const WgWidget * pWidget, const std::vecto
 
 
 
-//____ SetButton() _____________________________________________________________
+//____ setButton() _____________________________________________________________
 
-void WgInputHandler::SetButton( WgMouseButton button, bool bPressed )
+void WgInputHandler::setButton( WgMouseButton button, bool bPressed )
 {
 	// Sanity checks
 	
@@ -221,30 +221,30 @@ void WgInputHandler::_processMouseButtonPress( WgMouseButton button )
 
 	// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
 
-	WgWidget * pWidget = m_pMarkedWidget.RawPtr();
+	WgWidget * pWidget = m_pMarkedWidget.rawPtr();
 
 	WgMousePressMsg * pMsg = new WgMousePressMsg( button, pWidget );
-	WgBase::MsgRouter()->Post( pMsg );
+	WgBase::msgRouter()->post( pMsg );
 
 	// Handle possible double-click
 
-	int doubleClickTimeTreshold = WgBase::DoubleClickTimeTreshold();
-	int doubleClickDistanceTreshold = WgBase::DoubleClickDistanceTreshold();
+	int doubleClickTimeTreshold = WgBase::doubleClickTimeTreshold();
+	int doubleClickDistanceTreshold = WgBase::doubleClickDistanceTreshold();
 
 
-	if( m_pLatestPressMsgs[button] && m_pLatestPressMsgs[button]->Timestamp() + doubleClickTimeTreshold > m_timeStamp )
+	if( m_pLatestPressMsgs[button] && m_pLatestPressMsgs[button]->timestamp() + doubleClickTimeTreshold > m_timeStamp )
 	{
-		WgCoord distance = m_pointerPos - m_pLatestPressMsgs[button]->PointerPos();
+		WgCoord distance = m_pointerPos - m_pLatestPressMsgs[button]->pointerPos();
 
 		if( distance.x <= doubleClickDistanceTreshold &&
 			distance.x >= -doubleClickDistanceTreshold &&
 			distance.y <= doubleClickDistanceTreshold &&
 			distance.y >= -doubleClickDistanceTreshold )
 			{
-				if( pWidget && pWidget ==  m_latestPressWidgets[button].RawPtr() )
-					WgBase::MsgRouter()->Post( new WgMouseDoubleClickMsg(button, pWidget) );
+				if( pWidget && pWidget ==  m_latestPressWidgets[button].rawPtr() )
+					WgBase::msgRouter()->post( new WgMouseDoubleClickMsg(button, pWidget) );
 				else
-					WgBase::MsgRouter()->Post( new WgMouseDoubleClickMsg(button) );
+					WgBase::msgRouter()->post( new WgMouseDoubleClickMsg(button) );
 			}
 	}
 
@@ -262,20 +262,20 @@ void WgInputHandler::_processMouseButtonRelease( WgMouseButton button )
 {
 	// Post BUTTON_RELEASE events for widget that was pressed
 
-	WgWidget * pWidget = m_latestPressWidgets[button].RawPtr();
-	bool bIsInside = pWidget ? pWidget->GlobalGeo().Contains( m_pointerPos ) : false;
+	WgWidget * pWidget = m_latestPressWidgets[button].rawPtr();
+	bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 
 	WgMouseReleaseMsg * pMsg = new WgMouseReleaseMsg( button, pWidget, true, bIsInside );
-	WgBase::MsgRouter()->Post( pMsg );
+	WgBase::msgRouter()->post( pMsg );
 
 	// Post click event.
 
 	if( m_bButtonPressed[button] )
 	{
 		if( bIsInside )
-			WgBase::MsgRouter()->Post( new WgMouseClickMsg( button, pWidget ) );
+			WgBase::msgRouter()->post( new WgMouseClickMsg( button, pWidget ) );
 		else
-			WgBase::MsgRouter()->Post( new WgMouseClickMsg( button ) );
+			WgBase::msgRouter()->post( new WgMouseClickMsg( button ) );
 	}
 
 	// Save info for the future
@@ -284,31 +284,31 @@ void WgInputHandler::_processMouseButtonRelease( WgMouseButton button )
 }
 
 
-//____ SetFocused() ____________________________________________________________
+//____ setFocused() ____________________________________________________________
 
-void WgInputHandler::SetFocused( const WgRootPanelPtr& pRoot )
+void WgInputHandler::setFocused( const WgRootPanelPtr& pRoot )
 {
 	
 }
 
 
-//____ SetKey() ________________________________________________________________
+//____ setKey() ________________________________________________________________
 
-void WgInputHandler::SetKey( short nativeKeyCode, bool bPressed )
+void WgInputHandler::setKey( short nativeKeyCode, bool bPressed )
 {
 	
 }
 
-//____ SetWheelRoll() __________________________________________________________
+//____ setWheelRoll() __________________________________________________________
 
-void WgInputHandler::SetWheelRoll( int wheel, int steps )
+void WgInputHandler::setWheelRoll( int wheel, int steps )
 {
 	
 }
 
-//____ OnMsg() _________________________________________________________________
+//____ onMsg() _________________________________________________________________
 
-void WgInputHandler::OnMsg( const WgMsgPtr& pMsg )
+void WgInputHandler::onMsg( const WgMsgPtr& pMsg )
 {
 	
 }

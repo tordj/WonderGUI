@@ -82,36 +82,36 @@ WgMenu::~WgMenu()
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgMenu::IsInstanceOf( const char * pClassName ) const
+bool WgMenu::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgPanel::IsInstanceOf(pClassName);
+	return WgPanel::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgMenu::ClassName( void ) const
+const char * WgMenu::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgMenuPtr WgMenu::Cast( const WgObjectPtr& pObject )
+WgMenuPtr WgMenu::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMenuPtr( static_cast<WgMenu*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMenuPtr( static_cast<WgMenu*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetSkin() __________________________________________________________
+//____ setSkin() __________________________________________________________
 
-bool WgMenu::SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth )
+bool WgMenu::setSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth )
 {
 	m_pSkin			= pSkin;
 
@@ -124,9 +124,9 @@ bool WgMenu::SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowField
 
 }
 
-//____ SetEntrySkin() _________________________________________________________
+//____ setEntrySkin() _________________________________________________________
 
-void WgMenu::SetEntrySkin( const WgSkinPtr& pSkin )
+void WgMenu::setEntrySkin( const WgSkinPtr& pSkin )
 {
 	if( pSkin != m_pEntrySkin )
 	{
@@ -146,9 +146,9 @@ bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& borders )
 	m_sepBorder		= borders;
 
 	if( pSkin )
-		m_sepHeight	= m_pSeparatorSkin->PreferredSize().h + m_sepBorder.Height();
+		m_sepHeight	= m_pSeparatorSkin->preferredSize().h + m_sepBorder.height();
 	else
-		m_sepHeight = m_sepBorder.Height();
+		m_sepHeight = m_sepBorder.height();
 
 	_adjustSize();
 	_requestRender();
@@ -178,12 +178,12 @@ bool WgMenu::SetTextProperties( const WgTextpropPtr& pEntryProp, const WgTextpro
 
 	// We need to modify MinWidth now that fonts might have changed
 
-	WgMenuItem * pItem = m_items.First();
+	WgMenuItem * pItem = m_items.first();
 	while( pItem )
 	{
-		if( pItem->GetType() != SEPARATOR )
+		if( pItem->getType() != SEPARATOR )
 			_calcEntryMinWidth( (WgMenuEntry*) pItem );
-		pItem = pItem->Next();
+		pItem = pItem->next();
 	}
 
 	// Refresh everything affected...
@@ -200,23 +200,23 @@ void WgMenu::_refreshEntryHeight()
 {
 		WgPen		pen;
 		WgTextAttr	attr;
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
+		WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
+		WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
 
-		pen.SetAttributes( attr );
-		int	heightNormal	= pen.GetLineSpacing();
+		pen.setAttributes( attr );
+		int	heightNormal	= pen.getLineSpacing();
 
-		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
-		pen.SetAttributes( attr );
-		int heightMarked	= pen.GetLineSpacing();
+		attr.clear();
+		WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
+		WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
+		pen.setAttributes( attr );
+		int heightMarked	= pen.getLineSpacing();
 
-		attr.Clear();
-		WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop(), WG_STATE_DISABLED );
-		WgTextTool::AddPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
-		pen.SetAttributes( attr );
-		int heightDisabled	= pen.GetLineSpacing();
+		attr.clear();
+		WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_DISABLED );
+		WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
+		pen.setAttributes( attr );
+		int heightDisabled	= pen.getLineSpacing();
 
 		if( m_entryHeight < heightNormal )
 			m_entryHeight = heightNormal;
@@ -230,7 +230,7 @@ void WgMenu::_refreshEntryHeight()
 		//
 
 		if( m_pEntrySkin )
-			m_entryHeight +=  m_pEntrySkin->ContentPadding().h;
+			m_entryHeight +=  m_pEntrySkin->contentPadding().h;
 }
 
 
@@ -292,22 +292,22 @@ int WgMenu::GetEntryHeight() const
 	return m_entryHeight;
 }
 
-//____ AddItem() ______________________________________________________________
+//____ addItem() ______________________________________________________________
 
-int WgMenu::AddItem( WgMenuItem * pItem )
+int WgMenu::addItem( WgMenuItem * pItem )
 {
 	// Calculate minWidth for all derived from ENTRY
 
-	if( pItem->GetType() != SEPARATOR )
+	if( pItem->getType() != SEPARATOR )
 		_calcEntryMinWidth( (WgMenuEntry*) pItem );
 
 	// Let item do what it needs to
 
-	pItem->SetMyMenu( this );
+	pItem->setMyMenu( this );
 
 	// Add the item.
 
-	m_items.PushBack(pItem);
+	m_items.pushBack(pItem);
 	m_nItems++;
 
 	// Refresh what needs to be refreshed...
@@ -324,22 +324,22 @@ int WgMenu::InsertItem( WgMenuItem * pEntry, int pos )
 {
 	// Calculate minWidth for all derived from ENTRY
 
-	if( pEntry->GetType() != SEPARATOR )
+	if( pEntry->getType() != SEPARATOR )
 		_calcEntryMinWidth( (WgMenuEntry*) pEntry );
 
 	// Let item do what it needs to
 
-	pEntry->SetMyMenu( this );
+	pEntry->setMyMenu( this );
 
 	// Add the item.
 
-	WgMenuItem * pPos = m_items.Get(pos);
+	WgMenuItem * pPos = m_items.get(pos);
 	if( pPos )
-		pEntry->MoveBefore(pPos);
+		pEntry->moveBefore(pPos);
 	else
 	{
 		pos = m_nItems;
-		m_items.PushBack(pEntry);
+		m_items.pushBack(pEntry);
 	}
 
 	m_nItems++;
@@ -353,37 +353,37 @@ int WgMenu::InsertItem( WgMenuItem * pEntry, int pos )
 
 }
 
-//____ RemoveItem() ___________________________________________________________
+//____ removeItem() ___________________________________________________________
 
-bool WgMenu::RemoveItem( WgMenuItem * pEntry )
+bool WgMenu::removeItem( WgMenuItem * pEntry )
 {
-	if( !m_items.IsMemberOf(pEntry) )
+	if( !m_items.isMemberOf(pEntry) )
 		return false;
 
-	pEntry->Disconnect();
+	pEntry->disconnect();
 	m_nItems--;
 	_adjustSize();
 	_requestRender();
 	return true;
 }
 
-WgMenuItem* WgMenu::RemoveItem( int pos )
+WgMenuItem* WgMenu::removeItem( int pos )
 {
 	WgMenuItem * pEntry = GetItem(pos);
-	RemoveItem(pEntry);
+	removeItem(pEntry);
 	return pEntry;
 }
 
-//____ RemoveAllItems() _______________________________________________________
+//____ removeAllItems() _______________________________________________________
 
-void WgMenu::RemoveAllItems()
+void WgMenu::removeAllItems()
 {
-	WgMenuItem* pItem = m_items.First();
+	WgMenuItem* pItem = m_items.first();
 	while( pItem )
 	{
-		pItem->SetMyMenu(0);
-		pItem->Disconnect();
-		pItem = m_items.First();
+		pItem->setMyMenu(0);
+		pItem->disconnect();
+		pItem = m_items.first();
 	}
 
 	m_nItems = 0;
@@ -395,7 +395,7 @@ void WgMenu::RemoveAllItems()
 
 bool WgMenu::DeleteItem( WgMenuItem * pEntry )
 {
-	if( !m_items.IsMemberOf(pEntry) )
+	if( !m_items.isMemberOf(pEntry) )
 		return false;
 
 	delete pEntry;
@@ -414,7 +414,7 @@ bool WgMenu::DeleteItem( int pos )
 
 void WgMenu::DeleteAllItems()
 {
-	m_items.Clear();
+	m_items.clear();
 	m_nItems = 0;
 	_adjustSize();
 	_requestRender();
@@ -424,8 +424,8 @@ void WgMenu::DeleteAllItems()
 
 int WgMenu::GetItemPos( WgMenuItem* pEntry )
 {
-	if( m_items.IsMemberOf( pEntry ) )
-		return pEntry->Index();
+	if( m_items.isMemberOf( pEntry ) )
+		return pEntry->index();
 	else
 		return -1;
 }
@@ -434,49 +434,49 @@ int WgMenu::GetItemPos( WgMenuItem* pEntry )
 
 WgMenuItem* WgMenu::GetItem( int pos )
 {
-	return m_items.Get(pos);
+	return m_items.get(pos);
 }
 
 //____ FindItem() ______________________________________________________________
 
 WgMenuItem* WgMenu::FindItem(int id)
 {
-	WgMenuItem* pItem = m_items.First();
-	for(; pItem; pItem = pItem->Next())
+	WgMenuItem* pItem = m_items.first();
+	for(; pItem; pItem = pItem->next())
 	{
-		if(pItem->GetId() == id)
+		if(pItem->getId() == id)
 			return pItem;
 	}
 	return 0;
 }
 
-//____ PreferredSize() ___________________________________________________________
+//____ preferredSize() ___________________________________________________________
 
-WgSize WgMenu::PreferredSize() const
+WgSize WgMenu::preferredSize() const
 {
 	return m_defaultSize;
 }
 
-//____ MatchingWidth() ________________________________________________________
+//____ matchingWidth() ________________________________________________________
 
-int  WgMenu::MatchingWidth( int height ) const
+int  WgMenu::matchingWidth( int height ) const
 {
 	if( height >= m_defaultSize.h )
 		return m_defaultSize.w;
 
 	int scrollbarWidth = 0;
 
-	if( m_pScrollbarBgSkin && m_pScrollbarBgSkin->PreferredSize().w > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBgSkin->PreferredSize().w;
+	if( m_pScrollbarBgSkin && m_pScrollbarBgSkin->preferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBgSkin->preferredSize().w;
 
-	if( m_pScrollbarHandleSkin && m_pScrollbarHandleSkin->PreferredSize().w > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarHandleSkin->PreferredSize().w;
+	if( m_pScrollbarHandleSkin && m_pScrollbarHandleSkin->preferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarHandleSkin->preferredSize().w;
 
-	if( m_pScrollbarBtnFwdSkin && m_pScrollbarBtnFwdSkin->PreferredSize().w > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBtnFwdSkin->PreferredSize().w;
+	if( m_pScrollbarBtnFwdSkin && m_pScrollbarBtnFwdSkin->preferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnFwdSkin->preferredSize().w;
 
-	if( m_pScrollbarBtnBwdSkin && m_pScrollbarBtnBwdSkin->PreferredSize().w > scrollbarWidth )
-		scrollbarWidth = m_pScrollbarBtnBwdSkin->PreferredSize().w;
+	if( m_pScrollbarBtnBwdSkin && m_pScrollbarBtnBwdSkin->preferredSize().w > scrollbarWidth )
+		scrollbarWidth = m_pScrollbarBtnBwdSkin->preferredSize().w;
 
 	return m_defaultSize.w + scrollbarWidth;
 }
@@ -488,27 +488,27 @@ int  WgMenu::MatchingWidth( int height ) const
 void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
 {
 	WgTextAttr	entryAttr;
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
-	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
+	WgTextTool::addPropAttributes(entryAttr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
+	WgTextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
 	WgTextAttr	accelAttr;
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_NORMAL );
-	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
+	WgTextTool::addPropAttributes(accelAttr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
+	WgTextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
 
 	int wNormal = WgTextTool::lineWidth( entryAttr, "  " );
 	int wMarked = WgTextTool::lineWidth( entryAttr, "  " );
 
-	wNormal += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
-	wNormal += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
+	wNormal += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
+	wNormal += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
 
-	entryAttr.Clear();
-	WgTextTool::AddPropAttributes(entryAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
-	WgTextTool::AddPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
-	accelAttr.Clear();
-	WgTextTool::AddPropAttributes(accelAttr, WgBase::GetDefaultTextprop(), WG_STATE_HOVERED );
-	WgTextTool::AddPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
+	entryAttr.clear();
+	WgTextTool::addPropAttributes(entryAttr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
+	WgTextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
+	accelAttr.clear();
+	WgTextTool::addPropAttributes(accelAttr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
+	WgTextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
 
-	wMarked += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->GetText().Chars() );
-	wMarked += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->GetAccelText().Chars() );
+	wMarked += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
+	wMarked += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
 
 
 	if( wNormal > wMarked )
@@ -525,7 +525,7 @@ WgBorder WgMenu::_getPadding() const
 
 	if( m_pSkin )
 	{
-		WgRect r = m_pSkin->ContentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
+		WgRect r = m_pSkin->contentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
 		return WgBorder(r.x, r.y, 1000-r.w, 1000-r.h);
 	}
 	else
@@ -536,17 +536,17 @@ WgBorder WgMenu::_getPadding() const
 
 void WgMenu::_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 {
-	WgMenuItem * p = m_items.First();
+	WgMenuItem * p = m_items.first();
 	int ofs = 0;
 
 	while( p != pItem )
 	{
-		if( p->GetType() == SEPARATOR )
+		if( p->getType() == SEPARATOR )
 			ofs += m_sepHeight;
 		else
 			ofs += m_entryHeight;
 
-		p = p->Next();
+		p = p->next();
 	}
 
 	if( bForceAtTop || ofs < m_contentOfs )
@@ -561,20 +561,20 @@ void WgMenu::_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
 
 void WgMenu::_markFirstFilteredEntry()
 {
-	WgMenuItem * pItem = m_items.First();
+	WgMenuItem * pItem = m_items.first();
 
 	while( pItem )
 	{
-		if( pItem->GetType() != SEPARATOR )
+		if( pItem->getType() != SEPARATOR )
 		{
-			WgString str = ((WgMenuEntry*)pItem)->GetText();
+			WgString str = ((WgMenuEntry*)pItem)->getText();
 
-			if( str.Length() >= m_nSelectorKeys )
+			if( str.length() >= m_nSelectorKeys )
 			{
-				const WgChar * pChars = str.Chars();
+				const WgChar * pChars = str.chars();
 
 				int i = 0;
-				while( i < m_nSelectorKeys && towlower(pChars[i].Glyph()) == m_selectorKeys[i] )
+				while( i < m_nSelectorKeys && towlower(pChars[i].getGlyph()) == m_selectorKeys[i] )
 					i++;
 
 				if( i == m_nSelectorKeys )
@@ -582,13 +582,13 @@ void WgMenu::_markFirstFilteredEntry()
 			}
 		}
 
-		pItem = pItem->Next();
+		pItem = pItem->next();
 	}
 
 
 	if( pItem )
 	{
-		m_markedItem = pItem->Index()+1;
+		m_markedItem = pItem->index()+1;
 		_requestRender();
 		_scrollItemIntoView( pItem );
 	}
@@ -604,11 +604,11 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 
 	// Render the menu-items
 
-	WgRect		contentRect = m_pSkin?m_pSkin->ContentRect(canvas, m_state):canvas;
+	WgRect		contentRect = m_pSkin?m_pSkin->contentRect(canvas, m_state):canvas;
 
 	WgRect		contentClip( contentRect, clip );		// A clip rectangle for content.
 
-	WgMenuItem * pItem = m_items.First();
+	WgMenuItem * pItem = m_items.first();
 
 	int		yPos = contentRect.y - m_contentOfs;
 	int		xPosText = contentRect.x + m_iconFieldWidth;
@@ -622,16 +622,16 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 	unsigned int	item = 1;
 	while( pItem )
 	{
-		if( pItem->IsVisible() )
+		if( pItem->isVisible() )
 		{
-			if( pItem->GetType() == SEPARATOR )
+			if( pItem->getType() == SEPARATOR )
 			{
 				if( m_pSeparatorSkin )
 				{
 					WgRect	dest( contentRect.x, yPos + m_sepBorder.top,
-								  contentRect.w, m_pSeparatorSkin->PreferredSize().h );
+								  contentRect.w, m_pSeparatorSkin->preferredSize().h );
 
-					m_pSeparatorSkin->Render( pDevice, dest, m_state, contentClip );
+					m_pSeparatorSkin->render( pDevice, dest, m_state, contentClip );
 					yPos += m_sepHeight;
 				}
 			}
@@ -639,7 +639,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 			{
 				WgState	state = WG_STATE_DISABLED;
 
-				if( ((WgMenuEntry*)pItem)->IsEnabled() )
+				if( ((WgMenuEntry*)pItem)->isEnabled() )
 					state = WG_STATE_NORMAL;
 
 				if( item == m_markedItem )
@@ -655,56 +655,56 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 //				WgRect tileClip( contentClip, tileDest);
 
 				if( m_pEntrySkin )
-					m_pEntrySkin->Render( pDevice, tileDest, state, contentClip );
+					m_pEntrySkin->render( pDevice, tileDest, state, contentClip );
 
 
 				// Print the text (if any)
 
-				const WgChar * pText = ((WgMenuEntry*)pItem)->GetText().Chars();
-				if( pText->Glyph() != 0 )
+				const WgChar * pText = ((WgMenuEntry*)pItem)->getText().chars();
+				if( pText->getGlyph() != 0 )
 				{
 
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), state );
+					WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), state );
 //					if( m_pSkin )
-//						WgTextTool::SetAttrColor( attr, m_pSkin->TextColors(), mode );
-					WgTextTool::AddPropAttributes( attr, m_pEntryProp, state );
-					entryPen.SetAttributes( attr );
-					int y = yPos + (m_entryHeight - entryPen.GetLineHeight())/2 + entryPen.GetBaseline();
-					entryPen.SetPos( WgCoord( xPosText, y ) );
-					pDevice->PrintLine( entryPen, attr, pText );
+//						WgTextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
+					WgTextTool::addPropAttributes( attr, m_pEntryProp, state );
+					entryPen.setAttributes( attr );
+					int y = yPos + (m_entryHeight - entryPen.getLineHeight())/2 + entryPen.getBaseline();
+					entryPen.setPos( WgCoord( xPosText, y ) );
+					pDevice->printLine( entryPen, attr, pText );
 				}
 
 				// Print the accel text (if any)
 
-				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->GetAccelText().Chars();
-				if( pAccelText->Glyph() != 0 )
+				const WgChar * pAccelText = ((WgMenuEntry*)pItem)->getAccelText().chars();
+				if( pAccelText->getGlyph() != 0 )
 				{
 					WgTextAttr	attr;
-					WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), state );
+					WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), state );
 //					if( m_pSkin )
-//						WgTextTool::SetAttrColor( attr, m_pSkin->TextColors(), mode );
-					WgTextTool::AddPropAttributes( attr, m_pKeyAccelProp, state );
-					accelPen.SetAttributes( attr );
+//						WgTextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
+					WgTextTool::addPropAttributes( attr, m_pKeyAccelProp, state );
+					accelPen.setAttributes( attr );
 
-					int y = yPos + (m_entryHeight - accelPen.GetLineHeight())/2 + accelPen.GetBaseline();
+					int y = yPos + (m_entryHeight - accelPen.getLineHeight())/2 + accelPen.getBaseline();
 					int width = WgTextTool::lineWidth( attr, state, pAccelText );
 					int x = xPosText + textFieldLen - width;
 
-					accelPen.SetPos( WgCoord(x, y) );
-					pDevice->PrintLine( accelPen, attr, pAccelText );
+					accelPen.setPos( WgCoord(x, y) );
+					pDevice->printLine( accelPen, attr, pAccelText );
 				}
 
 				// Show the icon/checkbox/radiobutton (if any)
 
-				switch( pItem->GetType() )
+				switch( pItem->getType() )
 				{
 					case ENTRY:
 					{
-						WgSkinPtr pIcon = ((WgMenuEntry*)pItem)->GetIcon();
+						WgSkinPtr pIcon = ((WgMenuEntry*)pItem)->getIcon();
 						if( pIcon )
 						{
-							WgSize sz = pIcon->PreferredSize();
+							WgSize sz = pIcon->preferredSize();
 
 							if( sz.w > m_iconFieldWidth )
 								sz.w = m_iconFieldWidth;
@@ -714,7 +714,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 							int y = yPos + (m_entryHeight - sz.h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							pIcon->Render( pDevice, WgRect(x,y,sz), state, contentClip );
+							pIcon->render( pDevice, WgRect(x,y,sz), state, contentClip );
 						}
 					}
 					break;
@@ -723,17 +723,17 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 					{
 						WgState checkboxState = state;
 
-						if( ((WgMenuCheckBox*)pItem)->IsChecked() )
-							checkboxState.SetSelected(true);
+						if( ((WgMenuCheckBox*)pItem)->isChecked() )
+							checkboxState.setSelected(true);
 
 						if( m_pCheckBoxSkin )
 						{
-							WgSize sz = m_pCheckBoxSkin->PreferredSize();
+							WgSize sz = m_pCheckBoxSkin->preferredSize();
 
 							int y = yPos + (m_entryHeight - sz.h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							m_pCheckBoxSkin->Render( pDevice, WgRect(x,y,sz), checkboxState, contentClip );
+							m_pCheckBoxSkin->render( pDevice, WgRect(x,y,sz), checkboxState, contentClip );
 						}
 					}
 					break;
@@ -741,17 +741,17 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 					{
 						WgState radiobuttonState = state;
 
-						if( ((WgMenuRadioButton*)pItem)->IsSelected() )
-							radiobuttonState.SetSelected(true);
+						if( ((WgMenuRadioButton*)pItem)->isSelected() )
+							radiobuttonState.setSelected(true);
 
 						if( m_pRadioButtonSkin )
 						{
-							WgSize sz = m_pRadioButtonSkin->PreferredSize();
+							WgSize sz = m_pRadioButtonSkin->preferredSize();
 
 							int y = yPos + (m_entryHeight - sz.h)/2;
 							int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 
-							m_pRadioButtonSkin->Render( pDevice, WgRect(x,y,sz), radiobuttonState, contentClip );
+							m_pRadioButtonSkin->render( pDevice, WgRect(x,y,sz), radiobuttonState, contentClip );
 						}
 					}
 					break;
@@ -769,7 +769,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 			}
 		}
 
-		pItem = pItem->Next();
+		pItem = pItem->next();
 		item++;
 	}
 }
@@ -782,17 +782,17 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 	
 	// TODO: Not handle or swallow key-messages if some modifier keys are pressed.
 
-	WgCoord mousePos = pMsg->PointerPos() - GlobalPos();
+	WgCoord mousePos = pMsg->pointerPos() - globalPos();
 
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_TICK:
 		{
 			if( m_selectorCountdown > 0 )
 			{
-				WgTickMsgPtr pTick = WgTickMsg::Cast(pMsg);
+				WgTickMsgPtr pTick = WgTickMsg::cast(pMsg);
 
-				m_selectorCountdown -= pTick->Millisec();
+				m_selectorCountdown -= pTick->millisec();
 				if( m_selectorCountdown < 0 )
 				{
 					m_selectorCountdown = 0;
@@ -806,8 +806,8 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 		{
 			// Unmark any selected item unless it is a submenu...
 
-			WgMenuItem * pOldItem = m_items.Get(m_markedItem-1);
-			if( pOldItem && pOldItem->GetType() != SUBMENU )
+			WgMenuItem * pOldItem = m_items.get(m_markedItem-1);
+			if( pOldItem && pOldItem->getType() != SUBMENU )
 			{
 				m_markedItem = 0;
 				_requestRender();
@@ -823,10 +823,10 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 			Uint32 markedItem = 0;
 			if( pItem )
 			{
-				if( pItem->GetType() != SEPARATOR )
+				if( pItem->getType() != SEPARATOR )
 				{
-					if( ((WgMenuEntry*)pItem)->IsEnabled() )
-						markedItem = pItem->Index()+1;
+					if( ((WgMenuEntry*)pItem)->isEnabled() )
+						markedItem = pItem->index()+1;
 				}
 			}
 
@@ -839,7 +839,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 				// Open/close submenus depending on what item we have marked.
 
-				if( pItem && pItem->GetType() == SUBMENU )
+				if( pItem && pItem->getType() == SUBMENU )
 				{
 					WgMenuSubMenu * pSubMenu = (WgMenuSubMenu*) pItem;
 					
@@ -870,11 +870,11 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr pEv = WgWheelRollMsg::Cast(pMsg);
+			WgWheelRollMsgPtr pEv = WgWheelRollMsg::cast(pMsg);
 
-			if( pEv->Wheel() == 1 )
+			if( pEv->wheel() == 1 )
 			{
-				int distance = pEv->Distance();
+				int distance = pEv->distance();
 
 				_setViewOfs( m_contentOfs - m_entryHeight*distance );
 				_updateScrollbar( _getHandlePosition(), _getHandleSize() );
@@ -883,7 +883,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_CHARACTER:
 		{
-			Uint16 chr = WgCharacterMsg::Cast(pMsg)->Char();
+			Uint16 chr = WgCharacterMsg::cast(pMsg)->character();
 			if( chr != 0 )
 			{
 				m_selectorCountdown = c_selectorCountdownStart;
@@ -902,9 +902,9 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 		{
 			WgMenuItem * pItem = 0;
 			if( m_markedItem != 0 )
-				pItem = m_items.Get( m_markedItem-1 );
+				pItem = m_items.get( m_markedItem-1 );
 
-			int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
+			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_ESCAPE:
@@ -924,7 +924,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 				case WG_KEY_RIGHT:
 					if( pItem )
 					{
-						if( pItem->GetType() == SUBMENU )
+						if( pItem->getType() == SUBMENU )
 						{
 							_openSubMenu( (WgMenuSubMenu*) pItem );
 						}
@@ -934,7 +934,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 				case WG_KEY_RETURN:
 					if( pItem )
 					{
-						if( pItem->GetType() == SUBMENU )
+						if( pItem->getType() == SUBMENU )
 							_openSubMenu( (WgMenuSubMenu*) pItem );
 						else
 						{
@@ -947,32 +947,32 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 				case WG_KEY_UP:
 					if( pItem )
 					{
-						pItem = pItem->Prev();
-						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ) )
-							pItem = pItem->Prev();
+						pItem = pItem->prev();
+						while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ) )
+							pItem = pItem->prev();
 					}
 					break;
 
 				case WG_KEY_DOWN:
 					if( pItem )
-						pItem = pItem->Next();
+						pItem = pItem->next();
 					else
-						pItem = m_items.First();
+						pItem = m_items.first();
 
-					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ) )
-							pItem = pItem->Next();
+					while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ) )
+							pItem = pItem->next();
 					break;
 
 				case WG_KEY_HOME:
-					pItem = m_items.First();
-					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ) )
-						pItem = pItem->Next();
+					pItem = m_items.first();
+					while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ) )
+						pItem = pItem->next();
 					break;
 
 				case WG_KEY_END:
-					pItem = m_items.Last();
-					while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ))
-						pItem = pItem->Prev();
+					pItem = m_items.last();
+					while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ))
+						pItem = pItem->prev();
 					break;
 
 				case WG_KEY_PAGE_UP:
@@ -982,22 +982,22 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 					int distance = m_entryHeight;
 					while( pItem != 0 && distance < viewHeight )
 					{
-						if( pItem->IsVisible() )
+						if( pItem->isVisible() )
 						{
-							if( pItem->GetType() == SEPARATOR )
+							if( pItem->getType() == SEPARATOR )
 								distance += m_sepHeight;
 							else
 								distance += m_entryHeight;
 						}
 
-						pItem = pItem->Prev();
+						pItem = pItem->prev();
 					}
 
 					if( !pItem )
 					{
-						pItem = m_items.First();
-						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ))
-							pItem = pItem->Next();
+						pItem = m_items.first();
+						while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ))
+							pItem = pItem->next();
 					}
 					break;
 				}
@@ -1008,22 +1008,22 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 					int distance = m_entryHeight;
 					while( pItem != 0 && distance < viewHeight )
 					{
-						if( pItem->IsVisible() )
+						if( pItem->isVisible() )
 						{
-							if( pItem->GetType() == SEPARATOR )
+							if( pItem->getType() == SEPARATOR )
 								distance += m_sepHeight;
 							else
 								distance += m_entryHeight;
 						}
 
-						pItem = pItem->Next();
+						pItem = pItem->next();
 					}
 
 					if( !pItem )
 					{
-						pItem = m_items.Last();
-						while( pItem != 0 && (pItem->GetType() == SEPARATOR || !pItem->IsVisible() ))
-							pItem = pItem->Next();
+						pItem = m_items.last();
+						while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ))
+							pItem = pItem->next();
 					}
 					break;
 				}
@@ -1032,7 +1032,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 			if( pItem )
 			{
-				Uint32 markedItem = pItem->Index()+1;
+				Uint32 markedItem = pItem->index()+1;
 				if( markedItem != m_markedItem )
 				{
 					m_markedItem = markedItem;
@@ -1051,18 +1051,18 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 	// Swallow message depending on rules.
 
-	if( pMsg->IsMouseButtonMsg() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
-		pMsg->Swallow();
-	else if( pMsg->IsKeyMsg() )
+	if( pMsg->isMouseButtonMsg() && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+		pMsg->swallow();
+	else if( pMsg->isKeyMsg() )
 	{
-		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
+		int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
 		if( key == WG_KEY_RIGHT || key == WG_KEY_RETURN || key == WG_KEY_UP || key == WG_KEY_DOWN &&
 			key == WG_KEY_HOME || key == WG_KEY_END || key == WG_KEY_PAGE_UP || key == WG_KEY_PAGE_DOWN &&
 			key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
-			pMsg->Swallow();
+			pMsg->swallow();
 	}
-	else if( pMsg->Type() == WG_MSG_CHARACTER || pMsg->Type() == WG_MSG_WHEEL_ROLL )
-		pMsg->Swallow();
+	else if( pMsg->type() == WG_MSG_CHARACTER || pMsg->type() == WG_MSG_WHEEL_ROLL )
+		pMsg->swallow();
 }
 
 //____ _onStateChanged() ______________________________________________________
@@ -1071,8 +1071,8 @@ void WgMenu::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if( m_state.IsEnabled() != oldState.IsEnabled() && m_scrollbarHook._widget() )
-		m_scrollbarHook._widget()->SetEnabled(m_state.IsEnabled());
+	if( m_state.isEnabled() != oldState.isEnabled() && m_scrollbarHook._widget() )
+		m_scrollbarHook._widget()->setEnabled(m_state.isEnabled());
 
 }
 
@@ -1081,20 +1081,20 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 {
 	m_pSelectedItem = 0;
 
-	if(pItem == 0 || !pItem->IsVisible() )
+	if(pItem == 0 || !pItem->isVisible() )
 		return;
 
-	switch( pItem->GetType() )
+	switch( pItem->getType() )
 	{
 		case ENTRY:
 		{
 			m_pSelectedItem = pItem;
 
 			WgItemInfo * pInfo = new WgItemInfo[1];
-			pInfo->id = pItem->GetId();
+			pInfo->id = pItem->getId();
 											//TODO: Add index (and in the future pObject).
 
-			WgBase::MsgRouter()->Post( new WgItemsSelectMsg(this,1,pInfo));
+			WgBase::msgRouter()->post( new WgItemsSelectMsg(this,1,pInfo));
 			_itemSelected();
 		}
 		break;
@@ -1102,15 +1102,15 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 		{
 			WgMenuCheckBox * pCheckBox = (WgMenuCheckBox*) pItem;
 
-			if( pCheckBox->IsChecked() )
+			if( pCheckBox->isChecked() )
 			{
-				pCheckBox->Uncheck();
-				WgBase::MsgRouter()->Post( new WgItemToggleMsg(this,pItem->GetId(),WgObjectPtr(),true));
+				pCheckBox->uncheck();
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),true));
 			}
 			else
 			{
-				pCheckBox->Check();
-				WgBase::MsgRouter()->Post( new WgItemToggleMsg(this,pItem->GetId(),WgObjectPtr(),false));
+				pCheckBox->check();
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),false));
 			}
 
 			_itemSelected();
@@ -1118,10 +1118,10 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 		break;
 		case RADIOBUTTON:
 			if( m_pSelectedItem )
-				WgBase::MsgRouter()->Post( new WgItemToggleMsg(this,m_pSelectedItem->GetId(),WgObjectPtr(),false));
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,m_pSelectedItem->getId(),WgObjectPtr(),false));
 			m_pSelectedItem = pItem;
-			((WgMenuRadioButton*)pItem)->Select();
-			WgBase::MsgRouter()->Post( new WgItemToggleMsg(this,pItem->GetId(),WgObjectPtr(),true));
+			((WgMenuRadioButton*)pItem)->select();
+			WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),true));
 			_itemSelected();
 		break;
 
@@ -1135,7 +1135,7 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 {
 	WgWidget * pWidget = WgPanel::_findWidget(ofs, mode);
-	if( !pWidget && MarkTest( ofs ) )
+	if( !pWidget && markTest( ofs ) )
 		return this;
 
 	return pWidget;
@@ -1145,7 +1145,7 @@ WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgWidgetPtr pMenu = pItem->GetSubMenu();
+	WgWidgetPtr pMenu = pItem->getSubMenu();
 
 	if( !pMenu )
 		return;
@@ -1154,34 +1154,34 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 
 	Uint32 yOfs = 0;
 
-	WgMenuItem * p = m_items.First();
+	WgMenuItem * p = m_items.first();
 	while( p != pItem )
 	{
-		if( p->IsVisible() )
+		if( p->isVisible() )
 		{
-			if( p->GetType() == SEPARATOR )
+			if( p->getType() == SEPARATOR )
 				yOfs += m_sepHeight;
 			else
 				yOfs += m_entryHeight;
 		}
-		p = p->Next();
+		p = p->next();
 	}
 
 	// Calculate itemArea
 
-	WgRect	geo = m_pSkin?m_pSkin->ContentRect(GlobalGeo(), WG_STATE_NORMAL):GlobalGeo();
+	WgRect	geo = m_pSkin?m_pSkin->contentRect(globalGeo(), WG_STATE_NORMAL):globalGeo();
 	WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 
 	// 
 
 	WgPopupLayer * pLayer = 0;
 
-	if( Parent() )
-		pLayer = Parent()->_getPopupLayer();
+	if( parent() )
+		pLayer = parent()->_getPopupLayer();
 
 	if( pLayer )
 	{
-		pLayer->OpenPopup( pMenu, this, itemArea - pLayer->GlobalPos(), WG_NORTHEAST );
+		pLayer->openPopup( pMenu, this, itemArea - pLayer->globalPos(), WG_NORTHEAST );
 		m_pOpenSubMenu = pItem;
 	}
 }
@@ -1192,14 +1192,14 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
 	WgPopupLayer * pLayer = 0;
-	WgWidgetPtr pMenu = pItem->GetSubMenu();
+	WgWidgetPtr pMenu = pItem->getSubMenu();
 
-	if( Parent() )
-		pLayer = Parent()->_getPopupLayer();
+	if( parent() )
+		pLayer = parent()->_getPopupLayer();
 
 	if( pLayer && pMenu )
 	{	
-		pLayer->ClosePopup( pMenu );
+		pLayer->closePopup( pMenu );
 		m_pOpenSubMenu = 0;
 	}
 }
@@ -1211,11 +1211,11 @@ void WgMenu::_itemSelected()
 {
 	WgPopupLayer * pLayer = 0;
 
-	if( Parent() )
-		pLayer = Parent()->_getPopupLayer();
+	if( parent() )
+		pLayer = parent()->_getPopupLayer();
 
 	if( pLayer )
-		pLayer->CloseAllPopups();
+		pLayer->closeAllPopups();
 }
 
 //____ _renderPatches() ________________________________________________________
@@ -1224,7 +1224,7 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 {
 	WgRect scrollbarGeo = _scrollbarGeo( _canvas );
 
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		// Render menu itself
 
@@ -1247,7 +1247,7 @@ void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 void WgMenu::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
-	container.Add( WgRect( geo, clip ) );
+	container.add( WgRect( geo, clip ) );
 }
 
 //____ _onMaskPatches() ________________________________________________________
@@ -1256,14 +1256,14 @@ void WgMenu::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect
 {
 	if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 	{
-		patches.Sub( WgRect( geo, clip ) );
+		patches.sub( WgRect( geo, clip ) );
 	}
 	else if( blendMode == WG_BLENDMODE_BLEND && m_pSkin )
 	{
-		if( m_pSkin->IsOpaque() )
-			patches.Sub( WgRect( geo, clip ) );
-		else if( m_pSkin->IsOpaque() )
-			patches.Sub( WgRect( geo, clip ) );
+		if( m_pSkin->isOpaque() )
+			patches.sub( WgRect( geo, clip ) );
+		else if( m_pSkin->isOpaque() )
+			patches.sub( WgRect( geo, clip ) );
 	}
 }
 
@@ -1349,7 +1349,7 @@ WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
 {
 	if( m_scrollbarHook._widget() )
 	{
-		writeGeo = _scrollbarGeo( Size() );
+		writeGeo = _scrollbarGeo( size() );
 		return const_cast<ScrollbarHook*>(&m_scrollbarHook);
 	}
 	else
@@ -1367,14 +1367,14 @@ WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
 
 	y += m_contentOfs;
 
-	if( y > 0 && x > 0 && x < (int) ( Geo().w - contentBorder.right ) )
+	if( y > 0 && x > 0 && x < (int) ( geo().w - contentBorder.right ) )
 	{
-		WgMenuItem * pItem = m_items.First();
+		WgMenuItem * pItem = m_items.first();
 		while( pItem )
 		{
-			if( pItem->IsVisible() )
+			if( pItem->isVisible() )
 			{
-				if( pItem->GetType() == SEPARATOR )
+				if( pItem->getType() == SEPARATOR )
 					y -= m_sepHeight;
 				else
 					y -= m_entryHeight;
@@ -1384,7 +1384,7 @@ WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
 					return pItem;
 				}
 			}
-			pItem = pItem->Next();
+			pItem = pItem->next();
 		}
 	}
 
@@ -1405,19 +1405,19 @@ void WgMenu::_adjustSize()
 {
 	WgBorder contentBorder = _getPadding();
 
-	int  w = contentBorder.Width();
-	int	 h = contentBorder.Height();
+	int  w = contentBorder.width();
+	int	 h = contentBorder.height();
 
-	int minSep = m_sepBorder.Width();
+	int minSep = m_sepBorder.width();
 	if( m_pSeparatorSkin )
-		minSep += m_pSeparatorSkin->MinSize().w;
+		minSep += m_pSeparatorSkin->minSize().w;
 
-	WgMenuItem * pItem = m_items.First();
+	WgMenuItem * pItem = m_items.first();
 	while( pItem )
 	{
-		if( pItem->IsVisible() )
+		if( pItem->isVisible() )
 		{
-			if( pItem->GetType() == SEPARATOR )
+			if( pItem->getType() == SEPARATOR )
 			{
 				h += m_sepHeight;
 				if( w < minSep )
@@ -1427,7 +1427,7 @@ void WgMenu::_adjustSize()
 			{
 				h += m_entryHeight;
 
-				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorder.Width() + m_iconFieldWidth + m_arrowFieldWidth;
+				int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorder.width() + m_iconFieldWidth + m_arrowFieldWidth;
 
 				if( w < minW )
 					w = minW;
@@ -1435,13 +1435,13 @@ void WgMenu::_adjustSize()
 		}
 
 
-		pItem = pItem->Next();
+		pItem = pItem->next();
 	}
 
-	m_contentHeight = h - contentBorder.Height();
+	m_contentHeight = h - contentBorder.height();
 
-	if( h < m_entryHeight + contentBorder.Height() )
-		h = m_entryHeight + contentBorder.Height();
+	if( h < m_entryHeight + contentBorder.height() )
+		h = m_entryHeight + contentBorder.height();
 
 
 	if( w != m_defaultSize.w || h != m_defaultSize.h )
@@ -1451,7 +1451,7 @@ void WgMenu::_adjustSize()
 		_requestResize();
 	}
 
-	if( h > Size().h )
+	if( h > size().h )
 	{
 		WgScrollbar * pScrollbar = m_scrollbarHook.Scrollbar();
 		if( !pScrollbar )
@@ -1461,10 +1461,10 @@ void WgMenu::_adjustSize()
 			pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
 			pScrollbar->SetScrollbarTarget(this);
 		}
-		WgSize scrollbarSize = pScrollbar->PreferredSize();
+		WgSize scrollbarSize = pScrollbar->preferredSize();
 
 		m_scrollbarHook.m_size.w = scrollbarSize.w;
-		m_scrollbarHook.m_size.h = Size().h - contentBorder.Height();
+		m_scrollbarHook.m_size.h = size().h - contentBorder.height();
 
 		m_scrollbarHook._setWidget(pScrollbar);
 
@@ -1502,7 +1502,7 @@ float WgMenu::_stepBwd()
 
 float WgMenu::_jumpFwd()
 {
-	int viewHeight = Size().h - _getPadding().Height();
+	int viewHeight = size().h - _getPadding().height();
 	_setViewOfs( m_contentOfs + (viewHeight - m_entryHeight) );
 	return _getHandlePosition();
 }
@@ -1511,7 +1511,7 @@ float WgMenu::_jumpFwd()
 
 float WgMenu::_jumpBwd()
 {
-	int viewHeight = Size().h - _getPadding().Height();
+	int viewHeight = size().h - _getPadding().height();
 	_setViewOfs( m_contentOfs - (viewHeight - m_entryHeight) );
 	return _getHandlePosition();
 }
@@ -1520,7 +1520,7 @@ float WgMenu::_jumpBwd()
 
 float WgMenu::_wheelRolled( int distance )
 {
-	int viewHeight = Size().h - _getPadding().Height();
+	int viewHeight = size().h - _getPadding().height();
 	_setViewOfs( m_contentOfs + m_entryHeight*distance );
 	return _getHandlePosition();
 }
@@ -1536,7 +1536,7 @@ float WgMenu::_setPosition( float fraction )
 	if( fraction > 1.f )
 		fraction = 1.f;
 
-	int viewHeight = Size().h - _getPadding().Height();
+	int viewHeight = size().h - _getPadding().height();
 
 	int ofs = (int) (fraction * (m_contentHeight-viewHeight));
 
@@ -1557,7 +1557,7 @@ WgWidget* WgMenu::_getWidget()
 
 float WgMenu::_getHandlePosition()
 {
-	return ((float)m_contentOfs) / (m_contentHeight-(Size().h-_getPadding().Height()));
+	return ((float)m_contentOfs) / (m_contentHeight-(size().h-_getPadding().height()));
 }
 
 //____ _getHandleSize() ________________________________________________________
@@ -1571,14 +1571,14 @@ float WgMenu::_getHandleSize()
 
 int WgMenu::_getViewSize()
 {
-	return Size().h-_getPadding().Height();
+	return size().h-_getPadding().height();
 }
 
 //____ _setViewOfs() ______________________________________________________________
 
 void WgMenu::_setViewOfs(int pos)
 {
-	int viewHeight = Size().h - _getPadding().Height();
+	int viewHeight = size().h - _getPadding().height();
 
 	if( pos + viewHeight > m_contentHeight )
 		pos = m_contentHeight - viewHeight;
@@ -1594,55 +1594,55 @@ void WgMenu::_setViewOfs(int pos)
 }
 
 
-const char * WgMenu::ScrollbarHook::Type( void ) const
+const char * WgMenu::ScrollbarHook::type( void ) const
 {
-	return ClassType();
+	return classType();
 }
 
-const char * WgMenu::ScrollbarHook::ClassType()
+const char * WgMenu::ScrollbarHook::classType()
 {
 	return c_hookType;
 }
 
-WgCoord WgMenu::ScrollbarHook::Pos() const
+WgCoord WgMenu::ScrollbarHook::pos() const
 {
-	WgSize parentSize = m_pParent->Size();
+	WgSize parentSize = m_pParent->size();
 	WgBorder borders = m_pParent->_getPadding();
 	return WgCoord(parentSize.w-m_size.w-borders.right,borders.top);
 }
 
-WgSize WgMenu::ScrollbarHook::Size() const
+WgSize WgMenu::ScrollbarHook::size() const
 {
 	return m_size;
 }
 
-WgRect WgMenu::ScrollbarHook::Geo() const
+WgRect WgMenu::ScrollbarHook::geo() const
 {
-	WgSize parentSize = m_pParent->Size();
+	WgSize parentSize = m_pParent->size();
 	WgBorder borders = m_pParent->_getPadding();
 	return WgRect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
 }
 
-WgCoord WgMenu::ScrollbarHook::GlobalPos() const
+WgCoord WgMenu::ScrollbarHook::globalPos() const
 {
-	WgRect content = m_pParent->GlobalGeo() - m_pParent->_getPadding();
+	WgRect content = m_pParent->globalGeo() - m_pParent->_getPadding();
 	return WgCoord( content.x + content.w - m_size.w, content.y);
 }
 
-WgRect WgMenu::ScrollbarHook::GlobalGeo() const
+WgRect WgMenu::ScrollbarHook::globalGeo() const
 {
-	WgRect content = m_pParent->GlobalGeo() - m_pParent->_getPadding();
+	WgRect content = m_pParent->globalGeo() - m_pParent->_getPadding();
 	return WgRect( content.x + content.w - m_size.w, content.y, m_size );
 }
 
 void WgMenu::ScrollbarHook::_requestRender()
 {
-	m_pParent->_requestRender( Geo() );
+	m_pParent->_requestRender( geo() );
 }
 
 void WgMenu::ScrollbarHook::_requestRender( const WgRect& rect )
 {
-	m_pParent->_requestRender( rect + Pos() );
+	m_pParent->_requestRender( rect + pos() );
 }
 
 void WgMenu::ScrollbarHook::_requestResize()

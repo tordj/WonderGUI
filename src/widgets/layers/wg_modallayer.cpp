@@ -33,35 +33,35 @@ const char WgModalHook::CLASSNAME[] = {"ModalHook"};
 //TODO: Improve WgModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
 
-//____ WgModalHook::IsInstanceOf() __________________________________________
+//____ WgModalHook::isInstanceOf() __________________________________________
 
-bool WgModalHook::IsInstanceOf( const char * pClassName ) const
+bool WgModalHook::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLayerHook::IsInstanceOf(pClassName);
+	return WgLayerHook::isInstanceOf(pClassName);
 }
 
-//____ WgModalHook::ClassName() _____________________________________________
+//____ WgModalHook::className() _____________________________________________
 
-const char * WgModalHook::ClassName( void ) const
+const char * WgModalHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgModalHook::Cast() __________________________________________________
+//____ WgModalHook::cast() __________________________________________________
 
-WgModalHookPtr WgModalHook::Cast( const WgHookPtr& pHook )
+WgModalHookPtr WgModalHook::cast( const WgHookPtr& pHook )
 {
-	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.RawPtr()) );
+	if( pHook && pHook->isInstanceOf(CLASSNAME) )
+		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 //_____________________________________________________________________________
-void WgModalHook::Top()
+void WgModalHook::top()
 {
 	_moveLast();
 	_requestRender();
@@ -69,7 +69,7 @@ void WgModalHook::Top()
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetGeo( const WgRect& geometry, WgOrigo origo )
+bool WgModalHook::setGeo( const WgRect& geometry, WgOrigo origo )
 {
 	m_placementGeo 	= geometry;
 	m_origo 		= origo;
@@ -84,29 +84,29 @@ bool WgModalHook::SetGeo( const WgRect& geometry, WgOrigo origo )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetGeo( const WgCoord& ofs, WgOrigo origo )
+bool WgModalHook::setGeo( const WgCoord& ofs, WgOrigo origo )
 {
-	m_placementGeo.SetPos(ofs);
+	m_placementGeo.setPos(ofs);
 	m_origo	= origo;
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetOfs( const WgCoord& ofs )
+bool WgModalHook::setOfs( const WgCoord& ofs )
 {
-	m_placementGeo.SetPos(ofs);
+	m_placementGeo.setPos(ofs);
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetOfsX( int x )
+bool WgModalHook::setOfsX( int x )
 {
 	m_placementGeo.x = x;
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetOfsY( int y )
+bool WgModalHook::setOfsY( int y )
 {
 	m_placementGeo.y = y;
 	return _refreshRealGeo();
@@ -114,17 +114,17 @@ bool WgModalHook::SetOfsY( int y )
 
 
 //_____________________________________________________________________________
-bool WgModalHook::SetSize( WgSize sz )
+bool WgModalHook::setSize( WgSize sz )
 {
 	if( sz.w < 0 || sz.h < 0 )
 		return false;
 
-	m_placementGeo.SetSize( sz );
+	m_placementGeo.setSize( sz );
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetWidth( int width )
+bool WgModalHook::setWidth( int width )
 {
 	if( width < 0 )
 		return false;
@@ -134,7 +134,7 @@ bool WgModalHook::SetWidth( int width )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::SetHeight( int height )
+bool WgModalHook::setHeight( int height )
 {
 	if( height < 0 )
 		return false;
@@ -144,28 +144,28 @@ bool WgModalHook::SetHeight( int height )
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::Move( const WgCoord& ofs )
+bool WgModalHook::move( const WgCoord& ofs )
 {
 	m_placementGeo += ofs;
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::MoveX( int x )
+bool WgModalHook::moveX( int x )
 {
 	m_placementGeo.x += x;
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-bool WgModalHook::MoveY( int y )
+bool WgModalHook::moveY( int y )
 {
 	m_placementGeo.y += y;
 	return _refreshRealGeo();
 }
 
 //_____________________________________________________________________________
-WgModalLayerPtr WgModalHook::Parent() const
+WgModalLayerPtr WgModalHook::parent() const
 {
 	return m_pParent;
 }
@@ -179,22 +179,22 @@ WgModalHook::WgModalHook( WgModalLayer * pParent )
 //_____________________________________________________________________________
 bool WgModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly the requested (floating) geometry.
 {
-	WgSize sz = m_placementGeo.Size();
+	WgSize sz = m_placementGeo.size();
 
 	if( sz.w == 0 && sz.h == 0 )
-		sz = m_pWidget->PreferredSize();
+		sz = m_pWidget->preferredSize();
 	else if( sz.w == 0 )
-		sz.w = m_pWidget->MatchingWidth(sz.h);
+		sz.w = m_pWidget->matchingWidth(sz.h);
 	else if( sz.h == 0 )
-		sz.h = m_pWidget->MatchingHeight(sz.w);
+		sz.h = m_pWidget->matchingHeight(sz.w);
 
 	if( sz.w <= 0 )
 		sz.w = 1;
 	if( sz.h <= 0 )
 		sz.h = 1;
 
-	WgCoord ofs = WgUtil::OrigoToOfs( m_origo, m_pParent->Size() ) - WgUtil::OrigoToOfs( m_origo, sz );
-	ofs += m_placementGeo.Pos();
+	WgCoord ofs = WgUtil::origoToOfs( m_origo, m_pParent->size() ) - WgUtil::origoToOfs( m_origo, sz );
+	ofs += m_placementGeo.pos();
 
 	WgRect newGeo( ofs, sz );
 
@@ -259,44 +259,44 @@ WgModalLayer::~WgModalLayer()
 	// Children are deleted automaticallly when their hooks are deteled.
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgModalLayer::IsInstanceOf( const char * pClassName ) const
+bool WgModalLayer::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLayer::IsInstanceOf(pClassName);
+	return WgLayer::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgModalLayer::ClassName( void ) const
+const char * WgModalLayer::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgModalLayerPtr WgModalLayer::Cast( const WgObjectPtr& pObject )
+WgModalLayerPtr WgModalLayer::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalLayerPtr( static_cast<WgModalLayer*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgModalLayerPtr( static_cast<WgModalLayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ AddModalWidget() ________________________________________________________
+//____ addModalWidget() ________________________________________________________
 
-WgModalHookPtr WgModalLayer::AddModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo )
+WgModalHookPtr WgModalLayer::addModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo )
 {
 	// Create Hook and fill in members.
 
 	WgModalHook * pHook = new WgModalHook( this );
-	pHook->_setWidget(pWidget.RawPtr());
+	pHook->_setWidget(pWidget.rawPtr());
 	pHook->m_origo = origo;
 	pHook->m_placementGeo = geometry;
-	m_modalHooks.PushBack(pHook);
+	m_modalHooks.pushBack(pHook);
 
 	// Refresh geometry and request render.
 
@@ -305,25 +305,25 @@ WgModalHookPtr WgModalLayer::AddModalWidget( const WgWidgetPtr& pWidget, const W
 	return pHook;
 }
 
-//____ RemoveModalWidgets() ________________________________________________
+//____ removeModalWidgets() ________________________________________________
 
-bool WgModalLayer::RemoveModalWidgets()
+bool WgModalLayer::removeModalWidgets()
 {
-	m_modalHooks.Clear();
+	m_modalHooks.clear();
 	_requestRender();
 	_updateKeyboardFocus();
 	return true;
 }
 
-//____ RemoveWidget() _________________________________________________________
+//____ removeWidget() _________________________________________________________
 
-bool WgModalLayer::RemoveWidget( const WgWidgetPtr& pWidget )
+bool WgModalLayer::removeWidget( const WgWidgetPtr& pWidget )
 {
-	if( !pWidget || pWidget->Parent() != this )
+	if( !pWidget || pWidget->parent() != this )
 		return false;
 
 	if( pWidget == m_baseHook._widget() )
-		return RemoveBaseWidget();
+		return removeBaseWidget();
 	else
 	{
 		WgModalHook * pHook = (WgModalHook *) pWidget->_hook();
@@ -335,55 +335,55 @@ bool WgModalLayer::RemoveWidget( const WgWidgetPtr& pWidget )
 
 }
 
-//____ Clear() ________________________________________________________________
+//____ clear() ________________________________________________________________
 
-bool WgModalLayer::Clear()
+bool WgModalLayer::clear()
 {
-	RemoveBaseWidget();
-	RemoveModalWidgets();
+	removeBaseWidget();
+	removeModalWidgets();
 	return true;
 }
 
-//____ FirstModalHook() ______________________________________________________
+//____ firstModalHook() ______________________________________________________
 
-WgModalHookPtr WgModalLayer::FirstModalHook()
+WgModalHookPtr WgModalLayer::firstModalHook()
 {
-	return m_modalHooks.First();
+	return m_modalHooks.first();
 }
 
-//____ LastModalHook() _______________________________________________________
+//____ lastModalHook() _______________________________________________________
 
-WgModalHookPtr WgModalLayer::LastModalHook()
+WgModalHookPtr WgModalLayer::lastModalHook()
 {
-	return m_modalHooks.Last();
+	return m_modalHooks.last();
 }
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 
-int WgModalLayer::MatchingHeight( int width ) const
+int WgModalLayer::matchingHeight( int width ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->MatchingHeight( width );
+		return m_baseHook._widget()->matchingHeight( width );
 	else
-		return WgWidget::MatchingHeight(width);
+		return WgWidget::matchingHeight(width);
 }
 
-//____ MatchingWidth() _______________________________________________________
+//____ matchingWidth() _______________________________________________________
 
-int WgModalLayer::MatchingWidth( int height ) const
+int WgModalLayer::matchingWidth( int height ) const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->MatchingWidth( height );
+		return m_baseHook._widget()->matchingWidth( height );
 	else
-		return WgWidget::MatchingWidth(height);
+		return WgWidget::matchingWidth(height);
 }
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgModalLayer::PreferredSize() const
+WgSize WgModalLayer::preferredSize() const
 {
 	if( m_baseHook._widget() )
-		return m_baseHook._widget()->PreferredSize();
+		return m_baseHook._widget()->preferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -397,19 +397,19 @@ WgWidget *  WgModalLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	if( mode == WG_SEARCH_ACTION_TARGET )
 	{
-		WgModalHook * pHook = m_modalHooks.Last();
+		WgModalHook * pHook = m_modalHooks.last();
 
 		if( pHook )
 		{
 			if( pHook->_widget()->IsContainer() )
 			{
-				WgWidget * pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->Pos(), mode );
+				WgWidget * pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->pos(), mode );
 				if( pResult )
 					return pResult;
 			}
 			else
 			{
-				if( pHook->_widget()->MarkTest(ofs - pHook->Pos()) )
+				if( pHook->_widget()->markTest(ofs - pHook->pos()) )
 					return pHook->_widget();
 				else
 					return this;
@@ -419,7 +419,7 @@ WgWidget *  WgModalLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			if( m_baseHook._widget()->IsContainer() )
 			{
-				WgWidget * pResult = static_cast<WgContainer*>(m_baseHook._widget())->_findWidget( ofs - m_baseHook.Pos(), mode );
+				WgWidget * pResult = static_cast<WgContainer*>(m_baseHook._widget())->_findWidget( ofs - m_baseHook.pos(), mode );
 				if( pResult )
 					return pResult;
 			}
@@ -441,19 +441,19 @@ void WgModalLayer::_updateKeyboardFocus()
 {
 	// Get message handler, verify that we have a root
 
-	if( !Hook() )
+	if( !hook() )
 		return;
 
-	WgMsgRouter * pHandler = Hook()->MsgRouter().RawPtr();
+	WgMsgRouter * pHandler = hook()->msgRouter().rawPtr();
 	if( !pHandler )
 		return;
 
 	// Retrieve focused Widget and verify it being a descendant to us.
 
-	WgWidget * pFocused = pHandler->KeyboardFocus().RawPtr();
+	WgWidget * pFocused = pHandler->keyboardFocus().rawPtr();
 
 	WgWidget * p = pFocused;
-	while( p && p->Parent() && p->Parent() != this )
+	while( p && p->parent() && p->parent() != this )
 		p = p->_parent();
 
 	if( p && p->_parent() != this )
@@ -474,20 +474,20 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	// Find which child-branch to focus and switch to our previously saved focus
 
-	WgModalHook * pHook = m_modalHooks.Last();
+	WgModalHook * pHook = m_modalHooks.last();
 
 	WgWidget * 	pSavedFocus = 0;
 	WgHook *	pBranch	= 0;
 
 	if( pHook )
 	{
-		pSavedFocus = pHook->m_pKeyFocus.RawPtr();
+		pSavedFocus = pHook->m_pKeyFocus.rawPtr();
 		pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = pHook;
 	}
 	else if( m_baseHook._widget() )
 	{
-		pSavedFocus = m_pBaseKeyFocus.RawPtr();
+		pSavedFocus = m_pBaseKeyFocus.rawPtr();
 		m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
 		pBranch = &m_baseHook;
 	}
@@ -512,7 +512,7 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	// Switch to previously saved focus, or null if not applicable
 
-	pHandler->SetKeyboardFocus( pSavedFocus );
+	pHandler->setKeyboardFocus( pSavedFocus );
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -528,7 +528,7 @@ void WgModalLayer::_onNewSize( const WgSize& sz )
 
 	// Refresh modal widgets geometry, their positions might have changed.
 
-	WgModalHook * pHook = m_modalHooks.First();
+	WgModalHook * pHook = m_modalHooks.first();
 
 	while( pHook )
 	{
@@ -549,27 +549,27 @@ void WgModalLayer::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgLayer::_onMsg(_pMsg);
 
-	if( !m_modalHooks.IsEmpty() && _findWidget( _pMsg->PointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
+	if( !m_modalHooks.isEmpty() && _findWidget( _pMsg->pointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
 	{
-		switch( _pMsg->Type() )
+		switch( _pMsg->type() )
 		{
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
-				WgBase::MsgRouter()->Post( new WgModalBlockedPressMsg( pMsg->Button(), this) );
+				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
+				WgBase::msgRouter()->post( new WgModalBlockedPressMsg( pMsg->button(), this) );
 			}
 			break;
 
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
-				WgBase::MsgRouter()->Post( new WgModalBlockedPressMsg( pMsg->Button(), this) );
+				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
+				WgBase::msgRouter()->post( new WgModalBlockedPressMsg( pMsg->button(), this) );
 			}
 			break;
 
 			case WG_MSG_MOUSE_MOVE:
 			{
-				WgBase::MsgRouter()->Post( new WgModalMoveOutsideMsg(this) );
+				WgBase::msgRouter()->post( new WgModalMoveOutsideMsg(this) );
 			}
 			break;
 		}

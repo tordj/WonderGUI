@@ -56,36 +56,36 @@ WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg, const WgObjectPtr& pParam
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgMsgFunc::IsInstanceOf( const char * pClassName ) const
+bool WgMsgFunc::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgReceiver::IsInstanceOf(pClassName);
+	return WgReceiver::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgMsgFunc::ClassName( void ) const
+const char * WgMsgFunc::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgMsgFuncPtr WgMsgFunc::Cast( const WgObjectPtr& pObject )
+WgMsgFuncPtr WgMsgFunc::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMsgFuncPtr( static_cast<WgMsgFunc*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMsgFuncPtr( static_cast<WgMsgFunc*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ OnMsg() _______________________________________________________________
+//____ onMsg() _______________________________________________________________
 
-void WgMsgFunc::OnMsg( const WgMsgPtr& pMsg )
+void WgMsgFunc::onMsg( const WgMsgPtr& pMsg )
 {
 	switch( m_callbackType )
 	{

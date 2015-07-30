@@ -34,29 +34,29 @@ WgVolumeMeter::~WgVolumeMeter()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgVolumeMeter::IsInstanceOf( const char * pClassName ) const
+bool WgVolumeMeter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgVolumeMeter::ClassName( void ) const
+const char * WgVolumeMeter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgVolumeMeterPtr WgVolumeMeter::Cast( const WgObjectPtr& pObject )
+WgVolumeMeterPtr WgVolumeMeter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgVolumeMeterPtr( static_cast<WgVolumeMeter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgVolumeMeterPtr( static_cast<WgVolumeMeter*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -129,12 +129,12 @@ void WgVolumeMeter::SetLEDSpacing( float spacing )
 }
 
 
-//____ SetValue() ______________________________________________________________
+//____ setValue() ______________________________________________________________
 
-void WgVolumeMeter::SetValue( float peak, float hold )
+void WgVolumeMeter::setValue( float peak, float hold )
 {
-	WG_LIMIT( peak, 0.f, 1.f );
-	WG_LIMIT( hold, 0.f, 1.f );
+	LIMIT( peak, 0.f, 1.f );
+	LIMIT( hold, 0.f, 1.f );
 	
 	if( m_peak != peak || m_hold != hold )
 	{
@@ -145,9 +145,9 @@ void WgVolumeMeter::SetValue( float peak, float hold )
 }
 
 
-//____ PreferredSize() ________________________________________________________________
+//____ preferredSize() ________________________________________________________________
 
-WgSize WgVolumeMeter::PreferredSize() const
+WgSize WgVolumeMeter::preferredSize() const
 {
 	WgSize	content;
 
@@ -157,7 +157,7 @@ WgSize WgVolumeMeter::PreferredSize() const
 		content = WgSize(5*m_nLEDs,10);
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(content);
+		return m_pSkin->sizeForContent(content);
 	else
 		return content;
 }
@@ -171,7 +171,7 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas, m_state);
+		canvas = m_pSkin->contentRect(_canvas, m_state);
 	else
 		canvas = _canvas;
 
@@ -179,7 +179,7 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	int	peak = 0;
 	int hold = 0;
 	
-	if( m_state.IsEnabled() )
+	if( m_state.isEnabled() )
 	{
 		peak = (int) (m_nLEDs * m_peak);
 		hold = (int) (m_nLEDs * m_hold);
@@ -234,7 +234,7 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		if( i < peak || i+1 == hold )
 			onoff = 1;
 		
-		pDevice->FillSubPixel( WgRectF(ledRect, clip), m_LEDColors[section][onoff] );
+		pDevice->fillSubPixel( WgRectF(ledRect, clip), m_LEDColors[section][onoff] );
 		
 		ledRect.x += stepX;
 		ledRect.y += stepY;
@@ -247,7 +247,7 @@ void  WgVolumeMeter::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != m_state.IsEnabled() )
+	if( oldState.isEnabled() != m_state.isEnabled() )
 		_requestRender();
 }
 

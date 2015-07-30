@@ -22,12 +22,12 @@ typedef	WgWeakPtr<WgVolumeMeter,WgWidgetWeakPtr>	WgVolumeMeterWeakPtr;
 class WgVolumeMeter : public WgWidget
 {
 public:
-	static WgVolumeMeterPtr	Create() { return WgVolumeMeterPtr(new WgVolumeMeter()); }
+	static WgVolumeMeterPtr	create() { return WgVolumeMeterPtr(new WgVolumeMeter()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVolumeMeterPtr	Cast( const WgObjectPtr& pObject );
+	static WgVolumeMeterPtr	cast( const WgObjectPtr& pObject );
 	
 	//____ Methods __________________________________________
 	
@@ -35,10 +35,10 @@ public:
 							   WgColor bottomOff, WgColor middleOff, WgColor topOff );
 	void			SetNbLEDs( int bottomSection, int middleSection, int topSection );
 	void			SetLEDSpacing( float spacing );
-	void			SetValue( float peak, float hold );
+	void			setValue( float peak, float hold );
 	void			SetDirection( WgDirection direction );
 		
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 	
 protected:
 	WgVolumeMeter();

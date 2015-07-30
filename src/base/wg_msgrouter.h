@@ -55,59 +55,59 @@ friend class WgWidget;
 friend class WgRootPanel;
 
 public:
-	static WgMsgRouterPtr	Create() { return WgMsgRouterPtr(new WgMsgRouter()); }
+	static WgMsgRouterPtr	create() { return WgMsgRouterPtr(new WgMsgRouter()); }
 
-	bool					IsInstanceOf( const char * pClassName ) const;
-	const char *			ClassName( void ) const;
+	bool					isInstanceOf( const char * pClassName ) const;
+	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgMsgRouterPtr	Cast( const WgObjectPtr& pObject );
+	static WgMsgRouterPtr	cast( const WgObjectPtr& pObject );
 
-	void	SetRoot( const WgRootPanelPtr& pRoot ); // Temporary fix...
+	void	setRoot( const WgRootPanelPtr& pRoot ); // Temporary fix...
 
 
-	bool	Post( const WgMsgPtr& pMsg );
+	bool	post( const WgMsgPtr& pMsg );
 
-	void	Dispatch();
-
-	//----
-
-	bool	SetFocusGroup( const WgPanelPtr& pFocusGroup );
-	bool	SetKeyboardFocus( const WgWidgetPtr& pFocus );
-
-	WgPanelPtr	FocusGroup() const { return m_keyFocusGroup.RawPtr(); }
-	WgWidgetPtr	KeyboardFocus() const { return m_keyFocusWidget.RawPtr(); }
+	void	dispatch();
 
 	//----
 
-	bool	IsMouseButtonPressed( int button ) const;
-	bool	IsAnyMouseButtonPressed() const;
-	bool	IsKeyPressed( int native_keycode ) const;
-	WgModifierKeys ModKeys() const { return m_modKeys; }
+	bool	setFocusGroup( const WgPanelPtr& pFocusGroup );
+	bool	setKeyboardFocus( const WgWidgetPtr& pFocus );
 
-	bool	IsWindowFocused() const { return m_bWindowFocus; }
+	WgPanelPtr	focusGroup() const { return m_keyFocusGroup.rawPtr(); }
+	WgWidgetPtr	keyboardFocus() const { return m_keyFocusWidget.rawPtr(); }
 
 	//----
 
-	bool	BroadcastTo( const WgReceiverPtr& pReceiver );
-	bool	BroadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver );
-	bool	EndBroadcast( const WgReceiverPtr& pReceiver );
+	bool	isMouseButtonPressed( int button ) const;
+	bool	isAnyMouseButtonPressed() const;
+	bool	isKeyPressed( int native_keycode ) const;
+	WgModifierKeys modKeys() const { return m_modKeys; }
+
+	bool	isWindowFocused() const { return m_bWindowFocus; }
+
+	//----
+
+	bool	broadcastTo( const WgReceiverPtr& pReceiver );
+	bool	broadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver );
+	bool	endBroadcast( const WgReceiverPtr& pReceiver );
 	
-	WgRouteId	AddRoute( const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
-	WgRouteId	AddRoute( const WgMsgFilter& filter, const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
+	WgRouteId	addRoute( const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
+	WgRouteId	addRoute( const WgMsgFilter& filter, const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver );
 
-	WgRouteId	AddRoute( WgMsgType type, const WgReceiverPtr& pReceiver );
-	WgRouteId	AddRoute( const WgMsgFilter& filter, WgMsgType type, const WgReceiverPtr& pReceiver );
+	WgRouteId	addRoute( WgMsgType type, const WgReceiverPtr& pReceiver );
+	WgRouteId	addRoute( const WgMsgFilter& filter, WgMsgType type, const WgReceiverPtr& pReceiver );
 
-	WgRouteId	AddRoute( WgMsgType type, WgReceiver * pReceiver );		// For calls from constructors.
+	WgRouteId	addRoute( WgMsgType type, WgReceiver * pReceiver );		// For calls from constructors.
 
 
-	bool	DeleteRoute( WgRouteId handle );
-	int		DeleteRoutesTo( const WgReceiverPtr& pReceiver );
-	int		DeleteRoutesFrom( const WgObjectPtr& pSource );
-	int		DeleteRoutesFrom( WgMsgType type );
+	bool	deleteRoute( WgRouteId handle );
+	int		deleteRoutesTo( const WgReceiverPtr& pReceiver );
+	int		deleteRoutesFrom( const WgObjectPtr& pSource );
+	int		deleteRoutesFrom( WgMsgType type );
 
-	int		ClearRoutes();
-	int		GarbageCollectRoutes();
+	int		clearRoutes();
+	int		garbageCollectRoutes();
 
 	//----
 
@@ -167,7 +167,7 @@ private:
 	WgRootPanelWeakPtr	m_pRoot;
 
 	std::deque<WgMsgPtr>			m_msgQueue;
-	bool							m_bIsProcessing;		// Set when we are inside Dispatch().
+	bool							m_bIsProcessing;		// Set when we are inside dispatch().
 	std::deque<WgMsgPtr>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
 
 	int64_t			m_time;
@@ -220,10 +220,10 @@ private:
 
 		LINK_METHODS(Route);
 
-		void 	Dispatch( const WgMsgPtr& pMsg );
-		bool 	IsAlive() const;
-		WgReceiver *	Receiver() const;
-		inline const WgMsgFilter& 	Filter() const { return m_filter; }
+		void 	dispatch( const WgMsgPtr& pMsg );
+		bool 	isAlive() const;
+		WgReceiver *	receiver() const;
+		inline const WgMsgFilter& 	filter() const { return m_filter; }
 
 	protected:
 		WgMsgFilter			m_filter;

@@ -44,32 +44,32 @@ typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphsetWeakPtr>		WgBitmapGlyphsWeakPtr;
 class WgBitmapGlyphs : public WgGlyphset
 {
 public:
-	static WgBitmapGlyphsPtr	Create( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphsPtr(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
+	static WgBitmapGlyphsPtr	create( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphsPtr(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgBitmapGlyphsPtr	Cast( const WgObjectPtr& pObject );
+	static WgBitmapGlyphsPtr	cast( const WgObjectPtr& pObject );
 
 
-	inline Type	GetType() const { return BITMAP; }
+	inline Type	getType() const { return BITMAP; }
 
-	void					InsertGlyphs( const WgSurfacePtr& pSurf, char* pGlyphSpec, bool binaryFile=false );
-	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
+	void					insertGlyphs( const WgSurfacePtr& pSurf, char* pGlyphSpec, bool binaryFile=false );
+	void					copyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
 
 
-	WgGlyphPtr				GetGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
-	bool					HasGlyph( Uint16 chr );
-	int						GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
+	WgGlyphPtr				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
+	bool					hasGlyph( Uint16 chr );
+	int						getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
 
-	inline int				GetHeight( int size ) { return m_height; }
-	inline int				GetLineSpacing( int size ) { return m_height; }
-	inline int				GetBaseline( int size ) { return m_baseline; }
-	inline int				GetNbGlyphs() { return m_nGlyphs; }
-	inline bool				HasGlyphs() { return m_nGlyphs?true:false; }
-	inline bool				IsMonospace() { return m_bMonospace; }
-	inline int				GetWhitespaceAdvance( int size ) { return m_spaceSpacing; }
-	inline int				GetMaxGlyphAdvance( int size ) { return m_maxSpacing; }
+	inline int				getHeight( int size ) { return m_height; }
+	inline int				getLineSpacing( int size ) { return m_height; }
+	inline int				getBaseline( int size ) { return m_baseline; }
+	inline int				getNbGlyphs() { return m_nGlyphs; }
+	inline bool				hasGlyphs() { return m_nGlyphs?true:false; }
+	inline bool				isMonospace() { return m_bMonospace; }
+	inline int				getWhitespaceAdvance( int size ) { return m_spaceSpacing; }
+	inline int				getMaxGlyphAdvance( int size ) { return m_maxSpacing; }
 
 protected:
 	WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false );
@@ -81,9 +81,9 @@ protected:
 		Glyph();
 		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurfacePtr& pSurf, const WgRect& rect );
 
-		const WgGlyphBitmap * GetBitmap() { return &m_src; }
+		const WgGlyphBitmap * getBitmap() { return &m_src; }
 
-		void SetAdvance( short advance ) { m_advance = advance; }
+		void setAdvance( short advance ) { m_advance = advance; }
 
 		WgGlyphBitmap	m_src;
 	};

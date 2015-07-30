@@ -34,29 +34,29 @@ WgColumnHeader::WgColumnHeader(WgColumnHeaderField* pField) : m_pField(pField), 
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgColumnHeader::IsInstanceOf( const char * pClassName ) const
+bool WgColumnHeader::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgInterface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgColumnHeader::ClassName( void ) const
+const char * WgColumnHeader::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgColumnHeaderPtr WgColumnHeader::Cast( const WgInterfacePtr& pInterface )
+WgColumnHeaderPtr WgColumnHeader::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgColumnHeaderPtr( pInterface.GetRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgColumnHeaderPtr( pInterface.getRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.rawPtr()) );
 
 	return 0;
 }

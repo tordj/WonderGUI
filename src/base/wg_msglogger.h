@@ -34,37 +34,37 @@ typedef	WgWeakPtr<WgMsgLogger,WgReceiverWeakPtr>		WgMsgLoggerWeakPtr;
 class WgMsgLogger : public WgReceiver
 {
 public:
-	static WgMsgLoggerPtr		Create( std::ostream& stream ) { return WgMsgLoggerPtr( new WgMsgLogger(stream)); }
+	static WgMsgLoggerPtr		create( std::ostream& stream ) { return WgMsgLoggerPtr( new WgMsgLogger(stream)); }
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgMsgLoggerPtr		Cast( const WgObjectPtr& pObject );
+	static WgMsgLoggerPtr		cast( const WgObjectPtr& pObject );
 
-	void OnMsg( const WgMsgPtr& _pMsg );
+	void onMsg( const WgMsgPtr& _pMsg );
 
-	void IgnoreMsg( WgMsgType msg );
-	void LogMsg( WgMsgType msg );
+	void ignoreMsg( WgMsgType msg );
+	void logMsg( WgMsgType msg );
 
-	void LogPointerMsgs();
-	void IgnorePointerMsgs();
+	void logPointerMsgs();
+	void ignorePointerMsgs();
 
-	void LogMouseButtonMsgs();
-	void IgnoreMouseButtonMsgs();
+	void logMouseButtonMsgs();
+	void ignoreMouseButtonMsgs();
 
-	void LogKeyboardMsgs();
-	void IgnoreKeyboardMsgs();
+	void logKeyboardMsgs();
+	void ignoreKeyboardMsgs();
 
-	void LogMouseMsgs();
-	void IgnoreMouseMsgs();
+	void logMouseMsgs();
+	void ignoreMouseMsgs();
 
-	void LogInputMsgs();
-	void IgnoreInputMsgs();
+	void logInputMsgs();
+	void ignoreInputMsgs();
 
-	void LogAllMsgs();
-	void IgnoreAllMsgs();
+	void logAllMsgs();
+	void ignoreAllMsgs();
 
-	bool IsMsgLogged( WgMsgType msg ) { return m_msgFilter[msg]; }
+	bool isMsgLogged( WgMsgType msg ) { return m_msgFilter[msg]; }
 
 private:
 	WgMsgLogger( std::ostream& stream );

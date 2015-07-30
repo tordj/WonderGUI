@@ -41,7 +41,7 @@ WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
 	m_pDevice	= pDevice;
 	m_origo		= origo;
 	m_pos		= origo;
-	SetClipRect( clip );
+	setClipRect( clip );
 }
 
 //____ _init() _________________________________________________________________
@@ -68,9 +68,9 @@ void WgPen::_init()
 	m_bClip = false;
 }
 
-//____ SetClipRect() __________________________________________________________
+//____ setClipRect() __________________________________________________________
 
-void WgPen::SetClipRect( const WgRect& clip )
+void WgPen::setClipRect( const WgRect& clip )
 {
 	m_clipRect = clip;
 	if( m_clipRect.x == 0 && m_clipRect.y == 0 && m_clipRect.w == 0 && m_clipRect.h == 0 )
@@ -92,12 +92,12 @@ void WgPen::_onAttrChanged()
 	}
 
 	m_size = m_wantedSize;
-	m_pGlyphs = m_pFont->GetGlyphset( m_style, m_size );
+	m_pGlyphs = m_pFont->getGlyphset( m_style, m_size );
 }
 
-//____ SetAttributes() ________________________________________________________
+//____ setAttributes() ________________________________________________________
 
-bool WgPen::SetAttributes( const WgTextAttr& attr )
+bool WgPen::setAttributes( const WgTextAttr& attr )
 {
 	if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 		return false;
@@ -110,9 +110,9 @@ bool WgPen::SetAttributes( const WgTextAttr& attr )
 	return true;
 }
 
-//____ SetSize() ______________________________________________________________
+//____ setSize() ______________________________________________________________
 
-bool WgPen::SetSize( int size )
+bool WgPen::setSize( int size )
 {
 	if( size < 0 && size > WG_MAX_FONTSIZE )
 		return false;
@@ -122,34 +122,34 @@ bool WgPen::SetSize( int size )
 	return true;
 }
 
-//____ SetFont() ______________________________________________________________
+//____ setFont() ______________________________________________________________
 
-void WgPen::SetFont( const WgFontPtr& pFont )
+void WgPen::setFont( const WgFontPtr& pFont )
 {
 	m_pFont = pFont;
 	_onAttrChanged();
 }
 
-//____ SetStyle() _____________________________________________________________
+//____ setStyle() _____________________________________________________________
 
-void WgPen::SetStyle( WgFontAlt style )
+void WgPen::setStyle( WgFontAlt style )
 {
 	m_style = style;
 	_onAttrChanged();
 }
 
-//____ SetColor() _____________________________________________________________
+//____ setColor() _____________________________________________________________
 
-void WgPen::SetColor( WgColor color )
+void WgPen::setColor( WgColor color )
 {
 	m_color = color;
 //	_onAttrChanged();
 }
 
 
-//____ SetChar() _____________________________________________________________
+//____ setChar() _____________________________________________________________
 
-bool WgPen::SetChar( Uint32 chr )
+bool WgPen::setChar( Uint32 chr )
 {
 	m_pPrevGlyph = m_pGlyph;
 
@@ -160,23 +160,23 @@ bool WgPen::SetChar( Uint32 chr )
 		if( chr == ' ' && !m_bShowSpace )
 		{
 			if(m_pGlyphs)
-				m_dummyGlyph.SetAdvance( m_pGlyphs->GetWhitespaceAdvance( m_size ) );
+				m_dummyGlyph.setAdvance( m_pGlyphs->getWhitespaceAdvance( m_size ) );
 			else
-				m_dummyGlyph.SetAdvance(0);
+				m_dummyGlyph.setAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
 
 		if( chr == '\n' && !m_bShowCRLF )
 		{
-			m_dummyGlyph.SetAdvance(0);
+			m_dummyGlyph.setAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
 
 		if( chr == 0 )
 		{
-			m_dummyGlyph.SetAdvance(0);
+			m_dummyGlyph.setAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
@@ -184,7 +184,7 @@ bool WgPen::SetChar( Uint32 chr )
 		if( chr == '\t' )
 		{
 			int newPos = m_origo.x + ((m_pos.x - m_origo.x + m_tabWidth) / m_tabWidth) * m_tabWidth;
-			m_dummyGlyph.SetAdvance(newPos - m_pos.x);
+			m_dummyGlyph.setAdvance(newPos - m_pos.x);
 			m_pGlyph = &m_dummyGlyph;
 			return false;
 		}
@@ -192,7 +192,7 @@ bool WgPen::SetChar( Uint32 chr )
 
 	if( chr == WG_BREAK_PERMITTED || chr == WG_HYPHEN_BREAK_PERMITTED )
 	{
-		m_dummyGlyph.SetAdvance(0);
+		m_dummyGlyph.setAdvance(0);
 		m_pGlyph = &m_dummyGlyph;
 		return false;
 	}
@@ -207,48 +207,48 @@ bool WgPen::SetChar( Uint32 chr )
 
 	// First we try to get the glyph from our Glyphset.
 
-	WgGlyphPtr p = m_pGlyphs->GetGlyph( chr, m_size );
+	WgGlyphPtr p = m_pGlyphs->getGlyph( chr, m_size );
 	if( !p )
 	{
 		// If not in glyphset we get the closest match in size/style from Font.
 
-		p = m_pFont->GetGlyph( chr, m_style, m_size );
+		p = m_pFont->getGlyph( chr, m_style, m_size );
 		if( !p )
 		{
 			// The glyph doesn't exist in this font, try to get the unicode
 			// WHITE_BOX as a replacement glyph.
 
-			p = m_pFont->GetGlyph( 0xFFFD, m_style, m_size );
+			p = m_pFont->getGlyph( 0xFFFD, m_style, m_size );
 			if( !p )
 			{
 				// We don't have the white box, try with the most suitable
 				// common ascii character instead...
 
-				p = m_pFont->GetGlyph( '*', m_style, m_size );
+				p = m_pFont->getGlyph( '*', m_style, m_size );
 				if( !p )
 				{
 					// Total failure, nothing to render...
 
 					m_pGlyph = &m_dummyGlyph;
-					m_dummyGlyph.SetAdvance(0);
+					m_dummyGlyph.setAdvance(0);
 					return false;
 				}
 			}
 		}
 	}
 
-	if( m_pPrevGlyph->Glyphset() != p->Glyphset() )
+	if( m_pPrevGlyph->glyphset() != p->glyphset() )
 		m_pPrevGlyph = &m_dummyGlyph; // We can't do kerning between glyphs from different glyphsets.
 
 	m_pGlyph = p;
 	return true;
 }
 
-//____ BlitChar() _____________________________________________________________
+//____ blitChar() _____________________________________________________________
 
-void WgPen::BlitChar() const
+void WgPen::blitChar() const
 {
-	const WgGlyphBitmap * pSrc = m_pGlyph->GetBitmap();
+	const WgGlyphBitmap * pSrc = m_pGlyph->getBitmap();
 
 	if( pSrc )
 	{
@@ -256,34 +256,34 @@ void WgPen::BlitChar() const
 		int y = m_pos.y + pSrc->bearingY;
 
 		if( m_bClip )
-			m_pDevice->ClipBlit( m_clipRect, pSrc->pSurface, pSrc->rect, x, y);
+			m_pDevice->clipBlit( m_clipRect, pSrc->pSurface, pSrc->rect, x, y);
 		else
-			m_pDevice->Blit( pSrc->pSurface, pSrc->rect, x, y);
+			m_pDevice->blit( pSrc->pSurface, pSrc->rect, x, y);
 	}
 }
 
-//____ BlitCursor() ___________________________________________________________
+//____ blitCursor() ___________________________________________________________
 
-bool WgPen::BlitCursor( const WgCaretInstance& instance ) const
+bool WgPen::blitCursor( const WgCaretInstance& instance ) const
 {
-	WgCaretPtr pCursor = WgTextTool::GetCursor(instance.m_pText);
+	WgCaretPtr pCursor = WgTextTool::getCursor(instance.m_pText);
 	if( !pCursor )
 		return false;
 
 	WgCaret::Mode mode = instance.cursorMode();
 
-	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
+	WgGfxAnimPtr pAnim	= pCursor->anim( mode );
 	if( !pAnim )
 		return false;
 
-	WgGfxFrame * pAnimFrame =	pAnim->GetFrame( instance.time(), 0 );
+	WgGfxFrame * pAnimFrame =	pAnim->getFrame( instance.time(), 0 );
 
-	WgSize	size = pAnim->Size();
-	WgCoord  bearing = pCursor->Bearing( mode );
+	WgSize	size = pAnim->size();
+	WgCoord  bearing = pCursor->bearing( mode );
 
-	float	scaleValue = (pCursor->SizeRatio(mode)*GetLineHeight())/ size.h;
+	float	scaleValue = (pCursor->sizeRatio(mode)*getLineHeight())/ size.h;
 
-	if( pCursor->ScaleWidth(mode) )
+	if( pCursor->scaleWidth(mode) )
 	{
 		size		*= scaleValue;
 		bearing		*= scaleValue;
@@ -299,38 +299,38 @@ bool WgPen::BlitCursor( const WgCaretInstance& instance ) const
 
 	WgColor		tintColor;
 	WgBlendMode blendMode;
-	switch( pCursor->GetBlitMode() )
+	switch( pCursor->getBlitMode() )
 	{
 		case WgCaret::NORMAL:
 			break;
 		case WgCaret::TINTED:
-			tintColor = m_pDevice->GetTintColor();
-			m_pDevice->SetTintColor( tintColor * instance.text()->Properties()->Color( WG_STATE_NORMAL ) );
+			tintColor = m_pDevice->getTintColor();
+			m_pDevice->setTintColor( tintColor * instance.text()->properties()->color( WG_STATE_NORMAL ) );
 			break;
 		case WgCaret::INVERT_BG:
-			blendMode = m_pDevice->GetBlendMode();
-			m_pDevice->SetBlendMode(WG_BLENDMODE_INVERT);
+			blendMode = m_pDevice->getBlendMode();
+			m_pDevice->setBlendMode(WG_BLENDMODE_INVERT);
 			break;
 	}
 
 	//
 
 	if( m_bClip )
-		m_pDevice->ClipStretchBlit( m_clipRect, pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
+		m_pDevice->clipStretchBlit( m_clipRect, pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
 	else
-		m_pDevice->StretchBlit( pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
+		m_pDevice->stretchBlit( pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
 
 	// Restore tintcolor/blendmode.
 
-	switch( pCursor->GetBlitMode() )
+	switch( pCursor->getBlitMode() )
 	{
 		case WgCaret::NORMAL:
 			break;
 		case WgCaret::TINTED:
-			m_pDevice->SetTintColor( tintColor );
+			m_pDevice->setTintColor( tintColor );
 			break;
 		case WgCaret::INVERT_BG:
-			m_pDevice->SetBlendMode( blendMode );
+			m_pDevice->setBlendMode( blendMode );
 			break;
 	}
 
@@ -339,25 +339,25 @@ bool WgPen::BlitCursor( const WgCaretInstance& instance ) const
 
 
 
-//____ AdvancePosCursor() _____________________________________________________
+//____ advancePosCursor() _____________________________________________________
 
-void WgPen::AdvancePosCursor( const WgCaretInstance& instance )
+void WgPen::advancePosCursor( const WgCaretInstance& instance )
 {
-	WgCaretPtr pCursor = WgTextTool::GetCursor( instance.m_pText );
+	WgCaretPtr pCursor = WgTextTool::getCursor( instance.m_pText );
 	if( !pCursor )
 		return;
 
 	WgCaret::Mode mode = instance.cursorMode();
 
-	WgGfxAnimPtr pAnim	= pCursor->Anim( mode );
+	WgGfxAnimPtr pAnim	= pCursor->anim( mode );
 	if( !pAnim )
 		return;
 
-	int advance = pCursor->Advance(mode);
+	int advance = pCursor->advance(mode);
 
-	if( pCursor->ScaleWidth(mode) )
+	if( pCursor->scaleWidth(mode) )
 	{
-		float	scaleValue = (pCursor->SizeRatio(mode) * GetLineSpacing())/pAnim->Size().h;
+		float	scaleValue = (pCursor->sizeRatio(mode) * getLineSpacing())/pAnim->size().h;
 		advance = (int) (advance * scaleValue);
 	}
 

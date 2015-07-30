@@ -51,15 +51,15 @@ typedef	WgWeakPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
 class WgFiller : public WgWidget
 {
 public:
-	static WgFillerPtr	Create() { return WgFillerPtr(new WgFiller()); }
+	static WgFillerPtr	create() { return WgFillerPtr(new WgFiller()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFillerPtr	Cast( const WgObjectPtr& pObject );
+	static WgFillerPtr	cast( const WgObjectPtr& pObject );
 
-	void	SetPreferredSize( const WgSize& size );
-	WgSize	PreferredSize() const;
+	void	setPreferredSize( const WgSize& size );
+	WgSize	preferredSize() const;
 
 protected:
 	WgFiller();

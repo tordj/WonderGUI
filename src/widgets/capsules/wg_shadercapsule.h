@@ -34,20 +34,20 @@ typedef	WgWeakPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
 class WgShaderCapsule : public WgCapsule
 {
 public:
-	static WgShaderCapsulePtr	Create() { return WgShaderCapsulePtr(new WgShaderCapsule()); }
+	static WgShaderCapsulePtr	create() { return WgShaderCapsulePtr(new WgShaderCapsule()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgShaderCapsulePtr	Cast( const WgObjectPtr& pObject );
+	static WgShaderCapsulePtr	cast( const WgObjectPtr& pObject );
 
-	void		SetColor( const WgColor& color);
-	void		SetTintMode( WgTintMode mode );
-	void		SetBlendMode( WgBlendMode mode );
+	void		setColor( const WgColor& color);
+	void		setTintMode( WgTintMode mode );
+	void		setBlendMode( WgBlendMode mode );
 
-	inline WgColor		Color() { return m_tintColor; }
-	inline WgBlendMode	BlendMode() { return m_blendMode; }
-	inline WgTintMode	TintMode() { return m_tintMode; }
+	inline WgColor		color() { return m_tintColor; }
+	inline WgBlendMode	blendMode() { return m_blendMode; }
+	inline WgTintMode	tintMode() { return m_tintMode; }
 
 
 protected:

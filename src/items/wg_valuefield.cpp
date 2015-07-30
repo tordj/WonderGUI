@@ -32,9 +32,9 @@ WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder
 	m_scale = 1;
 }
 
-//____ SetFormatter() __________________________________________________________
+//____ setFormatter() __________________________________________________________
 
-void WgValueField::SetFormatter( const WgValueFormatterPtr& pFormatter )
+void WgValueField::setFormatter( const WgValueFormatterPtr& pFormatter )
 {
 	if( m_pFormatter != pFormatter )
 	{
@@ -43,9 +43,9 @@ void WgValueField::SetFormatter( const WgValueFormatterPtr& pFormatter )
 	}
 }
 
-//____ ClearFormatter() ________________________________________________________
+//____ clearFormatter() ________________________________________________________
 
-void WgValueField::ClearFormatter()
+void WgValueField::clearFormatter()
 {
 	if( m_pFormatter )
 	{
@@ -54,9 +54,9 @@ void WgValueField::ClearFormatter()
 	}
 }
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgValueField::Clear()
+void WgValueField::clear()
 {
 	if( m_value != 0 )
 	{
@@ -66,9 +66,9 @@ void WgValueField::Clear()
 	}
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-bool WgValueField::Set( Sint64 value, int scale )
+bool WgValueField::set( Sint64 value, int scale )
 {
 	if( m_value != value || m_scale != scale )
 	{
@@ -82,7 +82,7 @@ bool WgValueField::Set( Sint64 value, int scale )
 	return true;
 }
 /*
-void WgValueField::Set( float value )
+void WgValueField::set( float value )
 {
 	value *= m_scale;
 	Sint64 intVal = (Sint64) value;
@@ -93,7 +93,7 @@ void WgValueField::Set( float value )
 	}
 }
 
-void WgValueField::Set( double value )
+void WgValueField::set( double value )
 {
 	value *= m_scale;
 	Sint64 intVal = (Sint64) value;
@@ -105,21 +105,21 @@ void WgValueField::Set( double value )
 }
 */
 
-//____ OnRefresh() _____________________________________________________________
+//____ onRefresh() _____________________________________________________________
 
-void WgValueField::OnRefresh()
+void WgValueField::onRefresh()
 {	
 	_regenText();
-	WgPresentableField::OnRefresh();
+	WgPresentableField::onRefresh();
 }
 
 //____ _regenText() ____________________________________________________________
 
 void WgValueField::_regenText()
 {
-	WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.RawPtr() : 0; //WgBase::DefaultValueFormatter();
+	WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //WgBase::DefaultValueFormatter();
 	if( m_pFormatter )
-		m_charBuffer = pFormatter->Format(m_value, m_scale);
+		m_charBuffer = pFormatter->format(m_value, m_scale);
 	_onDirty();
 	
 	//TODO: Conditional call to _onResize();

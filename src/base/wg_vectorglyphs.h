@@ -59,12 +59,12 @@ typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphsetWeakPtr>	WgVectorGlyphsWeakPtr;
 class WgVectorGlyphs : public WgGlyphset
 {
 public:
-	static WgVectorGlyphsPtr	Create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphsPtr(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
+	static WgVectorGlyphsPtr	create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphsPtr(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVectorGlyphsPtr	Cast( const WgObjectPtr& pObject );
+	static WgVectorGlyphsPtr	cast( const WgObjectPtr& pObject );
 
 	enum RenderMode
 	{
@@ -75,30 +75,30 @@ public:
 
 
 
-	inline Type	GetType() const { return VECTOR; }
+	inline Type	getType() const { return VECTOR; }
 
-	int			GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
-	WgGlyphPtr	GetGlyph( Uint16 chr, int size );
-	bool		HasGlyph( Uint16 chr );
+	int			getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
+	WgGlyphPtr	getGlyph( Uint16 chr, int size );
+	bool		hasGlyph( Uint16 chr );
 
-	int			GetHeight( int size );
-	int			GetLineSpacing( int size );
-	int			GetBaseline( int size );
-	int			GetNbGlyphs();
-	bool		HasGlyphs();
-	bool		IsMonospace();
-	int			GetWhitespaceAdvance( int size );
-	int			GetMaxGlyphAdvance( int size );
+	int			getHeight( int size );
+	int			getLineSpacing( int size );
+	int			getBaseline( int size );
+	int			getNbGlyphs();
+	bool		hasGlyphs();
+	bool		isMonospace();
+	int			getWhitespaceAdvance( int size );
+	int			getMaxGlyphAdvance( int size );
 
-	inline void	SetSizeOffset( int offset ) { m_sizeOffset = offset; }
-	inline int	GetSizeOffset() const { return m_sizeOffset; }
-	inline bool SetRenderMode( RenderMode mode ) { return SetRenderMode( mode, 0, 0xFFFF ); }
-	inline bool SetRenderMode( RenderMode mode, int size ) { return SetRenderMode(mode,size,size); }
-	bool		SetRenderMode( RenderMode mode, int startSize, int endSize );
-	inline RenderMode	GetRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
+	inline void	setSizeOffset( int offset ) { m_sizeOffset = offset; }
+	inline int	getSizeOffset() const { return m_sizeOffset; }
+	inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
+	inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
+	bool		setRenderMode( RenderMode mode, int startSize, int endSize );
+	inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
-	static void	SetSurfaceFactory( const WgSurfaceFactoryPtr& pFactory );
-	static void	ClearCache();
+	static void	setSurfaceFactory( const WgSurfaceFactoryPtr& pFactory );
+	static void	clearCache();
 
 private:
 	WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
@@ -117,10 +117,10 @@ private:
 		Glyph();
 		Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset );
 		~Glyph();
-		const WgGlyphBitmap * GetBitmap();
+		const WgGlyphBitmap * getBitmap();
 
-		void	SlotLost() { m_pSlot = 0; }
-		bool	IsInitialized() { return m_pGlyphset?true:false; }
+		void	slotLost() { m_pSlot = 0; }
+		bool	isInitialized() { return m_pGlyphset?true:false; }
 
 		CacheSlot * m_pSlot;
 		Uint16		m_size;			// size of character in points.
@@ -179,16 +179,16 @@ private:
 	Uint32				m_accessCounter;
 	int					m_renderFlags;
 	RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
-	int					m_sizeOffset;								// value to add to specified size (for GetGlyph(), GetKerning() etc) before getting glyph data.
+	int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
 	int					m_whitespaceAdvance[WG_MAX_FONTSIZE+1];
 
 	//____ Static stuff __________________________________________________________
 
 
-	static CacheSlot *	GetCacheSlot( int width, int height );
-	static int			AddCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& slotSize, int minSlots );
-	static int			MaxSlotsInSurface( const WgSize& surf, const WgSize& slot );
-	static WgSize		CalcTextureSize( const WgSize& slotSize, int nSlots );
+	static CacheSlot *	getCacheSlot( int width, int height );
+	static int			addCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& slotSize, int minSlots );
+	static int			maxSlotsInSurface( const WgSize& surf, const WgSize& slot );
+	static WgSize		calcTextureSize( const WgSize& slotSize, int nSlots );
 
 
 	static WgChain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
@@ -205,7 +205,7 @@ private:
 
 WgVectorGlyphs::Glyph * WgVectorGlyphs::_findGlyph( Uint16 ch, int size ) const
 {
-	if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].IsInitialized() )
+	if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() )
 		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
 
 	return 0;
@@ -215,7 +215,7 @@ WgVectorGlyphs::Glyph * WgVectorGlyphs::_findGlyph( Uint16 ch, int size ) const
 
 void WgVectorGlyphs::_touchSlot( CacheSlot * pSlot )
 {
-	pSlot->MoveFirst();								// Move slot to the top
+	pSlot->moveFirst();								// Move slot to the top
 
 	pSlot->access = m_accessCounter;				// Increase access counter.
 	pSlot->pSurf->access = m_accessCounter++;		// We don't sort the surfaces, probably faster to just compare access when

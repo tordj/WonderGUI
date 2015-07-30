@@ -30,10 +30,10 @@ public:
 	WgMemStack( int blockSize );
 	~WgMemStack() {}
 
-	char *  Alloc( int bytes );
-	void	Release( int bytes );
-	void	Clear();
-	bool	IsEmpty() const;
+	char *  alloc( int bytes );
+	void	release( int bytes );
+	void	clear();
+	bool	isEmpty() const;
 
 private:
 

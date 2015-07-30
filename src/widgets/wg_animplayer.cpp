@@ -51,32 +51,32 @@ WgAnimPlayer::WgAnimPlayer()
 WgAnimPlayer::~WgAnimPlayer()
 {
 	if( m_tickRouteId )
-		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );		
+		WgBase::msgRouter()->deleteRoute( m_tickRouteId );		
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgAnimPlayer::IsInstanceOf( const char * pClassName ) const
+bool WgAnimPlayer::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgAnimPlayer::ClassName( void ) const
+const char * WgAnimPlayer::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgAnimPlayerPtr WgAnimPlayer::Cast( const WgObjectPtr& pObject )
+WgAnimPlayerPtr WgAnimPlayer::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgAnimPlayerPtr( static_cast<WgAnimPlayer*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgAnimPlayerPtr( static_cast<WgAnimPlayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -89,7 +89,7 @@ bool WgAnimPlayer::SetAnimation( const WgGfxAnimPtr& pAnim )
 	m_pAnim			= pAnim;
 	m_playPos		= 0.0;
 
-	WgSize	currSize = Size();
+	WgSize	currSize = size();
 	WgSize	wantedSize;
 
 	_requestResize();
@@ -111,7 +111,7 @@ bool WgAnimPlayer::SetPlayPosFractional( float _fraction )
 	if( !m_pAnim )
 		return false;
 
-	_fraction *= m_pAnim->Duration();
+	_fraction *= m_pAnim->duration();
 
 	m_playPos		= _fraction;
 	_playPosUpdated();
@@ -162,24 +162,24 @@ bool WgAnimPlayer::FastForward( int _ticks )
 	return true;
 }
 
-//____ Duration() _____________________________________________________________
+//____ duration() _____________________________________________________________
 
-int WgAnimPlayer::Duration()
+int WgAnimPlayer::duration()
 {
 	if( !m_pAnim )
 		return 0;
 
-	return	m_pAnim->DurationScaled();
+	return	m_pAnim->durationScaled();
 }
 
-//____ DurationScaled() _______________________________________________________
+//____ durationScaled() _______________________________________________________
 
-int WgAnimPlayer::DurationScaled()
+int WgAnimPlayer::durationScaled()
 {
 	if( !m_pAnim )
 		return 0;
 
-	return	(int) (m_pAnim->DurationScaled() / m_speed);
+	return	(int) (m_pAnim->durationScaled() / m_speed);
 }
 
 //____ Speed() ________________________________________________________________
@@ -208,7 +208,7 @@ bool WgAnimPlayer::Play()
 		return false;
 
 	m_bPlaying = true;
-	m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
+	m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
 	return true;
 }
 
@@ -217,22 +217,22 @@ bool WgAnimPlayer::Play()
 bool WgAnimPlayer::Stop()
 {
 	m_bPlaying = false;
-	WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+	WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 	m_tickRouteId = 0;
 	return true;
 }
 
-//____ PreferredSize() ___________________________________________________________
+//____ preferredSize() ___________________________________________________________
 
-WgSize WgAnimPlayer::PreferredSize() const
+WgSize WgAnimPlayer::preferredSize() const
 {
 	WgSize	sz;
 
 	if( m_pAnim )
-		sz = m_pAnim->Size();
+		sz = m_pAnim->size();
 
 	if( m_pSkin )
-		sz = m_pSkin->SizeForContent(sz);
+		sz = m_pSkin->sizeForContent(sz);
 
 	return sz;
 }
@@ -244,14 +244,14 @@ void WgAnimPlayer::_playPosUpdated()
 	if( !m_pAnim )
 		return;
 
-	WgGfxFrame * pAnimFrame = m_pAnim->GetFrame( (int64_t) m_playPos );
+	WgGfxFrame * pAnimFrame = m_pAnim->getFrame( (int64_t) m_playPos );
 
 	if( pAnimFrame != m_pAnimFrame )
 	{
 		m_pAnimFrame = pAnimFrame;
 		_requestRender();
 
-		WgBase::MsgRouter()->Post( new WgValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1)),true));
+		WgBase::msgRouter()->post( new WgValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
 	}
 }
 
@@ -262,14 +262,14 @@ void WgAnimPlayer::_onMsg( const WgMsgPtr& pMsg )
 {
 	WgWidget::_onMsg( pMsg );
 
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_TICK:
 		{
-			if( !m_pAnim || !m_state.IsEnabled() )
+			if( !m_pAnim || !m_state.isEnabled() )
 				return;
 
-			m_playPos += WgTickMsg::Cast(pMsg)->Millisec() * m_speed;
+			m_playPos += WgTickMsg::cast(pMsg)->millisec() * m_speed;
 			_playPosUpdated();
 
 		}
@@ -284,8 +284,8 @@ void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 {
 	WgWidget::_onRender( pDevice, _canvas, _window, _clip );
 
-	if( m_pAnim && m_state.IsEnabled() )
-		pDevice->ClipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
+	if( m_pAnim && m_state.isEnabled() )
+		pDevice->clipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -314,7 +314,7 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	if( m_pAnim && m_state.IsEnabled() && WgUtil::MarkTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity ) )
+	if( m_pAnim && m_state.isEnabled() && WgUtil::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity ) )
 		return true;
 
 	return WgWidget::_onAlphaTest(ofs,sz);
@@ -326,13 +326,13 @@ void WgAnimPlayer::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != m_state.IsEnabled() && m_bPlaying )
+	if( oldState.isEnabled() != m_state.isEnabled() && m_bPlaying )
 	{
-		if( m_state.IsEnabled() )
-			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
+		if( m_state.isEnabled() )
+			m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
 		else
 		{	
-			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 		}
 		_requestRender();

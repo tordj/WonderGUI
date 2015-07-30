@@ -69,7 +69,7 @@ template<typename T> inline T WgMax(const T &a, const T &b, const T &c) { if( a 
 template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
 template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
 
-#define		WG_LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
+#define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 
 #define	WG_FONTSIZE_INHERIT 0x80000000
 
@@ -103,18 +103,18 @@ public:
 //	void		set( WgModeEnum state ) { m_state = state; }
 //	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
 
-	bool	SetEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
-	bool	SetSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
-	bool	SetFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
-	bool	SetHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
-	bool	SetPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
+	bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
+	bool	setSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
+	bool	setFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
+	bool	setHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
+	bool	setPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
 
 
-	bool	IsEnabled() const { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
-	bool	IsSelected() const { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
-	bool	IsFocused() const { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
-	bool	IsHovered() const { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
-	bool	IsPressed() const { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
+	bool	isEnabled() const { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
+	bool	isSelected() const { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
+	bool	isFocused() const { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
+	bool	isHovered() const { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
+	bool	isPressed() const { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
 
 	inline bool operator==(WgStateEnum state) const { return m_state == state; }
 	inline bool operator!=(WgStateEnum state) const { return m_state != state; }
@@ -596,8 +596,8 @@ public:
 	WgRange() : ofs(0), len(0) {}
 	WgRange( int ofs, int len ) : ofs(ofs), len(len) {}
 
-	inline int	Begin() const { return ofs; }
-	inline int	End() const { return ofs+len; }
+	inline int	begin() const { return ofs; }
+	inline int	end() const { return ofs+len; }
 
 	int ofs;
 	int len;
@@ -680,7 +680,7 @@ enum WgPixelType
  *				 ((color.b << pFormat->B_shift) & pFormat->B_mask) |
  *				 ((color.a << pFormat->A_shift) & pFormat->A_mask);
  *
- * This is essentially what the default implementation for WgSurface::ColorToPixel() and WgSurface::PixelToColor() does.
+ * This is essentially what the default implementation for WgSurface::colorToPixel() and WgSurface::pixelToColor() does.
  *
  **/
 

@@ -29,9 +29,9 @@ WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgFie
 	m_bPressed = false;
 }
 
-//____ SetSkin() ______________________________________________________
+//____ setSkin() ______________________________________________________
 
-void WgColumnHeaderField::SetSkin( const WgSkinPtr& pSkin )
+void WgColumnHeaderField::setSkin( const WgSkinPtr& pSkin )
 {
 	if( pSkin != m_pSkin )
 	{

@@ -67,25 +67,25 @@ class WgContainer : public WgWidget
 
 	public:
 
-		virtual bool			IsInstanceOf( const char * pClassName ) const;
-		virtual const char *	ClassName( void ) const;
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgContainerPtr	Cast( const WgObjectPtr& pObject );
+		static WgContainerPtr	cast( const WgObjectPtr& pObject );
 
 
 		bool					IsContainer() const;
 
-		inline WgWidgetPtr		FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
-		inline WgWidgetPtr		LastWidget() const { return WgWidgetPtr(_lastWidget()); }
+		inline WgWidgetPtr		firstWidget() const { return WgWidgetPtr(_firstWidget()); }
+		inline WgWidgetPtr		lastWidget() const { return WgWidgetPtr(_lastWidget()); }
 
-		inline WgHookPtr		FirstHook() const { return _firstHook(); }
-		inline WgHookPtr		LastHook() const { return _lastHook(); }
+		inline WgHookPtr		firstHook() const { return _firstHook(); }
+		inline WgHookPtr		lastHook() const { return _lastHook(); }
 
-		virtual WgWidgetPtr		FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
+		virtual WgWidgetPtr		findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
 
 
-		virtual bool			RemoveWidget( const WgWidgetPtr& pWidget ) = 0;
-		virtual bool			Clear() = 0;
+		virtual bool			removeWidget( const WgWidgetPtr& pWidget ) = 0;
+		virtual bool			clear() = 0;
 			
 	protected:
 		WgContainer();

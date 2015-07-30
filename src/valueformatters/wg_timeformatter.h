@@ -39,17 +39,17 @@ class WgTimeFormatter : public WgValueFormatter
 {
 public:
 	
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgTimeFormatterPtr	Cast( const WgObjectPtr& pObject );
+	static WgTimeFormatterPtr	cast( const WgObjectPtr& pObject );
 
-	static WgTimeFormatterPtr	Create() { return WgTimeFormatterPtr(new WgTimeFormatter()); }
-	static WgTimeFormatterPtr	Create( const WgCharSeq& format24 ) { return WgTimeFormatterPtr(new WgTimeFormatter(format24)); }
-	static WgTimeFormatterPtr	Create( const WgCharSeq& formatAM, const WgCharSeq& formatPM ) { return WgTimeFormatterPtr(new WgTimeFormatter(formatAM,formatPM)); }
+	static WgTimeFormatterPtr	create() { return WgTimeFormatterPtr(new WgTimeFormatter()); }
+	static WgTimeFormatterPtr	create( const WgCharSeq& format24 ) { return WgTimeFormatterPtr(new WgTimeFormatter(format24)); }
+	static WgTimeFormatterPtr	create( const WgCharSeq& formatAM, const WgCharSeq& formatPM ) { return WgTimeFormatterPtr(new WgTimeFormatter(formatAM,formatPM)); }
 
-	WgString 		Format( Sint64 value, int scale ) const;
-	WgString 		Format( double value ) const;
+	WgString 		format( Sint64 value, int scale ) const;
+	WgString 		format( double value ) const;
 	
 protected:
 	WgTimeFormatter() {};

@@ -67,7 +67,7 @@ int main ( int argc, char** argv )
 
 	// First we need to initialize the base system
 
-	WgBase::Init();
+	WgBase::init();
 
 	// The software renderer needs a WgSoftSurface as its canvas,
 	// so we wrap the SDL WindowSurface into a WgSoftSurface.
@@ -79,18 +79,18 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::Create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
+	WgSoftSurfacePtr pCanvas = WgSoftSurface::create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
 
-	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::Create( pCanvas );
+	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::create( pCanvas );
 
 	// We create a RootPanel. This is responsible for rendering the
 	// tree of child widgets connected to it and handle their events.
 	// We provide it the GfxDevice to use for rendering.
 
-	WgRootPanelPtr pRoot = WgRootPanel::Create( pGfxDevice );
+	WgRootPanelPtr pRoot = WgRootPanel::create( pGfxDevice );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -101,26 +101,26 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::Create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel
 	// provides simple and powerful ways to layout multiple children.
 
-	WgFlexPanelPtr pFlexPanel = WgFlexPanel::Create();
-	pRoot->SetWidget(pFlexPanel);
+	WgFlexPanelPtr pFlexPanel = WgFlexPanel::create();
+	pRoot->setWidget(pFlexPanel);
 
 	// Now we create the background using the simplest widget
 	// type, the Filler and add it to the FlexPanel, making
 	// it stretch from the north-west to the south-east corners
 	// of the FlexPanel.
 
-	WgFillerPtr pBackground = WgFiller::Create();
-	pBackground->SetSkin( WgColorSkin::Create(WgColor::aqua) );
-	pFlexPanel->AddWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
+	WgFillerPtr pBackground = WgFiller::create();
+	pBackground->setSkin( WgColorSkin::create(WgColor::aqua) );
+	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
 
 	// Now we create the button, using a clickable skin built from
-	// the BMP with the button graphics. CreateClickableFromSurface()
+	// the BMP with the button graphics. createClickableFromSurface()
 	// expects the surface to be divided horizontally in four equal
 	// sections containing the graphics for the button states NORMAL,
 	// HOVERED, PRESSED and DISABLED. We specify that there are no
@@ -129,13 +129,13 @@ int main ( int argc, char** argv )
 	// When adding it to the FlexPanel we specify its geometry in
 	// pixels and that it should be centered.
 
-	WgButtonPtr pButton = WgButton::Create();
-	pButton->SetSkin( WgBlockSkin::CreateClickableFromSurface( pButtonSurface, 0, WgBorder(3) ) );
-	pFlexPanel->AddWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
+	WgButtonPtr pButton = WgButton::create();
+	pButton->setSkin( WgBlockSkin::createClickableFromSurface( pButtonSurface, 0, WgBorder(3) ) );
+	pFlexPanel->addWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
 	// Finally we add a callback to the click-event of the button.
 
-	pRoot->MsgRouter()->AddCallback( WgMsgFilter::Select(), myButtonClickCallback );
+	pRoot->msgRouter()->AddCallback( WgMsgFilter::select(), myButtonClickCallback );
 	
 
 	//------------------------------------------------------
@@ -147,12 +147,12 @@ int main ( int argc, char** argv )
 		// Loop through SDL events, translate them to WonderGUI events
 		// and process them.
 		
-		translateEvents( pRoot->MsgRouter() );
+		translateEvents( pRoot->msgRouter() );
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
 		SDL_LockSurface(pWinSurf);
-		pRoot->Render();
+		pRoot->render();
 		SDL_UnlockSurface(pWinSurf);
 
 		// Make SDL update any screen regions redrawn by WonderGUI.
@@ -164,7 +164,7 @@ int main ( int argc, char** argv )
 
 	// Exit WonderGUI
 
-	WgBase::Exit();
+	WgBase::exit();
 
 	// Exit SDL
 
@@ -192,7 +192,7 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	pMsgRouter->Post( WgTickMsg::Create(tickDiff) );
+	pMsgRouter->post( WgTickMsg::create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -206,15 +206,15 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pMsgRouter->Post( WgMouseMoveMsg::Create( WgCoord(e.motion.x,e.motion.y)) );
+				pMsgRouter->post( WgMouseMoveMsg::create( WgCoord(e.motion.x,e.motion.y)) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
-				pMsgRouter->Post( WgMousePressMsg::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->post( WgMousePressMsg::create( translateMouseButton(e.button.button)));
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				pMsgRouter->Post( WgMouseReleaseMsg::Create( translateMouseButton(e.button.button)));
+				pMsgRouter->post( WgMouseReleaseMsg::create( translateMouseButton(e.button.button)));
 				break;
 				
 			default:
@@ -222,7 +222,7 @@ void translateEvents( WgMsgRouterPtr pMsgRouter )
 		}
 	}
 	
-	pMsgRouter->Dispatch();	
+	pMsgRouter->dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -254,12 +254,12 @@ WgMouseButton translateMouseButton( Uint8 button )
 //
 void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 {	
-	int nRects = pRoot->NbUpdatedRects();
+	int nRects = pRoot->nbUpdatedRects();
 	if( nRects == 0 )
 		return;
 	
-	const WgRect * pUpdatedRects = pRoot->FirstUpdatedRect();
-	SDL_Rect * pSDLRects = (SDL_Rect*) WgBase::MemStackAlloc( sizeof(SDL_Rect) * nRects );
+	const WgRect * pUpdatedRects = pRoot->firstUpdatedRect();
+	SDL_Rect * pSDLRects = (SDL_Rect*) WgBase::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
@@ -271,7 +271,7 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
 
-	WgBase::MemStackRelease( sizeof(SDL_Rect) * nRects );
+	WgBase::memStackRelease( sizeof(SDL_Rect) * nRects );
 }
 
 //____ myButtonClickCallback() _________________________________________________

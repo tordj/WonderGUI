@@ -51,12 +51,12 @@ typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
 class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgLegacyTextHolder
 {
 public:
-	static WgValueEditorPtr	Create() { return WgValueEditorPtr(new WgValueEditor()); }
+	static WgValueEditorPtr	create() { return WgValueEditorPtr(new WgValueEditor()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueEditorPtr	Cast( const WgObjectPtr& pObject );
+	static WgValueEditorPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -67,11 +67,11 @@ public:
 
 	bool	SetMaxInputChars( int max );
 	int		MaxInputChars() const { return m_maxInputChars; }
-	void	SetFormat( const WgValueFormatPtr& pFormat );
-	WgValueFormatPtr Format() const { return m_pFormat; }
-	void	Clear();									// Sets value to 0 and clears input field.
+	void	setFormat( const WgValueFormatPtr& pFormat );
+	WgValueFormatPtr format() const { return m_pFormat; }
+	void	clear();									// Sets value to 0 and clears input field.
 
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgValueEditor();

@@ -30,7 +30,7 @@ WgHookPtr::WgHookPtr( WgHook * pHook )
 	{
 		if( !pHook->m_pPtrHub )
 		{
-			m_pHub = WgBase::AllocHookPtrHub();
+			m_pHub = WgBase::allocHookPtrHub();
 			m_pHub->refCnt = 1;
 			m_pHub->pObj = pHook;
 			pHook->m_pPtrHub = m_pHub;
@@ -57,7 +57,7 @@ WgHookPtr::~WgHookPtr()
 		{
 			if( m_pHub->pObj )
 				m_pHub->pObj->m_pPtrHub = 0;
-			WgBase::FreeHookPtrHub(m_pHub);
+			WgBase::freeHookPtrHub(m_pHub);
 		}
 	}
 }
@@ -74,7 +74,7 @@ void WgHookPtr::copy( WgHookPtr const & r)
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pPtrHub = 0;
-				WgBase::FreeHookPtrHub(m_pHub);
+				WgBase::freeHookPtrHub(m_pHub);
 			}
 		}
 

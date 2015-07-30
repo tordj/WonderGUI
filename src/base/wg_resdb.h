@@ -71,23 +71,23 @@ typedef	WgWeakPtr<WgResDB,WgObjectWeakPtr>	WgResDBWeakPtr;
 class WgResDB : public WgObject
 {
 public:
-	static WgResDBPtr	Create() { return WgResDBPtr(new WgResDB()); }
+	static WgResDBPtr	create() { return WgResDBPtr(new WgResDB()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgResDBPtr	Cast( const WgObjectPtr& pObject );
+	static WgResDBPtr	cast( const WgObjectPtr& pObject );
 
 
 	class MetaData
 	{
 	public:
 		virtual ~MetaData() {}
-		virtual MetaData* Clone() const = 0;
+		virtual MetaData* clone() const = 0;
 
-		virtual std::string GetAttribute(const std::string& name) const = 0;
-		virtual bool		SetAttribute(const std::string& name, const std::string& value) = 0;
-		virtual bool		HasAttribute(const std::string& name) const = 0;
+		virtual std::string getAttribute(const std::string& name) const = 0;
+		virtual bool		setAttribute(const std::string& name, const std::string& value) = 0;
+		virtual bool		hasAttribute(const std::string& name) const = 0;
 	};
 
 	struct Resource : public WgLink
@@ -146,136 +146,136 @@ public:
 
 	//----
 
-	static std::string	GenerateName( const WgSurfacePtr& data );
-	static std::string	GenerateName( const WgGlyphsetPtr& data );
-	static std::string	GenerateName( const WgFontPtr& data );
-	static std::string	GenerateName( const WgGfxAnimPtr& data );
-	static std::string	GenerateName( const WgCaretPtr& data );
-	static std::string	GenerateName( const WgColor data );
-	static std::string	GenerateName( const WgTextpropPtr& data );
-	static std::string	GenerateName( const WgSkinPtr& data );
-	static std::string	GenerateName( const WgWidgetPtr& data );
+	static std::string	generateName( const WgSurfacePtr& data );
+	static std::string	generateName( const WgGlyphsetPtr& data );
+	static std::string	generateName( const WgFontPtr& data );
+	static std::string	generateName( const WgGfxAnimPtr& data );
+	static std::string	generateName( const WgCaretPtr& data );
+	static std::string	generateName( const WgColor data );
+	static std::string	generateName( const WgTextpropPtr& data );
+	static std::string	generateName( const WgSkinPtr& data );
+	static std::string	generateName( const WgWidgetPtr& data );
 
-	void				SetResLoader( WgResLoader * pLoader );
-	void				Clear();
+	void				setResLoader( WgResLoader * pLoader );
+	void				clear();
 
-	void				ClearSurfaces();
-	void				ClearWidgets();
+	void				clearSurfaces();
+	void				clearWidgets();
 
-	std::string			LoadString( const std::string& token );
+	std::string			loadString( const std::string& token );
 
-	bool				AddResDb( const std::string& file, MetaData * pMetaData = 0 );
-	bool				AddResDb( const WgResDBPtr& db, const std::string& file, MetaData * pMetaData = 0 );
+	bool				addResDb( const std::string& file, MetaData * pMetaData = 0 );
+	bool				addResDb( const WgResDBPtr& db, const std::string& file, MetaData * pMetaData = 0 );
 
-	bool				AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
-	bool				AddSurface( const std::string& id, const WgSurfacePtr& pSurf, const std::string& filename, MetaData * pMetaData = 0 );
+	bool				addSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
+	bool				addSurface( const std::string& id, const WgSurfacePtr& pSurf, const std::string& filename, MetaData * pMetaData = 0 );
 
-	bool				AddGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );
-	bool				AddGlyphset( const std::string& id, const WgGlyphsetPtr& pGlyphset, const std::string& file, MetaData * pMetaData = 0 );
+	bool				addGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );
+	bool				addGlyphset( const std::string& id, const WgGlyphsetPtr& pGlyphset, const std::string& file, MetaData * pMetaData = 0 );
 
-	bool				AddFont( const std::string& id, const WgFontPtr& pFont, MetaData * pMetaData = 0 );
-	bool				AddGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, MetaData * pMetaData = 0 );
-	bool				AddCursor( const std::string& id, const WgCaretPtr& pCursor, MetaData * pMetaData = 0 );
-	bool				AddTextprop( const std::string& id, const WgTextpropPtr& pProp, MetaData * pMetaData = 0 );
-	bool				AddColor( const std::string& id, WgColor col, MetaData * pMetaData = 0 );
-	bool				AddLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData = 0 );
-	bool				AddSkin( const std::string& id, const WgSkinPtr& pSkin, MetaData * pMetaData = 0 );
-	bool				AddConnect( MetaData * pMetaData );
-	bool				AddWidget( const std::string& id, const WgWidgetPtr& pWidget, MetaData * pMetaData = 0 );
-	bool				AddDataSet( const std::string& id, MetaData * pMetaData );
+	bool				addFont( const std::string& id, const WgFontPtr& pFont, MetaData * pMetaData = 0 );
+	bool				addGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, MetaData * pMetaData = 0 );
+	bool				addCursor( const std::string& id, const WgCaretPtr& pCursor, MetaData * pMetaData = 0 );
+	bool				addTextprop( const std::string& id, const WgTextpropPtr& pProp, MetaData * pMetaData = 0 );
+	bool				addColor( const std::string& id, WgColor col, MetaData * pMetaData = 0 );
+	bool				addLegoSource( const std::string& id, const std::string& surface, WgRect rect, Uint32 nStates, MetaData * pMetaData = 0 );
+	bool				addSkin( const std::string& id, const WgSkinPtr& pSkin, MetaData * pMetaData = 0 );
+	bool				addConnect( MetaData * pMetaData );
+	bool				addWidget( const std::string& id, const WgWidgetPtr& pWidget, MetaData * pMetaData = 0 );
+	bool				addDataSet( const std::string& id, MetaData * pMetaData );
 
-	bool				RemoveSurface( const std::string& id );
-	bool				RemoveGlyphset( const std::string& id );
-	bool				RemoveFont( const std::string& id );
-	bool				RemoveGfxAnim( const std::string& id );
-	bool				RemoveCursor( const std::string& id );
-	bool				RemoveTextprop( const std::string& id );
-	bool				RemoveColor( const std::string& id );
-	bool				RemoveLegoSource( const std::string& id );
-	bool				RemoveSkin( const std::string& id );
-	bool				RemoveMenuitem( const std::string& id );
-	bool				RemoveTab( const std::string& id );
-	bool				RemoveConnect( const std::string& id );
-	bool				RemoveResDB( const std::string& id );
-	bool				RemoveWidget( const std::string& id );
-	bool				RemoveDataSet( const std::string& id );
+	bool				removeSurface( const std::string& id );
+	bool				removeGlyphset( const std::string& id );
+	bool				removeFont( const std::string& id );
+	bool				removeGfxAnim( const std::string& id );
+	bool				removeCursor( const std::string& id );
+	bool				removeTextprop( const std::string& id );
+	bool				removeColor( const std::string& id );
+	bool				removeLegoSource( const std::string& id );
+	bool				removeSkin( const std::string& id );
+	bool				removeMenuitem( const std::string& id );
+	bool				removeTab( const std::string& id );
+	bool				removeConnect( const std::string& id );
+	bool				removeResDb( const std::string& id );
+	bool				removeWidget( const std::string& id );
+	bool				removeDataSet( const std::string& id );
 
-	bool				RemoveSurface( SurfaceRes * pRes );
-	bool				RemoveGlyphset( GlyphsetRes * pRes );
-	bool				RemoveFont( FontRes * pRes );
-	bool				RemoveGfxAnim( GfxAnimRes * pRes );
-	bool				RemoveCursor( CursorRes * pRes );
-	bool				RemoveTextprop( TextpropRes * pRes );
-	bool				RemoveColor( ColorRes * pRes );
-	bool				RemoveLegoSource( LegoSource * pRes );
-	bool				RemoveSkin( SkinRes * pRes );
-	bool				RemoveConnect( ConnectRes* pRes );
-	bool				RemoveResDB( ResDBRes* pRes );
-	bool				RemoveWidget( WidgetRes * pRes );
-	bool				RemoveDataSet( DataSetRes * pRes );
-
-
-
-	WgSurfacePtr		GetSurface( const std::string& id ) const;
-	WgGlyphsetPtr		GetGlyphset( const std::string& id ) const;
-	WgFontPtr			GetFont( const std::string& id ) const;
-	WgGfxAnimPtr		GetGfxAnim( const std::string& id ) const;
-	WgCaretPtr			GetCursor( const std::string& id ) const;
-	WgTextpropPtr		GetTextprop( const std::string& id ) const;
-	WgColor				GetColor( const std::string& id ) const;
-	WgSkinPtr			GetSkin( const std::string& id ) const;
-	WgWidgetPtr			GetWidget( const std::string& id ) const;
-	MetaData*			GetDataSet( const std::string& id ) const;
-	WgWidgetPtr			CloneWidget( const std::string& id ) const;
+	bool				removeSurface( SurfaceRes * pRes );
+	bool				removeGlyphset( GlyphsetRes * pRes );
+	bool				removeFont( FontRes * pRes );
+	bool				removeGfxAnim( GfxAnimRes * pRes );
+	bool				removeCursor( CursorRes * pRes );
+	bool				removeTextprop( TextpropRes * pRes );
+	bool				removeColor( ColorRes * pRes );
+	bool				removeLegoSource( LegoSource * pRes );
+	bool				removeSkin( SkinRes * pRes );
+	bool				removeConnect( ConnectRes* pRes );
+	bool				removeResDb( ResDBRes* pRes );
+	bool				removeWidget( WidgetRes * pRes );
+	bool				removeDataSet( DataSetRes * pRes );
 
 
-	ResDBRes *			GetResDbRes( const std::string& id ) const;
-	SurfaceRes *		GetResSurface( const std::string& id ) const;
-	GlyphsetRes *		GetResGlyphset( const std::string& id ) const;
-	FontRes *			GetResFont( const std::string& id ) const;
-	GfxAnimRes *		GetResGfxAnim( const std::string& id ) const;
-	CursorRes *			GetResCursor( const std::string& id ) const;
-	TextpropRes *		GetResTextprop( const std::string& id ) const;
-	ColorRes *			GetResColor( const std::string& id ) const;
-	LegoSource *		GetLegoSource( const std::string& id ) const;
-	SkinRes *			GetResSkin( const std::string& id ) const;
-	ConnectRes *		GetResConnect( const std::string& id ) const;
-	WidgetRes *			GetResWidget( const std::string& id ) const;
-	DataSetRes *		GetResDataSet( const std::string& id ) const;
 
-	ResDBRes *			FindResDbRes( const WgResDBPtr& data ) const;
-	SurfaceRes *		FindResSurface( const WgSurfacePtr& data ) const;
-	GlyphsetRes *		FindResGlyphset( const WgGlyphsetPtr& data ) const;
-	FontRes *			FindResFont( const WgFontPtr& data ) const;
-	GfxAnimRes *		FindResGfxAnim( const WgGfxAnimPtr& data ) const;
-	CursorRes *			FindResCursor( const WgCaretPtr& data ) const;
-	TextpropRes *		FindResTextprop( const WgTextpropPtr& data ) const;
-	ColorRes *			FindResColor( const WgColor col ) const;
-	SkinRes *			FindResSkin( const WgSkinPtr& data ) const;
-	WidgetRes *			FindResWidget( const WgWidgetPtr& data ) const;
+	WgSurfacePtr		getSurface( const std::string& id ) const;
+	WgGlyphsetPtr		getGlyphset( const std::string& id ) const;
+	WgFontPtr			getFont( const std::string& id ) const;
+	WgGfxAnimPtr		getGfxAnim( const std::string& id ) const;
+	WgCaretPtr			getCursor( const std::string& id ) const;
+	WgTextpropPtr		getTextprop( const std::string& id ) const;
+	WgColor				getColor( const std::string& id ) const;
+	WgSkinPtr			getSkin( const std::string& id ) const;
+	WgWidgetPtr			getWidget( const std::string& id ) const;
+	MetaData*			getDataSet( const std::string& id ) const;
+	WgWidgetPtr			cloneWidget( const std::string& id ) const;
 
-	std::string			FindSurfaceId( const WgSurfacePtr& data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
-	std::string			FindGlyphsetId( const WgGlyphsetPtr& data ) const		{ GlyphsetRes * r =	FindResGlyphset(data); return r ? r->id : ""; }
-	std::string			FindFontId( const WgFontPtr& data ) const				{ FontRes *	r =		FindResFont(data); return r ? r->id : ""; }
-	std::string			FindGfxAnimId( const WgGfxAnimPtr& data ) const		{ GfxAnimRes *	r =		FindResGfxAnim(data); return r ? r->id : ""; }
-	std::string			FindCursorId( const WgCaretPtr& data ) const			{ CursorRes *	r =	FindResCursor(data); return r ? r->id : ""; }
-	std::string			FindTextpropId( const WgTextpropPtr& data ) const	{ TextpropRes *r =  FindResTextprop(data); return r ? r->id : ""; }
-	std::string			FindColorId( const WgColor data ) const				{ ColorRes *r =		FindResColor(data); return r ? r->id : ""; }
-	std::string			FindSkinId( const WgSkinPtr& data ) const			{ SkinRes *r =		FindResSkin(data); return r ? r->id : ""; }
-	std::string			FindWidgetId( const WgWidgetPtr& data ) const			{ WidgetRes *r =	FindResWidget(data); return r ? r->id : ""; }
 
-	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.First(); }
-	inline SurfaceRes *		GetFirstResSurface() const { return m_surfaces.First(); }
-	inline GlyphsetRes *	GetFirstResGlyphset() const { return m_glyphsets.First(); }
-	inline FontRes *		GetFirstResFont() const { return m_fonts.First(); }
-	inline GfxAnimRes *		GetFirstResGfxAnim() const { return m_gfxAnims.First(); }
-	inline CursorRes *		GetFirstResCursor() const { return m_cursors.First(); }
-	inline TextpropRes *	GetFirstResTextprop() const { return m_textProps.First(); }
-	inline ColorRes *		GetFirstResColor() const { return m_colors.First(); }
-	inline SkinRes *		GetFirstResSkin() const { return m_skins.First(); }
-	inline ConnectRes *		GetFirstResConnect() const { return m_connects.First(); }
-	inline WidgetRes *		GetFirstResWidget() const { return m_widgets.First(); }
-	inline DataSetRes *		GetFirstResDataSet() const { return m_dataSets.First(); }
+	ResDBRes *			getResDbRes( const std::string& id ) const;
+	SurfaceRes *		getResSurface( const std::string& id ) const;
+	GlyphsetRes *		getResGlyphset( const std::string& id ) const;
+	FontRes *			getResFont( const std::string& id ) const;
+	GfxAnimRes *		getResGfxAnim( const std::string& id ) const;
+	CursorRes *			getResCursor( const std::string& id ) const;
+	TextpropRes *		getResTextprop( const std::string& id ) const;
+	ColorRes *			getResColor( const std::string& id ) const;
+	LegoSource *		getLegoSource( const std::string& id ) const;
+	SkinRes *			getResSkin( const std::string& id ) const;
+	ConnectRes *		getResConnect( const std::string& id ) const;
+	WidgetRes *			getResWidget( const std::string& id ) const;
+	DataSetRes *		getResDataSet( const std::string& id ) const;
+
+	ResDBRes *			findResDbRes( const WgResDBPtr& data ) const;
+	SurfaceRes *		findResSurface( const WgSurfacePtr& data ) const;
+	GlyphsetRes *		findResGlyphset( const WgGlyphsetPtr& data ) const;
+	FontRes *			findResFont( const WgFontPtr& data ) const;
+	GfxAnimRes *		findResGfxAnim( const WgGfxAnimPtr& data ) const;
+	CursorRes *			findResCursor( const WgCaretPtr& data ) const;
+	TextpropRes *		findResTextprop( const WgTextpropPtr& data ) const;
+	ColorRes *			findResColor( const WgColor col ) const;
+	SkinRes *			findResSkin( const WgSkinPtr& data ) const;
+	WidgetRes *			findResWidget( const WgWidgetPtr& data ) const;
+
+	std::string			findSurfaceId( const WgSurfacePtr& data ) const		{ SurfaceRes * r =	findResSurface(data); return r ? r->id : ""; }
+	std::string			findGlyphsetId( const WgGlyphsetPtr& data ) const		{ GlyphsetRes * r =	findResGlyphset(data); return r ? r->id : ""; }
+	std::string			findFontId( const WgFontPtr& data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
+	std::string			findGfxAnimId( const WgGfxAnimPtr& data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
+	std::string			findCursorId( const WgCaretPtr& data ) const			{ CursorRes *	r =	findResCursor(data); return r ? r->id : ""; }
+	std::string			findTextpropId( const WgTextpropPtr& data ) const	{ TextpropRes *r =  findResTextprop(data); return r ? r->id : ""; }
+	std::string			findColorId( const WgColor data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
+	std::string			findSkinId( const WgSkinPtr& data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
+	std::string			findWidgetId( const WgWidgetPtr& data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
+
+	inline ResDBRes *		getFirstResDbRes() const { return m_resDbs.first(); }
+	inline SurfaceRes *		getFirstResSurface() const { return m_surfaces.first(); }
+	inline GlyphsetRes *	getFirstResGlyphset() const { return m_glyphsets.first(); }
+	inline FontRes *		getFirstResFont() const { return m_fonts.first(); }
+	inline GfxAnimRes *		getFirstResGfxAnim() const { return m_gfxAnims.first(); }
+	inline CursorRes *		getFirstResCursor() const { return m_cursors.first(); }
+	inline TextpropRes *	getFirstResTextprop() const { return m_textProps.first(); }
+	inline ColorRes *		getFirstResColor() const { return m_colors.first(); }
+	inline SkinRes *		getFirstResSkin() const { return m_skins.first(); }
+	inline ConnectRes *		getFirstResConnect() const { return m_connects.first(); }
+	inline WidgetRes *		getFirstResWidget() const { return m_widgets.first(); }
+	inline DataSetRes *		getFirstResDataSet() const { return m_dataSets.first(); }
 
 
 private:

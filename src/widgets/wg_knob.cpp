@@ -39,44 +39,44 @@ WgKnob::~WgKnob()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgKnob::IsInstanceOf( const char * pClassName ) const
+bool WgKnob::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgKnob::ClassName( void ) const
+const char * WgKnob::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgKnobPtr WgKnob::Cast( const WgObjectPtr& pObject )
+WgKnobPtr WgKnob::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKnobPtr( static_cast<WgKnob*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgKnobPtr( static_cast<WgKnob*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetValue() _____________________________________________________________
+//____ setValue() _____________________________________________________________
 
-void WgKnob::SetValue( float value )
+void WgKnob::setValue( float value )
 {
     //TODO: Implement!
 }
 
-//____ PreferredSize() __________________________________________________________
+//____ preferredSize() __________________________________________________________
 
-WgSize WgKnob::PreferredSize() const
+WgSize WgKnob::preferredSize() const
 {
 	return WgSize(40,40);
 }
@@ -99,7 +99,7 @@ void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRe
 
 	if( sz > 1 )
 	{
-		pDevice->ClipDrawElipse( _clip, WgRect(_canvas.Pos(),sz,sz), WgColor::pink );
+		pDevice->clipDrawElipse( _clip, WgRect(_canvas.pos(),sz,sz), WgColor::pink );
 	}
 }
 

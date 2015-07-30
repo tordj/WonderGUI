@@ -24,29 +24,29 @@
 
 const char WgSurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSurfaceFactory::IsInstanceOf( const char * pClassName ) const
+bool WgSurfaceFactory::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSurfaceFactory::ClassName( void ) const
+const char * WgSurfaceFactory::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSurfaceFactoryPtr WgSurfaceFactory::Cast( const WgObjectPtr& pObject )
+WgSurfaceFactoryPtr WgSurfaceFactory::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
 
 	return 0;
 }

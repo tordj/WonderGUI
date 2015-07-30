@@ -21,13 +21,13 @@ WgString::WgString( const WgCharBuffer* pBuffer )
 	if( pBuffer )
 	{
 		m_buffer = * pBuffer;
-		m_buffer.Trim();
+		m_buffer.trim();
 	}
 }
 
 WgString::WgString( const WgCharSeq& seq )
 {
-	m_buffer.PushBack( seq );
+	m_buffer.pushBack( seq );
 }
 
 
@@ -35,84 +35,84 @@ WgString::~WgString()
 {
 }
 
-const WgChar* WgString::Chars() const
+const WgChar* WgString::chars() const
 {
-	return m_buffer.Chars();
+	return m_buffer.chars();
 }
 
-int WgString::Length() const
+int WgString::length() const
 {
-	return (int) m_buffer.NbChars();
+	return (int) m_buffer.nbChars();
 }
 
-bool WgString::IsEmpty() const
+bool WgString::isEmpty() const
 {
-	return m_buffer.NbChars()==0?true:false;
+	return m_buffer.nbChars()==0?true:false;
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-void WgString::Set( const WgString& str )
+void WgString::set( const WgString& str )
 {
 	m_buffer = str.m_buffer;
 }
 
-void WgString::Set( const WgCharBuffer* pBuffer )
+void WgString::set( const WgCharBuffer* pBuffer )
 {
 	if( pBuffer )
 	{	
 		m_buffer = * pBuffer;
-		m_buffer.Trim();
+		m_buffer.trim();
 	}
 	else
-		m_buffer.Reset();
+		m_buffer.reset();
 }
 
-void WgString::Set( const WgCharSeq& seq )
+void WgString::set( const WgCharSeq& seq )
 {
-	m_buffer.Reset(seq.Length());
-	m_buffer.PushBack(seq);
+	m_buffer.reset(seq.length());
+	m_buffer.pushBack(seq);
 }
 
-//____ Append() ________________________________________________________________
+//____ append() ________________________________________________________________
 
-void WgString::Append( const WgString& str )
+void WgString::append( const WgString& str )
 {
-	m_buffer.PushBack(str.Chars(), str.Length());
+	m_buffer.pushBack(str.chars(), str.length());
 }
 
-void WgString::Append( const WgCharBuffer* pBuffer )
-{
-	if( pBuffer )
-		m_buffer.PushBack( pBuffer->Chars(), pBuffer->NbChars() );
-}
-
-void WgString::Append( const WgCharSeq& seq )
-{
-	m_buffer.PushBack(seq);
-}
-
-//____ Prepend() _______________________________________________________________
-
-void WgString::Prepend( const WgString& str )
-{
-	m_buffer.PushFront(str.Chars(), str.Length());
-}
-
-void WgString::Prepend( const WgCharBuffer* pBuffer )
+void WgString::append( const WgCharBuffer* pBuffer )
 {
 	if( pBuffer )
-		m_buffer.PushFront( pBuffer->Chars(), pBuffer->NbChars() );
+		m_buffer.pushBack( pBuffer->chars(), pBuffer->nbChars() );
 }
 
-void WgString::Prepend( const WgCharSeq& seq )
+void WgString::append( const WgCharSeq& seq )
 {
-	m_buffer.PushFront(seq);
+	m_buffer.pushBack(seq);
 }
 
-//____ Clear() _________________________________________________________________
+//____ prepend() _______________________________________________________________
 
-void WgString::Clear()
+void WgString::prepend( const WgString& str )
 {
-	m_buffer.Reset();
+	m_buffer.pushFront(str.chars(), str.length());
+}
+
+void WgString::prepend( const WgCharBuffer* pBuffer )
+{
+	if( pBuffer )
+		m_buffer.pushFront( pBuffer->chars(), pBuffer->nbChars() );
+}
+
+void WgString::prepend( const WgCharSeq& seq )
+{
+	m_buffer.pushFront(seq);
+}
+
+//____ clear() _________________________________________________________________
+
+void WgString::clear()
+{
+	m_buffer.reset();
 }

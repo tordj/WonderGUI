@@ -31,43 +31,43 @@ const char WgList::CLASSNAME[] = {"List"};
 const char WgListHook::CLASSNAME[] = {"ListHook"};
 
 
-//____ WgListHook::IsInstanceOf() __________________________________________
+//____ WgListHook::isInstanceOf() __________________________________________
 
-bool WgListHook::IsInstanceOf( const char * pClassName ) const
+bool WgListHook::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgHook::IsInstanceOf(pClassName);
+	return WgHook::isInstanceOf(pClassName);
 }
 
-//____ WgListHook::ClassName() _____________________________________________
+//____ WgListHook::className() _____________________________________________
 
-const char * WgListHook::ClassName( void ) const
+const char * WgListHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgListHook::Cast() __________________________________________________
+//____ WgListHook::cast() __________________________________________________
 
-WgListHookPtr WgListHook::Cast( const WgHookPtr& pHook )
+WgListHookPtr WgListHook::cast( const WgHookPtr& pHook )
 {
-	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgListHookPtr( static_cast<WgListHook*>(pHook.RawPtr()) );
+	if( pHook && pHook->isInstanceOf(CLASSNAME) )
+		return WgListHookPtr( static_cast<WgListHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
-//____ WgListHook::Parent() ___________________________________________________
+//____ WgListHook::parent() ___________________________________________________
 
-WgListPtr WgListHook::Parent() const 
+WgListPtr WgListHook::parent() const 
 { 
 	return static_cast<WgList*>(_parent()); 
 }
 
-//____ WgListHook::SetVisible() ________________________________________________
+//____ WgListHook::setVisible() ________________________________________________
 
-bool WgListHook::SetVisible( bool bVisible )
+bool WgListHook::setVisible( bool bVisible )
 {
 	if( m_bVisible != bVisible )
 	{
@@ -80,9 +80,9 @@ bool WgListHook::SetVisible( bool bVisible )
 	return true;
 }
 
-//____ WgListHook::SetSelected() ________________________________________________
+//____ WgListHook::setSelected() ________________________________________________
 
-bool WgListHook::SetSelected( bool bSelected )
+bool WgListHook::setSelected( bool bSelected )
 {
 	if( !m_bVisible )
 		return false;
@@ -103,71 +103,71 @@ WgList::~WgList()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgList::IsInstanceOf( const char * pClassName ) const
+bool WgList::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgContainer::IsInstanceOf(pClassName);
+	return WgContainer::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgList::ClassName( void ) const
+const char * WgList::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgListPtr WgList::Cast( const WgObjectPtr& pObject )
+WgListPtr WgList::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgListPtr( static_cast<WgList*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgListPtr( static_cast<WgList*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetEntrySkin() _________________________________________________________
+//____ setEntrySkin() _________________________________________________________
 
-void WgList::SetEntrySkin( const WgSkinPtr& pSkin )
+void WgList::setEntrySkin( const WgSkinPtr& pSkin )
 {
-	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->ContentPadding() : WgSize();
+	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : WgSize();
 
 	m_pEntrySkin[0] = pSkin;
 	m_pEntrySkin[1] = pSkin;
-	m_bOpaqueEntries = pSkin ? pSkin->IsOpaque() : false;
+	m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-	_onEntrySkinChanged( oldPadding, pSkin ? pSkin->ContentPadding() : WgSize() );
+	_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : WgSize() );
 }
 
-bool WgList::SetEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin )
+bool WgList::setEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin )
 {
-	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->ContentPadding() : WgSize();
+	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : WgSize();
 	WgSize padding[2];
 
 	if( pOddEntrySkin )
-		padding[0] = pOddEntrySkin->ContentPadding();
+		padding[0] = pOddEntrySkin->contentPadding();
 
 	if( pEvenEntrySkin )
-		padding[1] = pEvenEntrySkin->ContentPadding();
+		padding[1] = pEvenEntrySkin->contentPadding();
 
 	if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
 		return false;
 
 	m_pEntrySkin[0] = pOddEntrySkin;
 	m_pEntrySkin[1] = pEvenEntrySkin;
-	m_bOpaqueEntries = (pOddEntrySkin->IsOpaque() && pEvenEntrySkin->IsOpaque());
+	m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-	_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->ContentPadding() : WgSize() );
+	_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPadding() : WgSize() );
 	return true;
 }
 
-//____ SetSelectMode() ________________________________________________________
+//____ setSelectMode() ________________________________________________________
 
-bool WgList::SetSelectMode( WgSelectMode mode )
+bool WgList::setSelectMode( WgSelectMode mode )
 {
 	if( mode != m_selectMode )
 	{
@@ -178,9 +178,9 @@ bool WgList::SetSelectMode( WgSelectMode mode )
 	return true;
 }
 
-//____ SetLassoSkin() _________________________________________________________
+//____ setLassoSkin() _________________________________________________________
 
-void WgList::SetLassoSkin( const WgSkinPtr& pSkin )
+void WgList::setLassoSkin( const WgSkinPtr& pSkin )
 {
 	m_pLassoSkin = pSkin;
 }
@@ -193,17 +193,17 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 
 	WgState oldState = m_state;
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_MOUSE_ENTER:
 		{	
-			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->PointerPos()));
-			if( pEntry && pEntry != m_pHoveredEntry.RawPtr() )
+			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->pointerPos()));
+			if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
 			{
 				WgRect geo;
 				if( m_pHoveredEntry )
 				{
-					_getEntryGeo( geo, m_pHoveredEntry.RawPtr() ); 
+					_getEntryGeo( geo, m_pHoveredEntry.rawPtr() ); 
 					_requestRender(geo);
 				}
 
@@ -215,11 +215,11 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_LEAVE:
 		{
-			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->PointerPos()));
+			WgListHook * pEntry = _findEntry(ToLocal(_pMsg->pointerPos()));
 			if( m_pHoveredEntry && !pEntry )
 			{
 				WgRect geo;
-				_getEntryGeo( geo, m_pHoveredEntry.RawPtr() ); 
+				_getEntryGeo( geo, m_pHoveredEntry.rawPtr() ); 
 				_requestRender(geo);
 				m_pHoveredEntry = 0;
 			}
@@ -227,17 +227,17 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
-			if( m_selectMode != WG_SELECT_NONE && pMsg->Button() == WG_BUTTON_LEFT )
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			if( m_selectMode != WG_SELECT_NONE && pMsg->button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = ToLocal(pMsg->PointerPos());
-				if( !_listWindow().Contains(ofs) )
+				WgCoord ofs = ToLocal(pMsg->pointerPos());
+				if( !_listWindow().contains(ofs) )
 					break;								// Click on header or somewhere else outside the real list.
 				
 				WgRect listArea = _listArea();
 				WgListHook * pEntry = _findEntry(ofs);
 
-				ofs = listArea.Limit(ofs);
+				ofs = listArea.limit(ofs);
 				m_lassoBegin = ofs;
 				m_lassoEnd = ofs;
 
@@ -248,7 +248,7 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 						case WG_SELECT_NONE:
 							break;
 						case WG_SELECT_SINGLE:
-							if( !pEntry->IsSelected() )
+							if( !pEntry->isSelected() )
 							{
 								_clearSelected( true );
 								_selectEntry( pEntry, true, true );
@@ -256,22 +256,22 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 							}
 							break;
 						case WG_SELECT_FLIP:
-							_selectEntry( pEntry, !pEntry->IsSelected(), true );
+							_selectEntry( pEntry, !pEntry->isSelected(), true );
 							m_pFocusedEntry = pEntry;
 							break;
 						case WG_SELECT_MULTI:
-							if( pMsg->ModKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
+							if( pMsg->modKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
 							{
 								// Select range from focused to clicked entry.
 
-								WgListHook * pFocused = m_pFocusedEntry.RawPtr();
+								WgListHook * pFocused = m_pFocusedEntry.rawPtr();
 								WgListHook * pFirstSel = WgMin( pEntry, pFocused );
 								WgListHook * pLastSel = WgMax( pEntry, pFocused );
 								_selectRange( pFirstSel, pLastSel, true, true );
 
 								// Unselect the rest if not CTRL-click.
 
-								if( !(pMsg->ModKeys() & WG_MODKEY_CTRL) )
+								if( !(pMsg->modKeys() & WG_MODKEY_CTRL) )
 								{
 									WgListHook * pFirst = static_cast<WgListHook*>(_firstHook());
 									WgListHook * pLast = static_cast<WgListHook*>(_lastHook());
@@ -283,10 +283,10 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 							}
 							else
 							{
-								if( pMsg->ModKeys() & WG_MODKEY_CTRL )
+								if( pMsg->modKeys() & WG_MODKEY_CTRL )
 								{
 									// CTRL-click: We just flip the entry.
-									_selectEntry( pEntry, !pEntry->IsSelected(), true );
+									_selectEntry( pEntry, !pEntry->isSelected(), true );
 								}
 								else
 								{
@@ -305,36 +305,36 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 					m_pFocusedEntry = 0;
 				}
 
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		}
 		case WG_MSG_MOUSE_RELEASE:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseReleaseMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
+			if( m_selectMode != WG_SELECT_NONE && WgMouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 			{
 				WgRect dirtyRect( m_lassoBegin, m_lassoEnd );
 				_requestRender(dirtyRect);
 
 				m_lassoBegin = m_lassoEnd;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		case WG_MSG_MOUSE_CLICK:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseClickMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
-				_pMsg->Swallow();
+			if( m_selectMode != WG_SELECT_NONE && WgMouseClickMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				_pMsg->swallow();
 			break;
 		case WG_MSG_MOUSE_DOUBLE_CLICK:
 		case WG_MSG_MOUSE_REPEAT:
-			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonMsg::Cast(_pMsg)->Button() == WG_BUTTON_LEFT )
-				_pMsg->Swallow();
+			if( m_selectMode != WG_SELECT_NONE && WgMouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				_pMsg->swallow();
 			break;
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
-			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->Button() == WG_BUTTON_LEFT )
+			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->button() == WG_BUTTON_LEFT )
 			{
-				WgCoord ofs = _listArea().Limit(ToLocal(pMsg->PointerPos()));
-				ofs = _listWindow().Limit(ofs);
+				WgCoord ofs = _listArea().limit(ToLocal(pMsg->pointerPos()));
+				ofs = _listWindow().limit(ofs);
 
 				WgRect oldLasso( m_lassoBegin, m_lassoEnd );
 				WgRect newLasso( m_lassoBegin, ofs );
@@ -342,10 +342,10 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 				_onLassoUpdated( oldLasso, newLasso );
 
 				WgRect dirtyRect = oldLasso;
-				dirtyRect.GrowToContain( ofs );
+				dirtyRect.growToContain( ofs );
 				_requestRender( dirtyRect );
 				m_lassoEnd = ofs;
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		}
@@ -359,12 +359,12 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 
 bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostMsg )
 {
-	WgState	oldState = pHook->m_pWidget->State();
+	WgState	oldState = pHook->m_pWidget->state();
 
-	if( bSelected != oldState.IsSelected() )
+	if( bSelected != oldState.isSelected() )
 	{
 
-		pHook->m_pWidget->m_state.SetSelected(bSelected);
+		pHook->m_pWidget->m_state.setSelected(bSelected);
 		pHook->m_pWidget->_onStateChanged( oldState );
 
 		if( bPostMsg )
@@ -378,7 +378,7 @@ bool WgList::_selectEntry( WgListHook * pHook, bool bSelected, bool bPostMsg )
 				pMsg = new WgItemsSelectMsg(this, 1, pItemInfo);
 			else
 				pMsg = new WgItemsUnselectMsg(this, 1, pItemInfo);
-			WgBase::MsgRouter()->Post( pMsg );
+			WgBase::msgRouter()->post( pMsg );
 		}
 	}
 
@@ -405,7 +405,7 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 	WgRect geoLast;
 	_getEntryGeo( geoFirst, pFirst );
 	_getEntryGeo( geoLast, pLast );
-	_requestRender( WgRect::Union(geoFirst,geoLast) );
+	_requestRender( WgRect::getUnion(geoFirst,geoLast) );
 
 	// Reserve ItemInfo array of right size if we are going to post message
 
@@ -415,7 +415,7 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 		int size = 0;
 		for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 		{
-			if( bSelected != pHook->_widget()->State().IsSelected() )
+			if( bSelected != pHook->_widget()->state().isSelected() )
 				size++;
 		}
 
@@ -427,10 +427,10 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 
 	for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 	{
-		WgState	oldState = pHook->m_pWidget->State();
-		if( bSelected != oldState.IsSelected() )
+		WgState	oldState = pHook->m_pWidget->state();
+		if( bSelected != oldState.isSelected() )
 		{
-			pHook->m_pWidget->m_state.SetSelected(bSelected);
+			pHook->m_pWidget->m_state.setSelected(bSelected);
 			pHook->m_pWidget->_onStateChanged( oldState );
 
 			if( bPostMsg )
@@ -452,7 +452,7 @@ int WgList::_selectRange( WgListHook * pFirst, WgListHook * pLast, bool bSelecte
 			pMsg = new WgItemsSelectMsg(this, 1, pItemInfo);
 		else
 			pMsg = new WgItemsUnselectMsg(this, 1, pItemInfo);
-		WgBase::MsgRouter()->Post( pMsg );
+		WgBase::msgRouter()->post( pMsg );
 	}
 
 	return nModified;
@@ -472,7 +472,7 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 	WgRect geoLast;
 	_getEntryGeo( geoFirst, pFirst );
 	_getEntryGeo( geoLast, pLast );
-	_requestRender( WgRect::Union(geoFirst,geoLast) );
+	_requestRender( WgRect::getUnion(geoFirst,geoLast) );
 
 	// Reserve ItemInfo array of right size if we are going to post message
 
@@ -485,7 +485,7 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 
 		for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 		{
-			if( pHook->_widget()->State().IsSelected() )
+			if( pHook->_widget()->state().isSelected() )
 				nToDeselect++;
 			else
 				nToSelect++;
@@ -501,15 +501,15 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 
 	for( WgListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<WgListHook*>(pHook->_nextHook()) )
 	{
-		WgState	oldState = pHook->m_pWidget->State();
+		WgState	oldState = pHook->m_pWidget->state();
 
-		pHook->m_pWidget->m_state.SetSelected(!oldState.IsSelected());
+		pHook->m_pWidget->m_state.setSelected(!oldState.isSelected());
 		pHook->m_pWidget->_onStateChanged( oldState );
 
 		if( bPostMsg )
 		{
 			WgItemInfo * p;
-			if( oldState.IsSelected() )
+			if( oldState.isSelected() )
 				p = &pDeselectedItemsInfo[nSelected++];
 			else
 				p = &pSelectedItemsInfo[nDeselected++];
@@ -524,10 +524,10 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 	if( bPostMsg )
 	{
 		if( nSelected > 0 )
-			WgBase::MsgRouter()->Post( new WgItemsSelectMsg(this, 1, pSelectedItemsInfo) );
+			WgBase::msgRouter()->post( new WgItemsSelectMsg(this, 1, pSelectedItemsInfo) );
 
 		if( nDeselected > 0 )
-			WgBase::MsgRouter()->Post( new WgItemsUnselectMsg(this, 1, pDeselectedItemsInfo) );
+			WgBase::msgRouter()->post( new WgItemsUnselectMsg(this, 1, pDeselectedItemsInfo) );
 	}
 
 	return nSelected + nDeselected;
@@ -544,25 +544,25 @@ void WgList::_renderHeader( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	if( pSkin )
 	{
-		pSkin->Render( pDevice, canvas, state, _clip );
-		canvas = pSkin->ContentRect( canvas, state );
+		pSkin->render( pDevice, canvas, state, _clip );
+		canvas = pSkin->contentRect( canvas, state );
 	}
 
-	WgRect sortRect = pSortIcon->GetIconRect( canvas );
-	WgRect labelRect = pSortIcon->GetTextRect( canvas, sortRect );
-	WgRect iconRect = pLabelIcon->GetIconRect( labelRect );
-	labelRect = pLabelIcon->GetTextRect( labelRect, iconRect );
+	WgRect sortRect = pSortIcon->getIconRect( canvas );
+	WgRect labelRect = pSortIcon->getTextRect( canvas, sortRect );
+	WgRect iconRect = pLabelIcon->getIconRect( labelRect );
+	labelRect = pLabelIcon->getTextRect( labelRect, iconRect );
 
-	if( bShowSortIcon && !pSortIcon->IsEmpty() )
+	if( bShowSortIcon && !pSortIcon->isEmpty() )
 	{
 		WgState iconState = state;
-		iconState.SetSelected( bInvertedSort );
-		pSortIcon->Skin()->Render( pDevice, sortRect, iconState, _clip );
+		iconState.setSelected( bInvertedSort );
+		pSortIcon->skin()->render( pDevice, sortRect, iconState, _clip );
 	}
 
-	if( !pLabelIcon->IsEmpty() )
-		pLabelIcon->Skin()->Render( pDevice, iconRect, state, _clip );
+	if( !pLabelIcon->isEmpty() )
+		pLabelIcon->skin()->render( pDevice, iconRect, state, _clip );
 
-	if( !pText->IsEmpty() )
-		pText->OnRender( pDevice, labelRect, _clip );
+	if( !pText->isEmpty() )
+		pText->onRender( pDevice, labelRect, _clip );
 }

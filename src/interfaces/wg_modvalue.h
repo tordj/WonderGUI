@@ -52,28 +52,28 @@ class WgModValue : public WgValue
 public:
 	WgModValue(WgModValueField * pField) : WgValue(pField) {}
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgModValuePtr		Cast( const WgInterfacePtr& pInterface );
-	inline WgModValuePtr		Ptr() { return WgModValuePtr(_object(),this); }
+	static WgModValuePtr		cast( const WgInterfacePtr& pInterface );
+	inline WgModValuePtr		ptr() { return WgModValuePtr(_object(),this); }
 
 
-	void						Clear();
-	bool						Set( Sint64 value, int scale = 1);
+	void						clear();
+	bool						set( Sint64 value, int scale = 1);
 
 
 /*	For the future...
-	inline void					Set( float value );
-	inline void					Set( double value );
+	inline void					set( float value );
+	inline void					set( double value );
 */
 
-	inline Sint64				Value() const { return _field()->Value(); }
-	inline int					Scale() const { return _field()->Scale(); }
+	inline Sint64				value() const { return _field()->value(); }
+	inline int					scale() const { return _field()->scale(); }
 
-	bool						SetRange( Sint64 min, Sint64 max );
-	inline Sint64				Min() const { return _field()->Min(); }
-	inline Sint64				Max() const { return _field()->Max(); }
+	bool						setRange( Sint64 min, Sint64 max );
+	inline Sint64				min() const { return _field()->min(); }
+	inline Sint64				max() const { return _field()->max(); }
 
 private:
 	inline	WgModValueField * 		_field() { return static_cast<WgModValueField*>(m_pField); }

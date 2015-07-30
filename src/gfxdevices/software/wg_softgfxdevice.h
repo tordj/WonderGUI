@@ -42,48 +42,48 @@ typedef	WgWeakPtr<WgSoftGfxDevice,WgGfxDeviceWeakPtr>	WgSoftGfxDeviceWeakPtr;
 class WgSoftGfxDevice : public WgGfxDevice
 {
 public:
-	static WgSoftGfxDevicePtr	Create();
-	static WgSoftGfxDevicePtr	Create( const WgSoftSurfacePtr& pCanvas );
+	static WgSoftGfxDevicePtr	create();
+	static WgSoftGfxDevicePtr	create( const WgSoftSurfacePtr& pCanvas );
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSoftGfxDevicePtr	Cast( const WgObjectPtr& pObject );
+	static WgSoftGfxDevicePtr	cast( const WgObjectPtr& pObject );
 
-	void	SetCanvas( const WgSoftSurfacePtr& pCanvas );
+	void	setCanvas( const WgSoftSurfacePtr& pCanvas );
 
 	//
 
-	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurfacePtr& pSrc, const WgRect& srcrect, int dx, int dy  );
+	void	fill( const WgRect& rect, const WgColor& col );
+	void	blit( const WgSurfacePtr& pSrc, const WgRect& srcrect, int dx, int dy  );
 
-	void	DrawArcNE( const WgRect& rect, WgColor color );
-	void	DrawElipse( const WgRect& rect, WgColor color );
-	void	DrawFilledElipse( const WgRect& rect, WgColor color );
+	void	drawArcNE( const WgRect& rect, WgColor color );
+	void	drawElipse( const WgRect& rect, WgColor color );
+	void	drawFilledElipse( const WgRect& rect, WgColor color );
 
-	void	ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
-	void	ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
-	void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
 
-	void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
-	void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
-	void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
+	void	clipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	clipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
 
-	void	StretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
-	void	StretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
-	void	StretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
 
-	void	ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipBias = 0.f );
-	void	ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	void	ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	void	ClipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
+	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
-	void	FillSubPixel( const WgRectF& rect, const WgColor& col );
-	void	StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+	void	fillSubPixel( const WgRectF& rect, const WgColor& col );
+	void	stretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 	
-	void	SetBilinearFiltering( bool bEnable ) { m_bBilinearFiltering = bEnable; }
-	bool	GetBilinearFiltering() const { return m_bBilinearFiltering; }
+	void	setBilinearFiltering( bool bEnable ) { m_bBilinearFiltering = bEnable; }
+	bool	getBilinearFiltering() const { return m_bBilinearFiltering; }
 
 protected:
 	WgSoftGfxDevice();

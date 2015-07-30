@@ -18,29 +18,29 @@ WgRulerLabels::~WgRulerLabels()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgRulerLabels::IsInstanceOf( const char * pClassName ) const
+bool WgRulerLabels::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgRulerLabels::ClassName( void ) const
+const char * WgRulerLabels::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
+WgRulerLabelsPtr WgRulerLabels::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -51,11 +51,11 @@ WgRulerLabelsPtr WgRulerLabels::Cast( const WgObjectPtr& pObject )
 void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextStylePtr& pStyle, float offset )
 {
 	Label * pLabel = new Label(this);
-	pLabel->textField.Set(text);
-	pLabel->textField.SetStyle(pStyle);
+	pLabel->textField.set(text);
+	pLabel->textField.setStyle(pStyle);
 	pLabel->offset = offset;
     
-	m_labels.PushBack(pLabel);
+	m_labels.pushBack(pLabel);
 	_requestResize();
 	_requestRender();
 }
@@ -73,17 +73,17 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 
 WgModTextPtr	WgRulerLabels::GetLabel(int index)
 {
-	if( index >= m_labels.Size() )
+	if( index >= m_labels.size() )
 		return WgModTextPtr();
 
-	return WgModTextPtr(this, &m_labels.Get(index)->textInterface);
+	return WgModTextPtr(this, &m_labels.get(index)->textInterface);
 }
 
 
 
-//____ PreferredSize() ________________________________________________________________
+//____ preferredSize() ________________________________________________________________
 
-WgSize WgRulerLabels::PreferredSize() const
+WgSize WgRulerLabels::preferredSize() const
 {
     //TODO: calculation of length is not good.
     
@@ -91,34 +91,34 @@ WgSize WgRulerLabels::PreferredSize() const
  
     if( m_direction == WG_UP || m_direction == WG_DOWN )
     {
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
         {
-			WgSize sz = pLabel->textField.PreferredSize();
+			WgSize sz = pLabel->textField.preferredSize();
             if( sz.w > preferred.w )
                 preferred.w = sz.w;
   
             preferred.h += sz.h;
-            pLabel = pLabel->Next();
+            pLabel = pLabel->next();
         }
     }
     else
     {
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
         {
-            WgSize sz = pLabel->textField.PreferredSize();
+            WgSize sz = pLabel->textField.preferredSize();
             preferred.w += sz.w;
             
             if( sz.h > preferred.h )
                 preferred.h = sz.h;
             
-            pLabel = pLabel->Next();
+            pLabel = pLabel->next();
         }
     }
     
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(preferred);
+		return m_pSkin->sizeForContent(preferred);
 	else
 		return preferred;
 }
@@ -132,23 +132,23 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas,m_state);
+		canvas = m_pSkin->contentRect(_canvas,m_state);
 	else
 		canvas = _canvas;
 
 	if( m_direction == WG_UP || m_direction == WG_DOWN )
 	{
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
 		{
-			int height = pLabel->textField.Size().h;
+			int height = pLabel->textField.size().h;
 			int ofs = (int) (canvas.h * pLabel->offset);
 			if( m_direction == WG_UP )
 				ofs = canvas.h - ofs;
 /*
 TODO: Reinstate!!!
 			
-			switch( pLabel->textField.Alignment() )
+			switch( pLabel->textField.alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_NORTH:
@@ -166,23 +166,23 @@ TODO: Reinstate!!!
 					break;
 			}
 */			
-			pLabel->textField.OnRender(pDevice, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
-			pLabel = pLabel->Next();
+			pLabel->textField.onRender(pDevice, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
+			pLabel = pLabel->next();
 		}
 	}
 	else
 	{
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
 		{
-			int width = pLabel->textField.Size().w;
+			int width = pLabel->textField.size().w;
 			int ofs = (int) (canvas.w * pLabel->offset);
 			if( m_direction == WG_LEFT )
 				ofs = canvas.w - ofs;
 /*			
 TODO: Reinstate!
 
-			switch( pLabel->textField.Alignment() )
+			switch( pLabel->textField.alignment() )
 			{
 				case WG_NORTHWEST:
 				case WG_SOUTHWEST:
@@ -200,8 +200,8 @@ TODO: Reinstate!
 					break;
 			}
 */
-			pLabel->textField.OnRender( pDevice, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
-			pLabel = pLabel->Next();
+			pLabel->textField.onRender( pDevice, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
+			pLabel = pLabel->next();
 		}
 	}
 	
@@ -228,11 +228,11 @@ void WgRulerLabels::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	Label * p = m_labels.First();
+	Label * p = m_labels.first();
 	while( p )
 	{
-		p->textField.SetState(m_state);
-		p = p->Next();
+		p->textField.setState(m_state);
+		p = p->next();
 	}
 }
 

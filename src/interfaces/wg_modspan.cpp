@@ -26,29 +26,29 @@
 const char WgModSpan::CLASSNAME[] = {"ModSpan"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgModSpan::IsInstanceOf( const char * pClassName ) const
+bool WgModSpan::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgSlideSpan::IsInstanceOf(pClassName);
+	return WgSlideSpan::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgModSpan::ClassName( void ) const
+const char * WgModSpan::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgModSpanPtr WgModSpan::Cast( const WgInterfacePtr& pInterface )
+WgModSpanPtr WgModSpan::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgModSpanPtr( pInterface.GetRealObjectPtr(), static_cast<WgModSpan*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgModSpanPtr( pInterface.getRealObjectPtr(), static_cast<WgModSpan*>( pInterface.rawPtr()) );
 
 	return 0;
 }

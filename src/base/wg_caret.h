@@ -49,13 +49,13 @@ class WgCaret : public WgObject
 	friend class WgGlyphset;
 
 public:
-	static WgCaretPtr	Create() { return WgCaretPtr(new WgCaret()); }
-	static WgCaretPtr	Create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.RawPtr())); }
+	static WgCaretPtr	create() { return WgCaretPtr(new WgCaret()); }
+	static WgCaretPtr	create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.rawPtr())); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCaretPtr	Cast( const WgObjectPtr& pObject );
+	static WgCaretPtr	cast( const WgObjectPtr& pObject );
 
 
 	enum Mode
@@ -73,27 +73,27 @@ public:
 	};
 
 
-	bool				SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
+	bool				setMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
 
-	void				SetScaleWidth( Mode m, bool bScaleWidth );
+	void				setScaleWidth( Mode m, bool bScaleWidth );
 
-	void				SetBearing( Mode m, WgCoord bearing );
-	void				SetAdvance( Mode m, int advance );
-	void				SetAnim( Mode m, const WgGfxAnimPtr& pAnim );
+	void				setBearing( Mode m, WgCoord bearing );
+	void				setAdvance( Mode m, int advance );
+	void				setAnim( Mode m, const WgGfxAnimPtr& pAnim );
 
-	void				SetSizeRatio( Mode m, float ratio );
+	void				setSizeRatio( Mode m, float ratio );
 
-	void				SetBlitMode( BlitMode mode );
-	BlitMode			GetBlitMode() const { return m_blitMode; }
+	void				setBlitMode( BlitMode mode );
+	BlitMode			getBlitMode() const { return m_blitMode; }
 
-	int					BearingX( Mode m ) const { return m_bearing[m].x; };
-	int					BearingY( Mode m ) const { return m_bearing[m].y; };
-	WgCoord				Bearing( Mode m ) const { return m_bearing[m]; }
-	int					Advance( Mode m ) const { return m_advance[m]; };
-	int					Width( Mode m ) const { return m_pAnim[m]->Size().w; }
-	WgGfxAnimPtr 		Anim( Mode m ) const { return m_pAnim[m]; };
-	float				SizeRatio(Mode m ) const { return m_sizeRatio[m]; }
-	bool				ScaleWidth(Mode m ) const { return m_scaleWidth[m]; }
+	int					bearingX( Mode m ) const { return m_bearing[m].x; };
+	int					bearingY( Mode m ) const { return m_bearing[m].y; };
+	WgCoord				bearing( Mode m ) const { return m_bearing[m]; }
+	int					advance( Mode m ) const { return m_advance[m]; };
+	int					width( Mode m ) const { return m_pAnim[m]->size().w; }
+	WgGfxAnimPtr 		anim( Mode m ) const { return m_pAnim[m]; };
+	float				sizeRatio(Mode m ) const { return m_sizeRatio[m]; }
+	bool				scaleWidth(Mode m ) const { return m_scaleWidth[m]; }
 	
 
 private:

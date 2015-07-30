@@ -34,17 +34,17 @@ typedef	WgWeakPtr<WgMsgFunc,WgReceiverWeakPtr>	WgMsgFuncWeakPtr;
 class WgMsgFunc : public WgReceiver
 {
 public:
-	static WgMsgFuncPtr	Create( void(*fp)( const WgMsgPtr& pMsg) ) { return new WgMsgFunc( fp ); }
-	static WgMsgFuncPtr	Create( void(*fp)( const WgMsgPtr& pMsg, int param), int param ) { return new WgMsgFunc( fp, param ); }
-	static WgMsgFuncPtr	Create( void(*fp)( const WgMsgPtr& pMsg, void * pParam), void * pParam ) { return new WgMsgFunc( fp, pParam ); }
-	static WgMsgFuncPtr	Create( void(*fp)( const WgMsgPtr& pMsg, const WgObjectPtr& pParam), const WgObjectPtr& pParam ) { return new WgMsgFunc( fp, pParam ); }
+	static WgMsgFuncPtr	create( void(*fp)( const WgMsgPtr& pMsg) ) { return new WgMsgFunc( fp ); }
+	static WgMsgFuncPtr	create( void(*fp)( const WgMsgPtr& pMsg, int param), int param ) { return new WgMsgFunc( fp, param ); }
+	static WgMsgFuncPtr	create( void(*fp)( const WgMsgPtr& pMsg, void * pParam), void * pParam ) { return new WgMsgFunc( fp, pParam ); }
+	static WgMsgFuncPtr	create( void(*fp)( const WgMsgPtr& pMsg, const WgObjectPtr& pParam), const WgObjectPtr& pParam ) { return new WgMsgFunc( fp, pParam ); }
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgMsgFuncPtr	Cast( const WgObjectPtr& pObject );
+	static WgMsgFuncPtr	cast( const WgObjectPtr& pObject );
 
-	void OnMsg( const WgMsgPtr& pMsg );
+	void onMsg( const WgMsgPtr& pMsg );
 
 protected:
 	WgMsgFunc( void(*fp)( const WgMsgPtr& pMsg) );

@@ -39,12 +39,12 @@ typedef	WgWeakPtr<WgTextDisplay,WgWidgetWeakPtr>	WgTextDisplayWeakPtr;
 class WgTextDisplay:public WgWidget, protected WgTextHolder
 {
 public:
-	static WgTextDisplayPtr	Create() { return WgTextDisplayPtr(new WgTextDisplay()); }
+	static WgTextDisplayPtr	create() { return WgTextDisplayPtr(new WgTextDisplay()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextDisplayPtr	Cast( const WgObjectPtr& pObject );
+	static WgTextDisplayPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -55,9 +55,9 @@ public:
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	int		MatchingWidth( int height ) const;
-	int		MatchingHeight( int width ) const;
-	WgSize	PreferredSize() const;
+	int		matchingWidth( int height ) const;
+	int		matchingHeight( int width ) const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgTextDisplay();

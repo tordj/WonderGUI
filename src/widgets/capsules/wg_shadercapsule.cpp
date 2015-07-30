@@ -37,37 +37,37 @@ WgShaderCapsule::~WgShaderCapsule()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgShaderCapsule::IsInstanceOf( const char * pClassName ) const
+bool WgShaderCapsule::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgCapsule::IsInstanceOf(pClassName);
+	return WgCapsule::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgShaderCapsule::ClassName( void ) const
+const char * WgShaderCapsule::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgShaderCapsulePtr WgShaderCapsule::Cast( const WgObjectPtr& pObject )
+WgShaderCapsulePtr WgShaderCapsule::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetColor() ______________________________________________________________
+//____ setColor() ______________________________________________________________
 
-void WgShaderCapsule::SetColor( const WgColor& color)
+void WgShaderCapsule::setColor( const WgColor& color)
 {
 	if( color != m_tintColor )
 	{
@@ -76,9 +76,9 @@ void WgShaderCapsule::SetColor( const WgColor& color)
 	}
 }
 
-//____ SetTintMode() ___________________________________________________________
+//____ setTintMode() ___________________________________________________________
 
-void WgShaderCapsule::SetTintMode( WgTintMode mode )
+void WgShaderCapsule::setTintMode( WgTintMode mode )
 {
 	if( mode != m_tintMode )
 	{
@@ -87,9 +87,9 @@ void WgShaderCapsule::SetTintMode( WgTintMode mode )
 	}
 }
 
-//____ SetBlendMode() __________________________________________________________
+//____ setBlendMode() __________________________________________________________
 
-void WgShaderCapsule::SetBlendMode( WgBlendMode mode )
+void WgShaderCapsule::setBlendMode( WgBlendMode mode )
 {
 	if( mode != m_blendMode )
 	{
@@ -118,15 +118,15 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 //	if( (_layer & m_layer) != 0 )
 	{
-		oldBM = pDevice->GetBlendMode();
-		oldTC = pDevice->GetTintColor();
+		oldBM = pDevice->getBlendMode();
+		oldTC = pDevice->getTintColor();
 
-		pDevice->SetBlendMode(m_blendMode);
+		pDevice->setBlendMode(m_blendMode);
 
 		if( m_tintMode == WG_TINTMODE_OPAQUE )
-			pDevice->SetTintColor(m_tintColor);
+			pDevice->setTintColor(m_tintColor);
 		else	// MULTIPLY
-			pDevice->SetTintColor(m_tintColor*oldTC);
+			pDevice->setTintColor(m_tintColor*oldTC);
 	}
 
 	// Render children recursively
@@ -138,8 +138,8 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 //	if( (_layer & m_layer) != 0 )
 	{
-		pDevice->SetBlendMode(oldBM);
-		pDevice->SetTintColor(oldTC);
+		pDevice->setBlendMode(oldBM);
+		pDevice->setTintColor(oldTC);
 	}
 }
 

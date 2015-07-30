@@ -37,73 +37,73 @@ public:
 	WgString( const WgCharSeq& seq );
 	~WgString();
 
-	const WgChar*	Chars() const;
-	int				Length() const;
-	bool			IsEmpty() const;
+	const WgChar*	chars() const;
+	int				length() const;
+	bool			isEmpty() const;
 
-	void			Set( const WgString& str );
-	void			Set( const WgCharBuffer* pBuffer );
-	void			Set( const WgCharSeq& seq );
+	void			set( const WgString& str );
+	void			set( const WgCharBuffer* pBuffer );
+	void			set( const WgCharSeq& seq );
 
-	void			Append( const WgString& str );
-	void			Append( const WgCharBuffer* pBuffer );
-	void			Append( const WgCharSeq& seq );
+	void			append( const WgString& str );
+	void			append( const WgCharBuffer* pBuffer );
+	void			append( const WgCharSeq& seq );
 
-	void			Prepend( const WgString& str );
-	void			Prepend( const WgCharBuffer* pBuffer );
-	void			Prepend( const WgCharSeq& seq );
+	void			prepend( const WgString& str );
+	void			prepend( const WgCharBuffer* pBuffer );
+	void			prepend( const WgCharSeq& seq );
 
-	void			Clear();
+	void			clear();
 
 
 	inline WgString& operator = ( const WgString& kSource )
 	{
-		Set( kSource );
+		set( kSource );
 		return *this;
 	}
 	inline WgString& operator = ( const WgCharBuffer* pBuffer )
 	{
-		Set( pBuffer );
+		set( pBuffer );
 		return *this;
 	}
 	inline WgString& operator = ( const WgCharSeq& seq )
 	{
-		Set( seq );
+		set( seq );
 		return *this;
 	}
 
 	inline WgString& operator += ( const WgString& kSource )
 	{
-		Append( kSource );
+		append( kSource );
 		return *this;
 	}
 	inline WgString& operator += ( const WgCharBuffer* pBuffer )
 	{
-		Append( pBuffer );
+		append( pBuffer );
 		return *this;
 	}
 	inline WgString& operator += ( const WgCharSeq& seq )
 	{
-		Append( seq );
+		append( seq );
 		return *this;
 	}
 
 	inline WgString operator + ( const WgString& kSource ) const
 	{
 		WgString str(*this);
-		str.Append( kSource );
+		str.append( kSource );
 		return str;
 	}
 	inline WgString operator + ( const WgCharBuffer* pBuffer ) const
 	{
 		WgString str(*this);
-		str.Append( pBuffer );
+		str.append( pBuffer );
 		return str;
 	}
 	inline WgString operator + ( const WgCharSeq& seq ) const
 	{
 		WgString str(*this);
-		str.Append( seq );
+		str.append( seq );
 		return str;
 	}
 

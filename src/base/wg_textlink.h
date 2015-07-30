@@ -43,10 +43,10 @@ typedef	WgWeakPtr<class WgTextlink,WgObjectWeakPtr> WgTextLinkWeakPtr;
 class WgTextlink : public WgObject
 {
 public:
-	static WgTextLinkPtr Create( const std::string& link ) { return new WgTextlink(link); }
+	static WgTextLinkPtr create( const std::string& link ) { return new WgTextlink(link); }
 
-	const std::string&		Link() const { return m_link; }
-	bool					HasBeenAccessed() const { return m_bAccessed; }
+	const std::string&		link() const { return m_link; }
+	bool					hasBeenAccessed() const { return m_bAccessed; }
 
 private:
 	bool					m_bAccessed;

@@ -55,43 +55,43 @@ public:
 	WgPresentableField( WgPresentableHolder * pHolder );
 	virtual ~WgPresentableField();
 
-	virtual void		SetStyle( const WgTextStylePtr& pStyle );
-	virtual void		ClearStyle();
-	WgTextStylePtr		Style() const { return m_pStyle; }
+	virtual void		setStyle( const WgTextStylePtr& pStyle );
+	virtual void		clearStyle();
+	WgTextStylePtr		style() const { return m_pStyle; }
 
-	virtual void		SetPresenter( const WgTextPresenterPtr& pPresenter );
-	virtual void		ClearPresenter();
-	WgTextPresenterPtr	Presenter() const { return m_pPresenter; }
+	virtual void		setPresenter( const WgTextPresenterPtr& pPresenter );
+	virtual void		clearPresenter();
+	WgTextPresenterPtr	presenter() const { return m_pPresenter; }
 
-	virtual void		SetState( WgState state );
-	inline WgState		State() const { return m_state; }
+	virtual void		setState( WgState state );
+	inline WgState		state() const { return m_state; }
 
-	virtual WgSize		PreferredSize() const;	
-	virtual int			MatchingWidth( int height ) const;
-	virtual int			MatchingHeight( int width ) const;
-	inline WgSize		Size() const { return m_size; }
+	virtual WgSize		preferredSize() const;	
+	virtual int			matchingWidth( int height ) const;
+	virtual int			matchingHeight( int width ) const;
+	inline WgSize		size() const { return m_size; }
 
-	virtual int			CoordToChar( WgCoord pos ) const;
-	virtual WgRect		CharToRect( int charOfs ) const;
+	virtual int			coordToChar( WgCoord pos ) const;
+	virtual WgRect		charToRect( int charOfs ) const;
 
-	virtual void		OnRefresh();
+	virtual void		onRefresh();
 
-	virtual WgString	Tooltip() const;
+	virtual WgString	tooltip() const;
 
-	virtual void		OnNewSize( const WgSize& size );	
-	virtual void		OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+	virtual void		onNewSize( const WgSize& size );	
+	virtual void		onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
 
-	virtual WgRect		RectForRange( int ofs, int length ) const;
+	virtual WgRect		rectForRange( int ofs, int length ) const;
 	
-	virtual WgString	GetString() const;
+	virtual WgString	getString() const;
 	
-	virtual int			SelectionBegin() const;
-	virtual int			SelectionEnd() const;
+	virtual int			selectionBegin() const;
+	virtual int			selectionEnd() const;
 	
 protected:
 
-	WgTextPresenter *	_presenter() const { return m_pPresenter ? m_pPresenter.RawPtr() : WgBase::DefaultPresenter().RawPtr(); }
-	WgTextStyle *		_style() const { if( m_pStyle ) return m_pStyle.RawPtr(); return WgBase::DefaultStyle().RawPtr(); }
+	WgTextPresenter *	_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : WgBase::defaultPresenter().rawPtr(); }
+	WgTextStyle *		_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return WgBase::defaultStyle().rawPtr(); }
 
 	WgSize					m_size;
 

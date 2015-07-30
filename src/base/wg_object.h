@@ -58,10 +58,10 @@ class WgObject
 	friend class WgInterfaceWeakPtr;
 
 public:
-	virtual bool		IsInstanceOf( const char * pClassName ) const;
-	virtual const char *ClassName( void ) const;
+	virtual bool		isInstanceOf( const char * pClassName ) const;
+	virtual const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgObjectPtr	Cast( const WgObjectPtr& pObject );				// Provided just for completeness sake.
+	static WgObjectPtr	cast( const WgObjectPtr& pObject );				// Provided just for completeness sake.
 
 protected:
 	WgObject() : m_refCount(0), m_pWeakPtrHub(0) {}

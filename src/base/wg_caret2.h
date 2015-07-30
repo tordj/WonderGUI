@@ -49,24 +49,24 @@ enum WgCaretMode
 class WgCaret2 : public WgObject
 {
 public:
-	static WgCaret2Ptr	Create() { return WgCaret2Ptr(new WgCaret2()); }
+	static WgCaret2Ptr	create() { return WgCaret2Ptr(new WgCaret2()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCaret2Ptr	Cast( const WgObjectPtr& pObject );
+	static WgCaret2Ptr	cast( const WgObjectPtr& pObject );
 
-	virtual bool		SetCycleLength( int millisec );
-	inline int			CycleLength() const { return m_cycleLength; }
+	virtual bool		setCycleLength( int millisec );
+	inline int			cycleLength() const { return m_cycleLength; }
 
-	virtual void		SetGlyph( Uint16 glyph, int size, int advance, int ascend, int descend );
-	virtual void		SetMode( WgCaretMode mode );
-	virtual int			EOLWidth( int size, int advance, int ascend, int descend ) const;
-	inline WgCaretMode	Mode() const { return m_mode; }
-	virtual void		Tick( int millisec );
-	inline bool			NeedToRender() const { return m_bNeedToRender; }
-	virtual WgRect		DirtyRect( WgCoord pos ) const;
-	virtual void		Render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip );
+	virtual void		setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend );
+	virtual void		setMode( WgCaretMode mode );
+	virtual int			eolWidth( int size, int advance, int ascend, int descend ) const;
+	inline WgCaretMode	mode() const { return m_mode; }
+	virtual void		tick( int millisec );
+	inline bool			needToRender() const { return m_bNeedToRender; }
+	virtual WgRect		dirtyRect( WgCoord pos ) const;
+	virtual void		render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip );
 
 protected:
 	WgCaret2();

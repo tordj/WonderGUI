@@ -41,20 +41,20 @@ class WgPopupHook : public WgLayerHook, protected WgLink
 	friend class WgChain<WgPopupHook>;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPopupHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgPopupHookPtr	cast( const WgHookPtr& pInterface );
 
 	// Standard Hook methods
 
-	WgPopupHookPtr	Prev() const { return _prev(); }
-	WgPopupHookPtr	Next() const { return _next(); }
+	WgPopupHookPtr	prev() const { return _prev(); }
+	WgPopupHookPtr	next() const { return _next(); }
 
-	WgPopupLayerPtr	Parent() const;
+	WgPopupLayerPtr	parent() const;
 
 protected:
-	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
+	// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgPopupHook );
 
@@ -88,25 +88,25 @@ class WgPopupLayer : public WgLayer
 	friend class WgPopupHook;
 
 public:
-	static WgPopupLayerPtr	Create() { return WgPopupLayerPtr(new WgPopupLayer()); }
+	static WgPopupLayerPtr	create() { return WgPopupLayerPtr(new WgPopupLayer()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPopupLayerPtr	Cast( const WgObjectPtr& pObject );
+	static WgPopupLayerPtr	cast( const WgObjectPtr& pObject );
 
-	WgPopupHookPtr	OpenPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgPopupHookPtr	openPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
-	bool			ClosePopup( const WgWidgetPtr& pPopup );
-	bool			CloseAllPopups();
+	bool			closePopup( const WgWidgetPtr& pPopup );
+	bool			closeAllPopups();
 
-	WgPopupHookPtr	FirstPopupHook();
-	WgPopupHookPtr	LastPopupHook();
+	WgPopupHookPtr	firstPopupHook();
+	WgPopupHookPtr	lastPopupHook();
 
 	// Overloaded from WgPanel
 
-	bool			RemoveWidget( const WgWidgetPtr& pWidget ) { return false; }
-	bool			Clear() { return false; }
+	bool			removeWidget( const WgWidgetPtr& pWidget ) { return false; }
+	bool			clear() { return false; }
 
 protected:
 	WgPopupLayer();
@@ -119,8 +119,8 @@ private:
 
 	// Overloaded from WgLayer
 
-	WgLayerHook *	_firstLayerHook() const { return m_popupHooks.First(); }
-	WgLayerHook *	_lastLayerHook() const { return m_popupHooks.Last(); }
+	WgLayerHook *	_firstLayerHook() const { return m_popupHooks.first(); }
+	WgLayerHook *	_lastLayerHook() const { return m_popupHooks.last(); }
 
 	//
 

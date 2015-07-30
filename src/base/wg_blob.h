@@ -47,20 +47,20 @@ typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
 class WgBlob : public WgObject
 {
 public:
-	static WgBlobPtr	Create( int bytes );
-	static WgBlobPtr	Create( void * pData, void(*pDestructor)(void*) );
+	static WgBlobPtr	create( int bytes );
+	static WgBlobPtr	create( void * pData, void(*pDestructor)(void*) );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgBlobPtr	Cast( const WgObjectPtr& pObject );
+	static WgBlobPtr	cast( const WgObjectPtr& pObject );
     
-	inline int		Size() const { return m_size; }			///< @brief Get the size of the blobs content.
+	inline int		size() const { return m_size; }			///< @brief Get the size of the blobs content.
 															///<
 															///< Get the size of the blobs content.
 															///< The size of the content can only be retrieved if known by the blob.
 															///< @return Size of blob content or 0 if unknown.
-	void *			Content() { return m_pContent; }		///< @brief Get pointer to the content of the blob.
+	void *			content() { return m_pContent; }		///< @brief Get pointer to the content of the blob.
 															///<
 															///< Get a raw pointer to the content of the blob, which is either the object
 															///< wrapped or beginning of the reserved memory area.

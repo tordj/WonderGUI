@@ -46,20 +46,20 @@ class WgPackListHook : public WgListHook
 	friend class WgPackList;
 	friend class WgHookArray<WgPackListHook>;
 public:
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgPackListHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgPackListHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgCoord			Pos() const;
-	WgSize			Size() const;
-	WgRect			Geo() const;
-	WgCoord			GlobalPos() const;
-	WgRect			GlobalGeo() const;
+	WgCoord			pos() const;
+	WgSize			size() const;
+	WgRect			geo() const;
+	WgCoord			globalPos() const;
+	WgRect			globalGeo() const;
 
-	WgPackListHookPtr	Prev() const { return static_cast<WgPackListHook*>(_prevHook()); }
-	WgPackListHookPtr	Next() const { return static_cast<WgPackListHook*>(_nextHook()); }
-	WgPackListPtr		Parent() const { return m_pParent; }
+	WgPackListHookPtr	prev() const { return static_cast<WgPackListHook*>(_prevHook()); }
+	WgPackListHookPtr	next() const { return static_cast<WgPackListHook*>(_nextHook()); }
+	WgPackListPtr		parent() const { return m_pParent; }
 
 protected:
 	WgPackListHook() {};
@@ -87,7 +87,7 @@ class WgPackList : public WgList, protected WgColumnHeaderHolder
 {
 	friend class WgPackListHook;
 public:
-	static WgPackListPtr	Create() { return WgPackListPtr(new WgPackList()); }
+	static WgPackListPtr	create() { return WgPackListPtr(new WgPackList()); }
 
 	//____ Interfaces ______________________________________
 
@@ -95,36 +95,36 @@ public:
 
 	//____ Methods _________________________________________
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPackListPtr	Cast( const WgObjectPtr& pObject );
+	static WgPackListPtr	cast( const WgObjectPtr& pObject );
 
-	WgPackListHookPtr		AddWidget( const WgWidgetPtr& pWidget );
-	WgPackListHookPtr		InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgPackListHookPtr		InsertWidgetSorted( const WgWidgetPtr& pWidget );
+	WgPackListHookPtr		addWidget( const WgWidgetPtr& pWidget );
+	WgPackListHookPtr		insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
+	WgPackListHookPtr		insertWidgetSorted( const WgWidgetPtr& pWidget );
 
-	bool					RemoveWidget( const WgWidgetPtr& pWidget );
-	bool					Clear();
+	bool					removeWidget( const WgWidgetPtr& pWidget );
+	bool					clear();
 
-	void					SetOrientation( WgOrientation orientation );
-	WgOrientation			Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+	void					setOrientation( WgOrientation orientation );
+	WgOrientation			orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 
-	void					SortWidgets();
-	void					SetSortOrder( WgSortOrder order );
-	WgSortOrder				GetSortOrder() const { return m_sortOrder; }
+	void					sortWidgets();
+	void					setSortOrder( WgSortOrder order );
+	WgSortOrder				getSortOrder() const { return m_sortOrder; }
 
-	void					SetSortFunction( WgWidgetSortFunc pSortFunc );
-	WgWidgetSortFunc		SortFunction() const { return m_pSortFunc; }
+	void					setSortFunction( WgWidgetSortFunc pSortFunc );
+	WgWidgetSortFunc		sortFunction() const { return m_pSortFunc; }
 
-	WgSize					PreferredSize() const;
-	int						MatchingHeight( int width ) const;
-	int						MatchingWidth( int height ) const;
+	WgSize					preferredSize() const;
+	int						matchingHeight( int width ) const;
+	int						matchingWidth( int height ) const;
 
-	bool					SetMinEntrySize( WgSize min );
-	bool					SetMaxEntrySize( WgSize max );
-	WgSize					MinEntrySize() const { return m_minEntrySize; }
-	WgSize					MaxEntrySize() const { return m_maxEntrySize; }
+	bool					setMinEntrySize( WgSize min );
+	bool					setMaxEntrySize( WgSize max );
+	WgSize					minEntrySize() const { return m_minEntrySize; }
+	WgSize					maxEntrySize() const { return m_maxEntrySize; }
 
 
 

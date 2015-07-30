@@ -48,14 +48,14 @@ public:
 
 	// ModValue methods
 
-	void				Clear();
-	bool				Set( Sint64 value, int scale );
+	void				clear();
+	bool				set( Sint64 value, int scale );
 	
-	bool				SetRange( Sint64 min, Sint64 max );
-	inline Sint64		Min() const { return m_minValue; }
-	inline Sint64		Max() const { return m_maxValue; }
+	bool				setRange( Sint64 min, Sint64 max );
+	inline Sint64		min() const { return m_minValue; }
+	inline Sint64		max() const { return m_maxValue; }
 
-	void				OnValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
+	void				onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
 
 protected:
 	Sint64				m_minValue;

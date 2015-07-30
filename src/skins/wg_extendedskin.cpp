@@ -27,52 +27,52 @@ using namespace WgUtil;
 
 const char WgExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgExtendedSkin::IsInstanceOf( const char * pClassName ) const
+bool WgExtendedSkin::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgSkin::IsInstanceOf(pClassName);
+	return WgSkin::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgExtendedSkin::ClassName( void ) const
+const char * WgExtendedSkin::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgExtendedSkinPtr WgExtendedSkin::Cast( const WgObjectPtr& pObject )
+WgExtendedSkinPtr WgExtendedSkin::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetContentPadding() ____________________________________________________
+//____ setContentPadding() ____________________________________________________
 
-void WgExtendedSkin::SetContentPadding( WgBorder padding )
+void WgExtendedSkin::setContentPadding( WgBorder padding )
 {
 	m_contentPadding = padding;
 }
 
-//____ SetContentShift() ______________________________________________________
+//____ setContentShift() ______________________________________________________
 
-void WgExtendedSkin::SetContentShift( WgStateEnum state, WgCoord shift )
+void WgExtendedSkin::setContentShift( WgStateEnum state, WgCoord shift )
 {
 	int index = _stateToIndex(state);
 	m_contentShift[index] = shift;
 }
 
-//____ SetHoveredContentShift() _______________________________________________
+//____ setHoveredContentShift() _______________________________________________
 
-void WgExtendedSkin::SetHoveredContentShift( WgCoord shift )
+void WgExtendedSkin::setHoveredContentShift( WgCoord shift )
 {
 	m_contentShift[_stateToIndex(WG_STATE_HOVERED)] = shift;
 	m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
@@ -85,9 +85,9 @@ void WgExtendedSkin::SetHoveredContentShift( WgCoord shift )
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
 }
 
-//____ SetPressedContentShift() _______________________________________________
+//____ setPressedContentShift() _______________________________________________
 
-void WgExtendedSkin::SetPressedContentShift( WgCoord shift )
+void WgExtendedSkin::setPressedContentShift( WgCoord shift )
 {
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
@@ -95,9 +95,9 @@ void WgExtendedSkin::SetPressedContentShift( WgCoord shift )
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
 }
 
-//____ SetSelectedContentShift() ______________________________________________
+//____ setSelectedContentShift() ______________________________________________
 
-void WgExtendedSkin::SetSelectedContentShift( WgCoord shift )
+void WgExtendedSkin::setSelectedContentShift( WgCoord shift )
 {
 	m_contentShift[_stateToIndex(WG_STATE_SELECTED)] = shift;
 	m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
@@ -107,9 +107,9 @@ void WgExtendedSkin::SetSelectedContentShift( WgCoord shift )
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
 }
 
-//____ SetFocusedContentShift() _______________________________________________
+//____ setFocusedContentShift() _______________________________________________
 
-void WgExtendedSkin::SetFocusedContentShift( WgCoord shift )
+void WgExtendedSkin::setFocusedContentShift( WgCoord shift )
 {
 	m_contentShift[_stateToIndex(WG_STATE_FOCUSED)] = shift;
 	m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
@@ -119,45 +119,45 @@ void WgExtendedSkin::SetFocusedContentShift( WgCoord shift )
 	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
 }
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 
-WgSize WgExtendedSkin::MinSize() const
+WgSize WgExtendedSkin::minSize() const
 {
-	return WgSize(m_contentPadding.Width(), m_contentPadding.Height() );
+	return WgSize(m_contentPadding.width(), m_contentPadding.height() );
 }
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 
-WgSize WgExtendedSkin::PreferredSize() const
+WgSize WgExtendedSkin::preferredSize() const
 {
-	return WgSize(m_contentPadding.Width(), m_contentPadding.Height() );
+	return WgSize(m_contentPadding.width(), m_contentPadding.height() );
 }
 
-//____ SizeForContent() _______________________________________________________
+//____ sizeForContent() _______________________________________________________
 
-WgSize WgExtendedSkin::SizeForContent( const WgSize contentSize ) const
+WgSize WgExtendedSkin::sizeForContent( const WgSize contentSize ) const
 {
 	return contentSize + m_contentPadding;
 }
 
-//____ ContentPadding() _______________________________________________________
+//____ contentPadding() _______________________________________________________
 
-WgSize WgExtendedSkin::ContentPadding() const
+WgSize WgExtendedSkin::contentPadding() const
 {
-	return m_contentPadding.Size();
+	return m_contentPadding.size();
 }
 
 
-//____ ContentRect() __________________________________________________________
+//____ contentRect() __________________________________________________________
 
-WgRect WgExtendedSkin::ContentRect( const WgRect& canvas, WgState state ) const
+WgRect WgExtendedSkin::contentRect( const WgRect& canvas, WgState state ) const
 {
 	return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
 }
 
-//____ IsStateIdentical() ______________________________________________________
+//____ isStateIdentical() ______________________________________________________
 
-bool WgExtendedSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+bool WgExtendedSkin::isStateIdentical( WgState state, WgState comparedTo ) const
 {
 	return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
 }

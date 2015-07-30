@@ -69,12 +69,12 @@ class	WgScrollbar : public WgWidget
 	friend class WgMenu;
 
 	public:
-		static WgScrollbarPtr	Create() { return WgScrollbarPtr(new WgScrollbar()); }
+		static WgScrollbarPtr	create() { return WgScrollbarPtr(new WgScrollbar()); }
 
-		bool		IsInstanceOf( const char * pClassName ) const;
-		const char *ClassName( void ) const;
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgScrollbarPtr	Cast( const WgObjectPtr& pObject );
+		static WgScrollbarPtr	cast( const WgObjectPtr& pObject );
 
 
 		//____ Enums ____________________________________________
@@ -111,8 +111,8 @@ class	WgScrollbar : public WgWidget
 		inline WgSkinPtr 		FwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
 		inline BtnLayout		ButtonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
 
-		void			SetOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
-		inline WgOrientation	Orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
+		void			setOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
+		inline WgOrientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 
 		void		SetBackgroundPressMode( BgPressMode mode );			///< @brief Set action for mouse press on scrollbar background.
 		inline BgPressMode BackgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
@@ -134,7 +134,7 @@ class	WgScrollbar : public WgWidget
 
 		bool	SetScrollbarTarget( WgScrollbarTarget * pTarget );
 
-		WgSize	PreferredSize() const;
+		WgSize	preferredSize() const;
 
 	protected:
 		WgScrollbar();
@@ -251,7 +251,7 @@ float WgScrollbar::HandleSize() const
  * Get a pointer to the skin used as a background for the area of the handle.
  *
  * This handle area background skin is different from the standard widget skin you get
- * using Skin(). The standard widget skin covers the whole widget and includes the buttons
+ * using skin(). The standard widget skin covers the whole widget and includes the buttons
  * and handle area as its content.
  *
  * The background skin returned by this method only covers the handle area and includes
@@ -335,7 +335,7 @@ WgScrollbar::BtnLayout WgScrollbar::ButtonLayout() const
  * 		   	WG_VERTICAL if scrollbar is vertical.
  **/
 
-WgOrientation WgScrollbar::Orientation() const
+WgOrientation WgScrollbar::orientation() const
 {
 	return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL;
 }

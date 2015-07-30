@@ -76,43 +76,43 @@ class WgLegacyText : public WgInterface
 public:
 	WgLegacyText( WgLegacyTextField * pField ) : m_pField(pField) {};
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgLegacyTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgLegacyTextPtr		Ptr() { return WgLegacyTextPtr(_object(),this); }
+	static WgLegacyTextPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgLegacyTextPtr		ptr() { return WgLegacyTextPtr(_object(),this); }
 
-	inline void				SetProperties( const WgTextpropPtr& pProp ) { m_pField->SetProperties(pProp); }
-	inline void				ClearProperties() { m_pField->ClearProperties(); }
-	inline WgTextpropPtr	Properties() const { return m_pField->Properties(); }
+	inline void				setProperties( const WgTextpropPtr& pProp ) { m_pField->setProperties(pProp); }
+	inline void				clearProperties() { m_pField->clearProperties(); }
+	inline WgTextpropPtr	properties() const { return m_pField->properties(); }
 
-	inline void				SetSelectionProperties( const WgTextpropPtr& pProp ) { m_pField->SetSelectionProperties(pProp); }
-	inline void				ClearSelectionProperties() { m_pField->ClearSelectionProperties(); }
-	inline WgTextpropPtr	SelectionProperties() const { return m_pField->SelectionProperties(); }
+	inline void				setSelectionProperties( const WgTextpropPtr& pProp ) { m_pField->setSelectionProperties(pProp); }
+	inline void				clearSelectionProperties() { m_pField->clearSelectionProperties(); }
+	inline WgTextpropPtr	selectionProperties() const { return m_pField->selectionProperties(); }
 
-	inline void				SetLinkProperties( const WgTextpropPtr& pProp ) { m_pField->SetLinkProperties(pProp); }
-	inline void				ClearLinkProperties() { m_pField->ClearLinkProperties(); }
-	inline WgTextpropPtr	LinkProperties() const { return m_pField->LinkProperties(); }
+	inline void				setLinkProperties( const WgTextpropPtr& pProp ) { m_pField->setLinkProperties(pProp); }
+	inline void				clearLinkProperties() { m_pField->clearLinkProperties(); }
+	inline WgTextpropPtr	linkProperties() const { return m_pField->linkProperties(); }
 
-	inline void				SetAlignment( WgOrigo alignment ) { m_pField->SetAlignment(alignment); }
-	inline WgOrigo			Alignment() const { return m_pField->Alignment(); }
+	inline void				setAlignment( WgOrigo alignment ) { m_pField->setAlignment(alignment); }
+	inline WgOrigo			alignment() const { return m_pField->alignment(); }
 
-	inline void				SetTintMode( WgTintMode mode ) { m_pField->SetTintMode(mode); }
-	inline WgTintMode		TintMode() const { return m_pField->TintMode(); }
+	inline void				setTintMode( WgTintMode mode ) { m_pField->setTintMode(mode); }
+	inline WgTintMode		tintMode() const { return m_pField->tintMode(); }
 
-	inline void				SetLineSpacing( float adjustment ) { m_pField->SetLineSpacing(adjustment); }
-	inline float			LineSpacing() const { return m_pField->LineSpacing(); }
+	inline void				setLineSpacing( float adjustment ) { m_pField->setLineSpacing(adjustment); }
+	inline float			lineSpacing() const { return m_pField->lineSpacing(); }
 
-	inline void				SetWrap(bool bWrap) { m_pField->SetWrap(bWrap); }
-	inline bool				Wrap() const { return m_pField->Wrap(); }
+	inline void				setWrap(bool bWrap) { m_pField->setWrap(bWrap); }
+	inline bool				wrap() const { return m_pField->wrap(); }
 
-	inline void				SetAutoEllipsis(bool bAutoEllipsis) { m_pField->SetAutoEllipsis(bAutoEllipsis); }
-	inline bool				AutoEllipsis() const { return m_pField->AutoEllipsis(); }
+	inline void				setAutoEllipsis(bool bAutoEllipsis) { m_pField->setAutoEllipsis(bAutoEllipsis); }
+	inline bool				autoEllipsis() const { return m_pField->autoEllipsis(); }
 
-	inline WgState			State() const { return m_pField->State(); }
-	inline int				Lines() const { return m_pField->Lines(); }
-	inline int				Length() const { return m_pField->Length(); }
-	inline bool				IsEmpty() const { return m_pField->IsEmpty(); }
+	inline WgState			state() const { return m_pField->state(); }
+	inline int				lines() const { return m_pField->lines(); }
+	inline int				length() const { return m_pField->length(); }
+	inline bool				isEmpty() const { return m_pField->isEmpty(); }
 
 protected:
 	WgObject *				_object() const;

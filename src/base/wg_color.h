@@ -61,7 +61,7 @@ public:
 	inline WgColor operator*( float f ) const;
 	inline WgColor operator*( const WgColor& k ) const;
 
-	static WgColor Blend( const WgColor& start, const WgColor& dest, float grade );
+	static WgColor blend( const WgColor& start, const WgColor& dest, float grade );
 
 	void	setCMYK( float c, float m, float y, float k, Uint8 alpha = 255 );
 	void	getCMYK( float* c, float* m, float* y, float* k );

@@ -33,32 +33,32 @@ public:
 	WgHookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); }
 	~WgHookArray() { _killBlock( 0, m_size ); free(m_pArray); }
 
-	int		Size() const { return m_size; }
-	bool	IsEmpty() const { return m_size == 0; }
-	int		Capacity() const { return m_capacity; }
+	int		size() const { return m_size; }
+	bool	isEmpty() const { return m_size == 0; }
+	int		capacity() const { return m_capacity; }
 
-	H*		Hook(int index) const { return &m_pArray[index]; }
+	H*		hook(int index) const { return &m_pArray[index]; }
 
-	H*		Insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
-	H*		Insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
-	H*		Add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*3) / 2 ); _initBlock(m_size); return &m_pArray[m_size++]; }
-	H*		Add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
-	void	Remove(int index) { _deleteBlock(index,1); }
-	void	Remove(int index, int entries) { _deleteBlock(index,entries); }
+	H*		insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
+	H*		insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
+	H*		add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*3) / 2 ); _initBlock(m_size); return &m_pArray[m_size++]; }
+	H*		add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
+	void	remove(int index) { _deleteBlock(index,1); }
+	void	remove(int index, int entries) { _deleteBlock(index,entries); }
 
-	void	Clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
-	void	SetCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
+	void	clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
+	void	setCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
 
-	H*		Prev( const H* pHook ) const { if( pHook > m_pArray ) return const_cast<H*>(pHook)-1; return 0; }
-	H*		Next( const H* pHook ) const { if( pHook < &m_pArray[m_size-1] ) return const_cast<H*>(pHook)+1; return 0; }
+	H*		prev( const H* pHook ) const { if( pHook > m_pArray ) return const_cast<H*>(pHook)-1; return 0; }
+	H*		next( const H* pHook ) const { if( pHook < &m_pArray[m_size-1] ) return const_cast<H*>(pHook)+1; return 0; }
 
-	int		Index( const H* pHook ) const { return m_pArray - pHook; }
-	int		IsInArray( const H* pHook ) const { if( pHook >= m_pArray && pHook < &m_pArray[m_size] ) return true; return false; }
+	int		index( const H* pHook ) const { return m_pArray - pHook; }
+	int		isInArray( const H* pHook ) const { if( pHook >= m_pArray && pHook < &m_pArray[m_size] ) return true; return false; }
 
-	H*		Begin() const { return m_pArray; }
-	H*		End() const { return m_pArray + m_size; }
+	H*		begin() const { return m_pArray; }
+	H*		end() const { return m_pArray + m_size; }
 
-	void	Reorder( int order[] )
+	void	reorder( int order[] )
 	{
 		if( m_size == 0 ) 
 			return;

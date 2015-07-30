@@ -41,29 +41,29 @@ WgFinalizer::~WgFinalizer()
 		m_pCallback( m_pObject );
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgFinalizer::IsInstanceOf( const char * pClassName ) const
+bool WgFinalizer::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgFinalizer::ClassName( void ) const
+const char * WgFinalizer::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgFinalizerPtr WgFinalizer::Cast( const WgObjectPtr& pObject )
+WgFinalizerPtr WgFinalizer::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.rawPtr()) );
 
 	return 0;
 }

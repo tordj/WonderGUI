@@ -38,7 +38,7 @@ const char WgBlob::CLASSNAME[] = {"Blob"};
  * buffer is released.
  */
 
-WgBlobPtr WgBlob::Create( int bytes )
+WgBlobPtr WgBlob::create( int bytes )
 {
 	WgBlob * pBlob = new(bytes) WgBlob( bytes );
 	return WgBlobPtr(pBlob);
@@ -58,12 +58,12 @@ WgBlobPtr WgBlob::Create( int bytes )
  * When the Blob is destroyed, it will make a call to pDestructor with pData as parameter. It will
  * then be up to pDestructor to actually destroy the data (or not).
  * 
- * Since the size of the object/data is unknown to the blob, a call to Size() will return 0.
+ * Since the size of the object/data is unknown to the blob, a call to size() will return 0.
  * 
  */
 
 
-WgBlobPtr WgBlob::Create(void * pData, void(*pDestructor)(void*) )
+WgBlobPtr WgBlob::create(void * pData, void(*pDestructor)(void*) )
 {
 	WgBlob * pBlob = new(0) WgBlob( pData, pDestructor );
 	return WgBlobPtr(pBlob);
@@ -96,29 +96,29 @@ WgBlob::~WgBlob()
 		m_pDestructor( m_pContent );
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgBlob::IsInstanceOf( const char * pClassName ) const
+bool WgBlob::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgBlob::ClassName( void ) const
+const char * WgBlob::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgBlobPtr WgBlob::Cast( const WgObjectPtr& pObject )
+WgBlobPtr WgBlob::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBlobPtr( static_cast<WgBlob*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgBlobPtr( static_cast<WgBlob*>(pObject.rawPtr()) );
 
 	return 0;
 }

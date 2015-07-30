@@ -53,21 +53,21 @@ class WgTextField : public WgPresentableField
 public:
 	WgTextField( WgTextHolder * pHolder );
 
-	virtual void		Clear();
+	virtual void		clear();
 
-	virtual void		Set( const WgCharSeq& seq );
-	virtual void		Set( const WgCharBuffer * buffer );
-	virtual void		Set( const WgString& str );
+	virtual void		set( const WgCharSeq& seq );
+	virtual void		set( const WgCharBuffer * buffer );
+	virtual void		set( const WgString& str );
 
-	virtual int			Append( const WgCharSeq& seq );
-	virtual int			Insert( int ofs, const WgCharSeq& seq );
-	virtual int			Replace( int ofs, int nDelete, const WgCharSeq& seq );
-	virtual int			Delete( int ofs, int len );
+	virtual int			append( const WgCharSeq& seq );
+	virtual int			insert( int ofs, const WgCharSeq& seq );
+	virtual int			replace( int ofs, int nDelete, const WgCharSeq& seq );
+	virtual int			remove( int ofs, int len );
 
 
-	inline int			Length() const { return m_charBuffer.Length(); }
-	inline bool			IsEmpty() const { return Length()==0?true:false; }
-	WgTextLinkPtr		GetMarkedLink() const;
+	inline int			length() const { return m_charBuffer.length(); }
+	inline bool			isEmpty() const { return length()==0?true:false; }
+	WgTextLinkPtr		getMarkedLink() const;
 
 protected:
 

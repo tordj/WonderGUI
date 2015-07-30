@@ -23,29 +23,29 @@
 
 const char WgSkin::CLASSNAME[] = {"Skin"};
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSkin::IsInstanceOf( const char * pClassName ) const
+bool WgSkin::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSkin::ClassName( void ) const
+const char * WgSkin::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::Cast( const WgObjectPtr& pObject )
+WgSkinPtr WgSkin::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSkinPtr( static_cast<WgSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }

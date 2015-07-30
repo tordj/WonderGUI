@@ -52,36 +52,36 @@ typedef	WgWeakPtr<WgTextPresenter,WgObjectWeakPtr>	WgTextPresenterWeakPtr;
 class WgTextPresenter : public WgObject
 {
 public:
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgTextPresenterPtr	Cast( const WgObjectPtr& pObject );
+	static WgTextPresenterPtr	cast( const WgObjectPtr& pObject );
 
-	virtual void	AddField( WgPresentableField * pField ) = 0;
-	virtual void	RemoveField( WgPresentableField * pField ) = 0;
+	virtual void	addField( WgPresentableField * pField ) = 0;
+	virtual void	removeField( WgPresentableField * pField ) = 0;
 
-	virtual int		CoordToChar( const WgPresentableField * pField, WgCoord pos ) = 0;
+	virtual int		coordToChar( const WgPresentableField * pField, WgCoord pos ) = 0;
 
-	virtual void 	RenderField( WgPresentableField * pText, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
+	virtual void 	renderField( WgPresentableField * pText, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
 
-	virtual void	OnTextModified( WgPresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-	virtual void	OnFieldResize( WgPresentableField * pText, WgSize newSize ) = 0;
-	virtual void	OnStateChange( WgPresentableField * pText, WgState newState, WgState oldState ) = 0;
-	virtual void	OnStyleChange( WgPresentableField * pText ) = 0;
-	virtual void	OnRefresh( WgPresentableField * pText ) = 0;
+	virtual void	onTextModified( WgPresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
+	virtual void	onFieldResize( WgPresentableField * pText, WgSize newSize ) = 0;
+	virtual void	onStateChange( WgPresentableField * pText, WgState newState, WgState oldState ) = 0;
+	virtual void	onStyleChange( WgPresentableField * pText ) = 0;
+	virtual void	onRefresh( WgPresentableField * pText ) = 0;
 
 
-	virtual WgSize	PreferredSize( const WgPresentableField * pText ) const = 0;
-	virtual int		MatchingWidth( const WgPresentableField * pText, int height ) const = 0;
-	virtual int		MatchingHeight( const WgPresentableField * pText, int width ) const = 0;
+	virtual WgSize	preferredSize( const WgPresentableField * pText ) const = 0;
+	virtual int		matchingWidth( const WgPresentableField * pText, int height ) const = 0;
+	virtual int		matchingHeight( const WgPresentableField * pText, int width ) const = 0;
 
-	virtual WgRect	RectForRange( const WgPresentableField * pText, int ofs, int length ) const = 0;
+	virtual WgRect	rectForRange( const WgPresentableField * pText, int ofs, int length ) const = 0;
 
-	virtual WgString Tooltip( const WgPresentableField * pText ) const;
+	virtual WgString tooltip( const WgPresentableField * pText ) const;
 
-	virtual int		CoordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
-	virtual int		MoveCaret( WgPresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
-	virtual WgRect	CharToRect( const WgPresentableField * pField, int charOfs ) = 0;
+	virtual int		coordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
+	virtual int		moveCaret( WgPresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+	virtual WgRect	charToRect( const WgPresentableField * pField, int charOfs ) = 0;
 
 
 protected:

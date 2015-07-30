@@ -26,7 +26,7 @@ namespace sdl_wglib
 	void 		TranslateEvent( const WgEventHandlerPtr& pHandler, SDL_Event& event );
 	void 		EndEvents( const WgEventHandlerPtr& pHandler );
 
-	WgSurfacePtr LoadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
+	WgSurfacePtr loadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
 
 	WgResDBPtr	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& factory );
 

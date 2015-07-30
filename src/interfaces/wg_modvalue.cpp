@@ -25,51 +25,51 @@
 const char WgModValue::CLASSNAME[] = {"ModValue"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgModValue::IsInstanceOf( const char * pClassName ) const
+bool WgModValue::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgValue::IsInstanceOf(pClassName);
+	return WgValue::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgModValue::ClassName( void ) const
+const char * WgModValue::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgModValuePtr WgModValue::Cast( const WgInterfacePtr& pInterface )
+WgModValuePtr WgModValue::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgModValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgModValue*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgModValuePtr( pInterface.getRealObjectPtr(), static_cast<WgModValue*>( pInterface.rawPtr()) );
 
 	return 0;
 }
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgModValue::Clear() 
+void WgModValue::clear() 
 { 
-	bool bModified = _field()->Value() != 0;
-	_field()->Clear();
+	bool bModified = _field()->value() != 0;
+	_field()->clear();
 
 	if( bModified )
-		_field()->OnValueModified(); 
+		_field()->onValueModified(); 
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-bool WgModValue::Set( Sint64 value, int scale ) 
+bool WgModValue::set( Sint64 value, int scale ) 
 { 
-	if( _field()->Set(value,scale) )
+	if( _field()->set(value,scale) )
 	{
-		_field()->OnValueModified();
+		_field()->onValueModified();
 		return true;
 	} 
 	else
@@ -77,15 +77,15 @@ bool WgModValue::Set( Sint64 value, int scale )
 
 }
 
-//____ SetRange() ______________________________________________________________
+//____ setRange() ______________________________________________________________
 
-bool WgModValue::SetRange( Sint64 min, Sint64 max ) 
+bool WgModValue::setRange( Sint64 min, Sint64 max ) 
 { 
-	Sint64 val = _field()->Value();
+	Sint64 val = _field()->value();
 	
-	bool retVal = _field()->SetRange(min,max); 
-	if( val != _field()->Value() )
-		_field()->OnValueModified();
+	bool retVal = _field()->setRange(min,max); 
+	if( val != _field()->value() )
+		_field()->onValueModified();
 	
 	return retVal;
 }

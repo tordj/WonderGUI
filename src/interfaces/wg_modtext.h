@@ -69,22 +69,22 @@ class WgModText : public WgText
 public:
 	WgModText( WgTextField * pField ) : WgText(pField) {};
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgModTextPtr		Cast( const WgInterfacePtr& pInterface );
-	inline WgModTextPtr		Ptr() { return WgModTextPtr(_object(),this); }
+	static WgModTextPtr		cast( const WgInterfacePtr& pInterface );
+	inline WgModTextPtr		ptr() { return WgModTextPtr(_object(),this); }
 
-	inline void				Clear() { m_pField->Clear(); }
+	inline void				clear() { m_pField->clear(); }
 
-	inline void				Set( const WgCharSeq& seq ) { m_pField->Set(seq); }
-	inline void				Set( const WgCharBuffer * pBuffer ) { m_pField->Set(pBuffer); }
-	inline void				Set( const WgString& str ) { m_pField->Set(str); }
+	inline void				set( const WgCharSeq& seq ) { m_pField->set(seq); }
+	inline void				set( const WgCharBuffer * pBuffer ) { m_pField->set(pBuffer); }
+	inline void				set( const WgString& str ) { m_pField->set(str); }
 
-	inline int				Append( const WgCharSeq& seq ) { return m_pField->Append(seq); }
-	inline int				Insert( int ofs, const WgCharSeq& seq ) { return m_pField->Insert(ofs,seq); }
-	inline int				Replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->Replace(ofs,len,seq); }
-	inline int				Delete( int ofs, int len ) { return m_pField->Delete(ofs,len); }
+	inline int				append( const WgCharSeq& seq ) { return m_pField->append(seq); }
+	inline int				insert( int ofs, const WgCharSeq& seq ) { return m_pField->insert(ofs,seq); }
+	inline int				replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
+	inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
 
 };
 

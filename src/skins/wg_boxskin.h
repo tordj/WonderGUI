@@ -36,36 +36,36 @@ typedef	WgStrongPtr<WgBoxSkin,WgExtendedSkinPtr>	WgBoxSkinPtr;
 class WgBoxSkin : public WgExtendedSkin
 {
 public:
-	static WgBoxSkinPtr	Create();
-	static WgBoxSkinPtr Create( WgColor color, WgBorder frame, WgColor frameColor );
+	static WgBoxSkinPtr	create();
+	static WgBoxSkinPtr create( WgColor color, WgBorder frame, WgColor frameColor );
 	~WgBoxSkin() {};
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgBoxSkinPtr	Cast( const WgObjectPtr& pObject );
+	static WgBoxSkinPtr	cast( const WgObjectPtr& pObject );
 
-	void	SetColor( WgColor color );
-	void	SetFrameColor( WgColor color );
-	void	SetFrameThickness( WgBorder frame );
-	void	SetFrame( WgBorder frame, WgColor color );
+	void	setColor( WgColor color );
+	void	setFrameColor( WgColor color );
+	void	setFrameThickness( WgBorder frame );
+	void	setFrame( WgBorder frame, WgColor color );
 
-	void	SetStateColor( WgStateEnum state, WgColor color );
-	void	SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
+	void	setStateColor( WgStateEnum state, WgColor color );
+	void	setStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
 
-	void Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
+	void render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
 	
-	WgSize	MinSize() const;
-	WgSize	PreferredSize() const;
+	WgSize	minSize() const;
+	WgSize	preferredSize() const;
 
-	WgSize	SizeForContent( const WgSize contentSize ) const;
-	bool	MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const;
+	WgSize	sizeForContent( const WgSize contentSize ) const;
+	bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const;
 
-	bool	IsOpaque() const;
-	bool	IsOpaque( WgState state ) const;
-	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
+	bool	isOpaque() const;
+	bool	isOpaque( WgState state ) const;
+	bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
 
-	bool	IsStateIdentical( WgState state, WgState comparedTo ) const;
+	bool	isStateIdentical( WgState state, WgState comparedTo ) const;
 
 private:
 	WgBoxSkin();

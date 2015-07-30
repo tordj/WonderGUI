@@ -35,12 +35,12 @@ typedef	WgWeakPtr<WgFinalizer,WgObjectWeakPtr>	WgFinalizerWeakPtr;
 class WgFinalizer : public WgObject
 {
 public:
-	static WgFinalizerPtr	Create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
+	static WgFinalizerPtr	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFinalizerPtr	Cast( const WgObjectPtr& pObject );
+	static WgFinalizerPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgFinalizer(void(*pCallback)(void*),void * pObject);

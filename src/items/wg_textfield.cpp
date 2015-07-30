@@ -28,74 +28,74 @@ WgTextField::WgTextField( WgTextHolder * pHolder ) : WgPresentableField( pHolder
 {
 }
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgTextField::Clear()
+void WgTextField::clear()
 {
-	int removed = m_charBuffer.Length();
-	m_charBuffer.Clear();
-	_presenter()->OnTextModified(this, 0, removed, 0 );
+	int removed = m_charBuffer.length();
+	m_charBuffer.clear();
+	_presenter()->onTextModified(this, 0, removed, 0 );
 }
 
-//___ Set() ____________________________________________________________________
+//___ set() ____________________________________________________________________
 
-void WgTextField::Set( const WgCharSeq& seq )
+void WgTextField::set( const WgCharSeq& seq )
 {
-	int removed = m_charBuffer.Length();
+	int removed = m_charBuffer.length();
 	m_charBuffer = seq;
-	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
+	_presenter()->onTextModified(this, 0, removed, m_charBuffer.length() );
 }
 
-void WgTextField::Set( const WgCharBuffer * buffer )
+void WgTextField::set( const WgCharBuffer * buffer )
 {
-	int removed = m_charBuffer.Length();
+	int removed = m_charBuffer.length();
 	m_charBuffer = * buffer;
-	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
+	_presenter()->onTextModified(this, 0, removed, m_charBuffer.length() );
 }
 
-void WgTextField::Set( const WgString& str )
+void WgTextField::set( const WgString& str )
 {
-	int removed = m_charBuffer.Length();
+	int removed = m_charBuffer.length();
 	m_charBuffer = str;
-	_presenter()->OnTextModified(this, 0, removed, m_charBuffer.Length() );
+	_presenter()->onTextModified(this, 0, removed, m_charBuffer.length() );
 }
 
-//____ Append() ________________________________________________________________
+//____ append() ________________________________________________________________
 
-int WgTextField::Append( const WgCharSeq& seq )
+int WgTextField::append( const WgCharSeq& seq )
 {
-	int ofs = m_charBuffer.Length();
-	int len = m_charBuffer.PushBack(seq);
-	_presenter()->OnTextModified(this, ofs, 0, len );
+	int ofs = m_charBuffer.length();
+	int len = m_charBuffer.pushBack(seq);
+	_presenter()->onTextModified(this, ofs, 0, len );
 }
 
-//____ Insert() ________________________________________________________________
+//____ insert() ________________________________________________________________
 
-int WgTextField::Insert( int ofs, const WgCharSeq& seq )
+int WgTextField::insert( int ofs, const WgCharSeq& seq )
 {
-	m_charBuffer.Insert(ofs,seq);
-	_presenter()->OnTextModified(this, ofs, 0, seq.Length() );
+	m_charBuffer.insert(ofs,seq);
+	_presenter()->onTextModified(this, ofs, 0, seq.length() );
 }
 
-//____ Replace() _______________________________________________________________
+//____ replace() _______________________________________________________________
 
-int WgTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
+int WgTextField::replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
-	m_charBuffer.Replace(ofs,nDelete,seq);
-	_presenter()->OnTextModified(this, ofs, nDelete, seq.Length() );
+	m_charBuffer.replace(ofs,nDelete,seq);
+	_presenter()->onTextModified(this, ofs, nDelete, seq.length() );
 }
 
-//____ Delete() ________________________________________________________________
+//____ delete() ________________________________________________________________
 
-int WgTextField::Delete( int ofs, int len )
+int WgTextField::remove( int ofs, int len )
 {
-	m_charBuffer.Delete(ofs,len);
-	_presenter()->OnTextModified(this, ofs, len, 0 );	
+	m_charBuffer.remove(ofs,len);
+	_presenter()->onTextModified(this, ofs, len, 0 );	
 }
 
-//____ GetMarkedLink() _________________________________________________________
+//____ getMarkedLink() _________________________________________________________
 
-WgTextLinkPtr WgTextField::GetMarkedLink() const
+WgTextLinkPtr WgTextField::getMarkedLink() const
 {
 	//TODO: Implement!
 }

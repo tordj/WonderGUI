@@ -74,7 +74,7 @@ public:
 
 	/// Initializes a character to contain the glyph and properties of the specified character.
 
-	WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextpropManager::IncRef(properties,1); }
+	WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextpropManager::incRef(properties,1); }
 
 	/// Initializes a character to contain the specified glyph and no properties.
 
@@ -82,8 +82,8 @@ public:
 
 	/// Initializes a character to contain the glyph and properties as specified.
 
-	WgChar( Uint16 _glyph, const WgTextpropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::IncRef(properties,1); }
-	~WgChar() { if( properties ) WgTextpropManager::DecRef(properties,1); };
+	WgChar( Uint16 _glyph, const WgTextpropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
+	~WgChar() { if( properties ) WgTextpropManager::decRef(properties,1); };
 
 	inline WgChar & operator=(const WgChar &ref)
 	{
@@ -94,29 +94,29 @@ public:
 		else
 		{
 			if(properties)
-				WgTextpropManager::DecRef(properties,1);
+				WgTextpropManager::decRef(properties,1);
 			all = ref.all;
 			if(properties)
-				WgTextpropManager::IncRef(properties,1);
+				WgTextpropManager::incRef(properties,1);
 		}
 		return *this;
 	}
 
-	inline bool				Equals(const WgChar& ch) const { return all == ch.all; }
+	inline bool				equals(const WgChar& ch) const { return all == ch.all; }
 
 							/// Sets the glyph part of the character without affecting the display properties.
 
-	inline void				SetGlyph( Uint16 _glyph ) { glyph = _glyph; }
+	inline void				setGlyph( Uint16 _glyph ) { glyph = _glyph; }
 
 							/// Gets the glyph part of the character.
 							///
 							/// @return The glyph part of the character.
 
-	inline Uint16			Glyph() const { return glyph; }
+	inline Uint16			getGlyph() const { return glyph; }
 
 							/// Sets the properties of the character.
 
-	inline void				SetProperties( const WgTextpropPtr& pProperties ) { if(properties) WgTextpropManager::DecRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::IncRef(properties,1); }
+	inline void				setProperties( const WgTextpropPtr& pProperties ) { if(properties) WgTextpropManager::decRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
 
 							/// Gets the characters properties as a handle.
 							///
@@ -126,7 +126,7 @@ public:
 							///
 							/// @return The properties of the character as a handle.
 
-	inline Uint16			PropHandle() const { return (Uint16) properties; }
+	inline Uint16			propHandle() const { return (Uint16) properties; }
 
 							/// Gets read-access to the properties of the character.
 							///
@@ -135,7 +135,7 @@ public:
 							/// @return Read-only pointer to a WgTextprop specifying the properties of the character. A valid pointer
 							/// is always returned, if the character has no properties set a pointer to an empty default WgTextprop is returned.
 
-	inline WgTextpropPtr	Properties() const { return WgTextpropPtr(properties); }
+	inline WgTextpropPtr	getProperties() const { return WgTextpropPtr(properties); }
 
 							/// Checks if the character is set to be underlined in the given state.
 
@@ -143,7 +143,7 @@ public:
 
 							/// @return True if the character is set to underlined for the given state.
 
-	inline bool				IsUnderlined( WgState state ) const { return GetPropRef().IsUnderlined(state); }
+	inline bool				isUnderlined( WgState state ) const { return getPropRef().isUnderlined(state); }
 
 							/// Checks if the character has a color specified for the given state.
 
@@ -151,19 +151,19 @@ public:
 
 							/// @return True if the character has a color specified for the specified state.
 
-	inline bool				IsColored( WgState state ) const { return GetPropRef().IsColored(state); }
+	inline bool				isColored( WgState state ) const { return getPropRef().isColored(state); }
 
 							/// Returns the characters specified color (if any) for the given state.
 
 							/// @param state			The state of the Widget or Item containing the text.
 
-							/// The method IsColored() needs to be called to determine wether the
+							/// The method isColored() needs to be called to determine wether the
 							/// character actually has a color for the given state or not.
 							///
 							/// @return If the character has a color specified for the given state that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	Color( WgState state ) const { return GetPropRef().Color(state); }
+	inline const WgColor	color( WgState state ) const { return getPropRef().color(state); }
 
 							/// Checks if the character has a background color specified for the given state.
 
@@ -171,34 +171,34 @@ public:
 
 							/// @return True if the character has a background color specified for the specified state.
 
-	inline bool				IsBgColored( WgState state ) const { return GetPropRef().IsBgColored(state); }
+	inline bool				isBgColored( WgState state ) const { return getPropRef().isBgColored(state); }
 
 							/// Returns the characters specified background color (if any) for the given state.
 
 							/// @param state		The state of the Widget or Item containing the text.
 
-							/// The method IsBgColored() needs to be called to determine wether the
+							/// The method isBgColored() needs to be called to determine wether the
 							/// character actually has a background color for the given state or not.
 							///
 							/// @return If the character has a background color specified for the given state that will be returned,
 							///			otherwise an unspecified value will be returned.
 
-	inline const WgColor	BgColor( WgState state ) const { return GetPropRef().BgColor(state); }
+	inline const WgColor	bgColor( WgState state ) const { return getPropRef().bgColor(state); }
 
 							/// Returns the text-link (weblink) this character links to, if any.
 							///
 							/// @return Pointer to the WgTextLink this character is part of or NULL if none.
 
-	inline WgTextLinkPtr	Link() const { return GetPropRef().Link(); }
+	inline WgTextLinkPtr	link() const { return getPropRef().link(); }
 
 							/// Returns the characters specified font (if any).
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFontPtr		Font() const { return GetPropRef().Font(); }
+	inline WgFontPtr		font() const { return getPropRef().font(); }
 
 
-//	inline WgGlyphset *		Glyphset( const WgTextpropPtr& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.GetHandle(), properties, state); }
+//	inline WgGlyphset *		glyphset( const WgTextpropPtr& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
 
 							/// Returns the characters font size for the given state.
 							///
@@ -210,7 +210,7 @@ public:
 							///
 							/// @return Characters font size for the given state.
 
-	inline int				Size( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Size(state); }
+	inline int				size( WgState state = WG_STATE_NORMAL ) const { return getPropRef().size(state); }
 
 							/// Returns the characters font style specification for the given state.
 							///
@@ -222,26 +222,26 @@ public:
 							/// @return Font style specified for the given state.
 
 
-	inline WgFontAlt		Style( WgState state = WG_STATE_NORMAL ) const { return GetPropRef().Style(state); }
+	inline WgFontAlt		style( WgState state = WG_STATE_NORMAL ) const { return getPropRef().style(state); }
 
 							/// Checks if the character terminates the current line.
 							/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
 
-	inline bool 			IsEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
+	inline bool 			isEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
 
 							/// Checks if the character terminates the text.
 							/// @return True if the glyph portion of the character is End-of-Text (null).
 
-	inline bool				IsEndOfText() const { if( glyph == 0 ) return true; return false; }
+	inline bool				isEndOfText() const { if( glyph == 0 ) return true; return false; }
 
 							/// Checks if the character is a whitespace.
 							/// @return True if the glyph portion of the characer contains a space or WG_NO_BREAK_SPACE.
 
-	inline bool 			IsWhitespace() const { if( glyph == ' ' || glyph == WG_NO_BREAK_SPACE ) return true; return false; }
+	inline bool 			isWhitespace() const { if( glyph == ' ' || glyph == WG_NO_BREAK_SPACE ) return true; return false; }
 
 protected:
 
-	inline const WgTextprop&	GetPropRef() const { return WgTextpropManager::GetProp(properties); }		// Use with caution! Not safe if adding/removing
+	inline const WgTextprop&	getPropRef() const { return WgTextpropManager::getProp(properties); }		// Use with caution! Not safe if adding/removing
 
 private:
 

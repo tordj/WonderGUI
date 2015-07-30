@@ -31,7 +31,7 @@ WgSpanItem::WgSpanItem( WgSpanHolder * pHolder ) : WgItem( pHolder )
 }
 
 
-bool WgSpanItem::SetMin( int _min )
+bool WgSpanItem::setMin( int _min )
 {
 	if( _min < MIN || _min > MAX )
 		return false;
@@ -54,7 +54,7 @@ bool WgSpanItem::SetMin( int _min )
 	return true;
 }
 
-bool WgSpanItem::SetMax( int _max )
+bool WgSpanItem::setMax( int _max )
 {
 	if( _max < MIN || _max > MAX )
 		return false;
@@ -78,7 +78,7 @@ bool WgSpanItem::SetMax( int _max )
 	return true;
 }
 
-bool WgSpanItem::SetRange( int _min, int _max )
+bool WgSpanItem::setRange( int _min, int _max )
 {
 	if( _min > _max || _min < MIN || _max > MAX )
 		return false;
@@ -102,7 +102,7 @@ bool WgSpanItem::SetRange( int _min, int _max )
 	return true;
 }
 
-void WgSpanItem::SetSpan( int _begin, int _length )
+void WgSpanItem::setSpan( int _begin, int _length )
 {
 	if( _length > max - min )
 		_length = max - min;
@@ -121,7 +121,7 @@ void WgSpanItem::SetSpan( int _begin, int _length )
 	}
 }
 
-void WgSpanItem::SetBegin( int _begin )
+void WgSpanItem::setBegin( int _begin )
 {
 	if( _begin < min )
 		_begin = min;
@@ -135,7 +135,7 @@ void WgSpanItem::SetBegin( int _begin )
 	}
 }
 
-void WgSpanItem::SetLength( int _length )
+void WgSpanItem::setLength( int _length )
 {
 	if( _length > max - min )
 		_length = max - min;
@@ -150,52 +150,52 @@ void WgSpanItem::SetLength( int _length )
 	}
 }
 
-void WgSpanItem::SetRelativeSpan( float _begin, float _length )
+void WgSpanItem::setRelativeSpan( float _begin, float _length )
 {
 	int range = max - min;
-	SetSpan( min + (int) (_begin*range), (int) _length*range );
+	setSpan( min + (int) (_begin*range), (int) _length*range );
 }
 
-void WgSpanItem::SetRelativePos( float _pos )
+void WgSpanItem::setRelativePos( float _pos )
 {
 	int range = max - min;
-	SetBegin( min + (int) ((_pos*range*2)- length)/2 );
+	setBegin( min + (int) ((_pos*range*2)- length)/2 );
 }
 
-void WgSpanItem::SetRelativeBegin( float _begin )
+void WgSpanItem::setRelativeBegin( float _begin )
 {
 	int range = max - min;
-	SetBegin( min + (int) (_begin*range) );
+	setBegin( min + (int) (_begin*range) );
 }
 
-void WgSpanItem::SetRelativeLength( float _length )
+void WgSpanItem::setRelativeLength( float _length )
 {	int range = max - min;
-	SetLength( (int) _length*range );
+	setLength( (int) _length*range );
 }
 
-bool WgSpanItem::StepForward()
+bool WgSpanItem::stepForward()
 {
 	int beg = begin;
-	SetBegin( beg + _stepSize() );
+	setBegin( beg + _stepSize() );
 	return beg != begin;
 }
 
-bool WgSpanItem::StepBackward()
+bool WgSpanItem::stepBackward()
 {	int beg = begin;
-	SetBegin( beg - _stepSize() );
+	setBegin( beg - _stepSize() );
 	return beg != begin;
 }
 
-bool WgSpanItem::SkipForward()
+bool WgSpanItem::skipForward()
 {
 	int beg = begin;
-	SetBegin( beg + _skipSize() );
+	setBegin( beg + _skipSize() );
 	return beg != begin;
 }
 
-bool WgSpanItem::SkipBackward()
+bool WgSpanItem::skipBackward()
 {
 	int beg = begin;
-	SetBegin( beg - _skipSize() );
+	setBegin( beg - _skipSize() );
 	return beg != begin;
 }

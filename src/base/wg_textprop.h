@@ -79,7 +79,7 @@ public:
 	const WgTextprop * operator->() const;
 	inline operator bool() const { return (m_hProp != 0); }
 
-	inline	Uint16 GetHandle() const { return m_hProp; }
+	inline	Uint16 getHandle() const { return m_hProp; }
 
 private:
 	Uint16			m_hProp;
@@ -101,73 +101,73 @@ public:
 	WgTextprop( const WgTextpropPtr& pProp );
 //	~WgTextprop();
 
-	WgTextpropPtr	Register() const;
+	WgTextpropPtr	reg() const;
 
-	void			SetColor( WgColor col );
-	void			SetBgColor( WgColor col );
-	void			SetStyle( WgFontAlt style );
-	void			SetSize( int size );
-	void			SetUnderlined();
+	void			setColor( WgColor col );
+	void			setBgColor( WgColor col );
+	void			setStyle( WgFontAlt style );
+	void			setSize( int size );
+	void			setUnderlined();
 
-	void			SetColor( WgColor col, WgState state );
-	void			SetBgColor( WgColor col, WgState state );
-	void			SetStyle( WgFontAlt style, WgState state );
-	void			SetSize( int size, WgState state );
-	void			SetUnderlined( WgState state );
+	void			setColor( WgColor col, WgState state );
+	void			setBgColor( WgColor col, WgState state );
+	void			setStyle( WgFontAlt style, WgState state );
+	void			setSize( int size, WgState state );
+	void			setUnderlined( WgState state );
 
-	inline void		SetBreakLevel( int level ) { m_breakLevel = (char) level; }
-	inline void		SetLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
-	inline void		SetFont( const WgFontPtr& pFont ) { m_pFont = pFont; }
-	bool			SetCharVisibility( Uint16 specialCharacter, bool bVisible );
+	inline void		setBreakLevel( int level ) { m_breakLevel = (char) level; }
+	inline void		setLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
+	inline void		setFont( const WgFontPtr& pFont ) { m_pFont = pFont; }
+	bool			setCharVisibility( Uint16 specialCharacter, bool bVisible );
 
-	void			ClearColor();
-	void			ClearBgColor();
-	void			ClearStyle();
-	void			ClearSize();
-	void			ClearUnderlined();
+	void			clearColor();
+	void			clearBgColor();
+	void			clearStyle();
+	void			clearSize();
+	void			clearUnderlined();
 
-	void			ClearColor( WgState state );
-	void			ClearBgColor( WgState state );
-	void			ClearStyle( WgState state );
-	void			ClearSize( WgState state );
-	void			ClearUnderlined( WgState state );
+	void			clearColor( WgState state );
+	void			clearBgColor( WgState state );
+	void			clearStyle( WgState state );
+	void			clearSize( WgState state );
+	void			clearUnderlined( WgState state );
 
-	inline void		ClearBreakLevel() { m_breakLevel = -1; }
-	inline void		ClearLink() { m_pLink = 0; }
-	inline void		ClearFont() { m_pFont = 0; }
+	inline void		clearBreakLevel() { m_breakLevel = -1; }
+	inline void		clearLink() { m_pLink = 0; }
+	inline void		clearFont() { m_pFont = 0; }
 
-	void			ClearAll();
+	void			clearAll();
 
 
-	inline bool				IsUnderlined( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
-	inline bool				IsColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
-	inline const WgColor&	Color( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
-	inline bool				IsBgColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
-	inline const WgColor&	BgColor( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
-	inline WgFontAlt		Style( WgState state = WG_STATE_NORMAL ) const { return (WgFontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
-	inline int				Size( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
-	bool					CharVisibility( Uint16 specialCharacter ) const;
-	inline int				CharVisibilityFlags() const { return m_visibilityFlags; }
+	inline bool				isUnderlined( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
+	inline bool				isColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
+	inline const WgColor&	color( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
+	inline bool				isBgColored( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
+	inline const WgColor&	bgColor( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
+	inline WgFontAlt		style( WgState state = WG_STATE_NORMAL ) const { return (WgFontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
+	inline int				size( WgState state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
+	bool					charVisibility( Uint16 specialCharacter ) const;
+	inline int				charVisibilityFlags() const { return m_visibilityFlags; }
 
-	inline WgTextLinkPtr	Link() const { return m_pLink; }
-	inline WgFontPtr		Font() const { return m_pFont; }
-	inline int				BreakLevel() const { return m_breakLevel; }
+	inline WgTextLinkPtr	link() const { return m_pLink; }
+	inline WgFontPtr		font() const { return m_pFont; }
+	inline int				breakLevel() const { return m_breakLevel; }
 
-	void					AssertIntegrity() const;
+	void					assertIntegrity() const;
 
-	bool					IsEqual(WgState state0, WgState state1) const;
-	bool					IsColorStatic() const;
-	bool					IsBgColorStatic() const;
-	bool					IsStyleStatic() const;
-	bool					IsSizeStatic() const;
-	bool					IsUnderlineStatic() const;
+	bool					isEqual(WgState state0, WgState state1) const;
+	bool					isColorStatic() const;
+	bool					isBgColorStatic() const;
+	bool					isStyleStatic() const;
+	bool					isSizeStatic() const;
+	bool					isUnderlineStatic() const;
 
-	inline bool		CompareTo( const WgTextpropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
-	bool			CompareColorTo( const WgTextpropPtr& pProp ) const;
-	bool			CompareBgColorTo( const WgTextpropPtr& pProp ) const;
-	bool			CompareStyleTo( const WgTextpropPtr& pProp ) const;
-	bool			CompareSizeTo( const WgTextpropPtr& pProp ) const;
-	bool			CompareUnderlineTo( const WgTextpropPtr& pProp ) const;
+	inline bool		compareTo( const WgTextpropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
+	bool			compareColorTo( const WgTextpropPtr& pProp ) const;
+	bool			compareBgColorTo( const WgTextpropPtr& pProp ) const;
+	bool			compareStyleTo( const WgTextpropPtr& pProp ) const;
+	bool			compareSizeTo( const WgTextpropPtr& pProp ) const;
+	bool			compareUnderlineTo( const WgTextpropPtr& pProp ) const;
 
 private:
 	bool			_compareTo( const WgTextprop * pProp ) const;
@@ -235,7 +235,7 @@ public:
 	WgTextAttr() : pFont(0), size(0), style(WG_FONT_NORMAL), color(WgColor::white), bgColor(WgColor::transparent),
 				   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 
-	inline void	Clear() {	pFont = 0; size = 0; style = WG_FONT_NORMAL; color = WgColor::white;
+	inline void	clear() {	pFont = 0; size = 0; style = WG_FONT_NORMAL; color = WgColor::white;
 							bgColor = WgColor::transparent; bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 

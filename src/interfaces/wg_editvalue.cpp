@@ -25,29 +25,29 @@
 const char WgEditValue::CLASSNAME[] = {"EditValue"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgEditValue::IsInstanceOf( const char * pClassName ) const
+bool WgEditValue::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgModValue::IsInstanceOf(pClassName);
+	return WgModValue::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgEditValue::ClassName( void ) const
+const char * WgEditValue::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgEditValuePtr WgEditValue::Cast( const WgInterfacePtr& pInterface )
+WgEditValuePtr WgEditValue::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgEditValuePtr( pInterface.GetRealObjectPtr(), static_cast<WgEditValue*>(pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgEditValuePtr( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
 
 	return 0;
 }

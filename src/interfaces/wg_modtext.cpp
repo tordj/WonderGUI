@@ -25,29 +25,29 @@
 const char WgModText::CLASSNAME[] = {"ModText"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgModText::IsInstanceOf( const char * pClassName ) const
+bool WgModText::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgText::IsInstanceOf(pClassName);
+	return WgText::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgModText::ClassName( void ) const
+const char * WgModText::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgModTextPtr WgModText::Cast( const WgInterfacePtr& pInterface )
+WgModTextPtr WgModText::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgModTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgModText*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgModTextPtr( pInterface.getRealObjectPtr(), static_cast<WgModText*>( pInterface.rawPtr()) );
 
 	return 0;
 }

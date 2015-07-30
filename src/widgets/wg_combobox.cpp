@@ -37,9 +37,9 @@ const char WgCombobox::CLASSNAME[] = {"Combobox"};
 
 WgCombobox::WgCombobox( void ) : m_text(this), text(&m_text)
 {
-	m_text.SetAlignment( WG_WEST );
-	m_text.SetWrap(false);
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());	
+	m_text.setAlignment( WG_WEST );
+	m_text.setWrap(false);
+	m_text.setAutoEllipsis(IsAutoEllipsisDefault());	
 //	m_textColor = m_text.color();
 //	m_textDisabledColor	= 0xFFFF;
 
@@ -63,45 +63,45 @@ WgCombobox::~WgCombobox()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgCombobox::IsInstanceOf( const char * pClassName ) const
+bool WgCombobox::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgCombobox::ClassName( void ) const
+const char * WgCombobox::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgComboboxPtr WgCombobox::Cast( const WgObjectPtr& pObject )
+WgComboboxPtr WgCombobox::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ PreferredSize() __________________________________________________________
+//____ preferredSize() __________________________________________________________
 
-WgSize WgCombobox::PreferredSize() const
+WgSize WgCombobox::preferredSize() const
 {
 	WgTextAttr attr;
-	m_text.GetBaseAttr( attr );
+	m_text.getBaseAttr( attr );
 	int width = WgTextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
-	WgSize contentSize( m_text.Height(), width );
+	WgSize contentSize( m_text.height(), width );
 	
 	if( m_pSkin )
-		return m_pSkin->SizeForContent( contentSize );
+		return m_pSkin->sizeForContent( contentSize );
 	else
 		return contentSize;
 }
@@ -116,7 +116,7 @@ void WgCombobox::SetMenu( const WgMenuPtr& pMenu )
 
 	m_pMenu = pMenu;
 	if( m_pMenu && m_pMenu->GetSelectedItem() )
-		_entrySelected(m_pMenu->GetSelectedItem()->GetId());
+		_entrySelected(m_pMenu->GetSelectedItem()->getId());
 }
 
 //____ Menu() __________________________________________________________
@@ -126,11 +126,11 @@ WgMenuPtr WgCombobox::Menu() const
 	return m_pMenu;
 }
 
-//____ SetEditMode() __________________________________________________________
+//____ setEditMode() __________________________________________________________
 
-void WgCombobox::SetEditMode(WgTextEditMode mode)
+void WgCombobox::setEditMode(WgTextEditMode mode)
 {
-	m_text.SetEditMode(mode);
+	m_text.setEditMode(mode);
 }
 
 //____ SetTextFormat() ________________________________________________________
@@ -139,7 +139,7 @@ void WgCombobox::SetTextFormat( const WgCharSeq& str )
 {
 	m_textFormat = str;
 	if( m_pMenu && m_pMenu->GetSelectedItem() )
-		_entrySelected(m_pMenu->GetSelectedItem()->GetId());
+		_entrySelected(m_pMenu->GetSelectedItem()->getId());
 }
 
 //____ SetPlaceholderText() ___________________________________________________
@@ -147,7 +147,7 @@ void WgCombobox::SetTextFormat( const WgCharSeq& str )
 void WgCombobox::SetPlaceholderText( const WgCharSeq& str )
 {
 	m_placeholderText = str;
-	if( m_text.IsEmpty() && !m_text.isCursorShowing() )
+	if( m_text.isEmpty() && !m_text.isCursorShowing() )
 		_requestRender();
 }
 
@@ -158,24 +158,24 @@ int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
 	if( !_isEditable() )
 		return 0;
 
-	if( !m_state.IsFocused() )
+	if( !m_state.isFocused() )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
 	int retVal = 0;
 
-	if( m_maxCharacters == 0 || str.Length() < m_maxCharacters - m_text.Length() )
+	if( m_maxCharacters == 0 || str.length() < m_maxCharacters - m_text.length() )
 	{
 		m_text.putText( str );
-		retVal = str.Length();
+		retVal = str.length();
 	}
 	else
 	{
-		retVal = m_maxCharacters - m_text.Length();
+		retVal = m_maxCharacters - m_text.length();
 		m_text.putText( WgCharSeq( str, 0, retVal ) );
 	}
 
-	WgBase::MsgRouter()->Post( new WgTextEditMsg( text.Ptr(),false) );
+	WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),false) );
 
 	_adjustViewOfs();
 
@@ -189,16 +189,16 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 	if( !_isEditable() )
 		return 0;
 
-	if( !m_state.IsFocused() )
+	if( !m_state.isFocused() )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 
-	if( m_maxCharacters != 0 && m_maxCharacters < m_text.Length() )
+	if( m_maxCharacters != 0 && m_maxCharacters < m_text.length() )
 		return false;
 
 	m_text.putChar( c );
 
-	WgBase::MsgRouter()->Post( new WgTextEditMsg( text.Ptr(),false) );
+	WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),false) );
 
 	_adjustViewOfs();
 	return true;
@@ -208,13 +208,13 @@ bool WgCombobox::InsertCharAtCursor( Uint16 c )
 
 void WgCombobox::_closeMenu()
 {
-	if( Parent() )
+	if( parent() )
 	{
-		WgPopupLayer * pLayer = Parent()->_getPopupLayer();
+		WgPopupLayer * pLayer = parent()->_getPopupLayer();
 		if( pLayer )
-			pLayer->ClosePopup( m_pMenu );
+			pLayer->closePopup( m_pMenu );
 
-		WgBase::MsgRouter()->DeleteRoute( m_routeId );
+		WgBase::msgRouter()->deleteRoute( m_routeId );
 	}
 }
 
@@ -224,38 +224,38 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 {
 	WgState oldState = m_state;
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_TICK:
-			if( _isEditable() && m_state.IsFocused() )
+			if( _isEditable() && m_state.isFocused() )
 			{
-				m_text.incTime( WgTickMsg::Cast(_pMsg)->Millisec() );
+				m_text.incTime( WgTickMsg::cast(_pMsg)->millisec() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
 			}
 		break;
 
 		case WG_MSG_POPUP_CLOSED:
-			m_state.SetPressed(false);
+			m_state.setPressed(false);
 		break;
 
 		case WG_MSG_ITEMS_SELECT:
 		break;
 
 		case WG_MSG_MOUSE_ENTER:
-			m_state.SetHovered(true);
+			m_state.setHovered(true);
 			break;
 
 		case WG_MSG_MOUSE_LEAVE:
-			if( !m_state.IsPressed() )
-				m_state.SetHovered(false);
+			if( !m_state.isPressed() )
+				m_state.setHovered(false);
 			break;
 
 		case WG_MSG_MOUSE_POSITION:
 		{
-			WgCoord pos = WgMousePositionMsg::Cast(_pMsg)->PointerPos() - GlobalPos();
-			WgRect inputRect = m_pSkin ? m_pSkin->ContentRect(Size(),m_state): WgRect( 0,0, Size() );
+			WgCoord pos = WgMousePositionMsg::cast(_pMsg)->pointerPos() - globalPos();
+			WgRect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): WgRect( 0,0, size() );
 
-			if( _isSelectable() && inputRect.Contains( pos ) )
+			if( _isSelectable() && inputRect.contains( pos ) )
 			{
 				m_pointerStyle = WG_POINTER_IBEAM;
 			}
@@ -270,32 +270,32 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::Cast(_pMsg);
-			WgCoord pos = pMsg->PointerPos() - GlobalPos();
+			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			WgCoord pos = pMsg->pointerPos() - globalPos();
 
-			if( pMsg->Button() == WG_BUTTON_LEFT )
+			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
-				WgRect inputRect = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ): WgRect( 0,0, Size() );
+				WgRect inputRect = m_pSkin ? m_pSkin->contentRect( size(), m_state ): WgRect( 0,0, size() );
 
-				if( m_state.IsPressed() && m_pMenu )
+				if( m_state.isPressed() && m_pMenu )
 				{
 					m_bPressInInputRect = false;
 					_closeMenu();
 				}
-				else if( _isEditable() && inputRect.Contains(pos) )
+				else if( _isEditable() && inputRect.contains(pos) )
 				{
-					if( !m_state.IsFocused() )
+					if( !m_state.isFocused() )
 					{
 						GrabFocus();
-						if( m_state.IsFocused() )
+						if( m_state.isFocused() )
 							m_bFocusPress = true;		// Current button press brought focus.
 					}
 
 					m_bPressInInputRect = true;
 
-					if( m_state.IsFocused() )
+					if( m_state.isFocused() )
 					{
-						if( _isSelectable() && (pMsg->ModKeys() & WG_MODKEY_SHIFT))
+						if( _isSelectable() && (pMsg->modKeys() & WG_MODKEY_SHIFT))
 						{
 							m_text.setSelectionMode(true);
 						}
@@ -305,11 +305,11 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 						int y = pos.y;
 						x += m_viewOfs;
 
-						m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x,0,1000000,1000000) );
+						m_text.cursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x,0,1000000,1000000) );
 				
-						if(_isSelectable() && !(pMsg->ModKeys() & WG_MODKEY_SHIFT))
+						if(_isSelectable() && !(pMsg->modKeys() & WG_MODKEY_SHIFT))
 						{
-							m_text.ClearSelection();
+							m_text.clearSelection();
 							m_text.setSelectionMode(true);
 						}
 						_adjustViewOfs();
@@ -320,73 +320,73 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 				{
 					m_bPressInInputRect = false;
 
-					if( Parent() )
+					if( parent() )
 					{
-						WgPopupLayer * pLayer = Parent()->_getPopupLayer();
+						WgPopupLayer * pLayer = parent()->_getPopupLayer();
 						if( pLayer )
 						{
-							pLayer->OpenPopup( m_pMenu, this, m_pHook->GlobalGeo() - pLayer->GlobalPos(), WG_SOUTHWEST );
-//TODO: Fix					m_routeId = WgBase::MsgRouter()->AddRoute( WgMsgFilter::ItemsSelect(), m_pMenu, cbEntrySelected, this );
+							pLayer->openPopup( m_pMenu, this, m_pHook->globalGeo() - pLayer->globalPos(), WG_SOUTHWEST );
+//TODO: Fix					m_routeId = WgBase::msgRouter()->addRoute( WgMsgFilter::itemsSelect(), m_pMenu, cbEntrySelected, this );
 						}
 					}
 
-					m_state.SetPressed(true);
+					m_state.setPressed(true);
 				}
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		}
 
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
-			if( pMsg->Button() == WG_BUTTON_LEFT )
+			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
-				if( m_state.IsFocused() && m_bPressInInputRect )
+				if( m_state.isFocused() && m_bPressInInputRect )
 				{
-					if( _isSelectable() && (pMsg->ModKeys() & WG_MODKEY_SHIFT) )
+					if( _isSelectable() && (pMsg->modKeys() & WG_MODKEY_SHIFT) )
 					{
 						m_text.setSelectionMode(true);
 					}
 
-					int x = pMsg->PointerPos().x - GlobalPos().x + m_viewOfs;
-					int leftBorder = m_pSkin ? m_pSkin->ContentRect( Size(), m_state ).x : 0;
+					int x = pMsg->pointerPos().x - globalPos().x + m_viewOfs;
+					int leftBorder = m_pSkin ? m_pSkin->contentRect( size(), m_state ).x : 0;
 
-					m_text.CursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
+					m_text.cursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
 					_adjustViewOfs();
 				}
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		}
 
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::Cast(_pMsg);
-			if( pMsg->Button() == WG_BUTTON_LEFT )
+			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
-				if( m_state.IsFocused() )
+				if( m_state.isFocused() )
 				{
 					m_text.setSelectionMode(false);
 					if( m_bFocusPress )
 					{
 						m_bFocusPress = false;
 						if( !m_text.hasSelection() )
-							m_text.SelectAll();
+							m_text.selectAll();
 					}
 				}
-				_pMsg->Swallow();
+				_pMsg->swallow();
 			}
 			break;
 		}
 
 		case WG_MSG_WHEEL_ROLL:
 		{		
-			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::Cast(_pMsg);
-			if( !m_state.IsFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
+			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::cast(_pMsg);
+			if( !m_state.isFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
 			{
 				WgMenuItem * pItem = m_pSelectedItem;
-				int distance = pMsg->Distance();
+				int distance = pMsg->distance();
 
 				if( !pItem )
 				{
@@ -402,29 +402,29 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 					}
 				}
 
-				while( distance > 0 && pItem->Prev() )
+				while( distance > 0 && pItem->prev() )
 				{
-					pItem = pItem->Prev();
+					pItem = pItem->prev();
 					distance--;
 				}
 
-				while( distance < 0 && pItem->Next() )
+				while( distance < 0 && pItem->next() )
 				{
-					pItem = pItem->Next();
+					pItem = pItem->next();
 					distance++;
 				}
 
 				m_pMenu->SelectItem( pItem );
-				_entrySelected( pItem->GetId() );
-				_pMsg->Swallow();
+				_entrySelected( pItem->getId() );
+				_pMsg->swallow();
 			}
 			break;
 		}
 
 		case WG_MSG_CHARACTER:
 		{
-			WgCharacterMsgPtr pMsg = WgCharacterMsg::Cast(_pMsg);
-			if( _isEditable() && m_state.IsFocused() )
+			WgCharacterMsgPtr pMsg = WgCharacterMsg::cast(_pMsg);
+			if( _isEditable() && m_state.isFocused() )
 			{
 
 				if(m_text.hasSelection())
@@ -432,25 +432,25 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 				m_text.setSelectionMode(false);
 
 				// by default - no max limit
-				if( m_maxCharacters == 0 || m_maxCharacters > m_text.Length() )
-					m_text.putChar( pMsg->Char() );
+				if( m_maxCharacters == 0 || m_maxCharacters > m_text.length() )
+					m_text.putChar( pMsg->character() );
 
-				WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(),false) );
+				WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(),false) );
 				_adjustViewOfs();
 			}
 			break;
 		}
 
 		case WG_MSG_KEY_RELEASE:
-			if( m_state.IsFocused() )
+			if( m_state.isFocused() )
 			{
-				WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::Cast(_pMsg);
-				switch( pMsg->TranslatedKeyCode() )
+				WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::cast(_pMsg);
+				switch( pMsg->translatedKeyCode() )
 				{
 					case WG_KEY_SHIFT:
-						if(!WgBase::MsgRouter()->IsMouseButtonPressed(1))
+						if(!WgBase::msgRouter()->isMouseButtonPressed(1))
 							m_text.setSelectionMode(false);
-						_pMsg->Swallow();
+						_pMsg->swallow();
 					break;
 				}
 			}
@@ -459,58 +459,58 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_KEY_PRESS:
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyMsgPtr pMsg = WgKeyMsg::Cast(_pMsg);
+			WgKeyMsgPtr pMsg = WgKeyMsg::cast(_pMsg);
 
-			if( pMsg->TranslatedKeyCode() == WG_KEY_ESCAPE && m_state.IsPressed() )
+			if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE && m_state.isPressed() )
 			{
 				_closeMenu();
 			}
-			else if( _isEditable() && m_state.IsFocused() )
+			else if( _isEditable() && m_state.isFocused() )
 			{
-				switch( pMsg->TranslatedKeyCode() )
+				switch( pMsg->translatedKeyCode() )
 				{
 					case WG_KEY_LEFT:
-						if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
+						if( pMsg->modKeys() & WG_MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 
-						if( pMsg->ModKeys() & WG_MODKEY_CTRL )
+						if( pMsg->modKeys() & WG_MODKEY_CTRL )
 							m_text.gotoPrevWord();
 						else
 							m_text.goLeft();
-						_pMsg->Swallow();
+						_pMsg->swallow();
 						break;
 					case WG_KEY_RIGHT:
-						if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
+						if( pMsg->modKeys() & WG_MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 
-						if( pMsg->ModKeys() & WG_MODKEY_CTRL )
+						if( pMsg->modKeys() & WG_MODKEY_CTRL )
 								m_text.gotoNextWord();
 						else
 							m_text.goRight();
-						_pMsg->Swallow();
+						_pMsg->swallow();
 						break;
 
 					case WG_KEY_BACKSPACE:
 						if(m_text.hasSelection())
 							m_text.delSelection();
-						else if( pMsg->ModKeys() & WG_MODKEY_CTRL )
+						else if( pMsg->modKeys() & WG_MODKEY_CTRL )
 							m_text.delPrevWord();
 						else
 							m_text.delPrevChar();
 						
-						WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(), false) ); //TODO: Should only emit if text really has changed
-						_pMsg->Swallow();
+						WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(), false) ); //TODO: Should only emit if text really has changed
+						_pMsg->swallow();
 						break;
 
 					case WG_KEY_DELETE:
 						if(m_text.hasSelection())
 							m_text.delSelection();
-						else if( pMsg->ModKeys() & WG_MODKEY_CTRL )
+						else if( pMsg->modKeys() & WG_MODKEY_CTRL )
 							m_text.delNextWord();
 						else
 							m_text.delNextChar();
-						WgBase::MsgRouter()->Post( new WgTextEditMsg(text.Ptr(), false) );		//TODO: Should only emit if text really has changed
-						_pMsg->Swallow();
+						WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(), false) );		//TODO: Should only emit if text really has changed
+						_pMsg->swallow();
 						break;
 
 					case WG_KEY_HOME:
@@ -519,20 +519,20 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 						//	I am not sure if this is the proper way to this, but in my opinion, the default
 						//	"actions" has to be separated from any modifier key action combination
 						//
-						switch( pMsg->ModKeys() )
+						switch( pMsg->modKeys() )
 						{
 
 						case WG_MODKEY_CTRL:
 							break;
 
 						default: // no modifier key was pressed
-							if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
+							if( pMsg->modKeys() & WG_MODKEY_SHIFT )
 								m_text.setSelectionMode(true);
 
-							m_text.GoBOL();
+							m_text.goBol();
 							break;
 						}
-						_pMsg->Swallow();
+						_pMsg->swallow();
 						break;
 
 					case WG_KEY_END:
@@ -541,21 +541,21 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 			 			//	I am not sure if this is the proper way to this, but in my opinion, the default
 		 				//	"actions" has to be separated from any modifier key action combination
 						//
-						switch( pMsg->ModKeys() )
+						switch( pMsg->modKeys() )
 						{
 
 						case WG_MODKEY_CTRL:
 							break;
 
 						default: // no modifier key was pressed
-							if( pMsg->ModKeys() & WG_MODKEY_SHIFT )
+							if( pMsg->modKeys() & WG_MODKEY_SHIFT )
 								m_text.setSelectionMode(true);
 
-							m_text.GoEOL();
+							m_text.goEol();
 							break;
 						}
 
-						_pMsg->Swallow();
+						_pMsg->swallow();
 						break;
 				}
 				_adjustViewOfs();
@@ -578,31 +578,31 @@ void WgCombobox::_onStateChanged( WgState oldState )
 
 	// Check if we got focus
 
-	if( m_state.IsFocused() && !oldState.IsFocused() )
+	if( m_state.isFocused() && !oldState.isFocused() )
 	{
 		if( _isEditable() )
 		{
-			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
+			m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
 			m_text.showCursor();
 			if( m_bResetCursorOnFocus )
 			{
-				m_text.GoEOL();
-				m_text.SelectAll();
+				m_text.goEol();
+				m_text.selectAll();
 			}
 		}
 	}
 
 	// Check if we lost focus
 
-	if( !m_state.IsFocused() && oldState.IsFocused() )
+	if( !m_state.isFocused() && oldState.isFocused() )
 	{
 		if( _isEditable() )
 		{
-			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 			m_text.hideCursor();
-			m_text.ClearSelection();
+			m_text.clearSelection();
 			m_bResetCursorOnFocus = true;
-			WgBase::MsgRouter()->Post( new WgTextEditMsg( text.Ptr(),true ) );	//TODO: Should only do if text was really changed!
+			WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),true ) );	//TODO: Should only do if text was really changed!
 		}
 	}
 }
@@ -612,7 +612,7 @@ void WgCombobox::_onStateChanged( WgState oldState )
 void WgCombobox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	m_text.SetColorSkin(pNewSkin);
+	m_text.setColorSkin(pNewSkin);
 }
 
 
@@ -627,23 +627,23 @@ void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	WgRect r( _canvas );
 	if( m_pSkin )
-		r = m_pSkin->ContentRect(_canvas, m_state);
+		r = m_pSkin->contentRect(_canvas, m_state);
 
 	WgRect	textClip( r, _clip );
 
 	bool bPlaceholder = false;
-	if( !m_placeholderText.IsEmpty() && m_text.IsEmpty() && !m_text.isCursorShowing() )
+	if( !m_placeholderText.isEmpty() && m_text.isEmpty() && !m_text.isCursorShowing() )
 	{
 		bPlaceholder = true;
-		m_text.Set( m_placeholderText );
+		m_text.set( m_placeholderText );
 	}
 
 	r.x -= m_viewOfs;
 	r.w += m_viewOfs;
-	pDevice->PrintText( textClip, &m_text, r );
+	pDevice->printText( textClip, &m_text, r );
 
 	if( bPlaceholder )
-		m_text.Clear();
+		m_text.clear();
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -678,28 +678,28 @@ void WgCombobox::_adjustViewOfs()
 	//  2 At least one character is displayed before the cursor
 	//  3 At least one character is displayed after the cursor (if there is one).
 
-	if( m_state.IsFocused() && m_text.Properties() && m_text.Properties()->Font() )
+	if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 	{
-		WgCaretPtr pCursor = WgTextTool::GetCursor( &m_text );
+		WgCaretPtr pCursor = WgTextTool::getCursor( &m_text );
 		if( !pCursor )
 			return;
 
 		int cursCol	= m_text.column();
 
 		WgTextAttr	attr;
-		m_text.GetBaseAttr( attr );
+		m_text.getBaseAttr( attr );
 
-		int cursAdvance	= pCursor->Advance(m_text.cursorMode() );
-		int cursBearing	= pCursor->BearingX(m_text.cursorMode() );
-		int cursWidth	= pCursor->Width(m_text.cursorMode() );
+		int cursAdvance	= pCursor->advance(m_text.cursorMode() );
+		int cursBearing	= pCursor->bearingX(m_text.cursorMode() );
+		int cursWidth	= pCursor->width(m_text.cursorMode() );
 
 		int cursOfs;		// Cursor offset from beginning of line in pixels.
 		int maxOfs;			// Max allowed view offset in pixels.
 		int minOfs;			// Min allowed view offset in pixels.
 
-		int geoWidth = Size().w;
+		int geoWidth = size().w;
 		if( m_pSkin )
-			geoWidth -= m_pSkin->ContentPadding().w;
+			geoWidth -= m_pSkin->contentPadding().w;
 
 		int	lineWidth = m_text.getSoftLineWidth( 0 ) + cursBearing+cursWidth;
 
@@ -759,34 +759,34 @@ void WgCombobox::_entrySelected( int itemId )
 		return ;
 
 	m_pSelectedItem = pItem;
-	if(pItem && pItem->GetType() != SEPARATOR)
+	if(pItem && pItem->getType() != SEPARATOR)
 	{
 		WgCharBuffer	buff;
 
-		buff.PushBack(m_textFormat);
+		buff.pushBack(m_textFormat);
 
-		int ofs = buff.FindFirst( "%1" );
+		int ofs = buff.findFirst( "%1" );
 		if( ofs >= 0 )
 		{
-			WgTextpropPtr pProp = buff[ofs].Properties();
+			WgTextpropPtr pProp = buff[ofs].getProperties();
 
-			const WgChar * pEntry = ((WgMenuEntry*)pItem)->GetText().Chars();
+			const WgChar * pEntry = ((WgMenuEntry*)pItem)->getText().chars();
 			Uint32 len = WgTextTool::strlen( pEntry );
 
-			buff.Replace( ofs, 2, pEntry );
+			buff.replace( ofs, 2, pEntry );
 
-			WgChar * p = buff.BeginWrite() + ofs;
+			WgChar * p = buff.beginWrite() + ofs;
 
 			for( unsigned int i = 0 ; i < len ; i++ )
 			{
-				if( p[i].PropHandle() == 0 )
-					p[i].SetProperties( pProp );
+				if( p[i].propHandle() == 0 )
+					p[i].setProperties( pProp );
 			}
 
-			buff.EndWrite();
+			buff.endWrite();
 
 		}
-		m_text.Set( &buff );
+		m_text.set( &buff );
 		_adjustViewOfs();
 	}
 }

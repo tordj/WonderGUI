@@ -33,18 +33,18 @@ const char WgObject::CLASSNAME[] = {"Object"};
  * Check if the object is an instance or subclass of specified class.
  *
  * @param pClassName	Pointer to the class name. This needs to be a pointer returned by 
- * 						a call to WgObject::ClassName() or the CLASSNAME member of a subclass of WgObject.
+ * 						a call to WgObject::className() or the CLASSNAME member of a subclass of WgObject.
  * 
  * This method compares the specified class name to the CLASSNAME member of all classes implemented by the
  * object. This is needed when checking if the object implements a class other than the leaf class.  
- * When just checking for a leaf class, a direct comparison between object->ClassName() and Foo::CLASSNAME
+ * When just checking for a leaf class, a direct comparison between object->className() and Foo::CLASSNAME
  * is faster.
  * 
  * @return True if the object implements the specied class.
  * 
  */
 
-bool WgObject::IsInstanceOf( const char * pClassName ) const
+bool WgObject::isInstanceOf( const char * pClassName ) const
 { 
 	return (pClassName==CLASSNAME); 
 }
@@ -59,12 +59,12 @@ bool WgObject::IsInstanceOf( const char * pClassName ) const
  * objects of the same type. There is no need to do a string compare on the string content.
  * 
  * To see if an object is an instance of class WgFoo you can compare the pointer to WgFoo::CLASSNAME.
- * To see if an object is an instance of a subclass of WgFoo, you will need to call object->IsInstanceOf( WgFoo::CLASSNAME ).
+ * To see if an object is an instance of a subclass of WgFoo, you will need to call object->isInstanceOf( WgFoo::CLASSNAME ).
  * 
  * @return Pointer to a char string containing the class name without the Wg prefix.
  */
 
-const char * WgObject::ClassName( void ) const
+const char * WgObject::className( void ) const
 { 
 	return CLASSNAME; 
 }
@@ -87,7 +87,7 @@ void WgObject::_destroy()
  * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
  */
  
-WgObjectPtr WgObject::Cast( const WgObjectPtr& pObject )
+WgObjectPtr WgObject::cast( const WgObjectPtr& pObject )
 {
 	return pObject;
 }

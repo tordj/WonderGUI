@@ -25,29 +25,29 @@
 const char WgText::CLASSNAME[] = {"Text"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgText::IsInstanceOf( const char * pClassName ) const
+bool WgText::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgInterface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgText::ClassName( void ) const
+const char * WgText::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTextPtr WgText::Cast( const WgInterfacePtr& pInterface )
+WgTextPtr WgText::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgText*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgTextPtr( pInterface.getRealObjectPtr(), static_cast<WgText*>( pInterface.rawPtr()) );
 
 	return 0;
 }

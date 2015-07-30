@@ -47,27 +47,27 @@ public:
 	WgSpanItem( WgSpanHolder * pHolder );
 	virtual ~WgSpanItem() {};
 
-	bool	SetMin( int min );
-	bool	SetMax( int max );
-	bool	SetRange( int min, int max );
+	bool	setMin( int min );
+	bool	setMax( int max );
+	bool	setRange( int min, int max );
 
-	void	SetSpan( int begin, int length );
-	void	SetBegin( int begin );
-	void	SetLength( int length );
+	void	setSpan( int begin, int length );
+	void	setBegin( int begin );
+	void	setLength( int length );
 
-	void	SetRelativeSpan( float begin, float length );
-	void	SetRelativePos( float pos );
-	void	SetRelativeBegin( float begin );
-	void	SetRelativeLength( float length );
+	void	setRelativeSpan( float begin, float length );
+	void	setRelativePos( float pos );
+	void	setRelativeBegin( float begin );
+	void	setRelativeLength( float length );
 
-	bool	StepForward();
-	bool	StepBackward();
-	bool	SkipForward();
-	bool	SkipBackward();
+	bool	stepForward();
+	bool	stepBackward();
+	bool	skipForward();
+	bool	skipBackward();
 
-	inline float	RelativePos() const { return (begin+length/2)/(float)(max-min); }
-	inline float	RelativeBegin() const { return begin/(float)(max-min); }
-	inline float	RelativeLength() const { return length/(float)(max-min); };
+	inline float	relativePos() const { return (begin+length/2)/(float)(max-min); }
+	inline float	relativeBegin() const { return begin/(float)(max-min); }
+	inline float	relativeLength() const { return length/(float)(max-min); };
 
 
 	const static int	MAX = 0x00FFFFFF;

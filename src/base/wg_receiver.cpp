@@ -25,29 +25,29 @@ const char WgReceiver::CLASSNAME[] = {"Receiver"};
 
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgReceiver::IsInstanceOf( const char * pClassName ) const
+bool WgReceiver::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgReceiver::ClassName( void ) const
+const char * WgReceiver::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgReceiverPtr WgReceiver::Cast( const WgObjectPtr& pObject )
+WgReceiverPtr WgReceiver::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgReceiverPtr( static_cast<WgReceiver*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgReceiverPtr( static_cast<WgReceiver*>(pObject.rawPtr()) );
 
 	return 0;
 }

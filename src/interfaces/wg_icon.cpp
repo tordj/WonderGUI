@@ -25,29 +25,29 @@
 const char WgIcon::CLASSNAME[] = {"Icon"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgIcon::IsInstanceOf( const char * pClassName ) const
+bool WgIcon::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgInterface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgIcon::ClassName( void ) const
+const char * WgIcon::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgIconPtr WgIcon::Cast( const WgInterfacePtr& pInterface )
+WgIconPtr WgIcon::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIconPtr( pInterface.GetRealObjectPtr(), static_cast<WgIcon*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgIconPtr( pInterface.getRealObjectPtr(), static_cast<WgIcon*>( pInterface.rawPtr()) );
 
 	return 0;
 }

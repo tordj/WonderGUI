@@ -42,29 +42,29 @@ WgImage::~WgImage()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgImage::IsInstanceOf( const char * pClassName ) const
+bool WgImage::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgImage::ClassName( void ) const
+const char * WgImage::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgImagePtr WgImage::Cast( const WgObjectPtr& pObject )
+WgImagePtr WgImage::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgImagePtr( static_cast<WgImage*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgImagePtr( static_cast<WgImage*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -82,9 +82,9 @@ void WgImage::SetImage( const WgSurfacePtr& pSurface, const WgRect& rect )
 		m_pSurface = pSurface;
 
 		if( pSurface )
-			m_rect = WgRect( rect, WgRect(pSurface->Size()) );
+			m_rect = WgRect( rect, WgRect(pSurface->size()) );
 		else
-			m_rect.Clear();
+			m_rect.clear();
 
 		if( bResize )
 			_requestResize();
@@ -97,15 +97,15 @@ void WgImage::SetImage( const WgSurfacePtr& pSurface )
 	if( pSurface != m_pSurface )
 	{
 		bool bResize = false;
-		if( pSurface->Size() != m_pSurface->Size() )
+		if( pSurface->size() != m_pSurface->size() )
 			bResize = true;
 
 		m_pSurface = pSurface;
 
 		if( pSurface )
-			m_rect = pSurface->Size();
+			m_rect = pSurface->size();
 		else
-			m_rect.Clear();
+			m_rect.clear();
 
 		if( bResize )
 			_requestResize();
@@ -115,19 +115,19 @@ void WgImage::SetImage( const WgSurfacePtr& pSurface )
 
 
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgImage::PreferredSize() const
+WgSize WgImage::preferredSize() const
 {
 	if( m_pSurface )
 	{
 		if( m_pSkin )
-			return m_pSkin->SizeForContent( m_rect.Size() );
+			return m_pSkin->sizeForContent( m_rect.size() );
 		else
-			return m_rect.Size();
+			return m_rect.size();
 	}
 
-	return WgWidget::PreferredSize();
+	return WgWidget::preferredSize();
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -146,15 +146,15 @@ void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	if( m_pSurface && !m_rect.IsEmpty() )
+	if( m_pSurface && !m_rect.isEmpty() )
 	{
 		WgRect dest;
 		if( m_pSkin )
-			dest = m_pSkin->ContentRect( _canvas, State() );
+			dest = m_pSkin->contentRect( _canvas, state() );
 		else
 			dest = _canvas;
 
-		pDevice->ClipStretchBlit( _clip, m_pSurface, m_rect, dest );
+		pDevice->clipStretchBlit( _clip, m_pSurface, m_rect, dest );
 	}
 }
 
@@ -162,15 +162,15 @@ void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 
 bool WgImage::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 {
-	if( m_pSurface && !m_rect.IsEmpty() )
+	if( m_pSurface && !m_rect.isEmpty() )
 	{
 		WgRect dest;
 		if( m_pSkin )
-			dest = m_pSkin->ContentRect( sz, State() );
+			dest = m_pSkin->contentRect( sz, state() );
 		else
-			dest = Size();
+			dest = size();
 
-		if( WgUtil::MarkTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
+		if( WgUtil::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
 			return true;
 	}
 

@@ -7,20 +7,20 @@
 
 
 
-//____ WgMenuItem::SetVisible() _______________________________________________
+//____ WgMenuItem::setVisible() _______________________________________________
 
-void WgMenuItem::SetVisible( bool bVisible )
+void WgMenuItem::setVisible( bool bVisible )
 {
 	if( m_pMyMenu && m_bVisible != bVisible )
 	{
 		m_bVisible = bVisible;
-		Modified();
+		modified();
 	}
 }
 
-//____ WgMenuItem::Modified() ___________________________________________
+//____ WgMenuItem::modified() ___________________________________________
 
-void WgMenuItem::Modified()
+void WgMenuItem::modified()
 {
 	if(m_pMyMenu)
 		m_pMyMenu->_itemModified();
@@ -59,46 +59,46 @@ WgMenuEntry::WgMenuEntry(	int id, const WgString& text, const WgString& helpText
 	m_accelKey		= accelKey;
 }
 
-void WgMenuEntry::SetText(const WgString& text)
+void WgMenuEntry::setText(const WgString& text)
 {
 	m_text = text;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetHelpText(const WgString& helpText)
+void WgMenuEntry::setHelpText(const WgString& helpText)
 {
 	m_helpText		= helpText;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetIcon(const WgSkinPtr& pIcon)
+void WgMenuEntry::setIcon(const WgSkinPtr& pIcon)
 {
 	m_pIcon		= pIcon;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetNavKey(Uint16 navKey)
+void WgMenuEntry::setNavKey(Uint16 navKey)
 {
 	m_navKey		= navKey;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetAccelModifier(WgModifierKeys accelModif)
+void WgMenuEntry::setAccelModifier(WgModifierKeys accelModif)
 {
 	m_accelModif	= accelModif;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetAccelKey(Uint16 accelKey)
+void WgMenuEntry::setAccelKey(Uint16 accelKey)
 {
 	m_accelKey		= accelKey;
-	Modified();
+	modified();
 }
 
-void WgMenuEntry::SetAccelText(const WgString& accelText)
+void WgMenuEntry::setAccelText(const WgString& accelText)
 {
 	m_accelText		= accelText;
-	Modified();
+	modified();
 }
 
 //____ WgMenuEntry::Destructor _______________________________________________
@@ -141,26 +141,26 @@ WgMenuRadioButton::WgMenuRadioButton(	int id, const WgString& text, const WgStri
 	m_bSelected = bSelected;
 }
 
-//____ WgMenuRadioButton::Select() ____________________________________________
+//____ WgMenuRadioButton::select() ____________________________________________
 
-bool WgMenuRadioButton::Select()
+bool WgMenuRadioButton::select()
 {
 	// Select me and unselect any adjacent RadioButton.
 
 	m_bSelected = true;
 
-	WgMenuItem * pItem = this->Next();
-	while( pItem && pItem->GetType() == RADIOBUTTON )
+	WgMenuItem * pItem = this->next();
+	while( pItem && pItem->getType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
-		pItem = pItem->Next();
+		pItem = pItem->next();
 	}
 
-	pItem = this->Prev();
-	while( pItem && pItem->GetType() == RADIOBUTTON )
+	pItem = this->prev();
+	while( pItem && pItem->getType() == RADIOBUTTON )
 	{
 		((WgMenuRadioButton*)pItem)->m_bSelected = false;
-		pItem = pItem->Prev();
+		pItem = pItem->prev();
 	}
 
 
@@ -188,7 +188,7 @@ WgMenuSubMenu::WgMenuSubMenu(	int id, const WgString& text, const WgString& help
 	m_pSubMenu = pSubMenu;
 }
 
-void WgMenuSubMenu::SetSubMenu(const WgMenuPtr& pSubMenu)
+void WgMenuSubMenu::setSubMenu(const WgMenuPtr& pSubMenu)
 {
 	m_pSubMenu= pSubMenu;
 };

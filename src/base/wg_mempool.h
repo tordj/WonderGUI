@@ -32,13 +32,13 @@ public:
 	WgMemPool( int entriesPerBlock, int entrySize );
 	virtual ~WgMemPool();
 
-	void *	AllocEntry();
-	void	FreeEntry( void * pEntry );
+	void *	allocEntry();
+	void	freeEntry( void * pEntry );
 
-	inline int		EntriesAllocated() const { return m_nAllocEntries; }
-	inline int		EntriesAvailable() const { return m_blocks.Size()*m_nEntriesPerBlock - m_nAllocEntries; }
-	inline int		Capacity() const { return m_blocks.Size()*m_nEntriesPerBlock; }
-	inline bool		IsEmpty() const { return (m_nAllocEntries == 0); }
+	inline int		entriesAllocated() const { return m_nAllocEntries; }
+	inline int		entriesAvailable() const { return m_blocks.size()*m_nEntriesPerBlock - m_nAllocEntries; }
+	inline int		capacity() const { return m_blocks.size()*m_nEntriesPerBlock; }
+	inline bool		isEmpty() const { return (m_nAllocEntries == 0); }
 
 
 private:

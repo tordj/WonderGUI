@@ -29,14 +29,14 @@ using namespace WgUtil;
 
 const char WgBoxSkin::CLASSNAME[] = {"BoxSkin"};
 
-//____ Create() _______________________________________________________________
+//____ create() _______________________________________________________________
 
-WgBoxSkinPtr WgBoxSkin::Create()
+WgBoxSkinPtr WgBoxSkin::create()
 {
 	return WgBoxSkinPtr(new WgBoxSkin());
 }
 
-WgBoxSkinPtr WgBoxSkin::Create( WgColor color, WgBorder frame, WgColor frameColor )
+WgBoxSkinPtr WgBoxSkin::create( WgColor color, WgBorder frame, WgColor frameColor )
 {
 	return WgBoxSkinPtr(new WgBoxSkin(color, frame, frameColor));
 }
@@ -64,72 +64,72 @@ WgBoxSkin::WgBoxSkin( WgColor color, WgBorder frame, WgColor frameColor )
 		m_frameColor[i] = frameColor;
 	}
 
-	bool hasFrame = (frame.Width() + frame.Height() > 0 );
+	bool hasFrame = (frame.width() + frame.height() > 0 );
 	if( color.a == 255 && (!hasFrame || frameColor.a == 255) )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgBoxSkin::IsInstanceOf( const char * pClassName ) const
+bool WgBoxSkin::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgExtendedSkin::IsInstanceOf(pClassName);
+	return WgExtendedSkin::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgBoxSkin::ClassName( void ) const
+const char * WgBoxSkin::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgBoxSkinPtr WgBoxSkin::Cast( const WgObjectPtr& pObject )
+WgBoxSkinPtr WgBoxSkin::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetColor() _____________________________________________________________
+//____ setColor() _____________________________________________________________
 
-void WgBoxSkin::SetColor( WgColor color )
+void WgBoxSkin::setColor( WgColor color )
 {
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		m_color[i] = color;
 
-	if( m_frame.Width() + m_frame.Height() == 0 )
+	if( m_frame.width() + m_frame.height() == 0 )
 		m_bOpaque = color.a == 255;
 	else if( (color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque) )
 		_updateOpaqueFlag();
 }
 
-//____ SetFrameColor() ________________________________________________________
+//____ setFrameColor() ________________________________________________________
 
-void WgBoxSkin::SetFrameColor( WgColor color )
+void WgBoxSkin::setFrameColor( WgColor color )
 {
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		m_frameColor[i] = color;
 
-	bool hasFrame = (m_frame.Width() + m_frame.Height() > 0 );
+	bool hasFrame = (m_frame.width() + m_frame.height() > 0 );
 	if( hasFrame && ((color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque)) )
 		_updateOpaqueFlag();
 }
 
-//____ SetFrameThickness() ____________________________________________________
+//____ setFrameThickness() ____________________________________________________
 
-void WgBoxSkin::SetFrameThickness( WgBorder frame )
+void WgBoxSkin::setFrameThickness( WgBorder frame )
 {
-	bool hadFrame = (m_frame.Width() + m_frame.Height() > 0 );
-	bool hasFrame = (frame.Width() + frame.Height() > 0);
+	bool hadFrame = (m_frame.width() + m_frame.height() > 0 );
+	bool hasFrame = (frame.width() + frame.height() > 0);
 
 	m_frame = frame;
 
@@ -137,9 +137,9 @@ void WgBoxSkin::SetFrameThickness( WgBorder frame )
 		_updateOpaqueFlag();
 }
 
-//____ SetFrame() _____________________________________________________________
+//____ setFrame() _____________________________________________________________
 
-void WgBoxSkin::SetFrame( WgBorder frame, WgColor color )
+void WgBoxSkin::setFrame( WgBorder frame, WgColor color )
 {
 	m_frame = frame;
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
@@ -149,9 +149,9 @@ void WgBoxSkin::SetFrame( WgBorder frame, WgColor color )
 		_updateOpaqueFlag();
 }
 
-//____ SetStateColor() _________________________________________________________
+//____ setStateColor() _________________________________________________________
 
-void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color )
+void WgBoxSkin::setStateColor( WgStateEnum state, WgColor color )
 {
 	int i = _stateToIndex(state);
 
@@ -161,7 +161,7 @@ void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color )
 		_updateOpaqueFlag();
 }
 
-void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor )
+void WgBoxSkin::setStateColor( WgStateEnum state, WgColor color, WgColor frameColor )
 {
 	int i = _stateToIndex(state);
 
@@ -175,68 +175,68 @@ void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color, WgColor frameCo
 		_updateOpaqueFlag();
 }
 
-//____ Render() _______________________________________________________________
+//____ render() _______________________________________________________________
 	
-void WgBoxSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
+void WgBoxSkin::render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
 	int i = _stateToIndex(state);
-	if( m_frame.Width() + m_frame.Height() == 0 )
+	if( m_frame.width() + m_frame.height() == 0 )
 	{
-		pDevice->Fill( _clip, m_color[i] );
+		pDevice->fill( _clip, m_color[i] );
 	}
 	else
 	{
 		WgRect top( WgRect(_canvas.x, _canvas.y, _canvas.w, m_frame.top), _clip );
-		WgRect left( WgRect(_canvas.x, _canvas.y+m_frame.top, m_frame.left, _canvas.h - m_frame.Height()), _clip );
-		WgRect right( WgRect(_canvas.x + _canvas.w - m_frame.right, _canvas.y+m_frame.top, m_frame.right, _canvas.h - m_frame.Height()), _clip );
+		WgRect left( WgRect(_canvas.x, _canvas.y+m_frame.top, m_frame.left, _canvas.h - m_frame.height()), _clip );
+		WgRect right( WgRect(_canvas.x + _canvas.w - m_frame.right, _canvas.y+m_frame.top, m_frame.right, _canvas.h - m_frame.height()), _clip );
 		WgRect bottom( WgRect(_canvas.x, _canvas.y + _canvas.h - m_frame.bottom, _canvas.w, m_frame.bottom), _clip );
 		WgRect center( _canvas - m_frame, _clip );
 
-		pDevice->Fill( top, m_frameColor[i] );
-		pDevice->Fill( left, m_frameColor[i] );
-		pDevice->Fill( right, m_frameColor[i] );
-		pDevice->Fill( bottom, m_frameColor[i] );
+		pDevice->fill( top, m_frameColor[i] );
+		pDevice->fill( left, m_frameColor[i] );
+		pDevice->fill( right, m_frameColor[i] );
+		pDevice->fill( bottom, m_frameColor[i] );
 
 		if( center.w > 0 || center.h > 0 )
-			pDevice->Fill( center, m_color[i] );
+			pDevice->fill( center, m_color[i] );
 	}
 }
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 
-WgSize WgBoxSkin::MinSize() const
+WgSize WgBoxSkin::minSize() const
 {
-	WgSize content = WgExtendedSkin::MinSize();
-	WgSize frame = m_frame.Size();
+	WgSize content = WgExtendedSkin::minSize();
+	WgSize frame = m_frame.size();
 
 	return WgSize( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
 }
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 
-WgSize WgBoxSkin::PreferredSize() const
+WgSize WgBoxSkin::preferredSize() const
 {
-	WgSize content = WgExtendedSkin::PreferredSize();
-	WgSize frame = m_frame.Size();
+	WgSize content = WgExtendedSkin::preferredSize();
+	WgSize frame = m_frame.size();
 
 	return WgSize( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
 }
 
-//____ SizeForContent() _______________________________________________________
+//____ sizeForContent() _______________________________________________________
 
-WgSize WgBoxSkin::SizeForContent( const WgSize contentSize ) const
+WgSize WgBoxSkin::sizeForContent( const WgSize contentSize ) const
 {
-	WgSize content = WgExtendedSkin::SizeForContent(contentSize);
-	WgSize frame = m_frame.Size();
+	WgSize content = WgExtendedSkin::sizeForContent(contentSize);
+	WgSize frame = m_frame.size();
 
 	return WgSize( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
 }
 
-//____ MarkTest() _____________________________________________________________
+//____ markTest() _____________________________________________________________
 
-bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
+bool WgBoxSkin::markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
 {
-	if( !canvas.Contains(ofs) )
+	if( !canvas.contains(ofs) )
 		return false;
 
 	int opacity;
@@ -248,7 +248,7 @@ bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState stat
 		int i = _stateToIndex(state);
 
 		WgRect center = canvas - m_frame;
-		if( center.Contains(ofs) )
+		if( center.contains(ofs) )
 			opacity = m_color[i].a;
 		else
 			opacity = m_frameColor[i].a;
@@ -257,46 +257,46 @@ bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState stat
 	return ( opacity >= opacityTreshold );
 }
 
-//____ IsOpaque() _____________________________________________________________
+//____ isOpaque() _____________________________________________________________
 
-bool WgBoxSkin::IsOpaque() const
+bool WgBoxSkin::isOpaque() const
 {
 	return m_bOpaque;
 }
 
-bool WgBoxSkin::IsOpaque( WgState state ) const
+bool WgBoxSkin::isOpaque( WgState state ) const
 {
 	int i = _stateToIndex(state);
-	if( m_bOpaque || (m_color[i].a == 255 && (m_frameColor[i] == 255 || (m_frame.Width() + m_frame.Height() == 0))) )
+	if( m_bOpaque || (m_color[i].a == 255 && (m_frameColor[i] == 255 || (m_frame.width() + m_frame.height() == 0))) )
 		return true;
 
 	return false;
 }
 
-bool WgBoxSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
+bool WgBoxSkin::isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
 {
 	if( m_bOpaque )
 		return true;
 
 	WgRect center = WgRect(canvasSize) - m_frame;
 	int i = _stateToIndex(state);
-	if( center.Contains(rect) )
+	if( center.contains(rect) )
 		return m_color[i].a == 255;
-	else if( !center.IntersectsWith(rect) )
+	else if( !center.intersectsWith(rect) )
 		return m_frameColor[i].a == 255;
 
 	return m_color[i].a == 255 && m_frameColor[i].a == 255;
 }
 
-//____ IsStateIdentical() ____________________________________________________
+//____ isStateIdentical() ____________________________________________________
 
-bool WgBoxSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+bool WgBoxSkin::isStateIdentical( WgState state, WgState comparedTo ) const
 {
 	int i1 = _stateToIndex(state);
 	int i2 = _stateToIndex(comparedTo);
 
-	if( m_color[i1] == m_color[i2] && (m_frame.IsEmpty() || m_frameColor[i1] == m_frameColor[i2]) && 
-		WgExtendedSkin::IsStateIdentical(state,comparedTo) )
+	if( m_color[i1] == m_color[i2] && (m_frame.isEmpty() || m_frameColor[i1] == m_frameColor[i2]) && 
+		WgExtendedSkin::isStateIdentical(state,comparedTo) )
 		return true;
 	else
 		return false;
@@ -315,7 +315,7 @@ void WgBoxSkin::_updateOpaqueFlag()
 		frameAlpha += (int) m_frameColor[i].a;
 	}
 
-	bool hasFrame = (m_frame.Width() + m_frame.Height() > 0);
+	bool hasFrame = (m_frame.width() + m_frame.height() > 0);
 	
 	if( alpha == 255*WG_NB_STATES && (!hasFrame || frameAlpha == 255*WG_NB_STATES) )
 		m_bOpaque = true;

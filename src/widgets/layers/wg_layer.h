@@ -40,21 +40,21 @@ class WgLayerHook : public WgHook
 	friend class WgModalLayer;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgLayerHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgLayerHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgCoord			Pos() const { return m_geo.Pos(); }
-	WgSize			Size() const { 	return m_geo.Size(); }
-	WgRect			Geo() const { return m_geo; }
+	WgCoord			pos() const { return m_geo.pos(); }
+	WgSize			size() const { 	return m_geo.size(); }
+	WgRect			geo() const { return m_geo; }
 
-	WgCoord			GlobalPos() const;
-	WgRect			GlobalGeo() const;
+	WgCoord			globalPos() const;
+	WgRect			globalGeo() const;
 
-	WgLayerHookPtr	Prev() const { return _prevLayerHook(); }
-	WgLayerHookPtr	Next() const { return _nextLayerHook(); }
-	WgLayerPtr		Parent() const;
+	WgLayerHookPtr	prev() const { return _prevLayerHook(); }
+	WgLayerHookPtr	next() const { return _nextLayerHook(); }
+	WgLayerPtr		parent() const;
 
 protected:
 
@@ -97,25 +97,25 @@ class WgLayer : public WgContainer
 	friend class WgLayerHook;
 
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLayerPtr	Cast( const WgObjectPtr& pObject );
+	static WgLayerPtr	cast( const WgObjectPtr& pObject );
 
-	WgHookPtr			SetBaseWidget( const WgWidgetPtr& pWidget );
-	WgWidgetPtr			BaseWidget();
-	bool				RemoveBaseWidget();
-	inline WgHookPtr	BaseHook() { return &m_baseHook; }
+	WgHookPtr			setBaseWidget( const WgWidgetPtr& pWidget );
+	WgWidgetPtr			baseWidget();
+	bool				removeBaseWidget();
+	inline WgHookPtr	baseHook() { return &m_baseHook; }
 
-	inline WgLayerHookPtr	FirstLayerHook() const { return _firstLayerHook(); }
-	inline WgLayerHookPtr	LastLayerHook() const { return _lastLayerHook(); }
+	inline WgLayerHookPtr	firstLayerHook() const { return _firstLayerHook(); }
+	inline WgLayerHookPtr	lastLayerHook() const { return _lastLayerHook(); }
 
 	// Overloaded from WgWidget
 
-	int					MatchingHeight( int width ) const;
-	int					MatchingWidth( int height ) const;
+	int					matchingHeight( int width ) const;
+	int					matchingWidth( int height ) const;
 
-	WgSize				PreferredSize() const;
+	WgSize				preferredSize() const;
 
 protected:
 	WgLayer();
@@ -131,12 +131,12 @@ protected:
 
 		// Standard Hook methods
 
-		WgCoord		Pos() const { return m_pParent->Pos(); }
-		WgSize		Size() const { 	return m_pParent->Size(); }
-		WgRect		Geo() const { return m_pParent->Geo(); }
+		WgCoord		pos() const { return m_pParent->pos(); }
+		WgSize		size() const { 	return m_pParent->size(); }
+		WgRect		geo() const { return m_pParent->geo(); }
 
-		WgCoord		GlobalPos() const { return m_pParent->GlobalPos(); }
-		WgRect		GlobalGeo() const { return m_pParent->GlobalGeo(); }
+		WgCoord		globalPos() const { return m_pParent->globalPos(); }
+		WgRect		globalGeo() const { return m_pParent->globalGeo(); }
 
 	protected:
 

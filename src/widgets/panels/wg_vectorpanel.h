@@ -51,29 +51,29 @@ class WgVectorHook : public WgPanelHook, protected WgLink
 
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgVectorHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgVectorHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgCoord	Pos() const;
-	WgSize	Size() const;
-	WgRect	Geo() const;
-	WgCoord	GlobalPos() const;
-	WgRect	GlobalGeo() const;
+	WgCoord	pos() const;
+	WgSize	size() const;
+	WgRect	geo() const;
+	WgCoord	globalPos() const;
+	WgRect	globalGeo() const;
 
-	WgVectorHookPtr	Prev() const { return _prev(); }
-	WgVectorHookPtr	Next() const { return _next(); }
-	WgVectorPanelPtr Parent() const;
+	WgVectorHookPtr	prev() const { return _prev(); }
+	WgVectorHookPtr	next() const { return _next(); }
+	WgVectorPanelPtr parent() const;
 
-	bool			MoveForward();
-	bool			MoveBackward();
-	bool			MoveBefore( const WgVectorHookPtr& pSibling );
-	bool			MoveAfter( const WgVectorHookPtr& pSibling );
-	bool			MoveFirst();
-	bool			MoveLast();
+	bool			moveForward();
+	bool			moveBackward();
+	bool			moveBefore( const WgVectorHookPtr& pSibling );
+	bool			moveAfter( const WgVectorHookPtr& pSibling );
+	bool			moveFirst();
+	bool			moveLast();
 
-	bool			SetVisible( bool bVisible );
+	bool			setVisible( bool bVisible );
 
 protected:
 	PROTECTED_LINK_METHODS( WgVectorHook );
@@ -95,16 +95,16 @@ class WgVectorPanel : public WgPanel
 {
 	friend class WgVectorHook;
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVectorPanelPtr	Cast( const WgObjectPtr& pObject );
+	static WgVectorPanelPtr	cast( const WgObjectPtr& pObject );
 
-	WgVectorHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.RawPtr() ); }
-	WgVectorHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.RawPtr(), pSibling.RawPtr() ); }
+	WgVectorHookPtr addWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.rawPtr() ); }
+	WgVectorHookPtr insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.rawPtr(), pSibling.rawPtr() ); }
 
-	bool			RemoveWidget( const WgWidgetPtr& pWidget );
-	bool			Clear();
+	bool			removeWidget( const WgWidgetPtr& pWidget );
+	bool			clear();
 
 protected:
 	WgVectorPanel();
@@ -116,8 +116,8 @@ protected:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 
-	WgHook*			_firstHook() const { return m_hooks.First(); }
-	WgHook*			_lastHook() const { return m_hooks.Last(); }
+	WgHook*			_firstHook() const { return m_hooks.first(); }
+	WgHook*			_lastHook() const { return m_hooks.last(); }
 
 	// To be overloaded by subclasses
 

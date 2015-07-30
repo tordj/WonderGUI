@@ -42,34 +42,34 @@ typedef	WgWeakPtr<WgNullGfxDevice,WgGfxDeviceWeakPtr>	WgNullGfxDeviceWeakPtr;
 class WgNullGfxDevice : public WgGfxDevice
 {
 public:
-	static WgNullGfxDevicePtr	Create( WgSize size );
+	static WgNullGfxDevicePtr	create( WgSize size );
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgNullGfxDevicePtr	Cast( const WgObjectPtr& pObject );
+	static WgNullGfxDevicePtr	cast( const WgObjectPtr& pObject );
 
 	//
 
-	void	Fill( const WgRect& rect, const WgColor& col );
-	void	Blit( const WgSurfacePtr& src, const WgRect& srcrect, int dx, int dy  );
-	void	TileBlit( const WgSurfacePtr& src, const WgRect& srcrect, const WgRect& dest );
+	void	fill( const WgRect& rect, const WgColor& col );
+	void	blit( const WgSurfacePtr& src, const WgRect& srcrect, int dx, int dy  );
+	void	tileBlit( const WgSurfacePtr& src, const WgRect& srcrect, const WgRect& dest );
 
-	void	FillSubPixel( const WgRectF& rect, const WgColor& col );
-	void	StretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+	void	fillSubPixel( const WgRectF& rect, const WgColor& col );
+	void	stretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
-	void	ClipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
-	void	ClipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
-	void	ClipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
+	void	clipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	clipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
+	void	clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
 
-	void	DrawArcNE( const WgRect& rect, WgColor color );
-	void	DrawElipse( const WgRect& rect, WgColor color );
-	void	DrawFilledElipse( const WgRect& rect, WgColor color );
+	void	drawArcNE( const WgRect& rect, WgColor color );
+	void	drawElipse( const WgRect& rect, WgColor color );
+	void	drawFilledElipse( const WgRect& rect, WgColor color );
 
-	void	ClipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
-	void	ClipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
-	void	ClipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color );
+	void	clipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color );
 
 protected:
 	WgNullGfxDevice( WgSize size );

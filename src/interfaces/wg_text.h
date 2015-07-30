@@ -76,25 +76,25 @@ class WgText : public WgInterface
 public:
 	WgText( WgTextField * pField ) : m_pField(pField) {};
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgTextPtr		Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgTextPtr		Ptr() { return WgTextPtr(_object(),this); }
+	static WgTextPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgTextPtr		ptr() { return WgTextPtr(_object(),this); }
 
-	inline void				SetStyle( const WgTextStylePtr& pStyle ) { m_pField->SetStyle(pStyle); }
-	inline void				ClearStyle() { m_pField->ClearStyle(); }
-	inline WgTextStylePtr	Style() const { return m_pField->Style(); }
+	inline void				setStyle( const WgTextStylePtr& pStyle ) { m_pField->setStyle(pStyle); }
+	inline void				clearStyle() { m_pField->clearStyle(); }
+	inline WgTextStylePtr	style() const { return m_pField->style(); }
 
-	inline void					SetPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->SetPresenter(pPresenter); }
-	inline void					ClearPresenter() { m_pField->ClearPresenter(); }
-	inline WgTextPresenterPtr	Presenter() const { return m_pField->Presenter(); }
+	inline void					setPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->setPresenter(pPresenter); }
+	inline void					clearPresenter() { m_pField->clearPresenter(); }
+	inline WgTextPresenterPtr	presenter() const { return m_pField->presenter(); }
 
-	inline 	WgString			Get() const { return m_pField->GetString(); }
+	inline 	WgString			get() const { return m_pField->getString(); }
 
-	inline WgState			State() const { return m_pField->State(); }
-	inline int				Length() const { return m_pField->Length(); }
-	inline bool				IsEmpty() const { return m_pField->IsEmpty(); }
+	inline WgState			state() const { return m_pField->state(); }
+	inline int				length() const { return m_pField->length(); }
+	inline bool				isEmpty() const { return m_pField->isEmpty(); }
 
 protected:
 	WgObject *				_object() const;

@@ -42,17 +42,17 @@ class WgPackHook : public WgVectorHook
 	friend class WgPackPanel;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPackHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgPackHookPtr	cast( const WgHookPtr& pInterface );
 	
-	bool	SetWeight( float weight );
-	float	Weight() { return m_weight; }
+	bool	setWeight( float weight );
+	float	weight() { return m_weight; }
 
-	WgPackHookPtr	Prev() const { return _prev(); }
-	WgPackHookPtr	Next() const { return _next(); }
-	WgPackPanelPtr	Parent() const;
+	WgPackHookPtr	prev() const { return _prev(); }
+	WgPackHookPtr	next() const { return _next(); }
+	WgPackPanelPtr	parent() const;
 
 protected:
 	PROTECTED_LINK_METHODS( WgPackHook );
@@ -79,29 +79,29 @@ class WgPackPanel : public WgVectorPanel
 	friend class WgPackHook;
 
 public:
-	static WgPackPanelPtr	Create() { return WgPackPanelPtr(new WgPackPanel()); }
+	static WgPackPanelPtr	create() { return WgPackPanelPtr(new WgPackPanel()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPackPanelPtr	Cast( const WgObjectPtr& pObject );
+	static WgPackPanelPtr	cast( const WgObjectPtr& pObject );
 
-	inline WgPackHookPtr AddWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.RawPtr())); }
-	inline WgPackHookPtr InsertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.RawPtr(),pSibling.RawPtr())); }
+	inline WgPackHookPtr addWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.rawPtr())); }
+	inline WgPackHookPtr insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
     
-	void			SetOrientation( WgOrientation orientaiton );
-	WgOrientation	Orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+	void			setOrientation( WgOrientation orientaiton );
+	WgOrientation	orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 	
-	WgPackHookPtr	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
-	WgPackHookPtr	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
+	WgPackHookPtr	firstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
+	WgPackHookPtr	lastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
 
-	void			SetSizeBroker( const WgSizeBrokerPtr& pBroker );
-	WgSizeBrokerPtr	SizeBroker() const { return m_pSizeBroker; }
+	void			setSizeBroker( const WgSizeBrokerPtr& pBroker );
+	WgSizeBrokerPtr	sizeBroker() const { return m_pSizeBroker; }
 
-	int				MatchingHeight( int width ) const;
-	int				MatchingWidth( int height ) const;
+	int				matchingHeight( int width ) const;
+	int				matchingWidth( int height ) const;
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 	
 protected:
 	WgPackPanel();
@@ -136,8 +136,8 @@ protected:
 	
 	//
 	
-	inline WgPackHook *	_firstHook() const { return static_cast<WgPackHook*>(m_hooks.First()); }
-	inline WgPackHook *	_lastHook() const { return static_cast<WgPackHook*>(m_hooks.Last()); }
+	inline WgPackHook *	_firstHook() const { return static_cast<WgPackHook*>(m_hooks.first()); }
+	inline WgPackHook *	_lastHook() const { return static_cast<WgPackHook*>(m_hooks.last()); }
 
 
 	void			_refreshChildGeo();

@@ -28,7 +28,7 @@
 class FreeWeakPtrHub;
 WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
 {
-	m_pObj = r.RawPtr();
+	m_pObj = r.rawPtr();
 	if( m_pObj )
 		m_pObj->_incRefCount();
 }
@@ -40,7 +40,7 @@ WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 	{
 		if( !pObj->m_pWeakPtrHub )
 		{
-			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub = WgBase::allocWeakPtrHub();
 			m_pHub->refCnt = 1;
 			m_pHub->pObj = pObj;
 			pObj->m_pWeakPtrHub = m_pHub;
@@ -59,13 +59,13 @@ WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 
 WgObjectWeakPtr::WgObjectWeakPtr( const WgObjectPtr& pObject )
 {
-	WgObject * pObj = pObject.RawPtr();
+	WgObject * pObj = pObject.rawPtr();
 
 	if( pObj )
 	{
 		if( !pObj->m_pWeakPtrHub )
 		{
-			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub = WgBase::allocWeakPtrHub();
 			m_pHub->refCnt = 1;
 			m_pHub->pObj = pObj;
 			pObj->m_pWeakPtrHub = m_pHub;
@@ -92,7 +92,7 @@ WgObjectWeakPtr::~WgObjectWeakPtr()
 		{
 			if( m_pHub->pObj )
 				m_pHub->pObj->m_pWeakPtrHub = 0;
-			WgBase::FreeWeakPtrHub(m_pHub);
+			WgBase::freeWeakPtrHub(m_pHub);
 		}
 	}
 }
@@ -111,7 +111,7 @@ void WgObjectWeakPtr::copy( WgObjectWeakPtr const & r)
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				WgBase::FreeWeakPtrHub(m_pHub);
+				WgBase::freeWeakPtrHub(m_pHub);
 			}
 		}
 
@@ -130,7 +130,7 @@ WgInterfaceWeakPtr::WgInterfaceWeakPtr( WgObject * pObj, WgInterface * pInterfac
 
 		if( !pObj->m_pWeakPtrHub )
 		{
-			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub = WgBase::allocWeakPtrHub();
 			m_pHub->refCnt = 1;
 			m_pHub->pObj = pObj;
 			pObj->m_pWeakPtrHub = m_pHub;
@@ -159,7 +159,7 @@ WgInterfaceWeakPtr::~WgInterfaceWeakPtr()
 		{
 			if( m_pHub->pObj )
 				m_pHub->pObj->m_pWeakPtrHub = 0;
-			WgBase::FreeWeakPtrHub(m_pHub);
+			WgBase::freeWeakPtrHub(m_pHub);
 		}
 	}
 }
@@ -180,7 +180,7 @@ void WgInterfaceWeakPtr::copy( WgInterfaceWeakPtr const & r)
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				WgBase::FreeWeakPtrHub(m_pHub);
+				WgBase::freeWeakPtrHub(m_pHub);
 			}
 		}
 

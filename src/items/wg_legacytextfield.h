@@ -98,76 +98,76 @@ public:
 
 	//
 
-	void				SetProperties( const WgTextpropPtr& pProp );
-	void				ClearProperties();
-	WgTextpropPtr		Properties() const { return m_pBaseProp; }
+	void				setProperties( const WgTextpropPtr& pProp );
+	void				clearProperties();
+	WgTextpropPtr		properties() const { return m_pBaseProp; }
 
-	void				SetSelectionProperties( const WgTextpropPtr& pProp );
-	void				ClearSelectionProperties();
-	WgTextpropPtr		SelectionProperties() const { return m_pSelectionProp; }
+	void				setSelectionProperties( const WgTextpropPtr& pProp );
+	void				clearSelectionProperties();
+	WgTextpropPtr		selectionProperties() const { return m_pSelectionProp; }
 
-	void				SetLinkProperties( const WgTextpropPtr& pProp );
-	void				ClearLinkProperties();
-	WgTextpropPtr		LinkProperties() const { return m_pLinkProp; }
+	void				setLinkProperties( const WgTextpropPtr& pProp );
+	void				clearLinkProperties();
+	WgTextpropPtr		linkProperties() const { return m_pLinkProp; }
 
-	bool				SetMaxChars( int max );
-	int					MaxChars() const { return m_maxChars; }
+	bool				setMaxChars( int max );
+	int					maxChars() const { return m_maxChars; }
 
-	inline void			SetAlignment( WgOrigo alignment ) { m_alignment = alignment; }
-	inline WgOrigo		Alignment() const { return m_alignment; }
+	inline void			setAlignment( WgOrigo alignment ) { m_alignment = alignment; }
+	inline WgOrigo		alignment() const { return m_alignment; }
 
-	inline void			SetTintMode( WgTintMode mode ) { m_tintMode = mode; }
-	inline WgTintMode	TintMode() const { return m_tintMode; }
+	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
+	inline WgTintMode	tintMode() const { return m_tintMode; }
 
-	void				Clear();
+	void				clear();
 
-	void				Set( const WgCharSeq& seq );
-	void				Set( const WgCharBuffer * buffer );
-	void				Set( const WgString& str );
+	void				set( const WgCharSeq& seq );
+	void				set( const WgCharBuffer * buffer );
+	void				set( const WgString& str );
 
-	int					Append( const WgCharSeq& seq );
-	int					Insert( int ofs, const WgCharSeq& seq );
-	int					Replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					Delete( int ofs, int len );
-	void				DeleteSelected();
+	int					append( const WgCharSeq& seq );
+	int					insert( int ofs, const WgCharSeq& seq );
+	int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+	int					remove( int ofs, int len );
+	void				deleteSelected();
 
-	inline void			SetLineSpacing( float adjustment ) { m_lineSpaceAdj = adjustment; }
-	inline float		LineSpacing() const { return m_lineSpaceAdj; }
+	inline void			setLineSpacing( float adjustment ) { m_lineSpaceAdj = adjustment; }
+	inline float		lineSpacing() const { return m_lineSpaceAdj; }
 
-	void				SetWrap( bool bWrap );
-	bool				Wrap() const { return m_bWrap; }
+	void				setWrap( bool bWrap );
+	bool				wrap() const { return m_bWrap; }
 
-	void				SetAutoEllipsis( bool bAutoEllipsis );
-	bool				AutoEllipsis() const { return m_bAutoEllipsis; }
+	void				setAutoEllipsis( bool bAutoEllipsis );
+	bool				autoEllipsis() const { return m_bAutoEllipsis; }
 
-	inline WgState		State() const { return m_state; }
-	int					Length() const;
-	int					Lines() const;
-	inline bool			IsEmpty() const { return Length()==0?true:false; }
-	inline bool			IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	inline bool			IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	inline WgState		state() const { return m_state; }
+	int					length() const;
+	int					lines() const;
+	inline bool			isEmpty() const { return length()==0?true:false; }
+	inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
-	int					Width() const;
-	int					Height() const;
+	int					width() const;
+	int					height() const;
 
-	void				Select( int ofs, int len ) { if(m_pCursor) m_pCursor->selectRange( WgRange(ofs,len)); }	//TODO: Should not be dependent on a cursor!
-	void				SelectAll() { if(m_pCursor) m_pCursor->selectAll(); }									//TODO: Should not be dependent on a cursor!
-	int					SelectionStart() const;
-	int					SelectionLength() const;
-	void				ClearSelection( );
+	void				select( int ofs, int len ) { if(m_pCursor) m_pCursor->selectRange( WgRange(ofs,len)); }	//TODO: Should not be dependent on a cursor!
+	void				selectAll() { if(m_pCursor) m_pCursor->selectAll(); }									//TODO: Should not be dependent on a cursor!
+	int					selectionStart() const;
+	int					selectionLength() const;
+	void				clearSelection( );
 
 	//
 
-	void				SetCursorSkin( const WgCaretPtr& pCursor );
-	inline WgCaretPtr	CursorSkin() const { return m_pCursorStyle; }
+	void				setCursorSkin( const WgCaretPtr& pCursor );
+	inline WgCaretPtr	cursorSkin() const { return m_pCursorStyle; }
 
-	int					InsertAtCursor( const WgCharSeq& str ) { return putText(str); }
-	bool				InsertAtCursor( Uint16 c ) { return putChar(c); }
+	int					insertAtCursor( const WgCharSeq& str ) { return putText(str); }
+	bool				insertAtCursor( Uint16 c ) { return putChar(c); }
 
-	inline void			GoBOT(){ if(m_pCursor) m_pCursor->goBOF(); }
-	inline void			GoEOT(){ if(m_pCursor) m_pCursor->goEOF(); }
-	inline void			GoBOL(){ if(m_pCursor) m_pCursor->goBOL(); }
-	inline void			GoEOL(){ if(m_pCursor) m_pCursor->goEOL(); }
+	inline void			goBot(){ if(m_pCursor) m_pCursor->goBOF(); }
+	inline void			goEot(){ if(m_pCursor) m_pCursor->goEOF(); }
+	inline void			goBol(){ if(m_pCursor) m_pCursor->goBOL(); }
+	inline void			goEol(){ if(m_pCursor) m_pCursor->goEOL(); }
 
 
 	//
@@ -188,7 +188,7 @@ public:
 
 
 
-	inline const WgChar * getText() const { return m_buffer.Chars(); }
+	inline const WgChar * getText() const { return m_buffer.chars(); }
 	inline WgCharBuffer * getBuffer() { return &m_buffer; }
 	inline const WgCharBuffer * getBuffer() const { return &m_buffer; }
 
@@ -222,24 +222,24 @@ public:
 
 
 	void				setSelectionBgColor(WgColor c);
-	inline WgColor		getSelectionBgColor() const { return m_pSelectionProp->Color(); }
+	inline WgColor		getSelectionBgColor() const { return m_pSelectionProp->color(); }
 
 
 // -------------
 
-	void				GetBaseAttr( WgTextAttr& attr ) const;
-	bool				GetCharAttr( WgTextAttr& attr, int charOfs ) const;
-	bool				IsCharUnderlined(	int charOfs ) const;
-	WgColor				GetCharColor(		int charOfs ) const;
-	WgColor				GetCharBgColor(		int charOfs ) const;
-	WgFontAlt			GetCharStyle(		int charOfs ) const;
-	int					GetCharSize(		int charOfs ) const;
-	WgFontPtr			GetCharFont(		int charOfs ) const;
-//	WgGlyphset *		GetCharGlyphset(	int charOfs ) const;
-//	bool				GetCharVisibility(	int charOfs ) const;
-	int					GetCharBreakLevel(	int charOfs ) const;
-	WgTextLinkPtr		GetCharLink(		int charOfs ) const;
-	bool				IsCharLink(			int charOfs ) const;
+	void				getBaseAttr( WgTextAttr& attr ) const;
+	bool				getCharAttr( WgTextAttr& attr, int charOfs ) const;
+	bool				isCharUnderlined(	int charOfs ) const;
+	WgColor				getCharColor(		int charOfs ) const;
+	WgColor				getCharBgColor(		int charOfs ) const;
+	WgFontAlt			getCharStyle(		int charOfs ) const;
+	int					getCharSize(		int charOfs ) const;
+	WgFontPtr			getCharFont(		int charOfs ) const;
+//	WgGlyphset *		getCharGlyphset(	int charOfs ) const;
+//	bool				getCharVisibility(	int charOfs ) const;
+	int					getCharBreakLevel(	int charOfs ) const;
+	WgTextLinkPtr		getCharLink(		int charOfs ) const;
+	bool				isCharLink(			int charOfs ) const;
 
 // -------------
 
@@ -258,8 +258,8 @@ public:
 	void				setLineWidth( int width );
 	inline int			getLineWidth() const { return m_lineWidth; }
 
-	void					SetEditMode(WgTextEditMode mode);							// Maybe should be protected with Widgets/Items as friends?
-	inline WgTextEditMode	EditMode() const { return m_editMode; }
+	void					setEditMode(WgTextEditMode mode);							// Maybe should be protected with Widgets/Items as friends?
+	inline WgTextEditMode	editMode() const { return m_editMode; }
 
 
 
@@ -282,12 +282,12 @@ public:
 
 
 	// cursor instance forwards. TODO: merge cursor instance with WgText
-	WgCaretInstance*GetCursor() const { return m_pCursor; }
+	WgCaretInstance*getCursor() const { return m_pCursor; }
 
-	void			CursorGotoCoord( const WgCoord& coord, const WgRect& container );
-	void			CursorGotoLine( int line, const WgRect& container );
-	void			CursorGoUp( int nbLines, const WgRect& container );
-	void			CursorGoDown( int nbLines, const WgRect& container );
+	void			cursorGotoCoord( const WgCoord& coord, const WgRect& container );
+	void			cursorGotoLine( int line, const WgRect& container );
+	void			cursorGoUp( int nbLines, const WgRect& container );
+	void			cursorGoDown( int nbLines, const WgRect& container );
 
 	void			hideCursor() { if(m_pCursor) m_pCursor->hide(); }
 	void			showCursor() { if(m_pCursor) m_pCursor->show(); }
@@ -333,47 +333,47 @@ public:
 	bool			hasSelection()const { return m_pCursor ? m_pCursor->hasSelection() : false; }
 	void			delSelection(){ if(m_pCursor) m_pCursor->delSelection(); }
 
-	int				LineColToOffset(int line, int col) const;						// HARD LINES!!!!!
-//	void			OffsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
+	int				lineColToOffset(int line, int col) const;						// HARD LINES!!!!!
+//	void			offsetToSoftLineCol(int ofs, int* wpLine, int* wpCol) const;
 
 	//
 
-	int				LineStartX( int line, const WgRect& container ) const;
-	int				LineStartY( int line, const WgRect& container ) const;
-	WgCoord			LineStart( int line, const WgRect& container ) const;
+	int				lineStartX( int line, const WgRect& container ) const;
+	int				lineStartY( int line, const WgRect& container ) const;
+	WgCoord			lineStart( int line, const WgRect& container ) const;
 
-	int				CoordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	int				CoordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	WgTextPos		CoordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	int				CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	WgTextLinkPtr	CoordToLink( const WgCoord& coord, const WgRect& container ) const;
+	int				coordToLine( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				coordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	WgTextPos		coordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	int				coordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
+	WgTextLinkPtr	coordToLink( const WgCoord& coord, const WgRect& container ) const;
 
 	// WgTextPos is automatically clamped for all PosTo...-methods.
 
-	int				PosToCoordX( const WgTextPos& pos, const WgRect& container ) const;
-	int				PosToCoordY( const WgTextPos& pos, const WgRect& container ) const;
-	WgCoord			PosToCoord( const WgTextPos& pos, const WgRect& container ) const;
-	int				PosToOfs( const WgTextPos& pos ) const;
+	int				posToCoordX( const WgTextPos& pos, const WgRect& container ) const;
+	int				posToCoordY( const WgTextPos& pos, const WgRect& container ) const;
+	WgCoord			posToCoord( const WgTextPos& pos, const WgRect& container ) const;
+	int				posToOfs( const WgTextPos& pos ) const;
 
-	int				OfsToCoordX( int ofs, const WgRect& container ) const;
-	int				OfsToCoordY( int ofs, const WgRect& container ) const;
-	WgCoord			OfsToCoord( int ofs, const WgRect& container ) const;
-	WgTextPos		OfsToPos( int ofs ) const;
+	int				ofsToCoordX( int ofs, const WgRect& container ) const;
+	int				ofsToCoordY( int ofs, const WgRect& container ) const;
+	WgCoord			ofsToCoord( int ofs, const WgRect& container ) const;
+	WgTextPos		ofsToPos( int ofs ) const;
 
-	WgTextPos		ClampPos( WgTextPos ) const;
+	WgTextPos		clampPos( WgTextPos ) const;
 
 	//
 
-	WgCoord			FocusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
+	WgCoord			focusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
-	bool 			OnMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container );
-//	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
+	bool 			onMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container );
+//	bool			onAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
-	WgTextLinkPtr	GetMarkedLink() const { return m_pMarkedLink; }
-	WgState			GetMarkedLinkState() const { return m_markedLinkState; }
+	WgTextLinkPtr	getMarkedLink() const { return m_pMarkedLink; }
+	WgState			getMarkedLinkState() const { return m_markedLinkState; }
 
-	inline void		SetColorSkin( const WgSkinPtr& pSkin ) { m_pColorSkin = pSkin; }
-	inline WgSkinPtr ColorSkin() const { return m_pColorSkin; }
+	inline void		setColorSkin( const WgSkinPtr& pSkin ) { m_pColorSkin = pSkin; }
+	inline WgSkinPtr colorSkin() const { return m_pColorSkin; }
 
 protected:
 

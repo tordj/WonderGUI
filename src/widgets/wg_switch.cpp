@@ -39,49 +39,49 @@ WgSwitch::~WgSwitch()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSwitch::IsInstanceOf( const char * pClassName ) const
+bool WgSwitch::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSwitch::ClassName( void ) const
+const char * WgSwitch::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSwitchPtr WgSwitch::Cast( const WgObjectPtr& pObject )
+WgSwitchPtr WgSwitch::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetValue() _____________________________________________________________
+//____ setValue() _____________________________________________________________
 
-void WgSwitch::SetValue( int value )
+void WgSwitch::setValue( int value )
 {
     //TODO: Implement!
 }
 
-//____ PreferredSize() __________________________________________________________
+//____ preferredSize() __________________________________________________________
 
-WgSize WgSwitch::PreferredSize() const
+WgSize WgSwitch::preferredSize() const
 {
 	WgSize contentSize(40,40);
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(contentSize);
+		return m_pSkin->sizeForContent(contentSize);
 	else
 		return contentSize;
 }
@@ -102,7 +102,7 @@ void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas,m_state);
+		canvas = m_pSkin->contentRect(_canvas,m_state);
 	else
 		canvas = _canvas;
 
@@ -117,7 +117,7 @@ void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 		int x = canvas.x + (sz - itemSize) / 2;
 		for( int i = 0 ; i < 3 ; i++ )
 		{
-			pDevice->ClipDrawElipse( _clip, WgRect(x,y,itemSize,itemSize), WgColor::white );
+			pDevice->clipDrawElipse( _clip, WgRect(x,y,itemSize,itemSize), WgColor::white );
 			y += itemSize + stepping;
 		}
 	}	

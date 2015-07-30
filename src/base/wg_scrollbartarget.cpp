@@ -26,11 +26,11 @@
 
 void WgScrollbarTarget::_updateScrollbar( float pos, float size )
 {
-		WgWidget * pWidget = m_pScrollbar.RawPtr();
+		WgWidget * pWidget = m_pScrollbar.rawPtr();
 
 		if( pWidget )
 		{
-			if( pWidget->IsInstanceOf(WgScrollbar::CLASSNAME) )
+			if( pWidget->isInstanceOf(WgScrollbar::CLASSNAME) )
 					static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
 		}
 

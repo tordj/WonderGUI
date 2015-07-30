@@ -46,12 +46,12 @@ typedef	WgWeakPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
 class WgImage : public WgWidget
 {
 public:
-	static WgImagePtr	Create() { return WgImagePtr(new WgImage()); }
+	static WgImagePtr	create() { return WgImagePtr(new WgImage()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgImagePtr	Cast( const WgObjectPtr& pObject );
+	static WgImagePtr	cast( const WgObjectPtr& pObject );
 	
 
 	void				SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );	///< @brief Set image to display.
@@ -60,7 +60,7 @@ public:
 	inline WgSurfacePtr	ImageSurface() const;											///< @brief Get surface of image displayed.
 	inline WgRect		ImageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 
-	WgSize				PreferredSize() const;
+	WgSize				preferredSize() const;
 
 protected:
 	WgImage();

@@ -25,29 +25,29 @@
 
 const char WgInterface::CLASSNAME[] = {"Interface"};
 
-bool WgInterface::IsInstanceOf( const char * pClassName ) const
+bool WgInterface::isInstanceOf( const char * pClassName ) const
 { 
 	return (pClassName==CLASSNAME); 
 }
 
-const char * WgInterface::ClassName( void ) const
+const char * WgInterface::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
 
-WgInterfacePtr WgInterface::Cast( const WgInterfacePtr& pInterface )
+WgInterfacePtr WgInterface::cast( const WgInterfacePtr& pInterface )
 {
 	return pInterface;
 }
 
 
-WgInterfacePtr	WgInterface::Ptr()
+WgInterfacePtr	WgInterface::ptr()
 {
 	return WgInterfacePtr(_object(),this);
 }
 
-WgObjectPtr WgInterface::Holder() 
+WgObjectPtr WgInterface::holder() 
 { 
 	return WgObjectPtr( _object() ); 
 }

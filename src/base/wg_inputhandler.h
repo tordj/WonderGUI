@@ -49,20 +49,20 @@ typedef	WgWeakPtr<WgInputHandler,WgReceiverWeakPtr>		WgInputHandlerWeakPtr;
 class WgInputHandler : public WgReceiver
 {
 public:
-	static WgInputHandlerPtr	Create() { return new WgInputHandler(); }
+	static WgInputHandlerPtr	create() { return new WgInputHandler(); }
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgInputHandlerPtr	Cast( const WgObjectPtr& pObject );
+	static WgInputHandlerPtr	cast( const WgObjectPtr& pObject );
 
-	void SetPointer( const WgRootPanelPtr& pRoot, WgCoord pos );
-	void SetButton( WgMouseButton button, bool bPressed );
-	void SetWheelRoll( int wheel, int steps );
-	void SetFocused( const WgRootPanelPtr& pRoot );
-	void SetKey( short nativeKeyCode, bool bPressed );
+	void setPointer( const WgRootPanelPtr& pRoot, WgCoord pos );
+	void setButton( WgMouseButton button, bool bPressed );
+	void setWheelRoll( int wheel, int steps );
+	void setFocused( const WgRootPanelPtr& pRoot );
+	void setKey( short nativeKeyCode, bool bPressed );
 	
-	void OnMsg( const WgMsgPtr& pMsg );
+	void onMsg( const WgMsgPtr& pMsg );
 	
 protected:
 	WgInputHandler();

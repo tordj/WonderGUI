@@ -45,28 +45,28 @@ class WgSkin : public WgObject
 public:
 	virtual ~WgSkin() {};
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSkinPtr	Cast( const WgObjectPtr& pObject );
+	static WgSkinPtr	cast( const WgObjectPtr& pObject );
 
 
-	virtual void Render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
+	virtual void render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
 
-	virtual WgSize	MinSize() const = 0;
-	virtual WgSize	PreferredSize() const = 0;
+	virtual WgSize	minSize() const = 0;
+	virtual WgSize	preferredSize() const = 0;
 
-	virtual WgSize	ContentPadding() const = 0;
-	virtual WgSize	SizeForContent( const WgSize contentSize ) const = 0;
-	virtual WgRect	ContentRect( const WgRect& canvas, WgState state ) const = 0;
+	virtual WgSize	contentPadding() const = 0;
+	virtual WgSize	sizeForContent( const WgSize contentSize ) const = 0;
+	virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const = 0;
 
-	virtual bool	MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const = 0;
+	virtual bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const = 0;
 
-	virtual bool	IsOpaque() const = 0;
-	virtual bool	IsOpaque( WgState state ) const = 0;
-	virtual bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const = 0;
+	virtual bool	isOpaque() const = 0;
+	virtual bool	isOpaque( WgState state ) const = 0;
+	virtual bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const = 0;
 
-	virtual bool	IsStateIdentical( WgState state, WgState comparedTo ) const = 0;
+	virtual bool	isStateIdentical( WgState state, WgState comparedTo ) const = 0;
 
 protected:
 	WgSkin() {};

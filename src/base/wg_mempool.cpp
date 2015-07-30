@@ -17,44 +17,44 @@ WgMemPool::~WgMemPool()
 {
 }
 
-//____ AllocEntry() ___________________________________________________________
+//____ allocEntry() ___________________________________________________________
 
-void * WgMemPool::AllocEntry()
+void * WgMemPool::allocEntry()
 {
 	m_nAllocEntries++;
 
-	Block * pBlock = m_blocks.First();
+	Block * pBlock = m_blocks.first();
 	if(pBlock == 0)
 		pBlock = _addBlock();
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
 	{
-		m_blocks.PushBack(pBlock);			// This block is full so we put it in the back.
+		m_blocks.pushBack(pBlock);			// This block is full so we put it in the back.
 
-		pBlock = m_blocks.First();
+		pBlock = m_blocks.first();
 		if( pBlock->nAllocEntries == pBlock->maxEntries )
 		{
 			_addBlock();					// We don't have any free entries left in any block.
 											// so we need to create a new one.
-			pBlock = m_blocks.First();
+			pBlock = m_blocks.first();
 		}
 	}
 
 	return pBlock->allocEntry();
 }
 
-//____ FreeEntry() ____________________________________________________________
+//____ freeEntry() ____________________________________________________________
 
-void WgMemPool::FreeEntry( void * pEntry )
+void WgMemPool::freeEntry( void * pEntry )
 {
 	if( pEntry == 0 )
 		return;
 
-	Block * pBlock = m_blocks.First();
+	Block * pBlock = m_blocks.first();
 
 	while( (pBlock && pEntry < pBlock->pMemBlock) || (pEntry >= ((Uint8*)pBlock->pMemBlock) + pBlock->blockSize) )
 	{
-		pBlock = pBlock->Next();
+		pBlock = pBlock->next();
 	}
 
 	if( !pBlock )
@@ -63,7 +63,7 @@ void WgMemPool::FreeEntry( void * pEntry )
 	}
 
 	if( pBlock->nAllocEntries == pBlock->maxEntries )
-		m_blocks.PushFront(pBlock);			// Full block will get an entry free, needs to be among the free ones...
+		m_blocks.pushFront(pBlock);			// Full block will get an entry free, needs to be among the free ones...
 
 	pBlock->freeEntry(pEntry);
 
@@ -79,7 +79,7 @@ void WgMemPool::FreeEntry( void * pEntry )
 WgMemPool::Block *WgMemPool::_addBlock()
 {
 	Block * pBlock = new Block( m_nEntriesPerBlock, m_entrySize );
-	m_blocks.PushFront( pBlock );
+	m_blocks.pushFront( pBlock );
 	return pBlock;
 }
 

@@ -39,12 +39,12 @@ typedef	WgWeakPtr<WgRefreshButton,WgButtonWeakPtr>		WgRefreshButtonWeakPtr;
 class WgRefreshButton : public WgButton
 {
 public:
-	static WgRefreshButtonPtr	Create() { return WgRefreshButtonPtr(new WgRefreshButton()); }
+	static WgRefreshButtonPtr	create() { return WgRefreshButtonPtr(new WgRefreshButton()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRefreshButtonPtr	Cast( const WgObjectPtr& pObject );
+	static WgRefreshButtonPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 

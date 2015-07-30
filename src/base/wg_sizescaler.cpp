@@ -22,17 +22,17 @@
 
 #include <wg_sizescaler.h>
 
-WgSizeScalerPtr WgSizeScaler::Create() 
+WgSizeScalerPtr WgSizeScaler::create() 
 {
 	return new WgSizeScaler(1.f,1.f);
 }
 
-WgSizeScalerPtr WgSizeScaler::Create( float scale ) 
+WgSizeScalerPtr WgSizeScaler::create( float scale ) 
 {
 	return new WgSizeScaler(scale,scale);
 }
 
-WgSizeScalerPtr WgSizeScaler::Create( float scaleX, float scaleY ) 
+WgSizeScalerPtr WgSizeScaler::create( float scaleX, float scaleY ) 
 {
 	return new WgSizeScaler(scaleX,scaleY);
 }
@@ -43,52 +43,52 @@ WgSizeScaler::WgSizeScaler( float scaleX, float scaleY )
 	m_scaleY = scaleY;
 }
 
-void WgSizeScaler::SetScale( float scale )
+void WgSizeScaler::setScale( float scale )
 {
-	SetScale(scale,scale);
+	setScale(scale,scale);
 }
 
-void WgSizeScaler::SetScale( float scaleX, float scaleY )
+void WgSizeScaler::setScale( float scaleX, float scaleY )
 {
 	if( scaleX != m_scaleX || scaleY != m_scaleY )
 	{
 		m_scaleX = scaleX;
 		m_scaleY = scaleY;
 
-		Node * p = m_nodes.First();
+		Node * p = m_nodes.first();
 		while( p )
 		{
 			p->m_pScalable->_onScaleChanged();
-			p = p->Next();
+			p = p->next();
 		}
 	}
 }
 
-void WgSizeScaler::SetScaleX( float scaleX )
+void WgSizeScaler::setScaleX( float scaleX )
 {
-	SetScale(scaleX,m_scaleY);
+	setScale(scaleX,m_scaleY);
 }
 
-void WgSizeScaler::SetScaleY( float scaleY )
+void WgSizeScaler::setScaleY( float scaleY )
 {
-	SetScale(m_scaleX,scaleY);
+	setScale(m_scaleX,scaleY);
 }
 
-void WgSizeScaler::AddItem( WgScalable * pScalable )
+void WgSizeScaler::addItem( WgScalable * pScalable )
 {
 	if( !pScalable )
 		return;
 
 	Node * p = new Node();
 	p->m_pScalable = pScalable;
-	m_nodes.PushBack(p);
+	m_nodes.pushBack(p);
 	pScalable->m_pScaler = this;
 	pScalable->_onScaleChanged();
 }
 
-void WgSizeScaler::RemoveItem( WgScalable * pScalable )
+void WgSizeScaler::removeItem( WgScalable * pScalable )
 {
-	Node * p = m_nodes.First();
+	Node * p = m_nodes.first();
 	while( p )
 	{
 		if( p->m_pScalable == pScalable )
@@ -98,25 +98,25 @@ void WgSizeScaler::RemoveItem( WgScalable * pScalable )
 			delete p;
 			return;
 		}
-		p = p->Next();
+		p = p->next();
 	}
 }
 
-void WgSizeScaler::RemoveAllItems()
+void WgSizeScaler::removeAllItems()
 {
-	Node * p = m_nodes.First();
+	Node * p = m_nodes.first();
 	while( p )
 	{
 		p->m_pScalable->m_pScaler = 0;
 		p->m_pScalable->_onScaleChanged();
-		p = p->Next();
+		p = p->next();
 	}
-	m_nodes.Clear();
+	m_nodes.clear();
 }
 
 void WgSizeScaler::_removeDeadItem( WgScalable * pScalable )
 {
-	Node * p = m_nodes.First();
+	Node * p = m_nodes.first();
 	while( p )
 	{
 		if( p->m_pScalable == pScalable )
@@ -124,7 +124,7 @@ void WgSizeScaler::_removeDeadItem( WgScalable * pScalable )
 			delete p;
 			return;
 		}
-		p = p->Next();
+		p = p->next();
 	}
 }
 

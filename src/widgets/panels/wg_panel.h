@@ -50,20 +50,20 @@ typedef	WgHookTypePtr<WgPanelHook,WgHookPtr>	WgPanelHookPtr;
 class WgPanelHook : public WgHook
 {
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPanelHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgPanelHookPtr	cast( const WgHookPtr& pInterface );
 
-	WgPanelHookPtr	Prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
-	WgPanelHookPtr	Next() const { return static_cast<WgPanelHook*>(_nextHook()); }
-	WgPanelPtr		Parent() const;
+	WgPanelHookPtr	prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
+	WgPanelHookPtr	next() const { return static_cast<WgPanelHook*>(_nextHook()); }
+	WgPanelPtr		parent() const;
 
-	virtual bool	SetVisible( bool bVisible );
-	bool			IsVisible() { return m_bVisible; }
+	virtual bool	setVisible( bool bVisible );
+	bool			isVisible() { return m_bVisible; }
 
-	virtual bool	SetPadding( WgBorder padding );
-	WgBorder		Padding() const { return m_padding; }
+	virtual bool	setPadding( WgBorder padding );
+	WgBorder		padding() const { return m_padding; }
 
 protected:
 	WgPanelHook() : m_bVisible(true) {}
@@ -93,22 +93,22 @@ protected:
 class WgPanel : public WgContainer
 {
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPanelPtr	Cast( const WgObjectPtr& pObject );
+	static WgPanelPtr	cast( const WgObjectPtr& pObject );
 
-	void		SetFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
-	bool		IsFocusGroup() const { return m_bFocusGroup; }
+	void		setFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
+	bool		isFocusGroup() const { return m_bFocusGroup; }
 
-	void		SetTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
-	bool		IsTooltipGroup() const { return m_bTooltipGroup; }
+	void		setTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
+	bool		isTooltipGroup() const { return m_bTooltipGroup; }
 
-	void		SetMaskOp( WgMaskOp operation );
-	WgMaskOp	MaskOp() const { return m_maskOp; }
+	void		setMaskOp( WgMaskOp operation );
+	WgMaskOp	maskOp() const { return m_maskOp; }
 
-	inline WgPanelHookPtr	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
-	inline WgPanelHookPtr	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
+	inline WgPanelHookPtr	firstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
+	inline WgPanelHookPtr	lastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
 	// Overloaded from WgIWidgets
 

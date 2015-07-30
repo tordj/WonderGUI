@@ -40,36 +40,36 @@ WgCaret2::WgCaret2()
 	m_bNeedToRender = false;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgCaret2::IsInstanceOf( const char * pClassName ) const
+bool WgCaret2::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgCaret2::ClassName( void ) const
+const char * WgCaret2::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgCaret2Ptr WgCaret2::Cast( const WgObjectPtr& pObject )
+WgCaret2Ptr WgCaret2::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCaret2Ptr( static_cast<WgCaret2*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgCaret2Ptr( static_cast<WgCaret2*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetGlyph() ______________________________________________________________
+//____ setGlyph() ______________________________________________________________
 
-void WgCaret2::SetGlyph( Uint16 glyph, int size, int advance, int ascend, int descend )
+void WgCaret2::setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend )
 {
 	m_glyph = glyph;
 	m_glyphSize = size;
@@ -81,9 +81,9 @@ void WgCaret2::SetGlyph( Uint16 glyph, int size, int advance, int ascend, int de
 	m_bNeedToRender = true;
 }
 
-//____ SetMode() _______________________________________________________________
+//____ setMode() _______________________________________________________________
 
-void WgCaret2::SetMode( WgCaretMode mode )
+void WgCaret2::setMode( WgCaretMode mode )
 {
 	if( mode != m_mode )
 	{
@@ -93,16 +93,16 @@ void WgCaret2::SetMode( WgCaretMode mode )
 	}
 }
 
-//____ EOLWidth() ______________________________________________________________
+//____ eolWidth() ______________________________________________________________
 
-int WgCaret2::EOLWidth( int size, int advance, int ascend, int descend ) const
+int WgCaret2::eolWidth( int size, int advance, int ascend, int descend ) const
 {
 	return WgMax( 1, size / 8);
 }
 
-//____ Tick() __________________________________________________________________
+//____ tick() __________________________________________________________________
 
-void WgCaret2::Tick( int ms )
+void WgCaret2::tick( int ms )
 {
 	int halfCycle = m_cycleLength / 2;
 	int oldBlink = m_ticks / halfCycle;
@@ -114,9 +114,9 @@ void WgCaret2::Tick( int ms )
 		m_bNeedToRender = true;
 }
 
-//____ DirtyRect() _____________________________________________________________
+//____ dirtyRect() _____________________________________________________________
 
-WgRect WgCaret2::DirtyRect( WgCoord pos ) const
+WgRect WgCaret2::dirtyRect( WgCoord pos ) const
 {
 	switch( m_mode )
 	{
@@ -129,17 +129,17 @@ WgRect WgCaret2::DirtyRect( WgCoord pos ) const
 	}
 }
 
-//____ Render() ________________________________________________________________
+//____ render() ________________________________________________________________
 
-void WgCaret2::Render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip )
+void WgCaret2::render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip )
 {
 	if( m_ticks < m_cycleLength / 2 )
 	{
-		WgRect r = DirtyRect(pos);
-		WgBlendMode oldMode = pDevice->GetBlendMode();
-		pDevice->SetBlendMode(WG_BLENDMODE_INVERT);
-		pDevice->Fill( WgRect(r,clip), WgColor::black );
-		pDevice->SetBlendMode(oldMode);
+		WgRect r = dirtyRect(pos);
+		WgBlendMode oldMode = pDevice->getBlendMode();
+		pDevice->setBlendMode(WG_BLENDMODE_INVERT);
+		pDevice->fill( WgRect(r,clip), WgColor::black );
+		pDevice->setBlendMode(oldMode);
 	}
 }
 

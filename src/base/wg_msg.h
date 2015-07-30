@@ -286,31 +286,31 @@ class WgMsg : public WgObject
 
 	public:
 
-		bool				IsInstanceOf( const char * pClassName ) const;
-		const char *		ClassName( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgMsgPtr	Cast( const WgObjectPtr& pObject );
+		static WgMsgPtr	cast( const WgObjectPtr& pObject );
 
-		WgMsgType			Type() const { return m_type; }
-		int64_t				Timestamp() const { return m_timestamp; }
-		bool				HasSource() const { return m_pSource; } 
-		WgObject *			SourceRawPtr() const { return m_pSource.RawPtr(); }
-		WgObjectWeakPtr		Source() const { return m_pSource; } 
-		WgModifierKeys		ModKeys() const { return m_modKeys; }
-		WgCoord				PointerPos() const { return m_pointerPos; }
+		WgMsgType			type() const { return m_type; }
+		int64_t				timestamp() const { return m_timestamp; }
+		bool				hasSource() const { return m_pSource; } 
+		WgObject *			sourceRawPtr() const { return m_pSource.rawPtr(); }
+		WgObjectWeakPtr		source() const { return m_pSource; } 
+		WgModifierKeys		modKeys() const { return m_modKeys; }
+		WgCoord				pointerPos() const { return m_pointerPos; }
 			
-		bool				IsMouseMsg() const;
-		bool				IsMouseButtonMsg() const;
-		bool				IsKeyMsg() const;
+		bool				isMouseMsg() const;
+		bool				isMouseButtonMsg() const;
+		bool				isKeyMsg() const;
 
-		bool				HasCopyTo() { return m_pCopyTo; }
-		WgReceiverPtr		GetCopyTo() { return m_pCopyTo; }
-		bool				HasRepost() { return m_pRepostSource; }
+		bool				hasCopyTo() { return m_pCopyTo; }
+		WgReceiverPtr		getCopyTo() { return m_pCopyTo; }
+		bool				hasRepost() { return m_pRepostSource; }
 
-		void				SetCopyTo( const WgReceiverPtr& pReceiver );
-		void				SetRepost( const WgObjectPtr& pSource, const WgReceiverPtr& pCopyTo );
-		void				Swallow();
-		bool				DoRepost();
+		void				setCopyTo( const WgReceiverPtr& pReceiver );
+		void				setRepost( const WgObjectPtr& pSource, const WgReceiverPtr& pCopyTo );
+		void				swallow();
+		bool				doRepost();
 
 	protected:
 		WgMsg() : m_type(WG_MSG_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0) {}
@@ -338,12 +338,12 @@ class WgMouseButtonMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseButtonMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseButtonMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgMouseButton		Button() const { return m_button; }
+	WgMouseButton		button() const { return m_button; }
 protected:
 	WgMouseButtonMsg(WgMouseButton button) : m_button(button) {}
 
@@ -362,15 +362,15 @@ class WgKeyMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgKeyMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int		NativeKeyCode() const { return m_nativeKeyCode; }
-	int		TranslatedKeyCode() const { return m_translatedKeyCode; }
-	bool	IsCursorKey() const;
-	bool	IsMovementKey() const;
+	int		nativeKeyCode() const { return m_nativeKeyCode; }
+	int		translatedKeyCode() const { return m_translatedKeyCode; }
+	bool	isCursorKey() const;
+	bool	isMovementKey() const;
 protected:
 	WgKeyMsg( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
 
@@ -385,12 +385,12 @@ class WgFocusGainedMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgFocusGainedMsgPtr	Create() { return new WgFocusGainedMsg(); }
+	static WgFocusGainedMsgPtr	create() { return new WgFocusGainedMsg(); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFocusGainedMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgFocusGainedMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgFocusGainedMsg();
 };
@@ -402,12 +402,12 @@ class WgFocusLostMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgFocusLostMsgPtr	Create() { return new WgFocusLostMsg(); }
+	static WgFocusLostMsgPtr	create() { return new WgFocusLostMsg(); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFocusLostMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgFocusLostMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgFocusLostMsg();
 };
@@ -419,12 +419,12 @@ class WgMouseEnterMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseEnterMsgPtr			Create( const WgCoord& pos ) { return new WgMouseEnterMsg(pos); }
+	static WgMouseEnterMsgPtr			create( const WgCoord& pos ) { return new WgMouseEnterMsg(pos); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseEnterMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseEnterMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgMouseEnterMsg( const WgCoord& pos );
 	WgMouseEnterMsg( WgWidget * pWidget );
@@ -437,12 +437,12 @@ class WgMouseLeaveMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseLeaveMsgPtr			Create() { return new WgMouseLeaveMsg(); }
+	static WgMouseLeaveMsgPtr			create() { return new WgMouseLeaveMsg(); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseLeaveMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseLeaveMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgMouseLeaveMsg();
 	WgMouseLeaveMsg( WgWidget * pWidget );
@@ -455,12 +455,12 @@ class WgMouseMoveMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseMoveMsgPtr			Create( const WgCoord& pos ) { return new WgMouseMoveMsg(pos); }
+	static WgMouseMoveMsgPtr			create( const WgCoord& pos ) { return new WgMouseMoveMsg(pos); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseMoveMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseMoveMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgMouseMoveMsg( WgWidget * pWidget );
 	WgMouseMoveMsg( const WgCoord& pos );
@@ -473,12 +473,12 @@ class WgMousePressMsg : public WgMouseButtonMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMousePressMsgPtr			Create( WgMouseButton button ) { return new WgMousePressMsg(button); }
+	static WgMousePressMsgPtr			create( WgMouseButton button ) { return new WgMousePressMsg(button); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMousePressMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMousePressMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgMousePressMsg( WgMouseButton button, WgWidget * pWidget );
 	WgMousePressMsg( WgMouseButton button );
@@ -491,15 +491,15 @@ class WgMouseReleaseMsg : public WgMouseButtonMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseReleaseMsgPtr		Create( WgMouseButton button ) { return new WgMouseReleaseMsg(button); }
+	static WgMouseReleaseMsgPtr		create( WgMouseButton button ) { return new WgMouseReleaseMsg(button); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseReleaseMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseReleaseMsgPtr	cast( const WgObjectPtr& pObject );
 
-	bool			PressInside() const;
-	bool			ReleaseInside() const;
+	bool			pressInside() const;
+	bool			releaseInside() const;
 
 protected:
 	WgMouseReleaseMsg( WgMouseButton button );
@@ -516,12 +516,12 @@ class WgKeyPressMsg : public WgKeyMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgKeyPressMsgPtr			Create( int native_keycode ) { return new WgKeyPressMsg(native_keycode); }
+	static WgKeyPressMsgPtr			create( int native_keycode ) { return new WgKeyPressMsg(native_keycode); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyPressMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgKeyPressMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgKeyPressMsg( int native_keycode );
 	WgKeyPressMsg( int native_keycode, WgWidget * pWidget );
@@ -534,12 +534,12 @@ class WgKeyReleaseMsg : public WgKeyMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgKeyReleaseMsgPtr			Create( int native_keycode ) { return new WgKeyReleaseMsg(native_keycode); }
+	static WgKeyReleaseMsgPtr			create( int native_keycode ) { return new WgKeyReleaseMsg(native_keycode); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyReleaseMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgKeyReleaseMsgPtr	cast( const WgObjectPtr& pObject );
 protected:
 	WgKeyReleaseMsg( int native_keycode );
 	WgKeyReleaseMsg( int native_keycode, WgWidget * pWidget );
@@ -552,14 +552,14 @@ class WgCharacterMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgCharacterMsgPtr			Create( unsigned short character ) { return new WgCharacterMsg(character); }
+	static WgCharacterMsgPtr			create( unsigned short character ) { return new WgCharacterMsg(character); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCharacterMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgCharacterMsgPtr	cast( const WgObjectPtr& pObject );
 
-	unsigned short	Char() const;
+	unsigned short	character() const;
 protected:
 	WgCharacterMsg( unsigned short character );
 	WgCharacterMsg( unsigned short character, WgWidget * pWidget );
@@ -574,15 +574,15 @@ class WgWheelRollMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgWheelRollMsgPtr			Create( int wheel, int distance ) { return new WgWheelRollMsg(wheel,distance); }
+	static WgWheelRollMsgPtr			create( int wheel, int distance ) { return new WgWheelRollMsg(wheel,distance); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgWheelRollMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgWheelRollMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int			Wheel() const;
-	int			Distance() const;
+	int			wheel() const;
+	int			distance() const;
 protected:
 	WgWheelRollMsg( int wheel, int distance );
 	WgWheelRollMsg( int wheel, int distance, WgWidget * pWidget );
@@ -598,14 +598,14 @@ class WgTickMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgTickMsgPtr				Create( int ms ) { return new WgTickMsg(ms); }
+	static WgTickMsgPtr				create( int ms ) { return new WgTickMsg(ms); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTickMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgTickMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int				Millisec() const;
+	int				millisec() const;
 protected:
 	WgTickMsg( int ms );
 	WgTickMsg( int ms, WgReceiver * pReceiver );
@@ -620,12 +620,12 @@ class WgPointerChangeMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPointerChangeMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgPointerChangeMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgPointerStyle	Style() const;
+	WgPointerStyle	style() const;
 		
 protected:
 	WgPointerChangeMsg( WgPointerStyle style );
@@ -641,10 +641,10 @@ class WgSelectMsg : public WgMsg
 public:
 	WgSelectMsg( WgObject * pSource );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSelectMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgSelectMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 //____ WgToggleMsg ___________________________________________________________
@@ -654,12 +654,12 @@ class WgToggleMsg : public WgMsg
 public:
 	WgToggleMsg( WgObject * pSource, bool bSet );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgToggleMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgToggleMsgPtr	cast( const WgObjectPtr& pObject );
 
-	bool		IsSet() const;
+	bool		isSet() const;
 
 private:
 	bool	m_bSet;
@@ -672,14 +672,14 @@ class WgValueUpdateMsg : public WgMsg
 public:
 	WgValueUpdateMsg( WgObject * pSource, int64_t value, double fraction, bool bFinal );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueUpdateMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgValueUpdateMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int64_t		Value() const;
-	double		Fraction() const;
-	bool		IsFinal() const;
+	int64_t		value() const;
+	double		fraction() const;
+	bool		isFinal() const;
 
 protected:
 	int64_t		m_value;
@@ -694,16 +694,16 @@ class WgRangeUpdateMsg : public WgMsg
 public:
 	WgRangeUpdateMsg( WgObject * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ); 
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRangeUpdateMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgRangeUpdateMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int			Offset() const;
-	int			Length() const;
-	double		FracOffset() const;
-	double		FracLength() const;
-	bool		IsFinal() const;
+	int			offset() const;
+	int			length() const;
+	double		fracOffset() const;
+	double		fracLength() const;
+	bool		isFinal() const;
 
 	int			m_ofs;
 	int			m_length;
@@ -719,13 +719,13 @@ class WgTextEditMsg : public WgMsg
 public:
 	WgTextEditMsg( const WgEditTextPtr& pText, bool bFinal );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextEditMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgTextEditMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgEditTextPtr		Text() const;
-	bool				IsFinal() const;
+	WgEditTextPtr		text() const;
+	bool				isFinal() const;
 
 protected:
 	WgEditTextPtr		m_pText;
@@ -750,13 +750,13 @@ public:
 class WgItemMsg : public WgMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int				ItemId() const;
-	WgObjectPtr		ItemObject() const;
+	int				itemId() const;
+	WgObjectPtr		itemObject() const;
 
 protected:
 	WgItemMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject );
@@ -769,12 +769,12 @@ protected:
 class WgItemToggleMsg : public WgItemMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemToggleMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemToggleMsgPtr	cast( const WgObjectPtr& pObject );
 
-	bool		IsSet() const;
+	bool		isSet() const;
 
 //protected:
 	WgItemToggleMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, bool bSet );
@@ -787,12 +787,12 @@ public:
 class WgItemMousePressMsg : public WgItemMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemMousePressMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemMousePressMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgMouseButton		Button() const;
+	WgMouseButton		button() const;
 //protected:
 	WgItemMousePressMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button );
 
@@ -805,13 +805,13 @@ public:
 class WgItemListMsg : public WgMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemListMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemListMsgPtr	cast( const WgObjectPtr& pObject );
 
-	int					NbItems() const;
-	const WgItemInfo *	Items() const;
+	int					nbItems() const;
+	const WgItemInfo *	items() const;
 
 protected:
 	WgItemListMsg( WgObject * pSource, int nbItems, WgItemInfo * pItems );
@@ -828,10 +828,10 @@ class WgItemsSelectMsg : public WgItemListMsg
 public:
 	WgItemsSelectMsg( WgObject * pSource, int nbItems, WgItemInfo * pItems );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemsSelectMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemsSelectMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 //____ WgItemsUnselectMsg _____________________________________________________
@@ -841,10 +841,10 @@ class WgItemsUnselectMsg : public WgItemListMsg
 public:
 	WgItemsUnselectMsg( WgObject * pSource, int nbItems, WgItemInfo * pItems );
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemsUnselectMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgItemsUnselectMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 //____ WgPopupClosedMsg ______________________________________________________
@@ -853,10 +853,10 @@ class WgPopupClosedMsg : public WgMsg
 {
 	friend class WgPopupLayer;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPopupClosedMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgPopupClosedMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgPopupClosedMsg( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller );
@@ -869,10 +869,10 @@ class WgModalMoveOutsideMsg : public WgMsg
 {
 	friend class WgModalLayer;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalMoveOutsideMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgModalMoveOutsideMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgModalMoveOutsideMsg( WgWidget * pWidget );
@@ -882,10 +882,10 @@ class WgModalBlockedPressMsg : public WgMouseButtonMsg
 {
 	friend class WgModalLayer;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalBlockedPressMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgModalBlockedPressMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgModalBlockedPressMsg( WgMouseButton button, WgWidget * pModalWidget );
@@ -895,10 +895,10 @@ class WgModalBlockedReleaseMsg : public WgMouseButtonMsg
 {
 	friend class WgModalLayer;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalBlockedReleaseMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgModalBlockedReleaseMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgModalBlockedReleaseMsg( WgMouseButton button, WgWidget * pModalWidget );
@@ -909,19 +909,19 @@ protected:
 class WgLinkMsg : public WgMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 class WgLinkSelectMsg : public WgLinkMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkSelectMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkSelectMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkSelectMsg( const WgTextLinkPtr& pLink );
 };
@@ -930,10 +930,10 @@ public:
 class WgLinkMouseEnterMsg : public WgLinkMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseEnterMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseEnterMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseEnterMsg( const WgTextLinkPtr& pLink );
 };
@@ -941,10 +941,10 @@ public:
 class WgLinkMouseLeaveMsg : public WgLinkMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseLeaveMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseLeaveMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseLeaveMsg(  const WgTextLinkPtr& pLink );
 };
@@ -952,12 +952,12 @@ public:
 class WgLinkMouseButtonMsg : public WgLinkMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseButtonMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseButtonMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgMouseButton		Button() const;
+	WgMouseButton		button() const;
 protected:
 	WgMouseButton		m_button;
 };
@@ -965,10 +965,10 @@ protected:
 class WgLinkMousePressMsg : public WgLinkMouseButtonMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMousePressMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMousePressMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMousePressMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
 };
@@ -976,10 +976,10 @@ public:
 class WgLinkMouseRepeatMsg : public WgLinkMouseButtonMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseRepeatMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseRepeatMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseRepeatMsg( const WgTextLinkPtr& pLink, WgMouseButton button );
 };
@@ -987,10 +987,10 @@ public:
 class WgLinkMouseReleaseMsg : public WgLinkMouseButtonMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseReleaseMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseReleaseMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseReleaseMsg( const WgTextLinkPtr& pLink, WgMouseButton button );
 };
@@ -998,10 +998,10 @@ public:
 class WgLinkMouseClickMsg : public WgLinkMouseButtonMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseClickMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseClickMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseClickMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
 };
@@ -1009,10 +1009,10 @@ public:
 class WgLinkMouseDoubleClickMsg : public WgLinkMouseButtonMsg
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseDoubleClickMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgLinkMouseDoubleClickMsgPtr	cast( const WgObjectPtr& pObject );
 
 	WgLinkMouseDoubleClickMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
 };
@@ -1023,10 +1023,10 @@ class WgMousePositionMsg : public WgMsg
 {
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMousePositionMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMousePositionMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgMousePositionMsg();
@@ -1040,16 +1040,16 @@ protected:
 	WgMouseDragMsg( WgMouseButton button, const WgCoord& startPos, const WgCoord& prevPos, const WgCoord& currPos );
 	WgMouseDragMsg( WgMouseButton button, WgWidget * pWidget, const WgCoord& orgPos, const WgCoord& prevPos, const WgCoord& currPos );
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseDragMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseDragMsgPtr	cast( const WgObjectPtr& pObject );
 
-	WgCoord			DraggedTotal() const;
-	WgCoord			DraggedNow() const;
-	WgCoord			StartPos() const;
-	WgCoord			PrevPos() const;
-	WgCoord			CurrPos() const;
+	WgCoord			draggedTotal() const;
+	WgCoord			draggedNow() const;
+	WgCoord			startPos() const;
+	WgCoord			prevPos() const;
+	WgCoord			currPos() const;
 protected:
 	WgCoord			m_startPos;
 	WgCoord			m_prevPos;
@@ -1064,10 +1064,10 @@ protected:
 	WgMouseRepeatMsg( WgMouseButton button, WgWidget * pWidget );
 	WgMouseRepeatMsg( WgMouseButton button );
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseRepeatMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseRepeatMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 class WgMouseClickMsg : public WgMouseButtonMsg
@@ -1078,10 +1078,10 @@ protected:
 	WgMouseClickMsg( WgMouseButton button );
 	WgMouseClickMsg( WgMouseButton button, WgWidget * pWidget );
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseClickMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseClickMsgPtr	cast( const WgObjectPtr& pObject );
 };
 
 class WgMouseDoubleClickMsg : public WgMouseButtonMsg
@@ -1089,10 +1089,10 @@ class WgMouseDoubleClickMsg : public WgMouseButtonMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseDoubleClickMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgMouseDoubleClickMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgMouseDoubleClickMsg( WgMouseButton button );
@@ -1104,10 +1104,10 @@ class WgKeyRepeatMsg : public WgKeyMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyRepeatMsgPtr	Cast( const WgObjectPtr& pObject );
+	static WgKeyRepeatMsgPtr	cast( const WgObjectPtr& pObject );
 
 protected:
 	WgKeyRepeatMsg( int native_keycode );

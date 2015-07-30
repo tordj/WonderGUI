@@ -52,32 +52,32 @@ WgRefreshButton::WgRefreshButton() : m_refreshText(this), refreshText(&m_refresh
 WgRefreshButton::~WgRefreshButton()
 {
 	if( m_tickRouteId )
-		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+		WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgRefreshButton::IsInstanceOf( const char * pClassName ) const
+bool WgRefreshButton::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgButton::IsInstanceOf(pClassName);
+	return WgButton::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgRefreshButton::ClassName( void ) const
+const char * WgRefreshButton::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgRefreshButtonPtr WgRefreshButton::Cast( const WgObjectPtr& pObject )
+WgRefreshButtonPtr WgRefreshButton::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -123,8 +123,8 @@ void WgRefreshButton::StartRefresh()
 		m_bStopping = false;
 		m_refreshProgress = 0.f;
 		m_animTimer = 0;
-		m_pRefreshAnim->SetPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
-		m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
+		m_pRefreshAnim->setPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
+		m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
 		_requestRender();
 	}
 }
@@ -132,11 +132,11 @@ void WgRefreshButton::StartRefresh()
 //_____________________________________________________________________________
 void WgRefreshButton::StopRefresh()
 {
-	if( m_pRefreshAnim && m_pRefreshAnim->DurationScaled())
+	if( m_pRefreshAnim && m_pRefreshAnim->durationScaled())
 	{
 		m_bStopping = true;
-		m_animTimer = m_animTimer % m_pRefreshAnim->DurationScaled();	// So it doesn't stop immmediately.
-		m_pRefreshAnim->SetPlayMode( WG_FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
+		m_animTimer = m_animTimer % m_pRefreshAnim->durationScaled();	// So it doesn't stop immmediately.
+		m_pRefreshAnim->setPlayMode( WG_FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
 	}
 	else
 	{
@@ -149,7 +149,7 @@ void WgRefreshButton::StopRefreshNow()
 {
 	m_refreshProgress = 1.f;
 	m_bRefreshing = false;
-	WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+	WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 	m_tickRouteId = 0;
 	_requestRender();
 }
@@ -163,9 +163,9 @@ void WgRefreshButton::SetRefreshProgress( float fraction )
 
 		if( m_pRefreshAnim )
 		{
-			WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-			m_animTimer = (Uint32) (fraction * m_pRefreshAnim->Duration());
-			WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+			WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
+			m_animTimer = (Uint32) (fraction * m_pRefreshAnim->duration());
+			WgGfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
 			if( pOldFrame != pNewFrame )
 				_requestRender();
@@ -181,8 +181,8 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 {
 	Uint32 w = size.w;
 
-	WgSize contentSize = m_pSkin ? size - m_pSkin->ContentPadding() : size;
-	m_refreshText.OnNewSize(contentSize);
+	WgSize contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
+	m_refreshText.onNewSize(contentSize);
 
 	WgButton::_onNewSize( size );
 }
@@ -194,7 +194,7 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 {
 	WgButton::_onMsg( pMsg );
 
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_TICK:
 		{
@@ -202,11 +202,11 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 			{
 				if( m_refreshMode != PROGRESS )
 				{
-					WgTickMsgPtr pTick = WgTickMsg::Cast(pMsg);
+					WgTickMsgPtr pTick = WgTickMsg::cast(pMsg);
 
-					WgGfxFrame * pOldFrame = m_pRefreshAnim->GetFrame( m_animTimer );
-					m_animTimer += pTick->Millisec();
-					WgGfxFrame * pNewFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+					WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
+					m_animTimer += pTick->millisec();
+					WgGfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
 					// RequestRender if animation has moved.
 
@@ -215,11 +215,11 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 
 					// Check if animation has ended.
 
-					if( m_bStopping && pNewFrame == m_pRefreshAnim->GetLastFrame() )		//UGLY! Change when we have updated WgAnim!
+					if( m_bStopping && pNewFrame == m_pRefreshAnim->getLastFrame() )		//UGLY! Change when we have updated WgAnim!
 					{
 						m_bRefreshing = false;
 						m_bStopping = false;
-						WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+						WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 						m_tickRouteId = 0;
 						_requestRender();
 					}
@@ -230,9 +230,9 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_KEY_RELEASE:
 		{
-			WgKeyReleaseMsgPtr pKeyRelease = WgKeyReleaseMsg::Cast(pMsg);
+			WgKeyReleaseMsgPtr pKeyRelease = WgKeyReleaseMsg::cast(pMsg);
 
-			if( m_bAutoRefresh && pKeyRelease->TranslatedKeyCode() == WG_KEY_RETURN )
+			if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == WG_KEY_RETURN )
 				StartRefresh();
 
 			break;
@@ -240,9 +240,9 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pBtnRelease = WgMouseReleaseMsg::Cast(pMsg);
+			WgMouseReleaseMsgPtr pBtnRelease = WgMouseReleaseMsg::cast(pMsg);
 
-			if( m_bAutoRefresh && m_bPressed && pBtnRelease->Button() == WG_BUTTON_LEFT )
+			if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == WG_BUTTON_LEFT )
 				StartRefresh();
 
 			break;
@@ -262,7 +262,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 	if( m_bRefreshing && m_pRefreshAnim && m_animTarget != ICON )
 	{
-		WgGfxFrame * pAnimFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+		WgGfxFrame * pAnimFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
 		switch( m_animTarget )
 		{
@@ -270,9 +270,9 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 			{
 				WgRect dest = (	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
 								_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
-								pAnimFrame->rect.Size() );
+								pAnimFrame->rect.size() );
 
-				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, 
+				pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, 
 										  (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
 										  (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, false );
 			}
@@ -280,7 +280,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
+				pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
 										  (float) _canvas.x, (float) _canvas.y, (float) _canvas.w, (float) _canvas.h, false );
 			}
 			break;
@@ -291,25 +291,25 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	}
 	else if( m_pSkin )
 	{
-		m_pSkin->Render( pDevice, _canvas, m_state, _clip );
+		m_pSkin->render( pDevice, _canvas, m_state, _clip );
 	}
 
 	// Get content rect with displacement.
 
 	WgRect contentRect = _canvas;
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect( _canvas, m_state );
+		contentRect = m_pSkin->contentRect( _canvas, m_state );
 
 	// Get icon and text rect from content rect
 
 	WgSize iconSize;
-	if( !m_icon.IsEmpty() )
-		iconSize = m_icon.Skin()->PreferredSize();
+	if( !m_icon.isEmpty() )
+		iconSize = m_icon.skin()->preferredSize();
 	else if( m_animTarget == ICON && m_pRefreshAnim )
-		iconSize = m_pRefreshAnim->Size();
+		iconSize = m_pRefreshAnim->size();
 
-	WgRect iconRect = m_icon.GetIconRect( contentRect, iconSize );
-	WgRect textRect = m_icon.GetTextRect( contentRect, iconRect );
+	WgRect iconRect = m_icon.getIconRect( contentRect, iconSize );
+	WgRect textRect = m_icon.getTextRect( contentRect, iconRect );
 
 
 	// Render icon or animation
@@ -318,12 +318,12 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	{
 		// Render animation
 
-		WgGfxFrame * pAnimFrame = m_pRefreshAnim->GetFrame( m_animTimer );
+		WgGfxFrame * pAnimFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
-		pDevice->ClipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, iconRect );
+		pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, iconRect );
 	}
-	else if( !m_icon.IsEmpty() )
-		m_icon.Skin()->Render( pDevice, iconRect, m_state, _clip );
+	else if( !m_icon.isEmpty() )
+		m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
 
 	// Print text
 
@@ -334,12 +334,12 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	else
 		pText = &m_text;
 
- 	if( !pText->IsEmpty() )
+ 	if( !pText->isEmpty() )
 	{
-		pText->SetState(m_state);		//TODO: Should be done when state actually is set.
+		pText->setState(m_state);		//TODO: Should be done when state actually is set.
 
 		WgRect clip(textRect,_clip);
-		pText->OnRender(pDevice, textRect, clip );
+		pText->onRender(pDevice, textRect, clip );
 	}
 }
 

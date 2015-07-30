@@ -33,9 +33,9 @@ WgIconField::WgIconField( WgIconHolder * pHolder ) : WgField(pHolder)
 	m_bOverlap		= true;
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-bool WgIconField::Set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorder padding, float scale, bool bOverlap )
+bool WgIconField::set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorder padding, float scale, bool bOverlap )
 {
 	m_pSkin 	= pSkin;
 	m_origo 	= origo;
@@ -47,9 +47,9 @@ bool WgIconField::Set( const WgSkinPtr& pSkin, WgOrigo origo, WgBorder padding, 
 	return true;
 }
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgIconField::Clear()
+void WgIconField::clear()
 {
 	m_pSkin 	= 0;
 	m_origo 	= WG_WEST;
@@ -60,9 +60,9 @@ void WgIconField::Clear()
 	_onResize();
 }
 
-//____ SetScale() _________________________________________________________
+//____ setScale() _________________________________________________________
 
-bool WgIconField::SetScale( float scaleFactor )
+bool WgIconField::setScale( float scaleFactor )
 {
 	if( scaleFactor > 1.f || scaleFactor < 0.f )
 		return false;
@@ -76,9 +76,9 @@ bool WgIconField::SetScale( float scaleFactor )
 	return true;
 }
 
-//____ SetOrigo() ___________________________________________________
+//____ setOrigo() ___________________________________________________
 
-void WgIconField::SetOrigo( WgOrigo origo )
+void WgIconField::setOrigo( WgOrigo origo )
 {
 	if( origo != m_origo )
 	{
@@ -87,9 +87,9 @@ void WgIconField::SetOrigo( WgOrigo origo )
 	}
 }
 
-//____ SetPadding() _______________________________________________________
+//____ setPadding() _______________________________________________________
 
-void WgIconField::SetPadding( WgBorder borders )
+void WgIconField::setPadding( WgBorder borders )
 {
 	if( borders != m_padding )
 	{
@@ -98,9 +98,9 @@ void WgIconField::SetPadding( WgBorder borders )
 	}
 }
 
-//____ SetOverlap() _________________________________________________________
+//____ setOverlap() _________________________________________________________
 
-void WgIconField::SetOverlap( bool bOverlap )
+void WgIconField::setOverlap( bool bOverlap )
 {
 	if( bOverlap != m_bOverlap )
 	{
@@ -109,9 +109,9 @@ void WgIconField::SetOverlap( bool bOverlap )
 	}
 }
 
-//____ SetSkin() ______________________________________________________________
+//____ setSkin() ______________________________________________________________
 
-void WgIconField::SetSkin( const WgSkinPtr& pSkin )
+void WgIconField::setSkin( const WgSkinPtr& pSkin )
 {
 	if( pSkin != m_pSkin )
 	{
@@ -120,22 +120,22 @@ void WgIconField::SetSkin( const WgSkinPtr& pSkin )
 	}
 }
 
-//____ GetIconRect() _________________________________________________________
+//____ getIconRect() _________________________________________________________
 
 /*
 	Gets an icon-rect for the icon excluding borders, relative to upper left corner of content area.
 
 */
 
-WgRect WgIconField::GetIconRect( const WgRect& contentRect ) const
+WgRect WgIconField::getIconRect( const WgRect& contentRect ) const
 {
 	if( m_pSkin )
-		return GetIconRect(contentRect, m_pSkin->PreferredSize());
+		return getIconRect(contentRect, m_pSkin->preferredSize());
 	else
 		return WgRect();
 }
 
-WgRect WgIconField::GetIconRect( const WgRect& contentRect, const WgSize& iconSize ) const
+WgRect WgIconField::getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const
 {
 	WgRect rect;
 
@@ -144,8 +144,8 @@ WgRect WgIconField::GetIconRect( const WgRect& contentRect, const WgSize& iconSi
 
 	if( w > 0 && h > 0 )
 	{
-		int bgW = contentRect.w - m_padding.Width();
-		int bgH = contentRect.h - m_padding.Height();
+		int bgW = contentRect.w - m_padding.width();
+		int bgH = contentRect.h - m_padding.height();
 
 		if( m_scale != 0.f )
 		{
@@ -163,11 +163,11 @@ WgRect WgIconField::GetIconRect( const WgRect& contentRect, const WgSize& iconSi
 
 		// 
 
-		w += m_padding.Width();
-		h += m_padding.Height();
+		w += m_padding.width();
+		h += m_padding.height();
 
-		rect = WgUtil::OrigoToRect( m_origo, contentRect.Size(), WgSize(w,h) );
-		rect += contentRect.Pos();
+		rect = WgUtil::origoToRect( m_origo, contentRect.size(), WgSize(w,h) );
+		rect += contentRect.pos();
 		rect -= m_padding;
 	}
 
@@ -176,9 +176,9 @@ WgRect WgIconField::GetIconRect( const WgRect& contentRect, const WgSize& iconSi
 
 
 
-//____ GetTextRect() _____________________________________________________
+//____ getTextRect() _____________________________________________________
 
-WgRect WgIconField::GetTextRect( const WgRect& contentRect, const WgRect& iconRect ) const
+WgRect WgIconField::getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const
 {
 	WgRect textRect = contentRect;
 
@@ -230,9 +230,9 @@ WgRect WgIconField::GetTextRect( const WgRect& contentRect, const WgRect& iconRe
 	return textRect;
 }
 
-//____ OnCloneContent() ________________________________________________________
+//____ onCloneContent() ________________________________________________________
 
-void WgIconField::OnCloneContent( const WgIconField * _pOrg )
+void WgIconField::onCloneContent( const WgIconField * _pOrg )
 {
 	m_origo			= _pOrg->m_origo;
 	m_scale			= _pOrg->m_scale;
@@ -241,12 +241,12 @@ void WgIconField::OnCloneContent( const WgIconField * _pOrg )
 	m_pSkin			= _pOrg->m_pSkin;
 }
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 
-WgSize WgIconField::PreferredSize() const
+WgSize WgIconField::preferredSize() const
 {
 	if( m_pSkin )
-		return m_pSkin->PreferredSize() + m_padding;
+		return m_pSkin->preferredSize() + m_padding;
 
 	return WgSize();
 }

@@ -82,8 +82,8 @@ WgCharBuffer& WgCharBuffer::operator=( WgString const & r)
 
 WgCharBuffer& WgCharBuffer::operator=( WgCharSeq const & seq)
 {
-	Reset(seq.Length());
-	PushBack(seq);
+	reset(seq.length());
+	pushBack(seq);
 }
 
 
@@ -100,11 +100,11 @@ void WgCharBuffer::_clearCharsNoDeref( int ofs, int n )
 }
 
 
-//____ Trim() __________________________________________________________________
+//____ trim() __________________________________________________________________
 //
 /// @brief Trims down the buffer to the size of the content, thus removing any extra capacity.
 
-void WgCharBuffer::Trim()
+void WgCharBuffer::trim()
 {
 	// See if we don't have to do anything...
 
@@ -116,19 +116,19 @@ void WgCharBuffer::Trim()
 	_reshapeBuffer(0,0,m_pHead->m_len,0);
 }
 
-//____ TrimWhiteSpace() _______________________________________________________
+//____ trimWhiteSpace() _______________________________________________________
 //
 /// @brief Removes white spaces from the beginning and end of the string
 
-void WgCharBuffer::TrimWhiteSpace()
+void WgCharBuffer::trimWhiteSpace()
 {
 }
 
-//____ Reset() _________________________________________________________________
+//____ reset() _________________________________________________________________
 //
 /// @brief Deletes all content and reallocates the buffer to the specified capacity.
 
-void WgCharBuffer::Reset( int size )
+void WgCharBuffer::reset( int size )
 {
 	if( size < 0 )
 		size = 0;
@@ -203,21 +203,21 @@ void WgCharBuffer::_reshapeBuffer( int begMargin, int copyOfs, int copyLen, int 
 
 
 
-//____ BeginWrite() ____________________________________________________________
+//____ beginWrite() ____________________________________________________________
 //
 /// @brief Gives access to direct manipulation of the buffer content.
 ///
-/// Any attempt to directly read or manipulate the buffer content needs to be enclosed by calls to BeginWrite()
-/// and EndWrite().
+/// Any attempt to directly read or manipulate the buffer content needs to be enclosed by calls to beginWrite()
+/// and endWrite().
 ///
-/// You may NOT call any non-const methods of this buffer until you have called EndWrite() and not write
+/// You may NOT call any non-const methods of this buffer until you have called endWrite() and not write
 /// outside the null-terminated content of the buffer even if you know that there is extra capacity.
-/// If you need to grow the content before manipulation you can use the appropriate PushFront(), PushBack()
-/// or Insert() methods before calling BeginWrite().
+/// If you need to grow the content before manipulation you can use the appropriate pushFront(), pushBack()
+/// or insert() methods before calling beginWrite().
 ///
 /// @return Pointer to the content of the buffer, null-terminated.
 
-WgChar*	WgCharBuffer::BeginWrite()
+WgChar*	WgCharBuffer::beginWrite()
 {
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
@@ -227,16 +227,16 @@ WgChar*	WgCharBuffer::BeginWrite()
 }
 
 
-//____ EndWrite() ______________________________________________________________
+//____ endWrite() ______________________________________________________________
 //
 /// @brief Ends your direct access to the buffer content.
 
-void WgCharBuffer::EndWrite()
+void WgCharBuffer::endWrite()
 {
 	m_pHead->m_lockCnt--;
 }
 
-//____ PopFront() ______________________________________________________________
+//____ popFront() ______________________________________________________________
 //
 /// @brief Shrinks the content by removing characters from the front.
 ///
@@ -247,7 +247,7 @@ void WgCharBuffer::EndWrite()
 ///
 ///	@return Number of characters that was removed from the front of the content.
 
-int WgCharBuffer::PopFront( int nChars )
+int WgCharBuffer::popFront( int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -270,7 +270,7 @@ int WgCharBuffer::PopFront( int nChars )
 	return nChars;
 }
 
-//____ PopBack() _______________________________________________________________
+//____ popBack() _______________________________________________________________
 //
 /// @brief Shrinks the content by removing characters from the back.
 ///
@@ -281,7 +281,7 @@ int WgCharBuffer::PopFront( int nChars )
 ///
 ///	@return Number of characters that was removed from the back of the content.
 
-int WgCharBuffer::PopBack( int nChars )
+int WgCharBuffer::popBack( int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -348,7 +348,7 @@ void WgCharBuffer::_setChars( int ofs, int nChars, Uint32 value )
 		pChar[i] = value;
 }
 
-//____ PushFront() _____________________________________________________________
+//____ pushFront() _____________________________________________________________
 
 /// @brief Grows the content by pushing a character to the front.
 ///
@@ -356,13 +356,13 @@ void WgCharBuffer::_setChars( int ofs, int nChars, Uint32 value )
 ///
 ///	@return Number of characters the content was grown with. Always 1.
 
-int WgCharBuffer::PushFront( const WgChar& character )
+int WgCharBuffer::pushFront( const WgChar& character )
 {
 	_pushFront(1);
 	*((Uint32*)_ptr(0)) = character.all;
 
 	if( character.properties )
-		WgTextpropManager::IncRef(character.properties, 1 );
+		WgTextpropManager::incRef(character.properties, 1 );
 
 	return 1;
 }
@@ -374,7 +374,7 @@ int WgCharBuffer::PushFront( const WgChar& character )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-int WgCharBuffer::PushFront( int nChars )
+int WgCharBuffer::pushFront( int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -391,7 +391,7 @@ int WgCharBuffer::PushFront( int nChars )
 ///
 ///	@return Number of characters the content was grown with.
 
-int WgCharBuffer::PushFront( const WgChar * pChars )
+int WgCharBuffer::pushFront( const WgChar * pChars )
 {
 	int len = WgTextTool::strlen( pChars );
 
@@ -412,7 +412,7 @@ int WgCharBuffer::PushFront( const WgChar * pChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-int WgCharBuffer::PushFront( const WgChar * pChars, int nChars )
+int WgCharBuffer::pushFront( const WgChar * pChars, int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -431,16 +431,16 @@ int WgCharBuffer::PushFront( const WgChar * pChars, int nChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
-int WgCharBuffer::PushFront( const WgCharSeq& seq )
+int WgCharBuffer::pushFront( const WgCharSeq& seq )
 {
-	int len = seq.Length();
+	int len = seq.length();
 	_pushFront(len);
-	seq.CopyTo((WgChar*)_ptr(0));
+	seq.copyTo((WgChar*)_ptr(0));
 	return len;
 }
 
 
-//____ PushBack() ______________________________________________________________
+//____ pushBack() ______________________________________________________________
 //
 /// @brief Grows the content by pushing a character to the back.
 ///
@@ -448,13 +448,13 @@ int WgCharBuffer::PushFront( const WgCharSeq& seq )
 ///
 ///	@return Number of characters the content was grown with. Always 1.
 
-int WgCharBuffer::PushBack( const WgChar& character )
+int WgCharBuffer::pushBack( const WgChar& character )
 {
 	_pushBack(1);
 	*((Uint32*)_ptr( m_pHead->m_len - 1)) = character.all;
 
 	if( character.properties )
-		WgTextpropManager::IncRef(character.properties, 1 );
+		WgTextpropManager::incRef(character.properties, 1 );
 
 	return 1;
 }
@@ -466,7 +466,7 @@ int WgCharBuffer::PushBack( const WgChar& character )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-int WgCharBuffer::PushBack( int nChars )
+int WgCharBuffer::pushBack( int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -482,7 +482,7 @@ int WgCharBuffer::PushBack( int nChars )
 ///
 ///	@return Number of characters the content was grown with.
 
-int WgCharBuffer::PushBack( const WgChar * pChars )
+int WgCharBuffer::pushBack( const WgChar * pChars )
 {
 	int len = WgTextTool::strlen( pChars );
 
@@ -504,7 +504,7 @@ int WgCharBuffer::PushBack( const WgChar * pChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals nChars.
 
-int WgCharBuffer::PushBack( const WgChar * pChars, int nChars )
+int WgCharBuffer::pushBack( const WgChar * pChars, int nChars )
 {
 	if( nChars <= 0 )
 		return 0;
@@ -523,12 +523,12 @@ int WgCharBuffer::PushBack( const WgChar * pChars, int nChars )
 ///
 ///	@return Number of characters the content was grown with. Always equals length of the sequence.
 
-int WgCharBuffer::PushBack( const WgCharSeq& seq )
+int WgCharBuffer::pushBack( const WgCharSeq& seq )
 {
-	int nChars = seq.Length();
+	int nChars = seq.length();
 	_pushBack(nChars);
 	memset( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars, 0, sizeof(WgChar)*nChars );
-	seq.CopyTo( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars );
+	seq.copyTo( ((WgChar*) _ptr(0)) + m_pHead->m_len-nChars );
 	return nChars;
 }
 
@@ -600,7 +600,7 @@ void WgCharBuffer::_pushBack( int nChars )
 	* ((Uint32*) _ptr(m_pHead->m_len)) = 0;					// Null terminate the string.
 }
 
-//____ Insert() ________________________________________________________________
+//____ insert() ________________________________________________________________
 
 /// @brief Inserts a character.
 ///
@@ -612,7 +612,7 @@ void WgCharBuffer::_pushBack( int nChars )
 ///
 /// @return Number of characters that have been insert.
 
-int WgCharBuffer::Insert( int ofs, const WgChar& character )
+int WgCharBuffer::insert( int ofs, const WgChar& character )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -632,7 +632,7 @@ int WgCharBuffer::Insert( int ofs, const WgChar& character )
 ///
 /// @return Number of characters that have been insert. Always equals nChars.
 
-int WgCharBuffer::Insert( int ofs, int nChars )
+int WgCharBuffer::insert( int ofs, int nChars )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -655,7 +655,7 @@ int WgCharBuffer::Insert( int ofs, int nChars )
 ///
 /// @return Number of characters that have been insert. Always equals 1.
 
-int WgCharBuffer::Insert( int ofs, const WgChar * pChars )
+int WgCharBuffer::insert( int ofs, const WgChar * pChars )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -679,7 +679,7 @@ int WgCharBuffer::Insert( int ofs, const WgChar * pChars )
 ///
 /// @return Number of characters that have been insert. Always equals nChars.
 
-int WgCharBuffer::Insert( int ofs, const WgChar * pChars, int nChars )
+int WgCharBuffer::insert( int ofs, const WgChar * pChars, int nChars )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -701,7 +701,7 @@ int WgCharBuffer::Insert( int ofs, const WgChar * pChars, int nChars )
 ///
 /// @return Number of characters that have been insert. Always equals length of sequence.
 
-int WgCharBuffer::Insert( int ofs, const WgCharSeq& seq )
+int WgCharBuffer::insert( int ofs, const WgCharSeq& seq )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -709,29 +709,29 @@ int WgCharBuffer::Insert( int ofs, const WgCharSeq& seq )
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
-	_replace( ofs, 0, seq.Length() );
-	WgChar * pChars = BeginWrite();
-	seq.CopyTo( pChars+ofs );
-	EndWrite();
-	return seq.Length();
+	_replace( ofs, 0, seq.length() );
+	WgChar * pChars = beginWrite();
+	seq.copyTo( pChars+ofs );
+	endWrite();
+	return seq.length();
 }
 
-//____ Delete() ________________________________________________________________
+//____ remove() ________________________________________________________________
 //
-/// @brief Deletes characters from the buffer.
+/// @brief Removes characters from the buffer.
 ///
 ///
-/// @param ofs		Offset to delete characters from, counting from beginning of buffer content.
+/// @param ofs		Offset to remove characters from, counting from beginning of buffer content.
 ///
-/// @param nChars	Number of characters to delete, counting from ofs. This can be set larger than
-///					number of characters available for deletion in which case all content starting
-///					from ofs is deleted.
+/// @param nChars	Number of characters to remove, counting from ofs. This can be set larger than
+///					number of characters available for removal in which case all content starting
+///					from ofs is removed.
 ///
-/// If ofs is larger than number of characters no characters are deleted.
+/// If ofs is larger than number of characters no characters are removed.
 ///
-/// @return Number of characters that were deleted.
+/// @return Number of characters that were removed.
 
-int WgCharBuffer::Delete( int ofs, int nChars )
+int WgCharBuffer::remove( int ofs, int nChars )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -742,7 +742,7 @@ int WgCharBuffer::Delete( int ofs, int nChars )
 	return _replace( ofs, nChars, 0 );
 }
 
-//____ Replace() _______________________________________________________________
+//____ replace() _______________________________________________________________
 //
 /// @brief Replace a character.
 ///
@@ -754,13 +754,13 @@ int WgCharBuffer::Delete( int ofs, int nChars )
 ///
 /// @return Number of characters that were replaced. Always equals 1.
 
-int WgCharBuffer::Replace( int ofs, const WgChar& character )
+int WgCharBuffer::replace( int ofs, const WgChar& character )
 {
 	if( ofs < 0 )
 		return 0;
 
 	if( ofs >= m_pHead->m_len )
-		PushBack( character );
+		pushBack( character );
 	else
 		*((WgChar*)_ptr(ofs)) = character;
 	return 1;
@@ -781,7 +781,7 @@ int WgCharBuffer::Replace( int ofs, const WgChar& character )
 ///
 /// @return Number of characters that were inserted. Always equals nInsert.
 
-int WgCharBuffer::Replace( int ofs, int nDelete, int nInsert )
+int WgCharBuffer::replace( int ofs, int nDelete, int nInsert )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -812,7 +812,7 @@ int WgCharBuffer::Replace( int ofs, int nDelete, int nInsert )
 ///
 /// @return Number of characters that were inserted.
 
-int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars )
+int WgCharBuffer::replace( int ofs, int nDelete, const WgChar * pChars )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -842,7 +842,7 @@ int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars )
 ///
 /// @return Number of characters that were inserted. Always equals nInsert.
 
-int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars, int nInsert)
+int WgCharBuffer::replace( int ofs, int nDelete, const WgChar * pChars, int nInsert)
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -873,7 +873,7 @@ int WgCharBuffer::Replace( int ofs, int nDelete, const WgChar * pChars, int nIns
 ///
 /// @return Number of characters that were inserted. Always equals length of sequence.
 
-int WgCharBuffer::Replace( int ofs, int nDelete, const WgCharSeq& seq )
+int WgCharBuffer::replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	if( ofs < 0 )
 		ofs = 0;
@@ -883,11 +883,11 @@ int WgCharBuffer::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 	if( ofs > m_pHead->m_len )
 		ofs = m_pHead->m_len;
 
-	_replace( ofs, nDelete, seq.Length() );
-	WgChar * pChars = BeginWrite();
-	seq.CopyTo( pChars+ofs );
-	EndWrite();
-	return seq.Length();
+	_replace( ofs, nDelete, seq.length() );
+	WgChar * pChars = beginWrite();
+	seq.copyTo( pChars+ofs );
+	endWrite();
+	return seq.length();
 }
 
 
@@ -1046,9 +1046,9 @@ bool WgCharBuffer::_compareBuffers( const BufferHead * p1, const BufferHead * p2
 	return false;
 }
 
-//____ CompareTo() ____________________________________________________________
+//____ compareTo() ____________________________________________________________
 
-int WgCharBuffer::CompareTo( const WgCharBuffer * pBuffer )
+int WgCharBuffer::compareTo( const WgCharBuffer * pBuffer )
 {
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
@@ -1056,9 +1056,9 @@ int WgCharBuffer::CompareTo( const WgCharBuffer * pBuffer )
 	return WgTextTool::strcmp( (WgChar*) _ptr(0), (WgChar*) pBuffer->_ptr(0) );
 }
 
-//____ CompareGlyphsTo() ______________________________________________________
+//____ compareGlyphsTo() ______________________________________________________
 
-int WgCharBuffer::CompareGlyphsTo( const WgCharBuffer * pBuffer )
+int WgCharBuffer::compareGlyphsTo( const WgCharBuffer * pBuffer )
 {
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
@@ -1066,9 +1066,9 @@ int WgCharBuffer::CompareGlyphsTo( const WgCharBuffer * pBuffer )
 	return WgTextTool::glyphcmp( (WgChar*) _ptr(0), (WgChar*) pBuffer->_ptr(0) );
 }
 
-//____ CompareGlyphsIgnoreCaseTo() ____________________________________________
+//____ compareGlyphsIgnoreCaseTo() ____________________________________________
 
-int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
+int WgCharBuffer::compareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 {
 	if( m_pHead == pBuffer->m_pHead )
 		return 0;
@@ -1077,7 +1077,7 @@ int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 }
 
 
-//____ Fill() __________________________________________________________________
+//____ fill() __________________________________________________________________
 //
 /// @brief	Fills a section of the buffer with specified character.
 ///
@@ -1088,7 +1088,7 @@ int WgCharBuffer::CompareGlyphsIgnoreCaseTo( const WgCharBuffer * pBuffer )
 /// Fully replaces the content of the specified buffer section by filling it with the specified
 /// character. If the section spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::Fill( const WgChar& ch, int ofs, int len )
+void WgCharBuffer::fill( const WgChar& ch, int ofs, int len )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1099,10 +1099,10 @@ void WgCharBuffer::Fill( const WgChar& ch, int ofs, int len )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetChars( ch, (WgChar*)_ptr(ofs), len );
+	WgTextTool::setChars( ch, (WgChar*)_ptr(ofs), len );
 }
 
-//____ SetGlyphs() _____________________________________________________________
+//____ setGlyphs() _____________________________________________________________
 //
 /// @brief	Sets the glyph for a range of characters.
 ///
@@ -1113,7 +1113,7 @@ void WgCharBuffer::Fill( const WgChar& ch, int ofs, int len )
 /// This method sets the glyph for all characters in the specified range. If the
 /// range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetGlyphs( Uint16 glyph, int ofs, int len )
+void WgCharBuffer::setGlyphs( Uint16 glyph, int ofs, int len )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1124,12 +1124,12 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, int ofs, int len )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetGlyph( glyph, (WgChar*)_ptr(ofs), len );
+	WgTextTool::setGlyph( glyph, (WgChar*)_ptr(ofs), len );
 }
 
 
 
-//___ SetProperties() __________________________________________________________
+//___ setProperties() __________________________________________________________
 //
 /// @brief	Sets the properties for a range of characters.
 ///
@@ -1141,7 +1141,7 @@ void WgCharBuffer::SetGlyphs( Uint16 glyph, int ofs, int len )
 /// properties for the characters, like font, color, style, and underlined.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, int ofs, int len  )
+void WgCharBuffer::setProperties( const WgTextpropPtr& pProp, int ofs, int len  )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1152,10 +1152,10 @@ void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, int ofs, int len  
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::SetProperties( pProp, (WgChar*)_ptr(ofs), len );
+	WgTextTool::setProperties( pProp, (WgChar*)_ptr(ofs), len );
 }
 
-//___ SetColor() _______________________________________________________________
+//___ setColor() _______________________________________________________________
 //
 /// @brief	Sets the color for a range of characters.
 ///
@@ -1169,18 +1169,18 @@ void WgCharBuffer::SetProperties( const WgTextpropPtr& pProp, int ofs, int len  
 /// be tinted when displayed in the specified mode, for all characters in
 /// the specified range. If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetColor( const WgColor color, int ofs, int len, WgState state )
+void WgCharBuffer::setColor( const WgColor color, int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateColorModifier(color,state) );
 }
 
-void WgCharBuffer::SetColor( const WgColor color, int ofs, int len )
+void WgCharBuffer::setColor( const WgColor color, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropColorModifier(color) );
 }
 
 
-//___ SetStyle() _______________________________________________________________
+//___ setStyle() _______________________________________________________________
 //
 /// @brief	Sets the style for a range of characters.
 ///
@@ -1194,18 +1194,18 @@ void WgCharBuffer::SetColor( const WgColor color, int ofs, int len )
 /// displayed in the specified mode or all modes.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetStyle( WgFontAlt style, int ofs, int len, WgState state )
+void WgCharBuffer::setStyle( WgFontAlt style, int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(style,state) );
 }
 
-void WgCharBuffer::SetStyle( WgFontAlt style, int ofs, int len )
+void WgCharBuffer::setStyle( WgFontAlt style, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(style) );
 }
 
 
-//___ SetFont() ________________________________________________________________
+//___ setFont() ________________________________________________________________
 //
 /// @brief	Sets the font for a range of characters.
 ///
@@ -1216,14 +1216,14 @@ void WgCharBuffer::SetStyle( WgFontAlt style, int ofs, int len )
 /// This method sets the font for all characters in the specified range. If the
 /// range spans outside the buffer content it will be adjusted properly.
 ///
-/// Setting pFont to null is identical to calling ClearFont().
+/// Setting pFont to null is identical to calling clearFont().
 
-void WgCharBuffer::SetFont( const WgFontPtr& pFont, int ofs, int len )
+void WgCharBuffer::setFont( const WgFontPtr& pFont, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(pFont) );
 }
 
-//___ SetUnderlined() __________________________________________________________
+//___ setUnderlined() __________________________________________________________
 //
 /// @brief	Sets a range of characters to underlined.
 ///
@@ -1235,17 +1235,17 @@ void WgCharBuffer::SetFont( const WgFontPtr& pFont, int ofs, int len )
 /// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::SetUnderlined( int ofs, int len, WgState state )
+void WgCharBuffer::setUnderlined( int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateUnderlinedModifier(true,state) );
 }
 
-void WgCharBuffer::SetUnderlined( int ofs, int len )
+void WgCharBuffer::setUnderlined( int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropUnderlinedModifier(true) );
 }
 
-//___ ClearProperties() ________________________________________________________
+//___ clearProperties() ________________________________________________________
 //
 /// @brief	Clears the properties for a range of characters.
 ///
@@ -1256,7 +1256,7 @@ void WgCharBuffer::SetUnderlined( int ofs, int len )
 /// By clearing the properties you erase all previous settings of individual
 /// properties for the characters, like font, color, style and underlined.
 
-void WgCharBuffer::ClearProperties( int ofs, int len  )
+void WgCharBuffer::clearProperties( int ofs, int len  )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1267,10 +1267,10 @@ void WgCharBuffer::ClearProperties( int ofs, int len  )
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ClearProperties( (WgChar*)_ptr(ofs), len );
+	WgTextTool::clearProperties( (WgChar*)_ptr(ofs), len );
 }
 
-//___ ClearColor() _____________________________________________________________
+//___ clearColor() _____________________________________________________________
 //
 /// @brief	Clears the color setting for a range of characters.
 ///
@@ -1282,18 +1282,18 @@ void WgCharBuffer::ClearProperties( int ofs, int len  )
 /// This method clears the color-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearColor( int ofs, int len, WgState state )
+void WgCharBuffer::clearColor( int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateColorClearer(state) );
 }
 
-void WgCharBuffer::ClearColor( int ofs, int len )
+void WgCharBuffer::clearColor( int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropColorClearer() );
 }
 
 
-//___ ClearStyle() _____________________________________________________________
+//___ clearStyle() _____________________________________________________________
 //
 /// @brief	Clears the style setting for a range of characters.
 ///
@@ -1305,17 +1305,17 @@ void WgCharBuffer::ClearColor( int ofs, int len )
 /// This method clears the style-property of all characters in the specified range.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearStyle( int ofs, int len, WgState state )
+void WgCharBuffer::clearStyle( int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateStyleModifier(WG_FONT_NORMAL,state) );
 }
 
-void WgCharBuffer::ClearStyle( int ofs, int len )
+void WgCharBuffer::clearStyle( int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStyleModifier(WG_FONT_NORMAL) );
 }
 
-//___ ClearFont() ______________________________________________________________
+//___ clearFont() ______________________________________________________________
 //
 /// @brief	Clears the font for a range of characters.
 ///
@@ -1325,12 +1325,12 @@ void WgCharBuffer::ClearStyle( int ofs, int len )
 /// This method clears the font for all characters in the specified range. If the
 /// range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearFont( int ofs, int len  )
+void WgCharBuffer::clearFont( int ofs, int len  )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(0) );
 }
 
-//___ ClearUnderlined() ________________________________________________________
+//___ clearUnderlined() ________________________________________________________
 //
 /// @brief	Removes underline from a range of characters.
 ///
@@ -1341,12 +1341,12 @@ void WgCharBuffer::ClearFont( int ofs, int len  )
 ///
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::ClearUnderlined( int ofs, int len, WgState state )
+void WgCharBuffer::clearUnderlined( int ofs, int len, WgState state )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropStateUnderlinedModifier(false,state) );
 }
 
-void WgCharBuffer::ClearUnderlined( int ofs, int len )
+void WgCharBuffer::clearUnderlined( int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropUnderlinedModifier(false) );
 }
@@ -1365,10 +1365,10 @@ void WgCharBuffer::_modifyProperties( int ofs, int len, const WgTextTool::PropMo
 	if( m_pHead->m_refCnt > 1 )
 		_reshapeBuffer(0,0,m_pHead->m_len,0);
 
-	WgTextTool::ModifyProperties( modif, (WgChar*)_ptr(ofs), len );
+	WgTextTool::modifyProperties( modif, (WgChar*)_ptr(ofs), len );
 }
 
-//____ FindFirst() ____________________________________________________________
+//____ findFirst() ____________________________________________________________
 //
 /// @brief	Finds the first occurence of the specified character sequence in buffer starting from offset.
 ///
@@ -1380,12 +1380,12 @@ void WgCharBuffer::_modifyProperties( int ofs, int len, const WgTextTool::PropMo
 ///
 /// @return Offset in buffer for first match found or -1 if none found.
 
-int WgCharBuffer::FindFirst( const WgCharSeq& _seq, int ofs )
+int WgCharBuffer::findFirst( const WgCharSeq& _seq, int ofs )
 {
 	if( ofs < 0 )
 		ofs = 0;
 
-	WgCharSeq::WgCharBasket seq		= _seq.GetWgChars();
+	WgCharSeq::WgCharBasket seq		= _seq.getWgChars();
 	WgChar *				pBuff	= (WgChar*)_ptr(0);
 
 	while( ofs + seq.length <= m_pHead->m_len )
@@ -1418,7 +1418,7 @@ int WgCharBuffer::FindFirst( const WgCharSeq& _seq, int ofs )
 ///
 /// @return Offset in buffer for first match found or -1 if none found.
 
-int WgCharBuffer::FindFirst( Uint16 character, int ofs )
+int WgCharBuffer::findFirst( Uint16 character, int ofs )
 {
 	if( ofs < 0 )
 		ofs = 0;

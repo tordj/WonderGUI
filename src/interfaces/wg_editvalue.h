@@ -55,42 +55,42 @@ class WgEditValue : public WgModValue
 public:
 	WgEditValue(WgEditValueField * pField) : WgModValue(pField) {}
 
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgEditValuePtr	Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgEditValuePtr	Ptr() { return WgEditValuePtr(_object(),this); }
+	static WgEditValuePtr	cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgEditValuePtr	ptr() { return WgEditValuePtr(_object(),this); }
 
-	virtual void			SetEditMode(WgTextEditMode mode) = 0;
-	virtual WgTextEditMode	EditMode() const = 0;
+	virtual void			setEditMode(WgTextEditMode mode) = 0;
+	virtual WgTextEditMode	editMode() const = 0;
 
-	virtual bool			IsEditable() const = 0;
-	virtual bool			IsSelectable() const = 0;
+	virtual bool			isEditable() const = 0;
+	virtual bool			isSelectable() const = 0;
 
-	virtual void			SetCursorSkin( const WgCaretPtr& pCursor ) = 0;
-	virtual WgCaretPtr		CursorSkin() const = 0;
+	virtual void			setCursorSkin( const WgCaretPtr& pCursor ) = 0;
+	virtual WgCaretPtr		cursorSkin() const = 0;
 
 	// Calling these methods gets field into edit mode, displaying cursor.
 
-	virtual int				InsertAtCursor( const WgCharSeq& str ) = 0;
-	virtual bool			InsertAtCursor( Uint16 c ) = 0;
+	virtual int				insertAtCursor( const WgCharSeq& str ) = 0;
+	virtual bool			insertAtCursor( Uint16 c ) = 0;
 
-	virtual int				Append( const WgCharSeq& seq ) = 0;
-	virtual int				Insert( int ofs, const WgCharSeq& seq ) = 0;
-	virtual int				Replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
-	virtual int				Delete( int ofs, int len ) = 0;
-	virtual void			DeleteSelected() = 0;
+	virtual int				append( const WgCharSeq& seq ) = 0;
+	virtual int				insert( int ofs, const WgCharSeq& seq ) = 0;
+	virtual int				replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
+	virtual int				remove( int ofs, int len ) = 0;
+	virtual void			deleteSelected() = 0;
 
-	virtual void			Select( int ofs, int len ) = 0;
-	virtual void			SelectAll() = 0;
-	virtual int				SelectionStart() const = 0;
-	virtual int				SelectionLength() const = 0;
-	virtual void			ClearSelection() = 0;
+	virtual void			select( int ofs, int len ) = 0;
+	virtual void			selectAll() = 0;
+	virtual int				selectionStart() const = 0;
+	virtual int				selectionLength() const = 0;
+	virtual void			clearSelection() = 0;
 
-	virtual void			GoBOL() = 0;
-	virtual void			GoEOL() = 0;
-	virtual void			GoBOF() = 0;
-	virtual void			GoEOF() = 0;
+	virtual void			goBol() = 0;
+	virtual void			goEol() = 0;
+	virtual void			goBof() = 0;
+	virtual void			goEof() = 0;
 
 private:
 	inline	WgEditValueField * 	_field() { return static_cast<WgEditValueField*>(m_pField); }

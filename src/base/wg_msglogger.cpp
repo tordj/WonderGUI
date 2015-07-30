@@ -33,8 +33,8 @@ const char WgMsgLogger::CLASSNAME[] = {"MsgLogger"};
 
 WgMsgLogger::WgMsgLogger( std::ostream& stream ) : m_out(stream)
 {
-	LogAllMsgs();
-	IgnoreMsg( WG_MSG_TICK );
+	logAllMsgs();
+	ignoreMsg( WG_MSG_TICK );
 }
 
 //____ Destructor _____________________________________________________________
@@ -43,29 +43,29 @@ WgMsgLogger::~WgMsgLogger()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgMsgLogger::IsInstanceOf( const char * pClassName ) const
+bool WgMsgLogger::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgReceiver::IsInstanceOf(pClassName);
+	return WgReceiver::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgMsgLogger::ClassName( void ) const
+const char * WgMsgLogger::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgMsgLoggerPtr WgMsgLogger::Cast( const WgObjectPtr& pObject )
+WgMsgLoggerPtr WgMsgLogger::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMsgLoggerPtr( static_cast<WgMsgLogger*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMsgLoggerPtr( static_cast<WgMsgLogger*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -73,21 +73,21 @@ WgMsgLoggerPtr WgMsgLogger::Cast( const WgObjectPtr& pObject )
 
 //____ IgnoreMsg ____________________________________________________________
 
-void WgMsgLogger::IgnoreMsg( WgMsgType type )
+void WgMsgLogger::ignoreMsg( WgMsgType type )
 {
 	m_msgFilter[type] = false;
 }
 
 //____ LogMsg _______________________________________________________________
 
-void WgMsgLogger::LogMsg( WgMsgType type )
+void WgMsgLogger::logMsg( WgMsgType type )
 {
 	m_msgFilter[type] = true;
 }
 
 //____ IgnorePointerMsgs ____________________________________________________________
 
-void WgMsgLogger::IgnorePointerMsgs()
+void WgMsgLogger::ignorePointerMsgs()
 {
 	m_msgFilter[WG_MSG_MOUSE_ENTER] = false;
 	m_msgFilter[WG_MSG_MOUSE_MOVE] = false;
@@ -97,7 +97,7 @@ void WgMsgLogger::IgnorePointerMsgs()
 
 //____ LogPointerMsgs _______________________________________________________________
 
-void WgMsgLogger::LogPointerMsgs()
+void WgMsgLogger::logPointerMsgs()
 {
 	m_msgFilter[WG_MSG_MOUSE_ENTER] = true;
 	m_msgFilter[WG_MSG_MOUSE_MOVE] = true;
@@ -108,7 +108,7 @@ void WgMsgLogger::LogPointerMsgs()
 
 //____ IgnoreMouseButtonMsgs ____________________________________________________________
 
-void WgMsgLogger::IgnoreMouseButtonMsgs()
+void WgMsgLogger::ignoreMouseButtonMsgs()
 {
 	m_msgFilter[WG_MSG_MOUSE_PRESS] = false;
 	m_msgFilter[WG_MSG_MOUSE_REPEAT] = false;
@@ -120,7 +120,7 @@ void WgMsgLogger::IgnoreMouseButtonMsgs()
 
 //____ LogMouseButtonMsgs _______________________________________________________________
 
-void WgMsgLogger::LogMouseButtonMsgs()
+void WgMsgLogger::logMouseButtonMsgs()
 {
 	m_msgFilter[WG_MSG_MOUSE_PRESS] = true;
 	m_msgFilter[WG_MSG_MOUSE_REPEAT] = true;
@@ -132,7 +132,7 @@ void WgMsgLogger::LogMouseButtonMsgs()
 
 //____ IgnoreKeyboardMsgs ____________________________________________________________
 
-void WgMsgLogger::IgnoreKeyboardMsgs()
+void WgMsgLogger::ignoreKeyboardMsgs()
 {
 	m_msgFilter[WG_MSG_KEY_PRESS] = false;
 	m_msgFilter[WG_MSG_KEY_REPEAT] = false;
@@ -142,7 +142,7 @@ void WgMsgLogger::IgnoreKeyboardMsgs()
 
 //____ LogKeyboardMsgs _______________________________________________________________
 
-void WgMsgLogger::LogKeyboardMsgs()
+void WgMsgLogger::logKeyboardMsgs()
 {
 	m_msgFilter[WG_MSG_KEY_PRESS] = true;
 	m_msgFilter[WG_MSG_KEY_REPEAT] = true;
@@ -150,39 +150,39 @@ void WgMsgLogger::LogKeyboardMsgs()
 	m_msgFilter[WG_MSG_CHARACTER] = true;
 }
 
-//____ LogMouseMsgs() _______________________________________________________
+//____ logMouseMsgs() _______________________________________________________
 
-void WgMsgLogger::LogMouseMsgs()
+void WgMsgLogger::logMouseMsgs()
 {
-	LogPointerMsgs();
-	LogMouseButtonMsgs();
-	LogMsg( WG_MSG_WHEEL_ROLL );
+	logPointerMsgs();
+	logMouseButtonMsgs();
+	logMsg( WG_MSG_WHEEL_ROLL );
 }
 
-//____ IgnoreMouseMsgs() ____________________________________________________
+//____ ignoreMouseMsgs() ____________________________________________________
 
-void WgMsgLogger::IgnoreMouseMsgs()
+void WgMsgLogger::ignoreMouseMsgs()
 {
-	IgnorePointerMsgs();
-	IgnoreMouseButtonMsgs();
-	IgnoreMsg( WG_MSG_WHEEL_ROLL );
+	ignorePointerMsgs();
+	ignoreMouseButtonMsgs();
+	ignoreMsg( WG_MSG_WHEEL_ROLL );
 }
 
 
-//____ LogInputMsgs() _______________________________________________________
+//____ logInputMsgs() _______________________________________________________
 
-void WgMsgLogger::LogInputMsgs()
+void WgMsgLogger::logInputMsgs()
 {
-	LogMouseMsgs();
-	LogKeyboardMsgs();
+	logMouseMsgs();
+	logKeyboardMsgs();
 }
 
-//____ IgnoreInputMsgs() ____________________________________________________
+//____ ignoreInputMsgs() ____________________________________________________
 
-void WgMsgLogger::IgnoreInputMsgs()
+void WgMsgLogger::ignoreInputMsgs()
 {
-	IgnoreMouseMsgs();
-	IgnoreKeyboardMsgs();
+	ignoreMouseMsgs();
+	ignoreKeyboardMsgs();
 }
 
 
@@ -190,14 +190,14 @@ void WgMsgLogger::IgnoreInputMsgs()
 
 //____ IgnoreAllMsgs ________________________________________________________
 
-void WgMsgLogger::IgnoreAllMsgs()
+void WgMsgLogger::ignoreAllMsgs()
 {
 	for( int i = 0 ; i < WG_MSG_MAX ; i++ )
 		m_msgFilter[i] = false;
 }
 
 //____ LogAllMsgs ___________________________________________________________
-void WgMsgLogger::LogAllMsgs()
+void WgMsgLogger::logAllMsgs()
 {
 	for( int i = 0 ; i < WG_MSG_MAX ; i++ )
 		m_msgFilter[i] = true;
@@ -205,11 +205,11 @@ void WgMsgLogger::LogAllMsgs()
 
 
 
-//____ OnMsg() ______________________________________________________________
+//____ onMsg() ______________________________________________________________
 
-void WgMsgLogger::OnMsg( const WgMsgPtr& _pMsg )
+void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 {
-	if( m_msgFilter[_pMsg->Type()] == false )
+	if( m_msgFilter[_pMsg->type()] == false )
 		return;
 
 	string	timestamp;
@@ -221,17 +221,17 @@ void WgMsgLogger::OnMsg( const WgMsgPtr& _pMsg )
 	char	params[256]; params[0] = 0;			// Msg specific parameters
 
 
-	timestamp = _formatTimestamp( _pMsg->Timestamp() );
+	timestamp = _formatTimestamp( _pMsg->timestamp() );
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 		case WG_MSG_DUMMY:
 			break;
 		case WG_MSG_TICK:
-			sprintf( params, " millisec=%d", WgTickMsg::Cast(_pMsg)->Millisec() );
+			sprintf( params, " millisec=%d", WgTickMsg::cast(_pMsg)->millisec() );
 			break;
 		case WG_MSG_POINTER_CHANGE:
-			sprintf( params, " style=%s", _formatPointerStyle( WgPointerChangeMsg::Cast(_pMsg)).c_str() );
+			sprintf( params, " style=%s", _formatPointerStyle( WgPointerChangeMsg::cast(_pMsg)).c_str() );
 			break;
 		case WG_MSG_MOUSE_ENTER:
 			break;
@@ -242,76 +242,76 @@ void WgMsgLogger::OnMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_MOUSE_LEAVE:
 			break;
 		case WG_MSG_MOUSE_PRESS:
-			sprintf( params, " button=%s", _formatMouseButton(WgMousePressMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMousePressMsg::cast(_pMsg)->button()).c_str() );
 			break;
 		case WG_MSG_MOUSE_REPEAT:
-			sprintf( params, " button=%s", _formatMouseButton(WgMouseRepeatMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseRepeatMsg::cast(_pMsg)->button()).c_str() );
 			break;
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::Cast(_pMsg);
+			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
 
-			WgCoord	now		= pMsg->CurrPos();
-			WgCoord 	prev	= pMsg->PrevPos();
-			WgCoord	start	= pMsg->StartPos();
+			WgCoord	now		= pMsg->currPos();
+			WgCoord 	prev	= pMsg->prevPos();
+			WgCoord	start	= pMsg->startPos();
 
-			WgCoord	dragNow	= pMsg->DraggedNow();
-			WgCoord	dragTotal=pMsg->DraggedTotal();
+			WgCoord	dragNow	= pMsg->draggedNow();
+			WgCoord	dragTotal=pMsg->draggedTotal();
 
 			sprintf( params, " button=%s position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
-					_formatMouseButton(pMsg->Button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
+					_formatMouseButton(pMsg->button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 			break;
 		}
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::Cast(_pMsg);
+			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
 
 			const static char outside[] = "outside";
 			const static char inside[] = "inside";
 			const char * pPress = outside;
 			const char * pRelease = outside;
 
-			if( pMsg->PressInside() )
+			if( pMsg->pressInside() )
 				pPress = inside;
 
-			if( pMsg->ReleaseInside() )
+			if( pMsg->releaseInside() )
 				pRelease = inside;
 
-			sprintf( params, " button=%s press=%s release=%s", _formatMouseButton(pMsg->Button()).c_str(), pPress, pRelease );
+			sprintf( params, " button=%s press=%s release=%s", _formatMouseButton(pMsg->button()).c_str(), pPress, pRelease );
 			break;
 		}
 		case WG_MSG_MOUSE_CLICK:
-			sprintf( params, " button=%s", _formatMouseButton(WgMouseClickMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseClickMsg::cast(_pMsg)->button()).c_str() );
 			break;
 		case WG_MSG_MOUSE_DOUBLE_CLICK:
-			sprintf( params, " button=%s", _formatMouseButton(WgMouseDoubleClickMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgMouseDoubleClickMsg::cast(_pMsg)->button()).c_str() );
 			break;
 
 		case WG_MSG_KEY_PRESS:
 		{
-			WgKeyPressMsgPtr pMsg = WgKeyPressMsg::Cast(_pMsg);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->TranslatedKeyCode(), pMsg->NativeKeyCode() );
+			WgKeyPressMsgPtr pMsg = WgKeyPressMsg::cast(_pMsg);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyRepeatMsgPtr pMsg = WgKeyRepeatMsg::Cast(_pMsg);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->TranslatedKeyCode(), pMsg->NativeKeyCode() );
+			WgKeyRepeatMsgPtr pMsg = WgKeyRepeatMsg::cast(_pMsg);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
 		case WG_MSG_KEY_RELEASE:
 		{
-			WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::Cast(_pMsg);
-			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->TranslatedKeyCode(), pMsg->NativeKeyCode() );
+			WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::cast(_pMsg);
+			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
 		case WG_MSG_CHARACTER:
-			sprintf( params, " char=%X", WgCharacterMsg::Cast(_pMsg)->Char() );
+			sprintf( params, " char=%X", WgCharacterMsg::cast(_pMsg)->character() );
 			break;
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::Cast(_pMsg);
-			sprintf( params, "wheel=%d distance=%d", pMsg->Wheel(), pMsg->Distance() );
+			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::cast(_pMsg);
+			sprintf( params, "wheel=%d distance=%d", pMsg->wheel(), pMsg->distance() );
 			break;
 		}
 
@@ -319,63 +319,63 @@ void WgMsgLogger::OnMsg( const WgMsgPtr& _pMsg )
 			break;
 
 		case WG_MSG_TOGGLE:
-			sprintf( params, "set=%d", (int) (WgToggleMsg::Cast(_pMsg)->IsSet()) );
+			sprintf( params, "set=%d", (int) (WgToggleMsg::cast(_pMsg)->isSet()) );
 			break;
 
 		case WG_MSG_VALUE_UPDATE:
 		{
-			WgValueUpdateMsgPtr pMsg = WgValueUpdateMsg::Cast(_pMsg);
-			sprintf( params, "value=%ld fraction=%f", pMsg->Value(), pMsg->Fraction() );
+			WgValueUpdateMsgPtr pMsg = WgValueUpdateMsg::cast(_pMsg);
+			sprintf( params, "value=%ld fraction=%f", pMsg->value(), pMsg->fraction() );
 			break;
 		}
 
 		case WG_MSG_RANGE_UPDATE:
 		{
-			WgRangeUpdateMsgPtr pMsg = WgRangeUpdateMsg::Cast(_pMsg);
-			sprintf( params, "pos=%f length=%f", pMsg->Offset(), pMsg->Length() );
+			WgRangeUpdateMsgPtr pMsg = WgRangeUpdateMsg::cast(_pMsg);
+			sprintf( params, "pos=%f length=%f", pMsg->offset(), pMsg->length() );
 			break;
 		}
 
 		case WG_MSG_TEXT_EDIT:
 		{
-			WgTextEditMsgPtr pMsg = WgTextEditMsg::Cast(_pMsg);
+			WgTextEditMsgPtr pMsg = WgTextEditMsg::cast(_pMsg);
 			break;
 		}
 
 		case WG_MSG_ITEM_TOGGLE:
 		{
-			WgItemToggleMsgPtr pMsg = WgItemToggleMsg::Cast(_pMsg);
-			sprintf( params, "set=%s id=%d object=%d", pMsg->IsSet()?"true":"false", pMsg->ItemId() );
+			WgItemToggleMsgPtr pMsg = WgItemToggleMsg::cast(_pMsg);
+			sprintf( params, "set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
 			break;
 		}
 		case WG_MSG_ITEM_MOUSE_PRESS:
 		{
-			WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::Cast(_pMsg);
-			sprintf( params, "id=% mouseButton=%s", pMsg->ItemId(), _formatMouseButton(pMsg->Button()).c_str() );
+			WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::cast(_pMsg);
+			sprintf( params, "id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 			break;
 		}
 				
 		case WG_MSG_ITEMS_SELECT:
 		{
-			WgItemsSelectMsgPtr pMsg = WgItemsSelectMsg::Cast(_pMsg);
-			sprintf( params, "nbItems=%d", pMsg->NbItems() );
+			WgItemsSelectMsgPtr pMsg = WgItemsSelectMsg::cast(_pMsg);
+			sprintf( params, "nbItems=%d", pMsg->nbItems() );
 			break;
 		}
 
 		case WG_MSG_ITEMS_UNSELECT:
 		{
-			WgItemsUnselectMsgPtr pMsg = WgItemsUnselectMsg::Cast(_pMsg);
-			sprintf( params, "nbItems=%d", pMsg->NbItems() );
+			WgItemsUnselectMsgPtr pMsg = WgItemsUnselectMsg::cast(_pMsg);
+			sprintf( params, "nbItems=%d", pMsg->nbItems() );
 			break;
 		}
 
 		case WG_MSG_MODAL_MOVE_OUTSIDE:
 			break;
 		case WG_MSG_MODAL_BLOCKED_PRESS:
-			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedPressMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedPressMsg::cast(_pMsg)->button()).c_str() );
 			break;
 		case WG_MSG_MODAL_BLOCKED_RELEASE:
-			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedReleaseMsg::Cast(_pMsg)->Button()).c_str() );
+			sprintf( params, " button=%s", _formatMouseButton(WgModalBlockedReleaseMsg::cast(_pMsg)->button()).c_str() );
 			break;
 
 		default:
@@ -387,7 +387,7 @@ void WgMsgLogger::OnMsg( const WgMsgPtr& _pMsg )
 	modkeys = _formatModkeys( _pMsg );
 	pointerPos = _formatPointerPos( _pMsg );
 
-	m_out << timestamp << " - " << _pMsg->ClassName() << " - " << source << copyTo << pointerPos << modkeys << params;
+	m_out << timestamp << " - " << _pMsg->className() << " - " << source << copyTo << pointerPos << modkeys << params;
 	m_out << std::endl;
 }
 
@@ -412,16 +412,16 @@ string WgMsgLogger::_formatSource( const WgMsgPtr& _pMsg ) const
 {
 	std::string	out;
 
-	if( _pMsg->SourceRawPtr() )
+	if( _pMsg->sourceRawPtr() )
 	{
 		char	temp[64];
-		WgObject * pObject = _pMsg->SourceRawPtr();
+		WgObject * pObject = _pMsg->sourceRawPtr();
 
 		static const char def_type[] = "deleted";
 		const char * pType = def_type;
 
 		if( pObject )
-			pType = pObject->ClassName();
+			pType = pObject->className();
 
 		sprintf( temp, " source=%p (%s)", pObject, pType );
 		out = temp;
@@ -436,12 +436,12 @@ string WgMsgLogger::_formatCopyTo( const WgMsgPtr& _pMsg ) const
 {
 	std::string	out;
 
-	if( _pMsg->HasCopyTo() )
+	if( _pMsg->hasCopyTo() )
 	{
 		char	temp[64];
-		WgReceiver * pCopyTo = _pMsg->GetCopyTo().RawPtr();
+		WgReceiver * pCopyTo = _pMsg->getCopyTo().rawPtr();
 
-		const char * pType = pCopyTo->ClassName();
+		const char * pType = pCopyTo->className();
 
 		sprintf( temp, " copyTo=%p (%s)", pCopyTo, pType );
 		out = temp;
@@ -455,7 +455,7 @@ string WgMsgLogger::_formatCopyTo( const WgMsgPtr& _pMsg ) const
 
 string WgMsgLogger::_formatModkeys( const WgMsgPtr& _pMsg ) const
 {
-	WgModifierKeys keys = _pMsg->ModKeys();
+	WgModifierKeys keys = _pMsg->modKeys();
 
 	string	out;
 
@@ -473,7 +473,7 @@ string WgMsgLogger::_formatModkeys( const WgMsgPtr& _pMsg ) const
 
 string WgMsgLogger::_formatPointerPos( const WgMsgPtr& _pMsg ) const
 {
-	WgCoord globalPos = _pMsg->PointerPos();
+	WgCoord globalPos = _pMsg->pointerPos();
 
 
 	char	temp[64];
@@ -487,7 +487,7 @@ string WgMsgLogger::_formatPointerPos( const WgMsgPtr& _pMsg ) const
 
 string WgMsgLogger::_formatPointerStyle( const WgPointerChangeMsgPtr& _pMsg ) const
 {
-	switch( _pMsg->Style() )
+	switch( _pMsg->style() )
 	{
 		case WG_POINTER_ARROW:
 			return "WG_POINTER_ARROW";
@@ -518,7 +518,7 @@ string WgMsgLogger::_formatPointerStyle( const WgPointerChangeMsgPtr& _pMsg ) co
 		default:
 		{
 			char	temp[64];
-			sprintf( temp, "%d (unkown enum)", _pMsg->Style() );
+			sprintf( temp, "%d (unkown enum)", _pMsg->style() );
 			return string(temp);
 		}
 	}

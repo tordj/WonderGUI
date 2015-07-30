@@ -60,11 +60,11 @@ class WgColumnHeader : public WgInterface
 public:
 	WgColumnHeader(WgColumnHeaderField* pField);
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgColumnHeaderPtr	Cast( const WgInterfacePtr& pInterface );
-	inline WgColumnHeaderPtr	Ptr() { return WgColumnHeaderPtr(_object(),this); }
+	static WgColumnHeaderPtr	cast( const WgInterfacePtr& pInterface );
+	inline WgColumnHeaderPtr	ptr() { return WgColumnHeaderPtr(_object(),this); }
 
 	//____ Interfaces ______________________________________
 
@@ -74,8 +74,8 @@ public:
 
 	//____ Methods _________________________________________
 
-	inline void			SetSkin( const WgSkinPtr& pSkin ) { m_pField->SetSkin(pSkin); }
-	inline WgSkinPtr	Skin() const { return m_pField->Skin(); }
+	inline void			setSkin( const WgSkinPtr& pSkin ) { m_pField->setSkin(pSkin); }
+	inline WgSkinPtr	skin() const { return m_pField->skin(); }
 
 
 protected:

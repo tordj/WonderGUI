@@ -41,38 +41,38 @@ class WgModalHook : public WgLayerHook, protected WgLink
 	friend class WgChain<WgModalHook>;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgModalHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgModalHookPtr	cast( const WgHookPtr& pInterface );
 
-	void	Top();								// Put us ontop of all our siblings.
+	void	top();								// Put us ontop of all our siblings.
 
-	bool	SetGeo( const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	bool	SetGeo( const WgCoord& ofs, WgOrigo origo = WG_NORTHWEST );
+	bool	setGeo( const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	bool	setGeo( const WgCoord& ofs, WgOrigo origo = WG_NORTHWEST );
 
-	bool	SetOfs( const WgCoord& ofs );
-	bool	SetOfsX( int x );
-	bool	SetOfsY( int y );
+	bool	setOfs( const WgCoord& ofs );
+	bool	setOfsX( int x );
+	bool	setOfsY( int y );
 
-	bool	SetSize( WgSize sz );
-	bool	SetWidth( int width );
-	bool	SetHeight( int height );
+	bool	setSize( WgSize sz );
+	bool	setWidth( int width );
+	bool	setHeight( int height );
 
-	bool	Move( const WgCoord& ofs );
-	bool	MoveX( int x );
-	bool	MoveY( int y );
+	bool	move( const WgCoord& ofs );
+	bool	moveX( int x );
+	bool	moveY( int y );
 
 
 	// Standard Hook methods
 
-	WgModalHookPtr	Prev() const { return _prev(); }
-	WgModalHookPtr	Next() const { return _next(); }
+	WgModalHookPtr	prev() const { return _prev(); }
+	WgModalHookPtr	next() const { return _next(); }
 
-	WgModalLayerPtr	Parent() const;
+	WgModalLayerPtr	parent() const;
 
 protected:
-	// TODO: Constructor should in the future call SetHook() on Widget, once we are totally rid of widgets...
+	// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
 
 	PROTECTED_LINK_METHODS( WgModalHook );
 
@@ -89,8 +89,8 @@ protected:
 	WgModalLayer *	m_pParent;
 
 	WgOrigo	m_origo;
-	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets PreferredSize() dynamically.
-										// Setting just one of them to 0 uses Widgets MatchingHeight() or MatchingWidth() dynamically.
+	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 
 	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
 };
@@ -101,31 +101,31 @@ class WgModalLayer : public WgLayer
 	friend class WgModalHook;
 
 public:
-	static WgModalLayerPtr	Create() { return WgModalLayerPtr(new WgModalLayer()); }
+	static WgModalLayerPtr	create() { return WgModalLayerPtr(new WgModalLayer()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalLayerPtr	Cast( const WgObjectPtr& pObject );
+	static WgModalLayerPtr	cast( const WgObjectPtr& pObject );
 
-	WgModalHookPtr	AddModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgModalHookPtr	AddModalWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return AddModalWidget( pWidget, WgRect(pos,0,0), origo); }
+	WgModalHookPtr	addModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgModalHookPtr	addModalWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, WgRect(pos,0,0), origo); }
 
-	bool			RemoveModalWidgets();
+	bool			removeModalWidgets();
 
-	bool			RemoveWidget( const WgWidgetPtr& pWidget );
-	bool			Clear();
+	bool			removeWidget( const WgWidgetPtr& pWidget );
+	bool			clear();
 
-	WgModalHookPtr	FirstModalHook();
-	WgModalHookPtr	LastModalHook();
+	WgModalHookPtr	firstModalHook();
+	WgModalHookPtr	lastModalHook();
 
 
 	// Overloaded from WgWidget
 
-	int				MatchingHeight( int width ) const;
-	int				MatchingWidth( int height ) const;
+	int				matchingHeight( int width ) const;
+	int				matchingWidth( int height ) const;
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 
 protected:
 	WgModalLayer();
@@ -146,8 +146,8 @@ private:
 
 	// Overloaded from WgLayer
 
-	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.First(); }
-	WgLayerHook *	_lastLayerHook() const { return m_modalHooks.Last(); }
+	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.first(); }
+	WgLayerHook *	_lastLayerHook() const { return m_modalHooks.last(); }
 
 	//
 

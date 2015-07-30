@@ -34,16 +34,16 @@ typedef	WgWeakPtr<WgStandardFormatter,WgValueFormatterWeakPtr>	WgStandardFormatt
 class WgStandardFormatter : public WgValueFormatter
 {
 public:	
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgStandardFormatterPtr	Cast( const WgObjectPtr& pObject );
+	static WgStandardFormatterPtr	cast( const WgObjectPtr& pObject );
 
-	static WgStandardFormatterPtr	Create() { return WgStandardFormatterPtr(new WgStandardFormatter()); }
-	static WgStandardFormatterPtr	Create( const WgCharSeq& format ) { return WgStandardFormatterPtr(new WgStandardFormatter(format)); }
+	static WgStandardFormatterPtr	create() { return WgStandardFormatterPtr(new WgStandardFormatter()); }
+	static WgStandardFormatterPtr	create( const WgCharSeq& format ) { return WgStandardFormatterPtr(new WgStandardFormatter(format)); }
 
-	WgString 		Format( Sint64 value, int scale ) const;
-	WgString 		Format( double value ) const;
+	WgString 		format( Sint64 value, int scale ) const;
+	WgString 		format( double value ) const;
 
 protected:
 	WgStandardFormatter();

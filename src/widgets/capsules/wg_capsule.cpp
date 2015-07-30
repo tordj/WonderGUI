@@ -25,42 +25,42 @@
 const char WgCapsule::CLASSNAME[] = {"Capsule"};
 const char WgCapsuleHook::CLASSNAME[] = {"CapsuleHook"};
 
-//____ WgCapsuleHook::IsInstanceOf() __________________________________________
+//____ WgCapsuleHook::isInstanceOf() __________________________________________
 
-bool WgCapsuleHook::IsInstanceOf( const char * pClassName ) const
+bool WgCapsuleHook::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgHook::IsInstanceOf(pClassName);
+	return WgHook::isInstanceOf(pClassName);
 }
 
-//____ WgCapsuleHook::ClassName() _____________________________________________
+//____ WgCapsuleHook::className() _____________________________________________
 
-const char * WgCapsuleHook::ClassName( void ) const
+const char * WgCapsuleHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgCapsuleHook::Cast() __________________________________________________
+//____ WgCapsuleHook::cast() __________________________________________________
 
-WgCapsuleHookPtr WgCapsuleHook::Cast( const WgHookPtr& pHook )
+WgCapsuleHookPtr WgCapsuleHook::cast( const WgHookPtr& pHook )
 {
-	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.RawPtr()) );
+	if( pHook && pHook->isInstanceOf(CLASSNAME) )
+		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 
-WgCoord WgCapsuleHook::Pos() const { return m_pParent->Pos(); }
-WgSize WgCapsuleHook::Size() const { 	return m_pParent->Size(); }
-WgRect WgCapsuleHook::Geo() const { return m_pParent->Geo(); }
+WgCoord WgCapsuleHook::pos() const { return m_pParent->pos(); }
+WgSize WgCapsuleHook::size() const { 	return m_pParent->size(); }
+WgRect WgCapsuleHook::geo() const { return m_pParent->geo(); }
 
-WgCoord WgCapsuleHook::GlobalPos() const { return m_pParent->GlobalPos(); }
-WgRect WgCapsuleHook::GlobalGeo() const { return m_pParent->GlobalGeo(); }
+WgCoord WgCapsuleHook::globalPos() const { return m_pParent->globalPos(); }
+WgRect WgCapsuleHook::globalGeo() const { return m_pParent->globalGeo(); }
 
-WgCapsulePtr WgCapsuleHook::Parent() const { return m_pParent; }
+WgCapsulePtr WgCapsuleHook::parent() const { return m_pParent; }
 
 void WgCapsuleHook::_requestRender() { m_pParent->_requestRender(); }
 void WgCapsuleHook::_requestRender( const WgRect& rect ) { m_pParent->_requestRender(rect); }
@@ -78,53 +78,53 @@ WgCapsule::WgCapsule()
 	m_hook.m_pParent = this;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgCapsule::IsInstanceOf( const char * pClassName ) const
+bool WgCapsule::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgContainer::IsInstanceOf(pClassName);
+	return WgContainer::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgCapsule::ClassName( void ) const
+const char * WgCapsule::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgCapsulePtr WgCapsule::Cast( const WgObjectPtr& pObject )
+WgCapsulePtr WgCapsule::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCapsulePtr( static_cast<WgCapsule*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgCapsulePtr( static_cast<WgCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetWidget() ______________________________________________________________
+//____ setWidget() ______________________________________________________________
 
-WgCapsuleHookPtr WgCapsule::SetWidget( const WgWidgetPtr& pWidget )
+WgCapsuleHookPtr WgCapsule::setWidget( const WgWidgetPtr& pWidget )
 {
 	if( !pWidget )
 		return 0;
 
-	m_hook._setWidget(pWidget.RawPtr());
-	pWidget->_onNewSize(Size());
+	m_hook._setWidget(pWidget.rawPtr());
+	pWidget->_onNewSize(size());
 
 	_requestRender();
 	_requestResize();
 	return &m_hook;
 }
 
-//____ RemoveWidget() ___________________________________________________________
+//____ removeWidget() ___________________________________________________________
 
-bool WgCapsule::RemoveWidget( const WgWidgetPtr& pWidget )
+bool WgCapsule::removeWidget( const WgWidgetPtr& pWidget )
 {
-	if( m_hook._widget() != pWidget.RawPtr() )
+	if( m_hook._widget() != pWidget.rawPtr() )
 		return false;
 
 	m_hook._setWidget(0);
@@ -133,9 +133,9 @@ bool WgCapsule::RemoveWidget( const WgWidgetPtr& pWidget )
 	return true;
 }
 
-//____ Clear() __________________________________________________________
+//____ clear() __________________________________________________________
 
-bool WgCapsule::Clear()
+bool WgCapsule::clear()
 {
 	if( !m_hook._widget() )
 		return false;
@@ -146,32 +146,32 @@ bool WgCapsule::Clear()
 	return true;
 }
 
-//____ MatchingHeight() ________________________________________________________
+//____ matchingHeight() ________________________________________________________
 
-int WgCapsule::MatchingHeight( int width ) const
+int WgCapsule::matchingHeight( int width ) const
 {
 	if( m_hook._widget() )
-		return m_hook._widget()->MatchingHeight( width );
+		return m_hook._widget()->matchingHeight( width );
 	else
-		return WgWidget::MatchingHeight(width);
+		return WgWidget::matchingHeight(width);
 }
 
-//____ MatchingWidth() ________________________________________________________
+//____ matchingWidth() ________________________________________________________
 
-int WgCapsule::MatchingWidth( int height ) const
+int WgCapsule::matchingWidth( int height ) const
 {
 	if( m_hook._widget() )
-		return m_hook._widget()->MatchingWidth( height );
+		return m_hook._widget()->matchingWidth( height );
 	else
-		return WgWidget::MatchingWidth(height);
+		return WgWidget::matchingWidth(height);
 }
 
-//____ PreferredSize() ___________________________________________________________
+//____ preferredSize() ___________________________________________________________
 
-WgSize WgCapsule::PreferredSize() const
+WgSize WgCapsule::preferredSize() const
 {
 	if( m_hook._widget() )
-		return m_hook._widget()->PreferredSize();
+		return m_hook._widget()->preferredSize();
 	else
 		return WgSize(1,1);
 }
@@ -232,7 +232,7 @@ WgHook * WgCapsule::_firstHookWithGeo( WgRect& geo ) const
 {
 	if( m_hook._widget() )
 	{
-		geo = WgRect(0,0,Size());
+		geo = WgRect(0,0,size());
 		return const_cast<WgCapsuleHook*>(&m_hook);
 	}
 
@@ -252,7 +252,7 @@ WgHook * WgCapsule::_lastHookWithGeo( WgRect& geo ) const
 {
 	if( m_hook._widget() )
 	{
-		geo = WgRect(0,0,Size());
+		geo = WgRect(0,0,size());
 		return const_cast<WgCapsuleHook*>(&m_hook);
 	}
 

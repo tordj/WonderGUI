@@ -40,12 +40,12 @@ typedef	WgWeakPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
 class WgAnimPlayer:public WgWidget
 {
 public:
-	static WgAnimPlayerPtr	Create() { return WgAnimPlayerPtr(new WgAnimPlayer()); }
+	static WgAnimPlayerPtr	create() { return WgAnimPlayerPtr(new WgAnimPlayer()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgAnimPlayerPtr	Cast( const WgObjectPtr& pObject );
+	static WgAnimPlayerPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Methods __________________________________________
 
@@ -59,8 +59,8 @@ public:
 	bool			Rewind( int ticks );
 	bool			FastForward( int ticks );
 
-	int				Duration();										/// Returns duration of animation (one-shot-through, no looping).
-	int				DurationScaled();								/// Returns duration of animation, scaled by speed.
+	int				duration();										/// Returns duration of animation (one-shot-through, no looping).
+	int				durationScaled();								/// Returns duration of animation, scaled by speed.
 
 	float			Speed();
 	bool			SetSpeed( float speed );
@@ -69,7 +69,7 @@ public:
 	bool			Stop();
 	bool			IsPlaying() { return m_bPlaying; };
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 
 protected:
 	WgAnimPlayer();

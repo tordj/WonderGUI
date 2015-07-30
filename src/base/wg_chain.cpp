@@ -26,12 +26,12 @@ WgChainImp::WgChainImp()
 //-----------------------------------------------------------------------------
 WgChainImp::~WgChainImp()
 {
-	Clear();
+	clear();
 }
 
 
 //-----------------------------------------------------------------------------
-WgLink* WgChainImp::Get( int index ) const
+WgLink* WgChainImp::get( int index ) const
 {
 	if( index >= m_size )
 		return 0;
@@ -46,13 +46,13 @@ WgLink* WgChainImp::Get( int index ) const
 
 
 //-----------------------------------------------------------------------------
-bool WgChainImp::IsMemberOf( WgLink * _pLink ) const
+bool WgChainImp::isMemberOf( WgLink * _pLink ) const
 {
 	return _pLink != 0 && _pLink->m_pChain == this;
 }
 
 //-----------------------------------------------------------------------------
-void WgChainImp::Clear()
+void WgChainImp::clear()
 {
 	while( m_pFirst )
 		delete	m_pFirst;

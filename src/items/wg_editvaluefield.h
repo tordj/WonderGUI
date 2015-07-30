@@ -47,34 +47,34 @@ public:
 	WgEditValueField( WgEditValueHolder * pHolder );
 	~WgEditValueField();
 
-	void				SetEditMode(WgTextEditMode mode);
-	inline WgTextEditMode EditMode() const { return m_editMode; }
+	void				setEditMode(WgTextEditMode mode);
+	inline WgTextEditMode editMode() const { return m_editMode; }
 
-	inline bool			IsEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	inline bool			IsSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+	inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
-	void				SetCursorSkin( const WgCaretPtr& pCursor );
-	inline WgCaretPtr	CursorSkin() const { return m_pCursorSkin; }
+	void				setCursorSkin( const WgCaretPtr& pCursor );
+	inline WgCaretPtr	cursorSkin() const { return m_pCursorSkin; }
 
-	int					InsertAtCursor( const WgCharSeq& str );
-	bool				InsertAtCursor( Uint16 c );
+	int					insertAtCursor( const WgCharSeq& str );
+	bool				insertAtCursor( Uint16 c );
 
-	int					Append( const WgCharSeq& seq );
-	int					Insert( int ofs, const WgCharSeq& seq );
-	int					Replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					Delete( int ofs, int len );
-	void				DeleteSelected();
+	int					append( const WgCharSeq& seq );
+	int					insert( int ofs, const WgCharSeq& seq );
+	int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+	int					remove( int ofs, int len );
+	void				deleteSelected();
 
-	void				Select( int ofs, int len );
-	void				SelectAll();
-	inline int			SelectionStart() const { return m_selBeg; }
-	inline int			SelectionLength() const { return m_selEnd - m_selBeg; }
-	void				ClearSelection();
+	void				select( int ofs, int len );
+	void				selectAll();
+	inline int			selectionStart() const { return m_selBeg; }
+	inline int			selectionLength() const { return m_selEnd - m_selBeg; }
+	void				clearSelection();
 
-	void				GoBOL();
-	void				GoEOL();
-	void				GoBOF();
-	void				GoEOF();
+	void				goBol();
+	void				goEol();
+	void				goBof();
+	void				goEof();
 
 protected:
 	void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }

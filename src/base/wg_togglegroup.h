@@ -51,25 +51,25 @@ class	WgToggleGroup : public WgObject
 {
 friend class WgToggleButton;
 public:
-	static WgToggleGroupPtr	Create() { return WgToggleGroupPtr(new WgToggleGroup()); }
+	static WgToggleGroupPtr	create() { return WgToggleGroupPtr(new WgToggleGroup()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgToggleGroupPtr	Cast( const WgObjectPtr& pObject );	
+	static WgToggleGroupPtr	cast( const WgObjectPtr& pObject );	
 
 
-	inline bool			RequireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
-	void				SetRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
+	inline bool			requireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
+	void				setRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
 
-	void				Add( const WgToggleButtonPtr& pToggleButton );			///< @brief Add widget to this group.
-	bool				Remove( const WgToggleButtonPtr& pToggleButton );		///< @brief Remove a widget from this group.
-	void				Clear();												///< @brief Remove all widgets from this group.
+	void				add( const WgToggleButtonPtr& pToggleButton );			///< @brief Add widget to this group.
+	bool				remove( const WgToggleButtonPtr& pToggleButton );		///< @brief Remove a widget from this group.
+	void				clear();												///< @brief Remove all widgets from this group.
 	
-	WgToggleButtonPtr	Get( int index );										///< @brief Get widget at specified index in group.
-	int					Size() const;											///< @brief Get number of widgets in group.
+	WgToggleButtonPtr	get( int index );										///< @brief Get widget at specified index in group.
+	int					size() const;											///< @brief Get number of widgets in group.
 		
-	WgToggleButtonPtr	Selected() const;										///< @brief Get the selected widget.
+	WgToggleButtonPtr	selected() const;										///< @brief Get the selected widget.
 
 
 protected:

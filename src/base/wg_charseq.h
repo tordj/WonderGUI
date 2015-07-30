@@ -41,7 +41,7 @@ class WgCharBuffer;
 
 	TODO:
 
-	- CopyTo() använder sig av WgTextTool::readString() som inte rensar attributes...
+	- copyTo() använder sig av WgTextTool::readString() som inte rensar attributes...
 
 	DÄREFTER REKURSIVT ARBETA IGENOM:
 
@@ -132,20 +132,20 @@ public:
 		mutable bool	bIsOwner;
 	};
 
-	inline int				Length() const { return m_nbChars; }
-	int						LengthUTF8() const;
-	const WgCharBasket		GetWgChars() const;
-	const UnicodeBasket		GetUnicode() const;
-	const UTF8Basket		GetUTF8() const;
-	std::string				GetStdString() const;
-	std::wstring			GetStdWstring() const;
-	int						GetNbLines() const;
-	void					CopyTo( WgChar * pDest ) const;
-//	void					CopyTo( char * pDest ) const;			//TODO: implement.
-//	void					CopyTo( Uint16 * pDest ) const;			//TODO: implement.
+	inline int				length() const { return m_nbChars; }
+	int						lengthUtf8() const;
+	const WgCharBasket		getWgChars() const;
+	const UnicodeBasket		getUnicode() const;
+	const UTF8Basket		getUtf8() const;
+	std::string				getStdString() const;
+	std::wstring			getStdWstring() const;
+	int						getNbLines() const;
+	void					copyTo( WgChar * pDest ) const;
+//	void					copyTo( char * pDest ) const;			//TODO: implement.
+//	void					copyTo( Uint16 * pDest ) const;			//TODO: implement.
 
-	void					CopyFormattedTo( char * pDest ) const;
-	void					CopyFormattedTo( Uint16 * pDest ) const;
+	void					copyFormattedTo( char * pDest ) const;
+	void					copyFormattedTo( Uint16 * pDest ) const;
 
 protected:
 	WgCharSeq() {};

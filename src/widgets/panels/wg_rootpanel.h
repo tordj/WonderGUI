@@ -66,45 +66,45 @@ class WgRootPanel : public WgObject
 	friend class WgContainer;
 
 public:
-	static WgRootPanelPtr	Create() { return WgRootPanelPtr(new WgRootPanel()); }
-	static WgRootPanelPtr	Create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
+	static WgRootPanelPtr	create() { return WgRootPanelPtr(new WgRootPanel()); }
+	static WgRootPanelPtr	create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
 
-	bool					IsInstanceOf( const char * pClassName ) const;
-	const char *			ClassName( void ) const;
+	bool					isInstanceOf( const char * pClassName ) const;
+	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgRootPanelPtr	Cast( const WgObjectPtr& pObject );
+	static WgRootPanelPtr	cast( const WgObjectPtr& pObject );
 
-	bool					SetGfxDevice( const WgGfxDevicePtr& pDevice );
-	inline WgGfxDevicePtr 	GfxDevice() const { return m_pGfxDevice; }
+	bool					setGfxDevice( const WgGfxDevicePtr& pDevice );
+	inline WgGfxDevicePtr 	gfxDevice() const { return m_pGfxDevice; }
 
-	bool					SetGeo( const WgRect& geo );
-	WgRect					Geo() const;
+	bool					setGeo( const WgRect& geo );
+	WgRect					geo() const;
 
-	bool					SetVisible( bool bVisible );
-	bool					IsVisible() const { return m_bVisible; }
+	bool					setVisible( bool bVisible );
+	bool					isVisible() const { return m_bVisible; }
 
-	inline WgWidgetPtr		Widget() const { return m_hook._widget(); }
-	WgHookPtr				SetWidget( const WgWidgetPtr& pWidget );
-	bool					RemoveWidget();
-	bool					Clear();
+	inline WgWidgetPtr		widget() const { return m_hook._widget(); }
+	WgHookPtr				setWidget( const WgWidgetPtr& pWidget );
+	bool					removeWidget();
+	bool					clear();
 
-	WgWidgetPtr				FindWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs-m_geo.Pos(),mode)); }
+	WgWidgetPtr				findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs-m_geo.pos(),mode)); }
 
-	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
-	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }
+	inline int				nbDirtyRects() const { return m_dirtyPatches.size(); }
+	inline const WgRect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
 
-	inline int				NbUpdatedRects() const { return m_updatedPatches.Size(); }
-	inline const WgRect*	FirstUpdatedRect() const { return m_updatedPatches.IsEmpty() ? 0 : m_updatedPatches.Begin(); }
+	inline int				nbUpdatedRects() const { return m_updatedPatches.size(); }
+	inline const WgRect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
 
 
-	bool	Render();
-	bool	Render( const WgRect& clip );
+	bool	render();
+	bool	render( const WgRect& clip );
 
-	bool	BeginRender();
-	bool	RenderSection( const WgRect& clip );
-	bool	EndRender();
+	bool	beginRender();
+	bool	renderSection( const WgRect& clip );
+	bool	endRender();
 
-	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }
+	inline void	addDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
 
 
 protected:
@@ -119,14 +119,14 @@ protected:
 		Hook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
 		~Hook();
 
-		const char *Type( void ) const;
-		static const char * ClassType();
+		const char *type( void ) const;
+		static const char * classType();
 
-		WgCoord			Pos() const;
-		WgSize			Size() const;
-		WgRect			Geo() const;
-		WgCoord			GlobalPos() const;
-		WgRect			GlobalGeo() const;
+		WgCoord			pos() const;
+		WgSize			size() const;
+		WgRect			geo() const;
+		WgCoord			globalPos() const;
+		WgRect			globalGeo() const;
 
 
 	protected:

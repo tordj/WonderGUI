@@ -33,16 +33,16 @@ typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBrokerWeakPtr>	WgScalePreferr
 class WgScalePreferredSizeBroker : public WgSizeBroker
 {
 public:
-	static WgScalePreferredSizeBrokerPtr	Create() { return WgScalePreferredSizeBrokerPtr(new WgScalePreferredSizeBroker()); }
+	static WgScalePreferredSizeBrokerPtr	create() { return WgScalePreferredSizeBrokerPtr(new WgScalePreferredSizeBroker()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgScalePreferredSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
+	static WgScalePreferredSizeBrokerPtr	cast( const WgObjectPtr& pObject );
 
-	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool MayAlterPreferredLengths() const;
+	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+	bool mayAlterPreferredLengths() const;
     
 protected:
 	WgScalePreferredSizeBroker() {};

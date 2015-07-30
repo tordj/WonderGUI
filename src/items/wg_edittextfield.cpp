@@ -35,62 +35,62 @@ WgEditTextField::WgEditTextField( WgEditTextHolder * pHolder ) : WgTextField(pHo
 }
 
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgEditTextField::Clear()
+void WgEditTextField::clear()
 {
 	m_editState.caretOfs = 0;
 	m_editState.selectOfs = 0;
 	m_editState.wantedOfs = -1;
 
-	WgTextField::Clear();
+	WgTextField::clear();
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-void WgEditTextField::Set( const WgCharSeq& seq )
+void WgEditTextField::set( const WgCharSeq& seq )
 {
-	WgTextField::Set( seq );
+	WgTextField::set( seq );
 	_cursorToEnd();
 }
 
-void WgEditTextField::Set( const WgCharBuffer * pBuffer )
+void WgEditTextField::set( const WgCharBuffer * pBuffer )
 {
-	WgTextField::Set( pBuffer );
+	WgTextField::set( pBuffer );
 	_cursorToEnd();
 }
 
-void WgEditTextField::Set( const WgString& str )
+void WgEditTextField::set( const WgString& str )
 {
-	WgTextField::Set( str );
+	WgTextField::set( str );
 	_cursorToEnd();
 }
 
-//____ Append() ________________________________________________________________
+//____ append() ________________________________________________________________
 
-int WgEditTextField::Append( const WgCharSeq& seq )
+int WgEditTextField::append( const WgCharSeq& seq )
 {
 	m_editState.selectOfs = m_editState.caretOfs;
 	m_editState.wantedOfs = -1;
 			
-	return WgTextField::Append( seq );
+	return WgTextField::append( seq );
 }
 
-//____ Insert() ________________________________________________________________
+//____ insert() ________________________________________________________________
 
-int WgEditTextField::Insert( int ofs, const WgCharSeq& seq )
+int WgEditTextField::insert( int ofs, const WgCharSeq& seq )
 {
 	if( ofs < m_editState.caretOfs )
-		m_editState.caretOfs += seq.Length();
+		m_editState.caretOfs += seq.length();
 	m_editState.selectOfs = m_editState.caretOfs;
 	m_editState.wantedOfs = -1;
 
-	return WgTextField::Insert(ofs,seq);
+	return WgTextField::insert(ofs,seq);
 }
 
-//____ Replace() _______________________________________________________________
+//____ replace() _______________________________________________________________
 
-int WgEditTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
+int WgEditTextField::replace( int ofs, int nDelete, const WgCharSeq& seq )
 {
 	int caretOfs = m_editState.caretOfs;
 	if( caretOfs > ofs )
@@ -98,18 +98,18 @@ int WgEditTextField::Replace( int ofs, int nDelete, const WgCharSeq& seq )
 		if( caretOfs < ofs + nDelete )
 			caretOfs = ofs;
 		else
-			caretOfs = caretOfs - nDelete + seq.Length();
+			caretOfs = caretOfs - nDelete + seq.length();
 	}
 	m_editState.caretOfs = caretOfs;
 	m_editState.selectOfs = caretOfs;
 	m_editState.wantedOfs = -1;
 
-	return WgTextField::Replace(ofs,nDelete,seq);
+	return WgTextField::replace(ofs,nDelete,seq);
 }
 
-//____ Delete() ________________________________________________________________
+//____ delete() ________________________________________________________________
 
-int WgEditTextField::Delete( int ofs, int len )
+int WgEditTextField::remove( int ofs, int len )
 {
 	int caretOfs = m_editState.caretOfs;
 	if( caretOfs > ofs )
@@ -123,34 +123,34 @@ int WgEditTextField::Delete( int ofs, int len )
 	m_editState.selectOfs = m_editState.caretOfs;
 	m_editState.wantedOfs = -1;
 	
-	return WgTextField::Delete( ofs, len );
+	return WgTextField::remove( ofs, len );
 }
 
-//____ SetState() ______________________________________________________________
+//____ setState() ______________________________________________________________
 
-void WgEditTextField::SetState( WgState state )
+void WgEditTextField::setState( WgState state )
 {
-	WgTextField::SetState(state);
+	WgTextField::setState(state);
 
-	if( state.IsFocused() && m_editMode == WG_TEXT_EDITABLE )
+	if( state.isFocused() && m_editMode == WG_TEXT_EDITABLE )
 		m_editState.bCaret = true;
 	else
 		m_editState.bCaret = false;
 }
 
 
-//____ OnRender() ______________________________________________________________
+//____ onRender() ______________________________________________________________
 
-void WgEditTextField::OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
+void WgEditTextField::onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
 {
-	_presenter()->RenderField(this, pDevice, _canvas, _clip);
+	_presenter()->renderField(this, pDevice, _canvas, _clip);
 }
 
 //____ _cursorToEnd() __________________________________________________________
 
 void WgEditTextField::_cursorToEnd()
 {
-	int end = m_charBuffer.Length();
+	int end = m_charBuffer.length();
 	m_editState.caretOfs = end;
 	m_editState.selectOfs = end;
 	m_editState.wantedOfs = -1;	

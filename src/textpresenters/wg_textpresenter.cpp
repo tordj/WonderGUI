@@ -27,36 +27,36 @@ const char WgTextPresenter::CLASSNAME[] = {"TextPresenter"};
 
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgTextPresenter::IsInstanceOf( const char * pClassName ) const
+bool WgTextPresenter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgTextPresenter::ClassName( void ) const
+const char * WgTextPresenter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTextPresenterPtr WgTextPresenter::Cast( const WgObjectPtr& pObject )
+WgTextPresenterPtr WgTextPresenter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextPresenterPtr( static_cast<WgTextPresenter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTextPresenterPtr( static_cast<WgTextPresenter*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ Tooltip() _______________________________________________________________
+//____ tooltip() _______________________________________________________________
 
-WgString WgTextPresenter::Tooltip( const WgPresentableField * pField ) const
+WgString WgTextPresenter::tooltip( const WgPresentableField * pField ) const
 {
 	return WgString();
 }
@@ -97,9 +97,9 @@ int WgTextPresenter::_fieldDataInt( WgPresentableField * pField ) const
 
 WgTextStyle * WgTextPresenter::_baseStyle( WgPresentableField * pField ) const
 {
-	WgTextStyle * pStyle = pField->m_pStyle.RawPtr();
+	WgTextStyle * pStyle = pField->m_pStyle.rawPtr();
 	if( pStyle == 0 )
-		pStyle = WgBase::DefaultStyle().RawPtr();
+		pStyle = WgBase::defaultStyle().rawPtr();
 	
 	return pStyle;
 }

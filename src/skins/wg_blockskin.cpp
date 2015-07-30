@@ -29,137 +29,137 @@ using namespace WgUtil;
 
 const char WgBlockSkin::CLASSNAME[] = {"BlockSkin"};
 
-//____ Create() _______________________________________________________________
+//____ create() _______________________________________________________________
 
-WgBlockSkinPtr WgBlockSkin::Create()
+WgBlockSkinPtr WgBlockSkin::create()
 {
 	return WgBlockSkinPtr(new WgBlockSkin());
 }
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorder frame )
+WgBlockSkinPtr WgBlockSkin::createStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( block.Size(), frame );
-	pSkin->SetAllBlocks( block.Pos() );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( block.size(), frame );
+	pSkin->setAllBlocks( block.pos() );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame )
+WgBlockSkinPtr WgBlockSkin::createEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( blockSize, frame );
-	pSkin->SetAllBlocks( ofsEnabled );
-	pSkin->SetDisabledBlock( ofsDisabled );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( blockSize, frame );
+	pSkin->setAllBlocks( ofsEnabled );
+	pSkin->setDisabledBlock( ofsDisabled );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( blockGeo, blockFrame );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( blockGeo, blockFrame );
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetAllBlocks( blockOfs );
+	pSkin->setAllBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
-	pSkin->SetHoveredBlocks( blockOfs );
+	pSkin->setHoveredBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
-	pSkin->SetPressedBlocks( blockOfs );
+	pSkin->setPressedBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
-	pSkin->SetDisabledBlock( blockOfs );
+	pSkin->setDisabledBlock( blockOfs );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( blockGeo, blockFrame );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( blockGeo, blockFrame );
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetAllBlocks( blockOfs );
+	pSkin->setAllBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
-	pSkin->SetSelectedBlocks( blockOfs );
+	pSkin->setSelectedBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
-	pSkin->SetDisabledBlock( blockOfs );
+	pSkin->setDisabledBlock( blockOfs );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createClickSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( blockGeo, blockFrame );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( blockGeo, blockFrame );
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
-	pSkin->SetStateBlock( WG_STATE_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
+	pSkin->setStateBlock( WG_STATE_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered, not selected
-	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_PRESSED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered, not selected
+	pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_SELECTED, blockOfs );			// Selected, not hovered
-	pSkin->SetStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_SELECTED, blockOfs );			// Selected, not hovered
+	pSkin->setStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );	// Selected and hovered
-	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );	// Selected and hovered
+	pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_DISABLED, blockOfs );			// Disabled
+	pSkin->setStateBlock( WG_STATE_DISABLED, blockOfs );			// Disabled
 	return WgBlockSkinPtr(pSkin);
 }
 
 /** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
 */
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( blockGeo, blockFrame );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( blockGeo, blockFrame );
 
 	WgCoord blockOfs = blockStartOfs;
 
-	pSkin->SetStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
-	pSkin->SetStateBlock( WG_STATE_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
+	pSkin->setStateBlock( WG_STATE_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered
-	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered
+	pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_PRESSED, blockOfs );				// Pressed
-	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED, blockOfs );				// Pressed
+	pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_SELECTED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
-	pSkin->SetStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_DISABLED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_DISABLED, blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
-	pSkin->SetStateBlock( WG_STATE_DISABLED_SELECTED, blockOfs );
+	pSkin->setStateBlock( WG_STATE_DISABLED_SELECTED, blockOfs );
 
 	return WgBlockSkinPtr(pSkin);
 }
@@ -167,44 +167,44 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( const WgSurfacePtr& pSu
 
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( const WgSurfacePtr& pSurface, WgBorder frame )
+WgBlockSkinPtr WgBlockSkin::createStaticFromSurface( const WgSurfacePtr& pSurface, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( pSurface->Size(), frame );
-	pSkin->SetAllBlocks( WgCoord(0,0) );
+	pSkin->setSurface( pSurface );
+	pSkin->setBlockGeo( pSurface->size(), frame );
+	pSkin->setAllBlocks( WgCoord(0,0) );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
-	pSkin->SetSurface( pSurface );
+	pSkin->setSurface( pSurface );
 
-	WgSize	sz = WgSize( (pSurface->Width()-blockSpacing)/2, pSurface->Height() );
+	WgSize	sz = WgSize( (pSurface->width()-blockSpacing)/2, pSurface->height() );
 
-	pSkin->SetBlockGeo( sz, blockFrame );
-	pSkin->SetAllBlocks( WgCoord(0,0) );
-	pSkin->SetDisabledBlock( WgCoord(sz.w+blockSpacing,0) );
+	pSkin->setBlockGeo( sz, blockFrame );
+	pSkin->setAllBlocks( WgCoord(0,0) );
+	pSkin->setDisabledBlock( WgCoord(sz.w+blockSpacing,0) );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
-	WgSize	blockSize = WgSize( (pSurface->Width()-blockSpacing*3)/4, pSurface->Height() );
-	return CreateClickable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
+	WgSize	blockSize = WgSize( (pSurface->width()-blockSpacing*3)/4, pSurface->height() );
+	return createClickable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
-	WgSize	blockSize( (pSurface->Width()-blockSpacing*2)/3, pSurface->Height() );
-	return CreateSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
+	WgSize	blockSize( (pSurface->width()-blockSpacing*2)/3, pSurface->height() );
+	return createSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkinPtr WgBlockSkin::createClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
 {
-	WgSize	blockSize( (pSurface->Width()-blockSpacing*4)/5, pSurface->Height() );
-	return CreateClickSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
+	WgSize	blockSize( (pSurface->width()-blockSpacing*4)/5, pSurface->height() );
+	return createClickSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
 //____ Constructor ____________________________________________________________
@@ -223,39 +223,39 @@ WgBlockSkin::WgBlockSkin()
 	}
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgBlockSkin::IsInstanceOf( const char * pClassName ) const
+bool WgBlockSkin::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgExtendedSkin::IsInstanceOf(pClassName);
+	return WgExtendedSkin::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgBlockSkin::ClassName( void ) const
+const char * WgBlockSkin::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgBlockSkinPtr WgBlockSkin::Cast( const WgObjectPtr& pObject )
+WgBlockSkinPtr WgBlockSkin::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgBlockSkinPtr( static_cast<WgBlockSkin*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgBlockSkinPtr( static_cast<WgBlockSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetBlockGeo() __________________________________________________________
+//____ setBlockGeo() __________________________________________________________
 
-bool WgBlockSkin::SetBlockGeo( WgSize size, WgBorder frame )
+bool WgBlockSkin::setBlockGeo( WgSize size, WgBorder frame )
 {
-	if( size.w <= frame.Width() || size.h <= frame.Height() )
+	if( size.w <= frame.width() || size.h <= frame.height() )
 		return false;
 
 	m_dimensions	= size;
@@ -263,55 +263,55 @@ bool WgBlockSkin::SetBlockGeo( WgSize size, WgBorder frame )
 	return true;
 }
 
-//____ SetSurface() ______________________________________________________
+//____ setSurface() ______________________________________________________
 
-void WgBlockSkin::SetSurface( const WgSurfacePtr& pSurf )
+void WgBlockSkin::setSurface( const WgSurfacePtr& pSurf )
 {
 	m_pSurface = pSurf;
 	if( m_pSurface )
-		m_bIsOpaque = pSurf->IsOpaque();
+		m_bIsOpaque = pSurf->isOpaque();
 	else
 		m_bIsOpaque = false;
 }
 
-//____ SetStateBlock() ________________________________________________________
+//____ setStateBlock() ________________________________________________________
 
-void WgBlockSkin::SetStateBlock( WgStateEnum state, const WgCoord& ofs )
+void WgBlockSkin::setStateBlock( WgStateEnum state, const WgCoord& ofs )
 {
 	m_state[_stateToIndex(state)].ofs = ofs;
 }
 
-//____ SetAllBlocks() _________________________________________________________
+//____ setAllBlocks() _________________________________________________________
 
-void WgBlockSkin::SetAllBlocks( const WgCoord& ofs )
+void WgBlockSkin::setAllBlocks( const WgCoord& ofs )
 {
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		m_state[i].ofs = ofs;
 
 }
 
-//____ SetDisabledBlock() _____________________________________________________
+//____ setDisabledBlock() _____________________________________________________
 
-void WgBlockSkin::SetDisabledBlock( const WgCoord& ofs )
+void WgBlockSkin::setDisabledBlock( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_DISABLED)].ofs = ofs;
 }
 
-//____ SetHoveredBlocks() _____________________________________________________
+//____ setHoveredBlocks() _____________________________________________________
 
-void WgBlockSkin::SetHoveredBlocks( const WgCoord& ofs )
+void WgBlockSkin::setHoveredBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_HOVERED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_HOVERED_SELECTED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_HOVERED_FOCUSED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)].ofs = ofs;
 
-	SetPressedBlocks( ofs );
+	setPressedBlocks( ofs );
 }
 
-//____ SetPressedBlocks() _____________________________________________________
+//____ setPressedBlocks() _____________________________________________________
 
-void WgBlockSkin::SetPressedBlocks( const WgCoord& ofs )
+void WgBlockSkin::setPressedBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_PRESSED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_PRESSED_SELECTED)].ofs = ofs;
@@ -319,9 +319,9 @@ void WgBlockSkin::SetPressedBlocks( const WgCoord& ofs )
 	m_state[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)].ofs = ofs;
 }
 
-//____ SetSelectedBlocks() ____________________________________________________
+//____ setSelectedBlocks() ____________________________________________________
 
-void WgBlockSkin::SetSelectedBlocks( const WgCoord& ofs )
+void WgBlockSkin::setSelectedBlocks( const WgCoord& ofs )
 {
 	m_state[_stateToIndex(WG_STATE_SELECTED)].ofs = ofs;
 	m_state[_stateToIndex(WG_STATE_FOCUSED_SELECTED)].ofs = ofs;
@@ -331,9 +331,9 @@ void WgBlockSkin::SetSelectedBlocks( const WgCoord& ofs )
 	m_state[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)].ofs = ofs;
 }
 
-//____ SetTiled() _____________________________________________________________
+//____ setTiled() _____________________________________________________________
 
-void WgBlockSkin::SetTiled( bool bTiled )
+void WgBlockSkin::setTiled( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_NORTH, bTiled );
 	_setBitFlag( m_tiledSections, WG_SOUTH, bTiled );
@@ -342,48 +342,48 @@ void WgBlockSkin::SetTiled( bool bTiled )
 	_setBitFlag( m_tiledSections, WG_CENTER, bTiled );
 }
 
-//____ SetTiledTopBorder() ____________________________________________________
+//____ setTiledTopBorder() ____________________________________________________
 
-void WgBlockSkin::SetTiledTopBorder( bool bTiled )
+void WgBlockSkin::setTiledTopBorder( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_NORTH, bTiled );
 }
 
-//____ SetTiledBottomBorder() _________________________________________________
+//____ setTiledBottomBorder() _________________________________________________
 
-void WgBlockSkin::SetTiledBottomBorder( bool bTiled )
+void WgBlockSkin::setTiledBottomBorder( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_SOUTH, bTiled );
 }
 
-//____ SetTiledLeftBorder() ___________________________________________________
+//____ setTiledLeftBorder() ___________________________________________________
 
-void WgBlockSkin::SetTiledLeftBorder( bool bTiled )
+void WgBlockSkin::setTiledLeftBorder( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_WEST, bTiled );
 }
 
-//____ SetTiledRightBorder() __________________________________________________
+//____ setTiledRightBorder() __________________________________________________
 
-void WgBlockSkin::SetTiledRightBorder( bool bTiled )
+void WgBlockSkin::setTiledRightBorder( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_EAST, bTiled );
 }
 
-//____ SetTiledCenter() _______________________________________________________
+//____ setTiledCenter() _______________________________________________________
 
-void WgBlockSkin::SetTiledCenter( bool bTiled )
+void WgBlockSkin::setTiledCenter( bool bTiled )
 {
 	_setBitFlag( m_tiledSections, WG_CENTER, bTiled );
 }
 
-//____ OptimizeRenderMethods() ________________________________________________
+//____ optimizeRenderMethods() ________________________________________________
 
-void WgBlockSkin::OptimizeRenderMethods()
+void WgBlockSkin::optimizeRenderMethods()
 {
 	// Handle non-alpha surfaces the easy way
 
-	if( m_pSurface->IsOpaque() )
+	if( m_pSurface->isOpaque() )
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -408,7 +408,7 @@ void WgBlockSkin::OptimizeRenderMethods()
 
 	//
 
-	m_pSurface->Lock(WG_READ_ONLY);
+	m_pSurface->lock(WG_READ_ONLY);
 
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
@@ -422,8 +422,8 @@ void WgBlockSkin::OptimizeRenderMethods()
 		int y2 = m_state[i].ofs.y + m_frame.top;
 		int y3 = m_state[i].ofs.y + m_dimensions.h - m_frame.bottom;
 
-		int centerW = m_dimensions.w - m_frame.Width();
-		int	centerH = m_dimensions.h - m_frame.Height();
+		int centerW = m_dimensions.w - m_frame.width();
+		int	centerH = m_dimensions.h - m_frame.height();
 
 		if( m_frame.top > 0 )
 		{
@@ -459,7 +459,7 @@ void WgBlockSkin::OptimizeRenderMethods()
 		}
 	}
 
-	m_pSurface->Unlock();
+	m_pSurface->unlock();
 }
 
 //_____ _scanStateBlockSectionArea() __________________________________________
@@ -467,12 +467,12 @@ void WgBlockSkin::OptimizeRenderMethods()
 void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const WgRect& sectionArea )
 {
 	const WgPixelFormat * pFormat = m_pSurface->PixelFormat();
-	int pitch = m_pSurface->Pitch();
+	int pitch = m_pSurface->pitch();
 
 	if( pFormat->type != WG_PIXEL_ARGB_8 )
 		return;												// Only supports ARGB_8 for the moment.
 
-	unsigned char * p = ((unsigned char*)m_pSurface->Pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
+	unsigned char * p = ((unsigned char*)m_pSurface->pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
 
 	unsigned int alphaAcc = 0;
 
@@ -492,9 +492,9 @@ void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo sectio
 
 
 
-//____ Render() _______________________________________________________________
+//____ render() _______________________________________________________________
 
-void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
+void WgBlockSkin::render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
 	if( !m_pSurface )
 		return;
@@ -507,9 +507,9 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 
 	// Shortcuts & optimizations for common special cases.
 
-	WgSize borderSize = m_frame.Size();
+	WgSize borderSize = m_frame.size();
 
-	if( _clip.Contains( _canvas ) && borderSize.w <= _canvas.Size().w && borderSize.h <= _canvas.Size().h )
+	if( _clip.contains( _canvas ) && borderSize.w <= _canvas.size().w && borderSize.h <= _canvas.size().h )
 	{
 		_renderNoClip( pDevice, pState, _canvas );
 		return;
@@ -519,29 +519,29 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 
 	if( src.w == _canvas.w && src.h == _canvas.h )
 	{
-		pDevice->ClipBlit( _clip, m_pSurface, src, _canvas.x, _canvas.y );
+		pDevice->clipBlit( _clip, m_pSurface, src, _canvas.x, _canvas.y );
 		return;
 	}
 
 	if( borderSize.w == 0 && borderSize.h == 0 )
 	{
 		if( m_tiledSections & (1 << WG_CENTER) )
-			pDevice->ClipTileBlit( _clip, m_pSurface, src, _canvas );
+			pDevice->clipTileBlit( _clip, m_pSurface, src, _canvas );
 		else
-			pDevice->ClipStretchBlit( _clip, m_pSurface, src, _canvas );
+			pDevice->clipStretchBlit( _clip, m_pSurface, src, _canvas );
 		return;
 	}
 
 	if( src.w == _canvas.w )
 	{
-		pDevice->ClipBlitVertBar( _clip, m_pSurface, src, m_frame,
+		pDevice->clipBlitVertBar( _clip, m_pSurface, src, m_frame,
 						 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.h );
 		return;
 	}
 
 	if( src.h == _canvas.h )
 	{
-		pDevice->ClipBlitHorrBar( _clip, m_pSurface, src, m_frame,
+		pDevice->clipBlitHorrBar( _clip, m_pSurface, src, m_frame,
 						 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.w );
 		return;
 	}
@@ -554,7 +554,7 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 	{
 		WgRect rect( src.x, src.y, src.w, borders.top );
 
-		pDevice->ClipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
+		pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
 								_canvas.x, _canvas.y, _canvas.w );
 	}
 
@@ -564,36 +564,36 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 	{
 		WgRect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 
-		pDevice->ClipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
+		pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
 								_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
 	}
 
 	// Render left and right stretch areas
 
-	if( _canvas.h > (int) borders.Height() )
+	if( _canvas.h > (int) borders.height() )
 	{
 		if( borders.left > 0 )
 		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.Height() );
-			WgRect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.Height() );
+			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
+			WgRect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.height() );
 
 			if( m_tiledSections & (1<<WG_WEST) )
-				pDevice->ClipTileBlit( _clip, m_pSurface, sr, dr );
+				pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 			else
-				pDevice->ClipStretchBlit( _clip, m_pSurface, sr, dr );
+				pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
 		}
 
 		if( borders.right > 0 )
 		{
 			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.Height() );
+						borders.right, src.h - borders.height() );
 			WgRect dr(	_canvas.x + _canvas.w - borders.right, _canvas.y + borders.top,
-						borders.right, _canvas.h - borders.Height() );
+						borders.right, _canvas.h - borders.height() );
 
 			if( m_tiledSections & (1<<WG_EAST) )
-				pDevice->ClipTileBlit( _clip, m_pSurface, sr, dr );
+				pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 			else
-				pDevice->ClipStretchBlit( _clip, m_pSurface, sr, dr );
+				pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
 		}
 	}
 
@@ -603,15 +603,15 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 	if( (_canvas.h > borders.top + borders.bottom) && (_canvas.w > borders.left + borders.right ) )
 	{
 		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.Width(), src.h - borders.Height() );
+					src.w - borders.width(), src.h - borders.height() );
 
 		WgRect dr(	_canvas.x + borders.left, _canvas.y + borders.top,
-					_canvas.w - borders.Width(), _canvas.h - borders.Height() );
+					_canvas.w - borders.width(), _canvas.h - borders.height() );
 
 		if( m_tiledSections & (1<<WG_CENTER) )
-			pDevice->ClipTileBlit( _clip, m_pSurface, sr, dr );
+			pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 		else
-			pDevice->ClipStretchBlit( _clip, m_pSurface, sr, dr );
+			pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
 	}
 }
 
@@ -619,34 +619,34 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState 
 
 void WgBlockSkin::_renderNoClip( WgGfxDevice * pDevice, const StateData * pState, const WgRect& _canvas ) const
 {
-	WgSize borderSize = m_frame.Size();
+	WgSize borderSize = m_frame.size();
 	const WgRect&	src		= WgRect(pState->ofs, m_dimensions);
 
 	if( src.w == _canvas.w && src.h == _canvas.h )
 	{
-		pDevice->Blit( m_pSurface, src, _canvas.x, _canvas.y );
+		pDevice->blit( m_pSurface, src, _canvas.x, _canvas.y );
 		return;
 	}
 
 	if( borderSize.w == 0 && borderSize.h == 0 )
 	{
 		if( m_tiledSections & (1 << WG_CENTER) )
-			pDevice->TileBlit( m_pSurface, src, _canvas );
+			pDevice->tileBlit( m_pSurface, src, _canvas );
 		else
-			pDevice->StretchBlit( m_pSurface, src, _canvas );
+			pDevice->stretchBlit( m_pSurface, src, _canvas );
 		return;
 	}
 
 	if( src.w == _canvas.w )
 	{
-		pDevice->BlitVertBar( m_pSurface, src, m_frame,
+		pDevice->blitVertBar( m_pSurface, src, m_frame,
 						 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.h );
 		return;
 	}
 
 	if( src.h == _canvas.h )
 	{
-		pDevice->BlitHorrBar( m_pSurface, src, m_frame,
+		pDevice->blitHorrBar( m_pSurface, src, m_frame,
 						 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.w );
 		return;
 	}
@@ -659,7 +659,7 @@ void WgBlockSkin::_renderNoClip( WgGfxDevice * pDevice, const StateData * pState
 	{
 		WgRect rect( src.x, src.y, src.w, borders.top );
 
-		pDevice->BlitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
+		pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
 								_canvas.x, _canvas.y, _canvas.w );
 	}
 
@@ -669,36 +669,36 @@ void WgBlockSkin::_renderNoClip( WgGfxDevice * pDevice, const StateData * pState
 	{
 		WgRect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 
-		pDevice->BlitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
+		pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
 								_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
 	}
 
 	// Render left and right stretch areas
 
-	if( _canvas.h > (int) borders.Height() )
+	if( _canvas.h > (int) borders.height() )
 	{
 		if( borders.left > 0 )
 		{
-			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.Height() );
-			WgRect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.Height() );
+			WgRect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
+			WgRect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.height() );
 
 			if( m_tiledSections & (1<<WG_WEST) )
-				pDevice->TileBlit( m_pSurface, sr, dr );
+				pDevice->tileBlit( m_pSurface, sr, dr );
 			else
-				pDevice->StretchBlit( m_pSurface, sr, dr );
+				pDevice->stretchBlit( m_pSurface, sr, dr );
 		}
 
 		if( borders.right > 0 )
 		{
 			WgRect sr(	src.x + src.w - borders.right, src.y + borders.top,
-						borders.right, src.h - borders.Height() );
+						borders.right, src.h - borders.height() );
 			WgRect dr(	_canvas.x + _canvas.w - borders.right, _canvas.y + borders.top,
-						borders.right, _canvas.h - borders.Height() );
+						borders.right, _canvas.h - borders.height() );
 
 			if( m_tiledSections & (1<<WG_EAST) )
-				pDevice->TileBlit( m_pSurface, sr, dr );
+				pDevice->tileBlit( m_pSurface, sr, dr );
 			else
-				pDevice->StretchBlit( m_pSurface, sr, dr );
+				pDevice->stretchBlit( m_pSurface, sr, dr );
 		}
 	}
 
@@ -708,60 +708,60 @@ void WgBlockSkin::_renderNoClip( WgGfxDevice * pDevice, const StateData * pState
 	if( (_canvas.h > borders.top + borders.bottom) && (_canvas.w > borders.left + borders.right ) )
 	{
 		WgRect sr(	src.x + borders.left, src.y + borders.top,
-					src.w - borders.Width(), src.h - borders.Height() );
+					src.w - borders.width(), src.h - borders.height() );
 
 		WgRect dr(	_canvas.x + borders.left, _canvas.y + borders.top,
-					_canvas.w - borders.Width(), _canvas.h - borders.Height() );
+					_canvas.w - borders.width(), _canvas.h - borders.height() );
 
 		if( m_tiledSections & (1<<WG_CENTER) )
-			pDevice->TileBlit( m_pSurface, sr, dr );
+			pDevice->tileBlit( m_pSurface, sr, dr );
 		else
-			pDevice->StretchBlit( m_pSurface, sr, dr );
+			pDevice->stretchBlit( m_pSurface, sr, dr );
 	}
 }
 
 
 
-//____ MinSize() ______________________________________________________________
+//____ minSize() ______________________________________________________________
 
-WgSize WgBlockSkin::MinSize() const
+WgSize WgBlockSkin::minSize() const
 {
-	WgSize content = WgExtendedSkin::MinSize();
-	WgSize frame = m_frame.Size();
+	WgSize content = WgExtendedSkin::minSize();
+	WgSize frame = m_frame.size();
 	return WgSize( WgMax(content.w, frame.w), WgMax(content.h, frame.h) );
 }
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 
-WgSize WgBlockSkin::PreferredSize() const
+WgSize WgBlockSkin::preferredSize() const
 {
-	WgSize sz = WgExtendedSkin::PreferredSize();
+	WgSize sz = WgExtendedSkin::preferredSize();
 	return WgSize( WgMax(m_dimensions.w,sz.w),WgMax(m_dimensions.h,sz.h) );
 }
 
-//____ SizeForContent() _______________________________________________________
+//____ sizeForContent() _______________________________________________________
 
-WgSize WgBlockSkin::SizeForContent( const WgSize contentSize ) const
+WgSize WgBlockSkin::sizeForContent( const WgSize contentSize ) const
 {
-	WgSize sz = WgExtendedSkin::SizeForContent(contentSize);
-	WgSize min = m_frame.Size();
+	WgSize sz = WgExtendedSkin::sizeForContent(contentSize);
+	WgSize min = m_frame.size();
 
 	return WgSize( WgMax(sz.w,min.w), WgMax(sz.h,min.h) );
 }
 
-//____ MarkTest() _____________________________________________________________
+//____ markTest() _____________________________________________________________
 
-bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
+bool WgBlockSkin::markTest( const WgCoord& _ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
 {
-	if( !m_pSurface || !canvas.Contains(_ofs) )
+	if( !m_pSurface || !canvas.contains(_ofs) )
 		return false;
 
 	int alpha;
-	if( IsOpaque( state ) )
+	if( isOpaque( state ) )
 		alpha = 255;
 	else
 	{
-		WgCoord ofs = _ofs - canvas.Pos();
+		WgCoord ofs = _ofs - canvas.pos();
 
 		// Determine in which section the cordinate is (0-2 for x and y).
 
@@ -786,7 +786,7 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState s
 		}
 		else if( xSection == 1 )
 		{
-			int tileAreaWidth = m_dimensions.w - m_frame.Width();
+			int tileAreaWidth = m_dimensions.w - m_frame.width();
 
 			bool bTile;
 
@@ -801,7 +801,7 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState s
 				ofs.x = ((ofs.x - m_frame.left) % tileAreaWidth) + m_frame.left;
 			else
 			{
-				double screenWidth = canvas.w - m_frame.Width();	// Width of stretch-area on screen.
+				double screenWidth = canvas.w - m_frame.width();	// Width of stretch-area on screen.
 				ofs.x = (int) ((ofs.x-m_frame.left)/screenWidth * tileAreaWidth + m_frame.left);
 			}
 		}
@@ -815,7 +815,7 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState s
 		}
 		else if( ySection == 1 )
 		{
-			int tileAreaHeight = m_dimensions.h - m_frame.Height();
+			int tileAreaHeight = m_dimensions.h - m_frame.height();
 
 			bool bTile;
 
@@ -830,27 +830,27 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgRect& canvas, WgState s
 				ofs.y = ((ofs.y - m_frame.top) % tileAreaHeight) + m_frame.top;
 			else
 			{
-				double screenHeight = canvas.h - m_frame.Height();	// Height of stretch-area on screen.
+				double screenHeight = canvas.h - m_frame.height();	// Height of stretch-area on screen.
 				ofs.y = (int) ((ofs.y-m_frame.top)/screenHeight * tileAreaHeight + m_frame.top);
 			}
 		}
 
 		WgCoord srcOfs = m_state[_stateToIndex(state)].ofs;
 
-		alpha = m_pSurface->Alpha(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
+		alpha = m_pSurface->alpha(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
 	}
 
 	return ( alpha >= opacityTreshold);
 }
 
-//____ IsOpaque() _____________________________________________________________
+//____ isOpaque() _____________________________________________________________
 
-bool WgBlockSkin::IsOpaque() const
+bool WgBlockSkin::isOpaque() const
 {
 	return m_bIsOpaque;
 }
 
-bool WgBlockSkin::IsOpaque( WgState state ) const
+bool WgBlockSkin::isOpaque( WgState state ) const
 {
 	if( m_bIsOpaque )
 		return true;
@@ -858,7 +858,7 @@ bool WgBlockSkin::IsOpaque( WgState state ) const
 	return (m_state[_stateToIndex(state)].opaqueSections == ALL_SECTIONS);
 }
 
-bool WgBlockSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
+bool WgBlockSkin::isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
 {
 	// Quick exit in optimal case
 
@@ -873,7 +873,7 @@ bool WgBlockSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgStat
 		return (m_state[index].opaqueSections == ALL_SECTIONS);
 
 	WgRect center = WgRect(canvasSize) - m_frame;
-	if( center.Contains(rect) )
+	if( center.contains(rect) )
 	{
 		if( m_state[index].opaqueSections & (1<<WG_CENTER) )
 			return true;
@@ -944,14 +944,14 @@ bool WgBlockSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgStat
 	return false;
 }
 
-//____ IsStateIdentical() _____________________________________________________
+//____ isStateIdentical() _____________________________________________________
 
-bool WgBlockSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+bool WgBlockSkin::isStateIdentical( WgState state, WgState comparedTo ) const
 {
 	int i1 = _stateToIndex(state);
 	int i2 = _stateToIndex(comparedTo);
 
-	return ( m_state[i1].ofs == m_state[i2].ofs && WgExtendedSkin::IsStateIdentical(state,comparedTo) );
+	return ( m_state[i1].ofs == m_state[i2].ofs && WgExtendedSkin::isStateIdentical(state,comparedTo) );
 }
 
 //____ _setBitFlag() __________________________________________________________

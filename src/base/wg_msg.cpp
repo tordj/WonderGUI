@@ -39,45 +39,45 @@
 
 const char WgMsg::CLASSNAME[] = {"Msg"};
 
-bool WgMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-const char * WgMsg::ClassName( void ) const
+const char * WgMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMsgPtr WgMsg::Cast( const WgObjectPtr& pObject )
+WgMsgPtr WgMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMsgPtr( static_cast<WgMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMsgPtr( static_cast<WgMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-void WgMsg::SetCopyTo( const WgReceiverPtr& pReceiver )
+void WgMsg::setCopyTo( const WgReceiverPtr& pReceiver )
 {
 	m_pCopyTo = pReceiver;
 }
 
-void WgMsg::SetRepost( const WgObjectPtr& pSource, const WgReceiverPtr& pCopyTo )
+void WgMsg::setRepost( const WgObjectPtr& pSource, const WgReceiverPtr& pCopyTo )
 {
 	m_pRepostSource = pSource;	
 	m_pRepostCopyTo = pCopyTo;
 }
 
-void WgMsg::Swallow()
+void WgMsg::swallow()
 {
 	m_pRepostSource = 0;
 	m_pRepostCopyTo = 0;
 }
 
-bool WgMsg::DoRepost()
+bool WgMsg::doRepost()
 {
 	if( m_pRepostSource )
 	{
@@ -94,21 +94,21 @@ bool WgMsg::DoRepost()
 
 
 
-bool WgMsg::IsMouseMsg() const
+bool WgMsg::isMouseMsg() const
 {
 	if( m_type == WG_MSG_WHEEL_ROLL ||
 		m_type == WG_MSG_MOUSE_ENTER ||
 		m_type == WG_MSG_MOUSE_LEAVE ||	
 		m_type == WG_MSG_MOUSE_MOVE ||	
 		m_type == WG_MSG_MOUSE_POSITION ||
-		IsMouseButtonMsg() )
+		isMouseButtonMsg() )
 		return true;
 	else
 		return false;
 			
 }
 	
-bool WgMsg::IsMouseButtonMsg() const
+bool WgMsg::isMouseButtonMsg() const
 {
 	if( m_type == WG_MSG_MOUSE_CLICK ||
 		m_type == WG_MSG_MOUSE_DOUBLE_CLICK ||
@@ -121,7 +121,7 @@ bool WgMsg::IsMouseButtonMsg() const
 		return false;
 }
 	
-bool WgMsg::IsKeyMsg() const
+bool WgMsg::isKeyMsg() const
 {
 	if( m_type == WG_MSG_KEY_PRESS ||
 		m_type == WG_MSG_KEY_RELEASE ||
@@ -135,28 +135,28 @@ bool WgMsg::IsKeyMsg() const
 
 const char WgKeyMsg::CLASSNAME[] = {"KeyMsg"};
 
-bool WgKeyMsg::IsInstanceOf( const char * pClassName ) const
+bool WgKeyMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgKeyMsg::ClassName( void ) const
+const char * WgKeyMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgKeyMsgPtr WgKeyMsg::Cast( const WgObjectPtr& pObject )
+WgKeyMsgPtr WgKeyMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyMsgPtr( static_cast<WgKeyMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgKeyMsgPtr( static_cast<WgKeyMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-bool WgKeyMsg::IsCursorKey() const
+bool WgKeyMsg::isCursorKey() const
 {
 	if( m_translatedKeyCode == WG_KEY_UP || m_translatedKeyCode == WG_KEY_DOWN ||
 		m_translatedKeyCode == WG_KEY_LEFT || m_translatedKeyCode == WG_KEY_RIGHT )
@@ -165,11 +165,11 @@ bool WgKeyMsg::IsCursorKey() const
 		return false;
 }
 	
-bool WgKeyMsg::IsMovementKey() const
+bool WgKeyMsg::isMovementKey() const
 {
 	if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
 		m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
-		IsCursorKey() )
+		isCursorKey() )
 		return true;
 	else
 		return false;
@@ -179,23 +179,23 @@ bool WgKeyMsg::IsMovementKey() const
 
 const char WgMouseButtonMsg::CLASSNAME[] = {"MouseButtonMsg"};
 
-bool WgMouseButtonMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseButtonMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseButtonMsg::ClassName( void ) const
+const char * WgMouseButtonMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseButtonMsgPtr WgMouseButtonMsg::Cast( const WgObjectPtr& pObject )
+WgMouseButtonMsgPtr WgMouseButtonMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseButtonMsgPtr( static_cast<WgMouseButtonMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseButtonMsgPtr( static_cast<WgMouseButtonMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -210,23 +210,23 @@ WgFocusGainedMsg::WgFocusGainedMsg()
 	m_type = WG_MSG_FOCUS_GAINED;
 }
 
-bool WgFocusGainedMsg::IsInstanceOf( const char * pClassName ) const
+bool WgFocusGainedMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgFocusGainedMsg::ClassName( void ) const
+const char * WgFocusGainedMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgFocusGainedMsgPtr WgFocusGainedMsg::Cast( const WgObjectPtr& pObject )
+WgFocusGainedMsgPtr WgFocusGainedMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFocusGainedMsgPtr( static_cast<WgFocusGainedMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgFocusGainedMsgPtr( static_cast<WgFocusGainedMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -241,23 +241,23 @@ WgFocusLostMsg::WgFocusLostMsg()
 	m_type = WG_MSG_FOCUS_LOST;
 }
 
-bool WgFocusLostMsg::IsInstanceOf( const char * pClassName ) const
+bool WgFocusLostMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgFocusLostMsg::ClassName( void ) const
+const char * WgFocusLostMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgFocusLostMsgPtr WgFocusLostMsg::Cast( const WgObjectPtr& pObject )
+WgFocusLostMsgPtr WgFocusLostMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFocusLostMsgPtr( static_cast<WgFocusLostMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgFocusLostMsgPtr( static_cast<WgFocusLostMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -281,23 +281,23 @@ WgMouseEnterMsg::WgMouseEnterMsg( WgWidget * pWidget )
 	m_pCopyTo 	= pWidget;
 }
 
-bool WgMouseEnterMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseEnterMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseEnterMsg::ClassName( void ) const
+const char * WgMouseEnterMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseEnterMsgPtr WgMouseEnterMsg::Cast( const WgObjectPtr& pObject )
+WgMouseEnterMsgPtr WgMouseEnterMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseEnterMsgPtr( static_cast<WgMouseEnterMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseEnterMsgPtr( static_cast<WgMouseEnterMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -319,23 +319,23 @@ WgMouseLeaveMsg::WgMouseLeaveMsg( WgWidget * pWidget )
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgMouseLeaveMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseLeaveMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseLeaveMsg::ClassName( void ) const
+const char * WgMouseLeaveMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseLeaveMsgPtr WgMouseLeaveMsg::Cast( const WgObjectPtr& pObject )
+WgMouseLeaveMsgPtr WgMouseLeaveMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseLeaveMsgPtr( static_cast<WgMouseLeaveMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseLeaveMsgPtr( static_cast<WgMouseLeaveMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -358,23 +358,23 @@ WgMouseMoveMsg::WgMouseMoveMsg( WgWidget * pWidget )
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgMouseMoveMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseMoveMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseMoveMsg::ClassName( void ) const
+const char * WgMouseMoveMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseMoveMsgPtr WgMouseMoveMsg::Cast( const WgObjectPtr& pObject )
+WgMouseMoveMsgPtr WgMouseMoveMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseMoveMsgPtr( static_cast<WgMouseMoveMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseMoveMsgPtr( static_cast<WgMouseMoveMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -396,23 +396,23 @@ WgMousePressMsg::WgMousePressMsg( WgMouseButton button, WgWidget * pWidget ) : W
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgMousePressMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMousePressMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMousePressMsg::ClassName( void ) const
+const char * WgMousePressMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMousePressMsgPtr WgMousePressMsg::Cast( const WgObjectPtr& pObject )
+WgMousePressMsgPtr WgMousePressMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMousePressMsgPtr( static_cast<WgMousePressMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMousePressMsgPtr( static_cast<WgMousePressMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -433,23 +433,23 @@ WgMouseRepeatMsg::WgMouseRepeatMsg( WgMouseButton button, WgWidget * pWidget ) :
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgMouseRepeatMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseRepeatMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseRepeatMsg::ClassName( void ) const
+const char * WgMouseRepeatMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseRepeatMsgPtr WgMouseRepeatMsg::Cast( const WgObjectPtr& pObject )
+WgMouseRepeatMsgPtr WgMouseRepeatMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseRepeatMsgPtr( static_cast<WgMouseRepeatMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseRepeatMsgPtr( static_cast<WgMouseRepeatMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -477,33 +477,33 @@ WgMouseReleaseMsg::WgMouseReleaseMsg( WgMouseButton button, WgWidget * pWidget, 
 	m_bReleaseInside = bReleaseInside;
 }
 
-bool WgMouseReleaseMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseReleaseMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseReleaseMsg::ClassName( void ) const
+const char * WgMouseReleaseMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseReleaseMsgPtr WgMouseReleaseMsg::Cast( const WgObjectPtr& pObject )
+WgMouseReleaseMsgPtr WgMouseReleaseMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseReleaseMsgPtr( static_cast<WgMouseReleaseMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseReleaseMsgPtr( static_cast<WgMouseReleaseMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-bool WgMouseReleaseMsg::PressInside() const
+bool WgMouseReleaseMsg::pressInside() const
 {
 	return m_bPressInside;
 }
 
-bool WgMouseReleaseMsg::ReleaseInside() const
+bool WgMouseReleaseMsg::releaseInside() const
 {
 	return m_bReleaseInside;
 }
@@ -526,23 +526,23 @@ WgMouseClickMsg::WgMouseClickMsg( WgMouseButton button, WgWidget * pWidget ) : W
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgMouseClickMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseClickMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseClickMsg::ClassName( void ) const
+const char * WgMouseClickMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseClickMsgPtr WgMouseClickMsg::Cast( const WgObjectPtr& pObject )
+WgMouseClickMsgPtr WgMouseClickMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseClickMsgPtr( static_cast<WgMouseClickMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseClickMsgPtr( static_cast<WgMouseClickMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -563,23 +563,23 @@ WgMouseDoubleClickMsg::WgMouseDoubleClickMsg( WgMouseButton button, WgWidget * p
 	m_pCopyTo		= pWidget;
 }
 
-bool WgMouseDoubleClickMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseDoubleClickMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseDoubleClickMsg::ClassName( void ) const
+const char * WgMouseDoubleClickMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseDoubleClickMsgPtr WgMouseDoubleClickMsg::Cast( const WgObjectPtr& pObject )
+WgMouseDoubleClickMsgPtr WgMouseDoubleClickMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseDoubleClickMsgPtr( static_cast<WgMouseDoubleClickMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseDoubleClickMsgPtr( static_cast<WgMouseDoubleClickMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -600,23 +600,23 @@ WgKeyPressMsg::WgKeyPressMsg( int native_keycode, WgWidget * pWidget ) : WgKeyMs
 	m_pCopyTo		= pWidget;
 }
 
-bool WgKeyPressMsg::IsInstanceOf( const char * pClassName ) const
+bool WgKeyPressMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgKeyMsg::IsInstanceOf(pClassName);
+	return WgKeyMsg::isInstanceOf(pClassName);
 }
 
-const char * WgKeyPressMsg::ClassName( void ) const
+const char * WgKeyPressMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgKeyPressMsgPtr WgKeyPressMsg::Cast( const WgObjectPtr& pObject )
+WgKeyPressMsgPtr WgKeyPressMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyPressMsgPtr( static_cast<WgKeyPressMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgKeyPressMsgPtr( static_cast<WgKeyPressMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -637,23 +637,23 @@ WgKeyRepeatMsg::WgKeyRepeatMsg( int native_keycode, WgWidget * pWidget ) : WgKey
 	m_pCopyTo 		= pWidget;
 }
 
-bool WgKeyRepeatMsg::IsInstanceOf( const char * pClassName ) const
+bool WgKeyRepeatMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgKeyMsg::IsInstanceOf(pClassName);
+	return WgKeyMsg::isInstanceOf(pClassName);
 }
 
-const char * WgKeyRepeatMsg::ClassName( void ) const
+const char * WgKeyRepeatMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgKeyRepeatMsgPtr WgKeyRepeatMsg::Cast( const WgObjectPtr& pObject )
+WgKeyRepeatMsgPtr WgKeyRepeatMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyRepeatMsgPtr( static_cast<WgKeyRepeatMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgKeyRepeatMsgPtr( static_cast<WgKeyRepeatMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -674,23 +674,23 @@ WgKeyReleaseMsg::WgKeyReleaseMsg( int native_keycode, WgWidget * pWidget ) : WgK
 	m_pCopyTo		= pWidget;
 }
 
-bool WgKeyReleaseMsg::IsInstanceOf( const char * pClassName ) const
+bool WgKeyReleaseMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgKeyMsg::IsInstanceOf(pClassName);
+	return WgKeyMsg::isInstanceOf(pClassName);
 }
 
-const char * WgKeyReleaseMsg::ClassName( void ) const
+const char * WgKeyReleaseMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgKeyReleaseMsgPtr WgKeyReleaseMsg::Cast( const WgObjectPtr& pObject )
+WgKeyReleaseMsgPtr WgKeyReleaseMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgKeyReleaseMsgPtr( static_cast<WgKeyReleaseMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgKeyReleaseMsgPtr( static_cast<WgKeyReleaseMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -713,28 +713,28 @@ WgCharacterMsg::WgCharacterMsg( unsigned short character, WgWidget * pWidget )
 	m_pCopyTo		= pWidget;
 }
 
-unsigned short WgCharacterMsg::Char() const
+unsigned short WgCharacterMsg::character() const
 {
 	return m_char;
 }
 
-bool WgCharacterMsg::IsInstanceOf( const char * pClassName ) const
+bool WgCharacterMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgCharacterMsg::ClassName( void ) const
+const char * WgCharacterMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgCharacterMsgPtr WgCharacterMsg::Cast( const WgObjectPtr& pObject )
+WgCharacterMsgPtr WgCharacterMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCharacterMsgPtr( static_cast<WgCharacterMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgCharacterMsgPtr( static_cast<WgCharacterMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -760,33 +760,33 @@ WgWheelRollMsg::WgWheelRollMsg( int wheel, int distance, WgWidget * pWidget )
 	m_pCopyTo		= pWidget;
 }
 
-int WgWheelRollMsg::Wheel() const
+int WgWheelRollMsg::wheel() const
 {
 	return m_wheel;
 }
 
-int WgWheelRollMsg::Distance() const
+int WgWheelRollMsg::distance() const
 {
 	return m_distance;
 }
 
-bool WgWheelRollMsg::IsInstanceOf( const char * pClassName ) const
+bool WgWheelRollMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgWheelRollMsg::ClassName( void ) const
+const char * WgWheelRollMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgWheelRollMsgPtr WgWheelRollMsg::Cast( const WgObjectPtr& pObject )
+WgWheelRollMsgPtr WgWheelRollMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgWheelRollMsgPtr( static_cast<WgWheelRollMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgWheelRollMsgPtr( static_cast<WgWheelRollMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -808,28 +808,28 @@ WgTickMsg::WgTickMsg( int ms, WgReceiver * pReceiver )
 	m_pCopyTo 		= pReceiver;
 }
 	
-int WgTickMsg::Millisec() const
+int WgTickMsg::millisec() const
 {
 	return m_millisec;
 }
 
-bool WgTickMsg::IsInstanceOf( const char * pClassName ) const
+bool WgTickMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgTickMsg::ClassName( void ) const
+const char * WgTickMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgTickMsgPtr WgTickMsg::Cast( const WgObjectPtr& pObject )
+WgTickMsgPtr WgTickMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTickMsgPtr( static_cast<WgTickMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTickMsgPtr( static_cast<WgTickMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -844,28 +844,28 @@ WgPointerChangeMsg::WgPointerChangeMsg( WgPointerStyle style )
 	m_style = style;
 }
 	
-WgPointerStyle WgPointerChangeMsg::Style() const
+WgPointerStyle WgPointerChangeMsg::style() const
 {
 	return m_style;
 }
 
-bool WgPointerChangeMsg::IsInstanceOf( const char * pClassName ) const
+bool WgPointerChangeMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgPointerChangeMsg::ClassName( void ) const
+const char * WgPointerChangeMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgPointerChangeMsgPtr WgPointerChangeMsg::Cast( const WgObjectPtr& pObject )
+WgPointerChangeMsgPtr WgPointerChangeMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPointerChangeMsgPtr( static_cast<WgPointerChangeMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgPointerChangeMsgPtr( static_cast<WgPointerChangeMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -880,23 +880,23 @@ WgSelectMsg::WgSelectMsg( WgObject * pSource )
 	m_pSource 		= pSource;
 }
 
-bool WgSelectMsg::IsInstanceOf( const char * pClassName ) const
+bool WgSelectMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgSelectMsg::ClassName( void ) const
+const char * WgSelectMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgSelectMsgPtr WgSelectMsg::Cast( const WgObjectPtr& pObject )
+WgSelectMsgPtr WgSelectMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSelectMsgPtr( static_cast<WgSelectMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSelectMsgPtr( static_cast<WgSelectMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -912,28 +912,28 @@ WgToggleMsg::WgToggleMsg( WgObject * pSource, bool bSet )
 	m_bSet = bSet;
 }
 
-bool WgToggleMsg::IsSet() const
+bool WgToggleMsg::isSet() const
 {
 	return m_bSet;
 }
 
-bool WgToggleMsg::IsInstanceOf( const char * pClassName ) const
+bool WgToggleMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgToggleMsg::ClassName( void ) const
+const char * WgToggleMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgToggleMsgPtr WgToggleMsg::Cast( const WgObjectPtr& pObject )
+WgToggleMsgPtr WgToggleMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgToggleMsgPtr( static_cast<WgToggleMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgToggleMsgPtr( static_cast<WgToggleMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -951,38 +951,38 @@ WgValueUpdateMsg::WgValueUpdateMsg( WgObject * pSource, int64_t value, double fr
 	m_bFinal = bFinal;
 }
 
-int64_t WgValueUpdateMsg::Value() const
+int64_t WgValueUpdateMsg::value() const
 {
 	return m_value;
 }
 
-double WgValueUpdateMsg::Fraction() const
+double WgValueUpdateMsg::fraction() const
 {
 	return m_fraction;
 }
 
-bool WgValueUpdateMsg::IsFinal() const
+bool WgValueUpdateMsg::isFinal() const
 {
 	return m_bFinal;
 }
 
-bool WgValueUpdateMsg::IsInstanceOf( const char * pClassName ) const
+bool WgValueUpdateMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgValueUpdateMsg::ClassName( void ) const
+const char * WgValueUpdateMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgValueUpdateMsgPtr WgValueUpdateMsg::Cast( const WgObjectPtr& pObject )
+WgValueUpdateMsgPtr WgValueUpdateMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueUpdateMsgPtr( static_cast<WgValueUpdateMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgValueUpdateMsgPtr( static_cast<WgValueUpdateMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1002,48 +1002,48 @@ WgRangeUpdateMsg::WgRangeUpdateMsg( WgObject * pSource, int intOfs, int intLengt
 	m_bFinal	= bFinal;
 }
 
-bool WgRangeUpdateMsg::IsInstanceOf( const char * pClassName ) const
+bool WgRangeUpdateMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgRangeUpdateMsg::ClassName( void ) const
+const char * WgRangeUpdateMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgRangeUpdateMsgPtr WgRangeUpdateMsg::Cast( const WgObjectPtr& pObject )
+WgRangeUpdateMsgPtr WgRangeUpdateMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgRangeUpdateMsgPtr( static_cast<WgRangeUpdateMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgRangeUpdateMsgPtr( static_cast<WgRangeUpdateMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-int WgRangeUpdateMsg::Offset() const
+int WgRangeUpdateMsg::offset() const
 {
 	return m_ofs;
 }
 
-int WgRangeUpdateMsg::Length() const
+int WgRangeUpdateMsg::length() const
 {
 	return m_length;
 }
 
-double WgRangeUpdateMsg::FracOffset() const
+double WgRangeUpdateMsg::fracOffset() const
 {
 	return m_fracOfs;
 }
 
-double WgRangeUpdateMsg::FracLength() const
+double WgRangeUpdateMsg::fracLength() const
 {
 	return m_fracLength;
 }
 
-bool WgRangeUpdateMsg::IsFinal() const
+bool WgRangeUpdateMsg::isFinal() const
 {
 	return m_bFinal;
 }
@@ -1053,7 +1053,7 @@ bool WgRangeUpdateMsg::IsFinal() const
 
 const char WgTextEditMsg::CLASSNAME[] = {"TextEditMsg"};
 
-WgEditTextPtr WgTextEditMsg::Text() const
+WgEditTextPtr WgTextEditMsg::text() const
 {
 	return m_pText;
 }
@@ -1061,33 +1061,33 @@ WgEditTextPtr WgTextEditMsg::Text() const
 WgTextEditMsg::WgTextEditMsg( const WgEditTextPtr& pText, bool bFinal )
 {
 	m_type 		= WG_MSG_TEXT_EDIT;
-	m_pSource 	= pText->Holder();
+	m_pSource 	= pText->holder();
 	m_pText 	= pText;
 	m_bFinal	= bFinal;
 }
 
-bool WgTextEditMsg::IsFinal() const
+bool WgTextEditMsg::isFinal() const
 {
 	return m_bFinal;
 }
 
-bool WgTextEditMsg::IsInstanceOf( const char * pClassName ) const
+bool WgTextEditMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgTextEditMsg::ClassName( void ) const
+const char * WgTextEditMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgTextEditMsgPtr WgTextEditMsg::Cast( const WgObjectPtr& pObject )
+WgTextEditMsgPtr WgTextEditMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextEditMsgPtr( static_cast<WgTextEditMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTextEditMsgPtr( static_cast<WgTextEditMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1101,33 +1101,33 @@ WgItemMsg::WgItemMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemOb
 	m_pSource 	= pSource;
 }
 
-bool WgItemMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemMsg::ClassName( void ) const
+const char * WgItemMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemMsgPtr WgItemMsg::Cast( const WgObjectPtr& pObject )
+WgItemMsgPtr WgItemMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemMsgPtr( static_cast<WgItemMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemMsgPtr( static_cast<WgItemMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-int WgItemMsg::ItemId() const 
+int WgItemMsg::itemId() const 
 { 
 	return m_item.id; 
 }
 
-WgObjectPtr WgItemMsg::ItemObject() const 
+WgObjectPtr WgItemMsg::itemObject() const 
 { 
 	return m_item.pObject; 
 }
@@ -1142,28 +1142,28 @@ WgItemToggleMsg::WgItemToggleMsg( WgObject * pSource, int itemId, const WgObject
 	m_bSet = bSet;
 }
 
-bool WgItemToggleMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemToggleMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgItemMsg::IsInstanceOf(pClassName);
+	return WgItemMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemToggleMsg::ClassName( void ) const
+const char * WgItemToggleMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemToggleMsgPtr WgItemToggleMsg::Cast( const WgObjectPtr& pObject )
+WgItemToggleMsgPtr WgItemToggleMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemToggleMsgPtr( static_cast<WgItemToggleMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemToggleMsgPtr( static_cast<WgItemToggleMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-bool WgItemToggleMsg::IsSet() const
+bool WgItemToggleMsg::isSet() const
 {
 	return m_bSet;
 }
@@ -1178,28 +1178,28 @@ WgItemMousePressMsg::WgItemMousePressMsg( WgObject * pSource, int itemId, const 
 	m_button = button;
 }
 
-bool WgItemMousePressMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemMousePressMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgItemMsg::IsInstanceOf(pClassName);
+	return WgItemMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemMousePressMsg::ClassName( void ) const
+const char * WgItemMousePressMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemMousePressMsgPtr WgItemMousePressMsg::Cast( const WgObjectPtr& pObject )
+WgItemMousePressMsgPtr WgItemMousePressMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemMousePressMsgPtr( static_cast<WgItemMousePressMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemMousePressMsgPtr( static_cast<WgItemMousePressMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-WgMouseButton WgItemMousePressMsg::Button() const
+WgMouseButton WgItemMousePressMsg::button() const
 {
 	return m_button;
 }
@@ -1220,33 +1220,33 @@ WgItemListMsg::~WgItemListMsg()
 	delete [] m_pItems;
 }
 
-bool WgItemListMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemListMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemListMsg::ClassName( void ) const
+const char * WgItemListMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemListMsgPtr WgItemListMsg::Cast( const WgObjectPtr& pObject )
+WgItemListMsgPtr WgItemListMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemListMsgPtr( static_cast<WgItemListMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemListMsgPtr( static_cast<WgItemListMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-int WgItemListMsg::NbItems() const
+int WgItemListMsg::nbItems() const
 {
 	return m_nbItems;
 }
 
-const WgItemInfo * WgItemListMsg::Items() const
+const WgItemInfo * WgItemListMsg::items() const
 {
 	return m_pItems;
 }
@@ -1260,23 +1260,23 @@ WgItemsSelectMsg::WgItemsSelectMsg( WgObject * pSource, int nbItems, WgItemInfo 
 	m_type = WG_MSG_ITEMS_SELECT;
 }
 
-bool WgItemsSelectMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemsSelectMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgItemListMsg::IsInstanceOf(pClassName);
+	return WgItemListMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemsSelectMsg::ClassName( void ) const
+const char * WgItemsSelectMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemsSelectMsgPtr WgItemsSelectMsg::Cast( const WgObjectPtr& pObject )
+WgItemsSelectMsgPtr WgItemsSelectMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemsSelectMsgPtr( static_cast<WgItemsSelectMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemsSelectMsgPtr( static_cast<WgItemsSelectMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1290,23 +1290,23 @@ WgItemsUnselectMsg::WgItemsUnselectMsg( WgObject * pSource, int nbItems, WgItemI
 	m_type = WG_MSG_ITEMS_UNSELECT;
 }
 
-bool WgItemsUnselectMsg::IsInstanceOf( const char * pClassName ) const
+bool WgItemsUnselectMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgItemListMsg::IsInstanceOf(pClassName);
+	return WgItemListMsg::isInstanceOf(pClassName);
 }
 
-const char * WgItemsUnselectMsg::ClassName( void ) const
+const char * WgItemsUnselectMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgItemsUnselectMsgPtr WgItemsUnselectMsg::Cast( const WgObjectPtr& pObject )
+WgItemsUnselectMsgPtr WgItemsUnselectMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgItemsUnselectMsgPtr( static_cast<WgItemsUnselectMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgItemsUnselectMsgPtr( static_cast<WgItemsUnselectMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1318,27 +1318,27 @@ const char WgPopupClosedMsg::CLASSNAME[] = {"PopupClosedMsg"};
 WgPopupClosedMsg::WgPopupClosedMsg( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller )
 {
 	m_type			= WG_MSG_POPUP_CLOSED;
-	m_pCopyTo		= pCaller.RawPtr();
+	m_pCopyTo		= pCaller.rawPtr();
 	m_pSource		= pPopup;
 }
 
-bool WgPopupClosedMsg::IsInstanceOf( const char * pClassName ) const
+bool WgPopupClosedMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgPopupClosedMsg::ClassName( void ) const
+const char * WgPopupClosedMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgPopupClosedMsgPtr WgPopupClosedMsg::Cast( const WgObjectPtr& pObject )
+WgPopupClosedMsgPtr WgPopupClosedMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPopupClosedMsgPtr( static_cast<WgPopupClosedMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgPopupClosedMsgPtr( static_cast<WgPopupClosedMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1353,23 +1353,23 @@ WgModalMoveOutsideMsg::WgModalMoveOutsideMsg( WgWidget * pSource )
 	m_pSource		= pSource;
 }
 
-bool WgModalMoveOutsideMsg::IsInstanceOf( const char * pClassName ) const
+bool WgModalMoveOutsideMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgModalMoveOutsideMsg::ClassName( void ) const
+const char * WgModalMoveOutsideMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgModalMoveOutsideMsgPtr WgModalMoveOutsideMsg::Cast( const WgObjectPtr& pObject )
+WgModalMoveOutsideMsgPtr WgModalMoveOutsideMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalMoveOutsideMsgPtr( static_cast<WgModalMoveOutsideMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgModalMoveOutsideMsgPtr( static_cast<WgModalMoveOutsideMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1385,23 +1385,23 @@ WgModalBlockedPressMsg::WgModalBlockedPressMsg( WgMouseButton button, WgWidget *
 	m_pSource 		= pSource;
 }
 
-bool WgModalBlockedPressMsg::IsInstanceOf( const char * pClassName ) const
+bool WgModalBlockedPressMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgModalBlockedPressMsg::ClassName( void ) const
+const char * WgModalBlockedPressMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgModalBlockedPressMsgPtr WgModalBlockedPressMsg::Cast( const WgObjectPtr& pObject )
+WgModalBlockedPressMsgPtr WgModalBlockedPressMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalBlockedPressMsgPtr( static_cast<WgModalBlockedPressMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgModalBlockedPressMsgPtr( static_cast<WgModalBlockedPressMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1416,23 +1416,23 @@ WgModalBlockedReleaseMsg::WgModalBlockedReleaseMsg( WgMouseButton button, WgWidg
 	m_pSource 		= pSource;
 }
 
-bool WgModalBlockedReleaseMsg::IsInstanceOf( const char * pClassName ) const
+bool WgModalBlockedReleaseMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgModalBlockedReleaseMsg::ClassName( void ) const
+const char * WgModalBlockedReleaseMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgModalBlockedReleaseMsgPtr WgModalBlockedReleaseMsg::Cast( const WgObjectPtr& pObject )
+WgModalBlockedReleaseMsgPtr WgModalBlockedReleaseMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgModalBlockedReleaseMsgPtr( static_cast<WgModalBlockedReleaseMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgModalBlockedReleaseMsgPtr( static_cast<WgModalBlockedReleaseMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1441,23 +1441,23 @@ WgModalBlockedReleaseMsgPtr WgModalBlockedReleaseMsg::Cast( const WgObjectPtr& p
 
 const char WgLinkMsg::CLASSNAME[] = {"LinkMsg"};
 
-bool WgLinkMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMsg::ClassName( void ) const
+const char * WgLinkMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMsgPtr WgLinkMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMsgPtr WgLinkMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMsgPtr( static_cast<WgLinkMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMsgPtr( static_cast<WgLinkMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1472,23 +1472,23 @@ WgLinkSelectMsg::WgLinkSelectMsg( const WgTextLinkPtr& pLink )
 	m_pSource		= pLink;
 }
 
-bool WgLinkSelectMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkSelectMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMsg::IsInstanceOf(pClassName);
+	return WgLinkMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkSelectMsg::ClassName( void ) const
+const char * WgLinkSelectMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkSelectMsgPtr WgLinkSelectMsg::Cast( const WgObjectPtr& pObject )
+WgLinkSelectMsgPtr WgLinkSelectMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkSelectMsgPtr( static_cast<WgLinkSelectMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkSelectMsgPtr( static_cast<WgLinkSelectMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1503,23 +1503,23 @@ WgLinkMouseEnterMsg::WgLinkMouseEnterMsg( const WgTextLinkPtr& pLink )
 	m_pSource		= pLink;
 }
 
-bool WgLinkMouseEnterMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseEnterMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMsg::IsInstanceOf(pClassName);
+	return WgLinkMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseEnterMsg::ClassName( void ) const
+const char * WgLinkMouseEnterMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseEnterMsgPtr WgLinkMouseEnterMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseEnterMsgPtr WgLinkMouseEnterMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseEnterMsgPtr( static_cast<WgLinkMouseEnterMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseEnterMsgPtr( static_cast<WgLinkMouseEnterMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1534,23 +1534,23 @@ WgLinkMouseLeaveMsg::WgLinkMouseLeaveMsg( const WgTextLinkPtr& pLink )
 	m_pSource		= pLink;
 }
 
-bool WgLinkMouseLeaveMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseLeaveMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMsg::IsInstanceOf(pClassName);
+	return WgLinkMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseLeaveMsg::ClassName( void ) const
+const char * WgLinkMouseLeaveMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseLeaveMsgPtr WgLinkMouseLeaveMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseLeaveMsgPtr WgLinkMouseLeaveMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseLeaveMsgPtr( static_cast<WgLinkMouseLeaveMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseLeaveMsgPtr( static_cast<WgLinkMouseLeaveMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1559,28 +1559,28 @@ WgLinkMouseLeaveMsgPtr WgLinkMouseLeaveMsg::Cast( const WgObjectPtr& pObject )
 
 const char WgLinkMouseButtonMsg::CLASSNAME[] = {"LinkMouseButtonMsg"};
 
-WgMouseButton WgLinkMouseButtonMsg::Button() const
+WgMouseButton WgLinkMouseButtonMsg::button() const
 {
 	return m_button;
 }
 
-bool WgLinkMouseButtonMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseButtonMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMsg::IsInstanceOf(pClassName);
+	return WgLinkMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseButtonMsg::ClassName( void ) const
+const char * WgLinkMouseButtonMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseButtonMsgPtr WgLinkMouseButtonMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseButtonMsgPtr WgLinkMouseButtonMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseButtonMsgPtr( static_cast<WgLinkMouseButtonMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseButtonMsgPtr( static_cast<WgLinkMouseButtonMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1596,23 +1596,23 @@ WgLinkMousePressMsg::WgLinkMousePressMsg( const WgTextLinkPtr& pLink, WgMouseBut
 	m_button		= button;
 }
 
-bool WgLinkMousePressMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMousePressMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgLinkMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMousePressMsg::ClassName( void ) const
+const char * WgLinkMousePressMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMousePressMsgPtr WgLinkMousePressMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMousePressMsgPtr WgLinkMousePressMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMousePressMsgPtr( static_cast<WgLinkMousePressMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMousePressMsgPtr( static_cast<WgLinkMousePressMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1628,23 +1628,23 @@ WgLinkMouseRepeatMsg::WgLinkMouseRepeatMsg( const WgTextLinkPtr& pLink, WgMouseB
 	m_button		= button;
 }
 
-bool WgLinkMouseRepeatMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseRepeatMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgLinkMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseRepeatMsg::ClassName( void ) const
+const char * WgLinkMouseRepeatMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseRepeatMsgPtr WgLinkMouseRepeatMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseRepeatMsgPtr WgLinkMouseRepeatMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseRepeatMsgPtr( static_cast<WgLinkMouseRepeatMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseRepeatMsgPtr( static_cast<WgLinkMouseRepeatMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1660,23 +1660,23 @@ WgLinkMouseReleaseMsg::WgLinkMouseReleaseMsg( const WgTextLinkPtr& pLink, WgMous
 	m_button		= button;
 }
 
-bool WgLinkMouseReleaseMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseReleaseMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgLinkMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseReleaseMsg::ClassName( void ) const
+const char * WgLinkMouseReleaseMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseReleaseMsgPtr WgLinkMouseReleaseMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseReleaseMsgPtr WgLinkMouseReleaseMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseReleaseMsgPtr( static_cast<WgLinkMouseReleaseMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseReleaseMsgPtr( static_cast<WgLinkMouseReleaseMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1692,23 +1692,23 @@ WgLinkMouseClickMsg::WgLinkMouseClickMsg( const WgTextLinkPtr& pLink, WgMouseBut
 	m_button		= button;
 }
 
-bool WgLinkMouseClickMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseClickMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgLinkMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseClickMsg::ClassName( void ) const
+const char * WgLinkMouseClickMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseClickMsgPtr WgLinkMouseClickMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseClickMsgPtr WgLinkMouseClickMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseClickMsgPtr( static_cast<WgLinkMouseClickMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseClickMsgPtr( static_cast<WgLinkMouseClickMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1724,23 +1724,23 @@ WgLinkMouseDoubleClickMsg::WgLinkMouseDoubleClickMsg( const WgTextLinkPtr& pLink
 	m_button		= button;
 }
 
-bool WgLinkMouseDoubleClickMsg::IsInstanceOf( const char * pClassName ) const
+bool WgLinkMouseDoubleClickMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLinkMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgLinkMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgLinkMouseDoubleClickMsg::ClassName( void ) const
+const char * WgLinkMouseDoubleClickMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgLinkMouseDoubleClickMsgPtr WgLinkMouseDoubleClickMsg::Cast( const WgObjectPtr& pObject )
+WgLinkMouseDoubleClickMsgPtr WgLinkMouseDoubleClickMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgLinkMouseDoubleClickMsgPtr( static_cast<WgLinkMouseDoubleClickMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgLinkMouseDoubleClickMsgPtr( static_cast<WgLinkMouseDoubleClickMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1755,23 +1755,23 @@ WgMousePositionMsg::WgMousePositionMsg()
 	m_type = WG_MSG_MOUSE_POSITION;
 }
 
-bool WgMousePositionMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMousePositionMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMsg::IsInstanceOf(pClassName);
+	return WgMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMousePositionMsg::ClassName( void ) const
+const char * WgMousePositionMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMousePositionMsgPtr WgMousePositionMsg::Cast( const WgObjectPtr& pObject )
+WgMousePositionMsgPtr WgMousePositionMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMousePositionMsgPtr( static_cast<WgMousePositionMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMousePositionMsgPtr( static_cast<WgMousePositionMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -1800,48 +1800,48 @@ WgMouseDragMsg::WgMouseDragMsg( WgMouseButton button, WgWidget * pWidget, const 
 	m_currPos = currPos;
 }
 
-bool WgMouseDragMsg::IsInstanceOf( const char * pClassName ) const
+bool WgMouseDragMsg::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgMouseButtonMsg::IsInstanceOf(pClassName);
+	return WgMouseButtonMsg::isInstanceOf(pClassName);
 }
 
-const char * WgMouseDragMsg::ClassName( void ) const
+const char * WgMouseDragMsg::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-WgMouseDragMsgPtr WgMouseDragMsg::Cast( const WgObjectPtr& pObject )
+WgMouseDragMsgPtr WgMouseDragMsg::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgMouseDragMsgPtr( static_cast<WgMouseDragMsg*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgMouseDragMsgPtr( static_cast<WgMouseDragMsg*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-WgCoord WgMouseDragMsg::DraggedTotal() const
+WgCoord WgMouseDragMsg::draggedTotal() const
 {
 	return m_currPos - m_startPos;
 }
 
-WgCoord WgMouseDragMsg::DraggedNow() const
+WgCoord WgMouseDragMsg::draggedNow() const
 {
 	return m_currPos - m_prevPos;
 }
 
-WgCoord WgMouseDragMsg::CurrPos() const
+WgCoord WgMouseDragMsg::currPos() const
 {
 	return m_currPos;
 }
 
-WgCoord WgMouseDragMsg::StartPos() const
+WgCoord WgMouseDragMsg::startPos() const
 {
 	return m_startPos;
 }
 
-WgCoord WgMouseDragMsg::PrevPos() const
+WgCoord WgMouseDragMsg::prevPos() const
 {
 	return m_prevPos;
 }

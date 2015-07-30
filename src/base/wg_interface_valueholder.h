@@ -41,32 +41,32 @@ public:
 
 	Wg_Interface_ValueHolder();
 
-	bool	SetFonts( const WgFontPtr& _pFonts );
-	bool	SetRange( Sint64 min, Sint64 max );
-	bool	SetUnitSize( int unitSize );
+	bool	setFonts( const WgFontPtr& _pFonts );
+	bool	setRange( Sint64 min, Sint64 max );
+	bool	setUnitSize( int unitSize );
 
-	virtual void					SetFormat( const WgValueFormatPtr& format ) = 0;
-	virtual WgValueFormatPtr		Format() const = 0;
+	virtual void					setFormat( const WgValueFormatPtr& format ) = 0;
+	virtual WgValueFormatPtr		format() const = 0;
 
-	bool	SetValue( Sint64 value );
-	bool	SetFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
-	bool	SetFractionalRounding( int nValueDigits = 0, int lastDigitModulo = 1 );
+	bool	setValue( Sint64 value );
+	bool	setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
+	bool	setFractionalRounding( int nValueDigits = 0, int lastDigitModulo = 1 );
 
-	bool	SetStepSize( int size );						///< Step size for IncValue() and decValue().
-	bool	IncValue();														///< Increase value by step size.
-	bool	DecValue();														///< Decrease value by step size.
+	bool	setStepSize( int size );						///< Step size for incValue() and decValue().
+	bool	incValue();														///< Increase value by step size.
+	bool	decValue();														///< Decrease value by step size.
 
-	bool	IncValue( int increment );					///< Increase value by parameter.
-	bool	DecValue( int decrement );					///< Decrease value by parameter.
+	bool	incValue( int increment );					///< Increase value by parameter.
+	bool	decValue( int decrement );					///< Decrease value by parameter.
 
-	inline Sint64	Value() {return m_value;};
-	float			FractionalValue();
-	inline Uint32	UnitSize() {return m_unitSize;}
-	inline Uint32	StepSize() { return m_stepSize;}
-	inline Sint64	MinLimit() { return m_rangeMin; }
-	inline Sint64	MaxLimit() { return m_rangeMax; }
-	inline Uint32	ValueDigits() { return m_nValueDigits; }
-	inline Uint32	Modulator() { return m_modulator; }
+	inline Sint64	value() {return m_value;};
+	float			fractionalValue();
+	inline Uint32	unitSize() {return m_unitSize;}
+	inline Uint32	stepSize() { return m_stepSize;}
+	inline Sint64	minLimit() { return m_rangeMin; }
+	inline Sint64	maxLimit() { return m_rangeMax; }
+	inline Uint32	valueDigits() { return m_nValueDigits; }
+	inline Uint32	modulator() { return m_modulator; }
 
 protected:
 	virtual void	_valueModified() = 0;				///< Called when value has been modified.

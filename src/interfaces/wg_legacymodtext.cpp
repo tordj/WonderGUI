@@ -25,29 +25,29 @@
 const char WgLegacyModText::CLASSNAME[] = {"LegacyModText"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgLegacyModText::IsInstanceOf( const char * pClassName ) const
+bool WgLegacyModText::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLegacyText::IsInstanceOf(pClassName);
+	return WgLegacyText::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgLegacyModText::ClassName( void ) const
+const char * WgLegacyModText::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgLegacyModTextPtr WgLegacyModText::Cast( const WgInterfacePtr& pInterface )
+WgLegacyModTextPtr WgLegacyModText::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgLegacyModTextPtr( pInterface.GetRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgLegacyModTextPtr( pInterface.getRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.rawPtr()) );
 
 	return 0;
 }

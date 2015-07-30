@@ -21,20 +21,20 @@ class WgRect;
 
 namespace WgUtil
 {
-	bool		MarkTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
+	bool		markTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
 
-	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
+	bool		pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 
-	WgCoord 	OrigoToOfs( WgOrigo origo, WgSize base );
-	WgRect		OrigoToRect( WgOrigo origo, WgSize base, WgSize rect );
+	WgCoord 	origoToOfs( WgOrigo origo, WgSize base );
+	WgRect		origoToRect( WgOrigo origo, WgSize base, WgSize rect );
 
-	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
+	int 		sizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
 
-    inline WgOrientation DirToOrient( WgDirection dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
+    inline WgOrientation dirToOrient( WgDirection dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
     
 
-	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
-	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }
+	template <class T> inline T max (T a, T b) {return (a>b?a:b); }
+	template <class T> inline T min (T a, T b) {return (a<b?a:b); }
 
 
 	// A simple checksum algorithm that just performs a long division
@@ -47,14 +47,14 @@ namespace WgUtil
 	public:
 		Checksum8() { remainder = 0; }
 
-		inline void Add8( Uint8 x ) { remainder = ((remainder << 8) + x)%dividend;}
-		inline void Add16( Uint16 x ) { remainder = ((remainder << 16) + x)%dividend;}
-		inline void Add32( Uint32 x ) { remainder = (Uint32)(((((Uint64)remainder) << 32) + x)%dividend);}
+		inline void add8( Uint8 x ) { remainder = ((remainder << 8) + x)%dividend;}
+		inline void add16( Uint16 x ) { remainder = ((remainder << 16) + x)%dividend;}
+		inline void add32( Uint32 x ) { remainder = (Uint32)(((((Uint64)remainder) << 32) + x)%dividend);}
 
-		void Add( const void * pData, Uint32 nBytes );
+		void add( const void * pData, Uint32 nBytes );
 
-		Uint8 GetChecksum() { return (remainder & 0xFF); }
-		inline void Clear() { remainder = 0; }
+		Uint8 getChecksum() { return (remainder & 0xFF); }
+		inline void clear() { remainder = 0; }
 
 	private:
 		Uint32	remainder;
@@ -62,10 +62,10 @@ namespace WgUtil
 	};
 
 
-	Uint32 DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest );
+	Uint32 decodeBase64( const char * pSrc, Uint32 nIn, char * pDest );
 
 	template<typename T>
-	inline std::string ToString(T value)
+	inline std::string toString(T value)
 	{
 		std::ostringstream os;
 		os << value;
@@ -73,20 +73,20 @@ namespace WgUtil
 	}
 
 	// These two are needed to print the value as an integer instead of an ascii character
-	template<> inline std::string ToString(Sint8 value) { return ToString<int>(value); }
-	template<> inline std::string ToString(Uint8 value) { return ToString<Uint32>(value); }
+	template<> inline std::string toString(Sint8 value) { return toString<int>(value); }
+	template<> inline std::string toString(Uint8 value) { return toString<Uint32>(value); }
 
 	template<>
-	inline std::string ToString(bool value)
+	inline std::string toString(bool value)
 	{
 		return value ? "true" : "false";
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3>
-	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d);
+	inline std::string toString(const T0& a, const T1& b, const T2& c, const T3& d);
 
 	template<>
-	inline std::string ToString(WgOrigo value)
+	inline std::string toString(WgOrigo value)
 	{
 		switch( value )
 		{
@@ -115,37 +115,37 @@ namespace WgUtil
 
 
 	template<typename T0, typename T1>
-	inline std::string ToString(const T0& a, const T1& b)
+	inline std::string toString(const T0& a, const T1& b)
 	{
-		return ToString<T0>(a) + ", " + ToString<T1>(b);
+		return toString<T0>(a) + ", " + toString<T1>(b);
 	}
 
 	template<typename T0, typename T1, typename T2>
-	inline std::string ToString(const T0& a, const T1& b, const T2& c)
+	inline std::string toString(const T0& a, const T1& b, const T2& c)
 	{
-		return ToString(a, b) + ", " + ToString<T2>(c);
+		return toString(a, b) + ", " + toString<T2>(c);
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3>
-	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d)
+	inline std::string toString(const T0& a, const T1& b, const T2& c, const T3& d)
 	{
-		return ToString(a, b) + ", " + ToString(c, d);
+		return toString(a, b) + ", " + toString(c, d);
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3, typename T4>
-	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d, const T4& e)
+	inline std::string toString(const T0& a, const T1& b, const T2& c, const T3& d, const T4& e)
 	{
-		return ToString(a, b, c) + ", " + ToString(d, e);
+		return toString(a, b, c) + ", " + toString(d, e);
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
-	inline std::string ToString(const T0& a, const T1& b, const T2& c, const T3& d, const T4& e, const T5& f)
+	inline std::string toString(const T0& a, const T1& b, const T2& c, const T3& d, const T4& e, const T5& f)
 	{
-		return ToString(a, b, c, d) + ", " + ToString(e, f);
+		return toString(a, b, c, d) + ", " + toString(e, f);
 	}
 
 	template<typename T>
-	inline bool FromString(const std::string& str, T& a)
+	inline bool fromString(const std::string& str, T& a)
 	{
 		std::istringstream is(str);
 		is >> a;
@@ -154,10 +154,10 @@ namespace WgUtil
 	}
 
 	template<>
-	inline bool FromString(const std::string& str, Sint8& a)
+	inline bool fromString(const std::string& str, Sint8& a)
 	{
 		int i;
-		if(FromString<int>(str, i))
+		if(fromString<int>(str, i))
 		{
 			if(Sint8(i) == i)
 			{
@@ -169,10 +169,10 @@ namespace WgUtil
 	}
 
 	template<>
-	inline bool FromString(const std::string& str, Uint8& a)
+	inline bool fromString(const std::string& str, Uint8& a)
 	{
 		Uint32 i;
-		if(FromString<Uint32>(str, i))
+		if(fromString<Uint32>(str, i))
 		{
 			if(Uint8(i) == i)
 			{
@@ -184,7 +184,7 @@ namespace WgUtil
 	}
 
 	template<>
-	inline bool FromString(const std::string& str, bool& a)
+	inline bool fromString(const std::string& str, bool& a)
 	{
 		std::string b;
 		std::istringstream is(str);
@@ -196,17 +196,17 @@ namespace WgUtil
 		else
 		{
 			float f = 0;
-			FromString<float>(str, f);
+			fromString<float>(str, f);
 			return f != 0;
 		}
 		return true;
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3>
-	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d);
+	inline int fromString(const std::string& str, T0& a, T1& b, T2& c, T3& d);
 
 	template<>
-	inline bool FromString(const std::string& str, WgOrigo& a)
+	inline bool fromString(const std::string& str, WgOrigo& a)
 	{
 		if(str.empty() || str == "northwest") a = WG_NORTHWEST;
 		else if(str == "north") a = WG_NORTH;
@@ -226,17 +226,17 @@ namespace WgUtil
 	}
 
 
-	inline bool 	ToBool(const std::string& value, bool def = false)	{ bool 	 v = def; FromString(value, v); return v; }
-	inline Sint8	ToSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; FromString(value, v); return v; }
-	inline Sint16	ToSint16(const std::string& value, Sint16 def = 0)	{ Sint16 v = def; FromString(value, v); return v; }
-	inline int		ToSint32(const std::string& value, int def = 0)	{ int v = def; FromString(value, v); return v; }
-	inline Sint64	ToSint64(const std::string& value, Sint64 def = 0)	{ Sint64 v = def; FromString(value, v); return v; }
-	inline Uint8	ToUint8(const std::string& value, Uint8 def = 0)	{ Uint8	 v = def; FromString(value, v); return v; }
-	inline Uint16	ToUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; FromString(value, v); return v; }
-	inline Uint32	ToUint32(const std::string& value, Uint32 def = 0)	{ Uint32 v = def; FromString(value, v); return v; }
-	inline float	ToFloat(const std::string& value, float def = 0)	{ float	 v = def; FromString(value, v); return v; }
+	inline bool 	toBool(const std::string& value, bool def = false)	{ bool 	 v = def; fromString(value, v); return v; }
+	inline Sint8	toSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; fromString(value, v); return v; }
+	inline Sint16	toSint16(const std::string& value, Sint16 def = 0)	{ Sint16 v = def; fromString(value, v); return v; }
+	inline int		toSint32(const std::string& value, int def = 0)	{ int v = def; fromString(value, v); return v; }
+	inline Sint64	toSint64(const std::string& value, Sint64 def = 0)	{ Sint64 v = def; fromString(value, v); return v; }
+	inline Uint8	toUint8(const std::string& value, Uint8 def = 0)	{ Uint8	 v = def; fromString(value, v); return v; }
+	inline Uint16	toUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; fromString(value, v); return v; }
+	inline Uint32	toUint32(const std::string& value, Uint32 def = 0)	{ Uint32 v = def; fromString(value, v); return v; }
+	inline float	toFloat(const std::string& value, float def = 0)	{ float	 v = def; fromString(value, v); return v; }
 
-	inline void Tokenize(const std::string& str, std::vector<std::string>& tokens)
+	inline void tokenize(const std::string& str, std::vector<std::string>& tokens)
 	{
 		if(str.empty())
 			return;
@@ -252,55 +252,55 @@ namespace WgUtil
 	}
 
 	template<typename T0, typename T1>
-	inline int FromString(const std::string& str, T0& a, T1& b)
+	inline int fromString(const std::string& str, T0& a, T1& b)
 	{
 		std::vector<std::string> tokens;
-		Tokenize(str, tokens); tokens.resize(2);
-		if(!FromString<T0>(tokens[0], a)) return 0;
-		if(!FromString<T1>(tokens[1], b)) return 1;
+		tokenize(str, tokens); tokens.resize(2);
+		if(!fromString<T0>(tokens[0], a)) return 0;
+		if(!fromString<T1>(tokens[1], b)) return 1;
 		return 2;
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3>
-	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d)
+	inline int fromString(const std::string& str, T0& a, T1& b, T2& c, T3& d)
 	{
 		std::vector<std::string> tokens;
-		Tokenize(str, tokens); tokens.resize(4);
-		if(!FromString<T0>(tokens[0], a)) return 0;
-		if(!FromString<T1>(tokens[1], b)) return 1;
-		if(!FromString<T2>(tokens[2], c)) return 2;
-		if(!FromString<T3>(tokens[3], d)) return 3;
+		tokenize(str, tokens); tokens.resize(4);
+		if(!fromString<T0>(tokens[0], a)) return 0;
+		if(!fromString<T1>(tokens[1], b)) return 1;
+		if(!fromString<T2>(tokens[2], c)) return 2;
+		if(!fromString<T3>(tokens[3], d)) return 3;
 		return 4;
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3, typename T4>
-	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e)
+	inline int fromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e)
 	{
 		std::vector<std::string> tokens;
-		Tokenize(str, tokens); tokens.resize(5);
-		if(!FromString<T0>(tokens[0], a)) return 0;
-		if(!FromString<T1>(tokens[1], b)) return 1;
-		if(!FromString<T2>(tokens[2], c)) return 2;
-		if(!FromString<T3>(tokens[3], d)) return 3;
-		if(!FromString<T4>(tokens[4], e)) return 4;
+		tokenize(str, tokens); tokens.resize(5);
+		if(!fromString<T0>(tokens[0], a)) return 0;
+		if(!fromString<T1>(tokens[1], b)) return 1;
+		if(!fromString<T2>(tokens[2], c)) return 2;
+		if(!fromString<T3>(tokens[3], d)) return 3;
+		if(!fromString<T4>(tokens[4], e)) return 4;
 		return 5;
 	}
 
 	template<typename T0, typename T1, typename T2, typename T3, typename T4, typename T5>
-	inline int FromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e, T5& f)
+	inline int fromString(const std::string& str, T0& a, T1& b, T2& c, T3& d, T4& e, T5& f)
 	{
 		std::vector<std::string> tokens;
-		Tokenize(str, tokens); tokens.resize(6);
-		if(!FromString<T0>(tokens[0], a)) return 0;
-		if(!FromString<T1>(tokens[1], b)) return 1;
-		if(!FromString<T2>(tokens[2], c)) return 2;
-		if(!FromString<T3>(tokens[3], d)) return 3;
-		if(!FromString<T4>(tokens[4], e)) return 4;
-		if(!FromString<T5>(tokens[5], f)) return 5;
+		tokenize(str, tokens); tokens.resize(6);
+		if(!fromString<T0>(tokens[0], a)) return 0;
+		if(!fromString<T1>(tokens[1], b)) return 1;
+		if(!fromString<T2>(tokens[2], c)) return 2;
+		if(!fromString<T3>(tokens[3], d)) return 3;
+		if(!fromString<T4>(tokens[4], e)) return 4;
+		if(!fromString<T5>(tokens[5], f)) return 5;
 		return 6;
 	}
 
-	inline void XMLEscape(const std::string& text, std::string& escaped )
+	inline void xmlEscape(const std::string& text, std::string& escaped )
 	{
 		escaped = text;
 		int ofs;

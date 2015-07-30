@@ -50,44 +50,44 @@ WgTextStyle::~WgTextStyle()
 		m_pPrevSibling->m_pNextSibling = m_pNextSibling;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgTextStyle::IsInstanceOf( const char * pClassName ) const
+bool WgTextStyle::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgTextStyle::ClassName( void ) const
+const char * WgTextStyle::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTextStylePtr WgTextStyle::Cast( const WgObjectPtr& pObject )
+WgTextStylePtr WgTextStyle::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextStylePtr( static_cast<WgTextStyle*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTextStylePtr( static_cast<WgTextStyle*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetParent() _____________________________________________________________
+//____ setParent() _____________________________________________________________
 
-bool WgTextStyle::SetParent( const WgTextStylePtr& pParent )
+bool WgTextStyle::setParent( const WgTextStylePtr& pParent )
 {
 	// Check so we don't get circular references.
 
 	if( pParent )
 	{
-		WgTextStyle * p = pParent.RawPtr();
+		WgTextStyle * p = pParent.rawPtr();
 		while( p != 0 && p != this )
-			p = p->m_pParent.RawPtr();
+			p = p->m_pParent.rawPtr();
 
 		if( p == this )
 			return false;
@@ -121,23 +121,23 @@ bool WgTextStyle::SetParent( const WgTextStylePtr& pParent )
 }
 
 
-//____ Cascade() _______________________________________________________________
+//____ cascade() _______________________________________________________________
 
-void WgTextStyle::Cascade()
+void WgTextStyle::cascade()
 {
 	WgTextStyle * pChild = m_pFirstChild;
 	while( pChild )
 	{
 		if( pChild->_refreshComb() )
-			pChild->Cascade();
+			pChild->cascade();
 
 		pChild = pChild->m_pNextSibling;
 	}
 }
 
-//____ SetFont() _______________________________________________________________
+//____ setFont() _______________________________________________________________
 
-void WgTextStyle::SetFont( const WgFontPtr& pFont )
+void WgTextStyle::setFont( const WgFontPtr& pFont )
 {
 	if( pFont != m_specAttr.pFont )
 	{
@@ -149,9 +149,9 @@ void WgTextStyle::SetFont( const WgFontPtr& pFont )
 	}
 }
 
-//____ SetLink() _______________________________________________________________
+//____ setLink() _______________________________________________________________
 
-void WgTextStyle::SetLink( const WgTextLinkPtr& pLink )
+void WgTextStyle::setLink( const WgTextLinkPtr& pLink )
 {
 	if( pLink != m_specAttr.pLink )
 	{
@@ -163,12 +163,12 @@ void WgTextStyle::SetLink( const WgTextLinkPtr& pLink )
 	}
 }
 
-//____ SetColor() ______________________________________________________________
+//____ setColor() ______________________________________________________________
 
-void WgTextStyle::SetColor( WgColor color )
+void WgTextStyle::setColor( WgColor color )
 {
 	if( color == WgColor::none )
-		ClearColor();
+		clearColor();
 	else
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
@@ -178,10 +178,10 @@ void WgTextStyle::SetColor( WgColor color )
 		}
 	}}
 
-void WgTextStyle::SetColor( WgColor color, WgState state )
+void WgTextStyle::setColor( WgColor color, WgState state )
 {
 	if( color == WgColor::none )
-		ClearColor(state);
+		clearColor(state);
 	else
 	{
 		int idx = WgUtil::_stateToIndex(state);
@@ -190,12 +190,12 @@ void WgTextStyle::SetColor( WgColor color, WgState state )
 	}
 }
 
-//____ SetBgColor() ______________________________________________________________
+//____ setBgColor() ______________________________________________________________
 
-void WgTextStyle::SetBgColor( WgColor color )
+void WgTextStyle::setBgColor( WgColor color )
 {
 	if( color == WgColor::none )
-		ClearBgColor();
+		clearBgColor();
 	else
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
@@ -206,10 +206,10 @@ void WgTextStyle::SetBgColor( WgColor color )
 	}
 }
 
-void WgTextStyle::SetBgColor( WgColor color, WgState state )
+void WgTextStyle::setBgColor( WgColor color, WgState state )
 {
 	if( color == WgColor::none )
-		ClearBgColor(state);
+		clearBgColor(state);
 	else
 	{
 		int idx = WgUtil::_stateToIndex(state);
@@ -218,12 +218,12 @@ void WgTextStyle::SetBgColor( WgColor color, WgState state )
 	}
 }
 
-//____ SetSize() _______________________________________________________________
+//____ setSize() _______________________________________________________________
 
-void WgTextStyle::SetSize( int size )
+void WgTextStyle::setSize( int size )
 {
 	if( size == WG_FONTSIZE_INHERIT )
-		ClearSize();
+		clearSize();
 	else
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
@@ -234,10 +234,10 @@ void WgTextStyle::SetSize( int size )
 	}
 }
 
-void WgTextStyle::SetSize( int size, WgState state )
+void WgTextStyle::setSize( int size, WgState state )
 {
 	if( size == WG_FONTSIZE_INHERIT )
-		ClearSize(state);
+		clearSize(state);
 	else
 	{
 		int idx = WgUtil::_stateToIndex(state);
@@ -247,12 +247,12 @@ void WgTextStyle::SetSize( int size, WgState state )
 }
 
 
-//____ SetDecoration() _________________________________________________________
+//____ setDecoration() _________________________________________________________
 
-void WgTextStyle::SetDecoration( WgTextDecoration decoration )
+void WgTextStyle::setDecoration( WgTextDecoration decoration )
 {
 	if( decoration == WG_DECORATION_INHERIT )
-		ClearDecoration();
+		clearDecoration();
 	else
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
@@ -263,10 +263,10 @@ void WgTextStyle::SetDecoration( WgTextDecoration decoration )
 	}
 }
 
-void WgTextStyle::SetDecoration( WgTextDecoration decoration, WgState state )
+void WgTextStyle::setDecoration( WgTextDecoration decoration, WgState state )
 {
 	if( decoration == WG_DECORATION_INHERIT )
-		ClearDecoration(state);
+		clearDecoration(state);
 	else
 	{
 		int idx = WgUtil::_stateToIndex(state);
@@ -276,9 +276,9 @@ void WgTextStyle::SetDecoration( WgTextDecoration decoration, WgState state )
 }
 
 
-//____ ClearFont() _____________________________________________________________
+//____ clearFont() _____________________________________________________________
 
-void WgTextStyle::ClearFont()
+void WgTextStyle::clearFont()
 {
 	m_specAttr.pFont = 0;
 	if( m_pParent )
@@ -287,9 +287,9 @@ void WgTextStyle::ClearFont()
 		m_combAttr.pFont = 0;
 }
 
-//____ ClearLink() _____________________________________________________________
+//____ clearLink() _____________________________________________________________
 
-void WgTextStyle::ClearLink()
+void WgTextStyle::clearLink()
 {
 	m_specAttr.pLink = 0;
 	if( m_pParent )
@@ -298,9 +298,9 @@ void WgTextStyle::ClearLink()
 		m_combAttr.pLink = 0;
 }
 
-//____ ClearColor() ____________________________________________________________
+//____ clearColor() ____________________________________________________________
 
-void WgTextStyle::ClearColor()
+void WgTextStyle::clearColor()
 {
 	if( m_pParent )
 	{
@@ -319,7 +319,7 @@ void WgTextStyle::ClearColor()
 	}
 }
 
-void WgTextStyle::ClearColor( WgState state )
+void WgTextStyle::clearColor( WgState state )
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -328,9 +328,9 @@ void WgTextStyle::ClearColor( WgState state )
 }
 
 
-//____ ClearBgColor() ____________________________________________________________
+//____ clearBgColor() ____________________________________________________________
 
-void WgTextStyle::ClearBgColor()
+void WgTextStyle::clearBgColor()
 {
 	if( m_pParent )
 	{
@@ -350,7 +350,7 @@ void WgTextStyle::ClearBgColor()
 	}
 }
 
-void WgTextStyle::ClearBgColor( WgState state )
+void WgTextStyle::clearBgColor( WgState state )
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -358,9 +358,9 @@ void WgTextStyle::ClearBgColor( WgState state )
 	m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : WgColor::none;
 }
 
-//____ ClearSize() ____________________________________________________________
+//____ clearSize() ____________________________________________________________
 
-void WgTextStyle::ClearSize()
+void WgTextStyle::clearSize()
 {
 	if( m_pParent )
 	{
@@ -380,7 +380,7 @@ void WgTextStyle::ClearSize()
 	}
 }
 
-void WgTextStyle::ClearSize( WgState state )
+void WgTextStyle::clearSize( WgState state )
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -388,9 +388,9 @@ void WgTextStyle::ClearSize( WgState state )
 	m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : WG_FONTSIZE_INHERIT;
 }
 
-//____ ClearDecoration() ____________________________________________________________
+//____ clearDecoration() ____________________________________________________________
 
-void WgTextStyle::ClearDecoration()
+void WgTextStyle::clearDecoration()
 {
 	if( m_pParent )
 	{
@@ -410,7 +410,7 @@ void WgTextStyle::ClearDecoration()
 	}
 }
 
-void WgTextStyle::ClearDecoration( WgState state )
+void WgTextStyle::clearDecoration( WgState state )
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -418,9 +418,9 @@ void WgTextStyle::ClearDecoration( WgState state )
 	m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : WG_DECORATION_INHERIT;
 }
 
-//____ ExportAttr() ____________________________________________________________
+//____ exportAttr() ____________________________________________________________
 
-void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest ) const
+void WgTextStyle::exportAttr( WgState state, WgTextAttr2 * pDest ) const
 {
 	int idx = WgUtil::_stateToIndex(state);
 
@@ -435,9 +435,9 @@ void WgTextStyle::ExportAttr( WgState state, WgTextAttr2 * pDest ) const
 		pDest->size = 12;								// Default to size 12.
 }
 
-//____ AddToAttr() _____________________________________________________________
+//____ addToAttr() _____________________________________________________________
 
-void WgTextStyle::AddToAttr( WgState state, WgTextAttr2 * pDest ) const 
+void WgTextStyle::addToAttr( WgState state, WgTextAttr2 * pDest ) const 
 {
 	int idx = WgUtil::_stateToIndex(state);
 

@@ -56,27 +56,27 @@ class WgIcon : public WgInterface
 public:
 	WgIcon(WgIconField* pField) : m_pField(pField) {}
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgIconPtr			Cast( const WgInterfacePtr& pInterface );
-	inline WgIconPtr			Ptr() { return WgIconPtr(_object(),this); }
+	static WgIconPtr			cast( const WgInterfacePtr& pInterface );
+	inline WgIconPtr			ptr() { return WgIconPtr(_object(),this); }
 
-	inline bool			Set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0),
-							 float scale = 0.f, bool bOverlap = false ) { return m_pField->Set(pIconGfx,origo,padding,scale,bOverlap); }
-	inline void			Clear() { m_pField->Clear(); }
+	inline bool			set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0),
+							 float scale = 0.f, bool bOverlap = false ) { return m_pField->set(pIconGfx,origo,padding,scale,bOverlap); }
+	inline void			clear() { m_pField->clear(); }
 
-	inline bool			SetScale( float scaleFactor ) { return m_pField->SetScale(scaleFactor); }
-	inline void			SetOrigo( WgOrigo origo ) { m_pField->SetOrigo(origo); }
-	inline void			SetPadding( WgBorder padding ) { m_pField->SetPadding(padding); }
-	inline void			SetOverlap( bool bOverlap ) { m_pField->SetOverlap(bOverlap); }
-	inline void			SetSkin( const WgSkinPtr& pSkin ) { m_pField->SetSkin(pSkin); }
+	inline bool			setScale( float scaleFactor ) { return m_pField->setScale(scaleFactor); }
+	inline void			setOrigo( WgOrigo origo ) { m_pField->setOrigo(origo); }
+	inline void			setPadding( WgBorder padding ) { m_pField->setPadding(padding); }
+	inline void			setOverlap( bool bOverlap ) { m_pField->setOverlap(bOverlap); }
+	inline void			setSkin( const WgSkinPtr& pSkin ) { m_pField->setSkin(pSkin); }
 
-	inline float		Scale() const { return m_pField->Scale(); }
-	inline WgOrigo		Origo() const { return m_pField->Origo(); }
-	inline WgBorder		Padding() const { return m_pField->Padding(); }
-	inline bool			Overlap() const { return m_pField->Overlap(); }
-	inline WgSkinPtr	Skin() const { return m_pField->Skin(); }
+	inline float		scale() const { return m_pField->scale(); }
+	inline WgOrigo		origo() const { return m_pField->origo(); }
+	inline WgBorder		padding() const { return m_pField->padding(); }
+	inline bool			overlap() const { return m_pField->overlap(); }
+	inline WgSkinPtr	skin() const { return m_pField->skin(); }
 protected:
 	WgObject * 			_object() const;
 

@@ -34,16 +34,16 @@ typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBrokerWeakPtr>	WgUniformSizeBrokerWe
 class WgUniformSizeBroker : public WgSizeBroker
 {
 public:
-	static WgUniformSizeBrokerPtr	Create() { return WgUniformSizeBrokerPtr(new WgUniformSizeBroker()); }
+	static WgUniformSizeBrokerPtr	create() { return WgUniformSizeBrokerPtr(new WgUniformSizeBroker()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgUniformSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
+	static WgUniformSizeBrokerPtr	cast( const WgObjectPtr& pObject );
     
-	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool MayAlterPreferredLengths() const;
+	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+	bool mayAlterPreferredLengths() const;
 
 protected:
     WgUniformSizeBroker() {};

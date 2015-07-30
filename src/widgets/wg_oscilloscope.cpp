@@ -56,42 +56,42 @@ WgOscilloscope::~WgOscilloscope()
 	delete [] m_pMarkers;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgOscilloscope::IsInstanceOf( const char * pClassName ) const
+bool WgOscilloscope::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgOscilloscope::ClassName( void ) const
+const char * WgOscilloscope::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgOscilloscopePtr WgOscilloscope::Cast( const WgObjectPtr& pObject )
+WgOscilloscopePtr WgOscilloscope::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ PreferredSize() ________________________________________________________
+//____ preferredSize() ________________________________________________________
 
-WgSize WgOscilloscope::PreferredSize() const
+WgSize WgOscilloscope::preferredSize() const
 {
 	WgSize contentSize(80,64);
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(contentSize);
+		return m_pSkin->sizeForContent(contentSize);
 	else
 		return contentSize;
 }
@@ -164,7 +164,7 @@ void WgOscilloscope::SetLineColor( WgColor color )
 
 void WgOscilloscope::SetLineThickness( float thickness )
 {
-	WG_LIMIT( thickness, 1.f, 2.f );
+	LIMIT( thickness, 1.f, 2.f );
 	if( thickness != m_lineThickness )
 	{
 		m_lineThickness = thickness;
@@ -295,7 +295,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	WgRect canvas = _canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas,m_state);
+		canvas = m_pSkin->contentRect(_canvas,m_state);
 
 	//
 
@@ -309,7 +309,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	for( int i = 0 ; i < m_nHGridLines ; i++ )
 	{
 		int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-		pDevice->ClipDrawHorrLine( _clip, WgCoord(canvas.x,ofsY), canvas.w, m_gridColor );
+		pDevice->clipDrawHorrLine( _clip, WgCoord(canvas.x,ofsY), canvas.w, m_gridColor );
 	}
 
 	// Draw VGridLines
@@ -317,7 +317,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	for( int i = 0 ; i < m_nVGridLines ; i++ )
 	{
 		int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-		pDevice->ClipDrawVertLine( _clip, WgCoord(ofsX,canvas.y), canvas.h, m_gridColor );
+		pDevice->clipDrawVertLine( _clip, WgCoord(ofsX,canvas.y), canvas.h, m_gridColor );
 	}
 
 	// Draw the oscilloscope line
@@ -326,16 +326,16 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 
 	int allocSize = sizeof(WgCoord)*nPoints;
 
-	WgCoord * pOut = reinterpret_cast<WgCoord*>(WgBase::MemStackAlloc(allocSize));
+	WgCoord * pOut = reinterpret_cast<WgCoord*>(WgBase::memStackAlloc(allocSize));
 
 	for( int i = 0 ; i < nPoints ; i++ )
 	{
 		pOut[i] = WgCoord(canvas.x + i, (int)(centerY + scaleY*m_pLinePoints[i]));
 	}
 
-	pDevice->ClipPlotSoftPixels(_clip, nPoints, pOut, m_lineColor, m_lineThickness);
+	pDevice->clipPlotSoftPixels(_clip, nPoints, pOut, m_lineColor, m_lineThickness);
 
-	WgBase::MemStackRelease(allocSize);
+	WgBase::memStackRelease(allocSize);
 
 	// Render markers
 
@@ -348,11 +348,11 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 			int x = m_pMarkers[i].x;
 			int y = (int) (m_pMarkers[i].y*scaleY+centerY);
 
-			dest.SetSize( m_pMarkerSkin->PreferredSize() );
+			dest.setSize( m_pMarkerSkin->preferredSize() );
 			dest.x = x - dest.w / 2;
 			dest.y = y - dest.h / 2;
 
-			m_pMarkerSkin->Render( pDevice, dest, WG_STATE_NORMAL, _clip );
+			m_pMarkerSkin->render( pDevice, dest, WG_STATE_NORMAL, _clip );
 		}
 	}
 }

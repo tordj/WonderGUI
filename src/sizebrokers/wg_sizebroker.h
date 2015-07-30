@@ -44,14 +44,14 @@ typedef	WgWeakPtr<WgSizeBroker,WgObjectWeakPtr>	WgSizeBrokerWeakPtr;
 class WgSizeBroker : public WgObject
 {
 public:
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSizeBrokerPtr	Cast( const WgObjectPtr& pObject );
+	static WgSizeBrokerPtr	cast( const WgObjectPtr& pObject );
     
-	virtual int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
-	virtual int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
-	virtual bool MayAlterPreferredLengths() const = 0;
+	virtual int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
+	virtual int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
+	virtual bool mayAlterPreferredLengths() const = 0;
 
 protected:
 	WgSizeBroker();

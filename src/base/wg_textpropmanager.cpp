@@ -68,11 +68,11 @@ WgTextpropManager::WgTextpropManager()
 	g_propIndex[g_nullProp.m_indexOfs] = 0;
 }
 
-//____ RegisterProp() _________________________________________________________
+//____ registerProp() _________________________________________________________
 
-Uint16 WgTextpropManager::RegisterProp( const WgTextprop& prop )
+Uint16 WgTextpropManager::registerProp( const WgTextprop& prop )
 {
-	prop.AssertIntegrity();
+	prop.assertIntegrity();
 
 	Uint8 ofs = prop._calculateChecksum();
 
@@ -93,7 +93,7 @@ Uint16 WgTextpropManager::RegisterProp( const WgTextprop& prop )
 	// Get an available WgTextprop, fill in data, link and return id.
 
 	if( g_firstFreeProp < 0 )
-		IncreaseBuffer();
+		increaseBuffer();
 
 	Uint16 id = g_firstFreeProp;
 	WgTextpropHolder * p = &g_pPropBuffer[id];
@@ -121,9 +121,9 @@ Uint16 WgTextpropManager::RegisterProp( const WgTextprop& prop )
 }
 
 
-//____ IncreaseBuffer() ________________________________________________________
+//____ increaseBuffer() ________________________________________________________
 
-void WgTextpropManager::IncreaseBuffer()
+void WgTextpropManager::increaseBuffer()
 {
 	if( g_nPropTotal == 32768 )
 		return;
@@ -173,9 +173,9 @@ void WgTextpropManager::IncreaseBuffer()
 	g_nPropTotal = newSize;
 }
 
-//____ FreeProp() ______________________________________________
+//____ freeProp() ______________________________________________
 
-void WgTextpropManager::FreeProp( Uint16 hProp )
+void WgTextpropManager::freeProp( Uint16 hProp )
 {
 	WgTextpropHolder * p = &g_pPropBuffer[hProp];
 

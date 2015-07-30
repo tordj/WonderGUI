@@ -51,45 +51,45 @@ WgCaret::WgCaret(	WgCaret * pIn )
 	m_blitMode = pIn->m_blitMode;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgCaret::IsInstanceOf( const char * pClassName ) const
+bool WgCaret::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgCaret::ClassName( void ) const
+const char * WgCaret::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgCaretPtr WgCaret::Cast( const WgObjectPtr& pObject )
+WgCaretPtr WgCaret::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgCaretPtr( static_cast<WgCaret*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgCaretPtr( static_cast<WgCaret*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetBlitMode() __________________________________________________________
+//____ setBlitMode() __________________________________________________________
 
-void WgCaret::SetBlitMode( BlitMode mode )
+void WgCaret::setBlitMode( BlitMode mode )
 {
 	m_blitMode = mode;
 }
 
 
-//____ SetSizeRatio() _________________________________________________________
+//____ setSizeRatio() _________________________________________________________
 
-void WgCaret::SetSizeRatio( Mode m, float ratio )
+void WgCaret::setSizeRatio( Mode m, float ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -98,9 +98,9 @@ void WgCaret::SetSizeRatio( Mode m, float ratio )
 }
 
 
-//____ SetMode() ______________________________________________________________
+//____ setMode() ______________________________________________________________
 
-bool WgCaret::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
+bool WgCaret::setMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -113,9 +113,9 @@ bool WgCaret::SetMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int a
 	return true;
 }
 
-//____ SetBearing() ___________________________________________________________
+//____ setBearing() ___________________________________________________________
 
-void WgCaret::SetBearing( Mode m, WgCoord bearing )
+void WgCaret::setBearing( Mode m, WgCoord bearing )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -124,9 +124,9 @@ void WgCaret::SetBearing( Mode m, WgCoord bearing )
 }
 
 
-//____ SetAdvance() ___________________________________________________________
+//____ setAdvance() ___________________________________________________________
 
-void WgCaret::SetAdvance( Mode m, int advance )
+void WgCaret::setAdvance( Mode m, int advance )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -134,9 +134,9 @@ void WgCaret::SetAdvance( Mode m, int advance )
 	m_advance[m] = advance;
 }
 
-//____ SetScaleWidth() ___________________________________________________________
+//____ setScaleWidth() ___________________________________________________________
 
-void WgCaret::SetScaleWidth( Mode m, bool bScaleWidth )
+void WgCaret::setScaleWidth( Mode m, bool bScaleWidth )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;
@@ -145,9 +145,9 @@ void WgCaret::SetScaleWidth( Mode m, bool bScaleWidth )
 }
 
 
-//____ SetAnim() ______________________________________________________________
+//____ setAnim() ______________________________________________________________
 
-void WgCaret::SetAnim( Mode m, const WgGfxAnimPtr& pAnim )
+void WgCaret::setAnim( Mode m, const WgGfxAnimPtr& pAnim )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

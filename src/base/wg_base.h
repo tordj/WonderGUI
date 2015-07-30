@@ -85,80 +85,80 @@ class WgMemStack;
  * A static base class for WonderGUI that handles initialization and general
  * housekeeping and resource allocation.
  *
- * The first thing that you need to do when starting WonderGUI is to call WgBase::Init()
- * and the last thing you should do is to call WgBase::Exit().
+ * The first thing that you need to do when starting WonderGUI is to call WgBase::init()
+ * and the last thing you should do is to call WgBase::exit().
  * 
  */
 
 class WgBase
 {
 public:
-	static void Init();
-	static int Exit();
+	static void init();
+	static int exit();
 
 
 #ifdef WG_USE_FREETYPE
-	static bool					InitFreeType();
-	static inline FT_Library	GetFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
+	static bool					initFreeType();
+	static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 #endif
 
 
 
-//	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
-//	static const WgTextMgrPtr& GetDefaultTextManager();
+//	static void setDefaultTextManager( const WgTextMgrPtr& pManager );
+//	static const WgTextMgrPtr& getDefaultTextManager();
 
-	static void 	SetDefaultTextprop( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
+	static void 	setDefaultTextprop( const WgTextpropPtr& pProp );
+	static WgTextpropPtr getDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
 
-	static void 	SetDefaultSelectionProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
+	static void 	setDefaultSelectionProp( const WgTextpropPtr& pProp );
+	static WgTextpropPtr getDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
 
-	static void 	SetDefaultLinkProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
+	static void 	setDefaultLinkProp( const WgTextpropPtr& pProp );
+	static WgTextpropPtr getDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
 
-	static void 	SetDefaultCursor( const WgCaretPtr& pCursor );
-	static WgCaretPtr GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
+	static void 	setDefaultCursor( const WgCaretPtr& pCursor );
+	static WgCaretPtr getDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
-	static void		SetDefaultCaret( const WgCaret2Ptr& pCaret );
-	static WgCaret2Ptr DefaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
+	static void		setDefaultCaret( const WgCaret2Ptr& pCaret );
+	static WgCaret2Ptr defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
 
-	static void		SetDefaultPresenter( const WgTextPresenterPtr& pPresenter );
-	static WgTextPresenterPtr DefaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
+	static void		setDefaultPresenter( const WgTextPresenterPtr& pPresenter );
+	static WgTextPresenterPtr defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
 
-	static void		SetDefaultStyle( const WgTextStylePtr& pStyle );
-	static WgTextStylePtr DefaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
+	static void		setDefaultStyle( const WgTextStylePtr& pStyle );
+	static WgTextStylePtr defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 
 
-	static void		MapKey( WgKey translated_keycode, int native_keycode );
-	static void		UnmapKey( WgKey translated_keycode );
-	static void		ClearKeyMap();
-	static WgKey	TranslateKey( int native_keycode );
+	static void		mapKey( WgKey translated_keycode, int native_keycode );
+	static void		unmapKey( WgKey translated_keycode );
+	static void		clearKeyMap();
+	static WgKey	translateKey( int native_keycode );
 
-	static bool		SetMouseButtonRepeat( int delay, int rate );
-	static bool		SetKeyRepeat( int delay, int rate );
+	static bool		setMouseButtonRepeat( int delay, int rate );
+	static bool		setKeyRepeat( int delay, int rate );
 
-	static int		MouseButtonRepeatDelay() { assert(s_pData!=0); return s_pData->buttonRepeatDelay; }
-	static int		MouseButtonRepeatRate() { assert(s_pData!=0); return s_pData->buttonRepeatRate; }
+	static int		mouseButtonRepeatDelay() { assert(s_pData!=0); return s_pData->buttonRepeatDelay; }
+	static int		mouseButtonRepeatRate() { assert(s_pData!=0); return s_pData->buttonRepeatRate; }
 
-	static int		KeyRepeatDelay() { assert(s_pData!=0); return s_pData->keyRepeatDelay; }
-	static int		KeyRepeatRate() { assert(s_pData!=0); return s_pData->keyRepeatRate; }
+	static int		keyRepeatDelay() { assert(s_pData!=0); return s_pData->keyRepeatDelay; }
+	static int		keyRepeatRate() { assert(s_pData!=0); return s_pData->keyRepeatRate; }
 
-	static bool		SetDoubleClickTresholds( int time, int distance );
-	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
-	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
+	static bool		setDoubleClickTresholds( int time, int distance );
+	static int		doubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
+	static int		doubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
 
-	static char *	MemStackAlloc( int bytes );
-	static void		MemStackRelease( int bytes );
+	static char *	memStackAlloc( int bytes );
+	static void		memStackRelease( int bytes );
 
-	static WgMsgRouterPtr	MsgRouter() { return s_pData->pMsgRouter; }
+	static WgMsgRouterPtr	msgRouter() { return s_pData->pMsgRouter; }
  
 	//____
 
-	static WgWeakPtrHub *	AllocWeakPtrHub();
-	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
+	static WgWeakPtrHub *	allocWeakPtrHub();
+	static void			freeWeakPtrHub( WgWeakPtrHub * pHub );
 
-	static WgHookPtrHub *	AllocHookPtrHub();
-	static void			FreeHookPtrHub( WgHookPtrHub * pHub );
+	static WgHookPtrHub *	allocHookPtrHub();
+	static void			freeHookPtrHub( WgHookPtrHub * pHub );
 
 private:
 

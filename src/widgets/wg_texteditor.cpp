@@ -37,9 +37,9 @@ WgTextEditor::WgTextEditor() : m_text(this), text(&m_text)
 {
 	m_maxLines		= 0;
 
-	m_text.setLineWidth( Size().w );
-	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
-	m_text.SetEditMode( WG_TEXT_STATIC );
+	m_text.setLineWidth( size().w );
+	m_text.setAutoEllipsis(IsAutoEllipsisDefault());
+	m_text.setEditMode( WG_TEXT_STATIC );
 	m_bResetCursorOnFocus = true;
 	m_tickRouteId = 0;
 }
@@ -50,63 +50,63 @@ WgTextEditor::WgTextEditor() : m_text(this), text(&m_text)
 WgTextEditor::~WgTextEditor()
 {
 	if( m_tickRouteId )
-		WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+		WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgTextEditor::IsInstanceOf( const char * pClassName ) const
+bool WgTextEditor::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgTextEditor::ClassName( void ) const
+const char * WgTextEditor::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTextEditorPtr WgTextEditor::Cast( const WgObjectPtr& pObject )
+WgTextEditorPtr WgTextEditor::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTextEditorPtr( static_cast<WgTextEditor*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTextEditorPtr( static_cast<WgTextEditor*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //_______________________________________________________________
-void WgTextEditor::SetEditMode(WgTextEditMode mode)
+void WgTextEditor::setEditMode(WgTextEditMode mode)
 {
-	m_text.SetEditMode(mode);
+	m_text.setEditMode(mode);
 }
 
-//____ MatchingHeight() _______________________________________________________
+//____ matchingHeight() _______________________________________________________
 
-int WgTextEditor::MatchingHeight( int width ) const
+int WgTextEditor::matchingHeight( int width ) const
 {
 	int textHeight = m_text.heightForWidth( width );
 
 	if( m_pSkin )
-		textHeight += m_pSkin->ContentPadding().h;
+		textHeight += m_pSkin->contentPadding().h;
 
 	return textHeight;
 }
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgTextEditor::PreferredSize() const
+WgSize WgTextEditor::preferredSize() const
 {
 	WgSize contentSize = m_text.unwrappedSize();
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(contentSize);
+		return m_pSkin->sizeForContent(contentSize);
 	else
 		return contentSize;
 }
@@ -115,7 +115,7 @@ WgSize WgTextEditor::PreferredSize() const
 
 WgPointerStyle WgTextEditor::PointerStyle() const
 {
-	if( m_text.GetMarkedLink() )
+	if( m_text.getMarkedLink() )
 		return WG_POINTER_HAND;
 
 	return m_pointerStyle;
@@ -125,12 +125,12 @@ WgPointerStyle WgTextEditor::PointerStyle() const
 
 WgString WgTextEditor::TooltipString() const
 {
-	if( !m_tooltip.IsEmpty() )
+	if( !m_tooltip.isEmpty() )
 		return m_tooltip;
 	else
 	{
-		WgSize sz = Size();
-		if( sz.w < m_text.Width() || sz.h < m_text.Height() )
+		WgSize sz = size();
+		if( sz.w < m_text.width() || sz.h < m_text.height() )
 			return m_text.getBuffer();
 	}
 
@@ -145,11 +145,11 @@ void WgTextEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect(_canvas, m_state);
+		canvas = m_pSkin->contentRect(_canvas, m_state);
 	else
 		canvas = _canvas;
 
-	pDevice->PrintText( _clip, &m_text, canvas );
+	pDevice->printText( _clip, &m_text, canvas );
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -170,20 +170,20 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 	m_text.setState(m_state);
 	_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 
-	if( IsEditable() )
+	if( isEditable() )
 	{
-		if( m_state.IsFocused() && !oldState.IsFocused() )
+		if( m_state.isFocused() && !oldState.isFocused() )
 		{
 			m_text.showCursor();
-			m_tickRouteId = WgBase::MsgRouter()->AddRoute( WG_MSG_TICK, this );
+			m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
 			if(	m_bResetCursorOnFocus )
-				m_text.GoEOT();
+				m_text.goEot();
 			_requestRender();
 		}
-		if( !m_state.IsFocused() && oldState.IsFocused() )
+		if( !m_state.isFocused() && oldState.isFocused() )
 		{
 			m_text.hideCursor();
-			WgBase::MsgRouter()->DeleteRoute( m_tickRouteId );
+			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 			_requestRender();
 		}
@@ -197,14 +197,14 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 
-	int type 				= pMsg->Type();
-	WgModifierKeys modKeys 	= pMsg->ModKeys();
+	int type 				= pMsg->type();
+	WgModifierKeys modKeys 	= pMsg->modKeys();
 
 	if( type == WG_MSG_TICK )
 	{
-		if( IsSelectable() && m_state.IsFocused() )
+		if( isSelectable() && m_state.isFocused() )
 		{
-			m_text.incTime( WgTickMsg::Cast(pMsg)->Millisec() );
+			m_text.incTime( WgTickMsg::cast(pMsg)->millisec() );
 			_requestRender();					//TODO: Should only render the cursor and selection!
 		}
 		return;
@@ -212,28 +212,28 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 
 
 
-	if( m_state.IsFocused() && (type == WG_MSG_MOUSE_PRESS || type == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+	if( m_state.isFocused() && (type == WG_MSG_MOUSE_PRESS || type == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 	{
 
-		if( IsSelectable() && (modKeys & WG_MODKEY_SHIFT) )
+		if( isSelectable() && (modKeys & WG_MODKEY_SHIFT) )
 		{
 			m_text.setSelectionMode(true);
 		}
 
-		m_text.CursorGotoCoord( pMsg->PointerPos(), GlobalGeo() );
+		m_text.cursorGotoCoord( pMsg->pointerPos(), globalGeo() );
 
-		if(IsSelectable() && type == WG_MSG_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
+		if(isSelectable() && type == WG_MSG_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
-			m_text.ClearSelection();
+			m_text.clearSelection();
 			m_text.setSelectionMode(true);
 		}
 	}
 	else if( type == WG_MSG_MOUSE_RELEASE  )
 	{
-		if(m_state.IsFocused() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT)
+		if(m_state.isFocused() && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT)
 			m_text.setSelectionMode(false);
 	}
-	else if( !m_state.IsFocused() && IsEditable() && type == WG_MSG_MOUSE_PRESS && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
+	else if( !m_state.isFocused() && isEditable() && type == WG_MSG_MOUSE_PRESS && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 	{
 		GrabFocus();
 	}
@@ -241,9 +241,9 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 
 	if( type == WG_MSG_CHARACTER )
 	{
-		if( IsEditable() )
+		if( isEditable() )
 		{
-			int  chr = WgCharacterMsg::Cast(pMsg)->Char();
+			int  chr = WgCharacterMsg::cast(pMsg)->character();
 
 			if( chr >= 32 && chr != 127)
 			{
@@ -262,18 +262,18 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 
 	if( type == WG_MSG_KEY_RELEASE )
 	{
-		switch( WgKeyMsg::Cast(pMsg)->TranslatedKeyCode() )
+		switch( WgKeyMsg::cast(pMsg)->translatedKeyCode() )
 		{
 			case WG_KEY_SHIFT:
-				if(!WgBase::MsgRouter()->IsMouseButtonPressed(1))
+				if(!WgBase::msgRouter()->isMouseButtonPressed(1))
 					m_text.setSelectionMode(false);
 			break;
 		}
 	}
 
-	if( (type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT) && IsEditable() )
+	if( (type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT) && isEditable() )
 	{
-		switch( WgKeyMsg::Cast(pMsg)->TranslatedKeyCode() )
+		switch( WgKeyMsg::cast(pMsg)->translatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -298,14 +298,14 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				m_text.CursorGoUp( 1, GlobalGeo() );
+				m_text.cursorGoUp( 1, globalGeo() );
 				break;
 
 			case WG_KEY_DOWN:
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_text.setSelectionMode(true);
 
-				m_text.CursorGoDown( 1, GlobalGeo() );
+				m_text.cursorGoDown( 1, globalGeo() );
 				break;
 
 			case WG_KEY_BACKSPACE:
@@ -331,9 +331,9 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					m_text.GoBOT();
+					m_text.goBot();
 				else
-					m_text.GoBOL();
+					m_text.goBol();
 				break;
 
 			case WG_KEY_END:
@@ -341,9 +341,9 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 					m_text.setSelectionMode(true);
 
 				if( modKeys & WG_MODKEY_CTRL )
-					m_text.GoEOT();
+					m_text.goEot();
 				else
-					m_text.GoEOL();
+					m_text.goEol();
 				break;
 
 			default:
@@ -353,29 +353,29 @@ void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
 
 	// Let text object handle its actions.
 /*
-	bool bChanged = m_text.OnAction( action, button_key, GlobalGeo(), WgCoord(info.x, info.y) );
+	bool bChanged = m_text.onAction( action, button_key, globalGeo(), WgCoord(info.x, info.y) );
 	if( bChanged )
 		RequestRender();
 */
 
 	// Swallow message depending on rules.
 
-	if( pMsg->IsMouseButtonMsg() && IsSelectable() )
+	if( pMsg->isMouseButtonMsg() && isSelectable() )
 	{
-		if( WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
-			pMsg->Swallow();
+		if( WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			pMsg->swallow();
 	}
-	else if( pMsg->IsKeyMsg() && IsEditable() )
+	else if( pMsg->isKeyMsg() && isEditable() )
 	{
-		int key = WgKeyMsg::Cast(pMsg)->TranslatedKeyCode();
-		if( WgKeyMsg::Cast(pMsg)->IsMovementKey() == true ||
+		int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+		if( WgKeyMsg::cast(pMsg)->isMovementKey() == true ||
 			key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE || key == WG_KEY_RETURN || (key == WG_KEY_TAB && m_bTabLock) )
-				pMsg->Swallow();
+				pMsg->swallow();
 		
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( type == WG_MSG_CHARACTER )
-		pMsg->Swallow();
+		pMsg->swallow();
 }
 
 
@@ -394,7 +394,7 @@ void WgTextEditor::_onCloneContent( const WgWidget * _pOrg )
 void WgTextEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	m_text.SetColorSkin(pNewSkin);
+	m_text.setColorSkin(pNewSkin);
 }
 
 //____ _onNewSize() ________________________________________________
@@ -404,7 +404,7 @@ void WgTextEditor::_onNewSize( const WgSize& size )
 	int width = size.w;
 
 	if( m_pSkin )
-		width -= m_pSkin->ContentPadding().w;
+		width -= m_pSkin->contentPadding().w;
 
 	m_text.setLineWidth( width );
 }
@@ -415,10 +415,10 @@ void WgTextEditor::_onNewSize( const WgSize& size )
 
 int WgTextEditor::InsertTextAtCursor( const WgCharSeq& str )
 {
-	if( !IsEditable() )
+	if( !isEditable() )
 		return 0;
 
-	if( !m_state.IsFocused() )
+	if( !m_state.isFocused() )
 		if( !GrabFocus() )
 			return 0;				// Couldn't get input focus...
 
@@ -437,10 +437,10 @@ int WgTextEditor::InsertTextAtCursor( const WgCharSeq& str )
 
 bool WgTextEditor::InsertCharAtCursor( Uint16 c )
 {
-	if( !IsEditable() )
+	if( !isEditable() )
 		return 0;
 
-	if( !m_state.IsFocused() )
+	if( !m_state.isFocused() )
 		if( !GrabFocus() )
 			return false;				// Couldn't get input focus...
 

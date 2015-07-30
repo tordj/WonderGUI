@@ -37,10 +37,10 @@ class WgGlyphset;
 class WgResLoader
 {
 public:
-	virtual WgSurfacePtr	LoadSurface( const std::string& filename, bool bRequired ) = 0;
-	virtual WgGlyphsetPtr	LoadGlyphset( const std::string& filename ) = 0;
-	virtual WgResDBPtr		LoadDb( const std::string& filename, const WgResDBPtr& pDependencies = 0 ) = 0;
-	virtual std::string		LoadString( const std::string& token ) = 0;
+	virtual WgSurfacePtr	loadSurface( const std::string& filename, bool bRequired ) = 0;
+	virtual WgGlyphsetPtr	loadGlyphset( const std::string& filename ) = 0;
+	virtual WgResDBPtr		loadDb( const std::string& filename, const WgResDBPtr& pDependencies = 0 ) = 0;
+	virtual std::string		loadString( const std::string& token ) = 0;
 };
 
 

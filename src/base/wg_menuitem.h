@@ -70,19 +70,19 @@ public:
 	virtual ~WgMenuItem() {};
 	LINK_METHODS( WgMenuItem );
 
-	inline WgMenuItemType GetType() const { return m_type; }
-	inline void SetId(int id) { m_id = id; }
-	inline int GetId() const { return m_id; }
+	inline WgMenuItemType getType() const { return m_type; }
+	inline void setId(int id) { m_id = id; }
+	inline int getId() const { return m_id; }
 
-	inline bool IsVisible() const { return m_bVisible; }
+	inline bool isVisible() const { return m_bVisible; }
 
-	void SetVisible(bool bVisible);
-	void Modified();
+	void setVisible(bool bVisible);
+	void modified();
 
 protected:
 	WgMenuItem(WgMenuItemType _type, int id) {m_type = _type; m_id = id; m_pMyMenu = 0; m_bVisible = true; }
 
-	virtual void SetMyMenu( WgMenu * pMenu ) { m_pMyMenu = pMenu; }
+	virtual void setMyMenu( WgMenu * pMenu ) { m_pMyMenu = pMenu; }
 
 	WgMenuItemType	m_type;
     int				m_id;
@@ -112,25 +112,25 @@ public:
 		WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuEntry();
 
-	void 	SetText(const WgString& text);
-	void 	SetHelpText(const WgString& helpText);
-	void 	SetIcon(const WgSkinPtr& pIcon);
-	void 	SetNavKey(Uint16 navKey);
-	void 	SetAccelModifier(WgModifierKeys accelModif);
-	void 	SetAccelKey(Uint16 accelKey);
-	void 	SetAccelText(const WgString& accelText);
+	void 	setText(const WgString& text);
+	void 	setHelpText(const WgString& helpText);
+	void 	setIcon(const WgSkinPtr& pIcon);
+	void 	setNavKey(Uint16 navKey);
+	void 	setAccelModifier(WgModifierKeys accelModif);
+	void 	setAccelKey(Uint16 accelKey);
+	void 	setAccelText(const WgString& accelText);
 
-	inline bool IsEnabled() { return m_bEnabled; }
-	inline void	SetEnabled(bool bEnabled) { m_bEnabled = bEnabled; }			// Need to force a redraw here...
+	inline bool isEnabled() { return m_bEnabled; }
+	inline void	setEnabled(bool bEnabled) { m_bEnabled = bEnabled; }			// Need to force a redraw here...
 
-	inline WgString GetText() { return m_text; }
-	inline WgString GetHelpText() { return m_helpText; }
-	inline WgString GetAccelText() { return m_accelText; }
+	inline WgString getText() { return m_text; }
+	inline WgString getHelpText() { return m_helpText; }
+	inline WgString getAccelText() { return m_accelText; }
 
-	inline const WgSkinPtr GetIcon() { return m_pIcon; }
-	inline Uint16			GetNavKey()		{ return m_navKey; }
-	inline WgModifierKeys	GetAccelModif()	{ return m_accelModif; }
-	inline Uint16			GetAccelKey()	{ return m_accelKey; }
+	inline const WgSkinPtr getIcon() { return m_pIcon; }
+	inline Uint16			getNavKey()		{ return m_navKey; }
+	inline WgModifierKeys	getAccelModif()	{ return m_accelModif; }
+	inline Uint16			getAccelKey()	{ return m_accelKey; }
 
 protected:
 	Uint16			m_minWidth;
@@ -157,9 +157,9 @@ public:
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuCheckBox() {};
 
-	inline bool IsChecked() { return m_bChecked; }
-	inline void	Check() { m_bChecked = true; }			// Need to force a redraw here...
-	inline void Uncheck() { m_bChecked = false; }		// Need to force a redraw here...
+	inline bool isChecked() { return m_bChecked; }
+	inline void	check() { m_bChecked = true; }			// Need to force a redraw here...
+	inline void uncheck() { m_bChecked = false; }		// Need to force a redraw here...
 
 private:
 	bool			m_bChecked;
@@ -175,8 +175,8 @@ public:
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuRadioButton() {};
 
-	inline	bool IsSelected() { return m_bSelected; }
-			bool Select();
+	inline	bool isSelected() { return m_bSelected; }
+			bool select();
 
 private:
 	bool			m_bSelected;
@@ -193,8 +193,8 @@ public:
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline WgMenuPtr	GetSubMenu()					{return m_pSubMenu;};
-	void				SetSubMenu(const WgMenuPtr& pSubMenu);
+	inline WgMenuPtr	getSubMenu()					{return m_pSubMenu;};
+	void				setSubMenu(const WgMenuPtr& pSubMenu);
 
 	WgMenuPtr		m_pSubMenu;
 };

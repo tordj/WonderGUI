@@ -56,23 +56,23 @@ class WgSizeScaler : public WgObject
 {
 	friend class WgScalable;
 public:
-	static WgSizeScalerPtr Create();
-	static WgSizeScalerPtr Create( float scale );
-	static WgSizeScalerPtr Create( float scaleX, float scaleY );
+	static WgSizeScalerPtr create();
+	static WgSizeScalerPtr create( float scale );
+	static WgSizeScalerPtr create( float scaleX, float scaleY );
 
 	virtual ~WgSizeScaler() {}
 
-	void	SetScale( float scale );
-	void	SetScale( float scaleX, float scaleY );
-	void	SetScaleX( float scaleX );
-	void	SetScaleY( float scaleY );
+	void	setScale( float scale );
+	void	setScale( float scaleX, float scaleY );
+	void	setScaleX( float scaleX );
+	void	setScaleY( float scaleY );
 
-	inline float	ScaleX() const { return m_scaleX; }
-	inline float	ScaleY() const { return m_scaleY; }
+	inline float	scaleX() const { return m_scaleX; }
+	inline float	scaleY() const { return m_scaleY; }
 
-	void	AddItem( WgScalable * pScalable );
-	void	RemoveItem( WgScalable * pScalable );
-	void	RemoveAllItems();
+	void	addItem( WgScalable * pScalable );
+	void	removeItem( WgScalable * pScalable );
+	void	removeAllItems();
 
 private:
 	WgSizeScaler( float scaleX, float scaleY );

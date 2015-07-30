@@ -70,34 +70,34 @@ public:
 
 	// These are here for test- and debugging purposes.
 
-	inline static Uint32 GetNbProperties() { return g_nPropUsed; }
-	inline static Uint32 GetPropBufferSize() { return g_nPropTotal; }
-	inline static Uint32 GetRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
+	inline static Uint32 getNbProperties() { return g_nPropUsed; }
+	inline static Uint32 getPropBufferSize() { return g_nPropTotal; }
+	inline static Uint32 getRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
 
-	inline static void SetMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
+	inline static void setMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
 
 private:
 
 	static const int NB_START_PROPS = 16;
 
-	static inline void IncRef( Uint16 hProp, Uint32 incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
+	static inline void incRef( Uint16 hProp, Uint32 incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
 
-	static inline void DecRef( Uint16 hProp, Uint32 decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
+	static inline void decRef( Uint16 hProp, Uint32 decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
 																if( g_pPropBuffer[hProp].m_refCnt == 0 )
-																	FreeProp( hProp ); }
+																	freeProp( hProp ); }
 
-	static Uint16	RegisterProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
+	static Uint16	registerProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
 
-//	static Uint16 	GetProp( const WgFontPtr& pFont, const WgColor color, bool bColored,
+//	static Uint16 	getProp( const WgFontPtr& pFont, const WgColor color, bool bColored,
 //							 bool bUnderlined, bool bSelected, WgTextLinkPtr& pLink );
 
-	static const WgTextprop&	GetProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
-	static const WgTextprop *	GetPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
+	static const WgTextprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
+	static const WgTextprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
 
 
 
-	static void		FreeProp( Uint16 hProp );
-	static void		IncreaseBuffer( void );
+	static void		freeProp( Uint16 hProp );
+	static void		increaseBuffer( void );
 
 
 	// Table for finding a certain WgTextprop quickly.

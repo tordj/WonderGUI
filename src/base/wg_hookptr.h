@@ -52,8 +52,8 @@ public:
 		return *this;
 	}
 
-	inline WgHook& operator*() const { return * RawPtr(); }
-	inline WgHook * operator->() const { return RawPtr(); }
+	inline WgHook& operator*() const { return * rawPtr(); }
+	inline WgHook * operator->() const { return rawPtr(); }
 
 	//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
 	inline bool operator==(const WgHookPtr& other) const { return m_pHub == other.m_pHub; }
@@ -65,7 +65,7 @@ public:
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
-	inline WgHook * RawPtr() const
+	inline WgHook * rawPtr() const
 	{
 		if( m_pHub )
 			return m_pHub->pObj;
@@ -88,19 +88,19 @@ template<class T,class P> class WgHookTypePtr : public P
 {
 public:
 	WgHookTypePtr(T* p=0) : P( p ) {};
-	WgHookTypePtr(const WgHookTypePtr<T,P>& r) : P( r.RawPtr() ) {};
-//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.RawPtr() ) {};
+	WgHookTypePtr(const WgHookTypePtr<T,P>& r) : P( r.rawPtr() ) {};
+//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.rawPtr() ) {};
 	~WgHookTypePtr() {};
 
-	inline T & operator*() const { return * RawPtr(); }
-	inline T * operator->() const{ return RawPtr(); }
+	inline T & operator*() const { return * rawPtr(); }
+	inline T * operator->() const{ return rawPtr(); }
 
 	inline bool operator==(const WgHookTypePtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
 	inline bool operator!=(const WgHookTypePtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
 
 //	inline operator bool() const { return (this->m_pObj != 0); }
 
-	inline T * RawPtr() const
+	inline T * rawPtr() const
 	{
 		if( this->m_pHub && this->m_pHub->pObj )
 			return static_cast<T*>(this->m_pHub->pObj);

@@ -38,12 +38,12 @@ class WgReceiver : public WgObject
 {
 	friend class WgMsgRouter;
 public:
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgReceiverPtr	Cast( const WgObjectPtr& pObject );
+	static WgReceiverPtr	cast( const WgObjectPtr& pObject );
 
-	virtual void OnMsg( const WgMsgPtr& pMsg ) = 0;
+	virtual void onMsg( const WgMsgPtr& pMsg ) = 0;
 
 protected:
 	WgReceiver() {};

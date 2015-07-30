@@ -23,29 +23,29 @@
 #include <wg_widget.h>
 #include <wg_modvaluefield.h>
 
-//____ Clear() _________________________________________________________________
+//____ clear() _________________________________________________________________
 
-void WgModValueField::Clear()
+void WgModValueField::clear()
 {
-	WgValueField::Clear();
+	WgValueField::clear();
 	m_minValue = INT64_MIN;
 	m_maxValue = INT64_MAX;
 }
 
-//____ Set() ___________________________________________________________________
+//____ set() ___________________________________________________________________
 
-bool WgModValueField::Set( Sint64 value, int scale )
+bool WgModValueField::set( Sint64 value, int scale )
 {
 	if( value > m_maxValue )
 		value = m_maxValue;
 	else if( value < m_minValue )
 		value = m_minValue;
-	return WgValueField::Set(value,scale);
+	return WgValueField::set(value,scale);
 }
 
-//____ SetRange() ______________________________________________________________
+//____ setRange() ______________________________________________________________
 
-bool WgModValueField::SetRange( Sint64 min, Sint64 max )
+bool WgModValueField::setRange( Sint64 min, Sint64 max )
 {
 	if( min > max )
 		return false;
@@ -54,9 +54,9 @@ bool WgModValueField::SetRange( Sint64 min, Sint64 max )
 	m_maxValue = max;
 	
 	Sint64 val = m_value;
-	WG_LIMIT( val, min, max );
+	LIMIT( val, min, max );
 	m_value = val;
 	if( val != m_value )
-		WgValueField::Set(val, m_scale);
+		WgValueField::set(val, m_scale);
 	return true;
 }	

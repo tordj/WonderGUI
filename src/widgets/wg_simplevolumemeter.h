@@ -23,12 +23,12 @@ typedef	WgWeakPtr<WgSimpleVolumeMeter,WgWidgetWeakPtr>		WgSimpleVolumeMeterWeakP
 class WgSimpleVolumeMeter : public WgWidget
 {
 public:
-	static WgSimpleVolumeMeterPtr	Create() { return WgSimpleVolumeMeterPtr(new WgSimpleVolumeMeter()); }
+	static WgSimpleVolumeMeterPtr	create() { return WgSimpleVolumeMeterPtr(new WgSimpleVolumeMeter()); }
 	
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSimpleVolumeMeterPtr	Cast( const WgObjectPtr& pObject );
+	static WgSimpleVolumeMeterPtr	cast( const WgObjectPtr& pObject );
 	
 	//____ Methods __________________________________________
 
@@ -36,12 +36,12 @@ public:
 	void			SetSections( float bottomFraction, float topFraction );
 	void			SetHoldHeight( float fraction );
 	
-	void			SetValue( float peak, float hold );
-	void			SetValue( float leftPeak, float leftHold, float rightPeak, float rightHold );
+	void			setValue( float peak, float hold );
+	void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );
 	
 	
 	
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 	
 protected:
 	WgSimpleVolumeMeter();

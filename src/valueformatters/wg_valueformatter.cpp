@@ -25,29 +25,29 @@
 const char WgValueFormatter::CLASSNAME[] = {"ValueFormatter"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgValueFormatter::IsInstanceOf( const char * pClassName ) const
+bool WgValueFormatter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgObject::IsInstanceOf(pClassName);
+	return WgObject::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgValueFormatter::ClassName( void ) const
+const char * WgValueFormatter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgValueFormatterPtr WgValueFormatter::Cast( const WgObjectPtr& pObject )
+WgValueFormatterPtr WgValueFormatter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgValueFormatterPtr( static_cast<WgValueFormatter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgValueFormatterPtr( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }

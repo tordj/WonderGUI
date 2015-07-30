@@ -41,29 +41,29 @@ class WgSoftSurface : public WgSurface
 	friend class WgSoftSurfaceFactory;
 
  public:
-	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
-	static WgSoftSurfacePtr	Create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pBlob ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
-	static WgSoftSurfacePtr	Create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.RawPtr() )); }
+	static WgSoftSurfacePtr	create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
+	static WgSoftSurfacePtr	create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pBlob ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
+	static WgSoftSurfacePtr	create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.rawPtr() )); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSoftSurfacePtr	Cast( const WgObjectPtr& pObject );
+	static WgSoftSurfacePtr	cast( const WgObjectPtr& pObject );
 
-	WgSize		Size() const;
-	bool		IsOpaque() const;
+	WgSize		size() const;
+	bool		isOpaque() const;
 
-	Uint32		Pixel( WgCoord coord ) const;
-	Uint8		Alpha( WgCoord coord ) const;
+	Uint32		pixel( WgCoord coord ) const;
+	Uint8		alpha( WgCoord coord ) const;
 
-	void *		Lock( WgAccessMode mode );
-	void *		LockRegion( WgAccessMode mode, const WgRect& region );
-	void		Unlock();
+	void *		lock( WgAccessMode mode );
+	void *		lockRegion( WgAccessMode mode, const WgRect& region );
+	void		unlock();
 
-	inline float ScaleAlpha() { return m_fScaleAlpha; }
-	void SetScaleAlpha(float fScaleAlpha);
+	inline float scaleAlpha() { return m_fScaleAlpha; }
+	void setScaleAlpha(float fScaleAlpha);
 
-	void PutPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
+	void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
 
 protected:
 	WgSoftSurface( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );

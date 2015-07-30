@@ -33,7 +33,7 @@ const char WgPopupHook::CLASSNAME[] = {"PopupHook"};
 
 
 //_____________________________________________________________________________
-WgPopupLayerPtr WgPopupHook::Parent() const
+WgPopupLayerPtr WgPopupHook::parent() const
 {
 	return m_pParent;
 }
@@ -48,29 +48,29 @@ WgPopupHook::WgPopupHook( WgPopupLayer * pParent, WgWidget * pOpener, const WgRe
 	m_maxSize 		= maxSize;
 }
 
-//____ WgPopupHook::IsInstanceOf() __________________________________________
+//____ WgPopupHook::isInstanceOf() __________________________________________
 
-bool WgPopupHook::IsInstanceOf( const char * pClassName ) const
+bool WgPopupHook::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLayerHook::IsInstanceOf(pClassName);
+	return WgLayerHook::isInstanceOf(pClassName);
 }
 
-//____ WgPopupHook::ClassName() _____________________________________________
+//____ WgPopupHook::className() _____________________________________________
 
-const char * WgPopupHook::ClassName( void ) const
+const char * WgPopupHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgPopupHook::Cast() __________________________________________________
+//____ WgPopupHook::cast() __________________________________________________
 
-WgPopupHookPtr WgPopupHook::Cast( const WgHookPtr& pHook )
+WgPopupHookPtr WgPopupHook::cast( const WgHookPtr& pHook )
 {
-	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgPopupHookPtr( static_cast<WgPopupHook*>(pHook.RawPtr()) );
+	if( pHook && pHook->isInstanceOf(CLASSNAME) )
+		return WgPopupHookPtr( static_cast<WgPopupHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -84,7 +84,7 @@ void WgPopupHook::_requestRender()
 //_____________________________________________________________________________
 void WgPopupHook::_requestRender( const WgRect& rect )
 {
-	m_pParent->_onRequestRender( rect + m_geo.Pos(), this );
+	m_pParent->_onRequestRender( rect + m_geo.pos(), this );
 }
 
 //_____________________________________________________________________________
@@ -131,67 +131,67 @@ bool WgPopupHook::_updateGeo()
 {
 	// Get size of parent and correct launcherGeo
 
-	WgRect 	parentSize = m_pParent->Size();
+	WgRect 	parentSize = m_pParent->size();
 
 	//
 
-	WgRect geo(0,0,WgSize::Min(_widget()->PreferredSize(),WgSize::Min(m_maxSize,parentSize)));
+	WgRect geo(0,0,WgSize::min(_widget()->preferredSize(),WgSize::min(m_maxSize,parentSize)));
 
 	switch( m_attachPoint )
 	{
 		case WG_NORTHEAST:					// Right side of launcherGeo, going down.
 		{
-			geo.x = m_launcherGeo.Right();
-			geo.y = m_launcherGeo.Top();
+			geo.x = m_launcherGeo.right();
+			geo.y = m_launcherGeo.top();
 			break;
 		}
 
 		case WG_SOUTHEAST:					// Right side of launcherGeo, going up.
 		{
-			geo.x = m_launcherGeo.Right();
-			geo.y = m_launcherGeo.Bottom() - geo.h;
+			geo.x = m_launcherGeo.right();
+			geo.y = m_launcherGeo.bottom() - geo.h;
 			break;
 		}
 
 		case WG_NORTHWEST:					// Left-aligned above launcher.
 		{
-			geo.x = m_launcherGeo.Left();
-			geo.y = m_launcherGeo.Top() - geo.h;
+			geo.x = m_launcherGeo.left();
+			geo.y = m_launcherGeo.top() - geo.h;
 			break;
 		}
 
 		case WG_SOUTHWEST:					// Left-aligned below launcher.
 		{
-			geo.x = m_launcherGeo.Left();
-			geo.y = m_launcherGeo.Bottom();
+			geo.x = m_launcherGeo.left();
+			geo.y = m_launcherGeo.bottom();
 			break;
 		}
 
 		case WG_EAST:						// Centered left of launcherGeo.
 		{
-			geo.x = m_launcherGeo.Left() - geo.w;
-			geo.y = m_launcherGeo.Top() + m_launcherGeo.h/2 - geo.h/2;
+			geo.x = m_launcherGeo.left() - geo.w;
+			geo.y = m_launcherGeo.top() + m_launcherGeo.h/2 - geo.h/2;
 			break;
 		}
 
 		case WG_NORTH:						// Centered above launcherGeo.
 		{
-			geo.x = m_launcherGeo.Left() + m_launcherGeo.w/2 + geo.w/2;
-			geo.y = m_launcherGeo.Top() - geo.h;
+			geo.x = m_launcherGeo.left() + m_launcherGeo.w/2 + geo.w/2;
+			geo.y = m_launcherGeo.top() - geo.h;
 			break;
 		}
 
 		case WG_WEST:						// Centered right of launcherGeo.
 		{
-			geo.x = m_launcherGeo.Right();
-			geo.y = m_launcherGeo.Top() + m_launcherGeo.h/2 - geo.h/2;
+			geo.x = m_launcherGeo.right();
+			geo.y = m_launcherGeo.top() + m_launcherGeo.h/2 - geo.h/2;
 			break;
 		}
 
 		case WG_SOUTH:						// Centered below launcherGeo.
 		{
-			geo.x = m_launcherGeo.Left() + m_launcherGeo.w/2 + geo.w/2;
-			geo.y = m_launcherGeo.Bottom();
+			geo.x = m_launcherGeo.left() + m_launcherGeo.w/2 + geo.w/2;
+			geo.y = m_launcherGeo.bottom();
 			break;
 		}
 
@@ -199,17 +199,17 @@ bool WgPopupHook::_updateGeo()
 
 	// Adjust geometry to fit inside parent.
 
-	if( geo.Right() > parentSize.w )
+	if( geo.right() > parentSize.w )
 	{
-		if( geo.Left() == m_launcherGeo.Right() )
+		if( geo.left() == m_launcherGeo.right() )
 		{
-			if( m_launcherGeo.Left() > parentSize.w - m_launcherGeo.Right() )
+			if( m_launcherGeo.left() > parentSize.w - m_launcherGeo.right() )
 			{
-				geo.x = m_launcherGeo.Left() - geo.w;
+				geo.x = m_launcherGeo.left() - geo.w;
 				if( geo.x < 0 )
 				{
 					geo.x = 0;
-					geo.w = m_launcherGeo.Left();
+					geo.w = m_launcherGeo.left();
 				}
 			}
 			else
@@ -219,20 +219,20 @@ bool WgPopupHook::_updateGeo()
 			geo.x = parentSize.w - geo.w;
 	}
 
-	if( geo.Left() < 0 )
+	if( geo.left() < 0 )
 	{
-		if( geo.Right() == m_launcherGeo.Left() )
+		if( geo.right() == m_launcherGeo.left() )
 		{
-			if( m_launcherGeo.Left() < parentSize.w - m_launcherGeo.Right() )
+			if( m_launcherGeo.left() < parentSize.w - m_launcherGeo.right() )
 			{
-				geo.x = m_launcherGeo.Right();
-				if( geo.Right() > parentSize.w )
+				geo.x = m_launcherGeo.right();
+				if( geo.right() > parentSize.w )
 					geo.w = parentSize.w - geo.x;
 			}
 			else
 			{
 				geo.x = 0;
-				geo.w = m_launcherGeo.Left();
+				geo.w = m_launcherGeo.left();
 			}
 
 		}
@@ -240,17 +240,17 @@ bool WgPopupHook::_updateGeo()
 			geo.x = 0;
 	}
 
-	if( geo.Bottom() > parentSize.h )
+	if( geo.bottom() > parentSize.h )
 	{
-		if( geo.Top() == m_launcherGeo.Bottom() )
+		if( geo.top() == m_launcherGeo.bottom() )
 		{
-			if( m_launcherGeo.Top() > parentSize.h - m_launcherGeo.Bottom() )
+			if( m_launcherGeo.top() > parentSize.h - m_launcherGeo.bottom() )
 			{
-				geo.y = m_launcherGeo.Top() - geo.h;
+				geo.y = m_launcherGeo.top() - geo.h;
 				if( geo.y < 0 )
 				{
 					geo.y = 0;
-					geo.h = m_launcherGeo.Top();
+					geo.h = m_launcherGeo.top();
 				}
 			}
 			else
@@ -260,20 +260,20 @@ bool WgPopupHook::_updateGeo()
 			geo.y = parentSize.h - geo.h;
 	}
 
-	if( geo.Top() < 0 )
+	if( geo.top() < 0 )
 	{
-		if( geo.Bottom() == m_launcherGeo.Top() )
+		if( geo.bottom() == m_launcherGeo.top() )
 		{
-			if( m_launcherGeo.Top() < parentSize.h - m_launcherGeo.Bottom() )
+			if( m_launcherGeo.top() < parentSize.h - m_launcherGeo.bottom() )
 			{
-				geo.y = m_launcherGeo.Bottom();
-				if( geo.Bottom() > parentSize.h )
+				geo.y = m_launcherGeo.bottom();
+				if( geo.bottom() > parentSize.h )
 					geo.h = parentSize.h - geo.y;
 			}
 			else
 			{
 				geo.y = 0;
-				geo.h = m_launcherGeo.Bottom();
+				geo.h = m_launcherGeo.bottom();
 			}
 		}
 		else
@@ -306,69 +306,69 @@ WgPopupLayer::~WgPopupLayer()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgPopupLayer::IsInstanceOf( const char * pClassName ) const
+bool WgPopupLayer::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgLayer::IsInstanceOf(pClassName);
+	return WgLayer::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgPopupLayer::ClassName( void ) const
+const char * WgPopupLayer::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgPopupLayerPtr WgPopupLayer::Cast( const WgObjectPtr& pObject )
+WgPopupLayerPtr WgPopupLayer::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgPopupLayerPtr( static_cast<WgPopupLayer*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgPopupLayerPtr( static_cast<WgPopupLayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ OpenPopup() _______________________________________________________________
+//____ openPopup() _______________________________________________________________
 
-WgPopupHookPtr WgPopupLayer::OpenPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
+WgPopupHookPtr WgPopupLayer::openPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
-	WgPopupHook * pHook = new WgPopupHook( this, pOpener.RawPtr(), launcherGeo, attachPoint, maxSize );
-	pHook->_setWidget(pPopup.RawPtr());
-	m_popupHooks.PushBack(pHook);
+	WgPopupHook * pHook = new WgPopupHook( this, pOpener.rawPtr(), launcherGeo, attachPoint, maxSize );
+	pHook->_setWidget(pPopup.rawPtr());
+	m_popupHooks.pushBack(pHook);
 	pHook->_updateGeo();
 	_stealKeyboardFocus();
 	return pHook;
 }
 
 
-//____ CloseAllPopups() ________________________________________________
+//____ closeAllPopups() ________________________________________________
 
-bool WgPopupLayer::CloseAllPopups()
+bool WgPopupLayer::closeAllPopups()
 {
-	WgPopupHook * pHook = m_popupHooks.First();
+	WgPopupHook * pHook = m_popupHooks.first();
 	if( pHook )
-		ClosePopup( pHook->_widget() );
+		closePopup( pHook->_widget() );
 
 	return true;
 }
 
 
-//____ ClosePopup() _________________________________________________________
+//____ closePopup() _________________________________________________________
 
-bool WgPopupLayer::ClosePopup( const WgWidgetPtr& pWidget )
+bool WgPopupLayer::closePopup( const WgWidgetPtr& pWidget )
 {
-	if( !pWidget || pWidget->Parent() != this || pWidget == m_baseHook.Widget() )
+	if( !pWidget || pWidget->parent() != this || pWidget == m_baseHook.widget() )
 		return false;
 
-	WgMsgRouter * pEH = WgBase::MsgRouter().RawPtr();
+	WgMsgRouter * pEH = WgBase::msgRouter().rawPtr();
 
 	WgPopupHook * pHook = (WgPopupHook *) pWidget->_hook();
 
@@ -378,7 +378,7 @@ bool WgPopupLayer::ClosePopup( const WgWidgetPtr& pWidget )
 		pHook = pHook->_next();
 
 		if( pEH )
-			pEH->Post( new WgPopupClosedMsg( p->_widget(), p->m_pOpener ) );
+			pEH->post( new WgPopupClosedMsg( p->_widget(), p->m_pOpener ) );
 
 		p->_requestRender();
 		delete p;
@@ -387,18 +387,18 @@ bool WgPopupLayer::ClosePopup( const WgWidgetPtr& pWidget )
 	return true;
 }
 
-//____ FirstPopupHook() ______________________________________________________
+//____ firstPopupHook() ______________________________________________________
 
-WgPopupHookPtr WgPopupLayer::FirstPopupHook()
+WgPopupHookPtr WgPopupLayer::firstPopupHook()
 {
-	return m_popupHooks.First();
+	return m_popupHooks.first();
 }
 
-//____ LastPopupHook() _______________________________________________________
+//____ lastPopupHook() _______________________________________________________
 
-WgPopupHookPtr WgPopupLayer::LastPopupHook()
+WgPopupHookPtr WgPopupLayer::lastPopupHook()
 {
-	return m_popupHooks.Last();
+	return m_popupHooks.last();
 }
 
 //____ _findWidget() ____________________________________________________________
@@ -408,20 +408,20 @@ WgWidget *  WgPopupLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 	// MenuPanel has its own _findWidget() method since we need special treatment of
 	// searchmode ACTION_TARGET when a menu is open.
 
-	if( mode == WG_SEARCH_ACTION_TARGET && !m_popupHooks.IsEmpty() )
+	if( mode == WG_SEARCH_ACTION_TARGET && !m_popupHooks.isEmpty() )
 	{
 		// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
-		WgPopupHook * pHook = m_popupHooks.Last();
+		WgPopupHook * pHook = m_popupHooks.last();
 		WgWidget * pResult = 0;
 
 		while( pHook && !pResult )
 		{
-			if( pHook->m_geo.Contains( ofs ) )
+			if( pHook->m_geo.contains( ofs ) )
 			{
 				if( pHook->_widget()->IsContainer() )
-					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.Pos(), mode );
-				else if( pHook->_widget()->MarkTest( ofs - pHook->m_geo.Pos() ) )
+					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.pos(), mode );
+				else if( pHook->_widget()->markTest( ofs - pHook->m_geo.pos() ) )
 					pResult = pHook->_widget();
 			}
 			pHook = pHook->_prev();
@@ -431,15 +431,15 @@ WgWidget *  WgPopupLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			// Check the first opener
 			
-			WgPopupHook * pHook = m_popupHooks.First();
+			WgPopupHook * pHook = m_popupHooks.first();
 			if( pHook && pHook->m_pOpener )
 			{
-				WgWidget * pOpener = pHook->m_pOpener.RawPtr();
+				WgWidget * pOpener = pHook->m_pOpener.rawPtr();
 
-				WgCoord absPos 		= ofs + GlobalPos();
-				WgRect	openerGeo 	= pOpener->GlobalGeo();
+				WgCoord absPos 		= ofs + globalPos();
+				WgRect	openerGeo 	= pOpener->globalGeo();
 
-				if( openerGeo.Contains(absPos) && pOpener->MarkTest( absPos - openerGeo.Pos() ) )
+				if( openerGeo.contains(absPos) && pOpener->markTest( absPos - openerGeo.pos() ) )
 					pResult = pOpener;
 			}
 			
@@ -465,7 +465,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pHo
 	// Clip our geometry and put it in a dirtyrect-list
 
 	WgPatches patches;
-	patches.Add( WgRect( rect, WgRect(0,0,m_size)) );
+	patches.add( WgRect( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -475,11 +475,11 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pHo
 	if( pHook )
 		pCover = pHook->_next();
 	else
-		pCover = m_popupHooks.First();
+		pCover = m_popupHooks.first();
 
 	while( pCover )
 	{
-		if( pCover->m_geo.IntersectsWith( rect ) )
+		if( pCover->m_geo.intersectsWith( rect ) )
 			pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
 
 		pCover = pCover->_next();
@@ -487,7 +487,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pHo
 
 	// Make request render calls
 
-	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
+	for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 		_requestRender( * pRect );
 }
 
@@ -519,40 +519,40 @@ void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 
 	// Try to find an opener
 
-	WgObject * pSource = _pMsg->SourceRawPtr();
+	WgObject * pSource = _pMsg->sourceRawPtr();
 	if( pSource && pSource != this )
 	{
-		WgPopupHook * pHook = m_popupHooks.First();
+		WgPopupHook * pHook = m_popupHooks.first();
 		while( pHook && pHook->_widget() != pSource )
 			pHook = pHook->_next();
 			
 		if( pHook && pHook->m_pOpener )
-			pOpener = pHook->m_pOpener.RawPtr();
+			pOpener = pHook->m_pOpener.rawPtr();
 	}
 	
 	// First we try to repost message to opener (if any)
 
 	if( pOpener )
 	{
-		_pMsg->SetRepost( _pMsg->Source().RawPtr(), pOpener );
+		_pMsg->setRepost( _pMsg->source().rawPtr(), pOpener );
 		return;
 	}	
 
 	// Secondly we take care of message ourselves if it is addressed to one of our menus or us.
 
-	switch( _pMsg->Type() )
+	switch( _pMsg->type() )
 	{
 /*
 		case WG_MSG_MOUSE_POSITION:
 
-			if( !m_popupHooks.IsEmpty() )							// Process only if we have at least one open menu.
+			if( !m_popupHooks.isEmpty() )							// Process only if we have at least one open menu.
 			{
-				WgCoord ofs = _pMsg->PointerPos();
+				WgCoord ofs = _pMsg->pointerPos();
 				WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 				if( p != this )
 				{
-					while( p->Parent() != this )
-						p = p->Parent();
+					while( p->parent() != this )
+						p = p->parent();
 						
 					if( p != m_popupHooks.	
 				}	
@@ -562,14 +562,14 @@ void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_MOUSE_RELEASE:
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::Cast(_pMsg);
+			WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
 
-			WgCoord ofs = pMsg->PointerPos() - GlobalPos();
+			WgCoord ofs = pMsg->pointerPos() - globalPos();
 			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 			if( p == this )
 			{
-				CloseAllPopups();
-				_pMsg->Swallow();
+				closeAllPopups();
+				_pMsg->swallow();
 				return;
 			}
 		}
@@ -578,14 +578,14 @@ void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_KEY_PRESS:
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyMsgPtr pMsg = WgKeyMsg::Cast(_pMsg);
+			WgKeyMsgPtr pMsg = WgKeyMsg::cast(_pMsg);
 
-			if( pMsg->TranslatedKeyCode() == WG_KEY_ESCAPE )
+			if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE )
 			{
-				if( !m_popupHooks.IsEmpty() )
+				if( !m_popupHooks.isEmpty() )
 				{
-					ClosePopup( m_popupHooks.Last()->_widget() );
-					_pMsg->Swallow();
+					closePopup( m_popupHooks.last()->_widget() );
+					_pMsg->swallow();
 					return;
 				}
 			}
@@ -601,28 +601,28 @@ void WgPopupLayer::_stealKeyboardFocus()
 {
 	// Get event handler, verify that we have a root
 
-	if( !Hook() )
+	if( !hook() )
 		return;
 
-	WgMsgRouterPtr pHandler = Hook()->MsgRouter();
+	WgMsgRouterPtr pHandler = hook()->msgRouter();
 	if( !pHandler )
 		return;
 
 	// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 
-	if( m_popupHooks.Size() < 2 )
-		m_pKeyFocus = pHandler->KeyboardFocus().RawPtr();
+	if( m_popupHooks.size() < 2 )
+		m_pKeyFocus = pHandler->keyboardFocus().rawPtr();
 	else
-		m_popupHooks.Last()->Prev()->m_pKeyFocus = pHandler->KeyboardFocus().RawPtr();
+		m_popupHooks.last()->prev()->m_pKeyFocus = pHandler->keyboardFocus().rawPtr();
 
 	// Steal keyboard focus to top menu
 
-	WgWidget * pWidget = m_popupHooks.Last()->_widget();
+	WgWidget * pWidget = m_popupHooks.last()->_widget();
 
-	if( pWidget->IsInstanceOf( WgPanel::CLASSNAME ) && static_cast<WgPanel*>(pWidget)->IsFocusGroup() )
-		pHandler->SetFocusGroup(static_cast<WgPanel*>(pWidget));
+	if( pWidget->isInstanceOf( WgPanel::CLASSNAME ) && static_cast<WgPanel*>(pWidget)->isFocusGroup() )
+		pHandler->setFocusGroup(static_cast<WgPanel*>(pWidget));
 	else
-		pHandler->SetKeyboardFocus(pWidget);
+		pHandler->setKeyboardFocus(pWidget);
 }
 
 //____ _restoreKeyboardFocus() _________________________________________________
@@ -631,18 +631,18 @@ void WgPopupLayer::_restoreKeyboardFocus()
 {
 	// Get event handler, verify that we have a root
 
-	if( !Hook() )
+	if( !hook() )
 		return;
 
-	WgMsgRouterPtr pHandler = Hook()->MsgRouter();
+	WgMsgRouterPtr pHandler = hook()->msgRouter();
 	if( !pHandler )
 		return;
 
 	//
 
-	if( m_popupHooks.IsEmpty() )
-		pHandler->SetKeyboardFocus( m_pKeyFocus.RawPtr() );
+	if( m_popupHooks.isEmpty() )
+		pHandler->setKeyboardFocus( m_pKeyFocus.rawPtr() );
 	else
-		pHandler->SetKeyboardFocus( m_popupHooks.Last()->m_pKeyFocus.RawPtr() );
+		pHandler->setKeyboardFocus( m_popupHooks.last()->m_pKeyFocus.rawPtr() );
 }
 

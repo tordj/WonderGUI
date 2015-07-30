@@ -45,20 +45,20 @@ class WgSpan : public WgInterface
 public:
 	WgSpan(WgSpanItem* pItem) : m_pItem(pItem) {}
 
-	virtual bool				IsInstanceOf( const char * pClassName ) const;
-	virtual const char *		ClassName( void ) const;
+	virtual bool				isInstanceOf( const char * pClassName ) const;
+	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSpanPtr			Cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgSpanPtr			Ptr() { return WgSpanPtr(_object(),this); }
+	static WgSpanPtr			cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
+	inline WgSpanPtr			ptr() { return WgSpanPtr(_object(),this); }
 
-	inline int		Min() const { return m_pItem->min; }
-	inline int		Max() const { return m_pItem->max; }
-	inline int 		Begin() const { return m_pItem->begin; }
-	inline int		Length() const { return m_pItem->length; }
+	inline int		min() const { return m_pItem->min; }
+	inline int		max() const { return m_pItem->max; }
+	inline int 		begin() const { return m_pItem->begin; }
+	inline int		length() const { return m_pItem->length; }
 
-	inline float	RelativePos() const { return m_pItem->RelativePos(); }
-	inline float	RelativeBegin() const { return m_pItem->RelativeBegin(); }
-	inline float	RelativeLength() const { return m_pItem->RelativeLength(); };
+	inline float	relativePos() const { return m_pItem->relativePos(); }
+	inline float	relativeBegin() const { return m_pItem->relativeBegin(); }
+	inline float	relativeLength() const { return m_pItem->relativeLength(); };
 
 
 protected:

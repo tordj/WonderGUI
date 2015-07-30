@@ -38,36 +38,36 @@ WgTimeFormatter::WgTimeFormatter( const WgCharSeq& formatAM, const WgCharSeq& fo
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgTimeFormatter::IsInstanceOf( const char * pClassName ) const
+bool WgTimeFormatter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgValueFormatter::IsInstanceOf(pClassName);
+	return WgValueFormatter::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgTimeFormatter::ClassName( void ) const
+const char * WgTimeFormatter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgTimeFormatterPtr WgTimeFormatter::Cast( const WgObjectPtr& pObject )
+WgTimeFormatterPtr WgTimeFormatter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgTimeFormatterPtr( static_cast<WgTimeFormatter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgTimeFormatterPtr( static_cast<WgTimeFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ Format() _______________________________________________________________
+//____ format() _______________________________________________________________
 
-WgString WgTimeFormatter::Format( Sint64 value, int scale ) const
+WgString WgTimeFormatter::format( Sint64 value, int scale ) const
 {
 	Sint64 seconds = value / scale;
 	
@@ -75,7 +75,7 @@ WgString WgTimeFormatter::Format( Sint64 value, int scale ) const
 
 	const WgString * pFormat;
 	
-	if( !m_format24.IsEmpty() )
+	if( !m_format24.isEmpty() )
 		pFormat = &m_format24;
 	else
 	{
@@ -83,37 +83,37 @@ WgString WgTimeFormatter::Format( Sint64 value, int scale ) const
 		pFormat = seconds < 3600*12 ? &m_formatAM : &m_formatPM;
 	}
 	
-	if( pFormat->IsEmpty() )
+	if( pFormat->isEmpty() )
 		return WgString();
 	
 	//
 	
-	WgCharBuffer output(pFormat->Length());
+	WgCharBuffer output(pFormat->length());
 	
-	const WgChar * pSrc = pFormat->Chars();
+	const WgChar * pSrc = pFormat->chars();
 
 	int unit=1;			// Default to seconds.
 	
-	while( !pSrc->IsEndOfText() )
+	while( !pSrc->isEndOfText() )
 	{
-		Uint16 glyph = pSrc->Glyph();
-		Uint16 decoration = pSrc->PropHandle();
+		Uint16 glyph = pSrc->getGlyph();
+		Uint16 decoration = pSrc->propHandle();
 		
 		if( glyph == '%' )
 		{
 			int chars = 0;
 			pSrc++;
-			if( pSrc->IsEndOfText() )
+			if( pSrc->isEndOfText() )
 				goto error;
-			glyph = pSrc->Glyph();
+			glyph = pSrc->getGlyph();
 			while( glyph >= '0' && glyph <= '9' )
 			{
 				chars *= 10;
 				chars += glyph - '0';
 				pSrc++;
-				if( pSrc->IsEndOfText() )
+				if( pSrc->isEndOfText() )
 					goto error;
-				glyph = pSrc->Glyph();
+				glyph = pSrc->getGlyph();
 			}	
 
 			int num;
@@ -174,7 +174,7 @@ WgString WgTimeFormatter::Format( Sint64 value, int scale ) const
 
 			while( bar > 0 )
 			{
-				output.PushBack( WgChar( '0' + num/bar, 0 ) );		//TODO: Add property
+				output.pushBack( WgChar( '0' + num/bar, 0 ) );		//TODO: Add property
 				
 				num %= bar;
 				bar /= 10;		
@@ -182,7 +182,7 @@ WgString WgTimeFormatter::Format( Sint64 value, int scale ) const
 			
 		}
 		else
-			output.PushBack( * pSrc++ );
+			output.pushBack( * pSrc++ );
 		
 	}
 	
@@ -194,7 +194,7 @@ overflow:
 	
 }
 
-WgString WgTimeFormatter::Format( double value ) const
+WgString WgTimeFormatter::format( double value ) const
 {
-	return Format( (Sint64)(value*1000000), 1000000);
+	return format( (Sint64)(value*1000000), 1000000);
 }

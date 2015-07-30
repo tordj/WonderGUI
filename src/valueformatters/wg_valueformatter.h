@@ -44,13 +44,13 @@ class WgValueFormatter : public WgObject
 {
 public:
 	
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgValueFormatterPtr	Cast( const WgObjectPtr& pObject );
+	static WgValueFormatterPtr	cast( const WgObjectPtr& pObject );
 
-	virtual WgString Format( Sint64 value, int scale ) const = 0;
-	virtual WgString Format( double value ) const = 0;
+	virtual WgString format( Sint64 value, int scale ) const = 0;
+	virtual WgString format( double value ) const = 0;
 };
 
 #endif //WG_VALUEFORMATTER_DOT_H

@@ -52,12 +52,12 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
 public:
-	static WgButtonPtr	Create() { return WgButtonPtr(new WgButton()); }
+	static WgButtonPtr	create() { return WgButtonPtr(new WgButton()); }
 
-	bool				IsInstanceOf( const char * pClassName ) const;
-	const char *		ClassName( void ) const;
+	bool				isInstanceOf( const char * pClassName ) const;
+	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgButtonPtr	Cast( const WgObjectPtr& pObject );
+	static WgButtonPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -69,10 +69,10 @@ public:
 	void			SetDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
 	bool			DownWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
 	
-	virtual int		MatchingHeight( int width ) const;
-//	virtual int		MatchingWidth( int height ) const;
+	virtual int		matchingHeight( int width ) const;
+//	virtual int		matchingWidth( int height ) const;
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 
 	bool			IsAutoEllipsisDefault() const { return false; };
 

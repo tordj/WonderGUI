@@ -26,29 +26,29 @@
 const char WgSpan::CLASSNAME[] = {"Span"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSpan::IsInstanceOf( const char * pClassName ) const
+bool WgSpan::isInstanceOf( const char * pClassName ) const
 {
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgInterface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSpan::ClassName( void ) const
+const char * WgSpan::className( void ) const
 {
 	return CLASSNAME;
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSpanPtr WgSpan::Cast( const WgInterfacePtr& pInterface )
+WgSpanPtr WgSpan::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgSpanPtr( pInterface.GetRealObjectPtr(), static_cast<WgSpan*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgSpanPtr( pInterface.getRealObjectPtr(), static_cast<WgSpan*>( pInterface.rawPtr()) );
 
 	return 0;
 }

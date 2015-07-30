@@ -27,9 +27,9 @@
 const char WgColorSkin::CLASSNAME[] = {"ColorSkin"};
 
 
-//____ Create() _______________________________________________________________
+//____ create() _______________________________________________________________
 
-WgColorSkinPtr WgColorSkin::Create( WgColor col )
+WgColorSkinPtr WgColorSkin::create( WgColor col )
 {
 	return WgColorSkinPtr(new WgColorSkin(col));
 }
@@ -41,86 +41,86 @@ WgColorSkin::WgColorSkin( WgColor col )
 	m_color = col;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgColorSkin::IsInstanceOf( const char * pClassName ) const
+bool WgColorSkin::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgSkin::IsInstanceOf(pClassName);
+	return WgSkin::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgColorSkin::ClassName( void ) const
+const char * WgColorSkin::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgColorSkinPtr WgColorSkin::Cast( const WgObjectPtr& pObject )
+WgColorSkinPtr WgColorSkin::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
 	
-void WgColorSkin::Render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
+void WgColorSkin::render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const
 {
-	pDevice->Fill( _clip, m_color );
+	pDevice->fill( _clip, m_color );
 }
 	
-bool WgColorSkin::IsOpaque() const
+bool WgColorSkin::isOpaque() const
 {
 	return m_color.a == 255 ? true : false;
 }
 
-bool WgColorSkin::IsOpaque(WgState state) const
+bool WgColorSkin::isOpaque(WgState state) const
 {
 	return m_color.a == 255 ? true : false;
 }
 
-bool WgColorSkin::IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
+bool WgColorSkin::isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const
 {
 	return m_color.a == 255 ? true : false;
 }
 
-WgSize WgColorSkin::MinSize() const
+WgSize WgColorSkin::minSize() const
 {
 	return WgSize(0,0);
 }
 
-WgSize WgColorSkin::PreferredSize() const
+WgSize WgColorSkin::preferredSize() const
 {
 	return WgSize(0,0);
 }
 
-WgSize WgColorSkin::ContentPadding() const
+WgSize WgColorSkin::contentPadding() const
 {
 	return WgSize(0,0);
 }
 
-WgSize  WgColorSkin::SizeForContent( const WgSize contentSize ) const
+WgSize  WgColorSkin::sizeForContent( const WgSize contentSize ) const
 {
 	return contentSize;
 }
 
-WgRect  WgColorSkin::ContentRect( const WgRect& canvas, WgState state ) const
+WgRect  WgColorSkin::contentRect( const WgRect& canvas, WgState state ) const
 {
 	return canvas;
 }
 
-bool WgColorSkin::MarkTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
+bool WgColorSkin::markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const
 {
-	return ( canvas.Contains(ofs) && ((int)m_color.a) >= opacityTreshold );
+	return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
 }
 
-bool WgColorSkin::IsStateIdentical( WgState state, WgState comparedTo ) const
+bool WgColorSkin::isStateIdentical( WgState state, WgState comparedTo ) const
 {
 	return true;
 }

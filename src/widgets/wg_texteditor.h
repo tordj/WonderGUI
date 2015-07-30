@@ -43,12 +43,12 @@ typedef	WgWeakPtr<WgTextEditor,WgWidgetWeakPtr>	WgTextEditorWeakPtr;
 class WgTextEditor:public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgTextEditorPtr	Create() { return WgTextEditorPtr(new WgTextEditor()); }
+	static WgTextEditorPtr	create() { return WgTextEditorPtr(new WgTextEditor()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextEditorPtr	Cast( const WgObjectPtr& pObject );
+	static WgTextEditorPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -62,18 +62,18 @@ public:
 	int		InsertTextAtCursor( const WgCharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
-	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
+	virtual void			setEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
 
 	WgPointerStyle		PointerStyle() const;
 	WgString			TooltipString() const;
 
-	int		MatchingHeight( int width ) const;
-	WgSize	PreferredSize() const;
+	int		matchingHeight( int width ) const;
+	WgSize	preferredSize() const;
 	bool	IsAutoEllipsisDefault() const { return true; };
 
-	bool	IsEditable() const { return m_text.IsEditable(); }
-	bool	IsSelectable() const { return m_text.IsSelectable(); }
+	bool	isEditable() const { return m_text.isEditable(); }
+	bool	isSelectable() const { return m_text.isSelectable(); }
 
 protected:
 	WgTextEditor();

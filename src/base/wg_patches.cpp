@@ -56,9 +56,9 @@ WgPatches::~WgPatches()
 		delete [] m_pFirst;
 }
 
-//____ SetCapacity() ___________________________________________________________
+//____ setCapacity() ___________________________________________________________
 
-bool WgPatches::SetCapacity( int capacity )
+bool WgPatches::setCapacity( int capacity )
 {
 	if( capacity < m_size )
 		return false;
@@ -105,7 +105,7 @@ void WgPatches::_add( const WgRect& rect, int startOffset )
 		if( newR.x <= pR->x  &&  newR.x + newR.w >= pR->x + pR->w  &&
 		  newR.y <= pR->y  &&  newR.y + newR.h >= pR->y + pR->h  )
 		{
-			Delete( i-- );														// pR totally covered by newR
+			remove( i-- );														// pR totally covered by newR
 			continue;
 		}
 
@@ -228,12 +228,12 @@ void WgPatches::_add( const WgRect& rect, int startOffset )
 	
 	// If we haven't returned yet we have a patch left to add.
 	
-	Push( newR );	
+	push( newR );	
 }
 
-//____ Add() ___________________________________________________________________
+//____ add() ___________________________________________________________________
 
-void WgPatches::Add( const WgPatches * pSource, int ofs, int len )
+void WgPatches::add( const WgPatches * pSource, int ofs, int len )
 {
 	if( ofs > pSource->m_size )
 		return;
@@ -245,9 +245,9 @@ void WgPatches::Add( const WgPatches * pSource, int ofs, int len )
 		_add( pSource->m_pFirst[ofs++], 0 );
 }
 
-//____ Sub() ___________________________________________________________________
+//____ sub() ___________________________________________________________________
 
-void WgPatches::Sub( const WgPatches * pSource, int ofs, int len )
+void WgPatches::sub( const WgPatches * pSource, int ofs, int len )
 {
 	if( ofs > pSource->m_size )
 		return;
@@ -256,10 +256,10 @@ void WgPatches::Sub( const WgPatches * pSource, int ofs, int len )
 		len = pSource->m_size - ofs;
 
 	for( int i = 0 ; i < len ; i++ )
-		Sub( pSource->m_pFirst[ofs++] );	
+		sub( pSource->m_pFirst[ofs++] );	
 }
 
-void WgPatches::Sub( const WgRect& subR )
+void WgPatches::sub( const WgRect& subR )
 {
 	if( subR.w == 0 || subR.h == 0 )
 		return;
@@ -282,7 +282,7 @@ void WgPatches::Sub( const WgRect& subR )
 
 			if( rect.y < subR.y )													// Top part
 			{
-				Push( WgRect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
+				push( WgRect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
 			}
 
 			if( rect.x < subR.x )													// Left part
@@ -302,7 +302,7 @@ void WgPatches::Sub( const WgRect& subR )
 				else
 					newR.h = subR.y + subR.h - newR.y;
 					
-					Push( newR );													// Not optimal, will cause unnecessary processing later.
+					push( newR );													// Not optimal, will cause unnecessary processing later.
 			}
 
 			if( rect.x + rect.w > subR.x + subR.w )					// Right part
@@ -322,27 +322,27 @@ void WgPatches::Sub( const WgRect& subR )
 				else
 					newR.h = subR.y + subR.h - newR.y;
 
-					Push( newR );													// Not optimal, will cause unnecessary processing later.
+					push( newR );													// Not optimal, will cause unnecessary processing later.
 			}
 
 			if( rect.y + rect.h > subR.y + subR.h )					// Bottom part
 			{
-				Push( WgRect( rect.x, 
+				push( WgRect( rect.x, 
 							  subR.y + subR.h, 
 							  rect.w, 
 							  rect.y + rect.h - ( subR.y + subR.h )) );				// Not optimal, will cause unnecessary processing later.
 			}
 		}
 
-		// Delete the old rectangle
+		// Remove the old rectangle
 
-		Delete( i-- );
+		remove( i-- );
 	}
 }
 
-//____ Push() __________________________________________________________________
+//____ push() __________________________________________________________________
 
-int WgPatches::Push( const WgPatches * pSource, int ofs, int len )
+int WgPatches::push( const WgPatches * pSource, int ofs, int len )
 {
 	if( ofs > pSource->m_size )
 		return 0;
@@ -358,9 +358,9 @@ int WgPatches::Push( const WgPatches * pSource, int ofs, int len )
 	return len;
 }
 
-//____ Delete() ________________________________________________________________
+//____ remove() ________________________________________________________________
 
-void  WgPatches::Delete( int ofs )
+void  WgPatches::remove( int ofs )
 {
 	if( ofs >= m_size )
 		return;
@@ -368,7 +368,7 @@ void  WgPatches::Delete( int ofs )
 	m_pFirst[ofs] = m_pFirst[--m_size];
 }
 
-int WgPatches::Delete( int ofs, int len )
+int WgPatches::remove( int ofs, int len )
 {
 	if( ofs > m_size )
 		return 0;
@@ -389,9 +389,9 @@ int WgPatches::Delete( int ofs, int len )
 }
 
 
-//____ Clip() __________________________________________________________________
+//____ clip() __________________________________________________________________
 
-void WgPatches::Clip( const WgRect& clip )
+void WgPatches::clip( const WgRect& clip )
 {
 	WgRect * pRect = m_pFirst;
 
@@ -402,15 +402,15 @@ void WgPatches::Clip( const WgRect& clip )
 			pRect->x + pRect->w > clip.x + clip.w ||
 			pRect->y + pRect->h > clip.y + clip.h )
 		{
-			if( !pRect->Intersection( *pRect, clip ) )
-				*pRect-- = m_pFirst[--m_size];				// Delete the rectangle
+			if( !pRect->intersection( *pRect, clip ) )
+				*pRect-- = m_pFirst[--m_size];				// Remove the rectangle
 		}
 	}
 }
 
-//____ Union() _________________________________________________________________
+//____ getUnion() _________________________________________________________________
 
-WgRect WgPatches::Union() const
+WgRect WgPatches::getUnion() const
 {
 	if( m_size == 0 )
 		return WgRect();
@@ -435,18 +435,18 @@ WgRect WgPatches::Union() const
 	return WgRect(x1,y1,x2-x1,y2-y1);
 }
 
-//____ Repair() ________________________________________________________________
+//____ repair() ________________________________________________________________
 
-int WgPatches::Repair()
+int WgPatches::repair()
 {
 	//TODO: Implement
 
 	return 0;
 }
 
-//____ Optimize() ______________________________________________________________
+//____ optimize() ______________________________________________________________
 
-int WgPatches::Optimize()
+int WgPatches::optimize()
 {
 	//TODO: Implement
 
@@ -463,5 +463,5 @@ void WgPatches::_expandMem( int spaceNeeded )
 	while( capacity - m_size < spaceNeeded )
 		capacity += capacity;
 
-	SetCapacity(capacity);
+	setCapacity(capacity);
 }

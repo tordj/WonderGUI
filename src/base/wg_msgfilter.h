@@ -52,83 +52,83 @@ class WgMsgFilter
 public:
 	WgMsgFilter() : m_msgType(WG_MSG_DUMMY), m_pFilterFunc(_filterDummy) {}	//Not meant to be public, but has to for compatibility with older compilers.
 	
-	static WgMsgFilter	Tick();
-	static WgMsgFilter	PointerChange();
+	static WgMsgFilter	tick();
+	static WgMsgFilter	pointerChange();
 
-	static WgMsgFilter	FocusGained();
-	static WgMsgFilter	FocusLost();
+	static WgMsgFilter	focusGained();
+	static WgMsgFilter	focusLost();
 
-	static WgMsgFilter	MouseEnter();
+	static WgMsgFilter	mouseEnter();
 
-	static WgMsgFilter	MouseLeave();
+	static WgMsgFilter	mouseLeave();
 
-	static WgMsgFilter	MouseMove();
+	static WgMsgFilter	mouseMove();
 
-	static WgMsgFilter	MousePress();
-	static WgMsgFilter	MousePress( WgMouseButton button);
+	static WgMsgFilter	mousePress();
+	static WgMsgFilter	mousePress( WgMouseButton button);
 
-	static WgMsgFilter	MouseRelease();
-	static WgMsgFilter	MouseRelease( WgMouseButton button);
+	static WgMsgFilter	mouseRelease();
+	static WgMsgFilter	mouseRelease( WgMouseButton button);
 
-	static WgMsgFilter	MouseDrag();
-	static WgMsgFilter	MouseDrag( WgMouseButton button);
+	static WgMsgFilter	mouseDrag();
+	static WgMsgFilter	mouseDrag( WgMouseButton button);
 
-	static WgMsgFilter	MouseRepeat();
-	static WgMsgFilter	MouseRepeat( WgMouseButton button);
+	static WgMsgFilter	mouseRepeat();
+	static WgMsgFilter	mouseRepeat( WgMouseButton button);
 
-	static WgMsgFilter	MouseClick();
-	static WgMsgFilter	MouseClick( WgMouseButton button);
+	static WgMsgFilter	mouseClick();
+	static WgMsgFilter	mouseClick( WgMouseButton button);
 
-	static WgMsgFilter	MouseDoubleClick();
-	static WgMsgFilter	MouseDoubleClick( WgMouseButton button);
+	static WgMsgFilter	mouseDoubleClick();
+	static WgMsgFilter	mouseDoubleClick( WgMouseButton button);
 
-	static WgMsgFilter	KeyPress();
-	static WgMsgFilter	KeyPress( WgKey translated_keycode );
+	static WgMsgFilter	keyPress();
+	static WgMsgFilter	keyPress( WgKey translated_keycode );
 
-	static WgMsgFilter	KeyRelease();
-	static WgMsgFilter	KeyRelease( WgKey translated_keycode );
+	static WgMsgFilter	keyRelease();
+	static WgMsgFilter	keyRelease( WgKey translated_keycode );
 
-	static WgMsgFilter	KeyRepeat();
-	static WgMsgFilter	KeyRepeat( WgKey keycode );
+	static WgMsgFilter	keyRepeat();
+	static WgMsgFilter	keyRepeat( WgKey keycode );
 
-	static WgMsgFilter	KeyPressNative( int native_keycode );
+	static WgMsgFilter	keyPressNative( int native_keycode );
 
-	static WgMsgFilter	KeyReleaseNative( int native_keycode );
+	static WgMsgFilter	keyReleaseNative( int native_keycode );
 
-	static WgMsgFilter	KeyRepeatNative( int native_keycode );
+	static WgMsgFilter	keyRepeatNative( int native_keycode );
 
-	static WgMsgFilter	Character();
-	static WgMsgFilter	Character( unsigned short character);
+	static WgMsgFilter	character();
+	static WgMsgFilter	character( unsigned short character);
 
-	static WgMsgFilter	WheelRoll();
-	static WgMsgFilter	WheelRoll( int wheel );
+	static WgMsgFilter	wheelRoll();
+	static WgMsgFilter	wheelRoll( int wheel );
 
-	static WgMsgFilter	Select();
+	static WgMsgFilter	select();
 
-	static WgMsgFilter	Toggle();
+	static WgMsgFilter	toggle();
 
-	static WgMsgFilter	ValueUpdate();
+	static WgMsgFilter	valueUpdate();
 
-	static WgMsgFilter	RangeUpdate();
+	static WgMsgFilter	rangeUpdate();
 
-	static WgMsgFilter	TextEdit();
+	static WgMsgFilter	textEdit();
 
-	static WgMsgFilter	ItemToggle();
-	static WgMsgFilter	ItemToggle( int id );
+	static WgMsgFilter	itemToggle();
+	static WgMsgFilter	itemToggle( int id );
 
-	static WgMsgFilter	ItemMousePress();
-	static WgMsgFilter	ItemMousePress( WgMouseButton button );
-	static WgMsgFilter	ItemMousePress( WgMouseButton button, int id );
+	static WgMsgFilter	itemMousePress();
+	static WgMsgFilter	itemMousePress( WgMouseButton button );
+	static WgMsgFilter	itemMousePress( WgMouseButton button, int id );
 
-	static WgMsgFilter	ItemsSelect();
+	static WgMsgFilter	itemsSelect();
 
-	static WgMsgFilter	ItemsUnselect();
+	static WgMsgFilter	itemsUnselect();
 
 	//TODO: Add missing filters!
 
 
-	inline bool				FilterMsg( const WgMsgPtr& pMsg ) const { return m_pFilterFunc( pMsg, *this ); }
-	inline WgMsgType 		MsgType() const { return m_msgType; }
+	inline bool				filterMsg( const WgMsgPtr& pMsg ) const { return m_pFilterFunc( pMsg, *this ); }
+	inline WgMsgType 		msgType() const { return m_msgType; }
 private:
 	WgMsgFilter( WgMsgType msgType, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
 				: m_msgType(msgType), m_pFilterFunc(pFunc), m_data1(data1), m_data2(data2) 

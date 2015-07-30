@@ -66,20 +66,20 @@ class WgMenu:public WgPanel, private WgScrollbarTarget
 	friend class WgMenuSubMenu;
 
 public:
-	static WgMenuPtr	Create() { return WgMenuPtr(new WgMenu()); }
+	static WgMenuPtr	create() { return WgMenuPtr(new WgMenu()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenuPtr	Cast( const WgObjectPtr& pObject );
+	static WgMenuPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Methods ___________________________________________
 
-	bool			SetSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth );
+	bool			setSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth );
 	int				IconFieldWidth() const			{ return m_iconFieldWidth; }
 	int				ArrowFieldWidth() const			{ return m_arrowFieldWidth; }
 
-	void			SetEntrySkin( const WgSkinPtr& pSkin );
+	void			setEntrySkin( const WgSkinPtr& pSkin );
 	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
 
 	bool			SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& sepBorder = WgBorder() );
@@ -108,12 +108,12 @@ public:
 
 	int			GetEntryHeight() const;
 
-	int			AddItem( WgMenuItem * pEntry );
+	int			addItem( WgMenuItem * pEntry );
 	int			InsertItem( WgMenuItem * pEntry, int pos );
 
-	bool		RemoveItem( WgMenuItem * pEntry );
-	WgMenuItem*	RemoveItem( int pos );
-	void		RemoveAllItems();
+	bool		removeItem( WgMenuItem * pEntry );
+	WgMenuItem*	removeItem( int pos );
+	void		removeAllItems();
 
 	bool		DeleteItem( WgMenuItem * pEntry );
 	bool		DeleteItem( int pos );
@@ -121,12 +121,12 @@ public:
 
 	int			GetItemPos( WgMenuItem* pEntry );
 	WgMenuItem*	GetItem( int pos );
-	int			GetItemCount() const { return (int)m_items.Size(); }
+	int			GetItemCount() const { return (int)m_items.size(); }
 
 
 	WgMenuItem *FindItem( int id );
-	WgMenuItem *GetFirstItem() const { return m_items.First(); }
-	WgMenuItem *GetLastItem() const { return m_items.Last(); }
+	WgMenuItem *GetFirstItem() const { return m_items.first(); }
+	WgMenuItem *GetLastItem() const { return m_items.last(); }
 	WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
 
 	void		SelectItem(WgMenuItem* pItem);
@@ -135,12 +135,12 @@ public:
 
 	//____ Overloaded from WgWidget & WgPanel ___________________________
 
-	bool		RemoveWidget(const WgWidgetPtr& pWidget ) { return false; }
-	bool		Clear() { return false; }
+	bool		removeWidget(const WgWidgetPtr& pWidget ) { return false; }
+	bool		clear() { return false; }
 
-	int			MatchingWidth( int height ) const;
+	int			matchingWidth( int height ) const;
 
-	WgSize		PreferredSize() const;
+	WgSize		preferredSize() const;
 
 	//
 
@@ -156,20 +156,20 @@ private:
 		friend class WgMenu;
 
 	public:
-		const char *Type( void ) const;
-		static const char * ClassType();
+		const char *type( void ) const;
+		static const char * classType();
 
 		// Standard Hook methods
 
-		WgCoord		Pos() const;
-		WgSize		Size() const;
-		WgRect		Geo() const;
+		WgCoord		pos() const;
+		WgSize		size() const;
+		WgRect		geo() const;
 
-		WgCoord		GlobalPos() const;
-		WgRect		GlobalGeo() const;
+		WgCoord		globalPos() const;
+		WgRect		globalGeo() const;
 
-		bool		SetVisible( bool bVisible ) { return false; }
-		WgMenu* Parent() const { return m_pParent; }
+		bool		setVisible( bool bVisible ) { return false; }
+		WgMenu* parent() const { return m_pParent; }
 
 		WgScrollbar * Scrollbar() { return m_pWidget?static_cast<WgScrollbar*>(m_pWidget):0; }
 

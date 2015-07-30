@@ -40,37 +40,37 @@ WgFiller::~WgFiller()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgFiller::IsInstanceOf( const char * pClassName ) const
+bool WgFiller::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgFiller::ClassName( void ) const
+const char * WgFiller::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgFillerPtr WgFiller::Cast( const WgObjectPtr& pObject )
+WgFillerPtr WgFiller::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgFillerPtr( static_cast<WgFiller*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgFillerPtr( static_cast<WgFiller*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-//____ SetPreferredSize() _______________________________________________________
+//____ setPreferredSize() _______________________________________________________
 
-void WgFiller::SetPreferredSize( const WgSize& size )
+void WgFiller::setPreferredSize( const WgSize& size )
 {
 	if( size != m_preferredSize )
 	{
@@ -79,14 +79,14 @@ void WgFiller::SetPreferredSize( const WgSize& size )
 	}
 }
 
-//____ PreferredSize() __________________________________________________________
+//____ preferredSize() __________________________________________________________
 
-WgSize WgFiller::PreferredSize() const
+WgSize WgFiller::preferredSize() const
 {
 	if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
 		return m_preferredSize;
 	else
-		return WgWidget::PreferredSize();
+		return WgWidget::preferredSize();
 }
 
 

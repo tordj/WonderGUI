@@ -78,7 +78,7 @@ public:
 
 	inline operator bool() const { return (m_pObj != 0); }
 
-	inline WgObject * RawPtr() const { return m_pObj; }
+	inline WgObject * rawPtr() const { return m_pObj; }
 
 protected:
 	void copy( WgObjectPtr const & r )
@@ -106,7 +106,7 @@ template<class T,class P> class WgStrongPtr : public P
 public:
 	WgStrongPtr(T* p=0) : P( p ) {};
 	WgStrongPtr(const WgStrongPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
-//	WgStrongPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.RawPtr() ) {};
+//	WgStrongPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.rawPtr() ) {};
 	~WgStrongPtr() {};
 
 /*
@@ -124,7 +124,7 @@ public:
 
 //	inline operator bool() const { return (this->m_pObj != 0); }
 
-	inline T * RawPtr() const { return (T*) this->m_pObj; }
+	inline T * rawPtr() const { return (T*) this->m_pObj; }
 };
 
 
@@ -152,8 +152,8 @@ public:
 		return *this;
 	}
 
-	inline WgObject& operator*() const { return * RawPtr(); }
-	inline WgObject * operator->() const { return RawPtr(); }
+	inline WgObject& operator*() const { return * rawPtr(); }
+	inline WgObject * operator->() const { return rawPtr(); }
 
 	//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
 	inline bool operator==(const WgObjectWeakPtr& other) const { return m_pHub == other.m_pHub; }
@@ -165,7 +165,7 @@ public:
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
-	inline WgObject * RawPtr() const
+	inline WgObject * rawPtr() const
 	{
 		if( m_pHub )
 			return m_pHub->pObj;
@@ -186,19 +186,19 @@ template<class T,class P> class WgWeakPtr : public P
 public:
 	WgWeakPtr() {}
 	WgWeakPtr(T* p) : P( p ) {};
-	WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.RawPtr() ) {};
-//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.RawPtr() ) {};
+	WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.rawPtr() ) {};
+//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.rawPtr() ) {};
 	~WgWeakPtr() {};
 
-	inline T & operator*() const { return * RawPtr(); }
-	inline T * operator->() const{ return RawPtr(); }
+	inline T & operator*() const { return * rawPtr(); }
+	inline T * operator->() const{ return rawPtr(); }
 
 	inline bool operator==(const WgWeakPtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
 	inline bool operator!=(const WgWeakPtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
 
 //	inline operator bool() const { return (this->m_pObj != 0); }
 
-	inline T * RawPtr() const
+	inline T * rawPtr() const
 	{
 		if( this->m_pHub && this->m_pHub->pObj )
 			return static_cast<T*>(this->m_pHub->pObj);
@@ -259,8 +259,8 @@ public:
 
 	inline operator bool() const { return (m_pInterface != 0); }
 
-	inline WgInterface * RawPtr() const { return m_pInterface; }
-	inline WgObject * GetRealObjectPtr() const { return m_pObj; }
+	inline WgInterface * rawPtr() const { return m_pInterface; }
+	inline WgObject * getRealObjectPtr() const { return m_pObj; }
 
 protected:
 	void copy( WgInterfacePtr const & r )
@@ -298,7 +298,7 @@ public:
 	inline bool operator==(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
 	inline bool operator!=(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
 
-	inline T * RawPtr() const { return (T*) this->m_pInterface; }
+	inline T * rawPtr() const { return (T*) this->m_pInterface; }
 };
 
 
@@ -327,8 +327,8 @@ public:
 		return *this;
 	}
 
-	inline WgInterface& operator*() const { return * RawPtr(); }
-	inline WgInterface * operator->() const { return RawPtr(); }
+	inline WgInterface& operator*() const { return * rawPtr(); }
+	inline WgInterface * operator->() const { return rawPtr(); }
 
 	inline bool operator==(const WgInterfaceWeakPtr& other) const { return m_pInterface == other.m_pInterface; }
 	inline bool operator!=(const WgInterfaceWeakPtr& other) const { return m_pInterface != other.m_pInterface; }
@@ -339,7 +339,7 @@ public:
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
-	inline WgInterface * RawPtr() const
+	inline WgInterface * rawPtr() const
 	{
 		if( m_pHub && m_pHub->pObj )
 			return m_pInterface;
@@ -360,16 +360,16 @@ template<class T,class P> class WgIWeakPtr : public P
 {
 public:
 	WgIWeakPtr(WgObject* pObj, T* pInterface=0) : P( pObj, pInterface ) {};
-	WgIWeakPtr(const WgIWeakPtr<T,P>& r) : P( r.RawPtr(), r.m_pInterface ) {};
+	WgIWeakPtr(const WgIWeakPtr<T,P>& r) : P( r.rawPtr(), r.m_pInterface ) {};
 	~WgIWeakPtr() {};
 
-	inline T & operator*() const { return * RawPtr(); }
-	inline T * operator->() const{ return RawPtr(); }
+	inline T & operator*() const { return * rawPtr(); }
+	inline T * operator->() const{ return rawPtr(); }
 
 	inline bool operator==(const WgIWeakPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
 	inline bool operator!=(const WgIWeakPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
 
-	inline T * RawPtr() const
+	inline T * rawPtr() const
 	{
 		if( this->m_pHub && this->m_pHub->pObj )
 			return static_cast<T*>(this->m_pInterface);

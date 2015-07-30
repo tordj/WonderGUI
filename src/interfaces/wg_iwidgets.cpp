@@ -27,29 +27,29 @@
 const char WgIWidgets::CLASSNAME[] = {"IWidgets"};
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgIWidgets::IsInstanceOf( const char * pClassName ) const
+bool WgIWidgets::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgInterface::IsInstanceOf(pClassName);
+	return WgInterface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgIWidgets::ClassName( void ) const
+const char * WgIWidgets::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgIWidgetsPtr WgIWidgets::Cast( const WgInterfacePtr& pInterface )
+WgIWidgetsPtr WgIWidgets::cast( const WgInterfacePtr& pInterface )
 {
-	if( pInterface && pInterface->IsInstanceOf(CLASSNAME) )
-		return WgIWidgetsPtr( pInterface.GetRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.RawPtr()) );
+	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+		return WgIWidgetsPtr( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
 
 	return 0;
 }

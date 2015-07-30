@@ -44,12 +44,12 @@ typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
 class WgLineEditor : public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgLineEditorPtr	Create() { return WgLineEditorPtr(new WgLineEditor()); }
+	static WgLineEditorPtr	create() { return WgLineEditorPtr(new WgLineEditor()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLineEditorPtr	Cast( const WgObjectPtr& pObject );
+	static WgLineEditorPtr	cast( const WgObjectPtr& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -65,10 +65,10 @@ public:
 	int			InsertTextAtCursor( const WgCharSeq& str );
 	bool		InsertCharAtCursor( Uint16 c );
 
-	virtual void			SetEditMode(WgTextEditMode mode);
-	virtual WgTextEditMode	EditMode() const { return m_text.EditMode(); }
+	virtual void			setEditMode(WgTextEditMode mode);
+	virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
 
-	WgSize		PreferredSize() const;
+	WgSize		preferredSize() const;
 	bool		IsAutoEllipsisDefault() const { return false; };
 
 
@@ -77,8 +77,8 @@ protected:
 	virtual ~WgLineEditor();
 	virtual WgWidget* _newOfMyType() const { return new WgLineEditor(); };
 
-	bool	_isEditable() const { return m_text.IsEditable(); }
-	bool	_isSelectable() const { return m_text.IsSelectable(); }
+	bool	_isEditable() const { return m_text.isEditable(); }
+	bool	_isSelectable() const { return m_text.isSelectable(); }
 
 	void	_onMsg( const WgMsgPtr& pMsg );
 	void	_onStateChanged( WgState oldState );

@@ -44,30 +44,30 @@ public:
 
 	// Overloaded so we can update cursor and selection
 
-	void				Clear();
+	void				clear();
 
-	void				Set( const WgCharSeq& seq );
-	void				Set( const WgCharBuffer * buffer );
-	void				Set( const WgString& str );
+	void				set( const WgCharSeq& seq );
+	void				set( const WgCharBuffer * buffer );
+	void				set( const WgString& str );
 
-	int					Append( const WgCharSeq& seq );
-	int					Insert( int ofs, const WgCharSeq& seq );
-	int					Replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					Delete( int ofs, int len );
+	int					append( const WgCharSeq& seq );
+	int					insert( int ofs, const WgCharSeq& seq );
+	int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+	int					remove( int ofs, int len );
 
-	void				SetState( WgState state );
-	void				OnRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+	void				setState( WgState state );
+	void				onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
 
 	//
 
-	void				SetEditMode( WgTextEditMode mode );
-	WgTextEditMode		EditMode() const;
+	void				setEditMode( WgTextEditMode mode );
+	WgTextEditMode		editMode() const;
 	
-	void				SetCaret( const WgCaret2Ptr& pCaret );
-	WgCaret2Ptr 		Caret() { return m_pCaret; }
+	void				setCaret( const WgCaret2Ptr& pCaret );
+	WgCaret2Ptr 		caret() { return m_pCaret; }
 	
-	int					SelectionBegin() const;
-	int					SelectionEnd() const;
+	int					selectionBegin() const;
+	int					selectionEnd() const;
 
 
 protected:

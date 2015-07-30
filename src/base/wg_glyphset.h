@@ -58,11 +58,11 @@ class WgGlyph
 friend class WgFont;
 
 public:
-	virtual const WgGlyphBitmap * GetBitmap() = 0;
+	virtual const WgGlyphBitmap * getBitmap() = 0;
 
-	inline int		Advance() { return m_advance; }
-	inline int		KerningIndex() { return m_kerningIndex; }
-	inline WgGlyphset *	Glyphset() { return m_pGlyphset; }
+	inline int		advance() { return m_advance; }
+	inline int		kerningIndex() { return m_kerningIndex; }
+	inline WgGlyphset *	glyphset() { return m_pGlyphset; }
 
 protected:
 	WgGlyph();
@@ -100,10 +100,10 @@ typedef	WgWeakPtr<WgGlyphset,WgObjectWeakPtr>	WgGlyphsetWeakPtr;
 class WgGlyphset : public WgObject
 {
 public:
-	bool					IsInstanceOf( const char * pClassName ) const;
-	const char *			ClassName( void ) const;
+	bool					isInstanceOf( const char * pClassName ) const;
+	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgGlyphsetPtr	Cast( const WgObjectPtr& pObject );
+	static WgGlyphsetPtr	cast( const WgObjectPtr& pObject );
 
 	enum Type
 	{
@@ -112,20 +112,20 @@ public:
 	};
 
 
-	virtual	Type			GetType() const = 0;
+	virtual	Type			getType() const = 0;
 
-	virtual int				GetKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size ) = 0;
-	virtual WgGlyphPtr		GetGlyph( Uint16 chr, int size ) = 0;
-	virtual bool			HasGlyph( Uint16 chr ) = 0;
+	virtual int				getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size ) = 0;
+	virtual WgGlyphPtr		getGlyph( Uint16 chr, int size ) = 0;
+	virtual bool			hasGlyph( Uint16 chr ) = 0;
 
-	virtual int				GetHeight( int size ) = 0;
-	virtual int				GetLineSpacing( int size ) = 0;
-	virtual int				GetBaseline( int size ) = 0;	// Offset in pixels to baseline.
-	virtual int				GetNbGlyphs() = 0;
-	virtual bool			HasGlyphs() = 0;
-	virtual bool			IsMonospace() = 0;
-	virtual int				GetWhitespaceAdvance( int size ) = 0;
-	virtual int				GetMaxGlyphAdvance( int size ) = 0;
+	virtual int				getHeight( int size ) = 0;
+	virtual int				getLineSpacing( int size ) = 0;
+	virtual int				getBaseline( int size ) = 0;	// Offset in pixels to baseline.
+	virtual int				getNbGlyphs() = 0;
+	virtual bool			hasGlyphs() = 0;
+	virtual bool			isMonospace() = 0;
+	virtual int				getWhitespaceAdvance( int size ) = 0;
+	virtual int				getMaxGlyphAdvance( int size ) = 0;
 
 
 protected:

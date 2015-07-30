@@ -33,29 +33,29 @@ WgSimpleVolumeMeter::~WgSimpleVolumeMeter()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSimpleVolumeMeter::IsInstanceOf( const char * pClassName ) const
+bool WgSimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSimpleVolumeMeter::ClassName( void ) const
+const char * WgSimpleVolumeMeter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSimpleVolumeMeterPtr WgSimpleVolumeMeter::Cast( const WgObjectPtr& pObject )
+WgSimpleVolumeMeterPtr WgSimpleVolumeMeter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -106,7 +106,7 @@ void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
 
 void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
 {
-	WG_LIMIT( fraction, 0.f, 0.25f );
+	LIMIT( fraction, 0.f, 0.25f );
 	
 	if( m_holdHeight != fraction )
 	{
@@ -115,12 +115,12 @@ void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
 	}
 }
 
-//____ SetValue() ______________________________________________________________
+//____ setValue() ______________________________________________________________
 
-void WgSimpleVolumeMeter::SetValue( float peak, float hold )
+void WgSimpleVolumeMeter::setValue( float peak, float hold )
 {
-	WG_LIMIT( peak, 0.f, 1.f );
-	WG_LIMIT( hold, 0.f, 1.f );
+	LIMIT( peak, 0.f, 1.f );
+	LIMIT( hold, 0.f, 1.f );
 
 	if( m_bStereo || m_peak[0] != peak || m_hold[0] != hold )
 	{
@@ -131,12 +131,12 @@ void WgSimpleVolumeMeter::SetValue( float peak, float hold )
 	}
 }
 
-void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
+void WgSimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
 {
-	WG_LIMIT( leftPeak, 0.f, 1.f );
-	WG_LIMIT( leftHold, 0.f, 1.f );
-	WG_LIMIT( rightPeak, 0.f, 1.f );
-	WG_LIMIT( rightHold, 0.f, 1.f );
+	LIMIT( leftPeak, 0.f, 1.f );
+	LIMIT( leftHold, 0.f, 1.f );
+	LIMIT( rightPeak, 0.f, 1.f );
+	LIMIT( rightHold, 0.f, 1.f );
 	
 	if( !m_bStereo || m_peak[0] != leftPeak || m_hold[0] != leftHold || m_peak[1] != rightPeak || m_hold[1] != rightHold )
 	{
@@ -149,14 +149,14 @@ void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightP
 	}
 }
 
-//____ PreferredSize() ________________________________________________________________
+//____ preferredSize() ________________________________________________________________
 
-WgSize WgSimpleVolumeMeter::PreferredSize() const
+WgSize WgSimpleVolumeMeter::preferredSize() const
 {
 	WgSize content(9,20);
 
 	if( m_pSkin )
-		return m_pSkin->SizeForContent(content);
+		return m_pSkin->sizeForContent(content);
 	else
 		return content;
 }
@@ -177,12 +177,12 @@ void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canva
 {
 	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
 
-	if( !m_state.IsEnabled() )
+	if( !m_state.isEnabled() )
 		return;
 	
 	WgRect canvas;
 	if( m_pSkin )
-		canvas = m_pSkin->SizeForContent(_canvas);
+		canvas = m_pSkin->sizeForContent(_canvas);
 	else
 		canvas = _canvas;
 
@@ -222,7 +222,7 @@ void WgSimpleVolumeMeter::_renderPeak( WgGfxDevice * pDevice, int nb, const WgRe
 			sectionHeight = height;
 		
 		WgRect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
-		pDevice->Fill( WgRect( r, _clip ), m_sectionColors[i] );
+		pDevice->fill( WgRect( r, _clip ), m_sectionColors[i] );
 		
 		ofs += sectionHeight;
 		height -= sectionHeight;
@@ -263,16 +263,16 @@ void WgSimpleVolumeMeter::_renderHold( WgGfxDevice * pDevice, int nb, const WgRe
 	}
 
 	WgRect r( _rect.x, _rect.y + ofs, _rect.w, height );
-	pDevice->Fill( WgRect( r, _clip ), c );
+	pDevice->fill( WgRect( r, _clip ), c );
 }
 
 //____ _updateSectionPixelHeight() ______________________________________________________
 
 void WgSimpleVolumeMeter::_updateSectionPixelHeight()
 {
-	int totalHeight = Geo().h;
+	int totalHeight = geo().h;
 	if( m_pSkin )
-		totalHeight -= m_pSkin->ContentPadding().h;
+		totalHeight -= m_pSkin->contentPadding().h;
 
 	m_sectionPixelHeight[0] = (int) (m_sectionHeight[0] * totalHeight + 0.5f);
 	m_sectionPixelHeight[1] =  ((int)((m_sectionHeight[0] + m_sectionHeight[1]) * totalHeight + 0.5f)) - m_sectionPixelHeight[0];
@@ -307,7 +307,7 @@ void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
 {
 	WgWidget::_onStateChanged(oldState);
 
-	if( oldState.IsEnabled() != m_state.IsEnabled() )
+	if( oldState.isEnabled() != m_state.isEnabled() )
 		_requestRender();
 }
 

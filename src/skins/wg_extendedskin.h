@@ -32,27 +32,27 @@ typedef	WgStrongPtr<WgExtendedSkin,WgSkinPtr>	WgExtendedSkinPtr;
 class WgExtendedSkin : public WgSkin
 {
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgExtendedSkinPtr	Cast( const WgObjectPtr& pObject );
+	static WgExtendedSkinPtr	cast( const WgObjectPtr& pObject );
 
-	virtual void	SetContentPadding( WgBorder padding );
-	virtual void	SetContentShift( WgStateEnum state, WgCoord shift );
+	virtual void	setContentPadding( WgBorder padding );
+	virtual void	setContentShift( WgStateEnum state, WgCoord shift );
 
-	virtual void	SetHoveredContentShift( WgCoord shift );
-	virtual void	SetPressedContentShift( WgCoord shift );
-	virtual void	SetSelectedContentShift( WgCoord shift );
-	virtual void	SetFocusedContentShift( WgCoord shift );
+	virtual void	setHoveredContentShift( WgCoord shift );
+	virtual void	setPressedContentShift( WgCoord shift );
+	virtual void	setSelectedContentShift( WgCoord shift );
+	virtual void	setFocusedContentShift( WgCoord shift );
 
-	virtual WgSize	MinSize() const;
-	virtual WgSize	PreferredSize() const;
+	virtual WgSize	minSize() const;
+	virtual WgSize	preferredSize() const;
 
-	virtual WgSize	ContentPadding() const;
-	virtual WgSize	SizeForContent( const WgSize contentSize ) const;
-	virtual WgRect	ContentRect( const WgRect& canvas, WgState state ) const;
+	virtual WgSize	contentPadding() const;
+	virtual WgSize	sizeForContent( const WgSize contentSize ) const;
+	virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const;
 
-	virtual	bool	IsStateIdentical( WgState state, WgState comparedTo ) const;
+	virtual	bool	isStateIdentical( WgState state, WgState comparedTo ) const;
 
 
 protected:

@@ -41,39 +41,39 @@ WgStandardFormatter::~WgStandardFormatter()
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgStandardFormatter::IsInstanceOf( const char * pClassName ) const
+bool WgStandardFormatter::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgValueFormatter::IsInstanceOf(pClassName);
+	return WgValueFormatter::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgStandardFormatter::ClassName( void ) const
+const char * WgStandardFormatter::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgStandardFormatterPtr WgStandardFormatter::Cast( const WgObjectPtr& pObject )
+WgStandardFormatterPtr WgStandardFormatter::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgStandardFormatterPtr( static_cast<WgStandardFormatter*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgStandardFormatterPtr( static_cast<WgStandardFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ Format() _______________________________________________________________
+//____ format() _______________________________________________________________
 
-WgString WgStandardFormatter::Format( Sint64 value, int scale ) const
+WgString WgStandardFormatter::format( Sint64 value, int scale ) const
 {	
 }
 
-WgString WgStandardFormatter::Format( double value ) const
+WgString WgStandardFormatter::format( double value ) const
 {
 }

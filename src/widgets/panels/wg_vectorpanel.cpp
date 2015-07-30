@@ -25,145 +25,145 @@
 const char WgVectorPanel::CLASSNAME[] = {"VectorPanel"};
 const char WgVectorHook::CLASSNAME[] = {"VectorHook"};
 
-//____ WgVectorHook::IsInstanceOf() __________________________________________
+//____ WgVectorHook::isInstanceOf() __________________________________________
 
-bool WgVectorHook::IsInstanceOf( const char * pClassName ) const
+bool WgVectorHook::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgPanelHook::IsInstanceOf(pClassName);
+	return WgPanelHook::isInstanceOf(pClassName);
 }
 
-//____ WgVectorHook::ClassName() _____________________________________________
+//____ WgVectorHook::className() _____________________________________________
 
-const char * WgVectorHook::ClassName( void ) const
+const char * WgVectorHook::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ WgVectorHook::Cast() __________________________________________________
+//____ WgVectorHook::cast() __________________________________________________
 
-WgVectorHookPtr WgVectorHook::Cast( const WgHookPtr& pHook )
+WgVectorHookPtr WgVectorHook::cast( const WgHookPtr& pHook )
 {
-	if( pHook && pHook->IsInstanceOf(CLASSNAME) )
-		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.RawPtr()) );
+	if( pHook && pHook->isInstanceOf(CLASSNAME) )
+		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 
-WgCoord WgVectorHook::Pos() const
+WgCoord WgVectorHook::pos() const
 {
-	return Parent()->_hookGeo(this).Pos();
+	return parent()->_hookGeo(this).pos();
 }
 
-WgSize WgVectorHook::Size() const
+WgSize WgVectorHook::size() const
 {
-	return Parent()->_hookGeo(this).Size();
+	return parent()->_hookGeo(this).size();
 }
 
-WgRect WgVectorHook::Geo() const
+WgRect WgVectorHook::geo() const
 {
-	return Parent()->_hookGeo(this);
+	return parent()->_hookGeo(this);
 }
 
-WgCoord WgVectorHook::GlobalPos() const
+WgCoord WgVectorHook::globalPos() const
 {
-	return Parent()->_hookGeo(this).Pos() + Parent()->GlobalPos();
+	return parent()->_hookGeo(this).pos() + parent()->globalPos();
 
 }
 
-WgRect WgVectorHook::GlobalGeo() const
+WgRect WgVectorHook::globalGeo() const
 {
-	return Parent()->_hookGeo(this) + Parent()->GlobalPos();
+	return parent()->_hookGeo(this) + parent()->globalPos();
 }
 
-bool WgVectorHook::MoveForward()
+bool WgVectorHook::moveForward()
 {
 	if( _moveUp() )
 	{
-		Parent()->_onWidgetsReordered();
+		parent()->_onWidgetsReordered();
 		return true;
 	}
 
 	return false;
 }
 
-bool WgVectorHook::MoveBackward()
+bool WgVectorHook::moveBackward()
 {
 	if( _moveDown() )
 	{
-		Parent()->_onWidgetsReordered();
+		parent()->_onWidgetsReordered();
 		return true;
 	}
 
 	return false;
 }
 
-bool WgVectorHook::MoveBefore( const WgVectorHookPtr& pSibling )
+bool WgVectorHook::moveBefore( const WgVectorHookPtr& pSibling )
 {
-	if( pSibling && pSibling->Parent() == Parent() )
+	if( pSibling && pSibling->parent() == parent() )
 	{
-		if( _moveBefore(pSibling.RawPtr()) )
+		if( _moveBefore(pSibling.rawPtr()) )
 		{
-			Parent()->_onWidgetsReordered();
+			parent()->_onWidgetsReordered();
 			return true;
 		}
 	}
 	return false;
 }
 
-bool WgVectorHook::MoveAfter( const WgVectorHookPtr& pSibling )
+bool WgVectorHook::moveAfter( const WgVectorHookPtr& pSibling )
 {
-	if( pSibling && pSibling->Parent() == Parent() )
+	if( pSibling && pSibling->parent() == parent() )
 	{
-		if( _moveAfter(pSibling.RawPtr()) )
+		if( _moveAfter(pSibling.rawPtr()) )
 		{
-			Parent()->_onWidgetsReordered();
+			parent()->_onWidgetsReordered();
 			return true;
 		}
 	}
 	return false;
 }
 
-bool WgVectorHook::MoveFirst()
+bool WgVectorHook::moveFirst()
 {
 	if( _moveFirst() )
 	{
-		Parent()->_onWidgetsReordered();
+		parent()->_onWidgetsReordered();
 		return true;
 	}
 
 	return false;
 }
 
-bool WgVectorHook::MoveLast()
+bool WgVectorHook::moveLast()
 {
 	if( _moveLast() )
 	{
-		Parent()->_onWidgetsReordered();
+		parent()->_onWidgetsReordered();
 		return true;
 	}
 
 	return false;
 }
 
-bool WgVectorHook::SetVisible( bool bVisible )
+bool WgVectorHook::setVisible( bool bVisible )
 {
 	if( bVisible != m_bVisible )
 	{
 		m_bVisible = bVisible;
 		if( bVisible )
-			Parent()->_onWidgetAppeared(this);
+			parent()->_onWidgetAppeared(this);
 		else
-			Parent()->_onWidgetDisappeared(this);
+			parent()->_onWidgetDisappeared(this);
 	}
 
 	return true;
 }
 
-WgVectorPanelPtr WgVectorHook::Parent() const
+WgVectorPanelPtr WgVectorHook::parent() const
 {
 	return static_cast<WgVectorPanel*>(_parent());
 }
@@ -187,12 +187,12 @@ void WgVectorHook::_requestRender()
 
 void WgVectorHook::_requestRender( const WgRect& rect )
 {
-	Parent()->_onRenderRequested(this, rect);
+	parent()->_onRenderRequested(this, rect);
 }
 
 void WgVectorHook::_requestResize()
 {
-	Parent()->_onResizeRequested(this);
+	parent()->_onResizeRequested(this);
 }
 
 
@@ -220,29 +220,29 @@ WgVectorPanel::~WgVectorPanel()
 {
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgVectorPanel::IsInstanceOf( const char * pClassName ) const
+bool WgVectorPanel::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgPanel::IsInstanceOf(pClassName);
+	return WgPanel::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgVectorPanel::ClassName( void ) const
+const char * WgVectorPanel::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgVectorPanelPtr WgVectorPanel::Cast( const WgObjectPtr& pObject )
+WgVectorPanelPtr WgVectorPanel::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgVectorPanelPtr( static_cast<WgVectorPanel*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgVectorPanelPtr( static_cast<WgVectorPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -255,7 +255,7 @@ WgVectorHook * WgVectorPanel::_addWidget( WgWidget * pWidget )
 		return 0;
 
 	WgVectorHook * pHook = _newHook();
-	m_hooks.PushBack(pHook);
+	m_hooks.pushBack(pHook);
 	pHook->_setWidget( pWidget );
 
 	_onWidgetAppeared(pHook);
@@ -266,7 +266,7 @@ WgVectorHook * WgVectorPanel::_addWidget( WgWidget * pWidget )
 
 WgVectorHook * WgVectorPanel::_insertWidget( WgWidget * pWidget, WgWidget * pSibling )
 {
-	if( !pWidget || !pSibling || !pSibling->Parent() || pSibling->Parent() != this )
+	if( !pWidget || !pSibling || !pSibling->parent() || pSibling->parent() != this )
 		return 0;
 
 	WgVectorPanel * pWdg = (WgVectorPanel*) pSibling;
@@ -281,11 +281,11 @@ WgVectorHook * WgVectorPanel::_insertWidget( WgWidget * pWidget, WgWidget * pSib
 	return pHook;
 }
 
-//____ RemoveWidget() __________________________________________________________
+//____ removeWidget() __________________________________________________________
 
-bool WgVectorPanel::RemoveWidget( const WgWidgetPtr& pWidget )
+bool WgVectorPanel::removeWidget( const WgWidgetPtr& pWidget )
 {
-	if( !pWidget || !pWidget->Hook() || pWidget->Hook()->Parent() != this )
+	if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
 		return false;
 
 	// Disconnect and notify subclass that widget has disappeared
@@ -293,7 +293,7 @@ bool WgVectorPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 	WgVectorHook * pHook = (WgVectorHook *) pWidget->_hook();
 	pHook->_disconnect();
 
-	if( pHook->IsVisible() )
+	if( pHook->isVisible() )
 		_onWidgetDisappeared( pHook );
 
 	// Delete the hook and return
@@ -302,11 +302,11 @@ bool WgVectorPanel::RemoveWidget( const WgWidgetPtr& pWidget )
 	return true;
 }
 
-//____ Clear() ______________________________________________________
+//____ clear() ______________________________________________________
 
-bool WgVectorPanel::Clear()
+bool WgVectorPanel::clear()
 {
-	m_hooks.Clear();
+	m_hooks.clear();
 	_refreshAllWidgets();
 
 	return true;

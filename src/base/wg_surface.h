@@ -63,21 +63,21 @@ class WgSurface : public WgObject
 {
 
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSurfacePtr	Cast( const WgObjectPtr& pObject );
+	static WgSurfacePtr	cast( const WgObjectPtr& pObject );
 
 	// Methods for reading dimensions and abilities.
 
-	virtual	WgSize		Size() const = 0;					///< @brief Get the size of the surface.
+	virtual	WgSize		size() const = 0;					///< @brief Get the size of the surface.
 															///<
 															///< Get the width and height of the surface in a WgSize structure.
 															///< @return Size of the suface measured in pixels.
-	virtual	int			Width() const;						///< @brief Get the width of the surface.
-	virtual	int			Height() const;						///< @brief Get the height of the surface.
+	virtual	int			width() const;						///< @brief Get the width of the surface.
+	virtual	int			height() const;						///< @brief Get the height of the surface.
 
-	virtual bool		IsOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
+	virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
 															///<
 															///< Check if surface is entirely opaque.
 															///<
@@ -93,7 +93,7 @@ public:
 	// Slow, simple methods for reading and parsing individual pixels.
 
 
-	virtual Uint32		Pixel( WgCoord coord ) const = 0;	///< @brief Get pixel at specified coordinate.
+	virtual Uint32		pixel( WgCoord coord ) const = 0;	///< @brief Get pixel at specified coordinate.
 															///<
 															///< Get the raw pixel value from the specified coordinate of the surface.
 															///<
@@ -108,9 +108,9 @@ public:
 															///<
 															///< @return Pixel value in surface's native format.
 
-	inline Uint32		Pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
+	inline Uint32		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
 
-	virtual Uint8		Alpha( WgCoord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
+	virtual Uint8		alpha( WgCoord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
 															///<
 															///< Get the alpha value from the specified coordinate of the surface.
 															///<
@@ -125,14 +125,14 @@ public:
 															///<
 															///< @return Alpha value of pixel at coordinate.
 
-	inline Uint8		Alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
+	inline Uint8		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
 
-	virtual	Uint32		ColorToPixel( const WgColor& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
-	virtual	WgColor		PixelToColor( Uint32 pixel ) const;		///< @brief Get the color and alpha values of a pixel.
+	virtual	Uint32		colorToPixel( const WgColor& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
+	virtual	WgColor		pixelToColor( Uint32 pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
 	// Enums and methods for locking/unlocking of surface.
 
-	virtual void *		Lock( WgAccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
+	virtual void *		lock( WgAccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
 															///<
 															///< Locks the surface to gain direct access to the pixel data.
 															///<
@@ -146,22 +146,22 @@ public:
 															///< The first pixel of the first line of raw pixel data starts at the address returned
 															///< by this method. The rest of the pixels for the same line follows. There might be some
 															///< extra bytes between the end of one line and the beginning of the next which should
-															///< neither be read or written. Use the value returned by Pitch() to properly calculate
+															///< neither be read or written. Use the value returned by pitch() to properly calculate
 															///< the start adress of each line.
 															///<
-															///< Once you are done with a surface you should release it by calling Unlock() after
+															///< Once you are done with a surface you should release it by calling unlock() after
 															///< which no access of the raw pixel data is allowed until the surface has been locked again.
 															///< Be aware that the address and pitch of the raw pixel data might change between calls to
-															///< Lock().
+															///< lock().
 															///<
 															///< You should not use the surface as source or destination in any GfxDevice or
-															///< WgSurface::CopyTo() calls while it
+															///< WgSurface::copyTo() calls while it
 															///< is locked as that might result in undefined behavior on certain Surface implementations
 															///< and hardware architectures.
 															///<
 															///< @return Pointer to start of pixel data or null if failed.
 
-	virtual void *		LockRegion( WgAccessMode mode, const WgRect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
+	virtual void *		lockRegion( WgAccessMode mode, const WgRect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
 															///<
 															///< Locks a limited region of the surface to gain direct access to its pixel data.
 															///<
@@ -169,47 +169,47 @@ public:
 															///<				or WG_READ_WRITE.
 															///< @param region	The rectangular region of the surface to lock.
 															///<
-															///< Identical to Lock() except that just a specific region of the surface may be accessed
+															///< Identical to lock() except that just a specific region of the surface may be accessed
 															///< and that the pointer returned is to the first pixel of that region, not the entire surface.
 															///<
-															///< Use Pitch() to get the distance from the start of one pixel row of the region to the next.
-															///< Use Unlock() to release the surface when you are done with it.
+															///< Use pitch() to get the distance from the start of one pixel row of the region to the next.
+															///< Use unlock() to release the surface when you are done with it.
 															///<
 															///< Just locking a specific region of a surface as opposed to the whole of it might yield
 															///< performance gains depending on Surface implementation and hardware architecture in use.
 															///<
 															///< @return Pointer to start of pixel data for specified region or null if failed.
-	virtual void			Unlock() = 0;					///< @brief Unlock a locked surface.
+	virtual void			unlock() = 0;					///< @brief Unlock a locked surface.
 															///<
-															///< Unlocks a surface that has previously been locked by a call to Lock() or LockRegion().
+															///< Unlocks a surface that has previously been locked by a call to lock() or lockRegion().
 
-	inline 	bool			IsLocked() const { return (m_accessMode != WG_NO_ACCESS); }	///< @brief Check if surface is locked.
+	inline 	bool			isLocked() const { return (m_accessMode != WG_NO_ACCESS); }	///< @brief Check if surface is locked.
 																						///<
 																						///< Check if surface is locked.
 																						///< @return True if surface is locked, otherwise false.
-	inline	WgAccessMode 	LockStatus() const { return m_accessMode; }	///< @brief Check if surface is locked and in what way.
+	inline	WgAccessMode 	lockStatus() const { return m_accessMode; }	///< @brief Check if surface is locked and in what way.
 																		///<
 																		///< Check if surface is locked and if so, what kind of access is allowed.
 																		///< @return WG_READ_ONLY, WG_WRITE_ONLY or WG_READ_WRITE if the surface is locked,
 																		///< otherwise WG_NO_ACCESS.
-	inline  WgRect			RegionLocked() const;						///< @brief Get the locked region of the surface.
-	inline  int				Pitch() const;								///< @brief Get the pitch of the locked region.
+	inline  WgRect			regionLocked() const;						///< @brief Get the locked region of the surface.
+	inline  int				pitch() const;								///< @brief Get the pitch of the locked region.
 	inline const WgPixelFormat *PixelFormat() const;					///< @brief Get the pixel format of the locked region.
-	inline void *			Pixels() const { return m_pPixels; }		///< @brief Get a pointer to the raw pixels of the locked region.
+	inline void *			pixels() const { return m_pPixels; }		///< @brief Get a pointer to the raw pixels of the locked region.
 																		///< Get a pointer to the first line of raw pixels of the locked region.
 																		///<
 																		///< The pointer returned is identical to the one previously returned
-																		///< by the call to Lock() or LockRegion().
+																		///< by the call to lock() or lockRegion().
 																		///< @return Pointer to the raw pixels of the locked region or
 																		///<		 null if surface is not locked.
 
 
 	// Methods for modifying surface content
 
-	virtual bool		Fill( WgColor col );						///< @brief Fill surface with specified color.
-	virtual bool		Fill( WgColor col, const WgRect& region );	///< @brief Fill section of surface with specified color
-	virtual bool		CopyFrom( const WgSurfacePtr& pSrcSurf, const WgRect& srcRect, WgCoord dst );	///< @brief Copy block of graphics from other surface
-	virtual bool		CopyFrom( const WgSurfacePtr& pSrcSurf, WgCoord dst );	///< @brief Copy other surface as a block
+	virtual bool		fill( WgColor col );						///< @brief Fill surface with specified color.
+	virtual bool		fill( WgColor col, const WgRect& region );	///< @brief Fill section of surface with specified color
+	virtual bool		copyFrom( const WgSurfacePtr& pSrcSurf, const WgRect& srcRect, WgCoord dst );	///< @brief Copy block of graphics from other surface
+	virtual bool		copyFrom( const WgSurfacePtr& pSrcSurf, WgCoord dst );	///< @brief Copy other surface as a block
 
 protected:
 	WgSurface();
@@ -225,7 +225,7 @@ protected:
 	WgRect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 };
 
-//____ WgSurface::Pitch() _______________________________________________
+//____ WgSurface::pitch() _______________________________________________
 /**
  * Get the pitch of the locked region.
  *
@@ -236,7 +236,7 @@ protected:
  * @return Pitch of a pixel line of the locked region, measured in bytes, or 0 if the surface is not locked.
  *
  **/
-int WgSurface::Pitch() const
+int WgSurface::pitch() const
 {
 	if( m_accessMode == WG_NO_ACCESS )
 		return 0;
@@ -259,7 +259,7 @@ const WgPixelFormat *  WgSurface::PixelFormat() const
 	return &m_pixelFormat;
 }
 
-//____ Pixel() ______________________________________________________________
+//____ pixel() ______________________________________________________________
 /**
  * Get the raw pixel value from the specified coordinate of the surface.
  *
@@ -275,12 +275,12 @@ const WgPixelFormat *  WgSurface::PixelFormat() const
  *
  * @return Pixel value in surface's native format.
  **/
-Uint32 WgSurface::Pixel( int x, int y ) const
+Uint32 WgSurface::pixel( int x, int y ) const
 {
-	return Pixel( WgCoord(x,y) );
+	return pixel( WgCoord(x,y) );
 }
 
-//____ Alpha() ____________________________________________________________
+//____ alpha() ____________________________________________________________
 /**
  * Get the alpha value from the specified coordinate of the surface.
  *
@@ -295,21 +295,21 @@ Uint32 WgSurface::Pixel( int x, int y ) const
  *
  * @return Alpha value of pixel at coordinate.
  **/
-Uint8 WgSurface::Alpha( int x, int y ) const
+Uint8 WgSurface::alpha( int x, int y ) const
 {
-	return Alpha( WgCoord(x,y) );
+	return alpha( WgCoord(x,y) );
 }
 
-//____ RegionLocked() _________________________________________________________
+//____ regionLocked() _________________________________________________________
 /**
  * Get the region that is locked of a locked surface.
  *
- * If the surface has been locked using Lock(), this corresponds to the whole surface.
+ * If the surface has been locked using lock(), this corresponds to the whole surface.
  *
  * @return The region of the surface that is locked or an empty rectangle
  * (0,0,0,0) if surface isn't locked.
  **/
-WgRect WgSurface::RegionLocked() const
+WgRect WgSurface::regionLocked() const
 {
 	if( m_accessMode==WG_NO_ACCESS )
 		return WgRect();

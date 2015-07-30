@@ -215,17 +215,17 @@ Uint32 WgTextTool::readString( const char *& pSrc, WgChar * pDst, Uint32 maxChar
 	if( !pSrc )
 	{
 	    if( maxChars > 0 )
-            pDst[0].SetGlyph(0);
+            pDst[0].setGlyph(0);
 		return 0;
 	}
 	Uint32 n = 0;
 
 	while( * pSrc != 0 && n < maxChars )
 	{
-		pDst[n++].SetGlyph(readChar(pSrc));
+		pDst[n++].setGlyph(readChar(pSrc));
 	}
 	if( n != maxChars )
-		pDst[n].SetGlyph(0);
+		pDst[n].setGlyph(0);
 	return n;
 }
 
@@ -234,42 +234,42 @@ Uint32 WgTextTool::readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxCh
 	if( !pSrc )
 	{
 	    if( maxChars > 0 )
-            pDst[0].SetGlyph(0);
+            pDst[0].setGlyph(0);
 		return 0;
 	}
 	Uint32 n = 0;
 
 	while( * pSrc != 0 && n < maxChars )
-		pDst[n++].SetGlyph( * pSrc++);
+		pDst[n++].setGlyph( * pSrc++);
 
 	if( n != maxChars )
-		pDst[n].SetGlyph(0);
+		pDst[n].setGlyph(0);
 	return n;
 }
 
 
 Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars )
 {
-	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	Uint16 * pCP = WgCodePages::getCodePage( codepage );
 	if( !pCP || !pSrc )
 	{
 	    if( maxChars > 0 )
-            pDst[0].SetGlyph(0);
+            pDst[0].setGlyph(0);
 		return 0;
 	}
 
 	Uint32 n = 0;
 	for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
-		pDst[n].SetGlyph( pCP[p[n]] );
+		pDst[n].setGlyph( pCP[p[n]] );
 
 	if( n != maxChars )
-		pDst[n].SetGlyph(0);
+		pDst[n].setGlyph(0);
 	return n;
 }
 
 Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars )
 {
-	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	Uint16 * pCP = WgCodePages::getCodePage( codepage );
 	if( !pCP || !pSrc )
 	{
 	    if( maxChars > 0 )
@@ -323,9 +323,9 @@ Uint32 WgTextTool::countWhitespaces( const WgChar * pStr, Uint32 len  )
 		return 0;
 
 	Uint32 n = 0;
-	for( unsigned int i = 0 ; i < len && !pStr[i].IsEndOfText() ; i++ )
+	for( unsigned int i = 0 ; i < len && !pStr[i].isEndOfText() ; i++ )
 	{
-		if( pStr[i].IsWhitespace() )
+		if( pStr[i].isWhitespace() )
 			n++;
 	}
 	return n;
@@ -651,7 +651,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 
 	if( !_pSrc )
 	{
-		pDst[0].SetGlyph(0);
+		pDst[0].setGlyph(0);
 		return 0;
 	}
 
@@ -694,14 +694,14 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 				case 'n':					// Encoded newline
 					if( n < maxChars )
 					{
-						myChar.SetGlyph( '\n' );
+						myChar.setGlyph( '\n' );
 						pDst[n++] = myChar;
 					}
 				break;
 
 				case ':':					// BEGIN BREAK LEVEL
 					if( nBreakLevelRecursions != 0 )
-						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 
 					if( nBreakLevelRecursions < 16 )
 					{
@@ -717,7 +717,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 					if( nBreakLevelRecursions > 0 )
 					{
 						nBreakLevelRecursions--;
-						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 						pBeginSize = &pDst[n];
 					}
 				break;
@@ -725,7 +725,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 
 				case '[':					// BEGIN SIZE
 					if( nSizeRecursions != 0 )
-						WgTextTool::SetSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+						WgTextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
 
 					if( nSizeRecursions < 16 )
 					{
@@ -741,7 +741,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 					if( nSizeRecursions > 0 )
 					{
 						nSizeRecursions--;
-						WgTextTool::SetSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+						WgTextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
 						pBeginSize = &pDst[n];
 					}
 				break;
@@ -749,7 +749,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 
 				case '{':					// BEGIN COLOR
 					if( nColorRecursions != 0 )
-						WgTextTool::SetColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
+						WgTextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
 
 					if( nColorRecursions < 16 )
 					{
@@ -763,10 +763,10 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 						}
 						else
 */						{
-							col.a = WgTextTool::AsciiToUint8( &pSrc[0] );
-							col.r = WgTextTool::AsciiToUint8( &pSrc[2] );
-							col.g = WgTextTool::AsciiToUint8( &pSrc[4] );
-							col.b = WgTextTool::AsciiToUint8( &pSrc[6] );
+							col.a = WgTextTool::asciiToUint8( &pSrc[0] );
+							col.r = WgTextTool::asciiToUint8( &pSrc[2] );
+							col.g = WgTextTool::asciiToUint8( &pSrc[4] );
+							col.b = WgTextTool::asciiToUint8( &pSrc[6] );
 							pSrc += 8;
 						}
 
@@ -778,7 +778,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 					if( nColorRecursions > 0 )
 					{
 						nColorRecursions--;
-						WgTextTool::SetColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
+						WgTextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
 						pBeginColor = &pDst[n];
 					}
 				break;
@@ -793,14 +793,14 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 				case '|':					// END UNDERLINED
 					nUnderlinedRecursions--;
 					if( nUnderlinedRecursions == 0 )
-						WgTextTool::SetUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
+						WgTextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
 				break;
 
 				case '#':					// END STYLE
 					if( nStyleRecursions > 0 )
 					{
 						nStyleRecursions--;
-						WgTextTool::SetStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
+						WgTextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
 						pBeginStyle = &pDst[n];
 					}
 				break;
@@ -820,9 +820,9 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 						pSrc++;
 
 						if( id == "null" )
-							myChar.SetProperties( WgTextpropPtr() );
+							myChar.setProperties( WgTextpropPtr() );
 						else
-							myChar.SetProperties( pResDB->GetTextprop(id) );
+							myChar.setProperties( pResDB->getTextprop(id) );
 					}
 				}
 				break;
@@ -892,7 +892,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 					if( bOk )
 					{
 						if( nStyleRecursions != 0 )
-							WgTextTool::SetStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
+							WgTextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
 
 						if( nStyleRecursions < 16 )
 						{
@@ -908,7 +908,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 		{
 			if( n < maxChars )
 			{
-				myChar.SetGlyph( c );
+				myChar.setGlyph( c );
 				pDst[n++] = myChar;
 			}
 		}
@@ -917,7 +917,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 	// Terminate the string if possible.
 
 	if( n != maxChars )
-		pDst[n].SetGlyph(0);
+		pDst[n].setGlyph(0);
 
 	return n;
 }
@@ -947,7 +947,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 
 	if( !_pSrc )
 	{
-		pDst[0].SetGlyph(0);
+		pDst[0].setGlyph(0);
 		return 0;
 	}
 
@@ -988,14 +988,14 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 				case 'n':					// Encoded newline
 					if( n < maxChars )
 					{
-						myChar.SetGlyph( '\n' );
+						myChar.setGlyph( '\n' );
 						pDst[n++] = myChar;
 					}
 				break;
 
 				case '[':					// BEGIN SIZE
 					if( nSizeRecursions != 0 )
-						WgTextTool::SetSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+						WgTextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
 
 					if( nSizeRecursions < 16 )
 					{
@@ -1011,14 +1011,14 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 					if( nSizeRecursions > 0 )
 					{
 						nSizeRecursions--;
-						WgTextTool::SetSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+						WgTextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
 						pBeginSize = &pDst[n];
 					}
 				break;
 
 				case ':':					// BEGIN BREAK LEVEL
 					if( nBreakLevelRecursions != 0 )
-						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 
 					if( nBreakLevelRecursions < 16 )
 					{
@@ -1034,7 +1034,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 					if( nBreakLevelRecursions > 0 )
 					{
 						nBreakLevelRecursions--;
-						WgTextTool::SetBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+						WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 						pBeginSize = &pDst[n];
 					}
 				break;
@@ -1042,17 +1042,17 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 
 				case '{':					// BEGIN COLOR
 					if( nColorRecursions != 0 )
-						WgTextTool::SetColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
+						WgTextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
 
 					if( nColorRecursions < 16 )
 					{
 						pBeginColor = &pDst[n];
 
 						WgColor col;
-						col.a = WgTextTool::AsciiToUint8( &pSrc[0] );
-						col.r = WgTextTool::AsciiToUint8( &pSrc[2] );
-						col.g = WgTextTool::AsciiToUint8( &pSrc[4] );
-						col.b = WgTextTool::AsciiToUint8( &pSrc[6] );
+						col.a = WgTextTool::asciiToUint8( &pSrc[0] );
+						col.r = WgTextTool::asciiToUint8( &pSrc[2] );
+						col.g = WgTextTool::asciiToUint8( &pSrc[4] );
+						col.b = WgTextTool::asciiToUint8( &pSrc[6] );
 						pSrc += 8;
 
 						colorStack[nColorRecursions++] = col;
@@ -1063,7 +1063,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 					if( nColorRecursions > 0 )
 					{
 						nColorRecursions--;
-						WgTextTool::SetColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
+						WgTextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
 						pBeginColor = &pDst[n];
 					}
 				break;
@@ -1078,14 +1078,14 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 				case '|':					// END UNDERLINED
 					nUnderlinedRecursions--;
 					if( nUnderlinedRecursions == 0 )
-						WgTextTool::SetUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
+						WgTextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
 				break;
 
 				case '#':					// END STYLE
 					if( nStyleRecursions > 0 )
 					{
 						nStyleRecursions--;
-						WgTextTool::SetStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
+						WgTextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
 						pBeginStyle = &pDst[n];
 					}
 				break;
@@ -1105,9 +1105,9 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 						pSrc++;
 
 						if( id == "null" )
-							myChar.SetProperties( WgTextpropPtr() );
+							myChar.setProperties( WgTextpropPtr() );
 						else
-							myChar.SetProperties( pResDB->GetTextprop(id) );
+							myChar.setProperties( pResDB->getTextprop(id) );
 					}
 				}
 				break;
@@ -1170,7 +1170,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 					if( bOk )
 					{
 						if( nStyleRecursions != 0 )
-							WgTextTool::SetStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
+							WgTextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
 
 						if( nStyleRecursions < 16 )
 						{
@@ -1186,7 +1186,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 		{
 			if( n < maxChars )
 			{
-				myChar.SetGlyph( c );
+				myChar.setGlyph( c );
 				pDst[n++] = myChar;
 			}
 		}
@@ -1195,7 +1195,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 	// Terminate the string if possible.
 
 	if( n != maxChars )
-		pDst[n].SetGlyph(0);
+		pDst[n].setGlyph(0);
 
 	return n;
 }
@@ -1213,31 +1213,31 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 
 	TextpropEncoder	enc(pResDB);
 
-	Uint32 n = enc.BeginString();
+	Uint32 n = enc.beginString();
 	assert( n == 0 );						// If this has changed we need to add some code here...
 
-	while( !pSrc->IsEndOfText() )
+	while( !pSrc->isEndOfText() )
 	{
 
-		if( hActiveProp != pSrc->PropHandle() )
+		if( hActiveProp != pSrc->propHandle() )
 		{
 			// Handle changed properties
 
-			n = enc.SetProp( pSrc->Properties() );
+			n = enc.setProp( pSrc->getProperties() );
 
 			if( n > maxBytes - ofs )
 				break;								// Can't fit this encoding in, just quit.
 
-			strcpy( pDst+ofs, enc.GetCodes() );
+			strcpy( pDst+ofs, enc.getCodes() );
 			ofs += n;
 
-			hActiveProp = pSrc->PropHandle();
+			hActiveProp = pSrc->propHandle();
 		}
 
 
 		// Copy the glyph.
 
-		Uint16 glyph = pSrc->Glyph();
+		Uint16 glyph = pSrc->getGlyph();
 
 		if( glyph < 128 )
 		{
@@ -1269,10 +1269,10 @@ Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint3
 
 	// Finalize string by adding any last needed encoding.
 
-	n = enc.EndString();
+	n = enc.endString();
 	if( n <= maxBytes - ofs )
 	{
-		strcpy( pDst+ofs, enc.GetCodes() );
+		strcpy( pDst+ofs, enc.getCodes() );
 		ofs += n;
 	}
 
@@ -1292,25 +1292,25 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 	Uint16	hActiveProp = 0;
 
 	TextpropEncoder	enc(pResDB);
-	Uint32 n = enc.BeginString();
+	Uint32 n = enc.beginString();
 	assert( n == 0 );						// If this has changed we need to add some code here...
 
-	while( !pSrc->IsEndOfText() )
+	while( !pSrc->isEndOfText() )
 	{
-		if( hActiveProp != pSrc->PropHandle() )
+		if( hActiveProp != pSrc->propHandle() )
 		{
 			// Handle changed properties
 
-			n = enc.SetProp( pSrc->Properties() );
+			n = enc.setProp( pSrc->getProperties() );
 
 			if( n > maxBytes - ofs )
 				break;								// Can't fit this encoding in, just quit.
 
-			const char * p = enc.GetCodes();
+			const char * p = enc.getCodes();
 			for( unsigned int i = 0 ; i < n ; i++ )
 				pDst[ofs++] = * p++;
 
-			hActiveProp = pSrc->PropHandle();
+			hActiveProp = pSrc->propHandle();
 		}
 
 		// Copy the glyph.
@@ -1318,17 +1318,17 @@ Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 
 		if( ofs >= maxBytes )
 			break;					// Can't fit character, so we just terminate.
 
-		pDst[ofs++] = pSrc->Glyph();
+		pDst[ofs++] = pSrc->getGlyph();
 
 		pSrc++;
 	}
 
 	// Finalize string by adding any last needed encoding.
 
-	n = enc.EndString();
+	n = enc.endString();
 	if( n <= maxBytes - ofs )
 	{
-		const char * p = enc.GetCodes();
+		const char * p = enc.getCodes();
 		for( unsigned int i = 0 ; i < n ; i++ )
 			pDst[ofs++] = * p++;
 	}
@@ -1352,22 +1352,22 @@ Uint32 WgTextTool::getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChar
 	Uint16			hActiveProp = 0;
 
 	TextpropEncoder	enc(pResDB);
-	ofs += enc.BeginString();
+	ofs += enc.beginString();
 
 
-	while( charsRead < maxChars && !pSrc->IsEndOfText() )
+	while( charsRead < maxChars && !pSrc->isEndOfText() )
 	{
 		// Handle any changes to properties
 
-		if( hActiveProp != pSrc->PropHandle() )
+		if( hActiveProp != pSrc->propHandle() )
 		{
-			ofs += enc.SetProp( pSrc->Properties() );
-			hActiveProp = pSrc->PropHandle();
+			ofs += enc.setProp( pSrc->getProperties() );
+			hActiveProp = pSrc->propHandle();
 		}
 
 		// Add the glyph
 
-		Uint16 glyph = pSrc->Glyph();
+		Uint16 glyph = pSrc->getGlyph();
 
 		if( glyph < 128 )
 			ofs++;
@@ -1382,7 +1382,7 @@ Uint32 WgTextTool::getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChar
 
 	//
 
-	ofs += enc.EndString();
+	ofs += enc.endString();
 
 
 	return ofs;
@@ -1400,17 +1400,17 @@ Uint32 WgTextTool::getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars, c
 	Uint16			hActiveProp = 0;
 
 	TextpropEncoder	enc(pResDB);
-	ofs += enc.BeginString();
+	ofs += enc.beginString();
 
 
-	while( charsRead < maxChars && !pSrc->IsEndOfText() )
+	while( charsRead < maxChars && !pSrc->isEndOfText() )
 	{
 		// Handle any changes to properties
 
-		if( hActiveProp != pSrc->PropHandle() )
+		if( hActiveProp != pSrc->propHandle() )
 		{
-			ofs += enc.SetProp( pSrc->Properties() );
-			hActiveProp = pSrc->PropHandle();
+			ofs += enc.setProp( pSrc->getProperties() );
+			hActiveProp = pSrc->propHandle();
 		}
 
 		// Add the glyph
@@ -1423,17 +1423,17 @@ Uint32 WgTextTool::getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars, c
 
 	//
 
-	ofs += enc.EndString();
+	ofs += enc.endString();
 
 	return ofs;
 }
 
 
-//____ CopyChars() ____________________________________________________________
+//____ copyChars() ____________________________________________________________
 
-Uint32 WgTextTool::CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChars )
+Uint32 WgTextTool::copyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChars )
 {
-	// Special RefProps() equivalent which also counts characters and stops at NULL.
+	// Special refProps() equivalent which also counts characters and stops at NULL.
 
 	Uint16	hProp = 0;
 	Uint16	nProp = 0;
@@ -1442,18 +1442,18 @@ Uint32 WgTextTool::CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChar
 	for( ; n < maxChars ; n++ )
 	{
 
-		Uint16 h = pSrc[n].PropHandle();
+		Uint16 h = pSrc[n].propHandle();
 		if( h == hProp )
 			nProp++;
 		else
 		{
 			if( hProp )
-				WgTextpropManager::IncRef(hProp, nProp );
+				WgTextpropManager::incRef(hProp, nProp );
 
 			hProp = h;
 			nProp = 1;
 		}
-		if( pSrc[n].IsEndOfText() )
+		if( pSrc[n].isEndOfText() )
 		{
 			n++;
 			break;
@@ -1461,11 +1461,11 @@ Uint32 WgTextTool::CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChar
 	}
 
 	if( hProp )
-		WgTextpropManager::IncRef(hProp, nProp );
+		WgTextpropManager::incRef(hProp, nProp );
 
 	// Dereference the same amount of characters from destination.
 
-	DerefProps( pDst, n );
+	derefProps( pDst, n );
 
 	// Copy chars in a fast and straight way...
 
@@ -1476,9 +1476,9 @@ Uint32 WgTextTool::CopyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChar
 
 
 
-//____ DerefProps() ____________________________________________________________
+//____ derefProps() ____________________________________________________________
 
-void WgTextTool::DerefProps( WgChar * p, Uint32 n )
+void WgTextTool::derefProps( WgChar * p, Uint32 n )
 {
 	Uint16	hProp = 0;
 	Uint16	nProp = 0;
@@ -1486,13 +1486,13 @@ void WgTextTool::DerefProps( WgChar * p, Uint32 n )
 	for( int i = 0 ; i < (int) n ; i++ )
 	{
 
-		Uint16 h = p[i].PropHandle();
+		Uint16 h = p[i].propHandle();
 		if( h == hProp )
 			nProp++;
 		else
 		{
 			if( hProp )
-				WgTextpropManager::DecRef(hProp, nProp );
+				WgTextpropManager::decRef(hProp, nProp );
 
 			hProp = h;
 			nProp = 1;
@@ -1500,13 +1500,13 @@ void WgTextTool::DerefProps( WgChar * p, Uint32 n )
 	}
 
 	if( hProp )
-		WgTextpropManager::DecRef(hProp, nProp );
+		WgTextpropManager::decRef(hProp, nProp );
 }
 
 
-//____ RefProps() ______________________________________________________________
+//____ refProps() ______________________________________________________________
 
-void WgTextTool::RefProps( WgChar * p, Uint32 n )
+void WgTextTool::refProps( WgChar * p, Uint32 n )
 {
 	Uint16	hProp = 0;
 	Uint16	nProp = 0;
@@ -1514,13 +1514,13 @@ void WgTextTool::RefProps( WgChar * p, Uint32 n )
 	for( unsigned int i = 0 ; i < n ; i++ )
 	{
 
-		Uint16 h = p[i].PropHandle();
+		Uint16 h = p[i].propHandle();
 		if( h == hProp )
 			nProp++;
 		else
 		{
 			if( hProp )
-				WgTextpropManager::IncRef(hProp, nProp );
+				WgTextpropManager::incRef(hProp, nProp );
 
 			hProp = h;
 			nProp = 1;
@@ -1528,7 +1528,7 @@ void WgTextTool::RefProps( WgChar * p, Uint32 n )
 	}
 
 	if( hProp )
-		WgTextpropManager::IncRef(hProp, nProp );
+		WgTextpropManager::incRef(hProp, nProp );
 }
 
 
@@ -1586,9 +1586,9 @@ Uint32	WgTextTool::countLines( const WgChar * pStr )
 		return 0;
 
 	Uint32 n = 1;
-	while( !pStr->IsEndOfText() )
+	while( !pStr->isEndOfText() )
 	{
-		if( pStr->IsEndOfLine() )
+		if( pStr->isEndOfLine() )
 			n++;
 		pStr++;
 	}
@@ -1653,7 +1653,7 @@ Uint32	WgTextTool::countLineChars( const WgChar * pStr, Uint32 len )
 
 	Uint32 n = 0;
 
-	while( !pStr->IsEndOfLine() && n < len )
+	while( !pStr->isEndOfLine() && n < len )
 		n++;
 
 	return n;
@@ -1721,10 +1721,10 @@ void	WgTextTool::countCharsLines( const WgChar * pStr, Uint32& nChars, Uint32& n
 
 	while( pStr + nChars != pEnd )
 	{
-		if( pStr[nChars].IsEndOfText() )
+		if( pStr[nChars].isEndOfText() )
 			break;
 
-		if( pStr[nChars].IsEndOfLine() )
+		if( pStr[nChars].isEndOfLine() )
 			nLines++;
 
 		nChars++;
@@ -1792,7 +1792,7 @@ Uint32 WgTextTool::strlen( const Uint16 * pSrc )
 Uint32 WgTextTool::strlen( const WgChar * pSrc )
 {
 	Uint32 nChars = 0;
-	while( !pSrc->IsEndOfText() )
+	while( !pSrc->isEndOfText() )
 	{
 		++nChars;
 		++pSrc;
@@ -1814,13 +1814,13 @@ int WgTextTool::strcmp( const Uint16* pStr1, const Uint16* pStr2 )
 //____ strcmp() ____________________________________________________________
 int WgTextTool::strcmp( const WgChar * pStr1, const WgChar * pStr2 )
 {
-	while( !pStr1->IsEndOfText() && pStr1->Equals(*pStr2) )
+	while( !pStr1->isEndOfText() && pStr1->equals(*pStr2) )
 	{
 		pStr1++;
 		pStr2++;
 	}
 
-	if( pStr1->IsEndOfText() && pStr2->IsEndOfText() )
+	if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 		return 0;
 
 	return pStr1->all - pStr2->all;
@@ -1830,13 +1830,13 @@ int WgTextTool::strcmp( const WgChar * pStr1, const WgChar * pStr2 )
 //____ glyphcmp() ____________________________________________________________
 int WgTextTool::glyphcmp( const WgChar * pStr1, const WgChar * pStr2 )
 {
-	while( !pStr1->IsEndOfText() && pStr1->glyph == pStr2->glyph )
+	while( !pStr1->isEndOfText() && pStr1->glyph == pStr2->glyph )
 	{
 		pStr1++;
 		pStr2++;
 	}
 
-	if( pStr1->IsEndOfText() && pStr2->IsEndOfText() )
+	if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 		return 0;
 
 	return pStr1->glyph - pStr2->glyph;
@@ -1845,13 +1845,13 @@ int WgTextTool::glyphcmp( const WgChar * pStr1, const WgChar * pStr2 )
 //____ glyphcmpIgnoreCase() _______________________________________________________
 int WgTextTool::glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 )
 {
-	while( !pStr1->IsEndOfText() && towlower(pStr1->glyph) == towlower(pStr2->glyph) )
+	while( !pStr1->isEndOfText() && towlower(pStr1->glyph) == towlower(pStr2->glyph) )
 	{
 		pStr1++;
 		pStr2++;
 	}
 
-	if( pStr1->IsEndOfText() && pStr2->IsEndOfText() )
+	if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 		return 0;
 
 	return towlower(pStr1->glyph) - towlower(pStr2->glyph);
@@ -1859,8 +1859,8 @@ int WgTextTool::glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 )
 
 
 
-//____ NibbleToAscii() ____________________________________________________________
-inline Uint8 WgTextTool::NibbleToAscii( Uint8 nibble )
+//____ nibbleToAscii() ____________________________________________________________
+inline Uint8 WgTextTool::nibbleToAscii( Uint8 nibble )
 {
 	if( nibble <= 9 )
 		return '0' + nibble;
@@ -1868,8 +1868,8 @@ inline Uint8 WgTextTool::NibbleToAscii( Uint8 nibble )
 		return 'A' + ( nibble - 0x0A );
 }
 
-//____ AsciiToNibble() ____________________________________________________________
-inline Uint8 WgTextTool::AsciiToNibble( Uint8 ascii )
+//____ asciiToNibble() ____________________________________________________________
+inline Uint8 WgTextTool::asciiToNibble( Uint8 ascii )
 {
 	if( ascii >= '0' && ascii <= '9' )
 		return 0x00 + ascii - '0';
@@ -1881,60 +1881,60 @@ inline Uint8 WgTextTool::AsciiToNibble( Uint8 ascii )
 	return 0;
 }
 
-//____ Uint16ToAscii() ____________________________________________________________
-bool WgTextTool::Uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars )
+//____ uint16ToAscii() ____________________________________________________________
+bool WgTextTool::uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars )
 {
 	if( 0 == pDest || maxChars < 4 )
 		return false;
 
-	Uint8ToAscii( value >> 8, (Uint16*)&pDest[0], 2 );
-	Uint8ToAscii( value & 0xFF, (Uint16*)&pDest[2], 2 );
+	uint8ToAscii( value >> 8, (Uint16*)&pDest[0], 2 );
+	uint8ToAscii( value & 0xFF, (Uint16*)&pDest[2], 2 );
 
 	return true;
 }
 
-//____ AsciiToUint16() ____________________________________________________________
-Uint16 WgTextTool::AsciiToUint16( const Uint16 * pAscii )
+//____ asciiToUint16() ____________________________________________________________
+Uint16 WgTextTool::asciiToUint16( const Uint16 * pAscii )
 {
-	Uint16 high = AsciiToUint8( (Uint16*)&pAscii[0] );
-	Uint16 low = AsciiToUint8( (Uint16*)&pAscii[2] );
+	Uint16 high = asciiToUint8( (Uint16*)&pAscii[0] );
+	Uint16 low = asciiToUint8( (Uint16*)&pAscii[2] );
 
 	Uint16 value = high << 8 | low;
 
 	return value;
 }
 
-//____ Uint16ToAscii() ____________________________________________________________
-bool WgTextTool::Uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars )
+//____ uint16ToAscii() ____________________________________________________________
+bool WgTextTool::uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars )
 {
 	if( 0 == pDest || maxChars < 4 )
 		return false;
 
-	Uint8ToAscii( value >> 8, (char*)&pDest[0], 2 );
-	Uint8ToAscii( value & 0xFF, (char*)&pDest[2], 2 );
+	uint8ToAscii( value >> 8, (char*)&pDest[0], 2 );
+	uint8ToAscii( value & 0xFF, (char*)&pDest[2], 2 );
 
 	return true;
 }
 
-//____ AsciiToUint16() ____________________________________________________________
-Uint16 WgTextTool::AsciiToUint16( const char * pAscii )
+//____ asciiToUint16() ____________________________________________________________
+Uint16 WgTextTool::asciiToUint16( const char * pAscii )
 {
-	Uint16 high = AsciiToUint8( (char*)&pAscii[0] );
-	Uint16 low = AsciiToUint8( (char*)&pAscii[2] );
+	Uint16 high = asciiToUint8( (char*)&pAscii[0] );
+	Uint16 low = asciiToUint8( (char*)&pAscii[2] );
 
 	Uint16 value = high << 8 | low;
 
 	return value;
 }
 
-//____ Uint8ToAscii( Uint16* ) ____________________________________________________________
-bool WgTextTool::Uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
+//____ uint8ToAscii( Uint16* ) ____________________________________________________________
+bool WgTextTool::uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
 {
 	if( 0 == pDest || maxChars < 2 )
 		return false;
 
-	Uint8 high = NibbleToAscii( value >> 4 );
-	Uint8 low = NibbleToAscii( value & 0x0F );
+	Uint8 high = nibbleToAscii( value >> 4 );
+	Uint8 low = nibbleToAscii( value & 0x0F );
 
 	pDest[ 0 ] = high;
 	pDest[ 1 ] = low;
@@ -1942,25 +1942,25 @@ bool WgTextTool::Uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
 	return true;
 }
 
-//____ AsciiToUint8() ____________________________________________________________
-Uint8 WgTextTool::AsciiToUint8( const Uint16 * pAscii )
+//____ asciiToUint8() ____________________________________________________________
+Uint8 WgTextTool::asciiToUint8( const Uint16 * pAscii )
 {
-	Uint8 high = AsciiToNibble( (Uint8)pAscii[ 0 ] );
-	Uint8 low = AsciiToNibble( (Uint8)pAscii[ 1 ] );
+	Uint8 high = asciiToNibble( (Uint8)pAscii[ 0 ] );
+	Uint8 low = asciiToNibble( (Uint8)pAscii[ 1 ] );
 
 	Uint8 value = high << 4 | low;
 
 	return value;
 }
 
-//____ Uint8ToAscii( char* ) ____________________________________________________________
-bool WgTextTool::Uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
+//____ uint8ToAscii( char* ) ____________________________________________________________
+bool WgTextTool::uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
 {
 	if( 0 == pDest || maxChars < 2 )
 		return false;
 
-	Uint8 high = NibbleToAscii( value >> 4 );
-	Uint8 low = NibbleToAscii( value & 0x0F );
+	Uint8 high = nibbleToAscii( value >> 4 );
+	Uint8 low = nibbleToAscii( value & 0x0F );
 
 	pDest[ 0 ] = high;
 	pDest[ 1 ] = low;
@@ -1968,19 +1968,19 @@ bool WgTextTool::Uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
 	return true;
 }
 
-//____ AsciiToUint8() ____________________________________________________________
-Uint8 WgTextTool::AsciiToUint8( const char * pAscii )
+//____ asciiToUint8() ____________________________________________________________
+Uint8 WgTextTool::asciiToUint8( const char * pAscii )
 {
-	Uint8 high = AsciiToNibble( pAscii[ 0 ] );
-	Uint8 low = AsciiToNibble( pAscii[ 1 ] );
+	Uint8 high = asciiToNibble( pAscii[ 0 ] );
+	Uint8 low = asciiToNibble( pAscii[ 1 ] );
 
 	Uint8 value = high << 4 | low;
 
 	return value;
 }
 
-//____ Uint16ToUTF8() ____________________________________________________________
-Uint32 WgTextTool::Uint16ToUTF8( Uint16 value, char * pDest, Uint32 maxChars )
+//____ uint16ToUtf8() ____________________________________________________________
+Uint32 WgTextTool::uint16ToUtf8( Uint16 value, char * pDest, Uint32 maxChars )
 {
 	if( maxChars < 1 )
 		return 0;
@@ -2029,10 +2029,10 @@ Uint32 WgTextTool::formatBeginColor( const WgColor& color, char * pDest )
 	pDest += writeUTF8( WG_ESCAPE_CODE, pDest );
 	* pDest++ = '{';
 
-	Uint8ToAscii( color.a, pDest, 2 );
-	Uint8ToAscii( color.r, pDest+2, 2 );
-	Uint8ToAscii( color.g, pDest+4, 2 );
-	Uint8ToAscii( color.b, pDest+6, 2 );
+	uint8ToAscii( color.a, pDest, 2 );
+	uint8ToAscii( color.r, pDest+2, 2 );
+	uint8ToAscii( color.g, pDest+4, 2 );
+	uint8ToAscii( color.b, pDest+6, 2 );
 
 	return sizeUTF8( WG_ESCAPE_CODE ) + 9;
 }
@@ -2066,7 +2066,7 @@ Uint32 WgTextTool::getTextUTF8( const WgChar * pSrc, char * pDest, Uint32 maxByt
 	Uint32 nChars = 0;
 	Uint16 glyph;
 
-	while( (glyph = pSrc->Glyph()) != 0 )
+	while( (glyph = pSrc->getGlyph()) != 0 )
 	{
 		if( glyph < 128 )
 		{
@@ -2146,7 +2146,7 @@ Uint32 WgTextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxByt
 
 Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
 {
-	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	Uint16 * pCP = WgCodePages::getCodePage( codepage );
 	if( !pCP )
 	{
 		pDest[0] = 0;
@@ -2171,7 +2171,7 @@ Uint32 WgTextTool::getTextSizeUTF8( const WgChar* pSrc, Uint32 len )
 {
 	Uint32 size = 0;
 	Uint16 glyph = 0;
-	for( Uint32 i = 0 ; i < len && (0 != ( glyph = pSrc->Glyph()) ) ; i++ )
+	for( Uint32 i = 0 ; i < len && (0 != ( glyph = pSrc->getGlyph()) ) ; i++ )
 	{
 		size++;
 		if( glyph > 127 )
@@ -2211,7 +2211,7 @@ Uint32 WgTextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
 
 Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
 {
-	Uint16 * pCP = WgCodePages::GetCodePage( codepage );
+	Uint16 * pCP = WgCodePages::getCodePage( codepage );
 	if( !pCP )
 		return 0;
 
@@ -2230,43 +2230,43 @@ Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int 
 Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const char * pString )
 {
 	WgPen pen;
-	pen.SetAttributes( attr );
+	pen.setAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
-		pen.SetChar( * pString++ );
-		pen.ApplyKerning();
-		pen.AdvancePos();
+		pen.setChar( * pString++ );
+		pen.applyKerning();
+		pen.advancePos();
 	}
 
 	// We include the terminator in case it is set to be visible.
 
-	pen.SetChar( * pString );
-	pen.ApplyKerning();
-	pen.AdvancePos();
+	pen.setChar( * pString );
+	pen.applyKerning();
+	pen.advancePos();
 
-	return pen.GetPosX();
+	return pen.getPosX();
 }
 
 Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const Uint16 * pString )
 {
 	WgPen pen;
-	pen.SetAttributes( attr );
+	pen.setAttributes( attr );
 
 	while( * pString != 0 && * pString != '\n' )
 	{
-		pen.SetChar( * pString++ );
-		pen.ApplyKerning();
-		pen.AdvancePos();
+		pen.setChar( * pString++ );
+		pen.applyKerning();
+		pen.advancePos();
 	}
 
 	// We include the terminator in case it is set to be visible.
 
-	pen.SetChar( * pString );
-	pen.ApplyKerning();
-	pen.AdvancePos();
+	pen.setChar( * pString );
+	pen.applyKerning();
+	pen.advancePos();
 
-	return pen.GetPosX();
+	return pen.getPosX();
 }
 
 
@@ -2277,27 +2277,27 @@ Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, WgState state, const WgCha
 	WgPen pen;
 	Uint16 hProp = 0xFFFF;
 
-	while( !pString->IsEndOfLine() )
+	while( !pString->isEndOfLine() )
 	{
-		if( pString->PropHandle() != hProp )
+		if( pString->propHandle() != hProp )
 		{
 			attr2 = attr;
-			AddPropAttributes( attr2, pString->Properties(), state );
-			pen.SetAttributes( attr2 );
+			addPropAttributes( attr2, pString->getProperties(), state );
+			pen.setAttributes( attr2 );
 		}
-		pen.SetChar( pString->Glyph() );
-		pen.ApplyKerning();
-		pen.AdvancePos();
+		pen.setChar( pString->getGlyph() );
+		pen.applyKerning();
+		pen.advancePos();
 		pString++;
 	}
 
 	// We include the terminator in case it is set to be visible.
 
-	pen.SetChar( pString->Glyph() );
-	pen.ApplyKerning();
-	pen.AdvancePos();
+	pen.setChar( pString->getGlyph() );
+	pen.applyKerning();
+	pen.advancePos();
 
-	return pen.GetPosX();
+	return pen.getPosX();
 }
 
 //____ forwardCharacters() ____________________________________________________
@@ -2611,159 +2611,159 @@ int WgTextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int m
 	return n;
 }
 
-//____ SetSize() _____________________________________________________________
+//____ setSize() _____________________________________________________________
 
-void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb )
+void WgTextTool::setSize( int size, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropSizeModifier(size), pChar, nb );
+	modifyProperties( PropSizeModifier(size), pChar, nb );
 }
 
-void WgTextTool::SetSize( int size, WgChar * pChar, Uint32 nb, WgState state )
+void WgTextTool::setSize( int size, WgChar * pChar, Uint32 nb, WgState state )
 {
-	ModifyProperties( PropStateSizeModifier(size,state), pChar, nb );
-}
-
-
-//____ ClearSize() ___________________________________________________________
-
-void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropSizeClearer(), pChar, nb );
-}
-
-void WgTextTool::ClearSize( WgChar * pChar, Uint32 nb, WgState state )
-{
-	ModifyProperties( PropStateSizeClearer(state), pChar, nb );
-}
-
-//____ SetColor() _____________________________________________________________
-
-void WgTextTool::SetColor( const WgColor col, WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropColorModifier(col), pChar, nb );
-}
-
-void WgTextTool::SetColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state )
-{
-	ModifyProperties( PropStateColorModifier(col,state), pChar, nb );
+	modifyProperties( PropStateSizeModifier(size,state), pChar, nb );
 }
 
 
-//____ ClearColor() ___________________________________________________________
+//____ clearSize() ___________________________________________________________
 
-void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb )
+void WgTextTool::clearSize( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropColorClearer(), pChar, nb );
+	modifyProperties( PropSizeClearer(), pChar, nb );
 }
 
-void WgTextTool::ClearColor( WgChar * pChar, Uint32 nb, WgState state )
+void WgTextTool::clearSize( WgChar * pChar, Uint32 nb, WgState state )
 {
-	ModifyProperties( PropStateColorClearer(state), pChar, nb );
+	modifyProperties( PropStateSizeClearer(state), pChar, nb );
 }
 
+//____ setColor() _____________________________________________________________
 
-//____ SetStyle() _____________________________________________________________
-
-void WgTextTool::SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb )
+void WgTextTool::setColor( const WgColor col, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropStyleModifier(style), pChar, nb );
+	modifyProperties( PropColorModifier(col), pChar, nb );
 }
 
-void WgTextTool::SetStyle( WgFontAlt style, WgChar * pChar, Uint32 nb, WgState state )
+void WgTextTool::setColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state )
 {
-	ModifyProperties( PropStateStyleModifier(style,state), pChar, nb );
-}
-
-//____ ClearStyle() ___________________________________________________________
-
-void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
-}
-
-void WgTextTool::ClearStyle( WgChar * pChar, Uint32 nb, WgState state )
-{
-	ModifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
+	modifyProperties( PropStateColorModifier(col,state), pChar, nb );
 }
 
 
-//____ SetUnderlined() ________________________________________________________
+//____ clearColor() ___________________________________________________________
 
-void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb )
+void WgTextTool::clearColor( WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropUnderlinedModifier(true), pChar, nb );
+	modifyProperties( PropColorClearer(), pChar, nb );
 }
 
-void WgTextTool::SetUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+void WgTextTool::clearColor( WgChar * pChar, Uint32 nb, WgState state )
 {
-	ModifyProperties( PropStateUnderlinedModifier(true,state), pChar, nb );
-}
-
-//____ ClearUnderlined() ________________________________________________________
-
-void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropUnderlinedModifier(false), pChar, nb );
-}
-
-void WgTextTool::ClearUnderlined( WgChar * pChar, Uint32 nb, WgState state )
-{
-	ModifyProperties( PropStateUnderlinedModifier(false,state), pChar, nb );
-}
-
-//____ SetBreakLevel() ________________________________________________________
-
-void WgTextTool::SetBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropBreakLevelModifier(breakLevel), pChar, nb );
-}
-
-//____ SetLink() ______________________________________________________________
-
-void WgTextTool::SetLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb )
-{
-	ModifyProperties( PropLinkModifier(pLink), pChar, nb );
+	modifyProperties( PropStateColorClearer(state), pChar, nb );
 }
 
 
-//____ SetFont() ______________________________________________________________
+//____ setStyle() _____________________________________________________________
 
-void WgTextTool::SetFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb )
+void WgTextTool::setStyle( WgFontAlt style, WgChar * pChar, Uint32 nb )
 {
-	ModifyProperties( PropFontModifier(pFont), pChar, nb );
+	modifyProperties( PropStyleModifier(style), pChar, nb );
 }
 
-//____ SetGlyph() ______________________________________________________________
+void WgTextTool::setStyle( WgFontAlt style, WgChar * pChar, Uint32 nb, WgState state )
+{
+	modifyProperties( PropStateStyleModifier(style,state), pChar, nb );
+}
 
-void WgTextTool::SetGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb )
+//____ clearStyle() ___________________________________________________________
+
+void WgTextTool::clearStyle( WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
+}
+
+void WgTextTool::clearStyle( WgChar * pChar, Uint32 nb, WgState state )
+{
+	modifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
+}
+
+
+//____ setUnderlined() ________________________________________________________
+
+void WgTextTool::setUnderlined( WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropUnderlinedModifier(true), pChar, nb );
+}
+
+void WgTextTool::setUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+{
+	modifyProperties( PropStateUnderlinedModifier(true,state), pChar, nb );
+}
+
+//____ clearUnderlined() ________________________________________________________
+
+void WgTextTool::clearUnderlined( WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropUnderlinedModifier(false), pChar, nb );
+}
+
+void WgTextTool::clearUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+{
+	modifyProperties( PropStateUnderlinedModifier(false,state), pChar, nb );
+}
+
+//____ setBreakLevel() ________________________________________________________
+
+void WgTextTool::setBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropBreakLevelModifier(breakLevel), pChar, nb );
+}
+
+//____ setLink() ______________________________________________________________
+
+void WgTextTool::setLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropLinkModifier(pLink), pChar, nb );
+}
+
+
+//____ setFont() ______________________________________________________________
+
+void WgTextTool::setFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb )
+{
+	modifyProperties( PropFontModifier(pFont), pChar, nb );
+}
+
+//____ setGlyph() ______________________________________________________________
+
+void WgTextTool::setGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb )
 {
 	for( unsigned int i = 0 ; i < nb ; i++ )
 		pChar[i].glyph = glyph;
 }
 
-//____ SetChars() ______________________________________________________________
+//____ setChars() ______________________________________________________________
 
-void WgTextTool::SetChars( const WgChar& ch, WgChar * pChar, Uint32 nb )
+void WgTextTool::setChars( const WgChar& ch, WgChar * pChar, Uint32 nb )
 {
-	DerefProps( pChar, nb );
+	derefProps( pChar, nb );
 
 	for( unsigned int i = 0 ; i < nb ; i++ )
 		pChar[i].all = ch.all;
 
-	if( ch.PropHandle() != 0 )
-		WgTextpropManager::IncRef( ch.PropHandle(), nb );
+	if( ch.propHandle() != 0 )
+		WgTextpropManager::incRef( ch.propHandle(), nb );
 }
 
 
 
-//____ SetProperties() ________________________________________________________
+//____ setProperties() ________________________________________________________
 
-void WgTextTool::SetProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint32 nb )
+void WgTextTool::setProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint32 nb )
 {
 	Uint32		refCnt = 0;
 	Uint32		refCntTotal = 0;
 	Uint16		old_prop = 0xFFFF;
-	Uint16		new_prop = pProp.GetHandle();
+	Uint16		new_prop = pProp.getHandle();
 
 	for( unsigned int i = 0 ; i < nb ; i++ )
 	{
@@ -2772,7 +2772,7 @@ void WgTextTool::SetProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint
 			if( refCnt != 0 )
 			{
 				if( old_prop != 0 )
-					WgTextpropManager::DecRef( old_prop, refCnt );
+					WgTextpropManager::decRef( old_prop, refCnt );
 
 				refCntTotal += refCnt;
 				refCnt = 0;
@@ -2785,15 +2785,15 @@ void WgTextTool::SetProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint
 	}
 
 	if( refCnt != 0 && old_prop != 0 )
-		WgTextpropManager::DecRef( old_prop, refCnt );
+		WgTextpropManager::decRef( old_prop, refCnt );
 
 	if( new_prop != 0 )
-		WgTextpropManager::IncRef( new_prop, refCntTotal + refCnt );
+		WgTextpropManager::incRef( new_prop, refCntTotal + refCnt );
 }
 
-//____ ModifyProperties() __________________________________________________________
+//____ modifyProperties() __________________________________________________________
 
-void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb  )
+void WgTextTool::modifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb  )
 {
 	Uint32		refCnt = 0;
 	Uint16		old_prop = 0xFFFF;
@@ -2808,18 +2808,18 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 				// Increase first, in case they are the same...
 
 				if( new_prop != 0 )
-					WgTextpropManager::IncRef( new_prop, refCnt );
+					WgTextpropManager::incRef( new_prop, refCnt );
 
 				if( old_prop != 0 )
-					WgTextpropManager::DecRef( old_prop, refCnt );
+					WgTextpropManager::decRef( old_prop, refCnt );
 
 				refCnt = 0;
 			}
 			old_prop = pChar[i].properties;
 
-			WgTextprop prop = WgTextpropManager::GetProp(pChar[i].properties);
-			modif.Modify( prop );
-			new_prop = WgTextpropManager::RegisterProp(prop);
+			WgTextprop prop = WgTextpropManager::getProp(pChar[i].properties);
+			modif.modify( prop );
+			new_prop = WgTextpropManager::registerProp(prop);
 		}
 
 		pChar[i].properties = new_prop;
@@ -2829,91 +2829,91 @@ void WgTextTool::ModifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 	if( refCnt != 0 )
 	{
 		if( new_prop != 0 )
-			WgTextpropManager::IncRef( new_prop, refCnt );
+			WgTextpropManager::incRef( new_prop, refCnt );
 
 		if( old_prop != 0 )
-			WgTextpropManager::DecRef( old_prop, refCnt );
+			WgTextpropManager::decRef( old_prop, refCnt );
 	}
 }
 
 
-//____ AddPropAttributes() ________________________________________________________
+//____ addPropAttributes() ________________________________________________________
 
-void WgTextTool::AddPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state )
+void WgTextTool::addPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state )
 {
 	if( !pProp )
 		return;
 
-	if( pProp->Font() )
-		attr.pFont = pProp->Font();
+	if( pProp->font() )
+		attr.pFont = pProp->font();
 
-	if( pProp->Size(state) != 0 )
-		attr.size = pProp->Size(state);
+	if( pProp->size(state) != 0 )
+		attr.size = pProp->size(state);
 
-	if( pProp->Style(state) != WG_FONT_NORMAL )
-		attr.style = pProp->Style(state);
+	if( pProp->style(state) != WG_FONT_NORMAL )
+		attr.style = pProp->style(state);
 
-	if( pProp->IsColored(state) )
-		attr.color = pProp->Color(state);
+	if( pProp->isColored(state) )
+		attr.color = pProp->color(state);
 
-	if( pProp->IsBgColored(state) )
-		attr.bgColor = pProp->BgColor(state);
+	if( pProp->isBgColored(state) )
+		attr.bgColor = pProp->bgColor(state);
 
-	if( pProp->IsUnderlined(state) )
+	if( pProp->isUnderlined(state) )
 		attr.bUnderlined = true;
 
-	if( pProp->BreakLevel() != -1 )
-		attr.breakLevel = pProp->BreakLevel();
+	if( pProp->breakLevel() != -1 )
+		attr.breakLevel = pProp->breakLevel();
 
-	attr.visibilityFlags |= pProp->CharVisibilityFlags();
+	attr.visibilityFlags |= pProp->charVisibilityFlags();
 
-	if( pProp->Link() )
-		attr.pLink = pProp->Link();
+	if( pProp->link() )
+		attr.pLink = pProp->link();
 }
 
 /*
-//____ SetAttrColor() _______________________________________________________
+//____ setAttrColor() _______________________________________________________
 
-void WgTextTool::SetAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state )
+void WgTextTool::setAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state )
 {
 	if( !pColors )
 		return;
 
-	attr.color = pColors->Color(state);
+	attr.color = pColors->color(state);
 }
 */
 
-//____ GetCursor() ____________________________________________________________
+//____ getCursor() ____________________________________________________________
 
-WgCaretPtr WgTextTool::GetCursor( const WgLegacyTextField * pText )
+WgCaretPtr WgTextTool::getCursor( const WgLegacyTextField * pText )
 {
-	WgCaretPtr p = pText->CursorSkin();
+	WgCaretPtr p = pText->cursorSkin();
 	if( p )
 		return p;
 
-	return WgBase::GetDefaultCursor();
+	return WgBase::getDefaultCursor();
 }
 
-//____ GetSelectionProperties() _______________________________________________
+//____ getSelectionProperties() _______________________________________________
 
-WgTextpropPtr WgTextTool::GetSelectionProperties( const WgLegacyTextField * pText )
+WgTextpropPtr WgTextTool::getSelectionProperties( const WgLegacyTextField * pText )
 {
-	WgTextpropPtr p = pText->SelectionProperties();
+	WgTextpropPtr p = pText->selectionProperties();
 	if( p )
 		return p;
 
-	return WgBase::GetDefaultSelectionProp();
+	return WgBase::getDefaultSelectionProp();
 }
 
-//____ GetLinkProperties() ____________________________________________________
+//____ getLinkProperties() ____________________________________________________
 
-WgTextpropPtr WgTextTool::GetLinkProperties( const WgLegacyTextField * pText )
+WgTextpropPtr WgTextTool::getLinkProperties( const WgLegacyTextField * pText )
 {
-	WgTextpropPtr p = pText->LinkProperties();
+	WgTextpropPtr p = pText->linkProperties();
 	if( p )
 		return p;
 
-	return WgBase::GetDefaultLinkProp();
+	return WgBase::getDefaultLinkProp();
 }
 
 //____ TextpropEncoder::Constructor ___________________________________________
@@ -2923,9 +2923,9 @@ WgTextTool::TextpropEncoder::TextpropEncoder( const WgResDB * pResDB )
 	m_pResDB = pResDB;
 }
 
-//____ TextpropEncoder::BeginString() _________________________________________
+//____ TextpropEncoder::beginString() _________________________________________
 
-Uint32 WgTextTool::TextpropEncoder::BeginString()
+Uint32 WgTextTool::TextpropEncoder::beginString()
 {
 	m_bColorTagOpen = false;
 	m_bStyleTagOpen = false;
@@ -2938,19 +2938,19 @@ Uint32 WgTextTool::TextpropEncoder::BeginString()
 	return 0;
 }
 
-//____ TextpropEncoder::SetProp() _____________________________________________
+//____ TextpropEncoder::setProp() _____________________________________________
 
-Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
+Uint32 WgTextTool::TextpropEncoder::setProp( const WgTextpropPtr& pNewProp )
 {
 	Uint32 i = 0;
 
 	// First, see if we can do this using only current "baseprop" + style/color/size/underline settings.
 
-	if( pNewProp->Font() == m_pBaseProp->Font() && pNewProp->Link() == m_pBaseProp->Link() &&
-		((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( m_pBaseProp )) &&
-		(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( m_pBaseProp )) &&
-		(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( m_pBaseProp )) &&
-		((pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) || pNewProp->CompareUnderlineTo( m_pBaseProp )) )
+	if( pNewProp->font() == m_pBaseProp->font() && pNewProp->link() == m_pBaseProp->link() &&
+		((pNewProp->isColored() && pNewProp->isColorStatic()) || pNewProp->compareColorTo( m_pBaseProp )) &&
+		(pNewProp->isStyleStatic() || pNewProp->compareStyleTo( m_pBaseProp )) &&
+		(pNewProp->isSizeStatic() || pNewProp->compareSizeTo( m_pBaseProp )) &&
+		((pNewProp->isUnderlined() && pNewProp->isUnderlineStatic()) || pNewProp->compareUnderlineTo( m_pBaseProp )) )
 	{
 		// Yes we can!
 
@@ -2961,8 +2961,8 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 		// Secondly, if nullprop isn't our current baseprop we see if we can do this using only nullprop
 		// + style/color/size/underline settings.
 
-		if( !m_pBaseProp && !pNewProp->Font() && !pNewProp->Link() &&
-			pNewProp->IsColorStatic() && pNewProp->IsStyleStatic() && pNewProp->IsSizeStatic() && pNewProp->IsUnderlined() )
+		if( !m_pBaseProp && !pNewProp->font() && !pNewProp->link() &&
+			pNewProp->isColorStatic() && pNewProp->isStyleStatic() && pNewProp->isSizeStatic() && pNewProp->isUnderlined() )
 		{
 			// Yes we can! Switch to nullprop as our baseprop
 
@@ -2976,7 +2976,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 		{
 			// Thirdly, see if we have a perfect match
 
-			std::string id = m_pResDB->FindTextpropId( pNewProp );
+			std::string id = m_pResDB->findTextpropId( pNewProp );
 
 			if( id.length() > 0 )
 			{
@@ -2986,23 +2986,23 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 				strcpy( m_temp + i, id.c_str() );
 				i += id.length();
 
-				m_pBaseProp = m_pResDB->GetTextprop( id );
+				m_pBaseProp = m_pResDB->getTextprop( id );
 			}
 			else
 			{
 				// Fourthly, look for the first possible match which can be combined with style/color/size/underline settings
 				// to make a perfect match.
 
-				WgResDB::TextpropRes * pRes = m_pResDB->GetFirstResTextprop();
+				WgResDB::TextpropRes * pRes = m_pResDB->getFirstResTextprop();
 				while( pRes )
 				{
 					WgTextpropPtr pProp = pRes->res;
 
-					if( pNewProp->Font() == pProp->Font() && pNewProp->Link() == pProp->Link() &&
-						((pNewProp->IsColored() && pNewProp->IsColorStatic()) || pNewProp->CompareColorTo( pProp )) &&
-						(pNewProp->IsStyleStatic() || pNewProp->CompareStyleTo( pProp )) &&
-						(pNewProp->IsSizeStatic() || pNewProp->CompareSizeTo( pProp )) &&
-						((pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) || pNewProp->CompareUnderlineTo( pProp )) )
+					if( pNewProp->font() == pProp->font() && pNewProp->link() == pProp->link() &&
+						((pNewProp->isColored() && pNewProp->isColorStatic()) || pNewProp->compareColorTo( pProp )) &&
+						(pNewProp->isStyleStatic() || pNewProp->compareStyleTo( pProp )) &&
+						(pNewProp->isSizeStatic() || pNewProp->compareSizeTo( pProp )) &&
+						((pNewProp->isUnderlined() && pNewProp->isUnderlineStatic()) || pNewProp->compareUnderlineTo( pProp )) )
 					{
 						// This one works! Switch to this prop.
 
@@ -3014,7 +3014,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 					}
 
-					pRes = pRes->Next();
+					pRes = pRes->next();
 				}
 			}
 		}
@@ -3035,7 +3035,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 	// Possibly end active color
 
-	if( m_bColorTagOpen && (!pNewProp->IsColored() || pNewProp->CompareColorTo( m_pBaseProp ) || !pNewProp->CompareColorTo( m_pActiveProp ) )  )
+	if( m_bColorTagOpen && (!pNewProp->isColored() || pNewProp->compareColorTo( m_pBaseProp ) || !pNewProp->compareColorTo( m_pActiveProp ) )  )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '}';
@@ -3045,19 +3045,19 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 	// Possibly start new color.
 
-	if( !m_bColorTagOpen && pNewProp->IsColored() && !pNewProp->CompareColorTo( m_pBaseProp ) )
+	if( !m_bColorTagOpen && pNewProp->isColored() && !pNewProp->compareColorTo( m_pBaseProp ) )
 	{
-		WgColor col = pNewProp->Color();
+		WgColor col = pNewProp->color();
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '{';
 
-		Uint8ToAscii( col.a, &m_temp[i], 2 );
+		uint8ToAscii( col.a, &m_temp[i], 2 );
 		i += 2;
-		Uint8ToAscii( col.r, &m_temp[i], 2 );
+		uint8ToAscii( col.r, &m_temp[i], 2 );
 		i += 2;
-		Uint8ToAscii( col.g, &m_temp[i], 2 );
+		uint8ToAscii( col.g, &m_temp[i], 2 );
 		i += 2;
-		Uint8ToAscii( col.b, &m_temp[i], 2 );
+		uint8ToAscii( col.b, &m_temp[i], 2 );
 		i += 2;
 
 		m_bColorTagOpen = true;
@@ -3065,8 +3065,8 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 	// Possibly begin/end underline
 
-	if( (pNewProp->IsUnderlined() && pNewProp->IsUnderlineStatic()) &&
-		!m_bUnderTagOpen && !pNewProp->CompareUnderlineTo( m_pBaseProp ) )
+	if( (pNewProp->isUnderlined() && pNewProp->isUnderlineStatic()) &&
+		!m_bUnderTagOpen && !pNewProp->compareUnderlineTo( m_pBaseProp ) )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '_';
@@ -3083,7 +3083,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 	// Possibly end current style and/or start new style.
 
-	if( m_bStyleTagOpen && (!pNewProp->CompareStyleTo( m_pActiveProp ) || pNewProp->CompareStyleTo( m_pBaseProp )) )
+	if( m_bStyleTagOpen && (!pNewProp->compareStyleTo( m_pActiveProp ) || pNewProp->compareStyleTo( m_pBaseProp )) )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '#';
@@ -3091,11 +3091,11 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 		m_bStyleTagOpen = false;
 	}
 
-	if( !m_bStyleTagOpen && !pNewProp->CompareStyleTo( m_pBaseProp ) && pNewProp->IsStyleStatic() )
+	if( !m_bStyleTagOpen && !pNewProp->compareStyleTo( m_pBaseProp ) && pNewProp->isStyleStatic() )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 
-		switch( pNewProp->Style() )
+		switch( pNewProp->style() )
 		{
 			case WG_FONT_NORMAL:
 				m_temp[i++] = 'd';
@@ -3124,7 +3124,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 			case WG_FONT_HEADING_4:
 			case WG_FONT_HEADING_5:
 				m_temp[i++] = 'h';
-				m_temp[i++] = '1' + (pNewProp->Style() - WG_FONT_HEADING_1);
+				m_temp[i++] = '1' + (pNewProp->style() - WG_FONT_HEADING_1);
 				break;
 			case WG_FONT_USER_1:
 			case WG_FONT_USER_2:
@@ -3132,7 +3132,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 			case WG_FONT_USER_4:
 			case WG_FONT_USER_5:
 				m_temp[i++] = 'u';
-				m_temp[i++] = '1' + (pNewProp->Style() - WG_FONT_USER_1);
+				m_temp[i++] = '1' + (pNewProp->style() - WG_FONT_USER_1);
 				break;
 		}
 
@@ -3141,7 +3141,7 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 
 	// Possibly end current size and/or start new size.
 
-	if( m_bSizeTagOpen && (!pNewProp->CompareSizeTo( m_pActiveProp ) || pNewProp->CompareSizeTo( m_pBaseProp )) )
+	if( m_bSizeTagOpen && (!pNewProp->compareSizeTo( m_pActiveProp ) || pNewProp->compareSizeTo( m_pBaseProp )) )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = ']';
@@ -3149,9 +3149,9 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 		m_bSizeTagOpen = false;
 	}
 
-	if( !m_bSizeTagOpen && !pNewProp->CompareSizeTo( m_pBaseProp ) && pNewProp->IsSizeStatic() )
+	if( !m_bSizeTagOpen && !pNewProp->compareSizeTo( m_pBaseProp ) && pNewProp->isSizeStatic() )
 	{
-		int size = pNewProp->Size();
+		int size = pNewProp->size();
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '[';
 
@@ -3167,25 +3167,25 @@ Uint32 WgTextTool::TextpropEncoder::SetProp( const WgTextpropPtr& pNewProp )
 	return i;
 }
 
-//____ TextpropEncoder::EndString() ___________________________________________
+//____ TextpropEncoder::endString() ___________________________________________
 
-Uint32 WgTextTool::TextpropEncoder::EndString()
+Uint32 WgTextTool::TextpropEncoder::endString()
 {
 	Uint32 i = 0;
 
-	if( m_pActiveProp->Style() != WG_FONT_NORMAL )
+	if( m_pActiveProp->style() != WG_FONT_NORMAL )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '#';
 	}
 
-	if( m_pActiveProp->IsUnderlined() )
+	if( m_pActiveProp->isUnderlined() )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '|';
 	}
 
-	if( m_pActiveProp->IsColored() )
+	if( m_pActiveProp->isColored() )
 	{
 		i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 		m_temp[i++] = '}';

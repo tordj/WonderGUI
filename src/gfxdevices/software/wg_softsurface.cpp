@@ -35,7 +35,7 @@ const char WgSoftSurface::CLASSNAME[] = {"SoftSurface"};
 WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
-	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
+	WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 
 	m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 	m_size = size;
@@ -47,7 +47,7 @@ WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type )
 WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pFinalizer )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
-	WgUtil::PixelTypeToFormat(type, m_pixelFormat);
+	WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 	m_pFinalizer = pFinalizer;
 	m_pitch = pitch;
 	m_size = size;
@@ -69,29 +69,29 @@ WgSoftSurface::~WgSoftSurface()
 		delete m_pData;
 }
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgSoftSurface::IsInstanceOf( const char * pClassName ) const
+bool WgSoftSurface::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgSurface::IsInstanceOf(pClassName);
+	return WgSurface::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgSoftSurface::ClassName( void ) const
+const char * WgSoftSurface::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgSoftSurfacePtr WgSoftSurface::Cast( const WgObjectPtr& pObject )
+WgSoftSurfacePtr WgSoftSurface::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -113,9 +113,9 @@ void WgSoftSurface::_copy(const WgSoftSurface * pOther)
 		memcpy( m_pData+y*m_pitch, pOther->m_pData+y*pOther->m_pitch, linebytes );
 }
 
-//____ Pixel() _________________________________________________________________
+//____ pixel() _________________________________________________________________
 
-Uint32 WgSoftSurface::Pixel( WgCoord coord ) const
+Uint32 WgSoftSurface::pixel( WgCoord coord ) const
 {
 	if( m_pixelFormat.type == WG_PIXEL_ARGB_8 )
     {
@@ -132,9 +132,9 @@ Uint32 WgSoftSurface::Pixel( WgCoord coord ) const
 
 }
 
-//____ Alpha() _______________________________________________________________
+//____ alpha() _______________________________________________________________
 
-Uint8 WgSoftSurface::Alpha( WgCoord coord ) const
+Uint8 WgSoftSurface::alpha( WgCoord coord ) const
 {
 	if( m_pixelFormat.type == WG_PIXEL_ARGB_8 )
 	  {
@@ -146,23 +146,23 @@ Uint8 WgSoftSurface::Alpha( WgCoord coord ) const
 }
 
 
-//____ Size() __________________________________________________________________
+//____ size() __________________________________________________________________
 
-WgSize WgSoftSurface::Size() const
+WgSize WgSoftSurface::size() const
 {
 	return m_size;
 }
 
-//____ IsOpaque() ______________________________________________________________
+//____ isOpaque() ______________________________________________________________
 
-bool WgSoftSurface::IsOpaque() const
+bool WgSoftSurface::isOpaque() const
 {
 	return m_pixelFormat.A_bits==0?true:false;
 }
 
-//____ Lock() __________________________________________________________________
+//____ lock() __________________________________________________________________
 
-void * WgSoftSurface::Lock( WgAccessMode mode )
+void * WgSoftSurface::lock( WgAccessMode mode )
 {
 	m_accessMode = WG_READ_WRITE;
 	m_pPixels = m_pData;
@@ -170,9 +170,9 @@ void * WgSoftSurface::Lock( WgAccessMode mode )
 	return m_pPixels;
 }
 
-//____ LockRegion() ____________________________________________________________
+//____ lockRegion() ____________________________________________________________
 
-void * WgSoftSurface::LockRegion( WgAccessMode mode, const WgRect& region )
+void * WgSoftSurface::lockRegion( WgAccessMode mode, const WgRect& region )
 {
 	m_accessMode = mode;
 	m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;
@@ -180,28 +180,28 @@ void * WgSoftSurface::LockRegion( WgAccessMode mode, const WgRect& region )
 	return m_pPixels;
 }
 
-//____ Unlock() ________________________________________________________________
+//____ unlock() ________________________________________________________________
 
-void WgSoftSurface::Unlock()
+void WgSoftSurface::unlock()
 {
 	m_accessMode = WG_NO_ACCESS;
 	m_pPixels = 0;
-	m_lockRegion.Clear();
+	m_lockRegion.clear();
 }
 
 
-//____ SetScaleAlpha() _________________________________________________________
+//____ setScaleAlpha() _________________________________________________________
 
-void WgSoftSurface::SetScaleAlpha(float fScaleAlpha)
+void WgSoftSurface::setScaleAlpha(float fScaleAlpha)
 {
         m_fScaleAlpha = fScaleAlpha;
 }
 
-//____ PutPixels() _____________________________________________________________
+//____ putPixels() _____________________________________________________________
 
 #define PCLIP(x,y) (((x)>(y))?(y):(x))
 
-void WgSoftSurface::PutPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
+void WgSoftSurface::putPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
 {
 	WgColor color1;
 	WgColor color2;

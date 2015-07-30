@@ -36,16 +36,16 @@ typedef	WgWeakPtr<WgSwitch,WgWidgetWeakPtr>	WgSwitchWeakPtr;
 class WgSwitch : public WgWidget
 {
 public:
-	static WgSwitchPtr	Create() { return WgSwitchPtr(new WgSwitch()); }
+	static WgSwitchPtr	create() { return WgSwitchPtr(new WgSwitch()); }
 
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSwitchPtr	Cast( const WgObjectPtr& pObject );
+	static WgSwitchPtr	cast( const WgObjectPtr& pObject );
 
-    void    SetValue( int value );
+    void    setValue( int value );
     
-	WgSize	PreferredSize() const;
+	WgSize	preferredSize() const;
 
 protected:
 	WgSwitch();

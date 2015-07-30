@@ -52,21 +52,21 @@ class WgCapsuleHook : public WgHook
 	friend class WgShaderCapsule;
 
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgCapsuleHookPtr	Cast( const WgHookPtr& pInterface );
+	static WgCapsuleHookPtr	cast( const WgHookPtr& pInterface );
 
 	// Standard Hook methods
 
-	WgCoord			Pos() const;
-	WgSize			Size() const;
-	WgRect			Geo() const;
+	WgCoord			pos() const;
+	WgSize			size() const;
+	WgRect			geo() const;
 
-	WgCoord			GlobalPos() const;
-	WgRect			GlobalGeo() const;
+	WgCoord			globalPos() const;
+	WgRect			globalGeo() const;
 
-	WgCapsulePtr 		Parent() const;
+	WgCapsulePtr 		parent() const;
 
 protected:
 	void			_requestRender();
@@ -90,26 +90,26 @@ class WgCapsule : public WgContainer
 	friend class WgCapsuleHook;
 
 public:
-	bool		IsInstanceOf( const char * pClassName ) const;
-	const char *ClassName( void ) const;
+	bool		isInstanceOf( const char * pClassName ) const;
+	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCapsulePtr	Cast( const WgObjectPtr& pObject );
+	static WgCapsulePtr	cast( const WgObjectPtr& pObject );
 
-	WgCapsuleHookPtr	SetWidget( const WgWidgetPtr& pWidget );
-	WgWidgetPtr			Widget() { return m_hook.Widget(); }
-	bool				RemoveWidget( const WgWidgetPtr& pWidget );
-	bool				Clear();
+	WgCapsuleHookPtr	setWidget( const WgWidgetPtr& pWidget );
+	WgWidgetPtr			widget() { return m_hook.widget(); }
+	bool				removeWidget( const WgWidgetPtr& pWidget );
+	bool				clear();
 
-	inline WgCapsuleHookPtr	FirstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
-	inline WgCapsuleHookPtr	LastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+	inline WgCapsuleHookPtr	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
+	inline WgCapsuleHookPtr	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
 
 
 	// Overloaded from WgWidget
 
-	int				MatchingHeight( int width ) const;
-	int				MatchingWidth( int height ) const;
+	int				matchingHeight( int width ) const;
+	int				matchingWidth( int height ) const;
 
-	WgSize			PreferredSize() const;
+	WgSize			preferredSize() const;
 
 protected:
 	WgCapsule();

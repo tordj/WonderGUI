@@ -45,13 +45,13 @@ class WgIWidgets : public WgInterface
 {
 	
 public:
-	virtual bool			IsInstanceOf( const char * pClassName ) const;
-	virtual const char *	ClassName( void ) const;
+	virtual bool			isInstanceOf( const char * pClassName ) const;
+	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgIWidgetsPtr	Cast( const WgInterfacePtr& pInterface );
+	static WgIWidgetsPtr	cast( const WgInterfacePtr& pInterface );
 
-	inline WgWidgetPtr	FirstWidget() const { return WgWidgetPtr(_firstWidget()); }
-	inline WgWidgetPtr	LastWidget() const { return WgWidgetPtr(_lastWidget()); }
+	inline WgWidgetPtr	firstWidget() const { return WgWidgetPtr(_firstWidget()); }
+	inline WgWidgetPtr	lastWidget() const { return WgWidgetPtr(_lastWidget()); }
 
 protected:
 

@@ -65,34 +65,34 @@ WgScrollbar::~WgScrollbar( void )
 }
 
 
-//____ IsInstanceOf() _________________________________________________________
+//____ isInstanceOf() _________________________________________________________
 
-bool WgScrollbar::IsInstanceOf( const char * pClassName ) const
+bool WgScrollbar::isInstanceOf( const char * pClassName ) const
 { 
 	if( pClassName==CLASSNAME )
 		return true;
 
-	return WgWidget::IsInstanceOf(pClassName);
+	return WgWidget::isInstanceOf(pClassName);
 }
 
-//____ ClassName() ____________________________________________________________
+//____ className() ____________________________________________________________
 
-const char * WgScrollbar::ClassName( void ) const
+const char * WgScrollbar::className( void ) const
 { 
 	return CLASSNAME; 
 }
 
-//____ Cast() _________________________________________________________________
+//____ cast() _________________________________________________________________
 
-WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
+WgScrollbarPtr WgScrollbar::cast( const WgObjectPtr& pObject )
 {
-	if( pObject && pObject->IsInstanceOf(CLASSNAME) )
-		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.RawPtr()) );
+	if( pObject && pObject->isInstanceOf(CLASSNAME) )
+		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
-//____ SetOrientation() _______________________________________________________
+//____ setOrientation() _______________________________________________________
 /**
  * Set if scrollbar should be horizontal or vertical.
  *
@@ -102,7 +102,7 @@ WgScrollbarPtr WgScrollbar::Cast( const WgObjectPtr& pObject )
  * By default a scrollbar is vertical.
  **/
 
-void WgScrollbar::SetOrientation( WgOrientation orientation )
+void WgScrollbar::setOrientation( WgOrientation orientation )
 {
 	bool bHorizontal = (orientation == WG_HORIZONTAL);
 
@@ -160,8 +160,8 @@ void WgScrollbar::SetBackgroundPressMode( BgPressMode mode )
 
 void WgScrollbar::SetHandle( float _pos, float _size )
 {
-	WG_LIMIT( _size, 0.0001f, 1.f );
-	WG_LIMIT( _pos, 0.f, 1.f );
+	LIMIT( _size, 0.0001f, 1.f );
+	LIMIT( _pos, 0.f, 1.f );
 
 	if( m_handlePos == _pos && m_handleSize == _size )
 		return;
@@ -186,7 +186,7 @@ void WgScrollbar::SetHandle( float _pos, float _size )
 
 void WgScrollbar::SetHandlePos( float pos )
 {
-	WG_LIMIT( pos, 0.f, 1.f );
+	LIMIT( pos, 0.f, 1.f );
 
 	if( pos > m_handlePos-0.000001 && pos < m_handlePos+0.000001 )
 		return;
@@ -218,15 +218,15 @@ void WgScrollbar::SetHandlePixelPos( int pos )
 	int		length;
 	if( m_bHorizontal )
 	{
-		length = Size().w;
+		length = size().w;
 		if( m_pSkin )
-			length -= m_pSkin->ContentPadding().w;
+			length -= m_pSkin->contentPadding().w;
 	}
 	else
 	{
-		length = Size().h;
+		length = size().h;
 		if( m_pSkin )
-			length -= m_pSkin->ContentPadding().h;
+			length -= m_pSkin->contentPadding().h;
 	}
 
 	length -= m_headerLen + m_footerLen;
@@ -255,7 +255,7 @@ void WgScrollbar::SetHandlePixelPos( int pos )
 
 void WgScrollbar::SetHandleSize( float _size )
 {
-	WG_LIMIT( _size, 0.0001f, 1.f );
+	LIMIT( _size, 0.0001f, 1.f );
 
 	if( _size == m_handleSize )
 		return;
@@ -363,16 +363,16 @@ void WgScrollbar::_headerFooterChanged()
 	if( m_bHorizontal )
 	{
 		if( m_pBtnFwdSkin )
-			fwdLen = m_pBtnFwdSkin->PreferredSize().w;
+			fwdLen = m_pBtnFwdSkin->preferredSize().w;
 		if( m_pBtnBwdSkin )
-			bwdLen = m_pBtnBwdSkin->PreferredSize().w;
+			bwdLen = m_pBtnBwdSkin->preferredSize().w;
 	}
 	else
 	{
 		if( m_pBtnFwdSkin )
-			fwdLen = m_pBtnFwdSkin->PreferredSize().h;
+			fwdLen = m_pBtnFwdSkin->preferredSize().h;
 		if( m_pBtnBwdSkin )
-			bwdLen = m_pBtnBwdSkin->PreferredSize().h;
+			bwdLen = m_pBtnBwdSkin->preferredSize().h;
 	}
 
 	int	headerLen = 0;
@@ -443,15 +443,15 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 	int maxLen;
 	if( m_bHorizontal )
 	{
-		maxLen = Size().w;
+		maxLen = size().w;
 		if( m_pSkin )
-			maxLen -= m_pSkin->ContentPadding().w;
+			maxLen -= m_pSkin->contentPadding().w;
 	}
 	else
 	{
-		maxLen = Size().h;
+		maxLen = size().h;
 		if( m_pSkin )
-			maxLen -= m_pSkin->ContentPadding().h;
+			maxLen -= m_pSkin->contentPadding().h;
 	}
 	maxLen -= m_headerLen + m_footerLen;
 
@@ -461,9 +461,9 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 	int		minLen;
 
 	if( m_bHorizontal )
-		minLen = m_pHandleSkin->MinSize().w;
+		minLen = m_pHandleSkin->minSize().w;
 	else
-		minLen = m_pHandleSkin->MinSize().h;
+		minLen = m_pHandleSkin->minSize().h;
 
 	if( minLen < 4 )
 		minLen = 4;
@@ -495,10 +495,10 @@ void	WgScrollbar::_viewToPosLen( int * _wpPos, int * _wpLen )
 
 void WgScrollbar::_onStateChanged( WgState oldState )
 {
-	if( m_state.IsEnabled() != oldState.IsEnabled() )
+	if( m_state.isEnabled() != oldState.isEnabled() )
 	{
 		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-			m_states[i].SetEnabled(m_state.IsEnabled());
+			m_states[i].setEnabled(m_state.isEnabled());
 	}
 	_requestRender();
 }
@@ -511,9 +511,9 @@ void WgScrollbar::_onRefresh( void )
 	WgWidget::_onRefresh();
 }
 
-//____ PreferredSize() _____________________________________________________________
+//____ preferredSize() _____________________________________________________________
 
-WgSize WgScrollbar::PreferredSize() const
+WgSize WgScrollbar::preferredSize() const
 {
 	WgSize sz = m_minSize;
 
@@ -539,20 +539,20 @@ void WgScrollbar::_updateMinSize()
 
 	if( m_pBgSkin )
 	{
-		WgSize sz = m_pBgSkin->MinSize();
+		WgSize sz = m_pBgSkin->minSize();
 
-		minW = Max( minW, sz.w );
-		minH = Max( minH, sz.h );
+		minW = max( minW, sz.w );
+		minH = max( minH, sz.h );
 	}
 
 	// Check min w/h for BarGfx.
 
 	if( m_pHandleSkin )
 	{
-		WgSize sz = m_pHandleSkin->MinSize();
+		WgSize sz = m_pHandleSkin->minSize();
 
-		minW = Max( minW, sz.w );
-		minH = Max( minH, sz.h );
+		minW = max( minW, sz.w );
+		minH = max( minH, sz.h );
 	}
 
 
@@ -568,28 +568,28 @@ void WgScrollbar::_updateMinSize()
 
 	if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
 	{
-		WgSize sz = m_pBtnFwdSkin->PreferredSize();
+		WgSize sz = m_pBtnFwdSkin->preferredSize();
 
-		minW = Max( minW, sz.w );
-		minH = Max( minH, sz.h );
+		minW = max( minW, sz.w );
+		minH = max( minH, sz.h );
 	}
 
 	// Check min w/h for backward button.
 
 	if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
 	{
-		WgSize sz = m_pBtnBwdSkin->PreferredSize();
+		WgSize sz = m_pBtnBwdSkin->preferredSize();
 
-		minW = Max( minW, sz.w );
-		minH = Max( minH, sz.h );
+		minW = max( minW, sz.w );
+		minH = max( minH, sz.h );
 	}
 
 	// Add padding for base skin
 
 	if( m_pSkin )
 	{
-		minW += m_pSkin->ContentPadding().w;
-		minH += m_pSkin->ContentPadding().h;
+		minW += m_pSkin->contentPadding().w;
+		minH += m_pSkin->contentPadding().h;
 	}
 
 	// Set if changed.
@@ -608,11 +608,11 @@ void WgScrollbar::_updateMinSize()
 void WgScrollbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkinPtr& pSkin, WgState state )
 {
 		if( m_bHorizontal )
-			_dest.w = pSkin->PreferredSize().w;
+			_dest.w = pSkin->preferredSize().w;
 		else
-			_dest.h = pSkin->PreferredSize().h;
+			_dest.h = pSkin->preferredSize().h;
 
-		pSkin->Render( pDevice, _dest, state, _clip );
+		pSkin->render( pDevice, _dest, state, _clip );
 
 		if( m_bHorizontal )
 			_dest.x += _dest.w;
@@ -628,7 +628,7 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 
 	WgRect	dest = _canvas;
 	if( m_pSkin )
-		dest = m_pSkin->ContentRect(_canvas,m_state);
+		dest = m_pSkin->contentRect(_canvas,m_state);
 
 	// Render header buttons
 
@@ -641,12 +641,12 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 	// Render background (if any).
 
 	if( m_bHorizontal )
-		dest.w = Size().w - m_headerLen - m_footerLen;
+		dest.w = size().w - m_headerLen - m_footerLen;
 	else
-		dest.h = Size().h - m_headerLen - m_footerLen;
+		dest.h = size().h - m_headerLen - m_footerLen;
 
 	if( m_pBgSkin )
-		m_pBgSkin->Render( pDevice, dest, m_states[C_BG], _clip );
+		m_pBgSkin->render( pDevice, dest, m_states[C_BG], _clip );
 
 	// Render the handle
 
@@ -662,7 +662,7 @@ void WgScrollbar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const
 		else
 			handleDest = WgRect( dest.x, dest.y + handlePos, dest.w, handleLen );
 
-		m_pHandleSkin->Render( pDevice, handleDest, m_states[C_HANDLE], _clip );
+		m_pHandleSkin->render( pDevice, handleDest, m_states[C_HANDLE], _clip );
 	}
 
 	// Render footer buttons
@@ -694,11 +694,11 @@ bool WgScrollbar::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 bool WgScrollbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkinPtr& pSkin, WgState state )
 {
 		if( m_bHorizontal )
-			_dest.w = pSkin->PreferredSize().w;
+			_dest.w = pSkin->preferredSize().w;
 		else
-			_dest.h = pSkin->PreferredSize().h;
+			_dest.h = pSkin->preferredSize().h;
 
-		bool retVal = pSkin->MarkTest( ofs, _dest, state, m_markOpacity );
+		bool retVal = pSkin->markTest( ofs, _dest, state, m_markOpacity );
 
 		if( m_bHorizontal )
 			_dest.x += _dest.w;
@@ -715,9 +715,9 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 	WgRect canvas;
 
 	if( m_pSkin )
-		canvas = m_pSkin->ContentRect( WgRect(0,0,Size()),m_state);
+		canvas = m_pSkin->contentRect( WgRect(0,0,size()),m_state);
 	else 
-		canvas = WgRect(0,0,Size());
+		canvas = WgRect(0,0,size());
 
 	WgRect dest = canvas;
 
@@ -774,7 +774,7 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 		r.h -= m_headerLen + m_footerLen;
 	}
 
-	if( m_pBgSkin && m_pBgSkin->MarkTest( ofs, r, m_states[C_BG], m_markOpacity ) )
+	if( m_pBgSkin && m_pBgSkin->markTest( ofs, r, m_states[C_BG], m_markOpacity ) )
 		return C_BG;
 
 	return C_NONE;
@@ -785,7 +785,7 @@ WgScrollbar::Component WgScrollbar::_findMarkedComponent( WgCoord ofs )
 void WgScrollbar::_unhoverReqRender()
 {
 	for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-		m_states[i].SetHovered(false);
+		m_states[i].setHovered(false);
 
 	_requestRender();
 }
@@ -797,17 +797,17 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgMsgRouterPtr	pHandler = WgBase::MsgRouter();
-	WgCoord pos = pMsg->PointerPos() - GlobalPos();
+	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
+	WgCoord pos = pMsg->pointerPos() - globalPos();
 
 	int		pointerOfs;
 	int		length;
 
 	WgRect contentRect;
 	if( m_pSkin )
-		contentRect = m_pSkin->ContentRect(WgRect(0,0,Size()),m_state);
+		contentRect = m_pSkin->contentRect(WgRect(0,0,size()),m_state);
 	else
-		contentRect = WgRect(0,0,Size());
+		contentRect = WgRect(0,0,size());
 
 	if( m_bHorizontal )
 	{
@@ -823,11 +823,11 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 	length -= m_headerLen + m_footerLen;
 	pointerOfs -= m_headerLen;
 
-	switch( pMsg->Type() )
+	switch( pMsg->type() )
 	{
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
 				return;
 
 			// Just put them all to NORMAL and request render.
@@ -843,7 +843,7 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 			// Turn handle back to NORMAL only if MARKED (selected handle should remain selected).
 			// Request render only if something changed (which it has unless bar was SELECTED...).
 
-			if( m_states[C_HANDLE].IsPressed() )
+			if( m_states[C_HANDLE].isPressed() )
 				return;
 
 			_unhoverReqRender();
@@ -853,22 +853,22 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 		case WG_MSG_MOUSE_ENTER:
 		case WG_MSG_MOUSE_MOVE:
 		{
-			if( m_states[C_HANDLE].IsPressed() )
+			if( m_states[C_HANDLE].isPressed() )
 				return;
 
 			Component c = _findMarkedComponent(pos);
 
-			if( (c != C_NONE && !m_states[c].IsHovered()) || (c == C_BG && m_states[C_HANDLE].IsHovered()) )
+			if( (c != C_NONE && !m_states[c].isHovered()) || (c == C_BG && m_states[C_HANDLE].isHovered()) )
 			{
 				_unhoverReqRender();
-				m_states[c].SetHovered(true);
+				m_states[c].setHovered(true);
 				if( c == C_HANDLE )
-					m_states[C_BG].SetHovered(true);			// Always also mark bg if bar is marked.
+					m_states[C_BG].setHovered(true);			// Always also mark bg if bar is marked.
 			}
-			else if( c == C_BG && m_states[C_HANDLE].IsHovered() )
+			else if( c == C_BG && m_states[C_HANDLE].isHovered() )
 			{
-				m_states[C_HANDLE].SetHovered(false);
-				m_states[C_BG].SetHovered(false);
+				m_states[C_HANDLE].setHovered(false);
+				m_states[C_BG].setHovered(false);
 				_requestRender();
 			}
 
@@ -878,18 +878,18 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_MOUSE_PRESS:
 		{
-			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
 				return;
 
 			Component c = _findMarkedComponent(pos);
 
 			_unhoverReqRender();
-			m_states[c].SetPressed(true);
+			m_states[c].setPressed(true);
 
 			if( c == C_HANDLE )
 			{
 				m_handlePressOfs = pointerOfs - handlePos;
-				m_states[C_BG].SetHovered(true);			// Always mark bg if bar is pressed.
+				m_states[C_BG].setHovered(true);			// Always mark bg if bar is pressed.
 			}
 			else if( c == C_BG )
 			{
@@ -897,7 +897,7 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 				{
 				case JUMP_PAGE:
 
-					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					{
 						if( pointerOfs - handlePos < handleLen/2 )
 							SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
@@ -907,12 +907,12 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );
-					pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+					pHandler->post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 
 					break;
 				case GOTO_POS:
-					m_states[C_HANDLE].SetPressed(true);
-					m_states[C_BG].SetHovered(true);
+					m_states[C_HANDLE].setPressed(true);
+					m_states[C_BG].setHovered(true);
 					m_handlePressOfs = handleLen/2;
 					SetHandlePixelPos( pointerOfs );
 					break;
@@ -924,28 +924,28 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+				if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+				if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 			}
 
 
 			int pxlPos, pxlLen;
 			_viewToPosLen( &pxlPos, &pxlLen );
-			pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+			pHandler->post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
 		case WG_MSG_MOUSE_REPEAT:
 		{
-			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
 				return;
 
-			if( m_states[C_HANDLE].IsPressed() )
+			if( m_states[C_HANDLE].isPressed() )
 				return;
 
 			Component c = _findMarkedComponent(pos);
@@ -954,56 +954,56 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 			{
 				if( pointerOfs - handlePos < handleLen/2 )
 				{
-					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 				}
 				else
 				{
-					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 				}
 			}
 			else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 			{
-				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+				if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 			}
 			else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 			{
-				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+				if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 			}
 
 			int pxlPos, pxlLen;
 			_viewToPosLen( &pxlPos, &pxlLen );
-			pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+			pHandler->post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 			break;
 		}
 
 		case WG_MSG_MOUSE_DRAG:
 		{
-			if( WgMouseButtonMsg::Cast(pMsg)->Button() != WG_BUTTON_LEFT )
+			if( WgMouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
 				return;
 
-			if( m_states[C_HANDLE].IsPressed() )
+			if( m_states[C_HANDLE].isPressed() )
 			{
 				float	scrollhandlePos = 0.f;
 
 				if( m_handleSize < 1.f)
 					scrollhandlePos = ((float)(pointerOfs - m_handlePressOfs)) / (length - handleLen);
 
-				WG_LIMIT( scrollhandlePos, 0.f, 1.f );
+				LIMIT( scrollhandlePos, 0.f, 1.f );
 
 				if( scrollhandlePos != m_handlePos )
 				{
 					m_handlePos = scrollhandlePos;
 
-					if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						m_handlePos = m_pScrollbarTargetInterface->_setPosition(m_handlePos);
 
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );
-					pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+					pHandler->post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 					_requestRender();
 				}
 			}
@@ -1012,18 +1012,18 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 		
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr p = WgWheelRollMsg::Cast(pMsg);
+			WgWheelRollMsgPtr p = WgWheelRollMsg::cast(pMsg);
 
-			if( p->Wheel() == 1 )
+			if( p->wheel() == 1 )
 			{
-				int distance = p->Distance();
-				if( m_pScrollbarTargetWidget.RawPtr() != 0 )
+				int distance = p->distance();
+				if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 					SetHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 				
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
-				pHandler->Post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
-				pMsg->Swallow();
+				pHandler->post( new WgRangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+				pMsg->swallow();
 			}
 		}
 		
@@ -1034,8 +1034,8 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 
 	// Swallow all button 1 messages.
 
-	if( pMsg->IsMouseButtonMsg() && WgMouseButtonMsg::Cast(pMsg)->Button() == WG_BUTTON_LEFT )
-			pMsg->Swallow();
+	if( pMsg->isMouseButtonMsg() && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			pMsg->swallow();
 
 }
 
@@ -1050,10 +1050,10 @@ bool WgScrollbar::_markTestHandle( WgCoord ofs )
 	int   handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgRect area(0,0,Size());
+	WgRect area(0,0,size());
 
 	if( m_pSkin )
-		area = m_pSkin->ContentRect(area,m_state);
+		area = m_pSkin->contentRect(area,m_state);
 
 	if( m_bHorizontal )
 	{
@@ -1066,15 +1066,15 @@ bool WgScrollbar::_markTestHandle( WgCoord ofs )
 		area.h = handleLen;
 	}
 
-	return m_pHandleSkin->MarkTest( ofs, area, m_states[C_HANDLE], m_markOpacity );
+	return m_pHandleSkin->markTest( ofs, area, m_states[C_HANDLE], m_markOpacity );
 }
 
 //____ _setHandle() ____________________________________________________________
 
 bool WgScrollbar::_setHandle( float _pos, float _size )
 {
-	WG_LIMIT( _size, 0.0001f, 1.f );
-	WG_LIMIT( _pos, 0.f, 1.f );
+	LIMIT( _size, 0.0001f, 1.f );
+	LIMIT( _pos, 0.f, 1.f );
 
 	if( m_handlePos == _pos && m_handleSize == _size )
 		return true;

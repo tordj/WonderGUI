@@ -65,12 +65,12 @@ class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgText
 {
 friend class WgToggleGroup;
 public:
-	static WgToggleButtonPtr	Create() { return WgToggleButtonPtr(new WgToggleButton()); }
+	static WgToggleButtonPtr	create() { return WgToggleButtonPtr(new WgToggleButton()); }
 
-	bool						IsInstanceOf( const char * pClassName ) const;
-	const char *				ClassName( void ) const;
+	bool						isInstanceOf( const char * pClassName ) const;
+	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgToggleButtonPtr	Cast( const WgObjectPtr& pObject );
+	static WgToggleButtonPtr	cast( const WgObjectPtr& pObject );
 
 	enum ClickArea
 	{
@@ -93,14 +93,14 @@ public:
  	void				SetClickArea( ClickArea clickArea );
 	inline ClickArea	GetClickArea() const;
 
-	inline bool			IsSelected();
-	virtual bool		SetSelected( bool bSelected );
+	inline bool			isSelected();
+	virtual bool		setSelected( bool bSelected );
 
 	void				SetFlipOnRelease( bool bFlipOnRelease );
 	inline bool			FlipOnRelease();
 
 	inline WgToggleGroupPtr ToggleGroup() const;
-	WgSize				PreferredSize() const;
+	WgSize				preferredSize() const;
 	inline bool			IsAutoEllipsisDefault() const;
 
 
@@ -123,7 +123,7 @@ protected:
 	void 			_onFieldResize( WgField * pField );
 
 	void	_setToggleGroup( WgToggleGroup * pGroup );
-	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.RawPtr(); }
+	WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 
 private:
 
@@ -147,9 +147,9 @@ inline WgToggleButton::ClickArea WgToggleButton::GetClickArea() const
 	return m_clickArea;
 }
 
-inline bool WgToggleButton::IsSelected()
+inline bool WgToggleButton::isSelected()
 {
-	return m_state.IsSelected();
+	return m_state.isSelected();
 };
 
 inline bool WgToggleButton::FlipOnRelease()
