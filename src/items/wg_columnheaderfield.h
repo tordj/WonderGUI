@@ -49,8 +49,8 @@ public:
 
 	//____ Methods _____________________________________
 
-	void				setSkin( const WgSkinPtr& pSkin );
-	inline WgSkinPtr	skin() const { return m_pSkin; }
+	void				setSkin( const WgSkin_p& pSkin );
+	inline WgSkin_p	skin() const { return m_pSkin; }
 
 	WgObject * 			_object() { return m_pHolder->_object(); };
 //private:
@@ -59,7 +59,7 @@ public:
 
 
 	WgColumnHeaderHolder *	m_pHolder;
-	WgSkinPtr			m_pSkin;
+	WgSkin_p			m_pSkin;
 	int					m_height;
 	int					m_width;
 	WgState				m_state;

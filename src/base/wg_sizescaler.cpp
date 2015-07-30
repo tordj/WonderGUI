@@ -22,17 +22,17 @@
 
 #include <wg_sizescaler.h>
 
-WgSizeScalerPtr WgSizeScaler::create() 
+WgSizeScaler_p WgSizeScaler::create() 
 {
 	return new WgSizeScaler(1.f,1.f);
 }
 
-WgSizeScalerPtr WgSizeScaler::create( float scale ) 
+WgSizeScaler_p WgSizeScaler::create( float scale ) 
 {
 	return new WgSizeScaler(scale,scale);
 }
 
-WgSizeScalerPtr WgSizeScaler::create( float scaleX, float scaleY ) 
+WgSizeScaler_p WgSizeScaler::create( float scaleX, float scaleY ) 
 {
 	return new WgSizeScaler(scaleX,scaleY);
 }

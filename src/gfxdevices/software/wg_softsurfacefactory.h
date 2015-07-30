@@ -33,22 +33,22 @@
 #include <vector>
 
 class WgSoftSurfaceFactory;
-typedef	WgStrongPtr<WgSoftSurfaceFactory,WgSurfaceFactoryPtr>	WgSoftSurfaceFactoryPtr;
-typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactoryWeakPtr>	WgSoftSurfaceFactoryWeakPtr;
+typedef	WgStrongPtr<WgSoftSurfaceFactory,WgSurfaceFactory_p>	WgSoftSurfaceFactory_p;
+typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactory_wp>	WgSoftSurfaceFactory_wp;
 
 //____ WgSoftSurfaceFactory _______________________________________________________
 
 class WgSoftSurfaceFactory : public WgSurfaceFactory
 {
 public:
-	static WgSoftSurfaceFactoryPtr	create() { return WgSoftSurfaceFactoryPtr(new WgSoftSurfaceFactory()); }
+	static WgSoftSurfaceFactory_p	create() { return WgSoftSurfaceFactory_p(new WgSoftSurfaceFactory()); }
 
 	bool							isInstanceOf( const char * pClassName ) const;
 	const char *					className( void ) const;
 	static const char				CLASSNAME[];
-	static WgSoftSurfaceFactoryPtr	cast( const WgObjectPtr& pObject );
+	static WgSoftSurfaceFactory_p	cast( const WgObject_p& pObject );
 
-	virtual WgSurfacePtr createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
+	virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 protected:
 	virtual ~WgSoftSurfaceFactory() {}
 };

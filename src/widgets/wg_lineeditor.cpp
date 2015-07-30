@@ -75,10 +75,10 @@ const char * WgLineEditor::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgLineEditorPtr WgLineEditor::cast( const WgObjectPtr& pObject )
+WgLineEditor_p WgLineEditor::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgLineEditorPtr( static_cast<WgLineEditor*>(pObject.rawPtr()) );
+		return WgLineEditor_p( static_cast<WgLineEditor*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -238,11 +238,11 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onMsg() ______________________________________________________________
 
-void WgLineEditor::_onMsg( const WgMsgPtr& pMsg )
+void WgLineEditor::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 
-	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
+	WgMsgRouter_p	pHandler = WgBase::msgRouter();
 	WgMsgType event = pMsg->type();
 
 	if( event == WG_MSG_TICK )
@@ -492,7 +492,7 @@ void WgLineEditor::_adjustViewOfs()
 
 	if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 	{
-		WgCaretPtr pCursor = WgTextTool::getCursor( &m_text );
+		WgCaret_p pCursor = WgTextTool::getCursor( &m_text );
 		if( !pCursor )
 			return;
 
@@ -612,7 +612,7 @@ void WgLineEditor::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgLineEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgLineEditor::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.setColorSkin(pNewSkin);

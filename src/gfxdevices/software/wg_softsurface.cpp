@@ -44,7 +44,7 @@ WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type )
 	m_fScaleAlpha = 1.f;
 }
 
-WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pFinalizer )
+WgSoftSurface::WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObject_p& pFinalizer )
 {
 	assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_ARGB_8 );
 	WgUtil::pixelTypeToFormat(type, m_pixelFormat);
@@ -88,10 +88,10 @@ const char * WgSoftSurface::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSoftSurfacePtr WgSoftSurface::cast( const WgObjectPtr& pObject )
+WgSoftSurface_p WgSoftSurface::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSoftSurfacePtr( static_cast<WgSoftSurface*>(pObject.rawPtr()) );
+		return WgSoftSurface_p( static_cast<WgSoftSurface*>(pObject.rawPtr()) );
 
 	return 0;
 }

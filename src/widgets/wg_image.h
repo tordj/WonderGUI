@@ -32,8 +32,8 @@
 #endif
 
 class WgImage;
-typedef	WgStrongPtr<WgImage,WgWidgetPtr>		WgImagePtr;
-typedef	WgWeakPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
+typedef	WgStrongPtr<WgImage,WgWidget_p>		WgImage_p;
+typedef	WgWeakPtr<WgImage,WgWidget_wp>		WgImage_wp;
 
 //____ WgImage __________________________________________________________
 /**
@@ -46,18 +46,18 @@ typedef	WgWeakPtr<WgImage,WgWidgetWeakPtr>		WgImageWeakPtr;
 class WgImage : public WgWidget
 {
 public:
-	static WgImagePtr	create() { return WgImagePtr(new WgImage()); }
+	static WgImage_p	create() { return WgImage_p(new WgImage()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgImagePtr	cast( const WgObjectPtr& pObject );
+	static WgImage_p	cast( const WgObject_p& pObject );
 	
 
-	void				SetImage( const WgSurfacePtr& pSurface, const WgRect& rect );	///< @brief Set image to display.
-	void				SetImage( const WgSurfacePtr& pSurface );						///< @brief Set image to display.
+	void				SetImage( const WgSurface_p& pSurface, const WgRect& rect );	///< @brief Set image to display.
+	void				SetImage( const WgSurface_p& pSurface );						///< @brief Set image to display.
 
-	inline WgSurfacePtr	ImageSurface() const;											///< @brief Get surface of image displayed.
+	inline WgSurface_p	ImageSurface() const;											///< @brief Get surface of image displayed.
 	inline WgRect		ImageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 
 	WgSize				preferredSize() const;
@@ -73,13 +73,13 @@ protected:
 
 private:
 
-	WgSurfacePtr	m_pSurface;
+	WgSurface_p	m_pSurface;
 	WgRect			m_rect;
 
 };
 
 
-WgSurfacePtr WgImage::ImageSurface() const
+WgSurface_p WgImage::ImageSurface() const
 {
 	return m_pSurface;
 }

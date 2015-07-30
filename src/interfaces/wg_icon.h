@@ -48,8 +48,8 @@
 #endif
 
 class WgIcon;
-typedef	WgIStrongPtr<WgIcon,WgInterfacePtr>		WgIconPtr;
-typedef	WgIWeakPtr<WgIcon,WgInterfaceWeakPtr>	WgIconWeakPtr;
+typedef	WgIStrongPtr<WgIcon,WgInterface_p>		WgIcon_p;
+typedef	WgIWeakPtr<WgIcon,WgInterface_wp>	WgIcon_wp;
 
 class WgIcon : public WgInterface
 {
@@ -59,10 +59,10 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgIconPtr			cast( const WgInterfacePtr& pInterface );
-	inline WgIconPtr			ptr() { return WgIconPtr(_object(),this); }
+	static WgIcon_p			cast( const WgInterface_p& pInterface );
+	inline WgIcon_p			ptr() { return WgIcon_p(_object(),this); }
 
-	inline bool			set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0),
+	inline bool			set( const WgSkin_p& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0),
 							 float scale = 0.f, bool bOverlap = false ) { return m_pField->set(pIconGfx,origo,padding,scale,bOverlap); }
 	inline void			clear() { m_pField->clear(); }
 
@@ -70,13 +70,13 @@ public:
 	inline void			setOrigo( WgOrigo origo ) { m_pField->setOrigo(origo); }
 	inline void			setPadding( WgBorder padding ) { m_pField->setPadding(padding); }
 	inline void			setOverlap( bool bOverlap ) { m_pField->setOverlap(bOverlap); }
-	inline void			setSkin( const WgSkinPtr& pSkin ) { m_pField->setSkin(pSkin); }
+	inline void			setSkin( const WgSkin_p& pSkin ) { m_pField->setSkin(pSkin); }
 
 	inline float		scale() const { return m_pField->scale(); }
 	inline WgOrigo		origo() const { return m_pField->origo(); }
 	inline WgBorder		padding() const { return m_pField->padding(); }
 	inline bool			overlap() const { return m_pField->overlap(); }
-	inline WgSkinPtr	skin() const { return m_pField->skin(); }
+	inline WgSkin_p	skin() const { return m_pField->skin(); }
 protected:
 	WgObject * 			_object() const;
 

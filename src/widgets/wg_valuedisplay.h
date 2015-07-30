@@ -33,18 +33,18 @@
 
 
 class WgValueDisplay;
-typedef	WgStrongPtr<WgValueDisplay,WgWidgetPtr>		WgValueDisplayPtr;
-typedef	WgWeakPtr<WgValueDisplay,WgWidgetWeakPtr>	WgValueDisplayWeakPtr;
+typedef	WgStrongPtr<WgValueDisplay,WgWidget_p>		WgValueDisplay_p;
+typedef	WgWeakPtr<WgValueDisplay,WgWidget_wp>	WgValueDisplay_wp;
 
 class WgValueDisplay : public WgWidget, protected WgModValueHolder
 {
 public:
-	static WgValueDisplayPtr	create() { return WgValueDisplayPtr(new WgValueDisplay()); }
+	static WgValueDisplay_p	create() { return WgValueDisplay_p(new WgValueDisplay()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueDisplayPtr	cast( const WgObjectPtr& pObject );
+	static WgValueDisplay_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces _______________________________________
 
@@ -63,7 +63,7 @@ protected:
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 private:
 	WgObject * _object() { return this; }

@@ -53,10 +53,10 @@ const char * WgVolumeMeter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgVolumeMeterPtr WgVolumeMeter::cast( const WgObjectPtr& pObject )
+WgVolumeMeter_p WgVolumeMeter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgVolumeMeterPtr( static_cast<WgVolumeMeter*>(pObject.rawPtr()) );
+		return WgVolumeMeter_p( static_cast<WgVolumeMeter*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -73,10 +73,10 @@ const char * WgToggleButton::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgToggleButtonPtr WgToggleButton::cast( const WgObjectPtr& pObject )
+WgToggleButton_p WgToggleButton::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgToggleButtonPtr( static_cast<WgToggleButton*>(pObject.rawPtr()) );
+		return WgToggleButton_p( static_cast<WgToggleButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -141,7 +141,7 @@ void WgToggleButton::_setToggleGroup( WgToggleGroup * pGroup )
 
 //____ _onMsg() _____________________________________________________________
 
-void WgToggleButton::_onMsg( const WgMsgPtr& _pMsg )
+void WgToggleButton::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgState oldState = m_state;
 
@@ -256,7 +256,7 @@ void WgToggleButton::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgToggleButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgToggleButton::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 }

@@ -31,14 +31,14 @@ const char WgBoxSkin::CLASSNAME[] = {"BoxSkin"};
 
 //____ create() _______________________________________________________________
 
-WgBoxSkinPtr WgBoxSkin::create()
+WgBoxSkin_p WgBoxSkin::create()
 {
-	return WgBoxSkinPtr(new WgBoxSkin());
+	return WgBoxSkin_p(new WgBoxSkin());
 }
 
-WgBoxSkinPtr WgBoxSkin::create( WgColor color, WgBorder frame, WgColor frameColor )
+WgBoxSkin_p WgBoxSkin::create( WgColor color, WgBorder frame, WgColor frameColor )
 {
-	return WgBoxSkinPtr(new WgBoxSkin(color, frame, frameColor));
+	return WgBoxSkin_p(new WgBoxSkin(color, frame, frameColor));
 }
 
 //____ Constructor ____________________________________________________________
@@ -90,10 +90,10 @@ const char * WgBoxSkin::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgBoxSkinPtr WgBoxSkin::cast( const WgObjectPtr& pObject )
+WgBoxSkin_p WgBoxSkin::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgBoxSkinPtr( static_cast<WgBoxSkin*>(pObject.rawPtr()) );
+		return WgBoxSkin_p( static_cast<WgBoxSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -35,18 +35,18 @@
 class WgFont;
 
 class WgFpsDisplay;
-typedef	WgStrongPtr<WgFpsDisplay,WgWidgetPtr>		WgFpsDisplayPtr;
-typedef	WgWeakPtr<WgFpsDisplay,WgWidgetWeakPtr>	WgFpsDisplayWeakPtr;
+typedef	WgStrongPtr<WgFpsDisplay,WgWidget_p>		WgFpsDisplay_p;
+typedef	WgWeakPtr<WgFpsDisplay,WgWidget_wp>	WgFpsDisplay_wp;
 
 class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgFpsDisplayPtr	create() { return WgFpsDisplayPtr(new WgFpsDisplay()); }
+	static WgFpsDisplay_p	create() { return WgFpsDisplay_p(new WgFpsDisplay()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFpsDisplayPtr	cast( const WgObjectPtr& pObject );
+	static WgFpsDisplay_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -55,7 +55,7 @@ public:
 
 	//____ Methods __________________________________________
 
-	void	SetTextProperties( const WgTextpropPtr& pProp );
+	void	SetTextProperties( const WgTextprop_p& pProp );
 	WgSize	preferredSize() const;
 
 protected:
@@ -63,11 +63,11 @@ protected:
 	virtual ~WgFpsDisplay();
 	virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
 
-	void		_onMsg( const WgMsgPtr& pMsg );
+	void		_onMsg( const WgMsg_p& pMsg );
 	void		_onStateChanged( WgState oldState );
 	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void		_onCloneContent( const WgWidget * _pOrg );
-	void		_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void		_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 	WgObject * 	_object() { return this; };
 	void		_onFieldDirty( WgField * pField );

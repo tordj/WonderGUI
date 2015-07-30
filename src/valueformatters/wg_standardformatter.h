@@ -26,8 +26,8 @@
 
 
 class WgStandardFormatter;
-typedef	WgStrongPtr<WgStandardFormatter,WgValueFormatterPtr>		WgStandardFormatterPtr;
-typedef	WgWeakPtr<WgStandardFormatter,WgValueFormatterWeakPtr>	WgStandardFormatterWeakPtr;
+typedef	WgStrongPtr<WgStandardFormatter,WgValueFormatter_p>		WgStandardFormatter_p;
+typedef	WgWeakPtr<WgStandardFormatter,WgValueFormatter_wp>	WgStandardFormatter_wp;
 
 //____ WgStandardFormatter __________________________________________________________
 
@@ -37,10 +37,10 @@ public:
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgStandardFormatterPtr	cast( const WgObjectPtr& pObject );
+	static WgStandardFormatter_p	cast( const WgObject_p& pObject );
 
-	static WgStandardFormatterPtr	create() { return WgStandardFormatterPtr(new WgStandardFormatter()); }
-	static WgStandardFormatterPtr	create( const WgCharSeq& format ) { return WgStandardFormatterPtr(new WgStandardFormatter(format)); }
+	static WgStandardFormatter_p	create() { return WgStandardFormatter_p(new WgStandardFormatter()); }
+	static WgStandardFormatter_p	create( const WgCharSeq& format ) { return WgStandardFormatter_p(new WgStandardFormatter(format)); }
 
 	WgString 		format( Sint64 value, int scale ) const;
 	WgString 		format( double value ) const;

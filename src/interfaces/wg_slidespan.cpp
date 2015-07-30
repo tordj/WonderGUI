@@ -45,10 +45,10 @@ const char * WgSlideSpan::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSlideSpanPtr WgSlideSpan::cast( const WgInterfacePtr& pInterface )
+WgSlideSpan_p WgSlideSpan::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgSlideSpanPtr( pInterface.getRealObjectPtr(), static_cast<WgSlideSpan*>( pInterface.rawPtr()) );
+		return WgSlideSpan_p( pInterface.getRealObjectPtr(), static_cast<WgSlideSpan*>( pInterface.rawPtr()) );
 
 	return 0;
 }

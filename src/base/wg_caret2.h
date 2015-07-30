@@ -34,8 +34,8 @@
 class WgGfxDevice;
 
 class WgCaret2;
-typedef	WgStrongPtr<WgCaret2,WgObjectPtr>		WgCaret2Ptr;
-typedef	WgWeakPtr<WgCaret2,WgObjectWeakPtr>		WgCaret2WeakPtr;
+typedef	WgStrongPtr<WgCaret2,WgObject_p>		WgCaret2_p;
+typedef	WgWeakPtr<WgCaret2,WgObject_wp>		WgCaret2_wp;
 
 
 enum WgCaretMode
@@ -49,12 +49,12 @@ enum WgCaretMode
 class WgCaret2 : public WgObject
 {
 public:
-	static WgCaret2Ptr	create() { return WgCaret2Ptr(new WgCaret2()); }
+	static WgCaret2_p	create() { return WgCaret2_p(new WgCaret2()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCaret2Ptr	cast( const WgObjectPtr& pObject );
+	static WgCaret2_p	cast( const WgObject_p& pObject );
 
 	virtual bool		setCycleLength( int millisec );
 	inline int			cycleLength() const { return m_cycleLength; }

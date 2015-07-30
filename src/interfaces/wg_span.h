@@ -36,8 +36,8 @@
 #endif
 
 class WgSpan;
-typedef	WgIStrongPtr<WgSpan,WgInterfacePtr>			WgSpanPtr;
-typedef	WgIWeakPtr<WgSpan,WgInterfaceWeakPtr>		WgSpanWeakPtr;
+typedef	WgIStrongPtr<WgSpan,WgInterface_p>			WgSpan_p;
+typedef	WgIWeakPtr<WgSpan,WgInterface_wp>		WgSpan_wp;
 
 
 class WgSpan : public WgInterface
@@ -48,8 +48,8 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSpanPtr			cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgSpanPtr			ptr() { return WgSpanPtr(_object(),this); }
+	static WgSpan_p			cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgSpan_p			ptr() { return WgSpan_p(_object(),this); }
 
 	inline int		min() const { return m_pItem->min; }
 	inline int		max() const { return m_pItem->max; }

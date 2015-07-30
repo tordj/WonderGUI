@@ -29,14 +29,14 @@
 
 class WgTextprop;
 class WgTextpropHolder;
-class WgTextpropPtr;
+class WgTextprop_p;
 
 
 //____ WgTextpropHolder _______________________________________________________
 
 class WgTextpropHolder
 {
-	friend class WgTextpropPtr;
+	friend class WgTextprop_p;
 	friend class WgTextpropManager;
 
 private:
@@ -58,7 +58,7 @@ class WgTextpropManager
 {
 	friend class WgChar;
 	friend class WgTextprop;
-	friend class WgTextpropPtr;
+	friend class WgTextprop_p;
 	friend class WgTextTool;
 	friend class WgCharBuffer;
 	friend class WgTextMgr;
@@ -88,8 +88,8 @@ private:
 
 	static Uint16	registerProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
 
-//	static Uint16 	getProp( const WgFontPtr& pFont, const WgColor color, bool bColored,
-//							 bool bUnderlined, bool bSelected, WgTextLinkPtr& pLink );
+//	static Uint16 	getProp( const WgFont_p& pFont, const WgColor color, bool bColored,
+//							 bool bUnderlined, bool bSelected, WgTextLink_p& pLink );
 
 	static const WgTextprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
 	static const WgTextprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }

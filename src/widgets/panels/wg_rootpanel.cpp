@@ -44,7 +44,7 @@ WgRootPanel::WgRootPanel()
 }
 
 
-WgRootPanel::WgRootPanel( const WgGfxDevicePtr& pGfxDevice )
+WgRootPanel::WgRootPanel( const WgGfxDevice_p& pGfxDevice )
 {
 	m_bVisible = true;
 	m_bHasGeo = false;
@@ -78,10 +78,10 @@ const char * WgRootPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgRootPanelPtr WgRootPanel::cast( const WgObjectPtr& pObject )
+WgRootPanel_p WgRootPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgRootPanelPtr( static_cast<WgRootPanel*>(pObject.rawPtr()) );
+		return WgRootPanel_p( static_cast<WgRootPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -89,7 +89,7 @@ WgRootPanelPtr WgRootPanel::cast( const WgObjectPtr& pObject )
 
 //____ setGfxDevice() _________________________________________________________
 
-bool WgRootPanel::setGfxDevice( const WgGfxDevicePtr& pDevice )
+bool WgRootPanel::setGfxDevice( const WgGfxDevice_p& pDevice )
 {
 	m_pGfxDevice = pDevice;
 
@@ -132,7 +132,7 @@ WgRect WgRootPanel::geo() const
 
 //____ setWidget() _____________________________________________________________
 
-WgHookPtr WgRootPanel::setWidget( const WgWidgetPtr& pWidget )
+WgHook_p WgRootPanel::setWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget )
 		return 0;

@@ -37,7 +37,7 @@
 
 class WgSizeScaler;
 
-typedef	WgStrongPtr<WgSizeScaler,WgObjectPtr>	WgSizeScalerPtr;
+typedef	WgStrongPtr<WgSizeScaler,WgObject_p>	WgSizeScaler_p;
 
 
 class WgScalable
@@ -48,7 +48,7 @@ protected:
 	virtual ~WgScalable();
 	virtual void _onScaleChanged() = 0;
 	
-	WgSizeScalerPtr m_pScaler;
+	WgSizeScaler_p m_pScaler;
 };
 
 
@@ -56,9 +56,9 @@ class WgSizeScaler : public WgObject
 {
 	friend class WgScalable;
 public:
-	static WgSizeScalerPtr create();
-	static WgSizeScalerPtr create( float scale );
-	static WgSizeScalerPtr create( float scaleX, float scaleY );
+	static WgSizeScaler_p create();
+	static WgSizeScaler_p create( float scale );
+	static WgSizeScaler_p create( float scaleX, float scaleY );
 
 	virtual ~WgSizeScaler() {}
 

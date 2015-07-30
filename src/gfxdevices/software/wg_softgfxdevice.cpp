@@ -32,14 +32,14 @@ const char WgSoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 
 //____ create() _______________________________________________________________
 
-WgSoftGfxDevicePtr WgSoftGfxDevice::create()
+WgSoftGfxDevice_p WgSoftGfxDevice::create()
 {
-	return WgSoftGfxDevicePtr(new WgSoftGfxDevice());
+	return WgSoftGfxDevice_p(new WgSoftGfxDevice());
 }
 
-WgSoftGfxDevicePtr WgSoftGfxDevice::create( const WgSoftSurfacePtr& pCanvas )
+WgSoftGfxDevice_p WgSoftGfxDevice::create( const WgSoftSurface_p& pCanvas )
 {
-	return WgSoftGfxDevicePtr(new WgSoftGfxDevice(pCanvas));
+	return WgSoftGfxDevice_p(new WgSoftGfxDevice(pCanvas));
 }
 
 
@@ -53,7 +53,7 @@ WgSoftGfxDevice::WgSoftGfxDevice() : WgGfxDevice(WgSize(0,0))
 	_genCurveTab();
 }
 
-WgSoftGfxDevice::WgSoftGfxDevice( const WgSoftSurfacePtr& pCanvas ) : WgGfxDevice( pCanvas?pCanvas->size():WgSize() )
+WgSoftGfxDevice::WgSoftGfxDevice( const WgSoftSurface_p& pCanvas ) : WgGfxDevice( pCanvas?pCanvas->size():WgSize() )
 {
 	m_bBilinearFiltering = true;
 	m_pCanvas = pCanvas;
@@ -88,10 +88,10 @@ const char * WgSoftGfxDevice::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSoftGfxDevicePtr WgSoftGfxDevice::cast( const WgObjectPtr& pObject )
+WgSoftGfxDevice_p WgSoftGfxDevice::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSoftGfxDevicePtr( static_cast<WgSoftGfxDevice*>(pObject.rawPtr()) );
+		return WgSoftGfxDevice_p( static_cast<WgSoftGfxDevice*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -99,7 +99,7 @@ WgSoftGfxDevicePtr WgSoftGfxDevice::cast( const WgObjectPtr& pObject )
 
 //____ setCanvas() _______________________________________________________________
 
-void WgSoftGfxDevice::setCanvas( const WgSoftSurfacePtr& pCanvas )
+void WgSoftGfxDevice::setCanvas( const WgSoftSurface_p& pCanvas )
 {
 	m_pCanvas = pCanvas;
 	if( pCanvas )
@@ -1147,7 +1147,7 @@ void WgSoftGfxDevice::clipDrawArcNE( const WgRect& clip, const WgRect& rect, WgC
 
 //____ blit() __________________________________________________________________
 
-void WgSoftGfxDevice::blit( const WgSurfacePtr& pSrcSurf, const WgRect& srcrect, int dx, int dy  )
+void WgSoftGfxDevice::blit( const WgSurface_p& pSrcSurf, const WgRect& srcrect, int dx, int dy  )
 {
 	WgSurface * pSrc = pSrcSurf.rawPtr();
 
@@ -1539,17 +1539,17 @@ void WgSoftGfxDevice::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcre
 
 //____ stretchBlit() ___________________________________________________________
 
-void WgSoftGfxDevice::stretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear, float mipmapBias )
+void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, bool bTriLinear, float mipmapBias )
 {
 	stretchBlit( pSrc, WgRect(0, 0, pSrc->width(),pSrc->height()), WgRect(0,0,m_canvasSize.w,m_canvasSize.h), bTriLinear, mipmapBias );
 }
 
-void WgSoftGfxDevice::stretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
+void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
 	stretchBlit( pSrc, WgRect(0, 0, pSrc->width(),pSrc->height()), dest, bTriLinear, mipmapBias );
 }
 
-void WgSoftGfxDevice::stretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
+void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
 {
 	float srcW = (float) src.w;
 	float srcH = (float) src.h;
@@ -1571,22 +1571,22 @@ void WgSoftGfxDevice::stretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, 
 
 //____ clipStretchBlit() _______________________________________________________
 
-void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear, float mipBias )
+void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, bool bTriLinear, float mipBias )
 {
 	clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
 }
 
-void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
+void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
 {
 	clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
 }
 
-void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
+void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
 {
 	clipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
 }
 
-void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
 {
 	if( m_bBilinearFiltering )
 	{
@@ -1631,7 +1631,7 @@ void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurfacePtr& p
 
 //____ stretchBlitSubPixel() ___________________________________________________
 
-void WgSoftGfxDevice::stretchBlitSubPixel( const WgSurfacePtr& _pSrcSurf, float sx, float sy, float sw, float sh,
+void WgSoftGfxDevice::stretchBlitSubPixel( const WgSurface_p& _pSrcSurf, float sx, float sy, float sw, float sh,
 						   		 float _dx, float _dy, float _dw, float _dh, bool bTriLinear, float mipBias )
 {
 	if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(WgSoftSurface::CLASSNAME) )

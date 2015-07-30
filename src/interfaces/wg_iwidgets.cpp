@@ -46,10 +46,10 @@ const char * WgIWidgets::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgIWidgetsPtr WgIWidgets::cast( const WgInterfacePtr& pInterface )
+WgIWidgets_p WgIWidgets::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgIWidgetsPtr( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
+		return WgIWidgets_p( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
 
 	return 0;
 }

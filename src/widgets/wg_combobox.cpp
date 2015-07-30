@@ -82,10 +82,10 @@ const char * WgCombobox::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgComboboxPtr WgCombobox::cast( const WgObjectPtr& pObject )
+WgCombobox_p WgCombobox::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgComboboxPtr( static_cast<WgCombobox*>(pObject.rawPtr()) );
+		return WgCombobox_p( static_cast<WgCombobox*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -109,7 +109,7 @@ WgSize WgCombobox::preferredSize() const
 
 //____ SetMenu() ______________________________________________________________
 
-void WgCombobox::SetMenu( const WgMenuPtr& pMenu )
+void WgCombobox::SetMenu( const WgMenu_p& pMenu )
 {
 	if( pMenu == m_pMenu )
 		return;
@@ -121,7 +121,7 @@ void WgCombobox::SetMenu( const WgMenuPtr& pMenu )
 
 //____ Menu() __________________________________________________________
 
-WgMenuPtr WgCombobox::Menu() const
+WgMenu_p WgCombobox::Menu() const
 {
 	return m_pMenu;
 }
@@ -220,7 +220,7 @@ void WgCombobox::_closeMenu()
 
 //____ _onMsg() _____________________________________________________________
 
-void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
+void WgCombobox::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgState oldState = m_state;
 
@@ -270,7 +270,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
 			WgCoord pos = pMsg->pointerPos() - globalPos();
 
 			if( pMsg->button() == WG_BUTTON_LEFT )
@@ -339,7 +339,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.isFocused() && m_bPressInInputRect )
@@ -362,7 +362,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
 			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.isFocused() )
@@ -382,7 +382,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_WHEEL_ROLL:
 		{		
-			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::cast(_pMsg);
+			WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
 			if( !m_state.isFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
 			{
 				WgMenuItem * pItem = m_pSelectedItem;
@@ -423,7 +423,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_CHARACTER:
 		{
-			WgCharacterMsgPtr pMsg = WgCharacterMsg::cast(_pMsg);
+			WgCharacterMsg_p pMsg = WgCharacterMsg::cast(_pMsg);
 			if( _isEditable() && m_state.isFocused() )
 			{
 
@@ -444,7 +444,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_KEY_RELEASE:
 			if( m_state.isFocused() )
 			{
-				WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::cast(_pMsg);
+				WgKeyReleaseMsg_p pMsg = WgKeyReleaseMsg::cast(_pMsg);
 				switch( pMsg->translatedKeyCode() )
 				{
 					case WG_KEY_SHIFT:
@@ -459,7 +459,7 @@ void WgCombobox::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_KEY_PRESS:
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyMsgPtr pMsg = WgKeyMsg::cast(_pMsg);
+			WgKeyMsg_p pMsg = WgKeyMsg::cast(_pMsg);
 
 			if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE && m_state.isPressed() )
 			{
@@ -609,7 +609,7 @@ void WgCombobox::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgCombobox::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgCombobox::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.setColorSkin(pNewSkin);
@@ -680,7 +680,7 @@ void WgCombobox::_adjustViewOfs()
 
 	if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 	{
-		WgCaretPtr pCursor = WgTextTool::getCursor( &m_text );
+		WgCaret_p pCursor = WgTextTool::getCursor( &m_text );
 		if( !pCursor )
 			return;
 
@@ -768,7 +768,7 @@ void WgCombobox::_entrySelected( int itemId )
 		int ofs = buff.findFirst( "%1" );
 		if( ofs >= 0 )
 		{
-			WgTextpropPtr pProp = buff[ofs].getProperties();
+			WgTextprop_p pProp = buff[ofs].getProperties();
 
 			const WgChar * pEntry = ((WgMenuEntry*)pItem)->getText().chars();
 			Uint32 len = WgTextTool::strlen( pEntry );

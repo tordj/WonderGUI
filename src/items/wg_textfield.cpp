@@ -95,7 +95,7 @@ int WgTextField::remove( int ofs, int len )
 
 //____ getMarkedLink() _________________________________________________________
 
-WgTextLinkPtr WgTextField::getMarkedLink() const
+WgTextLink_p WgTextField::getMarkedLink() const
 {
 	//TODO: Implement!
 }

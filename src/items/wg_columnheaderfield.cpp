@@ -31,7 +31,7 @@ WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgFie
 
 //____ setSkin() ______________________________________________________
 
-void WgColumnHeaderField::setSkin( const WgSkinPtr& pSkin )
+void WgColumnHeaderField::setSkin( const WgSkin_p& pSkin )
 {
 	if( pSkin != m_pSkin )
 	{

@@ -67,7 +67,7 @@ public:
 
 	inline int			length() const { return m_charBuffer.length(); }
 	inline bool			isEmpty() const { return length()==0?true:false; }
-	WgTextLinkPtr		getMarkedLink() const;
+	WgTextLink_p		getMarkedLink() const;
 
 protected:
 

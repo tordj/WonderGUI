@@ -39,10 +39,10 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
-void 			translateEvents( WgMsgRouterPtr pMsgRouter );
+void 			translateEvents( WgMsgRouter_p pMsgRouter );
 WgMouseButton 	translateMouseButton( Uint8 button );
-void 			updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow );
-void 			myButtonClickCallback( const WgMsgPtr& pMsg );
+void 			updateWindowRects( WgRootPanel_p pRoot, SDL_Window * pWindow );
+void 			myButtonClickCallback( const WgMsg_p& pMsg );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
@@ -79,18 +79,18 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
+	WgSoftSurface_p pCanvas = WgSoftSurface::create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
 
-	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::create( pCanvas );
+	WgSoftGfxDevice_p pGfxDevice = WgSoftGfxDevice::create( pCanvas );
 
 	// We create a RootPanel. This is responsible for rendering the
 	// tree of child widgets connected to it and handle their events.
 	// We provide it the GfxDevice to use for rendering.
 
-	WgRootPanelPtr pRoot = WgRootPanel::create( pGfxDevice );
+	WgRootPanel_p pRoot = WgRootPanel::create( pGfxDevice );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -101,13 +101,13 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	WgSoftSurfacePtr pButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	WgSoftSurface_p pButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel
 	// provides simple and powerful ways to layout multiple children.
 
-	WgFlexPanelPtr pFlexPanel = WgFlexPanel::create();
+	WgFlexPanel_p pFlexPanel = WgFlexPanel::create();
 	pRoot->setWidget(pFlexPanel);
 
 	// Now we create the background using the simplest widget
@@ -115,7 +115,7 @@ int main ( int argc, char** argv )
 	// it stretch from the north-west to the south-east corners
 	// of the FlexPanel.
 
-	WgFillerPtr pBackground = WgFiller::create();
+	WgFiller_p pBackground = WgFiller::create();
 	pBackground->setSkin( WgColorSkin::create(WgColor::aqua) );
 	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
 
@@ -129,7 +129,7 @@ int main ( int argc, char** argv )
 	// When adding it to the FlexPanel we specify its geometry in
 	// pixels and that it should be centered.
 
-	WgButtonPtr pButton = WgButton::create();
+	WgButton_p pButton = WgButton::create();
 	pButton->setSkin( WgBlockSkin::createClickableFromSurface( pButtonSurface, 0, WgBorder(3) ) );
 	pFlexPanel->addWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
 
@@ -175,7 +175,7 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents( WgMsgRouterPtr pMsgRouter )
+void translateEvents( WgMsgRouter_p pMsgRouter )
 {
 	// WonderGUI needs Tick-messages to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
@@ -252,7 +252,7 @@ WgMouseButton translateMouseButton( Uint8 button )
 //
 // Updates the rectangles of the SDL Window that WonderGUI has modified.
 //
-void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
+void updateWindowRects( WgRootPanel_p pRoot, SDL_Window * pWindow )
 {	
 	int nRects = pRoot->nbUpdatedRects();
 	if( nRects == 0 )
@@ -276,7 +276,7 @@ void updateWindowRects( WgRootPanelPtr pRoot, SDL_Window * pWindow )
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgMsgPtr& pMsg )
+void myButtonClickCallback( const WgMsg_p& pMsg )
 {
 	bQuit = true;
 }

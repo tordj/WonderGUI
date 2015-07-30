@@ -59,10 +59,10 @@ const char * WgFiller::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgFillerPtr WgFiller::cast( const WgObjectPtr& pObject )
+WgFiller_p WgFiller::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgFillerPtr( static_cast<WgFiller*>(pObject.rawPtr()) );
+		return WgFiller_p( static_cast<WgFiller*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -84,10 +84,10 @@ const char * WgFpsDisplay::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgFpsDisplayPtr WgFpsDisplay::cast( const WgObjectPtr& pObject )
+WgFpsDisplay_p WgFpsDisplay::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgFpsDisplayPtr( static_cast<WgFpsDisplay*>(pObject.rawPtr()) );
+		return WgFpsDisplay_p( static_cast<WgFpsDisplay*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -95,7 +95,7 @@ WgFpsDisplayPtr WgFpsDisplay::cast( const WgObjectPtr& pObject )
 
 //____ SetTextProperties() ____________________________________________________
 
-void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
+void WgFpsDisplay::SetTextProperties( const WgTextprop_p& pProp )
 {
 	m_labelsText.setProperties(pProp);
 	m_valuesText.setProperties(pProp);
@@ -143,7 +143,7 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
 //____ _onMsg() _____________________________________________________________
 
-void WgFpsDisplay::_onMsg( const WgMsgPtr& pMsg )
+void WgFpsDisplay::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 
@@ -234,7 +234,7 @@ void WgFpsDisplay::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgFpsDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgFpsDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_labelsText.setColorSkin(pNewSkin);

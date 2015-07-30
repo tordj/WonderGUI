@@ -57,8 +57,8 @@ class WgString;
 class WgCharBuffer;
 
 class WgLegacyText;
-typedef	WgIStrongPtr<WgLegacyText,WgInterfacePtr>		WgLegacyTextPtr;
-typedef	WgIWeakPtr<WgLegacyText,WgInterfaceWeakPtr>	WgLegacyTextWeakPtr;
+typedef	WgIStrongPtr<WgLegacyText,WgInterface_p>		WgLegacyText_p;
+typedef	WgIWeakPtr<WgLegacyText,WgInterface_wp>	WgLegacyText_wp;
 
 /**
  * @brief Interface to a basic text field.
@@ -79,20 +79,20 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgLegacyTextPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgLegacyTextPtr		ptr() { return WgLegacyTextPtr(_object(),this); }
+	static WgLegacyText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgLegacyText_p		ptr() { return WgLegacyText_p(_object(),this); }
 
-	inline void				setProperties( const WgTextpropPtr& pProp ) { m_pField->setProperties(pProp); }
+	inline void				setProperties( const WgTextprop_p& pProp ) { m_pField->setProperties(pProp); }
 	inline void				clearProperties() { m_pField->clearProperties(); }
-	inline WgTextpropPtr	properties() const { return m_pField->properties(); }
+	inline WgTextprop_p	properties() const { return m_pField->properties(); }
 
-	inline void				setSelectionProperties( const WgTextpropPtr& pProp ) { m_pField->setSelectionProperties(pProp); }
+	inline void				setSelectionProperties( const WgTextprop_p& pProp ) { m_pField->setSelectionProperties(pProp); }
 	inline void				clearSelectionProperties() { m_pField->clearSelectionProperties(); }
-	inline WgTextpropPtr	selectionProperties() const { return m_pField->selectionProperties(); }
+	inline WgTextprop_p	selectionProperties() const { return m_pField->selectionProperties(); }
 
-	inline void				setLinkProperties( const WgTextpropPtr& pProp ) { m_pField->setLinkProperties(pProp); }
+	inline void				setLinkProperties( const WgTextprop_p& pProp ) { m_pField->setLinkProperties(pProp); }
 	inline void				clearLinkProperties() { m_pField->clearLinkProperties(); }
-	inline WgTextpropPtr	linkProperties() const { return m_pField->linkProperties(); }
+	inline WgTextprop_p	linkProperties() const { return m_pField->linkProperties(); }
 
 	inline void				setAlignment( WgOrigo alignment ) { m_pField->setAlignment(alignment); }
 	inline WgOrigo			alignment() const { return m_pField->alignment(); }

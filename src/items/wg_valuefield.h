@@ -45,9 +45,9 @@ class WgValueField : public WgPresentableField
 public:
 	WgValueField(WgValueHolder * pHolder);
 
-	void				setFormatter( const WgValueFormatterPtr& pFormatter );
+	void				setFormatter( const WgValueFormatter_p& pFormatter );
 	void				clearFormatter();
-	inline WgValueFormatterPtr	formatter() const { return m_pFormatter; }
+	inline WgValueFormatter_p	formatter() const { return m_pFormatter; }
 
 	virtual void		clear();
 	virtual bool		set( Sint64 value, int scale );
@@ -62,7 +62,7 @@ protected:
 	Sint64					m_value;
 	int						m_scale;
 	
-	WgValueFormatterPtr		m_pFormatter;
+	WgValueFormatter_p		m_pFormatter;
 };
 
 

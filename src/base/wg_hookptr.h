@@ -25,28 +25,28 @@
 
 class WgHook;
 
-class WgHookPtrHub
+class WgHook_pHub
 {
 public:
 	int				refCnt;
 	WgHook *		pObj;
 };
 
-class WgHookPtr
+class WgHook_p
 {
 public:
-	WgHookPtr() : m_pHub(0) {}
-	WgHookPtr( WgHook * pObj );
-	WgHookPtr(const WgHookPtr& r)
+	WgHook_p() : m_pHub(0) {}
+	WgHook_p( WgHook * pObj );
+	WgHook_p(const WgHook_p& r)
 	{
 		m_pHub = r.m_pHub;
 		if( m_pHub )
 			m_pHub->refCnt++;
 	}
 
-	~WgHookPtr();
+	~WgHook_p();
 
-    inline WgHookPtr& operator=( WgHookPtr const & r)
+    inline WgHook_p& operator=( WgHook_p const & r)
 	{
 		copy( r );
 		return *this;
@@ -56,12 +56,12 @@ public:
 	inline WgHook * operator->() const { return rawPtr(); }
 
 	//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
-	inline bool operator==(const WgHookPtr& other) const { return m_pHub == other.m_pHub; }
-	inline bool operator!=(const WgHookPtr& other) const { return m_pHub != other.m_pHub; }
-	inline bool operator<(const WgHookPtr& other) const { return m_pHub < other.m_pHub ? true : false; }
-	inline bool operator>(const WgHookPtr& other) const { return m_pHub > other.m_pHub ? true : false; }
-	inline bool operator<=(const WgHookPtr& other) const { return m_pHub <= other.m_pHub ? true : false; }
-	inline bool operator>=(const WgHookPtr& other) const { return m_pHub >= other.m_pHub ? true : false; }
+	inline bool operator==(const WgHook_p& other) const { return m_pHub == other.m_pHub; }
+	inline bool operator!=(const WgHook_p& other) const { return m_pHub != other.m_pHub; }
+	inline bool operator<(const WgHook_p& other) const { return m_pHub < other.m_pHub ? true : false; }
+	inline bool operator>(const WgHook_p& other) const { return m_pHub > other.m_pHub ? true : false; }
+	inline bool operator<=(const WgHook_p& other) const { return m_pHub <= other.m_pHub ? true : false; }
+	inline bool operator>=(const WgHook_p& other) const { return m_pHub >= other.m_pHub ? true : false; }
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
@@ -73,12 +73,12 @@ public:
 			return 0;
 	}
 
-	void copy( WgHookPtr const & r );
+	void copy( WgHook_p const & r );
 
 
 
 protected:
-	WgHookPtrHub *		m_pHub;
+	WgHook_pHub *		m_pHub;
 
 };
 

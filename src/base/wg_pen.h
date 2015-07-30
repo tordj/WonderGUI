@@ -64,7 +64,7 @@ public:
 
 	bool					setAttributes( const WgTextAttr& attr );
 	bool					setSize( int size );
-	void					setFont( const WgFontPtr& pFont );
+	void					setFont( const WgFont_p& pFont );
 	void					setStyle( WgFontAlt style );
 	void					setColor( WgColor color );
 //	void					setCharVisibility( int visibilityFlags );		// We need something better here...
@@ -88,7 +88,7 @@ public:
 	inline void				advancePosMonospaced() { m_pos.x += m_pGlyphs->getMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
 	void					advancePosCursor( const WgCaretInstance& instance );
 
-	inline WgGlyphPtr		getGlyph() const { return m_pGlyph; }
+	inline WgGlyph_p		getGlyph() const { return m_pGlyph; }
 	inline WgCoord			getPos() const { return m_pos; }
 	inline int				getPosX() const { return m_pos.x; }
 	inline int				getPosY() const { return m_pos.y; }
@@ -100,11 +100,11 @@ public:
 	inline const WgRect&	getClipRect() const { return m_clipRect; }
 	inline bool				hasClipRect() const { return m_bClip; }
 
-	inline WgFontPtr		getFont() const { return m_pFont; }
+	inline WgFont_p		getFont() const { return m_pFont; }
 	inline int				getSize() const { return m_size; }
 	inline WgFontAlt		getStyle() const { return m_style; }
 	inline WgColor			getColor() const { return m_color; }
-	inline WgGlyphsetPtr	getGlyphset() const { return m_pGlyphs; }
+	inline WgGlyphset_p	getGlyphset() const { return m_pGlyphs; }
 
 
 	inline int				getLineSpacing() const { return m_pGlyphs->getLineSpacing(m_size); }
@@ -132,12 +132,12 @@ private:
 
 	//
 
-	WgGlyphsetPtr	m_pGlyphs;			// Pointer at our glyphs.
+	WgGlyphset_p	m_pGlyphs;			// Pointer at our glyphs.
 
-	WgGlyphPtr		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
-	WgGlyphPtr		m_pGlyph;		// Current glyph.
+	WgGlyph_p		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
+	WgGlyph_p		m_pGlyph;		// Current glyph.
 
-	WgFontPtr		m_pFont;		// Pointer back to the font.
+	WgFont_p		m_pFont;		// Pointer back to the font.
 	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
 	WgFontAlt		m_style;		// Style of glyphset we requested.

@@ -40,29 +40,29 @@ class WgRectLink;
 class WgRootPanel;
 
 class WgReceiver;
-typedef WgStrongPtr<WgReceiver,WgObjectPtr>	WgReceiverPtr;
-typedef WgWeakPtr<WgReceiver,WgObjectWeakPtr>	WgReceiverWeakPtr;
+typedef WgStrongPtr<WgReceiver,WgObject_p>	WgReceiver_p;
+typedef WgWeakPtr<WgReceiver,WgObject_wp>	WgReceiver_wp;
 
 
 class WgWidget;
-typedef WgStrongPtr<WgWidget,WgReceiverPtr>	WgWidgetPtr;
-typedef WgWeakPtr<WgWidget,WgReceiverWeakPtr>	WgWidgetWeakPtr;
+typedef WgStrongPtr<WgWidget,WgReceiver_p>	WgWidget_p;
+typedef WgWeakPtr<WgWidget,WgReceiver_wp>	WgWidget_wp;
 
 class WgContainer;
-typedef	WgStrongPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
-typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgStrongPtr<WgContainer,WgWidget_p>		WgContainer_p;
+typedef	WgWeakPtr<WgContainer,WgWidget_wp>		WgContainer_wp;
 
 class WgRootPanel;
-typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>		WgRootPanelWeakPtr;
+typedef	WgStrongPtr<WgRootPanel,WgObject_p>		WgRootPanel_p;
+typedef	WgWeakPtr<WgRootPanel,WgObject_wp>		WgRootPanel_wp;
 
 class WgMsgRouter;
-typedef	WgStrongPtr<WgMsgRouter,WgObjectPtr>		WgMsgRouterPtr;
-typedef	WgWeakPtr<WgMsgRouter,WgObjectWeakPtr>	WgMsgRouterWeakPtr;
+typedef	WgStrongPtr<WgMsgRouter,WgObject_p>		WgMsgRouter_p;
+typedef	WgWeakPtr<WgMsgRouter,WgObject_wp>	WgMsgRouter_wp;
 
 class WgIWidgets;
-typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
-typedef	WgIWeakPtr<WgIWidgets,WgInterfaceWeakPtr>	WgIWidgetsWeakPtr;
+typedef	WgIStrongPtr<WgIWidgets,WgInterface_p>		WgIWidgets_p;
+typedef	WgIWeakPtr<WgIWidgets,WgInterface_wp>	WgIWidgets_wp;
 
 
 class WgHook
@@ -72,14 +72,14 @@ class WgHook
 	friend class WgPanel;
 	friend class WgContainer;
 	friend class WgVectorPanel;
-	friend class WgHookPtr;
+	friend class WgHook_p;
 	friend class WgModalLayer;
 
 public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgHookPtr		cast( const WgHookPtr& pInterface );				// Provided just for completeness sake.
+	static WgHook_p		cast( const WgHook_p& pInterface );				// Provided just for completeness sake.
 
 	virtual WgCoord			pos() const = 0;							///< Get the local position of the widget.
 	virtual WgSize			size() const = 0;							///< Get the size of the widget.
@@ -87,14 +87,14 @@ public:
 	virtual WgCoord			globalPos() const = 0;
 	virtual WgRect			globalGeo() const = 0;
 
-	WgHookPtr			prev() const { return _prevHook(); }
-	WgHookPtr			next() const { return _nextHook(); }
+	WgHook_p			prev() const { return _prevHook(); }
+	WgHook_p			next() const { return _nextHook(); }
 
-	WgWidgetPtr			widget() const;
-	WgContainerPtr 		parent() const;
+	WgWidget_p			widget() const;
+	WgContainer_p 		parent() const;
 
-	WgRootPanelPtr		root() const;
-	WgMsgRouterPtr	msgRouter() const;
+	WgRootPanel_p		root() const;
+	WgMsgRouter_p	msgRouter() const;
 
 protected:
 
@@ -126,7 +126,7 @@ protected:
 	virtual bool		_isVisible() const;
 
 	WgWidget *		m_pWidget;
-	WgHookPtrHub *	m_pPtrHub;
+	WgHook_pHub *	m_pPtrHub;
 };
 
 #endif //WG_HOOK_DOT_H

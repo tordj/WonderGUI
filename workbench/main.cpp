@@ -22,19 +22,19 @@ extern std::ostream cout;
 
 SDL_Surface *	initSDL( int w, int h );
 bool			eventLoop( const WgEventHandlerPtr& pHandler );
-WgRootPanelPtr	setupGUI( const WgGfxDevicePtr& pDevice );
+WgRootPanel_p	setupGUI( const WgGfxDevice_p& pDevice );
 void			printWidgetSizes();
 
-void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
-void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void cbInitDrag( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
+void cbDragWidget( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
 
-void cbOpenModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
-void cbCloseModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void cbOpenModal( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
+void cbCloseModal( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
 
-void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler );
-void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
-void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
-void cbAddEntryText( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget );
+void addResizablePanel( const WgFlexPanel_p& pParent, const WgWidget_p& pChild, const WgEventHandlerPtr& pEventHandler );
+void cbResize( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
+void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
+void cbAddEntryText( const WgEventPtr& _pEvent, const WgObject_p& pWidget );
 
 WgModalLayer * g_pModal = 0;
 
@@ -64,8 +64,8 @@ int main ( int argc, char** argv )
 
 	// Setup gfxdevice and gui
 
-	WgSoftSurfacePtr pCanvas = WgSoftSurface::create( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch, 0 );
-	WgSoftGfxDevicePtr pGfxDevice = WgSoftGfxDevice::create( pCanvas );
+	WgSoftSurface_p pCanvas = WgSoftSurface::create( WgSize(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch, 0 );
+	WgSoftGfxDevice_p pGfxDevice = WgSoftGfxDevice::create( pCanvas );
 	pGfxDevice->setBilinearFiltering( true );
 
 	// Load TTF-font
@@ -76,25 +76,25 @@ int main ( int argc, char** argv )
 
 	int size = fileSize( ttfname );
 	char * pFontFile = (char*) loadFile( ttfname );
-	WgVectorGlyphsPtr pGlyphs = WgVectorGlyphs::create( pFontFile , size, 0 );
+	WgVectorGlyphs_p pGlyphs = WgVectorGlyphs::create( pFontFile , size, 0 );
 
-	WgFontPtr pFont = WgFont::create();
+	WgFont_p pFont = WgFont::create();
 	pFont->setDefaultVectorGlyphs( pGlyphs );
 */
 	// Load bitmap font
 
-	WgFontPtr pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSoftSurfaceFactory::create() );
+	WgFont_p pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", WgSoftSurfaceFactory::create() );
 
 	// Load and setup cursor
 
-	WgSurfacePtr pCursorImg = sdl_wglib::loadSurface("../resources/cursors.png", WgSoftSurfaceFactory::create() );
+	WgSurface_p pCursorImg = sdl_wglib::loadSurface("../resources/cursors.png", WgSoftSurfaceFactory::create() );
 
-	WgGfxAnimPtr pCursorEOL = WgGfxAnim::create();
+	WgGfxAnim_p pCursorEOL = WgGfxAnim::create();
 	pCursorEOL->setSize( WgSize(8,8) );
 	pCursorEOL->addFrames(pCursorImg, WgCoord(0,0), WgSize(2,1), 200 );
 	pCursorEOL->setPlayMode( WG_FORWARD_LOOPING );
 
-	WgGfxAnimPtr pCursorINS = WgGfxAnim::create();
+	WgGfxAnim_p pCursorINS = WgGfxAnim::create();
 	pCursorINS->setSize( WgSize(8,8) );
 	pCursorINS->addFrames( pCursorImg, WgCoord(0,8), WgSize(2,1), 200 );
 	pCursorINS->setPlayMode( WG_FORWARD_LOOPING );
@@ -120,7 +120,7 @@ int main ( int argc, char** argv )
 	WgBase::setDefaultTextprop( prop.register() );
 
 
-	WgRootPanelPtr pRoot = setupGUI( pGfxDevice );
+	WgRootPanel_p pRoot = setupGUI( pGfxDevice );
 
 	pRoot->findWidget( WgCoord(10,10), WG_SEARCH_ACTION_TARGET );
 
@@ -242,13 +242,13 @@ int sortWidgetId( const WgWidget * p1, const WgWidget * p2 )
 
 //____ setupGUI() ______________________________________________________________
 
-WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
+WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 {
-	WgResDBPtr pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSoftSurfaceFactory::create() );
+	WgResDB_p pDB = sdl_wglib::LoadStdWidgets( "../resources/blocks.png", WgSoftSurfaceFactory::create() );
 	if( !pDB )
 		return 0;
 
-	WgRootPanelPtr pRoot = WgRootPanel::create( pDevice );
+	WgRootPanel_p pRoot = WgRootPanel::create( pDevice );
 
 	WgEventHandlerPtr pEventHandler = pRoot->EventHandler();
 
@@ -263,30 +263,30 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 
 	// Load images
 
-	WgSoftSurfaceFactoryPtr pFactory = WgSoftSurfaceFactory::create();
+	WgSoftSurfaceFactory_p pFactory = WgSoftSurfaceFactory::create();
 
-	WgSurfacePtr pBackImg = sdl_wglib::loadSurface("../resources/What-Goes-Up-3.bmp", pFactory );
+	WgSurface_p pBackImg = sdl_wglib::loadSurface("../resources/What-Goes-Up-3.bmp", pFactory );
 
-	WgSurfacePtr pFlagImg = sdl_wglib::loadSurface("cb2.bmp", pFactory );
+	WgSurface_p pFlagImg = sdl_wglib::loadSurface("cb2.bmp", pFactory );
 
-	WgSurfacePtr pSplashImg = sdl_wglib::loadSurface("../resources/splash.png", pFactory );
+	WgSurface_p pSplashImg = sdl_wglib::loadSurface("../resources/splash.png", pFactory );
 
-	WgSurfacePtr pBigImg = sdl_wglib::loadSurface("../resources/frog.jpg", pFactory );
+	WgSurface_p pBigImg = sdl_wglib::loadSurface("../resources/frog.jpg", pFactory );
 
 	// MenuPanel
 
-	WgPopupLayerPtr pPopupLayer = WgPopupLayer::create();
+	WgPopupLayer_p pPopupLayer = WgPopupLayer::create();
 	pRoot->setWidget( pPopupLayer );
 
 	// Bottom Flex
 
-	WgFlexPanelPtr pBottom = WgFlexPanel::create();
+	WgFlexPanel_p pBottom = WgFlexPanel::create();
 	pPopupLayer->setBaseWidget( pBottom );
 	pBottom->setSkin( WgColorSkin::create( WgColor::black ) );
 
 	// Main Flex
 
-	WgFlexPanelPtr pFlex = WgFlexPanel::create();
+	WgFlexPanel_p pFlex = WgFlexPanel::create();
 	pBottom->addWidget( pFlex, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord(), WgBorders(10) );
 
 	// Background
@@ -296,7 +296,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	WgFlexHook * pHook = pFlex->addWidget( pBackground );
 //	pHook->SetAnchored( WG_NORTHWEST, WG_SOUTHEAST );
 
-	WgBlockSkinPtr pBgSkin = WgBlockSkin::create();
+	WgBlockSkin_p pBgSkin = WgBlockSkin::create();
 	pBgSkin->setSurface(pBackImg);
 	pBgSkin->setBlockGeo( pBackImg->size() );
 	pBgSkin->setStateBlock( WG_STATE_NORMAL, WgCoord(0,0) );
@@ -376,8 +376,8 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	// Test PackList
 
 	{
-		WgPackListPtr pList = WgPackList::create();
-		WgSkinPtr pPlate = pDB->getSkin("plate");
+		WgPackList_p pList = WgPackList::create();
+		WgSkin_p pPlate = pDB->getSkin("plate");
 
 		pList->setSkin( pPlate );
 		pList->setEntrySkin( pDB->getSkin("listentry"));
@@ -395,12 +395,12 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		for( int i = 0 ; i < 20 ; i++ )
 		{
 			int id = rand() % 100;
-/*			WgPackPanelPtr pEntry = WgPackPanel::create();
+/*			WgPackPanel_p pEntry = WgPackPanel::create();
 			pEntry->setId(id);
 */
 
 
-			WgTextDisplayPtr pLabel = WgTextDisplay::create();
+			WgTextDisplay_p pLabel = WgTextDisplay::create();
 			char str[40];
 			sprintf( str, "ENTRY %d", id );
 			pLabel->text()->set( str );
@@ -410,7 +410,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 			pLabel->setId(id);
 /*			pEntry->addWidget(pLabel);
 			
-			WgButtonPtr pButton = WgButton::cast(pDB->cloneWidget("button"));
+			WgButton_p pButton = WgButton::cast(pDB->cloneWidget("button"));
 			pButton->Label()->set( "PUSH" );
 			pEntry->addWidget(pButton);
 */
@@ -419,7 +419,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 		}
 
 
-		WgScrollPanelPtr pWindow = WgScrollPanel::cast(pDB->getWidget("view"));
+		WgScrollPanel_p pWindow = WgScrollPanel::cast(pDB->getWidget("view"));
 		pWindow->setContent( pList );
 //		pWindow->setContentSizePolicy( WgSizePolicy::WG_DEFAULT, WgSizePolicy::WG_BOUND );
 		pWindow->setContentSizePolicy( WgSizePolicy::WG_BOUND, WgSizePolicy::WG_DEFAULT );
@@ -427,17 +427,17 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //		pFlex->addWidget(pWindow, WgRect( 50,50,200,200) );
 		pFlex->addWidget(pWindow, WgCoord(50,50) );
 
-		WgPackPanelPtr pButtonPanel = WgPackPanel::create();
+		WgPackPanel_p pButtonPanel = WgPackPanel::create();
 		pButtonPanel->setOrientation( WG_VERTICAL );
 		pFlex->addWidget(pButtonPanel, WgCoord(300,50) );
 
 
-		WgButtonPtr pButton = WgButton::cast(pDB->cloneWidget("button"));
+		WgButton_p pButton = WgButton::cast(pDB->cloneWidget("button"));
 		pButton->Label()->set("ADD ENTRY PADDING");
 		pButtonPanel->addWidget(pButton );
 		pRoot->EventHandler()->AddCallback( WgEventFilter::select(), pButton, cbIncreaseEntryPadding, pList );
 
-		WgButtonPtr pButton2 = WgButton::cast(pDB->cloneWidget("button"));
+		WgButton_p pButton2 = WgButton::cast(pDB->cloneWidget("button"));
 		pButton2->Label()->set("ADD ENTRY");
 		pButtonPanel->addWidget(pButton2 );
 		pRoot->EventHandler()->AddCallback( WgEventFilter::select(), pButton2, cbAddEntryText, pList->firstWidget() );
@@ -447,32 +447,32 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	// Test menus and MenuPanel.
 /*
 	{
-		WgMenuPtr pSubMenu1_1 = WgMenu::cast(pDB->cloneWidget( "menu" ));
-		pSubMenu1_1->addItem( new WgMenuEntry( 1, WgString("ENTRY 11"), WgString("Help text for entry 11"), WgSkinPtr(), 0 ));
-		pSubMenu1_1->addItem( new WgMenuEntry( 2, WgString("ENTRY 12"), WgString("Help text for entry 12"), WgSkinPtr(), 0 ));
+		WgMenu_p pSubMenu1_1 = WgMenu::cast(pDB->cloneWidget( "menu" ));
+		pSubMenu1_1->addItem( new WgMenuEntry( 1, WgString("ENTRY 11"), WgString("Help text for entry 11"), WgSkin_p(), 0 ));
+		pSubMenu1_1->addItem( new WgMenuEntry( 2, WgString("ENTRY 12"), WgString("Help text for entry 12"), WgSkin_p(), 0 ));
 		
-		WgMenuPtr pSubMenu1 = WgMenu::cast(pDB->cloneWidget( "menu" ));
-		pSubMenu1->addItem( new WgMenuEntry( 3, WgString("ENTRY 7"), WgString("Help text for entry 7"), WgSkinPtr(), 0 ));
-		pSubMenu1->addItem( new WgMenuEntry( 4, WgString("ENTRY 8"), WgString("Help text for entry 8"), WgSkinPtr(), 0 ));
+		WgMenu_p pSubMenu1 = WgMenu::cast(pDB->cloneWidget( "menu" ));
+		pSubMenu1->addItem( new WgMenuEntry( 3, WgString("ENTRY 7"), WgString("Help text for entry 7"), WgSkin_p(), 0 ));
+		pSubMenu1->addItem( new WgMenuEntry( 4, WgString("ENTRY 8"), WgString("Help text for entry 8"), WgSkin_p(), 0 ));
 		pSubMenu1->addItem( new WgMenuSeparator() );
-		pSubMenu1->addItem( new WgMenuSubMenu( 5, WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgSkinPtr(), 0, pSubMenu1_1.GetRealPtr() ) );
+		pSubMenu1->addItem( new WgMenuSubMenu( 5, WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgSkin_p(), 0, pSubMenu1_1.GetRealPtr() ) );
 
-		WgMenuPtr pSubMenu2 = WgMenu::cast(pDB->cloneWidget( "menu" ));
-		pSubMenu2->addItem( new WgMenuEntry( 6, WgString("ENTRY 9"), WgString("Help text for entry 9"), WgSkinPtr(), 0 ));
+		WgMenu_p pSubMenu2 = WgMenu::cast(pDB->cloneWidget( "menu" ));
+		pSubMenu2->addItem( new WgMenuEntry( 6, WgString("ENTRY 9"), WgString("Help text for entry 9"), WgSkin_p(), 0 ));
 		pSubMenu2->addItem( new WgMenuSeparator() );
-		pSubMenu2->addItem( new WgMenuEntry( 7, WgString("ENTRY 10"), WgString("Help text for entry 10"), WgSkinPtr(), 0 ));
+		pSubMenu2->addItem( new WgMenuEntry( 7, WgString("ENTRY 10"), WgString("Help text for entry 10"), WgSkin_p(), 0 ));
 
-		WgMenuPtr pMenu = WgMenu::cast(pDB->cloneWidget( "menu" ));
-		pMenu->addItem( new WgMenuEntry( 8, WgString("ENTRY 1"), WgString("Help text for entry 1"), WgSkinPtr(), 0 ));
+		WgMenu_p pMenu = WgMenu::cast(pDB->cloneWidget( "menu" ));
+		pMenu->addItem( new WgMenuEntry( 8, WgString("ENTRY 1"), WgString("Help text for entry 1"), WgSkin_p(), 0 ));
 		pMenu->addItem( new WgMenuSeparator() );
-		pMenu->addItem( new WgMenuEntry( 9, WgString("ENTRY 2"), WgString("Help text for entry 2"), WgSkinPtr(), 0 ));
-		pMenu->addItem( new WgMenuEntry( 10, WgString("ENTRY 3"), WgString("Help text for entry 3"), WgSkinPtr(), 0 ));
-		pMenu->addItem( new WgMenuEntry( 11, WgString("ENTRY 4"), WgString("Help text for entry 4"), WgSkinPtr(), 0 ));
-		pMenu->addItem( new WgMenuEntry( 12, WgString("ENTRY 5"), WgString("Help text for entry 5"), WgSkinPtr(), 0 ));
-		pMenu->addItem( new WgMenuEntry( 13, WgString("ENTRY 6"), WgString("Help text for entry 6"), WgSkinPtr(), 0 ));
+		pMenu->addItem( new WgMenuEntry( 9, WgString("ENTRY 2"), WgString("Help text for entry 2"), WgSkin_p(), 0 ));
+		pMenu->addItem( new WgMenuEntry( 10, WgString("ENTRY 3"), WgString("Help text for entry 3"), WgSkin_p(), 0 ));
+		pMenu->addItem( new WgMenuEntry( 11, WgString("ENTRY 4"), WgString("Help text for entry 4"), WgSkin_p(), 0 ));
+		pMenu->addItem( new WgMenuEntry( 12, WgString("ENTRY 5"), WgString("Help text for entry 5"), WgSkin_p(), 0 ));
+		pMenu->addItem( new WgMenuEntry( 13, WgString("ENTRY 6"), WgString("Help text for entry 6"), WgSkin_p(), 0 ));
 
-		pMenu->addItem( new WgMenuSubMenu( 14, WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgSkinPtr(), 0, pSubMenu1.GetRealPtr() ) );
-		pMenu->addItem( new WgMenuSubMenu( 15, WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgSkinPtr(), 0, pSubMenu2.GetRealPtr() ) );
+		pMenu->addItem( new WgMenuSubMenu( 14, WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgSkin_p(), 0, pSubMenu1.GetRealPtr() ) );
+		pMenu->addItem( new WgMenuSubMenu( 15, WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgSkin_p(), 0, pSubMenu2.GetRealPtr() ) );
 
 		pFlex->addWidget(pMenu);
 
@@ -626,7 +626,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 	//
 */
 
-//	WgPackPanelPtr pVBox = WgPackPanel::create();
+//	WgPackPanel_p pVBox = WgPackPanel::create();
 //	pVBox->setOrientation( WG_VERTICAL );
 //	pFlex->addWidget( pVBox, WgCoord(50,50), WG_NORTHWEST );
 
@@ -636,7 +636,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	WgImage * pFlag4= new WgImage();
 //	pFlag4->SetSource( pFlagBlock );
 
-//	WgButtonPtr pButton2 = WgButton::cast(pDB->cloneWidget( "button" ));
+//	WgButton_p pButton2 = WgButton::cast(pDB->cloneWidget( "button" ));
 //	pButton2->Label()->set( "BUTTON TEXT" );
 //	pVBox->addWidget(pButton2);
 
@@ -656,7 +656,7 @@ WgRootPanelPtr setupGUI( const WgGfxDevicePtr& pDevice )
 //	pText1->setEditMode(WG_TEXT_EDITABLE);
 //	pVBox->addWidget(pText1);
 
-//	WgTextDisplayPtr pText2 = WgTextDisplay::create();
+//	WgTextDisplay_p pText2 = WgTextDisplay::create();
 //	pText2->text()->set("TEXTB234ABC sajfas kjfaljsras kjasdfkasd kajfd fkajfa fkdjfa dfasfda asdkfj Hej");
 //	pText2->setEditMode(WG_TEXT_EDITABLE);
 //	pVBox->addWidget(pText2);
@@ -743,7 +743,7 @@ WgCoord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
+void cbInitDrag( const WgEventPtr& _pEvent, const WgObject_p& pWidget )
 {
 	WgFlexHook * pHook = static_cast<WgFlexHook*>(WgWidget::cast(pWidget)->hook().GetRealPtr());
 
@@ -754,9 +754,9 @@ void cbInitDrag( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 
 //____ cbDragWidget() __________________________________________________________
 
-void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
+void cbDragWidget( const WgEventPtr& _pEvent, const WgObject_p& pObject )
 {
-	WgWidgetPtr pWidget = WgWidget::cast(pObject);
+	WgWidget_p pWidget = WgWidget::cast(pObject);
 
 	if( _pEvent->type() != WG_EVENT_MOUSE_DRAG || !pWidget->parent() )
 		return;
@@ -776,21 +776,21 @@ void cbDragWidget( const WgEventPtr& _pEvent, const WgObjectPtr& pObject )
 
 //____ cbOpenModal() __________________________________________________________
 
-void cbOpenModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
+void cbOpenModal( const WgEventPtr& _pEvent, const WgObject_p& pWidget )
 {
 	g_pModal->addModalWidget( WgWidget::cast(pWidget), WgCoord(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
 
-void cbCloseModal( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
+void cbCloseModal( const WgEventPtr& _pEvent, const WgObject_p& pWidget )
 {
 	g_pModal->removeWidget( WgWidget::cast(pWidget));
 }
 
 //____ cbResizeWidget() _________________________________________________________
 
-void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
+void cbResize( const WgEventPtr& _pEvent, const WgObject_p& pWidget )
 {
 	WgFlexHook * pHook =   static_cast<WgFlexHook*>( WgWidget::cast(pWidget)->hook().GetRealPtr() );
 	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::cast(_pEvent);
@@ -802,11 +802,11 @@ void cbResize( const WgEventPtr& _pEvent, const WgObjectPtr& pWidget )
 
 //____ cbIncreaseEntryPadding() _________________________________________________________
 
-void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObjectPtr& _pWidget )
+void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObject_p& _pWidget )
 {
-	WgWidgetPtr pWidget = WgWidget::cast(_pWidget);
+	WgWidget_p pWidget = WgWidget::cast(_pWidget);
 
-	WgExtendedSkinPtr pSkin = WgExtendedSkin::cast(pWidget->skin());
+	WgExtendedSkin_p pSkin = WgExtendedSkin::cast(pWidget->skin());
 		
 	WgRect contentRect = pSkin->contentRect(WgRect(0,0,100,100), WG_STATE_NORMAL );
 	WgBorders padding( contentRect.top(), 100 - contentRect.right(), 100 - contentRect.bottom(), contentRect.left() );
@@ -816,23 +816,23 @@ void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObjectPtr& _pWid
 	pSkin->setContentPadding(padding);
 	pWidget->Refresh();
 
-//	WgListPtr pList = WgList::cast(pWidget);
+//	WgList_p pList = WgList::cast(pWidget);
 //	pList->setEntrySkin(pSkin);
 
 }
 
 //____ cbAddEntryText() _________________________________________________________
 
-void cbAddEntryText( const WgEventPtr& _pEvent, const WgObjectPtr& _pWidget )
+void cbAddEntryText( const WgEventPtr& _pEvent, const WgObject_p& _pWidget )
 {
-	WgTextDisplayPtr pWidget = WgTextDisplay::cast(_pWidget);
+	WgTextDisplay_p pWidget = WgTextDisplay::cast(_pWidget);
 	pWidget->text()->append("**** **** **** **** **** **** ****");
 }
 
 
 //____ addResizablePanel() _________________________________________________
 
-void addResizablePanel( const WgFlexPanelPtr& pParent, const WgWidgetPtr& pChild, const WgEventHandlerPtr& pEventHandler )
+void addResizablePanel( const WgFlexPanel_p& pParent, const WgWidget_p& pChild, const WgEventHandlerPtr& pEventHandler )
 {
 	pEventHandler->AddCallback( WgEventFilter::mouseDrag(WG_BUTTON_MIDDLE), pChild, cbResize, pChild );
 

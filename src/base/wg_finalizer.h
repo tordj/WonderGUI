@@ -29,18 +29,18 @@
 #endif
 
 class WgFinalizer;
-typedef	WgStrongPtr<WgFinalizer,WgObjectPtr>		WgFinalizerPtr;
-typedef	WgWeakPtr<WgFinalizer,WgObjectWeakPtr>	WgFinalizerWeakPtr;
+typedef	WgStrongPtr<WgFinalizer,WgObject_p>		WgFinalizer_p;
+typedef	WgWeakPtr<WgFinalizer,WgObject_wp>	WgFinalizer_wp;
 
 class WgFinalizer : public WgObject
 {
 public:
-	static WgFinalizerPtr	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
+	static WgFinalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFinalizerPtr	cast( const WgObjectPtr& pObject );
+	static WgFinalizer_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgFinalizer(void(*pCallback)(void*),void * pObject);

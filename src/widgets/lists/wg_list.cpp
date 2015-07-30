@@ -50,17 +50,17 @@ const char * WgListHook::className( void ) const
 
 //____ WgListHook::cast() __________________________________________________
 
-WgListHookPtr WgListHook::cast( const WgHookPtr& pHook )
+WgListHook_p WgListHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgListHookPtr( static_cast<WgListHook*>(pHook.rawPtr()) );
+		return WgListHook_p( static_cast<WgListHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 //____ WgListHook::parent() ___________________________________________________
 
-WgListPtr WgListHook::parent() const 
+WgList_p WgListHook::parent() const 
 { 
 	return static_cast<WgList*>(_parent()); 
 }
@@ -122,17 +122,17 @@ const char * WgList::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgListPtr WgList::cast( const WgObjectPtr& pObject )
+WgList_p WgList::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgListPtr( static_cast<WgList*>(pObject.rawPtr()) );
+		return WgList_p( static_cast<WgList*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ setEntrySkin() _________________________________________________________
 
-void WgList::setEntrySkin( const WgSkinPtr& pSkin )
+void WgList::setEntrySkin( const WgSkin_p& pSkin )
 {
 	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : WgSize();
 
@@ -143,7 +143,7 @@ void WgList::setEntrySkin( const WgSkinPtr& pSkin )
 	_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : WgSize() );
 }
 
-bool WgList::setEntrySkin( const WgSkinPtr& pOddEntrySkin, const WgSkinPtr& pEvenEntrySkin )
+bool WgList::setEntrySkin( const WgSkin_p& pOddEntrySkin, const WgSkin_p& pEvenEntrySkin )
 {
 	WgSize oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : WgSize();
 	WgSize padding[2];
@@ -180,14 +180,14 @@ bool WgList::setSelectMode( WgSelectMode mode )
 
 //____ setLassoSkin() _________________________________________________________
 
-void WgList::setLassoSkin( const WgSkinPtr& pSkin )
+void WgList::setLassoSkin( const WgSkin_p& pSkin )
 {
 	m_pLassoSkin = pSkin;
 }
 
 //____ _onMsg() _____________________________________________________________
 
-void WgList::_onMsg( const WgMsgPtr& _pMsg )
+void WgList::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgContainer::_onMsg(_pMsg);
 
@@ -227,7 +227,7 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
 			if( m_selectMode != WG_SELECT_NONE && pMsg->button() == WG_BUTTON_LEFT )
 			{
 				WgCoord ofs = ToLocal(pMsg->pointerPos());
@@ -330,7 +330,7 @@ void WgList::_onMsg( const WgMsgPtr& _pMsg )
 			break;
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 			if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->button() == WG_BUTTON_LEFT )
 			{
 				WgCoord ofs = _listArea().limit(ToLocal(pMsg->pointerPos()));
@@ -536,7 +536,7 @@ int WgList::_flipRange( WgListHook * pFirst, WgListHook * pLast, bool bPostMsg )
 //____ _renderHeader() ________________________________________________________
 
 void WgList::_renderHeader( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip, 
-									const WgSkinPtr& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
+									const WgSkin_p& pSkin, WgTextField * pText, WgIconField * pLabelIcon, 
 									WgIconField * pSortIcon, WgState state, bool bShowSortIcon, bool bInvertedSort )
 {
 	WgRect canvas( _canvas );

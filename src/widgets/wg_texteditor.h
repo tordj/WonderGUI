@@ -37,18 +37,18 @@
 #endif
 
 class WgTextEditor;
-typedef	WgStrongPtr<WgTextEditor,WgWidgetPtr>		WgTextEditorPtr;
-typedef	WgWeakPtr<WgTextEditor,WgWidgetWeakPtr>	WgTextEditorWeakPtr;
+typedef	WgStrongPtr<WgTextEditor,WgWidget_p>		WgTextEditor_p;
+typedef	WgWeakPtr<WgTextEditor,WgWidget_wp>	WgTextEditor_wp;
 
 class WgTextEditor:public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgTextEditorPtr	create() { return WgTextEditorPtr(new WgTextEditor()); }
+	static WgTextEditor_p	create() { return WgTextEditor_p(new WgTextEditor()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextEditorPtr	cast( const WgObjectPtr& pObject );
+	static WgTextEditor_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -84,9 +84,9 @@ protected:
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 	WgObject * _object() { return this; }
 	void	_onFieldDirty( WgField * pField );

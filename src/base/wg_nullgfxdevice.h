@@ -36,27 +36,27 @@ class WgRect;
 class WgColor;
 
 class WgNullGfxDevice;
-typedef	WgStrongPtr<WgNullGfxDevice,WgGfxDevicePtr>	WgNullGfxDevicePtr;
-typedef	WgWeakPtr<WgNullGfxDevice,WgGfxDeviceWeakPtr>	WgNullGfxDeviceWeakPtr;
+typedef	WgStrongPtr<WgNullGfxDevice,WgGfxDevice_p>	WgNullGfxDevice_p;
+typedef	WgWeakPtr<WgNullGfxDevice,WgGfxDevice_wp>	WgNullGfxDevice_wp;
 
 class WgNullGfxDevice : public WgGfxDevice
 {
 public:
-	static WgNullGfxDevicePtr	create( WgSize size );
+	static WgNullGfxDevice_p	create( WgSize size );
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgNullGfxDevicePtr	cast( const WgObjectPtr& pObject );
+	static WgNullGfxDevice_p	cast( const WgObject_p& pObject );
 
 	//
 
 	void	fill( const WgRect& rect, const WgColor& col );
-	void	blit( const WgSurfacePtr& src, const WgRect& srcrect, int dx, int dy  );
-	void	tileBlit( const WgSurfacePtr& src, const WgRect& srcrect, const WgRect& dest );
+	void	blit( const WgSurface_p& src, const WgRect& srcrect, int dx, int dy  );
+	void	tileBlit( const WgSurface_p& src, const WgRect& srcrect, const WgRect& dest );
 
 	void	fillSubPixel( const WgRectF& rect, const WgColor& col );
-	void	stretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+	void	stretchBlitSubPixel( const WgSurface_p& pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 
 	void	clipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );

@@ -44,10 +44,10 @@ const char * WgCapsuleHook::className( void ) const
 
 //____ WgCapsuleHook::cast() __________________________________________________
 
-WgCapsuleHookPtr WgCapsuleHook::cast( const WgHookPtr& pHook )
+WgCapsuleHook_p WgCapsuleHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgCapsuleHookPtr( static_cast<WgCapsuleHook*>(pHook.rawPtr()) );
+		return WgCapsuleHook_p( static_cast<WgCapsuleHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -60,7 +60,7 @@ WgRect WgCapsuleHook::geo() const { return m_pParent->geo(); }
 WgCoord WgCapsuleHook::globalPos() const { return m_pParent->globalPos(); }
 WgRect WgCapsuleHook::globalGeo() const { return m_pParent->globalGeo(); }
 
-WgCapsulePtr WgCapsuleHook::parent() const { return m_pParent; }
+WgCapsule_p WgCapsuleHook::parent() const { return m_pParent; }
 
 void WgCapsuleHook::_requestRender() { m_pParent->_requestRender(); }
 void WgCapsuleHook::_requestRender( const WgRect& rect ) { m_pParent->_requestRender(rect); }
@@ -97,17 +97,17 @@ const char * WgCapsule::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgCapsulePtr WgCapsule::cast( const WgObjectPtr& pObject )
+WgCapsule_p WgCapsule::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgCapsulePtr( static_cast<WgCapsule*>(pObject.rawPtr()) );
+		return WgCapsule_p( static_cast<WgCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ setWidget() ______________________________________________________________
 
-WgCapsuleHookPtr WgCapsule::setWidget( const WgWidgetPtr& pWidget )
+WgCapsuleHook_p WgCapsule::setWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget )
 		return 0;
@@ -122,7 +122,7 @@ WgCapsuleHookPtr WgCapsule::setWidget( const WgWidgetPtr& pWidget )
 
 //____ removeWidget() ___________________________________________________________
 
-bool WgCapsule::removeWidget( const WgWidgetPtr& pWidget )
+bool WgCapsule::removeWidget( const WgWidget_p& pWidget )
 {
 	if( m_hook._widget() != pWidget.rawPtr() )
 		return false;

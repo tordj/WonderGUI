@@ -30,8 +30,8 @@
 #endif
 
 class WgBlob;
-typedef	WgStrongPtr<WgBlob,WgObjectPtr>		WgBlobPtr;
-typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
+typedef	WgStrongPtr<WgBlob,WgObject_p>		WgBlob_p;
+typedef	WgWeakPtr<WgBlob,WgObject_wp>	WgBlob_wp;
 
 
 /**
@@ -47,13 +47,13 @@ typedef	WgWeakPtr<WgBlob,WgObjectWeakPtr>	WgBlobWeakPtr;
 class WgBlob : public WgObject
 {
 public:
-	static WgBlobPtr	create( int bytes );
-	static WgBlobPtr	create( void * pData, void(*pDestructor)(void*) );
+	static WgBlob_p	create( int bytes );
+	static WgBlob_p	create( void * pData, void(*pDestructor)(void*) );
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgBlobPtr	cast( const WgObjectPtr& pObject );
+	static WgBlob_p	cast( const WgObject_p& pObject );
     
 	inline int		size() const { return m_size; }			///< @brief Get the size of the blobs content.
 															///<

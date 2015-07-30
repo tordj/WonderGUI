@@ -28,18 +28,18 @@
 #endif
 
 class WgShaderCapsule;
-typedef	WgStrongPtr<WgShaderCapsule,WgCapsulePtr>		WgShaderCapsulePtr;
-typedef	WgWeakPtr<WgShaderCapsule,WgCapsuleWeakPtr>	WgShaderCapsuleWeakPtr;
+typedef	WgStrongPtr<WgShaderCapsule,WgCapsule_p>		WgShaderCapsule_p;
+typedef	WgWeakPtr<WgShaderCapsule,WgCapsule_wp>	WgShaderCapsule_wp;
 
 class WgShaderCapsule : public WgCapsule
 {
 public:
-	static WgShaderCapsulePtr	create() { return WgShaderCapsulePtr(new WgShaderCapsule()); }
+	static WgShaderCapsule_p	create() { return WgShaderCapsule_p(new WgShaderCapsule()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgShaderCapsulePtr	cast( const WgObjectPtr& pObject );
+	static WgShaderCapsule_p	cast( const WgObject_p& pObject );
 
 	void		setColor( const WgColor& color);
 	void		setTintMode( WgTintMode mode );

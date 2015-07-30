@@ -39,11 +39,11 @@
 class WgScrollPanel;
 
 class WgScrollPanel;
-typedef	WgStrongPtr<WgScrollPanel,WgPanelPtr>		WgScrollPanelPtr;
-typedef	WgWeakPtr<WgScrollPanel,WgPanelWeakPtr>	WgScrollPanelWeakPtr;
+typedef	WgStrongPtr<WgScrollPanel,WgPanel_p>		WgScrollPanel_p;
+typedef	WgWeakPtr<WgScrollPanel,WgPanel_wp>	WgScrollPanel_wp;
 
 class WgScrollHook;
-typedef	WgHookTypePtr<WgScrollHook,WgPanelHookPtr>	WgScrollHookPtr;
+typedef	WgHookTypePtr<WgScrollHook,WgPanelHook_p>	WgScrollHook_p;
 
 //____ WgScrollHook _____________________________________________________________
 
@@ -54,7 +54,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgScrollHookPtr	cast( const WgHookPtr& pInterface );
+	static WgScrollHook_p	cast( const WgHook_p& pInterface );
 
 	WgCoord			pos() const;
 	WgSize			size() const;
@@ -62,11 +62,11 @@ public:
 	WgCoord			globalPos() const;
 	WgRect			globalGeo() const;
 
-	WgScrollHookPtr 	prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
-	WgScrollHookPtr 	next() const { return static_cast<WgScrollHook*>(_nextHook()); }
+	WgScrollHook_p 	prev() const { return static_cast<WgScrollHook*>(_prevHook()); }
+	WgScrollHook_p 	next() const { return static_cast<WgScrollHook*>(_nextHook()); }
 
 	bool			setVisible( bool bVisible ) { return false; }		// This widget handles hide/show of children according to its own rules.
-	WgScrollPanelPtr 	parent() const { return m_pView; }
+	WgScrollPanel_p 	parent() const { return m_pView; }
 
 protected:
 	WgScrollHook() : m_pView(0) {};				// So we can make them members and then make placement new...
@@ -95,12 +95,12 @@ class WgScrollPanel : public WgPanel
 {
 	friend class WgScrollHook;
 public:
-	static WgScrollPanelPtr	create() { return WgScrollPanelPtr(new WgScrollPanel()); }
+	static WgScrollPanel_p	create() { return WgScrollPanel_p(new WgScrollPanel()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgScrollPanelPtr	cast( const WgObjectPtr& pObject );
+	static WgScrollPanel_p	cast( const WgObject_p& pObject );
 
 	bool		stepUp();
 	bool		stepDown();
@@ -177,19 +177,19 @@ public:
 	bool		autoScrollX() const { return m_bAutoScrollX; }
 	bool		autoScrollY() const { return m_bAutoScrollY; }
 
-	WgScrollHookPtr setHorizontalScrollbar( const WgScrollbarPtr& pScrollbar );
+	WgScrollHook_p setHorizontalScrollbar( const WgScrollbar_p& pScrollbar );
 	void			removeHorizontalScrollbar() {setHorizontalScrollbar(0);}
-	WgScrollbarPtr	horizontalScrollbar() const;
+	WgScrollbar_p	horizontalScrollbar() const;
 
-	WgScrollHookPtr	setVerticalScrollbar( const WgScrollbarPtr& pScrollbar );
+	WgScrollHook_p	setVerticalScrollbar( const WgScrollbar_p& pScrollbar );
 	void			removeVerticalScrollbar() {setVerticalScrollbar(0);}
-	WgScrollbarPtr	verticalScrollbar() const;
+	WgScrollbar_p	verticalScrollbar() const;
 
-	WgScrollHookPtr	setContent( const WgWidgetPtr& pContent );
+	WgScrollHook_p	setContent( const WgWidget_p& pContent );
 	void			removeContent() {setContent(0); }
-	WgWidgetPtr		content() const;
+	WgWidget_p		content() const;
 
-	bool		removeWidget( const WgWidgetPtr& pWidget );
+	bool		removeWidget( const WgWidget_p& pWidget );
 	bool		clear();
 
 	void		setScrollbarAutoHide( bool bHideVerticalScrollbar, bool bHideHorizontalScrollbar );
@@ -206,10 +206,10 @@ public:
 	void		setOverlayScrollbars( bool bOverlay );
 	bool		overlayScrollbars() const { return m_bOverlayScrollbars; }
 
-	void		setCornerSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr	cornerSkin() const { return m_pCornerSkin; }
+	void		setCornerSkin( const WgSkin_p& pSkin );
+	WgSkin_p	cornerSkin() const { return m_pCornerSkin; }
 
-	virtual void setSkin( const WgSkinPtr& pSkin );
+	virtual void setSkin( const WgSkin_p& pSkin );
 
 	// Overloaded from Widget
 
@@ -270,7 +270,7 @@ protected:
 
 	//
 
-	void		_onMsg( const WgMsgPtr& pMsg );
+	void		_onMsg( const WgMsg_p& pMsg );
 	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
@@ -338,7 +338,7 @@ private:
 	WgHook*	_lastHook() const;
 
 
-	WgSkinPtr		m_pCornerSkin;
+	WgSkin_p		m_pCornerSkin;
 	WgRect			m_cornerGeo;
 };
 

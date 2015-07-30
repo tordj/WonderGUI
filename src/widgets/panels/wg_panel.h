@@ -38,11 +38,11 @@
 class WgPatches;
 
 class WgPanel;
-typedef	WgStrongPtr<WgPanel,WgContainerPtr>		WgPanelPtr;
-typedef	WgWeakPtr<WgPanel,WgContainerWeakPtr>	WgPanelWeakPtr;
+typedef	WgStrongPtr<WgPanel,WgContainer_p>		WgPanel_p;
+typedef	WgWeakPtr<WgPanel,WgContainer_wp>	WgPanel_wp;
 
 class WgPanelHook;
-typedef	WgHookTypePtr<WgPanelHook,WgHookPtr>	WgPanelHookPtr;
+typedef	WgHookTypePtr<WgPanelHook,WgHook_p>	WgPanelHook_p;
 
 
 //____ WgPanelHook ____________________________________________________________
@@ -53,11 +53,11 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPanelHookPtr	cast( const WgHookPtr& pInterface );
+	static WgPanelHook_p	cast( const WgHook_p& pInterface );
 
-	WgPanelHookPtr	prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
-	WgPanelHookPtr	next() const { return static_cast<WgPanelHook*>(_nextHook()); }
-	WgPanelPtr		parent() const;
+	WgPanelHook_p	prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
+	WgPanelHook_p	next() const { return static_cast<WgPanelHook*>(_nextHook()); }
+	WgPanel_p		parent() const;
 
 	virtual bool	setVisible( bool bVisible );
 	bool			isVisible() { return m_bVisible; }
@@ -96,7 +96,7 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPanelPtr	cast( const WgObjectPtr& pObject );
+	static WgPanel_p	cast( const WgObject_p& pObject );
 
 	void		setFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
 	bool		isFocusGroup() const { return m_bFocusGroup; }
@@ -107,8 +107,8 @@ public:
 	void		setMaskOp( WgMaskOp operation );
 	WgMaskOp	maskOp() const { return m_maskOp; }
 
-	inline WgPanelHookPtr	firstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
-	inline WgPanelHookPtr	lastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
+	inline WgPanelHook_p	firstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
+	inline WgPanelHook_p	lastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 
 	// Overloaded from WgIWidgets
 

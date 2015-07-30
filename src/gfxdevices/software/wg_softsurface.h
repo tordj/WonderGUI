@@ -30,8 +30,8 @@
 #include <vector>
 
 class WgSoftSurface;
-typedef	WgStrongPtr<WgSoftSurface,WgSurfacePtr>		WgSoftSurfacePtr;
-typedef	WgWeakPtr<WgSoftSurface,WgSurfaceWeakPtr>	WgSoftSurfaceWeakPtr;
+typedef	WgStrongPtr<WgSoftSurface,WgSurface_p>		WgSoftSurface_p;
+typedef	WgWeakPtr<WgSoftSurface,WgSurface_wp>	WgSoftSurface_wp;
 
 //____ Class WgSoftSurface _____________________________________________________________________
 
@@ -41,14 +41,14 @@ class WgSoftSurface : public WgSurface
 	friend class WgSoftSurfaceFactory;
 
  public:
-	static WgSoftSurfacePtr	create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type)); }
-	static WgSoftSurfacePtr	create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pBlob ) { return WgSoftSurfacePtr(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
-	static WgSoftSurfacePtr	create( const WgSoftSurfacePtr& pOther ) { return WgSoftSurfacePtr(new WgSoftSurface( pOther.rawPtr() )); }
+	static WgSoftSurface_p	create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurface_p(new WgSoftSurface(size,type)); }
+	static WgSoftSurface_p	create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObject_p& pBlob ) { return WgSoftSurface_p(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
+	static WgSoftSurface_p	create( const WgSoftSurface_p& pOther ) { return WgSoftSurface_p(new WgSoftSurface( pOther.rawPtr() )); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSoftSurfacePtr	cast( const WgObjectPtr& pObject );
+	static WgSoftSurface_p	cast( const WgObject_p& pObject );
 
 	WgSize		size() const;
 	bool		isOpaque() const;
@@ -67,13 +67,13 @@ class WgSoftSurface : public WgSurface
 
 protected:
 	WgSoftSurface( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
-	WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObjectPtr& pFinalizer );
+	WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObject_p& pFinalizer );
 	WgSoftSurface( const WgSoftSurface * pOther );
 	virtual ~WgSoftSurface();
 
 	void _copy(const WgSoftSurface * pOther);
 
-	WgObjectPtr	m_pFinalizer;
+	WgObject_p	m_pFinalizer;
 	WgSize		m_size;
 	float    	m_fScaleAlpha;
 	bool		m_bOwnsData;

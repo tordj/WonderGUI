@@ -63,10 +63,10 @@ const char * WgTextDisplay::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgTextDisplayPtr WgTextDisplay::cast( const WgObjectPtr& pObject )
+WgTextDisplay_p WgTextDisplay::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgTextDisplayPtr( static_cast<WgTextDisplay*>(pObject.rawPtr()) );
+		return WgTextDisplay_p( static_cast<WgTextDisplay*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -163,7 +163,7 @@ void WgTextDisplay::_onStateChanged( WgState oldState )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgTextDisplay::_onMsg( const WgMsgPtr& pMsg )
+void WgTextDisplay::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 /*
@@ -187,7 +187,7 @@ void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgTextDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgTextDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 }

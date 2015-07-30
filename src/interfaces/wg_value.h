@@ -46,8 +46,8 @@
 
 
 class WgValue;
-typedef	WgIStrongPtr<WgValue,WgInterfacePtr>	WgValuePtr;
-typedef	WgIWeakPtr<WgValue,WgInterfaceWeakPtr>	WgValueWeakPtr;
+typedef	WgIStrongPtr<WgValue,WgInterface_p>	WgValue_p;
+typedef	WgIWeakPtr<WgValue,WgInterface_wp>	WgValue_wp;
 
 /**
  * @brief Interface to a basic value display field
@@ -66,20 +66,20 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgValuePtr			cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgValuePtr			ptr() { return WgValuePtr(_object(),this); }
+	static WgValue_p			cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgValue_p			ptr() { return WgValue_p(_object(),this); }
 
-	inline void				setFormatter( const WgValueFormatterPtr& pFormatter ) { m_pField->setFormatter(pFormatter); }
+	inline void				setFormatter( const WgValueFormatter_p& pFormatter ) { m_pField->setFormatter(pFormatter); }
 	inline void				clearFormatter() { m_pField->clearFormatter(); }
-	inline WgValueFormatterPtr	formatter() const { return m_pField->formatter(); }
+	inline WgValueFormatter_p	formatter() const { return m_pField->formatter(); }
 
-	inline void				setStyle( const WgTextStylePtr& pStyle ) { m_pField->setStyle(pStyle); }
+	inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
 	inline void				clearStyle() { m_pField->clearStyle(); }
-	inline WgTextStylePtr	style() const { return m_pField->style(); }
+	inline WgTextStyle_p	style() const { return m_pField->style(); }
 
-	inline void				setPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->setPresenter(pPresenter); }
+	inline void				setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
 	inline void				clearPresenter() { m_pField->clearPresenter(); }
-	inline WgTextPresenterPtr	presenter() const { return m_pField->presenter(); }
+	inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
 
 	inline WgState			state() const { return m_pField->state(); }
 protected:

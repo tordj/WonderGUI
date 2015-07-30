@@ -23,7 +23,7 @@
 #define WG_OBJECT_DOT_H
 
 class WgObject;
-class WgObjectPtr;
+class WgObject_p;
 
 class WgWeakPtrHub
 {
@@ -49,22 +49,22 @@ public:
 
 class WgObject
 {
-	friend class WgObjectPtr;
-	friend class WgObjectWeakPtr;
+	friend class WgObject_p;
+	friend class WgObject_wp;
 	template<class T, class P> friend class WgStrongPtr;
 	template<class T, class P> friend class WgWeakPtr;
 
-	friend class WgInterfacePtr;
-	friend class WgInterfaceWeakPtr;
+	friend class WgInterface_p;
+	friend class WgInterface_wp;
 
 public:
 	virtual bool		isInstanceOf( const char * pClassName ) const;
 	virtual const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgObjectPtr	cast( const WgObjectPtr& pObject );				// Provided just for completeness sake.
+	static WgObject_p	cast( const WgObject_p& pObject );				// Provided just for completeness sake.
 
 protected:
-	WgObject() : m_refCount(0), m_pWeakPtrHub(0) {}
+	WgObject() : m_pWeakPtrHub(0), m_refCount(0) {}
 	virtual ~WgObject() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
 
 	inline void _incRefCount() { m_refCount++; }

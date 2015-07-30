@@ -47,17 +47,17 @@
 #endif
 
 class WgTextStyle;
-typedef	WgStrongPtr<WgTextStyle,WgObjectPtr>		WgTextStylePtr;
-typedef	WgWeakPtr<WgTextStyle,WgObjectWeakPtr>		WgTextStyleWeakPtr;
+typedef	WgStrongPtr<WgTextStyle,WgObject_p>		WgTextStyle_p;
+typedef	WgWeakPtr<WgTextStyle,WgObject_wp>		WgTextStyle_wp;
 
 struct WgTextAttr2
 {
-		WgFontPtr			pFont;
+		WgFont_p			pFont;
 		int					size;
 		WgColor				color;
 		WgColor				bgColor;
 		WgTextDecoration	decoration;
-		WgTextLinkPtr		pLink;
+		WgTextLink_p		pLink;
 		
 		// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
 };
@@ -69,18 +69,18 @@ struct WgTextAttr2
 class WgTextStyle : public WgObject
 {
 public:
-	static WgTextStylePtr	create() { return WgTextStylePtr(new WgTextStyle()); }
+	static WgTextStyle_p	create() { return WgTextStyle_p(new WgTextStyle()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextStylePtr	cast( const WgObjectPtr& pObject );
+	static WgTextStyle_p	cast( const WgObject_p& pObject );
 
-	bool			setParent( const WgTextStylePtr& pParent );
+	bool			setParent( const WgTextStyle_p& pParent );
 	void			cascade();
 
-	void			setFont( const WgFontPtr& pFont );
-	void			setLink( const WgTextLinkPtr& pLink );
+	void			setFont( const WgFont_p& pFont );
+	void			setLink( const WgTextLink_p& pLink );
 
 	void			setColor( WgColor color );
 	void			setBgColor( WgColor color );
@@ -105,15 +105,15 @@ public:
 	void			clearSize( WgState state );
 	void			clearDecoration( WgState state );
 
-	inline WgFontPtr		font() const;
-	inline WgTextLinkPtr	link() const;
+	inline WgFont_p		font() const;
+	inline WgTextLink_p	link() const;
 	inline WgColor			color( WgState state ) const;
 	inline 	WgColor			bgColor( WgState state ) const;
 	inline int				size( WgState state ) const;
 	inline WgTextDecoration decoration( WgState state ) const;
 
-	inline WgFontPtr		combFont() const;
-	inline WgTextLinkPtr	combLink() const;
+	inline WgFont_p		combFont() const;
+	inline WgTextLink_p	combLink() const;
 	inline WgColor			combColor( WgState state ) const;
 	inline WgColor			combBgColor( WgState state ) const;
 	inline int				combSize( WgState state ) const;
@@ -130,19 +130,19 @@ protected:
 
 	struct AttrSet
 	{
-		WgFontPtr			pFont;
+		WgFont_p			pFont;
 		int					size[WG_NB_STATES];
 		WgColor				color[WG_NB_STATES];
 		WgColor				bgColor[WG_NB_STATES];
 		WgTextDecoration	decoration[WG_NB_STATES];
-		WgTextLinkPtr		pLink;
+		WgTextLink_p		pLink;
 	};
 
 	bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
 	bool		_refreshComb();
 	void		_clearSet( AttrSet * pSet );
 
-	WgTextStylePtr	m_pParent;
+	WgTextStyle_p	m_pParent;
 	WgTextStyle *	m_pFirstChild;
 	WgTextStyle *	m_pNextSibling;
 	WgTextStyle *	m_pPrevSibling;
@@ -156,13 +156,13 @@ protected:
 
 
 //______________________________________________________________________________
-inline WgFontPtr WgTextStyle::font() const
+inline WgFont_p WgTextStyle::font() const
 {
 	return m_specAttr.pFont;
 }
 
 //______________________________________________________________________________
-inline WgTextLinkPtr WgTextStyle::link() const
+inline WgTextLink_p WgTextStyle::link() const
 {
 	return m_specAttr.pLink;
 }
@@ -193,13 +193,13 @@ inline WgTextDecoration WgTextStyle::decoration( WgState state ) const
 
 //______________________________________________________________________________
 
-inline WgFontPtr WgTextStyle::combFont() const
+inline WgFont_p WgTextStyle::combFont() const
 {
 	return m_combAttr.pFont;
 }
 
 //______________________________________________________________________________
-inline WgTextLinkPtr WgTextStyle::combLink() const
+inline WgTextLink_p WgTextStyle::combLink() const
 {
 	return m_combAttr.pLink;
 }

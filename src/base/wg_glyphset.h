@@ -44,7 +44,7 @@ class	WgGlyphset;
 
 struct WgGlyphBitmap
 {
-	WgSurfacePtr pSurface;
+	WgSurface_p pSurface;
 	WgRect		rect;
 	Sint8		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
 	Sint8		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
@@ -74,7 +74,7 @@ protected:
 	int				m_kerningIndex;	// index into kerning table (WgBitmapGlyphs) or glyph_index (WgVectorGlyphs)
 };
 
-typedef WgGlyph*	WgGlyphPtr;
+typedef WgGlyph*	WgGlyph_p;
 
 
 //____ WgUnderline ____________________________________________________________
@@ -83,7 +83,7 @@ struct WgUnderline
 {
 	WgUnderline() { pSurf = 0; rect = WgRect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
 
-	WgSurfacePtr pSurf;
+	WgSurface_p pSurf;
 	WgRect		rect;
 	Sint8		bearingX;
 	Sint8		bearingY;
@@ -92,8 +92,8 @@ struct WgUnderline
 };
 
 class WgGlyphset;
-typedef	WgStrongPtr<WgGlyphset,WgObjectPtr>		WgGlyphsetPtr;
-typedef	WgWeakPtr<WgGlyphset,WgObjectWeakPtr>	WgGlyphsetWeakPtr;
+typedef	WgStrongPtr<WgGlyphset,WgObject_p>		WgGlyphset_p;
+typedef	WgWeakPtr<WgGlyphset,WgObject_wp>	WgGlyphset_wp;
 
 //____ WgGlyphset _____________________________________________________________
 
@@ -103,7 +103,7 @@ public:
 	bool					isInstanceOf( const char * pClassName ) const;
 	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgGlyphsetPtr	cast( const WgObjectPtr& pObject );
+	static WgGlyphset_p	cast( const WgObject_p& pObject );
 
 	enum Type
 	{
@@ -114,8 +114,8 @@ public:
 
 	virtual	Type			getType() const = 0;
 
-	virtual int				getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size ) = 0;
-	virtual WgGlyphPtr		getGlyph( Uint16 chr, int size ) = 0;
+	virtual int				getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size ) = 0;
+	virtual WgGlyph_p		getGlyph( Uint16 chr, int size ) = 0;
 	virtual bool			hasGlyph( Uint16 chr ) = 0;
 
 	virtual int				getHeight( int size ) = 0;

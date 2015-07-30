@@ -54,17 +54,17 @@ const char * WgPackHook::className( void ) const
 
 //____ WgPackHook::cast() __________________________________________________
 
-WgPackHookPtr WgPackHook::cast( const WgHookPtr& pHook )
+WgPackHook_p WgPackHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgPackHookPtr( static_cast<WgPackHook*>(pHook.rawPtr()) );
+		return WgPackHook_p( static_cast<WgPackHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 //____ WgPackHook::parent() ___________________________________________________
 
-WgPackPanelPtr WgPackHook::parent() const 
+WgPackPanel_p WgPackHook::parent() const 
 { 
 	return m_pParent; 
 }
@@ -125,10 +125,10 @@ const char * WgPackPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgPackPanelPtr WgPackPanel::cast( const WgObjectPtr& pObject )
+WgPackPanel_p WgPackPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgPackPanelPtr( static_cast<WgPackPanel*>(pObject.rawPtr()) );
+		return WgPackPanel_p( static_cast<WgPackPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -149,7 +149,7 @@ void WgPackPanel::setOrientation( WgOrientation orientation )
 
 //____ setSizeBroker() _______________________________________________________
 
-void WgPackPanel::setSizeBroker( const WgSizeBrokerPtr& pBroker )
+void WgPackPanel::setSizeBroker( const WgSizeBroker_p& pBroker )
 {
 	if( m_pSizeBroker != pBroker )
 	{

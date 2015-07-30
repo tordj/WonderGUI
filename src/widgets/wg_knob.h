@@ -28,20 +28,20 @@
 #endif
 
 class WgKnob;
-typedef	WgStrongPtr<WgKnob,WgWidgetPtr>		WgKnobPtr;
-typedef	WgWeakPtr<WgKnob,WgWidgetWeakPtr>	WgKnobWeakPtr;
+typedef	WgStrongPtr<WgKnob,WgWidget_p>		WgKnob_p;
+typedef	WgWeakPtr<WgKnob,WgWidget_wp>	WgKnob_wp;
 
 //____ WgKnob ____________________________________________________________
 
 class WgKnob : public WgWidget
 {
 public:
-	static WgKnobPtr	create() { return WgKnobPtr(new WgKnob()); }
+	static WgKnob_p	create() { return WgKnob_p(new WgKnob()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKnobPtr	cast( const WgObjectPtr& pObject );
+	static WgKnob_p	cast( const WgObject_p& pObject );
 
     void    setValue( float value );
     

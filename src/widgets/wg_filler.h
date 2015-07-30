@@ -32,8 +32,8 @@
 #endif
 
 class WgFiller;
-typedef	WgStrongPtr<WgFiller,WgWidgetPtr>		WgFillerPtr;
-typedef	WgWeakPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
+typedef	WgStrongPtr<WgFiller,WgWidget_p>		WgFiller_p;
+typedef	WgWeakPtr<WgFiller,WgWidget_wp>	WgFiller_wp;
 
 //____ WgFiller ____________________________________________________________
 /**
@@ -51,12 +51,12 @@ typedef	WgWeakPtr<WgFiller,WgWidgetWeakPtr>	WgFillerWeakPtr;
 class WgFiller : public WgWidget
 {
 public:
-	static WgFillerPtr	create() { return WgFillerPtr(new WgFiller()); }
+	static WgFiller_p	create() { return WgFiller_p(new WgFiller()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFillerPtr	cast( const WgObjectPtr& pObject );
+	static WgFiller_p	cast( const WgObject_p& pObject );
 
 	void	setPreferredSize( const WgSize& size );
 	WgSize	preferredSize() const;

@@ -35,8 +35,8 @@
 
 
 class WgToggleGroup;
-typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
-typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>		WgToggleGroupWeakPtr;
+typedef	WgStrongPtr<WgToggleGroup,WgObject_p>		WgToggleGroup_p;
+typedef	WgWeakPtr<WgToggleGroup,WgObject_wp>		WgToggleGroup_wp;
 
 
 /**
@@ -51,25 +51,25 @@ class	WgToggleGroup : public WgObject
 {
 friend class WgToggleButton;
 public:
-	static WgToggleGroupPtr	create() { return WgToggleGroupPtr(new WgToggleGroup()); }
+	static WgToggleGroup_p	create() { return WgToggleGroup_p(new WgToggleGroup()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgToggleGroupPtr	cast( const WgObjectPtr& pObject );	
+	static WgToggleGroup_p	cast( const WgObject_p& pObject );	
 
 
 	inline bool			requireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
 	void				setRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
 
-	void				add( const WgToggleButtonPtr& pToggleButton );			///< @brief Add widget to this group.
-	bool				remove( const WgToggleButtonPtr& pToggleButton );		///< @brief Remove a widget from this group.
+	void				add( const WgToggleButton_p& pToggleButton );			///< @brief Add widget to this group.
+	bool				remove( const WgToggleButton_p& pToggleButton );		///< @brief Remove a widget from this group.
 	void				clear();												///< @brief Remove all widgets from this group.
 	
-	WgToggleButtonPtr	get( int index );										///< @brief Get widget at specified index in group.
+	WgToggleButton_p	get( int index );										///< @brief Get widget at specified index in group.
 	int					size() const;											///< @brief Get number of widgets in group.
 		
-	WgToggleButtonPtr	selected() const;										///< @brief Get the selected widget.
+	WgToggleButton_p	selected() const;										///< @brief Get the selected widget.
 
 
 protected:

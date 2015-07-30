@@ -46,8 +46,8 @@ class WgCharBuffer;
 class WgTextStyle;
 
 class WgTextPresenter;
-typedef	WgStrongPtr<WgTextPresenter,WgObjectPtr>	WgTextPresenterPtr;
-typedef	WgWeakPtr<WgTextPresenter,WgObjectWeakPtr>	WgTextPresenterWeakPtr;
+typedef	WgStrongPtr<WgTextPresenter,WgObject_p>	WgTextPresenter_p;
+typedef	WgWeakPtr<WgTextPresenter,WgObject_wp>	WgTextPresenter_wp;
 
 class WgTextPresenter : public WgObject
 {
@@ -55,7 +55,7 @@ public:
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgTextPresenterPtr	cast( const WgObjectPtr& pObject );
+	static WgTextPresenter_p	cast( const WgObject_p& pObject );
 
 	virtual void	addField( WgPresentableField * pField ) = 0;
 	virtual void	removeField( WgPresentableField * pField ) = 0;

@@ -21,7 +21,7 @@ class WgRect;
 
 namespace WgUtil
 {
-	bool		markTestStretchRect( WgCoord ofs, const WgSurfacePtr& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
+	bool		markTestStretchRect( WgCoord ofs, const WgSurface_p& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
 
 	bool		pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 

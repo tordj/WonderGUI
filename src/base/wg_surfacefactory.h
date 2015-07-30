@@ -30,8 +30,8 @@
 
 
 class WgSurfaceFactory;
-typedef	WgStrongPtr<WgSurfaceFactory,WgObjectPtr>	WgSurfaceFactoryPtr;
-typedef	WgWeakPtr<WgSurfaceFactory,WgObjectWeakPtr>	WgSurfaceFactoryWeakPtr;
+typedef	WgStrongPtr<WgSurfaceFactory,WgObject_p>	WgSurfaceFactory_p;
+typedef	WgWeakPtr<WgSurfaceFactory,WgObject_wp>	WgSurfaceFactory_wp;
 
 
 //____ WgSurfaceFactory _______________________________________________________
@@ -49,9 +49,9 @@ public:
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSurfaceFactoryPtr	cast( const WgObjectPtr& pObject );
+	static WgSurfaceFactory_p	cast( const WgObject_p& pObject );
 
-	virtual WgSurfacePtr createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
+	virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
 protected:
 	virtual ~WgSurfaceFactory() {}
 };

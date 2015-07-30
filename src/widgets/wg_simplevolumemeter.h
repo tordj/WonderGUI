@@ -15,20 +15,20 @@
 #endif
 
 class WgSimpleVolumeMeter;
-typedef	WgStrongPtr<WgSimpleVolumeMeter,WgWidgetPtr>		WgSimpleVolumeMeterPtr;
-typedef	WgWeakPtr<WgSimpleVolumeMeter,WgWidgetWeakPtr>		WgSimpleVolumeMeterWeakPtr;
+typedef	WgStrongPtr<WgSimpleVolumeMeter,WgWidget_p>		WgSimpleVolumeMeter_p;
+typedef	WgWeakPtr<WgSimpleVolumeMeter,WgWidget_wp>		WgSimpleVolumeMeter_wp;
 
 //____ WgSimpleVolumeMeter ____________________________________________________________
 
 class WgSimpleVolumeMeter : public WgWidget
 {
 public:
-	static WgSimpleVolumeMeterPtr	create() { return WgSimpleVolumeMeterPtr(new WgSimpleVolumeMeter()); }
+	static WgSimpleVolumeMeter_p	create() { return WgSimpleVolumeMeter_p(new WgSimpleVolumeMeter()); }
 	
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSimpleVolumeMeterPtr	cast( const WgObjectPtr& pObject );
+	static WgSimpleVolumeMeter_p	cast( const WgObject_p& pObject );
 	
 	//____ Methods __________________________________________
 
@@ -52,7 +52,7 @@ protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_onStateChanged( WgState oldState );
-	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void			_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 	
 	void			_updateSectionPixelHeight();
 	void			_renderPeak( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip );

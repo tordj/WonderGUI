@@ -65,10 +65,10 @@ const char * WgButton::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgButtonPtr WgButton::cast( const WgObjectPtr& pObject )
+WgButton_p WgButton::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgButtonPtr( static_cast<WgButton*>(pObject.rawPtr()) );
+		return WgButton_p( static_cast<WgButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -132,7 +132,7 @@ void WgButton::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgButton::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgButton::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 }
@@ -182,10 +182,10 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 
 //____ _onMsg() ______________________________________________________________
 
-void WgButton::_onMsg( const WgMsgPtr& _pMsg )
+void WgButton::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgState oldState = m_state;
-	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
+	WgMsgRouter_p	pHandler = WgBase::msgRouter();
 
 	switch( _pMsg->type() )
 	{

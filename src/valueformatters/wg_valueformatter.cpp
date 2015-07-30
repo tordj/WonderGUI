@@ -44,10 +44,10 @@ const char * WgValueFormatter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgValueFormatterPtr WgValueFormatter::cast( const WgObjectPtr& pObject )
+WgValueFormatter_p WgValueFormatter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgValueFormatterPtr( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
+		return WgValueFormatter_p( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }

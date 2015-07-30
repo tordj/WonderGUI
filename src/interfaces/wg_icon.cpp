@@ -44,10 +44,10 @@ const char * WgIcon::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgIconPtr WgIcon::cast( const WgInterfacePtr& pInterface )
+WgIcon_p WgIcon::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgIconPtr( pInterface.getRealObjectPtr(), static_cast<WgIcon*>( pInterface.rawPtr()) );
+		return WgIcon_p( pInterface.getRealObjectPtr(), static_cast<WgIcon*>( pInterface.rawPtr()) );
 
 	return 0;
 }

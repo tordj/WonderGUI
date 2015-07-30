@@ -31,20 +31,20 @@
 #endif
 
 class WgRefreshButton;
-typedef	WgStrongPtr<WgRefreshButton,WgButtonPtr>		WgRefreshButtonPtr;
-typedef	WgWeakPtr<WgRefreshButton,WgButtonWeakPtr>		WgRefreshButtonWeakPtr;
+typedef	WgStrongPtr<WgRefreshButton,WgButton_p>		WgRefreshButton_p;
+typedef	WgWeakPtr<WgRefreshButton,WgButton_wp>		WgRefreshButton_wp;
 
 //____ WgWidgetRefreshButton ____________________________________________________________
 
 class WgRefreshButton : public WgButton
 {
 public:
-	static WgRefreshButtonPtr	create() { return WgRefreshButtonPtr(new WgRefreshButton()); }
+	static WgRefreshButton_p	create() { return WgRefreshButton_p(new WgRefreshButton()); }
 	
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRefreshButtonPtr	cast( const WgObjectPtr& pObject );
+	static WgRefreshButton_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -65,8 +65,8 @@ public:
 		BUTTON_STRETCHED
 	};
 
-	void			SetRefreshAnimation( const WgGfxAnimPtr& pAnimation );
-	WgGfxAnimPtr	GetRefreshAnimation() const { return m_pRefreshAnim; }
+	void			SetRefreshAnimation( const WgGfxAnim_p& pAnimation );
+	WgGfxAnim_p	GetRefreshAnimation() const { return m_pRefreshAnim; }
 
 	void			SetRefreshMode( RefreshMode mode );
 	RefreshMode		GetRefreshMode() const { return m_refreshMode; }
@@ -92,7 +92,7 @@ protected:
 	virtual ~WgRefreshButton();
 	virtual WgWidget* _newOfMyType() const { return new WgRefreshButton(); };
 
-	void			_onMsg( const WgMsgPtr& pMsg );
+	void			_onMsg( const WgMsg_p& pMsg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	virtual void 	_onNewSize( const WgSize& size );
@@ -101,7 +101,7 @@ protected:
 
 
 	WgRouteId		m_tickRouteId;
-	WgGfxAnimPtr	m_pRefreshAnim;
+	WgGfxAnim_p	m_pRefreshAnim;
 	AnimTarget		m_animTarget;
 	RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
 	WgTextField		m_refreshText;

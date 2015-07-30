@@ -27,9 +27,9 @@ const char WgNullGfxDevice::CLASSNAME[] = {"NullGfxDevice"};
 
 //____ create() _______________________________________________________________
 
-WgNullGfxDevicePtr WgNullGfxDevice::create( WgSize size )
+WgNullGfxDevice_p WgNullGfxDevice::create( WgSize size )
 {
-	return WgNullGfxDevicePtr(new WgNullGfxDevice(size));
+	return WgNullGfxDevice_p(new WgNullGfxDevice(size));
 }
 
 WgNullGfxDevice::WgNullGfxDevice( WgSize size ) : WgGfxDevice(size)
@@ -59,10 +59,10 @@ const char * WgNullGfxDevice::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgNullGfxDevicePtr WgNullGfxDevice::cast( const WgObjectPtr& pObject )
+WgNullGfxDevice_p WgNullGfxDevice::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgNullGfxDevicePtr( static_cast<WgNullGfxDevice*>(pObject.rawPtr()) );
+		return WgNullGfxDevice_p( static_cast<WgNullGfxDevice*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -72,11 +72,11 @@ void WgNullGfxDevice::fill( const WgRect& rect, const WgColor& col )
 {
 }
 
-void WgNullGfxDevice::blit( const WgSurfacePtr& src, const WgRect& srcrect, int dx, int dy  )
+void WgNullGfxDevice::blit( const WgSurface_p& src, const WgRect& srcrect, int dx, int dy  )
 {
 }
 
-void WgNullGfxDevice::tileBlit( const WgSurfacePtr& src, const WgRect& srcrect, const WgRect& dest )
+void WgNullGfxDevice::tileBlit( const WgSurface_p& src, const WgRect& srcrect, const WgRect& dest )
 {
 }
 
@@ -84,7 +84,7 @@ void WgNullGfxDevice::fillSubPixel( const WgRectF& rect, const WgColor& col )
 {
 }
 
-void WgNullGfxDevice::stretchBlitSubPixel( 	const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+void WgNullGfxDevice::stretchBlitSubPixel( 	const WgSurface_p& pSrc, float sx, float sy, float sw, float sh,
 						   		 			float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 {
 }

@@ -85,10 +85,10 @@ const char * WgValueEditor::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgValueEditorPtr WgValueEditor::cast( const WgObjectPtr& pObject )
+WgValueEditor_p WgValueEditor::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgValueEditorPtr( static_cast<WgValueEditor*>(pObject.rawPtr()) );
+		return WgValueEditor_p( static_cast<WgValueEditor*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -97,7 +97,7 @@ WgValueEditorPtr WgValueEditor::cast( const WgObjectPtr& pObject )
 
 //____ setFormat() ____________________________________________________________
 
-void WgValueEditor::setFormat( const WgValueFormatPtr& pFormat )
+void WgValueEditor::setFormat( const WgValueFormat_p& pFormat )
 {
 	m_pFormat		= pFormat;
 	m_pUseFormat	= pFormat;
@@ -332,10 +332,10 @@ bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgValueEditor::_onMsg( const WgMsgPtr& pMsg )
+void WgValueEditor::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
-	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
+	WgMsgRouter_p	pHandler = WgBase::msgRouter();
 	WgMsgType type = pMsg->type();
 
 	if( type == WG_MSG_TICK )
@@ -822,7 +822,7 @@ void WgValueEditor::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgValueEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgValueEditor::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.setColorSkin(pNewSkin);

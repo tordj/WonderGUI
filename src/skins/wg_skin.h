@@ -37,7 +37,7 @@
 class WgSkin;
 class WgGfxDevice;
 
-typedef	WgStrongPtr<WgSkin,WgObjectPtr>	WgSkinPtr;
+typedef	WgStrongPtr<WgSkin,WgObject_p>	WgSkin_p;
 
 
 class WgSkin : public WgObject
@@ -48,7 +48,7 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSkinPtr	cast( const WgObjectPtr& pObject );
+	static WgSkin_p	cast( const WgObject_p& pObject );
 
 
 	virtual void render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;

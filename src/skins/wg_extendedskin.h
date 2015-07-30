@@ -27,7 +27,7 @@
 #endif
 
 class WgExtendedSkin;
-typedef	WgStrongPtr<WgExtendedSkin,WgSkinPtr>	WgExtendedSkinPtr;
+typedef	WgStrongPtr<WgExtendedSkin,WgSkin_p>	WgExtendedSkin_p;
 
 class WgExtendedSkin : public WgSkin
 {
@@ -35,7 +35,7 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgExtendedSkinPtr	cast( const WgObjectPtr& pObject );
+	static WgExtendedSkin_p	cast( const WgObject_p& pObject );
 
 	virtual void	setContentPadding( WgBorder padding );
 	virtual void	setContentShift( WgStateEnum state, WgCoord shift );

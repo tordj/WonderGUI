@@ -36,26 +36,26 @@
 
 
 class WgSoftGfxDevice;
-typedef	WgStrongPtr<WgSoftGfxDevice,WgGfxDevicePtr>	WgSoftGfxDevicePtr;
-typedef	WgWeakPtr<WgSoftGfxDevice,WgGfxDeviceWeakPtr>	WgSoftGfxDeviceWeakPtr;
+typedef	WgStrongPtr<WgSoftGfxDevice,WgGfxDevice_p>	WgSoftGfxDevice_p;
+typedef	WgWeakPtr<WgSoftGfxDevice,WgGfxDevice_wp>	WgSoftGfxDevice_wp;
 
 class WgSoftGfxDevice : public WgGfxDevice
 {
 public:
-	static WgSoftGfxDevicePtr	create();
-	static WgSoftGfxDevicePtr	create( const WgSoftSurfacePtr& pCanvas );
+	static WgSoftGfxDevice_p	create();
+	static WgSoftGfxDevice_p	create( const WgSoftSurface_p& pCanvas );
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSoftGfxDevicePtr	cast( const WgObjectPtr& pObject );
+	static WgSoftGfxDevice_p	cast( const WgObject_p& pObject );
 
-	void	setCanvas( const WgSoftSurfacePtr& pCanvas );
+	void	setCanvas( const WgSoftSurface_p& pCanvas );
 
 	//
 
 	void	fill( const WgRect& rect, const WgColor& col );
-	void	blit( const WgSurfacePtr& pSrc, const WgRect& srcrect, int dx, int dy  );
+	void	blit( const WgSurface_p& pSrc, const WgRect& srcrect, int dx, int dy  );
 
 	void	drawArcNE( const WgRect& rect, WgColor color );
 	void	drawElipse( const WgRect& rect, WgColor color );
@@ -69,17 +69,17 @@ public:
 	void	clipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col );
 	void	clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness );
 
-	void	stretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
-	void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
-	void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurface_p& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	void	stretchBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
 
-	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipBias = 0.f );
-	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
+	void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
 	void	fillSubPixel( const WgRectF& rect, const WgColor& col );
-	void	stretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+	void	stretchBlitSubPixel( const WgSurface_p& pSrc, float sx, float sy, float sw, float sh,
 						   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
 	
 	void	setBilinearFiltering( bool bEnable ) { m_bBilinearFiltering = bEnable; }
@@ -87,7 +87,7 @@ public:
 
 protected:
 	WgSoftGfxDevice();
-	WgSoftGfxDevice( const WgSoftSurfacePtr& pCanvas );
+	WgSoftGfxDevice( const WgSoftSurface_p& pCanvas );
 	~WgSoftGfxDevice();
 
 	void	_initTables();
@@ -134,7 +134,7 @@ protected:
 										int dx, int dy, int dw, int dh );
 
 	bool			m_bBilinearFiltering;
-	WgSoftSurfacePtr m_pCanvas;
+	WgSoftSurface_p m_pCanvas;
 	Uint8			m_limitTable[512];
 	int *			m_pCurveTab;
 	Uint8 *			m_pDivTab;

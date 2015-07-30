@@ -39,8 +39,8 @@
 class WgGlyphset;
 
 class WgCaret;
-typedef	WgStrongPtr<WgCaret,WgObjectPtr>		WgCaretPtr;
-typedef	WgWeakPtr<WgCaret,WgObjectWeakPtr>		WgCaretWeakPtr;
+typedef	WgStrongPtr<WgCaret,WgObject_p>		WgCaret_p;
+typedef	WgWeakPtr<WgCaret,WgObject_wp>		WgCaret_wp;
 
 //____ WgCaret _______________________________________________________________
 
@@ -49,13 +49,13 @@ class WgCaret : public WgObject
 	friend class WgGlyphset;
 
 public:
-	static WgCaretPtr	create() { return WgCaretPtr(new WgCaret()); }
-	static WgCaretPtr	create( const WgCaretPtr& in ) { return WgCaretPtr(new WgCaret(in.rawPtr())); }
+	static WgCaret_p	create() { return WgCaret_p(new WgCaret()); }
+	static WgCaret_p	create( const WgCaret_p& in ) { return WgCaret_p(new WgCaret(in.rawPtr())); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCaretPtr	cast( const WgObjectPtr& pObject );
+	static WgCaret_p	cast( const WgObject_p& pObject );
 
 
 	enum Mode
@@ -73,13 +73,13 @@ public:
 	};
 
 
-	bool				setMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
+	bool				setMode( Mode m, const WgGfxAnim_p& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
 
 	void				setScaleWidth( Mode m, bool bScaleWidth );
 
 	void				setBearing( Mode m, WgCoord bearing );
 	void				setAdvance( Mode m, int advance );
-	void				setAnim( Mode m, const WgGfxAnimPtr& pAnim );
+	void				setAnim( Mode m, const WgGfxAnim_p& pAnim );
 
 	void				setSizeRatio( Mode m, float ratio );
 
@@ -91,7 +91,7 @@ public:
 	WgCoord				bearing( Mode m ) const { return m_bearing[m]; }
 	int					advance( Mode m ) const { return m_advance[m]; };
 	int					width( Mode m ) const { return m_pAnim[m]->size().w; }
-	WgGfxAnimPtr 		anim( Mode m ) const { return m_pAnim[m]; };
+	WgGfxAnim_p 		anim( Mode m ) const { return m_pAnim[m]; };
 	float				sizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 	bool				scaleWidth(Mode m ) const { return m_scaleWidth[m]; }
 	
@@ -102,7 +102,7 @@ private:
 
 	enum { N_MODES = 3 };
 
-	WgGfxAnimPtr		m_pAnim[N_MODES];
+	WgGfxAnim_p		m_pAnim[N_MODES];
 	WgCoord				m_bearing[N_MODES];
 	int					m_advance[N_MODES];
 	bool				m_scaleWidth[N_MODES];

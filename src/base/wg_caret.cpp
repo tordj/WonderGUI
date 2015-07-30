@@ -70,10 +70,10 @@ const char * WgCaret::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgCaretPtr WgCaret::cast( const WgObjectPtr& pObject )
+WgCaret_p WgCaret::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgCaretPtr( static_cast<WgCaret*>(pObject.rawPtr()) );
+		return WgCaret_p( static_cast<WgCaret*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -100,7 +100,7 @@ void WgCaret::setSizeRatio( Mode m, float ratio )
 
 //____ setMode() ______________________________________________________________
 
-bool WgCaret::setMode( Mode m, const WgGfxAnimPtr& pAnim, WgCoord bearing, int advance, float size_ratio )
+bool WgCaret::setMode( Mode m, const WgGfxAnim_p& pAnim, WgCoord bearing, int advance, float size_ratio )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return false;
@@ -147,7 +147,7 @@ void WgCaret::setScaleWidth( Mode m, bool bScaleWidth )
 
 //____ setAnim() ______________________________________________________________
 
-void WgCaret::setAnim( Mode m, const WgGfxAnimPtr& pAnim )
+void WgCaret::setAnim( Mode m, const WgGfxAnim_p& pAnim )
 {
 	if( m < 0 || m >= (Mode) N_MODES )
 		return;

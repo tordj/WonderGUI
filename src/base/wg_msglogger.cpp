@@ -62,10 +62,10 @@ const char * WgMsgLogger::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgMsgLoggerPtr WgMsgLogger::cast( const WgObjectPtr& pObject )
+WgMsgLogger_p WgMsgLogger::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgMsgLoggerPtr( static_cast<WgMsgLogger*>(pObject.rawPtr()) );
+		return WgMsgLogger_p( static_cast<WgMsgLogger*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -207,7 +207,7 @@ void WgMsgLogger::logAllMsgs()
 
 //____ onMsg() ______________________________________________________________
 
-void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
+void WgMsgLogger::onMsg( const WgMsg_p& _pMsg )
 {
 	if( m_msgFilter[_pMsg->type()] == false )
 		return;
@@ -249,7 +249,7 @@ void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 			break;
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 
 			WgCoord	now		= pMsg->currPos();
 			WgCoord 	prev	= pMsg->prevPos();
@@ -264,7 +264,7 @@ void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
 
 			const static char outside[] = "outside";
 			const static char inside[] = "inside";
@@ -289,19 +289,19 @@ void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_KEY_PRESS:
 		{
-			WgKeyPressMsgPtr pMsg = WgKeyPressMsg::cast(_pMsg);
+			WgKeyPressMsg_p pMsg = WgKeyPressMsg::cast(_pMsg);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyRepeatMsgPtr pMsg = WgKeyRepeatMsg::cast(_pMsg);
+			WgKeyRepeatMsg_p pMsg = WgKeyRepeatMsg::cast(_pMsg);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
 		case WG_MSG_KEY_RELEASE:
 		{
-			WgKeyReleaseMsgPtr pMsg = WgKeyReleaseMsg::cast(_pMsg);
+			WgKeyReleaseMsg_p pMsg = WgKeyReleaseMsg::cast(_pMsg);
 			sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 			break;
 		}
@@ -310,7 +310,7 @@ void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 			break;
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::cast(_pMsg);
+			WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
 			sprintf( params, "wheel=%d distance=%d", pMsg->wheel(), pMsg->distance() );
 			break;
 		}
@@ -324,47 +324,47 @@ void WgMsgLogger::onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_VALUE_UPDATE:
 		{
-			WgValueUpdateMsgPtr pMsg = WgValueUpdateMsg::cast(_pMsg);
+			WgValueUpdateMsg_p pMsg = WgValueUpdateMsg::cast(_pMsg);
 			sprintf( params, "value=%ld fraction=%f", pMsg->value(), pMsg->fraction() );
 			break;
 		}
 
 		case WG_MSG_RANGE_UPDATE:
 		{
-			WgRangeUpdateMsgPtr pMsg = WgRangeUpdateMsg::cast(_pMsg);
+			WgRangeUpdateMsg_p pMsg = WgRangeUpdateMsg::cast(_pMsg);
 			sprintf( params, "pos=%f length=%f", pMsg->offset(), pMsg->length() );
 			break;
 		}
 
 		case WG_MSG_TEXT_EDIT:
 		{
-			WgTextEditMsgPtr pMsg = WgTextEditMsg::cast(_pMsg);
+			WgTextEditMsg_p pMsg = WgTextEditMsg::cast(_pMsg);
 			break;
 		}
 
 		case WG_MSG_ITEM_TOGGLE:
 		{
-			WgItemToggleMsgPtr pMsg = WgItemToggleMsg::cast(_pMsg);
+			WgItemToggleMsg_p pMsg = WgItemToggleMsg::cast(_pMsg);
 			sprintf( params, "set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
 			break;
 		}
 		case WG_MSG_ITEM_MOUSE_PRESS:
 		{
-			WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::cast(_pMsg);
+			WgItemMousePressMsg_p pMsg = WgItemMousePressMsg::cast(_pMsg);
 			sprintf( params, "id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 			break;
 		}
 				
 		case WG_MSG_ITEMS_SELECT:
 		{
-			WgItemsSelectMsgPtr pMsg = WgItemsSelectMsg::cast(_pMsg);
+			WgItemsSelectMsg_p pMsg = WgItemsSelectMsg::cast(_pMsg);
 			sprintf( params, "nbItems=%d", pMsg->nbItems() );
 			break;
 		}
 
 		case WG_MSG_ITEMS_UNSELECT:
 		{
-			WgItemsUnselectMsgPtr pMsg = WgItemsUnselectMsg::cast(_pMsg);
+			WgItemsUnselectMsg_p pMsg = WgItemsUnselectMsg::cast(_pMsg);
 			sprintf( params, "nbItems=%d", pMsg->nbItems() );
 			break;
 		}
@@ -408,7 +408,7 @@ string WgMsgLogger::_formatTimestamp( int64_t ms ) const
 
 //____ _formatSource() __________________________________________________________
 
-string WgMsgLogger::_formatSource( const WgMsgPtr& _pMsg ) const
+string WgMsgLogger::_formatSource( const WgMsg_p& _pMsg ) const
 {
 	std::string	out;
 
@@ -432,7 +432,7 @@ string WgMsgLogger::_formatSource( const WgMsgPtr& _pMsg ) const
 
 //____ _formatCopyTo() __________________________________________________________
 
-string WgMsgLogger::_formatCopyTo( const WgMsgPtr& _pMsg ) const
+string WgMsgLogger::_formatCopyTo( const WgMsg_p& _pMsg ) const
 {
 	std::string	out;
 
@@ -453,7 +453,7 @@ string WgMsgLogger::_formatCopyTo( const WgMsgPtr& _pMsg ) const
 
 //____ _formatModkeys() __________________________________________________________
 
-string WgMsgLogger::_formatModkeys( const WgMsgPtr& _pMsg ) const
+string WgMsgLogger::_formatModkeys( const WgMsg_p& _pMsg ) const
 {
 	WgModifierKeys keys = _pMsg->modKeys();
 
@@ -471,7 +471,7 @@ string WgMsgLogger::_formatModkeys( const WgMsgPtr& _pMsg ) const
 
 //____ _formatPointerPos() _____________________________________________________
 
-string WgMsgLogger::_formatPointerPos( const WgMsgPtr& _pMsg ) const
+string WgMsgLogger::_formatPointerPos( const WgMsg_p& _pMsg ) const
 {
 	WgCoord globalPos = _pMsg->pointerPos();
 
@@ -485,7 +485,7 @@ string WgMsgLogger::_formatPointerPos( const WgMsgPtr& _pMsg ) const
 
 //____ _formatPointerStyle() _____________________________________________________
 
-string WgMsgLogger::_formatPointerStyle( const WgPointerChangeMsgPtr& _pMsg ) const
+string WgMsgLogger::_formatPointerStyle( const WgPointerChangeMsg_p& _pMsg ) const
 {
 	switch( _pMsg->style() )
 	{

@@ -32,20 +32,20 @@
 #endif
 
 class WgOscilloscope;
-typedef	WgStrongPtr<WgOscilloscope,WgWidgetPtr>		WgOscilloscopePtr;
-typedef	WgWeakPtr<WgOscilloscope,WgWidgetWeakPtr>	WgOscilloscopeWeakPtr;
+typedef	WgStrongPtr<WgOscilloscope,WgWidget_p>		WgOscilloscope_p;
+typedef	WgWeakPtr<WgOscilloscope,WgWidget_wp>	WgOscilloscope_wp;
 
 //____ WgOscilloscope ____________________________________________________________
 
 class WgOscilloscope : public WgWidget
 {
 public:
-	static WgOscilloscopePtr	create() { return WgOscilloscopePtr(new WgOscilloscope()); }
+	static WgOscilloscope_p	create() { return WgOscilloscope_p(new WgOscilloscope()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgOscilloscopePtr	cast( const WgObjectPtr& pObject );
+	static WgOscilloscope_p	cast( const WgObject_p& pObject );
 
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
@@ -58,7 +58,7 @@ public:
 
 	void	ClearMarkers();
 	void	AddMarker( int xOfs, float yOfs );
-	void	SetMarkerSkin( const WgSkinPtr& pSkin );
+	void	SetMarkerSkin( const WgSkin_p& pSkin );
 
 	WgSize	preferredSize() const;
 
@@ -94,7 +94,7 @@ private:
 	int				m_nMarkers;
 	Marker *		m_pMarkers;
 	
-	WgSkinPtr		m_pMarkerSkin;
+	WgSkin_p		m_pMarkerSkin;
 };
 
 

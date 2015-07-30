@@ -73,10 +73,10 @@ const char * WgAnimPlayer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgAnimPlayerPtr WgAnimPlayer::cast( const WgObjectPtr& pObject )
+WgAnimPlayer_p WgAnimPlayer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgAnimPlayerPtr( static_cast<WgAnimPlayer*>(pObject.rawPtr()) );
+		return WgAnimPlayer_p( static_cast<WgAnimPlayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -84,7 +84,7 @@ WgAnimPlayerPtr WgAnimPlayer::cast( const WgObjectPtr& pObject )
 
 //____ SetAnimation() ____________________________________________________________
 
-bool WgAnimPlayer::SetAnimation( const WgGfxAnimPtr& pAnim )
+bool WgAnimPlayer::SetAnimation( const WgGfxAnim_p& pAnim )
 {
 	m_pAnim			= pAnim;
 	m_playPos		= 0.0;
@@ -258,7 +258,7 @@ void WgAnimPlayer::_playPosUpdated()
 
 //____ _onMsg() ______________________________________________________________
 
-void WgAnimPlayer::_onMsg( const WgMsgPtr& pMsg )
+void WgAnimPlayer::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg( pMsg );
 

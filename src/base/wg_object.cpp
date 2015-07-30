@@ -87,7 +87,7 @@ void WgObject::_destroy()
  * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
  */
  
-WgObjectPtr WgObject::cast( const WgObjectPtr& pObject )
+WgObject_p WgObject::cast( const WgObject_p& pObject )
 {
 	return pObject;
 }

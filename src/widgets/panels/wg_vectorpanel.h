@@ -36,11 +36,11 @@
 #endif
 
 class WgVectorPanel;
-typedef	WgStrongPtr<WgVectorPanel,WgPanelPtr>		WgVectorPanelPtr;
-typedef	WgWeakPtr<WgVectorPanel,WgPanelWeakPtr>	WgVectorPanelWeakPtr;
+typedef	WgStrongPtr<WgVectorPanel,WgPanel_p>		WgVectorPanel_p;
+typedef	WgWeakPtr<WgVectorPanel,WgPanel_wp>	WgVectorPanel_wp;
 
 class WgVectorHook;
-typedef	WgHookTypePtr<WgVectorHook,WgPanelHookPtr>	WgVectorHookPtr;
+typedef	WgHookTypePtr<WgVectorHook,WgPanelHook_p>	WgVectorHook_p;
 
 //____ WgVectorHook ___________________________________________________________
 
@@ -54,7 +54,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgVectorHookPtr	cast( const WgHookPtr& pInterface );
+	static WgVectorHook_p	cast( const WgHook_p& pInterface );
 
 	WgCoord	pos() const;
 	WgSize	size() const;
@@ -62,14 +62,14 @@ public:
 	WgCoord	globalPos() const;
 	WgRect	globalGeo() const;
 
-	WgVectorHookPtr	prev() const { return _prev(); }
-	WgVectorHookPtr	next() const { return _next(); }
-	WgVectorPanelPtr parent() const;
+	WgVectorHook_p	prev() const { return _prev(); }
+	WgVectorHook_p	next() const { return _next(); }
+	WgVectorPanel_p parent() const;
 
 	bool			moveForward();
 	bool			moveBackward();
-	bool			moveBefore( const WgVectorHookPtr& pSibling );
-	bool			moveAfter( const WgVectorHookPtr& pSibling );
+	bool			moveBefore( const WgVectorHook_p& pSibling );
+	bool			moveAfter( const WgVectorHook_p& pSibling );
 	bool			moveFirst();
 	bool			moveLast();
 
@@ -98,12 +98,12 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVectorPanelPtr	cast( const WgObjectPtr& pObject );
+	static WgVectorPanel_p	cast( const WgObject_p& pObject );
 
-	WgVectorHookPtr addWidget( const WgWidgetPtr& pWidget ) { return _addWidget(pWidget.rawPtr() ); }
-	WgVectorHookPtr insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return _insertWidget( pWidget.rawPtr(), pSibling.rawPtr() ); }
+	WgVectorHook_p addWidget( const WgWidget_p& pWidget ) { return _addWidget(pWidget.rawPtr() ); }
+	WgVectorHook_p insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling ) { return _insertWidget( pWidget.rawPtr(), pSibling.rawPtr() ); }
 
-	bool			removeWidget( const WgWidgetPtr& pWidget );
+	bool			removeWidget( const WgWidget_p& pWidget );
 	bool			clear();
 
 protected:

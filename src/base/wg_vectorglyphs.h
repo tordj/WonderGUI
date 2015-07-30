@@ -53,18 +53,18 @@ typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
 class WgVectorGlyphs;
-typedef	WgStrongPtr<WgVectorGlyphs,WgGlyphsetPtr>		WgVectorGlyphsPtr;
-typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphsetWeakPtr>	WgVectorGlyphsWeakPtr;
+typedef	WgStrongPtr<WgVectorGlyphs,WgGlyphset_p>		WgVectorGlyphs_p;
+typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphset_wp>	WgVectorGlyphs_wp;
 
 class WgVectorGlyphs : public WgGlyphset
 {
 public:
-	static WgVectorGlyphsPtr	create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphsPtr(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
+	static WgVectorGlyphs_p	create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphs_p(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVectorGlyphsPtr	cast( const WgObjectPtr& pObject );
+	static WgVectorGlyphs_p	cast( const WgObject_p& pObject );
 
 	enum RenderMode
 	{
@@ -77,8 +77,8 @@ public:
 
 	inline Type	getType() const { return VECTOR; }
 
-	int			getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
-	WgGlyphPtr	getGlyph( Uint16 chr, int size );
+	int			getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size );
+	WgGlyph_p	getGlyph( Uint16 chr, int size );
 	bool		hasGlyph( Uint16 chr );
 
 	int			getHeight( int size );
@@ -97,7 +97,7 @@ public:
 	bool		setRenderMode( RenderMode mode, int startSize, int endSize );
 	inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
-	static void	setSurfaceFactory( const WgSurfaceFactoryPtr& pFactory );
+	static void	setSurfaceFactory( const WgSurfaceFactory_p& pFactory );
 	static void	clearCache();
 
 private:
@@ -130,13 +130,13 @@ private:
 	class CacheSurf : public WgLink
 	{
 	public:
-		CacheSurf( const WgSurfacePtr& _pSurf ) { pSurf = _pSurf; access = 0; }
+		CacheSurf( const WgSurface_p& _pSurf ) { pSurf = _pSurf; access = 0; }
 		~CacheSurf();
 
 		LINK_METHODS( CacheSurf );		
 
 		Uint32			access;			// Timestamp of last access.
-		WgSurfacePtr	pSurf;
+		WgSurface_p	pSurf;
 	};
 
 
@@ -193,7 +193,7 @@ private:
 
 	static WgChain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
 	static WgChain<CacheSurf>	s_cacheSurfaces;
-	static WgSurfaceFactoryPtr	s_pSurfaceFactory;
+	static WgSurfaceFactory_p	s_pSurfaceFactory;
 
 	//____
 

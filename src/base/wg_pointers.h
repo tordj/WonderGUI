@@ -34,37 +34,37 @@
 #	include	<wg_interface.h>
 #endif
 
-class WgObjectWeakPtr;
+class WgObject_wp;
 
-//____ WgObjectPtr _____________________________________________________________
+//____ WgObject_p _____________________________________________________________
 
-class WgObjectPtr
+class WgObject_p
 {
 public:
-	WgObjectPtr(WgObject* p=0)
+	WgObject_p(WgObject* p=0)
 	{
 		m_pObj = p;
 		if( p )
 			p->_incRefCount();
 	}
 
-	WgObjectPtr(const WgObjectPtr& r)
+	WgObject_p(const WgObject_p& r)
 	{
 		m_pObj = r.m_pObj;
 		if( m_pObj )
 			m_pObj->_incRefCount();
 	}
 
-	WgObjectPtr( const WgObjectWeakPtr& r );
+	WgObject_p( const WgObject_wp& r );
 
-	~WgObjectPtr()
+	~WgObject_p()
 	{
 		if( m_pObj )
 			m_pObj->_decRefCount();
 	}
 
 
-    inline WgObjectPtr & operator=( WgObjectPtr const & r)
+    inline WgObject_p & operator=( WgObject_p const & r)
 	{
 		copy( r );
 		return *this;
@@ -73,15 +73,15 @@ public:
 	inline WgObject& operator*() const { return * m_pObj; }
 	inline WgObject* operator->() const{ return m_pObj; }
 
-	inline bool operator==(const WgObjectPtr& other) const { return m_pObj == other.m_pObj; }
-	inline bool operator!=(const WgObjectPtr& other) const { return m_pObj != other.m_pObj; }
+	inline bool operator==(const WgObject_p& other) const { return m_pObj == other.m_pObj; }
+	inline bool operator!=(const WgObject_p& other) const { return m_pObj != other.m_pObj; }
 
 	inline operator bool() const { return (m_pObj != 0); }
 
 	inline WgObject * rawPtr() const { return m_pObj; }
 
 protected:
-	void copy( WgObjectPtr const & r )
+	void copy( WgObject_p const & r )
 	{
 		if( m_pObj != r.m_pObj )
 		{
@@ -128,15 +128,15 @@ public:
 };
 
 
-//____ WgObjectWeakPtr ______________________________________________________________
+//____ WgObject_wp ______________________________________________________________
 
-class WgObjectWeakPtr
+class WgObject_wp
 {
 public:
-	WgObjectWeakPtr() : m_pHub(0) {}
-	WgObjectWeakPtr( WgObject * pObj );
-	WgObjectWeakPtr(const WgObjectPtr& r);
-	WgObjectWeakPtr(const WgObjectWeakPtr& r)
+	WgObject_wp() : m_pHub(0) {}
+	WgObject_wp( WgObject * pObj );
+	WgObject_wp(const WgObject_p& r);
+	WgObject_wp(const WgObject_wp& r)
 	{
 
 		m_pHub = r.m_pHub;
@@ -144,9 +144,9 @@ public:
 			m_pHub->refCnt++;
 	}
 
-	~WgObjectWeakPtr();
+	~WgObject_wp();
 
-    inline WgObjectWeakPtr& operator=( WgObjectWeakPtr const & r)
+    inline WgObject_wp& operator=( WgObject_wp const & r)
 	{
 		copy( r );
 		return *this;
@@ -156,12 +156,12 @@ public:
 	inline WgObject * operator->() const { return rawPtr(); }
 
 	//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
-	inline bool operator==(const WgObjectWeakPtr& other) const { return m_pHub == other.m_pHub; }
-	inline bool operator!=(const WgObjectWeakPtr& other) const { return m_pHub != other.m_pHub; }
-	inline bool operator<(const WgObjectWeakPtr& other) const { return m_pHub < other.m_pHub ? true : false; }
-	inline bool operator>(const WgObjectWeakPtr& other) const { return m_pHub > other.m_pHub ? true : false; }
-	inline bool operator<=(const WgObjectWeakPtr& other) const { return m_pHub <= other.m_pHub ? true : false; }
-	inline bool operator>=(const WgObjectWeakPtr& other) const { return m_pHub >= other.m_pHub ? true : false; }
+	inline bool operator==(const WgObject_wp& other) const { return m_pHub == other.m_pHub; }
+	inline bool operator!=(const WgObject_wp& other) const { return m_pHub != other.m_pHub; }
+	inline bool operator<(const WgObject_wp& other) const { return m_pHub < other.m_pHub ? true : false; }
+	inline bool operator>(const WgObject_wp& other) const { return m_pHub > other.m_pHub ? true : false; }
+	inline bool operator<=(const WgObject_wp& other) const { return m_pHub <= other.m_pHub ? true : false; }
+	inline bool operator>=(const WgObject_wp& other) const { return m_pHub >= other.m_pHub ? true : false; }
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
@@ -173,7 +173,7 @@ public:
 			return 0;
 	}
 
-	void copy( WgObjectWeakPtr const & r );
+	void copy( WgObject_wp const & r );
 
 	WgWeakPtrHub * m_pHub;
 
@@ -208,21 +208,21 @@ public:
 };
 
 
-//____ WgInterfacePtr _____________________________________________________________
+//____ WgInterface_p _____________________________________________________________
 
 // m_pObj and m_pInterface must both be valid or null.
 
-class WgInterfacePtr
+class WgInterface_p
 {
 public:
 
-	WgInterfacePtr()
+	WgInterface_p()
 	{
 		m_pObj = 0;
 		m_pInterface = 0;
 	}
 
-	WgInterfacePtr(WgObject* pObj, WgInterface* pInterface )
+	WgInterface_p(WgObject* pObj, WgInterface* pInterface )
 	{
 		m_pInterface = pInterface;
 		m_pObj = pObj;
@@ -230,7 +230,7 @@ public:
 			pObj->_incRefCount();
 	}
 
-	WgInterfacePtr(const WgInterfacePtr& r)
+	WgInterface_p(const WgInterface_p& r)
 	{
 		m_pInterface = r.m_pInterface;
 		m_pObj = r.m_pObj;
@@ -238,14 +238,14 @@ public:
 			m_pObj->_incRefCount();
 	}
 
-	~WgInterfacePtr()
+	~WgInterface_p()
 	{
 		if( m_pObj )
 			m_pObj->_decRefCount();
 	}
 
 
-    inline WgInterfacePtr & operator=( WgInterfacePtr const & r)
+    inline WgInterface_p & operator=( WgInterface_p const & r)
 	{
 		copy( r );
 		return *this;
@@ -254,8 +254,8 @@ public:
 	inline WgInterface& operator*() const { return * m_pInterface; }
 	inline WgInterface* operator->() const{ return m_pInterface; }
 
-	inline bool operator==(const WgInterfacePtr& other) const { return m_pInterface == other.m_pInterface; }
-	inline bool operator!=(const WgInterfacePtr& other) const { return m_pInterface != other.m_pInterface; }
+	inline bool operator==(const WgInterface_p& other) const { return m_pInterface == other.m_pInterface; }
+	inline bool operator!=(const WgInterface_p& other) const { return m_pInterface != other.m_pInterface; }
 
 	inline operator bool() const { return (m_pInterface != 0); }
 
@@ -263,7 +263,7 @@ public:
 	inline WgObject * getRealObjectPtr() const { return m_pObj; }
 
 protected:
-	void copy( WgInterfacePtr const & r )
+	void copy( WgInterface_p const & r )
 	{
 		m_pInterface = r.m_pInterface;
 		if( m_pObj != r.m_pObj )
@@ -302,15 +302,15 @@ public:
 };
 
 
-//____ WgInterfaceWeakPtr ______________________________________________________________
+//____ WgInterface_wp ______________________________________________________________
 
-class WgInterfaceWeakPtr
+class WgInterface_wp
 {
 public:
-	WgInterfaceWeakPtr() { m_pHub = 0; m_pInterface = 0; }
-	WgInterfaceWeakPtr( WgObject * pObj, WgInterface * pInterface );
+	WgInterface_wp() { m_pHub = 0; m_pInterface = 0; }
+	WgInterface_wp( WgObject * pObj, WgInterface * pInterface );
 
-	WgInterfaceWeakPtr(const WgInterfaceWeakPtr& r)
+	WgInterface_wp(const WgInterface_wp& r)
 	{
 		m_pInterface = r.m_pInterface;
 		m_pHub = r.m_pHub;
@@ -318,10 +318,10 @@ public:
 			m_pHub->refCnt++;
 	}
 
-	~WgInterfaceWeakPtr();
+	~WgInterface_wp();
 
 
-    inline WgInterfaceWeakPtr& operator=( WgInterfaceWeakPtr const & r)
+    inline WgInterface_wp& operator=( WgInterface_wp const & r)
 	{
 		copy( r );
 		return *this;
@@ -330,12 +330,12 @@ public:
 	inline WgInterface& operator*() const { return * rawPtr(); }
 	inline WgInterface * operator->() const { return rawPtr(); }
 
-	inline bool operator==(const WgInterfaceWeakPtr& other) const { return m_pInterface == other.m_pInterface; }
-	inline bool operator!=(const WgInterfaceWeakPtr& other) const { return m_pInterface != other.m_pInterface; }
-	inline bool operator<(const WgInterfaceWeakPtr& other) const { return m_pInterface < other.m_pInterface ? true : false; }
-	inline bool operator>(const WgInterfaceWeakPtr& other) const { return m_pInterface > other.m_pInterface ? true : false; }
-	inline bool operator<=(const WgInterfaceWeakPtr& other) const { return m_pInterface <= other.m_pInterface ? true : false; }
-	inline bool operator>=(const WgInterfaceWeakPtr& other) const { return m_pInterface >= other.m_pInterface ? true : false; }
+	inline bool operator==(const WgInterface_wp& other) const { return m_pInterface == other.m_pInterface; }
+	inline bool operator!=(const WgInterface_wp& other) const { return m_pInterface != other.m_pInterface; }
+	inline bool operator<(const WgInterface_wp& other) const { return m_pInterface < other.m_pInterface ? true : false; }
+	inline bool operator>(const WgInterface_wp& other) const { return m_pInterface > other.m_pInterface ? true : false; }
+	inline bool operator<=(const WgInterface_wp& other) const { return m_pInterface <= other.m_pInterface ? true : false; }
+	inline bool operator>=(const WgInterface_wp& other) const { return m_pInterface >= other.m_pInterface ? true : false; }
 
 	inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
@@ -347,7 +347,7 @@ public:
 			return 0;
 	}
 
-	void copy( WgInterfaceWeakPtr const & r );
+	void copy( WgInterface_wp const & r );
 
 	WgWeakPtrHub *	m_pHub;
 	WgInterface *	m_pInterface;

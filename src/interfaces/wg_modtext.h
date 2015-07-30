@@ -53,8 +53,8 @@ class WgString;
 class WgCharBuffer;
 
 class WgModText;
-typedef	WgIStrongPtr<WgModText,WgTextPtr>	WgModTextPtr;
-typedef	WgIWeakPtr<WgModText,WgTextWeakPtr>	WgModTextWeakPtr;
+typedef	WgIStrongPtr<WgModText,WgText_p>	WgModText_p;
+typedef	WgIWeakPtr<WgModText,WgText_wp>	WgModText_wp;
 
 /**
  * @brief Interface to a text field with text that is modifiable through the api
@@ -72,8 +72,8 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgModTextPtr		cast( const WgInterfacePtr& pInterface );
-	inline WgModTextPtr		ptr() { return WgModTextPtr(_object(),this); }
+	static WgModText_p		cast( const WgInterface_p& pInterface );
+	inline WgModText_p		ptr() { return WgModText_p(_object(),this); }
 
 	inline void				clear() { m_pField->clear(); }
 

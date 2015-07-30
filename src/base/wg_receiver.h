@@ -28,11 +28,11 @@
 #endif
 
 class WgMsg;
-typedef	WgStrongPtr<WgMsg,WgObjectPtr>			WgMsgPtr;
+typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
 
 class WgReceiver;
-typedef	WgStrongPtr<WgReceiver,WgObjectPtr>		WgReceiverPtr;
-typedef	WgWeakPtr<WgReceiver,WgObjectWeakPtr>		WgReceiverWeakPtr;
+typedef	WgStrongPtr<WgReceiver,WgObject_p>		WgReceiver_p;
+typedef	WgWeakPtr<WgReceiver,WgObject_wp>		WgReceiver_wp;
 
 class WgReceiver : public WgObject
 {
@@ -41,9 +41,9 @@ public:
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgReceiverPtr	cast( const WgObjectPtr& pObject );
+	static WgReceiver_p	cast( const WgObject_p& pObject );
 
-	virtual void onMsg( const WgMsgPtr& pMsg ) = 0;
+	virtual void onMsg( const WgMsg_p& pMsg ) = 0;
 
 protected:
 	WgReceiver() {};

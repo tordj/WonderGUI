@@ -75,10 +75,10 @@ const char * WgOscilloscope::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgOscilloscopePtr WgOscilloscope::cast( const WgObjectPtr& pObject )
+WgOscilloscope_p WgOscilloscope::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgOscilloscopePtr( static_cast<WgOscilloscope*>(pObject.rawPtr()) );
+		return WgOscilloscope_p( static_cast<WgOscilloscope*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -222,7 +222,7 @@ void WgOscilloscope::AddMarker( int xOfs, float yOfs )
 
 //____ SetMarkerSkin() _________________________________________________________
 
-void WgOscilloscope::SetMarkerSkin( const WgSkinPtr& pSkin )
+void WgOscilloscope::SetMarkerSkin( const WgSkin_p& pSkin )
 {
 	if( m_pMarkerSkin != pSkin )
 	{

@@ -36,19 +36,19 @@ const char * WgInterface::className( void ) const
 }
 
 
-WgInterfacePtr WgInterface::cast( const WgInterfacePtr& pInterface )
+WgInterface_p WgInterface::cast( const WgInterface_p& pInterface )
 {
 	return pInterface;
 }
 
 
-WgInterfacePtr	WgInterface::ptr()
+WgInterface_p	WgInterface::ptr()
 {
-	return WgInterfacePtr(_object(),this);
+	return WgInterface_p(_object(),this);
 }
 
-WgObjectPtr WgInterface::holder() 
+WgObject_p WgInterface::holder() 
 { 
-	return WgObjectPtr( _object() ); 
+	return WgObject_p( _object() ); 
 }
 

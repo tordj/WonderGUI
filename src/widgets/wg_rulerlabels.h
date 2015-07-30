@@ -14,27 +14,27 @@
 #endif
 
 class WgRulerLabels;
-typedef	WgStrongPtr<WgRulerLabels,WgWidgetPtr>		WgRulerLabelsPtr;
-typedef	WgWeakPtr<WgRulerLabels,WgWidgetWeakPtr>	WgRulerLabelsWeakPtr;
+typedef	WgStrongPtr<WgRulerLabels,WgWidget_p>		WgRulerLabels_p;
+typedef	WgWeakPtr<WgRulerLabels,WgWidget_wp>	WgRulerLabels_wp;
 
 //____ WgRulerLabels ____________________________________________________________
 
 class WgRulerLabels : public WgWidget, protected WgTextHolder
 {
 public:
-	static WgRulerLabelsPtr	create() { return WgRulerLabelsPtr(new WgRulerLabels()); }
+	static WgRulerLabels_p	create() { return WgRulerLabels_p(new WgRulerLabels()); }
 	
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRulerLabelsPtr	cast( const WgObjectPtr& pObject );
+	static WgRulerLabels_p	cast( const WgObject_p& pObject );
 	
 	//____ Methods __________________________________________
 	
-	void			AddLabel( const WgCharSeq& text, const WgTextStylePtr& pStyle, float offset );
+	void			AddLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset );
  	WgSize			preferredSize() const;
 	void			SetDirection( WgDirection direction );
-	WgModTextPtr	GetLabel(int index);
+	WgModText_p	GetLabel(int index);
 
 
 protected:
@@ -45,7 +45,7 @@ protected:
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onStateChanged( WgState oldState );
-	void			_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void			_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	WgObject * 		_object() { return this; };

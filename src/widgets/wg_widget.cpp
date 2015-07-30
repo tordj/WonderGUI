@@ -63,17 +63,17 @@ const char * WgWidget::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgWidgetPtr WgWidget::cast( const WgObjectPtr& pObject )
+WgWidget_p WgWidget::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgWidgetPtr( static_cast<WgWidget*>(pObject.rawPtr()) );
+		return WgWidget_p( static_cast<WgWidget*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ parent() _______________________________________________________________
 
-WgContainerPtr WgWidget::parent() const
+WgContainer_p WgWidget::parent() const
 { 
 	if( m_pHook ) 
 		return m_pHook->parent(); 
@@ -139,9 +139,9 @@ bool WgWidget::markTest( const WgCoord& ofs )
 
 //____ setSkin() ______________________________________________________________
 
-void WgWidget::setSkin( const WgSkinPtr& pSkin )
+void WgWidget::setSkin( const WgSkin_p& pSkin )
 {
-	WgSkinPtr pOldSkin = m_pSkin;
+	WgSkin_p pOldSkin = m_pSkin;
 	m_pSkin = pSkin;
 	_onSkinChanged( pOldSkin, m_pSkin );
 }
@@ -150,7 +150,7 @@ void WgWidget::setSkin( const WgSkinPtr& pSkin )
 
 //____ CloneContent() _________________________________________________________
 
-bool WgWidget::CloneContent( const WgWidgetPtr& _pOrg )
+bool WgWidget::CloneContent( const WgWidget_p& _pOrg )
 {
 	if( _pOrg->className() != className() )
 		return false;
@@ -323,7 +323,7 @@ WgSize WgWidget::minSize() const
 
 //____ onMsg() _______________________________________________________________
 
-void WgWidget::onMsg( const WgMsgPtr& pMsg )
+void WgWidget::onMsg( const WgMsg_p& pMsg )
 {
 	// SetRepost before _onMsg() so that subclasses can swallow the respost.
 	
@@ -342,7 +342,7 @@ void WgWidget::onMsg( const WgMsgPtr& pMsg )
 		case WG_MSG_KEY_RELEASE:
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWidgetPtr pParent = parent();
+			WgWidget_p pParent = parent();
 			if( pParent )
 				pMsg->setRepost(pParent,pParent);
 			break;
@@ -444,7 +444,7 @@ void WgWidget::_onRefresh()
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgWidget::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgWidget::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	if( !pOldSkin || !pNewSkin || pOldSkin->contentPadding() != pNewSkin->contentPadding() ||
 		pOldSkin->preferredSize() != pNewSkin->preferredSize() ||
@@ -474,7 +474,7 @@ void WgWidget::_onStateChanged( WgState oldState )
 
 //____ _onMsg() _____________________________________________________________
 
-void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
+void WgWidget::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgState oldState = m_state;
 
@@ -491,7 +491,7 @@ void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 			break;
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
 			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.isHovered() )
@@ -503,7 +503,7 @@ void WgWidget::_onMsg( const WgMsgPtr& _pMsg )
 		}
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
 			if( pMsg->button() == WG_BUTTON_LEFT )
 			{
 				if( m_state.isHovered() )

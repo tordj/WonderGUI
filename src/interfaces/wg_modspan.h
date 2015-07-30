@@ -28,8 +28,8 @@
 
 
 class WgModSpan;
-typedef	WgIStrongPtr<WgModSpan,WgSlideSpanPtr>		WgModSpanPtr;
-typedef	WgIWeakPtr<WgModSpan,WgSlideSpanWeakPtr>	WgModSpanWeakPtr;
+typedef	WgIStrongPtr<WgModSpan,WgSlideSpan_p>		WgModSpan_p;
+typedef	WgIWeakPtr<WgModSpan,WgSlideSpan_wp>	WgModSpan_wp;
 
 
 class WgModSpan : public WgSlideSpan
@@ -40,8 +40,8 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgModSpanPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgModSpanPtr		ptr() { return WgModSpanPtr(_object(),this); }
+	static WgModSpan_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgModSpan_p		ptr() { return WgModSpan_p(_object(),this); }
 
 
 	inline bool	setMin( int min ) { return m_pItem->setMin(min); }

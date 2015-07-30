@@ -36,20 +36,20 @@
 #endif
 
 class WgLineEditor;
-typedef	WgStrongPtr<WgLineEditor,WgWidgetPtr>		WgLineEditorPtr;
-typedef	WgWeakPtr<WgLineEditor,WgWidgetWeakPtr>	WgLineEditorWeakPtr;
+typedef	WgStrongPtr<WgLineEditor,WgWidget_p>		WgLineEditor_p;
+typedef	WgWeakPtr<WgLineEditor,WgWidget_wp>	WgLineEditor_wp;
 
 //____ WgLineEditor ____________________________________________________________
 
 class WgLineEditor : public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgLineEditorPtr	create() { return WgLineEditorPtr(new WgLineEditor()); }
+	static WgLineEditor_p	create() { return WgLineEditor_p(new WgLineEditor()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLineEditorPtr	cast( const WgObjectPtr& pObject );
+	static WgLineEditor_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -80,12 +80,12 @@ protected:
 	bool	_isEditable() const { return m_text.isEditable(); }
 	bool	_isSelectable() const { return m_text.isSelectable(); }
 
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	void	_onStateChanged( WgState oldState );
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onNewSize( const WgSize& size );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 	WgObject * 		_object() { return this; };
 	void			_onFieldDirty( WgField * pField );

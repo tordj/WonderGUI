@@ -29,11 +29,11 @@
 
 
 class WgModalLayer;
-typedef	WgStrongPtr<WgModalLayer,WgLayerPtr>	WgModalLayerPtr;
-typedef	WgWeakPtr<WgModalLayer,WgLayerWeakPtr>	WgModalLayerWeakPtr;
+typedef	WgStrongPtr<WgModalLayer,WgLayer_p>	WgModalLayer_p;
+typedef	WgWeakPtr<WgModalLayer,WgLayer_wp>	WgModalLayer_wp;
 
 class WgModalHook;
-typedef	WgHookTypePtr<WgModalHook,WgLayerHookPtr>	WgModalHookPtr;
+typedef	WgHookTypePtr<WgModalHook,WgLayerHook_p>	WgModalHook_p;
 
 class WgModalHook : public WgLayerHook, protected WgLink
 {
@@ -44,7 +44,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgModalHookPtr	cast( const WgHookPtr& pInterface );
+	static WgModalHook_p	cast( const WgHook_p& pInterface );
 
 	void	top();								// Put us ontop of all our siblings.
 
@@ -66,10 +66,10 @@ public:
 
 	// Standard Hook methods
 
-	WgModalHookPtr	prev() const { return _prev(); }
-	WgModalHookPtr	next() const { return _next(); }
+	WgModalHook_p	prev() const { return _prev(); }
+	WgModalHook_p	next() const { return _next(); }
 
-	WgModalLayerPtr	parent() const;
+	WgModalLayer_p	parent() const;
 
 protected:
 	// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
@@ -92,7 +92,7 @@ protected:
 	WgRect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 
-	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
+	WgWidget_wp	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
 };
 
 
@@ -101,23 +101,23 @@ class WgModalLayer : public WgLayer
 	friend class WgModalHook;
 
 public:
-	static WgModalLayerPtr	create() { return WgModalLayerPtr(new WgModalLayer()); }
+	static WgModalLayer_p	create() { return WgModalLayer_p(new WgModalLayer()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalLayerPtr	cast( const WgObjectPtr& pObject );
+	static WgModalLayer_p	cast( const WgObject_p& pObject );
 
-	WgModalHookPtr	addModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
-	WgModalHookPtr	addModalWidget( const WgWidgetPtr& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, WgRect(pos,0,0), origo); }
+	WgModalHook_p	addModalWidget( const WgWidget_p& pWidget, const WgRect& geometry, WgOrigo origo = WG_NORTHWEST );
+	WgModalHook_p	addModalWidget( const WgWidget_p& pWidget, const WgCoord& pos, WgOrigo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, WgRect(pos,0,0), origo); }
 
 	bool			removeModalWidgets();
 
-	bool			removeWidget( const WgWidgetPtr& pWidget );
+	bool			removeWidget( const WgWidget_p& pWidget );
 	bool			clear();
 
-	WgModalHookPtr	firstModalHook();
-	WgModalHookPtr	lastModalHook();
+	WgModalHook_p	firstModalHook();
+	WgModalHook_p	lastModalHook();
 
 
 	// Overloaded from WgWidget
@@ -153,11 +153,11 @@ private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onMsg( const WgMsgPtr& pMsg );
+	void			_onMsg( const WgMsg_p& pMsg );
 
 	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 
-	WgWidgetWeakPtr			m_pBaseKeyFocus;
+	WgWidget_wp			m_pBaseKeyFocus;
 
 };
 

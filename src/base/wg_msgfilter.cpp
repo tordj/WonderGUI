@@ -324,12 +324,12 @@ WgMsgFilter	WgMsgFilter::MenuitemSelect( int itemId )
 	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, 0, _filterMenuitemMsg, itemId );
 }
 
-WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidgetPtr& pWidget )
+WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidget_p& pWidget )
 {
 	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.rawPtr(), _filterMenuitemMsg );
 }
 
-WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidgetPtr& pWidget, int itemId )
+WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidget_p& pWidget, int itemId )
 {
 	return WgMsgFilter( WG_MSG_MENUITEM_SELECT, pWidget.rawPtr(), _filterMenuitemMsg, itemId );
 }
@@ -337,12 +337,12 @@ WgMsgFilter	WgMsgFilter::MenuitemSelect( const WgWidgetPtr& pWidget, int itemId 
 
 //_____________________________________________________________________________
 
-bool WgMsgFilter::_filterDummy( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterDummy( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	return true;
 }
 
-bool WgMsgFilter::_filterType( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterType( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 		return true;
@@ -350,7 +350,7 @@ bool WgMsgFilter::_filterType( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
 	return false;
 }
 
-bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
@@ -358,7 +358,7 @@ bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilte
 			return true;
 		else
 		{
-			WgMouseButtonMsgPtr p = WgMouseButtonMsg::cast(pMsg);
+			WgMouseButtonMsg_p p = WgMouseButtonMsg::cast(pMsg);
 
 			if( p->button() == filter.m_data1 )
 				return true;
@@ -367,7 +367,7 @@ bool WgMsgFilter::_filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilte
 	return false;
 }
 
-bool WgMsgFilter::_filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterKeyMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
@@ -375,7 +375,7 @@ bool WgMsgFilter::_filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filte
 			return true;
 		else
 		{
-			WgKeyMsgPtr p = WgKeyMsg::cast(pMsg);
+			WgKeyMsg_p p = WgKeyMsg::cast(pMsg);
 
 			if( p->translatedKeyCode() == filter.m_data1 )
 				return true;
@@ -384,11 +384,11 @@ bool WgMsgFilter::_filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filte
 	return false;
 }
 
-bool WgMsgFilter::_filterNativeKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterNativeKeyMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
-		WgKeyMsgPtr p = WgKeyMsg::cast(pMsg);
+		WgKeyMsg_p p = WgKeyMsg::cast(pMsg);
 
 		if( p->nativeKeyCode() == filter.m_data1 )
 			return true;
@@ -396,7 +396,7 @@ bool WgMsgFilter::_filterNativeKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 	return false;
 }
 
-bool WgMsgFilter::_filterCharacterMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterCharacterMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
@@ -408,7 +408,7 @@ bool WgMsgFilter::_filterCharacterMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 	return false;
 }
 
-bool WgMsgFilter::_filterWheelRollMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterWheelRollMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
@@ -420,7 +420,7 @@ bool WgMsgFilter::_filterWheelRollMsgs( const WgMsgPtr& pMsg, const WgMsgFilter&
 	return false;
 }
 
-bool WgMsgFilter::_filterItemToggleMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterItemToggleMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
@@ -433,11 +433,11 @@ bool WgMsgFilter::_filterItemToggleMsgs( const WgMsgPtr& pMsg, const WgMsgFilter
 }
 
 
-bool WgMsgFilter::_filterItemMousePressMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterItemMousePressMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{
-		WgItemMousePressMsgPtr pMsg = WgItemMousePressMsg::cast(pMsg);
+		WgItemMousePressMsg_p pMsg = WgItemMousePressMsg::cast(pMsg);
 
 		if( (filter.m_data1 == -1 || pMsg->itemId() == filter.m_data1) ||
 			(filter.m_data2 == -1 || pMsg->button() == filter.m_data2) )
@@ -449,7 +449,7 @@ bool WgMsgFilter::_filterItemMousePressMsgs( const WgMsgPtr& pMsg, const WgMsgFi
 
 
 /*
-bool WgMsgFilter::_filterMenuitemMsg( const WgMsgPtr& pMsg, const WgMsgFilter& filter )
+bool WgMsgFilter::_filterMenuitemMsg( const WgMsg_p& pMsg, const WgMsgFilter& filter )
 {
 	if( pMsg->type() == filter.msgType() )
 	{

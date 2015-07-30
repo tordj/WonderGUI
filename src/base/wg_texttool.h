@@ -187,9 +187,9 @@ public:
 	static void			setGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb );
 	static void			setChars( const WgChar& ch, WgChar * pChar, Uint32 nb );
 
-	static void			setProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint32 nb );
-	static void			setLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb );
-	static void			setFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb );
+	static void			setProperties( const WgTextprop_p& pProp, WgChar * pChar, Uint32 nb );
+	static void			setLink( const WgTextLink_p& pLink, WgChar * pChar, Uint32 nb );
+	static void			setFont( const WgFont_p& pFont, WgChar * pChar, Uint32 nb );
 	static void			setBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb );
 
 	static void			setColor( const WgColor col, WgChar * pChar, Uint32 nb );
@@ -220,12 +220,12 @@ public:
 
 
 
-	static void			addPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state = WG_STATE_NORMAL );
+	static void			addPropAttributes( WgTextAttr& attr, const WgTextprop_p& pProp, WgState state = WG_STATE_NORMAL );
 //	static void			setAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state = WG_STATE_NORMAL );
 
-	static WgCaretPtr		getCursor( const WgLegacyTextField * pText );
-	static WgTextpropPtr	getSelectionProperties( const WgLegacyTextField * pText );
-	static WgTextpropPtr	getLinkProperties( const WgLegacyTextField * pText );
+	static WgCaret_p		getCursor( const WgLegacyTextField * pText );
+	static WgTextprop_p	getSelectionProperties( const WgLegacyTextField * pText );
+	static WgTextprop_p	getLinkProperties( const WgLegacyTextField * pText );
 
     static char *           itoa( int value, char * str, int base );
 
@@ -243,7 +243,7 @@ public:
 		TextpropEncoder( const WgResDB * pResDB );
 
 		Uint32	beginString();
-		Uint32	setProp( const WgTextpropPtr& pNewProp );
+		Uint32	setProp( const WgTextprop_p& pNewProp );
 		Uint32	endString();
 
 		inline const char * getCodes() const { return m_temp; }
@@ -258,8 +258,8 @@ public:
 
 		const WgResDB *	m_pResDB;
 
-		WgTextpropPtr	m_pBaseProp;
-		WgTextpropPtr	m_pActiveProp;
+		WgTextprop_p	m_pBaseProp;
+		WgTextprop_p	m_pActiveProp;
 	};
 
 
@@ -338,19 +338,19 @@ private:
 	class PropLinkModifier : public PropModifier
 	{
 	public:
-		PropLinkModifier( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
+		PropLinkModifier( const WgTextLink_p& pLink ) { m_pLink = pLink; }
 		void modify( WgTextprop& prop ) const { prop.setLink( m_pLink ); }
 	private:
-		WgTextLinkPtr	m_pLink;
+		WgTextLink_p	m_pLink;
 	};
 
 	class PropFontModifier : public PropModifier
 	{
 	public:
-		PropFontModifier( const WgFontPtr& pFont ) { m_pFont = pFont; }
+		PropFontModifier( const WgFont_p& pFont ) { m_pFont = pFont; }
 		void modify( WgTextprop& prop ) const { prop.setFont( m_pFont ); }
 	private:
-		WgFontPtr	m_pFont;
+		WgFont_p	m_pFont;
 	};
 
 	class PropStateSizeModifier : public PropModifier

@@ -44,10 +44,10 @@ const char * WgEditValue::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgEditValuePtr WgEditValue::cast( const WgInterfacePtr& pInterface )
+WgEditValue_p WgEditValue::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgEditValuePtr( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
+		return WgEditValue_p( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
 
 	return 0;
 }

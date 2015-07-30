@@ -27,18 +27,18 @@
 #endif
 
 class WgScalePreferredSizeBroker;
-typedef	WgStrongPtr<WgScalePreferredSizeBroker,WgSizeBrokerPtr>		WgScalePreferredSizeBrokerPtr;
-typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBrokerWeakPtr>	WgScalePreferredSizeBrokerWeakPtr;
+typedef	WgStrongPtr<WgScalePreferredSizeBroker,WgSizeBroker_p>		WgScalePreferredSizeBroker_p;
+typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBroker_wp>	WgScalePreferredSizeBroker_wp;
 
 class WgScalePreferredSizeBroker : public WgSizeBroker
 {
 public:
-	static WgScalePreferredSizeBrokerPtr	create() { return WgScalePreferredSizeBrokerPtr(new WgScalePreferredSizeBroker()); }
+	static WgScalePreferredSizeBroker_p	create() { return WgScalePreferredSizeBroker_p(new WgScalePreferredSizeBroker()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgScalePreferredSizeBrokerPtr	cast( const WgObjectPtr& pObject );
+	static WgScalePreferredSizeBroker_p	cast( const WgObject_p& pObject );
 
 	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
 	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;

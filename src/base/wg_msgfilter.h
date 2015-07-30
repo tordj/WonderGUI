@@ -42,7 +42,7 @@
 
 class WgMsgFilter;
 
-typedef	bool(*WgFilterFuncPtr)(const WgMsgPtr&, const WgMsgFilter& );
+typedef	bool(*WgFilterFuncPtr)(const WgMsg_p&, const WgMsgFilter& );
 
 
 class WgMsgFilter
@@ -127,7 +127,7 @@ public:
 	//TODO: Add missing filters!
 
 
-	inline bool				filterMsg( const WgMsgPtr& pMsg ) const { return m_pFilterFunc( pMsg, *this ); }
+	inline bool				filterMsg( const WgMsg_p& pMsg ) const { return m_pFilterFunc( pMsg, *this ); }
 	inline WgMsgType 		msgType() const { return m_msgType; }
 private:
 	WgMsgFilter( WgMsgType msgType, WgFilterFuncPtr pFunc, int data1 = 0, int data2 = 0 )
@@ -141,17 +141,17 @@ private:
 	int					m_data2;			// Additional data for filter function.
 
 
-	static bool _filterDummy( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterType( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
+	static bool _filterDummy( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterType( const WgMsg_p& pMsg, const WgMsgFilter& filter );
 
-	static bool _filterPointerMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterMouseButtonMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterNativeKeyMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterCharacterMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterWheelRollMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterItemToggleMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
-	static bool _filterItemMousePressMsgs( const WgMsgPtr& pMsg, const WgMsgFilter& filter );
+	static bool _filterPointerMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterMouseButtonMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterKeyMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterNativeKeyMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterCharacterMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterWheelRollMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterItemToggleMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
+	static bool _filterItemMousePressMsgs( const WgMsg_p& pMsg, const WgMsgFilter& filter );
 };
 
 

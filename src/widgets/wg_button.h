@@ -39,8 +39,8 @@
 #endif
 
 class WgButton;
-typedef	WgStrongPtr<WgButton,WgWidgetPtr>		WgButtonPtr;
-typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
+typedef	WgStrongPtr<WgButton,WgWidget_p>		WgButton_p;
+typedef	WgWeakPtr<WgButton,WgWidget_wp>	WgButton_wp;
 
 //____ WgButton ____________________________________________________________
 /**
@@ -52,12 +52,12 @@ typedef	WgWeakPtr<WgButton,WgWidgetWeakPtr>	WgButtonWeakPtr;
 class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
 {
 public:
-	static WgButtonPtr	create() { return WgButtonPtr(new WgButton()); }
+	static WgButton_p	create() { return WgButton_p(new WgButton()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgButtonPtr	cast( const WgObjectPtr& pObject );
+	static WgButton_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -82,14 +82,14 @@ protected:
 	virtual ~WgButton();
 	virtual WgWidget* _newOfMyType() const { return new WgButton(); };
 
-	virtual void	_onMsg( const WgMsgPtr& pMsg );
+	virtual void	_onMsg( const WgMsg_p& pMsg );
 	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	virtual void	_onNewSize( const WgSize& size );
 	void			_onStateChanged( WgState oldState );
-	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	virtual void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 
 	WgObject * 		_object() { return this; };

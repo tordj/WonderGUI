@@ -22,11 +22,11 @@
 #ifndef WG_INTERFACE_DOT_H
 #define WG_INTERFACE_DOT_H
 
-class WgInterfacePtr;
-class WgInterfaceWeakPtr;
+class WgInterface_p;
+class WgInterface_wp;
 
 class WgObject;
-class WgObjectPtr;
+class WgObject_p;
 
 
 /**
@@ -52,15 +52,15 @@ class WgObjectPtr;
 
 class WgInterface
 {
-	friend class WgInterfacePtr;
-	friend class WgInterfaceWeakPtr;
+	friend class WgInterface_p;
+	friend class WgInterface_wp;
 public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgInterfacePtr	cast( const WgInterfacePtr& pInterface );			// Provided just for completeness sake.
-	WgInterfacePtr			ptr();												///< @brief Get a pointer to this interface.
-	WgObjectPtr				holder();											///< @breif Get a pointer to the object providing this interface.
+	static WgInterface_p	cast( const WgInterface_p& pInterface );			// Provided just for completeness sake.
+	WgInterface_p			ptr();												///< @brief Get a pointer to this interface.
+	WgObject_p				holder();											///< @breif Get a pointer to the object providing this interface.
 
 protected:
 	virtual WgObject * 		_object() const = 0;

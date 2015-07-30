@@ -43,10 +43,10 @@ const char * WgSurfaceFactory::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSurfaceFactoryPtr WgSurfaceFactory::cast( const WgObjectPtr& pObject )
+WgSurfaceFactory_p WgSurfaceFactory::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSurfaceFactoryPtr( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
+		return WgSurfaceFactory_p( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
 
 	return 0;
 }

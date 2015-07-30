@@ -49,31 +49,31 @@
 class WgChar;
 class WgGlyphset;
 class WgTextprop;
-class WgTextpropPtr;
+class WgTextprop_p;
 class WgTextlink;
 class WgTextpropHolder;
 class WgTextpropManager;
 
-//____ WgTextpropPtr __________________________________________________________
+//____ WgTextprop_p __________________________________________________________
 
-class WgTextpropPtr
+class WgTextprop_p
 {
 public:
 	friend class WgChar;
 	friend class WgLegacyTextField;
 	friend class WgPen;
 
-	WgTextpropPtr( WgTextpropHolder * pProp = 0 );
-	explicit WgTextpropPtr( Uint16 hProp );
-	WgTextpropPtr(const WgTextpropPtr& r);
-	~WgTextpropPtr();
+	WgTextprop_p( WgTextpropHolder * pProp = 0 );
+	explicit WgTextprop_p( Uint16 hProp );
+	WgTextprop_p(const WgTextprop_p& r);
+	~WgTextprop_p();
 
 
-	WgTextpropPtr& operator=(const WgTextpropPtr& ref);
-	WgTextpropPtr& operator=(int handle);
+	WgTextprop_p& operator=(const WgTextprop_p& ref);
+	WgTextprop_p& operator=(int handle);
 
-	inline bool operator==(const WgTextpropPtr& other) const { return m_hProp == other.m_hProp; }
-	inline bool operator!=(const WgTextpropPtr& other) const { return m_hProp != other.m_hProp; }
+	inline bool operator==(const WgTextprop_p& other) const { return m_hProp == other.m_hProp; }
+	inline bool operator!=(const WgTextprop_p& other) const { return m_hProp != other.m_hProp; }
 
 	const WgTextprop & operator*() const;
 	const WgTextprop * operator->() const;
@@ -98,10 +98,10 @@ class WgTextprop
 public:
 
 	WgTextprop();
-	WgTextprop( const WgTextpropPtr& pProp );
+	WgTextprop( const WgTextprop_p& pProp );
 //	~WgTextprop();
 
-	WgTextpropPtr	reg() const;
+	WgTextprop_p	reg() const;
 
 	void			setColor( WgColor col );
 	void			setBgColor( WgColor col );
@@ -116,8 +116,8 @@ public:
 	void			setUnderlined( WgState state );
 
 	inline void		setBreakLevel( int level ) { m_breakLevel = (char) level; }
-	inline void		setLink( const WgTextLinkPtr& pLink ) { m_pLink = pLink; }
-	inline void		setFont( const WgFontPtr& pFont ) { m_pFont = pFont; }
+	inline void		setLink( const WgTextLink_p& pLink ) { m_pLink = pLink; }
+	inline void		setFont( const WgFont_p& pFont ) { m_pFont = pFont; }
 	bool			setCharVisibility( Uint16 specialCharacter, bool bVisible );
 
 	void			clearColor();
@@ -149,8 +149,8 @@ public:
 	bool					charVisibility( Uint16 specialCharacter ) const;
 	inline int				charVisibilityFlags() const { return m_visibilityFlags; }
 
-	inline WgTextLinkPtr	link() const { return m_pLink; }
-	inline WgFontPtr		font() const { return m_pFont; }
+	inline WgTextLink_p	link() const { return m_pLink; }
+	inline WgFont_p		font() const { return m_pFont; }
 	inline int				breakLevel() const { return m_breakLevel; }
 
 	void					assertIntegrity() const;
@@ -162,12 +162,12 @@ public:
 	bool					isSizeStatic() const;
 	bool					isUnderlineStatic() const;
 
-	inline bool		compareTo( const WgTextpropPtr& pProp ) const { return _compareTo( &(*pProp) ); }
-	bool			compareColorTo( const WgTextpropPtr& pProp ) const;
-	bool			compareBgColorTo( const WgTextpropPtr& pProp ) const;
-	bool			compareStyleTo( const WgTextpropPtr& pProp ) const;
-	bool			compareSizeTo( const WgTextpropPtr& pProp ) const;
-	bool			compareUnderlineTo( const WgTextpropPtr& pProp ) const;
+	inline bool		compareTo( const WgTextprop_p& pProp ) const { return _compareTo( &(*pProp) ); }
+	bool			compareColorTo( const WgTextprop_p& pProp ) const;
+	bool			compareBgColorTo( const WgTextprop_p& pProp ) const;
+	bool			compareStyleTo( const WgTextprop_p& pProp ) const;
+	bool			compareSizeTo( const WgTextprop_p& pProp ) const;
+	bool			compareUnderlineTo( const WgTextprop_p& pProp ) const;
 
 private:
 	bool			_compareTo( const WgTextprop * pProp ) const;
@@ -206,8 +206,8 @@ private:
 	};
 
 	char				m_breakLevel;		///< How aggressively lines should be breaked. Higher value breaks on more characters. -1 = not set.
-	WgTextLinkPtr		m_pLink;			///< Hierarchally overrides.
-	WgFontPtr			m_pFont;			///< Hierarchally overrides.
+	WgTextLink_p		m_pLink;			///< Hierarchally overrides.
+	WgFont_p			m_pFont;			///< Hierarchally overrides.
 
 	WgStateProp		m_stateProp[WG_NB_STATES];
 };
@@ -239,7 +239,7 @@ public:
 							bgColor = WgColor::transparent; bUnderlined = false; breakLevel = 3;
 							visibilityFlags = 0; pLink = 0; }
 
-	WgFontPtr		pFont;
+	WgFont_p		pFont;
 	int				size;
 	WgFontAlt		style;
 	WgColor			color;
@@ -247,7 +247,7 @@ public:
 	bool			bUnderlined;
 	int				breakLevel;
 	int				visibilityFlags;
-	WgTextLinkPtr	pLink;
+	WgTextLink_p	pLink;
 };
 
 

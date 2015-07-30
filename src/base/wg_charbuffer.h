@@ -184,11 +184,11 @@ public:
 	inline void			setGlyphs( Uint16 glyph );
 	void			    setGlyphs( Uint16 glyph, int ofs, int len );
 
-	inline void			setProperties( const WgTextpropPtr& pProp );
-	void				setProperties( const WgTextpropPtr& pProp, int ofs, int len);
+	inline void			setProperties( const WgTextprop_p& pProp );
+	void				setProperties( const WgTextprop_p& pProp, int ofs, int len);
 
-	inline void			setFont( const WgFontPtr& pFont );
-	void				setFont( const WgFontPtr& pFont, int ofs, int len );
+	inline void			setFont( const WgFont_p& pFont );
+	void				setFont( const WgFont_p& pFont, int ofs, int len );
 
 	inline void			setColor( const WgColor color );
 	void				setColor( const WgColor color, int ofs, int len );
@@ -488,7 +488,7 @@ void WgCharBuffer::setGlyphs( Uint16 glyph )
 /// By setting the properties you erase all previous settings of individual
 /// properties for the characters, like font, color, style and underlined.
 
-void WgCharBuffer::setProperties( const WgTextpropPtr& pProp )
+void WgCharBuffer::setProperties( const WgTextprop_p& pProp )
 {
 	setProperties( pProp, 0, INT_MAX );
 }
@@ -504,7 +504,7 @@ void WgCharBuffer::setProperties( const WgTextpropPtr& pProp )
 ///
 /// Setting pFont to null is identical to calling clearFont().
 
-void WgCharBuffer::setFont( const WgFontPtr& pFont )
+void WgCharBuffer::setFont( const WgFont_p& pFont )
 {
 	setFont( pFont, 0, INT_MAX );
 }

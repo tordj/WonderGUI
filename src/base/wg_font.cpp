@@ -35,14 +35,14 @@ WgFont::WgFont()
 }
 
 #ifdef WG_USE_FREETYPE
-WgFont::WgFont( const WgVectorGlyphsPtr& pNormal )
+WgFont::WgFont( const WgVectorGlyphs_p& pNormal )
 {
 	_init();
 	setVectorGlyphs( pNormal, WG_FONT_NORMAL );
 }
 #endif
 
-WgFont::WgFont( const WgBitmapGlyphsPtr& pNormal, int size )
+WgFont::WgFont( const WgBitmapGlyphs_p& pNormal, int size )
 {
 	_init();
 	setBitmapGlyphs( pNormal, WG_FONT_NORMAL, size );
@@ -101,10 +101,10 @@ const char * WgFont::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgFontPtr WgFont::cast( const WgObjectPtr& pObject )
+WgFont_p WgFont::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgFontPtr( static_cast<WgFont*>(pObject.rawPtr()) );
+		return WgFont_p( static_cast<WgFont*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -112,7 +112,7 @@ WgFontPtr WgFont::cast( const WgObjectPtr& pObject )
 
 //____ getGlyphset() _______________________________________________________________
 
-WgGlyphsetPtr WgFont::getGlyphset( WgFontAlt style, int size ) const
+WgGlyphset_p WgFont::getGlyphset( WgFontAlt style, int size ) const
 {
 	// Find the right glyphset to the following priorities:
 	//
@@ -152,7 +152,7 @@ const WgUnderline * WgFont::getUnderline( int size )
 	// Create an underline specification from the '_' character as default.
 	// It should be possible to specify something different in the spec file later on...
 
-	WgGlyphPtr pUnder = getGlyph('_', WG_FONT_NORMAL, size);
+	WgGlyph_p pUnder = getGlyph('_', WG_FONT_NORMAL, size);
 
 	const WgGlyphBitmap * pSrc = pUnder->getBitmap();
 
@@ -178,9 +178,9 @@ const WgUnderline * WgFont::getUnderline( int size )
 
 //____ getGlyph() _____________________________________________________________
 
-WgGlyphPtr WgFont::getGlyph( Uint32 chr, WgFontAlt style, int size ) const
+WgGlyph_p WgFont::getGlyph( Uint32 chr, WgFontAlt style, int size ) const
 {
-	WgGlyphPtr p;
+	WgGlyph_p p;
 
 	// Special case: For whitespace we give vector glyphs top priority
 
@@ -342,10 +342,10 @@ WgFont::GlyphProvided WgFont::isGlyphProvided( Uint32 chr, WgFontAlt style, int 
 #ifdef WG_USE_FREETYPE
 //____ setVectorGlyphs() ______________________________________________________
 
-bool WgFont::setVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style )
+bool WgFont::setVectorGlyphs( const WgVectorGlyphs_p& pGlyph, WgFontAlt style )
 {
 	if( m_aVectorGlyphs[style] == 0 )
-		m_aVectorGlyphs[style] = new WgVectorGlyphsPtr[WG_MAX_FONTSIZE+1];
+		m_aVectorGlyphs[style] = new WgVectorGlyphs_p[WG_MAX_FONTSIZE+1];
 
 	for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 		m_aVectorGlyphs[style][i] = pGlyph;
@@ -353,14 +353,14 @@ bool WgFont::setVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style )
 	return true;
 }
 
-bool WgFont::setVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style, int size )
+bool WgFont::setVectorGlyphs( const WgVectorGlyphs_p& pGlyph, WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( m_aVectorGlyphs[style] == 0 )
 	{
-		m_aVectorGlyphs[style] = new WgVectorGlyphsPtr[WG_MAX_FONTSIZE+1];
+		m_aVectorGlyphs[style] = new WgVectorGlyphs_p[WG_MAX_FONTSIZE+1];
 
 		for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 			m_aVectorGlyphs[style][i] = 0;
@@ -375,7 +375,7 @@ bool WgFont::setVectorGlyphs( const WgVectorGlyphsPtr& pGlyph, WgFontAlt style, 
 
 //____ setDefaultVectorGlyphs() _______________________________________________
 
-bool WgFont::setDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs )
+bool WgFont::setDefaultVectorGlyphs( const WgVectorGlyphs_p& pGlyphs )
 {
 	m_pDefaultVectorGlyphs = pGlyphs;
 	return true;
@@ -383,7 +383,7 @@ bool WgFont::setDefaultVectorGlyphs( const WgVectorGlyphsPtr& pGlyphs )
 
 //____ replaceVectorGlyphs() __________________________________________________
 
-int WgFont::replaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGlyphsPtr& pNew )
+int WgFont::replaceVectorGlyphs( const WgVectorGlyphs_p& pOld, const WgVectorGlyphs_p& pNew )
 {
 	int nbReplaced = 0;
 
@@ -413,7 +413,7 @@ int WgFont::replaceVectorGlyphs( const WgVectorGlyphsPtr& pOld, const WgVectorGl
 
 //____ replaceBitmapGlyphs() __________________________________________________
 
-int WgFont::replaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGlyphsPtr& pNew )
+int WgFont::replaceBitmapGlyphs( const WgBitmapGlyphs_p& pOld, const WgBitmapGlyphs_p& pNew )
 {
 	if( !pOld )
 		return 0;
@@ -448,14 +448,14 @@ int WgFont::replaceBitmapGlyphs( const WgBitmapGlyphsPtr& pOld, const WgBitmapGl
 
 //____ setBitmapGlyphs() ______________________________________________________
 
-bool WgFont::setBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, int size )
+bool WgFont::setBitmapGlyphs( const WgBitmapGlyphs_p& pGlyph, WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
 
 	if( m_aBitmapGlyphs[size] == 0 )
 	{
-		WgBitmapGlyphsPtr* p = new WgBitmapGlyphsPtr[WG_NB_FONTSTYLES];
+		WgBitmapGlyphs_p* p = new WgBitmapGlyphs_p[WG_NB_FONTSTYLES];
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 			p[i] = 0;
 
@@ -469,7 +469,7 @@ bool WgFont::setBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyph, WgFontAlt style, 
 
 //____ setDefaultBitmapGlyphs() _______________________________________________
 
-bool WgFont::setDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size )
+bool WgFont::setDefaultBitmapGlyphs( const WgBitmapGlyphs_p& pGlyphs, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return false;
@@ -480,7 +480,7 @@ bool WgFont::setDefaultBitmapGlyphs( const WgBitmapGlyphsPtr& pGlyphs, int size 
 
 //____ getBitmapGlyphs() ______________________________________________________
 
-WgBitmapGlyphsPtr WgFont::getBitmapGlyphs( WgFontAlt style, int size )
+WgBitmapGlyphs_p WgFont::getBitmapGlyphs( WgFontAlt style, int size )
 {
 	if( size < 0 || size > WG_MAX_FONTSIZE )
 		return 0;

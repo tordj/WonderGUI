@@ -28,8 +28,8 @@
 
 
 class WgSlideSpan;
-typedef	WgIStrongPtr<WgSlideSpan,WgSpanPtr>		WgSlideSpanPtr;
-typedef	WgIWeakPtr<WgSlideSpan,WgSpanWeakPtr>	WgSlideSpanWeakPtr;
+typedef	WgIStrongPtr<WgSlideSpan,WgSpan_p>		WgSlideSpan_p;
+typedef	WgIWeakPtr<WgSlideSpan,WgSpan_wp>	WgSlideSpan_wp;
 
 
 class WgSlideSpan : public WgSpan
@@ -40,8 +40,8 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgSlideSpanPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgSlideSpanPtr		ptr() { return WgSlideSpanPtr(_object(),this); }
+	static WgSlideSpan_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgSlideSpan_p		ptr() { return WgSlideSpan_p(_object(),this); }
 
 
 	inline void	setBegin( int begin ) { m_pItem->setBegin(begin); }

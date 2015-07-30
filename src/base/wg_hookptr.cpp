@@ -24,7 +24,7 @@
 #include <wg_hook.h>
 #include <wg_base.h>
 
-WgHookPtr::WgHookPtr( WgHook * pHook )
+WgHook_p::WgHook_p( WgHook * pHook )
 {
 	if( pHook )
 	{
@@ -47,7 +47,7 @@ WgHookPtr::WgHookPtr( WgHook * pHook )
 	}
 };
 
-WgHookPtr::~WgHookPtr()
+WgHook_p::~WgHook_p()
 {
 	if( m_pHub )
 	{
@@ -62,7 +62,7 @@ WgHookPtr::~WgHookPtr()
 	}
 }
 
-void WgHookPtr::copy( WgHookPtr const & r)
+void WgHook_p::copy( WgHook_p const & r)
 {
 	if( m_pHub != r.m_pHub )
 	{

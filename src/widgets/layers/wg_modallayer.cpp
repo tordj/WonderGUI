@@ -52,10 +52,10 @@ const char * WgModalHook::className( void ) const
 
 //____ WgModalHook::cast() __________________________________________________
 
-WgModalHookPtr WgModalHook::cast( const WgHookPtr& pHook )
+WgModalHook_p WgModalHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgModalHookPtr( static_cast<WgModalHook*>(pHook.rawPtr()) );
+		return WgModalHook_p( static_cast<WgModalHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -165,7 +165,7 @@ bool WgModalHook::moveY( int y )
 }
 
 //_____________________________________________________________________________
-WgModalLayerPtr WgModalHook::parent() const
+WgModalLayer_p WgModalHook::parent() const
 {
 	return m_pParent;
 }
@@ -278,17 +278,17 @@ const char * WgModalLayer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgModalLayerPtr WgModalLayer::cast( const WgObjectPtr& pObject )
+WgModalLayer_p WgModalLayer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgModalLayerPtr( static_cast<WgModalLayer*>(pObject.rawPtr()) );
+		return WgModalLayer_p( static_cast<WgModalLayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ addModalWidget() ________________________________________________________
 
-WgModalHookPtr WgModalLayer::addModalWidget( const WgWidgetPtr& pWidget, const WgRect& geometry, WgOrigo origo )
+WgModalHook_p WgModalLayer::addModalWidget( const WgWidget_p& pWidget, const WgRect& geometry, WgOrigo origo )
 {
 	// Create Hook and fill in members.
 
@@ -317,7 +317,7 @@ bool WgModalLayer::removeModalWidgets()
 
 //____ removeWidget() _________________________________________________________
 
-bool WgModalLayer::removeWidget( const WgWidgetPtr& pWidget )
+bool WgModalLayer::removeWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget || pWidget->parent() != this )
 		return false;
@@ -346,14 +346,14 @@ bool WgModalLayer::clear()
 
 //____ firstModalHook() ______________________________________________________
 
-WgModalHookPtr WgModalLayer::firstModalHook()
+WgModalHook_p WgModalLayer::firstModalHook()
 {
 	return m_modalHooks.first();
 }
 
 //____ lastModalHook() _______________________________________________________
 
-WgModalHookPtr WgModalLayer::lastModalHook()
+WgModalHook_p WgModalLayer::lastModalHook()
 {
 	return m_modalHooks.last();
 }
@@ -545,7 +545,7 @@ void WgModalLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgModalLayer::_onMsg( const WgMsgPtr& _pMsg )
+void WgModalLayer::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgLayer::_onMsg(_pMsg);
 
@@ -555,14 +555,14 @@ void WgModalLayer::_onMsg( const WgMsgPtr& _pMsg )
 		{
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
+				WgMouseButtonMsg_p pMsg = WgMouseButtonMsg::cast(_pMsg);
 				WgBase::msgRouter()->post( new WgModalBlockedPressMsg( pMsg->button(), this) );
 			}
 			break;
 
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
+				WgMouseButtonMsg_p pMsg = WgMouseButtonMsg::cast(_pMsg);
 				WgBase::msgRouter()->post( new WgModalBlockedPressMsg( pMsg->button(), this) );
 			}
 			break;

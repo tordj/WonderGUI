@@ -53,16 +53,16 @@ class WgMsgRouter;
 class WgPatches;
 
 class WgWidget;
-typedef	WgStrongPtr<WgWidget,WgReceiverPtr>	WgWidgetPtr;
-typedef	WgWeakPtr<WgWidget,WgReceiverWeakPtr>	WgWidgetWeakPtr;
+typedef	WgStrongPtr<WgWidget,WgReceiver_p>	WgWidget_p;
+typedef	WgWeakPtr<WgWidget,WgReceiver_wp>	WgWidget_wp;
 
 class WgContainer;
-typedef	WgStrongPtr<WgContainer,WgWidgetPtr>		WgContainerPtr;
-typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgStrongPtr<WgContainer,WgWidget_p>		WgContainer_p;
+typedef	WgWeakPtr<WgContainer,WgWidget_wp>		WgContainer_wp;
 
 class WgMsg;
-typedef	WgStrongPtr<WgMsg,WgObjectPtr>			WgMsgPtr;
-typedef	WgWeakPtr<WgMsg,WgObjectWeakPtr>			WgMsgWeakPtr;
+typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
+typedef	WgWeakPtr<WgMsg,WgObject_wp>			WgMsg_wp;
 
 
 /**
@@ -107,7 +107,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgWidgetPtr	cast( const WgObjectPtr& pObject );
+	static WgWidget_p	cast( const WgObject_p& pObject );
 
 	inline int			Id() const { return m_id; }
 	inline void			setId( int id ) { m_id = id; }
@@ -121,7 +121,7 @@ public:
 
 	inline WgState		state() const { return m_state; }
 
-	bool				CloneContent( const WgWidgetPtr& _pOrg );
+	bool				CloneContent( const WgWidget_p& _pOrg );
 
 	void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 	virtual WgPointerStyle	PointerStyle() const;
@@ -133,15 +133,15 @@ public:
 	int					MarkOpacity() const { return m_markOpacity; }
 	bool				markTest( const WgCoord& ofs );
 
-	virtual void		setSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr			skin( ) const	{ return m_pSkin; }
+	virtual void		setSkin( const WgSkin_p& pSkin );
+	WgSkin_p			skin( ) const	{ return m_pSkin; }
 
 
-	WgHookPtr			hook() const { return m_pHook; }
+	WgHook_p			hook() const { return m_pHook; }
 
-	WgWidgetPtr		NewOfMyType() const { return WgWidgetPtr(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+	WgWidget_p		NewOfMyType() const { return WgWidget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
-	void 				onMsg( const WgMsgPtr& pMsg );
+	void 				onMsg( const WgMsg_p& pMsg );
 
 
 	// Convenient calls to hook
@@ -154,10 +154,10 @@ public:
 	inline bool			GrabFocus();
 	inline bool			ReleaseFocus();
 	inline bool			isFocused();
-	WgContainerPtr		parent() const;
+	WgContainer_p		parent() const;
 
-	inline WgWidgetPtr	NextSibling() const;
-	inline WgWidgetPtr	PrevSibling() const;
+	inline WgWidget_p	NextSibling() const;
+	inline WgWidget_p	PrevSibling() const;
 
 	WgCoord				ToGlobal( const WgCoord& coord ) const;
 	WgCoord				ToLocal( const WgCoord& coord ) const; 
@@ -211,10 +211,10 @@ protected:
 
 	virtual void	_onRefresh();
 	virtual void	_onNewSize( const WgSize& size );
-	virtual void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	virtual void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 	virtual void	_onStateChanged( WgState oldState );
 
-	virtual void	_onMsg( const WgMsgPtr& pMsg );
+	virtual void	_onMsg( const WgMsg_p& pMsg );
 	virtual	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
 	virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
@@ -224,7 +224,7 @@ protected:
 	int				m_id;
 	WgHook *		m_pHook;
 
-	WgSkinPtr		m_pSkin;
+	WgSkin_p		m_pSkin;
 	WgPointerStyle	m_pointerStyle;
 
 	WgString		m_tooltip;
@@ -356,7 +356,7 @@ bool WgWidget::isFocused()
  * @return Pointer to next sibling or null if none.
  */
 
-WgWidgetPtr WgWidget::NextSibling() const 
+WgWidget_p WgWidget::NextSibling() const 
 { 
 	if( m_pHook ) 
 	{
@@ -376,7 +376,7 @@ WgWidgetPtr WgWidget::NextSibling() const
  * @return Pointer to previous sibling or null if none.
  */
 
-WgWidgetPtr WgWidget::PrevSibling() const 
+WgWidget_p WgWidget::PrevSibling() const 
 { 
 	if( m_pHook ) 
 	{

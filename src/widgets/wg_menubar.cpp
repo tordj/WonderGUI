@@ -76,10 +76,10 @@ const char * WgMenubar::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgMenubarPtr WgMenubar::cast( const WgObjectPtr& pObject )
+WgMenubar_p WgMenubar::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgMenubarPtr( static_cast<WgMenubar*>(pObject.rawPtr()) );
+		return WgMenubar_p( static_cast<WgMenubar*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -87,7 +87,7 @@ WgMenubarPtr WgMenubar::cast( const WgObjectPtr& pObject )
 
 //____ setEntrySkin() _______________________________________________________
 
-bool WgMenubar::setEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties )
+bool WgMenubar::setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties )
 {
 	//TODO: Possibly resize if needed.
 
@@ -100,7 +100,7 @@ bool WgMenubar::setEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pText
 
 //____ AddMenu() ______________________________________________________________
 
-bool WgMenubar::AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 navKey )
+bool WgMenubar::AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey )
 {
 	// Sanity check
 
@@ -153,7 +153,7 @@ bool WgMenubar::AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 nav
 }
 
 //____ RemoveMenu() ________________________________________________________
-bool WgMenubar::RemoveMenu( const WgMenuPtr& pMenu )
+bool WgMenubar::RemoveMenu( const WgMenu_p& pMenu )
 {
 	for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 	{
@@ -169,7 +169,7 @@ bool WgMenubar::RemoveMenu( const WgMenuPtr& pMenu )
 }
 
 //____ MenuTitle() ________________________________________________________
-WgChar *WgMenubar::MenuTitle( const WgMenuPtr& pMenu) const
+WgChar *WgMenubar::MenuTitle( const WgMenu_p& pMenu) const
 {
 	for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 	{
@@ -180,7 +180,7 @@ WgChar *WgMenubar::MenuTitle( const WgMenuPtr& pMenu) const
 }
 
 //____ ShowMenu() ________________________________________________________
-bool WgMenubar::ShowMenu( const WgMenuPtr& pMenu)
+bool WgMenubar::ShowMenu( const WgMenu_p& pMenu)
 {
 	for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 	{
@@ -194,7 +194,7 @@ bool WgMenubar::ShowMenu( const WgMenuPtr& pMenu)
 }
 
 //____ HideMenu() ________________________________________________________
-bool WgMenubar::HideMenu(const WgMenuPtr& pMenu)
+bool WgMenubar::HideMenu(const WgMenu_p& pMenu)
 {
 	for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 	{
@@ -307,7 +307,7 @@ void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const W
 
 //____ _onMsg() _____________________________________________________________
 
-void WgMenubar::_onMsg( const WgMsgPtr& pMsg )
+void WgMenubar::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 
@@ -454,7 +454,7 @@ bool WgMenubar::_closeMenu( int nb )
 
 
 	WgPopupLayer * pLayer = 0;
-	WgWidgetPtr pMenu = pItem->m_pMenu;
+	WgWidget_p pMenu = pItem->m_pMenu;
 	if( parent() )
 		pLayer = parent()->_getPopupLayer();
 

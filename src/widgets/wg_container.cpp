@@ -58,10 +58,10 @@ const char * WgContainer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgContainerPtr WgContainer::cast( const WgObjectPtr& pObject )
+WgContainer_p WgContainer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgContainerPtr( static_cast<WgContainer*>(pObject.rawPtr()) );
+		return WgContainer_p( static_cast<WgContainer*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -38,10 +38,10 @@ const char WgBlob::CLASSNAME[] = {"Blob"};
  * buffer is released.
  */
 
-WgBlobPtr WgBlob::create( int bytes )
+WgBlob_p WgBlob::create( int bytes )
 {
 	WgBlob * pBlob = new(bytes) WgBlob( bytes );
-	return WgBlobPtr(pBlob);
+	return WgBlob_p(pBlob);
 }
 
 /**
@@ -63,10 +63,10 @@ WgBlobPtr WgBlob::create( int bytes )
  */
 
 
-WgBlobPtr WgBlob::create(void * pData, void(*pDestructor)(void*) )
+WgBlob_p WgBlob::create(void * pData, void(*pDestructor)(void*) )
 {
 	WgBlob * pBlob = new(0) WgBlob( pData, pDestructor );
-	return WgBlobPtr(pBlob);
+	return WgBlob_p(pBlob);
 }
 
 
@@ -115,10 +115,10 @@ const char * WgBlob::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgBlobPtr WgBlob::cast( const WgObjectPtr& pObject )
+WgBlob_p WgBlob::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgBlobPtr( static_cast<WgBlob*>(pObject.rawPtr()) );
+		return WgBlob_p( static_cast<WgBlob*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -60,10 +60,10 @@ const char * WgFinalizer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgFinalizerPtr WgFinalizer::cast( const WgObjectPtr& pObject )
+WgFinalizer_p WgFinalizer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgFinalizerPtr( static_cast<WgFinalizer*>(pObject.rawPtr()) );
+		return WgFinalizer_p( static_cast<WgFinalizer*>(pObject.rawPtr()) );
 
 	return 0;
 }

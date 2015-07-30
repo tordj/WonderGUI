@@ -28,11 +28,11 @@
 #endif
 
 class WgCapsule;
-typedef	WgStrongPtr<WgCapsule,WgContainerPtr>	WgCapsulePtr;
-typedef	WgWeakPtr<WgCapsule,WgContainerPtr>	WgCapsuleWeakPtr;
+typedef	WgStrongPtr<WgCapsule,WgContainer_p>	WgCapsule_p;
+typedef	WgWeakPtr<WgCapsule,WgContainer_p>	WgCapsule_wp;
 
 class WgCapsuleHook;
-typedef	WgHookTypePtr<WgCapsuleHook,WgHookPtr>	WgCapsuleHookPtr;
+typedef	WgHookTypePtr<WgCapsuleHook,WgHook_p>	WgCapsuleHook_p;
 
 /**
  * @brief Base class for containers that only holds one child.
@@ -55,7 +55,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgCapsuleHookPtr	cast( const WgHookPtr& pInterface );
+	static WgCapsuleHook_p	cast( const WgHook_p& pInterface );
 
 	// Standard Hook methods
 
@@ -66,7 +66,7 @@ public:
 	WgCoord			globalPos() const;
 	WgRect			globalGeo() const;
 
-	WgCapsulePtr 		parent() const;
+	WgCapsule_p 		parent() const;
 
 protected:
 	void			_requestRender();
@@ -93,15 +93,15 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCapsulePtr	cast( const WgObjectPtr& pObject );
+	static WgCapsule_p	cast( const WgObject_p& pObject );
 
-	WgCapsuleHookPtr	setWidget( const WgWidgetPtr& pWidget );
-	WgWidgetPtr			widget() { return m_hook.widget(); }
-	bool				removeWidget( const WgWidgetPtr& pWidget );
+	WgCapsuleHook_p	setWidget( const WgWidget_p& pWidget );
+	WgWidget_p			widget() { return m_hook.widget(); }
+	bool				removeWidget( const WgWidget_p& pWidget );
 	bool				clear();
 
-	inline WgCapsuleHookPtr	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
-	inline WgCapsuleHookPtr	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+	inline WgCapsuleHook_p	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
+	inline WgCapsuleHook_p	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
 
 
 	// Overloaded from WgWidget

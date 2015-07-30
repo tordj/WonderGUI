@@ -46,10 +46,10 @@ const char * WgExtendedSkin::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgExtendedSkinPtr WgExtendedSkin::cast( const WgObjectPtr& pObject )
+WgExtendedSkin_p WgExtendedSkin::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgExtendedSkinPtr( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
+		return WgExtendedSkin_p( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -37,8 +37,8 @@
 #endif
 
 class WgEditValue;
-typedef	WgIStrongPtr<WgEditValue,WgModValuePtr>		WgEditValuePtr;
-typedef	WgIWeakPtr<WgEditValue,WgModValueWeakPtr>	WgEditValueWeakPtr;
+typedef	WgIStrongPtr<WgEditValue,WgModValue_p>		WgEditValue_p;
+typedef	WgIWeakPtr<WgEditValue,WgModValue_wp>	WgEditValue_wp;
 
 /**
  * @brief Interface to a value display field with editable text.
@@ -58,8 +58,8 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgEditValuePtr	cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgEditValuePtr	ptr() { return WgEditValuePtr(_object(),this); }
+	static WgEditValue_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgEditValue_p	ptr() { return WgEditValue_p(_object(),this); }
 
 	virtual void			setEditMode(WgTextEditMode mode) = 0;
 	virtual WgTextEditMode	editMode() const = 0;
@@ -67,8 +67,8 @@ public:
 	virtual bool			isEditable() const = 0;
 	virtual bool			isSelectable() const = 0;
 
-	virtual void			setCursorSkin( const WgCaretPtr& pCursor ) = 0;
-	virtual WgCaretPtr		cursorSkin() const = 0;
+	virtual void			setCursorSkin( const WgCaret_p& pCursor ) = 0;
+	virtual WgCaret_p		cursorSkin() const = 0;
 
 	// Calling these methods gets field into edit mode, displaying cursor.
 

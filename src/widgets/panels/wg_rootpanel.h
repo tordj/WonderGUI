@@ -46,8 +46,8 @@ class WgWidget;
 
 
 class WgRootPanel;
-typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>	WgRootPanelWeakPtr;
+typedef	WgStrongPtr<WgRootPanel,WgObject_p>		WgRootPanel_p;
+typedef	WgWeakPtr<WgRootPanel,WgObject_wp>	WgRootPanel_wp;
 
 
 //____ WgRootPanel ____________________________________________________________
@@ -66,16 +66,16 @@ class WgRootPanel : public WgObject
 	friend class WgContainer;
 
 public:
-	static WgRootPanelPtr	create() { return WgRootPanelPtr(new WgRootPanel()); }
-	static WgRootPanelPtr	create( const WgGfxDevicePtr& pDevice ) { return WgRootPanelPtr(new WgRootPanel(pDevice)); }
+	static WgRootPanel_p	create() { return WgRootPanel_p(new WgRootPanel()); }
+	static WgRootPanel_p	create( const WgGfxDevice_p& pDevice ) { return WgRootPanel_p(new WgRootPanel(pDevice)); }
 
 	bool					isInstanceOf( const char * pClassName ) const;
 	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgRootPanelPtr	cast( const WgObjectPtr& pObject );
+	static WgRootPanel_p	cast( const WgObject_p& pObject );
 
-	bool					setGfxDevice( const WgGfxDevicePtr& pDevice );
-	inline WgGfxDevicePtr 	gfxDevice() const { return m_pGfxDevice; }
+	bool					setGfxDevice( const WgGfxDevice_p& pDevice );
+	inline WgGfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 	bool					setGeo( const WgRect& geo );
 	WgRect					geo() const;
@@ -83,12 +83,12 @@ public:
 	bool					setVisible( bool bVisible );
 	bool					isVisible() const { return m_bVisible; }
 
-	inline WgWidgetPtr		widget() const { return m_hook._widget(); }
-	WgHookPtr				setWidget( const WgWidgetPtr& pWidget );
+	inline WgWidget_p		widget() const { return m_hook._widget(); }
+	WgHook_p				setWidget( const WgWidget_p& pWidget );
 	bool					removeWidget();
 	bool					clear();
 
-	WgWidgetPtr				findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs-m_geo.pos(),mode)); }
+	WgWidget_p				findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 
 	inline int				nbDirtyRects() const { return m_dirtyPatches.size(); }
 	inline const WgRect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
@@ -109,7 +109,7 @@ public:
 
 protected:
 	WgRootPanel();
-	WgRootPanel( const WgGfxDevicePtr& pGfxDevice );
+	WgRootPanel( const WgGfxDevice_p& pGfxDevice );
 	~WgRootPanel();
 
 	class Hook : public WgHook
@@ -154,7 +154,7 @@ protected:
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
-	WgGfxDevicePtr		m_pGfxDevice;
+	WgGfxDevice_p		m_pGfxDevice;
 	Hook				m_hook;
 	WgRect				m_geo;
 	bool				m_bHasGeo;

@@ -34,7 +34,7 @@ WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder
 
 //____ setFormatter() __________________________________________________________
 
-void WgValueField::setFormatter( const WgValueFormatterPtr& pFormatter )
+void WgValueField::setFormatter( const WgValueFormatter_p& pFormatter )
 {
 	if( m_pFormatter != pFormatter )
 	{

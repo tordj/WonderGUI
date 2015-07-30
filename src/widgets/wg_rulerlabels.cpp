@@ -37,10 +37,10 @@ const char * WgRulerLabels::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgRulerLabelsPtr WgRulerLabels::cast( const WgObjectPtr& pObject )
+WgRulerLabels_p WgRulerLabels::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgRulerLabelsPtr( static_cast<WgRulerLabels*>(pObject.rawPtr()) );
+		return WgRulerLabels_p( static_cast<WgRulerLabels*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -48,7 +48,7 @@ WgRulerLabelsPtr WgRulerLabels::cast( const WgObjectPtr& pObject )
 
 //____ AddLabel() ____________________________________________________________
 
-void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextStylePtr& pStyle, float offset )
+void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset )
 {
 	Label * pLabel = new Label(this);
 	pLabel->textField.set(text);
@@ -71,12 +71,12 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 
 //____ GetLabel() ________________________________________________________________
 
-WgModTextPtr	WgRulerLabels::GetLabel(int index)
+WgModText_p	WgRulerLabels::GetLabel(int index)
 {
 	if( index >= m_labels.size() )
-		return WgModTextPtr();
+		return WgModText_p();
 
-	return WgModTextPtr(this, &m_labels.get(index)->textInterface);
+	return WgModText_p(this, &m_labels.get(index)->textInterface);
 }
 
 
@@ -238,7 +238,7 @@ void WgRulerLabels::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgRulerLabels::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgRulerLabels::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 }

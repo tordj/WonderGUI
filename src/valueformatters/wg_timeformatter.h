@@ -26,8 +26,8 @@
 
 
 class WgTimeFormatter;
-typedef	WgStrongPtr<WgTimeFormatter,WgValueFormatterPtr>		WgTimeFormatterPtr;
-typedef	WgWeakPtr<WgTimeFormatter,WgValueFormatterWeakPtr>	WgTimeFormatterWeakPtr;
+typedef	WgStrongPtr<WgTimeFormatter,WgValueFormatter_p>		WgTimeFormatter_p;
+typedef	WgWeakPtr<WgTimeFormatter,WgValueFormatter_wp>	WgTimeFormatter_wp;
 
 //____ WgTimeFormatter __________________________________________________________
 
@@ -42,11 +42,11 @@ public:
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgTimeFormatterPtr	cast( const WgObjectPtr& pObject );
+	static WgTimeFormatter_p	cast( const WgObject_p& pObject );
 
-	static WgTimeFormatterPtr	create() { return WgTimeFormatterPtr(new WgTimeFormatter()); }
-	static WgTimeFormatterPtr	create( const WgCharSeq& format24 ) { return WgTimeFormatterPtr(new WgTimeFormatter(format24)); }
-	static WgTimeFormatterPtr	create( const WgCharSeq& formatAM, const WgCharSeq& formatPM ) { return WgTimeFormatterPtr(new WgTimeFormatter(formatAM,formatPM)); }
+	static WgTimeFormatter_p	create() { return WgTimeFormatter_p(new WgTimeFormatter()); }
+	static WgTimeFormatter_p	create( const WgCharSeq& format24 ) { return WgTimeFormatter_p(new WgTimeFormatter(format24)); }
+	static WgTimeFormatter_p	create( const WgCharSeq& formatAM, const WgCharSeq& formatPM ) { return WgTimeFormatter_p(new WgTimeFormatter(formatAM,formatPM)); }
 
 	WgString 		format( Sint64 value, int scale ) const;
 	WgString 		format( double value ) const;

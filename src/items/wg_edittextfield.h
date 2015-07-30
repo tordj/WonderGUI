@@ -63,8 +63,8 @@ public:
 	void				setEditMode( WgTextEditMode mode );
 	WgTextEditMode		editMode() const;
 	
-	void				setCaret( const WgCaret2Ptr& pCaret );
-	WgCaret2Ptr 		caret() { return m_pCaret; }
+	void				setCaret( const WgCaret2_p& pCaret );
+	WgCaret2_p 		caret() { return m_pCaret; }
 	
 	int					selectionBegin() const;
 	int					selectionEnd() const;
@@ -76,7 +76,7 @@ protected:
 
 	WgTextEditMode	m_editMode;
 	WgEditState		m_editState;
-	WgCaret2Ptr		m_pCaret;
+	WgCaret2_p		m_pCaret;
 };
 
 #endif //WG_EDITTEXTFIELD_DOT_H

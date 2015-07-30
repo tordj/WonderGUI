@@ -53,8 +53,8 @@ public:
 	inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
 	inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
 
-	void				setCursorSkin( const WgCaretPtr& pCursor );
-	inline WgCaretPtr	cursorSkin() const { return m_pCursorSkin; }
+	void				setCursorSkin( const WgCaret_p& pCursor );
+	inline WgCaret_p	cursorSkin() const { return m_pCursorSkin; }
 
 	int					insertAtCursor( const WgCharSeq& str );
 	bool				insertAtCursor( Uint16 c );
@@ -80,7 +80,7 @@ protected:
 	void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }
 
 	WgTextEditMode		m_editMode;
-	WgCaretPtr			m_pCursorSkin;
+	WgCaret_p			m_pCursorSkin;
 	int					m_cursorOfs;		// -1 = No cursor.
 	int					m_selBeg;
 	int					m_selEnd;

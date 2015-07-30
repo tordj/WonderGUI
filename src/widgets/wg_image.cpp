@@ -61,17 +61,17 @@ const char * WgImage::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgImagePtr WgImage::cast( const WgObjectPtr& pObject )
+WgImage_p WgImage::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgImagePtr( static_cast<WgImage*>(pObject.rawPtr()) );
+		return WgImage_p( static_cast<WgImage*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ SetImage() _____________________________________________________________
 
-void WgImage::SetImage( const WgSurfacePtr& pSurface, const WgRect& rect )
+void WgImage::SetImage( const WgSurface_p& pSurface, const WgRect& rect )
 {
 	if( pSurface != m_pSurface || rect != m_rect )
 	{
@@ -92,7 +92,7 @@ void WgImage::SetImage( const WgSurfacePtr& pSurface, const WgRect& rect )
 	}
 }
 
-void WgImage::SetImage( const WgSurfacePtr& pSurface )
+void WgImage::SetImage( const WgSurface_p& pSurface )
 {
 	if( pSurface != m_pSurface )
 	{

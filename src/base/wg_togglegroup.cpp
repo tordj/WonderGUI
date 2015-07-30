@@ -59,10 +59,10 @@ const char * WgToggleGroup::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgToggleGroupPtr WgToggleGroup::cast( const WgObjectPtr& pObject )
+WgToggleGroup_p WgToggleGroup::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgToggleGroupPtr( static_cast<WgToggleGroup*>(pObject.rawPtr()) );
+		return WgToggleGroup_p( static_cast<WgToggleGroup*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -112,7 +112,7 @@ void WgToggleGroup::setRequireSelected(bool bRequire)
  *
  **/
 
-void WgToggleGroup::add( const WgToggleButtonPtr& pToggleButton )
+void WgToggleGroup::add( const WgToggleButton_p& pToggleButton )
 {
 	WgToggleButton * p = pToggleButton.rawPtr();
 	if( p )
@@ -146,7 +146,7 @@ void WgToggleGroup::add( const WgToggleButtonPtr& pToggleButton )
  **/
 
 
-bool WgToggleGroup::remove( const WgToggleButtonPtr& pToggleButton )
+bool WgToggleGroup::remove( const WgToggleButton_p& pToggleButton )
 {
 	if( pToggleButton && pToggleButton->_toggleGroup() == this )
 	{
@@ -185,12 +185,12 @@ void WgToggleGroup::clear()
  * @return Pointer to member at index or null if index was out of bounds.
  **/
 
-WgToggleButtonPtr WgToggleGroup::get( int index )
+WgToggleButton_p WgToggleGroup::get( int index )
 {
 	if( index >= 0 && index < m_entries.size() )
-		return WgToggleButtonPtr(m_entries[index]);
+		return WgToggleButton_p(m_entries[index]);
 
-	return WgToggleButtonPtr();
+	return WgToggleButton_p();
 }
 
 //____ size() __________________________________________________________________
@@ -213,9 +213,9 @@ int WgToggleGroup::size() const
  *
  **/
 
-WgToggleButtonPtr WgToggleGroup::selected() const
+WgToggleButton_p WgToggleGroup::selected() const
 {
-	return WgToggleButtonPtr(m_pSelected);
+	return WgToggleButton_p(m_pSelected);
 }
 
 //____ _remove() _______________________________________________________________

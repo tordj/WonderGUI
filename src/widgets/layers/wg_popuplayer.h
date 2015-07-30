@@ -29,11 +29,11 @@
 
 
 class WgPopupLayer;
-typedef	WgStrongPtr<WgPopupLayer,WgLayerPtr>		WgPopupLayerPtr;
-typedef	WgWeakPtr<WgPopupLayer,WgLayerWeakPtr>	WgPopupLayerWeakPtr;
+typedef	WgStrongPtr<WgPopupLayer,WgLayer_p>		WgPopupLayer_p;
+typedef	WgWeakPtr<WgPopupLayer,WgLayer_wp>	WgPopupLayer_wp;
 
 class WgPopupHook;
-typedef	WgHookTypePtr<WgPopupHook,WgLayerHookPtr>	WgPopupHookPtr;
+typedef	WgHookTypePtr<WgPopupHook,WgLayerHook_p>	WgPopupHook_p;
 
 class WgPopupHook : public WgLayerHook, protected WgLink
 {
@@ -44,14 +44,14 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPopupHookPtr	cast( const WgHookPtr& pInterface );
+	static WgPopupHook_p	cast( const WgHook_p& pInterface );
 
 	// Standard Hook methods
 
-	WgPopupHookPtr	prev() const { return _prev(); }
-	WgPopupHookPtr	next() const { return _next(); }
+	WgPopupHook_p	prev() const { return _prev(); }
+	WgPopupHook_p	next() const { return _next(); }
 
-	WgPopupLayerPtr	parent() const;
+	WgPopupLayer_p	parent() const;
 
 protected:
 	// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
@@ -76,8 +76,8 @@ protected:
 	WgRect			m_launcherGeo;		// Launcher geo relative sibling or parent.
 	WgOrigo			m_attachPoint;
 	WgSize			m_maxSize;
-	WgWidgetWeakPtr	m_pOpener;			// Widget that opened this popup.
-	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
+	WgWidget_wp	m_pOpener;			// Widget that opened this popup.
+	WgWidget_wp	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
 };
 
 
@@ -88,24 +88,24 @@ class WgPopupLayer : public WgLayer
 	friend class WgPopupHook;
 
 public:
-	static WgPopupLayerPtr	create() { return WgPopupLayerPtr(new WgPopupLayer()); }
+	static WgPopupLayer_p	create() { return WgPopupLayer_p(new WgPopupLayer()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPopupLayerPtr	cast( const WgObjectPtr& pObject );
+	static WgPopupLayer_p	cast( const WgObject_p& pObject );
 
-	WgPopupHookPtr	openPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
+	WgPopupHook_p	openPopup( const WgWidget_p& pPopup, const WgWidget_p& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, WgSize maxSize = WgSize(INT_MAX,INT_MAX) );
 
-	bool			closePopup( const WgWidgetPtr& pPopup );
+	bool			closePopup( const WgWidget_p& pPopup );
 	bool			closeAllPopups();
 
-	WgPopupHookPtr	firstPopupHook();
-	WgPopupHookPtr	lastPopupHook();
+	WgPopupHook_p	firstPopupHook();
+	WgPopupHook_p	lastPopupHook();
 
 	// Overloaded from WgPanel
 
-	bool			removeWidget( const WgWidgetPtr& pWidget ) { return false; }
+	bool			removeWidget( const WgWidget_p& pWidget ) { return false; }
 	bool			clear() { return false; }
 
 protected:
@@ -133,13 +133,13 @@ private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
-	void			_onMsg( const WgMsgPtr& pMsg );
+	void			_onMsg( const WgMsg_p& pMsg );
 
 	void			_onRequestRender( const WgRect& rect, const WgPopupHook * pHook );	// rect is in our coordinate system.
 
 	WgChain<WgPopupHook>		m_popupHooks;		// First popup lies at the bottom.
 
-	WgWidgetWeakPtr	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
+	WgWidget_wp	m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
 
 
 };

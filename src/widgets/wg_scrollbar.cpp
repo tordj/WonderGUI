@@ -84,10 +84,10 @@ const char * WgScrollbar::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgScrollbarPtr WgScrollbar::cast( const WgObjectPtr& pObject )
+WgScrollbar_p WgScrollbar::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgScrollbarPtr( static_cast<WgScrollbar*>(pObject.rawPtr()) );
+		return WgScrollbar_p( static_cast<WgScrollbar*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -286,9 +286,9 @@ void WgScrollbar::SetHandleSize( float _size )
  **/
 
 
-void WgScrollbar::SetSkins( const WgSkinPtr& pBaseSkin, const WgSkinPtr& pBackgroundSkin,
-							const WgSkinPtr& pHandleSkin,
-							const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin )
+void WgScrollbar::SetSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin,
+							const WgSkin_p& pHandleSkin,
+							const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
 {
 	m_pSkin 		= pBaseSkin;
 	m_pBgSkin		= pBackgroundSkin;
@@ -605,7 +605,7 @@ void WgScrollbar::_updateMinSize()
 
 //____ _renderButton() _________________________________________________________
 
-void WgScrollbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkinPtr& pSkin, WgState state )
+void WgScrollbar::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkin_p& pSkin, WgState state )
 {
 		if( m_bHorizontal )
 			_dest.w = pSkin->preferredSize().w;
@@ -691,7 +691,7 @@ bool WgScrollbar::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
 
 //____ _markTestButton() _______________________________________________________
 
-bool WgScrollbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkinPtr& pSkin, WgState state )
+bool WgScrollbar::_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkin_p& pSkin, WgState state )
 {
 		if( m_bHorizontal )
 			_dest.w = pSkin->preferredSize().w;
@@ -792,12 +792,12 @@ void WgScrollbar::_unhoverReqRender()
 
 //____ _onMsg() ______________________________________________________________
 
-void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
+void WgScrollbar::_onMsg( const WgMsg_p& pMsg )
 {
 	int		handlePos, handleLen;
 	_viewToPosLen( &handlePos, &handleLen );
 
-	WgMsgRouterPtr	pHandler = WgBase::msgRouter();
+	WgMsgRouter_p	pHandler = WgBase::msgRouter();
 	WgCoord pos = pMsg->pointerPos() - globalPos();
 
 	int		pointerOfs;
@@ -1012,7 +1012,7 @@ void WgScrollbar::_onMsg( const WgMsgPtr& pMsg )
 		
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr p = WgWheelRollMsg::cast(pMsg);
+			WgWheelRollMsg_p p = WgWheelRollMsg::cast(pMsg);
 
 			if( p->wheel() == 1 )
 			{

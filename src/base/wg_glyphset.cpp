@@ -48,10 +48,10 @@ const char * WgGlyphset::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgGlyphsetPtr WgGlyphset::cast( const WgObjectPtr& pObject )
+WgGlyphset_p WgGlyphset::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgGlyphsetPtr( static_cast<WgGlyphset*>(pObject.rawPtr()) );
+		return WgGlyphset_p( static_cast<WgGlyphset*>(pObject.rawPtr()) );
 
 	return 0;
 }

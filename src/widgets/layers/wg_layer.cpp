@@ -53,10 +53,10 @@ const char * WgLayer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgLayerPtr WgLayer::cast( const WgObjectPtr& pObject )
+WgLayer_p WgLayer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgLayerPtr( static_cast<WgLayer*>(pObject.rawPtr()) );
+		return WgLayer_p( static_cast<WgLayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -64,7 +64,7 @@ WgLayerPtr WgLayer::cast( const WgObjectPtr& pObject )
 
 //____ setBaseWidget() _________________________________________________________
 
-WgHookPtr WgLayer::setBaseWidget( const WgWidgetPtr& pWidget )
+WgHook_p WgLayer::setBaseWidget( const WgWidget_p& pWidget )
 {
 	m_baseHook._setWidget(pWidget.rawPtr());
 	_onBaseChanged();
@@ -73,7 +73,7 @@ WgHookPtr WgLayer::setBaseWidget( const WgWidgetPtr& pWidget )
 
 //____ baseWidget() ____________________________________________________________
 
-WgWidgetPtr WgLayer::baseWidget()
+WgWidget_p WgLayer::baseWidget()
 {
 	return m_baseHook._widget();
 }
@@ -291,10 +291,10 @@ const char * WgLayerHook::className( void ) const
 
 //____ WgLayerHook::cast() __________________________________________________
 
-WgLayerHookPtr WgLayerHook::cast( const WgHookPtr& pHook )
+WgLayerHook_p WgLayerHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgLayerHookPtr( static_cast<WgLayerHook*>(pHook.rawPtr()) );
+		return WgLayerHook_p( static_cast<WgLayerHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -348,7 +348,7 @@ WgHook * WgLayerHook::_nextHook() const
 
 
 //_____________________________________________________________________________
-WgLayerPtr WgLayerHook::parent() const
+WgLayer_p WgLayerHook::parent() const
 { 
 	return static_cast<WgLayer*>(_parent()); 
 }

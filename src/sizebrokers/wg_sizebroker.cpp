@@ -54,10 +54,10 @@ const char * WgSizeBroker::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSizeBrokerPtr WgSizeBroker::cast( const WgObjectPtr& pObject )
+WgSizeBroker_p WgSizeBroker::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSizeBrokerPtr( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
+		return WgSizeBroker_p( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
 
 	return 0;
 }

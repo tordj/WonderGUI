@@ -57,8 +57,8 @@ class WgString;
 class WgCharBuffer;
 
 class WgText;
-typedef	WgIStrongPtr<WgText,WgInterfacePtr>		WgTextPtr;
-typedef	WgIWeakPtr<WgText,WgInterfaceWeakPtr>	WgTextWeakPtr;
+typedef	WgIStrongPtr<WgText,WgInterface_p>		WgText_p;
+typedef	WgIWeakPtr<WgText,WgInterface_wp>	WgText_wp;
 
 /**
  * @brief Interface to a basic text field.
@@ -79,16 +79,16 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgTextPtr		cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgTextPtr		ptr() { return WgTextPtr(_object(),this); }
+	static WgText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgText_p		ptr() { return WgText_p(_object(),this); }
 
-	inline void				setStyle( const WgTextStylePtr& pStyle ) { m_pField->setStyle(pStyle); }
+	inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
 	inline void				clearStyle() { m_pField->clearStyle(); }
-	inline WgTextStylePtr	style() const { return m_pField->style(); }
+	inline WgTextStyle_p	style() const { return m_pField->style(); }
 
-	inline void					setPresenter( const WgTextPresenterPtr& pPresenter ) { m_pField->setPresenter(pPresenter); }
+	inline void					setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
 	inline void					clearPresenter() { m_pField->clearPresenter(); }
-	inline WgTextPresenterPtr	presenter() const { return m_pField->presenter(); }
+	inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
 
 	inline 	WgString			get() const { return m_pField->getString(); }
 

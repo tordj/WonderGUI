@@ -42,10 +42,10 @@ const char * WgSkin::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSkinPtr WgSkin::cast( const WgObjectPtr& pObject )
+WgSkin_p WgSkin::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSkinPtr( static_cast<WgSkin*>(pObject.rawPtr()) );
+		return WgSkin_p( static_cast<WgSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }

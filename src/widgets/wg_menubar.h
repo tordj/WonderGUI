@@ -92,7 +92,7 @@ public:
 
 	WgChar *		m_pText;
 	Uint16			m_navKey;
-	WgMenuPtr		m_pMenu;
+	WgMenu_p		m_pMenu;
 	Uint16			m_width;		// Width of this item.
 	bool			m_bEnabled;
 	bool			m_bVisible;
@@ -100,8 +100,8 @@ public:
 };
 
 class WgMenubar;
-typedef	WgStrongPtr<WgMenubar,WgWidgetPtr>		WgMenubarPtr;
-typedef	WgWeakPtr<WgMenubar,WgWidgetWeakPtr>	WgMenubarWeakPtr;
+typedef	WgStrongPtr<WgMenubar,WgWidget_p>		WgMenubar_p;
+typedef	WgWeakPtr<WgMenubar,WgWidget_wp>	WgMenubar_wp;
 
 //____ WgMenubar ____________________________________________________________
 
@@ -110,28 +110,28 @@ class WgMenubar:public WgWidget
 	friend class WgMenuBarItem;
 
 public:
-	static WgMenubarPtr	create() { return WgMenubarPtr(new WgMenubar()); }
+	static WgMenubar_p	create() { return WgMenubar_p(new WgMenubar()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenubarPtr	cast( const WgObjectPtr& pObject );
+	static WgMenubar_p	cast( const WgObject_p& pObject );
 
 	//____ Methods __________________________________________
 
-	bool			setEntrySkin( const WgSkinPtr& pSkin, const WgTextpropPtr& pTextProperties );
-	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
-	WgTextpropPtr	TextProp() const { return m_pTextProp; }
+	bool			setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties );
+	WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
+	WgTextprop_p	TextProp() const { return m_pTextProp; }
 
-	bool			AddMenu( const char * pTitle, const WgMenuPtr& pMenu, Uint16 navKey = 0 );
-	bool			RemoveMenu( const WgMenuPtr& pMenu );
+	bool			AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey = 0 );
+	bool			RemoveMenu( const WgMenu_p& pMenu );
 
 	WgMenuBarItem*	FirstMenuBarItem() { return m_items.first(); }
 
-	WgChar *		MenuTitle(const WgMenuPtr& pMenu) const;
+	WgChar *		MenuTitle(const WgMenu_p& pMenu) const;
 
-	bool			ShowMenu(const WgMenuPtr& pMenu);
-	bool			HideMenu(const WgMenuPtr& pMenu);
+	bool			ShowMenu(const WgMenu_p& pMenu);
+	bool			HideMenu(const WgMenu_p& pMenu);
 
 	WgSize			preferredSize() const;
 
@@ -143,7 +143,7 @@ protected:
 
 	//TODO: Should handle disable/enable (close open menu?) and cloning.
 
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void	_onRefresh();
@@ -170,8 +170,8 @@ private:
 	Uint32					m_selectedItem;		// 0 = no item is selected.
 	Uint32					m_markedItem;		// 0 = no item is marked:
 
-	WgSkinPtr				m_pEntrySkin;
-	WgTextpropPtr			m_pTextProp;
+	WgSkin_p				m_pEntrySkin;
+	WgTextprop_p			m_pTextProp;
 };
 
 

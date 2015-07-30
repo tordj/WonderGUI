@@ -45,18 +45,18 @@ class	WgFont;
 class	WgTextManager;
 
 class WgValueEditor;
-typedef	WgStrongPtr<WgValueEditor,WgWidgetPtr>		WgValueEditorPtr;
-typedef	WgWeakPtr<WgValueEditor,WgWidgetWeakPtr>	WgValueEditorWeakPtr;
+typedef	WgStrongPtr<WgValueEditor,WgWidget_p>		WgValueEditor_p;
+typedef	WgWeakPtr<WgValueEditor,WgWidget_wp>	WgValueEditor_wp;
 
 class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgLegacyTextHolder
 {
 public:
-	static WgValueEditorPtr	create() { return WgValueEditorPtr(new WgValueEditor()); }
+	static WgValueEditor_p	create() { return WgValueEditor_p(new WgValueEditor()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueEditorPtr	cast( const WgObjectPtr& pObject );
+	static WgValueEditor_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -67,8 +67,8 @@ public:
 
 	bool	SetMaxInputChars( int max );
 	int		MaxInputChars() const { return m_maxInputChars; }
-	void	setFormat( const WgValueFormatPtr& pFormat );
-	WgValueFormatPtr format() const { return m_pFormat; }
+	void	setFormat( const WgValueFormat_p& pFormat );
+	WgValueFormat_p format() const { return m_pFormat; }
 	void	clear();									// Sets value to 0 and clears input field.
 
 	WgSize	preferredSize() const;
@@ -80,9 +80,9 @@ protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 	void	_onRefresh();
 
 	WgWidget*	_getWidget() { return this; }
@@ -103,8 +103,8 @@ private:
 	void	_regenText();
 
 	bool				m_bRegenText;
-	WgValueFormatPtr	m_pFormat;			///< Value format specified by user
-	WgValueFormatPtr	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
+	WgValueFormat_p	m_pFormat;			///< Value format specified by user
+	WgValueFormat_p	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
 	WgLegacyTextField			m_text;
 	int					m_buttonDownOfs;
 	bool				m_bSelectAllOnRelease;

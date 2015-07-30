@@ -61,10 +61,10 @@ const char * WgStandardPresenter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgStandardPresenterPtr WgStandardPresenter::cast( const WgObjectPtr& pObject )
+WgStandardPresenter_p WgStandardPresenter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgStandardPresenterPtr( static_cast<WgStandardPresenter*>(pObject.rawPtr()) );
+		return WgStandardPresenter_p( static_cast<WgStandardPresenter*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -130,8 +130,8 @@ void WgStandardPresenter::renderField( WgPresentableField * pField, WgGfxDevice 
 	_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
 
 	WgTextAttr2		attr = baseAttr;
-	WgFontPtr pFont = attr.pFont;
-	WgGlyphsetPtr pGlyphSet = pFont->getGlyphset( WG_FONT_NORMAL, attr.size);
+	WgFont_p pFont = attr.pFont;
+	WgGlyphset_p pGlyphSet = pFont->getGlyphset( WG_FONT_NORMAL, attr.size);
 	
 	for( int i = 0 ; i < pHeader->nbLines ; i++ )
 	{
@@ -140,8 +140,8 @@ void WgStandardPresenter::renderField( WgPresentableField * pField, WgGfxDevice 
 			lineStart.x = canvas.x + _lineOfsX( pLineInfo, canvas.w );
 			const WgChar * pChars = pCharArray + pLineInfo->offset;
 
-			WgGlyphPtr	pGlyph;
-			WgGlyphPtr	pPrevGlyph;
+			WgGlyph_p	pGlyph;
+			WgGlyph_p	pPrevGlyph;
 			
 			WgCoord pos = lineStart;
 			pos.y += pLineInfo->base;
@@ -295,8 +295,8 @@ void WgStandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLi
 
 
 	WgTextAttr2		attr = baseAttr;
-	WgFontPtr pFont = attr.pFont;
-	WgGlyphsetPtr pGlyphSet = pFont->getGlyphset(WG_FONT_NORMAL, attr.size);
+	WgFont_p pFont = attr.pFont;
+	WgGlyphset_p pGlyphSet = pFont->getGlyphset(WG_FONT_NORMAL, attr.size);
 
 	
 	
@@ -309,8 +309,8 @@ void WgStandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLi
 		int spacing = pGlyphSet->getLineSpacing(attr.size);
 		int base = pGlyphSet->getBaseline(attr.size);
 
-		WgGlyphPtr	pGlyph;
-		WgGlyphPtr	pPrevGlyph;
+		WgGlyph_p	pGlyph;
+		WgGlyph_p	pPrevGlyph;
 
 		while( !pChars->isEndOfLine() )
 		{

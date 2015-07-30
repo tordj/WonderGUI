@@ -58,10 +58,10 @@ const char * WgValueDisplay::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgValueDisplayPtr WgValueDisplay::cast( const WgObjectPtr& pObject )
+WgValueDisplay_p WgValueDisplay::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgValueDisplayPtr( static_cast<WgValueDisplay*>(pObject.rawPtr()) );
+		return WgValueDisplay_p( static_cast<WgValueDisplay*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -113,7 +113,7 @@ void WgValueDisplay::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgValueDisplay::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgValueDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 //	m_text.setColorSkin(pNewSkin);

@@ -28,11 +28,11 @@
 #endif
 
 class WgStackPanel;
-typedef	WgStrongPtr<WgStackPanel,WgVectorPanelPtr>		WgStackPanelPtr;
-typedef	WgWeakPtr<WgStackPanel,WgVectorPanelWeakPtr>	WgStackPanelWeakPtr;
+typedef	WgStrongPtr<WgStackPanel,WgVectorPanel_p>		WgStackPanel_p;
+typedef	WgWeakPtr<WgStackPanel,WgVectorPanel_wp>	WgStackPanel_wp;
 
 class WgStackHook;
-typedef	WgHookTypePtr<WgStackHook,WgVectorHookPtr>		WgStackHookPtr;
+typedef	WgHookTypePtr<WgStackHook,WgVectorHook_p>		WgStackHook_p;
 
 //____ WgStackHook ____________________________________________________________
 
@@ -43,7 +43,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgStackHookPtr	cast( const WgHookPtr& pInterface );
+	static WgStackHook_p	cast( const WgHook_p& pInterface );
 
 	enum SizePolicy
 	{
@@ -58,10 +58,10 @@ public:
 	void			setOrigo( WgOrigo origo );
 	WgOrigo	origo() const { return m_origo; }
 
-	WgStackHookPtr	prev() const { return _prev(); }
-	WgStackHookPtr 	next() const { return _next(); }
+	WgStackHook_p	prev() const { return _prev(); }
+	WgStackHook_p 	next() const { return _next(); }
 
-	WgStackPanelPtr 	parent() const { return m_pParent; }
+	WgStackPanel_p 	parent() const { return m_pParent; }
 
 protected:
 	PROTECTED_LINK_METHODS( WgStackHook );
@@ -86,18 +86,18 @@ class WgStackPanel : public WgVectorPanel
 friend class WgStackHook;	
 	
 public:
-	static WgStackPanelPtr	create() { return WgStackPanelPtr(new WgStackPanel()); }
+	static WgStackPanel_p	create() { return WgStackPanel_p(new WgStackPanel()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgStackPanelPtr	cast( const WgObjectPtr& pObject );
+	static WgStackPanel_p	cast( const WgObject_p& pObject );
 	
-	inline WgStackHookPtr addWidget( const WgWidgetPtr& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.rawPtr())); }
-	inline WgStackHookPtr insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
+	inline WgStackHook_p addWidget( const WgWidget_p& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.rawPtr())); }
+	inline WgStackHook_p insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 
-	inline WgStackHookPtr firstHook() const { return static_cast<WgStackHook*>(m_hooks.first()); }
-	inline WgStackHookPtr lastHook() const { return static_cast<WgStackHook*>(m_hooks.last()); }
+	inline WgStackHook_p firstHook() const { return static_cast<WgStackHook*>(m_hooks.first()); }
+	inline WgStackHook_p lastHook() const { return static_cast<WgStackHook*>(m_hooks.last()); }
 
 	// Overloaded from WgWidget
 

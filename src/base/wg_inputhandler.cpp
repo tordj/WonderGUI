@@ -58,10 +58,10 @@ const char * WgInputHandler::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgInputHandlerPtr WgInputHandler::cast( const WgObjectPtr& pObject )
+WgInputHandler_p WgInputHandler::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgInputHandlerPtr( static_cast<WgInputHandler*>(pObject.rawPtr()) );
+		return WgInputHandler_p( static_cast<WgInputHandler*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -69,15 +69,15 @@ WgInputHandlerPtr WgInputHandler::cast( const WgObjectPtr& pObject )
 //____ setPointer() ___________________________________________________________
 
 
-void WgInputHandler::setPointer( const WgRootPanelPtr& pRoot, WgCoord pos )
+void WgInputHandler::setPointer( const WgRootPanel_p& pRoot, WgCoord pos )
 {
 	WgCoord	prevPointerPos = m_pointerPos;
 	
 	m_pointerPos = pos;
 	m_pMarkedRoot = 0;
 
-	WgWidgetPtr pNowMarked = 0;
-	WgWidgetPtr pWidgetTarget = 0;
+	WgWidget_p pNowMarked = 0;
+	WgWidget_p pWidgetTarget = 0;
 
 	if( pRoot && pRoot->geo().contains( pos ) )
 	{
@@ -182,7 +182,7 @@ WgWidget * WgInputHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 
 //____ _widgetPosInList() ________________________________________________________
 
-int WgInputHandler::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
+int WgInputHandler::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidget_wp>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
 		if( list[i].rawPtr() == pWidget )
@@ -286,7 +286,7 @@ void WgInputHandler::_processMouseButtonRelease( WgMouseButton button )
 
 //____ setFocused() ____________________________________________________________
 
-void WgInputHandler::setFocused( const WgRootPanelPtr& pRoot )
+void WgInputHandler::setFocused( const WgRootPanel_p& pRoot )
 {
 	
 }
@@ -308,7 +308,7 @@ void WgInputHandler::setWheelRoll( int wheel, int steps )
 
 //____ onMsg() _________________________________________________________________
 
-void WgInputHandler::onMsg( const WgMsgPtr& pMsg )
+void WgInputHandler::onMsg( const WgMsg_p& pMsg )
 {
 	
 }

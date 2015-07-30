@@ -98,17 +98,17 @@ public:
 
 	//
 
-	void				setProperties( const WgTextpropPtr& pProp );
+	void				setProperties( const WgTextprop_p& pProp );
 	void				clearProperties();
-	WgTextpropPtr		properties() const { return m_pBaseProp; }
+	WgTextprop_p		properties() const { return m_pBaseProp; }
 
-	void				setSelectionProperties( const WgTextpropPtr& pProp );
+	void				setSelectionProperties( const WgTextprop_p& pProp );
 	void				clearSelectionProperties();
-	WgTextpropPtr		selectionProperties() const { return m_pSelectionProp; }
+	WgTextprop_p		selectionProperties() const { return m_pSelectionProp; }
 
-	void				setLinkProperties( const WgTextpropPtr& pProp );
+	void				setLinkProperties( const WgTextprop_p& pProp );
 	void				clearLinkProperties();
-	WgTextpropPtr		linkProperties() const { return m_pLinkProp; }
+	WgTextprop_p		linkProperties() const { return m_pLinkProp; }
 
 	bool				setMaxChars( int max );
 	int					maxChars() const { return m_maxChars; }
@@ -158,8 +158,8 @@ public:
 
 	//
 
-	void				setCursorSkin( const WgCaretPtr& pCursor );
-	inline WgCaretPtr	cursorSkin() const { return m_pCursorStyle; }
+	void				setCursorSkin( const WgCaret_p& pCursor );
+	inline WgCaret_p	cursorSkin() const { return m_pCursorStyle; }
 
 	int					insertAtCursor( const WgCharSeq& str ) { return putText(str); }
 	bool				insertAtCursor( Uint16 c ) { return putChar(c); }
@@ -234,17 +234,17 @@ public:
 	WgColor				getCharBgColor(		int charOfs ) const;
 	WgFontAlt			getCharStyle(		int charOfs ) const;
 	int					getCharSize(		int charOfs ) const;
-	WgFontPtr			getCharFont(		int charOfs ) const;
+	WgFont_p			getCharFont(		int charOfs ) const;
 //	WgGlyphset *		getCharGlyphset(	int charOfs ) const;
 //	bool				getCharVisibility(	int charOfs ) const;
 	int					getCharBreakLevel(	int charOfs ) const;
-	WgTextLinkPtr		getCharLink(		int charOfs ) const;
+	WgTextLink_p		getCharLink(		int charOfs ) const;
 	bool				isCharLink(			int charOfs ) const;
 
 // -------------
 
-	void				setValue( double value, const WgValueFormatPtr& pFormat );
-	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat );
+	void				setValue( double value, const WgValueFormat_p& pFormat );
+	void				setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat_p& pFormat );
 //	int				compareTo( const WgLegacyTextField * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 
 	WgSize				unwrappedSize() const;
@@ -346,7 +346,7 @@ public:
 	int				coordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	WgTextPos		coordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	int				coordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-	WgTextLinkPtr	coordToLink( const WgCoord& coord, const WgRect& container ) const;
+	WgTextLink_p	coordToLink( const WgCoord& coord, const WgRect& container ) const;
 
 	// WgTextPos is automatically clamped for all PosTo...-methods.
 
@@ -366,14 +366,14 @@ public:
 
 	WgCoord			focusWindowOnRange( const WgSize& canvas, const WgRect& window, WgRange range ) const;
 
-	bool 			onMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container );
+	bool 			onMsg( const WgMsg_p& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container );
 //	bool			onAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
-	WgTextLinkPtr	getMarkedLink() const { return m_pMarkedLink; }
+	WgTextLink_p	getMarkedLink() const { return m_pMarkedLink; }
 	WgState			getMarkedLinkState() const { return m_markedLinkState; }
 
-	inline void		setColorSkin( const WgSkinPtr& pSkin ) { m_pColorSkin = pSkin; }
-	inline WgSkinPtr colorSkin() const { return m_pColorSkin; }
+	inline void		setColorSkin( const WgSkin_p& pSkin ) { m_pColorSkin = pSkin; }
+	inline WgSkin_p colorSkin() const { return m_pColorSkin; }
 
 protected:
 
@@ -396,7 +396,7 @@ protected:
 
 
 	WgCharBuffer	m_buffer;
-	WgCaretPtr		m_pCursorStyle;
+	WgCaret_p		m_pCursorStyle;
 	WgCaretInstance*	m_pCursor;
 
 	WgTextEditMode	m_editMode;
@@ -406,7 +406,7 @@ protected:
 	WgOrigo	m_alignment;
 	WgState			m_state;
 
-	WgTextLinkPtr	m_pMarkedLink;
+	WgTextLink_p	m_pMarkedLink;
 	WgState			m_markedLinkState;
 
 //	int				m_markedLinkOfs;	// Offset in buffer for first character of link currently marked or -1 if none.
@@ -417,12 +417,12 @@ protected:
 	int				m_selEndCol;
 	float			m_lineSpaceAdj;		// Adjustment of linespacing for this text.
 
-	WgSkinPtr		m_pColorSkin;		// Skin from which we take low-prio text colors (lowest prio).
+	WgSkin_p		m_pColorSkin;		// Skin from which we take low-prio text colors (lowest prio).
 
-	WgTextpropPtr	m_pBaseProp;		// Default properties for this text. Used for all characters who have
+	WgTextprop_p	m_pBaseProp;		// Default properties for this text. Used for all characters who have
 										// properties set to 0.
-	WgTextpropPtr	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
-	WgTextpropPtr	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
+	WgTextprop_p	m_pLinkProp;		// Props used for links, overriding certain text and char properties.
+	WgTextprop_p	m_pSelectionProp;	// Props used for selected text, overriding certain text, char and link properties.
 
 	WgLegacyTextLine*		m_pHardLines;
 	WgLegacyTextLine*		m_pSoftLines;

@@ -820,7 +820,7 @@ Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint3
 						pSrc++;
 
 						if( id == "null" )
-							myChar.setProperties( WgTextpropPtr() );
+							myChar.setProperties( WgTextprop_p() );
 						else
 							myChar.setProperties( pResDB->getTextprop(id) );
 					}
@@ -1105,7 +1105,7 @@ Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uin
 						pSrc++;
 
 						if( id == "null" )
-							myChar.setProperties( WgTextpropPtr() );
+							myChar.setProperties( WgTextprop_p() );
 						else
 							myChar.setProperties( pResDB->getTextprop(id) );
 					}
@@ -1348,7 +1348,7 @@ Uint32 WgTextTool::getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChar
 	Uint32 ofs = 0;
 	Uint32 charsRead = 0;
 
-	WgTextpropPtr	pActiveProp;
+	WgTextprop_p	pActiveProp;
 	Uint16			hActiveProp = 0;
 
 	TextpropEncoder	enc(pResDB);
@@ -1396,7 +1396,7 @@ Uint32 WgTextTool::getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars, c
 	Uint32 ofs = 0;
 	Uint32 charsRead = 0;
 
-	WgTextpropPtr	pActiveProp;
+	WgTextprop_p	pActiveProp;
 	Uint16			hActiveProp = 0;
 
 	TextpropEncoder	enc(pResDB);
@@ -2720,7 +2720,7 @@ void WgTextTool::setBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb )
 
 //____ setLink() ______________________________________________________________
 
-void WgTextTool::setLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb )
+void WgTextTool::setLink( const WgTextLink_p& pLink, WgChar * pChar, Uint32 nb )
 {
 	modifyProperties( PropLinkModifier(pLink), pChar, nb );
 }
@@ -2728,7 +2728,7 @@ void WgTextTool::setLink( const WgTextLinkPtr& pLink, WgChar * pChar, Uint32 nb 
 
 //____ setFont() ______________________________________________________________
 
-void WgTextTool::setFont( const WgFontPtr& pFont, WgChar * pChar, Uint32 nb )
+void WgTextTool::setFont( const WgFont_p& pFont, WgChar * pChar, Uint32 nb )
 {
 	modifyProperties( PropFontModifier(pFont), pChar, nb );
 }
@@ -2758,7 +2758,7 @@ void WgTextTool::setChars( const WgChar& ch, WgChar * pChar, Uint32 nb )
 
 //____ setProperties() ________________________________________________________
 
-void WgTextTool::setProperties( const WgTextpropPtr& pProp, WgChar * pChar, Uint32 nb )
+void WgTextTool::setProperties( const WgTextprop_p& pProp, WgChar * pChar, Uint32 nb )
 {
 	Uint32		refCnt = 0;
 	Uint32		refCntTotal = 0;
@@ -2839,7 +2839,7 @@ void WgTextTool::modifyProperties( const PropModifier& modif, WgChar * pChar, Ui
 
 //____ addPropAttributes() ________________________________________________________
 
-void WgTextTool::addPropAttributes( WgTextAttr& attr, const WgTextpropPtr& pProp, WgState state )
+void WgTextTool::addPropAttributes( WgTextAttr& attr, const WgTextprop_p& pProp, WgState state )
 {
 	if( !pProp )
 		return;
@@ -2885,9 +2885,9 @@ void WgTextTool::setAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, W
 
 //____ getCursor() ____________________________________________________________
 
-WgCaretPtr WgTextTool::getCursor( const WgLegacyTextField * pText )
+WgCaret_p WgTextTool::getCursor( const WgLegacyTextField * pText )
 {
-	WgCaretPtr p = pText->cursorSkin();
+	WgCaret_p p = pText->cursorSkin();
 	if( p )
 		return p;
 
@@ -2896,9 +2896,9 @@ WgCaretPtr WgTextTool::getCursor( const WgLegacyTextField * pText )
 
 //____ getSelectionProperties() _______________________________________________
 
-WgTextpropPtr WgTextTool::getSelectionProperties( const WgLegacyTextField * pText )
+WgTextprop_p WgTextTool::getSelectionProperties( const WgLegacyTextField * pText )
 {
-	WgTextpropPtr p = pText->selectionProperties();
+	WgTextprop_p p = pText->selectionProperties();
 	if( p )
 		return p;
 
@@ -2907,9 +2907,9 @@ WgTextpropPtr WgTextTool::getSelectionProperties( const WgLegacyTextField * pTex
 
 //____ getLinkProperties() ____________________________________________________
 
-WgTextpropPtr WgTextTool::getLinkProperties( const WgLegacyTextField * pText )
+WgTextprop_p WgTextTool::getLinkProperties( const WgLegacyTextField * pText )
 {
-	WgTextpropPtr p = pText->linkProperties();
+	WgTextprop_p p = pText->linkProperties();
 	if( p )
 		return p;
 
@@ -2940,7 +2940,7 @@ Uint32 WgTextTool::TextpropEncoder::beginString()
 
 //____ TextpropEncoder::setProp() _____________________________________________
 
-Uint32 WgTextTool::TextpropEncoder::setProp( const WgTextpropPtr& pNewProp )
+Uint32 WgTextTool::TextpropEncoder::setProp( const WgTextprop_p& pNewProp )
 {
 	Uint32 i = 0;
 
@@ -2996,7 +2996,7 @@ Uint32 WgTextTool::TextpropEncoder::setProp( const WgTextpropPtr& pNewProp )
 				WgResDB::TextpropRes * pRes = m_pResDB->getFirstResTextprop();
 				while( pRes )
 				{
-					WgTextpropPtr pProp = pRes->res;
+					WgTextprop_p pProp = pRes->res;
 
 					if( pNewProp->font() == pProp->font() && pNewProp->link() == pProp->link() &&
 						((pNewProp->isColored() && pNewProp->isColorStatic()) || pNewProp->compareColorTo( pProp )) &&

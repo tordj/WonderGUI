@@ -64,10 +64,10 @@ const char * WgResDB::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgResDBPtr WgResDB::cast( const WgObjectPtr& pObject )
+WgResDB_p WgResDB::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgResDBPtr( static_cast<WgResDB*>(pObject.rawPtr()) );
+		return WgResDB_p( static_cast<WgResDB*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -128,35 +128,35 @@ void WgResDB::clearWidgets()
 
 //____ () _________________________________________________________
 
-std::string	WgResDB::generateName( const WgSurfacePtr& data )
+std::string	WgResDB::generateName( const WgSurface_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_surf__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgGlyphsetPtr& data )
+std::string	WgResDB::generateName( const WgGlyphset_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_glyphset__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgFontPtr& data )
+std::string	WgResDB::generateName( const WgFont_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_font__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgGfxAnimPtr& data )
+std::string	WgResDB::generateName( const WgGfxAnim_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_anim__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgCaretPtr& data )
+std::string	WgResDB::generateName( const WgCaret_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -170,21 +170,21 @@ std::string	WgResDB::generateName( const WgColor data )
 	return std::string("_color__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgTextpropPtr& data )
+std::string	WgResDB::generateName( const WgTextprop_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_textprop__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgSkinPtr& data )
+std::string	WgResDB::generateName( const WgSkin_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
 	return std::string("_skin__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::generateName( const WgWidgetPtr& data )
+std::string	WgResDB::generateName( const WgWidget_p& data )
 {
 	static int nGenerated = 0;
 	char pBuf[100];
@@ -203,7 +203,7 @@ bool WgResDB::addResDb( const std::string& file, MetaData * pMetaData )
 
 	if(getResDbRes(file) == 0 && m_pResLoader)
 	{
-		WgResDBPtr pDb = m_pResLoader->loadDb( file, this );
+		WgResDB_p pDb = m_pResLoader->loadDb( file, this );
 		// store resource even if load failed. could be an optional include
 		ResDBRes* p = new ResDBRes(file, pDb, file, pMetaData);
 		m_resDbs.pushBack(p);
@@ -213,7 +213,7 @@ bool WgResDB::addResDb( const std::string& file, MetaData * pMetaData )
 	return false;
 }
 
-bool WgResDB::addResDb( const WgResDBPtr& db, const std::string& file, MetaData * pMetaData )
+bool WgResDB::addResDb( const WgResDB_p& db, const std::string& file, MetaData * pMetaData )
 {
 	assert(getResDbRes(file) == 0);
 
@@ -237,7 +237,7 @@ bool WgResDB::addSurface( const std::string& id, const std::string& file, MetaDa
 
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end() && m_pResLoader)
 	{
-		WgSurfacePtr pSurface = m_pResLoader->loadSurface( file, bRequired );
+		WgSurface_p pSurface = m_pResLoader->loadSurface( file, bRequired );
 		if( !pSurface )
 			return false;
 
@@ -252,7 +252,7 @@ bool WgResDB::addSurface( const std::string& id, const std::string& file, MetaDa
 
 //____ () _________________________________________________________
 
-bool WgResDB::addSurface( const std::string& id, const WgSurfacePtr& pSurface, const std::string& filename, MetaData * pMetaData )
+bool WgResDB::addSurface( const std::string& id, const WgSurface_p& pSurface, const std::string& filename, MetaData * pMetaData )
 {
 	assert(m_mapSurfaces.find(id) == m_mapSurfaces.end());
 	if(m_mapSurfaces.find(id) == m_mapSurfaces.end())
@@ -275,7 +275,7 @@ bool WgResDB::addGlyphset( const std::string& id, const std::string& file, MetaD
 
 	if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end() && m_pResLoader)
 	{
-		WgGlyphsetPtr pGlyphset = m_pResLoader->loadGlyphset( file );
+		WgGlyphset_p pGlyphset = m_pResLoader->loadGlyphset( file );
 		if( !pGlyphset )
 			return false;
 
@@ -288,7 +288,7 @@ bool WgResDB::addGlyphset( const std::string& id, const std::string& file, MetaD
 	return false;
 }
 
-bool WgResDB::addGlyphset( const std::string& id, const WgGlyphsetPtr& pGlyphset, const std::string& file, MetaData * pMetaData )
+bool WgResDB::addGlyphset( const std::string& id, const WgGlyphset_p& pGlyphset, const std::string& file, MetaData * pMetaData )
 {
 	assert(m_mapGlyphsets.find(id) == m_mapGlyphsets.end());
 	if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end())
@@ -304,7 +304,7 @@ bool WgResDB::addGlyphset( const std::string& id, const WgGlyphsetPtr& pGlyphset
 
 //____ () _________________________________________________________
 
-bool WgResDB::addFont( const std::string& id, const WgFontPtr& pFont, MetaData * pMetaData )
+bool WgResDB::addFont( const std::string& id, const WgFont_p& pFont, MetaData * pMetaData )
 {
 	assert(m_mapFonts.find(id) == m_mapFonts.end());
 	if(m_mapFonts.find(id) == m_mapFonts.end())
@@ -320,7 +320,7 @@ bool WgResDB::addFont( const std::string& id, const WgFontPtr& pFont, MetaData *
 
 //____ () _________________________________________________________
 
-bool WgResDB::addGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, MetaData * pMetaData )
+bool WgResDB::addGfxAnim( const std::string& id, const WgGfxAnim_p& pAnim, MetaData * pMetaData )
 {
 	assert(m_mapGfxAnims.find(id) == m_mapGfxAnims.end());
 	if(m_mapGfxAnims.find(id) == m_mapGfxAnims.end())
@@ -336,7 +336,7 @@ bool WgResDB::addGfxAnim( const std::string& id, const WgGfxAnimPtr& pAnim, Meta
 
 //____ () _________________________________________________________
 
-bool WgResDB::addCursor( const std::string& id, const WgCaretPtr& pCursor, MetaData * pMetaData )
+bool WgResDB::addCursor( const std::string& id, const WgCaret_p& pCursor, MetaData * pMetaData )
 {
 	assert(m_mapCursors.find(id) == m_mapCursors.end());
 	if(m_mapCursors.find(id) == m_mapCursors.end())
@@ -352,7 +352,7 @@ bool WgResDB::addCursor( const std::string& id, const WgCaretPtr& pCursor, MetaD
 
 //____ () _________________________________________________________
 
-bool WgResDB::addTextprop( const std::string& id, const WgTextpropPtr& pProp, MetaData * pMetaData )
+bool WgResDB::addTextprop( const std::string& id, const WgTextprop_p& pProp, MetaData * pMetaData )
 {
 	//assert(m_mapTextprops.find(id) == m_mapTextprops.end());
 	if(m_mapTextprops.find(id) == m_mapTextprops.end())
@@ -405,7 +405,7 @@ std::string WgResDB::loadString( const std::string& token )
 
 //____ () _________________________________________________________
 
-bool WgResDB::addSkin( const std::string& id, const WgSkinPtr& pSkin, MetaData * pMetaData )
+bool WgResDB::addSkin( const std::string& id, const WgSkin_p& pSkin, MetaData * pMetaData )
 {
 	assert(m_mapSkins.find(id) == m_mapSkins.end());
 	if(m_mapSkins.find(id) == m_mapSkins.end())
@@ -438,7 +438,7 @@ bool WgResDB::addDataSet( const std::string& id, MetaData * pMetaData )
 
 //____ () _________________________________________________________
 
-bool WgResDB::addWidget( const std::string& id, const WgWidgetPtr& pWidget, MetaData * pMetaData )
+bool WgResDB::addWidget( const std::string& id, const WgWidget_p& pWidget, MetaData * pMetaData )
 {
 	assert(m_mapWidgets.find(id) == m_mapWidgets.end());
 	if(m_mapWidgets.find(id) == m_mapWidgets.end())
@@ -464,50 +464,50 @@ bool WgResDB::addConnect( MetaData * pMetaData )
 
 //____ () _________________________________________________________
 
-WgSurfacePtr WgResDB::getSurface( const std::string& id ) const
+WgSurface_p WgResDB::getSurface( const std::string& id ) const
 {
 	SurfaceRes* surfRes = getResSurface(id);
-	return surfRes ? surfRes->res : WgSurfacePtr();
+	return surfRes ? surfRes->res : WgSurface_p();
 }
 
 //____ () _________________________________________________________
 
-WgGlyphsetPtr WgResDB::getGlyphset( const std::string& id ) const
+WgGlyphset_p WgResDB::getGlyphset( const std::string& id ) const
 {
 	GlyphsetRes* glyphRes = getResGlyphset(id);
-	return glyphRes ? glyphRes->res : WgGlyphsetPtr();
+	return glyphRes ? glyphRes->res : WgGlyphset_p();
 }
 
 //____ () _________________________________________________________
 
-WgFontPtr WgResDB::getFont( const std::string& id ) const
+WgFont_p WgResDB::getFont( const std::string& id ) const
 {
 	FontRes* fontRes = getResFont(id);
-	return fontRes ? fontRes->res : WgFontPtr();
+	return fontRes ? fontRes->res : WgFont_p();
 }
 
 //____ () _________________________________________________________
 
-WgGfxAnimPtr WgResDB::getGfxAnim( const std::string& id ) const
+WgGfxAnim_p WgResDB::getGfxAnim( const std::string& id ) const
 {
 	GfxAnimRes* animRes = getResGfxAnim(id);
-	return animRes ? animRes->res : WgGfxAnimPtr();
+	return animRes ? animRes->res : WgGfxAnim_p();
 }
 
 //____ () _________________________________________________________
 
-WgCaretPtr WgResDB::getCursor( const std::string& id ) const
+WgCaret_p WgResDB::getCursor( const std::string& id ) const
 {
 	CursorRes* cursorRes = getResCursor(id);
-	return cursorRes ? cursorRes->res : WgCaretPtr();
+	return cursorRes ? cursorRes->res : WgCaret_p();
 }
 
 //____ () _________________________________________________________
 
-WgTextpropPtr WgResDB::getTextprop( const std::string& id ) const
+WgTextprop_p WgResDB::getTextprop( const std::string& id ) const
 {
 	TextpropRes* propRes = getResTextprop(id);
-	return propRes ? propRes->res : WgTextpropPtr();
+	return propRes ? propRes->res : WgTextprop_p();
 }
 
 //____ () _________________________________________________________
@@ -520,10 +520,10 @@ WgColor WgResDB::getColor( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgSkinPtr WgResDB::getSkin( const std::string& id ) const
+WgSkin_p WgResDB::getSkin( const std::string& id ) const
 {
 	SkinRes* skinRes = getResSkin(id);
-	return skinRes ? skinRes->res : WgSkinPtr();
+	return skinRes ? skinRes->res : WgSkin_p();
 }
 
 //____ () _________________________________________________________
@@ -536,24 +536,24 @@ WgResDB::MetaData * WgResDB::getDataSet( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgWidgetPtr WgResDB::getWidget( const std::string& id ) const
+WgWidget_p WgResDB::getWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = getResWidget(id);
-	return widgetRes ? widgetRes->res : WgWidgetPtr();
+	return widgetRes ? widgetRes->res : WgWidget_p();
 }
 
 //____ () _________________________________________________________
 
-WgWidgetPtr WgResDB::cloneWidget( const std::string& id ) const
+WgWidget_p WgResDB::cloneWidget( const std::string& id ) const
 {
 	WidgetRes* widgetRes = getResWidget(id);
 
 	if( !widgetRes )
 		return 0;
 
-	WgWidgetPtr pWidget = widgetRes->res;
+	WgWidget_p pWidget = widgetRes->res;
 
-	WgWidgetPtr pClone = pWidget->NewOfMyType();
+	WgWidget_p pClone = pWidget->NewOfMyType();
 	pClone->CloneContent(pWidget.rawPtr());
 	return pClone;
 }
@@ -781,7 +781,7 @@ WgResDB::ConnectRes * WgResDB::getResConnect( const std::string& id ) const
 
 //____ () _________________________________________________________
 
-WgResDB::ResDBRes * WgResDB::findResDbRes( const WgResDBPtr& data ) const
+WgResDB::ResDBRes * WgResDB::findResDbRes( const WgResDB_p& data ) const
 {
 	for(ResDBRes* res = getFirstResDbRes(); res; res = res->next())
 	{
@@ -799,7 +799,7 @@ WgResDB::ResDBRes * WgResDB::findResDbRes( const WgResDBPtr& data ) const
 
 //____ () _________________________________________________________
 
-WgResDB::SurfaceRes* WgResDB::findResSurface( const WgSurfacePtr& surf ) const
+WgResDB::SurfaceRes* WgResDB::findResSurface( const WgSurface_p& surf ) const
 {
 	SurfaceRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -818,7 +818,7 @@ WgResDB::SurfaceRes* WgResDB::findResSurface( const WgSurfacePtr& surf ) const
 
 //____ () _________________________________________________________
 
-WgResDB::GlyphsetRes* WgResDB::findResGlyphset( const WgGlyphsetPtr& meta ) const
+WgResDB::GlyphsetRes* WgResDB::findResGlyphset( const WgGlyphset_p& meta ) const
 {
 	GlyphsetRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -837,7 +837,7 @@ WgResDB::GlyphsetRes* WgResDB::findResGlyphset( const WgGlyphsetPtr& meta ) cons
 
 //____ () _________________________________________________________
 
-WgResDB::FontRes* WgResDB::findResFont( const WgFontPtr& meta ) const
+WgResDB::FontRes* WgResDB::findResFont( const WgFont_p& meta ) const
 {
 	FontRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -856,7 +856,7 @@ WgResDB::FontRes* WgResDB::findResFont( const WgFontPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::GfxAnimRes* WgResDB::findResGfxAnim( const WgGfxAnimPtr& meta ) const
+WgResDB::GfxAnimRes* WgResDB::findResGfxAnim( const WgGfxAnim_p& meta ) const
 {
 	GfxAnimRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -875,7 +875,7 @@ WgResDB::GfxAnimRes* WgResDB::findResGfxAnim( const WgGfxAnimPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::CursorRes* WgResDB::findResCursor( const WgCaretPtr& meta ) const
+WgResDB::CursorRes* WgResDB::findResCursor( const WgCaret_p& meta ) const
 {
 	CursorRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -894,7 +894,7 @@ WgResDB::CursorRes* WgResDB::findResCursor( const WgCaretPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::TextpropRes* WgResDB::findResTextprop( const WgTextpropPtr& meta ) const
+WgResDB::TextpropRes* WgResDB::findResTextprop( const WgTextprop_p& meta ) const
 {
 	TextpropRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -932,7 +932,7 @@ WgResDB::ColorRes* WgResDB::findResColor( const WgColor meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::SkinRes* WgResDB::findResSkin( const WgSkinPtr& meta ) const
+WgResDB::SkinRes* WgResDB::findResSkin( const WgSkin_p& meta ) const
 {
 	SkinRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -951,7 +951,7 @@ WgResDB::SkinRes* WgResDB::findResSkin( const WgSkinPtr& meta ) const
 
 //____ () _________________________________________________________
 
-WgResDB::WidgetRes* WgResDB::findResWidget( const WgWidgetPtr& meta ) const
+WgResDB::WidgetRes* WgResDB::findResWidget( const WgWidget_p& meta ) const
 {
 	WidgetRes* res = 0;
 	for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())

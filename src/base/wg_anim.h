@@ -56,8 +56,8 @@ protected:
 };
 
 class WgAnim;
-typedef	WgStrongPtr<WgAnim,WgObjectPtr>		WgAnimPtr;
-typedef	WgWeakPtr<WgAnim,WgObjectWeakPtr>	WgAnimWeakPtr;
+typedef	WgStrongPtr<WgAnim,WgObject_p>		WgAnim_p;
+typedef	WgWeakPtr<WgAnim,WgObject_wp>	WgAnim_wp;
 
 //____ Class WgAnim ______________________________________________________
 
@@ -69,7 +69,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgAnimPtr	cast( const WgObjectPtr& pObject );
+	static WgAnim_p	cast( const WgObject_p& pObject );
 
 	bool				setPlayMode( WgAnimMode mode );
 	bool				setTimeScaler( float scale );

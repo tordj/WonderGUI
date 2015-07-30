@@ -59,7 +59,7 @@ protected:
 
 	//
 
-	WgWidgetWeakPtr	m_pScrollbar;
+	WgWidget_wp	m_pScrollbar;
 };
 
 

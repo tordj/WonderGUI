@@ -52,10 +52,10 @@ const char * WgSimpleVolumeMeter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSimpleVolumeMeterPtr WgSimpleVolumeMeter::cast( const WgObjectPtr& pObject )
+WgSimpleVolumeMeter_p WgSimpleVolumeMeter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSimpleVolumeMeterPtr( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
+		return WgSimpleVolumeMeter_p( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -313,7 +313,7 @@ void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	_updateSectionPixelHeight();

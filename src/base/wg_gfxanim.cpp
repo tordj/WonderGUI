@@ -57,10 +57,10 @@ const char * WgGfxAnim::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgGfxAnimPtr WgGfxAnim::cast( const WgObjectPtr& pObject )
+WgGfxAnim_p WgGfxAnim::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgGfxAnimPtr( static_cast<WgGfxAnim*>(pObject.rawPtr()) );
+		return WgGfxAnim_p( static_cast<WgGfxAnim*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -74,7 +74,7 @@ void WgGfxAnim::setSize( WgSize size )
 
 //____ insertFrame() __________________________________________________________
 
-bool WgGfxAnim::insertFrame( int pos, const WgSurfacePtr& pSurf, WgCoord ofs, int duration )
+bool WgGfxAnim::insertFrame( int pos, const WgSurface_p& pSurf, WgCoord ofs, int duration )
 {
 	if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 		return false;
@@ -93,7 +93,7 @@ bool WgGfxAnim::insertFrame( int pos, const WgSurfacePtr& pSurf, WgCoord ofs, in
 	return bOk;
 }
 
-bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, const WgSurfacePtr& pSurf, WgCoord ofs, int duration )
+bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, const WgSurface_p& pSurf, WgCoord ofs, int duration )
 {
 	if( !pSurf )
 		return false;
@@ -113,7 +113,7 @@ bool WgGfxAnim::insertFrame( WgGfxFrame * pBefore, const WgSurfacePtr& pSurf, Wg
 
 //____ addFrame() _____________________________________________________________
 
-bool WgGfxAnim::addFrame( const WgSurfacePtr& pSurf, WgCoord ofs, int duration )
+bool WgGfxAnim::addFrame( const WgSurface_p& pSurf, WgCoord ofs, int duration )
 {
 	if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 		return false;
@@ -134,7 +134,7 @@ bool WgGfxAnim::addFrame( const WgSurfacePtr& pSurf, WgCoord ofs, int duration )
 
 //____ addFrames() ____________________________________________________________
 
-int WgGfxAnim::addFrames( const WgSurfacePtr& pSurf, int duration, int nFrames, WgSize spacing )
+int WgGfxAnim::addFrames( const WgSurface_p& pSurf, int duration, int nFrames, WgSize spacing )
 {
 	if( !pSurf )
 		return 0;
@@ -148,7 +148,7 @@ int WgGfxAnim::addFrames( const WgSurfacePtr& pSurf, int duration, int nFrames, 
 }
 
 
-int WgGfxAnim::addFrames( const WgSurfacePtr& pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames, WgSize spacing )
+int WgGfxAnim::addFrames( const WgSurface_p& pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames, WgSize spacing )
 {
 	int nFramesX = arraySize.w;
 	int nFramesY = arraySize.h;

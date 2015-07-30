@@ -44,10 +44,10 @@ const char * WgReceiver::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgReceiverPtr WgReceiver::cast( const WgObjectPtr& pObject )
+WgReceiver_p WgReceiver::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgReceiverPtr( static_cast<WgReceiver*>(pObject.rawPtr()) );
+		return WgReceiver_p( static_cast<WgReceiver*>(pObject.rawPtr()) );
 
 	return 0;
 }

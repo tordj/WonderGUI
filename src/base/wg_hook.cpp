@@ -59,21 +59,21 @@ const char * WgHook::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgHookPtr WgHook::cast( const WgHookPtr& pHook )
+WgHook_p WgHook::cast( const WgHook_p& pHook )
 {
 	return pHook;
 }
 
 //____ widget() _______________________________________________________________
 
-WgWidgetPtr WgHook::widget() const
+WgWidget_p WgHook::widget() const
 { 
 	return m_pWidget; 
 }
 
 //____ parent() _______________________________________________________________
 
-WgContainerPtr WgHook::parent() const 
+WgContainer_p WgHook::parent() const 
 { 
 	return _parent(); 
 }
@@ -125,7 +125,7 @@ bool WgHook::_releaseFocus()
 
 //____ root() _________________________________________________________________
 
-WgRootPanelPtr WgHook::root() const
+WgRootPanel_p WgHook::root() const
 {
 	return _root();
 }

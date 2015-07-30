@@ -38,12 +38,12 @@
 class	WgSurface;
 
 class WgToggleButton;
-typedef	WgStrongPtr<WgToggleButton,WgWidgetPtr>		WgToggleButtonPtr;
-typedef	WgWeakPtr<WgToggleButton,WgWidgetWeakPtr>	WgToggleButtonWeakPtr;
+typedef	WgStrongPtr<WgToggleButton,WgWidget_p>		WgToggleButton_p;
+typedef	WgWeakPtr<WgToggleButton,WgWidget_wp>	WgToggleButton_wp;
 
 class WgToggleGroup;
-typedef	WgStrongPtr<WgToggleGroup,WgObjectPtr>		WgToggleGroupPtr;
-typedef	WgWeakPtr<WgToggleGroup,WgObjectWeakPtr>	WgToggleGroupWeakPtr;
+typedef	WgStrongPtr<WgToggleGroup,WgObject_p>		WgToggleGroup_p;
+typedef	WgWeakPtr<WgToggleGroup,WgObject_wp>	WgToggleGroup_wp;
 
 
 /**
@@ -65,12 +65,12 @@ class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgText
 {
 friend class WgToggleGroup;
 public:
-	static WgToggleButtonPtr	create() { return WgToggleButtonPtr(new WgToggleButton()); }
+	static WgToggleButton_p	create() { return WgToggleButton_p(new WgToggleButton()); }
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgToggleButtonPtr	cast( const WgObjectPtr& pObject );
+	static WgToggleButton_p	cast( const WgObject_p& pObject );
 
 	enum ClickArea
 	{
@@ -99,7 +99,7 @@ public:
 	void				SetFlipOnRelease( bool bFlipOnRelease );
 	inline bool			FlipOnRelease();
 
-	inline WgToggleGroupPtr ToggleGroup() const;
+	inline WgToggleGroup_p ToggleGroup() const;
 	WgSize				preferredSize() const;
 	inline bool			IsAutoEllipsisDefault() const;
 
@@ -111,12 +111,12 @@ protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 	
 	WgObject * 		_object() { return this; };
 	void			_onFieldDirty( WgField * pField );
@@ -136,7 +136,7 @@ private:
 
 	WgTextField		m_label;
 	WgIconField		m_icon;
-	WgToggleGroupPtr	m_pToggleGroup;
+	WgToggleGroup_p	m_pToggleGroup;
 
 	ClickArea		m_clickArea;
 };
@@ -157,7 +157,7 @@ inline bool WgToggleButton::FlipOnRelease()
 	return m_bFlipOnRelease;
 }
 
-inline WgToggleGroupPtr WgToggleButton::ToggleGroup() const
+inline WgToggleGroup_p WgToggleButton::ToggleGroup() const
 {
 	return m_pToggleGroup;
 }

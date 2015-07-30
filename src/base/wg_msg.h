@@ -69,207 +69,207 @@ class WgLegacyText;
 class WgLegacyModText;
 class WgEditText;
 
-typedef	WgIStrongPtr<WgLegacyText,WgInterfacePtr>	WgLegacyTextPtr;
-typedef	WgIWeakPtr<WgLegacyText,WgInterfaceWeakPtr> WgLegacyTextWeakPtr;
+typedef	WgIStrongPtr<WgLegacyText,WgInterface_p>	WgLegacyText_p;
+typedef	WgIWeakPtr<WgLegacyText,WgInterface_wp> WgLegacyText_wp;
 
-typedef	WgIStrongPtr<WgLegacyModText,WgLegacyTextPtr>	WgLegacyModTextPtr;
-typedef	WgIWeakPtr<WgLegacyModText,WgLegacyTextWeakPtr>	WgLegacyModTextWeakPtr;
+typedef	WgIStrongPtr<WgLegacyModText,WgLegacyText_p>	WgLegacyModText_p;
+typedef	WgIWeakPtr<WgLegacyModText,WgLegacyText_wp>	WgLegacyModText_wp;
 
-typedef	WgIStrongPtr<WgEditText,WgLegacyModTextPtr>	WgEditTextPtr;
-typedef	WgIWeakPtr<WgEditText,WgLegacyModTextWeakPtr>	WgEditTextWeakPtr;
+typedef	WgIStrongPtr<WgEditText,WgLegacyModText_p>	WgEditText_p;
+typedef	WgIWeakPtr<WgEditText,WgLegacyModText_wp>	WgEditText_wp;
 
 
-typedef WgWeakPtr<WgWidget,WgReceiverWeakPtr> WgWidgetWeakPtr;
+typedef WgWeakPtr<WgWidget,WgReceiver_wp> WgWidget_wp;
 
 class WgMsg;
-typedef	WgStrongPtr<WgMsg,WgObjectPtr>		WgMsgPtr;
-typedef	WgWeakPtr<WgMsg,WgObjectWeakPtr>	WgMsgWeakPtr;
+typedef	WgStrongPtr<WgMsg,WgObject_p>		WgMsg_p;
+typedef	WgWeakPtr<WgMsg,WgObject_wp>	WgMsg_wp;
 
 class WgFocusGainedMsg;
-typedef	WgStrongPtr<WgFocusGainedMsg,WgMsgPtr>		WgFocusGainedMsgPtr;
-typedef	WgWeakPtr<WgFocusGainedMsg,WgMsgWeakPtr>	WgFocusGainedMsgWeakPtr;
+typedef	WgStrongPtr<WgFocusGainedMsg,WgMsg_p>		WgFocusGainedMsg_p;
+typedef	WgWeakPtr<WgFocusGainedMsg,WgMsg_wp>	WgFocusGainedMsg_wp;
 
 class WgFocusLostMsg;
-typedef	WgStrongPtr<WgFocusLostMsg,WgMsgPtr>		WgFocusLostMsgPtr;
-typedef	WgWeakPtr<WgFocusLostMsg,WgMsgWeakPtr>	WgFocusLostMsgWeakPtr;
+typedef	WgStrongPtr<WgFocusLostMsg,WgMsg_p>		WgFocusLostMsg_p;
+typedef	WgWeakPtr<WgFocusLostMsg,WgMsg_wp>	WgFocusLostMsg_wp;
 
 class WgMouseEnterMsg;
-typedef	WgStrongPtr<WgMouseEnterMsg,WgMsgPtr>		WgMouseEnterMsgPtr;
-typedef	WgWeakPtr<WgMouseEnterMsg,WgMsgWeakPtr>	WgMouseEnterMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseEnterMsg,WgMsg_p>		WgMouseEnterMsg_p;
+typedef	WgWeakPtr<WgMouseEnterMsg,WgMsg_wp>	WgMouseEnterMsg_wp;
 
 class WgMouseLeaveMsg;
-typedef	WgStrongPtr<WgMouseLeaveMsg,WgMsgPtr>		WgMouseLeaveMsgPtr;
-typedef	WgWeakPtr<WgMouseLeaveMsg,WgMsgWeakPtr>	WgMouseLeaveMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseLeaveMsg,WgMsg_p>		WgMouseLeaveMsg_p;
+typedef	WgWeakPtr<WgMouseLeaveMsg,WgMsg_wp>	WgMouseLeaveMsg_wp;
 
 class WgMouseMoveMsg;
-typedef	WgStrongPtr<WgMouseMoveMsg,WgMsgPtr>		WgMouseMoveMsgPtr;
-typedef	WgWeakPtr<WgMouseMoveMsg,WgMsgWeakPtr>	WgMouseMoveMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseMoveMsg,WgMsg_p>		WgMouseMoveMsg_p;
+typedef	WgWeakPtr<WgMouseMoveMsg,WgMsg_wp>	WgMouseMoveMsg_wp;
 
 class WgMousePositionMsg;
-typedef	WgStrongPtr<WgMousePositionMsg,WgMsgPtr>		WgMousePositionMsgPtr;
-typedef	WgWeakPtr<WgMousePositionMsg,WgMsgWeakPtr>	WgMousePositionMsgWeakPtr;
+typedef	WgStrongPtr<WgMousePositionMsg,WgMsg_p>		WgMousePositionMsg_p;
+typedef	WgWeakPtr<WgMousePositionMsg,WgMsg_wp>	WgMousePositionMsg_wp;
 
 class WgMouseButtonMsg;
-typedef	WgStrongPtr<WgMouseButtonMsg,WgMsgPtr>		WgMouseButtonMsgPtr;
-typedef	WgWeakPtr<WgMouseButtonMsg,WgMsgWeakPtr>	WgMouseButtonMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseButtonMsg,WgMsg_p>		WgMouseButtonMsg_p;
+typedef	WgWeakPtr<WgMouseButtonMsg,WgMsg_wp>	WgMouseButtonMsg_wp;
 
 class WgMousePressMsg;
-typedef	WgStrongPtr<WgMousePressMsg,WgMouseButtonMsgPtr>		WgMousePressMsgPtr;
-typedef	WgWeakPtr<WgMousePressMsg,WgMouseButtonMsgWeakPtr>	WgMousePressMsgWeakPtr;
+typedef	WgStrongPtr<WgMousePressMsg,WgMouseButtonMsg_p>		WgMousePressMsg_p;
+typedef	WgWeakPtr<WgMousePressMsg,WgMouseButtonMsg_wp>	WgMousePressMsg_wp;
 
 class WgMouseReleaseMsg;
-typedef	WgStrongPtr<WgMouseReleaseMsg,WgMouseButtonMsgPtr>		WgMouseReleaseMsgPtr;
-typedef	WgWeakPtr<WgMouseReleaseMsg,WgMouseButtonMsgWeakPtr>	WgMouseReleaseMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseReleaseMsg,WgMouseButtonMsg_p>		WgMouseReleaseMsg_p;
+typedef	WgWeakPtr<WgMouseReleaseMsg,WgMouseButtonMsg_wp>	WgMouseReleaseMsg_wp;
 
 class WgMouseRepeatMsg;
-typedef	WgStrongPtr<WgMouseRepeatMsg,WgMouseButtonMsgPtr>		WgMouseRepeatMsgPtr;
-typedef	WgWeakPtr<WgMouseRepeatMsg,WgMouseButtonMsgWeakPtr>	WgMouseRepeatMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseRepeatMsg,WgMouseButtonMsg_p>		WgMouseRepeatMsg_p;
+typedef	WgWeakPtr<WgMouseRepeatMsg,WgMouseButtonMsg_wp>	WgMouseRepeatMsg_wp;
 
 class WgMouseClickMsg;
-typedef	WgStrongPtr<WgMouseClickMsg,WgMouseButtonMsgPtr>		WgMouseClickMsgPtr;
-typedef	WgWeakPtr<WgMouseClickMsg,WgMouseButtonMsgWeakPtr>	WgMouseClickMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseClickMsg,WgMouseButtonMsg_p>		WgMouseClickMsg_p;
+typedef	WgWeakPtr<WgMouseClickMsg,WgMouseButtonMsg_wp>	WgMouseClickMsg_wp;
 
 class WgMouseDoubleClickMsg;
-typedef	WgStrongPtr<WgMouseDoubleClickMsg,WgMouseButtonMsgPtr>		WgMouseDoubleClickMsgPtr;
-typedef	WgWeakPtr<WgMouseDoubleClickMsg,WgMouseButtonMsgWeakPtr>	WgMouseDoubleClickMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseDoubleClickMsg,WgMouseButtonMsg_p>		WgMouseDoubleClickMsg_p;
+typedef	WgWeakPtr<WgMouseDoubleClickMsg,WgMouseButtonMsg_wp>	WgMouseDoubleClickMsg_wp;
 
 class WgMouseDragMsg;
-typedef	WgStrongPtr<WgMouseDragMsg,WgMouseButtonMsgPtr>		WgMouseDragMsgPtr;
-typedef	WgWeakPtr<WgMouseDragMsg,WgMouseButtonMsgWeakPtr>	WgMouseDragMsgWeakPtr;
+typedef	WgStrongPtr<WgMouseDragMsg,WgMouseButtonMsg_p>		WgMouseDragMsg_p;
+typedef	WgWeakPtr<WgMouseDragMsg,WgMouseButtonMsg_wp>	WgMouseDragMsg_wp;
 
 class WgKeyMsg;
-typedef	WgStrongPtr<WgKeyMsg,WgMsgPtr>		WgKeyMsgPtr;
-typedef	WgWeakPtr<WgKeyMsg,WgMsgWeakPtr>	WgKeyMsgWeakPtr;
+typedef	WgStrongPtr<WgKeyMsg,WgMsg_p>		WgKeyMsg_p;
+typedef	WgWeakPtr<WgKeyMsg,WgMsg_wp>	WgKeyMsg_wp;
 
 class WgKeyPressMsg;
-typedef	WgStrongPtr<WgKeyPressMsg,WgKeyMsgPtr>		WgKeyPressMsgPtr;
-typedef	WgWeakPtr<WgKeyPressMsg,WgKeyMsgWeakPtr>	WgKeyPressMsgWeakPtr;
+typedef	WgStrongPtr<WgKeyPressMsg,WgKeyMsg_p>		WgKeyPressMsg_p;
+typedef	WgWeakPtr<WgKeyPressMsg,WgKeyMsg_wp>	WgKeyPressMsg_wp;
 
 class WgKeyReleaseMsg;
-typedef	WgStrongPtr<WgKeyReleaseMsg,WgKeyMsgPtr>		WgKeyReleaseMsgPtr;
-typedef	WgWeakPtr<WgKeyReleaseMsg,WgKeyMsgWeakPtr>	WgKeyReleaseMsgWeakPtr;
+typedef	WgStrongPtr<WgKeyReleaseMsg,WgKeyMsg_p>		WgKeyReleaseMsg_p;
+typedef	WgWeakPtr<WgKeyReleaseMsg,WgKeyMsg_wp>	WgKeyReleaseMsg_wp;
 
 class WgKeyRepeatMsg;
-typedef	WgStrongPtr<WgKeyRepeatMsg,WgKeyMsgPtr>		WgKeyRepeatMsgPtr;
-typedef	WgWeakPtr<WgKeyRepeatMsg,WgKeyMsgWeakPtr>	WgKeyRepeatMsgWeakPtr;
+typedef	WgStrongPtr<WgKeyRepeatMsg,WgKeyMsg_p>		WgKeyRepeatMsg_p;
+typedef	WgWeakPtr<WgKeyRepeatMsg,WgKeyMsg_wp>	WgKeyRepeatMsg_wp;
 
 class WgCharacterMsg;
-typedef	WgStrongPtr<WgCharacterMsg,WgMsgPtr>		WgCharacterMsgPtr;
-typedef	WgWeakPtr<WgCharacterMsg,WgMsgWeakPtr>	WgCharacterMsgWeakPtr;
+typedef	WgStrongPtr<WgCharacterMsg,WgMsg_p>		WgCharacterMsg_p;
+typedef	WgWeakPtr<WgCharacterMsg,WgMsg_wp>	WgCharacterMsg_wp;
 
 class WgWheelRollMsg;
-typedef	WgStrongPtr<WgWheelRollMsg,WgMsgPtr>		WgWheelRollMsgPtr;
-typedef	WgWeakPtr<WgWheelRollMsg,WgMsgWeakPtr>	WgWheelRollMsgWeakPtr;
+typedef	WgStrongPtr<WgWheelRollMsg,WgMsg_p>		WgWheelRollMsg_p;
+typedef	WgWeakPtr<WgWheelRollMsg,WgMsg_wp>	WgWheelRollMsg_wp;
 
 class WgTickMsg;
-typedef	WgStrongPtr<WgTickMsg,WgMsgPtr>		WgTickMsgPtr;
-typedef	WgWeakPtr<WgTickMsg,WgMsgWeakPtr>	WgTickMsgWeakPtr;
+typedef	WgStrongPtr<WgTickMsg,WgMsg_p>		WgTickMsg_p;
+typedef	WgWeakPtr<WgTickMsg,WgMsg_wp>	WgTickMsg_wp;
 
 class WgPointerChangeMsg;
-typedef	WgStrongPtr<WgPointerChangeMsg,WgMsgPtr>		WgPointerChangeMsgPtr;
-typedef	WgWeakPtr<WgPointerChangeMsg,WgMsgWeakPtr>	WgPointerChangeMsgWeakPtr;
+typedef	WgStrongPtr<WgPointerChangeMsg,WgMsg_p>		WgPointerChangeMsg_p;
+typedef	WgWeakPtr<WgPointerChangeMsg,WgMsg_wp>	WgPointerChangeMsg_wp;
 
 class WgSelectMsg;
-typedef	WgStrongPtr<WgSelectMsg,WgMsgPtr>		WgSelectMsgPtr;
-typedef	WgWeakPtr<WgSelectMsg,WgMsgWeakPtr>	WgSelectMsgWeakPtr;
+typedef	WgStrongPtr<WgSelectMsg,WgMsg_p>		WgSelectMsg_p;
+typedef	WgWeakPtr<WgSelectMsg,WgMsg_wp>	WgSelectMsg_wp;
 
 class WgToggleMsg;
-typedef	WgStrongPtr<WgToggleMsg,WgMsgPtr>		WgToggleMsgPtr;
-typedef	WgWeakPtr<WgToggleMsg,WgMsgWeakPtr>	WgToggleMsgWeakPtr;
+typedef	WgStrongPtr<WgToggleMsg,WgMsg_p>		WgToggleMsg_p;
+typedef	WgWeakPtr<WgToggleMsg,WgMsg_wp>	WgToggleMsg_wp;
 
 class WgValueUpdateMsg;
-typedef	WgStrongPtr<WgValueUpdateMsg,WgMsgPtr>		WgValueUpdateMsgPtr;
-typedef	WgWeakPtr<WgValueUpdateMsg,WgMsgWeakPtr>	WgValueUpdateMsgWeakPtr;
+typedef	WgStrongPtr<WgValueUpdateMsg,WgMsg_p>		WgValueUpdateMsg_p;
+typedef	WgWeakPtr<WgValueUpdateMsg,WgMsg_wp>	WgValueUpdateMsg_wp;
 
 class WgRangeUpdateMsg;
-typedef	WgStrongPtr<WgRangeUpdateMsg,WgMsgPtr>		WgRangeUpdateMsgPtr;
-typedef	WgWeakPtr<WgRangeUpdateMsg,WgMsgWeakPtr>	WgRangeUpdateMsgWeakPtr;
+typedef	WgStrongPtr<WgRangeUpdateMsg,WgMsg_p>		WgRangeUpdateMsg_p;
+typedef	WgWeakPtr<WgRangeUpdateMsg,WgMsg_wp>	WgRangeUpdateMsg_wp;
 
 class WgTextEditMsg;
-typedef	WgStrongPtr<WgTextEditMsg,WgMsgPtr>		WgTextEditMsgPtr;
-typedef	WgWeakPtr<WgTextEditMsg,WgMsgWeakPtr>	WgTextEditMsgWeakPtr;
+typedef	WgStrongPtr<WgTextEditMsg,WgMsg_p>		WgTextEditMsg_p;
+typedef	WgWeakPtr<WgTextEditMsg,WgMsg_wp>	WgTextEditMsg_wp;
 
 class WgItemMsg;
-typedef	WgStrongPtr<WgItemMsg,WgMsgPtr>		WgItemMsgPtr;
-typedef	WgWeakPtr<WgItemMsg,WgMsgWeakPtr>	WgItemMsgWeakPtr;
+typedef	WgStrongPtr<WgItemMsg,WgMsg_p>		WgItemMsg_p;
+typedef	WgWeakPtr<WgItemMsg,WgMsg_wp>	WgItemMsg_wp;
 
 class WgItemListMsg;
-typedef	WgStrongPtr<WgItemListMsg,WgMsgPtr>		WgItemListMsgPtr;
-typedef	WgWeakPtr<WgItemListMsg,WgMsgWeakPtr>	WgItemListMsgWeakPtr;
+typedef	WgStrongPtr<WgItemListMsg,WgMsg_p>		WgItemListMsg_p;
+typedef	WgWeakPtr<WgItemListMsg,WgMsg_wp>	WgItemListMsg_wp;
 
 class WgItemsSelectMsg;
-typedef	WgStrongPtr<WgItemsSelectMsg,WgItemListMsgPtr>		WgItemsSelectMsgPtr;
-typedef	WgWeakPtr<WgItemsSelectMsg,WgItemListMsgWeakPtr>	WgItemsSelectMsgWeakPtr;
+typedef	WgStrongPtr<WgItemsSelectMsg,WgItemListMsg_p>		WgItemsSelectMsg_p;
+typedef	WgWeakPtr<WgItemsSelectMsg,WgItemListMsg_wp>	WgItemsSelectMsg_wp;
 
 class WgItemsUnselectMsg;
-typedef	WgStrongPtr<WgItemsUnselectMsg,WgItemListMsgPtr>		WgItemsUnselectMsgPtr;
-typedef	WgWeakPtr<WgItemsUnselectMsg,WgItemListMsgWeakPtr>	WgItemsUnselectMsgWeakPtr;
+typedef	WgStrongPtr<WgItemsUnselectMsg,WgItemListMsg_p>		WgItemsUnselectMsg_p;
+typedef	WgWeakPtr<WgItemsUnselectMsg,WgItemListMsg_wp>	WgItemsUnselectMsg_wp;
 
 class WgItemToggleMsg;
-typedef	WgStrongPtr<WgItemToggleMsg,WgItemMsgPtr>		WgItemToggleMsgPtr;
-typedef	WgWeakPtr<WgItemToggleMsg,WgItemMsgWeakPtr>	WgItemToggleMsgWeakPtr;
+typedef	WgStrongPtr<WgItemToggleMsg,WgItemMsg_p>		WgItemToggleMsg_p;
+typedef	WgWeakPtr<WgItemToggleMsg,WgItemMsg_wp>	WgItemToggleMsg_wp;
 
 class WgItemMousePressMsg;
-typedef	WgStrongPtr<WgItemMousePressMsg,WgItemMsgPtr>		WgItemMousePressMsgPtr;
-typedef	WgWeakPtr<WgItemMousePressMsg,WgItemMsgWeakPtr>	WgItemMousePressMsgWeakPtr;
+typedef	WgStrongPtr<WgItemMousePressMsg,WgItemMsg_p>		WgItemMousePressMsg_p;
+typedef	WgWeakPtr<WgItemMousePressMsg,WgItemMsg_wp>	WgItemMousePressMsg_wp;
 
 class WgPopupClosedMsg;
-typedef	WgStrongPtr<WgPopupClosedMsg,WgMsgPtr>		WgPopupClosedMsgPtr;
-typedef	WgWeakPtr<WgPopupClosedMsg,WgMsgWeakPtr>	WgPopupClosedMsgWeakPtr;
+typedef	WgStrongPtr<WgPopupClosedMsg,WgMsg_p>		WgPopupClosedMsg_p;
+typedef	WgWeakPtr<WgPopupClosedMsg,WgMsg_wp>	WgPopupClosedMsg_wp;
 
 class WgModalMoveOutsideMsg;
-typedef	WgStrongPtr<WgModalMoveOutsideMsg,WgMsgPtr>		WgModalMoveOutsideMsgPtr;
-typedef	WgWeakPtr<WgModalMoveOutsideMsg,WgMsgWeakPtr>	WgModalMoveOutsideMsgWeakPtr;
+typedef	WgStrongPtr<WgModalMoveOutsideMsg,WgMsg_p>		WgModalMoveOutsideMsg_p;
+typedef	WgWeakPtr<WgModalMoveOutsideMsg,WgMsg_wp>	WgModalMoveOutsideMsg_wp;
 
 class WgModalBlockedPressMsg;
-typedef	WgStrongPtr<WgModalBlockedPressMsg,WgMsgPtr>		WgModalBlockedPressMsgPtr;
-typedef	WgWeakPtr<WgModalBlockedPressMsg,WgMsgWeakPtr>	WgModalBlockedPressMsgWeakPtr;
+typedef	WgStrongPtr<WgModalBlockedPressMsg,WgMsg_p>		WgModalBlockedPressMsg_p;
+typedef	WgWeakPtr<WgModalBlockedPressMsg,WgMsg_wp>	WgModalBlockedPressMsg_wp;
 
 class WgModalBlockedReleaseMsg;
-typedef	WgStrongPtr<WgModalBlockedReleaseMsg,WgMsgPtr>		WgModalBlockedReleaseMsgPtr;
-typedef	WgWeakPtr<WgModalBlockedReleaseMsg,WgMsgWeakPtr>	WgModalBlockedReleaseMsgWeakPtr;
+typedef	WgStrongPtr<WgModalBlockedReleaseMsg,WgMsg_p>		WgModalBlockedReleaseMsg_p;
+typedef	WgWeakPtr<WgModalBlockedReleaseMsg,WgMsg_wp>	WgModalBlockedReleaseMsg_wp;
 
 //
 
 class WgLinkMsg;
-typedef	WgStrongPtr<WgLinkMsg,WgMsgPtr>		WgLinkMsgPtr;
-typedef	WgWeakPtr<WgLinkMsg,WgMsgWeakPtr>	WgLinkMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMsg,WgMsg_p>		WgLinkMsg_p;
+typedef	WgWeakPtr<WgLinkMsg,WgMsg_wp>	WgLinkMsg_wp;
 
 class WgLinkSelectMsg;
-typedef	WgStrongPtr<WgLinkSelectMsg,WgLinkMsgPtr>		WgLinkSelectMsgPtr;
-typedef	WgWeakPtr<WgLinkSelectMsg,WgLinkMsgWeakPtr>		WgLinkSelectMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkSelectMsg,WgLinkMsg_p>		WgLinkSelectMsg_p;
+typedef	WgWeakPtr<WgLinkSelectMsg,WgLinkMsg_wp>		WgLinkSelectMsg_wp;
 
 class WgLinkMouseEnterMsg;
-typedef	WgStrongPtr<WgLinkMouseEnterMsg,WgLinkMsgPtr>		WgLinkMouseEnterMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseEnterMsg,WgLinkMsgWeakPtr>		WgLinkMouseEnterMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseEnterMsg,WgLinkMsg_p>		WgLinkMouseEnterMsg_p;
+typedef	WgWeakPtr<WgLinkMouseEnterMsg,WgLinkMsg_wp>		WgLinkMouseEnterMsg_wp;
 
 class WgLinkMouseLeaveMsg;
-typedef	WgStrongPtr<WgLinkMouseLeaveMsg,WgLinkMsgPtr>		WgLinkMouseLeaveMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseLeaveMsg,WgLinkMsgWeakPtr>		WgLinkMouseLeaveMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseLeaveMsg,WgLinkMsg_p>		WgLinkMouseLeaveMsg_p;
+typedef	WgWeakPtr<WgLinkMouseLeaveMsg,WgLinkMsg_wp>		WgLinkMouseLeaveMsg_wp;
 
 class WgLinkMouseButtonMsg;
-typedef	WgStrongPtr<WgLinkMouseButtonMsg,WgLinkMsgPtr>		WgLinkMouseButtonMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseButtonMsg,WgLinkMsgWeakPtr>		WgLinkMouseButtonMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseButtonMsg,WgLinkMsg_p>		WgLinkMouseButtonMsg_p;
+typedef	WgWeakPtr<WgLinkMouseButtonMsg,WgLinkMsg_wp>		WgLinkMouseButtonMsg_wp;
 
 class WgLinkMousePressMsg;
-typedef	WgStrongPtr<WgLinkMousePressMsg,WgLinkMouseButtonMsgPtr>		WgLinkMousePressMsgPtr;
-typedef	WgWeakPtr<WgLinkMousePressMsg,WgLinkMouseButtonMsgWeakPtr>		WgLinkMousePressMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMousePressMsg,WgLinkMouseButtonMsg_p>		WgLinkMousePressMsg_p;
+typedef	WgWeakPtr<WgLinkMousePressMsg,WgLinkMouseButtonMsg_wp>		WgLinkMousePressMsg_wp;
 
 class WgLinkMouseRepeatMsg;
-typedef	WgStrongPtr<WgLinkMouseRepeatMsg,WgLinkMouseButtonMsgPtr>		WgLinkMouseRepeatMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseRepeatMsg,WgLinkMouseButtonMsgWeakPtr>		WgLinkMouseRepeatMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseRepeatMsg,WgLinkMouseButtonMsg_p>		WgLinkMouseRepeatMsg_p;
+typedef	WgWeakPtr<WgLinkMouseRepeatMsg,WgLinkMouseButtonMsg_wp>		WgLinkMouseRepeatMsg_wp;
 
 class WgLinkMouseReleaseMsg;
-typedef	WgStrongPtr<WgLinkMouseReleaseMsg,WgLinkMouseButtonMsgPtr>		WgLinkMouseReleaseMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseReleaseMsg,WgLinkMouseButtonMsgWeakPtr>		WgLinkMouseReleaseMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseReleaseMsg,WgLinkMouseButtonMsg_p>		WgLinkMouseReleaseMsg_p;
+typedef	WgWeakPtr<WgLinkMouseReleaseMsg,WgLinkMouseButtonMsg_wp>		WgLinkMouseReleaseMsg_wp;
 
 class WgLinkMouseClickMsg;
-typedef	WgStrongPtr<WgLinkMouseClickMsg,WgLinkMouseButtonMsgPtr>		WgLinkMouseClickMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseClickMsg,WgLinkMouseButtonMsgWeakPtr>		WgLinkMouseClickMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseClickMsg,WgLinkMouseButtonMsg_p>		WgLinkMouseClickMsg_p;
+typedef	WgWeakPtr<WgLinkMouseClickMsg,WgLinkMouseButtonMsg_wp>		WgLinkMouseClickMsg_wp;
 
 class WgLinkMouseDoubleClickMsg;
-typedef	WgStrongPtr<WgLinkMouseDoubleClickMsg,WgLinkMouseButtonMsgPtr>		WgLinkMouseDoubleClickMsgPtr;
-typedef	WgWeakPtr<WgLinkMouseDoubleClickMsg,WgLinkMouseButtonMsgWeakPtr>		WgLinkMouseDoubleClickMsgWeakPtr;
+typedef	WgStrongPtr<WgLinkMouseDoubleClickMsg,WgLinkMouseButtonMsg_p>		WgLinkMouseDoubleClickMsg_p;
+typedef	WgWeakPtr<WgLinkMouseDoubleClickMsg,WgLinkMouseButtonMsg_wp>		WgLinkMouseDoubleClickMsg_wp;
 
 //____ WgMsg _________________________________________________________________
 /**
@@ -289,13 +289,13 @@ class WgMsg : public WgObject
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgMsgPtr	cast( const WgObjectPtr& pObject );
+		static WgMsg_p	cast( const WgObject_p& pObject );
 
 		WgMsgType			type() const { return m_type; }
 		int64_t				timestamp() const { return m_timestamp; }
 		bool				hasSource() const { return m_pSource; } 
 		WgObject *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-		WgObjectWeakPtr		source() const { return m_pSource; } 
+		WgObject_wp		source() const { return m_pSource; } 
 		WgModifierKeys		modKeys() const { return m_modKeys; }
 		WgCoord				pointerPos() const { return m_pointerPos; }
 			
@@ -304,11 +304,11 @@ class WgMsg : public WgObject
 		bool				isKeyMsg() const;
 
 		bool				hasCopyTo() { return m_pCopyTo; }
-		WgReceiverPtr		getCopyTo() { return m_pCopyTo; }
+		WgReceiver_p		getCopyTo() { return m_pCopyTo; }
 		bool				hasRepost() { return m_pRepostSource; }
 
-		void				setCopyTo( const WgReceiverPtr& pReceiver );
-		void				setRepost( const WgObjectPtr& pSource, const WgReceiverPtr& pCopyTo );
+		void				setCopyTo( const WgReceiver_p& pReceiver );
+		void				setRepost( const WgObject_p& pSource, const WgReceiver_p& pCopyTo );
 		void				swallow();
 		bool				doRepost();
 
@@ -318,10 +318,10 @@ class WgMsg : public WgObject
 		
 		WgMsgType			m_type;				// Type of message
 		int64_t				m_timestamp;		// Timestamp of posting this message.
-		WgObjectPtr			m_pSource;			// The source of this message, if any.
-		WgReceiverPtr		m_pCopyTo;			// Receiver to receive a copy of this message, if any.
-		WgObjectPtr			m_pRepostSource;	// Object to repost this message from, if any.
-		WgReceiverPtr		m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.
+		WgObject_p			m_pSource;			// The source of this message, if any.
+		WgReceiver_p		m_pCopyTo;			// Receiver to receive a copy of this message, if any.
+		WgObject_p			m_pRepostSource;	// Object to repost this message from, if any.
+		WgReceiver_p		m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.
 
 		WgModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
 		WgCoord				m_pointerPos;		// Screen position of pointer.
@@ -341,7 +341,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseButtonMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseButtonMsg_p	cast( const WgObject_p& pObject );
 
 	WgMouseButton		button() const { return m_button; }
 protected:
@@ -365,7 +365,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgKeyMsg_p	cast( const WgObject_p& pObject );
 
 	int		nativeKeyCode() const { return m_nativeKeyCode; }
 	int		translatedKeyCode() const { return m_translatedKeyCode; }
@@ -385,12 +385,12 @@ class WgFocusGainedMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgFocusGainedMsgPtr	create() { return new WgFocusGainedMsg(); }
+	static WgFocusGainedMsg_p	create() { return new WgFocusGainedMsg(); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFocusGainedMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgFocusGainedMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgFocusGainedMsg();
 };
@@ -402,12 +402,12 @@ class WgFocusLostMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgFocusLostMsgPtr	create() { return new WgFocusLostMsg(); }
+	static WgFocusLostMsg_p	create() { return new WgFocusLostMsg(); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgFocusLostMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgFocusLostMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgFocusLostMsg();
 };
@@ -419,12 +419,12 @@ class WgMouseEnterMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseEnterMsgPtr			create( const WgCoord& pos ) { return new WgMouseEnterMsg(pos); }
+	static WgMouseEnterMsg_p			create( const WgCoord& pos ) { return new WgMouseEnterMsg(pos); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseEnterMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseEnterMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgMouseEnterMsg( const WgCoord& pos );
 	WgMouseEnterMsg( WgWidget * pWidget );
@@ -437,12 +437,12 @@ class WgMouseLeaveMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseLeaveMsgPtr			create() { return new WgMouseLeaveMsg(); }
+	static WgMouseLeaveMsg_p			create() { return new WgMouseLeaveMsg(); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseLeaveMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseLeaveMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgMouseLeaveMsg();
 	WgMouseLeaveMsg( WgWidget * pWidget );
@@ -455,12 +455,12 @@ class WgMouseMoveMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseMoveMsgPtr			create( const WgCoord& pos ) { return new WgMouseMoveMsg(pos); }
+	static WgMouseMoveMsg_p			create( const WgCoord& pos ) { return new WgMouseMoveMsg(pos); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseMoveMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseMoveMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgMouseMoveMsg( WgWidget * pWidget );
 	WgMouseMoveMsg( const WgCoord& pos );
@@ -473,12 +473,12 @@ class WgMousePressMsg : public WgMouseButtonMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMousePressMsgPtr			create( WgMouseButton button ) { return new WgMousePressMsg(button); }
+	static WgMousePressMsg_p			create( WgMouseButton button ) { return new WgMousePressMsg(button); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMousePressMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMousePressMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgMousePressMsg( WgMouseButton button, WgWidget * pWidget );
 	WgMousePressMsg( WgMouseButton button );
@@ -491,12 +491,12 @@ class WgMouseReleaseMsg : public WgMouseButtonMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgMouseReleaseMsgPtr		create( WgMouseButton button ) { return new WgMouseReleaseMsg(button); }
+	static WgMouseReleaseMsg_p		create( WgMouseButton button ) { return new WgMouseReleaseMsg(button); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseReleaseMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseReleaseMsg_p	cast( const WgObject_p& pObject );
 
 	bool			pressInside() const;
 	bool			releaseInside() const;
@@ -516,12 +516,12 @@ class WgKeyPressMsg : public WgKeyMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgKeyPressMsgPtr			create( int native_keycode ) { return new WgKeyPressMsg(native_keycode); }
+	static WgKeyPressMsg_p			create( int native_keycode ) { return new WgKeyPressMsg(native_keycode); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyPressMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgKeyPressMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgKeyPressMsg( int native_keycode );
 	WgKeyPressMsg( int native_keycode, WgWidget * pWidget );
@@ -534,12 +534,12 @@ class WgKeyReleaseMsg : public WgKeyMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgKeyReleaseMsgPtr			create( int native_keycode ) { return new WgKeyReleaseMsg(native_keycode); }
+	static WgKeyReleaseMsg_p			create( int native_keycode ) { return new WgKeyReleaseMsg(native_keycode); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyReleaseMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgKeyReleaseMsg_p	cast( const WgObject_p& pObject );
 protected:
 	WgKeyReleaseMsg( int native_keycode );
 	WgKeyReleaseMsg( int native_keycode, WgWidget * pWidget );
@@ -552,12 +552,12 @@ class WgCharacterMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgCharacterMsgPtr			create( unsigned short character ) { return new WgCharacterMsg(character); }
+	static WgCharacterMsg_p			create( unsigned short character ) { return new WgCharacterMsg(character); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgCharacterMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgCharacterMsg_p	cast( const WgObject_p& pObject );
 
 	unsigned short	character() const;
 protected:
@@ -574,12 +574,12 @@ class WgWheelRollMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgWheelRollMsgPtr			create( int wheel, int distance ) { return new WgWheelRollMsg(wheel,distance); }
+	static WgWheelRollMsg_p			create( int wheel, int distance ) { return new WgWheelRollMsg(wheel,distance); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgWheelRollMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgWheelRollMsg_p	cast( const WgObject_p& pObject );
 
 	int			wheel() const;
 	int			distance() const;
@@ -598,12 +598,12 @@ class WgTickMsg : public WgMsg
 	friend class WgInputHandler;
 	friend class WgMsgRouter;
 public:
-	static WgTickMsgPtr				create( int ms ) { return new WgTickMsg(ms); }
+	static WgTickMsg_p				create( int ms ) { return new WgTickMsg(ms); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTickMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgTickMsg_p	cast( const WgObject_p& pObject );
 
 	int				millisec() const;
 protected:
@@ -623,7 +623,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPointerChangeMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgPointerChangeMsg_p	cast( const WgObject_p& pObject );
 
 	WgPointerStyle	style() const;
 		
@@ -644,7 +644,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSelectMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgSelectMsg_p	cast( const WgObject_p& pObject );
 };
 
 //____ WgToggleMsg ___________________________________________________________
@@ -657,7 +657,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgToggleMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgToggleMsg_p	cast( const WgObject_p& pObject );
 
 	bool		isSet() const;
 
@@ -675,7 +675,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgValueUpdateMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgValueUpdateMsg_p	cast( const WgObject_p& pObject );
 
 	int64_t		value() const;
 	double		fraction() const;
@@ -697,7 +697,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgRangeUpdateMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgRangeUpdateMsg_p	cast( const WgObject_p& pObject );
 
 	int			offset() const;
 	int			length() const;
@@ -717,18 +717,18 @@ public:
 class WgTextEditMsg : public WgMsg
 {
 public:
-	WgTextEditMsg( const WgEditTextPtr& pText, bool bFinal );
+	WgTextEditMsg( const WgEditText_p& pText, bool bFinal );
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgTextEditMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgTextEditMsg_p	cast( const WgObject_p& pObject );
 
-	WgEditTextPtr		text() const;
+	WgEditText_p		text() const;
 	bool				isFinal() const;
 
 protected:
-	WgEditTextPtr		m_pText;
+	WgEditText_p		m_pText;
 	bool				m_bFinal;
 };
 
@@ -739,10 +739,10 @@ class WgItemInfo
 {
 public:
 	WgItemInfo(): id(-1) {}
-	WgItemInfo( int _id, const WgObjectPtr& _pObject ) : id(_id), pObject(_pObject) {}
+	WgItemInfo( int _id, const WgObject_p& _pObject ) : id(_id), pObject(_pObject) {}
 
 	int				id;
-	WgObjectPtr		pObject;
+	WgObject_p		pObject;
 };
 
 //____ WgItemMsg ____________________________________________________________
@@ -753,13 +753,13 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemMsg_p	cast( const WgObject_p& pObject );
 
 	int				itemId() const;
-	WgObjectPtr		itemObject() const;
+	WgObject_p		itemObject() const;
 
 protected:
-	WgItemMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject );
+	WgItemMsg( WgObject * pSource, int itemId, const WgObject_p& pItemObject );
 
 	WgItemInfo		m_item;
 };
@@ -772,12 +772,12 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemToggleMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemToggleMsg_p	cast( const WgObject_p& pObject );
 
 	bool		isSet() const;
 
 //protected:
-	WgItemToggleMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, bool bSet );
+	WgItemToggleMsg( WgObject * pSource, int itemId, const WgObject_p& pItemObject, bool bSet );
 
 	bool		m_bSet;
 };
@@ -790,11 +790,11 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemMousePressMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemMousePressMsg_p	cast( const WgObject_p& pObject );
 
 	WgMouseButton		button() const;
 //protected:
-	WgItemMousePressMsg( WgObject * pSource, int itemId, const WgObjectPtr& pItemObject, WgMouseButton button );
+	WgItemMousePressMsg( WgObject * pSource, int itemId, const WgObject_p& pItemObject, WgMouseButton button );
 
 	WgMouseButton		m_button;
 };
@@ -808,7 +808,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemListMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemListMsg_p	cast( const WgObject_p& pObject );
 
 	int					nbItems() const;
 	const WgItemInfo *	items() const;
@@ -831,7 +831,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemsSelectMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemsSelectMsg_p	cast( const WgObject_p& pObject );
 };
 
 //____ WgItemsUnselectMsg _____________________________________________________
@@ -844,7 +844,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgItemsUnselectMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgItemsUnselectMsg_p	cast( const WgObject_p& pObject );
 };
 
 //____ WgPopupClosedMsg ______________________________________________________
@@ -856,10 +856,10 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgPopupClosedMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgPopupClosedMsg_p	cast( const WgObject_p& pObject );
 
 protected:
-	WgPopupClosedMsg( WgWidget * pPopup, const WgWidgetWeakPtr& pCaller );
+	WgPopupClosedMsg( WgWidget * pPopup, const WgWidget_wp& pCaller );
 
 };
 
@@ -872,7 +872,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalMoveOutsideMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgModalMoveOutsideMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgModalMoveOutsideMsg( WgWidget * pWidget );
@@ -885,7 +885,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalBlockedPressMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgModalBlockedPressMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgModalBlockedPressMsg( WgMouseButton button, WgWidget * pModalWidget );
@@ -898,7 +898,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgModalBlockedReleaseMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgModalBlockedReleaseMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgModalBlockedReleaseMsg( WgMouseButton button, WgWidget * pModalWidget );
@@ -912,7 +912,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMsg_p	cast( const WgObject_p& pObject );
 };
 
 class WgLinkSelectMsg : public WgLinkMsg
@@ -921,9 +921,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkSelectMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkSelectMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkSelectMsg( const WgTextLinkPtr& pLink );
+	WgLinkSelectMsg( const WgTextLink_p& pLink );
 };
 
 
@@ -933,9 +933,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseEnterMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseEnterMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseEnterMsg( const WgTextLinkPtr& pLink );
+	WgLinkMouseEnterMsg( const WgTextLink_p& pLink );
 };
 
 class WgLinkMouseLeaveMsg : public WgLinkMsg
@@ -944,9 +944,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseLeaveMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseLeaveMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseLeaveMsg(  const WgTextLinkPtr& pLink );
+	WgLinkMouseLeaveMsg(  const WgTextLink_p& pLink );
 };
 
 class WgLinkMouseButtonMsg : public WgLinkMsg
@@ -955,7 +955,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseButtonMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseButtonMsg_p	cast( const WgObject_p& pObject );
 
 	WgMouseButton		button() const;
 protected:
@@ -968,9 +968,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMousePressMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMousePressMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMousePressMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
+	WgLinkMousePressMsg(  const WgTextLink_p& pLink, WgMouseButton button );
 };
 
 class WgLinkMouseRepeatMsg : public WgLinkMouseButtonMsg
@@ -979,9 +979,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseRepeatMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseRepeatMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseRepeatMsg( const WgTextLinkPtr& pLink, WgMouseButton button );
+	WgLinkMouseRepeatMsg( const WgTextLink_p& pLink, WgMouseButton button );
 };
 
 class WgLinkMouseReleaseMsg : public WgLinkMouseButtonMsg
@@ -990,9 +990,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseReleaseMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseReleaseMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseReleaseMsg( const WgTextLinkPtr& pLink, WgMouseButton button );
+	WgLinkMouseReleaseMsg( const WgTextLink_p& pLink, WgMouseButton button );
 };
 
 class WgLinkMouseClickMsg : public WgLinkMouseButtonMsg
@@ -1001,9 +1001,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseClickMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseClickMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseClickMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
+	WgLinkMouseClickMsg(  const WgTextLink_p& pLink, WgMouseButton button );
 };
 
 class WgLinkMouseDoubleClickMsg : public WgLinkMouseButtonMsg
@@ -1012,9 +1012,9 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLinkMouseDoubleClickMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgLinkMouseDoubleClickMsg_p	cast( const WgObject_p& pObject );
 
-	WgLinkMouseDoubleClickMsg(  const WgTextLinkPtr& pLink, WgMouseButton button );
+	WgLinkMouseDoubleClickMsg(  const WgTextLink_p& pLink, WgMouseButton button );
 };
 
 //____ Internally posted messages ____________________________________________
@@ -1026,7 +1026,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMousePositionMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMousePositionMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgMousePositionMsg();
@@ -1043,7 +1043,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseDragMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseDragMsg_p	cast( const WgObject_p& pObject );
 
 	WgCoord			draggedTotal() const;
 	WgCoord			draggedNow() const;
@@ -1067,7 +1067,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseRepeatMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseRepeatMsg_p	cast( const WgObject_p& pObject );
 };
 
 class WgMouseClickMsg : public WgMouseButtonMsg
@@ -1081,7 +1081,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseClickMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseClickMsg_p	cast( const WgObject_p& pObject );
 };
 
 class WgMouseDoubleClickMsg : public WgMouseButtonMsg
@@ -1092,7 +1092,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMouseDoubleClickMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgMouseDoubleClickMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgMouseDoubleClickMsg( WgMouseButton button );
@@ -1107,7 +1107,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgKeyRepeatMsgPtr	cast( const WgObjectPtr& pObject );
+	static WgKeyRepeatMsg_p	cast( const WgObject_p& pObject );
 
 protected:
 	WgKeyRepeatMsg( int native_keycode );

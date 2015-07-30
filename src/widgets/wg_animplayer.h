@@ -33,24 +33,24 @@
 #endif
 
 class WgAnimPlayer;
-typedef	WgStrongPtr<WgAnimPlayer,WgWidgetPtr>		WgAnimPlayerPtr;
-typedef	WgWeakPtr<WgAnimPlayer,WgWidgetWeakPtr>	WgAnimPlayerWeakPtr;
+typedef	WgStrongPtr<WgAnimPlayer,WgWidget_p>		WgAnimPlayer_p;
+typedef	WgWeakPtr<WgAnimPlayer,WgWidget_wp>	WgAnimPlayer_wp;
 
 
 class WgAnimPlayer:public WgWidget
 {
 public:
-	static WgAnimPlayerPtr	create() { return WgAnimPlayerPtr(new WgAnimPlayer()); }
+	static WgAnimPlayer_p	create() { return WgAnimPlayer_p(new WgAnimPlayer()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgAnimPlayerPtr	cast( const WgObjectPtr& pObject );
+	static WgAnimPlayer_p	cast( const WgObject_p& pObject );
 
 	//____ Methods __________________________________________
 
-	bool			SetAnimation( const WgGfxAnimPtr& pAnim );
-	WgGfxAnimPtr	Animation() const { return m_pAnim; }
+	bool			SetAnimation( const WgGfxAnim_p& pAnim );
+	WgGfxAnim_p	Animation() const { return m_pAnim; }
 		
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
@@ -79,7 +79,7 @@ protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void			_onRefresh();
-	void			_onMsg( const WgMsgPtr& pMsg );
+	void			_onMsg( const WgMsg_p& pMsg );
 	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void			_onStateChanged( WgState oldState );
 
@@ -87,7 +87,7 @@ protected:
 
 private:
 
-	WgGfxAnimPtr	m_pAnim;
+	WgGfxAnim_p	m_pAnim;
 	WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
 	WgRouteId		m_tickRouteId;
 

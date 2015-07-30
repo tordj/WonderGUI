@@ -32,18 +32,18 @@
 #endif
 
 class WgStandardPresenter;
-typedef	WgStrongPtr<WgStandardPresenter,WgTextPresenterPtr>		WgStandardPresenterPtr;
-typedef	WgWeakPtr<WgStandardPresenter,WgTextPresenterWeakPtr>	WgStandardPresenterWeakPtr;
+typedef	WgStrongPtr<WgStandardPresenter,WgTextPresenter_p>		WgStandardPresenter_p;
+typedef	WgWeakPtr<WgStandardPresenter,WgTextPresenter_wp>	WgStandardPresenter_wp;
 
 class WgStandardPresenter : public WgTextPresenter
 {
 public:
-	static WgStandardPresenterPtr create() { return WgStandardPresenterPtr(new WgStandardPresenter()); }
+	static WgStandardPresenter_p create() { return WgStandardPresenter_p(new WgStandardPresenter()); }
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgStandardPresenterPtr	cast( const WgObjectPtr& pObject );
+	static WgStandardPresenter_p	cast( const WgObject_p& pObject );
 
 	void			setAlignment( WgOrigo alignment );
 	WgOrigo			alignment() const { return m_alignment; }

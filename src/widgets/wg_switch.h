@@ -28,20 +28,20 @@
 #endif
 
 class WgSwitch;
-typedef	WgStrongPtr<WgSwitch,WgWidgetPtr>		WgSwitchPtr;
-typedef	WgWeakPtr<WgSwitch,WgWidgetWeakPtr>	WgSwitchWeakPtr;
+typedef	WgStrongPtr<WgSwitch,WgWidget_p>		WgSwitch_p;
+typedef	WgWeakPtr<WgSwitch,WgWidget_wp>	WgSwitch_wp;
 
 //____ WgSwitch ____________________________________________________________
 
 class WgSwitch : public WgWidget
 {
 public:
-	static WgSwitchPtr	create() { return WgSwitchPtr(new WgSwitch()); }
+	static WgSwitch_p	create() { return WgSwitch_p(new WgSwitch()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSwitchPtr	cast( const WgObjectPtr& pObject );
+	static WgSwitch_p	cast( const WgObject_p& pObject );
 
     void    setValue( int value );
     

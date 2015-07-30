@@ -44,10 +44,10 @@ const char * WgVectorHook::className( void ) const
 
 //____ WgVectorHook::cast() __________________________________________________
 
-WgVectorHookPtr WgVectorHook::cast( const WgHookPtr& pHook )
+WgVectorHook_p WgVectorHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgVectorHookPtr( static_cast<WgVectorHook*>(pHook.rawPtr()) );
+		return WgVectorHook_p( static_cast<WgVectorHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -101,7 +101,7 @@ bool WgVectorHook::moveBackward()
 	return false;
 }
 
-bool WgVectorHook::moveBefore( const WgVectorHookPtr& pSibling )
+bool WgVectorHook::moveBefore( const WgVectorHook_p& pSibling )
 {
 	if( pSibling && pSibling->parent() == parent() )
 	{
@@ -114,7 +114,7 @@ bool WgVectorHook::moveBefore( const WgVectorHookPtr& pSibling )
 	return false;
 }
 
-bool WgVectorHook::moveAfter( const WgVectorHookPtr& pSibling )
+bool WgVectorHook::moveAfter( const WgVectorHook_p& pSibling )
 {
 	if( pSibling && pSibling->parent() == parent() )
 	{
@@ -163,7 +163,7 @@ bool WgVectorHook::setVisible( bool bVisible )
 	return true;
 }
 
-WgVectorPanelPtr WgVectorHook::parent() const
+WgVectorPanel_p WgVectorHook::parent() const
 {
 	return static_cast<WgVectorPanel*>(_parent());
 }
@@ -239,10 +239,10 @@ const char * WgVectorPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgVectorPanelPtr WgVectorPanel::cast( const WgObjectPtr& pObject )
+WgVectorPanel_p WgVectorPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgVectorPanelPtr( static_cast<WgVectorPanel*>(pObject.rawPtr()) );
+		return WgVectorPanel_p( static_cast<WgVectorPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -283,7 +283,7 @@ WgVectorHook * WgVectorPanel::_insertWidget( WgWidget * pWidget, WgWidget * pSib
 
 //____ removeWidget() __________________________________________________________
 
-bool WgVectorPanel::removeWidget( const WgWidgetPtr& pWidget )
+bool WgVectorPanel::removeWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
 		return false;

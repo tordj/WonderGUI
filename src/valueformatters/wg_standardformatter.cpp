@@ -60,10 +60,10 @@ const char * WgStandardFormatter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgStandardFormatterPtr WgStandardFormatter::cast( const WgObjectPtr& pObject )
+WgStandardFormatter_p WgStandardFormatter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgStandardFormatterPtr( static_cast<WgStandardFormatter*>(pObject.rawPtr()) );
+		return WgStandardFormatter_p( static_cast<WgStandardFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }

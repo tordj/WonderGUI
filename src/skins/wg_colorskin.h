@@ -32,19 +32,19 @@
 
 class WgColorSkin;
 
-typedef	WgStrongPtr<WgColorSkin,WgSkinPtr>	WgColorSkinPtr;
+typedef	WgStrongPtr<WgColorSkin,WgSkin_p>	WgColorSkin_p;
 
 
 class WgColorSkin : public WgSkin
 {
 public:
-	static WgColorSkinPtr create( WgColor col );
+	static WgColorSkin_p create( WgColor col );
 	~WgColorSkin() {};
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgColorSkinPtr	cast( const WgObjectPtr& pObject );
+	static WgColorSkin_p	cast( const WgObject_p& pObject );
 
 	void	render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
 	bool	isOpaque() const;

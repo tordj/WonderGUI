@@ -45,10 +45,10 @@ const char * WgModSpan::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgModSpanPtr WgModSpan::cast( const WgInterfacePtr& pInterface )
+WgModSpan_p WgModSpan::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgModSpanPtr( pInterface.getRealObjectPtr(), static_cast<WgModSpan*>( pInterface.rawPtr()) );
+		return WgModSpan_p( pInterface.getRealObjectPtr(), static_cast<WgModSpan*>( pInterface.rawPtr()) );
 
 	return 0;
 }

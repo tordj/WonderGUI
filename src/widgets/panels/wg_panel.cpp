@@ -58,10 +58,10 @@ const char * WgPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgPanelPtr WgPanel::cast( const WgObjectPtr& pObject )
+WgPanel_p WgPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgPanelPtr( static_cast<WgPanel*>(pObject.rawPtr()) );
+		return WgPanel_p( static_cast<WgPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -152,17 +152,17 @@ const char * WgPanelHook::className( void ) const
 
 //____ WgPanelHook::cast() __________________________________________________
 
-WgPanelHookPtr WgPanelHook::cast( const WgHookPtr& pHook )
+WgPanelHook_p WgPanelHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgPanelHookPtr( static_cast<WgPanelHook*>(pHook.rawPtr()) );
+		return WgPanelHook_p( static_cast<WgPanelHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
 
 //____ WgPanelHook::parent() __________________________________________________
 
-WgPanelPtr WgPanelHook::parent() const 
+WgPanel_p WgPanelHook::parent() const 
 { 
 	return static_cast<WgPanel*>(_parent()); 
 }

@@ -56,10 +56,10 @@ const char * WgShaderCapsule::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgShaderCapsulePtr WgShaderCapsule::cast( const WgObjectPtr& pObject )
+WgShaderCapsule_p WgShaderCapsule::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgShaderCapsulePtr( static_cast<WgShaderCapsule*>(pObject.rawPtr()) );
+		return WgShaderCapsule_p( static_cast<WgShaderCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }

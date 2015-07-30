@@ -38,7 +38,7 @@ WgPresentableField::~WgPresentableField()
 
 //____ setStyle() ______________________________________________________________
 
-void WgPresentableField::setStyle( const WgTextStylePtr& pStyle )
+void WgPresentableField::setStyle( const WgTextStyle_p& pStyle )
 {
 	m_pStyle = pStyle;
 	_presenter()->onStyleChange(this);
@@ -54,7 +54,7 @@ void WgPresentableField::clearStyle()
 
 //____ setPresenter() __________________________________________________________
 
-void WgPresentableField::setPresenter( const WgTextPresenterPtr& pPresenter )
+void WgPresentableField::setPresenter( const WgTextPresenter_p& pPresenter )
 {
 	if( pPresenter == m_pPresenter )
 		return;

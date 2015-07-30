@@ -55,10 +55,10 @@ const char * WgSizeCapsule::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSizeCapsulePtr WgSizeCapsule::cast( const WgObjectPtr& pObject )
+WgSizeCapsule_p WgSizeCapsule::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSizeCapsulePtr( static_cast<WgSizeCapsule*>(pObject.rawPtr()) );
+		return WgSizeCapsule_p( static_cast<WgSizeCapsule*>(pObject.rawPtr()) );
 
 	return 0;
 }

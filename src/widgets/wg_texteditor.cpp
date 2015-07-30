@@ -73,10 +73,10 @@ const char * WgTextEditor::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgTextEditorPtr WgTextEditor::cast( const WgObjectPtr& pObject )
+WgTextEditor_p WgTextEditor::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgTextEditorPtr( static_cast<WgTextEditor*>(pObject.rawPtr()) );
+		return WgTextEditor_p( static_cast<WgTextEditor*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -193,7 +193,7 @@ void WgTextEditor::_onStateChanged( WgState oldState )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgTextEditor::_onMsg( const WgMsgPtr& pMsg )
+void WgTextEditor::_onMsg( const WgMsg_p& pMsg )
 {
 	WgWidget::_onMsg(pMsg);
 
@@ -391,7 +391,7 @@ void WgTextEditor::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onSkinChanged() _______________________________________________________
 
-void WgTextEditor::_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin )
+void WgTextEditor::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
 {
 	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
 	m_text.setColorSkin(pNewSkin);

@@ -32,8 +32,8 @@
 #endif
 
 class WgEditText;
-typedef	WgIStrongPtr<WgEditText,WgLegacyModTextPtr>		WgEditTextPtr;
-typedef	WgIWeakPtr<WgEditText,WgLegacyModTextWeakPtr>		WgEditTextWeakPtr;
+typedef	WgIStrongPtr<WgEditText,WgLegacyModText_p>		WgEditText_p;
+typedef	WgIWeakPtr<WgEditText,WgLegacyModText_wp>		WgEditText_wp;
 
 /**
  * @brief Interface to a text field with editable text.
@@ -52,8 +52,8 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgEditTextPtr	cast( const WgInterfacePtr& pInterface );				// Provided just for completeness sake.
-	inline WgEditTextPtr	ptr() { return WgEditTextPtr(_object(),this); }
+	static WgEditText_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+	inline WgEditText_p	ptr() { return WgEditText_p(_object(),this); }
 
 	inline void			setEditMode(WgTextEditMode mode) { m_pField->setEditMode(mode); }
 	inline WgTextEditMode	editMode() const { return m_pField->editMode(); }
@@ -61,8 +61,8 @@ public:
 	inline bool			isEditable() const { return m_pField->isEditable(); }
 	inline bool			isSelectable() const { return m_pField->isSelectable(); }
 
-	inline void			setCursorSkin( const WgCaretPtr& pCursor ) { m_pField->setCursorSkin(pCursor); }
-	inline WgCaretPtr	cursorSkin() const { return m_pField->cursorSkin(); }
+	inline void			setCursorSkin( const WgCaret_p& pCursor ) { m_pField->setCursorSkin(pCursor); }
+	inline WgCaret_p	cursorSkin() const { return m_pField->cursorSkin(); }
 
 	inline int			insertAtCursor( const WgCharSeq& str ) { return m_pField->insertAtCursor(str); }
 	inline bool			insertAtCursor( Uint16 c ) { return m_pField->insertAtCursor(c); }

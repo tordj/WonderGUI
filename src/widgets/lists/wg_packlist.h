@@ -35,11 +35,11 @@
 #endif
 
 class WgPackList;
-typedef	WgStrongPtr<WgPackList,WgListPtr>		WgPackListPtr;
-typedef	WgWeakPtr<WgPackList,WgListWeakPtr>	WgPackListWeakPtr;
+typedef	WgStrongPtr<WgPackList,WgList_p>		WgPackList_p;
+typedef	WgWeakPtr<WgPackList,WgList_wp>	WgPackList_wp;
 
 class WgPackListHook;
-typedef	WgHookTypePtr<WgPackListHook,WgListHookPtr>	WgPackListHookPtr;
+typedef	WgHookTypePtr<WgPackListHook,WgListHook_p>	WgPackListHook_p;
 
 class WgPackListHook : public WgListHook
 {
@@ -49,7 +49,7 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgPackListHookPtr	cast( const WgHookPtr& pInterface );
+	static WgPackListHook_p	cast( const WgHook_p& pInterface );
 
 	WgCoord			pos() const;
 	WgSize			size() const;
@@ -57,9 +57,9 @@ public:
 	WgCoord			globalPos() const;
 	WgRect			globalGeo() const;
 
-	WgPackListHookPtr	prev() const { return static_cast<WgPackListHook*>(_prevHook()); }
-	WgPackListHookPtr	next() const { return static_cast<WgPackListHook*>(_nextHook()); }
-	WgPackListPtr		parent() const { return m_pParent; }
+	WgPackListHook_p	prev() const { return static_cast<WgPackListHook*>(_prevHook()); }
+	WgPackListHook_p	next() const { return static_cast<WgPackListHook*>(_nextHook()); }
+	WgPackList_p		parent() const { return m_pParent; }
 
 protected:
 	WgPackListHook() {};
@@ -87,7 +87,7 @@ class WgPackList : public WgList, protected WgColumnHeaderHolder
 {
 	friend class WgPackListHook;
 public:
-	static WgPackListPtr	create() { return WgPackListPtr(new WgPackList()); }
+	static WgPackList_p	create() { return WgPackList_p(new WgPackList()); }
 
 	//____ Interfaces ______________________________________
 
@@ -98,13 +98,13 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgPackListPtr	cast( const WgObjectPtr& pObject );
+	static WgPackList_p	cast( const WgObject_p& pObject );
 
-	WgPackListHookPtr		addWidget( const WgWidgetPtr& pWidget );
-	WgPackListHookPtr		insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling );
-	WgPackListHookPtr		insertWidgetSorted( const WgWidgetPtr& pWidget );
+	WgPackListHook_p		addWidget( const WgWidget_p& pWidget );
+	WgPackListHook_p		insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling );
+	WgPackListHook_p		insertWidgetSorted( const WgWidget_p& pWidget );
 
-	bool					removeWidget( const WgWidgetPtr& pWidget );
+	bool					removeWidget( const WgWidget_p& pWidget );
 	bool					clear();
 
 	void					setOrientation( WgOrientation orientation );
@@ -142,7 +142,7 @@ protected:
 	void			_onRefresh();
 	void			_onRefreshList();
 
-	void			_onMsg( const WgMsgPtr& pMsg );
+	void			_onMsg( const WgMsg_p& pMsg );
 	void			_onStateChanged( WgState oldState );
 
 	void			_onRequestRender( WgPackListHook * pHook );

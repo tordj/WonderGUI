@@ -61,10 +61,10 @@ const char * WgSurface::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSurfacePtr WgSurface::cast( const WgObjectPtr& pObject )
+WgSurface_p WgSurface::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSurfacePtr( static_cast<WgSurface*>(pObject.rawPtr()) );
+		return WgSurface_p( static_cast<WgSurface*>(pObject.rawPtr()) );
 
 	return 0;
 } 
@@ -288,7 +288,7 @@ bool WgSurface::fill( WgColor col, const WgRect& region )
  *
  * @return True if successful, otherwise false.
  **/
-bool WgSurface::copyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
+bool WgSurface::copyFrom( const WgSurface_p& pSrcSurface, WgCoord dst )
 {
 	if( !pSrcSurface )
 		return false;
@@ -312,7 +312,7 @@ bool WgSurface::copyFrom( const WgSurfacePtr& pSrcSurface, WgCoord dst )
  *
  * @return True if successful, otherwise false.
  **/
-bool WgSurface::copyFrom( const WgSurfacePtr& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
+bool WgSurface::copyFrom( const WgSurface_p& pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
 {
 	if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
 		return false;

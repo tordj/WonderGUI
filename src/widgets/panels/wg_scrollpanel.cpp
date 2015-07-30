@@ -102,10 +102,10 @@ const char * WgScrollPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgScrollPanelPtr WgScrollPanel::cast( const WgObjectPtr& pObject )
+WgScrollPanel_p WgScrollPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgScrollPanelPtr( static_cast<WgScrollPanel*>(pObject.rawPtr()) );
+		return WgScrollPanel_p( static_cast<WgScrollPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -512,7 +512,7 @@ bool WgScrollPanel::setViewOfsY( float y )
 
 //____ setSkin() ______________________________________________________________
 
-void WgScrollPanel::setSkin( const WgSkinPtr& pSkin )
+void WgScrollPanel::setSkin( const WgSkin_p& pSkin )
 {
 	WgPanel::setSkin(pSkin);
 	m_elements[WINDOW].m_canvasGeo = _genContentCanvasGeo( m_elements[WINDOW].m_windowGeo, m_contentSize, m_contentOrigo, m_viewPixOfs );
@@ -521,7 +521,7 @@ void WgScrollPanel::setSkin( const WgSkinPtr& pSkin )
 
 //____ setContent() ___________________________________________________________
 
-WgScrollHookPtr WgScrollPanel::setContent( const WgWidgetPtr& pContent )
+WgScrollHook_p WgScrollPanel::setContent( const WgWidget_p& pContent )
 {
 	m_elements[WINDOW]._setWidget(pContent.rawPtr());
 
@@ -536,7 +536,7 @@ WgScrollHookPtr WgScrollPanel::setContent( const WgWidgetPtr& pContent )
 
 //____ setHorizontalScrollbar() ________________________________________________________
 
-WgScrollHookPtr WgScrollPanel::setHorizontalScrollbar( const WgScrollbarPtr& pScrollbar )
+WgScrollHook_p WgScrollPanel::setHorizontalScrollbar( const WgScrollbar_p& pScrollbar )
 {
 	// Remove us as target target from current Scrollbar (if we have any)
 
@@ -563,7 +563,7 @@ WgScrollHookPtr WgScrollPanel::setHorizontalScrollbar( const WgScrollbarPtr& pSc
 
 //____ setVerticalScrollbar() ________________________________________________________
 
-WgScrollHookPtr WgScrollPanel::setVerticalScrollbar( const WgScrollbarPtr& pScrollbar )
+WgScrollHook_p WgScrollPanel::setVerticalScrollbar( const WgScrollbar_p& pScrollbar )
 {
 	// Remove us as target from current Scrollbar (if we have any)
 
@@ -588,17 +588,17 @@ WgScrollHookPtr WgScrollPanel::setVerticalScrollbar( const WgScrollbarPtr& pScro
 	return 0;
 }
 
-WgScrollbarPtr WgScrollPanel::horizontalScrollbar() const 
+WgScrollbar_p WgScrollPanel::horizontalScrollbar() const 
 {
 	return static_cast<WgScrollbar*>(m_elements[XDRAG]._widget()); 
 }
 
-WgScrollbarPtr WgScrollPanel::verticalScrollbar() const 
+WgScrollbar_p WgScrollPanel::verticalScrollbar() const 
 { 
 	return static_cast<WgScrollbar*>(m_elements[YDRAG]._widget()); 
 }
 
-WgWidgetPtr WgScrollPanel::content() const 
+WgWidget_p WgScrollPanel::content() const 
 { 
 	return m_elements[WINDOW]._widget(); 
 }
@@ -607,7 +607,7 @@ WgWidgetPtr WgScrollPanel::content() const
 
 //____ removeWidget() __________________________________________________________
 
-bool WgScrollPanel::removeWidget( const WgWidgetPtr& pWidget )
+bool WgScrollPanel::removeWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget )
 		return false;
@@ -675,7 +675,7 @@ void WgScrollPanel::setHandlePositions( bool bBottom, bool bRight )
 
 //____ setCornerSkin() ______________________________________________________
 
-void WgScrollPanel::setCornerSkin( const WgSkinPtr& pSkin )
+void WgScrollPanel::setCornerSkin( const WgSkin_p& pSkin )
 {
 	m_pCornerSkin = pSkin;
 	_requestRender( m_cornerGeo );
@@ -1103,7 +1103,7 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgScrollPanel::_onMsg( const WgMsgPtr& _pMsg )
+void WgScrollPanel::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgPanel::_onMsg(_pMsg);
 
@@ -1111,7 +1111,7 @@ void WgScrollPanel::_onMsg( const WgMsgPtr& _pMsg )
 	{
 		case WG_MSG_WHEEL_ROLL:
 		{			
-			WgWheelRollMsgPtr pMsg = WgWheelRollMsg::cast(_pMsg);
+			WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
 
 			if( m_elements[WINDOW].m_windowGeo.contains( ToLocal(pMsg->pointerPos())) )
 			{
@@ -1475,10 +1475,10 @@ const char * WgScrollHook::className( void ) const
 
 //____ WgScrollHook::cast() __________________________________________________
 
-WgScrollHookPtr WgScrollHook::cast( const WgHookPtr& pHook )
+WgScrollHook_p WgScrollHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgScrollHookPtr( static_cast<WgScrollHook*>(pHook.rawPtr()) );
+		return WgScrollHook_p( static_cast<WgScrollHook*>(pHook.rawPtr()) );
 
 	return 0;
 }

@@ -33,8 +33,8 @@
 class WgCoord;
 
 class WgTextlink;
-typedef	WgStrongPtr<class WgTextlink,WgObjectPtr> WgTextLinkPtr;
-typedef	WgWeakPtr<class WgTextlink,WgObjectWeakPtr> WgTextLinkWeakPtr;
+typedef	WgStrongPtr<class WgTextlink,WgObject_p> WgTextLink_p;
+typedef	WgWeakPtr<class WgTextlink,WgObject_wp> WgTextLink_wp;
 
 
 //____ WgTextLink _____________________________________________________________
@@ -43,7 +43,7 @@ typedef	WgWeakPtr<class WgTextlink,WgObjectWeakPtr> WgTextLinkWeakPtr;
 class WgTextlink : public WgObject
 {
 public:
-	static WgTextLinkPtr create( const std::string& link ) { return new WgTextlink(link); }
+	static WgTextLink_p create( const std::string& link ) { return new WgTextlink(link); }
 
 	const std::string&		link() const { return m_link; }
 	bool					hasBeenAccessed() const { return m_bAccessed; }

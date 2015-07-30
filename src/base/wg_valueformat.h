@@ -45,8 +45,8 @@
 #endif
 
 class WgValueFormat;
-typedef	WgStrongPtr<WgValueFormat,WgObjectPtr>		WgValueFormatPtr;
-typedef	WgWeakPtr<WgValueFormat,WgObjectWeakPtr>	WgValueFormatWeakPtr;
+typedef	WgStrongPtr<WgValueFormat,WgObject_p>		WgValueFormat_p;
+typedef	WgWeakPtr<WgValueFormat,WgObject_wp>	WgValueFormat_wp;
 
 //____ WgValueFormat __________________________________________________________
 
@@ -54,20 +54,20 @@ class WgValueFormat : public WgObject
 {
 	friend class WgLegacyTextField;
 	public:
-		static WgValueFormatPtr	create() { return WgValueFormatPtr(new WgValueFormat()); }
-		static WgValueFormatPtr	create( const WgCharSeq& format )  { return WgValueFormatPtr(new WgValueFormat(format)); }
-		static WgValueFormatPtr	create( const WgValueFormatPtr& pIn ) { return WgValueFormatPtr(new WgValueFormat(pIn)); }
-		static WgValueFormatPtr	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+		static WgValueFormat_p	create() { return WgValueFormat_p(new WgValueFormat()); }
+		static WgValueFormat_p	create( const WgCharSeq& format )  { return WgValueFormat_p(new WgValueFormat(format)); }
+		static WgValueFormat_p	create( const WgValueFormat_p& pIn ) { return WgValueFormat_p(new WgValueFormat(pIn)); }
+		static WgValueFormat_p	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
-		{ return WgValueFormatPtr(new WgValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
+		{ return WgValueFormat_p(new WgValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
 
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgValueFormatPtr	cast( const WgObjectPtr& pObject );
+		static WgValueFormat_p	cast( const WgObject_p& pObject );
 
 		void setFormat( const WgCharSeq& format );
-		void setFormat( const WgValueFormatPtr& pFormat );
+		void setFormat( const WgValueFormat_p& pFormat );
 
 		void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
@@ -80,9 +80,9 @@ class WgValueFormat : public WgObject
 		void setSuffix( const WgCharSeq& seq );
 		inline const WgString& getSuffix() const { return suffix; }
 
-		inline void setTextProperties( WgTextpropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
+		inline void setTextProperties( WgTextprop_p& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
 		inline void clearTextProperties() { bSetTextprop = false; }
-		inline WgTextpropPtr getTextProperties() const { return pTextProperties; }
+		inline WgTextprop_p getTextProperties() const { return pTextProperties; }
 
 		inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 		inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -120,7 +120,7 @@ class WgValueFormat : public WgObject
 protected:
 		WgValueFormat();
 		WgValueFormat( const WgCharSeq& format );
-		WgValueFormat( const WgValueFormatPtr& pIn );
+		WgValueFormat( const WgValueFormat_p& pIn );
 		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
 
@@ -135,7 +135,7 @@ protected:
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?
-	WgTextpropPtr 	pTextProperties;	/// Text properties for generated text.
+	WgTextprop_p 	pTextProperties;	/// Text properties for generated text.
 		bool		bSetTextprop;		/// Set if properties should be set for text.
 		bool		bForceDecimals;		/// Display decimals even if they are 0
 		int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.

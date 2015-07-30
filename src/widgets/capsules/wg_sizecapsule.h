@@ -34,18 +34,18 @@
 #endif
 
 class WgSizeCapsule;
-typedef	WgStrongPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsulePtr;
-typedef	WgWeakPtr<WgSizeCapsule,WgCapsulePtr>		WgSizeCapsuleWeakPtr;
+typedef	WgStrongPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_p;
+typedef	WgWeakPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_wp;
 
 class WgSizeCapsule : public WgCapsule, public WgScalable
 {
 public:
-	static WgSizeCapsulePtr	create() { return WgSizeCapsulePtr(new WgSizeCapsule()); }
+	static WgSizeCapsule_p	create() { return WgSizeCapsule_p(new WgSizeCapsule()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSizeCapsulePtr	cast( const WgObjectPtr& pObject );
+	static WgSizeCapsule_p	cast( const WgObject_p& pObject );
 
 	void	setSizes( WgSize min, WgSize preferred, WgSize max );
 

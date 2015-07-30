@@ -69,17 +69,17 @@ const char * WgTextStyle::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgTextStylePtr WgTextStyle::cast( const WgObjectPtr& pObject )
+WgTextStyle_p WgTextStyle::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgTextStylePtr( static_cast<WgTextStyle*>(pObject.rawPtr()) );
+		return WgTextStyle_p( static_cast<WgTextStyle*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ setParent() _____________________________________________________________
 
-bool WgTextStyle::setParent( const WgTextStylePtr& pParent )
+bool WgTextStyle::setParent( const WgTextStyle_p& pParent )
 {
 	// Check so we don't get circular references.
 
@@ -137,7 +137,7 @@ void WgTextStyle::cascade()
 
 //____ setFont() _______________________________________________________________
 
-void WgTextStyle::setFont( const WgFontPtr& pFont )
+void WgTextStyle::setFont( const WgFont_p& pFont )
 {
 	if( pFont != m_specAttr.pFont )
 	{
@@ -151,7 +151,7 @@ void WgTextStyle::setFont( const WgFontPtr& pFont )
 
 //____ setLink() _______________________________________________________________
 
-void WgTextStyle::setLink( const WgTextLinkPtr& pLink )
+void WgTextStyle::setLink( const WgTextLink_p& pLink )
 {
 	if( pLink != m_specAttr.pLink )
 	{

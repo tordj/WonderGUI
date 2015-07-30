@@ -43,10 +43,10 @@ const char * WgScalePreferredSizeBroker::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgScalePreferredSizeBrokerPtr WgScalePreferredSizeBroker::cast( const WgObjectPtr& pObject )
+WgScalePreferredSizeBroker_p WgScalePreferredSizeBroker::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgScalePreferredSizeBrokerPtr( static_cast<WgScalePreferredSizeBroker*>(pObject.rawPtr()) );
+		return WgScalePreferredSizeBroker_p( static_cast<WgScalePreferredSizeBroker*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -76,7 +76,7 @@ class WgFont;
 class WgTextpropManager;
 class WgMemPool;
 class WgWeakPtrHub;
-class WgHookPtrHub;
+class WgHook_pHub;
 class WgMemStack;
 
 /**
@@ -107,26 +107,26 @@ public:
 //	static void setDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& getDefaultTextManager();
 
-	static void 	setDefaultTextprop( const WgTextpropPtr& pProp );
-	static WgTextpropPtr getDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
+	static void 	setDefaultTextprop( const WgTextprop_p& pProp );
+	static WgTextprop_p getDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
 
-	static void 	setDefaultSelectionProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr getDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
+	static void 	setDefaultSelectionProp( const WgTextprop_p& pProp );
+	static WgTextprop_p getDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
 
-	static void 	setDefaultLinkProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr getDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
+	static void 	setDefaultLinkProp( const WgTextprop_p& pProp );
+	static WgTextprop_p getDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
 
-	static void 	setDefaultCursor( const WgCaretPtr& pCursor );
-	static WgCaretPtr getDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
+	static void 	setDefaultCursor( const WgCaret_p& pCursor );
+	static WgCaret_p getDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
-	static void		setDefaultCaret( const WgCaret2Ptr& pCaret );
-	static WgCaret2Ptr defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
+	static void		setDefaultCaret( const WgCaret2_p& pCaret );
+	static WgCaret2_p defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
 
-	static void		setDefaultPresenter( const WgTextPresenterPtr& pPresenter );
-	static WgTextPresenterPtr defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
+	static void		setDefaultPresenter( const WgTextPresenter_p& pPresenter );
+	static WgTextPresenter_p defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
 
-	static void		setDefaultStyle( const WgTextStylePtr& pStyle );
-	static WgTextStylePtr defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
+	static void		setDefaultStyle( const WgTextStyle_p& pStyle );
+	static WgTextStyle_p defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 
 
 	static void		mapKey( WgKey translated_keycode, int native_keycode );
@@ -150,30 +150,30 @@ public:
 	static char *	memStackAlloc( int bytes );
 	static void		memStackRelease( int bytes );
 
-	static WgMsgRouterPtr	msgRouter() { return s_pData->pMsgRouter; }
+	static WgMsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
  
 	//____
 
 	static WgWeakPtrHub *	allocWeakPtrHub();
 	static void			freeWeakPtrHub( WgWeakPtrHub * pHub );
 
-	static WgHookPtrHub *	allocHookPtrHub();
-	static void			freeHookPtrHub( WgHookPtrHub * pHub );
+	static WgHook_pHub *	allocHookPtrHub();
+	static void			freeHookPtrHub( WgHook_pHub * pHub );
 
 private:
 
 	struct Data
 	{
-		WgMsgRouterPtr	pMsgRouter;
+		WgMsgRouter_p	pMsgRouter;
 		
-		WgTextpropPtr		pDefaultTextprop;
-		WgTextpropPtr		pDefaultSelectionProp;
-		WgTextpropPtr		pDefaultLinkProp;
-		WgCaretPtr			pDefaultCursor;
+		WgTextprop_p		pDefaultTextprop;
+		WgTextprop_p		pDefaultSelectionProp;
+		WgTextprop_p		pDefaultLinkProp;
+		WgCaret_p			pDefaultCursor;
 
-		WgCaret2Ptr			pDefaultCaret;
-		WgTextPresenterPtr	pDefaultPresenter;
-		WgTextStylePtr		pDefaultStyle;
+		WgCaret2_p			pDefaultCaret;
+		WgTextPresenter_p	pDefaultPresenter;
+		WgTextStyle_p		pDefaultStyle;
 
 		// Settings for keyboard/pointer input
 

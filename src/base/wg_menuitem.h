@@ -47,8 +47,8 @@ class WgGfxAnim;
 class WgMenu;
 //typedef class WgMenu WgMenu;
 
-typedef	WgStrongPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
-typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
+typedef	WgStrongPtr<WgMenu,WgWidget_p>		WgMenu_p;
+typedef	WgWeakPtr<WgMenu,WgWidget_wp>	WgMenu_wp;
 
 enum WgMenuItemType
 {
@@ -108,13 +108,13 @@ class WgMenuEntry : public WgMenuItem
 	friend class WgMenu;
 public:
 	WgMenuEntry();
-	WgMenuEntry( int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey,
+	WgMenuEntry( int id, const WgString& text, const WgString& helpText, const WgSkin_p& pIcon, Uint16 navKey,
 		WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuEntry();
 
 	void 	setText(const WgString& text);
 	void 	setHelpText(const WgString& helpText);
-	void 	setIcon(const WgSkinPtr& pIcon);
+	void 	setIcon(const WgSkin_p& pIcon);
 	void 	setNavKey(Uint16 navKey);
 	void 	setAccelModifier(WgModifierKeys accelModif);
 	void 	setAccelKey(Uint16 accelKey);
@@ -127,7 +127,7 @@ public:
 	inline WgString getHelpText() { return m_helpText; }
 	inline WgString getAccelText() { return m_accelText; }
 
-	inline const WgSkinPtr getIcon() { return m_pIcon; }
+	inline const WgSkin_p getIcon() { return m_pIcon; }
 	inline Uint16			getNavKey()		{ return m_navKey; }
 	inline WgModifierKeys	getAccelModif()	{ return m_accelModif; }
 	inline Uint16			getAccelKey()	{ return m_accelKey; }
@@ -139,7 +139,7 @@ private:
 	WgString		m_accelText;
 	WgString		m_helpText;
 
-	WgSkinPtr		m_pIcon;
+	WgSkin_p		m_pIcon;
 	bool			m_bEnabled;
 
 	Uint16			m_navKey;
@@ -189,14 +189,14 @@ class WgMenuSubMenu : public WgMenuEntry
 {
 public:
 	WgMenuSubMenu();
-	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgSkinPtr& pIcon, Uint16 navKey, const WgMenuPtr& pSubMenu,
+	WgMenuSubMenu(	int id, const WgString& text, const WgString& helpText, const WgSkin_p& pIcon, Uint16 navKey, const WgMenu_p& pSubMenu,
 					WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const WgString& accelText = WgString() );
 	virtual ~WgMenuSubMenu() {};
 
-	inline WgMenuPtr	getSubMenu()					{return m_pSubMenu;};
-	void				setSubMenu(const WgMenuPtr& pSubMenu);
+	inline WgMenu_p	getSubMenu()					{return m_pSubMenu;};
+	void				setSubMenu(const WgMenu_p& pSubMenu);
 
-	WgMenuPtr		m_pSubMenu;
+	WgMenu_p		m_pSubMenu;
 };
 
 

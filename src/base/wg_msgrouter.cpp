@@ -78,16 +78,16 @@ const char * WgMsgRouter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgMsgRouterPtr WgMsgRouter::cast( const WgObjectPtr& pObject )
+WgMsgRouter_p WgMsgRouter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgMsgRouterPtr( static_cast<WgMsgRouter*>(pObject.rawPtr()) );
+		return WgMsgRouter_p( static_cast<WgMsgRouter*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
-void WgMsgRouter::setRoot( const WgRootPanelPtr& pRoot )
+void WgMsgRouter::setRoot( const WgRootPanel_p& pRoot )
 {
 	m_pRoot = pRoot.rawPtr();
 }
@@ -95,7 +95,7 @@ void WgMsgRouter::setRoot( const WgRootPanelPtr& pRoot )
 
 //____ setFocusGroup() ________________________________________________________
 
-bool WgMsgRouter::setFocusGroup( const WgPanelPtr& pFocusGroup )
+bool WgMsgRouter::setFocusGroup( const WgPanel_p& pFocusGroup )
 {
 	// Sanity checks
 
@@ -113,7 +113,7 @@ bool WgMsgRouter::setFocusGroup( const WgPanelPtr& pFocusGroup )
 
 	// Set new focus widget as specified by group
 
-	WgWidgetWeakPtr pNewFocusWidget;
+	WgWidget_wp pNewFocusWidget;
 
 	if( pFocusGroup )
 		if( m_focusGroupMap.find(pFocusGroup.rawPtr()) != m_focusGroupMap.end() )
@@ -136,7 +136,7 @@ bool WgMsgRouter::setFocusGroup( const WgPanelPtr& pFocusGroup )
 
 //____ setKeyboardFocus() _____________________________________________________
 
-bool WgMsgRouter::setKeyboardFocus( const WgWidgetPtr& pFocus )
+bool WgMsgRouter::setKeyboardFocus( const WgWidget_p& pFocus )
 {
 	// Return if Widget is not child of our root.
 
@@ -220,14 +220,14 @@ bool WgMsgRouter::isKeyPressed( int native_keycode ) const
 
 //____ broadcastTo() ___________________________________________________________
 
-bool  WgMsgRouter::broadcastTo( const WgReceiverPtr& pReceiver )
+bool  WgMsgRouter::broadcastTo( const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( WgMsgFilter(), pReceiver.rawPtr() );
 	m_broadcasts.pushBack( p );
 	return true;
 }
 
-bool  WgMsgRouter::broadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& pReceiver )
+bool  WgMsgRouter::broadcastTo( const WgMsgFilter& filter, const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( filter, pReceiver.rawPtr() );
 	m_broadcasts.pushBack( p );
@@ -236,7 +236,7 @@ bool  WgMsgRouter::broadcastTo( const WgMsgFilter& filter, const WgReceiverPtr& 
 
 //____ endBroadcast() __________________________________________________________
 
-bool  WgMsgRouter::endBroadcast( const WgReceiverPtr& _pReceiver )
+bool  WgMsgRouter::endBroadcast( const WgReceiver_p& _pReceiver )
 {
 	WgReceiver * pReceiver = _pReceiver.rawPtr();
 	Route * p = m_broadcasts.first();
@@ -256,19 +256,19 @@ bool  WgMsgRouter::endBroadcast( const WgReceiverPtr& _pReceiver )
 
 //____ addRoute() __________________________________________________________
 
-WgRouteId WgMsgRouter::addRoute( const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver )
+WgRouteId WgMsgRouter::addRoute( const WgObject_p& pSource, const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( WgMsgFilter(), pReceiver.rawPtr() );
 	return _addRoute( pSource, p );
 }
 
-WgRouteId WgMsgRouter::addRoute( const WgMsgFilter& filter, const WgObjectPtr& pSource, const WgReceiverPtr& pReceiver )
+WgRouteId WgMsgRouter::addRoute( const WgMsgFilter& filter, const WgObject_p& pSource, const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( filter, pReceiver.rawPtr() );
 	return _addRoute( pSource, p );
 }
 
-WgRouteId WgMsgRouter::addRoute( WgMsgType msgType, const WgReceiverPtr& pReceiver )
+WgRouteId WgMsgRouter::addRoute( WgMsgType msgType, const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( WgMsgFilter(), pReceiver.rawPtr() );
 	return _addRoute( msgType, p );	
@@ -280,7 +280,7 @@ WgRouteId WgMsgRouter::addRoute( WgMsgType msgType, WgReceiver * pReceiver )
 	return _addRoute( msgType, p );	
 }
 
-WgRouteId WgMsgRouter::addRoute( const WgMsgFilter& filter, WgMsgType msgType, const WgReceiverPtr& pReceiver )
+WgRouteId WgMsgRouter::addRoute( const WgMsgFilter& filter, WgMsgType msgType, const WgReceiver_p& pReceiver )
 {
 	Route * p = new Route( filter, pReceiver.rawPtr() );
 	return _addRoute( msgType, p );	
@@ -290,7 +290,7 @@ WgRouteId WgMsgRouter::addRoute( const WgMsgFilter& filter, WgMsgType msgType, c
 
 //____ deleteRoutesTo() _______________________________________________________
 
-int WgMsgRouter::deleteRoutesTo( const WgReceiverPtr& _pReceiver )
+int WgMsgRouter::deleteRoutesTo( const WgReceiver_p& _pReceiver )
 {
 	WgReceiver * pReceiver = _pReceiver.rawPtr();
 	int nDeleted = 0;
@@ -339,9 +339,9 @@ int WgMsgRouter::deleteRoutesTo( const WgReceiverPtr& _pReceiver )
 
 //____ deleteRoutesFrom() _______________________________________________________
 
-int WgMsgRouter::deleteRoutesFrom( const WgObjectPtr& pSource )
+int WgMsgRouter::deleteRoutesFrom( const WgObject_p& pSource )
 {
-	auto it = m_sourceRoutes.find(WgObjectWeakPtr(pSource.rawPtr()) );
+	auto it = m_sourceRoutes.find(WgObject_wp(pSource.rawPtr()) );
 
 	if( it == m_sourceRoutes.end() )
 		return 0;
@@ -487,7 +487,7 @@ int WgMsgRouter::garbageCollectRoutes()
 
 //____ _addRoute() _________________________________________________________
 
-WgRouteId WgMsgRouter::_addRoute( const WgObjectPtr& pSource, Route * pRoute )
+WgRouteId WgMsgRouter::_addRoute( const WgObject_p& pSource, Route * pRoute )
 {
 	if( !pSource )
 		return 0;
@@ -514,7 +514,7 @@ WgRouteId WgMsgRouter::_addRoute( WgMsgType type, Route * pRoute )
 
 //____ post() ___________________________________________________________
 
-bool WgMsgRouter::post( const WgMsgPtr& pMsg )
+bool WgMsgRouter::post( const WgMsg_p& pMsg )
 {
 	if( m_bIsProcessing )
 	{
@@ -557,7 +557,7 @@ void WgMsgRouter::_dispatchQueued()
 {
 	while( !m_msgQueue.empty() )
 	{
-		WgMsgPtr& pMsg = m_msgQueue.front();
+		WgMsg_p& pMsg = m_msgQueue.front();
 		m_insertPos = m_msgQueue.begin()+1;	// Insert position set to right after current event.
 
 		_finalizeMsg( pMsg );
@@ -584,7 +584,7 @@ void WgMsgRouter::_dispatchQueued()
 
 //____ _broadcast() ________________________________________________
 
-void WgMsgRouter::_broadcast( const WgMsgPtr& pMsg )
+void WgMsgRouter::_broadcast( const WgMsg_p& pMsg )
 {
 	Route * pRoute = m_broadcasts.first();
 
@@ -598,7 +598,7 @@ void WgMsgRouter::_broadcast( const WgMsgPtr& pMsg )
 
 //____ _dispatchToTypeRoutes() __________________________________________________
 
-void WgMsgRouter::_dispatchToTypeRoutes( const WgMsgPtr& pMsg )
+void WgMsgRouter::_dispatchToTypeRoutes( const WgMsg_p& pMsg )
 {
 	auto it = m_typeRoutes.find(pMsg->type());
 	if( it != m_typeRoutes.end() )
@@ -615,13 +615,13 @@ void WgMsgRouter::_dispatchToTypeRoutes( const WgMsgPtr& pMsg )
 
 //____ _dispatchToSourceRoutes() ________________________________________________
 
-void WgMsgRouter::_dispatchToSourceRoutes( const WgMsgPtr& pMsg )
+void WgMsgRouter::_dispatchToSourceRoutes( const WgMsg_p& pMsg )
 {
 	WgObject * pSource = pMsg->sourceRawPtr();
 
 	if( pSource )
 	{
-		auto it = m_sourceRoutes.find(WgObjectWeakPtr(pSource));
+		auto it = m_sourceRoutes.find(WgObject_wp(pSource));
 		if( it != m_sourceRoutes.end() )
 		{
 			Route * pRoute = it->second.first();
@@ -637,7 +637,7 @@ void WgMsgRouter::_dispatchToSourceRoutes( const WgMsgPtr& pMsg )
 
 //____ _finalizeMsg() ________________________________________________________
 
-void WgMsgRouter::_finalizeMsg( const WgMsgPtr& pMsg )
+void WgMsgRouter::_finalizeMsg( const WgMsg_p& pMsg )
 {
 	// Fill in missing information in the event-class.
 
@@ -679,7 +679,7 @@ void WgMsgRouter::_finalizeMsg( const WgMsgPtr& pMsg )
 
 //____ _processGeneralMsg() _________________________________________________
 
-void WgMsgRouter::_processGeneralMsg( const WgMsgPtr& _pMsg )
+void WgMsgRouter::_processGeneralMsg( const WgMsg_p& _pMsg )
 {
 	WgMsg * pMsg = _pMsg.rawPtr();
 
@@ -939,9 +939,9 @@ void WgMsgRouter::_setWidgetFocused( WgWidget * pWidget, bool bFocused )
 
 void WgMsgRouter::_updateMarkedWidget(bool bPostMouseMoveMsgs)
 {
-	WgWidgetPtr pNowMarked = 0;
+	WgWidget_p pNowMarked = 0;
 
-	WgWidgetPtr pWidgetTarget = m_pRoot->findWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
+	WgWidget_p pWidgetTarget = m_pRoot->findWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
 
 	// Figure out which button of currently pressed has been pressed the longest.
 	// Mouse is only allowed to mark Widgets that were marked on press of that button.
@@ -1331,7 +1331,7 @@ void WgMsgRouter::_processMouseButtonDoubleClick( WgMouseDoubleClickMsg * pMsg )
 
 //____ _widgetPosInList() ________________________________________________________
 
-int WgMsgRouter::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
+int WgMsgRouter::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidget_wp>& list )
 {
 	for( size_t i = 0 ; i < list.size() ; i++ )
 		if( list[i].rawPtr() == pWidget )
@@ -1354,7 +1354,7 @@ WgMsgRouter::Route::~Route()
 		m_pReceiver->_onRouteRemoved();
 }
 
-void WgMsgRouter::Route::dispatch( const WgMsgPtr& pMsg )
+void WgMsgRouter::Route::dispatch( const WgMsg_p& pMsg )
 {
 	if( m_filter.filterMsg(pMsg) )
 		m_pReceiver->onMsg( pMsg );

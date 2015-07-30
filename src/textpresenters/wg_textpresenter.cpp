@@ -46,10 +46,10 @@ const char * WgTextPresenter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgTextPresenterPtr WgTextPresenter::cast( const WgObjectPtr& pObject )
+WgTextPresenter_p WgTextPresenter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgTextPresenterPtr( static_cast<WgTextPresenter*>(pObject.rawPtr()) );
+		return WgTextPresenter_p( static_cast<WgTextPresenter*>(pObject.rawPtr()) );
 
 	return 0;
 }

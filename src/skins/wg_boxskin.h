@@ -31,19 +31,19 @@
 #endif
 
 class WgBoxSkin;
-typedef	WgStrongPtr<WgBoxSkin,WgExtendedSkinPtr>	WgBoxSkinPtr;
+typedef	WgStrongPtr<WgBoxSkin,WgExtendedSkin_p>	WgBoxSkin_p;
 
 class WgBoxSkin : public WgExtendedSkin
 {
 public:
-	static WgBoxSkinPtr	create();
-	static WgBoxSkinPtr create( WgColor color, WgBorder frame, WgColor frameColor );
+	static WgBoxSkin_p	create();
+	static WgBoxSkin_p create( WgColor color, WgBorder frame, WgColor frameColor );
 	~WgBoxSkin() {};
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgBoxSkinPtr	cast( const WgObjectPtr& pObject );
+	static WgBoxSkin_p	cast( const WgObject_p& pObject );
 
 	void	setColor( WgColor color );
 	void	setFrameColor( WgColor color );

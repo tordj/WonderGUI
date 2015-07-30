@@ -57,8 +57,8 @@ class	WgFont;
 class	WgGfxAnim;
 
 class WgMenu;
-typedef	WgStrongPtr<WgMenu,WgWidgetPtr>		WgMenuPtr;
-typedef	WgWeakPtr<WgMenu,WgWidgetWeakPtr>	WgMenuWeakPtr;
+typedef	WgStrongPtr<WgMenu,WgWidget_p>		WgMenu_p;
+typedef	WgWeakPtr<WgMenu,WgWidget_wp>	WgMenu_wp;
 
 class WgMenu:public WgPanel, private WgScrollbarTarget
 {
@@ -66,45 +66,45 @@ class WgMenu:public WgPanel, private WgScrollbarTarget
 	friend class WgMenuSubMenu;
 
 public:
-	static WgMenuPtr	create() { return WgMenuPtr(new WgMenu()); }
+	static WgMenu_p	create() { return WgMenu_p(new WgMenu()); }
 
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgMenuPtr	cast( const WgObjectPtr& pObject );
+	static WgMenu_p	cast( const WgObject_p& pObject );
 
 	//____ Methods ___________________________________________
 
-	bool			setSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth );
+	bool			setSkin( const WgSkin_p& pSkin, int iconFieldWidth, int arrowFieldWidth );
 	int				IconFieldWidth() const			{ return m_iconFieldWidth; }
 	int				ArrowFieldWidth() const			{ return m_arrowFieldWidth; }
 
-	void			setEntrySkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		EntrySkin() const { return m_pEntrySkin; }
+	void			setEntrySkin( const WgSkin_p& pSkin );
+	WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
 
-	bool			SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& sepBorder = WgBorder() );
-	WgSkinPtr		SeparatorSkin() const { return m_pSeparatorSkin; }
+	bool			SetSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& sepBorder = WgBorder() );
+	WgSkin_p		SeparatorSkin() const { return m_pSeparatorSkin; }
 	WgBorder		SeparatorBorder() const { return m_sepBorder; }
 
-	bool			SetCheckBoxSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr		CheckBoxSkin() const { return m_pCheckBoxSkin; }
+	bool			SetCheckBoxSkin( const WgSkin_p& pSkin );
+	WgSkin_p		CheckBoxSkin() const { return m_pCheckBoxSkin; }
 
-	bool			SetRadioButtonSkin( const WgSkinPtr& pSkin );
-	WgSkinPtr 		RadioButtonSkin() const { return m_pRadioButtonSkin; }
+	bool			SetRadioButtonSkin( const WgSkin_p& pSkin );
+	WgSkin_p 		RadioButtonSkin() const { return m_pRadioButtonSkin; }
 
-	bool			SetArrowSource( const WgGfxAnimPtr& pAnim );
+	bool			SetArrowSource( const WgGfxAnim_p& pAnim );
 
-	bool			SetTextProperties( const WgTextpropPtr& pEntryProperties, const WgTextpropPtr& pKeyAccelProperties );
-	WgTextpropPtr	GetTextEntryProperties() const { return m_pEntryProp; }
-	WgTextpropPtr	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
+	bool			SetTextProperties( const WgTextprop_p& pEntryProperties, const WgTextprop_p& pKeyAccelProperties );
+	WgTextprop_p	GetTextEntryProperties() const { return m_pEntryProp; }
+	WgTextprop_p	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
 
-	bool			SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin );
+	bool			SetScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin );
 	bool			SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout );
 	WgScrollbar::BtnLayout ScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
-	WgSkinPtr 		ScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
-	WgSkinPtr 		ScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
-	WgSkinPtr 		ScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
-	WgSkinPtr 		ScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
+	WgSkin_p 		ScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
+	WgSkin_p 		ScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
+	WgSkin_p 		ScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
+	WgSkin_p 		ScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
 
 	int			GetEntryHeight() const;
 
@@ -135,7 +135,7 @@ public:
 
 	//____ Overloaded from WgWidget & WgPanel ___________________________
 
-	bool		removeWidget(const WgWidgetPtr& pWidget ) { return false; }
+	bool		removeWidget(const WgWidget_p& pWidget ) { return false; }
 	bool		clear() { return false; }
 
 	int			matchingWidth( int height ) const;
@@ -201,7 +201,7 @@ private:
 	void		_onNewSize( const WgSize& size );
 	void		_onRefresh();
 
-	void		_onMsg( const WgMsgPtr& pMsg );
+	void		_onMsg( const WgMsg_p& pMsg );
 	void		_onStateChanged( WgState oldState );
 	bool		_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 
@@ -281,7 +281,7 @@ private:
 
 	// Members defining background
 
-	WgSkinPtr				m_pEntrySkin;
+	WgSkin_p				m_pEntrySkin;
 
 	// Members defining content layout
 
@@ -290,12 +290,12 @@ private:
 
 	// Members defining separators
 
-	WgSkinPtr				m_pSeparatorSkin;
+	WgSkin_p				m_pSeparatorSkin;
 	WgBorder				m_sepBorder;
 
 	// Members defining the arrow for submenus
 
-	WgGfxAnimPtr			m_pArrowAnim;
+	WgGfxAnim_p			m_pArrowAnim;
 	Uint32					m_arrowAnimCount;	// Animation position in milliseconds.
 
 	//
@@ -303,23 +303,23 @@ private:
 	Uint8					m_entryHeight;		// Height of a menu entry >= font height.
 	Uint8					m_sepHeight;		// Height of a separator menu entry.
 
-	WgTextpropPtr			m_pEntryProp;		// Default text properties for entry.
-	WgTextpropPtr			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
+	WgTextprop_p			m_pEntryProp;		// Default text properties for entry.
+	WgTextprop_p			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
 
 	// Members defining checkbox entries
 
-	WgSkinPtr				m_pCheckBoxSkin;
+	WgSkin_p				m_pCheckBoxSkin;
 
 	// Members defining radiobutton entries.
 
-	WgSkinPtr				m_pRadioButtonSkin;
+	WgSkin_p				m_pRadioButtonSkin;
 
 	// Members defining dragbar.
 
-	WgSkinPtr					m_pScrollbarBgSkin;
-	WgSkinPtr					m_pScrollbarHandleSkin;
-	WgSkinPtr					m_pScrollbarBtnFwdSkin;
-	WgSkinPtr					m_pScrollbarBtnBwdSkin;
+	WgSkin_p					m_pScrollbarBgSkin;
+	WgSkin_p					m_pScrollbarHandleSkin;
+	WgSkin_p					m_pScrollbarBtnFwdSkin;
+	WgSkin_p					m_pScrollbarBtnBwdSkin;
 	WgScrollbar::BtnLayout		m_scrollbarBtnLayout;
 };
 

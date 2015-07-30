@@ -124,7 +124,7 @@ bool WgPen::setSize( int size )
 
 //____ setFont() ______________________________________________________________
 
-void WgPen::setFont( const WgFontPtr& pFont )
+void WgPen::setFont( const WgFont_p& pFont )
 {
 	m_pFont = pFont;
 	_onAttrChanged();
@@ -207,7 +207,7 @@ bool WgPen::setChar( Uint32 chr )
 
 	// First we try to get the glyph from our Glyphset.
 
-	WgGlyphPtr p = m_pGlyphs->getGlyph( chr, m_size );
+	WgGlyph_p p = m_pGlyphs->getGlyph( chr, m_size );
 	if( !p )
 	{
 		// If not in glyphset we get the closest match in size/style from Font.
@@ -266,13 +266,13 @@ void WgPen::blitChar() const
 
 bool WgPen::blitCursor( const WgCaretInstance& instance ) const
 {
-	WgCaretPtr pCursor = WgTextTool::getCursor(instance.m_pText);
+	WgCaret_p pCursor = WgTextTool::getCursor(instance.m_pText);
 	if( !pCursor )
 		return false;
 
 	WgCaret::Mode mode = instance.cursorMode();
 
-	WgGfxAnimPtr pAnim	= pCursor->anim( mode );
+	WgGfxAnim_p pAnim	= pCursor->anim( mode );
 	if( !pAnim )
 		return false;
 
@@ -343,13 +343,13 @@ bool WgPen::blitCursor( const WgCaretInstance& instance ) const
 
 void WgPen::advancePosCursor( const WgCaretInstance& instance )
 {
-	WgCaretPtr pCursor = WgTextTool::getCursor( instance.m_pText );
+	WgCaret_p pCursor = WgTextTool::getCursor( instance.m_pText );
 	if( !pCursor )
 		return;
 
 	WgCaret::Mode mode = instance.cursorMode();
 
-	WgGfxAnimPtr pAnim	= pCursor->anim( mode );
+	WgGfxAnim_p pAnim	= pCursor->anim( mode );
 	if( !pAnim )
 		return;
 

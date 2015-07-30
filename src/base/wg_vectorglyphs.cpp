@@ -41,7 +41,7 @@ const char WgVectorGlyphs::CLASSNAME[] = {"VectorGlyphs"};
 
 WgChain<WgVectorGlyphs::CacheSlot>	WgVectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
 WgChain<WgVectorGlyphs::CacheSurf>	WgVectorGlyphs::s_cacheSurfaces;
-WgSurfaceFactoryPtr					WgVectorGlyphs::s_pSurfaceFactory = 0;
+WgSurfaceFactory_p					WgVectorGlyphs::s_pSurfaceFactory = 0;
 
 
 //____ Constructor ____________________________________________________________
@@ -116,10 +116,10 @@ const char * WgVectorGlyphs::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgVectorGlyphsPtr WgVectorGlyphs::cast( const WgObjectPtr& pObject )
+WgVectorGlyphs_p WgVectorGlyphs::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgVectorGlyphsPtr( static_cast<WgVectorGlyphs*>(pObject.rawPtr()) );
+		return WgVectorGlyphs_p( static_cast<WgVectorGlyphs*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -181,7 +181,7 @@ bool WgVectorGlyphs::setRenderMode( RenderMode mode, int startSize, int endSize 
 
 //____ getKerning() ___________________________________________________________
 
-int WgVectorGlyphs::getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size )
+int WgVectorGlyphs::getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size )
 {
 	size += m_sizeOffset;
 
@@ -316,7 +316,7 @@ bool WgVectorGlyphs::hasGlyph( Uint16 ch )
 
 //____ getGlyph() _____________________________________________________________
 
-WgGlyphPtr WgVectorGlyphs::getGlyph( Uint16 ch, int size )
+WgGlyph_p WgVectorGlyphs::getGlyph( Uint16 ch, int size )
 {
 	size += m_sizeOffset;
 
@@ -363,7 +363,7 @@ WgGlyphPtr WgVectorGlyphs::getGlyph( Uint16 ch, int size )
 
 
 /*
-WgGlyphPtr WgVectorGlyphs::getGlyph( Uint16 ch, int size )
+WgGlyph_p WgVectorGlyphs::getGlyph( Uint16 ch, int size )
 {
 	size += m_sizeOffset;
 
@@ -490,7 +490,7 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::_generateBitmap( Glyph * pGlyph )
 
 void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
-	WgSurfacePtr pSurf = pSlot->bitmap.pSurface;
+	WgSurface_p pSurf = pSlot->bitmap.pSurface;
 
 	unsigned char * pDest = (unsigned char*) pSurf->lockRegion( WG_WRITE_ONLY, pSlot->bitmap.rect );
 	assert( pDest != 0 );
@@ -622,7 +622,7 @@ WgVectorGlyphs::Glyph * WgVectorGlyphs::_addGlyph( Uint16 ch, int size, int adva
 
 //____ setSurfaceFactory() ____________________________________________________
 
-void WgVectorGlyphs::setSurfaceFactory( const WgSurfaceFactoryPtr& pFactory )
+void WgVectorGlyphs::setSurfaceFactory( const WgSurfaceFactory_p& pFactory )
 {
 	s_pSurfaceFactory = pFactory;
 }
@@ -690,7 +690,7 @@ int WgVectorGlyphs::addCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& sl
 
 	WgSize texSize = calcTextureSize( slotSize, 16 );
 
-	WgSurfacePtr pSurf = s_pSurfaceFactory->createSurface( texSize );
+	WgSurface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
 	pSurf->fill( WgColor( 255,255,255,0 ) );
 
 	CacheSurf * pCache = new CacheSurf( pSurf );

@@ -53,10 +53,10 @@ const char * WgColumnHeader::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgColumnHeaderPtr WgColumnHeader::cast( const WgInterfacePtr& pInterface )
+WgColumnHeader_p WgColumnHeader::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgColumnHeaderPtr( pInterface.getRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.rawPtr()) );
+		return WgColumnHeader_p( pInterface.getRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.rawPtr()) );
 
 	return 0;
 }

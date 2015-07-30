@@ -32,8 +32,8 @@ class WgModalLayer;
 class WgPopupLayer;
 
 class WgContainer;
-typedef	WgStrongPtr<WgContainer,WgWidgetPtr>			WgContainerPtr;
-typedef	WgWeakPtr<WgContainer,WgWidgetWeakPtr>		WgContainerWeakPtr;
+typedef	WgStrongPtr<WgContainer,WgWidget_p>			WgContainer_p;
+typedef	WgWeakPtr<WgContainer,WgWidget_wp>		WgContainer_wp;
 
 /**
  * @brief Base class for all widgets that can hold child widgets.
@@ -70,21 +70,21 @@ class WgContainer : public WgWidget
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgContainerPtr	cast( const WgObjectPtr& pObject );
+		static WgContainer_p	cast( const WgObject_p& pObject );
 
 
 		bool					IsContainer() const;
 
-		inline WgWidgetPtr		firstWidget() const { return WgWidgetPtr(_firstWidget()); }
-		inline WgWidgetPtr		lastWidget() const { return WgWidgetPtr(_lastWidget()); }
+		inline WgWidget_p		firstWidget() const { return WgWidget_p(_firstWidget()); }
+		inline WgWidget_p		lastWidget() const { return WgWidget_p(_lastWidget()); }
 
-		inline WgHookPtr		firstHook() const { return _firstHook(); }
-		inline WgHookPtr		lastHook() const { return _lastHook(); }
+		inline WgHook_p		firstHook() const { return _firstHook(); }
+		inline WgHook_p		lastHook() const { return _lastHook(); }
 
-		virtual WgWidgetPtr		findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidgetPtr(_findWidget(ofs,mode)); }
+		virtual WgWidget_p		findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidget_p(_findWidget(ofs,mode)); }
 
 
-		virtual bool			removeWidget( const WgWidgetPtr& pWidget ) = 0;
+		virtual bool			removeWidget( const WgWidget_p& pWidget ) = 0;
 		virtual bool			clear() = 0;
 			
 	protected:

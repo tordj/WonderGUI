@@ -100,7 +100,7 @@ WgLegacyTextField::~WgLegacyTextField()
 
 //____ setCursorSkin() _______________________________________________________
 
-void WgLegacyTextField::setCursorSkin( const WgCaretPtr& pCursor )
+void WgLegacyTextField::setCursorSkin( const WgCaret_p& pCursor )
 {
 	if( pCursor != m_pCursorStyle )
 	{
@@ -527,7 +527,7 @@ int WgLegacyTextField::softLineSpacing( int line )
 }
 
 
-void WgLegacyTextField::setLinkProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setLinkProperties( const WgTextprop_p& pProp )
 {
 	if( m_pLinkProp != pProp )
 	{
@@ -549,7 +549,7 @@ void WgLegacyTextField::clearLinkProperties()
 	}
 }
 
-void WgLegacyTextField::setSelectionProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setSelectionProperties( const WgTextprop_p& pProp )
 {
 	if( m_pSelectionProp != pProp )
 	{
@@ -581,7 +581,7 @@ void WgLegacyTextField::setSelectionBgColor(WgColor color )
 }
 
 
-void WgLegacyTextField::setProperties( const WgTextpropPtr& pProp )
+void WgLegacyTextField::setProperties( const WgTextprop_p& pProp )
 {
 	m_pBaseProp = pProp;
 	_regenSoftLines();
@@ -771,7 +771,7 @@ int WgLegacyTextField::compareTo( const WgLegacyTextField * _pOther, bool bCheck
 
 //____ setValue() _____________________________________________________________
 
-void WgLegacyTextField::setValue( double value, const WgValueFormatPtr& pFormat )
+void WgLegacyTextField::setValue( double value, const WgValueFormat_p& pFormat )
 {
 	WgChar	str[s_parseBufLen];
 	WgChar * pStr = _parseValue( value, pFormat.rawPtr(), str );
@@ -780,7 +780,7 @@ void WgLegacyTextField::setValue( double value, const WgValueFormatPtr& pFormat 
 
 //____ setScaledValue() _______________________________________________________
 
-void WgLegacyTextField::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormatPtr& pFormat )
+void WgLegacyTextField::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat_p& pFormat )
 {
 	WgChar	str[s_parseBufLen];
 	WgChar * pStr = _parseScaledValue( value, scale, pFormat.rawPtr(), str );
@@ -1495,7 +1495,7 @@ int WgLegacyTextField::_countWriteSoftLines( int maxWidth, const WgChar * pStart
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					WgGlyphPtr pHyphen = pen.getGlyphset()->getGlyph( '-', pen.getSize() );
+					WgGlyph_p pHyphen = pen.getGlyphset()->getGlyph( '-', pen.getSize() );
 					if( !pHyphen || (pen.getPosX() + pHyphen->advance()) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
@@ -1731,7 +1731,7 @@ void WgLegacyTextField::_refreshLineInfo( WgLegacyTextLine * pLine ) const
 
 int WgLegacyTextField::_cursorMaxWidth() const
 {
-	WgCaretPtr p = m_pCursorStyle?m_pCursorStyle:WgBase::getDefaultCursor();
+	WgCaret_p p = m_pCursorStyle?m_pCursorStyle:WgBase::getDefaultCursor();
 
 	if( p && m_editMode == WG_TEXT_EDITABLE )
 	{
@@ -1958,7 +1958,7 @@ int WgLegacyTextField::coordToOfs( const WgCoord& coord, const WgRect& container
 
 //____ coordToLink() __________________________________________________________
 
-WgTextLinkPtr WgLegacyTextField::coordToLink( const WgCoord& coord, const WgRect& container ) const
+WgTextLink_p WgLegacyTextField::coordToLink( const WgCoord& coord, const WgRect& container ) const
 {
 	int ofs = coordToOfs( coord, container );
 	if( ofs >= 0 )
@@ -2281,7 +2281,7 @@ int WgLegacyTextField::lineColToOffset(int line, int col) const
 
 //____ onMsg() _____________________________________________________________
 
-bool WgLegacyTextField::onMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container )
+bool WgLegacyTextField::onMsg( const WgMsg_p& pMsg, WgMsgRouter * pMsgRouter, const WgRect& container )
 {
 	bool bRefresh = false;
 
@@ -2293,7 +2293,7 @@ bool WgLegacyTextField::onMsg( const WgMsgPtr& pMsg, WgMsgRouter * pMsgRouter, c
 /*
 			WgCoord pointerOfs = pMsg->pointerPos();
 			
-			WgTextLinkPtr pLink = coordToLink( pointerOfs, container );
+			WgTextLink_p pLink = coordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
 				pMsgRouter->post( new WgLinkMouseLeaveMsg( m_pMarkedLink ));
@@ -2402,7 +2402,7 @@ bool WgLegacyTextField::onAction( WgInput::UserAction action, int button_key, co
 		case WgInput::POINTER_ENTER:
 		case WgInput::POINTER_OVER:
 		{
-			WgTextLinkPtr pLink = coordToLink( pointerOfs, container );
+			WgTextLink_p pLink = coordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
 				if( pHandler )
@@ -2543,15 +2543,15 @@ bool WgLegacyTextField::getCharAttr( WgTextAttr& attr, int charOfs ) const
 
 	// Add link properties if character is part of a link
 
-	WgTextpropPtr pCharProp = m_buffer.chars()[charOfs].getProperties();
+	WgTextprop_p pCharProp = m_buffer.chars()[charOfs].getProperties();
 
-	WgTextLinkPtr pLink = pCharProp->link();
+	WgTextLink_p pLink = pCharProp->link();
 	if( !pLink )
 		pLink = m_pBaseProp->link();
 
 	if( pLink )
 	{
-		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::getDefaultLinkProp();
+		WgTextprop_p pProp = m_pLinkProp?m_pLinkProp:WgBase::getDefaultLinkProp();
 
 		WgState	state;
 
@@ -2620,7 +2620,7 @@ int WgLegacyTextField::getCharSize( int charOfs ) const
 	return attr.size;
 }
 
-WgFontPtr WgLegacyTextField::getCharFont( int charOfs ) const
+WgFont_p WgLegacyTextField::getCharFont( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;
@@ -2636,7 +2636,7 @@ int WgLegacyTextField::getCharBreakLevel( int charOfs ) const
 	return attr.breakLevel;
 }
 
-WgTextLinkPtr WgLegacyTextField::getCharLink( int charOfs ) const
+WgTextLink_p WgLegacyTextField::getCharLink( int charOfs ) const
 {
 	//TODO: Optimize
 	WgTextAttr	attr;

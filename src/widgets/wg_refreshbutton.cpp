@@ -74,17 +74,17 @@ const char * WgRefreshButton::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgRefreshButtonPtr WgRefreshButton::cast( const WgObjectPtr& pObject )
+WgRefreshButton_p WgRefreshButton::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgRefreshButtonPtr( static_cast<WgRefreshButton*>(pObject.rawPtr()) );
+		return WgRefreshButton_p( static_cast<WgRefreshButton*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 
 //_____________________________________________________________________________
-void WgRefreshButton::SetRefreshAnimation( const WgGfxAnimPtr& pAnimation )
+void WgRefreshButton::SetRefreshAnimation( const WgGfxAnim_p& pAnimation )
 {
 	m_pRefreshAnim		= pAnimation;
 
@@ -190,7 +190,7 @@ void WgRefreshButton::_onNewSize( const WgSize& size )
 
 //____ _onMsg() _____________________________________________________________
 
-void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
+void WgRefreshButton::_onMsg( const WgMsg_p& pMsg )
 {
 	WgButton::_onMsg( pMsg );
 
@@ -202,7 +202,7 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 			{
 				if( m_refreshMode != PROGRESS )
 				{
-					WgTickMsgPtr pTick = WgTickMsg::cast(pMsg);
+					WgTickMsg_p pTick = WgTickMsg::cast(pMsg);
 
 					WgGfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
 					m_animTimer += pTick->millisec();
@@ -230,7 +230,7 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_KEY_RELEASE:
 		{
-			WgKeyReleaseMsgPtr pKeyRelease = WgKeyReleaseMsg::cast(pMsg);
+			WgKeyReleaseMsg_p pKeyRelease = WgKeyReleaseMsg::cast(pMsg);
 
 			if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == WG_KEY_RETURN )
 				StartRefresh();
@@ -240,7 +240,7 @@ void WgRefreshButton::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pBtnRelease = WgMouseReleaseMsg::cast(pMsg);
+			WgMouseReleaseMsg_p pBtnRelease = WgMouseReleaseMsg::cast(pMsg);
 
 			if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == WG_BUTTON_LEFT )
 				StartRefresh();

@@ -39,30 +39,30 @@
 #endif
 
 class WgRootPanel;
-typedef	WgStrongPtr<WgRootPanel,WgObjectPtr>		WgRootPanelPtr;
-typedef	WgWeakPtr<WgRootPanel,WgObjectWeakPtr>		WgRootPanelWeakPtr;
+typedef	WgStrongPtr<WgRootPanel,WgObject_p>		WgRootPanel_p;
+typedef	WgWeakPtr<WgRootPanel,WgObject_wp>		WgRootPanel_wp;
 
 class WgInputHandler;
-typedef	WgStrongPtr<WgInputHandler,WgReceiverPtr>		WgInputHandlerPtr;
-typedef	WgWeakPtr<WgInputHandler,WgReceiverWeakPtr>		WgInputHandlerWeakPtr;
+typedef	WgStrongPtr<WgInputHandler,WgReceiver_p>		WgInputHandler_p;
+typedef	WgWeakPtr<WgInputHandler,WgReceiver_wp>		WgInputHandler_wp;
 
 class WgInputHandler : public WgReceiver
 {
 public:
-	static WgInputHandlerPtr	create() { return new WgInputHandler(); }
+	static WgInputHandler_p	create() { return new WgInputHandler(); }
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgInputHandlerPtr	cast( const WgObjectPtr& pObject );
+	static WgInputHandler_p	cast( const WgObject_p& pObject );
 
-	void setPointer( const WgRootPanelPtr& pRoot, WgCoord pos );
+	void setPointer( const WgRootPanel_p& pRoot, WgCoord pos );
 	void setButton( WgMouseButton button, bool bPressed );
 	void setWheelRoll( int wheel, int steps );
-	void setFocused( const WgRootPanelPtr& pRoot );
+	void setFocused( const WgRootPanel_p& pRoot );
 	void setKey( short nativeKeyCode, bool bPressed );
 	
-	void onMsg( const WgMsgPtr& pMsg );
+	void onMsg( const WgMsg_p& pMsg );
 	
 protected:
 	WgInputHandler();
@@ -74,7 +74,7 @@ protected:
 	void		_processMouseButtonPress( WgMouseButton button );
 	void		_processMouseButtonRelease( WgMouseButton button );
 
-	int			_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
+	int			_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidget_wp>& list );
 
 
 
@@ -83,10 +83,10 @@ protected:
 	
 	WgCoord				m_pointerPos;
 	
-	WgRootPanelWeakPtr	m_pMarkedRoot;		// Root widget the pointer currently is "inside". 
-	WgWidgetWeakPtr		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
+	WgRootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside". 
+	WgWidget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
-	std::vector<WgWidgetWeakPtr>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
+	std::vector<WgWidget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
 	
 
 	WgPointerStyle	m_pointerStyle;
@@ -97,10 +97,10 @@ protected:
 
 	bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
 
-	WgMousePressMsgPtr			m_pLatestPressMsgs[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-	WgMouseReleaseMsgPtr		m_pLatestReleaseMsgs[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
+	WgMousePressMsg_p			m_pLatestPressMsgs[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+	WgMouseReleaseMsg_p		m_pLatestReleaseMsgs[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
 
-	WgWidgetWeakPtr				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+	WgWidget_wp				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
 };
 
 

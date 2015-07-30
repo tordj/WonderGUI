@@ -38,8 +38,8 @@ class WgMenu;
 
 
 class WgScrollbar;
-typedef	WgStrongPtr<WgScrollbar,WgWidgetPtr>		WgScrollbarPtr;
-typedef	WgWeakPtr<WgScrollbar,WgWidgetWeakPtr>		WgScrollbarWeakPtr;
+typedef	WgStrongPtr<WgScrollbar,WgWidget_p>		WgScrollbar_p;
+typedef	WgWeakPtr<WgScrollbar,WgWidget_wp>		WgScrollbar_wp;
 
 //____ Class: WgScrollbar _____________________________________________________
 /**
@@ -69,12 +69,12 @@ class	WgScrollbar : public WgWidget
 	friend class WgMenu;
 
 	public:
-		static WgScrollbarPtr	create() { return WgScrollbarPtr(new WgScrollbar()); }
+		static WgScrollbar_p	create() { return WgScrollbar_p(new WgScrollbar()); }
 
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgScrollbarPtr	cast( const WgObjectPtr& pObject );
+		static WgScrollbar_p	cast( const WgObject_p& pObject );
 
 
 		//____ Enums ____________________________________________
@@ -105,10 +105,10 @@ class	WgScrollbar : public WgWidget
 
 		inline float			HandlePos() const;						///< @brief Get position of the scrollbar handle.
 		inline float			HandleSize() const;						///< @brief Get the size of the scrollbar handle.
-		inline WgSkinPtr 		BackgroundSkin() const;					///< @brief Get the skin used as a background for the handle slide area.
-		inline WgSkinPtr 		HandleSkin() const;						///< @brief Get the skin used for the scrollbar handle.
-		inline WgSkinPtr 		BwdButtonSkin() const;					///< @brief Get the skin used for the backward button.
-		inline WgSkinPtr 		FwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
+		inline WgSkin_p 		BackgroundSkin() const;					///< @brief Get the skin used as a background for the handle slide area.
+		inline WgSkin_p 		HandleSkin() const;						///< @brief Get the skin used for the scrollbar handle.
+		inline WgSkin_p 		BwdButtonSkin() const;					///< @brief Get the skin used for the backward button.
+		inline WgSkin_p 		FwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
 		inline BtnLayout		ButtonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
 
 		void			setOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
@@ -122,14 +122,14 @@ class	WgScrollbar : public WgWidget
 		void	SetHandlePixelPos( int pos );								///< @brief Set pixel position of scrollbar handle.
 		void	SetHandleSize( float size );							///< @brief Set size of scrollbar handle.
 
-		void	SetBackgroundSkin( const WgSkinPtr& pSkin );			///< @brief Set skin for background of handle slide area.
-		void	SetHandleSkin( const WgSkinPtr& pSkin );				///< @brief Set skin for scrollbar handle.
-		void	SetBwdButtonSkin( const WgSkinPtr& pSkin );				///< @brief Set skin for forward button.
-		void	SetFwdButtonSkin( const WgSkinPtr& pSkin );				///< @brief Set skin for backward button.
+		void	SetBackgroundSkin( const WgSkin_p& pSkin );			///< @brief Set skin for background of handle slide area.
+		void	SetHandleSkin( const WgSkin_p& pSkin );				///< @brief Set skin for scrollbar handle.
+		void	SetBwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for forward button.
+		void	SetFwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for backward button.
 
 
-		void	SetSkins( const WgSkinPtr& pBaseSkin, const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin,
-						  const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin ); ///< @brief Set all skins in one go.
+		void	SetSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin,
+						  const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin ); ///< @brief Set all skins in one go.
 		void	SetButtonLayout(  BtnLayout layout );				///< @brief Set the layout for the forward/backward buttons.
 
 		bool	SetScrollbarTarget( WgScrollbarTarget * pTarget );
@@ -142,7 +142,7 @@ class	WgScrollbar : public WgWidget
 
 		void	_onCloneContent( const WgWidget * _pOrg );
 		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onMsg( const WgMsgPtr& pMsg );
+		void	_onMsg( const WgMsg_p& pMsg );
 		void	_onRefresh();
 		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 		void	_onStateChanged( WgState oldState );
@@ -165,10 +165,10 @@ class	WgScrollbar : public WgWidget
 
 		};
 
-		WgSkinPtr		m_pBgSkin;
-		WgSkinPtr		m_pHandleSkin;
-		WgSkinPtr		m_pBtnFwdSkin;
-		WgSkinPtr		m_pBtnBwdSkin;
+		WgSkin_p		m_pBgSkin;
+		WgSkin_p		m_pHandleSkin;
+		WgSkin_p		m_pBtnFwdSkin;
+		WgSkin_p		m_pBtnBwdSkin;
 
 		float			m_handlePos;
 		float			m_handleSize;
@@ -188,7 +188,7 @@ class	WgScrollbar : public WgWidget
 		WgSize			m_minSize;
 
 		WgScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
-		WgWidgetWeakPtr	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
+		WgWidget_wp	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
 
 
 	private:
@@ -200,8 +200,8 @@ class	WgScrollbar : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkinPtr& pSkin, WgState state );
-		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkinPtr& pSkin, WgState state );
+		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgSkin_p& pSkin, WgState state );
+		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgSkin_p& pSkin, WgState state );
 		bool		_markTestHandle( WgCoord ofs );
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
@@ -260,7 +260,7 @@ float WgScrollbar::HandleSize() const
  * @return Pointer to skin used as a background for the area of the handle or null.
  **/
 
-WgSkinPtr WgScrollbar::BackgroundSkin() const
+WgSkin_p WgScrollbar::BackgroundSkin() const
 {
 	return m_pBgSkin;
 }
@@ -272,7 +272,7 @@ WgSkinPtr WgScrollbar::BackgroundSkin() const
  * @return Pointer to the skin used for the scrollbar handle or null.
  **/
 
-WgSkinPtr WgScrollbar::HandleSkin() const
+WgSkin_p WgScrollbar::HandleSkin() const
 {
 	return m_pHandleSkin;
 }
@@ -287,7 +287,7 @@ WgSkinPtr WgScrollbar::HandleSkin() const
  * @return Pointer to the skin used for the backward button or null.
  **/
 
-WgSkinPtr WgScrollbar::BwdButtonSkin() const
+WgSkin_p WgScrollbar::BwdButtonSkin() const
 {
 	return m_pBtnBwdSkin;
 }
@@ -302,7 +302,7 @@ WgSkinPtr WgScrollbar::BwdButtonSkin() const
  * @return Pointer to the skin used for the forward button or null.
  **/
 
-WgSkinPtr WgScrollbar::FwdButtonSkin() const
+WgSkin_p WgScrollbar::FwdButtonSkin() const
 {
 	return m_pBtnFwdSkin;
 }

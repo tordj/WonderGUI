@@ -48,10 +48,10 @@ const char * WgPackListHook::className( void ) const
 
 //____ WgPackListHook::cast() ________________________________________________
 
-WgPackListHookPtr WgPackListHook::cast( const WgHookPtr& pHook )
+WgPackListHook_p WgPackListHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgPackListHookPtr( static_cast<WgPackListHook*>(pHook.rawPtr()) );
+		return WgPackListHook_p( static_cast<WgPackListHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -167,17 +167,17 @@ const char * WgPackList::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgPackListPtr WgPackList::cast( const WgObjectPtr& pObj )
+WgPackList_p WgPackList::cast( const WgObject_p& pObj )
 {
 	if( pObj && pObj->isInstanceOf(CLASSNAME) )
-		return WgPackListPtr( static_cast<WgPackList*>(pObj.rawPtr()) );
+		return WgPackList_p( static_cast<WgPackList*>(pObj.rawPtr()) );
 
 	return 0;
 }
 
 //____ addWidget() ____________________________________________________________
 
-WgPackListHookPtr WgPackList::addWidget( const WgWidgetPtr& pWidget )
+WgPackListHook_p WgPackList::addWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget )
 		return 0;
@@ -193,7 +193,7 @@ WgPackListHookPtr WgPackList::addWidget( const WgWidgetPtr& pWidget )
 
 //____ insertWidget() ____________________________________________________________
 
-WgPackListHookPtr WgPackList::insertWidget( const WgWidgetPtr& pWidget, const WgWidgetPtr& pSibling )
+WgPackListHook_p WgPackList::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling )
 {
 	if( !pWidget )
 		return 0;
@@ -220,7 +220,7 @@ WgPackListHookPtr WgPackList::insertWidget( const WgWidgetPtr& pWidget, const Wg
 
 //____ insertWidgetSorted() ___________________________________________________
 
-WgPackListHookPtr WgPackList::insertWidgetSorted( const WgWidgetPtr& pWidget )
+WgPackListHook_p WgPackList::insertWidgetSorted( const WgWidget_p& pWidget )
 {
 	if( !pWidget )
 		return 0;
@@ -240,7 +240,7 @@ WgPackListHookPtr WgPackList::insertWidgetSorted( const WgWidgetPtr& pWidget )
 
 //____ removeWidget() _________________________________________________________
 
-bool WgPackList::removeWidget( const WgWidgetPtr& pWidget )
+bool WgPackList::removeWidget( const WgWidget_p& pWidget )
 {
 	if( !pWidget || !pWidget->_hook() )
 		return false;
@@ -720,7 +720,7 @@ void WgPackList::_onRefreshList()
 
 //____ _onMsg() _____________________________________________________________
 
-void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
+void WgPackList::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgState oldState = m_state;
 
@@ -728,7 +728,7 @@ void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 	{
 		case WG_MSG_MOUSE_MOVE:
 		{
-			WgMouseMoveMsgPtr pMsg = WgMouseMoveMsg::cast(_pMsg);
+			WgMouseMoveMsg_p pMsg = WgMouseMoveMsg::cast(_pMsg);
 			WgCoord ofs = ToLocal(pMsg->pointerPos());
 			WgRect headerGeo = _headerGeo();
 			bool bHeaderHovered = headerGeo.contains(ofs) && (!WgBase::msgRouter()->isAnyMouseButtonPressed() || 
@@ -744,7 +744,7 @@ void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_LEAVE:
 		{
-			WgMouseLeaveMsgPtr pMsg = WgMouseLeaveMsg::cast(_pMsg);
+			WgMouseLeaveMsg_p pMsg = WgMouseLeaveMsg::cast(_pMsg);
 			if( pMsg->source() == this && m_header.m_state.isHovered() )
 			{
 				m_header.m_state.setPressed(false);
@@ -757,7 +757,7 @@ void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMousePressMsgPtr pMsg = WgMousePressMsg::cast(_pMsg);
+			WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
 			WgCoord ofs = ToLocal(pMsg->pointerPos());
 			WgRect headerGeo = _headerGeo();
 			if(pMsg->button() == WG_BUTTON_LEFT && headerGeo.contains(ofs))
@@ -774,7 +774,7 @@ void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_DRAG:
 		{
-			WgMouseDragMsgPtr pMsg = WgMouseDragMsg::cast(_pMsg);
+			WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 			if( m_header.m_bPressed )
 			{
 				WgCoord ofs = ToLocal(pMsg->pointerPos());
@@ -795,7 +795,7 @@ void WgPackList::_onMsg( const WgMsgPtr& _pMsg )
 
 		case WG_MSG_MOUSE_RELEASE:
 		{
-			WgMouseReleaseMsgPtr pMsg = WgMouseReleaseMsg::cast(_pMsg);
+			WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
 			if(pMsg->button() == WG_BUTTON_LEFT && m_header.m_bPressed )
 			{
 				m_header.m_bPressed = false;

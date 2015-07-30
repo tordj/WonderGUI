@@ -38,8 +38,8 @@ public:
 
 
 class WgSizeBroker;
-typedef	WgStrongPtr<WgSizeBroker,WgObjectPtr>		WgSizeBrokerPtr;
-typedef	WgWeakPtr<WgSizeBroker,WgObjectWeakPtr>	WgSizeBrokerWeakPtr;
+typedef	WgStrongPtr<WgSizeBroker,WgObject_p>		WgSizeBroker_p;
+typedef	WgWeakPtr<WgSizeBroker,WgObject_wp>	WgSizeBroker_wp;
 
 class WgSizeBroker : public WgObject
 {
@@ -47,7 +47,7 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSizeBrokerPtr	cast( const WgObjectPtr& pObject );
+	static WgSizeBroker_p	cast( const WgObject_p& pObject );
     
 	virtual int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
 	virtual int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;

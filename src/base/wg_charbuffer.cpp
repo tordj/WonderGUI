@@ -1141,7 +1141,7 @@ void WgCharBuffer::setGlyphs( Uint16 glyph, int ofs, int len )
 /// properties for the characters, like font, color, style, and underlined.
 /// If the range spans outside the buffer content it will be adjusted properly.
 
-void WgCharBuffer::setProperties( const WgTextpropPtr& pProp, int ofs, int len  )
+void WgCharBuffer::setProperties( const WgTextprop_p& pProp, int ofs, int len  )
 {
 	if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 		return;
@@ -1218,7 +1218,7 @@ void WgCharBuffer::setStyle( WgFontAlt style, int ofs, int len )
 ///
 /// Setting pFont to null is identical to calling clearFont().
 
-void WgCharBuffer::setFont( const WgFontPtr& pFont, int ofs, int len )
+void WgCharBuffer::setFont( const WgFont_p& pFont, int ofs, int len )
 {
 	_modifyProperties( ofs, len, WgTextTool::PropFontModifier(pFont) );
 }

@@ -42,8 +42,8 @@
 
 
 class WgSurface;
-typedef	WgStrongPtr<WgSurface,WgObjectPtr>		WgSurfacePtr;
-typedef	WgWeakPtr<WgSurface,WgObjectWeakPtr>	WgSurfaceWeakPtr;
+typedef	WgStrongPtr<WgSurface,WgObject_p>		WgSurface_p;
+typedef	WgWeakPtr<WgSurface,WgObject_wp>	WgSurface_wp;
 
 //____ WgSurface ______________________________________________________________
 /**
@@ -66,7 +66,7 @@ public:
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgSurfacePtr	cast( const WgObjectPtr& pObject );
+	static WgSurface_p	cast( const WgObject_p& pObject );
 
 	// Methods for reading dimensions and abilities.
 
@@ -208,8 +208,8 @@ public:
 
 	virtual bool		fill( WgColor col );						///< @brief Fill surface with specified color.
 	virtual bool		fill( WgColor col, const WgRect& region );	///< @brief Fill section of surface with specified color
-	virtual bool		copyFrom( const WgSurfacePtr& pSrcSurf, const WgRect& srcRect, WgCoord dst );	///< @brief Copy block of graphics from other surface
-	virtual bool		copyFrom( const WgSurfacePtr& pSrcSurf, WgCoord dst );	///< @brief Copy other surface as a block
+	virtual bool		copyFrom( const WgSurface_p& pSrcSurf, const WgRect& srcRect, WgCoord dst );	///< @brief Copy block of graphics from other surface
+	virtual bool		copyFrom( const WgSurface_p& pSrcSurf, WgCoord dst );	///< @brief Copy other surface as a block
 
 protected:
 	WgSurface();

@@ -28,18 +28,18 @@
 
 
 class WgUniformSizeBroker;
-typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBrokerPtr>		WgUniformSizeBrokerPtr;
-typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBrokerWeakPtr>	WgUniformSizeBrokerWeakPtr;
+typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBroker_p>		WgUniformSizeBroker_p;
+typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBroker_wp>	WgUniformSizeBroker_wp;
 
 class WgUniformSizeBroker : public WgSizeBroker
 {
 public:
-	static WgUniformSizeBrokerPtr	create() { return WgUniformSizeBrokerPtr(new WgUniformSizeBroker()); }
+	static WgUniformSizeBroker_p	create() { return WgUniformSizeBroker_p(new WgUniformSizeBroker()); }
 
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgUniformSizeBrokerPtr	cast( const WgObjectPtr& pObject );
+	static WgUniformSizeBroker_p	cast( const WgObject_p& pObject );
     
 	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
 	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;

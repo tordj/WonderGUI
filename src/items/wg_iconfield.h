@@ -57,7 +57,7 @@ public:
 	virtual ~WgIconField() {};
 
 
-	bool			set( const WgSkinPtr& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
+	bool			set( const WgSkin_p& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
 								float _scale = 0.f, bool _bOverlap = false );
 	void			clear();
 
@@ -67,13 +67,13 @@ public:
 	void			setOrigo( WgOrigo origo );
 	void			setPadding( WgBorder borders );
 	void			setOverlap( bool bOverlap );
-	void			setSkin( const WgSkinPtr& pSkin );
+	void			setSkin( const WgSkin_p& pSkin );
 
 	float			scale() const { return m_scale; }
 	WgOrigo			origo() const { return m_origo; }
 	WgBorder		padding() const { return m_padding; }
 	bool			overlap() const { return m_bOverlap; }
-	WgSkinPtr		skin() const { return  m_pSkin; }
+	WgSkin_p		skin() const { return  m_pSkin; }
 
 
 	WgRect			getIconRect( const WgRect& contentRect ) const;
@@ -88,7 +88,7 @@ protected:
 	float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 	bool			m_bOverlap;
 	WgBorder		m_padding;
-	WgSkinPtr		m_pSkin;
+	WgSkin_p		m_pSkin;
 
 };
 

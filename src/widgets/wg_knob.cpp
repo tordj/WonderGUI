@@ -58,10 +58,10 @@ const char * WgKnob::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgKnobPtr WgKnob::cast( const WgObjectPtr& pObject )
+WgKnob_p WgKnob::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgKnobPtr( static_cast<WgKnob*>(pObject.rawPtr()) );
+		return WgKnob_p( static_cast<WgKnob*>(pObject.rawPtr()) );
 
 	return 0;
 }

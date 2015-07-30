@@ -38,8 +38,8 @@
 class WgHook;
 
 class WgIWidgets;
-typedef	WgIStrongPtr<WgIWidgets,WgInterfacePtr>		WgIWidgetsPtr;
-typedef	WgIWeakPtr<WgIWidgets,WgInterfaceWeakPtr>	WgIWidgetsWeakPtr;
+typedef	WgIStrongPtr<WgIWidgets,WgInterface_p>		WgIWidgets_p;
+typedef	WgIWeakPtr<WgIWidgets,WgInterface_wp>	WgIWidgets_wp;
 
 class WgIWidgets : public WgInterface
 {
@@ -48,10 +48,10 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgIWidgetsPtr	cast( const WgInterfacePtr& pInterface );
+	static WgIWidgets_p	cast( const WgInterface_p& pInterface );
 
-	inline WgWidgetPtr	firstWidget() const { return WgWidgetPtr(_firstWidget()); }
-	inline WgWidgetPtr	lastWidget() const { return WgWidgetPtr(_lastWidget()); }
+	inline WgWidget_p	firstWidget() const { return WgWidget_p(_firstWidget()); }
+	inline WgWidget_p	lastWidget() const { return WgWidget_p(_lastWidget()); }
 
 protected:
 

@@ -33,7 +33,7 @@ const char WgBitmapGlyphs::CLASSNAME[] = {"BitmapGlyphs"};
 
 //____ Constructor ____________________________________________________________
 
-WgBitmapGlyphs::WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile )
+WgBitmapGlyphs::WgBitmapGlyphs( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile )
 {
 	m_nKerningGlyphs= 0;
 	m_pKerningTable = 0;
@@ -110,10 +110,10 @@ const char * WgBitmapGlyphs::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgBitmapGlyphsPtr WgBitmapGlyphs::cast( const WgObjectPtr& pObject )
+WgBitmapGlyphs_p WgBitmapGlyphs::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgBitmapGlyphsPtr( static_cast<WgBitmapGlyphs*>(pObject.rawPtr()) );
+		return WgBitmapGlyphs_p( static_cast<WgBitmapGlyphs*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -183,7 +183,7 @@ inline bool WgBitmapGlyphs::hasGlyph( Uint16 chr )
 
 //____ getGlyph() _________________________________________________________
 
-inline WgGlyphPtr WgBitmapGlyphs::getGlyph( Uint16 chr, int size )
+inline WgGlyph_p WgBitmapGlyphs::getGlyph( Uint16 chr, int size )
 {
 	Glyph * pGlyph = m_glyphTab[chr >> 8];
 
@@ -201,7 +201,7 @@ inline WgGlyphPtr WgBitmapGlyphs::getGlyph( Uint16 chr, int size )
 //____ getKerning() _________________________________________________________
 
 
-inline int WgBitmapGlyphs::getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size )
+inline int WgBitmapGlyphs::getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size )
 {
 	if( !m_pKerningTable )
 		return 0;
@@ -221,7 +221,7 @@ inline int WgBitmapGlyphs::getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightG
 
 //____ insertGlyphs() _________________________________________________________
 
-void WgBitmapGlyphs::insertGlyphs( const WgSurfacePtr& pSurf, char* pGlyphSpec, bool binaryFile )
+void WgBitmapGlyphs::insertGlyphs( const WgSurface_p& pSurf, char* pGlyphSpec, bool binaryFile )
 {
 	// Multiply average spacing by glyph count so that we can continue to add widths..
 	m_avgSpacing *= m_nGlyphs;
@@ -592,7 +592,7 @@ WgBitmapGlyphs::Glyph::Glyph()
 	m_src.pSurface = 0;
 }
 
-WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurfacePtr& pSurf, const WgRect& rect )
+WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurface_p& pSurf, const WgRect& rect )
 : WgGlyph( advance, kerningIndex, pGlyphset )
 {
 		m_src.pSurface	= pSurf;

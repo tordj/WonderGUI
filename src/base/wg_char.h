@@ -82,7 +82,7 @@ public:
 
 	/// Initializes a character to contain the glyph and properties as specified.
 
-	WgChar( Uint16 _glyph, const WgTextpropPtr& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
+	WgChar( Uint16 _glyph, const WgTextprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
 	~WgChar() { if( properties ) WgTextpropManager::decRef(properties,1); };
 
 	inline WgChar & operator=(const WgChar &ref)
@@ -116,7 +116,7 @@ public:
 
 							/// Sets the properties of the character.
 
-	inline void				setProperties( const WgTextpropPtr& pProperties ) { if(properties) WgTextpropManager::decRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
+	inline void				setProperties( const WgTextprop_p& pProperties ) { if(properties) WgTextpropManager::decRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
 
 							/// Gets the characters properties as a handle.
 							///
@@ -135,7 +135,7 @@ public:
 							/// @return Read-only pointer to a WgTextprop specifying the properties of the character. A valid pointer
 							/// is always returned, if the character has no properties set a pointer to an empty default WgTextprop is returned.
 
-	inline WgTextpropPtr	getProperties() const { return WgTextpropPtr(properties); }
+	inline WgTextprop_p	getProperties() const { return WgTextprop_p(properties); }
 
 							/// Checks if the character is set to be underlined in the given state.
 
@@ -189,16 +189,16 @@ public:
 							///
 							/// @return Pointer to the WgTextLink this character is part of or NULL if none.
 
-	inline WgTextLinkPtr	link() const { return getPropRef().link(); }
+	inline WgTextLink_p	link() const { return getPropRef().link(); }
 
 							/// Returns the characters specified font (if any).
 							///
 							/// @return Pointer to the font specified for this character or NULL if none.
 
-	inline WgFontPtr		font() const { return getPropRef().font(); }
+	inline WgFont_p		font() const { return getPropRef().font(); }
 
 
-//	inline WgGlyphset *		glyphset( const WgTextpropPtr& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
+//	inline WgGlyphset *		glyphset( const WgTextprop_p& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
 
 							/// Returns the characters font size for the given state.
 							///

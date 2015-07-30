@@ -28,20 +28,20 @@
 
 
 class WgMsgLogger;
-typedef	WgStrongPtr<WgMsgLogger,WgReceiverPtr>		WgMsgLoggerPtr;
-typedef	WgWeakPtr<WgMsgLogger,WgReceiverWeakPtr>		WgMsgLoggerWeakPtr;
+typedef	WgStrongPtr<WgMsgLogger,WgReceiver_p>		WgMsgLogger_p;
+typedef	WgWeakPtr<WgMsgLogger,WgReceiver_wp>		WgMsgLogger_wp;
 
 class WgMsgLogger : public WgReceiver
 {
 public:
-	static WgMsgLoggerPtr		create( std::ostream& stream ) { return WgMsgLoggerPtr( new WgMsgLogger(stream)); }
+	static WgMsgLogger_p		create( std::ostream& stream ) { return WgMsgLogger_p( new WgMsgLogger(stream)); }
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgMsgLoggerPtr		cast( const WgObjectPtr& pObject );
+	static WgMsgLogger_p		cast( const WgObject_p& pObject );
 
-	void onMsg( const WgMsgPtr& _pMsg );
+	void onMsg( const WgMsg_p& _pMsg );
 
 	void ignoreMsg( WgMsgType msg );
 	void logMsg( WgMsgType msg );
@@ -74,11 +74,11 @@ private:
 	void	_onRouteRemoved();
 
 	std::string	_formatTimestamp( int64_t ms ) const;
-	std::string _formatSource( const WgMsgPtr& _pMsg ) const;
-	std::string _formatCopyTo( const WgMsgPtr& _pMsg ) const;
-	std::string _formatModkeys( const WgMsgPtr& _pMsg ) const;
-	std::string _formatPointerPos( const WgMsgPtr& _pMsg ) const;
-	std::string _formatPointerStyle( const WgPointerChangeMsgPtr& _pMsg ) const;
+	std::string _formatSource( const WgMsg_p& _pMsg ) const;
+	std::string _formatCopyTo( const WgMsg_p& _pMsg ) const;
+	std::string _formatModkeys( const WgMsg_p& _pMsg ) const;
+	std::string _formatPointerPos( const WgMsg_p& _pMsg ) const;
+	std::string _formatPointerStyle( const WgPointerChangeMsg_p& _pMsg ) const;
 	std::string _formatMouseButton( WgMouseButton button ) const;
 
 	bool			m_msgFilter[WG_MSG_MAX];

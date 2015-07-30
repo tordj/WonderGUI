@@ -37,7 +37,7 @@ WgTextprop::WgTextprop()
 	clearAll();
 }
 
-WgTextprop::WgTextprop( const WgTextpropPtr& pProp )
+WgTextprop::WgTextprop( const WgTextprop_p& pProp )
 {
 	m_pLink				= pProp->m_pLink;
 	m_pFont				= pProp->m_pFont;
@@ -59,9 +59,9 @@ WgTextprop::WgTextprop( const WgTextpropPtr& pProp )
 
 //____ reg() _____________________________________________________________
 
-WgTextpropPtr WgTextprop::reg() const
+WgTextprop_p WgTextprop::reg() const
 {
-	return	WgTextpropPtr(WgTextpropManager::registerProp(*this));
+	return	WgTextprop_p(WgTextpropManager::registerProp(*this));
 }
 
 //____ clearAll() _____________________________________________________________
@@ -320,7 +320,7 @@ bool WgTextprop::isUnderlineStatic() const
 
 //____ compareColorTo() ________________________________________________________
 
-bool WgTextprop::compareColorTo( const WgTextpropPtr& pProp ) const
+bool WgTextprop::compareColorTo( const WgTextprop_p& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_STATES ; i++ )
 		if( m_stateProp[i].m_bColored != pProp->m_stateProp[i].m_bColored || m_stateProp[i].m_color != pProp->m_stateProp[i].m_color )
@@ -331,7 +331,7 @@ bool WgTextprop::compareColorTo( const WgTextpropPtr& pProp ) const
 
 //____ compareBgColorTo() ______________________________________________________
 
-bool WgTextprop::compareBgColorTo( const WgTextpropPtr& pProp ) const
+bool WgTextprop::compareBgColorTo( const WgTextprop_p& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_STATES ; i++ )
 		if( m_stateProp[i].m_bBgColor != pProp->m_stateProp[i].m_bBgColor || m_stateProp[i].m_bgColor != pProp->m_stateProp[i].m_bgColor )
@@ -343,7 +343,7 @@ bool WgTextprop::compareBgColorTo( const WgTextpropPtr& pProp ) const
 
 //____ compareStyleTo() ________________________________________________________
 
-bool WgTextprop::compareStyleTo( const WgTextpropPtr& pProp ) const
+bool WgTextprop::compareStyleTo( const WgTextprop_p& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_STATES ; i++ )
 		if( m_stateProp[i].m_style != pProp->m_stateProp[i].m_style )
@@ -354,7 +354,7 @@ bool WgTextprop::compareStyleTo( const WgTextpropPtr& pProp ) const
 
 //____ compareSizeTo() _________________________________________________________
 
-bool WgTextprop::compareSizeTo( const WgTextpropPtr& pProp ) const
+bool WgTextprop::compareSizeTo( const WgTextprop_p& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_STATES ; i++ )
 		if( m_stateProp[i].m_size != pProp->m_stateProp[i].m_size )
@@ -365,7 +365,7 @@ bool WgTextprop::compareSizeTo( const WgTextpropPtr& pProp ) const
 
 
 //____ compareUnderlineTo() ____________________________________________________
-bool WgTextprop::compareUnderlineTo( const WgTextpropPtr& pProp ) const
+bool WgTextprop::compareUnderlineTo( const WgTextprop_p& pProp ) const
 {
 	for( int i = 1 ; i < WG_NB_STATES ; i++ )
 		if( m_stateProp[i].m_bUnderlined != pProp->m_stateProp[i].m_bUnderlined )
@@ -383,8 +383,8 @@ Uint8 WgTextprop::_calculateChecksum() const
 
 	chk.add8( m_visibilityFlags );
 	chk.add8( m_breakLevel );
-	chk.add( &m_pLink, sizeof(WgTextLinkPtr) );
-	chk.add( &m_pFont, sizeof(WgFontPtr) );
+	chk.add( &m_pLink, sizeof(WgTextLink_p) );
+	chk.add( &m_pFont, sizeof(WgFont_p) );
 
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
@@ -477,12 +477,12 @@ bool WgTextprop::charVisibility( Uint16 specialCharacter ) const
 }
 
 //=============================================================================
-//							>>> WgTextpropPtr <<<
+//							>>> WgTextprop_p <<<
 //=============================================================================
 
 //____ Constructor ____________________________________________________________
 
-WgTextpropPtr::WgTextpropPtr( WgTextpropHolder * pProp )
+WgTextprop_p::WgTextprop_p( WgTextpropHolder * pProp )
 {
 	if( pProp )
 		m_hProp = pProp->m_id;
@@ -492,14 +492,14 @@ WgTextpropPtr::WgTextpropPtr( WgTextpropHolder * pProp )
 	WgTextpropManager::incRef(m_hProp, 1);
 }
 
-WgTextpropPtr::WgTextpropPtr( Uint16 hProp )
+WgTextprop_p::WgTextprop_p( Uint16 hProp )
 {
 	m_hProp = hProp;
 	WgTextpropManager::incRef(m_hProp);
 }
 
 
-WgTextpropPtr::WgTextpropPtr(const WgTextpropPtr& r)
+WgTextprop_p::WgTextprop_p(const WgTextprop_p& r)
 {
 	m_hProp = r.m_hProp;
 	WgTextpropManager::incRef(m_hProp);
@@ -508,7 +508,7 @@ WgTextpropPtr::WgTextpropPtr(const WgTextpropPtr& r)
 
 //____ Destructor _____________________________________________________________
 
-WgTextpropPtr::~WgTextpropPtr()
+WgTextprop_p::~WgTextprop_p()
 {
 	WgTextpropManager::decRef(m_hProp, 1);
 }
@@ -516,7 +516,7 @@ WgTextpropPtr::~WgTextpropPtr()
 
 //____ operator= ______________________________________________________________
 
-WgTextpropPtr& WgTextpropPtr::operator=(const WgTextpropPtr& ref)
+WgTextprop_p& WgTextprop_p::operator=(const WgTextprop_p& ref)
 {
 	if(m_hProp != ref.m_hProp)
 	{
@@ -527,7 +527,7 @@ WgTextpropPtr& WgTextpropPtr::operator=(const WgTextpropPtr& ref)
 	return *this;
 }
 
-WgTextpropPtr& WgTextpropPtr::operator=(int handle)
+WgTextprop_p& WgTextprop_p::operator=(int handle)
 {
 	if(m_hProp != handle)
 	{
@@ -540,14 +540,14 @@ WgTextpropPtr& WgTextpropPtr::operator=(int handle)
 
 //____ operator* ______________________________________________________________
 
-const WgTextprop & WgTextpropPtr::operator*() const
+const WgTextprop & WgTextprop_p::operator*() const
 {
 	return WgTextpropManager::getProp(m_hProp);
 }
 
 //____ operator-> _____________________________________________________________
 
-const WgTextprop * WgTextpropPtr::operator->() const
+const WgTextprop * WgTextprop_p::operator->() const
 {
 	return WgTextpropManager::getPropPtr(m_hProp);
 }

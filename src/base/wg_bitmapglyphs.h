@@ -36,31 +36,31 @@
 #endif
 
 class WgBitmapGlyphs;
-typedef	WgStrongPtr<WgBitmapGlyphs,WgGlyphsetPtr>		WgBitmapGlyphsPtr;
-typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphsetWeakPtr>		WgBitmapGlyphsWeakPtr;
+typedef	WgStrongPtr<WgBitmapGlyphs,WgGlyphset_p>		WgBitmapGlyphs_p;
+typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphset_wp>		WgBitmapGlyphs_wp;
 
 //____ WgBitmapGlyphs _____________________________________________________________
 
 class WgBitmapGlyphs : public WgGlyphset
 {
 public:
-	static WgBitmapGlyphsPtr	create( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphsPtr(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
+	static WgBitmapGlyphs_p	create( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphs_p(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
 
 	bool						isInstanceOf( const char * pClassName ) const;
 	const char *				className( void ) const;
 	static const char			CLASSNAME[];
-	static WgBitmapGlyphsPtr	cast( const WgObjectPtr& pObject );
+	static WgBitmapGlyphs_p	cast( const WgObject_p& pObject );
 
 
 	inline Type	getType() const { return BITMAP; }
 
-	void					insertGlyphs( const WgSurfacePtr& pSurf, char* pGlyphSpec, bool binaryFile=false );
+	void					insertGlyphs( const WgSurface_p& pSurf, char* pGlyphSpec, bool binaryFile=false );
 	void					copyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
 
 
-	WgGlyphPtr				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
+	WgGlyph_p				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
 	bool					hasGlyph( Uint16 chr );
-	int						getKerning( WgGlyphPtr pLeftGlyph, WgGlyphPtr pRightGlyph, int size );
+	int						getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size );
 
 	inline int				getHeight( int size ) { return m_height; }
 	inline int				getLineSpacing( int size ) { return m_height; }
@@ -72,14 +72,14 @@ public:
 	inline int				getMaxGlyphAdvance( int size ) { return m_maxSpacing; }
 
 protected:
-	WgBitmapGlyphs( const WgSurfacePtr& pSurf, char * pGlyphSpec, bool binaryFile=false );
+	WgBitmapGlyphs( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile=false );
 	~WgBitmapGlyphs();
 
 	class Glyph : public WgGlyph
 	{
 	public:
 		Glyph();
-		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurfacePtr& pSurf, const WgRect& rect );
+		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurface_p& pSurf, const WgRect& rect );
 
 		const WgGlyphBitmap * getBitmap() { return &m_src; }
 

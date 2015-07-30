@@ -38,18 +38,18 @@
 class WgMenuItem;
 
 class WgCombobox;
-typedef	WgStrongPtr<WgCombobox,WgWidgetPtr>		WgComboboxPtr;
-typedef	WgWeakPtr<WgCombobox,WgWidgetWeakPtr>	WgComboboxWeakPtr;
+typedef	WgStrongPtr<WgCombobox,WgWidget_p>		WgCombobox_p;
+typedef	WgWeakPtr<WgCombobox,WgWidget_wp>	WgCombobox_wp;
 
 class WgCombobox : public WgWidget, protected WgLegacyTextHolder
 {
 public:
-	static WgComboboxPtr	create() { return WgComboboxPtr(new WgCombobox()); }
+	static WgCombobox_p	create() { return WgCombobox_p(new WgCombobox()); }
 
 	bool					isInstanceOf( const char * pClassName ) const;
 	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgComboboxPtr	cast( const WgObjectPtr& pObject );
+	static WgCombobox_p	cast( const WgObject_p& pObject );
 
 	//____ Interfaces ______________________________________
 
@@ -57,8 +57,8 @@ public:
 
 	//____ Methods _________________________________________
 
-	void			SetMenu( const WgMenuPtr& pMenu );
-	WgMenuPtr		Menu( ) const;
+	void			SetMenu( const WgMenu_p& pMenu );
+	WgMenu_p		Menu( ) const;
 
 	WgMenuItem*		SelectedItem() const { return m_pSelectedItem; }
 
@@ -96,10 +96,10 @@ protected:
 	void	_onCloneContent( const WgWidget * _pOrg );
 	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
 	void	_onRefresh();
-	void	_onMsg( const WgMsgPtr& pMsg );
+	void	_onMsg( const WgMsg_p& pMsg );
 	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
 	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkinPtr& pOldSkin, const WgSkinPtr& pNewSkin );
+	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
 
 private:
 	bool	_isEditable() const { return m_text.isEditable(); }
@@ -113,12 +113,12 @@ private:
 	void	_closeMenu();
 
 	void	_entrySelected(int itemId);
-	static void cbEntrySelected( const WgMsgPtr& pMsg, const WgObjectPtr& pWdg) { WgCombobox::cast(pWdg)->_entrySelected(WgItemsSelectMsg::cast(pMsg)->items()->id); }
+	static void cbEntrySelected( const WgMsg_p& pMsg, const WgObject_p& pWdg) { WgCombobox::cast(pWdg)->_entrySelected(WgItemsSelectMsg::cast(pMsg)->items()->id); }
 
 	WgString		m_textFormat;
 	WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 
-	WgMenuPtr		m_pMenu;
+	WgMenu_p		m_pMenu;
 	WgMenuItem*		m_pSelectedItem;
 	WgLegacyTextField		m_text;
 	bool			m_bResetCursorOnFocus;

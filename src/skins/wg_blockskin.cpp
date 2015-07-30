@@ -31,32 +31,32 @@ const char WgBlockSkin::CLASSNAME[] = {"BlockSkin"};
 
 //____ create() _______________________________________________________________
 
-WgBlockSkinPtr WgBlockSkin::create()
+WgBlockSkin_p WgBlockSkin::create()
 {
-	return WgBlockSkinPtr(new WgBlockSkin());
+	return WgBlockSkin_p(new WgBlockSkin());
 }
 
 
-WgBlockSkinPtr WgBlockSkin::createStatic( const WgSurfacePtr& pSurface, WgRect block, WgBorder frame )
+WgBlockSkin_p WgBlockSkin::createStatic( const WgSurface_p& pSurface, WgRect block, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
 	pSkin->setBlockGeo( block.size(), frame );
 	pSkin->setAllBlocks( block.pos() );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createEnable( const WgSurfacePtr& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame )
+WgBlockSkin_p WgBlockSkin::createEnable( const WgSurface_p& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
 	pSkin->setBlockGeo( blockSize, frame );
 	pSkin->setAllBlocks( ofsEnabled );
 	pSkin->setDisabledBlock( ofsDisabled );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createClickable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createClickable( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
@@ -71,10 +71,10 @@ WgBlockSkinPtr WgBlockSkin::createClickable( const WgSurfacePtr& pSurface, WgSiz
 	pSkin->setPressedBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 	pSkin->setDisabledBlock( blockOfs );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createSelectable( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
@@ -87,10 +87,10 @@ WgBlockSkinPtr WgBlockSkin::createSelectable( const WgSurfacePtr& pSurface, WgSi
 	pSkin->setSelectedBlocks( blockOfs );
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 	pSkin->setDisabledBlock( blockOfs );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createClickSelectable( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createClickSelectable( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
@@ -119,12 +119,12 @@ WgBlockSkinPtr WgBlockSkin::createClickSelectable( const WgSurfacePtr& pSurface,
 	blockOfs += WgCoord(blockPitch.w,blockPitch.h);
 
 	pSkin->setStateBlock( WG_STATE_DISABLED, blockOfs );			// Disabled
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
 /** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
 */
-WgBlockSkinPtr WgBlockSkin::createClickSelectableWidget( const WgSurfacePtr& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createClickSelectableWidget( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
@@ -161,22 +161,22 @@ WgBlockSkinPtr WgBlockSkin::createClickSelectableWidget( const WgSurfacePtr& pSu
 
 	pSkin->setStateBlock( WG_STATE_DISABLED_SELECTED, blockOfs );
 
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
 
 
 
-WgBlockSkinPtr WgBlockSkin::createStaticFromSurface( const WgSurfacePtr& pSurface, WgBorder frame )
+WgBlockSkin_p WgBlockSkin::createStaticFromSurface( const WgSurface_p& pSurface, WgBorder frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
 	pSkin->setBlockGeo( pSurface->size(), frame );
 	pSkin->setAllBlocks( WgCoord(0,0) );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createEnableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createEnableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->setSurface( pSurface );
@@ -186,22 +186,22 @@ WgBlockSkinPtr WgBlockSkin::createEnableFromSurface( const WgSurfacePtr& pSurfac
 	pSkin->setBlockGeo( sz, blockFrame );
 	pSkin->setAllBlocks( WgCoord(0,0) );
 	pSkin->setDisabledBlock( WgCoord(sz.w+blockSpacing,0) );
-	return WgBlockSkinPtr(pSkin);
+	return WgBlockSkin_p(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::createClickableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createClickableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize = WgSize( (pSurface->width()-blockSpacing*3)/4, pSurface->height() );
 	return createClickable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::createSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createSelectableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize( (pSurface->width()-blockSpacing*2)/3, pSurface->height() );
 	return createSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::createClickSelectableFromSurface( const WgSurfacePtr& pSurface, int blockSpacing, WgBorder blockFrame )
+WgBlockSkin_p WgBlockSkin::createClickSelectableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame )
 {
 	WgSize	blockSize( (pSurface->width()-blockSpacing*4)/5, pSurface->height() );
 	return createClickSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
@@ -242,10 +242,10 @@ const char * WgBlockSkin::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgBlockSkinPtr WgBlockSkin::cast( const WgObjectPtr& pObject )
+WgBlockSkin_p WgBlockSkin::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgBlockSkinPtr( static_cast<WgBlockSkin*>(pObject.rawPtr()) );
+		return WgBlockSkin_p( static_cast<WgBlockSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -265,7 +265,7 @@ bool WgBlockSkin::setBlockGeo( WgSize size, WgBorder frame )
 
 //____ setSurface() ______________________________________________________
 
-void WgBlockSkin::setSurface( const WgSurfacePtr& pSurf )
+void WgBlockSkin::setSurface( const WgSurface_p& pSurf )
 {
 	m_pSurface = pSurf;
 	if( m_pSurface )

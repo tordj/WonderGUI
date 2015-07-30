@@ -55,13 +55,13 @@ public:
 	WgPresentableField( WgPresentableHolder * pHolder );
 	virtual ~WgPresentableField();
 
-	virtual void		setStyle( const WgTextStylePtr& pStyle );
+	virtual void		setStyle( const WgTextStyle_p& pStyle );
 	virtual void		clearStyle();
-	WgTextStylePtr		style() const { return m_pStyle; }
+	WgTextStyle_p		style() const { return m_pStyle; }
 
-	virtual void		setPresenter( const WgTextPresenterPtr& pPresenter );
+	virtual void		setPresenter( const WgTextPresenter_p& pPresenter );
 	virtual void		clearPresenter();
-	WgTextPresenterPtr	presenter() const { return m_pPresenter; }
+	WgTextPresenter_p	presenter() const { return m_pPresenter; }
 
 	virtual void		setState( WgState state );
 	inline WgState		state() const { return m_state; }
@@ -102,9 +102,9 @@ protected:
 	};
 
 	WgState					m_state;
-	WgTextStylePtr			m_pStyle;
+	WgTextStyle_p			m_pStyle;
 	WgCharBuffer			m_charBuffer;
-	WgTextPresenterPtr		m_pPresenter;
+	WgTextPresenter_p		m_pPresenter;
 
 };
 

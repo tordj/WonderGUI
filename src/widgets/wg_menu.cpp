@@ -101,17 +101,17 @@ const char * WgMenu::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgMenuPtr WgMenu::cast( const WgObjectPtr& pObject )
+WgMenu_p WgMenu::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgMenuPtr( static_cast<WgMenu*>(pObject.rawPtr()) );
+		return WgMenu_p( static_cast<WgMenu*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ setSkin() __________________________________________________________
 
-bool WgMenu::setSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowFieldWidth )
+bool WgMenu::setSkin( const WgSkin_p& pSkin, int iconFieldWidth, int arrowFieldWidth )
 {
 	m_pSkin			= pSkin;
 
@@ -126,7 +126,7 @@ bool WgMenu::setSkin( const WgSkinPtr& pSkin, int iconFieldWidth, int arrowField
 
 //____ setEntrySkin() _________________________________________________________
 
-void WgMenu::setEntrySkin( const WgSkinPtr& pSkin )
+void WgMenu::setEntrySkin( const WgSkin_p& pSkin )
 {
 	if( pSkin != m_pEntrySkin )
 	{
@@ -140,7 +140,7 @@ void WgMenu::setEntrySkin( const WgSkinPtr& pSkin )
 
 //____ SetSeparatorSkin() ___________________________________________________
 
-bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& borders )
+bool WgMenu::SetSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& borders )
 {
 	m_pSeparatorSkin	= pSkin;
 	m_sepBorder		= borders;
@@ -157,7 +157,7 @@ bool WgMenu::SetSeparatorSkin( const WgSkinPtr& pSkin, const WgBorder& borders )
 
 //____ SetArrowSource() _______________________________________________________
 
-bool WgMenu::SetArrowSource( const WgGfxAnimPtr& pAnim )
+bool WgMenu::SetArrowSource( const WgGfxAnim_p& pAnim )
 {
 	if( !pAnim )
 		return false;
@@ -171,7 +171,7 @@ bool WgMenu::SetArrowSource( const WgGfxAnimPtr& pAnim )
 
 //____ SetTextProperties() _____________________________________________________
 
-bool WgMenu::SetTextProperties( const WgTextpropPtr& pEntryProp, const WgTextpropPtr& pKeyAccelProp )
+bool WgMenu::SetTextProperties( const WgTextprop_p& pEntryProp, const WgTextprop_p& pKeyAccelProp )
 {
 	m_pEntryProp 	= pEntryProp;
 	m_pKeyAccelProp = pKeyAccelProp;
@@ -236,7 +236,7 @@ void WgMenu::_refreshEntryHeight()
 
 //____ SetScrollbarSkin() ______________________________________________________
 
-bool WgMenu::SetScrollbarSkins(  const WgSkinPtr& pBackgroundSkin, const WgSkinPtr& pHandleSkin, const WgSkinPtr& pBwdButtonSkin, const WgSkinPtr& pFwdButtonSkin )
+bool WgMenu::SetScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
 {
 	m_pScrollbarBgSkin		= pBackgroundSkin;
 	m_pScrollbarHandleSkin	= pHandleSkin;
@@ -267,7 +267,7 @@ bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout )
 
 //____ SetCheckBoxSkin() ____________________________________________________
 
-bool WgMenu::SetCheckBoxSkin( const WgSkinPtr& pSkin )
+bool WgMenu::SetCheckBoxSkin( const WgSkin_p& pSkin )
 {
 	m_pCheckBoxSkin		= pSkin;
 
@@ -277,7 +277,7 @@ bool WgMenu::SetCheckBoxSkin( const WgSkinPtr& pSkin )
 
 //____ SetRadioButtonSkin() _________________________________________________
 
-bool WgMenu::SetRadioButtonSkin( const WgSkinPtr& pSkin )
+bool WgMenu::SetRadioButtonSkin( const WgSkin_p& pSkin )
 {
 	m_pRadioButtonSkin			= pSkin;
 
@@ -701,7 +701,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 				{
 					case ENTRY:
 					{
-						WgSkinPtr pIcon = ((WgMenuEntry*)pItem)->getIcon();
+						WgSkin_p pIcon = ((WgMenuEntry*)pItem)->getIcon();
 						if( pIcon )
 						{
 							WgSize sz = pIcon->preferredSize();
@@ -776,7 +776,7 @@ void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRec
 
 //____ _onMsg() _____________________________________________________________
 
-void WgMenu::_onMsg( const WgMsgPtr& pMsg )
+void WgMenu::_onMsg( const WgMsg_p& pMsg )
 {
 	WgPanel::_onMsg(pMsg);
 	
@@ -790,7 +790,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 		{
 			if( m_selectorCountdown > 0 )
 			{
-				WgTickMsgPtr pTick = WgTickMsg::cast(pMsg);
+				WgTickMsg_p pTick = WgTickMsg::cast(pMsg);
 
 				m_selectorCountdown -= pTick->millisec();
 				if( m_selectorCountdown < 0 )
@@ -870,7 +870,7 @@ void WgMenu::_onMsg( const WgMsgPtr& pMsg )
 
 		case WG_MSG_WHEEL_ROLL:
 		{
-			WgWheelRollMsgPtr pEv = WgWheelRollMsg::cast(pMsg);
+			WgWheelRollMsg_p pEv = WgWheelRollMsg::cast(pMsg);
 
 			if( pEv->wheel() == 1 )
 			{
@@ -1105,12 +1105,12 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 			if( pCheckBox->isChecked() )
 			{
 				pCheckBox->uncheck();
-				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),true));
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),true));
 			}
 			else
 			{
 				pCheckBox->check();
-				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),false));
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),false));
 			}
 
 			_itemSelected();
@@ -1118,10 +1118,10 @@ void WgMenu::SelectItem(WgMenuItem* pItem)
 		break;
 		case RADIOBUTTON:
 			if( m_pSelectedItem )
-				WgBase::msgRouter()->post( new WgItemToggleMsg(this,m_pSelectedItem->getId(),WgObjectPtr(),false));
+				WgBase::msgRouter()->post( new WgItemToggleMsg(this,m_pSelectedItem->getId(),WgObject_p(),false));
 			m_pSelectedItem = pItem;
 			((WgMenuRadioButton*)pItem)->select();
-			WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObjectPtr(),true));
+			WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),true));
 			_itemSelected();
 		break;
 
@@ -1145,7 +1145,7 @@ WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
 
 void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 {
-	WgWidgetPtr pMenu = pItem->getSubMenu();
+	WgWidget_p pMenu = pItem->getSubMenu();
 
 	if( !pMenu )
 		return;
@@ -1192,7 +1192,7 @@ void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
 void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
 {
 	WgPopupLayer * pLayer = 0;
-	WgWidgetPtr pMenu = pItem->getSubMenu();
+	WgWidget_p pMenu = pItem->getSubMenu();
 
 	if( parent() )
 		pLayer = parent()->_getPopupLayer();

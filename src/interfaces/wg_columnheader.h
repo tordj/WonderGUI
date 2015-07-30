@@ -52,8 +52,8 @@
 #endif
 
 class WgColumnHeader;
-typedef	WgIStrongPtr<WgColumnHeader,WgInterfacePtr>		WgColumnHeaderPtr;
-typedef	WgIWeakPtr<WgColumnHeader,WgInterfaceWeakPtr>	WgColumnHeaderWeakPtr;
+typedef	WgIStrongPtr<WgColumnHeader,WgInterface_p>		WgColumnHeader_p;
+typedef	WgIWeakPtr<WgColumnHeader,WgInterface_wp>	WgColumnHeader_wp;
 
 class WgColumnHeader : public WgInterface
 {
@@ -63,8 +63,8 @@ public:
 	virtual bool				isInstanceOf( const char * pClassName ) const;
 	virtual const char *		className( void ) const;
 	static const char			CLASSNAME[];
-	static WgColumnHeaderPtr	cast( const WgInterfacePtr& pInterface );
-	inline WgColumnHeaderPtr	ptr() { return WgColumnHeaderPtr(_object(),this); }
+	static WgColumnHeader_p	cast( const WgInterface_p& pInterface );
+	inline WgColumnHeader_p	ptr() { return WgColumnHeader_p(_object(),this); }
 
 	//____ Interfaces ______________________________________
 
@@ -74,8 +74,8 @@ public:
 
 	//____ Methods _________________________________________
 
-	inline void			setSkin( const WgSkinPtr& pSkin ) { m_pField->setSkin(pSkin); }
-	inline WgSkinPtr	skin() const { return m_pField->skin(); }
+	inline void			setSkin( const WgSkin_p& pSkin ) { m_pField->setSkin(pSkin); }
+	inline WgSkin_p	skin() const { return m_pField->skin(); }
 
 
 protected:

@@ -59,10 +59,10 @@ const char * WgCaret2::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgCaret2Ptr WgCaret2::cast( const WgObjectPtr& pObject )
+WgCaret2_p WgCaret2::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgCaret2Ptr( static_cast<WgCaret2*>(pObject.rawPtr()) );
+		return WgCaret2_p( static_cast<WgCaret2*>(pObject.rawPtr()) );
 
 	return 0;
 }

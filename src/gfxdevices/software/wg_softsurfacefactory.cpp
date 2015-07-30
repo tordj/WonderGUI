@@ -46,17 +46,17 @@ const char * WgSoftSurfaceFactory::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSoftSurfaceFactoryPtr WgSoftSurfaceFactory::cast( const WgObjectPtr& pObject )
+WgSoftSurfaceFactory_p WgSoftSurfaceFactory::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSoftSurfaceFactoryPtr( static_cast<WgSoftSurfaceFactory*>(pObject.rawPtr()) );
+		return WgSoftSurfaceFactory_p( static_cast<WgSoftSurfaceFactory*>(pObject.rawPtr()) );
 
 	return 0;
 }
 
 //____ WgSoftSurfaceFactory::createSurface() ___________________________________
 
-WgSurfacePtr WgSoftSurfaceFactory::createSurface( const WgSize& size, WgPixelType type ) const
+WgSurface_p WgSoftSurfaceFactory::createSurface( const WgSize& size, WgPixelType type ) const
 {
 	return new WgSoftSurface( size, type );
 }

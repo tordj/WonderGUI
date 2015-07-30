@@ -72,10 +72,10 @@ const char * WgStackHook::className( void ) const
 
 //____ WgStackHook::cast() __________________________________________________
 
-WgStackHookPtr WgStackHook::cast( const WgHookPtr& pHook )
+WgStackHook_p WgStackHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgStackHookPtr( static_cast<WgStackHook*>(pHook.rawPtr()) );
+		return WgStackHook_p( static_cast<WgStackHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -176,10 +176,10 @@ const char * WgStackPanel::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgStackPanelPtr WgStackPanel::cast( const WgObjectPtr& pObject )
+WgStackPanel_p WgStackPanel::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgStackPanelPtr( static_cast<WgStackPanel*>(pObject.rawPtr()) );
+		return WgStackPanel_p( static_cast<WgStackPanel*>(pObject.rawPtr()) );
 
 	return 0;
 }

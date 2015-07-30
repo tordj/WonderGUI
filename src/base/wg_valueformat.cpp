@@ -62,7 +62,7 @@ WgValueFormat::WgValueFormat( const WgCharSeq& format )
 
 //____ WgValueFormat() ________________________________________________________
 
-WgValueFormat::WgValueFormat( const WgValueFormatPtr& pIn )
+WgValueFormat::WgValueFormat( const WgValueFormat_p& pIn )
 {
 	setFormat(pIn);
 }
@@ -106,10 +106,10 @@ const char * WgValueFormat::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgValueFormatPtr WgValueFormat::cast( const WgObjectPtr& pObject )
+WgValueFormat_p WgValueFormat::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgValueFormatPtr( static_cast<WgValueFormat*>(pObject.rawPtr()) );
+		return WgValueFormat_p( static_cast<WgValueFormat*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -265,7 +265,7 @@ void WgValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
 
 //____ WgValueFormat() ________________________________________________________
 
-void WgValueFormat::setFormat( const WgValueFormatPtr& pIn )
+void WgValueFormat::setFormat( const WgValueFormat_p& pIn )
 {
 	integers	= pIn->integers;
 	decimals	= pIn->decimals;

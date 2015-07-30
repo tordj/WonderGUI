@@ -58,10 +58,10 @@ const char * WgAnim::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgAnimPtr WgAnim::cast( const WgObjectPtr& pObject )
+WgAnim_p WgAnim::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgAnimPtr( static_cast<WgAnim*>(pObject.rawPtr()) );
+		return WgAnim_p( static_cast<WgAnim*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -45,7 +45,7 @@ WgBase::Data *			WgBase::s_pData = 0;
 void WgBase::init()
 {
 	assert( s_pData == 0 );
-	assert( sizeof( WgWeakPtrHub ) == sizeof( WgHookPtrHub ) );			// Need to be same as we are sharing object stack!
+	assert( sizeof( WgWeakPtrHub ) == sizeof( WgHook_pHub ) );			// Need to be same as we are sharing object stack!
 	s_pData = new Data;
 
 	s_pData->pMsgRouter = WgMsgRouter::create();
@@ -124,15 +124,15 @@ void WgBase::freeWeakPtrHub( WgWeakPtrHub * pHub )
 
 //____ allocHookPtrHub() ______________________________________________________
 
-WgHookPtrHub * WgBase::allocHookPtrHub()
+WgHook_pHub * WgBase::allocHookPtrHub()
 {
 	assert( s_pData != 0 );
-	return (WgHookPtrHub*) s_pData->pPtrPool->allocEntry();
+	return (WgHook_pHub*) s_pData->pPtrPool->allocEntry();
 }
 
 //____ freeHookPtrHub() _______________________________________________________
 
-void WgBase::freeHookPtrHub( WgHookPtrHub * pHub )
+void WgBase::freeHookPtrHub( WgHook_pHub * pHub )
 {
 	assert( s_pData != 0 );
 	s_pData->pPtrPool->freeEntry( pHub );
@@ -178,7 +178,7 @@ const WgTextMgrPtr& WgBase::getDefaultTextManager()
 
 //____ setDefaultCaret() _______________________________________________________
 
-void WgBase::setDefaultCaret( const WgCaret2Ptr& pCaret )
+void WgBase::setDefaultCaret( const WgCaret2_p& pCaret )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCaret = pCaret;	
@@ -186,7 +186,7 @@ void WgBase::setDefaultCaret( const WgCaret2Ptr& pCaret )
 
 //____ setDefaultPresenter() ___________________________________________________
 
-void WgBase::setDefaultPresenter( const WgTextPresenterPtr& pPresenter )
+void WgBase::setDefaultPresenter( const WgTextPresenter_p& pPresenter )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultPresenter = pPresenter;	
@@ -194,7 +194,7 @@ void WgBase::setDefaultPresenter( const WgTextPresenterPtr& pPresenter )
 
 //____ setDefaultStyle() _______________________________________________________
 
-void WgBase::setDefaultStyle( const WgTextStylePtr& pStyle )
+void WgBase::setDefaultStyle( const WgTextStyle_p& pStyle )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultStyle = pStyle;	
@@ -204,7 +204,7 @@ void WgBase::setDefaultStyle( const WgTextStylePtr& pStyle )
 
 //____ setDefaultTextprop() ___________________________________________________
 
-void WgBase::setDefaultTextprop( const WgTextpropPtr& pProp )
+void WgBase::setDefaultTextprop( const WgTextprop_p& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultTextprop = pProp;
@@ -212,7 +212,7 @@ void WgBase::setDefaultTextprop( const WgTextpropPtr& pProp )
 
 //____ setDefaultSelectionProp() ___________________________________________________
 
-void WgBase::setDefaultSelectionProp( const WgTextpropPtr& pProp )
+void WgBase::setDefaultSelectionProp( const WgTextprop_p& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultSelectionProp = pProp;
@@ -220,7 +220,7 @@ void WgBase::setDefaultSelectionProp( const WgTextpropPtr& pProp )
 
 //____ setDefaultLinkProp() ___________________________________________________
 
-void WgBase::setDefaultLinkProp( const WgTextpropPtr& pProp )
+void WgBase::setDefaultLinkProp( const WgTextprop_p& pProp )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultLinkProp = pProp;
@@ -229,7 +229,7 @@ void WgBase::setDefaultLinkProp( const WgTextpropPtr& pProp )
 
 //____ setDefaultCursor() ___________________________________________________
 
-void WgBase::setDefaultCursor( const WgCaretPtr& pCursor )
+void WgBase::setDefaultCursor( const WgCaret_p& pCursor )
 {
 	assert( s_pData != 0 );
 	s_pData->pDefaultCursor = pCursor;

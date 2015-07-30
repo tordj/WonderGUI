@@ -57,10 +57,10 @@ const char * WgTimeFormatter::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgTimeFormatterPtr WgTimeFormatter::cast( const WgObjectPtr& pObject )
+WgTimeFormatter_p WgTimeFormatter::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgTimeFormatterPtr( static_cast<WgTimeFormatter*>(pObject.rawPtr()) );
+		return WgTimeFormatter_p( static_cast<WgTimeFormatter*>(pObject.rawPtr()) );
 
 	return 0;
 }

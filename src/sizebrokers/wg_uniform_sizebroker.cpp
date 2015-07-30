@@ -43,10 +43,10 @@ const char * WgUniformSizeBroker::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgUniformSizeBrokerPtr WgUniformSizeBroker::cast( const WgObjectPtr& pObject )
+WgUniformSizeBroker_p WgUniformSizeBroker::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgUniformSizeBrokerPtr( static_cast<WgUniformSizeBroker*>(pObject.rawPtr()) );
+		return WgUniformSizeBroker_p( static_cast<WgUniformSizeBroker*>(pObject.rawPtr()) );
 
 	return 0;
 }

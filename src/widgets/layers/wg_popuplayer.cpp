@@ -33,7 +33,7 @@ const char WgPopupHook::CLASSNAME[] = {"PopupHook"};
 
 
 //_____________________________________________________________________________
-WgPopupLayerPtr WgPopupHook::parent() const
+WgPopupLayer_p WgPopupHook::parent() const
 {
 	return m_pParent;
 }
@@ -67,10 +67,10 @@ const char * WgPopupHook::className( void ) const
 
 //____ WgPopupHook::cast() __________________________________________________
 
-WgPopupHookPtr WgPopupHook::cast( const WgHookPtr& pHook )
+WgPopupHook_p WgPopupHook::cast( const WgHook_p& pHook )
 {
 	if( pHook && pHook->isInstanceOf(CLASSNAME) )
-		return WgPopupHookPtr( static_cast<WgPopupHook*>(pHook.rawPtr()) );
+		return WgPopupHook_p( static_cast<WgPopupHook*>(pHook.rawPtr()) );
 
 	return 0;
 }
@@ -325,10 +325,10 @@ const char * WgPopupLayer::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgPopupLayerPtr WgPopupLayer::cast( const WgObjectPtr& pObject )
+WgPopupLayer_p WgPopupLayer::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgPopupLayerPtr( static_cast<WgPopupLayer*>(pObject.rawPtr()) );
+		return WgPopupLayer_p( static_cast<WgPopupLayer*>(pObject.rawPtr()) );
 
 	return 0;
 }
@@ -336,7 +336,7 @@ WgPopupLayerPtr WgPopupLayer::cast( const WgObjectPtr& pObject )
 
 //____ openPopup() _______________________________________________________________
 
-WgPopupHookPtr WgPopupLayer::openPopup( const WgWidgetPtr& pPopup, const WgWidgetPtr& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
+WgPopupHook_p WgPopupLayer::openPopup( const WgWidget_p& pPopup, const WgWidget_p& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
 {
 	// Create Hook and fill in members.
 
@@ -363,7 +363,7 @@ bool WgPopupLayer::closeAllPopups()
 
 //____ closePopup() _________________________________________________________
 
-bool WgPopupLayer::closePopup( const WgWidgetPtr& pWidget )
+bool WgPopupLayer::closePopup( const WgWidget_p& pWidget )
 {
 	if( !pWidget || pWidget->parent() != this || pWidget == m_baseHook.widget() )
 		return false;
@@ -389,14 +389,14 @@ bool WgPopupLayer::closePopup( const WgWidgetPtr& pWidget )
 
 //____ firstPopupHook() ______________________________________________________
 
-WgPopupHookPtr WgPopupLayer::firstPopupHook()
+WgPopupHook_p WgPopupLayer::firstPopupHook()
 {
 	return m_popupHooks.first();
 }
 
 //____ lastPopupHook() _______________________________________________________
 
-WgPopupHookPtr WgPopupLayer::lastPopupHook()
+WgPopupHook_p WgPopupLayer::lastPopupHook()
 {
 	return m_popupHooks.last();
 }
@@ -511,7 +511,7 @@ void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onMsg() ______________________________________________________________
 
-void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
+void WgPopupLayer::_onMsg( const WgMsg_p& _pMsg )
 {
 	WgLayer::_onMsg(_pMsg);
 
@@ -562,7 +562,7 @@ void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_MOUSE_RELEASE:
 		case WG_MSG_MOUSE_PRESS:
 		{
-			WgMouseButtonMsgPtr pMsg = WgMouseButtonMsg::cast(_pMsg);
+			WgMouseButtonMsg_p pMsg = WgMouseButtonMsg::cast(_pMsg);
 
 			WgCoord ofs = pMsg->pointerPos() - globalPos();
 			WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
@@ -578,7 +578,7 @@ void WgPopupLayer::_onMsg( const WgMsgPtr& _pMsg )
 		case WG_MSG_KEY_PRESS:
 		case WG_MSG_KEY_REPEAT:
 		{
-			WgKeyMsgPtr pMsg = WgKeyMsg::cast(_pMsg);
+			WgKeyMsg_p pMsg = WgKeyMsg::cast(_pMsg);
 
 			if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE )
 			{
@@ -604,7 +604,7 @@ void WgPopupLayer::_stealKeyboardFocus()
 	if( !hook() )
 		return;
 
-	WgMsgRouterPtr pHandler = hook()->msgRouter();
+	WgMsgRouter_p pHandler = hook()->msgRouter();
 	if( !pHandler )
 		return;
 
@@ -634,7 +634,7 @@ void WgPopupLayer::_restoreKeyboardFocus()
 	if( !hook() )
 		return;
 
-	WgMsgRouterPtr pHandler = hook()->msgRouter();
+	WgMsgRouter_p pHandler = hook()->msgRouter();
 	if( !pHandler )
 		return;
 

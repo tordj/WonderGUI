@@ -14,20 +14,20 @@
 #endif
 
 class WgVolumeMeter;
-typedef	WgStrongPtr<WgVolumeMeter,WgWidgetPtr>		WgVolumeMeterPtr;
-typedef	WgWeakPtr<WgVolumeMeter,WgWidgetWeakPtr>	WgVolumeMeterWeakPtr;
+typedef	WgStrongPtr<WgVolumeMeter,WgWidget_p>		WgVolumeMeter_p;
+typedef	WgWeakPtr<WgVolumeMeter,WgWidget_wp>	WgVolumeMeter_wp;
 
 //____ WgVolumeMeter ____________________________________________________________
 
 class WgVolumeMeter : public WgWidget
 {
 public:
-	static WgVolumeMeterPtr	create() { return WgVolumeMeterPtr(new WgVolumeMeter()); }
+	static WgVolumeMeter_p	create() { return WgVolumeMeter_p(new WgVolumeMeter()); }
 	
 	bool		isInstanceOf( const char * pClassName ) const;
 	const char *className( void ) const;
 	static const char	CLASSNAME[];
-	static WgVolumeMeterPtr	cast( const WgObjectPtr& pObject );
+	static WgVolumeMeter_p	cast( const WgObject_p& pObject );
 	
 	//____ Methods __________________________________________
 	

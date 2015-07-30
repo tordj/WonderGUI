@@ -60,8 +60,8 @@ class	WgCaretInstance;
 class 	WgPen;
 
 class WgGfxDevice;
-typedef	WgStrongPtr<WgGfxDevice,WgObjectPtr>	WgGfxDevicePtr;
-typedef	WgWeakPtr<WgGfxDevice,WgObjectWeakPtr>	WgGfxDeviceWeakPtr;
+typedef	WgStrongPtr<WgGfxDevice,WgObject_p>	WgGfxDevice_p;
+typedef	WgWeakPtr<WgGfxDevice,WgObject_wp>	WgGfxDevice_wp;
 
 class WgGfxDevice : public WgObject
 {
@@ -70,7 +70,7 @@ public:
 	bool					isInstanceOf( const char * pClassName ) const;
 	const char *			className( void ) const;
 	static const char		CLASSNAME[];
-	static WgGfxDevicePtr	cast( const WgObjectPtr& pObject );
+	static WgGfxDevice_p	cast( const WgObject_p& pObject );
 
 	enum WgRenderFlags
 	{
@@ -123,54 +123,54 @@ public:
 	virtual void	clipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color ) = 0;
 
 
-	virtual void	blit( const WgSurfacePtr& pSrc );
-	virtual void	blit( const WgSurfacePtr& pSrc, int dx, int dy );
-	virtual void	blit( const WgSurfacePtr& pSrc, const WgRect& src, int dx, int dy ) = 0;
+	virtual void	blit( const WgSurface_p& pSrc );
+	virtual void	blit( const WgSurface_p& pSrc, int dx, int dy );
+	virtual void	blit( const WgSurface_p& pSrc, const WgRect& src, int dx, int dy ) = 0;
 
-	virtual void	stretchBlit( const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
-	virtual void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
-	virtual void	stretchBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	virtual void	stretchBlit( const WgSurface_p& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
+	virtual void	stretchBlit( const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+	virtual void	stretchBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
 
-	virtual void	tileBlit( const WgSurfacePtr& pSrc );
-	virtual void	tileBlit( const WgSurfacePtr& pSrc, const WgRect& dest );
-	virtual void	tileBlit( const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest );
+	virtual void	tileBlit( const WgSurface_p& pSrc );
+	virtual void	tileBlit( const WgSurface_p& pSrc, const WgRect& dest );
+	virtual void	tileBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest );
 
 
 	virtual void	clipFill( const WgRect& clip, const WgRect& rect, const WgColor& col );
 
-	virtual void	clipBlit( const WgRect& clip, const WgSurfacePtr& src );
-	virtual void	clipBlit( const WgRect& clip, const WgSurfacePtr& src, int dx, int dy  );
-	virtual void	clipBlit( const WgRect& clip, const WgSurfacePtr& src,
+	virtual void	clipBlit( const WgRect& clip, const WgSurface_p& src );
+	virtual void	clipBlit( const WgRect& clip, const WgSurface_p& src, int dx, int dy  );
+	virtual void	clipBlit( const WgRect& clip, const WgSurface_p& src,
 							  const WgRect& srcrect, int dx, int dy  );
 
-	virtual void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, bool bTriLinear = false, float mipBias = 0.f );
-	virtual void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	virtual void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
-	virtual void	clipStretchBlit( const WgRect& clip, const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
+	virtual void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, bool bTriLinear = false, float mipBias = 0.f );
+	virtual void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	virtual void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear = false, float mipBias = 0.f );
+	virtual void	clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
 
-	virtual void	clipTileBlit( const WgRect& clip, const WgSurfacePtr& src );
-	virtual void	clipTileBlit( const WgRect& clip, const WgSurfacePtr& src,
+	virtual void	clipTileBlit( const WgRect& clip, const WgSurface_p& src );
+	virtual void	clipTileBlit( const WgRect& clip, const WgSurface_p& src,
 								  const WgRect& dest );
-	virtual void	clipTileBlit( const WgRect& clip, const WgSurfacePtr& src,
+	virtual void	clipTileBlit( const WgRect& clip, const WgSurface_p& src,
 								  const WgRect& srcrect, const WgRect& dest );
 
 
 	// Mid-level draw methods
 
-	virtual void	clipBlitHorrBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf, const WgRect& _src,
+	virtual void	clipBlitHorrBar(	const WgRect& _clip, const WgSurface_p& _pSurf, const WgRect& _src,
 										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
-	virtual void	clipBlitVertBar(	const WgRect& _clip, const WgSurfacePtr& _pSurf, const WgRect& _src,
+	virtual void	clipBlitVertBar(	const WgRect& _clip, const WgSurface_p& _pSurf, const WgRect& _src,
 										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
 
-	virtual void	blitHorrBar(		const WgSurfacePtr& _pSurf, const WgRect& _src,
+	virtual void	blitHorrBar(		const WgSurface_p& _pSurf, const WgRect& _src,
 										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
-	virtual void	blitVertBar(		const WgSurfacePtr& _pSurf, const WgRect& _src,
+	virtual void	blitVertBar(		const WgSurface_p& _pSurf, const WgRect& _src,
 										const WgBorder& _borders, bool _bTile,
 										int _dx, int _dy, int _len );
 
@@ -183,7 +183,7 @@ public:
 	virtual void		printLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgState state = WG_STATE_NORMAL );
 
 	virtual void	fillSubPixel( const WgRectF& rect, const WgColor& col ) = 0;
-	virtual void	stretchBlitSubPixel( const WgSurfacePtr& pSrc, float sx, float sy, float sw, float sh,
+	virtual void	stretchBlitSubPixel( const WgSurface_p& pSrc, float sx, float sy, float sw, float sh,
 								   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
 
 	

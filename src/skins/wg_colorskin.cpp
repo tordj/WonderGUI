@@ -29,9 +29,9 @@ const char WgColorSkin::CLASSNAME[] = {"ColorSkin"};
 
 //____ create() _______________________________________________________________
 
-WgColorSkinPtr WgColorSkin::create( WgColor col )
+WgColorSkin_p WgColorSkin::create( WgColor col )
 {
-	return WgColorSkinPtr(new WgColorSkin(col));
+	return WgColorSkin_p(new WgColorSkin(col));
 }
 
 //____ Constructor ____________________________________________________________
@@ -60,10 +60,10 @@ const char * WgColorSkin::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgColorSkinPtr WgColorSkin::cast( const WgObjectPtr& pObject )
+WgColorSkin_p WgColorSkin::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgColorSkinPtr( static_cast<WgColorSkin*>(pObject.rawPtr()) );
+		return WgColorSkin_p( static_cast<WgColorSkin*>(pObject.rawPtr()) );
 
 	return 0;
 }

@@ -26,11 +26,11 @@ namespace sdl_wglib
 	void 		TranslateEvent( const WgEventHandlerPtr& pHandler, SDL_Event& event );
 	void 		EndEvents( const WgEventHandlerPtr& pHandler );
 
-	WgSurfacePtr loadSurface( const char * path, const WgSurfaceFactoryPtr& factory );
+	WgSurface_p loadSurface( const char * path, const WgSurfaceFactory_p& factory );
 
-	WgResDBPtr	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactoryPtr& factory );
+	WgResDB_p	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactory_p& factory );
 
-	WgFontPtr	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactoryPtr& pFactory );
+	WgFont_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory_p& pFactory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

@@ -44,10 +44,10 @@ const char * WgModText::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgModTextPtr WgModText::cast( const WgInterfacePtr& pInterface )
+WgModText_p WgModText::cast( const WgInterface_p& pInterface )
 {
 	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgModTextPtr( pInterface.getRealObjectPtr(), static_cast<WgModText*>( pInterface.rawPtr()) );
+		return WgModText_p( pInterface.getRealObjectPtr(), static_cast<WgModText*>( pInterface.rawPtr()) );
 
 	return 0;
 }

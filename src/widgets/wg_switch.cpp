@@ -58,10 +58,10 @@ const char * WgSwitch::className( void ) const
 
 //____ cast() _________________________________________________________________
 
-WgSwitchPtr WgSwitch::cast( const WgObjectPtr& pObject )
+WgSwitch_p WgSwitch::cast( const WgObject_p& pObject )
 {
 	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSwitchPtr( static_cast<WgSwitch*>(pObject.rawPtr()) );
+		return WgSwitch_p( static_cast<WgSwitch*>(pObject.rawPtr()) );
 
 	return 0;
 }

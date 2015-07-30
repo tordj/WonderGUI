@@ -27,11 +27,11 @@
 #endif
 
 class WgLayer;
-typedef	WgStrongPtr<WgLayer,WgContainerPtr>	WgLayerPtr;
-typedef	WgWeakPtr<WgLayer,WgContainerPtr>	WgLayerWeakPtr;
+typedef	WgStrongPtr<WgLayer,WgContainer_p>	WgLayer_p;
+typedef	WgWeakPtr<WgLayer,WgContainer_p>	WgLayer_wp;
 
 class WgLayerHook;
-typedef	WgHookTypePtr<WgLayerHook,WgHookPtr>	WgLayerHookPtr;
+typedef	WgHookTypePtr<WgLayerHook,WgHook_p>	WgLayerHook_p;
 
 
 class WgLayerHook : public WgHook
@@ -43,7 +43,7 @@ public:
 	virtual bool			isInstanceOf( const char * pClassName ) const;
 	virtual const char *	className( void ) const;
 	static const char		CLASSNAME[];
-	static WgLayerHookPtr	cast( const WgHookPtr& pInterface );
+	static WgLayerHook_p	cast( const WgHook_p& pInterface );
 
 	WgCoord			pos() const { return m_geo.pos(); }
 	WgSize			size() const { 	return m_geo.size(); }
@@ -52,9 +52,9 @@ public:
 	WgCoord			globalPos() const;
 	WgRect			globalGeo() const;
 
-	WgLayerHookPtr	prev() const { return _prevLayerHook(); }
-	WgLayerHookPtr	next() const { return _nextLayerHook(); }
-	WgLayerPtr		parent() const;
+	WgLayerHook_p	prev() const { return _prevLayerHook(); }
+	WgLayerHook_p	next() const { return _nextLayerHook(); }
+	WgLayer_p		parent() const;
 
 protected:
 
@@ -100,15 +100,15 @@ public:
 	bool				isInstanceOf( const char * pClassName ) const;
 	const char *		className( void ) const;
 	static const char	CLASSNAME[];
-	static WgLayerPtr	cast( const WgObjectPtr& pObject );
+	static WgLayer_p	cast( const WgObject_p& pObject );
 
-	WgHookPtr			setBaseWidget( const WgWidgetPtr& pWidget );
-	WgWidgetPtr			baseWidget();
+	WgHook_p			setBaseWidget( const WgWidget_p& pWidget );
+	WgWidget_p			baseWidget();
 	bool				removeBaseWidget();
-	inline WgHookPtr	baseHook() { return &m_baseHook; }
+	inline WgHook_p	baseHook() { return &m_baseHook; }
 
-	inline WgLayerHookPtr	firstLayerHook() const { return _firstLayerHook(); }
-	inline WgLayerHookPtr	lastLayerHook() const { return _lastLayerHook(); }
+	inline WgLayerHook_p	firstLayerHook() const { return _firstLayerHook(); }
+	inline WgLayerHook_p	lastLayerHook() const { return _lastLayerHook(); }
 
 	// Overloaded from WgWidget
 

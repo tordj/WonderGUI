@@ -26,7 +26,7 @@
 
 
 class FreeWeakPtrHub;
-WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
+WgObject_p::WgObject_p( const WgObject_wp& r )
 {
 	m_pObj = r.rawPtr();
 	if( m_pObj )
@@ -34,7 +34,7 @@ WgObjectPtr::WgObjectPtr( const WgObjectWeakPtr& r )
 }
 
 
-WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
+WgObject_wp::WgObject_wp( WgObject * pObj )
 {
 	if( pObj )
 	{
@@ -57,7 +57,7 @@ WgObjectWeakPtr::WgObjectWeakPtr( WgObject * pObj )
 	}
 };
 
-WgObjectWeakPtr::WgObjectWeakPtr( const WgObjectPtr& pObject )
+WgObject_wp::WgObject_wp( const WgObject_p& pObject )
 {
 	WgObject * pObj = pObject.rawPtr();
 
@@ -82,7 +82,7 @@ WgObjectWeakPtr::WgObjectWeakPtr( const WgObjectPtr& pObject )
 	}
 };
 
-WgObjectWeakPtr::~WgObjectWeakPtr()
+WgObject_wp::~WgObject_wp()
 {
 	if( m_pHub )
 	{
@@ -99,7 +99,7 @@ WgObjectWeakPtr::~WgObjectWeakPtr()
 
 
 
-void WgObjectWeakPtr::copy( WgObjectWeakPtr const & r)
+void WgObject_wp::copy( WgObject_wp const & r)
 {
 	if( m_pHub != r.m_pHub )
 	{
@@ -122,7 +122,7 @@ void WgObjectWeakPtr::copy( WgObjectWeakPtr const & r)
 }
 
 
-WgInterfaceWeakPtr::WgInterfaceWeakPtr( WgObject * pObj, WgInterface * pInterface )
+WgInterface_wp::WgInterface_wp( WgObject * pObj, WgInterface * pInterface )
 {
 	if( pObj && pInterface )
 	{
@@ -149,7 +149,7 @@ WgInterfaceWeakPtr::WgInterfaceWeakPtr( WgObject * pObj, WgInterface * pInterfac
 };
 
 
-WgInterfaceWeakPtr::~WgInterfaceWeakPtr()
+WgInterface_wp::~WgInterface_wp()
 {
 	if( m_pHub )
 	{
@@ -166,7 +166,7 @@ WgInterfaceWeakPtr::~WgInterfaceWeakPtr()
 
 
 
-void WgInterfaceWeakPtr::copy( WgInterfaceWeakPtr const & r)
+void WgInterface_wp::copy( WgInterface_wp const & r)
 {
 	m_pInterface = r.m_pInterface;
 
