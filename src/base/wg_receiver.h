@@ -30,26 +30,26 @@
 namespace wg 
 {
 	
-	class WgMsg;
-	typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
+	class Msg;
+	typedef	WgStrongPtr<Msg,Object_p>			Msg_p;
 	
-	class WgReceiver;
-	typedef	WgStrongPtr<WgReceiver,WgObject_p>		WgReceiver_p;
-	typedef	WgWeakPtr<WgReceiver,WgObject_wp>		WgReceiver_wp;
+	class Receiver;
+	typedef	WgStrongPtr<Receiver,Object_p>		Receiver_p;
+	typedef	WgWeakPtr<Receiver,Object_wp>		Receiver_wp;
 	
-	class WgReceiver : public WgObject
+	class Receiver : public Object
 	{
-		friend class WgMsgRouter;
+		friend class MsgRouter;
 	public:
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgReceiver_p	cast( const WgObject_p& pObject );
+		static Receiver_p	cast( const Object_p& pObject );
 	
-		virtual void onMsg( const WgMsg_p& pMsg ) = 0;
+		virtual void onMsg( const Msg_p& pMsg ) = 0;
 	
 	protected:
-		WgReceiver() {};
+		Receiver() {};
 		
 		virtual void	_onRouteAdded();
 		virtual void	_onRouteRemoved();

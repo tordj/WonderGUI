@@ -16,56 +16,56 @@
 namespace wg 
 {
 	
-	class WgRulerLabels;
-	typedef	WgStrongPtr<WgRulerLabels,WgWidget_p>		WgRulerLabels_p;
-	typedef	WgWeakPtr<WgRulerLabels,WgWidget_wp>	WgRulerLabels_wp;
+	class RulerLabels;
+	typedef	WgStrongPtr<RulerLabels,Widget_p>		RulerLabels_p;
+	typedef	WgWeakPtr<RulerLabels,Widget_wp>	RulerLabels_wp;
 	
-	//____ WgRulerLabels ____________________________________________________________
+	//____ RulerLabels ____________________________________________________________
 	
-	class WgRulerLabels : public WgWidget, protected WgTextHolder
+	class RulerLabels : public Widget, protected TextHolder
 	{
 	public:
-		static WgRulerLabels_p	create() { return WgRulerLabels_p(new WgRulerLabels()); }
+		static RulerLabels_p	create() { return RulerLabels_p(new RulerLabels()); }
 		
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgRulerLabels_p	cast( const WgObject_p& pObject );
+		static RulerLabels_p	cast( const Object_p& pObject );
 		
 		//____ Methods __________________________________________
 		
-		void			addLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset );
-	 	WgSize			preferredSize() const;
+		void			addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset );
+	 	Size			preferredSize() const;
 		void			setDirection( WgDirection direction );
-		WgModText_p	getLabel(int index);
+		ModText_p	getLabel(int index);
 	
 	
 	protected:
-		WgRulerLabels();
-		virtual ~WgRulerLabels();
-		virtual WgWidget* _newOfMyType() const { return new WgRulerLabels(); };
+		RulerLabels();
+		virtual ~RulerLabels();
+		virtual Widget* _newOfMyType() const { return new RulerLabels(); };
 		
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void			_onCloneContent( const WgWidget * _pOrg );
-		void			_onStateChanged( WgState oldState );
-		void			_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
-		bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onStateChanged( State oldState );
+		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
 	
-		WgObject * 		_object() { return this; };
-		void			_onFieldDirty( WgField * pField );
-		void 			_onFieldResize( WgField * pField );
+		Object * 		_object() { return this; };
+		void			_onFieldDirty( Field * pField );
+		void 			_onFieldResize( Field * pField );
 	
-		class Label : public WgLink
+		class Label : public Link
 		{
 		public:
-			Label(WgTextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
+			Label(TextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
 			LINK_METHODS(Label);
-			WgModText	textInterface;
-			WgTextField	textField;
+			ModText	textInterface;
+			TextField	textField;
 			float		offset;
 		};
 		
-		WgChain<Label>	m_labels;
+		Chain<Label>	m_labels;
 		WgDirection		m_direction;
 	};
 	

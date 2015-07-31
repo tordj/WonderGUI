@@ -34,13 +34,13 @@
 namespace wg 
 {
 	
-	class WgCharSeq;
-	class WgString;
-	class WgCharBuffer;
+	class CharSeq;
+	class String;
+	class CharBuffer;
 	
-	class WgModValue;
-	typedef	WgIStrongPtr<WgModValue,WgValue_p>	WgModValue_p;
-	typedef	WgIWeakPtr<WgModValue,WgValue_wp>	WgModValue_wp;
+	class ModValue;
+	typedef	WgIStrongPtr<ModValue,Value_p>	ModValue_p;
+	typedef	WgIWeakPtr<ModValue,Value_wp>	ModValue_wp;
 	
 	/**
 	 * @brief Interface to a value field where the value is modifiable through the api
@@ -50,16 +50,16 @@ namespace wg
 	 * 
 	*/
 	
-	class WgModValue : public WgValue
+	class ModValue : public Value
 	{
 	public:
-		WgModValue(WgModValueField * pField) : WgValue(pField) {}
+		ModValue(ModValueField * pField) : Value(pField) {}
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
 		static const char			CLASSNAME[];
-		static WgModValue_p		cast( const WgInterface_p& pInterface );
-		inline WgModValue_p		ptr() { return WgModValue_p(_object(),this); }
+		static ModValue_p		cast( const Interface_p& pInterface );
+		inline ModValue_p		ptr() { return ModValue_p(_object(),this); }
 	
 	
 		void						clear();
@@ -79,8 +79,8 @@ namespace wg
 		inline Sint64				max() const { return _field()->max(); }
 	
 	private:
-		inline	WgModValueField * 		_field() { return static_cast<WgModValueField*>(m_pField); }
-		inline	const WgModValueField * _field() const { return static_cast<WgModValueField*>(m_pField); }
+		inline	ModValueField * 		_field() { return static_cast<ModValueField*>(m_pField); }
+		inline	const ModValueField * _field() const { return static_cast<ModValueField*>(m_pField); }
 	};
 	
 	

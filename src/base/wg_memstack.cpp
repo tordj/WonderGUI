@@ -25,14 +25,14 @@
 namespace wg 
 {
 	
-	WgMemStack::BlockHeader::BlockHeader(int bytes)
+	MemStack::BlockHeader::BlockHeader(int bytes)
 	{
 		pBlock = new char[bytes];
 		size = bytes;
 		allocated = 0;
 	}
 	
-	WgMemStack::BlockHeader::~BlockHeader()
+	MemStack::BlockHeader::~BlockHeader()
 	{
 		delete [] pBlock;
 	}
@@ -40,7 +40,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgMemStack::WgMemStack( int blockSize ) : m_blockSize(blockSize)
+	MemStack::MemStack( int blockSize ) : m_blockSize(blockSize)
 	{
 	}
 	
@@ -48,7 +48,7 @@ namespace wg
 	
 	//____ alloc() ________________________________________________________________
 	
-	char * WgMemStack::alloc( int bytes )
+	char * MemStack::alloc( int bytes )
 	{
 		BlockHeader * p = m_blocks.last();
 	
@@ -66,7 +66,7 @@ namespace wg
 	
 	//____ release() ______________________________________________________________
 	
-	void WgMemStack::release( int bytes )
+	void MemStack::release( int bytes )
 	{
 		assert( !m_blocks.isEmpty() && bytes <= m_blocks.last()->allocated );
 	
@@ -77,14 +77,14 @@ namespace wg
 	
 	//____ clear() ________________________________________________________________
 	
-	void WgMemStack::clear()
+	void MemStack::clear()
 	{
 		m_blocks.clear();
 	}
 	
 	//____ isEmpty() ______________________________________________________________
 	
-	bool WgMemStack::isEmpty() const
+	bool MemStack::isEmpty() const
 	{
 		if( m_blocks.isEmpty() || (m_blocks.size() == 1 && m_blocks.first()->allocated == 0) )
 			return true;

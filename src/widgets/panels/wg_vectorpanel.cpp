@@ -25,64 +25,64 @@
 namespace wg 
 {
 	
-	const char WgVectorPanel::CLASSNAME[] = {"VectorPanel"};
-	const char WgVectorHook::CLASSNAME[] = {"VectorHook"};
+	const char VectorPanel::CLASSNAME[] = {"VectorPanel"};
+	const char VectorHook::CLASSNAME[] = {"VectorHook"};
 	
-	//____ WgVectorHook::isInstanceOf() __________________________________________
+	//____ VectorHook::isInstanceOf() __________________________________________
 	
-	bool WgVectorHook::isInstanceOf( const char * pClassName ) const
+	bool VectorHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgPanelHook::isInstanceOf(pClassName);
+		return PanelHook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgVectorHook::className() _____________________________________________
+	//____ VectorHook::className() _____________________________________________
 	
-	const char * WgVectorHook::className( void ) const
+	const char * VectorHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgVectorHook::cast() __________________________________________________
+	//____ VectorHook::cast() __________________________________________________
 	
-	WgVectorHook_p WgVectorHook::cast( const WgHook_p& pHook )
+	VectorHook_p VectorHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgVectorHook_p( static_cast<WgVectorHook*>(pHook.rawPtr()) );
+			return VectorHook_p( static_cast<VectorHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
 	
-	WgCoord WgVectorHook::pos() const
+	Coord VectorHook::pos() const
 	{
 		return parent()->_hookGeo(this).pos();
 	}
 	
-	WgSize WgVectorHook::size() const
+	Size VectorHook::size() const
 	{
 		return parent()->_hookGeo(this).size();
 	}
 	
-	WgRect WgVectorHook::geo() const
+	Rect VectorHook::geo() const
 	{
 		return parent()->_hookGeo(this);
 	}
 	
-	WgCoord WgVectorHook::globalPos() const
+	Coord VectorHook::globalPos() const
 	{
 		return parent()->_hookGeo(this).pos() + parent()->globalPos();
 	
 	}
 	
-	WgRect WgVectorHook::globalGeo() const
+	Rect VectorHook::globalGeo() const
 	{
 		return parent()->_hookGeo(this) + parent()->globalPos();
 	}
 	
-	bool WgVectorHook::moveForward()
+	bool VectorHook::moveForward()
 	{
 		if( _moveUp() )
 		{
@@ -93,7 +93,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::moveBackward()
+	bool VectorHook::moveBackward()
 	{
 		if( _moveDown() )
 		{
@@ -104,7 +104,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::moveBefore( const WgVectorHook_p& pSibling )
+	bool VectorHook::moveBefore( const VectorHook_p& pSibling )
 	{
 		if( pSibling && pSibling->parent() == parent() )
 		{
@@ -117,7 +117,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::moveAfter( const WgVectorHook_p& pSibling )
+	bool VectorHook::moveAfter( const VectorHook_p& pSibling )
 	{
 		if( pSibling && pSibling->parent() == parent() )
 		{
@@ -130,7 +130,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::moveFirst()
+	bool VectorHook::moveFirst()
 	{
 		if( _moveFirst() )
 		{
@@ -141,7 +141,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::moveLast()
+	bool VectorHook::moveLast()
 	{
 		if( _moveLast() )
 		{
@@ -152,7 +152,7 @@ namespace wg
 		return false;
 	}
 	
-	bool WgVectorHook::setVisible( bool bVisible )
+	bool VectorHook::setVisible( bool bVisible )
 	{
 		if( bVisible != m_bVisible )
 		{
@@ -166,52 +166,52 @@ namespace wg
 		return true;
 	}
 	
-	WgVectorPanel_p WgVectorHook::parent() const
+	VectorPanel_p VectorHook::parent() const
 	{
-		return static_cast<WgVectorPanel*>(_parent());
+		return static_cast<VectorPanel*>(_parent());
 	}
 	
 	
-	WgVectorHook::WgVectorHook()
+	VectorHook::VectorHook()
 	{
 	}
 	
-	WgVectorHook::~WgVectorHook()
+	VectorHook::~VectorHook()
 	{
 	}
 	
 	
-	void WgVectorHook::_requestRender()
+	void VectorHook::_requestRender()
 	{
-		WgVectorPanel * p = static_cast<WgVectorPanel*>(_parent());
+		VectorPanel * p = static_cast<VectorPanel*>(_parent());
 	
 		p->_onRenderRequested(this);
 	}
 	
-	void WgVectorHook::_requestRender( const WgRect& rect )
+	void VectorHook::_requestRender( const Rect& rect )
 	{
 		parent()->_onRenderRequested(this, rect);
 	}
 	
-	void WgVectorHook::_requestResize()
+	void VectorHook::_requestResize()
 	{
 		parent()->_onResizeRequested(this);
 	}
 	
 	
-	WgHook * WgVectorHook::_prevHook() const
+	Hook * VectorHook::_prevHook() const
 	{
 		return _prev();
 	}
 	
-	WgHook * WgVectorHook::_nextHook() const
+	Hook * VectorHook::_nextHook() const
 	{
 		return _next();
 	}
 	
 	//____ Constructor() __________________________________________________________
 	
-	WgVectorPanel::WgVectorPanel() : m_nChildPanels(0)
+	VectorPanel::VectorPanel() : m_nChildPanels(0)
 	{
 	
 	}
@@ -219,45 +219,45 @@ namespace wg
 	
 	//____ Destructor() ___________________________________________________________
 	
-	WgVectorPanel::~WgVectorPanel()
+	VectorPanel::~VectorPanel()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgVectorPanel::isInstanceOf( const char * pClassName ) const
+	bool VectorPanel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgPanel::isInstanceOf(pClassName);
+		return Panel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgVectorPanel::className( void ) const
+	const char * VectorPanel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgVectorPanel_p WgVectorPanel::cast( const WgObject_p& pObject )
+	VectorPanel_p VectorPanel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgVectorPanel_p( static_cast<WgVectorPanel*>(pObject.rawPtr()) );
+			return VectorPanel_p( static_cast<VectorPanel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _addWidget() _____________________________________________________________
 	
-	WgVectorHook * WgVectorPanel::_addWidget( WgWidget * pWidget )
+	VectorHook * VectorPanel::_addWidget( Widget * pWidget )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgVectorHook * pHook = _newHook();
+		VectorHook * pHook = _newHook();
 		m_hooks.pushBack(pHook);
 		pHook->_setWidget( pWidget );
 	
@@ -267,16 +267,16 @@ namespace wg
 	
 	//____ _insertWidget() __________________________________________________________
 	
-	WgVectorHook * WgVectorPanel::_insertWidget( WgWidget * pWidget, WgWidget * pSibling )
+	VectorHook * VectorPanel::_insertWidget( Widget * pWidget, Widget * pSibling )
 	{
 		if( !pWidget || !pSibling || !pSibling->parent() || pSibling->parent() != this )
 			return 0;
 	
-		WgVectorPanel * pWdg = (WgVectorPanel*) pSibling;
-		WgHook * p = pWdg->m_pHook;
+		VectorPanel * pWdg = (VectorPanel*) pSibling;
+		Hook * p = pWdg->m_pHook;
 	
-		WgVectorHook * pHook = _newHook();
-		pHook->_moveBefore(static_cast<WgVectorHook*>(pSibling->_hook()));
+		VectorHook * pHook = _newHook();
+		pHook->_moveBefore(static_cast<VectorHook*>(pSibling->_hook()));
 	
 		pHook->_setWidget( pWidget );
 		
@@ -286,14 +286,14 @@ namespace wg
 	
 	//____ removeWidget() __________________________________________________________
 	
-	bool WgVectorPanel::removeWidget( const WgWidget_p& pWidget )
+	bool VectorPanel::removeWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
 			return false;
 	
 		// Disconnect and notify subclass that widget has disappeared
 	
-		WgVectorHook * pHook = (WgVectorHook *) pWidget->_hook();
+		VectorHook * pHook = (VectorHook *) pWidget->_hook();
 		pHook->_disconnect();
 	
 		if( pHook->isVisible() )
@@ -307,7 +307,7 @@ namespace wg
 	
 	//____ clear() ______________________________________________________
 	
-	bool WgVectorPanel::clear()
+	bool VectorPanel::clear()
 	{
 		m_hooks.clear();
 		_refreshAllWidgets();
@@ -317,7 +317,7 @@ namespace wg
 	
 	//____ _onCloneContent() ______________________________________________________
 	
-	void WgVectorPanel::_onCloneContent( const WgWidget * _pOrg )
+	void VectorPanel::_onCloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement
 	}

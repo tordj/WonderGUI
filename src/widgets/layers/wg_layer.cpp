@@ -26,40 +26,40 @@
 namespace wg 
 {
 	
-	const char WgLayer::CLASSNAME[] = {"Layer"};
-	const char WgLayerHook::CLASSNAME[] = {"LayerHook"};
+	const char Layer::CLASSNAME[] = {"Layer"};
+	const char LayerHook::CLASSNAME[] = {"LayerHook"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgLayer::WgLayer()
+	Layer::Layer()
 	{
 		m_baseHook.m_pParent = this;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgLayer::isInstanceOf( const char * pClassName ) const
+	bool Layer::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgContainer::isInstanceOf(pClassName);
+		return Container::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgLayer::className( void ) const
+	const char * Layer::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgLayer_p WgLayer::cast( const WgObject_p& pObject )
+	Layer_p Layer::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgLayer_p( static_cast<WgLayer*>(pObject.rawPtr()) );
+			return Layer_p( static_cast<Layer*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -67,7 +67,7 @@ namespace wg
 	
 	//____ setBaseWidget() _________________________________________________________
 	
-	WgHook_p WgLayer::setBaseWidget( const WgWidget_p& pWidget )
+	Hook_p Layer::setBaseWidget( const Widget_p& pWidget )
 	{
 		m_baseHook._setWidget(pWidget.rawPtr());
 		_onBaseChanged();
@@ -76,7 +76,7 @@ namespace wg
 	
 	//____ baseWidget() ____________________________________________________________
 	
-	WgWidget_p WgLayer::baseWidget()
+	Widget_p Layer::baseWidget()
 	{
 		return m_baseHook._widget();
 	}
@@ -84,7 +84,7 @@ namespace wg
 	
 	//____ removeBaseWidget() _____________________________________________________
 	
-	bool WgLayer::removeBaseWidget()
+	bool Layer::removeBaseWidget()
 	{
 		if( !m_baseHook._widget() )
 			return false;
@@ -97,48 +97,48 @@ namespace wg
 	
 	//____ matchingHeight() _______________________________________________________
 	
-	int WgLayer::matchingHeight( int width ) const
+	int Layer::matchingHeight( int width ) const
 	{
 		if( m_baseHook._widget() )
 			return m_baseHook._widget()->matchingHeight( width );
 		else
-			return WgWidget::matchingHeight(width);
+			return Widget::matchingHeight(width);
 	}
 	
 	//____ matchingWidth() _______________________________________________________
 	
-	int WgLayer::matchingWidth( int height ) const
+	int Layer::matchingWidth( int height ) const
 	{
 		if( m_baseHook._widget() )
 			return m_baseHook._widget()->matchingWidth( height );
 		else
-			return WgWidget::matchingWidth(height);
+			return Widget::matchingWidth(height);
 	}
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	WgSize WgLayer::preferredSize() const
+	Size Layer::preferredSize() const
 	{
 		if( m_baseHook._widget() )
 			return m_baseHook._widget()->preferredSize();
 		else
-			return WgSize(1,1);
+			return Size(1,1);
 	}
 	
 	
 	//____ _onRequestRender() _____________________________________________________
 	
-	void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
+	void Layer::_onRequestRender( const Rect& rect, const LayerHook * pHook )
 	{
 		// Clip our geometry and put it in a dirtyrect-list
 	
-		WgPatches patches;
-		patches.add( WgRect( rect, WgRect(0,0,m_size)) );
+		Patches patches;
+		patches.add( Rect( rect, Rect(0,0,m_size)) );
 	
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 	
-		WgLayerHook * pCover;
+		LayerHook * pCover;
 	
 		if( pHook )
 			pCover = pHook->_nextLayerHook();
@@ -148,21 +148,21 @@ namespace wg
 		while( pCover )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_nextLayerHook();
 		}
 	
 		// Make request render calls
 	
-		for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 	
 	
 	//____ _firstHook() ___________________________________________________________
 	
-	WgHook* WgLayer::_firstHook() const
+	Hook* Layer::_firstHook() const
 	{
 		if( m_baseHook._widget() )
 			return const_cast<_BaseHook*>(&m_baseHook);
@@ -172,9 +172,9 @@ namespace wg
 	
 	//____ _lastHook() ____________________________________________________________
 	
-	WgHook* WgLayer::_lastHook() const
+	Hook* Layer::_lastHook() const
 	{
-		WgHook * p = _lastLayerHook();
+		Hook * p = _lastLayerHook();
 	
 		if( !p )
 		{
@@ -188,16 +188,16 @@ namespace wg
 	
 	//____ _firstHookWithGeo() _____________________________________________________
 	
-	WgHook * WgLayer::_firstHookWithGeo( WgRect& geo ) const
+	Hook * Layer::_firstHookWithGeo( Rect& geo ) const
 	{
 		if( m_baseHook._widget() )
 		{
-			geo = WgRect(0,0,m_size);
+			geo = Rect(0,0,m_size);
 			return const_cast<_BaseHook*>(&m_baseHook);
 		}
 		else
 		{
-			WgLayerHook * p = _firstLayerHook();
+			LayerHook * p = _firstLayerHook();
 			if( p )
 				geo = p->m_geo;
 	
@@ -207,11 +207,11 @@ namespace wg
 	
 	//____ _nextHookWithGeo() _______________________________________________________
 	
-	WgHook * WgLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook * Layer::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgHook * p = pHook->_nextHook();
+		Hook * p = pHook->_nextHook();
 		if( p )
-			geo = ((WgLayerHook*)p)->m_geo;
+			geo = ((LayerHook*)p)->m_geo;
 	
 		return p;
 	}
@@ -219,9 +219,9 @@ namespace wg
 	
 	//____ _lastHookWithGeo() _____________________________________________________
 	
-	WgHook * WgLayer::_lastHookWithGeo( WgRect& geo ) const
+	Hook * Layer::_lastHookWithGeo( Rect& geo ) const
 	{
-		WgLayerHook * p = _lastLayerHook();
+		LayerHook * p = _lastLayerHook();
 		if( p )
 		{
 			geo = p->m_geo;
@@ -229,7 +229,7 @@ namespace wg
 		}
 		else if( m_baseHook._widget() )
 		{
-			geo = WgRect(0,0,m_size);
+			geo = Rect(0,0,m_size);
 			return const_cast<_BaseHook*>(&m_baseHook);
 		}
 		else
@@ -238,9 +238,9 @@ namespace wg
 	
 	//____ _prevHookWithGeo() _______________________________________________________
 	
-	WgHook * WgLayer::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook * Layer::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgHook * p = pHook->_prevHook();
+		Hook * p = pHook->_prevHook();
 		if( p )
 			geo = p->geo();
 	
@@ -250,92 +250,92 @@ namespace wg
 	
 	//____ _onBaseChanged() _______________________________________________________
 	
-	void WgLayer::_onBaseChanged()
+	void Layer::_onBaseChanged()
 	{
-		_onRequestRender( WgRect(0,0,m_size), 0 );
+		_onRequestRender( Rect(0,0,m_size), 0 );
 		_requestResize();
 	}
 	
 	//_____________________________________________________________________________
-	void WgLayer::_BaseHook::_requestRender()
+	void Layer::_BaseHook::_requestRender()
 	{
-		m_pParent->_onRequestRender( WgRect( 0,0, m_pParent->m_size ), 0 );
+		m_pParent->_onRequestRender( Rect( 0,0, m_pParent->m_size ), 0 );
 	}
 	
 	//_____________________________________________________________________________
-	void WgLayer::_BaseHook::_requestRender( const WgRect& rect )
+	void Layer::_BaseHook::_requestRender( const Rect& rect )
 	{
 		m_pParent->_onRequestRender( rect, 0 );
 	}
 	
 	//_____________________________________________________________________________
-	void WgLayer::_BaseHook::_requestResize()
+	void Layer::_BaseHook::_requestResize()
 	{
 		m_pParent->_requestResize();					// Just forward to our parent
 	}
 	
 	
-	//____ WgLayerHook::isInstanceOf() __________________________________________
+	//____ LayerHook::isInstanceOf() __________________________________________
 	
-	bool WgLayerHook::isInstanceOf( const char * pClassName ) const
+	bool LayerHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgHook::isInstanceOf(pClassName);
+		return Hook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgLayerHook::className() _____________________________________________
+	//____ LayerHook::className() _____________________________________________
 	
-	const char * WgLayerHook::className( void ) const
+	const char * LayerHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgLayerHook::cast() __________________________________________________
+	//____ LayerHook::cast() __________________________________________________
 	
-	WgLayerHook_p WgLayerHook::cast( const WgHook_p& pHook )
+	LayerHook_p LayerHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgLayerHook_p( static_cast<WgLayerHook*>(pHook.rawPtr()) );
+			return LayerHook_p( static_cast<LayerHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//_____________________________________________________________________________
-	WgCoord WgLayerHook::globalPos() const
+	Coord LayerHook::globalPos() const
 	{
 		return parent()->globalPos() + m_geo.pos();
 	}
 	
 	//_____________________________________________________________________________
-	WgRect WgLayerHook::globalGeo() const
+	Rect LayerHook::globalGeo() const
 	{
 		return m_geo + parent()->globalPos();
 	}
 	
 	//_____________________________________________________________________________
-	void WgLayerHook::_requestRender()
+	void LayerHook::_requestRender()
 	{
 		parent()->_onRequestRender( m_geo, this );
 	}
 	
 	//_____________________________________________________________________________
-	void WgLayerHook::_requestRender( const WgRect& rect )
+	void LayerHook::_requestRender( const Rect& rect )
 	{
 		parent()->_onRequestRender( rect + m_geo.pos(), this );
 	}
 	
 	//_____________________________________________________________________________
-	WgHook * WgLayerHook::_prevHook() const
+	Hook * LayerHook::_prevHook() const
 	{
-		WgHook * p = _prevLayerHook();
+		Hook * p = _prevLayerHook();
 		if( !p )
 		{
-			WgContainer * c = _parent();
+			Container * c = _parent();
 			if( c != 0 )
 			{
-				WgLayer * l = static_cast<WgLayer*>(c);
+				Layer * l = static_cast<Layer*>(c);
 				if( l->m_baseHook._widget() )	
 					p = &l->m_baseHook;
 			}
@@ -344,16 +344,16 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	WgHook * WgLayerHook::_nextHook() const
+	Hook * LayerHook::_nextHook() const
 	{
 		return _nextLayerHook();
 	}
 	
 	
 	//_____________________________________________________________________________
-	WgLayer_p WgLayerHook::parent() const
+	Layer_p LayerHook::parent() const
 	{ 
-		return static_cast<WgLayer*>(_parent()); 
+		return static_cast<Layer*>(_parent()); 
 	}
 
 } // namespace wg

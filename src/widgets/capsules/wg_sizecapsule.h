@@ -36,44 +36,44 @@
 namespace wg 
 {
 	
-	class WgSizeCapsule;
-	typedef	WgStrongPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_p;
-	typedef	WgWeakPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_wp;
+	class SizeCapsule;
+	typedef	WgStrongPtr<SizeCapsule,Capsule_p>		SizeCapsule_p;
+	typedef	WgWeakPtr<SizeCapsule,Capsule_p>		SizeCapsule_wp;
 	
-	class WgSizeCapsule : public WgCapsule, public WgScalable
+	class SizeCapsule : public Capsule, public Scalable
 	{
 	public:
-		static WgSizeCapsule_p	create() { return WgSizeCapsule_p(new WgSizeCapsule()); }
+		static SizeCapsule_p	create() { return SizeCapsule_p(new SizeCapsule()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgSizeCapsule_p	cast( const WgObject_p& pObject );
+		static SizeCapsule_p	cast( const Object_p& pObject );
 	
-		void	setSizes( WgSize min, WgSize preferred, WgSize max );
+		void	setSizes( Size min, Size preferred, Size max );
 	
-		void	setPreferredSize( WgSize size );
-		void	setMinSize( WgSize size );
-		void	setMaxSize( WgSize size );
+		void	setPreferredSize( Size size );
+		void	setMinSize( Size size );
+		void	setMaxSize( Size size );
 	
-		WgSize	preferredSize() const;
-		WgSize	minSize() const;
-		WgSize	maxSize() const;
+		Size	preferredSize() const;
+		Size	minSize() const;
+		Size	maxSize() const;
 	
 		int		matchingHeight( int width ) const;
 		int		matchingWidth( int height ) const;
 	
 	protected:
-		WgSizeCapsule();
-		virtual ~WgSizeCapsule();
-		virtual WgWidget* _newOfMyType() const { return new WgSizeCapsule(); };
+		SizeCapsule();
+		virtual ~SizeCapsule();
+		virtual Widget* _newOfMyType() const { return new SizeCapsule(); };
 	
 	private:
 		void	_onScaleChanged();
 	
-		WgSize			m_min;
-		WgSize			m_max;
-		WgSize			m_preferred;
+		Size			m_min;
+		Size			m_max;
+		Size			m_preferred;
 	};
 	
 

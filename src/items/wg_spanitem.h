@@ -29,26 +29,26 @@
 namespace wg 
 {
 	
-	class WgSpanItem;
+	class SpanItem;
 	
-	//____ WgSpanHolder ___________________________________________________________
+	//____ SpanHolder ___________________________________________________________
 	
-	class WgSpanHolder : public WgItemHolder
+	class SpanHolder : public ItemHolder
 	{
 	public:
-		virtual void	_onSpanModified( WgSpanItem * pItem ) = 0;
-		virtual int		_spanStepSize( WgSpanItem * pItem ) = 0;
-		virtual int		_spanSkipSize( WgSpanItem * pItem ) = 0;
+		virtual void	_onSpanModified( SpanItem * pItem ) = 0;
+		virtual int		_spanStepSize( SpanItem * pItem ) = 0;
+		virtual int		_spanSkipSize( SpanItem * pItem ) = 0;
 	};
 	
-	//____ WgSpanItem _____________________________________________________________
+	//____ SpanItem _____________________________________________________________
 	
-	class WgSpanItem : public WgItem
+	class SpanItem : public Item
 	{
-		friend class WgSpanHolder;
+		friend class SpanHolder;
 	public:
-		WgSpanItem( WgSpanHolder * pHolder );
-		virtual ~WgSpanItem() {};
+		SpanItem( SpanHolder * pHolder );
+		virtual ~SpanItem() {};
 	
 		bool	setMin( int min );
 		bool	setMax( int max );
@@ -86,9 +86,9 @@ namespace wg
 	
 	
 	protected:
-		void	_onModified() { static_cast<WgSpanHolder*>(m_pHolder)->_onSpanModified(this); }
-		int		_stepSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
-		int		_skipSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
+		void	_onModified() { static_cast<SpanHolder*>(m_pHolder)->_onSpanModified(this); }
+		int		_stepSize() { return static_cast<SpanHolder*>(m_pHolder)->_spanStepSize(this); }
+		int		_skipSize() { return static_cast<SpanHolder*>(m_pHolder)->_spanSkipSize(this); }
 	};
 	
 	

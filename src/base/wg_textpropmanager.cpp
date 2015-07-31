@@ -32,23 +32,23 @@
 namespace wg 
 {
 	
-	Sint16				WgTextpropManager::g_propIndex[256];
+	Sint16				TextpropManager::g_propIndex[256];
 	
-	WgTextpropHolder	WgTextpropManager::g_nullProp;
+	TextpropHolder	TextpropManager::g_nullProp;
 	
 	
-	WgTextpropHolder *	WgTextpropManager::g_pPropBuffer = &g_nullProp;
-	Uint32				WgTextpropManager::g_nPropUsed  = 1;
-	Uint32				WgTextpropManager::g_nPropTotal = 1;
-	Sint16				WgTextpropManager::g_firstFreeProp = -1;
-	bool				WgTextpropManager::g_bMergeSimilar = true;
+	TextpropHolder *	TextpropManager::g_pPropBuffer = &g_nullProp;
+	Uint32				TextpropManager::g_nPropUsed  = 1;
+	Uint32				TextpropManager::g_nPropTotal = 1;
+	Sint16				TextpropManager::g_firstFreeProp = -1;
+	bool				TextpropManager::g_bMergeSimilar = true;
 	
-	WgTextpropManager	dummy;		// Used to bootstrap the system...
+	TextpropManager	dummy;		// Used to bootstrap the system...
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgTextpropManager::WgTextpropManager()
+	TextpropManager::TextpropManager()
 	{
 		// Initialize nullProp
 	
@@ -73,7 +73,7 @@ namespace wg
 	
 	//____ registerProp() _________________________________________________________
 	
-	Uint16 WgTextpropManager::registerProp( const WgTextprop& prop )
+	Uint16 TextpropManager::registerProp( const Textprop& prop )
 	{
 		prop.assertIntegrity();
 	
@@ -85,7 +85,7 @@ namespace wg
 	
 		while( h >= 0 )
 		{
-			WgTextpropHolder * p = &g_pPropBuffer[h];
+			TextpropHolder * p = &g_pPropBuffer[h];
 	
 			if( g_bMergeSimilar && prop._compareTo( &p->m_prop ) )
 				return p->m_id;
@@ -93,13 +93,13 @@ namespace wg
 			h = (Sint16) p->m_next;
 		}
 	
-		// Get an available WgTextprop, fill in data, link and return id.
+		// Get an available Textprop, fill in data, link and return id.
 	
 		if( g_firstFreeProp < 0 )
 			increaseBuffer();
 	
 		Uint16 id = g_firstFreeProp;
-		WgTextpropHolder * p = &g_pPropBuffer[id];
+		TextpropHolder * p = &g_pPropBuffer[id];
 	
 	
 		g_firstFreeProp = p->m_next;
@@ -126,7 +126,7 @@ namespace wg
 	
 	//____ increaseBuffer() ________________________________________________________
 	
-	void WgTextpropManager::increaseBuffer()
+	void TextpropManager::increaseBuffer()
 	{
 		if( g_nPropTotal == 32768 )
 			return;
@@ -148,17 +148,17 @@ namespace wg
 		// problems with smartpointers that otherwise would increase/decrease
 		// references etc.
 	
-		char * pNewBuffer = new char[sizeof(WgTextpropHolder)*newSize];
+		char * pNewBuffer = new char[sizeof(TextpropHolder)*newSize];
 	
-		memcpy( pNewBuffer, g_pPropBuffer, sizeof(WgTextpropHolder)*g_nPropTotal );
-		memset( pNewBuffer+sizeof(WgTextpropHolder)*g_nPropTotal, 0, (newSize - g_nPropTotal)*sizeof(WgTextpropHolder) );
+		memcpy( pNewBuffer, g_pPropBuffer, sizeof(TextpropHolder)*g_nPropTotal );
+		memset( pNewBuffer+sizeof(TextpropHolder)*g_nPropTotal, 0, (newSize - g_nPropTotal)*sizeof(TextpropHolder) );
 	
 		if( g_pPropBuffer != &g_nullProp )
 			delete [] (char*)g_pPropBuffer;
 	
 		// Construct the s_firstFreeProp chain.
 	
-		WgTextpropHolder * p = (WgTextpropHolder*) pNewBuffer;
+		TextpropHolder * p = (TextpropHolder*) pNewBuffer;
 	
 		for( int i = g_nPropTotal ; i < newSize ; i++ )
 		{
@@ -172,15 +172,15 @@ namespace wg
 	
 		// Set the global data.
 	
-		g_pPropBuffer = (WgTextpropHolder*) pNewBuffer;
+		g_pPropBuffer = (TextpropHolder*) pNewBuffer;
 		g_nPropTotal = newSize;
 	}
 	
 	//____ freeProp() ______________________________________________
 	
-	void WgTextpropManager::freeProp( Uint16 hProp )
+	void TextpropManager::freeProp( Uint16 hProp )
 	{
-		WgTextpropHolder * p = &g_pPropBuffer[hProp];
+		TextpropHolder * p = &g_pPropBuffer[hProp];
 	
 		// Remove prop from its g_propIndex chain.
 	
@@ -213,7 +213,7 @@ namespace wg
 	
 		if( g_nPropUsed == 1 )
 		{
-			memcpy( &g_nullProp, g_pPropBuffer, sizeof(WgTextpropHolder) );	// Copy content of prop 0 to nullProp.
+			memcpy( &g_nullProp, g_pPropBuffer, sizeof(TextpropHolder) );	// Copy content of prop 0 to nullProp.
 	
 			delete [] (char*) g_pPropBuffer;	// Typecast to avoid dereferencing Normal delete, so smartpointers gets dereferenced.
 	

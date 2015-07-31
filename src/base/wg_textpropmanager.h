@@ -30,45 +30,45 @@ namespace wg
 {
 	
 	
-	class WgTextprop;
-	class WgTextpropHolder;
-	class WgTextprop_p;
+	class Textprop;
+	class TextpropHolder;
+	class Textprop_p;
 	
 	
-	//____ WgTextpropHolder _______________________________________________________
+	//____ TextpropHolder _______________________________________________________
 	
-	class WgTextpropHolder
+	class TextpropHolder
 	{
-		friend class WgTextprop_p;
-		friend class WgTextpropManager;
+		friend class Textprop_p;
+		friend class TextpropManager;
 	
 	private:
-		WgTextpropHolder() {};
-		~WgTextpropHolder() {};
+		TextpropHolder() {};
+		~TextpropHolder() {};
 	
-		Uint16			m_id;				///< Handle of this WgTextprop.
+		Uint16			m_id;				///< Handle of this Textprop.
 		Uint8			m_indexOfs;			///< Offset in index table, need to know for quick removal.
-		Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and WgChar referencing this prop.
-		Sint16			m_next;				///< Handle of next WgTextprop with same checksum or -1.
-		Sint16			m_prev;				///< Handle of next WgTextprop with same checksum or -1.
+		Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and Char referencing this prop.
+		Sint16			m_next;				///< Handle of next Textprop with same checksum or -1.
+		Sint16			m_prev;				///< Handle of next Textprop with same checksum or -1.
 	
-		WgTextprop		m_prop;
+		Textprop		m_prop;
 	};
 	
-	//____ WgTextpropManager ______________________________________________________
+	//____ TextpropManager ______________________________________________________
 	
-	class WgTextpropManager
+	class TextpropManager
 	{
-		friend class WgChar;
-		friend class WgTextprop;
-		friend class WgTextprop_p;
-		friend class WgTextTool;
-		friend class WgCharBuffer;
-		friend class WgTextMgr;
+		friend class Char;
+		friend class Textprop;
+		friend class Textprop_p;
+		friend class TextTool;
+		friend class CharBuffer;
+		friend class TextMgr;
 	
 	public:
-		WgTextpropManager();
-	//	~WgTextpropManager();
+		TextpropManager();
+	//	~TextpropManager();
 	
 	
 		// These are here for test- and debugging purposes.
@@ -89,13 +89,13 @@ namespace wg
 																	if( g_pPropBuffer[hProp].m_refCnt == 0 )
 																		freeProp( hProp ); }
 	
-		static Uint16	registerProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
+		static Uint16	registerProp( const Textprop& prop );			// DOES NOT INCREASE REFCNT!
 	
-	//	static Uint16 	getProp( const WgFont_p& pFont, const WgColor color, bool bColored,
-	//							 bool bUnderlined, bool bSelected, WgTextLink_p& pLink );
+	//	static Uint16 	getProp( const Font_p& pFont, const Color color, bool bColored,
+	//							 bool bUnderlined, bool bSelected, TextLink_p& pLink );
 	
-		static const WgTextprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
-		static const WgTextprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
+		static const Textprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
+		static const Textprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
 	
 	
 	
@@ -103,16 +103,16 @@ namespace wg
 		static void		increaseBuffer( void );
 	
 	
-		// Table for finding a certain WgTextprop quickly.
+		// Table for finding a certain Textprop quickly.
 		// Uses a checksum on properties to choose one out of 256 linked lists which
 		// is then searched linearly for any already existing object with same properties.
 	
 		static Sint16  				g_propIndex[256];
 	
-		static WgTextpropHolder		g_nullProp;
+		static TextpropHolder		g_nullProp;
 	
 	
-		static WgTextpropHolder *	g_pPropBuffer;
+		static TextpropHolder *	g_pPropBuffer;
 		static Uint32				g_nPropUsed;
 		static Uint32				g_nPropTotal;
 		static Sint16				g_firstFreeProp;

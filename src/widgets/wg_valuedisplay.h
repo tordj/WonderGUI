@@ -35,46 +35,46 @@ namespace wg
 {
 	
 	
-	class WgValueDisplay;
-	typedef	WgStrongPtr<WgValueDisplay,WgWidget_p>		WgValueDisplay_p;
-	typedef	WgWeakPtr<WgValueDisplay,WgWidget_wp>	WgValueDisplay_wp;
+	class ValueDisplay;
+	typedef	WgStrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
+	typedef	WgWeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
 	
-	class WgValueDisplay : public WgWidget, protected WgModValueHolder
+	class ValueDisplay : public Widget, protected ModValueHolder
 	{
 	public:
-		static WgValueDisplay_p	create() { return WgValueDisplay_p(new WgValueDisplay()); }
+		static ValueDisplay_p	create() { return ValueDisplay_p(new ValueDisplay()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgValueDisplay_p	cast( const WgObject_p& pObject );
+		static ValueDisplay_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces _______________________________________
 	
-		WgModValue		value;
+		ModValue		value;
 	
 		//____ Methods __________________________________________
 	
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgValueDisplay();
-		virtual ~WgValueDisplay();
-		virtual WgWidget* _newOfMyType() const { return new WgValueDisplay(); };
+		ValueDisplay();
+		virtual ~ValueDisplay();
+		virtual Widget* _newOfMyType() const { return new ValueDisplay(); };
 	
 		void	_onRefresh();
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
 	private:
-		WgObject * _object() { return this; }
-		void	_onFieldDirty( WgField * pField );
-		void	_onFieldResize( WgField * pField );
-		void	_onValueModified( WgModValueField * pField );
+		Object * _object() { return this; }
+		void	_onFieldDirty( Field * pField );
+		void	_onFieldResize( Field * pField );
+		void	_onValueModified( ModValueField * pField );
 	
-		WgModValueField		m_field;
+		ModValueField		m_field;
 	};
 	
 	

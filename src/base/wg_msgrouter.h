@@ -45,40 +45,40 @@
 namespace wg 
 {
 	
-	class WgRootPanel;
+	class RootPanel;
 	
 	
-	class WgMsgRouter;
-	typedef	WgStrongPtr<WgMsgRouter,WgObject_p>		WgMsgRouter_p;
-	typedef	WgWeakPtr<WgMsgRouter,WgObject_wp>	WgMsgRouter_wp;
+	class MsgRouter;
+	typedef	WgStrongPtr<MsgRouter,Object_p>		MsgRouter_p;
+	typedef	WgWeakPtr<MsgRouter,Object_wp>	MsgRouter_wp;
 	
-	class WgMsgRouter : public WgObject
+	class MsgRouter : public Object
 	{
-	friend class WgWidget;
-	friend class WgRootPanel;
+	friend class Widget;
+	friend class RootPanel;
 	
 	public:
-		static WgMsgRouter_p	create() { return WgMsgRouter_p(new WgMsgRouter()); }
+		static MsgRouter_p	create() { return MsgRouter_p(new MsgRouter()); }
 	
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static WgMsgRouter_p	cast( const WgObject_p& pObject );
+		static MsgRouter_p	cast( const Object_p& pObject );
 	
-		void	setRoot( const WgRootPanel_p& pRoot ); // Temporary fix...
+		void	setRoot( const RootPanel_p& pRoot ); // Temporary fix...
 	
 	
-		bool	post( const WgMsg_p& pMsg );
+		bool	post( const Msg_p& pMsg );
 	
 		void	dispatch();
 	
 		//----
 	
-		bool	setFocusGroup( const WgPanel_p& pFocusGroup );
-		bool	setKeyboardFocus( const WgWidget_p& pFocus );
+		bool	setFocusGroup( const Panel_p& pFocusGroup );
+		bool	setKeyboardFocus( const Widget_p& pFocus );
 	
-		WgPanel_p	focusGroup() const { return m_keyFocusGroup.rawPtr(); }
-		WgWidget_p	keyboardFocus() const { return m_keyFocusWidget.rawPtr(); }
+		Panel_p	focusGroup() const { return m_keyFocusGroup.rawPtr(); }
+		Widget_p	keyboardFocus() const { return m_keyFocusWidget.rawPtr(); }
 	
 		//----
 	
@@ -91,23 +91,23 @@ namespace wg
 	
 		//----
 	
-		bool	broadcastTo( const WgReceiver_p& pReceiver );
-		bool	broadcastTo( const WgMsgFilter& filter, const WgReceiver_p& pReceiver );
-		bool	endBroadcast( const WgReceiver_p& pReceiver );
+		bool	broadcastTo( const Receiver_p& pReceiver );
+		bool	broadcastTo( const MsgFilter& filter, const Receiver_p& pReceiver );
+		bool	endBroadcast( const Receiver_p& pReceiver );
 		
-		WgRouteId	addRoute( const WgObject_p& pSource, const WgReceiver_p& pReceiver );
-		WgRouteId	addRoute( const WgMsgFilter& filter, const WgObject_p& pSource, const WgReceiver_p& pReceiver );
+		WgRouteId	addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
+		WgRouteId	addRoute( const MsgFilter& filter, const Object_p& pSource, const Receiver_p& pReceiver );
 	
-		WgRouteId	addRoute( WgMsgType type, const WgReceiver_p& pReceiver );
-		WgRouteId	addRoute( const WgMsgFilter& filter, WgMsgType type, const WgReceiver_p& pReceiver );
+		WgRouteId	addRoute( MsgType type, const Receiver_p& pReceiver );
+		WgRouteId	addRoute( const MsgFilter& filter, MsgType type, const Receiver_p& pReceiver );
 	
-		WgRouteId	addRoute( WgMsgType type, WgReceiver * pReceiver );		// For calls from constructors.
+		WgRouteId	addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
 	
 		bool	deleteRoute( WgRouteId handle );
-		int		deleteRoutesTo( const WgReceiver_p& pReceiver );
-		int		deleteRoutesFrom( const WgObject_p& pSource );
-		int		deleteRoutesFrom( WgMsgType type );
+		int		deleteRoutesTo( const Receiver_p& pReceiver );
+		int		deleteRoutesFrom( const Object_p& pSource );
+		int		deleteRoutesFrom( MsgType type );
 	
 		int		clearRoutes();
 		int		garbageCollectRoutes();
@@ -115,131 +115,131 @@ namespace wg
 		//----
 	
 	private:
-		WgMsgRouter();
-		~WgMsgRouter();
+		MsgRouter();
+		~MsgRouter();
 	
 		class	Route;
 	
 		void 	_dispatchQueued();
 	
 	
-		void	_finalizeMsg( const WgMsg_p& pMsg );
-		void	_processGeneralMsg( const WgMsg_p& pMsg );
-		void	_broadcast( const WgMsg_p& pMsg );
-		void	_dispatchToSourceRoutes( const WgMsg_p& pMsg );
-		void	_dispatchToTypeRoutes( const WgMsg_p& pMsg );
+		void	_finalizeMsg( const Msg_p& pMsg );
+		void	_processGeneralMsg( const Msg_p& pMsg );
+		void	_broadcast( const Msg_p& pMsg );
+		void	_dispatchToSourceRoutes( const Msg_p& pMsg );
+		void	_dispatchToTypeRoutes( const Msg_p& pMsg );
 	
-		void	_processTick( WgTickMsg * pMsg );
+		void	_processTick( TickMsg * pMsg );
 	
-		void	_processFocusGained( WgFocusGainedMsg * pMsg );
-		void	_processFocusLost( WgFocusLostMsg * pMsg );
+		void	_processFocusGained( FocusGainedMsg * pMsg );
+		void	_processFocusLost( FocusLostMsg * pMsg );
 	
-		void	_processMouseEnter( WgMouseEnterMsg * pMsg );
-		void	_processMouseMove( WgMouseMoveMsg * pMsg );
-		void	_processMousePosition( WgMousePositionMsg * pMsg );
-		void	_processMouseLeave( WgMouseLeaveMsg * pMsg );
+		void	_processMouseEnter( MouseEnterMsg * pMsg );
+		void	_processMouseMove( MouseMoveMsg * pMsg );
+		void	_processMousePosition( MousePositionMsg * pMsg );
+		void	_processMouseLeave( MouseLeaveMsg * pMsg );
 	
-		void	_processMouseButtonPress( WgMousePressMsg * pMsg );
-		void	_processMouseButtonRepeat( WgMouseRepeatMsg * pMsg );
-		void	_processMouseButtonDrag( WgMouseDragMsg * pMsg );
-		void	_processMouseButtonRelease( WgMouseReleaseMsg * pMsg );
-		void	_processMouseButtonClick( WgMouseClickMsg * pMsg );
-		void	_processMouseButtonDoubleClick( WgMouseDoubleClickMsg * pMsg );
+		void	_processMouseButtonPress( MousePressMsg * pMsg );
+		void	_processMouseButtonRepeat( MouseRepeatMsg * pMsg );
+		void	_processMouseButtonDrag( MouseDragMsg * pMsg );
+		void	_processMouseButtonRelease( MouseReleaseMsg * pMsg );
+		void	_processMouseButtonClick( MouseClickMsg * pMsg );
+		void	_processMouseButtonDoubleClick( MouseDoubleClickMsg * pMsg );
 	
-		void	_processMouseWheelRoll( WgWheelRollMsg * pMsg );
+		void	_processMouseWheelRoll( WheelRollMsg * pMsg );
 	
-		void	_processKeyPress( WgKeyPressMsg * pMsg );
-		void	_processKeyRepeat( WgKeyRepeatMsg * pMsg );
-		void	_processKeyRelease( WgKeyReleaseMsg * pMsg );
+		void	_processKeyPress( KeyPressMsg * pMsg );
+		void	_processKeyRepeat( KeyRepeatMsg * pMsg );
+		void	_processKeyRelease( KeyReleaseMsg * pMsg );
 	
-		void	_processCharacter( WgCharacterMsg * pMsg );
+		void	_processCharacter( CharacterMsg * pMsg );
 	
-		int		_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidget_wp>& list );
+		int		_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
 	
-		WgRouteId	_addRoute( const WgObject_p& pSource, Route * pRoute );
-		WgRouteId	_addRoute( WgMsgType type, Route * pRoute );
+		WgRouteId	_addRoute( const Object_p& pSource, Route * pRoute );
+		WgRouteId	_addRoute( MsgType type, Route * pRoute );
 	
 		void 		_updateMarkedWidget(bool bPostMouseMoveMsgs);
-		WgWidget *	_updateEnteredWidgets( WgWidget * pMarkedWidget );
+		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget );
 	
-		void	_setWidgetFocused( WgWidget * pWidget, bool bFocused );
+		void	_setWidgetFocused( Widget * pWidget, bool bFocused );
 	
 	
 		//
 	
-		WgRootPanel_wp	m_pRoot;
+		RootPanel_wp	m_pRoot;
 	
-		std::deque<WgMsg_p>			m_msgQueue;
+		std::deque<Msg_p>			m_msgQueue;
 		bool							m_bIsProcessing;		// Set when we are inside dispatch().
-		std::deque<WgMsg_p>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
+		std::deque<Msg_p>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
 	
 		int64_t			m_time;
-		WgCoord			m_pointerPos;
+		Coord			m_pointerPos;
 		WgPointerStyle	m_pointerStyle;
 		WgModifierKeys	m_modKeys;
 	
 		// Current mouse state
 	
-		WgWidget_wp					m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
+		Widget_wp					m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
 	
-		std::vector<WgWidget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
+		std::vector<Widget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
 	
 	
 		// Current button states
 	
 		bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
 	
-		WgMousePressMsg_p			m_pLatestPressMsgs[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-		WgMouseReleaseMsg_p		m_pLatestReleaseMsgs[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
+		MousePressMsg_p			m_pLatestPressMsgs[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
+		MouseReleaseMsg_p		m_pLatestReleaseMsgs[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
 	
-		WgWidget_wp				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
-		WgWidget_wp				m_previousPressWidgets[WG_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
+		Widget_wp				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+		Widget_wp				m_previousPressWidgets[WG_MAX_BUTTONS+1];	// Widget that received the second latest press, for each button,
 																				// used for double-click handling.
 	
 		// Current keyboard state
 	
 		struct KeyDownInfo
 		{
-			WgKeyPressMsg_p 		pMsg;
-			WgWidget_wp			pWidget;					// Widget that received the press event.
+			KeyPressMsg_p 		pMsg;
+			Widget_wp			pWidget;					// Widget that received the press event.
 		};
 	
 		std::vector<KeyDownInfo*>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 	
 		bool						m_bWindowFocus;			// Set if we have window focus.
-		WgPanel_wp				m_keyFocusGroup;		// Current focus group (if any).
-		WgWidget_wp				m_keyFocusWidget;		// Widget currently having the keyboard focus.
+		Panel_wp				m_keyFocusGroup;		// Current focus group (if any).
+		Widget_wp				m_keyFocusWidget;		// Widget currently having the keyboard focus.
 	
-		std::map<WgWidget_wp,WgWidget_wp>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Widget (value).
+		std::map<Widget_wp,Widget_wp>	m_focusGroupMap;	// Mapping focus groups (key) with their currently focused Widget (value).
 	
 	
 	
-		class Route : public WgLink
+		class Route : public Link
 		{
-		friend class WgMsgRouter;
+		friend class MsgRouter;
 		public:
-			Route( const WgMsgFilter& filter, WgReceiver * pReceiver );
+			Route( const MsgFilter& filter, Receiver * pReceiver );
 			virtual ~Route();
 	
 			LINK_METHODS(Route);
 	
-			void 	dispatch( const WgMsg_p& pMsg );
+			void 	dispatch( const Msg_p& pMsg );
 			bool 	isAlive() const;
-			WgReceiver *	receiver() const;
-			inline const WgMsgFilter& 	filter() const { return m_filter; }
+			Receiver *	receiver() const;
+			inline const MsgFilter& 	filter() const { return m_filter; }
 	
 		protected:
-			WgMsgFilter			m_filter;
+			MsgFilter			m_filter;
 			WgRouteId			m_handle;
-			WgReceiver_wp	m_pReceiver;
+			Receiver_wp	m_pReceiver;
 		};
 	
 	
 		WgRouteId				m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
-		WgChain<Route>			m_broadcasts;
+		Chain<Route>			m_broadcasts;
 	
-		std::map<WgObject_wp,WgChain<Route> >	m_sourceRoutes;
-		std::map<WgMsgType,WgChain<Route> >			m_typeRoutes;
+		std::map<Object_wp,Chain<Route> >	m_sourceRoutes;
+		std::map<MsgType,Chain<Route> >			m_typeRoutes;
 	};
 	
 	

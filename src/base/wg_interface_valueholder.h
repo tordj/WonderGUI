@@ -35,21 +35,21 @@
 namespace wg 
 {
 	
-	class	WgFont;
+	class	Font;
 	
 	
-	class Wg_Interface_ValueHolder : public WgScrollbarTarget
+	class _Interface_ValueHolder : public ScrollbarTarget
 	{
 	public:
 	
-		Wg_Interface_ValueHolder();
+		_Interface_ValueHolder();
 	
-		bool	setFonts( const WgFont_p& _pFonts );
+		bool	setFonts( const Font_p& _pFonts );
 		bool	setRange( Sint64 min, Sint64 max );
 		bool	setUnitSize( int unitSize );
 	
-		virtual void					setFormat( const WgValueFormat_p& format ) = 0;
-		virtual WgValueFormat_p		format() const = 0;
+		virtual void					setFormat( const ValueFormat_p& format ) = 0;
+		virtual ValueFormat_p		format() const = 0;
 	
 		bool	setValue( Sint64 value );
 		bool	setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
@@ -75,7 +75,7 @@ namespace wg
 		virtual void	_valueModified() = 0;				///< Called when value has been modified.
 		virtual void	_rangeModified() = 0;				///< Called when range (and thus fractional value) has been modified.
 	
-		void			_onCloneContent( const Wg_Interface_ValueHolder * pOrg );
+		void			_onCloneContent( const _Interface_ValueHolder * pOrg );
 	
 		bool			_setValue( Sint64 value );
 		bool			_setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)

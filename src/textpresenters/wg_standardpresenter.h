@@ -34,60 +34,60 @@
 namespace wg 
 {
 	
-	class WgStandardPresenter;
-	typedef	WgStrongPtr<WgStandardPresenter,WgTextPresenter_p>		WgStandardPresenter_p;
-	typedef	WgWeakPtr<WgStandardPresenter,WgTextPresenter_wp>	WgStandardPresenter_wp;
+	class StandardPresenter;
+	typedef	WgStrongPtr<StandardPresenter,TextPresenter_p>		StandardPresenter_p;
+	typedef	WgWeakPtr<StandardPresenter,TextPresenter_wp>	StandardPresenter_wp;
 	
-	class WgStandardPresenter : public WgTextPresenter
+	class StandardPresenter : public TextPresenter
 	{
 	public:
-		static WgStandardPresenter_p create() { return WgStandardPresenter_p(new WgStandardPresenter()); }
+		static StandardPresenter_p create() { return StandardPresenter_p(new StandardPresenter()); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgStandardPresenter_p	cast( const WgObject_p& pObject );
+		static StandardPresenter_p	cast( const Object_p& pObject );
 	
 		void			setAlignment( WgOrigo alignment );
 		WgOrigo			alignment() const { return m_alignment; }
 	
-		virtual void	addField( WgPresentableField * pField );
-		virtual void	removeField( WgPresentableField * pField );
+		virtual void	addField( PresentableField * pField );
+		virtual void	removeField( PresentableField * pField );
 	
-		virtual int		coordToChar( const WgPresentableField * pField, WgCoord pos );
-		virtual WgRect	charToRect( const WgPresentableField * pField, int charOfs );
-	
-	
-		virtual void 	renderField( WgPresentableField * pField, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip );
-	
-		virtual void	onTextModified( WgPresentableField * pField, int ofs, int charsRemoved, int charsAdded );
-		virtual void	onFieldResize( WgPresentableField * pField, WgSize newSize );
-		virtual void	onStateChange( WgPresentableField * pField, WgState newState, WgState oldState );
-		virtual void	onStyleChange( WgPresentableField * pField );
-		virtual void	onRefresh( WgPresentableField * pField );
+		virtual int		coordToChar( const PresentableField * pField, Coord pos );
+		virtual Rect	charToRect( const PresentableField * pField, int charOfs );
 	
 	
-		virtual WgSize	preferredSize( const WgPresentableField * pField ) const;
-		virtual int		matchingWidth( const WgPresentableField * pField, int height ) const;
-		virtual int		matchingHeight( const WgPresentableField * pField, int width ) const;
+		virtual void 	renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 	
-		virtual WgRect	rectForRange( const WgPresentableField * pField, int ofs, int length ) const;
+		virtual void	onTextModified( PresentableField * pField, int ofs, int charsRemoved, int charsAdded );
+		virtual void	onFieldResize( PresentableField * pField, Size newSize );
+		virtual void	onStateChange( PresentableField * pField, State newState, State oldState );
+		virtual void	onStyleChange( PresentableField * pField );
+		virtual void	onRefresh( PresentableField * pField );
 	
-		virtual WgString tooltip( const WgPresentableField * pField ) const;
 	
-		virtual int		coordToCaretPos( WgPresentableField * pField, WgCoord pos );
-		virtual int		moveCaret( WgPresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif );
+		virtual Size	preferredSize( const PresentableField * pField ) const;
+		virtual int		matchingWidth( const PresentableField * pField, int height ) const;
+		virtual int		matchingHeight( const PresentableField * pField, int width ) const;
+	
+		virtual Rect	rectForRange( const PresentableField * pField, int ofs, int length ) const;
+	
+		virtual String tooltip( const PresentableField * pField ) const;
+	
+		virtual int		coordToCaretPos( PresentableField * pField, Coord pos );
+		virtual int		moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif );
 	
 	
 	protected:
-		WgStandardPresenter();
-		virtual ~WgStandardPresenter();
+		StandardPresenter();
+		virtual ~StandardPresenter();
 	
 	
 		struct BlockHeader
 		{
 			int nbLines;
-			WgSize preferredSize;
+			Size preferredSize;
 		};
 	
 		struct LineInfo
@@ -100,10 +100,10 @@ namespace wg
 			int spacing;			// Offset from start of line to start of next line.
 		};
 	
-		int				_countLines( const WgCharBuffer * pBuffer );
-		void *			_reallocBlock( WgPresentableField * pField, int lines );
-		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const WgCharBuffer * pBuffer, const WgTextStyle * pBaseStyle,
-												WgState state );
+		int				_countLines( const CharBuffer * pBuffer );
+		void *			_reallocBlock( PresentableField * pField, int lines );
+		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+												State state );
 		bool   			_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines );
 		
 		inline BlockHeader *	_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }

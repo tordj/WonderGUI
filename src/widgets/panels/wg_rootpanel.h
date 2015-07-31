@@ -45,15 +45,15 @@
 namespace wg 
 {
 	
-	class WgWidget;
+	class Widget;
 	
 	
-	class WgRootPanel;
-	typedef	WgStrongPtr<WgRootPanel,WgObject_p>		WgRootPanel_p;
-	typedef	WgWeakPtr<WgRootPanel,WgObject_wp>	WgRootPanel_wp;
+	class RootPanel;
+	typedef	WgStrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	WgWeakPtr<RootPanel,Object_wp>	RootPanel_wp;
 	
 	
-	//____ WgRootPanel ____________________________________________________________
+	//____ RootPanel ____________________________________________________________
 	
 	/**
 	 * @brief	Special widget, being the root of all widgets on screen.
@@ -64,102 +64,102 @@ namespace wg
 	 */
 	
 	
-	class WgRootPanel : public WgObject
+	class RootPanel : public Object
 	{
-		friend class WgContainer;
+		friend class Container;
 	
 	public:
-		static WgRootPanel_p	create() { return WgRootPanel_p(new WgRootPanel()); }
-		static WgRootPanel_p	create( const WgGfxDevice_p& pDevice ) { return WgRootPanel_p(new WgRootPanel(pDevice)); }
+		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
+		static RootPanel_p	create( const GfxDevice_p& pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
 	
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static WgRootPanel_p	cast( const WgObject_p& pObject );
+		static RootPanel_p	cast( const Object_p& pObject );
 	
-		bool					setGfxDevice( const WgGfxDevice_p& pDevice );
-		inline WgGfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
+		bool					setGfxDevice( const GfxDevice_p& pDevice );
+		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 	
-		bool					setGeo( const WgRect& geo );
-		WgRect					geo() const;
+		bool					setGeo( const Rect& geo );
+		Rect					geo() const;
 	
 		bool					setVisible( bool bVisible );
 		bool					isVisible() const { return m_bVisible; }
 	
-		inline WgWidget_p		widget() const { return m_hook._widget(); }
-		WgHook_p				setWidget( const WgWidget_p& pWidget );
+		inline Widget_p		widget() const { return m_hook._widget(); }
+		Hook_p				setWidget( const Widget_p& pWidget );
 		bool					removeWidget();
 		bool					clear();
 	
-		WgWidget_p				findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidget_p(_findWidget(ofs-m_geo.pos(),mode)); }
+		Widget_p				findWidget( const Coord& ofs, WgSearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
 		inline int				nbDirtyRects() const { return m_dirtyPatches.size(); }
-		inline const WgRect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
+		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
 	
 		inline int				nbUpdatedRects() const { return m_updatedPatches.size(); }
-		inline const WgRect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
+		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
 	
 	
 		bool	render();
-		bool	render( const WgRect& clip );
+		bool	render( const Rect& clip );
 	
 		bool	beginRender();
-		bool	renderSection( const WgRect& clip );
+		bool	renderSection( const Rect& clip );
 		bool	endRender();
 	
-		inline void	addDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
+		inline void	addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
 	
 	
 	protected:
-		WgRootPanel();
-		WgRootPanel( const WgGfxDevice_p& pGfxDevice );
-		~WgRootPanel();
+		RootPanel();
+		RootPanel( const GfxDevice_p& pGfxDevice );
+		~RootPanel();
 	
-		class Hook : public WgHook
+		class MyHook : public Hook
 		{
-			friend class WgRootPanel;
+			friend class RootPanel;
 		public:
-			Hook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
-			~Hook();
+			MyHook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
+			~MyHook();
 	
 			const char *type( void ) const;
 			static const char * classType();
 	
-			WgCoord			pos() const;
-			WgSize			size() const;
-			WgRect			geo() const;
-			WgCoord			globalPos() const;
-			WgRect			globalGeo() const;
+			Coord			pos() const;
+			Size			size() const;
+			Rect			geo() const;
+			Coord			globalPos() const;
+			Rect			globalGeo() const;
 	
 	
 		protected:
 	
 			void			_requestRender();
-			void			_requestRender( const WgRect& rect );
+			void			_requestRender( const Rect& rect );
 			void			_requestResize();
 	
-			WgHook *		_prevHook() const;
-			WgHook *		_nextHook() const;
-			WgContainer *	_parent() const;
-			WgRootPanel *	_root() const;
+			Hook *		_prevHook() const;
+			Hook *		_nextHook() const;
+			Container *	_parent() const;
+			RootPanel *	_root() const;
 	
-			WgRootPanel *	m_pRoot;
+			RootPanel *	m_pRoot;
 		};
 	
-		WgWidget *			_findWidget( const WgCoord& ofs, WgSearchMode mode );
+		Widget *			_findWidget( const Coord& ofs, WgSearchMode mode );
 	
-		WgHook*				_firstHook() const { return m_hook._widget()? const_cast<Hook*>(&m_hook):0; }
-		WgHook*				_lastHook() const { return m_hook._widget()? const_cast<Hook*>(&m_hook):0; }
+		Hook*				_firstHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
+		Hook*				_lastHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
 	
-		bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
-		bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
+		bool 				_focusRequested( Hook * pBranch, Widget * pWidgetRequesting );
+		bool 				_focusReleased( Hook * pBranch, Widget * pWidgetReleasing );
 	
-		WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
-		WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
+		Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
+		Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
 	
-		WgGfxDevice_p		m_pGfxDevice;
-		Hook				m_hook;
-		WgRect				m_geo;
+		GfxDevice_p		m_pGfxDevice;
+		MyHook				m_hook;
+		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;
 	};

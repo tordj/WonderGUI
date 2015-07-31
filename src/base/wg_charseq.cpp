@@ -35,42 +35,42 @@ namespace wg
 	//____ Constructors ____________________________________________________________
 	
 	
-	WgCharSeq::WgCharSeq( const char * pChar )
+	CharSeq::CharSeq( const char * pChar )
 	{
 		m_type 		= ESCAPED_UTF8;
 	    m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
+	    m_nbChars	= TextTool::countNonFormattingChars(pChar);
 	}
 	
-	WgCharSeq::WgCharSeq( const char * pChar, int len )
+	CharSeq::CharSeq( const char * pChar, int len )
 	{
 		m_type 		= ESCAPED_UTF8;
 		m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
+	    m_nbChars	= TextTool::countNonFormattingChars(pChar, len);
 	}
 	
-	WgCharSeq::WgCharSeq( const Uint16 * pChar )
+	CharSeq::CharSeq( const Uint16 * pChar )
 	{
 		m_type 		= ESCAPED_UTF16;
 		m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::countNonFormattingChars(pChar);
+	    m_nbChars	= TextTool::countNonFormattingChars(pChar);
 	
 	}
-	WgCharSeq::WgCharSeq( const Uint16 * pChar, int len )
+	CharSeq::CharSeq( const Uint16 * pChar, int len )
 	{
 		m_type 		= ESCAPED_UTF16;
 		m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::countNonFormattingChars(pChar, len);
+	    m_nbChars	= TextTool::countNonFormattingChars(pChar, len);
 	}
 	
-	WgCharSeq::WgCharSeq( const std::string& str )
+	CharSeq::CharSeq( const std::string& str )
 	{
 		m_type 		= ESCAPED_UTF8;
 	    m_pChar     = (void *) str.c_str();
-	    m_nbChars   = WgTextTool::countNonFormattingChars(str.c_str());
+	    m_nbChars   = TextTool::countNonFormattingChars(str.c_str());
 	}
 	
-	WgCharSeq::WgCharSeq( const std::string& str, int ofs, int len )
+	CharSeq::CharSeq( const std::string& str, int ofs, int len )
 	{
 		const char * p = str.c_str();
 		int strlen = str.length();
@@ -84,17 +84,17 @@ namespace wg
 	
 		m_type 		= ESCAPED_UTF8;
 	    m_pChar     = p + ofs;
-	    m_nbChars   = WgTextTool::countNonFormattingChars(p+ofs, len);
+	    m_nbChars   = TextTool::countNonFormattingChars(p+ofs, len);
 	}
 	
-	WgCharSeq::WgCharSeq( const std::wstring& str )
+	CharSeq::CharSeq( const std::wstring& str )
 	{
 	    m_type      = ESCAPED_UTF16;
 	    m_pChar     = (void *) str.c_str();
-	    m_nbChars   = WgTextTool::countNonFormattingChars( (Uint16*) str.c_str());
+	    m_nbChars   = TextTool::countNonFormattingChars( (Uint16*) str.c_str());
 	}
 	
-	WgCharSeq::WgCharSeq( const std::wstring& str, int ofs, int len )
+	CharSeq::CharSeq( const std::wstring& str, int ofs, int len )
 	{
 		const wchar_t * p = str.c_str();
 		int strlen = str.length();
@@ -108,18 +108,18 @@ namespace wg
 	
 	    m_type      = ESCAPED_UTF16;
 	    m_pChar     = p + ofs;
-	    m_nbChars   = WgTextTool::countNonFormattingChars( ((Uint16*)p)+ofs, len);
+	    m_nbChars   = TextTool::countNonFormattingChars( ((Uint16*)p)+ofs, len);
 	}
 	
 	
-	WgCharSeq::WgCharSeq( const WgChar * pChar )
+	CharSeq::CharSeq( const Char * pChar )
 	{
 	    m_type		= WGCHAR;
 	    m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::strlen(pChar);
+	    m_nbChars	= TextTool::strlen(pChar);
 	}
 	
-	WgCharSeq::WgCharSeq( const WgChar * pChar, int len )
+	CharSeq::CharSeq( const Char * pChar, int len )
 	{
 	    m_type      = WGCHAR;
 	    m_pChar     = (void *) pChar;
@@ -128,14 +128,14 @@ namespace wg
 	
 	
 	
-	WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer )
+	CharSeq::CharSeq( const CharBuffer * pBuffer )
 	{
 		m_type		= WGCHAR;
 		m_pChar		= (void *) pBuffer->chars();
 		m_nbChars	= pBuffer->nbChars();
 	}
 	
-	WgCharSeq::WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len )
+	CharSeq::CharSeq( const CharBuffer * pBuffer, int ofs, int len )
 	{
 		int realNbChars = (int) pBuffer->nbChars();
 		if( ofs + len > realNbChars )
@@ -150,14 +150,14 @@ namespace wg
 		m_nbChars	= len;
 	}
 	
-	WgCharSeq::WgCharSeq( const WgString& str )
+	CharSeq::CharSeq( const String& str )
 	{
 		m_type		= WGCHAR;
 		m_pChar		= (void *) str.chars();
 		m_nbChars	= str.length();
 	}
 	
-	WgCharSeq::WgCharSeq( const WgString& str, int ofs, int len )
+	CharSeq::CharSeq( const String& str, int ofs, int len )
 	{
 		int realNbChars = (int) str.length();
 		if( ofs + len > realNbChars )
@@ -172,7 +172,7 @@ namespace wg
 		m_nbChars	= len;
 	}
 	
-	WgCharSeq::WgCharSeq( const WgCharSeq& seq, int ofs, int len )
+	CharSeq::CharSeq( const CharSeq& seq, int ofs, int len )
 	{
 		if( ofs > seq.m_nbChars )
 			ofs = seq.m_nbChars;
@@ -186,12 +186,12 @@ namespace wg
 		switch( seq.m_type )
 		{
 			case WGCHAR:
-				m_pChar = ((const WgChar *)seq.m_pChar) + ofs;
+				m_pChar = ((const Char *)seq.m_pChar) + ofs;
 				break;
 			case UTF8:
 			{
 				const char * p = (const char *) seq.m_pChar;
-				WgTextTool::forwardCharacters( p, ofs );
+				TextTool::forwardCharacters( p, ofs );
 				m_pChar = p;
 				break;
 			}
@@ -201,14 +201,14 @@ namespace wg
 			case ESCAPED_UTF8:
 			{
 				const char * p = (const char *) seq.m_pChar;
-				WgTextTool::forwardEscapedCharacters( p, ofs );
+				TextTool::forwardEscapedCharacters( p, ofs );
 				m_pChar = p;
 				break;
 			}
 			case ESCAPED_UTF16:
 			{
 				const Uint16 * p = (const Uint16 *) seq.m_pChar;
-				WgTextTool::forwardEscapedCharacters( p, ofs );
+				TextTool::forwardEscapedCharacters( p, ofs );
 				m_pChar = p;
 				break;
 			}
@@ -227,26 +227,26 @@ namespace wg
 	
 	//____ lengthUtf8() ___________________________________________________________
 	
-	int WgCharSeq::lengthUtf8() const
+	int CharSeq::lengthUtf8() const
 	{
 		switch( m_type )
 		{
 		case WGCHAR:
-			return (int) WgTextTool::getTextSizeUTF8( (const WgChar*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeUTF8( (const Char*) m_pChar, m_nbChars );
 		case UTF8:
 		{
 			const char * p = (const char *) m_pChar;
-			WgTextTool::forwardCharacters( p, m_nbChars );
+			TextTool::forwardCharacters( p, m_nbChars );
 			return p - (const char *) m_pChar;
 		}
 		case UTF16:
-			return (int) WgTextTool::getTextSizeUTF8( (const Uint16*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeUTF8( (const Uint16*) m_pChar, m_nbChars );
 		case ESCAPED_UTF8:
-			return (int) WgTextTool::getTextSizeStrippedUTF8( (const char*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeStrippedUTF8( (const char*) m_pChar, m_nbChars );
 		case ESCAPED_UTF16:
-			return (int) WgTextTool::getTextSizeStrippedUTF8( (const Uint16*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeStrippedUTF8( (const Uint16*) m_pChar, m_nbChars );
 		case MAP8:
-			return (int) WgTextTool::getTextSizeUTF8( (const char *) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+			return (int) TextTool::getTextSizeUTF8( (const char *) m_pChar, ((CharSeq8*)this)->m_codepage, m_nbChars );
 		default:						// EMPTY
 			return 0;
 		}
@@ -255,7 +255,7 @@ namespace wg
 	
 	//____ getNbLines() ____________________________________________________________
 	
-	int WgCharSeq::getNbLines() const
+	int CharSeq::getNbLines() const
 	{
 		int nbLines = 1;		// We always have at least one line...
 	
@@ -263,7 +263,7 @@ namespace wg
 		{
 			case WGCHAR:
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					if( ((const WgChar*)m_pChar)[i].isEndOfLine() )
+					if( ((const Char*)m_pChar)[i].isEndOfLine() )
 						nbLines++;
 				break;
 			case UTF8:
@@ -271,7 +271,7 @@ namespace wg
 			{
 				const char * p = (const char *) m_pChar;
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					if( WgTextTool::readChar( p ) == '\n' )
+					if( TextTool::readChar( p ) == '\n' )
 						nbLines++;
 				break;
 			}
@@ -297,49 +297,49 @@ namespace wg
 	
 	//___ copyTo() _________________________________________________________________
 	
-	void WgCharSeq::copyTo( WgChar * pDest ) const
+	void CharSeq::copyTo( Char * pDest ) const
 	{
 		switch( m_type )
 		{
 			case WGCHAR:
-				WgTextTool::copyChars( (WgChar*) m_pChar, pDest, m_nbChars );
+				TextTool::copyChars( (Char*) m_pChar, pDest, m_nbChars );
 				break;
 	
 			case UTF8:
 			{
 				const char * pSrc = (const char*) m_pChar;
 	
-				WgTextTool::derefProps( pDest, m_nbChars );
-				WgTextTool::readString( pSrc, pDest, m_nbChars );
+				TextTool::derefProps( pDest, m_nbChars );
+				TextTool::readString( pSrc, pDest, m_nbChars );
 				break;
 			}
 			case UTF16:
 			{
 				const Uint16 * pSrc = (const Uint16*) m_pChar;
 	
-				WgTextTool::derefProps( pDest, m_nbChars );
-				WgTextTool::readString( pSrc, pDest, m_nbChars );
+				TextTool::derefProps( pDest, m_nbChars );
+				TextTool::readString( pSrc, pDest, m_nbChars );
 				break;
 			}
 			case ESCAPED_UTF8:
 			{
 				const char * pSrc = (const char*) m_pChar;
-				WgTextTool::derefProps( pDest, m_nbChars );
-				WgTextTool::readFormattedString( pSrc, pDest, m_nbChars );
+				TextTool::derefProps( pDest, m_nbChars );
+				TextTool::readFormattedString( pSrc, pDest, m_nbChars );
 				break;
 			}
 			case ESCAPED_UTF16:
 			{
 				const Uint16 * pSrc = (const Uint16*) m_pChar;
-				WgTextTool::derefProps( pDest, m_nbChars );
-				WgTextTool::readFormattedString( pSrc, pDest, m_nbChars );
+				TextTool::derefProps( pDest, m_nbChars );
+				TextTool::readFormattedString( pSrc, pDest, m_nbChars );
 				break;
 			}
 			case MAP8:
 			{
 				const char * pSrc = (const char*) m_pChar;
-				WgTextTool::derefProps( pDest, m_nbChars );
-				WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, pDest, m_nbChars );
+				TextTool::derefProps( pDest, m_nbChars );
+				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, pDest, m_nbChars );
 				break;
 			}
 	
@@ -348,28 +348,28 @@ namespace wg
 		}
 	}
 	
-	//____ getWgChars() ______________________________________________________________
+	//____ getChars() ______________________________________________________________
 	
-	const WgCharSeq::WgCharBasket WgCharSeq::getWgChars() const
+	const CharSeq::CharBasket CharSeq::getChars() const
 	{
-		WgCharBasket	basket;
+		CharBasket	basket;
 	
 		switch( m_type )
 		{
 			case WGCHAR:
-				basket.ptr = (const WgChar *) m_pChar;
+				basket.ptr = (const Char *) m_pChar;
 				basket.length = m_nbChars;
 				basket.bIsOwner = false;
 				return basket;
 	
 			case UTF8:
 			{
-				int bytes = sizeof(WgChar)*m_nbChars;
+				int bytes = sizeof(Char)*m_nbChars;
 	
-				WgChar * p = (WgChar *) new char[bytes];
+				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
 				const char * pSrc = (char*) m_pChar;
-				WgTextTool::readString( pSrc, p, m_nbChars );
+				TextTool::readString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -378,12 +378,12 @@ namespace wg
 			}
 			case UTF16:
 			{
-				int bytes = sizeof(WgChar)*m_nbChars;
+				int bytes = sizeof(Char)*m_nbChars;
 	
-				WgChar * p = (WgChar *) new char[bytes];
+				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
 				const Uint16 * pSrc = (Uint16*) m_pChar;
-				WgTextTool::readString( pSrc, p, m_nbChars );
+				TextTool::readString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -392,12 +392,12 @@ namespace wg
 			}
 			case ESCAPED_UTF8:
 			{
-				int bytes = sizeof(WgChar)*m_nbChars;
+				int bytes = sizeof(Char)*m_nbChars;
 	
-				WgChar * p = (WgChar *) new char[bytes];
+				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
 				const char * pSrc = (char*) m_pChar;
-				WgTextTool::readFormattedString( pSrc, p, m_nbChars );
+				TextTool::readFormattedString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -406,12 +406,12 @@ namespace wg
 			}
 			case ESCAPED_UTF16:
 			{
-				int bytes = sizeof(WgChar)*m_nbChars;
+				int bytes = sizeof(Char)*m_nbChars;
 	
-				WgChar * p = (WgChar *) new char[bytes];
+				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
 				const Uint16 * pSrc = (Uint16*) m_pChar;
-				WgTextTool::readFormattedString( pSrc, p, m_nbChars );
+				TextTool::readFormattedString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -420,12 +420,12 @@ namespace wg
 			}
 			case MAP8:
 			{
-				int bytes = sizeof(WgChar)*m_nbChars;
+				int bytes = sizeof(Char)*m_nbChars;
 	
-				WgChar * p = (WgChar *) new char[bytes];
+				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
 				const char * pSrc = (char*) m_pChar;
-				WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
+				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, p, m_nbChars );
 	
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -448,7 +448,7 @@ namespace wg
 	
 	//____ getUnicode() ____________________________________________________________
 	
-	const WgCharSeq::UnicodeBasket WgCharSeq::getUnicode() const
+	const CharSeq::UnicodeBasket CharSeq::getUnicode() const
 	{
 		UnicodeBasket	basket;
 	
@@ -458,7 +458,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					p[i] = ((WgChar*)m_pChar)[i].getGlyph();
+					p[i] = ((Char*)m_pChar)[i].getGlyph();
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -468,7 +468,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::readString( pSrc, p, m_nbChars );
+				TextTool::readString( pSrc, p, m_nbChars );
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -484,7 +484,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
+				TextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -495,7 +495,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const Uint16 * pSrc = (const Uint16 *) m_pChar;
-				WgTextTool::stripTextCommands( pSrc, p, m_nbChars );
+				TextTool::stripTextCommands( pSrc, p, m_nbChars );
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -506,7 +506,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
+				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, p, m_nbChars );
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -523,7 +523,7 @@ namespace wg
 	
 	//____ getStdWstring() ____________________________________________________________
 	
-	std::wstring WgCharSeq::getStdWstring() const
+	std::wstring CharSeq::getStdWstring() const
 	{
 		std::wstring str;
 	
@@ -533,7 +533,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					p[i] = ((WgChar*)m_pChar)[i].getGlyph();
+					p[i] = ((Char*)m_pChar)[i].getGlyph();
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;
@@ -542,7 +542,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::readString( pSrc, p, m_nbChars );
+				TextTool::readString( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;
@@ -555,7 +555,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
+				TextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;
@@ -565,7 +565,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const Uint16 * pSrc = (const Uint16 *) m_pChar;
-				WgTextTool::stripTextCommands( pSrc, p, m_nbChars );
+				TextTool::stripTextCommands( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;
@@ -575,7 +575,7 @@ namespace wg
 			{
 				Uint16 * p = new Uint16[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
-				WgTextTool::readString( pSrc, ((WgCharSeq8*)this)->m_codepage, p, m_nbChars );
+				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;
@@ -588,7 +588,7 @@ namespace wg
 	
 	//____ getUtf8() _______________________________________________________________
 	
-	const WgCharSeq::UTF8Basket WgCharSeq::getUtf8() const
+	const CharSeq::UTF8Basket CharSeq::getUtf8() const
 	{
 		UTF8Basket	basket;
 	
@@ -596,9 +596,9 @@ namespace wg
 		{
 			case WGCHAR:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (Char*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (Char*) m_pChar, p, size+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -608,16 +608,16 @@ namespace wg
 			{
 				basket.ptr = (const char *) m_pChar;
 				const char * p = (const char *) m_pChar;
-				WgTextTool::forwardCharacters( p, m_nbChars );
+				TextTool::forwardCharacters( p, m_nbChars );
 				basket.length = p - (const char *) m_pChar;
 				basket.bIsOwner = false;
 				return basket;
 			}
 			case UTF16:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -625,9 +625,9 @@ namespace wg
 			}
 			case ESCAPED_UTF8:
 			{
-				int size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
+				TextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -636,9 +636,9 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				int size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
+				TextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -647,9 +647,9 @@ namespace wg
 	
 			case MAP8:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (char*) m_pChar, ((CharSeq8*)this)->m_codepage, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
+				TextTool::getTextUTF8( (char*) m_pChar, ((CharSeq8*)this)->m_codepage, p, size+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -667,7 +667,7 @@ namespace wg
 	
 	//____ getStdString() _________________________________________________________
 	
-	std::string WgCharSeq::getStdString() const
+	std::string CharSeq::getStdString() const
 	{
 	//	char	temp[512];
 	
@@ -675,9 +675,9 @@ namespace wg
 		{
 			case WGCHAR:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (WgChar*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (Char*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (WgChar*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (Char*) m_pChar, p, size+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -685,24 +685,24 @@ namespace wg
 			case UTF8:
 			{
 				const char * p = (const char *) m_pChar;
-				WgTextTool::forwardCharacters( p, m_nbChars );
+				TextTool::forwardCharacters( p, m_nbChars );
 				int size = p - (const char *) m_pChar;
 				return std::string( p, size );
 			}
 			case UTF16:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
 			}
 			case ESCAPED_UTF8:
 			{
-				int size = WgTextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (char *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
+				TextTool::stripTextCommands( (char*) m_pChar, p, size+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -710,9 +710,9 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				int size = WgTextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
+				TextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -720,9 +720,9 @@ namespace wg
 	
 			case MAP8:
 			{
-				int size = WgTextTool::getTextSizeUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (char*) m_pChar, ((CharSeq8*)this)->m_codepage, m_nbChars );
 				char * p = new char[size+1];
-				WgTextTool::getTextUTF8( (char*) m_pChar, ((WgCharSeq8*)this)->m_codepage, p, size+1 );
+				TextTool::getTextUTF8( (char*) m_pChar, ((CharSeq8*)this)->m_codepage, p, size+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -737,53 +737,53 @@ namespace wg
 	
 	//____ CharBasket::Destructor __________________________________________________
 	
-	WgCharSeq::WgCharBasket::~WgCharBasket()
+	CharSeq::CharBasket::~CharBasket()
 	{
 		if( bIsOwner )
 		{
-			WgTextTool::derefProps( (WgChar*) ptr, length );
+			TextTool::derefProps( (Char*) ptr, length );
 			delete [] (char*) ptr;
 		}
 	}
 	
-	//____ WgCharSeqLiteral::Constructors _________________________________________
+	//____ CharSeqLiteral::Constructors _________________________________________
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const char * pChar)
+	CharSeqLiteral::CharSeqLiteral( const char * pChar)
 	{
 	    m_type		= UTF8;
 	    m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::countChars(pChar);
+	    m_nbChars	= TextTool::countChars(pChar);
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const char * pChar, int len )
+	CharSeqLiteral::CharSeqLiteral( const char * pChar, int len )
 	{
 	    m_type		= UTF8;
 	    m_pChar		= (void *) pChar;
 	    m_nbChars	= len;
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const Uint16 * pChar )
+	CharSeqLiteral::CharSeqLiteral( const Uint16 * pChar )
 	{
 	    m_type		= UTF16;
 	    m_pChar		= (void *) pChar;
-	    m_nbChars	= WgTextTool::strlen(pChar);
+	    m_nbChars	= TextTool::strlen(pChar);
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const Uint16 * pChar, int len )
+	CharSeqLiteral::CharSeqLiteral( const Uint16 * pChar, int len )
 	{
 	    m_type		= UTF16;
 	    m_pChar		= (void *) pChar;
 	    m_nbChars	= len;
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const std::string& str )
+	CharSeqLiteral::CharSeqLiteral( const std::string& str )
 	{
 	    m_type      = UTF8;
 	    m_pChar     = (void *) str.c_str();
 	    m_nbChars   = str.length();
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const std::string& str, int ofs, int len )
+	CharSeqLiteral::CharSeqLiteral( const std::string& str, int ofs, int len )
 	{
 		const char * p = str.c_str();
 		int strlen = str.length();
@@ -797,18 +797,18 @@ namespace wg
 	
 	    m_type      = UTF8;
 	    m_pChar     = p + ofs;
-	    m_nbChars   = WgTextTool::countChars(p+ofs, len);
+	    m_nbChars   = TextTool::countChars(p+ofs, len);
 	}
 	
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const std::wstring& str )
+	CharSeqLiteral::CharSeqLiteral( const std::wstring& str )
 	{
 	    m_type      = UTF16;
 	    m_pChar     = (void *) str.c_str();
 	    m_nbChars   = str.length();
 	}
 	
-	WgCharSeqLiteral::WgCharSeqLiteral( const std::wstring& str, int ofs, int len )
+	CharSeqLiteral::CharSeqLiteral( const std::wstring& str, int ofs, int len )
 	{
 		const wchar_t * p = str.c_str();
 		int strlen = str.length();
@@ -826,10 +826,10 @@ namespace wg
 	}
 	
 	
-	//____ WgCharSeq8::Constructors _________________________________________
+	//____ CharSeq8::Constructors _________________________________________
 	
 	
-	WgCharSeq8::WgCharSeq8( const char * pChar, WgCodePage codePage )
+	CharSeq8::CharSeq8( const char * pChar, WgCodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= (void *) pChar;
@@ -838,7 +838,7 @@ namespace wg
 	}
 	
 	
-	WgCharSeq8::WgCharSeq8( const char * pChar, int len, WgCodePage codePage )
+	CharSeq8::CharSeq8( const char * pChar, int len, WgCodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= (void *) pChar;
@@ -846,7 +846,7 @@ namespace wg
 		m_codepage	= codePage;
 	}
 	
-	WgCharSeq8::WgCharSeq8( const std::string& str, WgCodePage codePage )
+	CharSeq8::CharSeq8( const std::string& str, WgCodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= str.c_str();
@@ -854,7 +854,7 @@ namespace wg
 		m_codepage	= codePage;
 	}
 	
-	WgCharSeq8::WgCharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage )
+	CharSeq8::CharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage )
 	{
 		const char * p = str.c_str();
 		int strlen = str.length();

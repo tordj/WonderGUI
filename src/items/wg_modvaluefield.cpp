@@ -28,27 +28,27 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgModValueField::clear()
+	void ModValueField::clear()
 	{
-		WgValueField::clear();
+		ValueField::clear();
 		m_minValue = INT64_MIN;
 		m_maxValue = INT64_MAX;
 	}
 	
 	//____ set() ___________________________________________________________________
 	
-	bool WgModValueField::set( Sint64 value, int scale )
+	bool ModValueField::set( Sint64 value, int scale )
 	{
 		if( value > m_maxValue )
 			value = m_maxValue;
 		else if( value < m_minValue )
 			value = m_minValue;
-		return WgValueField::set(value,scale);
+		return ValueField::set(value,scale);
 	}
 	
 	//____ setRange() ______________________________________________________________
 	
-	bool WgModValueField::setRange( Sint64 min, Sint64 max )
+	bool ModValueField::setRange( Sint64 min, Sint64 max )
 	{
 		if( min > max )
 			return false;
@@ -60,7 +60,7 @@ namespace wg
 		LIMIT( val, min, max );
 		m_value = val;
 		if( val != m_value )
-			WgValueField::set(val, m_scale);
+			ValueField::set(val, m_scale);
 		return true;
 	}	
 

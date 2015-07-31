@@ -28,31 +28,31 @@ namespace wg
 	
 	using namespace WgUtil;
 	
-	const char WgExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
+	const char ExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgExtendedSkin::isInstanceOf( const char * pClassName ) const
+	bool ExtendedSkin::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgSkin::isInstanceOf(pClassName);
+		return Skin::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgExtendedSkin::className( void ) const
+	const char * ExtendedSkin::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgExtendedSkin_p WgExtendedSkin::cast( const WgObject_p& pObject )
+	ExtendedSkin_p ExtendedSkin::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgExtendedSkin_p( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
+			return ExtendedSkin_p( static_cast<ExtendedSkin*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -60,14 +60,14 @@ namespace wg
 	
 	//____ setContentPadding() ____________________________________________________
 	
-	void WgExtendedSkin::setContentPadding( WgBorder padding )
+	void ExtendedSkin::setContentPadding( Border padding )
 	{
 		m_contentPadding = padding;
 	}
 	
 	//____ setContentShift() ______________________________________________________
 	
-	void WgExtendedSkin::setContentShift( WgStateEnum state, WgCoord shift )
+	void ExtendedSkin::setContentShift( StateEnum state, Coord shift )
 	{
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
@@ -75,7 +75,7 @@ namespace wg
 	
 	//____ setHoveredContentShift() _______________________________________________
 	
-	void WgExtendedSkin::setHoveredContentShift( WgCoord shift )
+	void ExtendedSkin::setHoveredContentShift( Coord shift )
 	{
 		m_contentShift[_stateToIndex(WG_STATE_HOVERED)] = shift;
 		m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
@@ -90,7 +90,7 @@ namespace wg
 	
 	//____ setPressedContentShift() _______________________________________________
 	
-	void WgExtendedSkin::setPressedContentShift( WgCoord shift )
+	void ExtendedSkin::setPressedContentShift( Coord shift )
 	{
 		m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
 		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
@@ -100,7 +100,7 @@ namespace wg
 	
 	//____ setSelectedContentShift() ______________________________________________
 	
-	void WgExtendedSkin::setSelectedContentShift( WgCoord shift )
+	void ExtendedSkin::setSelectedContentShift( Coord shift )
 	{
 		m_contentShift[_stateToIndex(WG_STATE_SELECTED)] = shift;
 		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ setFocusedContentShift() _______________________________________________
 	
-	void WgExtendedSkin::setFocusedContentShift( WgCoord shift )
+	void ExtendedSkin::setFocusedContentShift( Coord shift )
 	{
 		m_contentShift[_stateToIndex(WG_STATE_FOCUSED)] = shift;
 		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
@@ -124,28 +124,28 @@ namespace wg
 	
 	//____ minSize() ______________________________________________________________
 	
-	WgSize WgExtendedSkin::minSize() const
+	Size ExtendedSkin::minSize() const
 	{
-		return WgSize(m_contentPadding.width(), m_contentPadding.height() );
+		return Size(m_contentPadding.width(), m_contentPadding.height() );
 	}
 	
 	//____ minSize() ______________________________________________________________
 	
-	WgSize WgExtendedSkin::preferredSize() const
+	Size ExtendedSkin::preferredSize() const
 	{
-		return WgSize(m_contentPadding.width(), m_contentPadding.height() );
+		return Size(m_contentPadding.width(), m_contentPadding.height() );
 	}
 	
 	//____ sizeForContent() _______________________________________________________
 	
-	WgSize WgExtendedSkin::sizeForContent( const WgSize contentSize ) const
+	Size ExtendedSkin::sizeForContent( const Size contentSize ) const
 	{
 		return contentSize + m_contentPadding;
 	}
 	
 	//____ contentPadding() _______________________________________________________
 	
-	WgSize WgExtendedSkin::contentPadding() const
+	Size ExtendedSkin::contentPadding() const
 	{
 		return m_contentPadding.size();
 	}
@@ -153,14 +153,14 @@ namespace wg
 	
 	//____ contentRect() __________________________________________________________
 	
-	WgRect WgExtendedSkin::contentRect( const WgRect& canvas, WgState state ) const
+	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
 	{
 		return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
 	}
 	
 	//____ isStateIdentical() ______________________________________________________
 	
-	bool WgExtendedSkin::isStateIdentical( WgState state, WgState comparedTo ) const
+	bool ExtendedSkin::isStateIdentical( State state, State comparedTo ) const
 	{
 		return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
 	}

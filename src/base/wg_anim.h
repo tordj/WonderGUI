@@ -38,15 +38,15 @@
 namespace wg 
 {
 	
-	class		WgKeyFrame;
-	struct	WgAnimPlayPos;
+	class		KeyFrame;
+	struct	AnimPlayPos;
 	
 	
-	//____ Class WgKeyFrame _______________________________________________________
+	//____ Class KeyFrame _______________________________________________________
 	
-	class WgKeyFrame : public WgLink
+	class KeyFrame : public Link
 	{
-		friend class WgAnim;
+		friend class Anim;
 	public:
 		bool	setDuration( int ticks );
 		int		duration( void ) { return m_duration; };
@@ -55,74 +55,74 @@ namespace wg
 	protected:
 		int		m_timestamp;
 		int		m_duration;
-		LINK_METHODS( WgKeyFrame );
+		LINK_METHODS( KeyFrame );
 	};
 	
-	class WgAnim;
-	typedef	WgStrongPtr<WgAnim,WgObject_p>		WgAnim_p;
-	typedef	WgWeakPtr<WgAnim,WgObject_wp>	WgAnim_wp;
+	class Anim;
+	typedef	WgStrongPtr<Anim,Object_p>		Anim_p;
+	typedef	WgWeakPtr<Anim,Object_wp>	Anim_wp;
 	
-	//____ Class WgAnim ______________________________________________________
+	//____ Class Anim ______________________________________________________
 	
-	class WgAnim : public WgObject
+	class Anim : public Object
 	{
-		friend class WgKeyFrame;
+		friend class KeyFrame;
 	
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgAnim_p	cast( const WgObject_p& pObject );
+		static Anim_p	cast( const Object_p& pObject );
 	
-		bool				setPlayMode( WgAnimMode mode );
+		bool				setPlayMode( AnimMode mode );
 		bool				setTimeScaler( float scale );
 	
 		bool				deleteKeyFrame( int pos );
-		bool				deleteKeyFrame( WgKeyFrame * pKeyFrame );
+		bool				deleteKeyFrame( KeyFrame * pKeyFrame );
 		void				clear( void ) { m_keyframes.clear(); };
 	
 		int					duration( void ) { return m_duration; };
-		WgAnimMode			playMode( void ) { return m_playMode; };
+		AnimMode			playMode( void ) { return m_playMode; };
 		float				timeScaler( void ) { return m_scale; };
 		int					durationScaled( void ) { return (int) (m_duration * m_scale); };
 		int					timeToOfs( int64_t ticks );			/// Convert play-time to offset in animation by scaling with timeScaler and unwinding loops.
 	
 	protected:
-		WgAnim();
-		virtual ~WgAnim();
+		Anim();
+		virtual ~Anim();
 	
 		// Meant to be overloaded with methods by the same name that builds up their 
-		// WgKeyFrame-derived class.
+		// KeyFrame-derived class.
 	
-		bool				_insertKeyFrame( int pos, WgKeyFrame * pFrame, int duration );
-		bool				_insertKeyFrame( WgKeyFrame * pBefore, WgKeyFrame * pFrame, int duration );
-		bool				_addKeyFrame( WgKeyFrame * pFrame, int duration );
+		bool				_insertKeyFrame( int pos, KeyFrame * pFrame, int duration );
+		bool				_insertKeyFrame( KeyFrame * pBefore, KeyFrame * pFrame, int duration );
+		bool				_addKeyFrame( KeyFrame * pFrame, int duration );
 	
 		// Meant to be overloaded with public methods returning right type.
 	
-		WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.first();};
-		WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.last();};
+		KeyFrame *		_firstKeyFrame( void ) {return m_keyframes.first();};
+		KeyFrame *		_lastKeyFrame( void ) {return m_keyframes.last();};
 	
 		//
 	
-		WgAnimPlayPos		_playPos( int64_t ticks, WgKeyFrame * pProximity = 0 ) const;		// ticks gets scaled.
+		AnimPlayPos		_playPos( int64_t ticks, KeyFrame * pProximity = 0 ) const;		// ticks gets scaled.
 	
-		WgKeyFrame *		_keyFrame( int64_t ticks, WgKeyFrame * pProximity = 0 ) const;
+		KeyFrame *		_keyFrame( int64_t ticks, KeyFrame * pProximity = 0 ) const;
 	
 	private:
 		
 		float				m_scale;			// Only used for getKeyFrame
 		int					m_duration;
-		WgAnimMode			m_playMode;	
-		WgChain<WgKeyFrame>	m_keyframes;
+		AnimMode			m_playMode;	
+		Chain<KeyFrame>	m_keyframes;
 	};
 	
-	//____ Struct WgAnimPlayPos ___________________________________________________
+	//____ Struct AnimPlayPos ___________________________________________________
 	
-	struct WgAnimPlayPos
+	struct AnimPlayPos
 	{
-		WgKeyFrame *	pKeyFrame1;					// KeyFrame we are transitioning from.
-		WgKeyFrame *	pKeyFrame2;					// KeyFrame we are transitioning towards.
+		KeyFrame *	pKeyFrame1;					// KeyFrame we are transitioning from.
+		KeyFrame *	pKeyFrame2;					// KeyFrame we are transitioning towards.
 		float			transition;					// 0 -> 1.0, current position. (1.0 only when anim has ended).
 		int				animOffset;					// Offset in ticks from start of animation (unwinding loops etc).
 	};

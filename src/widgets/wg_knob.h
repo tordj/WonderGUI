@@ -30,34 +30,34 @@
 namespace wg 
 {
 	
-	class WgKnob;
-	typedef	WgStrongPtr<WgKnob,WgWidget_p>		WgKnob_p;
-	typedef	WgWeakPtr<WgKnob,WgWidget_wp>	WgKnob_wp;
+	class Knob;
+	typedef	WgStrongPtr<Knob,Widget_p>		Knob_p;
+	typedef	WgWeakPtr<Knob,Widget_wp>	Knob_wp;
 	
-	//____ WgKnob ____________________________________________________________
+	//____ Knob ____________________________________________________________
 	
-	class WgKnob : public WgWidget
+	class Knob : public Widget
 	{
 	public:
-		static WgKnob_p	create() { return WgKnob_p(new WgKnob()); }
+		static Knob_p	create() { return Knob_p(new Knob()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgKnob_p	cast( const WgObject_p& pObject );
+		static Knob_p	cast( const Object_p& pObject );
 	
 	    void    setValue( float value );
 	    
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgKnob();
-		virtual ~WgKnob();
-		virtual WgWidget* _newOfMyType() const { return new WgKnob(); };
+		Knob();
+		virtual ~Knob();
+		virtual Widget* _newOfMyType() const { return new Knob(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
 	
 	private:
 	

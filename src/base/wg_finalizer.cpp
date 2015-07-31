@@ -24,12 +24,12 @@
 namespace wg 
 {
 	
-	const char WgFinalizer::CLASSNAME[] = {"Finalizer"};
+	const char Finalizer::CLASSNAME[] = {"Finalizer"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgFinalizer::WgFinalizer( void(*pCallback)(void*), void * pObject )
+	Finalizer::Finalizer( void(*pCallback)(void*), void * pObject )
 	{
 		m_pCallback = pCallback;
 		m_pObject = pObject;
@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgFinalizer::~WgFinalizer()
+	Finalizer::~Finalizer()
 	{
 		if( m_pCallback )
 			m_pCallback( m_pObject );
@@ -46,27 +46,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgFinalizer::isInstanceOf( const char * pClassName ) const
+	bool Finalizer::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgFinalizer::className( void ) const
+	const char * Finalizer::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgFinalizer_p WgFinalizer::cast( const WgObject_p& pObject )
+	Finalizer_p Finalizer::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgFinalizer_p( static_cast<WgFinalizer*>(pObject.rawPtr()) );
+			return Finalizer_p( static_cast<Finalizer*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

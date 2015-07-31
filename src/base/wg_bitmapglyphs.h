@@ -38,32 +38,32 @@
 namespace wg 
 {
 	
-	class WgBitmapGlyphs;
-	typedef	WgStrongPtr<WgBitmapGlyphs,WgGlyphset_p>		WgBitmapGlyphs_p;
-	typedef	WgWeakPtr<WgBitmapGlyphs,WgGlyphset_wp>		WgBitmapGlyphs_wp;
+	class BitmapGlyphs;
+	typedef	WgStrongPtr<BitmapGlyphs,Glyphset_p>		BitmapGlyphs_p;
+	typedef	WgWeakPtr<BitmapGlyphs,Glyphset_wp>		BitmapGlyphs_wp;
 	
-	//____ WgBitmapGlyphs _____________________________________________________________
+	//____ BitmapGlyphs _____________________________________________________________
 	
-	class WgBitmapGlyphs : public WgGlyphset
+	class BitmapGlyphs : public Glyphset
 	{
 	public:
-		static WgBitmapGlyphs_p	create( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return WgBitmapGlyphs_p(new WgBitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
+		static BitmapGlyphs_p	create( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return BitmapGlyphs_p(new BitmapGlyphs(pSurf,pGlyphSpec,binaryFile)); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgBitmapGlyphs_p	cast( const WgObject_p& pObject );
+		static BitmapGlyphs_p	cast( const Object_p& pObject );
 	
 	
 		inline Type	getType() const { return BITMAP; }
 	
-		void					insertGlyphs( const WgSurface_p& pSurf, char* pGlyphSpec, bool binaryFile=false );
-		void					copyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
+		void					insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile=false );
+		void					copyGlyphs( BitmapGlyphs* pOtherGlyphset );
 	
 	
-		WgGlyph_p				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
+		Glyph_p				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
 		bool					hasGlyph( Uint16 chr );
-		int						getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size );
+		int						getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
 	
 		inline int				getHeight( int size ) { return m_height; }
 		inline int				getLineSpacing( int size ) { return m_height; }
@@ -75,24 +75,24 @@ namespace wg
 		inline int				getMaxGlyphAdvance( int size ) { return m_maxSpacing; }
 	
 	protected:
-		WgBitmapGlyphs( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile=false );
-		~WgBitmapGlyphs();
+		BitmapGlyphs( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile=false );
+		~BitmapGlyphs();
 	
-		class Glyph : public WgGlyph
+		class MyGlyph : public Glyph
 		{
 		public:
-			Glyph();
-			Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurface_p& pSurf, const WgRect& rect );
+			MyGlyph();
+			MyGlyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect );
 	
-			const WgGlyphBitmap * getBitmap() { return &m_src; }
+			const GlyphBitmap * getBitmap() { return &m_src; }
 	
 			void setAdvance( short advance ) { m_advance = advance; }
 	
-			WgGlyphBitmap	m_src;
+			GlyphBitmap	m_src;
 		};
 	
 	
-		Glyph * 	m_glyphTab[256];
+		MyGlyph * 	m_glyphTab[256];
 	
 		int			m_nKerningGlyphs;
 		Sint8*		m_pKerningTable;

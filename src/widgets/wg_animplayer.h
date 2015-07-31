@@ -35,25 +35,25 @@
 namespace wg 
 {
 	
-	class WgAnimPlayer;
-	typedef	WgStrongPtr<WgAnimPlayer,WgWidget_p>		WgAnimPlayer_p;
-	typedef	WgWeakPtr<WgAnimPlayer,WgWidget_wp>	WgAnimPlayer_wp;
+	class AnimPlayer;
+	typedef	WgStrongPtr<AnimPlayer,Widget_p>		AnimPlayer_p;
+	typedef	WgWeakPtr<AnimPlayer,Widget_wp>	AnimPlayer_wp;
 	
 	
-	class WgAnimPlayer:public WgWidget
+	class AnimPlayer:public Widget
 	{
 	public:
-		static WgAnimPlayer_p	create() { return WgAnimPlayer_p(new WgAnimPlayer()); }
+		static AnimPlayer_p	create() { return AnimPlayer_p(new AnimPlayer()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgAnimPlayer_p	cast( const WgObject_p& pObject );
+		static AnimPlayer_p	cast( const Object_p& pObject );
 	
 		//____ Methods __________________________________________
 	
-		bool			setAnimation( const WgGfxAnim_p& pAnim );
-		WgGfxAnim_p		animation() const { return m_pAnim; }
+		bool			setAnimation( const GfxAnim_p& pAnim );
+		GfxAnim_p		animation() const { return m_pAnim; }
 			
 		int				playPos();										/// Returns play position in ticks.
 		bool			setPlayPos( int ticks );						/// Position in ticks for next update.
@@ -72,26 +72,26 @@ namespace wg
 		bool			stop();
 		bool			isPlaying() { return m_bPlaying; };
 	
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 	
 	protected:
-		WgAnimPlayer();
-		virtual ~WgAnimPlayer();
-		virtual WgWidget* _newOfMyType() const { return new WgAnimPlayer(); };
+		AnimPlayer();
+		virtual ~AnimPlayer();
+		virtual Widget* _newOfMyType() const { return new AnimPlayer(); };
 	
-		void			_onCloneContent( const WgWidget * _pOrg );
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_onRefresh();
-		void			_onMsg( const WgMsg_p& pMsg );
-		bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-		void			_onStateChanged( WgState oldState );
+		void			_onMsg( const Msg_p& pMsg );
+		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
+		void			_onStateChanged( State oldState );
 	
 		void			_playPosUpdated();
 	
 	private:
 	
-		WgGfxAnim_p	m_pAnim;
-		WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
+		GfxAnim_p	m_pAnim;
+		GfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
 		WgRouteId		m_tickRouteId;
 	
 		bool			m_bPlaying;

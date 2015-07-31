@@ -38,22 +38,22 @@
 namespace wg 
 {
 	
-	class	WgSurface;
+	class	Surface;
 	
-	class WgToggleButton;
-	typedef	WgStrongPtr<WgToggleButton,WgWidget_p>		WgToggleButton_p;
-	typedef	WgWeakPtr<WgToggleButton,WgWidget_wp>	WgToggleButton_wp;
+	class ToggleButton;
+	typedef	WgStrongPtr<ToggleButton,Widget_p>		ToggleButton_p;
+	typedef	WgWeakPtr<ToggleButton,Widget_wp>	ToggleButton_wp;
 	
-	class WgToggleGroup;
-	typedef	WgStrongPtr<WgToggleGroup,WgObject_p>		WgToggleGroup_p;
-	typedef	WgWeakPtr<WgToggleGroup,WgObject_wp>	WgToggleGroup_wp;
+	class ToggleGroup;
+	typedef	WgStrongPtr<ToggleGroup,Object_p>		ToggleGroup_p;
+	typedef	WgWeakPtr<ToggleGroup,Object_wp>	ToggleGroup_wp;
 	
 	
 	/**
 	 * @brief Combined ToggleButton, Checkbox and RadioButton widget.
 	 *
-	 * WgToggleButton is a button widget that toggles its selected-state each time it is pressed.
-	 * Press once to select, press again to deselect. WgToggleButton is also used for Checkboxes
+	 * ToggleButton is a button widget that toggles its selected-state each time it is pressed.
+	 * Press once to select, press again to deselect. ToggleButton is also used for Checkboxes
 	 * and RadioButtons since these are technically just ToggleButtons with different skinning
 	 * and possibly (depending on exact behavior desired) a different ClickArea.
 	 *
@@ -64,16 +64,16 @@ namespace wg
 	 *
 	 **/
 	
-	class	WgToggleButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
+	class	ToggleButton : public Widget, protected IconHolder, protected TextHolder
 	{
-	friend class WgToggleGroup;
+	friend class ToggleGroup;
 	public:
-		static WgToggleButton_p	create() { return WgToggleButton_p(new WgToggleButton()); }
+		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgToggleButton_p	cast( const WgObject_p& pObject );
+		static ToggleButton_p	cast( const Object_p& pObject );
 	
 		enum ClickArea
 		{
@@ -87,8 +87,8 @@ namespace wg
 	
 		//____ Interfaces() ____________________________________
 	
-		WgModText		label;
-		WgIcon			icon;
+		ModText		label;
+		Icon			icon;
 	
 	
 		//____ Methods() _______________________________________
@@ -102,31 +102,31 @@ namespace wg
 		void				setFlipOnRelease( bool bFlipOnRelease );
 		inline bool			flipOnRelease();
 	
-		inline WgToggleGroup_p toggleGroup() const;
-		WgSize				preferredSize() const;
+		inline ToggleGroup_p toggleGroup() const;
+		Size				preferredSize() const;
 		inline bool			isAutoEllipsisDefault() const;
 	
 	
 	protected:
-		WgToggleButton();
-		virtual ~WgToggleButton();
-		virtual WgWidget* _newOfMyType() const { return new WgToggleButton(); };
+		ToggleButton();
+		virtual ~ToggleButton();
+		virtual Widget* _newOfMyType() const { return new ToggleButton(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onMsg( const WgMsg_p& pMsg );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onMsg( const Msg_p& pMsg );
 		void	_onRefresh();
-		void	_onNewSize( const WgSize& size );
-		bool	_onAlphaTest( const WgCoord& ofs );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onNewSize( const Size& size );
+		bool	_onAlphaTest( const Coord& ofs );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 		
-		WgObject * 		_object() { return this; };
-		void			_onFieldDirty( WgField * pField );
-		void 			_onFieldResize( WgField * pField );
+		Object * 		_object() { return this; };
+		void			_onFieldDirty( Field * pField );
+		void 			_onFieldResize( Field * pField );
 	
-		void	_setToggleGroup( WgToggleGroup * pGroup );
-		WgToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
+		void	_setToggleGroup( ToggleGroup * pGroup );
+		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 	
 	private:
 	
@@ -137,35 +137,35 @@ namespace wg
 		bool			m_bReturnPressed;
 		bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 	
-		WgTextField		m_label;
-		WgIconField		m_icon;
-		WgToggleGroup_p	m_pToggleGroup;
+		TextField		m_label;
+		IconField		m_icon;
+		ToggleGroup_p	m_pToggleGroup;
 	
 		ClickArea		m_clickArea;
 	};
 	
 	
-	inline WgToggleButton::ClickArea WgToggleButton::getClickArea() const
+	inline ToggleButton::ClickArea ToggleButton::getClickArea() const
 	{
 		return m_clickArea;
 	}
 	
-	inline bool WgToggleButton::isSelected()
+	inline bool ToggleButton::isSelected()
 	{
 		return m_state.isSelected();
 	};
 	
-	inline bool WgToggleButton::flipOnRelease()
+	inline bool ToggleButton::flipOnRelease()
 	{
 		return m_bFlipOnRelease;
 	}
 	
-	inline WgToggleGroup_p WgToggleButton::toggleGroup() const
+	inline ToggleGroup_p ToggleButton::toggleGroup() const
 	{
 		return m_pToggleGroup;
 	}
 	
-	inline bool WgToggleButton::isAutoEllipsisDefault() const
+	inline bool ToggleButton::isAutoEllipsisDefault() const
 	{
 		return false;
 	};

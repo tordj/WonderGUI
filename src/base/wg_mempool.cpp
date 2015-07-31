@@ -7,7 +7,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgMemPool::WgMemPool( int entriesPerBlock, int entrySize )
+	MemPool::MemPool( int entriesPerBlock, int entrySize )
 	{
 		m_nEntriesPerBlock	= entriesPerBlock;
 		m_entrySize			= entrySize;
@@ -16,13 +16,13 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgMemPool::~WgMemPool()
+	MemPool::~MemPool()
 	{
 	}
 	
 	//____ allocEntry() ___________________________________________________________
 	
-	void * WgMemPool::allocEntry()
+	void * MemPool::allocEntry()
 	{
 		m_nAllocEntries++;
 	
@@ -48,7 +48,7 @@ namespace wg
 	
 	//____ freeEntry() ____________________________________________________________
 	
-	void WgMemPool::freeEntry( void * pEntry )
+	void MemPool::freeEntry( void * pEntry )
 	{
 		if( pEntry == 0 )
 			return;
@@ -79,7 +79,7 @@ namespace wg
 	
 	//____ _addBlock() _____________________________________________________________
 	
-	WgMemPool::Block *WgMemPool::_addBlock()
+	MemPool::Block *MemPool::_addBlock()
 	{
 		Block * pBlock = new Block( m_nEntriesPerBlock, m_entrySize );
 		m_blocks.pushFront( pBlock );
@@ -88,7 +88,7 @@ namespace wg
 	
 	//____ Block::Constructor _____________________________________________________
 	
-	WgMemPool::Block::Block( int _nEntries, int _entrySize )
+	MemPool::Block::Block( int _nEntries, int _entrySize )
 	{
 		pMemBlock		= malloc( _nEntries*_entrySize );
 		blockSize		= _nEntries*_entrySize;
@@ -101,14 +101,14 @@ namespace wg
 	
 	//____ Block::Destructor ______________________________________________________
 	
-	WgMemPool::Block::~Block()
+	MemPool::Block::~Block()
 	{
 		free( pMemBlock );
 	}
 	
 	//____ Block::allocEntry() ____________________________________________________
 	
-	void * WgMemPool::Block::allocEntry()
+	void * MemPool::Block::allocEntry()
 	{
 		if( nAllocEntries == maxEntries )
 			return 0;
@@ -130,7 +130,7 @@ namespace wg
 	
 	//____ Block::freeEntry() _____________________________________________________
 	
-	bool WgMemPool::Block::freeEntry( void * pEntry )
+	bool MemPool::Block::freeEntry( void * pEntry )
 	{
 		if( pEntry < pMemBlock || pEntry >= ((Uint8*)pMemBlock) + blockSize )
 			return false;

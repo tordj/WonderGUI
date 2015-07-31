@@ -30,19 +30,19 @@
 namespace wg 
 {
 	
-	const char WgPopupLayer::CLASSNAME[] = {"PopupLayer"};
-	const char WgPopupHook::CLASSNAME[] = {"PopupHook"};
+	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
+	const char PopupHook::CLASSNAME[] = {"PopupHook"};
 	
 	
 	
 	//_____________________________________________________________________________
-	WgPopupLayer_p WgPopupHook::parent() const
+	PopupLayer_p PopupHook::parent() const
 	{
 		return m_pParent;
 	}
 	
 	//_____________________________________________________________________________
-	WgPopupHook::WgPopupHook( WgPopupLayer * pParent, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
+	PopupHook::PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, WgOrigo attachPoint, Size maxSize )
 	{
 		m_pParent 		= pParent;
 		m_pOpener		= pOpener;
@@ -51,55 +51,55 @@ namespace wg
 		m_maxSize 		= maxSize;
 	}
 	
-	//____ WgPopupHook::isInstanceOf() __________________________________________
+	//____ PopupHook::isInstanceOf() __________________________________________
 	
-	bool WgPopupHook::isInstanceOf( const char * pClassName ) const
+	bool PopupHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgLayerHook::isInstanceOf(pClassName);
+		return LayerHook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgPopupHook::className() _____________________________________________
+	//____ PopupHook::className() _____________________________________________
 	
-	const char * WgPopupHook::className( void ) const
+	const char * PopupHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgPopupHook::cast() __________________________________________________
+	//____ PopupHook::cast() __________________________________________________
 	
-	WgPopupHook_p WgPopupHook::cast( const WgHook_p& pHook )
+	PopupHook_p PopupHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgPopupHook_p( static_cast<WgPopupHook*>(pHook.rawPtr()) );
+			return PopupHook_p( static_cast<PopupHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//_____________________________________________________________________________
-	void WgPopupHook::_requestRender()
+	void PopupHook::_requestRender()
 	{
 		m_pParent->_onRequestRender( m_geo, this );
 	}
 	
 	//_____________________________________________________________________________
-	void WgPopupHook::_requestRender( const WgRect& rect )
+	void PopupHook::_requestRender( const Rect& rect )
 	{
 		m_pParent->_onRequestRender( rect + m_geo.pos(), this );
 	}
 	
 	//_____________________________________________________________________________
-	void WgPopupHook::_requestResize()
+	void PopupHook::_requestResize()
 	{
 		_updateGeo();					// Just update this menus geo, don't recursively update children, their position should remain where it is.
 	}
 	
 	//_____________________________________________________________________________
-	WgLayerHook * WgPopupHook::_prevLayerHook() const
+	LayerHook * PopupHook::_prevLayerHook() const
 	{
-		WgPopupHook * p = _prev();
+		PopupHook * p = _prev();
 	
 		// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
 	
@@ -110,9 +110,9 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	WgLayerHook * WgPopupHook::_nextLayerHook() const
+	LayerHook * PopupHook::_nextLayerHook() const
 	{
-		WgPopupHook * p = _next();
+		PopupHook * p = _next();
 	
 		// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
 	
@@ -123,22 +123,22 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	WgContainer * WgPopupHook::_parent() const
+	Container * PopupHook::_parent() const
 	{
 		return m_pParent;
 	}
 	
 	//____ _updateGeo() __________________________________________________________
 	
-	bool WgPopupHook::_updateGeo()
+	bool PopupHook::_updateGeo()
 	{
 		// Get size of parent and correct launcherGeo
 	
-		WgRect 	parentSize = m_pParent->size();
+		Rect 	parentSize = m_pParent->size();
 	
 		//
 	
-		WgRect geo(0,0,WgSize::min(_widget()->preferredSize(),WgSize::min(m_maxSize,parentSize)));
+		Rect geo(0,0,Size::min(_widget()->preferredSize(),Size::min(m_maxSize,parentSize)));
 	
 		switch( m_attachPoint )
 		{
@@ -299,39 +299,39 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgPopupLayer::WgPopupLayer()
+	PopupLayer::PopupLayer()
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgPopupLayer::~WgPopupLayer()
+	PopupLayer::~PopupLayer()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgPopupLayer::isInstanceOf( const char * pClassName ) const
+	bool PopupLayer::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgLayer::isInstanceOf(pClassName);
+		return Layer::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgPopupLayer::className( void ) const
+	const char * PopupLayer::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgPopupLayer_p WgPopupLayer::cast( const WgObject_p& pObject )
+	PopupLayer_p PopupLayer::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgPopupLayer_p( static_cast<WgPopupLayer*>(pObject.rawPtr()) );
+			return PopupLayer_p( static_cast<PopupLayer*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -339,11 +339,11 @@ namespace wg
 	
 	//____ openPopup() _______________________________________________________________
 	
-	WgPopupHook_p WgPopupLayer::openPopup( const WgWidget_p& pPopup, const WgWidget_p& pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgSize maxSize )
+	PopupHook_p PopupLayer::openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, WgOrigo attachPoint, Size maxSize )
 	{
-		// Create Hook and fill in members.
+		// Create MyHook and fill in members.
 	
-		WgPopupHook * pHook = new WgPopupHook( this, pOpener.rawPtr(), launcherGeo, attachPoint, maxSize );
+		PopupHook * pHook = new PopupHook( this, pOpener.rawPtr(), launcherGeo, attachPoint, maxSize );
 		pHook->_setWidget(pPopup.rawPtr());
 		m_popupHooks.pushBack(pHook);
 		pHook->_updateGeo();
@@ -354,9 +354,9 @@ namespace wg
 	
 	//____ closeAllPopups() ________________________________________________
 	
-	bool WgPopupLayer::closeAllPopups()
+	bool PopupLayer::closeAllPopups()
 	{
-		WgPopupHook * pHook = m_popupHooks.first();
+		PopupHook * pHook = m_popupHooks.first();
 		if( pHook )
 			closePopup( pHook->_widget() );
 	
@@ -366,22 +366,22 @@ namespace wg
 	
 	//____ closePopup() _________________________________________________________
 	
-	bool WgPopupLayer::closePopup( const WgWidget_p& pWidget )
+	bool PopupLayer::closePopup( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->parent() != this || pWidget == m_baseHook.widget() )
 			return false;
 	
-		WgMsgRouter * pEH = WgBase::msgRouter().rawPtr();
+		MsgRouter * pEH = Base::msgRouter().rawPtr();
 	
-		WgPopupHook * pHook = (WgPopupHook *) pWidget->_hook();
+		PopupHook * pHook = (PopupHook *) pWidget->_hook();
 	
 		while( pHook )
 		{
-			WgPopupHook * p = pHook;
+			PopupHook * p = pHook;
 			pHook = pHook->_next();
 	
 			if( pEH )
-				pEH->post( new WgPopupClosedMsg( p->_widget(), p->m_pOpener ) );
+				pEH->post( new PopupClosedMsg( p->_widget(), p->m_pOpener ) );
 	
 			p->_requestRender();
 			delete p;
@@ -392,21 +392,21 @@ namespace wg
 	
 	//____ firstPopupHook() ______________________________________________________
 	
-	WgPopupHook_p WgPopupLayer::firstPopupHook()
+	PopupHook_p PopupLayer::firstPopupHook()
 	{
 		return m_popupHooks.first();
 	}
 	
 	//____ lastPopupHook() _______________________________________________________
 	
-	WgPopupHook_p WgPopupLayer::lastPopupHook()
+	PopupHook_p PopupLayer::lastPopupHook()
 	{
 		return m_popupHooks.last();
 	}
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	WgWidget *  WgPopupLayer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+	Widget *  PopupLayer::_findWidget( const Coord& ofs, WgSearchMode mode )
 	{
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
@@ -415,15 +415,15 @@ namespace wg
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 	
-			WgPopupHook * pHook = m_popupHooks.last();
-			WgWidget * pResult = 0;
+			PopupHook * pHook = m_popupHooks.last();
+			Widget * pResult = 0;
 	
 			while( pHook && !pResult )
 			{
 				if( pHook->m_geo.contains( ofs ) )
 				{
 					if( pHook->_widget()->isContainer() )
-						pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.pos(), mode );
+						pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.pos(), mode );
 					else if( pHook->_widget()->markTest( ofs - pHook->m_geo.pos() ) )
 						pResult = pHook->_widget();
 				}
@@ -434,13 +434,13 @@ namespace wg
 			{
 				// Check the first opener
 				
-				WgPopupHook * pHook = m_popupHooks.first();
+				PopupHook * pHook = m_popupHooks.first();
 				if( pHook && pHook->m_pOpener )
 				{
-					WgWidget * pOpener = pHook->m_pOpener.rawPtr();
+					Widget * pOpener = pHook->m_pOpener.rawPtr();
 	
-					WgCoord absPos 		= ofs + globalPos();
-					WgRect	openerGeo 	= pOpener->globalGeo();
+					Coord absPos 		= ofs + globalPos();
+					Rect	openerGeo 	= pOpener->globalGeo();
 	
 					if( openerGeo.contains(absPos) && pOpener->markTest( absPos - openerGeo.pos() ) )
 						pResult = pOpener;
@@ -457,23 +457,23 @@ namespace wg
 		{
 			// For the rest of the modes we can rely on the default method.
 	
-			return WgContainer::_findWidget( ofs, mode );
+			return Container::_findWidget( ofs, mode );
 		}
 	}
 	
 	//____ _onRequestRender() _____________________________________________________
 	
-	void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pHook )
+	void PopupLayer::_onRequestRender( const Rect& rect, const PopupHook * pHook )
 	{
 		// Clip our geometry and put it in a dirtyrect-list
 	
-		WgPatches patches;
-		patches.add( WgRect( rect, WgRect(0,0,m_size)) );
+		Patches patches;
+		patches.add( Rect( rect, Rect(0,0,m_size)) );
 	
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 	
-		WgPopupHook * pCover;
+		PopupHook * pCover;
 	
 		if( pHook )
 			pCover = pHook->_next();
@@ -483,20 +483,20 @@ namespace wg
 		while( pCover )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_next();
 		}
 	
 		// Make request render calls
 	
-		for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 	
 	//____ _onNewSize() ___________________________________________________________
 	
-	void WgPopupLayer::_onNewSize( const WgSize& sz )
+	void PopupLayer::_onNewSize( const Size& sz )
 	{
 		m_size = sz;
 	
@@ -508,24 +508,24 @@ namespace wg
 	
 	//____ _onCloneContent() ______________________________________________________
 	
-	void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
+	void PopupLayer::_onCloneContent( const Widget * _pOrg )
 	{
 	}
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgPopupLayer::_onMsg( const WgMsg_p& _pMsg )
+	void PopupLayer::_onMsg( const Msg_p& _pMsg )
 	{
-		WgLayer::_onMsg(_pMsg);
+		Layer::_onMsg(_pMsg);
 	
-		WgWidget * pOpener = 0;
+		Widget * pOpener = 0;
 	
 		// Try to find an opener
 	
-		WgObject * pSource = _pMsg->sourceRawPtr();
+		Object * pSource = _pMsg->sourceRawPtr();
 		if( pSource && pSource != this )
 		{
-			WgPopupHook * pHook = m_popupHooks.first();
+			PopupHook * pHook = m_popupHooks.first();
 			while( pHook && pHook->_widget() != pSource )
 				pHook = pHook->_next();
 				
@@ -550,8 +550,8 @@ namespace wg
 	
 				if( !m_popupHooks.isEmpty() )							// Process only if we have at least one open menu.
 				{
-					WgCoord ofs = _pMsg->pointerPos();
-					WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
+					Coord ofs = _pMsg->pointerPos();
+					Widget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 					if( p != this )
 					{
 						while( p->parent() != this )
@@ -565,10 +565,10 @@ namespace wg
 			case WG_MSG_MOUSE_RELEASE:
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMouseButtonMsg_p pMsg = WgMouseButtonMsg::cast(_pMsg);
+				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 	
-				WgCoord ofs = pMsg->pointerPos() - globalPos();
-				WgWidget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
+				Coord ofs = pMsg->pointerPos() - globalPos();
+				Widget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
 				if( p == this )
 				{
 					closeAllPopups();
@@ -581,7 +581,7 @@ namespace wg
 			case WG_MSG_KEY_PRESS:
 			case WG_MSG_KEY_REPEAT:
 			{
-				WgKeyMsg_p pMsg = WgKeyMsg::cast(_pMsg);
+				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
 				if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE )
 				{
@@ -600,14 +600,14 @@ namespace wg
 	
 	//____ _stealKeyboardFocus() _________________________________________________
 	
-	void WgPopupLayer::_stealKeyboardFocus()
+	void PopupLayer::_stealKeyboardFocus()
 	{
 		// Get event handler, verify that we have a root
 	
 		if( !hook() )
 			return;
 	
-		WgMsgRouter_p pHandler = hook()->msgRouter();
+		MsgRouter_p pHandler = hook()->msgRouter();
 		if( !pHandler )
 			return;
 	
@@ -620,24 +620,24 @@ namespace wg
 	
 		// Steal keyboard focus to top menu
 	
-		WgWidget * pWidget = m_popupHooks.last()->_widget();
+		Widget * pWidget = m_popupHooks.last()->_widget();
 	
-		if( pWidget->isInstanceOf( WgPanel::CLASSNAME ) && static_cast<WgPanel*>(pWidget)->isFocusGroup() )
-			pHandler->setFocusGroup(static_cast<WgPanel*>(pWidget));
+		if( pWidget->isInstanceOf( Panel::CLASSNAME ) && static_cast<Panel*>(pWidget)->isFocusGroup() )
+			pHandler->setFocusGroup(static_cast<Panel*>(pWidget));
 		else
 			pHandler->setKeyboardFocus(pWidget);
 	}
 	
 	//____ _restoreKeyboardFocus() _________________________________________________
 	
-	void WgPopupLayer::_restoreKeyboardFocus()
+	void PopupLayer::_restoreKeyboardFocus()
 	{
 		// Get event handler, verify that we have a root
 	
 		if( !hook() )
 			return;
 	
-		WgMsgRouter_p pHandler = hook()->msgRouter();
+		MsgRouter_p pHandler = hook()->msgRouter();
 		if( !pHandler )
 			return;
 	

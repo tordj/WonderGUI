@@ -41,31 +41,31 @@
 namespace wg 
 {
 	
-	class WgButton;
-	typedef	WgStrongPtr<WgButton,WgWidget_p>		WgButton_p;
-	typedef	WgWeakPtr<WgButton,WgWidget_wp>	WgButton_wp;
+	class Button;
+	typedef	WgStrongPtr<Button,Widget_p>		Button_p;
+	typedef	WgWeakPtr<Button,Widget_wp>	Button_wp;
 	
-	//____ WgButton ____________________________________________________________
+	//____ Button ____________________________________________________________
 	/**
 	 * @breif A normal push button widget.
 	 *
 	 * A simple push button widget with label and icon.
 	 **/
 	
-	class WgButton : public WgWidget, protected WgIconHolder, protected WgTextHolder
+	class Button : public Widget, protected IconHolder, protected TextHolder
 	{
 	public:
-		static WgButton_p	create() { return WgButton_p(new WgButton()); }
+		static Button_p	create() { return Button_p(new Button()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgButton_p	cast( const WgObject_p& pObject );
+		static Button_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgModText		label;
-		WgIcon			icon;
+		ModText		label;
+		Icon			icon;
 	
 		//____ Methods __________________________________________
 	
@@ -75,32 +75,32 @@ namespace wg
 		virtual int		matchingHeight( int width ) const;
 	//	virtual int		matchingWidth( int height ) const;
 	
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 	
 		bool			isAutoEllipsisDefault() const { return false; };
 	
 	
 	protected:
-		WgButton();
-		virtual ~WgButton();
-		virtual WgWidget* _newOfMyType() const { return new WgButton(); };
+		Button();
+		virtual ~Button();
+		virtual Widget* _newOfMyType() const { return new Button(); };
 	
-		virtual void	_onMsg( const WgMsg_p& pMsg );
-		virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		virtual void	_onMsg( const Msg_p& pMsg );
+		virtual void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_onRefresh();
-		virtual void	_onCloneContent( const WgWidget * _pOrg );
-		bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-		virtual void	_onNewSize( const WgSize& size );
-		void			_onStateChanged( WgState oldState );
-		virtual void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		virtual void	_onCloneContent( const Widget * _pOrg );
+		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
+		virtual void	_onNewSize( const Size& size );
+		void			_onStateChanged( State oldState );
+		virtual void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
 	
-		WgObject * 		_object() { return this; };
-		void			_onFieldDirty( WgField * pField );
-		void 			_onFieldResize( WgField * pField );
+		Object * 		_object() { return this; };
+		void			_onFieldDirty( Field * pField );
+		void 			_onFieldResize( Field * pField );
 	
-		WgTextField		m_text;
-		WgIconField		m_icon;
+		TextField		m_text;
+		IconField		m_icon;
 	
 		bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 	

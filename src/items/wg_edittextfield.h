@@ -32,42 +32,42 @@ namespace wg
 {
 	
 	
-	//____ WgEditTextHolder ___________________________________________________________
+	//____ EditTextHolder ___________________________________________________________
 	
-	struct WgEditTextHolder : public WgTextHolder
+	struct EditTextHolder : public TextHolder
 	{
 	};
 	
-	//____ WgEditTextField __________________________________________________________________
+	//____ EditTextField __________________________________________________________________
 	
-	class WgEditTextField : public WgTextField
+	class EditTextField : public TextField
 	{
 	public:
-		WgEditTextField( WgEditTextHolder * pHolder );
+		EditTextField( EditTextHolder * pHolder );
 	
 		// Overloaded so we can update cursor and selection
 	
 		void				clear();
 	
-		void				set( const WgCharSeq& seq );
-		void				set( const WgCharBuffer * buffer );
-		void				set( const WgString& str );
+		void				set( const CharSeq& seq );
+		void				set( const CharBuffer * buffer );
+		void				set( const String& str );
 	
-		int					append( const WgCharSeq& seq );
-		int					insert( int ofs, const WgCharSeq& seq );
-		int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+		int					append( const CharSeq& seq );
+		int					insert( int ofs, const CharSeq& seq );
+		int					replace( int ofs, int nDelete, const CharSeq& seq );
 		int					remove( int ofs, int len );
 	
-		void				setState( WgState state );
-		void				onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+		void				setState( State state );
+		void				onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
 		//
 	
-		void				setEditMode( WgTextEditMode mode );
-		WgTextEditMode		editMode() const;
+		void				setEditMode( TextEditMode mode );
+		TextEditMode		editMode() const;
 		
-		void				setCaret( const WgCaret2_p& pCaret );
-		WgCaret2_p 		caret() { return m_pCaret; }
+		void				setCaret( const Caret2_p& pCaret );
+		Caret2_p 		caret() { return m_pCaret; }
 		
 		int					selectionBegin() const;
 		int					selectionEnd() const;
@@ -77,9 +77,9 @@ namespace wg
 	
 		void			_cursorToEnd();
 	
-		WgTextEditMode	m_editMode;
+		TextEditMode	m_editMode;
 		WgEditState		m_editState;
-		WgCaret2_p		m_pCaret;
+		Caret2_p		m_pCaret;
 	};
 	
 

@@ -32,7 +32,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Wg_Interface_ValueHolder::Wg_Interface_ValueHolder()
+	_Interface_ValueHolder::_Interface_ValueHolder()
 	{
 		m_rangeMin						= LLONG_MIN >> 2;
 		m_rangeMax						= LLONG_MAX >> 2;
@@ -45,7 +45,7 @@ namespace wg
 	
 	//____ setRange() _____________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setRange( Sint64 min, Sint64 max )
+	bool _Interface_ValueHolder::setRange( Sint64 min, Sint64 max )
 	{
 		if( min > max )
 			return false;
@@ -74,7 +74,7 @@ namespace wg
 	
 	//____ setFractionalRounding() ________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setFractionalRounding( int nValueDigits, int lastDigitModulo )
+	bool _Interface_ValueHolder::setFractionalRounding( int nValueDigits, int lastDigitModulo )
 	{
 		if( nValueDigits < 0 || nValueDigits > 12 || (lastDigitModulo != 1 && lastDigitModulo != 2 && lastDigitModulo != 5 ) )
 			return false;
@@ -87,7 +87,7 @@ namespace wg
 	
 	//____ setUnitSize() __________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setUnitSize( int unitsize )
+	bool _Interface_ValueHolder::setUnitSize( int unitsize )
 	{
 		if( unitsize <= 0 )
 			return false;
@@ -98,7 +98,7 @@ namespace wg
 	
 	//____ setValue() _____________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setValue( Sint64 value )
+	bool _Interface_ValueHolder::setValue( Sint64 value )
 	{
 		bool b = _setValue(value);
 		_updateScrollbar( fractionalValue(), 0.f );
@@ -107,7 +107,7 @@ namespace wg
 	
 	//____ setFractionalValue() ___________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setFractionalValue( float fraction )
+	bool _Interface_ValueHolder::setFractionalValue( float fraction )
 	{
 		// First we check if fraction is identical to what we might have sent out
 		// ourselves. In that case we ignore it even if it would result in a slightly
@@ -125,7 +125,7 @@ namespace wg
 	
 	//____ fractionalValue() ______________________________________________________
 	
-	float Wg_Interface_ValueHolder::fractionalValue()
+	float _Interface_ValueHolder::fractionalValue()
 	{
 		if( m_rangeMax == m_rangeMin )
 			return 0.0f;
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ setStepSize() __________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::setStepSize( int size )
+	bool _Interface_ValueHolder::setStepSize( int size )
 	{
 		if( size <= 0 )
 			return false;
@@ -146,31 +146,31 @@ namespace wg
 	
 	//____ incValue() _____________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::incValue()
+	bool _Interface_ValueHolder::incValue()
 	{
 		return setValue( m_value + m_stepSize );
 	}
 	
-	bool Wg_Interface_ValueHolder::incValue( int increment )
+	bool _Interface_ValueHolder::incValue( int increment )
 	{
 		return setValue( m_value + increment );
 	}
 	
 	//____ decValue() _____________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::decValue()
+	bool _Interface_ValueHolder::decValue()
 	{
 		return setValue( m_value - m_stepSize );
 	}
 	
-	bool Wg_Interface_ValueHolder::decValue( int decrement )
+	bool _Interface_ValueHolder::decValue( int decrement )
 	{
 		return setValue( m_value - decrement );
 	}
 	
 	//____ _stepFwd() ______________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_stepFwd()
+	float _Interface_ValueHolder::_stepFwd()
 	{
 		_setValue( m_value + m_stepSize );
 		return fractionalValue();
@@ -178,7 +178,7 @@ namespace wg
 	
 	//____ _stepBwd() ______________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_stepBwd()
+	float _Interface_ValueHolder::_stepBwd()
 	{
 		_setValue( m_value - m_stepSize );
 		return fractionalValue();
@@ -186,7 +186,7 @@ namespace wg
 	
 	//____ _jumpFwd() ______________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_jumpFwd()
+	float _Interface_ValueHolder::_jumpFwd()
 	{
 		_setValue( m_value + 10*m_stepSize );
 		return fractionalValue();
@@ -194,7 +194,7 @@ namespace wg
 	
 	//____ _jumpBwd() ______________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_jumpBwd()
+	float _Interface_ValueHolder::_jumpBwd()
 	{
 		_setValue( m_value - 10*m_stepSize );
 		return fractionalValue();
@@ -202,7 +202,7 @@ namespace wg
 	
 	//____ _wheelRolled() __________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_wheelRolled( int distance )
+	float _Interface_ValueHolder::_wheelRolled( int distance )
 	{
 		_setValue( m_value + distance*m_stepSize );
 		return fractionalValue();
@@ -210,7 +210,7 @@ namespace wg
 	
 	//____ _setPosition() __________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_setPosition( float fraction )
+	float _Interface_ValueHolder::_setPosition( float fraction )
 	{
 		_setFractionalValue(fraction);
 		return fractionalValue();
@@ -218,14 +218,14 @@ namespace wg
 	
 	//____ _getHandlePosition() ____________________________________________________
 	
-	float Wg_Interface_ValueHolder::_getHandlePosition()
+	float _Interface_ValueHolder::_getHandlePosition()
 	{
 		return fractionalValue();
 	}
 	
 	//____ _getHandleSize() ________________________________________________________
 	
-	float Wg_Interface_ValueHolder::_getHandleSize()
+	float _Interface_ValueHolder::_getHandleSize()
 	{
 		return 0.f;
 	}
@@ -233,7 +233,7 @@ namespace wg
 	
 	//____ _setFractionalValue() ___________________________________________________
 	
-	bool Wg_Interface_ValueHolder::_setFractionalValue( float fraction )
+	bool _Interface_ValueHolder::_setFractionalValue( float fraction )
 	{
 		// Calculate new value and set it.
 	
@@ -261,7 +261,7 @@ namespace wg
 	
 	//____ _setValue() _____________________________________________________________
 	
-	bool Wg_Interface_ValueHolder::_setValue( Sint64 value )
+	bool _Interface_ValueHolder::_setValue( Sint64 value )
 	{
 		bool	retVal = true;
 	
@@ -291,7 +291,7 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void Wg_Interface_ValueHolder::_onCloneContent( const Wg_Interface_ValueHolder * pOrg )
+	void _Interface_ValueHolder::_onCloneContent( const _Interface_ValueHolder * pOrg )
 	{
 		m_rangeMin 	= pOrg->m_rangeMin;
 		m_rangeMax 	= pOrg->m_rangeMax;

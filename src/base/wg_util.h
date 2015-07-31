@@ -17,21 +17,21 @@
 namespace wg 
 {
 	
-	class WgRect;
+	class Rect;
 	
 	
 	//____ WgUtil _________________________________________________________________
 	
 	namespace WgUtil
 	{
-		bool		markTestStretchRect( WgCoord ofs, const WgSurface_p& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold );
+		bool		markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold );
 	
 		bool		pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
 	
-		WgCoord 	origoToOfs( WgOrigo origo, WgSize base );
-		WgRect		origoToRect( WgOrigo origo, WgSize base, WgSize rect );
+		Coord 	origoToOfs( WgOrigo origo, Size base );
+		Rect		origoToRect( WgOrigo origo, Size base, Size rect );
 	
-		int 		sizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
+		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 	
 	    inline WgOrientation dirToOrient( WgDirection dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
 	    
@@ -316,7 +316,7 @@ namespace wg
 	
 	
 	
-		inline int _stateToIndex(WgStateEnum state)
+		inline int _stateToIndex(StateEnum state)
 		{ 
 			static int	s_stateToIndexTable[WG_MAX_STATE_VALUE+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
 			return s_stateToIndexTable[state]; 

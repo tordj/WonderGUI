@@ -17,25 +17,25 @@
 namespace wg 
 {
 	
-	class WgSimpleVolumeMeter;
-	typedef	WgStrongPtr<WgSimpleVolumeMeter,WgWidget_p>		WgSimpleVolumeMeter_p;
-	typedef	WgWeakPtr<WgSimpleVolumeMeter,WgWidget_wp>		WgSimpleVolumeMeter_wp;
+	class SimpleVolumeMeter;
+	typedef	WgStrongPtr<SimpleVolumeMeter,Widget_p>		SimpleVolumeMeter_p;
+	typedef	WgWeakPtr<SimpleVolumeMeter,Widget_wp>		SimpleVolumeMeter_wp;
 	
-	//____ WgSimpleVolumeMeter ____________________________________________________________
+	//____ SimpleVolumeMeter ____________________________________________________________
 	
-	class WgSimpleVolumeMeter : public WgWidget
+	class SimpleVolumeMeter : public Widget
 	{
 	public:
-		static WgSimpleVolumeMeter_p	create() { return WgSimpleVolumeMeter_p(new WgSimpleVolumeMeter()); }
+		static SimpleVolumeMeter_p	create() { return SimpleVolumeMeter_p(new SimpleVolumeMeter()); }
 		
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgSimpleVolumeMeter_p	cast( const WgObject_p& pObject );
+		static SimpleVolumeMeter_p	cast( const Object_p& pObject );
 		
 		//____ Methods __________________________________________
 	
-		void			setColors( WgColor bottom, WgColor middle, WgColor top );
+		void			setColors( Color bottom, Color middle, Color top );
 		void			setSections( float bottomFraction, float topFraction );
 		void			setHoldHeight( float fraction );
 		
@@ -44,25 +44,25 @@ namespace wg
 		
 		
 		
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 		
 	protected:
-		WgSimpleVolumeMeter();
-		virtual ~WgSimpleVolumeMeter();
-		virtual WgWidget* _newOfMyType() const { return new WgSimpleVolumeMeter(); };
+		SimpleVolumeMeter();
+		virtual ~SimpleVolumeMeter();
+		virtual Widget* _newOfMyType() const { return new SimpleVolumeMeter(); };
 		
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void			_onCloneContent( const WgWidget * _pOrg );
-		void			_onNewSize( const WgSize& size );
-		void			_onStateChanged( WgState oldState );
-		void			_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onNewSize( const Size& size );
+		void			_onStateChanged( State oldState );
+		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 		
 		void			_updateSectionPixelHeight();
-		void			_renderPeak( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip );
-		void			_renderHold( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip );
+		void			_renderPeak( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip );
+		void			_renderHold( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip );
 		
 		
-		WgColor			m_sectionColors[3];
+		Color			m_sectionColors[3];
 		float			m_sectionHeight[3];
 		int				m_sectionPixelHeight[3];
 		float			m_holdHeight;

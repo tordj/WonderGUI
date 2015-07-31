@@ -35,52 +35,52 @@
 namespace wg 
 {
 	
-	class WgTextDisplay;
-	typedef	WgStrongPtr<WgTextDisplay,WgWidget_p>		WgTextDisplay_p;
-	typedef	WgWeakPtr<WgTextDisplay,WgWidget_wp>	WgTextDisplay_wp;
+	class TextDisplay;
+	typedef	WgStrongPtr<TextDisplay,Widget_p>		TextDisplay_p;
+	typedef	WgWeakPtr<TextDisplay,Widget_wp>	TextDisplay_wp;
 	
-	class WgTextDisplay:public WgWidget, protected WgTextHolder
+	class TextDisplay:public Widget, protected TextHolder
 	{
 	public:
-		static WgTextDisplay_p	create() { return WgTextDisplay_p(new WgTextDisplay()); }
+		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgTextDisplay_p	cast( const WgObject_p& pObject );
+		static TextDisplay_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgModText		text;
+		ModText		text;
 	
 		//____ Methods __________________________________________
 	
 		WgPointerStyle		pointerStyle() const;
-		WgString			tooltipString() const;
+		String			tooltipString() const;
 	
 		int		matchingWidth( int height ) const;
 		int		matchingHeight( int width ) const;
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgTextDisplay();
-		virtual ~WgTextDisplay();
-		virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
+		TextDisplay();
+		virtual ~TextDisplay();
+		virtual Widget* _newOfMyType() const { return new TextDisplay(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onNewSize( const WgSize& size );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onNewSize( const Size& size );
 		void	_onRefresh();
-		void	_onMsg( const WgMsg_p& pMsg );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onMsg( const Msg_p& pMsg );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		WgObject * _object() { return this; }
-		void	_onFieldDirty( WgField * pField );
-		void	_onFieldResize( WgField * pField );
+		Object * _object() { return this; }
+		void	_onFieldDirty( Field * pField );
+		void	_onFieldResize( Field * pField );
 	private:
 	
-		WgTextField			m_text;
+		TextField			m_text;
 	};
 	
 	

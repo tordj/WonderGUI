@@ -25,7 +25,7 @@
 namespace wg 
 {
 	
-	WgSpanItem::WgSpanItem( WgSpanHolder * pHolder ) : WgItem( pHolder )
+	SpanItem::SpanItem( SpanHolder * pHolder ) : Item( pHolder )
 	{
 		min = MIN;
 		max = MAX;
@@ -34,7 +34,7 @@ namespace wg
 	}
 	
 	
-	bool WgSpanItem::setMin( int _min )
+	bool SpanItem::setMin( int _min )
 	{
 		if( _min < MIN || _min > MAX )
 			return false;
@@ -57,7 +57,7 @@ namespace wg
 		return true;
 	}
 	
-	bool WgSpanItem::setMax( int _max )
+	bool SpanItem::setMax( int _max )
 	{
 		if( _max < MIN || _max > MAX )
 			return false;
@@ -81,7 +81,7 @@ namespace wg
 		return true;
 	}
 	
-	bool WgSpanItem::setRange( int _min, int _max )
+	bool SpanItem::setRange( int _min, int _max )
 	{
 		if( _min > _max || _min < MIN || _max > MAX )
 			return false;
@@ -105,7 +105,7 @@ namespace wg
 		return true;
 	}
 	
-	void WgSpanItem::setSpan( int _begin, int _length )
+	void SpanItem::setSpan( int _begin, int _length )
 	{
 		if( _length > max - min )
 			_length = max - min;
@@ -124,7 +124,7 @@ namespace wg
 		}
 	}
 	
-	void WgSpanItem::setBegin( int _begin )
+	void SpanItem::setBegin( int _begin )
 	{
 		if( _begin < min )
 			_begin = min;
@@ -138,7 +138,7 @@ namespace wg
 		}
 	}
 	
-	void WgSpanItem::setLength( int _length )
+	void SpanItem::setLength( int _length )
 	{
 		if( _length > max - min )
 			_length = max - min;
@@ -153,50 +153,50 @@ namespace wg
 		}
 	}
 	
-	void WgSpanItem::setRelativeSpan( float _begin, float _length )
+	void SpanItem::setRelativeSpan( float _begin, float _length )
 	{
 		int range = max - min;
 		setSpan( min + (int) (_begin*range), (int) _length*range );
 	}
 	
-	void WgSpanItem::setRelativePos( float _pos )
+	void SpanItem::setRelativePos( float _pos )
 	{
 		int range = max - min;
 		setBegin( min + (int) ((_pos*range*2)- length)/2 );
 	}
 	
-	void WgSpanItem::setRelativeBegin( float _begin )
+	void SpanItem::setRelativeBegin( float _begin )
 	{
 		int range = max - min;
 		setBegin( min + (int) (_begin*range) );
 	}
 	
-	void WgSpanItem::setRelativeLength( float _length )
+	void SpanItem::setRelativeLength( float _length )
 	{	int range = max - min;
 		setLength( (int) _length*range );
 	}
 	
-	bool WgSpanItem::stepForward()
+	bool SpanItem::stepForward()
 	{
 		int beg = begin;
 		setBegin( beg + _stepSize() );
 		return beg != begin;
 	}
 	
-	bool WgSpanItem::stepBackward()
+	bool SpanItem::stepBackward()
 	{	int beg = begin;
 		setBegin( beg - _stepSize() );
 		return beg != begin;
 	}
 	
-	bool WgSpanItem::skipForward()
+	bool SpanItem::skipForward()
 	{
 		int beg = begin;
 		setBegin( beg + _skipSize() );
 		return beg != begin;
 	}
 	
-	bool WgSpanItem::skipBackward()
+	bool SpanItem::skipBackward()
 	{
 		int beg = begin;
 		setBegin( beg - _skipSize() );

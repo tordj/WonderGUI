@@ -25,13 +25,13 @@
 namespace wg 
 {
 	
-	const char WgTextStyle::CLASSNAME[] = {"TextStyle"};
+	const char TextStyle::CLASSNAME[] = {"TextStyle"};
 	
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgTextStyle::WgTextStyle()
+	TextStyle::TextStyle()
 	{
 		m_pFirstChild = 0;
 		m_pNextSibling = 0;
@@ -44,7 +44,7 @@ namespace wg
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgTextStyle::~WgTextStyle()
+	TextStyle::~TextStyle()
 	{
 		if( m_pNextSibling )
 			m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
@@ -55,40 +55,40 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgTextStyle::isInstanceOf( const char * pClassName ) const
+	bool TextStyle::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgTextStyle::className( void ) const
+	const char * TextStyle::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgTextStyle_p WgTextStyle::cast( const WgObject_p& pObject )
+	TextStyle_p TextStyle::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgTextStyle_p( static_cast<WgTextStyle*>(pObject.rawPtr()) );
+			return TextStyle_p( static_cast<TextStyle*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setParent() _____________________________________________________________
 	
-	bool WgTextStyle::setParent( const WgTextStyle_p& pParent )
+	bool TextStyle::setParent( const TextStyle_p& pParent )
 	{
 		// Check so we don't get circular references.
 	
 		if( pParent )
 		{
-			WgTextStyle * p = pParent.rawPtr();
+			TextStyle * p = pParent.rawPtr();
 			while( p != 0 && p != this )
 				p = p->m_pParent.rawPtr();
 	
@@ -126,9 +126,9 @@ namespace wg
 	
 	//____ cascade() _______________________________________________________________
 	
-	void WgTextStyle::cascade()
+	void TextStyle::cascade()
 	{
-		WgTextStyle * pChild = m_pFirstChild;
+		TextStyle * pChild = m_pFirstChild;
 		while( pChild )
 		{
 			if( pChild->_refreshComb() )
@@ -140,7 +140,7 @@ namespace wg
 	
 	//____ setFont() _______________________________________________________________
 	
-	void WgTextStyle::setFont( const WgFont_p& pFont )
+	void TextStyle::setFont( const Font_p& pFont )
 	{
 		if( pFont != m_specAttr.pFont )
 		{
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ setLink() _______________________________________________________________
 	
-	void WgTextStyle::setLink( const WgTextLink_p& pLink )
+	void TextStyle::setLink( const TextLink_p& pLink )
 	{
 		if( pLink != m_specAttr.pLink )
 		{
@@ -168,9 +168,9 @@ namespace wg
 	
 	//____ setColor() ______________________________________________________________
 	
-	void WgTextStyle::setColor( WgColor color )
+	void TextStyle::setColor( Color color )
 	{
-		if( color == WgColor::none )
+		if( color == Color::none )
 			clearColor();
 		else
 		{
@@ -181,9 +181,9 @@ namespace wg
 			}
 		}}
 	
-	void WgTextStyle::setColor( WgColor color, WgState state )
+	void TextStyle::setColor( Color color, State state )
 	{
-		if( color == WgColor::none )
+		if( color == Color::none )
 			clearColor(state);
 		else
 		{
@@ -195,9 +195,9 @@ namespace wg
 	
 	//____ setBgColor() ______________________________________________________________
 	
-	void WgTextStyle::setBgColor( WgColor color )
+	void TextStyle::setBgColor( Color color )
 	{
-		if( color == WgColor::none )
+		if( color == Color::none )
 			clearBgColor();
 		else
 		{
@@ -209,9 +209,9 @@ namespace wg
 		}
 	}
 	
-	void WgTextStyle::setBgColor( WgColor color, WgState state )
+	void TextStyle::setBgColor( Color color, State state )
 	{
-		if( color == WgColor::none )
+		if( color == Color::none )
 			clearBgColor(state);
 		else
 		{
@@ -223,7 +223,7 @@ namespace wg
 	
 	//____ setSize() _______________________________________________________________
 	
-	void WgTextStyle::setSize( int size )
+	void TextStyle::setSize( int size )
 	{
 		if( size == WG_FONTSIZE_INHERIT )
 			clearSize();
@@ -237,7 +237,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextStyle::setSize( int size, WgState state )
+	void TextStyle::setSize( int size, State state )
 	{
 		if( size == WG_FONTSIZE_INHERIT )
 			clearSize(state);
@@ -252,7 +252,7 @@ namespace wg
 	
 	//____ setDecoration() _________________________________________________________
 	
-	void WgTextStyle::setDecoration( WgTextDecoration decoration )
+	void TextStyle::setDecoration( TextDecoration decoration )
 	{
 		if( decoration == WG_DECORATION_INHERIT )
 			clearDecoration();
@@ -266,7 +266,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextStyle::setDecoration( WgTextDecoration decoration, WgState state )
+	void TextStyle::setDecoration( TextDecoration decoration, State state )
 	{
 		if( decoration == WG_DECORATION_INHERIT )
 			clearDecoration(state);
@@ -281,7 +281,7 @@ namespace wg
 	
 	//____ clearFont() _____________________________________________________________
 	
-	void WgTextStyle::clearFont()
+	void TextStyle::clearFont()
 	{
 		m_specAttr.pFont = 0;
 		if( m_pParent )
@@ -292,7 +292,7 @@ namespace wg
 	
 	//____ clearLink() _____________________________________________________________
 	
-	void WgTextStyle::clearLink()
+	void TextStyle::clearLink()
 	{
 		m_specAttr.pLink = 0;
 		if( m_pParent )
@@ -303,43 +303,43 @@ namespace wg
 	
 	//____ clearColor() ____________________________________________________________
 	
-	void WgTextStyle::clearColor()
+	void TextStyle::clearColor()
 	{
 		if( m_pParent )
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.color[i] = WgColor::none;
+				m_specAttr.color[i] = Color::none;
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
 			}
 		}
 		else
 		{		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.color[i] = WgColor::none;
-				m_combAttr.color[i] = WgColor::none;
+				m_specAttr.color[i] = Color::none;
+				m_combAttr.color[i] = Color::none;
 			}
 		}
 	}
 	
-	void WgTextStyle::clearColor( WgState state )
+	void TextStyle::clearColor( State state )
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
-		m_specAttr.color[idx] = WgColor::none;
-		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : WgColor::none;
+		m_specAttr.color[idx] = Color::none;
+		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : Color::none;
 	}
 	
 	
 	//____ clearBgColor() ____________________________________________________________
 	
-	void WgTextStyle::clearBgColor()
+	void TextStyle::clearBgColor()
 	{
 		if( m_pParent )
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.bgColor[i] = WgColor::none;
+				m_specAttr.bgColor[i] = Color::none;
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
 			}
 		}
@@ -347,23 +347,23 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.bgColor[i] = WgColor::none;
-				m_combAttr.bgColor[i] = WgColor::none;
+				m_specAttr.bgColor[i] = Color::none;
+				m_combAttr.bgColor[i] = Color::none;
 			}
 		}
 	}
 	
-	void WgTextStyle::clearBgColor( WgState state )
+	void TextStyle::clearBgColor( State state )
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
-		m_specAttr.bgColor[idx] = WgColor::none;
-		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : WgColor::none;
+		m_specAttr.bgColor[idx] = Color::none;
+		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : Color::none;
 	}
 	
 	//____ clearSize() ____________________________________________________________
 	
-	void WgTextStyle::clearSize()
+	void TextStyle::clearSize()
 	{
 		if( m_pParent )
 		{
@@ -383,7 +383,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextStyle::clearSize( WgState state )
+	void TextStyle::clearSize( State state )
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
@@ -393,7 +393,7 @@ namespace wg
 	
 	//____ clearDecoration() ____________________________________________________________
 	
-	void WgTextStyle::clearDecoration()
+	void TextStyle::clearDecoration()
 	{
 		if( m_pParent )
 		{
@@ -413,7 +413,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextStyle::clearDecoration( WgState state )
+	void TextStyle::clearDecoration( State state )
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
@@ -423,7 +423,7 @@ namespace wg
 	
 	//____ exportAttr() ____________________________________________________________
 	
-	void WgTextStyle::exportAttr( WgState state, WgTextAttr2 * pDest ) const
+	void TextStyle::exportAttr( State state, TextAttr2 * pDest ) const
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
@@ -440,7 +440,7 @@ namespace wg
 	
 	//____ addToAttr() _____________________________________________________________
 	
-	void WgTextStyle::addToAttr( WgState state, WgTextAttr2 * pDest ) const 
+	void TextStyle::addToAttr( State state, TextAttr2 * pDest ) const 
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
@@ -450,9 +450,9 @@ namespace wg
 			pDest->pLink = m_combAttr.pLink;
 		if( m_combAttr.size[idx] != WG_FONTSIZE_INHERIT )
 			pDest->size	= m_combAttr.size[idx];
-		if( m_combAttr.color[idx] != WgColor::none )
+		if( m_combAttr.color[idx] != Color::none )
 			pDest->color = m_combAttr.color[idx];
-		if( m_combAttr.bgColor[idx] != WgColor::none )
+		if( m_combAttr.bgColor[idx] != Color::none )
 			pDest->bgColor = m_combAttr.bgColor[idx];
 		if( m_combAttr.decoration[idx] != WG_DECORATION_INHERIT )
 			pDest->decoration = m_combAttr.decoration[idx];
@@ -461,7 +461,7 @@ namespace wg
 	
 	//____ refreshComb() ___________________________________________________________
 	
-	bool WgTextStyle::_refreshComb()
+	bool TextStyle::_refreshComb()
 	{
 		if( m_pParent )
 		{
@@ -474,8 +474,8 @@ namespace wg
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
 				newComb.size[i] = m_specAttr.size[i] != WG_FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-				newComb.color[i] = m_specAttr.color[i] != WgColor::none ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
-				newComb.bgColor[i] = m_specAttr.bgColor[i] != WgColor::none ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
+				newComb.color[i] = m_specAttr.color[i] != Color::none ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
+				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::none ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
 				newComb.decoration[i] = m_specAttr.decoration[i] != WG_DECORATION_INHERIT ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
 			}
 	
@@ -496,7 +496,7 @@ namespace wg
 	
 	//____ _clearSet() _____________________________________________________________
 	
-	void WgTextStyle::_clearSet( WgTextStyle::AttrSet * pSet )
+	void TextStyle::_clearSet( TextStyle::AttrSet * pSet )
 	{
 		pSet->pFont = 0;
 		pSet->pLink = 0;
@@ -504,15 +504,15 @@ namespace wg
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
 			pSet->size[i] 		= WG_FONTSIZE_INHERIT;
-			pSet->color[i] 		= WgColor::none;
-			pSet->bgColor[i] 	= WgColor::none;
+			pSet->color[i] 		= Color::none;
+			pSet->bgColor[i] 	= Color::none;
 			pSet->decoration[i] = WG_DECORATION_INHERIT;
 		}
 	}
 	
 	//____ _compareSets() __________________________________________________________
 	
-	bool WgTextStyle::_compareSets( WgTextStyle::AttrSet * p1, WgTextStyle::AttrSet * p2 )
+	bool TextStyle::_compareSets( TextStyle::AttrSet * p1, TextStyle::AttrSet * p2 )
 	{
 		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink )
 			return false;

@@ -34,60 +34,60 @@
 namespace wg 
 {
 	
-	class WgImage;
-	typedef	WgStrongPtr<WgImage,WgWidget_p>		WgImage_p;
-	typedef	WgWeakPtr<WgImage,WgWidget_wp>		WgImage_wp;
+	class Image;
+	typedef	WgStrongPtr<Image,Widget_p>		Image_p;
+	typedef	WgWeakPtr<Image,Widget_wp>		Image_wp;
 	
-	//____ WgImage __________________________________________________________
+	//____ Image __________________________________________________________
 	/**
 	 * @brief	Widget for displaying an image.
 	 *
-	 * WgImage is a widget that displays an image.
+	 * Image is a widget that displays an image.
 	 *
 	 **/
 	
-	class WgImage : public WgWidget
+	class Image : public Widget
 	{
 	public:
-		static WgImage_p	create() { return WgImage_p(new WgImage()); }
+		static Image_p	create() { return Image_p(new Image()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgImage_p	cast( const WgObject_p& pObject );
+		static Image_p	cast( const Object_p& pObject );
 		
 	
-		void				setImage( const WgSurface_p& pSurface, const WgRect& rect );	///< @brief Set image to display.
-		void				setImage( const WgSurface_p& pSurface );						///< @brief Set image to display.
+		void				setImage( const Surface_p& pSurface, const Rect& rect );	///< @brief Set image to display.
+		void				setImage( const Surface_p& pSurface );						///< @brief Set image to display.
 	
-		inline WgSurface_p	imageSurface() const;											///< @brief Get surface of image displayed.
-		inline WgRect		imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
+		inline Surface_p	imageSurface() const;											///< @brief Get surface of image displayed.
+		inline Rect		imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 	
-		WgSize				preferredSize() const;
+		Size				preferredSize() const;
 	
 	protected:
-		WgImage();
-		virtual ~WgImage();
-		virtual WgWidget* _newOfMyType() const { return new WgImage(); };
+		Image();
+		virtual ~Image();
+		virtual Widget* _newOfMyType() const { return new Image(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
 	
 	private:
 	
-		WgSurface_p	m_pSurface;
-		WgRect			m_rect;
+		Surface_p	m_pSurface;
+		Rect			m_rect;
 	
 	};
 	
 	
-	WgSurface_p WgImage::imageSurface() const
+	Surface_p Image::imageSurface() const
 	{
 		return m_pSurface;
 	}
 	
-	WgRect WgImage::imageRect() const
+	Rect Image::imageRect() const
 	{
 		return m_rect;
 	}

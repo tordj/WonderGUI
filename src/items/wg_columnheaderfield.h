@@ -34,38 +34,38 @@ namespace wg
 {
 	
 	
-	class WgColumnHeaderHolder : public WgFieldHolder
+	class ColumnHeaderHolder : public FieldHolder
 	{
 	};
 	
 	
-	class WgColumnHeaderField : public WgField, protected WgIconHolder, protected WgTextHolder
+	class ColumnHeaderField : public Field, protected IconHolder, protected TextHolder
 	{
 	public:
-		WgColumnHeaderField(WgColumnHeaderHolder * pHolder);
+		ColumnHeaderField(ColumnHeaderHolder * pHolder);
 	
 		//____ Subfields __________________________________
 	
-		WgIconField		icon;
-		WgIconField		arrow;
-		WgTextField		label;
+		IconField		icon;
+		IconField		arrow;
+		TextField		label;
 	
 		//____ Methods _____________________________________
 	
-		void				setSkin( const WgSkin_p& pSkin );
-		inline WgSkin_p	skin() const { return m_pSkin; }
+		void				setSkin( const Skin_p& pSkin );
+		inline Skin_p	skin() const { return m_pSkin; }
 	
-		WgObject * 			_object() { return m_pHolder->_object(); };
+		Object * 			_object() { return m_pHolder->_object(); };
 	//private:
-		void				_onFieldDirty( WgField * pField );
-		void 				_onFieldResize( WgField * pField );
+		void				_onFieldDirty( Field * pField );
+		void 				_onFieldResize( Field * pField );
 	
 	
-		WgColumnHeaderHolder *	m_pHolder;
-		WgSkin_p			m_pSkin;
+		ColumnHeaderHolder *	m_pHolder;
+		Skin_p			m_pSkin;
 		int					m_height;
 		int					m_width;
-		WgState				m_state;
+		State				m_state;
 		bool				m_bPressed;
 	
 	};

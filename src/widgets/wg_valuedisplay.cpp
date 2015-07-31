@@ -27,44 +27,44 @@ namespace wg
 {
 	
 	
-	const char WgValueDisplay::CLASSNAME[] = {"ValueDisplay"};
+	const char ValueDisplay::CLASSNAME[] = {"ValueDisplay"};
 	
 	
-	//____ WgValueDisplay() _________________________________________________________________
+	//____ ValueDisplay() _________________________________________________________________
 	
-	WgValueDisplay::WgValueDisplay() : m_field(this), value(&m_field)
+	ValueDisplay::ValueDisplay() : m_field(this), value(&m_field)
 	{
 	}
 	
-	//____ ~WgValueDisplay() ___________________________________________________________
+	//____ ~ValueDisplay() ___________________________________________________________
 	
-	WgValueDisplay::~WgValueDisplay()
+	ValueDisplay::~ValueDisplay()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgValueDisplay::isInstanceOf( const char * pClassName ) const
+	bool ValueDisplay::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgValueDisplay::className( void ) const
+	const char * ValueDisplay::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgValueDisplay_p WgValueDisplay::cast( const WgObject_p& pObject )
+	ValueDisplay_p ValueDisplay::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgValueDisplay_p( static_cast<WgValueDisplay*>(pObject.rawPtr()) );
+			return ValueDisplay_p( static_cast<ValueDisplay*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,9 +72,9 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgValueDisplay::preferredSize() const
+	Size ValueDisplay::preferredSize() const
 	{
-		WgSize size = m_field.preferredSize();
+		Size size = m_field.preferredSize();
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(size);
@@ -85,53 +85,53 @@ namespace wg
 	
 	//____ _onRefresh() ____________________________________________________________
 	
-	void WgValueDisplay::_onRefresh( void )
+	void ValueDisplay::_onRefresh( void )
 	{
 		m_field.onRefresh();
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void ValueDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 		m_field.onRender(pDevice, _canvas, _clip);
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgValueDisplay::_onCloneContent( const WgWidget * _pOrg )
+	void ValueDisplay::_onCloneContent( const Widget * _pOrg )
 	{
-		WgValueDisplay * pOrg = (WgValueDisplay *) _pOrg;
+		ValueDisplay * pOrg = (ValueDisplay *) _pOrg;
 	}
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgValueDisplay::_onStateChanged( WgState oldState )
+	void ValueDisplay::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 		m_field.setState(m_state);
 	}
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgValueDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void ValueDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 	//	m_text.setColorSkin(pNewSkin);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgValueDisplay::_onFieldDirty( WgField * pField )
+	void ValueDisplay::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgValueDisplay::_onFieldResize( WgField * pField )
+	void ValueDisplay::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();
@@ -139,7 +139,7 @@ namespace wg
 	
 	//____ _onValueModified() ______________________________________________________
 	
-	void WgValueDisplay::_onValueModified( WgModValueField * pField )
+	void ValueDisplay::_onValueModified( ModValueField * pField )
 	{
 		_requestResize();
 		_requestRender();

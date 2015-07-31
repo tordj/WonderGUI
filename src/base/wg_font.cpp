@@ -27,25 +27,25 @@
 namespace wg 
 {
 	
-	const char WgFont::CLASSNAME[] = {"Font"};
+	const char Font::CLASSNAME[] = {"Font"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgFont::WgFont()
+	Font::Font()
 	{
 	
 		_init();
 	}
 	
 	#ifdef WG_USE_FREETYPE
-	WgFont::WgFont( const WgVectorGlyphs_p& pNormal )
+	Font::Font( const VectorGlyphs_p& pNormal )
 	{
 		_init();
 		setVectorGlyphs( pNormal, WG_FONT_NORMAL );
 	}
 	#endif
 	
-	WgFont::WgFont( const WgBitmapGlyphs_p& pNormal, int size )
+	Font::Font( const BitmapGlyphs_p& pNormal, int size )
 	{
 		_init();
 		setBitmapGlyphs( pNormal, WG_FONT_NORMAL, size );
@@ -53,7 +53,7 @@ namespace wg
 	
 	//____ _init() _________________________________________________________________
 	
-	void WgFont::_init()
+	void Font::_init()
 	{
 	#ifdef	WG_USE_FREETYPE
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
@@ -68,7 +68,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgFont::~WgFont()
+	Font::~Font()
 	{
 	#ifdef	WG_USE_FREETYPE
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
@@ -87,27 +87,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgFont::isInstanceOf( const char * pClassName ) const
+	bool Font::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgFont::className( void ) const
+	const char * Font::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgFont_p WgFont::cast( const WgObject_p& pObject )
+	Font_p Font::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgFont_p( static_cast<WgFont*>(pObject.rawPtr()) );
+			return Font_p( static_cast<Font*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -115,7 +115,7 @@ namespace wg
 	
 	//____ getGlyphset() _______________________________________________________________
 	
-	WgGlyphset_p WgFont::getGlyphset( WgFontAlt style, int size ) const
+	Glyphset_p Font::getGlyphset( FontAlt style, int size ) const
 	{
 		// Find the right glyphset to the following priorities:
 		//
@@ -150,14 +150,14 @@ namespace wg
 	
 	//____ getUnderline() _________________________________________________________
 	
-	const WgUnderline * WgFont::getUnderline( int size )
+	const WgUnderline * Font::getUnderline( int size )
 	{
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
 	
-		WgGlyph_p pUnder = getGlyph('_', WG_FONT_NORMAL, size);
+		Glyph_p pUnder = getGlyph('_', WG_FONT_NORMAL, size);
 	
-		const WgGlyphBitmap * pSrc = pUnder->getBitmap();
+		const GlyphBitmap * pSrc = pUnder->getBitmap();
 	
 		m_tempUnderline.pSurf = pSrc->pSurface;
 		m_tempUnderline.rect = pSrc->rect;
@@ -181,9 +181,9 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	WgGlyph_p WgFont::getGlyph( Uint32 chr, WgFontAlt style, int size ) const
+	Glyph_p Font::getGlyph( Uint32 chr, FontAlt style, int size ) const
 	{
-		WgGlyph_p p;
+		Glyph_p p;
 	
 		// Special case: For whitespace we give vector glyphs top priority
 	
@@ -279,7 +279,7 @@ namespace wg
 	
 	//____ isGlyphProvided() ______________________________________________________
 	
-	WgFont::GlyphProvided WgFont::isGlyphProvided( Uint32 chr, WgFontAlt style, int size ) const
+	Font::GlyphProvided Font::isGlyphProvided( Uint32 chr, FontAlt style, int size ) const
 	{
 		// Find the right glyph to the following priorities:
 	
@@ -345,10 +345,10 @@ namespace wg
 	#ifdef WG_USE_FREETYPE
 	//____ setVectorGlyphs() ______________________________________________________
 	
-	bool WgFont::setVectorGlyphs( const WgVectorGlyphs_p& pGlyph, WgFontAlt style )
+	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt style )
 	{
 		if( m_aVectorGlyphs[style] == 0 )
-			m_aVectorGlyphs[style] = new WgVectorGlyphs_p[WG_MAX_FONTSIZE+1];
+			m_aVectorGlyphs[style] = new VectorGlyphs_p[WG_MAX_FONTSIZE+1];
 	
 		for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 			m_aVectorGlyphs[style][i] = pGlyph;
@@ -356,14 +356,14 @@ namespace wg
 		return true;
 	}
 	
-	bool WgFont::setVectorGlyphs( const WgVectorGlyphs_p& pGlyph, WgFontAlt style, int size )
+	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt style, int size )
 	{
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return false;
 	
 		if( m_aVectorGlyphs[style] == 0 )
 		{
-			m_aVectorGlyphs[style] = new WgVectorGlyphs_p[WG_MAX_FONTSIZE+1];
+			m_aVectorGlyphs[style] = new VectorGlyphs_p[WG_MAX_FONTSIZE+1];
 	
 			for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
 				m_aVectorGlyphs[style][i] = 0;
@@ -378,7 +378,7 @@ namespace wg
 	
 	//____ setDefaultVectorGlyphs() _______________________________________________
 	
-	bool WgFont::setDefaultVectorGlyphs( const WgVectorGlyphs_p& pGlyphs )
+	bool Font::setDefaultVectorGlyphs( const VectorGlyphs_p& pGlyphs )
 	{
 		m_pDefaultVectorGlyphs = pGlyphs;
 		return true;
@@ -386,7 +386,7 @@ namespace wg
 	
 	//____ replaceVectorGlyphs() __________________________________________________
 	
-	int WgFont::replaceVectorGlyphs( const WgVectorGlyphs_p& pOld, const WgVectorGlyphs_p& pNew )
+	int Font::replaceVectorGlyphs( const VectorGlyphs_p& pOld, const VectorGlyphs_p& pNew )
 	{
 		int nbReplaced = 0;
 	
@@ -416,7 +416,7 @@ namespace wg
 	
 	//____ replaceBitmapGlyphs() __________________________________________________
 	
-	int WgFont::replaceBitmapGlyphs( const WgBitmapGlyphs_p& pOld, const WgBitmapGlyphs_p& pNew )
+	int Font::replaceBitmapGlyphs( const BitmapGlyphs_p& pOld, const BitmapGlyphs_p& pNew )
 	{
 		if( !pOld )
 			return 0;
@@ -451,14 +451,14 @@ namespace wg
 	
 	//____ setBitmapGlyphs() ______________________________________________________
 	
-	bool WgFont::setBitmapGlyphs( const WgBitmapGlyphs_p& pGlyph, WgFontAlt style, int size )
+	bool Font::setBitmapGlyphs( const BitmapGlyphs_p& pGlyph, FontAlt style, int size )
 	{
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return false;
 	
 		if( m_aBitmapGlyphs[size] == 0 )
 		{
-			WgBitmapGlyphs_p* p = new WgBitmapGlyphs_p[WG_NB_FONTSTYLES];
+			BitmapGlyphs_p* p = new BitmapGlyphs_p[WG_NB_FONTSTYLES];
 			for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 				p[i] = 0;
 	
@@ -472,7 +472,7 @@ namespace wg
 	
 	//____ setDefaultBitmapGlyphs() _______________________________________________
 	
-	bool WgFont::setDefaultBitmapGlyphs( const WgBitmapGlyphs_p& pGlyphs, int size )
+	bool Font::setDefaultBitmapGlyphs( const BitmapGlyphs_p& pGlyphs, int size )
 	{
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return false;
@@ -483,7 +483,7 @@ namespace wg
 	
 	//____ getBitmapGlyphs() ______________________________________________________
 	
-	WgBitmapGlyphs_p WgFont::getBitmapGlyphs( WgFontAlt style, int size )
+	BitmapGlyphs_p Font::getBitmapGlyphs( FontAlt style, int size )
 	{
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return 0;

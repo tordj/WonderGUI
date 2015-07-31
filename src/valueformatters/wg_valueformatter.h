@@ -37,23 +37,23 @@
 namespace wg 
 {
 	
-	class WgValueFormatter;
-	typedef	WgStrongPtr<WgValueFormatter,WgObject_p>		WgValueFormatter_p;
-	typedef	WgWeakPtr<WgValueFormatter,WgObject_wp>	WgValueFormatter_wp;
+	class ValueFormatter;
+	typedef	WgStrongPtr<ValueFormatter,Object_p>		ValueFormatter_p;
+	typedef	WgWeakPtr<ValueFormatter,Object_wp>	ValueFormatter_wp;
 	
-	//____ WgValueFormatter __________________________________________________________
+	//____ ValueFormatter __________________________________________________________
 	
-	class WgValueFormatter : public WgObject
+	class ValueFormatter : public Object
 	{
 	public:
 		
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgValueFormatter_p	cast( const WgObject_p& pObject );
+		static ValueFormatter_p	cast( const Object_p& pObject );
 	
-		virtual WgString format( Sint64 value, int scale ) const = 0;
-		virtual WgString format( double value ) const = 0;
+		virtual String format( Sint64 value, int scale ) const = 0;
+		virtual String format( double value ) const = 0;
 	};
 	
 

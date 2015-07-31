@@ -33,25 +33,25 @@
 namespace wg 
 {
 	
-	class WgRefreshButton;
-	typedef	WgStrongPtr<WgRefreshButton,WgButton_p>		WgRefreshButton_p;
-	typedef	WgWeakPtr<WgRefreshButton,WgButton_wp>		WgRefreshButton_wp;
+	class RefreshButton;
+	typedef	WgStrongPtr<RefreshButton,Button_p>		RefreshButton_p;
+	typedef	WgWeakPtr<RefreshButton,Button_wp>		RefreshButton_wp;
 	
-	//____ WgWidgetRefreshButton ____________________________________________________________
+	//____ WidgetRefreshButton ____________________________________________________________
 	
-	class WgRefreshButton : public WgButton
+	class RefreshButton : public Button
 	{
 	public:
-		static WgRefreshButton_p	create() { return WgRefreshButton_p(new WgRefreshButton()); }
+		static RefreshButton_p	create() { return RefreshButton_p(new RefreshButton()); }
 		
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgRefreshButton_p	cast( const WgObject_p& pObject );
+		static RefreshButton_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgModText	refreshText;
+		ModText	refreshText;
 	
 		//____ Methods __________________________________________
 	
@@ -68,8 +68,8 @@ namespace wg
 			BUTTON_STRETCHED
 		};
 	
-		void			setRefreshAnimation( const WgGfxAnim_p& pAnimation );
-		WgGfxAnim_p	getRefreshAnimation() const { return m_pRefreshAnim; }
+		void			setRefreshAnimation( const GfxAnim_p& pAnimation );
+		GfxAnim_p	getRefreshAnimation() const { return m_pRefreshAnim; }
 	
 		void			setRefreshMode( RefreshMode mode );
 		RefreshMode		getRefreshMode() const { return m_refreshMode; }
@@ -91,23 +91,23 @@ namespace wg
 		bool			isRefreshing() const { return m_bRefreshing; }
 	
 	protected:
-		WgRefreshButton();
-		virtual ~WgRefreshButton();
-		virtual WgWidget* _newOfMyType() const { return new WgRefreshButton(); };
+		RefreshButton();
+		virtual ~RefreshButton();
+		virtual Widget* _newOfMyType() const { return new RefreshButton(); };
 	
-		void			_onMsg( const WgMsg_p& pMsg );
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void			_onCloneContent( const WgWidget * _pOrg );
-		virtual void 	_onNewSize( const WgSize& size );
+		void			_onMsg( const Msg_p& pMsg );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onCloneContent( const Widget * _pOrg );
+		virtual void 	_onNewSize( const Size& size );
 	
-		WgState			_getRenderState();
+		State			_getRenderState();
 	
 	
 		WgRouteId		m_tickRouteId;
-		WgGfxAnim_p	m_pRefreshAnim;
+		GfxAnim_p	m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-		WgTextField		m_refreshText;
+		TextField		m_refreshText;
 		bool			m_bRestartable;
 	
 		bool			m_bRefreshing;

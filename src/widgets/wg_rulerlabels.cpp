@@ -5,45 +5,45 @@
 namespace wg 
 {
 	
-	const char WgRulerLabels::CLASSNAME[] = {"RulerLabels"};
+	const char RulerLabels::CLASSNAME[] = {"RulerLabels"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgRulerLabels::WgRulerLabels()
+	RulerLabels::RulerLabels()
 	{
 		m_direction = WG_RIGHT;
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgRulerLabels::~WgRulerLabels()
+	RulerLabels::~RulerLabels()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgRulerLabels::isInstanceOf( const char * pClassName ) const
+	bool RulerLabels::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgRulerLabels::className( void ) const
+	const char * RulerLabels::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgRulerLabels_p WgRulerLabels::cast( const WgObject_p& pObject )
+	RulerLabels_p RulerLabels::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgRulerLabels_p( static_cast<WgRulerLabels*>(pObject.rawPtr()) );
+			return RulerLabels_p( static_cast<RulerLabels*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -51,7 +51,7 @@ namespace wg
 	
 	//____ addLabel() ____________________________________________________________
 	
-	void WgRulerLabels::addLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset )
+	void RulerLabels::addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
 		pLabel->textField.set(text);
@@ -65,7 +65,7 @@ namespace wg
 	
 	//____ setDirection() __________________________________________________________
 	
-	void WgRulerLabels::setDirection( WgDirection direction )
+	void RulerLabels::setDirection( WgDirection direction )
 	{
 		m_direction = direction;
 		_requestResize();
@@ -74,30 +74,30 @@ namespace wg
 	
 	//____ getLabel() ________________________________________________________________
 	
-	WgModText_p	WgRulerLabels::getLabel(int index)
+	ModText_p	RulerLabels::getLabel(int index)
 	{
 		if( index >= m_labels.size() )
-			return WgModText_p();
+			return ModText_p();
 	
-		return WgModText_p(this, &m_labels.get(index)->textInterface);
+		return ModText_p(this, &m_labels.get(index)->textInterface);
 	}
 	
 	
 	
 	//____ preferredSize() ________________________________________________________________
 	
-	WgSize WgRulerLabels::preferredSize() const
+	Size RulerLabels::preferredSize() const
 	{
 	    //TODO: calculation of length is not good.
 	    
-	    WgSize preferred;
+	    Size preferred;
 	 
 	    if( m_direction == WG_UP || m_direction == WG_DOWN )
 	    {
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 	        {
-				WgSize sz = pLabel->textField.preferredSize();
+				Size sz = pLabel->textField.preferredSize();
 	            if( sz.w > preferred.w )
 	                preferred.w = sz.w;
 	  
@@ -110,7 +110,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 	        {
-	            WgSize sz = pLabel->textField.preferredSize();
+	            Size sz = pLabel->textField.preferredSize();
 	            preferred.w += sz.w;
 	            
 	            if( sz.h > preferred.h )
@@ -129,11 +129,11 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________________
 	
-	void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void RulerLabels::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 		else
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/			
-				pLabel->textField.onRender(pDevice, WgRect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
+				pLabel->textField.onRender(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
 				pLabel = pLabel->next();
 			}
 		}
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->textField.onRender( pDevice, WgRect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
+				pLabel->textField.onRender( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
 				pLabel = pLabel->next();
 			}
 		}
@@ -212,24 +212,24 @@ namespace wg
 	
 	//____ _onCloneContent() _________________________________________________________________ 
 	
-	void WgRulerLabels::_onCloneContent( const WgWidget * _pOrg )
+	void RulerLabels::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgRulerLabels * pOrg = static_cast<const WgRulerLabels*>(_pOrg);
+		const RulerLabels * pOrg = static_cast<const RulerLabels*>(_pOrg);
 	}
 	
 	//____ _onAlphaTest() ____________________________________________________________________
 	
-	bool WgRulerLabels::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool RulerLabels::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
-		return WgWidget::_onAlphaTest(ofs,sz);
+		return Widget::_onAlphaTest(ofs,sz);
 	}
 	
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgRulerLabels::_onStateChanged( WgState oldState )
+	void RulerLabels::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		Label * p = m_labels.first();
 		while( p )
@@ -241,21 +241,21 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgRulerLabels::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void RulerLabels::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgRulerLabels::_onFieldDirty( WgField * pField )
+	void RulerLabels::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgRulerLabels::_onFieldResize( WgField * pField )
+	void RulerLabels::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();

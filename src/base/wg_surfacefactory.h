@@ -32,31 +32,31 @@ namespace wg
 {
 	
 	
-	class WgSurfaceFactory;
-	typedef	WgStrongPtr<WgSurfaceFactory,WgObject_p>	WgSurfaceFactory_p;
-	typedef	WgWeakPtr<WgSurfaceFactory,WgObject_wp>	WgSurfaceFactory_wp;
+	class SurfaceFactory;
+	typedef	WgStrongPtr<SurfaceFactory,Object_p>	SurfaceFactory_p;
+	typedef	WgWeakPtr<SurfaceFactory,Object_wp>	SurfaceFactory_wp;
 	
 	
-	//____ WgSurfaceFactory _______________________________________________________
+	//____ SurfaceFactory _______________________________________________________
 	/**
 	 * @brief Factory class for creating surfaces.
 	 *
-	 * WgSurfaceFactory is the base class for all surface factories. The surface factories
+	 * SurfaceFactory is the base class for all surface factories. The surface factories
 	 * are used by WonderGUI components that needs to dynamically create surfaces as
 	 * part of their operation, like WgVectorFont.
 	 *
 	 **/
-	class WgSurfaceFactory : public WgObject
+	class SurfaceFactory : public Object
 	{
 	public:
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgSurfaceFactory_p	cast( const WgObject_p& pObject );
+		static SurfaceFactory_p	cast( const Object_p& pObject );
 	
-		virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
+		virtual Surface_p createSurface( const Size& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
 	protected:
-		virtual ~WgSurfaceFactory() {}
+		virtual ~SurfaceFactory() {}
 	};
 	
 	

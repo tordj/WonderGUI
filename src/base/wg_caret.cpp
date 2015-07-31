@@ -24,11 +24,11 @@
 namespace wg 
 {
 	
-	const char WgCaret::CLASSNAME[] = {"Caret"};
+	const char Caret::CLASSNAME[] = {"Caret"};
 	
-	//____ WgCaret() _____________________________________________________________
+	//____ Caret() _____________________________________________________________
 	
-	WgCaret::WgCaret()
+	Caret::Caret()
 	{
 		for( int i = 0 ; i < N_MODES ; i++ )
 		{
@@ -40,7 +40,7 @@ namespace wg
 		m_blitMode = NORMAL;
 	}
 	
-	WgCaret::WgCaret(	WgCaret * pIn )
+	Caret::Caret(	Caret * pIn )
 	{
 		for( int i = 0 ; i < N_MODES ; i++ )
 		{
@@ -56,27 +56,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgCaret::isInstanceOf( const char * pClassName ) const
+	bool Caret::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgCaret::className( void ) const
+	const char * Caret::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgCaret_p WgCaret::cast( const WgObject_p& pObject )
+	Caret_p Caret::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgCaret_p( static_cast<WgCaret*>(pObject.rawPtr()) );
+			return Caret_p( static_cast<Caret*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -84,7 +84,7 @@ namespace wg
 	
 	//____ setBlitMode() __________________________________________________________
 	
-	void WgCaret::setBlitMode( BlitMode mode )
+	void Caret::setBlitMode( BlitMode mode )
 	{
 		m_blitMode = mode;
 	}
@@ -92,7 +92,7 @@ namespace wg
 	
 	//____ setSizeRatio() _________________________________________________________
 	
-	void WgCaret::setSizeRatio( Mode m, float ratio )
+	void Caret::setSizeRatio( Mode m, float ratio )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return;
@@ -103,7 +103,7 @@ namespace wg
 	
 	//____ setMode() ______________________________________________________________
 	
-	bool WgCaret::setMode( Mode m, const WgGfxAnim_p& pAnim, WgCoord bearing, int advance, float size_ratio )
+	bool Caret::setMode( Mode m, const GfxAnim_p& pAnim, Coord bearing, int advance, float size_ratio )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return false;
@@ -118,7 +118,7 @@ namespace wg
 	
 	//____ setBearing() ___________________________________________________________
 	
-	void WgCaret::setBearing( Mode m, WgCoord bearing )
+	void Caret::setBearing( Mode m, Coord bearing )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return;
@@ -129,7 +129,7 @@ namespace wg
 	
 	//____ setAdvance() ___________________________________________________________
 	
-	void WgCaret::setAdvance( Mode m, int advance )
+	void Caret::setAdvance( Mode m, int advance )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return;
@@ -139,7 +139,7 @@ namespace wg
 	
 	//____ setScaleWidth() ___________________________________________________________
 	
-	void WgCaret::setScaleWidth( Mode m, bool bScaleWidth )
+	void Caret::setScaleWidth( Mode m, bool bScaleWidth )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return;
@@ -150,7 +150,7 @@ namespace wg
 	
 	//____ setAnim() ______________________________________________________________
 	
-	void WgCaret::setAnim( Mode m, const WgGfxAnim_p& pAnim )
+	void Caret::setAnim( Mode m, const GfxAnim_p& pAnim )
 	{
 		if( m < 0 || m >= (Mode) N_MODES )
 			return;

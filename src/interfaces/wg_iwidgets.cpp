@@ -27,32 +27,32 @@ namespace wg
 {
 	
 	
-	const char WgIWidgets::CLASSNAME[] = {"IWidgets"};
+	const char IWidgets::CLASSNAME[] = {"IWidgets"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgIWidgets::isInstanceOf( const char * pClassName ) const
+	bool IWidgets::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgIWidgets::className( void ) const
+	const char * IWidgets::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgIWidgets_p WgIWidgets::cast( const WgInterface_p& pInterface )
+	IWidgets_p IWidgets::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgIWidgets_p( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
+			return IWidgets_p( pInterface.getRealObjectPtr(), static_cast<IWidgets*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}

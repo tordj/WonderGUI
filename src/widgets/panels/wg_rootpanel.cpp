@@ -30,24 +30,24 @@
 namespace wg 
 {
 	
-	const char WgRootPanel::CLASSNAME[] = {"RootPanel"};
+	const char RootPanel::CLASSNAME[] = {"RootPanel"};
 	
 	static const char	c_hookType[] = {"RootHook"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgRootPanel::WgRootPanel()
+	RootPanel::RootPanel()
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
-		m_geo = WgRect(0,0,0,0);
+		m_geo = Rect(0,0,0,0);
 		m_hook.m_pRoot = this;
 	
 	}
 	
 	
-	WgRootPanel::WgRootPanel( const WgGfxDevice_p& pGfxDevice )
+	RootPanel::RootPanel( const GfxDevice_p& pGfxDevice )
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -58,33 +58,33 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgRootPanel::~WgRootPanel()
+	RootPanel::~RootPanel()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgRootPanel::isInstanceOf( const char * pClassName ) const
+	bool RootPanel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgRootPanel::className( void ) const
+	const char * RootPanel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgRootPanel_p WgRootPanel::cast( const WgObject_p& pObject )
+	RootPanel_p RootPanel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgRootPanel_p( static_cast<WgRootPanel*>(pObject.rawPtr()) );
+			return RootPanel_p( static_cast<RootPanel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -92,7 +92,7 @@ namespace wg
 	
 	//____ setGfxDevice() _________________________________________________________
 	
-	bool WgRootPanel::setGfxDevice( const WgGfxDevice_p& pDevice )
+	bool RootPanel::setGfxDevice( const GfxDevice_p& pDevice )
 	{
 		m_pGfxDevice = pDevice;
 	
@@ -104,7 +104,7 @@ namespace wg
 	
 	//_____ setGeo() _____________________________________________________________
 	
-	bool WgRootPanel::setGeo( const WgRect& geo )
+	bool RootPanel::setGeo( const Rect& geo )
 	{
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
@@ -117,25 +117,25 @@ namespace wg
 	
 	//____ geo() __________________________________________________________________
 	
-	WgRect WgRootPanel::geo() const
+	Rect RootPanel::geo() const
 	{
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
 		{
-			WgRect r( WgCoord(0,0), m_pGfxDevice->canvasSize() );
+			Rect r( Coord(0,0), m_pGfxDevice->canvasSize() );
 			if( r.w == 0 || r.h == 0 )
 				int x = 0;
 			return r;
 		}
 		else
-			return WgRect(0,0,0,0);
+			return Rect(0,0,0,0);
 	}
 	
 	
 	//____ setWidget() _____________________________________________________________
 	
-	WgHook_p WgRootPanel::setWidget( const WgWidget_p& pWidget )
+	Hook_p RootPanel::setWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget )
 			return 0;
@@ -150,7 +150,7 @@ namespace wg
 	
 	//____ removeWidget() _________________________________________________________
 	
-	bool WgRootPanel::removeWidget()
+	bool RootPanel::removeWidget()
 	{
 		if( !m_hook._widget() )
 			return false;
@@ -162,7 +162,7 @@ namespace wg
 	
 	//____ clear() ______________________________________________________
 	
-	bool WgRootPanel::clear()
+	bool RootPanel::clear()
 	{
 		return removeWidget();
 	}
@@ -170,7 +170,7 @@ namespace wg
 	
 	//____ setVisible() ___________________________________________________________
 	
-	bool WgRootPanel::setVisible( bool bVisible )
+	bool RootPanel::setVisible( bool bVisible )
 	{
 		if( bVisible != m_bVisible )
 		{
@@ -183,12 +183,12 @@ namespace wg
 	
 	//____ render() _______________________________________________________________
 	
-	bool WgRootPanel::render()
+	bool RootPanel::render()
 	{
 		return render( geo() );
 	}
 	
-	bool WgRootPanel::render( const WgRect& clip )
+	bool RootPanel::render( const Rect& clip )
 	{
 		if( !beginRender() )
 			return false;
@@ -207,7 +207,7 @@ namespace wg
 	
 	//____ beginRender() __________________________________________________________
 	
-	bool WgRootPanel::beginRender()
+	bool RootPanel::beginRender()
 	{
 		if( !m_pGfxDevice || !m_hook._widget() )
 			return false;						// No GFX-device or no widgets to render.
@@ -218,15 +218,15 @@ namespace wg
 	
 	//____ renderSection() __________________________________________________________
 	
-	bool WgRootPanel::renderSection( const WgRect& _clip )
+	bool RootPanel::renderSection( const Rect& _clip )
 	{
 		if( !m_pGfxDevice || !m_hook._widget() )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 	
-		WgRect canvas = geo();
-		WgRect clip( _clip, canvas );
+		Rect canvas = geo();
+		Rect clip( _clip, canvas );
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 	
@@ -237,10 +237,10 @@ namespace wg
 	
 		// Copy and clip our dirty patches
 	
-		WgPatches dirtyPatches( m_dirtyPatches.size() );
+		Patches dirtyPatches( m_dirtyPatches.size() );
 	
-		WgRect clipped;
-		for( const WgRect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
+		Rect clipped;
+		for( const Rect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
 		{
 			if( clipped.intersection( *pRect, clip ) )
 				dirtyPatches.push( clipped );
@@ -255,7 +255,7 @@ namespace wg
 	
 	//____ endRender() ____________________________________________________________
 	
-	bool WgRootPanel::endRender( void )
+	bool RootPanel::endRender( void )
 	{
 		if( !m_pGfxDevice || !m_hook._widget() )
 			return false;						// No GFX-device or no widgets to render.
@@ -273,13 +273,13 @@ namespace wg
 	
 	//____ _findWidget() _____________________________________________________________
 	
-	WgWidget * WgRootPanel::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+	Widget * RootPanel::_findWidget( const Coord& ofs, WgSearchMode mode )
 	{
 		if( !geo().contains(ofs) || !m_hook._widget() )
 			return 0;
 	
 		if( m_hook._widget() && m_hook._widget()->isContainer() )
-			return static_cast<WgContainer*>(m_hook._widget())->_findWidget( ofs, mode );
+			return static_cast<Container*>(m_hook._widget())->_findWidget( ofs, mode );
 	
 		return m_hook._widget();
 	}
@@ -287,92 +287,92 @@ namespace wg
 	
 	//____ _focusRequested() _______________________________________________________
 	
-	bool WgRootPanel::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
+	bool RootPanel::_focusRequested( Hook * pBranch, Widget * pWidgetRequesting )
 	{
-		return WgBase::msgRouter()->setKeyboardFocus(pWidgetRequesting);
+		return Base::msgRouter()->setKeyboardFocus(pWidgetRequesting);
 	}
 	
 	//____ _focusReleased() ________________________________________________________
 	
-	bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
+	bool RootPanel::_focusReleased( Hook * pBranch, Widget * pWidgetReleasing )
 	{
-		return WgBase::msgRouter()->setKeyboardFocus(0);
+		return Base::msgRouter()->setKeyboardFocus(0);
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
 	
-	WgRootPanel::Hook::~Hook()
+	RootPanel::MyHook::~MyHook()
 	{
 	}
 	
-	const char * WgRootPanel::Hook::type( void ) const
+	const char * RootPanel::MyHook::type( void ) const
 	{
 		return classType();
 	}
 	
-	const char * WgRootPanel::Hook::classType()
+	const char * RootPanel::MyHook::classType()
 	{
 		return c_hookType;
 	}
 	
-	WgCoord WgRootPanel::Hook::pos() const
+	Coord RootPanel::MyHook::pos() const
 	{
 		return m_pRoot->geo();
 	}
 	
-	WgSize WgRootPanel::Hook::size() const
+	Size RootPanel::MyHook::size() const
 	{
 		return m_pRoot->geo();
 	}
 	
-	WgRect WgRootPanel::Hook::geo() const
+	Rect RootPanel::MyHook::geo() const
 	{
 		return m_pRoot->geo();
 	}
 	
-	WgCoord WgRootPanel::Hook::globalPos() const
+	Coord RootPanel::MyHook::globalPos() const
 	{
 		return m_pRoot->geo();
 	}
 	
-	WgRect WgRootPanel::Hook::globalGeo() const
+	Rect RootPanel::MyHook::globalGeo() const
 	{
 		return m_pRoot->geo();
 	}
 	
-	WgRootPanel * WgRootPanel::Hook::_root() const
+	RootPanel * RootPanel::MyHook::_root() const
 	{
 		return m_pRoot;
 	}
 	
-	void WgRootPanel::Hook::_requestRender()
+	void RootPanel::MyHook::_requestRender()
 	{
 		if( m_pRoot->m_bVisible )
 			m_pRoot->addDirtyPatch( geo() );
 	}
 	
-	void WgRootPanel::Hook::_requestRender( const WgRect& rect )
+	void RootPanel::MyHook::_requestRender( const Rect& rect )
 	{
 		if( m_pRoot->m_bVisible )
-			m_pRoot->addDirtyPatch( WgRect( pos() + rect.pos(), rect.size() ) );
+			m_pRoot->addDirtyPatch( Rect( pos() + rect.pos(), rect.size() ) );
 	}
 	
-	void WgRootPanel::Hook::_requestResize()
+	void RootPanel::MyHook::_requestResize()
 	{
 		// Do nothing, root ignores size requests.
 	}
 	
-	WgHook * WgRootPanel::Hook::_prevHook() const
+	Hook * RootPanel::MyHook::_prevHook() const
 	{
 		return 0;
 	}
 	
-	WgHook * WgRootPanel::Hook::_nextHook() const
+	Hook * RootPanel::MyHook::_nextHook() const
 	{
 		return 0;
 	}
 	
-	WgContainer * WgRootPanel::Hook::_parent() const
+	Container * RootPanel::MyHook::_parent() const
 	{
 		return 0;
 	}

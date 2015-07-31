@@ -26,32 +26,32 @@
 namespace wg 
 {
 	
-	const char WgModSpan::CLASSNAME[] = {"ModSpan"};
+	const char ModSpan::CLASSNAME[] = {"ModSpan"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgModSpan::isInstanceOf( const char * pClassName ) const
+	bool ModSpan::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgSlideSpan::isInstanceOf(pClassName);
+		return SlideSpan::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgModSpan::className( void ) const
+	const char * ModSpan::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgModSpan_p WgModSpan::cast( const WgInterface_p& pInterface )
+	ModSpan_p ModSpan::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgModSpan_p( pInterface.getRealObjectPtr(), static_cast<WgModSpan*>( pInterface.rawPtr()) );
+			return ModSpan_p( pInterface.getRealObjectPtr(), static_cast<ModSpan*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}

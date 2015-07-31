@@ -24,50 +24,50 @@
 namespace wg 
 {
 	
-	const char WgSizeBroker::CLASSNAME[] = {"SizeBroker"};
+	const char SizeBroker::CLASSNAME[] = {"SizeBroker"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgSizeBroker::WgSizeBroker()
+	SizeBroker::SizeBroker()
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgSizeBroker::~WgSizeBroker()
+	SizeBroker::~SizeBroker()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSizeBroker::isInstanceOf( const char * pClassName ) const
+	bool SizeBroker::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSizeBroker::className( void ) const
+	const char * SizeBroker::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSizeBroker_p WgSizeBroker::cast( const WgObject_p& pObject )
+	SizeBroker_p SizeBroker::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSizeBroker_p( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
+			return SizeBroker_p( static_cast<SizeBroker*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	
 	/*
-	int WgSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int _totalLength ) const
+	int SizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, int _totalLength ) const
 	{
 		int totalLength = 0;
 		for( int i = 0 ; i < nItems ; i++ )
@@ -78,7 +78,7 @@ namespace wg
 		return totalLength;
 	}
 	
-	int WgSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
+	int SizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
 		int totalLength = 0;
 		for( int i = 0 ; i < nItems ; i++ )
@@ -89,7 +89,7 @@ namespace wg
 		return totalLength;
 	}
 	
-	bool WgSizeBroker::mayAlterPreferredLengths() const
+	bool SizeBroker::mayAlterPreferredLengths() const
 	{
 		return false;
 	}

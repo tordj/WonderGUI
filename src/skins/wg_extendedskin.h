@@ -29,38 +29,38 @@
 namespace wg 
 {
 	
-	class WgExtendedSkin;
-	typedef	WgStrongPtr<WgExtendedSkin,WgSkin_p>	WgExtendedSkin_p;
+	class ExtendedSkin;
+	typedef	WgStrongPtr<ExtendedSkin,Skin_p>	ExtendedSkin_p;
 	
-	class WgExtendedSkin : public WgSkin
+	class ExtendedSkin : public Skin
 	{
 	public:
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgExtendedSkin_p	cast( const WgObject_p& pObject );
+		static ExtendedSkin_p	cast( const Object_p& pObject );
 	
-		virtual void	setContentPadding( WgBorder padding );
-		virtual void	setContentShift( WgStateEnum state, WgCoord shift );
+		virtual void	setContentPadding( Border padding );
+		virtual void	setContentShift( StateEnum state, Coord shift );
 	
-		virtual void	setHoveredContentShift( WgCoord shift );
-		virtual void	setPressedContentShift( WgCoord shift );
-		virtual void	setSelectedContentShift( WgCoord shift );
-		virtual void	setFocusedContentShift( WgCoord shift );
+		virtual void	setHoveredContentShift( Coord shift );
+		virtual void	setPressedContentShift( Coord shift );
+		virtual void	setSelectedContentShift( Coord shift );
+		virtual void	setFocusedContentShift( Coord shift );
 	
-		virtual WgSize	minSize() const;
-		virtual WgSize	preferredSize() const;
+		virtual Size	minSize() const;
+		virtual Size	preferredSize() const;
 	
-		virtual WgSize	contentPadding() const;
-		virtual WgSize	sizeForContent( const WgSize contentSize ) const;
-		virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const;
+		virtual Size	contentPadding() const;
+		virtual Size	sizeForContent( const Size contentSize ) const;
+		virtual Rect	contentRect( const Rect& canvas, State state ) const;
 	
-		virtual	bool	isStateIdentical( WgState state, WgState comparedTo ) const;
+		virtual	bool	isStateIdentical( State state, State comparedTo ) const;
 	
 	
 	protected:
-		WgBorder	m_contentPadding;
-		WgCoord		m_contentShift[WG_NB_STATES];	
+		Border	m_contentPadding;
+		Coord		m_contentShift[WG_NB_STATES];	
 	};
 	
 	

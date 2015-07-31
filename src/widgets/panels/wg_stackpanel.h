@@ -30,23 +30,23 @@
 namespace wg 
 {
 	
-	class WgStackPanel;
-	typedef	WgStrongPtr<WgStackPanel,WgVectorPanel_p>		WgStackPanel_p;
-	typedef	WgWeakPtr<WgStackPanel,WgVectorPanel_wp>	WgStackPanel_wp;
+	class StackPanel;
+	typedef	WgStrongPtr<StackPanel,VectorPanel_p>		StackPanel_p;
+	typedef	WgWeakPtr<StackPanel,VectorPanel_wp>	StackPanel_wp;
 	
-	class WgStackHook;
-	typedef	WgHookTypePtr<WgStackHook,WgVectorHook_p>		WgStackHook_p;
+	class StackHook;
+	typedef	HookTypePtr<StackHook,VectorHook_p>		StackHook_p;
 	
-	//____ WgStackHook ____________________________________________________________
+	//____ StackHook ____________________________________________________________
 	
-	class WgStackHook : public WgVectorHook
+	class StackHook : public VectorHook
 	{
-		friend class WgStackPanel;
+		friend class StackPanel;
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgStackHook_p	cast( const WgHook_p& pInterface );
+		static StackHook_p	cast( const Hook_p& pInterface );
 	
 		enum SizePolicy
 		{
@@ -61,96 +61,96 @@ namespace wg
 		void			setOrigo( WgOrigo origo );
 		WgOrigo	origo() const { return m_origo; }
 	
-		WgStackHook_p	prev() const { return _prev(); }
-		WgStackHook_p 	next() const { return _next(); }
+		StackHook_p	prev() const { return _prev(); }
+		StackHook_p 	next() const { return _next(); }
 	
-		WgStackPanel_p 	parent() const { return m_pParent; }
+		StackPanel_p 	parent() const { return m_pParent; }
 	
 	protected:
-		PROTECTED_LINK_METHODS( WgStackHook );
+		PROTECTED_LINK_METHODS( StackHook );
 	
-		WgStackHook( WgStackPanel * pParent );
+		StackHook( StackPanel * pParent );
 	
-		WgContainer * _parent() const;
+		Container * _parent() const;
 	
-		WgRect			_getGeo( const WgRect& parentGeo ) const;
+		Rect			_getGeo( const Rect& parentGeo ) const;
 	
-		WgStackPanel *	m_pParent;
+		StackPanel *	m_pParent;
 		
 		WgOrigo	m_origo;
 		SizePolicy		m_sizePolicy;
 		
 	};
 	
-	//____ WgStackPanel ___________________________________________________________
+	//____ StackPanel ___________________________________________________________
 	
-	class WgStackPanel : public WgVectorPanel
+	class StackPanel : public VectorPanel
 	{
-	friend class WgStackHook;	
+	friend class StackHook;	
 		
 	public:
-		static WgStackPanel_p	create() { return WgStackPanel_p(new WgStackPanel()); }
+		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgStackPanel_p	cast( const WgObject_p& pObject );
+		static StackPanel_p	cast( const Object_p& pObject );
 		
-		inline WgStackHook_p addWidget( const WgWidget_p& pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline WgStackHook_p insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
+		inline StackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<StackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
+		inline StackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<StackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 	
-		inline WgStackHook_p firstHook() const { return static_cast<WgStackHook*>(m_hooks.first()); }
-		inline WgStackHook_p lastHook() const { return static_cast<WgStackHook*>(m_hooks.last()); }
+		inline StackHook_p firstHook() const { return static_cast<StackHook*>(m_hooks.first()); }
+		inline StackHook_p lastHook() const { return static_cast<StackHook*>(m_hooks.last()); }
 	
-		// Overloaded from WgWidget
+		// Overloaded from Widget
 	
 		int		matchingHeight( int width ) const;
 		int		matchingWidth( int height ) const;
 	
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgStackPanel();
-		virtual ~WgStackPanel();
-		virtual WgWidget* _newOfMyType() const { return new WgStackPanel(); };
+		StackPanel();
+		virtual ~StackPanel();
+		virtual Widget* _newOfMyType() const { return new StackPanel(); };
 	
 		// Overloaded from Widget
 	
-	//	void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onNewSize( const WgSize& size );
+	//	void	_onCloneContent( const Widget * _pOrg );
+		void	_onNewSize( const Size& size );
 	
-		// Overloaded from WgPanel
+		// Overloaded from Panel
 	
-		WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
-		WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+		Hook *	_firstHookWithGeo( Rect& writeGeo ) const;
+		Hook *	_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const;
 	
-		WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const;
-		WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
+		Hook *	_lastHookWithGeo( Rect& writeGeo ) const;
+		Hook *	_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const;
 	
-		// Overloaded from WgVectorPanel
+		// Overloaded from VectorPanel
 	
-		WgRect	_hookGeo( const WgVectorHook * pHook );
-		void	_onResizeRequested( WgVectorHook * pHook );
-		void	_onRenderRequested( WgVectorHook * pHook );
-		void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
-		void	_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
-		void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+		Rect	_hookGeo( const VectorHook * pHook );
+		void	_onResizeRequested( VectorHook * pHook );
+		void	_onRenderRequested( VectorHook * pHook );
+		void	_onRenderRequested( VectorHook * pHook, const Rect& rect );
+		void	_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.
+		void	_onWidgetDisappeared( VectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 		void	_onWidgetsReordered();
 		void	_refreshAllWidgets();
-		WgVectorHook * _newHook();
+		VectorHook * _newHook();
 	
-		// Internal to WgStackPanel
+		// Internal to StackPanel
 	
 		void 	_refreshPreferredSize();
 		void	_adaptChildrenToSize();
-		void	_renderFromChildOnward( WgVectorHook * pHook );
+		void	_renderFromChildOnward( VectorHook * pHook );
 	
-		inline WgStackHook *	_firstHook() const { return static_cast<WgStackHook*>(m_hooks.first()); }
-		inline WgStackHook *	_lastHook() const { return static_cast<WgStackHook*>(m_hooks.last()); }
+		inline StackHook *	_firstHook() const { return static_cast<StackHook*>(m_hooks.first()); }
+		inline StackHook *	_lastHook() const { return static_cast<StackHook*>(m_hooks.last()); }
 	
 	
-		WgSize	m_size;
-		WgSize	m_preferredSize;
+		Size	m_size;
+		Size	m_preferredSize;
 	
 	};
 	

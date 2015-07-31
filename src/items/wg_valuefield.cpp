@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder)
+	ValueField::ValueField(ValueHolder * pHolder) : PresentableField(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ setFormatter() __________________________________________________________
 	
-	void WgValueField::setFormatter( const WgValueFormatter_p& pFormatter )
+	void ValueField::setFormatter( const ValueFormatter_p& pFormatter )
 	{
 		if( m_pFormatter != pFormatter )
 		{
@@ -48,7 +48,7 @@ namespace wg
 	
 	//____ clearFormatter() ________________________________________________________
 	
-	void WgValueField::clearFormatter()
+	void ValueField::clearFormatter()
 	{
 		if( m_pFormatter )
 		{
@@ -59,7 +59,7 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgValueField::clear()
+	void ValueField::clear()
 	{
 		if( m_value != 0 )
 		{
@@ -71,7 +71,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool WgValueField::set( Sint64 value, int scale )
+	bool ValueField::set( Sint64 value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
@@ -85,7 +85,7 @@ namespace wg
 		return true;
 	}
 	/*
-	void WgValueField::set( float value )
+	void ValueField::set( float value )
 	{
 		value *= m_scale;
 		Sint64 intVal = (Sint64) value;
@@ -96,7 +96,7 @@ namespace wg
 		}
 	}
 	
-	void WgValueField::set( double value )
+	void ValueField::set( double value )
 	{
 		value *= m_scale;
 		Sint64 intVal = (Sint64) value;
@@ -110,17 +110,17 @@ namespace wg
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void WgValueField::onRefresh()
+	void ValueField::onRefresh()
 	{	
 		_regenText();
-		WgPresentableField::onRefresh();
+		PresentableField::onRefresh();
 	}
 	
 	//____ _regenText() ____________________________________________________________
 	
-	void WgValueField::_regenText()
+	void ValueField::_regenText()
 	{
-		WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //WgBase::DefaultValueFormatter();
+		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //Base::DefaultValueFormatter();
 		if( m_pFormatter )
 			m_charBuffer = pFormatter->format(m_value, m_scale);
 		_onDirty();

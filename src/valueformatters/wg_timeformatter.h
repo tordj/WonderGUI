@@ -28,42 +28,42 @@ namespace wg
 {
 	
 	
-	class WgTimeFormatter;
-	typedef	WgStrongPtr<WgTimeFormatter,WgValueFormatter_p>		WgTimeFormatter_p;
-	typedef	WgWeakPtr<WgTimeFormatter,WgValueFormatter_wp>	WgTimeFormatter_wp;
+	class TimeFormatter;
+	typedef	WgStrongPtr<TimeFormatter,ValueFormatter_p>		TimeFormatter_p;
+	typedef	WgWeakPtr<TimeFormatter,ValueFormatter_wp>	TimeFormatter_wp;
 	
-	//____ WgTimeFormatter __________________________________________________________
+	//____ TimeFormatter __________________________________________________________
 	
 	// Format: %D days %2H:%2M:%2S.%3F
 	//  %4F
 	//  %4S.%4F
 	
-	class WgTimeFormatter : public WgValueFormatter
+	class TimeFormatter : public ValueFormatter
 	{
 	public:
 		
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgTimeFormatter_p	cast( const WgObject_p& pObject );
+		static TimeFormatter_p	cast( const Object_p& pObject );
 	
-		static WgTimeFormatter_p	create() { return WgTimeFormatter_p(new WgTimeFormatter()); }
-		static WgTimeFormatter_p	create( const WgCharSeq& format24 ) { return WgTimeFormatter_p(new WgTimeFormatter(format24)); }
-		static WgTimeFormatter_p	create( const WgCharSeq& formatAM, const WgCharSeq& formatPM ) { return WgTimeFormatter_p(new WgTimeFormatter(formatAM,formatPM)); }
+		static TimeFormatter_p	create() { return TimeFormatter_p(new TimeFormatter()); }
+		static TimeFormatter_p	create( const CharSeq& format24 ) { return TimeFormatter_p(new TimeFormatter(format24)); }
+		static TimeFormatter_p	create( const CharSeq& formatAM, const CharSeq& formatPM ) { return TimeFormatter_p(new TimeFormatter(formatAM,formatPM)); }
 	
-		WgString 		format( Sint64 value, int scale ) const;
-		WgString 		format( double value ) const;
+		String 		format( Sint64 value, int scale ) const;
+		String 		format( double value ) const;
 		
 	protected:
-		WgTimeFormatter() {};
-		WgTimeFormatter( const WgCharSeq& format24 );
-		WgTimeFormatter( const WgCharSeq& formatAM, const WgCharSeq& formatPM );
+		TimeFormatter() {};
+		TimeFormatter( const CharSeq& format24 );
+		TimeFormatter( const CharSeq& formatAM, const CharSeq& formatPM );
 		
-	    ~WgTimeFormatter() {} 
+	    ~TimeFormatter() {} 
 		
-		WgString	m_format24;
-		WgString	m_formatAM;
-		WgString	m_formatPM;
+		String	m_format24;
+		String	m_formatAM;
+		String	m_formatPM;
 	};
 	
 

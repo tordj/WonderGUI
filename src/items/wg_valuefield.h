@@ -34,23 +34,23 @@ namespace wg
 {
 	
 	
-	//____ WgValueHolder ___________________________________________________________
+	//____ ValueHolder ___________________________________________________________
 	
-	class WgValueHolder : public WgPresentableHolder
+	class ValueHolder : public WgPresentableHolder
 	{
 	public:
 	};
 	
-	//____ WgValueField ____________________________________________________________
+	//____ ValueField ____________________________________________________________
 	
-	class WgValueField : public WgPresentableField
+	class ValueField : public PresentableField
 	{
 	public:
-		WgValueField(WgValueHolder * pHolder);
+		ValueField(ValueHolder * pHolder);
 	
-		void				setFormatter( const WgValueFormatter_p& pFormatter );
+		void				setFormatter( const ValueFormatter_p& pFormatter );
 		void				clearFormatter();
-		inline WgValueFormatter_p	formatter() const { return m_pFormatter; }
+		inline ValueFormatter_p	formatter() const { return m_pFormatter; }
 	
 		virtual void		clear();
 		virtual bool		set( Sint64 value, int scale );
@@ -65,7 +65,7 @@ namespace wg
 		Sint64					m_value;
 		int						m_scale;
 		
-		WgValueFormatter_p		m_pFormatter;
+		ValueFormatter_p		m_pFormatter;
 	};
 	
 	

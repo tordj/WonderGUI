@@ -33,12 +33,12 @@
 namespace wg 
 {
 	
-	const char WgCombobox::CLASSNAME[] = {"Combobox"};
+	const char Combobox::CLASSNAME[] = {"Combobox"};
 	
 	
-	//____ WgCombobox() _________________________________________________________________
+	//____ Combobox() _________________________________________________________________
 	
-	WgCombobox::WgCombobox( void ) : m_text(this), text(&m_text)
+	Combobox::Combobox( void ) : m_text(this), text(&m_text)
 	{
 		m_text.setAlignment( WG_WEST );
 		m_text.setWrap(false);
@@ -62,33 +62,33 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgCombobox::~WgCombobox()
+	Combobox::~Combobox()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgCombobox::isInstanceOf( const char * pClassName ) const
+	bool Combobox::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgCombobox::className( void ) const
+	const char * Combobox::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgCombobox_p WgCombobox::cast( const WgObject_p& pObject )
+	Combobox_p Combobox::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgCombobox_p( static_cast<WgCombobox*>(pObject.rawPtr()) );
+			return Combobox_p( static_cast<Combobox*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -96,12 +96,12 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgCombobox::preferredSize() const
+	Size Combobox::preferredSize() const
 	{
-		WgTextAttr attr;
+		TextAttr attr;
 		m_text.getBaseAttr( attr );
-		int width = WgTextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
-		WgSize contentSize( m_text.height(), width );
+		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
+		Size contentSize( m_text.height(), width );
 		
 		if( m_pSkin )
 			return m_pSkin->sizeForContent( contentSize );
@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ setMenu() ______________________________________________________________
 	
-	void WgCombobox::setMenu( const WgMenu_p& pMenu )
+	void Combobox::setMenu( const Menu_p& pMenu )
 	{
 		if( pMenu == m_pMenu )
 			return;
@@ -124,21 +124,21 @@ namespace wg
 	
 	//____ menu() __________________________________________________________
 	
-	WgMenu_p WgCombobox::menu() const
+	Menu_p Combobox::menu() const
 	{
 		return m_pMenu;
 	}
 	
 	//____ setEditMode() __________________________________________________________
 	
-	void WgCombobox::setEditMode(WgTextEditMode mode)
+	void Combobox::setEditMode(TextEditMode mode)
 	{
 		m_text.setEditMode(mode);
 	}
 	
 	//____ setTextFormat() ________________________________________________________
 	
-	void WgCombobox::setTextFormat( const WgCharSeq& str )
+	void Combobox::setTextFormat( const CharSeq& str )
 	{
 		m_textFormat = str;
 		if( m_pMenu && m_pMenu->GetSelectedItem() )
@@ -147,7 +147,7 @@ namespace wg
 	
 	//____ setPlaceholderText() ___________________________________________________
 	
-	void WgCombobox::setPlaceholderText( const WgCharSeq& str )
+	void Combobox::setPlaceholderText( const CharSeq& str )
 	{
 		m_placeholderText = str;
 		if( m_text.isEmpty() && !m_text.isCursorShowing() )
@@ -156,7 +156,7 @@ namespace wg
 	
 	//____ insertTextAtCursor() ___________________________________________________
 	
-	int WgCombobox::insertTextAtCursor( const WgCharSeq& str )
+	int Combobox::insertTextAtCursor( const CharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -175,10 +175,10 @@ namespace wg
 		else
 		{
 			retVal = m_maxCharacters - m_text.length();
-			m_text.putText( WgCharSeq( str, 0, retVal ) );
+			m_text.putText( CharSeq( str, 0, retVal ) );
 		}
 	
-		WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),false) );
+		Base::msgRouter()->post( new TextEditMsg( text.ptr(),false) );
 	
 		_adjustViewOfs();
 	
@@ -187,7 +187,7 @@ namespace wg
 	
 	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool WgCombobox::insertCharAtCursor( Uint16 c )
+	bool Combobox::insertCharAtCursor( Uint16 c )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -201,7 +201,7 @@ namespace wg
 	
 		m_text.putChar( c );
 	
-		WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),false) );
+		Base::msgRouter()->post( new TextEditMsg( text.ptr(),false) );
 	
 		_adjustViewOfs();
 		return true;
@@ -209,30 +209,30 @@ namespace wg
 	
 	//____ _closeMenu() ___________________________________________________________
 	
-	void WgCombobox::_closeMenu()
+	void Combobox::_closeMenu()
 	{
 		if( parent() )
 		{
-			WgPopupLayer * pLayer = parent()->_getPopupLayer();
+			PopupLayer * pLayer = parent()->_getPopupLayer();
 			if( pLayer )
 				pLayer->closePopup( m_pMenu );
 	
-			WgBase::msgRouter()->deleteRoute( m_routeId );
+			Base::msgRouter()->deleteRoute( m_routeId );
 		}
 	}
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgCombobox::_onMsg( const WgMsg_p& _pMsg )
+	void Combobox::_onMsg( const Msg_p& _pMsg )
 	{
-		WgState oldState = m_state;
+		State oldState = m_state;
 	
 		switch( _pMsg->type() )
 		{
 			case WG_MSG_TICK:
 				if( _isEditable() && m_state.isFocused() )
 				{
-					m_text.incTime( WgTickMsg::cast(_pMsg)->millisec() );
+					m_text.incTime( TickMsg::cast(_pMsg)->millisec() );
 					_requestRender();					//TODO: Should only render the cursor and selection!
 				}
 			break;
@@ -255,8 +255,8 @@ namespace wg
 	
 			case WG_MSG_MOUSE_POSITION:
 			{
-				WgCoord pos = WgMousePositionMsg::cast(_pMsg)->pointerPos() - globalPos();
-				WgRect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): WgRect( 0,0, size() );
+				Coord pos = MousePositionMsg::cast(_pMsg)->pointerPos() - globalPos();
+				Rect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): Rect( 0,0, size() );
 	
 				if( _isSelectable() && inputRect.contains( pos ) )
 				{
@@ -273,12 +273,12 @@ namespace wg
 	
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
-				WgCoord pos = pMsg->pointerPos() - globalPos();
+				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
+				Coord pos = pMsg->pointerPos() - globalPos();
 	
 				if( pMsg->button() == WG_BUTTON_LEFT )
 				{
-					WgRect inputRect = m_pSkin ? m_pSkin->contentRect( size(), m_state ): WgRect( 0,0, size() );
+					Rect inputRect = m_pSkin ? m_pSkin->contentRect( size(), m_state ): Rect( 0,0, size() );
 	
 					if( m_state.isPressed() && m_pMenu )
 					{
@@ -308,7 +308,7 @@ namespace wg
 							int y = pos.y;
 							x += m_viewOfs;
 	
-							m_text.cursorGotoCoord( WgCoord(x, 0), WgRect(inputRect.x,0,1000000,1000000) );
+							m_text.cursorGotoCoord( Coord(x, 0), Rect(inputRect.x,0,1000000,1000000) );
 					
 							if(_isSelectable() && !(pMsg->modKeys() & WG_MODKEY_SHIFT))
 							{
@@ -325,11 +325,11 @@ namespace wg
 	
 						if( parent() )
 						{
-							WgPopupLayer * pLayer = parent()->_getPopupLayer();
+							PopupLayer * pLayer = parent()->_getPopupLayer();
 							if( pLayer )
 							{
 								pLayer->openPopup( m_pMenu, this, m_pHook->globalGeo() - pLayer->globalPos(), WG_SOUTHWEST );
-	//TODO: Fix					m_routeId = WgBase::msgRouter()->addRoute( WgMsgFilter::itemsSelect(), m_pMenu, cbEntrySelected, this );
+	//TODO: Fix					m_routeId = Base::msgRouter()->addRoute( MsgFilter::itemsSelect(), m_pMenu, cbEntrySelected, this );
 							}
 						}
 	
@@ -342,7 +342,7 @@ namespace wg
 	
 			case WG_MSG_MOUSE_DRAG:
 			{
-				WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
+				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( pMsg->button() == WG_BUTTON_LEFT )
 				{
 					if( m_state.isFocused() && m_bPressInInputRect )
@@ -355,7 +355,7 @@ namespace wg
 						int x = pMsg->pointerPos().x - globalPos().x + m_viewOfs;
 						int leftBorder = m_pSkin ? m_pSkin->contentRect( size(), m_state ).x : 0;
 	
-						m_text.cursorGotoCoord( WgCoord(x, 0), WgRect(leftBorder,0,1000000,1000000) );
+						m_text.cursorGotoCoord( Coord(x, 0), Rect(leftBorder,0,1000000,1000000) );
 						_adjustViewOfs();
 					}
 					_pMsg->swallow();
@@ -365,7 +365,7 @@ namespace wg
 	
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
+				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 				if( pMsg->button() == WG_BUTTON_LEFT )
 				{
 					if( m_state.isFocused() )
@@ -385,10 +385,10 @@ namespace wg
 	
 			case WG_MSG_WHEEL_ROLL:
 			{		
-				WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
+				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
 				if( !m_state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
 				{
-					WgMenuItem * pItem = m_pSelectedItem;
+					MenuItem * pItem = m_pSelectedItem;
 					int distance = pMsg->distance();
 	
 					if( !pItem )
@@ -426,7 +426,7 @@ namespace wg
 	
 			case WG_MSG_CHARACTER:
 			{
-				WgCharacterMsg_p pMsg = WgCharacterMsg::cast(_pMsg);
+				CharacterMsg_p pMsg = CharacterMsg::cast(_pMsg);
 				if( _isEditable() && m_state.isFocused() )
 				{
 	
@@ -438,7 +438,7 @@ namespace wg
 					if( m_maxCharacters == 0 || m_maxCharacters > m_text.length() )
 						m_text.putChar( pMsg->character() );
 	
-					WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(),false) );
+					Base::msgRouter()->post( new TextEditMsg(text.ptr(),false) );
 					_adjustViewOfs();
 				}
 				break;
@@ -447,11 +447,11 @@ namespace wg
 			case WG_MSG_KEY_RELEASE:
 				if( m_state.isFocused() )
 				{
-					WgKeyReleaseMsg_p pMsg = WgKeyReleaseMsg::cast(_pMsg);
+					KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
 					switch( pMsg->translatedKeyCode() )
 					{
 						case WG_KEY_SHIFT:
-							if(!WgBase::msgRouter()->isMouseButtonPressed(1))
+							if(!Base::msgRouter()->isMouseButtonPressed(1))
 								m_text.setSelectionMode(false);
 							_pMsg->swallow();
 						break;
@@ -462,7 +462,7 @@ namespace wg
 			case WG_MSG_KEY_PRESS:
 			case WG_MSG_KEY_REPEAT:
 			{
-				WgKeyMsg_p pMsg = WgKeyMsg::cast(_pMsg);
+				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
 				if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE && m_state.isPressed() )
 				{
@@ -501,7 +501,7 @@ namespace wg
 							else
 								m_text.delPrevChar();
 							
-							WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(), false) ); //TODO: Should only emit if text really has changed
+							Base::msgRouter()->post( new TextEditMsg(text.ptr(), false) ); //TODO: Should only emit if text really has changed
 							_pMsg->swallow();
 							break;
 	
@@ -512,7 +512,7 @@ namespace wg
 								m_text.delNextWord();
 							else
 								m_text.delNextChar();
-							WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(), false) );		//TODO: Should only emit if text really has changed
+							Base::msgRouter()->post( new TextEditMsg(text.ptr(), false) );		//TODO: Should only emit if text really has changed
 							_pMsg->swallow();
 							break;
 	
@@ -573,9 +573,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgCombobox::_onStateChanged( WgState oldState )
+	void Combobox::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged( oldState );
+		Widget::_onStateChanged( oldState );
 	
 		m_text.setState( m_state );
 	
@@ -585,7 +585,7 @@ namespace wg
 		{
 			if( _isEditable() )
 			{
-				m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+				m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 				m_text.showCursor();
 				if( m_bResetCursorOnFocus )
 				{
@@ -601,20 +601,20 @@ namespace wg
 		{
 			if( _isEditable() )
 			{
-				WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+				Base::msgRouter()->deleteRoute( m_tickRouteId );
 				m_text.hideCursor();
 				m_text.clearSelection();
 				m_bResetCursorOnFocus = true;
-				WgBase::msgRouter()->post( new WgTextEditMsg( text.ptr(),true ) );	//TODO: Should only do if text was really changed!
+				Base::msgRouter()->post( new TextEditMsg( text.ptr(),true ) );	//TODO: Should only do if text was really changed!
 			}
 		}
 	}
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgCombobox::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void Combobox::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 		m_text.setColorSkin(pNewSkin);
 	}
 	
@@ -622,17 +622,17 @@ namespace wg
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgCombobox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Combobox::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender( pDevice, _canvas, _window, _clip );
+		Widget::_onRender( pDevice, _canvas, _window, _clip );
 	
 		// Print the text
 	
-		WgRect r( _canvas );
+		Rect r( _canvas );
 		if( m_pSkin )
 			r = m_pSkin->contentRect(_canvas, m_state);
 	
-		WgRect	textClip( r, _clip );
+		Rect	textClip( r, _clip );
 	
 		bool bPlaceholder = false;
 		if( !m_placeholderText.isEmpty() && m_text.isEmpty() && !m_text.isCursorShowing() )
@@ -651,17 +651,17 @@ namespace wg
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void WgCombobox::_onRefresh( void )
+	void Combobox::_onRefresh( void )
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgCombobox::_onCloneContent( const WgWidget * _pOrg )
+	void Combobox::_onCloneContent( const Widget * _pOrg )
 	{
 	
-		const WgCombobox * pOrg = static_cast<const WgCombobox*>(_pOrg);
+		const Combobox * pOrg = static_cast<const Combobox*>(_pOrg);
 	
 		m_textFormat		= pOrg->m_textFormat;
 		m_placeholderText	= pOrg->m_placeholderText;
@@ -674,7 +674,7 @@ namespace wg
 	
 	//____ _adjustViewOfs() ________________________________________________________
 	
-	void WgCombobox::_adjustViewOfs()
+	void Combobox::_adjustViewOfs()
 	{
 		// Possibly move viewOfs so that:
 		//	1 Cursor remains inside view.
@@ -683,13 +683,13 @@ namespace wg
 	
 		if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 		{
-			WgCaret_p pCursor = WgTextTool::getCursor( &m_text );
+			Caret_p pCursor = TextTool::getCursor( &m_text );
 			if( !pCursor )
 				return;
 	
 			int cursCol	= m_text.column();
 	
-			WgTextAttr	attr;
+			TextAttr	attr;
 			m_text.getBaseAttr( attr );
 	
 			int cursAdvance	= pCursor->advance(m_text.cursorMode() );
@@ -746,39 +746,39 @@ namespace wg
 	
 	//____ _onAlphaTest() ______________________________________________________
 	
-	bool WgCombobox::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Combobox::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		//TODO: Should we treat text-box as opaque for mouse?
 	
-		return WgWidget::_onAlphaTest(ofs, sz);
+		return Widget::_onAlphaTest(ofs, sz);
 	}
 	
 	//____ _entrySelected() ________________________________________________________
 	
-	void WgCombobox::_entrySelected( int itemId )
+	void Combobox::_entrySelected( int itemId )
 	{
-		WgMenuItem * pItem = m_pMenu->FindItem(itemId);
+		MenuItem * pItem = m_pMenu->FindItem(itemId);
 		if( !pItem )
 			return ;
 	
 		m_pSelectedItem = pItem;
 		if(pItem && pItem->getType() != SEPARATOR)
 		{
-			WgCharBuffer	buff;
+			CharBuffer	buff;
 	
 			buff.pushBack(m_textFormat);
 	
 			int ofs = buff.findFirst( "%1" );
 			if( ofs >= 0 )
 			{
-				WgTextprop_p pProp = buff[ofs].getProperties();
+				Textprop_p pProp = buff[ofs].getProperties();
 	
-				const WgChar * pEntry = ((WgMenuEntry*)pItem)->getText().chars();
-				Uint32 len = WgTextTool::strlen( pEntry );
+				const Char * pEntry = ((MenuEntry*)pItem)->getText().chars();
+				Uint32 len = TextTool::strlen( pEntry );
 	
 				buff.replace( ofs, 2, pEntry );
 	
-				WgChar * p = buff.beginWrite() + ofs;
+				Char * p = buff.beginWrite() + ofs;
 	
 				for( unsigned int i = 0 ; i < len ; i++ )
 				{
@@ -797,14 +797,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgCombobox::_onFieldDirty( WgField * pField )
+	void Combobox::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgCombobox::_onFieldResize( WgField * pField )
+	void Combobox::_onFieldResize( Field * pField )
 	{
 		m_bResetCursorOnFocus = true;
 		_requestResize();

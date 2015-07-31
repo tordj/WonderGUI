@@ -25,33 +25,33 @@
 namespace wg 
 {
 	
-	WgSizeScaler_p WgSizeScaler::create() 
+	SizeScaler_p SizeScaler::create() 
 	{
-		return new WgSizeScaler(1.f,1.f);
+		return new SizeScaler(1.f,1.f);
 	}
 	
-	WgSizeScaler_p WgSizeScaler::create( float scale ) 
+	SizeScaler_p SizeScaler::create( float scale ) 
 	{
-		return new WgSizeScaler(scale,scale);
+		return new SizeScaler(scale,scale);
 	}
 	
-	WgSizeScaler_p WgSizeScaler::create( float scaleX, float scaleY ) 
+	SizeScaler_p SizeScaler::create( float scaleX, float scaleY ) 
 	{
-		return new WgSizeScaler(scaleX,scaleY);
+		return new SizeScaler(scaleX,scaleY);
 	}
 	
-	WgSizeScaler::WgSizeScaler( float scaleX, float scaleY )
+	SizeScaler::SizeScaler( float scaleX, float scaleY )
 	{
 		m_scaleX = scaleX;
 		m_scaleY = scaleY;
 	}
 	
-	void WgSizeScaler::setScale( float scale )
+	void SizeScaler::setScale( float scale )
 	{
 		setScale(scale,scale);
 	}
 	
-	void WgSizeScaler::setScale( float scaleX, float scaleY )
+	void SizeScaler::setScale( float scaleX, float scaleY )
 	{
 		if( scaleX != m_scaleX || scaleY != m_scaleY )
 		{
@@ -67,17 +67,17 @@ namespace wg
 		}
 	}
 	
-	void WgSizeScaler::setScaleX( float scaleX )
+	void SizeScaler::setScaleX( float scaleX )
 	{
 		setScale(scaleX,m_scaleY);
 	}
 	
-	void WgSizeScaler::setScaleY( float scaleY )
+	void SizeScaler::setScaleY( float scaleY )
 	{
 		setScale(m_scaleX,scaleY);
 	}
 	
-	void WgSizeScaler::addItem( WgScalable * pScalable )
+	void SizeScaler::addItem( Scalable * pScalable )
 	{
 		if( !pScalable )
 			return;
@@ -89,7 +89,7 @@ namespace wg
 		pScalable->_onScaleChanged();
 	}
 	
-	void WgSizeScaler::removeItem( WgScalable * pScalable )
+	void SizeScaler::removeItem( Scalable * pScalable )
 	{
 		Node * p = m_nodes.first();
 		while( p )
@@ -105,7 +105,7 @@ namespace wg
 		}
 	}
 	
-	void WgSizeScaler::removeAllItems()
+	void SizeScaler::removeAllItems()
 	{
 		Node * p = m_nodes.first();
 		while( p )
@@ -117,7 +117,7 @@ namespace wg
 		m_nodes.clear();
 	}
 	
-	void WgSizeScaler::_removeDeadItem( WgScalable * pScalable )
+	void SizeScaler::_removeDeadItem( Scalable * pScalable )
 	{
 		Node * p = m_nodes.first();
 		while( p )
@@ -131,7 +131,7 @@ namespace wg
 		}
 	}
 	
-	WgScalable::~WgScalable()
+	Scalable::~Scalable()
 	{
 		if( m_pScaler )
 			m_pScaler->_removeDeadItem(this);

@@ -25,32 +25,32 @@
 namespace wg 
 {
 	
-	const char WgMsgFunc::CLASSNAME[] = {"MsgFunc"};
+	const char MsgFunc::CLASSNAME[] = {"MsgFunc"};
 	
 	
 	//____ Constructors ____________________________________________________________
 	
-	WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsg_p& pMsg) )
+	MsgFunc::MsgFunc( void(*fp)( const Msg_p& pMsg) )
 	{
 		m_callbackType = 0;
 		m_pCallback = (void*) fp;	
 	}
 	
-	WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, int param), int param )
+	MsgFunc::MsgFunc( void(*fp)( const Msg_p& pMsg, int param), int param )
 	{
 		m_callbackType = 1;
 		m_pCallback = (void*) fp;
 		m_param = param;
 	}
 	
-	WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, void * pParam), void * pParam )
+	MsgFunc::MsgFunc( void(*fp)( const Msg_p& pMsg, void * pParam), void * pParam )
 	{
 		m_callbackType = 2;
 		m_pCallback = (void*) fp;
 		m_pParam = pParam;
 	}
 	
-	WgMsgFunc::WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, const WgObject_p& pParam), const WgObject_p& pParam )
+	MsgFunc::MsgFunc( void(*fp)( const Msg_p& pMsg, const Object_p& pParam), const Object_p& pParam )
 	{
 		m_callbackType = 3;
 		m_pCallback = (void*) fp;
@@ -61,48 +61,48 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgMsgFunc::isInstanceOf( const char * pClassName ) const
+	bool MsgFunc::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgReceiver::isInstanceOf(pClassName);
+		return Receiver::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgMsgFunc::className( void ) const
+	const char * MsgFunc::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgMsgFunc_p WgMsgFunc::cast( const WgObject_p& pObject )
+	MsgFunc_p MsgFunc::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgMsgFunc_p( static_cast<WgMsgFunc*>(pObject.rawPtr()) );
+			return MsgFunc_p( static_cast<MsgFunc*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ onMsg() _______________________________________________________________
 	
-	void WgMsgFunc::onMsg( const WgMsg_p& pMsg )
+	void MsgFunc::onMsg( const Msg_p& pMsg )
 	{
 		switch( m_callbackType )
 		{
 			case 0:
-				((void(*)( const WgMsg_p&))m_pCallback)(pMsg);
+				((void(*)( const Msg_p&))m_pCallback)(pMsg);
 				break;
 			case 1:
-				((void(*)( const WgMsg_p&, int ))m_pCallback)(pMsg,m_param);
+				((void(*)( const Msg_p&, int ))m_pCallback)(pMsg,m_param);
 				break;
 			case 2:
-				((void(*)( const WgMsg_p&, void* ))m_pCallback)(pMsg,m_pParam);
+				((void(*)( const Msg_p&, void* ))m_pCallback)(pMsg,m_pParam);
 				break;
 			case 3:
-				((void(*)( const WgMsg_p&, const WgObject_p& ))m_pCallback)(pMsg,m_pParamObj);
+				((void(*)( const Msg_p&, const Object_p& ))m_pCallback)(pMsg,m_pParamObj);
 				break;
 			default:
 				break;
@@ -111,14 +111,14 @@ namespace wg
 	
 	//____ _onRouteAdded() _________________________________________________________
 	
-	void  WgMsgFunc::_onRouteAdded()
+	void  MsgFunc::_onRouteAdded()
 	{	
 		_incRefCount();
 	}
 	
 	//____ _onRouteRemoved() _______________________________________________________
 	
-	void  WgMsgFunc::_onRouteRemoved()
+	void  MsgFunc::_onRouteRemoved()
 	{
 		_decRefCount();
 	}

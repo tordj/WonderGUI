@@ -25,39 +25,39 @@
 namespace wg 
 {
 	
-	const char WgText::CLASSNAME[] = {"Text"};
+	const char Text::CLASSNAME[] = {"Text"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgText::isInstanceOf( const char * pClassName ) const
+	bool Text::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgText::className( void ) const
+	const char * Text::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgText_p WgText::cast( const WgInterface_p& pInterface )
+	Text_p Text::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgText_p( pInterface.getRealObjectPtr(), static_cast<WgText*>( pInterface.rawPtr()) );
+			return Text_p( pInterface.getRealObjectPtr(), static_cast<Text*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _object() _______________________________________________________________
 	
-	WgObject * WgText::_object() const
+	Object * Text::_object() const
 	{
 		return m_pField->_object();
 	}

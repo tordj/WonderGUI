@@ -5,19 +5,19 @@
 namespace wg 
 {
 	
-	const char WgVolumeMeter::CLASSNAME[] = {"VolumeMeter"};
+	const char VolumeMeter::CLASSNAME[] = {"VolumeMeter"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgVolumeMeter::WgVolumeMeter()
+	VolumeMeter::VolumeMeter()
 	{
-		m_LEDColors[0][0] = WgColor::black;
-		m_LEDColors[1][0] = WgColor::black;
-		m_LEDColors[2][0] = WgColor::black;
-		m_LEDColors[0][1] = WgColor::green;
-		m_LEDColors[1][1] = WgColor::yellow;
-		m_LEDColors[2][1] = WgColor::red;
+		m_LEDColors[0][0] = Color::black;
+		m_LEDColors[1][0] = Color::black;
+		m_LEDColors[2][0] = Color::black;
+		m_LEDColors[0][1] = Color::green;
+		m_LEDColors[1][1] = Color::yellow;
+		m_LEDColors[2][1] = Color::red;
 		
 		m_nSectionLEDs[0] = 8;
 		m_nSectionLEDs[1] = 2;
@@ -33,40 +33,40 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgVolumeMeter::~WgVolumeMeter()
+	VolumeMeter::~VolumeMeter()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgVolumeMeter::isInstanceOf( const char * pClassName ) const
+	bool VolumeMeter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgVolumeMeter::className( void ) const
+	const char * VolumeMeter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgVolumeMeter_p WgVolumeMeter::cast( const WgObject_p& pObject )
+	VolumeMeter_p VolumeMeter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgVolumeMeter_p( static_cast<WgVolumeMeter*>(pObject.rawPtr()) );
+			return VolumeMeter_p( static_cast<VolumeMeter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setDirection() ________________________________________________________
 	
-	void WgVolumeMeter::setDirection( WgDirection direction )
+	void VolumeMeter::setDirection( WgDirection direction )
 	{
 		if( direction != m_direction )
 		{
@@ -79,8 +79,8 @@ namespace wg
 	
 	//____ setLEDColors() ___________________________________________________________
 	
-	void WgVolumeMeter::setLEDColors(	WgColor bottomOn, WgColor middleOn, WgColor topOn, 
-										WgColor bottomOff, WgColor middleOff, WgColor topOff )
+	void VolumeMeter::setLEDColors(	Color bottomOn, Color middleOn, Color topOn, 
+										Color bottomOff, Color middleOff, Color topOff )
 	{
 		m_LEDColors[0][0] = bottomOff;
 		m_LEDColors[0][1] = bottomOn;
@@ -96,7 +96,7 @@ namespace wg
 	
 	//____ setNbLEDs() _________________________________________________________
 	
-	void WgVolumeMeter::setNbLEDs( int bottomSection, int middleSection, int topSection )
+	void VolumeMeter::setNbLEDs( int bottomSection, int middleSection, int topSection )
 	{
 		if( bottomSection < 0 )
 			bottomSection = 0;
@@ -118,7 +118,7 @@ namespace wg
 	
 	//____ setLEDSpacing() ___________________________________________________________
 	
-	void WgVolumeMeter::setLEDSpacing( float spacing )
+	void VolumeMeter::setLEDSpacing( float spacing )
 	{
 		if( spacing < 0.f )
 			spacing = 0.f;
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ setValue() ______________________________________________________________
 	
-	void WgVolumeMeter::setValue( float peak, float hold )
+	void VolumeMeter::setValue( float peak, float hold )
 	{
 		LIMIT( peak, 0.f, 1.f );
 		LIMIT( hold, 0.f, 1.f );
@@ -150,14 +150,14 @@ namespace wg
 	
 	//____ preferredSize() ________________________________________________________________
 	
-	WgSize WgVolumeMeter::preferredSize() const
+	Size VolumeMeter::preferredSize() const
 	{
-		WgSize	content;
+		Size	content;
 	
 		if( m_direction == WG_UP || m_direction == WG_DOWN )
-			content = WgSize(10,5*m_nLEDs);
+			content = Size(10,5*m_nLEDs);
 		else
-			content = WgSize(5*m_nLEDs,10);
+			content = Size(5*m_nLEDs,10);
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(content);
@@ -168,11 +168,11 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________________
 	
-	void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void VolumeMeter::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
@@ -192,35 +192,35 @@ namespace wg
 		float ledSize = ((m_direction == WG_UP || m_direction == WG_DOWN)?canvas.h:canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
 		float stepSize = ledSize * (1.f+m_LEDSpacing);
 	
-		WgRectF ledRect;
+		RectF ledRect;
 		float	stepX;
 		float	stepY;
 		
 		switch( m_direction )
 		{
 			case WG_UP:
-				ledRect = WgRectF( (float) canvas.x, (float) (canvas.y + canvas.h - ledSize), (float) canvas.w, (float) ledSize );
+				ledRect = RectF( (float) canvas.x, (float) (canvas.y + canvas.h - ledSize), (float) canvas.w, (float) ledSize );
 				stepX = 0.f;
 				stepY = -stepSize;
 				break;
 			case WG_DOWN:
-				ledRect = WgRectF( (float) canvas.x, (float) canvas.y, (float) canvas.w, (float) ledSize );
+				ledRect = RectF( (float) canvas.x, (float) canvas.y, (float) canvas.w, (float) ledSize );
 				stepX = 0.f;
 				stepY = stepSize;
 				break;
 			case WG_LEFT:
-				ledRect = WgRectF( (float) (canvas.x + canvas.w - ledSize), (float) canvas.y, (float) ledSize, (float) canvas.h );
+				ledRect = RectF( (float) (canvas.x + canvas.w - ledSize), (float) canvas.y, (float) ledSize, (float) canvas.h );
 				stepX = -stepSize;
 				stepY = 0.f;
 				break;
 			case WG_RIGHT:
-				ledRect = WgRectF( (float) canvas.x, (float) canvas.y, (float) ledSize, (float) canvas.h );
+				ledRect = RectF( (float) canvas.x, (float) canvas.y, (float) ledSize, (float) canvas.h );
 				stepX = stepSize;
 				stepY = 0.f;
 				break;
 		}
 		
-		WgRectF	clip( _clip );
+		RectF	clip( _clip );
 			
 		for( int i = 0 ; i < m_nLEDs ; i++ )
 		{
@@ -237,7 +237,7 @@ namespace wg
 			if( i < peak || i+1 == hold )
 				onoff = 1;
 			
-			pDevice->fillSubPixel( WgRectF(ledRect, clip), m_LEDColors[section][onoff] );
+			pDevice->fillSubPixel( RectF(ledRect, clip), m_LEDColors[section][onoff] );
 			
 			ledRect.x += stepX;
 			ledRect.y += stepY;
@@ -246,9 +246,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void  WgVolumeMeter::_onStateChanged( WgState oldState )
+	void  VolumeMeter::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if( oldState.isEnabled() != m_state.isEnabled() )
 			_requestRender();
@@ -256,9 +256,9 @@ namespace wg
 	
 	//____ _onCloneContent() _________________________________________________________________ 
 	
-	void WgVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
+	void VolumeMeter::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgVolumeMeter * pOrg = static_cast<const WgVolumeMeter*>(_pOrg);
+		const VolumeMeter * pOrg = static_cast<const VolumeMeter*>(_pOrg);
 		
 		for( int i = 0 ; i < 3 ; i++ )
 		{

@@ -30,24 +30,24 @@ namespace wg
 {
 	
 	
-	class WgModValueField;
+	class ModValueField;
 	
-	//____ WgModValueHolder ___________________________________________________________
+	//____ ModValueHolder ___________________________________________________________
 	
-	class WgModValueHolder : public WgValueHolder
+	class ModValueHolder : public ValueHolder
 	{
 	public:
-		virtual void		_onValueModified( WgModValueField * pField ) = 0;
+		virtual void		_onValueModified( ModValueField * pField ) = 0;
 	};
 	
 	
-	//____ WgModValueField ____________________________________________________________
+	//____ ModValueField ____________________________________________________________
 	
-	class WgModValueField : public WgValueField
+	class ModValueField : public ValueField
 	{
 	public:
-		WgModValueField( WgModValueHolder * pHolder ) : WgValueField(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
-		~WgModValueField() {}
+		ModValueField( ModValueHolder * pHolder ) : ValueField(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
+		~ModValueField() {}
 	
 		// ModValue methods
 	
@@ -58,7 +58,7 @@ namespace wg
 		inline Sint64		min() const { return m_minValue; }
 		inline Sint64		max() const { return m_maxValue; }
 	
-		void				onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
+		void				onValueModified() { static_cast<ModValueHolder*>(m_pHolder)->_onValueModified(this); }
 	
 	protected:
 		Sint64				m_minValue;

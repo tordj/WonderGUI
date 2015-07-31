@@ -29,11 +29,11 @@
 namespace wg 
 {
 	
-	const char WgHook::CLASSNAME[] = {"Hook"};
+	const char Hook::CLASSNAME[] = {"MyHook"};
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgHook::~WgHook()
+	Hook::~Hook()
 	{
 		if( m_pWidget )
 		{
@@ -48,35 +48,35 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgHook::isInstanceOf( const char * pClassName ) const
+	bool Hook::isInstanceOf( const char * pClassName ) const
 	{ 
 		return (pClassName==CLASSNAME);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgHook::className( void ) const
+	const char * Hook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgHook_p WgHook::cast( const WgHook_p& pHook )
+	Hook_p Hook::cast( const Hook_p& pHook )
 	{
 		return pHook;
 	}
 	
 	//____ widget() _______________________________________________________________
 	
-	WgWidget_p WgHook::widget() const
+	Widget_p Hook::widget() const
 	{ 
 		return m_pWidget; 
 	}
 	
 	//____ parent() _______________________________________________________________
 	
-	WgContainer_p WgHook::parent() const 
+	Container_p Hook::parent() const 
 	{ 
 		return _parent(); 
 	}
@@ -84,7 +84,7 @@ namespace wg
 	
 	//____ _setWidget() __________________________________________________________
 	
-	void WgHook::_setWidget( WgWidget * pWidget )
+	void Hook::_setWidget( Widget * pWidget )
 	{
 		assert( pWidget == 0 || pWidget->_parent() == 0 );
 	
@@ -106,7 +106,7 @@ namespace wg
 	
 	//____ _relinkWidget() __________________________________________________________
 	
-	void WgHook::_relinkWidget()
+	void Hook::_relinkWidget()
 	{
 		if( m_pWidget )
 			m_pWidget->m_pHook = this;
@@ -114,34 +114,34 @@ namespace wg
 	
 	//____ _requestFocus() _________________________________________________________
 	
-	bool WgHook::_requestFocus()
+	bool Hook::_requestFocus()
 	{
 		return parent()->_focusRequested(this, m_pWidget);
 	}
 	
 	//____ _releaseFocus() _________________________________________________________
 	
-	bool WgHook::_releaseFocus()
+	bool Hook::_releaseFocus()
 	{
 		return parent()->_focusReleased(this, m_pWidget);
 	}
 	
 	//____ root() _________________________________________________________________
 	
-	WgRootPanel_p WgHook::root() const
+	RootPanel_p Hook::root() const
 	{
 		return _root();
 	}
 	
 	//____ _root() _________________________________________________________________
 	
-	WgRootPanel * WgHook::_root() const
+	RootPanel * Hook::_root() const
 	{
-		WgContainer * pParent = _parent();
+		Container * pParent = _parent();
 	
 		if( pParent )
 		{
-			WgHook * pParentHook = pParent->_hook();
+			Hook * pParentHook = pParent->_hook();
 			if( pParentHook )
 				return pParentHook->_root();
 		}
@@ -151,7 +151,7 @@ namespace wg
 	
 	//____ _isVisible() ___________________________________________________________
 	
-	bool WgHook::_isVisible() const
+	bool Hook::_isVisible() const
 	{
 		return true;
 	}

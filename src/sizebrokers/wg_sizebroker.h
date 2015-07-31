@@ -29,7 +29,7 @@
 namespace wg 
 {
 	
-	class WgSizeBrokerItem
+	class SizeBrokerItem
 	{
 	public:	
 		int		preferred;		// Preferred length for this item (input)
@@ -40,25 +40,25 @@ namespace wg
 	};
 	
 	
-	class WgSizeBroker;
-	typedef	WgStrongPtr<WgSizeBroker,WgObject_p>		WgSizeBroker_p;
-	typedef	WgWeakPtr<WgSizeBroker,WgObject_wp>	WgSizeBroker_wp;
+	class SizeBroker;
+	typedef	WgStrongPtr<SizeBroker,Object_p>		SizeBroker_p;
+	typedef	WgWeakPtr<SizeBroker,Object_wp>	SizeBroker_wp;
 	
-	class WgSizeBroker : public WgObject
+	class SizeBroker : public Object
 	{
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgSizeBroker_p	cast( const WgObject_p& pObject );
+		static SizeBroker_p	cast( const Object_p& pObject );
 	    
-		virtual int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
-		virtual int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
+		virtual int setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
+		virtual int setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
 		virtual bool mayAlterPreferredLengths() const = 0;
 	
 	protected:
-		WgSizeBroker();
-		virtual ~WgSizeBroker();
+		SizeBroker();
+		virtual ~SizeBroker();
 	};
 	
 

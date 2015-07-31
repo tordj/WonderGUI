@@ -49,7 +49,7 @@ namespace wg
 	
 	//____ parseChar() ____________________________________________________________
 	
-	Uint16 WgTextTool::parseChar( const char * pChar )
+	Uint16 TextTool::parseChar( const char * pChar )
 	{
 		if( pChar[0] == 0 )
 			return 0;
@@ -84,7 +84,7 @@ namespace wg
 	
 	//____ clearBreakRules() ______________________________________________________
 	
-	void WgTextTool::clearBreakRules()
+	void TextTool::clearBreakRules()
 	{
 		for( int i = 0 ; i < 256 ; i++ )
 			breakRulesTab[i] = WG_NO_BREAK | 0xF;
@@ -93,7 +93,7 @@ namespace wg
 	
 	//____ addBreakRule() _________________________________________________________
 	
-	bool WgTextTool::setBreakRule( unsigned char character, int level, WgBreakRules rule )
+	bool TextTool::setBreakRule( unsigned char character, int level, WgBreakRules rule )
 	{
 		if( level < 0 || level > 15 )
 			return false;
@@ -104,7 +104,7 @@ namespace wg
 	
 	//____ setDefaultBreakRules() _________________________________________________
 	
-	void WgTextTool::setDefaultBreakRules()
+	void TextTool::setDefaultBreakRules()
 	{
 		clearBreakRules();
 	
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ isBreakAllowed() _______________________________________________________
 	
-	WgBreakRules WgTextTool::isBreakAllowed( Uint16 chr, int breakLevel )
+	WgBreakRules TextTool::isBreakAllowed( Uint16 chr, int breakLevel )
 	{
 		if( chr > 255 )
 			return WG_NO_BREAK;
@@ -168,7 +168,7 @@ namespace wg
 	
 	//____ itoa() _________________________________________________________________
 	
-	char * WgTextTool::itoa( int value, char * str, int base )
+	char * TextTool::itoa( int value, char * str, int base )
 	{
 	
 	    char * p1 = str+33;
@@ -194,7 +194,7 @@ namespace wg
 	
 	//____ readString() ___________________________________________________________
 	
-	Uint32 WgTextTool::readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars )
+	Uint32 TextTool::readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars )
 	{
 		if( !pSrc )
 		{
@@ -213,7 +213,7 @@ namespace wg
 	}
 	
 	
-	Uint32 WgTextTool::readString( const char *& pSrc, WgChar * pDst, Uint32 maxChars )
+	Uint32 TextTool::readString( const char *& pSrc, Char * pDst, Uint32 maxChars )
 	{
 		if( !pSrc )
 		{
@@ -232,7 +232,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 WgTextTool::readString( const Uint16 *& pSrc, WgChar * pDst, Uint32 maxChars )
+	Uint32 TextTool::readString( const Uint16 *& pSrc, Char * pDst, Uint32 maxChars )
 	{
 		if( !pSrc )
 		{
@@ -251,9 +251,9 @@ namespace wg
 	}
 	
 	
-	Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, WgChar * pDst, Uint32 maxChars )
+	Uint32 TextTool::readString( const char *& pSrc, WgCodePage codepage, Char * pDst, Uint32 maxChars )
 	{
-		Uint16 * pCP = WgCodePages::getCodePage( codepage );
+		Uint16 * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -270,9 +270,9 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 WgTextTool::readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars )
+	Uint32 TextTool::readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars )
 	{
-		Uint16 * pCP = WgCodePages::getCodePage( codepage );
+		Uint16 * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -292,7 +292,7 @@ namespace wg
 	
 	//____ CountWhitespaces() ______________________________________________________
 	
-	Uint32 WgTextTool::countWhitespaces( const char * pStr, Uint32 len )
+	Uint32 TextTool::countWhitespaces( const char * pStr, Uint32 len )
 	{
 		if( !pStr )
 			return 0;
@@ -306,7 +306,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 WgTextTool::countWhitespaces( const Uint16 * pStr, Uint32 len  )
+	Uint32 TextTool::countWhitespaces( const Uint16 * pStr, Uint32 len  )
 	{
 		if( !pStr )
 			return 0;
@@ -320,7 +320,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 WgTextTool::countWhitespaces( const WgChar * pStr, Uint32 len  )
+	Uint32 TextTool::countWhitespaces( const Char * pStr, Uint32 len  )
 	{
 		if( !pStr )
 			return 0;
@@ -338,7 +338,7 @@ namespace wg
 	
 	//____ countNonFormattingChars() ______________________________________________
 	
-	Uint32 WgTextTool::countNonFormattingChars( const char * pStr, Uint32 strlen )
+	Uint32 TextTool::countNonFormattingChars( const char * pStr, Uint32 strlen )
 	{
 		if( !pStr )
 			return 0;
@@ -384,7 +384,7 @@ namespace wg
 	}
 	
 	
-	Uint32 WgTextTool::countNonFormattingChars( const Uint16 * pStr, Uint32 strlen )
+	Uint32 TextTool::countNonFormattingChars( const Uint16 * pStr, Uint32 strlen )
 	{
 		if( !pStr )
 			return 0;
@@ -432,7 +432,7 @@ namespace wg
 	
 	//____ getTextSizeStripped() ______________________________________________
 	
-	Uint32 WgTextTool::getTextSizeStripped( const char * pStr, Uint32 maxChars )
+	Uint32 TextTool::getTextSizeStripped( const char * pStr, Uint32 maxChars )
 	{
 		Uint32 nChar = 0;
 	
@@ -476,7 +476,7 @@ namespace wg
 	
 	}
 	
-	Uint32 WgTextTool::getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars )
+	Uint32 TextTool::getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars )
 	{
 		Uint32 nChar = 0;
 	
@@ -521,7 +521,7 @@ namespace wg
 	
 	//____ getTextSizeStrippedUTF8() ______________________________________________
 	
-	Uint32 WgTextTool::getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars )
+	Uint32 TextTool::getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars )
 	{
 		Uint32 nChar = 0;
 		Uint32 nBytes = 0;
@@ -575,7 +575,7 @@ namespace wg
 	
 	}
 	
-	Uint32 WgTextTool::getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars )
+	Uint32 TextTool::getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars )
 	{
 		Uint32 nChar = 0;
 		Uint32 nBytes = 0;
@@ -630,24 +630,24 @@ namespace wg
 	
 	//____ readFormattedString() __________________________________________________
 	/**
-		@brief	Reads a formatted UTF-8 string into WgChars.
+		@brief	Reads a formatted UTF-8 string into Chars.
 	
 		Reads a UTF-8 string equipped with escape codes for text properties into
-		an array of WgChar.
+		an array of Char.
 	
 		@param pSrc		Pointer at source to read from. This must be a null-terminated
 						string which may include WG escape codes.
-		@param pDst		Pointer at an array of WgChar where to write the WgChar converted
+		@param pDst		Pointer at an array of Char where to write the Char converted
 						string. The string will be null-terminated if the null-termination
 						will fit into maxChars.
 		@param maxChars	Maximum number of characters to write to the destination.
 	
-		@return			Number of WgChar written into the array, excluding null-terminator.
+		@return			Number of Char written into the array, excluding null-terminator.
 						This value is <= maxChars. If return value == maxChars, the
 						destination is not null-terminated.
 	*/
 	
-	Uint32 WgTextTool::readFormattedString( const char * _pSrc, WgChar * pDst, Uint32 maxChars, const WgResDB * pResDB )
+	Uint32 TextTool::readFormattedString( const char * _pSrc, Char * pDst, Uint32 maxChars, const ResDB * pResDB )
 	{
 		if( maxChars == 0 )
 			return 0;
@@ -658,28 +658,28 @@ namespace wg
 			return 0;
 		}
 	
-		WgChar *	pBeginUnderlined = 0;
+		Char *	pBeginUnderlined = 0;
 		Uint32		nUnderlinedRecursions = 0;
 	
-		WgChar *	pBeginStyle = 0;
-		WgFontAlt	styleStack[16];
+		Char *	pBeginStyle = 0;
+		FontAlt	styleStack[16];
 		Uint32		nStyleRecursions = 0;
 	
-		WgChar *	pBeginColor = 0;
-		WgColor		colorStack[16];
+		Char *	pBeginColor = 0;
+		Color		colorStack[16];
 		Uint32		nColorRecursions = 0;
 	
-		WgChar *	pBeginSize = 0;
+		Char *	pBeginSize = 0;
 		int			sizeStack[16];
 		Uint32		nSizeRecursions = 0;
 	
-		WgChar *	pBeginBreakLevel = 0;
+		Char *	pBeginBreakLevel = 0;
 		int			breakLevelStack[16];
 		Uint32		nBreakLevelRecursions = 0;
 	
 	
 	
-		WgChar		myChar;
+		Char		myChar;
 	
 		const char * pSrc = _pSrc;		// We need a pointer that can be increased.
 	
@@ -704,7 +704,7 @@ namespace wg
 	
 					case ':':					// BEGIN BREAK LEVEL
 						if( nBreakLevelRecursions != 0 )
-							WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+							TextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 	
 						if( nBreakLevelRecursions < 16 )
 						{
@@ -720,7 +720,7 @@ namespace wg
 						if( nBreakLevelRecursions > 0 )
 						{
 							nBreakLevelRecursions--;
-							WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+							TextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 							pBeginSize = &pDst[n];
 						}
 					break;
@@ -728,7 +728,7 @@ namespace wg
 	
 					case '[':					// BEGIN SIZE
 						if( nSizeRecursions != 0 )
-							WgTextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+							TextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
 	
 						if( nSizeRecursions < 16 )
 						{
@@ -744,7 +744,7 @@ namespace wg
 						if( nSizeRecursions > 0 )
 						{
 							nSizeRecursions--;
-							WgTextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+							TextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
 							pBeginSize = &pDst[n];
 						}
 					break;
@@ -752,13 +752,13 @@ namespace wg
 	
 					case '{':					// BEGIN COLOR
 						if( nColorRecursions != 0 )
-							WgTextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
+							TextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
 	
 						if( nColorRecursions < 16 )
 						{
 							pBeginColor = &pDst[n];
 	
-							WgColor col;
+							Color col;
 	
 	/*						if( pSrc[0] == '#' )
 							{
@@ -766,10 +766,10 @@ namespace wg
 							}
 							else
 	*/						{
-								col.a = WgTextTool::asciiToUint8( &pSrc[0] );
-								col.r = WgTextTool::asciiToUint8( &pSrc[2] );
-								col.g = WgTextTool::asciiToUint8( &pSrc[4] );
-								col.b = WgTextTool::asciiToUint8( &pSrc[6] );
+								col.a = TextTool::asciiToUint8( &pSrc[0] );
+								col.r = TextTool::asciiToUint8( &pSrc[2] );
+								col.g = TextTool::asciiToUint8( &pSrc[4] );
+								col.b = TextTool::asciiToUint8( &pSrc[6] );
 								pSrc += 8;
 							}
 	
@@ -781,7 +781,7 @@ namespace wg
 						if( nColorRecursions > 0 )
 						{
 							nColorRecursions--;
-							WgTextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
+							TextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
 							pBeginColor = &pDst[n];
 						}
 					break;
@@ -796,14 +796,14 @@ namespace wg
 					case '|':					// END UNDERLINED
 						nUnderlinedRecursions--;
 						if( nUnderlinedRecursions == 0 )
-							WgTextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
+							TextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
 					break;
 	
 					case '#':					// END STYLE
 						if( nStyleRecursions > 0 )
 						{
 							nStyleRecursions--;
-							WgTextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
+							TextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
 							pBeginStyle = &pDst[n];
 						}
 					break;
@@ -823,7 +823,7 @@ namespace wg
 							pSrc++;
 	
 							if( id == "null" )
-								myChar.setProperties( WgTextprop_p() );
+								myChar.setProperties( Textprop_p() );
 							else
 								myChar.setProperties( pResDB->getTextprop(id) );
 						}
@@ -833,7 +833,7 @@ namespace wg
 					default:					// Either setting a font style or this is an invalid command
 					{
 						bool bOk = true;
-						WgFontAlt style;
+						FontAlt style;
 	
 						// Determine style or that this is an invalid command
 	
@@ -867,7 +867,7 @@ namespace wg
 									bOk = false;
 								else
 								{
-									style = (WgFontAlt) (WG_FONT_HEADING_1 + c - '1');
+									style = (FontAlt) (WG_FONT_HEADING_1 + c - '1');
 									if((Uint32)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
@@ -880,7 +880,7 @@ namespace wg
 									bOk = false;
 								else
 								{
-									style = (WgFontAlt) (WG_FONT_USER_1 + c - '1');
+									style = (FontAlt) (WG_FONT_USER_1 + c - '1');
 									if((Uint32)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
@@ -895,7 +895,7 @@ namespace wg
 						if( bOk )
 						{
 							if( nStyleRecursions != 0 )
-								WgTextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
+								TextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
 	
 							if( nStyleRecursions < 16 )
 							{
@@ -926,24 +926,24 @@ namespace wg
 	}
 	
 	/**
-		@brief	Reads a formatted Uint16 string into WgChars.
+		@brief	Reads a formatted Uint16 string into Chars.
 	
 		Reads a Uint16 string equipped with escape codes for text properties into
-		an array of WgChar.
+		an array of Char.
 	
 		@param pSrc		Pointer at source to read from. This must be a null-terminated
 						string which may include WG escape codes.
-		@param pDst		Pointer at an array of WgChar where to write the WgChar converted
+		@param pDst		Pointer at an array of Char where to write the Char converted
 						string. The string will be null-terminated if the null-termination
 						will fit into maxChars.
 		@param maxChars	Maximum number of characters to write to the destination.
 	
-		@return			Number of WgChar written into the array, excluding null-terminator.
+		@return			Number of Char written into the array, excluding null-terminator.
 						This value is <= maxChars. If return value == maxChars, the
 						destination is not null-terminated.
 	*/
 	
-	Uint32 WgTextTool::readFormattedString( const Uint16 * _pSrc, WgChar * pDst, Uint32 maxChars, const WgResDB * pResDB )
+	Uint32 TextTool::readFormattedString( const Uint16 * _pSrc, Char * pDst, Uint32 maxChars, const ResDB * pResDB )
 	{
 		if( maxChars == 0 )
 			return 0;
@@ -954,26 +954,26 @@ namespace wg
 			return 0;
 		}
 	
-		WgChar *	pBeginUnderlined = 0;
+		Char *	pBeginUnderlined = 0;
 		Uint32		nUnderlinedRecursions = 0;
 	
-		WgChar *	pBeginStyle = 0;
-		WgFontAlt	styleStack[16];
+		Char *	pBeginStyle = 0;
+		FontAlt	styleStack[16];
 		Uint32		nStyleRecursions = 0;
 	
-		WgChar *	pBeginColor = 0;
-		WgColor		colorStack[16];
+		Char *	pBeginColor = 0;
+		Color		colorStack[16];
 		Uint32		nColorRecursions = 0;
 	
-		WgChar *	pBeginSize = 0;
+		Char *	pBeginSize = 0;
 		int			sizeStack[16];
 		Uint32		nSizeRecursions = 0;
 	
-		WgChar *	pBeginBreakLevel = 0;
+		Char *	pBeginBreakLevel = 0;
 		int			breakLevelStack[16];
 		Uint32		nBreakLevelRecursions = 0;
 	
-		WgChar		myChar;
+		Char		myChar;
 	
 		const Uint16 * pSrc = _pSrc;		// We need a pointer that can be increased.
 	
@@ -998,7 +998,7 @@ namespace wg
 	
 					case '[':					// BEGIN SIZE
 						if( nSizeRecursions != 0 )
-							WgTextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
+							TextTool::setSize( sizeStack[nSizeRecursions-1], pBeginSize, pDst + n - pBeginSize );
 	
 						if( nSizeRecursions < 16 )
 						{
@@ -1014,14 +1014,14 @@ namespace wg
 						if( nSizeRecursions > 0 )
 						{
 							nSizeRecursions--;
-							WgTextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
+							TextTool::setSize( sizeStack[nSizeRecursions], pBeginSize, pDst + n - pBeginSize );
 							pBeginSize = &pDst[n];
 						}
 					break;
 	
 					case ':':					// BEGIN BREAK LEVEL
 						if( nBreakLevelRecursions != 0 )
-							WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+							TextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions-1], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 	
 						if( nBreakLevelRecursions < 16 )
 						{
@@ -1037,7 +1037,7 @@ namespace wg
 						if( nBreakLevelRecursions > 0 )
 						{
 							nBreakLevelRecursions--;
-							WgTextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
+							TextTool::setBreakLevel( breakLevelStack[nBreakLevelRecursions], pBeginBreakLevel, pDst + n - pBeginBreakLevel );
 							pBeginSize = &pDst[n];
 						}
 					break;
@@ -1045,17 +1045,17 @@ namespace wg
 	
 					case '{':					// BEGIN COLOR
 						if( nColorRecursions != 0 )
-							WgTextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
+							TextTool::setColor( colorStack[nColorRecursions-1], pBeginColor, pDst + n - pBeginColor );
 	
 						if( nColorRecursions < 16 )
 						{
 							pBeginColor = &pDst[n];
 	
-							WgColor col;
-							col.a = WgTextTool::asciiToUint8( &pSrc[0] );
-							col.r = WgTextTool::asciiToUint8( &pSrc[2] );
-							col.g = WgTextTool::asciiToUint8( &pSrc[4] );
-							col.b = WgTextTool::asciiToUint8( &pSrc[6] );
+							Color col;
+							col.a = TextTool::asciiToUint8( &pSrc[0] );
+							col.r = TextTool::asciiToUint8( &pSrc[2] );
+							col.g = TextTool::asciiToUint8( &pSrc[4] );
+							col.b = TextTool::asciiToUint8( &pSrc[6] );
 							pSrc += 8;
 	
 							colorStack[nColorRecursions++] = col;
@@ -1066,7 +1066,7 @@ namespace wg
 						if( nColorRecursions > 0 )
 						{
 							nColorRecursions--;
-							WgTextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
+							TextTool::setColor( colorStack[nColorRecursions], pBeginColor, pDst + n - pBeginColor );
 							pBeginColor = &pDst[n];
 						}
 					break;
@@ -1081,14 +1081,14 @@ namespace wg
 					case '|':					// END UNDERLINED
 						nUnderlinedRecursions--;
 						if( nUnderlinedRecursions == 0 )
-							WgTextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
+							TextTool::setUnderlined( pBeginUnderlined, pDst + n - pBeginUnderlined );
 					break;
 	
 					case '#':					// END STYLE
 						if( nStyleRecursions > 0 )
 						{
 							nStyleRecursions--;
-							WgTextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
+							TextTool::setStyle( styleStack[nStyleRecursions], pBeginStyle, pDst + n - pBeginStyle );
 							pBeginStyle = &pDst[n];
 						}
 					break;
@@ -1108,7 +1108,7 @@ namespace wg
 							pSrc++;
 	
 							if( id == "null" )
-								myChar.setProperties( WgTextprop_p() );
+								myChar.setProperties( Textprop_p() );
 							else
 								myChar.setProperties( pResDB->getTextprop(id) );
 						}
@@ -1119,7 +1119,7 @@ namespace wg
 					default:					// Either setting a font style or this is an invalid command
 					{
 						bool bOk = true;
-						WgFontAlt style;
+						FontAlt style;
 	
 						// Determine style or that this is an invalid command
 	
@@ -1152,7 +1152,7 @@ namespace wg
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
-									style = (WgFontAlt) (WG_FONT_HEADING_1 + c - '1');
+									style = (FontAlt) (WG_FONT_HEADING_1 + c - '1');
 								break;
 							}
 							case 'u':
@@ -1161,7 +1161,7 @@ namespace wg
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
-									style = (WgFontAlt) (WG_FONT_USER_1 + c - '1');
+									style = (FontAlt) (WG_FONT_USER_1 + c - '1');
 								break;
 							}
 							default:
@@ -1173,7 +1173,7 @@ namespace wg
 						if( bOk )
 						{
 							if( nStyleRecursions != 0 )
-								WgTextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
+								TextTool::setStyle( styleStack[nStyleRecursions-1], pBeginStyle, pDst + n - pBeginStyle );
 	
 							if( nStyleRecursions < 16 )
 							{
@@ -1209,7 +1209,7 @@ namespace wg
 	
 	//____ getTextFormattedUTF8() __________________________________________________
 	
-	Uint32 WgTextTool::getTextFormattedUTF8( const WgChar * pSrc, char * pDst, Uint32 maxBytes, const WgResDB * pResDB )
+	Uint32 TextTool::getTextFormattedUTF8( const Char * pSrc, char * pDst, Uint32 maxBytes, const ResDB * pResDB )
 	{
 		Uint32	ofs			= 0;
 		Uint16	hActiveProp = 0;
@@ -1289,7 +1289,7 @@ namespace wg
 	
 	//____ getTextFormatted() _____________________________________________________
 	
-	Uint32 WgTextTool::getTextFormatted( const WgChar * pSrc, Uint16 * pDst, Uint32 maxBytes, const WgResDB * pResDB )
+	Uint32 TextTool::getTextFormatted( const Char * pSrc, Uint16 * pDst, Uint32 maxBytes, const ResDB * pResDB )
 	{
 		Uint32	ofs			= 0;
 		Uint16	hActiveProp = 0;
@@ -1346,12 +1346,12 @@ namespace wg
 	
 	//____ getTextSizeFormattedUTF8() _____________________________________________
 	
-	Uint32 WgTextTool::getTextSizeFormattedUTF8( const WgChar * pSrc, Uint32 maxChars, const WgResDB * pResDB )
+	Uint32 TextTool::getTextSizeFormattedUTF8( const Char * pSrc, Uint32 maxChars, const ResDB * pResDB )
 	{
 		Uint32 ofs = 0;
 		Uint32 charsRead = 0;
 	
-		WgTextprop_p	pActiveProp;
+		Textprop_p	pActiveProp;
 		Uint16			hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
@@ -1394,12 +1394,12 @@ namespace wg
 	
 	//____ getTextSizeFormatted() _________________________________________________
 	
-	Uint32 WgTextTool::getTextSizeFormatted( const WgChar * pSrc, Uint32 maxChars, const WgResDB * pResDB )
+	Uint32 TextTool::getTextSizeFormatted( const Char * pSrc, Uint32 maxChars, const ResDB * pResDB )
 	{
 		Uint32 ofs = 0;
 		Uint32 charsRead = 0;
 	
-		WgTextprop_p	pActiveProp;
+		Textprop_p	pActiveProp;
 		Uint16			hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
@@ -1434,7 +1434,7 @@ namespace wg
 	
 	//____ copyChars() ____________________________________________________________
 	
-	Uint32 WgTextTool::copyChars( const WgChar * pSrc, WgChar * pDst, Uint32 maxChars )
+	Uint32 TextTool::copyChars( const Char * pSrc, Char * pDst, Uint32 maxChars )
 	{
 		// Special refProps() equivalent which also counts characters and stops at NULL.
 	
@@ -1451,7 +1451,7 @@ namespace wg
 			else
 			{
 				if( hProp )
-					WgTextpropManager::incRef(hProp, nProp );
+					TextpropManager::incRef(hProp, nProp );
 	
 				hProp = h;
 				nProp = 1;
@@ -1464,7 +1464,7 @@ namespace wg
 		}
 	
 		if( hProp )
-			WgTextpropManager::incRef(hProp, nProp );
+			TextpropManager::incRef(hProp, nProp );
 	
 		// Dereference the same amount of characters from destination.
 	
@@ -1472,7 +1472,7 @@ namespace wg
 	
 		// Copy chars in a fast and straight way...
 	
-		memcpy( pDst, pSrc, n*sizeof(WgChar) );
+		memcpy( pDst, pSrc, n*sizeof(Char) );
 	
 		return n;
 	}
@@ -1481,7 +1481,7 @@ namespace wg
 	
 	//____ derefProps() ____________________________________________________________
 	
-	void WgTextTool::derefProps( WgChar * p, Uint32 n )
+	void TextTool::derefProps( Char * p, Uint32 n )
 	{
 		Uint16	hProp = 0;
 		Uint16	nProp = 0;
@@ -1495,7 +1495,7 @@ namespace wg
 			else
 			{
 				if( hProp )
-					WgTextpropManager::decRef(hProp, nProp );
+					TextpropManager::decRef(hProp, nProp );
 	
 				hProp = h;
 				nProp = 1;
@@ -1503,13 +1503,13 @@ namespace wg
 		}
 	
 		if( hProp )
-			WgTextpropManager::decRef(hProp, nProp );
+			TextpropManager::decRef(hProp, nProp );
 	}
 	
 	
 	//____ refProps() ______________________________________________________________
 	
-	void WgTextTool::refProps( WgChar * p, Uint32 n )
+	void TextTool::refProps( Char * p, Uint32 n )
 	{
 		Uint16	hProp = 0;
 		Uint16	nProp = 0;
@@ -1523,7 +1523,7 @@ namespace wg
 			else
 			{
 				if( hProp )
-					WgTextpropManager::incRef(hProp, nProp );
+					TextpropManager::incRef(hProp, nProp );
 	
 				hProp = h;
 				nProp = 1;
@@ -1531,13 +1531,13 @@ namespace wg
 		}
 	
 		if( hProp )
-			WgTextpropManager::incRef(hProp, nProp );
+			TextpropManager::incRef(hProp, nProp );
 	}
 	
 	
 	//____ countChars() ___________________________________________________________
 	
-	Uint32	WgTextTool::countChars( const char * pStr, Uint32 strlen )
+	Uint32	TextTool::countChars( const char * pStr, Uint32 strlen )
 	{
 		if( !pStr )
 			return 0;
@@ -1553,7 +1553,7 @@ namespace wg
 	
 	//____ countLines() ___________________________________________________________
 	
-	Uint32	WgTextTool::countLines( const char * pStr )
+	Uint32	TextTool::countLines( const char * pStr )
 	{
 		if( !pStr )
 			return 0;
@@ -1568,7 +1568,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32	WgTextTool::countLines( const Uint16 * pStr )
+	Uint32	TextTool::countLines( const Uint16 * pStr )
 	{
 		if( !pStr )
 			return 0;
@@ -1583,7 +1583,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32	WgTextTool::countLines( const WgChar * pStr )
+	Uint32	TextTool::countLines( const Char * pStr )
 	{
 		if( !pStr )
 			return 0;
@@ -1606,7 +1606,7 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	WgTextTool::countLineChars( const char * pStr, Uint32 len )
+	Uint32	TextTool::countLineChars( const char * pStr, Uint32 len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
@@ -1628,7 +1628,7 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	WgTextTool::countLineChars( const Uint16 * pStr, Uint32 len )
+	Uint32	TextTool::countLineChars( const Uint16 * pStr, Uint32 len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
@@ -1649,7 +1649,7 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	WgTextTool::countLineChars( const WgChar * pStr, Uint32 len )
+	Uint32	TextTool::countLineChars( const Char * pStr, Uint32 len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
@@ -1665,7 +1665,7 @@ namespace wg
 	
 	//____ countCharsLines() ______________________________________________________
 	
-	void	WgTextTool::countCharsLines( const char * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const char * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
 	{
 		if( !pStr )
 			return;
@@ -1688,7 +1688,7 @@ namespace wg
 		}
 	}
 	
-	void	WgTextTool::countCharsLines( const Uint16 * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const Uint16 * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
 	{
 		if( !pStr )
 			return;
@@ -1712,12 +1712,12 @@ namespace wg
 	}
 	
 	
-	void	WgTextTool::countCharsLines( const WgChar * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const Char * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
 	{
 		if( !pStr )
 			return;
 	
-		const WgChar * pEnd = pStr + strlen;
+		const Char * pEnd = pStr + strlen;
 	
 		nChars = 0;
 		nLines = 1;
@@ -1737,7 +1737,7 @@ namespace wg
 	
 	//____ nextLine() _____________________________________________________________
 	
-	char * WgTextTool::nextLine( char * p )
+	char * TextTool::nextLine( char * p )
 	{
 		while( * p != 10 )
 		{
@@ -1755,7 +1755,7 @@ namespace wg
 	
 	//____ writeUTF8() ____________________________________________________________
 	
-	Uint32 WgTextTool::writeUTF8( Uint16 glyph, char * pDest )
+	Uint32 TextTool::writeUTF8( Uint16 glyph, char * pDest )
 	{
 		if( glyph < 128 )
 		{
@@ -1779,7 +1779,7 @@ namespace wg
 	
 	
 	//____ strlen() ____________________________________________________________
-	Uint32 WgTextTool::strlen( const Uint16 * pSrc )
+	Uint32 TextTool::strlen( const Uint16 * pSrc )
 	{
 		Uint32 nChars = 0;
 		while( * pSrc != 0 )
@@ -1792,7 +1792,7 @@ namespace wg
 	
 	
 	//____ strlen() ____________________________________________________________
-	Uint32 WgTextTool::strlen( const WgChar * pSrc )
+	Uint32 TextTool::strlen( const Char * pSrc )
 	{
 		Uint32 nChars = 0;
 		while( !pSrc->isEndOfText() )
@@ -1804,7 +1804,7 @@ namespace wg
 	}
 	
 	//____ strcmp() ____________________________________________________________
-	int WgTextTool::strcmp( const Uint16* pStr1, const Uint16* pStr2 )
+	int TextTool::strcmp( const Uint16* pStr1, const Uint16* pStr2 )
 	{
 		while( *pStr1 != L'\0' && *pStr1 == *pStr2 )
 		{
@@ -1815,7 +1815,7 @@ namespace wg
 	}
 	
 	//____ strcmp() ____________________________________________________________
-	int WgTextTool::strcmp( const WgChar * pStr1, const WgChar * pStr2 )
+	int TextTool::strcmp( const Char * pStr1, const Char * pStr2 )
 	{
 		while( !pStr1->isEndOfText() && pStr1->equals(*pStr2) )
 		{
@@ -1831,7 +1831,7 @@ namespace wg
 	
 	
 	//____ glyphcmp() ____________________________________________________________
-	int WgTextTool::glyphcmp( const WgChar * pStr1, const WgChar * pStr2 )
+	int TextTool::glyphcmp( const Char * pStr1, const Char * pStr2 )
 	{
 		while( !pStr1->isEndOfText() && pStr1->glyph == pStr2->glyph )
 		{
@@ -1846,7 +1846,7 @@ namespace wg
 	}
 	
 	//____ glyphcmpIgnoreCase() _______________________________________________________
-	int WgTextTool::glyphcmpIgnoreCase( const WgChar * pStr1, const WgChar * pStr2 )
+	int TextTool::glyphcmpIgnoreCase( const Char * pStr1, const Char * pStr2 )
 	{
 		while( !pStr1->isEndOfText() && towlower(pStr1->glyph) == towlower(pStr2->glyph) )
 		{
@@ -1863,7 +1863,7 @@ namespace wg
 	
 	
 	//____ nibbleToAscii() ____________________________________________________________
-	inline Uint8 WgTextTool::nibbleToAscii( Uint8 nibble )
+	inline Uint8 TextTool::nibbleToAscii( Uint8 nibble )
 	{
 		if( nibble <= 9 )
 			return '0' + nibble;
@@ -1872,7 +1872,7 @@ namespace wg
 	}
 	
 	//____ asciiToNibble() ____________________________________________________________
-	inline Uint8 WgTextTool::asciiToNibble( Uint8 ascii )
+	inline Uint8 TextTool::asciiToNibble( Uint8 ascii )
 	{
 		if( ascii >= '0' && ascii <= '9' )
 			return 0x00 + ascii - '0';
@@ -1885,7 +1885,7 @@ namespace wg
 	}
 	
 	//____ uint16ToAscii() ____________________________________________________________
-	bool WgTextTool::uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars )
+	bool TextTool::uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars )
 	{
 		if( 0 == pDest || maxChars < 4 )
 			return false;
@@ -1897,7 +1897,7 @@ namespace wg
 	}
 	
 	//____ asciiToUint16() ____________________________________________________________
-	Uint16 WgTextTool::asciiToUint16( const Uint16 * pAscii )
+	Uint16 TextTool::asciiToUint16( const Uint16 * pAscii )
 	{
 		Uint16 high = asciiToUint8( (Uint16*)&pAscii[0] );
 		Uint16 low = asciiToUint8( (Uint16*)&pAscii[2] );
@@ -1908,7 +1908,7 @@ namespace wg
 	}
 	
 	//____ uint16ToAscii() ____________________________________________________________
-	bool WgTextTool::uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars )
+	bool TextTool::uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars )
 	{
 		if( 0 == pDest || maxChars < 4 )
 			return false;
@@ -1920,7 +1920,7 @@ namespace wg
 	}
 	
 	//____ asciiToUint16() ____________________________________________________________
-	Uint16 WgTextTool::asciiToUint16( const char * pAscii )
+	Uint16 TextTool::asciiToUint16( const char * pAscii )
 	{
 		Uint16 high = asciiToUint8( (char*)&pAscii[0] );
 		Uint16 low = asciiToUint8( (char*)&pAscii[2] );
@@ -1931,7 +1931,7 @@ namespace wg
 	}
 	
 	//____ uint8ToAscii( Uint16* ) ____________________________________________________________
-	bool WgTextTool::uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
+	bool TextTool::uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
 	{
 		if( 0 == pDest || maxChars < 2 )
 			return false;
@@ -1946,7 +1946,7 @@ namespace wg
 	}
 	
 	//____ asciiToUint8() ____________________________________________________________
-	Uint8 WgTextTool::asciiToUint8( const Uint16 * pAscii )
+	Uint8 TextTool::asciiToUint8( const Uint16 * pAscii )
 	{
 		Uint8 high = asciiToNibble( (Uint8)pAscii[ 0 ] );
 		Uint8 low = asciiToNibble( (Uint8)pAscii[ 1 ] );
@@ -1957,7 +1957,7 @@ namespace wg
 	}
 	
 	//____ uint8ToAscii( char* ) ____________________________________________________________
-	bool WgTextTool::uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
+	bool TextTool::uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
 	{
 		if( 0 == pDest || maxChars < 2 )
 			return false;
@@ -1972,7 +1972,7 @@ namespace wg
 	}
 	
 	//____ asciiToUint8() ____________________________________________________________
-	Uint8 WgTextTool::asciiToUint8( const char * pAscii )
+	Uint8 TextTool::asciiToUint8( const char * pAscii )
 	{
 		Uint8 high = asciiToNibble( pAscii[ 0 ] );
 		Uint8 low = asciiToNibble( pAscii[ 1 ] );
@@ -1983,7 +1983,7 @@ namespace wg
 	}
 	
 	//____ uint16ToUtf8() ____________________________________________________________
-	Uint32 WgTextTool::uint16ToUtf8( Uint16 value, char * pDest, Uint32 maxChars )
+	Uint32 TextTool::uint16ToUtf8( Uint16 value, char * pDest, Uint32 maxChars )
 	{
 		if( maxChars < 1 )
 			return 0;
@@ -2027,7 +2027,7 @@ namespace wg
 	
 	//____ formatBeginColor() _____________________________________________________
 	
-	Uint32 WgTextTool::formatBeginColor( const WgColor& color, char * pDest )
+	Uint32 TextTool::formatBeginColor( const Color& color, char * pDest )
 	{
 		pDest += writeUTF8( WG_ESCAPE_CODE, pDest );
 		* pDest++ = '{';
@@ -2044,8 +2044,8 @@ namespace wg
 	//____ getTextUTF8() __________________________________________________________
 	
 	/**
-		Writes a UTF8 representation of the WgChar-string (or first part thereof) into
-		the specified area. WgChar effects such as underline, font changes etc are
+		Writes a UTF8 representation of the Char-string (or first part thereof) into
+		the specified area. Char effects such as underline, font changes etc are
 		ignored.
 	
 	
@@ -2061,7 +2061,7 @@ namespace wg
 	
 	*/
 	
-	Uint32 WgTextTool::getTextUTF8( const WgChar * pSrc, char * pDest, Uint32 maxBytes )
+	Uint32 TextTool::getTextUTF8( const Char * pSrc, char * pDest, Uint32 maxBytes )
 	{
 		if( maxBytes < 1 || pSrc == 0 || pDest == 0 )
 			return 0;
@@ -2103,7 +2103,7 @@ namespace wg
 		return nChars;
 	}
 	
-	Uint32 WgTextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes )
+	Uint32 TextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes )
 	{
 		if( maxBytes < 1 || pSrc == 0 || pDest == 0 )
 			return 0;
@@ -2147,9 +2147,9 @@ namespace wg
 	
 	//____ getTextUTF8() __________________________________________________________
 	
-	Uint32 WgTextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
+	Uint32 TextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
 	{
-		Uint16 * pCP = WgCodePages::getCodePage( codepage );
+		Uint16 * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 		{
 			pDest[0] = 0;
@@ -2170,7 +2170,7 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ______________________________________________________
 	
-	Uint32 WgTextTool::getTextSizeUTF8( const WgChar* pSrc, Uint32 len )
+	Uint32 TextTool::getTextSizeUTF8( const Char* pSrc, Uint32 len )
 	{
 		Uint32 size = 0;
 		Uint16 glyph = 0;
@@ -2191,7 +2191,7 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ____________________________________________________________
 	
-	Uint32 WgTextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
+	Uint32 TextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
 	{
 		Uint32 size = 0;
 		Uint16 glyph = 0;
@@ -2212,9 +2212,9 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ____________________________________________________________
 	
-	Uint32 WgTextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
+	Uint32 TextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
 	{
-		Uint16 * pCP = WgCodePages::getCodePage( codepage );
+		Uint16 * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 			return 0;
 	
@@ -2230,9 +2230,9 @@ namespace wg
 	
 	//____ lineWidth() ____________________________________________________________
 	
-	Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const char * pString )
+	Uint32 TextTool::lineWidth( const TextAttr& attr, const char * pString )
 	{
-		WgPen pen;
+		Pen pen;
 		pen.setAttributes( attr );
 	
 		while( * pString != 0 && * pString != '\n' )
@@ -2251,9 +2251,9 @@ namespace wg
 		return pen.getPosX();
 	}
 	
-	Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, const Uint16 * pString )
+	Uint32 TextTool::lineWidth( const TextAttr& attr, const Uint16 * pString )
 	{
-		WgPen pen;
+		Pen pen;
 		pen.setAttributes( attr );
 	
 		while( * pString != 0 && * pString != '\n' )
@@ -2273,11 +2273,11 @@ namespace wg
 	}
 	
 	
-	Uint32 WgTextTool::lineWidth( const WgTextAttr& attr, WgState state, const WgChar * pString )
+	Uint32 TextTool::lineWidth( const TextAttr& attr, State state, const Char * pString )
 	{
-		WgTextAttr	attr2;
+		TextAttr	attr2;
 	
-		WgPen pen;
+		Pen pen;
 		Uint16 hProp = 0xFFFF;
 	
 		while( !pString->isEndOfLine() )
@@ -2305,7 +2305,7 @@ namespace wg
 	
 	//____ forwardCharacters() ____________________________________________________
 	
-	void WgTextTool::forwardCharacters( const char *& pChar, Uint32 nChars )
+	void TextTool::forwardCharacters( const char *& pChar, Uint32 nChars )
 	{
 		for( unsigned int i = 0 ; i < nChars && * pChar != 0 ; i++ )
 		{
@@ -2329,7 +2329,7 @@ namespace wg
 	
 	//____ forwardEscapedCharacters() ____________________________________________________
 	
-	void WgTextTool::forwardEscapedCharacters( const char *& pStr, Uint32 nChars )
+	void TextTool::forwardEscapedCharacters( const char *& pStr, Uint32 nChars )
 	{
 		Uint32 n = 0;
 		while( * pStr != 0 && n < nChars )
@@ -2372,7 +2372,7 @@ namespace wg
 	
 	//____ forwardEscapedCharacters() ____________________________________________________
 	
-	void WgTextTool::forwardEscapedCharacters( const Uint16 *& pStr, Uint32 nChars )
+	void TextTool::forwardEscapedCharacters( const Uint16 *& pStr, Uint32 nChars )
 	{
 		Uint32 n = 0;
 		while( * pStr != 0 && n < nChars )
@@ -2415,7 +2415,7 @@ namespace wg
 	
 	//____ stripTextCommands() ____________________________________________________
 	
-	int WgTextTool::stripTextCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
@@ -2451,7 +2451,7 @@ namespace wg
 	}
 	
 	
-	int WgTextTool::stripTextCommands( const char* pSrc, char* pDest, int maxChars )
+	int TextTool::stripTextCommands( const char* pSrc, char* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
@@ -2487,7 +2487,7 @@ namespace wg
 	}
 	
 	
-	int WgTextTool::stripTextColorCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextColorCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
@@ -2512,7 +2512,7 @@ namespace wg
 	}
 	
 	
-	int WgTextTool::stripTextColorCommands( const char* pSrc, char* pDest, int maxBytes )
+	int TextTool::stripTextColorCommands( const char* pSrc, char* pDest, int maxBytes )
 	{
 		int n = 0;
 		while( n < maxBytes )
@@ -2539,7 +2539,7 @@ namespace wg
 	
 	//____ stripTextCommandsConvert() _____________________________________________
 	
-	int WgTextTool::stripTextCommandsConvert( const Uint16* pSrc, char* pDest, int maxChars )
+	int TextTool::stripTextCommandsConvert( const Uint16* pSrc, char* pDest, int maxChars )
 	{
 		int n = 0;
 		int ofs = 0;
@@ -2579,7 +2579,7 @@ namespace wg
 	}
 	
 	
-	int WgTextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
@@ -2616,12 +2616,12 @@ namespace wg
 	
 	//____ setSize() _____________________________________________________________
 	
-	void WgTextTool::setSize( int size, WgChar * pChar, Uint32 nb )
+	void TextTool::setSize( int size, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropSizeModifier(size), pChar, nb );
 	}
 	
-	void WgTextTool::setSize( int size, WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::setSize( int size, Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateSizeModifier(size,state), pChar, nb );
 	}
@@ -2629,24 +2629,24 @@ namespace wg
 	
 	//____ clearSize() ___________________________________________________________
 	
-	void WgTextTool::clearSize( WgChar * pChar, Uint32 nb )
+	void TextTool::clearSize( Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropSizeClearer(), pChar, nb );
 	}
 	
-	void WgTextTool::clearSize( WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::clearSize( Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateSizeClearer(state), pChar, nb );
 	}
 	
 	//____ setColor() _____________________________________________________________
 	
-	void WgTextTool::setColor( const WgColor col, WgChar * pChar, Uint32 nb )
+	void TextTool::setColor( const Color col, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropColorModifier(col), pChar, nb );
 	}
 	
-	void WgTextTool::setColor( const WgColor col, WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::setColor( const Color col, Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateColorModifier(col,state), pChar, nb );
 	}
@@ -2654,12 +2654,12 @@ namespace wg
 	
 	//____ clearColor() ___________________________________________________________
 	
-	void WgTextTool::clearColor( WgChar * pChar, Uint32 nb )
+	void TextTool::clearColor( Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropColorClearer(), pChar, nb );
 	}
 	
-	void WgTextTool::clearColor( WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::clearColor( Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateColorClearer(state), pChar, nb );
 	}
@@ -2667,24 +2667,24 @@ namespace wg
 	
 	//____ setStyle() _____________________________________________________________
 	
-	void WgTextTool::setStyle( WgFontAlt style, WgChar * pChar, Uint32 nb )
+	void TextTool::setStyle( FontAlt style, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropStyleModifier(style), pChar, nb );
 	}
 	
-	void WgTextTool::setStyle( WgFontAlt style, WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::setStyle( FontAlt style, Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateStyleModifier(style,state), pChar, nb );
 	}
 	
 	//____ clearStyle() ___________________________________________________________
 	
-	void WgTextTool::clearStyle( WgChar * pChar, Uint32 nb )
+	void TextTool::clearStyle( Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
 	}
 	
-	void WgTextTool::clearStyle( WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::clearStyle( Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
 	}
@@ -2692,38 +2692,38 @@ namespace wg
 	
 	//____ setUnderlined() ________________________________________________________
 	
-	void WgTextTool::setUnderlined( WgChar * pChar, Uint32 nb )
+	void TextTool::setUnderlined( Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropUnderlinedModifier(true), pChar, nb );
 	}
 	
-	void WgTextTool::setUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::setUnderlined( Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateUnderlinedModifier(true,state), pChar, nb );
 	}
 	
 	//____ clearUnderlined() ________________________________________________________
 	
-	void WgTextTool::clearUnderlined( WgChar * pChar, Uint32 nb )
+	void TextTool::clearUnderlined( Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropUnderlinedModifier(false), pChar, nb );
 	}
 	
-	void WgTextTool::clearUnderlined( WgChar * pChar, Uint32 nb, WgState state )
+	void TextTool::clearUnderlined( Char * pChar, Uint32 nb, State state )
 	{
 		modifyProperties( PropStateUnderlinedModifier(false,state), pChar, nb );
 	}
 	
 	//____ setBreakLevel() ________________________________________________________
 	
-	void WgTextTool::setBreakLevel( int breakLevel, WgChar * pChar, Uint32 nb )
+	void TextTool::setBreakLevel( int breakLevel, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropBreakLevelModifier(breakLevel), pChar, nb );
 	}
 	
 	//____ setLink() ______________________________________________________________
 	
-	void WgTextTool::setLink( const WgTextLink_p& pLink, WgChar * pChar, Uint32 nb )
+	void TextTool::setLink( const TextLink_p& pLink, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropLinkModifier(pLink), pChar, nb );
 	}
@@ -2731,14 +2731,14 @@ namespace wg
 	
 	//____ setFont() ______________________________________________________________
 	
-	void WgTextTool::setFont( const WgFont_p& pFont, WgChar * pChar, Uint32 nb )
+	void TextTool::setFont( const Font_p& pFont, Char * pChar, Uint32 nb )
 	{
 		modifyProperties( PropFontModifier(pFont), pChar, nb );
 	}
 	
 	//____ setGlyph() ______________________________________________________________
 	
-	void WgTextTool::setGlyph( Uint16 glyph, WgChar * pChar, Uint32 nb )
+	void TextTool::setGlyph( Uint16 glyph, Char * pChar, Uint32 nb )
 	{
 		for( unsigned int i = 0 ; i < nb ; i++ )
 			pChar[i].glyph = glyph;
@@ -2746,7 +2746,7 @@ namespace wg
 	
 	//____ setChars() ______________________________________________________________
 	
-	void WgTextTool::setChars( const WgChar& ch, WgChar * pChar, Uint32 nb )
+	void TextTool::setChars( const Char& ch, Char * pChar, Uint32 nb )
 	{
 		derefProps( pChar, nb );
 	
@@ -2754,14 +2754,14 @@ namespace wg
 			pChar[i].all = ch.all;
 	
 		if( ch.propHandle() != 0 )
-			WgTextpropManager::incRef( ch.propHandle(), nb );
+			TextpropManager::incRef( ch.propHandle(), nb );
 	}
 	
 	
 	
 	//____ setProperties() ________________________________________________________
 	
-	void WgTextTool::setProperties( const WgTextprop_p& pProp, WgChar * pChar, Uint32 nb )
+	void TextTool::setProperties( const Textprop_p& pProp, Char * pChar, Uint32 nb )
 	{
 		Uint32		refCnt = 0;
 		Uint32		refCntTotal = 0;
@@ -2775,7 +2775,7 @@ namespace wg
 				if( refCnt != 0 )
 				{
 					if( old_prop != 0 )
-						WgTextpropManager::decRef( old_prop, refCnt );
+						TextpropManager::decRef( old_prop, refCnt );
 	
 					refCntTotal += refCnt;
 					refCnt = 0;
@@ -2788,15 +2788,15 @@ namespace wg
 		}
 	
 		if( refCnt != 0 && old_prop != 0 )
-			WgTextpropManager::decRef( old_prop, refCnt );
+			TextpropManager::decRef( old_prop, refCnt );
 	
 		if( new_prop != 0 )
-			WgTextpropManager::incRef( new_prop, refCntTotal + refCnt );
+			TextpropManager::incRef( new_prop, refCntTotal + refCnt );
 	}
 	
 	//____ modifyProperties() __________________________________________________________
 	
-	void WgTextTool::modifyProperties( const PropModifier& modif, WgChar * pChar, Uint32 nb  )
+	void TextTool::modifyProperties( const PropModifier& modif, Char * pChar, Uint32 nb  )
 	{
 		Uint32		refCnt = 0;
 		Uint16		old_prop = 0xFFFF;
@@ -2811,18 +2811,18 @@ namespace wg
 					// Increase first, in case they are the same...
 	
 					if( new_prop != 0 )
-						WgTextpropManager::incRef( new_prop, refCnt );
+						TextpropManager::incRef( new_prop, refCnt );
 	
 					if( old_prop != 0 )
-						WgTextpropManager::decRef( old_prop, refCnt );
+						TextpropManager::decRef( old_prop, refCnt );
 	
 					refCnt = 0;
 				}
 				old_prop = pChar[i].properties;
 	
-				WgTextprop prop = WgTextpropManager::getProp(pChar[i].properties);
+				Textprop prop = TextpropManager::getProp(pChar[i].properties);
 				modif.modify( prop );
-				new_prop = WgTextpropManager::registerProp(prop);
+				new_prop = TextpropManager::registerProp(prop);
 			}
 	
 			pChar[i].properties = new_prop;
@@ -2832,17 +2832,17 @@ namespace wg
 		if( refCnt != 0 )
 		{
 			if( new_prop != 0 )
-				WgTextpropManager::incRef( new_prop, refCnt );
+				TextpropManager::incRef( new_prop, refCnt );
 	
 			if( old_prop != 0 )
-				WgTextpropManager::decRef( old_prop, refCnt );
+				TextpropManager::decRef( old_prop, refCnt );
 		}
 	}
 	
 	
 	//____ addPropAttributes() ________________________________________________________
 	
-	void WgTextTool::addPropAttributes( WgTextAttr& attr, const WgTextprop_p& pProp, WgState state )
+	void TextTool::addPropAttributes( TextAttr& attr, const Textprop_p& pProp, State state )
 	{
 		if( !pProp )
 			return;
@@ -2877,7 +2877,7 @@ namespace wg
 	/*
 	//____ setAttrColor() _______________________________________________________
 	
-	void WgTextTool::setAttrColor( WgTextAttr& attr, const WgColorsetPtr& pColors, WgState state )
+	void TextTool::setAttrColor( TextAttr& attr, const ColorsetPtr& pColors, State state )
 	{
 		if( !pColors )
 			return;
@@ -2888,47 +2888,47 @@ namespace wg
 	
 	//____ getCursor() ____________________________________________________________
 	
-	WgCaret_p WgTextTool::getCursor( const WgLegacyTextField * pText )
+	Caret_p TextTool::getCursor( const LegacyTextField * pText )
 	{
-		WgCaret_p p = pText->cursorSkin();
+		Caret_p p = pText->cursorSkin();
 		if( p )
 			return p;
 	
-		return WgBase::getDefaultCursor();
+		return Base::getDefaultCursor();
 	}
 	
 	//____ getSelectionProperties() _______________________________________________
 	
-	WgTextprop_p WgTextTool::getSelectionProperties( const WgLegacyTextField * pText )
+	Textprop_p TextTool::getSelectionProperties( const LegacyTextField * pText )
 	{
-		WgTextprop_p p = pText->selectionProperties();
+		Textprop_p p = pText->selectionProperties();
 		if( p )
 			return p;
 	
-		return WgBase::getDefaultSelectionProp();
+		return Base::getDefaultSelectionProp();
 	}
 	
 	//____ getLinkProperties() ____________________________________________________
 	
-	WgTextprop_p WgTextTool::getLinkProperties( const WgLegacyTextField * pText )
+	Textprop_p TextTool::getLinkProperties( const LegacyTextField * pText )
 	{
-		WgTextprop_p p = pText->linkProperties();
+		Textprop_p p = pText->linkProperties();
 		if( p )
 			return p;
 	
-		return WgBase::getDefaultLinkProp();
+		return Base::getDefaultLinkProp();
 	}
 	
 	//____ TextpropEncoder::Constructor ___________________________________________
 	
-	WgTextTool::TextpropEncoder::TextpropEncoder( const WgResDB * pResDB )
+	TextTool::TextpropEncoder::TextpropEncoder( const ResDB * pResDB )
 	{
 		m_pResDB = pResDB;
 	}
 	
 	//____ TextpropEncoder::beginString() _________________________________________
 	
-	Uint32 WgTextTool::TextpropEncoder::beginString()
+	Uint32 TextTool::TextpropEncoder::beginString()
 	{
 		m_bColorTagOpen = false;
 		m_bStyleTagOpen = false;
@@ -2943,7 +2943,7 @@ namespace wg
 	
 	//____ TextpropEncoder::setProp() _____________________________________________
 	
-	Uint32 WgTextTool::TextpropEncoder::setProp( const WgTextprop_p& pNewProp )
+	Uint32 TextTool::TextpropEncoder::setProp( const Textprop_p& pNewProp )
 	{
 		Uint32 i = 0;
 	
@@ -2996,10 +2996,10 @@ namespace wg
 					// Fourthly, look for the first possible match which can be combined with style/color/size/underline settings
 					// to make a perfect match.
 	
-					WgResDB::TextpropRes * pRes = m_pResDB->getFirstResTextprop();
+					ResDB::TextpropRes * pRes = m_pResDB->getFirstResTextprop();
 					while( pRes )
 					{
-						WgTextprop_p pProp = pRes->res;
+						Textprop_p pProp = pRes->res;
 	
 						if( pNewProp->font() == pProp->font() && pNewProp->link() == pProp->link() &&
 							((pNewProp->isColored() && pNewProp->isColorStatic()) || pNewProp->compareColorTo( pProp )) &&
@@ -3050,7 +3050,7 @@ namespace wg
 	
 		if( !m_bColorTagOpen && pNewProp->isColored() && !pNewProp->compareColorTo( m_pBaseProp ) )
 		{
-			WgColor col = pNewProp->color();
+			Color col = pNewProp->color();
 			i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 			m_temp[i++] = '{';
 	
@@ -3172,7 +3172,7 @@ namespace wg
 	
 	//____ TextpropEncoder::endString() ___________________________________________
 	
-	Uint32 WgTextTool::TextpropEncoder::endString()
+	Uint32 TextTool::TextpropEncoder::endString()
 	{
 		Uint32 i = 0;
 	

@@ -31,40 +31,40 @@
 namespace wg 
 {
 	
-	class WgPatches
+	class Patches
 	{
 	public:
 		
-		WgPatches();
-		WgPatches( int startCapacity );
-		WgPatches( WgRect * pArray, int capacity );
-		~WgPatches();
+		Patches();
+		Patches( int startCapacity );
+		Patches( Rect * pArray, int capacity );
+		~Patches();
 	
 		bool			setCapacity( int capacity );
-		bool			setArray( WgRect * pArray, int capacity );
+		bool			setArray( Rect * pArray, int capacity );
 	
-		inline void		add( const WgRect& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
-		void			add( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
+		inline void		add( const Rect& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
+		void			add( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 		
-		void			sub( const WgRect& rect );											// Subtracts the area
-		void			sub( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
+		void			sub( const Rect& rect );											// Subtracts the area
+		void			sub( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 	
-		inline void		push( const WgRect& rect );											// Adds the rect (no optimizations, overlap may occur).
-		int				push( const WgPatches * pSource, int ofs = 0, int len = INT_MAX );
-		inline WgRect	pop();																// Pops last rect from the patches.
+		inline void		push( const Rect& rect );											// Adds the rect (no optimizations, overlap may occur).
+		int				push( const Patches * pSource, int ofs = 0, int len = INT_MAX );
+		inline Rect	pop();																// Pops last rect from the patches.
 	
 		void			remove( int ofs );													// Deletes specific rect from the patches.
 		int				remove( int ofs, int len );											// Deletes range of rects from the patches.
 	
 		inline void		clear() { m_size = 0; }
-		void			clip( const WgRect& clip );
-		WgRect			getUnion() const;
+		void			clip( const Rect& clip );
+		Rect			getUnion() const;
 	
 		int				repair();															// Fixes any overlap that might have resulted from push()
 		int				optimize();															// Combines small patches into larger ones where possible
 	
-		const WgRect *	begin() const { return m_pFirst; }
-		const WgRect *	end() const { return m_pFirst + m_size; }
+		const Rect *	begin() const { return m_pFirst; }
+		const Rect *	end() const { return m_pFirst + m_size; }
 		int				size() const { return m_size; }
 		int				capacity() const { return m_capacity; }
 		bool			isEmpty() const { return (m_size == 0); }
@@ -72,10 +72,10 @@ namespace wg
 	private:
 		const static int	c_defaultCapacity = 64;
 	
-		void		_add( const WgRect& rect, int startOffset );
+		void		_add( const Rect& rect, int startOffset );
 		void		_expandMem( int spaceNeeded );
 	
-		WgRect * 	m_pFirst;
+		Rect * 	m_pFirst;
 		int			m_size;
 		int			m_capacity;
 		bool		m_bOwnsArray;
@@ -83,19 +83,19 @@ namespace wg
 	
 	
 	
-	void WgPatches::push( const WgRect& rect ) 
+	void Patches::push( const Rect& rect ) 
 	{ 
 		if(m_size==m_capacity)
 			_expandMem(1);
 		m_pFirst[m_size++]=rect;
 	}
 	
-	WgRect WgPatches::pop() 
+	Rect Patches::pop() 
 	{ 
 		if( m_size>0 )
 			return m_pFirst[--m_size];
 		else
-			return WgRect(); 
+			return Rect(); 
 	}
 	
 	

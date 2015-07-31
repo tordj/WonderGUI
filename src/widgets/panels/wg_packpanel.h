@@ -33,41 +33,41 @@
 namespace wg 
 {
 	
-	class WgPackPanel;
-	typedef	WgStrongPtr<WgPackPanel,WgVectorPanel_p>		WgPackPanel_p;
-	typedef	WgWeakPtr<WgPackPanel,WgVectorPanel_wp>	WgPackPanel_wp;
+	class PackPanel;
+	typedef	WgStrongPtr<PackPanel,VectorPanel_p>		PackPanel_p;
+	typedef	WgWeakPtr<PackPanel,VectorPanel_wp>	PackPanel_wp;
 	
-	class WgPackHook;
-	typedef	WgHookTypePtr<WgPackHook,WgVectorHook_p>	WgPackHook_p;
+	class PackHook;
+	typedef	HookTypePtr<PackHook,VectorHook_p>	PackHook_p;
 	
-	class WgPackHook : public WgVectorHook
+	class PackHook : public VectorHook
 	{
-		friend class WgPackPanel;
+		friend class PackPanel;
 	
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgPackHook_p	cast( const WgHook_p& pInterface );
+		static PackHook_p	cast( const Hook_p& pInterface );
 		
 		bool	setWeight( float weight );
 		float	weight() { return m_weight; }
 	
-		WgPackHook_p	prev() const { return _prev(); }
-		WgPackHook_p	next() const { return _next(); }
-		WgPackPanel_p	parent() const;
+		PackHook_p	prev() const { return _prev(); }
+		PackHook_p	next() const { return _next(); }
+		PackPanel_p	parent() const;
 	
 	protected:
-		PROTECTED_LINK_METHODS( WgPackHook );
+		PROTECTED_LINK_METHODS( PackHook );
 	
-		WgPackHook( WgPackPanel * pParent );
+		PackHook( PackPanel * pParent );
 	
-		WgContainer * _parent() const;
+		Container * _parent() const;
 		
 		float			m_weight;			// Weight for space allocation.
-		WgRect			m_geo;				// Real geo of child (no padding included).
-		WgSize			m_preferredSize;	// Cached padded preferred size from the child.
-		WgPackPanel *	m_pParent;
+		Rect			m_geo;				// Real geo of child (no padding included).
+		Size			m_preferredSize;	// Cached padded preferred size from the child.
+		PackPanel *	m_pParent;
 	};
 	
 	
@@ -77,81 +77,81 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class WgPackPanel : public WgVectorPanel
+	class PackPanel : public VectorPanel
 	{
-		friend class WgPackHook;
+		friend class PackHook;
 	
 	public:
-		static WgPackPanel_p	create() { return WgPackPanel_p(new WgPackPanel()); }
+		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 		
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgPackPanel_p	cast( const WgObject_p& pObject );
+		static PackPanel_p	cast( const Object_p& pObject );
 	
-		inline WgPackHook_p addWidget( const WgWidget_p& pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline WgPackHook_p insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
+		inline PackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<PackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
+		inline PackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<PackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 	    
 		void			setOrientation( WgOrientation orientaiton );
 		WgOrientation	orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 		
-		WgPackHook_p	firstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
-		WgPackHook_p	lastHook() const { return static_cast<WgPackHook*>(_lastHook()); }
+		PackHook_p	firstHook() const { return static_cast<PackHook*>(_firstHook()); }
+		PackHook_p	lastHook() const { return static_cast<PackHook*>(_lastHook()); }
 	
-		void			setSizeBroker( const WgSizeBroker_p& pBroker );
-		WgSizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
+		void			setSizeBroker( const SizeBroker_p& pBroker );
+		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 	
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 	
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 		
 	protected:
-		WgPackPanel();
-		virtual ~WgPackPanel();
-		virtual WgWidget* _newOfMyType() const { return new WgPackPanel(); };
+		PackPanel();
+		virtual ~PackPanel();
+		virtual Widget* _newOfMyType() const { return new PackPanel(); };
 	
 	    // Overloaded from Widget
 	    
-		void			_onNewSize( const WgSize& size );
+		void			_onNewSize( const Size& size );
 	 
 	    
 		// Overloaded from Container
 		
-		WgHook*			_firstHookWithGeo( WgRect& geo ) const;
-		WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook*			_firstHookWithGeo( Rect& geo ) const;
+		Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 		
-		WgHook*			_lastHookWithGeo( WgRect& geo ) const;
-		WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook*			_lastHookWithGeo( Rect& geo ) const;
+		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 		
 		
 		// Overloaded from VectorPanel
 		
-		WgRect			_hookGeo( const WgVectorHook * pHook );
-		void			_onResizeRequested( WgVectorHook * pHook );
-		void			_onRenderRequested( WgVectorHook * pHook );
-		void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
-		void			_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
-		void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+		Rect			_hookGeo( const VectorHook * pHook );
+		void			_onResizeRequested( VectorHook * pHook );
+		void			_onRenderRequested( VectorHook * pHook );
+		void			_onRenderRequested( VectorHook * pHook, const Rect& rect );
+		void			_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.
+		void			_onWidgetDisappeared( VectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 		void			_onWidgetsReordered();
 		void			_refreshAllWidgets();
-		WgVectorHook *	_newHook();
+		VectorHook *	_newHook();
 		
 		//
 		
-		inline WgPackHook *	_firstHook() const { return static_cast<WgPackHook*>(m_hooks.first()); }
-		inline WgPackHook *	_lastHook() const { return static_cast<WgPackHook*>(m_hooks.last()); }
+		inline PackHook *	_firstHook() const { return static_cast<PackHook*>(m_hooks.first()); }
+		inline PackHook *	_lastHook() const { return static_cast<PackHook*>(m_hooks.last()); }
 	
 	
 		void			_refreshChildGeo();
 		void			_updatePreferredSize();
-		int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const;
-		int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const;
+		int				_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
+		int				_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
 	
 	
 		bool			m_bHorizontal;
-		WgSizeBroker_p	m_pSizeBroker;
-		WgSize			m_preferredSize;
+		SizeBroker_p	m_pSizeBroker;
+		Size			m_preferredSize;
 	
 	};
 	

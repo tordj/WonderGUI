@@ -43,52 +43,52 @@ namespace wg
 {
 	
 	
-	class	WgCaretInstance;
-	class	WgFont;
-	class	WgTextManager;
+	class	CaretInstance;
+	class	Font;
+	class	TextManager;
 	
-	class WgValueEditor;
-	typedef	WgStrongPtr<WgValueEditor,WgWidget_p>		WgValueEditor_p;
-	typedef	WgWeakPtr<WgValueEditor,WgWidget_wp>	WgValueEditor_wp;
+	class ValueEditor;
+	typedef	WgStrongPtr<ValueEditor,Widget_p>		ValueEditor_p;
+	typedef	WgWeakPtr<ValueEditor,Widget_wp>	ValueEditor_wp;
 	
-	class WgValueEditor : public WgWidget, public Wg_Interface_ValueHolder, protected WgLegacyTextHolder
+	class ValueEditor : public Widget, public _Interface_ValueHolder, protected LegacyTextHolder
 	{
 	public:
-		static WgValueEditor_p	create() { return WgValueEditor_p(new WgValueEditor()); }
+		static ValueEditor_p	create() { return ValueEditor_p(new ValueEditor()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgValueEditor_p	cast( const WgObject_p& pObject );
+		static ValueEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgLegacyText	text;
+		LegacyText	text;
 	
 	
 		//____ Methods __________________________________________
 	
 		bool	setMaxInputChars( int max );
 		int		maxInputChars() const { return m_maxInputChars; }
-		void	setFormat( const WgValueFormat_p& pFormat );
-		WgValueFormat_p format() const { return m_pFormat; }
+		void	setFormat( const ValueFormat_p& pFormat );
+		ValueFormat_p format() const { return m_pFormat; }
 		void	clear();									// Sets value to 0 and clears input field.
 	
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgValueEditor();
-		virtual ~WgValueEditor();
-		virtual WgWidget* _newOfMyType() const { return new WgValueEditor(); };
+		ValueEditor();
+		virtual ~ValueEditor();
+		virtual Widget* _newOfMyType() const { return new ValueEditor(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onMsg( const WgMsg_p& pMsg );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onMsg( const Msg_p& pMsg );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 		void	_onRefresh();
 	
-		WgWidget*	_getWidget() { return this; }
+		Widget*	_getWidget() { return this; }
 	
 	private:
 		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.
@@ -97,22 +97,22 @@ namespace wg
 		void	_valueModified();				///< Called when value has been modified.
 		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 	
-		WgObject * _object() { return this; }
-		void	_onFieldDirty( WgField * pField );
-		void	_onFieldResize( WgField * pField );
+		Object * _object() { return this; }
+		void	_onFieldDirty( Field * pField );
+		void	_onFieldResize( Field * pField );
 	
 		bool	_parseValueFromInput( int64_t * wpResult );
 	
 		void	_regenText();
 	
 		bool				m_bRegenText;
-		WgValueFormat_p	m_pFormat;			///< Value format specified by user
-		WgValueFormat_p	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-		WgLegacyTextField			m_text;
+		ValueFormat_p	m_pFormat;			///< Value format specified by user
+		ValueFormat_p	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
+		LegacyTextField			m_text;
 		int					m_buttonDownOfs;
 		bool				m_bSelectAllOnRelease;
 		int					m_maxInputChars;
-		WgCoord				m_viewOfs;
+		Coord				m_viewOfs;
 		WgRouteId			m_tickRouteId;
 	};
 	

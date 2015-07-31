@@ -26,39 +26,39 @@
 namespace wg 
 {
 	
-	const char WgValue::CLASSNAME[] = {"Value"};
+	const char Value::CLASSNAME[] = {"Value"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgValue::isInstanceOf( const char * pClassName ) const
+	bool Value::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgValue::className( void ) const
+	const char * Value::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgValue_p WgValue::cast( const WgInterface_p& pInterface )
+	Value_p Value::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgValue_p( pInterface.getRealObjectPtr(), static_cast<WgValue*>( pInterface.rawPtr()) );
+			return Value_p( pInterface.getRealObjectPtr(), static_cast<Value*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _object() _______________________________________________________________
 	
-	WgObject * WgValue::_object() const
+	Object * Value::_object() const
 	{
 		return m_pField->_object();
 	}

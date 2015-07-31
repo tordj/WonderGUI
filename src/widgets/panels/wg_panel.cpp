@@ -33,38 +33,38 @@
 namespace wg 
 {
 	
-	const char WgPanel::CLASSNAME[] = {"Panel"};
-	const char WgPanelHook::CLASSNAME[] = {"PanelHook"};
+	const char Panel::CLASSNAME[] = {"Panel"};
+	const char PanelHook::CLASSNAME[] = {"PanelHook"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgPanel::WgPanel() : m_bFocusGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
+	Panel::Panel() : m_bFocusGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgPanel::isInstanceOf( const char * pClassName ) const
+	bool Panel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgContainer::isInstanceOf(pClassName);
+		return Container::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgPanel::className( void ) const
+	const char * Panel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgPanel_p WgPanel::cast( const WgObject_p& pObject )
+	Panel_p Panel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgPanel_p( static_cast<WgPanel*>(pObject.rawPtr()) );
+			return Panel_p( static_cast<Panel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,14 +72,14 @@ namespace wg
 	
 	//____ _isPanel() ______________________________________________________________
 	
-	bool WgPanel::_isPanel() const
+	bool Panel::_isPanel() const
 	{
 		return true;
 	}
 	
 	//____ setMaskOp() _____________________________________________________________
 	
-	void WgPanel::setMaskOp( WgMaskOp operation )
+	void Panel::setMaskOp( WgMaskOp operation )
 	{
 		if( operation != m_maskOp )
 		{
@@ -90,26 +90,26 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgPanel::_onCloneContent( const WgWidget * _pOrg )
+	void Panel::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgPanel * pOrg = static_cast<const WgPanel*>(_pOrg);
+		const Panel * pOrg = static_cast<const Panel*>(_pOrg);
 	
 		m_bFocusGroup 		= pOrg->m_bFocusGroup;
 		m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
 		m_maskOp 			= pOrg->m_maskOp;
 	
-		WgContainer::_onCloneContent( pOrg );
+		Container::_onCloneContent( pOrg );
 	}
 	
 	
 	//____ _onMaskPatches() __________________________________________________________
 	
-	void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+	void Panel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 		{
-			patches.sub( WgRect(geo,clip) );
+			patches.sub( Rect(geo,clip) );
 			return;
 		}
 		
@@ -117,63 +117,63 @@ namespace wg
 		{
 			case WG_MASKOP_RECURSE:
 			{
-				WgRect childGeo;
-				WgPanelHook * p = static_cast<WgPanelHook*>(_firstHookWithGeo( childGeo ));
+				Rect childGeo;
+				PanelHook * p = static_cast<PanelHook*>(_firstHookWithGeo( childGeo ));
 	
 				while(p)
 				{
 					if( p->isVisible() )
 						p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-					p = static_cast<WgPanelHook*>(_nextHookWithGeo( childGeo, p ));
+					p = static_cast<PanelHook*>(_nextHookWithGeo( childGeo, p ));
 				}
 				break;
 			}
 			case WG_MASKOP_SKIP:
 				break;
 			case WG_MASKOP_MASK:
-				patches.sub( WgRect(geo,clip) );
+				patches.sub( Rect(geo,clip) );
 				break;
 		}
 	}
 	
-	//____ WgPanelHook::isInstanceOf() __________________________________________
+	//____ PanelHook::isInstanceOf() __________________________________________
 	
-	bool WgPanelHook::isInstanceOf( const char * pClassName ) const
+	bool PanelHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgHook::isInstanceOf(pClassName);
+		return Hook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgPanelHook::className() _____________________________________________
+	//____ PanelHook::className() _____________________________________________
 	
-	const char * WgPanelHook::className( void ) const
+	const char * PanelHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgPanelHook::cast() __________________________________________________
+	//____ PanelHook::cast() __________________________________________________
 	
-	WgPanelHook_p WgPanelHook::cast( const WgHook_p& pHook )
+	PanelHook_p PanelHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgPanelHook_p( static_cast<WgPanelHook*>(pHook.rawPtr()) );
+			return PanelHook_p( static_cast<PanelHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
-	//____ WgPanelHook::parent() __________________________________________________
+	//____ PanelHook::parent() __________________________________________________
 	
-	WgPanel_p WgPanelHook::parent() const 
+	Panel_p PanelHook::parent() const 
 	{ 
-		return static_cast<WgPanel*>(_parent()); 
+		return static_cast<Panel*>(_parent()); 
 	}
 	
 	
-	//____ WgPanelHook::setVisible() _____________________________________________________________
+	//____ PanelHook::setVisible() _____________________________________________________________
 	
-	bool WgPanelHook::setVisible( bool bVisible )
+	bool PanelHook::setVisible( bool bVisible )
 	{
 		if( bVisible != m_bVisible )
 		{
@@ -191,9 +191,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgPanelHook::setPadding() ______________________________________________
+	//____ PanelHook::setPadding() ______________________________________________
 	
-	bool WgPanelHook::setPadding( WgBorder padding )
+	bool PanelHook::setPadding( Border padding )
 	{
 		if( padding != m_padding )
 		{
@@ -203,13 +203,13 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgPanelHook::_sizeFromPolicy() ________________________________________________________
+	//____ PanelHook::_sizeFromPolicy() ________________________________________________________
 	
-	WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const
+	Size PanelHook::_sizeFromPolicy( Size specifiedSize, SizePolicy widthPolicy, SizePolicy heightPolicy ) const
 	{
-		WgSize	defaultSize = _paddedPreferredSize();
+		Size	defaultSize = _paddedPreferredSize();
 	
-		WgSize	sz;
+		Size	sz;
 	
 		switch( widthPolicy )
 		{
@@ -256,27 +256,27 @@ namespace wg
 		return sz;
 	}
 	
-	WgSize WgPanelHook::_paddedPreferredSize() const
+	Size PanelHook::_paddedPreferredSize() const
 	{
 		return m_pWidget->preferredSize() + m_padding;
 	}
 	
-	WgSize WgPanelHook::_paddedMinSize() const
+	Size PanelHook::_paddedMinSize() const
 	{
 		return m_pWidget->minSize() + m_padding;
 	}
 	
-	WgSize WgPanelHook::_paddedMaxSize() const
+	Size PanelHook::_paddedMaxSize() const
 	{
 		return m_pWidget->maxSize() + m_padding;
 	}
 	
-	int WgPanelHook::_paddedMatchingWidth( int paddedHeight ) const
+	int PanelHook::_paddedMatchingWidth( int paddedHeight ) const
 	{
 		return m_pWidget->matchingWidth( paddedHeight - m_padding.height() ) + m_padding.width();
 	}
 	
-	int WgPanelHook::_paddedMatchingHeight( int paddedWidth ) const
+	int PanelHook::_paddedMatchingHeight( int paddedWidth ) const
 	{
 		return m_pWidget->matchingHeight( paddedWidth - m_padding.width() ) + m_padding.height();
 	}

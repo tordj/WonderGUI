@@ -16,44 +16,44 @@
 namespace wg 
 {
 	
-	class WgVolumeMeter;
-	typedef	WgStrongPtr<WgVolumeMeter,WgWidget_p>		WgVolumeMeter_p;
-	typedef	WgWeakPtr<WgVolumeMeter,WgWidget_wp>	WgVolumeMeter_wp;
+	class VolumeMeter;
+	typedef	WgStrongPtr<VolumeMeter,Widget_p>		VolumeMeter_p;
+	typedef	WgWeakPtr<VolumeMeter,Widget_wp>	VolumeMeter_wp;
 	
-	//____ WgVolumeMeter ____________________________________________________________
+	//____ VolumeMeter ____________________________________________________________
 	
-	class WgVolumeMeter : public WgWidget
+	class VolumeMeter : public Widget
 	{
 	public:
-		static WgVolumeMeter_p	create() { return WgVolumeMeter_p(new WgVolumeMeter()); }
+		static VolumeMeter_p	create() { return VolumeMeter_p(new VolumeMeter()); }
 		
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgVolumeMeter_p	cast( const WgObject_p& pObject );
+		static VolumeMeter_p	cast( const Object_p& pObject );
 		
 		//____ Methods __________________________________________
 		
-		void			setLEDColors( WgColor bottomOn, WgColor middleOn, WgColor topOn, 
-								   WgColor bottomOff, WgColor middleOff, WgColor topOff );
+		void			setLEDColors( Color bottomOn, Color middleOn, Color topOn, 
+								   Color bottomOff, Color middleOff, Color topOff );
 		void			setNbLEDs( int bottomSection, int middleSection, int topSection );
 		void			setLEDSpacing( float spacing );
 		void			setValue( float peak, float hold );
 		void			setDirection( WgDirection direction );
 			
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 		
 	protected:
-		WgVolumeMeter();
-		virtual ~WgVolumeMeter();
-		virtual WgWidget* _newOfMyType() const { return new WgVolumeMeter(); };
+		VolumeMeter();
+		virtual ~VolumeMeter();
+		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
 		
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void			_onStateChanged( WgState oldState );
-		void			_onCloneContent( const WgWidget * _pOrg );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onStateChanged( State oldState );
+		void			_onCloneContent( const Widget * _pOrg );
 		
 		WgDirection		m_direction;
-		WgColor			m_LEDColors[3][2];
+		Color			m_LEDColors[3][2];
 		int				m_nSectionLEDs[3];
 		int				m_nLEDs;
 		float			m_LEDSpacing;

@@ -25,32 +25,32 @@
 namespace wg 
 {
 	
-	const char WgLegacyModText::CLASSNAME[] = {"LegacyModText"};
+	const char LegacyModText::CLASSNAME[] = {"LegacyModText"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgLegacyModText::isInstanceOf( const char * pClassName ) const
+	bool LegacyModText::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgLegacyText::isInstanceOf(pClassName);
+		return LegacyText::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgLegacyModText::className( void ) const
+	const char * LegacyModText::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgLegacyModText_p WgLegacyModText::cast( const WgInterface_p& pInterface )
+	LegacyModText_p LegacyModText::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgLegacyModText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.rawPtr()) );
+			return LegacyModText_p( pInterface.getRealObjectPtr(), static_cast<LegacyModText*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}

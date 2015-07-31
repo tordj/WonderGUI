@@ -31,50 +31,50 @@ namespace wg
 {
 	
 	
-	const char WgImage::CLASSNAME[] = {"Image"};
+	const char Image::CLASSNAME[] = {"Image"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgImage::WgImage() : m_pSurface(0)
+	Image::Image() : m_pSurface(0)
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgImage::~WgImage()
+	Image::~Image()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgImage::isInstanceOf( const char * pClassName ) const
+	bool Image::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgImage::className( void ) const
+	const char * Image::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgImage_p WgImage::cast( const WgObject_p& pObject )
+	Image_p Image::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgImage_p( static_cast<WgImage*>(pObject.rawPtr()) );
+			return Image_p( static_cast<Image*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setImage() _____________________________________________________________
 	
-	void WgImage::setImage( const WgSurface_p& pSurface, const WgRect& rect )
+	void Image::setImage( const Surface_p& pSurface, const Rect& rect )
 	{
 		if( pSurface != m_pSurface || rect != m_rect )
 		{
@@ -85,7 +85,7 @@ namespace wg
 			m_pSurface = pSurface;
 	
 			if( pSurface )
-				m_rect = WgRect( rect, WgRect(pSurface->size()) );
+				m_rect = Rect( rect, Rect(pSurface->size()) );
 			else
 				m_rect.clear();
 	
@@ -95,7 +95,7 @@ namespace wg
 		}
 	}
 	
-	void WgImage::setImage( const WgSurface_p& pSurface )
+	void Image::setImage( const Surface_p& pSurface )
 	{
 		if( pSurface != m_pSurface )
 		{
@@ -120,7 +120,7 @@ namespace wg
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	WgSize WgImage::preferredSize() const
+	Size Image::preferredSize() const
 	{
 		if( m_pSurface )
 		{
@@ -130,14 +130,14 @@ namespace wg
 				return m_rect.size();
 		}
 	
-		return WgWidget::preferredSize();
+		return Widget::preferredSize();
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgImage::_onCloneContent( const WgWidget * _pOrg )
+	void Image::_onCloneContent( const Widget * _pOrg )
 	{
-		WgImage * pOrg = (WgImage*) _pOrg;
+		Image * pOrg = (Image*) _pOrg;
 	
 		m_pSurface	= pOrg->m_pSurface;
 		m_rect		= pOrg->m_rect;
@@ -145,13 +145,13 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Image::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			WgRect dest;
+			Rect dest;
 			if( m_pSkin )
 				dest = m_pSkin->contentRect( _canvas, state() );
 			else
@@ -163,11 +163,11 @@ namespace wg
 	
 	//____ _onAlphaTest() ___________________________________________________________
 	
-	bool WgImage::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Image::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			WgRect dest;
+			Rect dest;
 			if( m_pSkin )
 				dest = m_pSkin->contentRect( sz, state() );
 			else
@@ -177,7 +177,7 @@ namespace wg
 				return true;
 		}
 	
-		return WgWidget::_onAlphaTest(ofs,sz);
+		return Widget::_onAlphaTest(ofs,sz);
 	}
 
 } // namespace wg

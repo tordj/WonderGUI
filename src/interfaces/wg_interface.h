@@ -25,11 +25,11 @@ namespace wg
 {
 	#define WG_INTERFACE_DOT_H
 	
-	class WgInterface_p;
-	class WgInterface_wp;
+	class Interface_p;
+	class Interface_wp;
 	
-	class WgObject;
-	class WgObject_p;
+	class Object;
+	class Object_p;
 	
 	
 	/**
@@ -53,20 +53,20 @@ namespace wg
 	 *
 	 **/
 	
-	class WgInterface
+	class Interface
 	{
-		friend class WgInterface_p;
-		friend class WgInterface_wp;
+		friend class Interface_p;
+		friend class Interface_wp;
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgInterface_p	cast( const WgInterface_p& pInterface );			// Provided just for completeness sake.
-		WgInterface_p			ptr();												///< @brief Get a pointer to this interface.
-		WgObject_p				holder();											///< @breif Get a pointer to the object providing this interface.
+		static Interface_p	cast( const Interface_p& pInterface );			// Provided just for completeness sake.
+		Interface_p			ptr();												///< @brief Get a pointer to this interface.
+		Object_p				holder();											///< @breif Get a pointer to the object providing this interface.
 	
 	protected:
-		virtual WgObject * 		_object() const = 0;
+		virtual Object * 		_object() const = 0;
 	};
 	
 	

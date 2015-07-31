@@ -29,12 +29,12 @@
 namespace wg 
 {
 	
-	template<class H> class WgHookArray
+	template<class H> class HookArray
 	{
 	public:
-		WgHookArray() : m_pArray(0), m_size(0), m_capacity(0) {}
-		WgHookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); }
-		~WgHookArray() { _killBlock( 0, m_size ); free(m_pArray); }
+		HookArray() : m_pArray(0), m_size(0), m_capacity(0) {}
+		HookArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (H*) malloc( sizeof(H)*capacity ); }
+		~HookArray() { _killBlock( 0, m_size ); free(m_pArray); }
 	
 		int		size() const { return m_size; }
 		bool	isEmpty() const { return m_size == 0; }

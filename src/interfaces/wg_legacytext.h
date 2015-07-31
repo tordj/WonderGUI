@@ -54,14 +54,14 @@
 namespace wg 
 {
 	
-	class WgColor;
-	class WgCharSeq;
-	class WgString;
-	class WgCharBuffer;
+	class Color;
+	class CharSeq;
+	class String;
+	class CharBuffer;
 	
-	class WgLegacyText;
-	typedef	WgIStrongPtr<WgLegacyText,WgInterface_p>		WgLegacyText_p;
-	typedef	WgIWeakPtr<WgLegacyText,WgInterface_wp>	WgLegacyText_wp;
+	class LegacyText;
+	typedef	WgIStrongPtr<LegacyText,Interface_p>		LegacyText_p;
+	typedef	WgIWeakPtr<LegacyText,Interface_wp>	LegacyText_wp;
 	
 	/**
 	 * @brief Interface to a basic text field.
@@ -74,28 +74,28 @@ namespace wg
 	 * 
 	 */
 	
-	class WgLegacyText : public WgInterface
+	class LegacyText : public Interface
 	{
 	public:
-		WgLegacyText( WgLegacyTextField * pField ) : m_pField(pField) {};
+		LegacyText( LegacyTextField * pField ) : m_pField(pField) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgLegacyText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-		inline WgLegacyText_p		ptr() { return WgLegacyText_p(_object(),this); }
+		static LegacyText_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline LegacyText_p		ptr() { return LegacyText_p(_object(),this); }
 	
-		inline void				setProperties( const WgTextprop_p& pProp ) { m_pField->setProperties(pProp); }
+		inline void				setProperties( const Textprop_p& pProp ) { m_pField->setProperties(pProp); }
 		inline void				clearProperties() { m_pField->clearProperties(); }
-		inline WgTextprop_p	properties() const { return m_pField->properties(); }
+		inline Textprop_p	properties() const { return m_pField->properties(); }
 	
-		inline void				setSelectionProperties( const WgTextprop_p& pProp ) { m_pField->setSelectionProperties(pProp); }
+		inline void				setSelectionProperties( const Textprop_p& pProp ) { m_pField->setSelectionProperties(pProp); }
 		inline void				clearSelectionProperties() { m_pField->clearSelectionProperties(); }
-		inline WgTextprop_p	selectionProperties() const { return m_pField->selectionProperties(); }
+		inline Textprop_p	selectionProperties() const { return m_pField->selectionProperties(); }
 	
-		inline void				setLinkProperties( const WgTextprop_p& pProp ) { m_pField->setLinkProperties(pProp); }
+		inline void				setLinkProperties( const Textprop_p& pProp ) { m_pField->setLinkProperties(pProp); }
 		inline void				clearLinkProperties() { m_pField->clearLinkProperties(); }
-		inline WgTextprop_p	linkProperties() const { return m_pField->linkProperties(); }
+		inline Textprop_p	linkProperties() const { return m_pField->linkProperties(); }
 	
 		inline void				setAlignment( WgOrigo alignment ) { m_pField->setAlignment(alignment); }
 		inline WgOrigo			alignment() const { return m_pField->alignment(); }
@@ -112,15 +112,15 @@ namespace wg
 		inline void				setAutoEllipsis(bool bAutoEllipsis) { m_pField->setAutoEllipsis(bAutoEllipsis); }
 		inline bool				autoEllipsis() const { return m_pField->autoEllipsis(); }
 	
-		inline WgState			state() const { return m_pField->state(); }
+		inline State			state() const { return m_pField->state(); }
 		inline int				lines() const { return m_pField->lines(); }
 		inline int				length() const { return m_pField->length(); }
 		inline bool				isEmpty() const { return m_pField->isEmpty(); }
 	
 	protected:
-		WgObject *				_object() const;
+		Object *				_object() const;
 	
-		WgLegacyTextField * 			m_pField;
+		LegacyTextField * 			m_pField;
 	};
 	
 	

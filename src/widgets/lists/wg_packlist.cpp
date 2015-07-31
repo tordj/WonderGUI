@@ -28,115 +28,115 @@
 namespace wg 
 {
 	
-	const char WgPackList::CLASSNAME[] = {"PackList"};
-	const char WgPackListHook::CLASSNAME[] = {"PackListHook"};
+	const char PackList::CLASSNAME[] = {"PackList"};
+	const char PackListHook::CLASSNAME[] = {"PackListHook"};
 	
 	
-	//____ WgPackListHook::isInstanceOf() __________________________________________
+	//____ PackListHook::isInstanceOf() __________________________________________
 	
-	bool WgPackListHook::isInstanceOf( const char * pClassName ) const
+	bool PackListHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgListHook::isInstanceOf(pClassName);
+		return ListHook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgPackListHook::className() _____________________________________________
+	//____ PackListHook::className() _____________________________________________
 	
-	const char * WgPackListHook::className( void ) const
+	const char * PackListHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgPackListHook::cast() ________________________________________________
+	//____ PackListHook::cast() ________________________________________________
 	
-	WgPackListHook_p WgPackListHook::cast( const WgHook_p& pHook )
+	PackListHook_p PackListHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgPackListHook_p( static_cast<WgPackListHook*>(pHook.rawPtr()) );
+			return PackListHook_p( static_cast<PackListHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ WqPackListHook::pos() _________________________________________________
 	
-	WgCoord WgPackListHook::pos() const
+	Coord PackListHook::pos() const
 	{
-		WgRect	geo;
+		Rect	geo;
 		m_pParent->_getChildGeo(geo,this);
 		return geo.pos();
 	}
 	
-	WgSize WgPackListHook::size() const
+	Size PackListHook::size() const
 	{
-		WgRect	geo;
+		Rect	geo;
 		m_pParent->_getChildGeo(geo,this);
 		return geo.size();
 	}
 	
-	WgRect WgPackListHook::geo() const
+	Rect PackListHook::geo() const
 	{
-		WgRect	geo;
+		Rect	geo;
 		m_pParent->_getChildGeo(geo,this);
 		return geo;
 	}
 	
-	WgCoord WgPackListHook::globalPos() const
+	Coord PackListHook::globalPos() const
 	{
-		WgRect	geo;
+		Rect	geo;
 		m_pParent->_getChildGeo(geo,this);
 		return m_pParent->globalPos() + geo.pos();
 	}
 	
-	WgRect WgPackListHook::globalGeo() const
+	Rect PackListHook::globalGeo() const
 	{
-		WgRect	geo;
+		Rect	geo;
 		m_pParent->_getChildGeo(geo,this);
 		return geo + globalPos();
 	}
 	
 	
-	void WgPackListHook::_requestRender()
+	void PackListHook::_requestRender()
 	{
 		m_pParent->_onRequestRender(this);
 	}
 	
-	void WgPackListHook::_requestRender( const WgRect& rect )
+	void PackListHook::_requestRender( const Rect& rect )
 	{
 		m_pParent->_onRequestRender(this, rect);
 	}
 	
-	void WgPackListHook::_requestResize()
+	void PackListHook::_requestResize()
 	{
 		m_pParent->_onRequestResize(this);
 	}
 	
-	WgHook *  WgPackListHook::_prevHook() const
+	Hook *  PackListHook::_prevHook() const
 	{
 		return m_pParent->m_hooks.prev(this);
 	}
 	
-	WgHook *  WgPackListHook::_nextHook() const
+	Hook *  PackListHook::_nextHook() const
 	{
 		return m_pParent->m_hooks.next(this);
 	}
 	
-	WgContainer *  WgPackListHook::_parent() const
+	Container *  PackListHook::_parent() const
 	{
 		return m_pParent;
 	}
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgPackList::WgPackList() : m_header(this), header(&m_header)
+	PackList::PackList() : m_header(this), header(&m_header)
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
 		m_sortOrder = WG_SORT_ASCENDING;
 		m_pSortFunc = 0;
 	
-		m_maxEntrySize = WgSize(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
+		m_maxEntrySize = Size(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 	
 		m_contentBreadth = 0;
 		m_contentLength = 0;
@@ -147,45 +147,45 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgPackList::~WgPackList()
+	PackList::~PackList()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgPackList::isInstanceOf( const char * pClassName ) const
+	bool PackList::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgList::isInstanceOf(pClassName);
+		return List::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgPackList::className( void ) const
+	const char * PackList::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgPackList_p WgPackList::cast( const WgObject_p& pObj )
+	PackList_p PackList::cast( const Object_p& pObj )
 	{
 		if( pObj && pObj->isInstanceOf(CLASSNAME) )
-			return WgPackList_p( static_cast<WgPackList*>(pObj.rawPtr()) );
+			return PackList_p( static_cast<PackList*>(pObj.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ addWidget() ____________________________________________________________
 	
-	WgPackListHook_p WgPackList::addWidget( const WgWidget_p& pWidget )
+	PackListHook_p PackList::addWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgPackListHook * pHook = m_hooks.add();
+		PackListHook * pHook = m_hooks.add();
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
 	
@@ -196,7 +196,7 @@ namespace wg
 	
 	//____ insertWidget() ____________________________________________________________
 	
-	WgPackListHook_p WgPackList::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling )
+	PackListHook_p PackList::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling )
 	{
 		if( !pWidget )
 			return 0;
@@ -206,14 +206,14 @@ namespace wg
 			index = m_hooks.size();
 		else 
 		{
-			WgPackListHook * pHook = static_cast<WgPackListHook*>(pSibling->_hook());
+			PackListHook * pHook = static_cast<PackListHook*>(pSibling->_hook());
 			if( pHook && pHook->_parent() == this )
 				index = m_hooks.index(pHook);
 			else
 				return 0;
 		}
 	
-		WgPackListHook * pHook = m_hooks.insert(index);
+		PackListHook * pHook = m_hooks.insert(index);
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
 	
@@ -223,7 +223,7 @@ namespace wg
 	
 	//____ insertWidgetSorted() ___________________________________________________
 	
-	WgPackListHook_p WgPackList::insertWidgetSorted( const WgWidget_p& pWidget )
+	PackListHook_p PackList::insertWidgetSorted( const Widget_p& pWidget )
 	{
 		if( !pWidget )
 			return 0;
@@ -233,7 +233,7 @@ namespace wg
 	
 		int index = _getInsertionPoint( pWidget.rawPtr() );
 	
-		WgPackListHook * pHook = m_hooks.insert(index);
+		PackListHook * pHook = m_hooks.insert(index);
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
 	
@@ -243,12 +243,12 @@ namespace wg
 	
 	//____ removeWidget() _________________________________________________________
 	
-	bool WgPackList::removeWidget( const WgWidget_p& pWidget )
+	bool PackList::removeWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget || !pWidget->_hook() )
 			return false;
 	
-		WgPackListHook * pHook = static_cast<WgPackListHook*>(pWidget->_hook());
+		PackListHook * pHook = static_cast<PackListHook*>(pWidget->_hook());
 		if( pHook->_parent() != this )
 			return false;
 	
@@ -260,7 +260,7 @@ namespace wg
 	
 	//____ clear() ________________________________________________________________
 	
-	bool WgPackList::clear()
+	bool PackList::clear()
 	{
 		m_hooks.clear();
 		_onRefreshList();
@@ -269,7 +269,7 @@ namespace wg
 	
 	//____ setOrientation() _______________________________________________________
 	
-	void WgPackList::setOrientation( WgOrientation orientation )
+	void PackList::setOrientation( WgOrientation orientation )
 	{
 		bool bHorizontal = (orientation == WG_HORIZONTAL);
 	
@@ -282,14 +282,14 @@ namespace wg
 	
 	//____ sortWidgets() __________________________________________________________
 	
-	void WgPackList::sortWidgets()
+	void PackList::sortWidgets()
 	{
 		_sortEntries();
 	}
 	
 	//____ setSortOrder() _________________________________________________________
 	
-	void WgPackList::setSortOrder( WgSortOrder order )
+	void PackList::setSortOrder( WgSortOrder order )
 	{
 		if( order != m_sortOrder )
 		{
@@ -301,7 +301,7 @@ namespace wg
 	
 	//____ setSortFunction() ______________________________________________________
 	
-	void WgPackList::setSortFunction( WgWidgetSortFunc pSortFunc )
+	void PackList::setSortFunction( WidgetSortFunc pSortFunc )
 	{
 		if( pSortFunc != m_pSortFunc )
 		{
@@ -312,18 +312,18 @@ namespace wg
 	
 	//____ preferredSize() ________________________________________________________
 	
-	WgSize WgPackList::preferredSize() const
+	Size PackList::preferredSize() const
 	{
-		WgSize sz;
+		Size sz;
 		if( m_bHorizontal )
 		{
-			sz =  WgSize(m_contentPreferredLength + m_header.m_width, m_contentPreferredBreadth);
+			sz =  Size(m_contentPreferredLength + m_header.m_width, m_contentPreferredBreadth);
 			if( m_header.m_height > sz.h )
 				sz.h = m_header.m_height;
 		}
 		else
 		{
-			sz = WgSize(m_contentPreferredBreadth,m_contentPreferredLength + m_header.m_height );
+			sz = Size(m_contentPreferredBreadth,m_contentPreferredLength + m_header.m_height );
 			if( m_header.m_width > sz.w )
 				sz.w = m_header.m_width;
 		}
@@ -336,7 +336,7 @@ namespace wg
 	
 	//____ matchingHeight() _______________________________________________________
 	
-	int WgPackList::matchingHeight( int width ) const
+	int PackList::matchingHeight( int width ) const
 	{
 		if( m_bHorizontal )
 		{
@@ -353,7 +353,7 @@ namespace wg
 			int height = m_header.m_height;
 			if( m_pSkin )
 			{
-				WgSize pad = m_pSkin->contentPadding();
+				Size pad = m_pSkin->contentPadding();
 				width -= pad.w;
 				height += pad.h;
 			}
@@ -361,7 +361,7 @@ namespace wg
 	
 			for( int i = 0 ; i < m_hooks.size() ; i++ )
 			{
-				WgPackListHook * pHook = m_hooks.hook(i);
+				PackListHook * pHook = m_hooks.hook(i);
 				height += pHook->_widget()->matchingHeight(width);
 			}
 			height += m_entryPadding.h*m_hooks.size();		
@@ -371,14 +371,14 @@ namespace wg
 	
 	//____ matchingWidth() _______________________________________________________
 	
-	int WgPackList::matchingWidth( int height ) const
+	int PackList::matchingWidth( int height ) const
 	{
 		if( m_bHorizontal )
 		{
 			int width = m_header.m_width;
 			if( m_pSkin )
 			{
-				WgSize pad = m_pSkin->contentPadding();
+				Size pad = m_pSkin->contentPadding();
 				height -= pad.w;
 				width += pad.h;
 			}
@@ -386,7 +386,7 @@ namespace wg
 	
 			for( int i = 0 ; i < m_hooks.size() ; i++ )
 			{
-				WgPackListHook * pHook = m_hooks.hook(i);
+				PackListHook * pHook = m_hooks.hook(i);
 				width += pHook->_widget()->matchingWidth(height);
 			}
 			width += m_entryPadding.w*m_hooks.size();		
@@ -407,7 +407,7 @@ namespace wg
 	
 	//____ setMinEntrySize() ______________________________________________________
 	
-	bool WgPackList::setMinEntrySize( WgSize min )
+	bool PackList::setMinEntrySize( Size min )
 	{
 		if( min == m_minEntrySize )
 			return true;
@@ -422,7 +422,7 @@ namespace wg
 	
 	//____ setMaxEntrySize() ______________________________________________________
 	
-	bool WgPackList::setMaxEntrySize( WgSize max )
+	bool PackList::setMaxEntrySize( Size max )
 	{
 		if( max == m_maxEntrySize )
 			return true;
@@ -438,42 +438,42 @@ namespace wg
 	
 	//____ _onCollectPatches() ____________________________________________________
 	
-	void WgPackList::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+	void PackList::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		if( m_pSkin )
-			container.add( WgRect( geo, clip ) );
+			container.add( Rect( geo, clip ) );
 		else
 		{
 			if( m_bHorizontal )
-				container.add( WgRect( WgRect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+				container.add( Rect( Rect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				container.add( WgRect( WgRect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+				container.add( Rect( Rect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
 		}
 	}
 	
 	//____ _onMaskPatches() _______________________________________________________
 	
-	void WgPackList::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
-			patches.sub( WgRect(geo,clip) );
+			patches.sub( Rect(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == WG_BLENDMODE_BLEND )
 		{
 			if( m_bHorizontal )
-				patches.sub( WgRect( WgRect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( Rect( Rect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( WgRect( WgRect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+				patches.sub( Rect( Rect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
-			WgRect childGeo;
-			WgPackListHook * p = static_cast<WgPackListHook*>(_firstHookWithGeo( childGeo ));
+			Rect childGeo;
+			PackListHook * p = static_cast<PackListHook*>(_firstHookWithGeo( childGeo ));
 	
 			while(p)
 			{
 				if( p->_isVisible() )
 					p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-				p = static_cast<WgPackListHook*>(_nextHookWithGeo( childGeo, p ));
+				p = static_cast<PackListHook*>(_nextHookWithGeo( childGeo, p ));
 			}
 		}
 	
@@ -481,45 +481,45 @@ namespace wg
 	
 	//____ _onCloneContent() ______________________________________________________
 	
-	void WgPackList::_onCloneContent( const WgWidget * _pOrg )
+	void PackList::_onCloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement!!!
 	}
 	
 	//____ _renderPatches() _______________________________________________________
 	
-	void WgPackList::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+	void PackList::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
 		// We start by eliminating dirt outside our geometry
 	
-		WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
+		Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 	
-		for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
+		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 		{
 			if( _canvas.intersectsWith( *pRect ) )
-				patches.push( WgRect(*pRect,_canvas) );
+				patches.push( Rect(*pRect,_canvas) );
 		}
 	
 		// Render container itself
 		
-		for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 			_onRender(pDevice, _canvas, _window, *pRect );
 			
 		
 		// Render children
 	
-		WgRect	dirtBounds = patches.getUnion();
+		Rect	dirtBounds = patches.getUnion();
 		
 		{
-			WgRect childGeo;
-			WgPackListHook * p = (WgPackListHook*)_firstHookWithGeo( childGeo );
+			Rect childGeo;
+			PackListHook * p = (PackListHook*)_firstHookWithGeo( childGeo );
 	
 			while(p)
 			{
-				WgRect canvas = childGeo + _canvas.pos();
+				Rect canvas = childGeo + _canvas.pos();
 				if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
 					p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
-				p = (WgPackListHook*) _nextHookWithGeo( childGeo, p );
+				p = (PackListHook*) _nextHookWithGeo( childGeo, p );
 			}
 		}
 	
@@ -528,9 +528,9 @@ namespace wg
 		if( m_header.m_height != 0 )
 		{
 			bool bInvertedSort = (m_sortOrder == WG_SORT_DESCENDING);
-			WgRect canvas = _headerGeo() + _canvas.pos();
+			Rect canvas = _headerGeo() + _canvas.pos();
 	
-			for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 				_renderHeader( pDevice, canvas, *pRect, m_header.m_pSkin, &m_header.label, &m_header.icon, &m_header.arrow, m_header.m_state, true, bInvertedSort );
 		}
 	
@@ -538,21 +538,21 @@ namespace wg
 	
 		if( m_pLassoSkin && m_lassoBegin != m_lassoEnd )
 		{
-			WgRect lasso( m_lassoBegin, m_lassoEnd );
+			Rect lasso( m_lassoBegin, m_lassoEnd );
 			lasso += _canvas.pos();
 	
 	
-			for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-				m_pLassoSkin->render( pDevice, lasso, m_state, WgRect( lasso, *pRect ) );
+			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+				m_pLassoSkin->render( pDevice, lasso, m_state, Rect( lasso, *pRect ) );
 		}
 	}
 	
 	
 	//____ _onRender() ____________________________________________________________
 	
-	void WgPackList::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void PackList::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgRect contentRect = _listCanvas() + _canvas.pos();
+		Rect contentRect = _listCanvas() + _canvas.pos();
 	
 		if( m_pSkin )
 		{
@@ -566,12 +566,12 @@ namespace wg
 	
 		for( int i = _getEntryAt( startOfs ) ; i < m_hooks.size() ; i++ )
 		{
-			WgPackListHook * pHook = m_hooks.hook(i);
-			WgWidget * pChild = pHook->_widget();
+			PackListHook * pHook = m_hooks.hook(i);
+			Widget * pChild = pHook->_widget();
 	
 			// Get entry geometry, skin and state
 	
-			WgRect entryGeo( contentRect );
+			Rect entryGeo( contentRect );
 			if( m_bHorizontal )
 			{
 				if( pHook->m_ofs >= contentRect.w )
@@ -589,9 +589,9 @@ namespace wg
 				entryGeo.h = pHook->m_length;
 			}
 			
-			WgSkin * pEntrySkin	= m_pEntrySkin[i&0x1].rawPtr();
-			WgState	state		= pChild->state();
-	//		WgRect	childGeo( entryGeo );
+			Skin * pEntrySkin	= m_pEntrySkin[i&0x1].rawPtr();
+			State	state		= pChild->state();
+	//		Rect	childGeo( entryGeo );
 	
 			// Render entry skin, shrink child geo
 	
@@ -610,7 +610,7 @@ namespace wg
 	
 	//____ _onNewSize() ___________________________________________________________
 	
-	void WgPackList::_onNewSize( const WgSize& size )
+	void PackList::_onNewSize( const Size& size )
 	{
 		m_size = size;
 		int newContentBreadth;
@@ -627,8 +627,8 @@ namespace wg
 	
 			for( int i = 0 ; i < m_hooks.size() ; i++ )
 			{
-				WgPackListHook * pHook = m_hooks.hook(i);
-				WgWidget * pWidget = pHook->_widget();
+				PackListHook * pHook = m_hooks.hook(i);
+				Widget * pWidget = pHook->_widget();
 	
 				if( m_bHorizontal )
 				{
@@ -637,7 +637,7 @@ namespace wg
 					pHook->m_length = newEntryLength;
 					ofs += newEntryLength;
 	
-					pWidget->_onNewSize( WgSize(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+					pWidget->_onNewSize( Size(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -646,7 +646,7 @@ namespace wg
 					pHook->m_length = newEntryLength;
 					ofs += newEntryLength;
 	
-					pWidget->_onNewSize( WgSize(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+					pWidget->_onNewSize( Size(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -657,16 +657,16 @@ namespace wg
 	
 	//____ _onRefresh() ___________________________________________________________
 	
-	void WgPackList::_onRefresh()
+	void PackList::_onRefresh()
 	{
 		_refreshHeader();
 		_onRefreshList();	
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onRefreshList() _______________________________________________________
 	
-	void WgPackList::_onRefreshList()
+	void PackList::_onRefreshList()
 	{
 		if( m_pEntrySkin[0] )
 			m_entryPadding = m_pEntrySkin[0]->contentPadding();
@@ -678,10 +678,10 @@ namespace wg
 	
 		for( int entry = 0 ; entry < m_hooks.size() ; entry++ )
 		{
-			WgPackListHook * pHook = m_hooks.hook(entry);
-			WgWidget * pChild = pHook->_widget();
+			PackListHook * pHook = m_hooks.hook(entry);
+			Widget * pChild = pHook->_widget();
 	
-			WgSize pref = _paddedLimitedPreferredSize( pChild );
+			Size pref = _paddedLimitedPreferredSize( pChild );
 	
 			if( m_bHorizontal )
 			{
@@ -723,46 +723,46 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgPackList::_onMsg( const WgMsg_p& _pMsg )
+	void PackList::_onMsg( const Msg_p& _pMsg )
 	{
-		WgState oldState = m_state;
+		State oldState = m_state;
 	
 		switch( _pMsg->type() )
 		{
 			case WG_MSG_MOUSE_MOVE:
 			{
-				WgMouseMoveMsg_p pMsg = WgMouseMoveMsg::cast(_pMsg);
-				WgCoord ofs = toLocal(pMsg->pointerPos());
-				WgRect headerGeo = _headerGeo();
-				bool bHeaderHovered = headerGeo.contains(ofs) && (!WgBase::msgRouter()->isAnyMouseButtonPressed() || 
-																 (WgBase::msgRouter()->isMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
+				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
+				Coord ofs = toLocal(pMsg->pointerPos());
+				Rect headerGeo = _headerGeo();
+				bool bHeaderHovered = headerGeo.contains(ofs) && (!Base::msgRouter()->isAnyMouseButtonPressed() || 
+																 (Base::msgRouter()->isMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
 				if( bHeaderHovered != m_header.m_state.isHovered() )
 				{
 					m_header.m_state.setHovered(bHeaderHovered);
 					_requestRender( headerGeo );
 				}
-				WgList::_onMsg( _pMsg );
+				List::_onMsg( _pMsg );
 				break;
 			}
 	
 			case WG_MSG_MOUSE_LEAVE:
 			{
-				WgMouseLeaveMsg_p pMsg = WgMouseLeaveMsg::cast(_pMsg);
+				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
 				if( pMsg->source() == this && m_header.m_state.isHovered() )
 				{
 					m_header.m_state.setPressed(false);
 					m_header.m_state.setHovered(false);
 					_requestRender( _headerGeo() );
 				}
-				WgList::_onMsg( _pMsg );
+				List::_onMsg( _pMsg );
 				break;
 			}
 	
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
-				WgCoord ofs = toLocal(pMsg->pointerPos());
-				WgRect headerGeo = _headerGeo();
+				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
+				Coord ofs = toLocal(pMsg->pointerPos());
+				Rect headerGeo = _headerGeo();
 				if(pMsg->button() == WG_BUTTON_LEFT && headerGeo.contains(ofs))
 				{
 					m_header.m_bPressed = true;
@@ -771,17 +771,17 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					WgList::_onMsg( _pMsg );
+					List::_onMsg( _pMsg );
 				break;
 			}
 	
 			case WG_MSG_MOUSE_DRAG:
 			{
-				WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
+				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( m_header.m_bPressed )
 				{
-					WgCoord ofs = toLocal(pMsg->pointerPos());
-					WgRect headerGeo = _headerGeo();
+					Coord ofs = toLocal(pMsg->pointerPos());
+					Rect headerGeo = _headerGeo();
 					bool bHeaderHovered = headerGeo.contains(ofs);
 					if( bHeaderHovered != m_header.m_state.isHovered() )
 					{
@@ -792,21 +792,21 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					WgList::_onMsg( _pMsg );
+					List::_onMsg( _pMsg );
 				break;
 			}
 	
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
+				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 				if(pMsg->button() == WG_BUTTON_LEFT && m_header.m_bPressed )
 				{
 					m_header.m_bPressed = false;
 					m_header.m_state.setPressed(false);
-					WgRect headerGeo = _headerGeo();
+					Rect headerGeo = _headerGeo();
 					_requestRender( headerGeo );
 	
-					WgCoord ofs = toLocal(pMsg->pointerPos());
+					Coord ofs = toLocal(pMsg->pointerPos());
 					if( headerGeo.contains(ofs) )
 					{
 						if( m_sortOrder == WG_SORT_ASCENDING )
@@ -818,7 +818,7 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					WgList::_onMsg( _pMsg );
+					List::_onMsg( _pMsg );
 				break;
 			}
 			case WG_MSG_KEY_PRESS:
@@ -826,14 +826,14 @@ namespace wg
 				if( m_selectMode == WG_SELECT_NONE )
 					break;
 	
-				int				keyCode = WgKeyPressMsg::cast(_pMsg)->translatedKeyCode();
-				WgModifierKeys	modKeys = WgKeyPressMsg::cast(_pMsg)->modKeys();
+				int				keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
+				WgModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
 				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 					(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
 						_pMsg->swallow();
-				WgList::_onMsg( _pMsg );
+				List::_onMsg( _pMsg );
 				break;
 			}
 	
@@ -843,19 +843,19 @@ namespace wg
 				if( m_selectMode == WG_SELECT_NONE )
 					break;
 	
-				int				keyCode = WgKeyMsg::cast(_pMsg)->translatedKeyCode();
-				WgModifierKeys	modKeys = WgKeyMsg::cast(_pMsg)->modKeys();
+				int				keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
+				WgModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
 				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
 					(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
 						_pMsg->swallow();
-				WgList::_onMsg( _pMsg );
+				List::_onMsg( _pMsg );
 				break;
 			}
 		
 			default:
-				WgList::_onMsg(_pMsg);
+				List::_onMsg(_pMsg);
 				return;
 		}
 	
@@ -865,11 +865,11 @@ namespace wg
 	
 	//____ _onLassoUpdated() ______________________________________________________
 	
-	void WgPackList::_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso )
+	void PackList::_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso )
 	{
 		// Get out content area
 	
-		WgRect listArea = _listArea();
+		Rect listArea = _listArea();
 	
 		// Check if our lassos are inside content area or not.
 	
@@ -951,24 +951,24 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgPackList::_onStateChanged( WgState oldState )
+	void PackList::_onStateChanged( State oldState )
 	{
-		WgList::_onStateChanged(oldState);
+		List::_onStateChanged(oldState);
 	}
 	
 	
 	//____ _onRequestRender() _____________________________________________________
 	
-	void WgPackList::_onRequestRender( WgPackListHook * pHook )
+	void PackList::_onRequestRender( PackListHook * pHook )
 	{
-		WgRect geo;
+		Rect geo;
 		_getChildGeo(geo, pHook);
 		_requestRender(geo);
 	}
 	
-	void WgPackList::_onRequestRender( WgPackListHook * pHook, const WgRect& rect )
+	void PackList::_onRequestRender( PackListHook * pHook, const Rect& rect )
 	{
-		WgRect geo;
+		Rect geo;
 		_getChildGeo(geo, pHook);
 		geo.x += rect.x;
 		geo.y += rect.y;
@@ -979,13 +979,13 @@ namespace wg
 	
 	//____ _onRequestResize() _____________________________________________________
 	
-	void WgPackList::_onRequestResize( WgPackListHook * pHook )
+	void PackList::_onRequestResize( PackListHook * pHook )
 	{
 		if( !pHook->m_bVisible  || m_minEntrySize == m_maxEntrySize )
 			return;
 	
-		WgWidget * pChild = pHook->_widget();
-		WgSize prefEntrySize = _paddedLimitedPreferredSize(pChild);
+		Widget * pChild = pHook->_widget();
+		Size prefEntrySize = _paddedLimitedPreferredSize(pChild);
 	
 		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
 		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
@@ -1022,7 +1022,7 @@ namespace wg
 			_updateChildOfsFrom( pHook );
 			_requestRenderChildrenFrom( pHook );
 	
-			WgRect childGeo;
+			Rect childGeo;
 			_getChildGeo(childGeo,pHook);
 			pHook->_widget()->_onNewSize(childGeo);
 		}
@@ -1035,12 +1035,12 @@ namespace wg
 	
 	//____ _onWidgetAppeared() ____________________________________________________
 	
-	void WgPackList::_onWidgetAppeared( WgListHook * pInserted )
+	void PackList::_onWidgetAppeared( ListHook * pInserted )
 	{
-		WgPackListHook * pHook = static_cast<WgPackListHook*>(pInserted);
-		WgWidget * pChild = pHook->_widget();
+		PackListHook * pHook = static_cast<PackListHook*>(pInserted);
+		Widget * pChild = pHook->_widget();
 	
-		WgSize pref = _paddedLimitedPreferredSize( pChild );
+		Size pref = _paddedLimitedPreferredSize( pChild );
 	
 		if( m_bHorizontal )
 		{
@@ -1070,9 +1070,9 @@ namespace wg
 	
 		m_contentLength += pHook->m_length;
 	
-		WgRect childGeo;
+		Rect childGeo;
 		_getChildGeo(childGeo,pHook);
-		static_cast<WgPackListHook*>(pInserted)->_widget()->_onNewSize( childGeo );
+		static_cast<PackListHook*>(pInserted)->_widget()->_onNewSize( childGeo );
 	
 	
 		// Finish up
@@ -1085,12 +1085,12 @@ namespace wg
 	
 	//____ _onWidgetDisappeared() _________________________________________________
 	
-	void WgPackList::_onWidgetDisappeared( WgListHook * pToBeRemoved )
+	void PackList::_onWidgetDisappeared( ListHook * pToBeRemoved )
 	{
-		WgPackListHook * pHook = static_cast<WgPackListHook*>(pToBeRemoved);
-		WgWidget * pChild = pHook->_widget();
+		PackListHook * pHook = static_cast<PackListHook*>(pToBeRemoved);
+		Widget * pChild = pHook->_widget();
 	
-		WgSize pref = _paddedLimitedPreferredSize( pChild );
+		Size pref = _paddedLimitedPreferredSize( pChild );
 	
 		_requestRenderChildrenFrom( pHook );	// Request render on dirty area
 	
@@ -1111,7 +1111,7 @@ namespace wg
 	
 	// Pixelofs is counted from beginning of container content, not widget.
 	
-	int WgPackList::_getEntryAt( int pixelofs ) const
+	int PackList::_getEntryAt( int pixelofs ) const
 	{
 		int first = 0;
 		int last = m_hooks.size() - 1;
@@ -1119,7 +1119,7 @@ namespace wg
 	 
 		while( first <= last )
 		{
-			WgPackListHook * pHook = m_hooks.hook(middle);
+			PackListHook * pHook = m_hooks.hook(middle);
 	
 			if( pHook->m_ofs + pHook->m_length < pixelofs )
 				first = middle + 1;
@@ -1136,7 +1136,7 @@ namespace wg
 	
 	//____ _getInsertionPoint() ___________________________________________________
 	
-	int WgPackList::_getInsertionPoint( const WgWidget * pWidget ) const
+	int PackList::_getInsertionPoint( const Widget * pWidget ) const
 	{
 		int first = 0;
 		int last = m_hooks.size() - 1;
@@ -1145,7 +1145,7 @@ namespace wg
 	
 		while( first <= last )
 		{
-			WgPackListHook * pHook = m_hooks.hook(middle);
+			PackListHook * pHook = m_hooks.hook(middle);
 	
 			int cmpRes = m_pSortFunc( pHook->_widget(), pWidget )*negator;
 	
@@ -1166,10 +1166,10 @@ namespace wg
 	
 	//____ _findEntry() ___________________________________________________________
 	
-	WgListHook * WgPackList::_findEntry( const WgCoord& ofs )
+	ListHook * PackList::_findEntry( const Coord& ofs )
 	{
-		WgWidget * pResult = 0;
-		WgRect list = _listArea();
+		Widget * pResult = 0;
+		Rect list = _listArea();
 	
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -1188,10 +1188,10 @@ namespace wg
 	
 	//____ _findWidget() __________________________________________________________
 	
-	WgWidget * WgPackList::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+	Widget * PackList::_findWidget( const Coord& ofs, WgSearchMode mode )
 	{
-		WgWidget * pResult = 0;
-		WgRect list = _listArea();
+		Widget * pResult = 0;
+		Rect list = _listArea();
 	
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -1203,14 +1203,14 @@ namespace wg
 	
 			if( entry != m_hooks.size() )
 			{
-				WgPackListHook * pHook = m_hooks.hook(entry);
-				WgRect childGeo;
+				PackListHook * pHook = m_hooks.hook(entry);
+				Rect childGeo;
 				_getChildGeo( childGeo, pHook );
 				if( childGeo.contains(ofs) )
 				{
 					if( pHook->_widget()->isContainer() )
 					{
-						pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
+						pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
 					else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
 					{
@@ -1234,7 +1234,7 @@ namespace wg
 	
 	//____ _addToContentPreferredSize() ___________________________________________
 	
-	void  WgPackList::_addToContentPreferredSize( int length, int breadth )
+	void  PackList::_addToContentPreferredSize( int length, int breadth )
 	{
 		m_contentPreferredLength += length;
 		
@@ -1249,7 +1249,7 @@ namespace wg
 	
 	//____ _subFromContentPreferredSize() _________________________________________
 	
-	void  WgPackList::_subFromContentPreferredSize( int length, int breadth )
+	void  PackList::_subFromContentPreferredSize( int length, int breadth )
 	{
 		m_contentPreferredLength -= length;
 		
@@ -1259,7 +1259,7 @@ namespace wg
 			if( m_nbPreferredBreadthEntries == 0 )
 			{
 				int highest = 0;
-				for( WgPackListHook * p = m_hooks.begin() ; p < m_hooks.end() ; p++ )
+				for( PackListHook * p = m_hooks.begin() ; p < m_hooks.end() ; p++ )
 				{
 					if( p->m_prefBreadth == highest )
 						m_nbPreferredBreadthEntries++;
@@ -1277,9 +1277,9 @@ namespace wg
 	
 	//____ _requestRenderChildrenFrom() ___________________________________________
 	
-	void WgPackList::_requestRenderChildrenFrom( WgPackListHook * pHook )
+	void PackList::_requestRenderChildrenFrom( PackListHook * pHook )
 	{
-		WgRect box = _listArea();
+		Rect box = _listArea();
 	
 		if( m_bHorizontal )
 		{
@@ -1297,10 +1297,10 @@ namespace wg
 	
 	//____ _updateChildOfsFrom() __________________________________________________
 	
-	void WgPackList::_updateChildOfsFrom( WgPackListHook * pHook )
+	void PackList::_updateChildOfsFrom( PackListHook * pHook )
 	{
 		int ofs = 0;
-		WgPackListHook * pPrev = m_hooks.prev(pHook);
+		PackListHook * pPrev = m_hooks.prev(pHook);
 		if( pPrev )
 			ofs = pPrev->m_ofs + pPrev->m_length;
 	
@@ -1314,7 +1314,7 @@ namespace wg
 	
 	//____ _onEntrySkinChanged() __________________________________________________
 	
-	void WgPackList::_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding )
+	void PackList::_onEntrySkinChanged( Size oldPadding, Size newPadding )
 	{
 		_requestRender();
 	
@@ -1350,9 +1350,9 @@ namespace wg
 	
 	//____ _getEntryGeo() _________________________________________________________
 	
-	void WgPackList::_getEntryGeo( WgRect& geo, const WgListHook * _pHook ) const
+	void PackList::_getEntryGeo( Rect& geo, const ListHook * _pHook ) const
 	{
-		const WgPackListHook * pHook = static_cast<const WgPackListHook*>(_pHook);
+		const PackListHook * pHook = static_cast<const PackListHook*>(_pHook);
 	
 		geo = _listArea();
 	
@@ -1371,7 +1371,7 @@ namespace wg
 	
 	//____ _getChildGeo() _________________________________________________________
 	
-	void WgPackList::_getChildGeo( WgRect& geo, const WgPackListHook * pHook ) const
+	void PackList::_getChildGeo( Rect& geo, const PackListHook * pHook ) const
 	{
 		geo = _listArea();
 	
@@ -1398,7 +1398,7 @@ namespace wg
 	
 	//____ _paddedLimitedMatchingHeight() _________________________________________
 	
-	int WgPackList::_paddedLimitedMatchingHeight( WgWidget * pChild, int paddedWidth )
+	int PackList::_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth )
 	{
 		int height = pChild->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
 		LIMIT( height, m_minEntrySize.h, m_maxEntrySize.h );
@@ -1407,7 +1407,7 @@ namespace wg
 	
 	//____ _paddedLimitedMatchingWidth() _________________________________________
 	
-	int WgPackList::_paddedLimitedMatchingWidth( WgWidget * pChild, int paddedHeight )
+	int PackList::_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight )
 	{
 		int width = pChild->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
 		LIMIT( width, m_minEntrySize.w, m_maxEntrySize.w );
@@ -1416,9 +1416,9 @@ namespace wg
 	
 	//____ _paddedLimitedPreferredSize() __________________________________________
 	
-	WgSize WgPackList::_paddedLimitedPreferredSize( WgWidget * pChild )
+	Size PackList::_paddedLimitedPreferredSize( Widget * pChild )
 	{
-		WgSize sz = pChild->preferredSize();
+		Size sz = pChild->preferredSize();
 		sz += m_entryPadding;
 	
 		// Apply limits
@@ -1444,7 +1444,7 @@ namespace wg
 	
 	//____ _firstHook() ___________________________________________________________
 	
-	WgHook* WgPackList::_firstHook() const
+	Hook* PackList::_firstHook() const
 	{
 		if( m_hooks.size() > 0 )
 			return m_hooks.hook(0);
@@ -1454,7 +1454,7 @@ namespace wg
 	
 	//____ _lastHook() ____________________________________________________________
 	
-	WgHook* WgPackList::_lastHook() const
+	Hook* PackList::_lastHook() const
 	{
 		if( m_hooks.size() > 0 )
 			return m_hooks.hook(m_hooks.size()-1);
@@ -1464,21 +1464,21 @@ namespace wg
 	
 	//____ _firstHookWithGeo() ____________________________________________________
 	
-	WgHook* WgPackList::_firstHookWithGeo( WgRect& geo ) const
+	Hook* PackList::_firstHookWithGeo( Rect& geo ) const
 	{
 		if( m_hooks.size() == 0 )
 			return 0;
 	
-		WgPackListHook * p = m_hooks.hook(0);
+		PackListHook * p = m_hooks.hook(0);
 		_getChildGeo(geo,p);
 		return p;
 	}
 	
 	//____ _nextHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackList::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook* PackList::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgPackListHook * p = m_hooks.next(static_cast<WgPackListHook*>(pHook));
+		PackListHook * p = m_hooks.next(static_cast<PackListHook*>(pHook));
 		if( p )
 			_getChildGeo(geo,p);
 		return p;
@@ -1486,21 +1486,21 @@ namespace wg
 	
 	//_____ _lastHookWithGeo() ____________________________________________________
 	
-	WgHook* WgPackList::_lastHookWithGeo( WgRect& geo ) const
+	Hook* PackList::_lastHookWithGeo( Rect& geo ) const
 	{
 		if( m_hooks.size() == 0 )
 			return 0;
 	
-		WgPackListHook * p = m_hooks.hook(m_hooks.size()-1);
+		PackListHook * p = m_hooks.hook(m_hooks.size()-1);
 		_getChildGeo(geo,p);
 		return p;
 	}
 	
 	//____ _prevHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackList::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook* PackList::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgPackListHook * p = m_hooks.prev(static_cast<WgPackListHook*>(pHook));
+		PackListHook * p = m_hooks.prev(static_cast<PackListHook*>(pHook));
 		if( p )
 			_getChildGeo(geo,p);
 		return p;
@@ -1508,9 +1508,9 @@ namespace wg
 	
 	//____ _listArea() ____________________________________________________________
 	
-	WgRect WgPackList::_listArea() const
+	Rect PackList::_listArea() const
 	{
-		WgRect r = _listCanvas();
+		Rect r = _listCanvas();
 		if( m_pSkin )
 			r = m_pSkin->contentRect( r, m_state );
 	
@@ -1519,9 +1519,9 @@ namespace wg
 	
 	//____ _listWindow() ____________________________________________________________
 	
-	WgRect WgPackList::_listWindow() const
+	Rect PackList::_listWindow() const
 	{
-		WgRect r = _windowSection();		// Window in widgets own coordinate system.
+		Rect r = _windowSection();		// Window in widgets own coordinate system.
 	
 		if( m_bHorizontal )
 		{
@@ -1538,43 +1538,43 @@ namespace wg
 	
 	//____ _listCanvas() ____________________________________________________________
 	
-	WgRect WgPackList::_listCanvas() const
+	Rect PackList::_listCanvas() const
 	{
 		if( m_bHorizontal )
-			return WgRect(m_header.m_width, 0, m_size.w - m_header.m_width, m_size.h );
+			return Rect(m_header.m_width, 0, m_size.w - m_header.m_width, m_size.h );
 		else
-			return WgRect(0, m_header.m_height, m_size.w, m_size.h - m_header.m_height);	// List canvas in widgets own coordinate system.
+			return Rect(0, m_header.m_height, m_size.w, m_size.h - m_header.m_height);	// List canvas in widgets own coordinate system.
 	}
 	
 	//____ _headerGeo() ___________________________________________________________
 	
-	WgRect WgPackList::_headerGeo() const
+	Rect PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return WgRect( _windowSection().x, 0, m_header.m_width, m_size.h );
+			return Rect( _windowSection().x, 0, m_header.m_width, m_size.h );
 		else
-			return WgRect( 0, _windowSection().y, m_size.w, m_header.m_height );
+			return Rect( 0, _windowSection().y, m_size.w, m_header.m_height );
 	}
 	
 	//____ _windowPadding() _______________________________________________________
 	
-	WgSize WgPackList::_windowPadding() const
+	Size PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return WgSize( m_header.m_width, 0 );
+			return Size( m_header.m_width, 0 );
 		else
-			return WgSize( 0, m_header.m_height );
+			return Size( 0, m_header.m_height );
 	}
 	
 	//____ _refreshHeader() _______________________________________________________
 	
-	void WgPackList::_refreshHeader()
+	void PackList::_refreshHeader()
 	{
-		WgSize wantedIconSize = m_header.icon.preferredSize();
-		WgSize wantedArrowSize = m_header.arrow.preferredSize();
-		WgSize wantedTextSize = m_header.label.preferredSize();
+		Size wantedIconSize = m_header.icon.preferredSize();
+		Size wantedArrowSize = m_header.arrow.preferredSize();
+		Size wantedTextSize = m_header.label.preferredSize();
 	
-		WgSize wantedSize;
+		Size wantedSize;
 	
 		//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
 		//TODO: Assumes text not wrapping.
@@ -1624,7 +1624,7 @@ namespace wg
 	
 	//____ _sortEntries() _________________________________________________________
 	
-	bool WgPackList::_sortEntries()
+	bool PackList::_sortEntries()
 	{
 		if( !m_pSortFunc )
 			return false;
@@ -1635,13 +1635,13 @@ namespace wg
 		// Create a temporary, sorted list of pointers to hooks
 	
 		int listSize = sizeof(int) * m_hooks.size();
-		int * pOrderList = (int*) WgBase::memStackAlloc( listSize );
+		int * pOrderList = (int*) Base::memStackAlloc( listSize );
 		int negator = m_sortOrder == WG_SORT_ASCENDING ? 1 : -1;
 	
 		pOrderList[0] = 0;
 		for( int entry = 1 ; entry < m_hooks.size() ; entry++ )
 		{
-			WgWidget * pWidget = m_hooks.hook(entry)->_widget();
+			Widget * pWidget = m_hooks.hook(entry)->_widget();
 	
 			int first = 0;
 			int last = entry-1;
@@ -1649,7 +1649,7 @@ namespace wg
 	 
 			while( first <= last )
 			{
-				WgWidget * pEntry = m_hooks.hook(pOrderList[middle])->_widget();
+				Widget * pEntry = m_hooks.hook(pOrderList[middle])->_widget();
 	
 				int cmpRes = m_pSortFunc( pEntry, pWidget ) * negator;
 	
@@ -1673,7 +1673,7 @@ namespace wg
 		}
 	
 		m_hooks.reorder( pOrderList );
-		WgBase::memStackRelease( listSize );
+		Base::memStackRelease( listSize );
 	
 		// Update m_ofs in the hooks
 	
@@ -1684,14 +1684,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgPackList::_onFieldDirty(WgField * pField)
+	void PackList::_onFieldDirty(Field * pField)
 	{
 		_refreshHeader();	//TODO: Just request render on header.
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgPackList::_onFieldResize(WgField * pField)
+	void PackList::_onFieldResize(Field * pField)
 	{
 		_refreshHeader();
 	}

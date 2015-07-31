@@ -54,14 +54,14 @@
 namespace wg 
 {
 	
-	class WgColor;
-	class WgCharSeq;
-	class WgString;
-	class WgCharBuffer;
+	class Color;
+	class CharSeq;
+	class String;
+	class CharBuffer;
 	
-	class WgText;
-	typedef	WgIStrongPtr<WgText,WgInterface_p>		WgText_p;
-	typedef	WgIWeakPtr<WgText,WgInterface_wp>	WgText_wp;
+	class Text;
+	typedef	WgIStrongPtr<Text,Interface_p>		Text_p;
+	typedef	WgIWeakPtr<Text,Interface_wp>	Text_wp;
 	
 	/**
 	 * @brief Interface to a basic text field.
@@ -74,35 +74,35 @@ namespace wg
 	 * 
 	 */
 	
-	class WgText : public WgInterface
+	class Text : public Interface
 	{
 	public:
-		WgText( WgTextField * pField ) : m_pField(pField) {};
+		Text( TextField * pField ) : m_pField(pField) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-		inline WgText_p		ptr() { return WgText_p(_object(),this); }
+		static Text_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline Text_p		ptr() { return Text_p(_object(),this); }
 	
-		inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
+		inline void				setStyle( const TextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
 		inline void				clearStyle() { m_pField->clearStyle(); }
-		inline WgTextStyle_p	style() const { return m_pField->style(); }
+		inline TextStyle_p	style() const { return m_pField->style(); }
 	
-		inline void					setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
+		inline void					setPresenter( const TextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
 		inline void					clearPresenter() { m_pField->clearPresenter(); }
-		inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
+		inline TextPresenter_p	presenter() const { return m_pField->presenter(); }
 	
-		inline 	WgString			get() const { return m_pField->getString(); }
+		inline 	String			get() const { return m_pField->getString(); }
 	
-		inline WgState			state() const { return m_pField->state(); }
+		inline State			state() const { return m_pField->state(); }
 		inline int				length() const { return m_pField->length(); }
 		inline bool				isEmpty() const { return m_pField->isEmpty(); }
 	
 	protected:
-		WgObject *				_object() const;
+		Object *				_object() const;
 	
-		WgTextField * 			m_pField;
+		TextField * 			m_pField;
 	};
 	
 	

@@ -25,46 +25,46 @@
 namespace wg 
 {
 	
-	const char WgAnim::CLASSNAME[] = {"Anim"};
+	const char Anim::CLASSNAME[] = {"Anim"};
 	
-	//____ WgAnim() _______________________________________________________________
+	//____ Anim() _______________________________________________________________
 	
-	WgAnim::WgAnim()
+	Anim::Anim()
 	{ 
 		m_scale			= 1.f;
 		m_duration		= 0;
 		m_playMode	= WG_FORWARD_ONCE;
 	}
 	
-	//____ ~WgAnim() ______________________________________________________________
+	//____ ~Anim() ______________________________________________________________
 	
-	WgAnim::~WgAnim()
+	Anim::~Anim()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgAnim::isInstanceOf( const char * pClassName ) const
+	bool Anim::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgAnim::className( void ) const
+	const char * Anim::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgAnim_p WgAnim::cast( const WgObject_p& pObject )
+	Anim_p Anim::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgAnim_p( static_cast<WgAnim*>(pObject.rawPtr()) );
+			return Anim_p( static_cast<Anim*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,7 +72,7 @@ namespace wg
 	
 	//____ setPlayMode() __________________________________________________________
 	
-	bool WgAnim::setPlayMode( WgAnimMode mode )
+	bool Anim::setPlayMode( AnimMode mode )
 	{
 		m_playMode = mode;
 		return true;
@@ -80,7 +80,7 @@ namespace wg
 	
 	//____ setTimeScaler() ________________________________________________________
 	
-	bool WgAnim::setTimeScaler( float scale )
+	bool Anim::setTimeScaler( float scale )
 	{
 		if( scale <= 0.f )
 			return false;
@@ -92,14 +92,14 @@ namespace wg
 	
 	//____ deleteKeyFrame() _______________________________________________________
 	
-	bool WgAnim::deleteKeyFrame( int pos )
+	bool Anim::deleteKeyFrame( int pos )
 	{
 		return false;
 	}
 	
 	//____ deleteKeyFrame() _______________________________________________________
 	
-	bool WgAnim::deleteKeyFrame( WgKeyFrame * pKeyFrame )
+	bool Anim::deleteKeyFrame( KeyFrame * pKeyFrame )
 	{
 		delete pKeyFrame;
 		return true;
@@ -108,9 +108,9 @@ namespace wg
 	
 	//____ _insertKeyFrame() _______________________________________________________
 	
-	bool WgAnim::_insertKeyFrame( int pos, WgKeyFrame * pFrame, int duration )
+	bool Anim::_insertKeyFrame( int pos, KeyFrame * pFrame, int duration )
 	{
-		WgKeyFrame * pPos = m_keyframes.first();
+		KeyFrame * pPos = m_keyframes.first();
 	
 		for( int i = 0 ; i < pos ; i++ )
 		{
@@ -123,7 +123,7 @@ namespace wg
 	}
 	
 	
-	bool WgAnim::_insertKeyFrame( WgKeyFrame * pPos, WgKeyFrame * pFrame, int duration )
+	bool Anim::_insertKeyFrame( KeyFrame * pPos, KeyFrame * pFrame, int duration )
 	{
 		if( pFrame->m_duration == 0 || pPos->chain() != &m_keyframes || m_duration + pFrame->m_duration < m_duration )
 			return false;
@@ -144,7 +144,7 @@ namespace wg
 	
 	//____ _addKeyFrame() __________________________________________________________
 	
-	bool WgAnim::_addKeyFrame( WgKeyFrame * pFrame, int duration )
+	bool Anim::_addKeyFrame( KeyFrame * pFrame, int duration )
 	{
 		if( duration == 0 || m_duration + duration < m_duration )
 			return false;
@@ -158,11 +158,11 @@ namespace wg
 	
 	//____ _playPos() ___________________________________________________________
 	
-	WgAnimPlayPos WgAnim::_playPos( int64_t ticks, WgKeyFrame * pProximity ) const
+	AnimPlayPos Anim::_playPos( int64_t ticks, KeyFrame * pProximity ) const
 	{
 		ticks = (int64_t)(ticks * ((double)m_scale));
 		
-		WgAnimPlayPos	pos;
+		AnimPlayPos	pos;
 	
 		switch( m_playMode )
 		{
@@ -177,7 +177,7 @@ namespace wg
 				}
 				else
 				{
-					WgKeyFrame * pFrame = _keyFrame( ticks, pProximity );
+					KeyFrame * pFrame = _keyFrame( ticks, pProximity );
 					pos.pKeyFrame1			= pFrame;
 					pos.transition			= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= (int) ticks;
@@ -200,7 +200,7 @@ namespace wg
 				}
 				else
 				{
-					WgKeyFrame * pFrame = _keyFrame( m_duration - ticks, pProximity );
+					KeyFrame * pFrame = _keyFrame( m_duration - ticks, pProximity );
 					pos.pKeyFrame2			= pFrame;
 					pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= m_duration - (int) ticks;
@@ -216,7 +216,7 @@ namespace wg
 			{
 				ticks = ticks % m_duration;
 	
-				WgKeyFrame * pFrame		= _keyFrame( ticks, pProximity );
+				KeyFrame * pFrame		= _keyFrame( ticks, pProximity );
 				pos.pKeyFrame1			= pFrame;
 				pos.transition			= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= (int) ticks;
@@ -231,7 +231,7 @@ namespace wg
 			{
 				ticks = ticks % m_duration;
 	
-				WgKeyFrame * pFrame =	_keyFrame( m_duration - ticks, pProximity );
+				KeyFrame * pFrame =	_keyFrame( m_duration - ticks, pProximity );
 				pos.pKeyFrame2			= pFrame;
 				pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 				pos.animOffset			= m_duration - (int) ticks;
@@ -250,7 +250,7 @@ namespace wg
 				if( ((ticks/m_duration) % 2) == 0 )
 				{
 					ts = ticks % m_duration;
-					WgKeyFrame * pFrame		= _keyFrame( ts, pProximity );
+					KeyFrame * pFrame		= _keyFrame( ts, pProximity );
 					pos.pKeyFrame1			= pFrame;
 					pos.transition	= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= (int) ts;
@@ -263,7 +263,7 @@ namespace wg
 				{
 					ts = m_duration - (ticks % m_duration);
 	
-					WgKeyFrame * pFrame		= _keyFrame( ts, pProximity );
+					KeyFrame * pFrame		= _keyFrame( ts, pProximity );
 					pos.pKeyFrame2			= pFrame;
 					pos.transition			= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= (int) ts;
@@ -283,7 +283,7 @@ namespace wg
 				if( ((ticks/m_duration) % 2) == 1 )
 				{
 					ts = ticks % m_duration;
-					WgKeyFrame * pFrame		= _keyFrame( ts, pProximity );
+					KeyFrame * pFrame		= _keyFrame( ts, pProximity );
 					pos.pKeyFrame1			= pFrame;
 					pos.transition	= (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= (int) ts;
@@ -296,7 +296,7 @@ namespace wg
 				{
 					ts = m_duration - (ticks % m_duration);
 	
-					WgKeyFrame * pFrame		= _keyFrame( ts, pProximity );
+					KeyFrame * pFrame		= _keyFrame( ts, pProximity );
 					pos.pKeyFrame2			= pFrame;
 					pos.transition	= 1.f - (ticks-pFrame->m_timestamp) / (float) pFrame->m_duration;
 					pos.animOffset			= (int) ts;
@@ -313,7 +313,7 @@ namespace wg
 	
 	//____ _keyFrame() __________________________________________________________
 	
-	WgKeyFrame * WgAnim::_keyFrame( int64_t ticks, WgKeyFrame * pProximity ) const
+	KeyFrame * Anim::_keyFrame( int64_t ticks, KeyFrame * pProximity ) const
 	{
 		// If proximity isn't set, we'll start from first or last depending
 		// on which we belive is closest.
@@ -350,7 +350,7 @@ namespace wg
 	
 	//____ timeToOfs() _____________________________________________________________
 	
-	int WgAnim::timeToOfs( int64_t ticks )
+	int Anim::timeToOfs( int64_t ticks )
 	{
 		ticks = (int64_t)(ticks * ((double)m_scale));
 		
@@ -396,17 +396,17 @@ namespace wg
 	
 	
 	
-	//____ WgKeyFrame::setDuration() ______________________________________________
+	//____ KeyFrame::setDuration() ______________________________________________
 	
-	bool WgKeyFrame::setDuration( int ticks )
+	bool KeyFrame::setDuration( int ticks )
 	{
 		
-		// Ugly hack to get a pointer to our WgAnim object.
+		// Ugly hack to get a pointer to our Anim object.
 	
-		WgChain<WgKeyFrame> * pChain = chain();
-		WgAnim * pAnim = 0;
+		Chain<KeyFrame> * pChain = chain();
+		Anim * pAnim = 0;
 		char * ofs = (char *) &(pAnim->m_keyframes);
-		pAnim = (WgAnim *)(((char *)pChain) - ofs);
+		pAnim = (Anim *)(((char *)pChain) - ofs);
 	
 		//
 	
@@ -419,7 +419,7 @@ namespace wg
 	
 		m_duration = ticks;
 	
-		WgKeyFrame * pFrame = next();
+		KeyFrame * pFrame = next();
 		while( pFrame )
 		{
 			pFrame->m_duration += change;

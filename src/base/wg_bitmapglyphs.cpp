@@ -31,12 +31,12 @@ namespace wg
 {
 	
 	
-	const char WgBitmapGlyphs::CLASSNAME[] = {"BitmapGlyphs"};
+	const char BitmapGlyphs::CLASSNAME[] = {"BitmapGlyphs"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgBitmapGlyphs::WgBitmapGlyphs( const WgSurface_p& pSurf, char * pGlyphSpec, bool binaryFile )
+	BitmapGlyphs::BitmapGlyphs( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -59,7 +59,7 @@ namespace wg
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
 	
-		const WgGlyph* pUnder = getGlyph('_', 0);
+		const Glyph* pUnder = getGlyph('_', 0);
 	
 		m_underline.pSurf = pUnder->pSurf;
 		m_underline.rect = pUnder->rect;
@@ -82,7 +82,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgBitmapGlyphs::~WgBitmapGlyphs()
+	BitmapGlyphs::~BitmapGlyphs()
 	{
 		for( int i = 0 ; i < 256 ; i++ )
 		{
@@ -96,34 +96,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgBitmapGlyphs::isInstanceOf( const char * pClassName ) const
+	bool BitmapGlyphs::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgGlyphset::isInstanceOf(pClassName);
+		return Glyphset::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgBitmapGlyphs::className( void ) const
+	const char * BitmapGlyphs::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgBitmapGlyphs_p WgBitmapGlyphs::cast( const WgObject_p& pObject )
+	BitmapGlyphs_p BitmapGlyphs::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgBitmapGlyphs_p( static_cast<WgBitmapGlyphs*>(pObject.rawPtr()) );
+			return BitmapGlyphs_p( static_cast<BitmapGlyphs*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ copyGlyphs() ___________________________________________________________
 	
-	void WgBitmapGlyphs::copyGlyphs( WgBitmapGlyphs* pOtherFont )
+	void BitmapGlyphs::copyGlyphs( BitmapGlyphs* pOtherFont )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgSpacing *= m_nGlyphs;
@@ -136,10 +136,10 @@ namespace wg
 				if(m_glyphTab[tabIndex] == NULL)
 				{
 					// Allocate memory for this tab, and reset it
-					m_glyphTab[tabIndex] = new Glyph[256];
+					m_glyphTab[tabIndex] = new MyGlyph[256];
 					for( int i = 0 ; i < 256 ; i++ )
 					{
-						m_glyphTab[tabIndex][i] = Glyph();
+						m_glyphTab[tabIndex][i] = MyGlyph();
 					}
 				}
 	
@@ -169,9 +169,9 @@ namespace wg
 	
 	//____ hasGlyph() _________________________________________________
 	
-	inline bool WgBitmapGlyphs::hasGlyph( Uint16 chr )
+	inline bool BitmapGlyphs::hasGlyph( Uint16 chr )
 	{
-		Glyph * pGlyph = m_glyphTab[chr >> 8];
+		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
 		if( pGlyph )
 		{
@@ -186,9 +186,9 @@ namespace wg
 	
 	//____ getGlyph() _________________________________________________________
 	
-	inline WgGlyph_p WgBitmapGlyphs::getGlyph( Uint16 chr, int size )
+	inline Glyph_p BitmapGlyphs::getGlyph( Uint16 chr, int size )
 	{
-		Glyph * pGlyph = m_glyphTab[chr >> 8];
+		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
 		if( pGlyph )
 		{
@@ -204,7 +204,7 @@ namespace wg
 	//____ getKerning() _________________________________________________________
 	
 	
-	inline int WgBitmapGlyphs::getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size )
+	inline int BitmapGlyphs::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
 	{
 		if( !m_pKerningTable )
 			return 0;
@@ -224,7 +224,7 @@ namespace wg
 	
 	//____ insertGlyphs() _________________________________________________________
 	
-	void WgBitmapGlyphs::insertGlyphs( const WgSurface_p& pSurf, char* pGlyphSpec, bool binaryFile )
+	void BitmapGlyphs::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgSpacing *= m_nGlyphs;
@@ -319,10 +319,10 @@ namespace wg
 	
 			if(firstInsert)
 			{
-				m_glyphTab[0] = new Glyph[256];
+				m_glyphTab[0] = new MyGlyph[256];
 				for( int i = 0 ; i < 256 ; i++ )
 				{
-					m_glyphTab[0][i] = Glyph();
+					m_glyphTab[0][i] = MyGlyph();
 				}
 			}
 	
@@ -368,15 +368,15 @@ namespace wg
 							int tab = c >> 8;
 							if( m_glyphTab[tab] == 0 )
 							{
-								m_glyphTab[tab] = new Glyph[256];
+								m_glyphTab[tab] = new MyGlyph[256];
 								for( int i = 0 ; i < 256 ; i++ )
 								{
-									m_glyphTab[tab][i] = Glyph();
+									m_glyphTab[tab][i] = MyGlyph();
 								}
 							}
 	
 							c &= 0xff;
-							m_glyphTab[tab][c] = Glyph( (Uint8)info.advance, (Sint8)info.xoffset, (Sint8)info.yoffset, m_nGlyphs, this, pSurf, WgRect( info.x, info.y, info.width, info.height) );
+							m_glyphTab[tab][c] = MyGlyph( (Uint8)info.advance, (Sint8)info.xoffset, (Sint8)info.yoffset, m_nGlyphs, this, pSurf, Rect( info.x, info.y, info.width, info.height) );
 	
 							if(firstInsert)
 							{
@@ -463,9 +463,9 @@ namespace wg
 			bearingX = 0; // Clear bearingX since it is optional in the font.
 			bearingY = 0; // Clear bearingY since it is optional in the font.
 	
-			pGlyphSpec = WgTextTool::nextLine( pGlyphSpec );
+			pGlyphSpec = TextTool::nextLine( pGlyphSpec );
 			nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
-			pGlyphSpec = WgTextTool::nextLine( pGlyphSpec );
+			pGlyphSpec = TextTool::nextLine( pGlyphSpec );
 			firstSpacing = advance;
 	
 	
@@ -477,10 +477,10 @@ namespace wg
 				if( (int) m_spaceSpacing != firstSpacing )
 					m_bMonospace = false;
 	
-				m_glyphTab[0] = new Glyph[256];
+				m_glyphTab[0] = new MyGlyph[256];
 				for( int i = 0 ; i < 256 ; i++ )
 				{
-					m_glyphTab[0][i] = Glyph();
+					m_glyphTab[0][i] = MyGlyph();
 				}
 				m_glyphTab[0][32].setAdvance( m_spaceSpacing );
 				m_glyphTab[0][0xA0].setAdvance( m_spaceSpacing );	// NO_BREAK_SPACE
@@ -497,15 +497,15 @@ namespace wg
 				//
 	
 				const char * pChr = chr;
-				Uint16 c = WgTextTool::parseChar( pChr );
+				Uint16 c = TextTool::parseChar( pChr );
 	
 				int tab = c >> 8;
 				if( m_glyphTab[tab] == 0 )
 				{
-					m_glyphTab[tab] = new Glyph[256];
+					m_glyphTab[tab] = new MyGlyph[256];
 					for( int i = 0 ; i < 256 ; i++ )
 					{
-						m_glyphTab[tab][i] = Glyph();
+						m_glyphTab[tab][i] = MyGlyph();
 					}
 				}
 	
@@ -513,7 +513,7 @@ namespace wg
 	
 				if(!m_glyphTab[tab][c].m_src.pSurface)
 				{
-					m_glyphTab[tab][c] = Glyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, WgRect( x, y, w, h ) );
+					m_glyphTab[tab][c] = MyGlyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, Rect( x, y, w, h ) );
 	
 					if( advance != firstSpacing )
 						m_bMonospace = false;
@@ -532,7 +532,7 @@ namespace wg
 				bearingX = 0; // Clear berings since they are optional in the font.
 				bearingY = 0;
 				nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
-				pGlyphSpec = WgTextTool::nextLine( pGlyphSpec );
+				pGlyphSpec = TextTool::nextLine( pGlyphSpec );
 			}
 	
 			// I guess monospace means no kerning.
@@ -542,7 +542,7 @@ namespace wg
 				char* pKerningStart = strstr( pGlyphSpec, "[kerning]" );
 				if( pKerningStart )
 				{
-					char* pKerningSpec = WgTextTool::nextLine( pKerningStart );
+					char* pKerningSpec = TextTool::nextLine( pKerningStart );
 	
 					Sint8* pNewKerningTable = new Sint8[ m_nGlyphs * m_nGlyphs ];
 					int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
@@ -564,13 +564,13 @@ namespace wg
 					int kern = 0;
 	
 					nRead = sscanf( pKerningSpec, "%s %s %d", chrLeft, chrRight, &kern );
-					pKerningSpec = WgTextTool::nextLine( pKerningSpec );
+					pKerningSpec = TextTool::nextLine( pKerningSpec );
 					while( nRead == 3 )
 					{
 						const char* pChrLeft = chrLeft;
 						const char* pChrRight = chrRight;
-						Uint16 cLeft = WgTextTool::parseChar( pChrLeft );
-						Uint16 cRight = WgTextTool::parseChar( pChrRight );
+						Uint16 cLeft = TextTool::parseChar( pChrLeft );
+						Uint16 cRight = TextTool::parseChar( pChrRight );
 	
 						int indexLeft = getGlyph( cLeft )->kerningIndex();
 						int indexRight = getGlyph( cRight )->kerningIndex();
@@ -578,7 +578,7 @@ namespace wg
 						m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = kern;
 	
 						nRead = sscanf( pKerningSpec, "%s %s %d", chrLeft, chrRight, &kern );
-						pKerningSpec = WgTextTool::nextLine( pKerningSpec );
+						pKerningSpec = TextTool::nextLine( pKerningSpec );
 					}
 				}
 			}
@@ -588,15 +588,15 @@ namespace wg
 		m_avgSpacing /= m_nGlyphs;
 	}
 	
-	//____ WgBitmapGlyphs::Glyph constructor ______________________________________
+	//____ BitmapGlyphs::MyGlyph constructor ______________________________________
 	
-	WgBitmapGlyphs::Glyph::Glyph()
+	BitmapGlyphs::MyGlyph::MyGlyph()
 	{
 		m_src.pSurface = 0;
 	}
 	
-	WgBitmapGlyphs::Glyph::Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, const WgSurface_p& pSurf, const WgRect& rect )
-	: WgGlyph( advance, kerningIndex, pGlyphset )
+	BitmapGlyphs::MyGlyph::MyGlyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect )
+	: Glyph( advance, kerningIndex, pGlyphset )
 	{
 			m_src.pSurface	= pSurf;
 			m_src.rect		= rect;

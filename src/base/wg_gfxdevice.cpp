@@ -37,13 +37,13 @@
 namespace wg 
 {
 	
-	const char WgGfxDevice::CLASSNAME[] = {"GfxDevice"};
+	const char GfxDevice::CLASSNAME[] = {"GfxDevice"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgGfxDevice::WgGfxDevice( WgSize canvasSize )
+	GfxDevice::GfxDevice( Size canvasSize )
 	{
-		m_tintColor 		= WgColor(255,255,255);
+		m_tintColor 		= Color(255,255,255);
 		m_blendMode 		= WG_BLENDMODE_BLEND;
 		m_bSaveDirtyRects 	= false;
 		m_renderFlags		= 0;
@@ -52,34 +52,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgGfxDevice::isInstanceOf( const char * pClassName ) const
+	bool GfxDevice::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgGfxDevice::className( void ) const
+	const char * GfxDevice::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgGfxDevice_p WgGfxDevice::cast( const WgObject_p& pObject )
+	GfxDevice_p GfxDevice::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgGfxDevice_p( static_cast<WgGfxDevice*>(pObject.rawPtr()) );
+			return GfxDevice_p( static_cast<GfxDevice*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setSaveDirtyRects() _____________________________________________________
 	
-	bool WgGfxDevice::setSaveDirtyRects( bool bSave )
+	bool GfxDevice::setSaveDirtyRects( bool bSave )
 	{
 		m_bSaveDirtyRects = bSave;
 		return true;
@@ -87,21 +87,21 @@ namespace wg
 	
 	//____ setTintColor() __________________________________________________________
 	
-	void WgGfxDevice::setTintColor( WgColor color )
+	void GfxDevice::setTintColor( Color color )
 	{
 		m_tintColor = color;
 	}
 	
 	//____ setBlendMode() __________________________________________________________
 	
-	bool WgGfxDevice::setBlendMode( WgBlendMode blendMode )
+	bool GfxDevice::setBlendMode( WgBlendMode blendMode )
 	{
 		m_blendMode = blendMode;
 		return false;				// Not implemented.
 	}
 	
 	//______________________________________________________________________________
-	Uint32 WgGfxDevice::setRenderFlags( Uint32 flags )
+	Uint32 GfxDevice::setRenderFlags( Uint32 flags )
 	{
 		Uint32 oldFlags = m_renderFlags;
 		m_renderFlags = flags;
@@ -110,66 +110,66 @@ namespace wg
 	
 	//____ beginRender() ___________________________________________________________
 	
-	bool WgGfxDevice::beginRender()
+	bool GfxDevice::beginRender()
 	{
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 	
 	//____ endRender() _____________________________________________________________
 	
-	bool WgGfxDevice::endRender()
+	bool GfxDevice::endRender()
 	{
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 	
 	//____ blit() __________________________________________________________________
 	
-	void WgGfxDevice::blit( const WgSurface_p& pSrc )
+	void GfxDevice::blit( const Surface_p& pSrc )
 	{
-		blit( pSrc, WgRect( 0, 0, pSrc->width(), pSrc->height() ), 0, 0 );
+		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), 0, 0 );
 	}
 	
-	void WgGfxDevice::blit( const WgSurface_p& pSrc, int dx, int dy )
+	void GfxDevice::blit( const Surface_p& pSrc, int dx, int dy )
 	{
-		blit( pSrc, WgRect( 0, 0, pSrc->width(), pSrc->height() ), dx, dy );
+		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), dx, dy );
 	}
 	
 	//____ stretchBlit() ___________________________________________________________
 	
-	void WgGfxDevice::stretchBlit( const WgSurface_p& pSrc, bool bTriLinear, float mipmapBias )
+	void GfxDevice::stretchBlit( const Surface_p& pSrc, bool bTriLinear, float mipmapBias )
 	{
 		stretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->width(), (float) pSrc->height(), 0, 0, (float) m_canvasSize.w, (float) m_canvasSize.h, bTriLinear, mipmapBias );
 	}
 	
-	void WgGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
+	void GfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipmapBias )
 	{
 		stretchBlitSubPixel( pSrc, 0, 0, (float) pSrc->width(), (float) pSrc->height(), (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
 	}
 	
-	void WgGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
+	void GfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipmapBias )
 	{
 		stretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, (float) src.w, (float) src.h, (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, bTriLinear, mipmapBias );
 	}
 	
 	//____ tileBlit() ______________________________________________________________
 	
-	void WgGfxDevice::tileBlit( const WgSurface_p& _pSrc )
+	void GfxDevice::tileBlit( const Surface_p& _pSrc )
 	{
-		tileBlit( _pSrc, WgRect( 0, 0, _pSrc->width(), _pSrc->height() ), WgRect(0,0,m_canvasSize) );
+		tileBlit( _pSrc, Rect( 0, 0, _pSrc->width(), _pSrc->height() ), Rect(0,0,m_canvasSize) );
 	}
 	
-	void WgGfxDevice::tileBlit( const WgSurface_p& _pSrc, const WgRect& _dest )
+	void GfxDevice::tileBlit( const Surface_p& _pSrc, const Rect& _dest )
 	{
-		tileBlit( _pSrc, WgRect( 0, 0, _pSrc->width(), _pSrc->height() ), _dest );
+		tileBlit( _pSrc, Rect( 0, 0, _pSrc->width(), _pSrc->height() ), _dest );
 	}
 	
-	void WgGfxDevice::tileBlit( const WgSurface_p& _pSrc, const WgRect& _src, const WgRect& _dest )
+	void GfxDevice::tileBlit( const Surface_p& _pSrc, const Rect& _src, const Rect& _dest )
 	{
 		if( !_pSrc || _dest.h == 0 || _dest.w == 0 )
 			return;
 	
-		WgRect	r = _src;
-		WgRect	r2 = _src;
+		Rect	r = _src;
+		Rect	r2 = _src;
 	
 		int nCol = _dest.w / _src.w;
 		r2.w = _dest.w % _src.w;
@@ -211,24 +211,24 @@ namespace wg
 	
 	//____ clipFill() ______________________________________________________________
 	
-	void WgGfxDevice::clipFill( const WgRect& _clip, const WgRect& _rect, const WgColor& _col )
+	void GfxDevice::clipFill( const Rect& _clip, const Rect& _rect, const Color& _col )
 	{
-		fill( WgRect( _clip, _rect ), _col );
+		fill( Rect( _clip, _rect ), _col );
 	}
 	
 	//____ clipBlit() ______________________________________________________________
 	
-	void WgGfxDevice::clipBlit( const WgRect& clip, const WgSurface_p& pSrc )
+	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc )
 	{
-		clipBlit( clip, pSrc, WgRect(0,0,pSrc->width(),pSrc->height()), 0, 0 );
+		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), 0, 0 );
 	}
 	
-	void WgGfxDevice::clipBlit( const WgRect& clip, const WgSurface_p& pSrc, int dx, int dy  )
+	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc, int dx, int dy  )
 	{
-		clipBlit( clip, pSrc, WgRect(0,0,pSrc->width(),pSrc->height()), dx, dy );
+		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dx, dy );
 	}
 	
-	void WgGfxDevice::clipBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& srcRect, int dx, int dy  )
+	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc, const Rect& srcRect, int dx, int dy  )
 	{
 		if( (clip.x <= dx) && (clip.x + clip.w > dx + srcRect.w) &&
 	      (clip.y <= dy) && (clip.y + clip.h > dy + srcRect.h) )
@@ -243,7 +243,7 @@ namespace wg
 	
 		// Do Clipping
 	
-		WgRect	newSrc = srcRect;
+		Rect	newSrc = srcRect;
 	
 		if( dx < clip.x )
 		{
@@ -271,22 +271,22 @@ namespace wg
 	
 	//____ clipStretchBlit() _______________________________________________________
 	
-	void WgGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, bool bTriLinear, float mipBias )
+	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, bool bTriLinear, float mipBias )
 	{
-		clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
+		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), Rect( 0,0,m_canvasSize), bTriLinear, mipBias );
 	}
 	
-	void WgGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
+	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipBias )
 	{
-		clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
+		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
 	}
 	
-	void WgGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
+	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipBias )
 	{
 		clipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
 	}
 	
-	void WgGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
 	{
 		float cx = std::max(float(clip.x), dx);
 		float cy = std::max(float(clip.y), dy);
@@ -321,27 +321,27 @@ namespace wg
 	
 	//____ clipTileBlit() __________________________________________________________
 	
-	void WgGfxDevice::clipTileBlit( const WgRect& clip, const WgSurface_p& pSrc )
+	void GfxDevice::clipTileBlit( const Rect& clip, const Surface_p& pSrc )
 	{
-		clipTileBlit( clip, pSrc, WgRect( 0,0,pSrc->width(),pSrc->height() ),
-					  WgRect(0,0,m_canvasSize) );
+		clipTileBlit( clip, pSrc, Rect( 0,0,pSrc->width(),pSrc->height() ),
+					  Rect(0,0,m_canvasSize) );
 	}
 	
-	void WgGfxDevice::clipTileBlit( const WgRect& clip, const WgSurface_p& pSrc,
-									  const WgRect& dest )
+	void GfxDevice::clipTileBlit( const Rect& clip, const Surface_p& pSrc,
+									  const Rect& dest )
 	{
-		clipTileBlit( clip, pSrc, WgRect(0,0,pSrc->width(),pSrc->height()), dest );
+		clipTileBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dest );
 	}
 	
 	
-	void WgGfxDevice::clipTileBlit( const WgRect& _clip, const WgSurface_p& _pSrc, const WgRect& _src, const WgRect& _dest )
+	void GfxDevice::clipTileBlit( const Rect& _clip, const Surface_p& _pSrc, const Rect& _src, const Rect& _dest )
 	{
 		if( !_pSrc )
 			return;
 	
-		WgRect	myRect;
+		Rect	myRect;
 	
-		WgRect	clip;
+		Rect	clip;
 		if( !clip.intersection( _dest, _clip ) )
 			return;
 	
@@ -401,8 +401,8 @@ namespace wg
 	
 	//____ clipBlitHorrBar() ______________________________________________________
 	
-	void WgGfxDevice::clipBlitHorrBar(	const WgRect& _clip, const WgSurface_p& _pSurf,
-									  	const WgRect& _src, const WgBorder& _borders,
+	void GfxDevice::clipBlitHorrBar(	const Rect& _clip, const Surface_p& _pSurf,
+									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, int _dx, int _dy, int _len )
 	{
 		/*
@@ -411,7 +411,7 @@ namespace wg
 	
 		// Blit left edge
 	
-		WgRect	r( _src.x, _src.y, _borders.left, _src.h );
+		Rect	r( _src.x, _src.y, _borders.left, _src.h );
 		clipBlit( _clip, _pSurf, r, _dx, _dy );
 	
 		_len -= _borders.width();			// Remove left and right edges from len.
@@ -439,7 +439,7 @@ namespace wg
 		}
 		else
 		{
-			clipStretchBlit( _clip, _pSurf, r, WgRect( _dx, _dy, _len, r.h ) );
+			clipStretchBlit( _clip, _pSurf, r, Rect( _dx, _dy, _len, r.h ) );
 			_dx += _len;
 		}
 	
@@ -452,8 +452,8 @@ namespace wg
 	
 	//____ clipBlitVertBar() ______________________________________________________
 	
-	void WgGfxDevice::clipBlitVertBar(	const WgRect& _clip, const WgSurface_p& _pSurf,
-									  	const WgRect& _src, const WgBorder& _borders,
+	void GfxDevice::clipBlitVertBar(	const Rect& _clip, const Surface_p& _pSurf,
+									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, int _dx, int _dy, int _len )
 	{
 		/*
@@ -462,7 +462,7 @@ namespace wg
 	
 		// Blit top edge
 	
-		WgRect	r( _src.x, _src.y, _src.w, _borders.top );
+		Rect	r( _src.x, _src.y, _src.w, _borders.top );
 		clipBlit( _clip, _pSurf, r, _dx, _dy );
 	
 		_len -= _borders.height();			// Remove top and bottom edges from len.
@@ -490,7 +490,7 @@ namespace wg
 		}
 		else
 		{
-			clipStretchBlit( _clip, _pSurf, r, WgRect( _dx, _dy, r.w, _len ) );
+			clipStretchBlit( _clip, _pSurf, r, Rect( _dx, _dy, r.w, _len ) );
 			_dy += _len;
 		}
 	
@@ -504,13 +504,13 @@ namespace wg
 	
 	//____ blitHorrBar() __________________________________________________________
 	
-	void WgGfxDevice::blitHorrBar(	const WgSurface_p& _pSurf, const WgRect& _src,
-									const WgBorder& _borders, bool _bTile,
+	void GfxDevice::blitHorrBar(	const Surface_p& _pSurf, const Rect& _src,
+									const Border& _borders, bool _bTile,
 									int _dx, int _dy, int _len )
 	{
 		// Blit left edge
 	
-		WgRect	r( _src.x, _src.y, _borders.left, _src.h );
+		Rect	r( _src.x, _src.y, _borders.left, _src.h );
 		blit( _pSurf, r, _dx, _dy );
 	
 		_len -= _borders.width();			// Remove left and right edges from len.
@@ -538,7 +538,7 @@ namespace wg
 		}
 		else
 		{
-			stretchBlit( _pSurf, r, WgRect( _dx, _dy, _len, r.h ) );
+			stretchBlit( _pSurf, r, Rect( _dx, _dy, _len, r.h ) );
 			_dx += _len;
 		}
 	
@@ -551,13 +551,13 @@ namespace wg
 	
 	//____ blitVertBar() __________________________________________________________
 	
-	void WgGfxDevice::blitVertBar(	const WgSurface_p& _pSurf, const WgRect& _src,
-									const WgBorder& _borders, bool _bTile,
+	void GfxDevice::blitVertBar(	const Surface_p& _pSurf, const Rect& _src,
+									const Border& _borders, bool _bTile,
 									int _dx, int _dy, int _len )
 	{
 		// Blit top edge
 	
-		WgRect	r( _src.x, _src.y, _src.w, _borders.top );
+		Rect	r( _src.x, _src.y, _src.w, _borders.top );
 		blit( _pSurf, r, _dx, _dy );
 	
 		_len -= _borders.height();			// Remove top and bottom borders from len.
@@ -585,7 +585,7 @@ namespace wg
 		}
 		else
 		{
-			stretchBlit( _pSurf, r, WgRect( _dx, _dy, r.w, _len ) );
+			stretchBlit( _pSurf, r, Rect( _dx, _dy, r.w, _len ) );
 			_dy += _len;
 		}
 	
@@ -598,17 +598,17 @@ namespace wg
 	
 	//____ printText() ____________________________________________________________
 	
-	bool WgGfxDevice::printText( const WgRect& clip, const WgLegacyTextField * pText, const WgRect& dest )
+	bool GfxDevice::printText( const Rect& clip, const LegacyTextField * pText, const Rect& dest )
 	{
 		if( !pText || dest.w <= 0 )
 			return false;
 	
 		_drawTextBg(clip, pText, dest);
 	
-		WgPen pen;
+		Pen pen;
 		pen.setDevice( this );
 	
-		WgTextAttr	attr;
+		TextAttr	attr;
 		pText->getBaseAttr(attr);
 	
 		if( !attr.pFont )
@@ -616,12 +616,12 @@ namespace wg
 	
 		pen.setAttributes(attr);
 	
-		WgSize	textSize( pText->width(), pText->height() );
+		Size	textSize( pText->width(), pText->height() );
 	
 		if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 			pen.setClipRect( clip );
 	
-		const WgCaretInstance* pCursor = 0;
+		const CaretInstance* pCursor = 0;
 		int cursLine = -1, cursCol = -1;
 	
 		if( pText->isCursorShowing() )
@@ -634,11 +634,11 @@ namespace wg
 		if( pText->autoEllipsis() && !pText->isCursorShowing() && (textSize.w > dest.w || textSize.h > dest.h) )
 			bEllipsisActive = true;
 	
-		WgCoord	pos;
+		Coord	pos;
 		pos.y = pText->lineStartY( 0, dest ) + pText->getSoftLine(0)->baseline;
 	
 		int					nLines = pText->nbSoftLines();
-		const WgLegacyTextLine *	pLines = pText->getSoftLines();
+		const LegacyTextLine *	pLines = pText->getSoftLines();
 	
 		for( int i = 0 ; i < nLines ; i++ )
 		{
@@ -656,13 +656,13 @@ namespace wg
 				// Draw line parts, make space for cursor.
 	
 				_printTextSpan( pen, pText, pLines[i].ofs, cursCol, false );
-				WgCoord cursorPos = pen.getPos();
+				Coord cursorPos = pen.getPos();
 				pen.advancePosCursor( *pCursor );
 				_printTextSpan( pen, pText, pLines[i].ofs + cursCol, pLines[i].nChars - cursCol, true );
 	
 				// Blit the cursor
 	
-				WgCoord restorePos = pen.getPos();
+				Coord restorePos = pen.getPos();
 				pen.setPos( cursorPos );
 				pen.blitCursor( *pCursor );
 				pen.setPos( restorePos );
@@ -689,16 +689,16 @@ namespace wg
 	
 	//____ _printTextSpan() ________________________________________________________
 	
-	void WgGfxDevice::_printTextSpan( WgPen& pen, const WgLegacyTextField * pText, int ofs, int len, bool bLineEnding )
+	void GfxDevice::_printTextSpan( Pen& pen, const LegacyTextField * pText, int ofs, int len, bool bLineEnding )
 	{
-		WgColor baseCol	= m_tintColor;
-		WgColor	color	= baseCol;
+		Color baseCol	= m_tintColor;
+		Color	color	= baseCol;
 	
-		const WgChar * pChars = pText->getText();
+		const Char * pChars = pText->getText();
 		Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-		WgTextAttr		attr;
+		TextAttr		attr;
 	
-		WgRange	selection = pText->getSelection();
+		Range	selection = pText->getSelection();
 	
 		// Print loop
 	
@@ -729,7 +729,7 @@ namespace wg
 	
 				if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
 				{
-					WgRect clip = pen.hasClipRect()?pen.getClipRect():WgRect(0,0,65535,65535);
+					Rect clip = pen.hasClipRect()?pen.getClipRect():Rect(0,0,65535,65535);
 					_drawUnderline( clip, pText, pen.getPosX(), pen.getPosY(), i, (ofs+len)-i );
 				}
 	
@@ -786,17 +786,17 @@ namespace wg
 	
 	//____ _printEllipsisTextSpan() ________________________________________________________
 	
-	void WgGfxDevice::_printEllipsisTextSpan( WgPen& pen, const WgLegacyTextField * pText, int ofs, int len, int endX )
+	void GfxDevice::_printEllipsisTextSpan( Pen& pen, const LegacyTextField * pText, int ofs, int len, int endX )
 	{
-		WgColor baseCol	= m_tintColor;
-		WgColor	color	= baseCol;
+		Color baseCol	= m_tintColor;
+		Color	color	= baseCol;
 	
-		const WgChar * pChars = pText->getText();
+		const Char * pChars = pText->getText();
 		Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-		WgTextAttr		attr;
-		WgTextAttr		baseAttr;
+		TextAttr		attr;
+		TextAttr		baseAttr;
 	
-		WgRange	selection = pText->getSelection();
+		Range	selection = pText->getSelection();
 		int		ellipsisWidth = 0;
 	
 	
@@ -807,7 +807,7 @@ namespace wg
 	
 		Uint16	ellipsisChar = WG_ELLIPSIS;
 		ellipsisWidth = 0;
-		WgGlyph_p pEllipsis = pen.getFont()->getGlyph( WG_ELLIPSIS, pen.getStyle(), pen.getSize() );
+		Glyph_p pEllipsis = pen.getFont()->getGlyph( WG_ELLIPSIS, pen.getStyle(), pen.getSize() );
 	
 		if( !pEllipsis )
 		{
@@ -817,7 +817,7 @@ namespace wg
 	
 		if( pEllipsis )
 		{
-			const WgGlyphBitmap * pBitmap = pEllipsis->getBitmap();
+			const GlyphBitmap * pBitmap = pEllipsis->getBitmap();
 			if( pBitmap )
 			{
 				if( ellipsisChar == WG_ELLIPSIS )
@@ -856,7 +856,7 @@ namespace wg
 	
 				if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
 				{
-					WgRect clip = pen.hasClipRect()?pen.getClipRect():WgRect(0,0,65535,65535);
+					Rect clip = pen.hasClipRect()?pen.getClipRect():Rect(0,0,65535,65535);
 					_drawUnderline( clip, pText, pen.getPosX(), pen.getPosY(), i, (ofs+len)-i );
 				}
 			}
@@ -867,9 +867,9 @@ namespace wg
 	
 			bool bBlit = pen.setChar( ch );
 	
-			WgCoord savedPos = pen.getPos();
+			Coord savedPos = pen.getPos();
 			pen.applyKerning();
-			WgGlyph_p pGlyph = pen.getGlyph();
+			Glyph_p pGlyph = pen.getGlyph();
 			if( pen.getPosX() +  pGlyph->advance() + ellipsisWidth > endX )
 			{
 				pen.setPos( savedPos );
@@ -919,11 +919,11 @@ namespace wg
 	
 	//____ _drawTextBg() ___________________________________________________________
 	
-	void WgGfxDevice::_drawTextBg( const WgRect& _clip, const WgLegacyTextField * pText, const WgRect& dest )
+	void GfxDevice::_drawTextBg( const Rect& _clip, const LegacyTextField * pText, const Rect& dest )
 	{
-		WgRect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
+		Rect		clip(_clip,dest);		// Make sure clipping rect is inside dest.
 	
-		WgState state = pText->state();
+		State state = pText->state();
 	
 		// Take care of selection background color (if we have any)
 	
@@ -934,7 +934,7 @@ namespace wg
 		selStart = pText->lineColToOffset(startLine, startCol);
 		selEnd = pText->lineColToOffset(endLine,endCol);
 	
-		WgTextprop_p pSelProp = WgTextTool::getSelectionProperties(pText);
+		Textprop_p pSelProp = TextTool::getSelectionProperties(pText);
 	
 		if( selStart != selEnd && pSelProp->isBgColored() )
 		{
@@ -950,10 +950,10 @@ namespace wg
 		// (and in the future punching holes in the general background?)
 	
 		Uint16	hProp = 0xFFFF;
-		WgColor	color;
+		Color	color;
 		int		startOfs = 0;
 	
-		const WgChar * pChars = pText->getText();
+		const Char * pChars = pText->getText();
 		int nChars = pText->length();
 	
 		for( int ofs = 0 ; ofs < nChars ; ofs++ )
@@ -973,7 +973,7 @@ namespace wg
 	
 				hProp = pChars[ofs].propHandle();
 	
-				WgColor newColor = pText->getCharBgColor(ofs);
+				Color newColor = pText->getCharBgColor(ofs);
 	
 				if( newColor != color )
 				{
@@ -999,20 +999,20 @@ namespace wg
 	
 	//____ _drawTextSectionBg() ___________________________________________________
 	
-	void WgGfxDevice::_drawTextSectionBg( const WgRect& clip, const WgLegacyTextField * pText, const WgRect& dstRect,
-										  int iStartOfs, int iEndOfs, WgColor color )
+	void GfxDevice::_drawTextSectionBg( const Rect& clip, const LegacyTextField * pText, const Rect& dstRect,
+										  int iStartOfs, int iEndOfs, Color color )
 	{
-		const WgLegacyTextLine *	pLines = pText->getSoftLines();
+		const LegacyTextLine *	pLines = pText->getSoftLines();
 	
-		WgTextPos startPos = pText->ofsToPos( iStartOfs );
-		WgTextPos endPos = pText->ofsToPos( iEndOfs );
+		TextPos startPos = pText->ofsToPos( iStartOfs );
+		TextPos endPos = pText->ofsToPos( iEndOfs );
 	
 		int xs = pText->posToCoordX( startPos, dstRect );
 		int xe = pText->posToCoordX( endPos, dstRect );
 	
 		int dstPosY = pText->lineStartY( 0, dstRect );
 	
-		WgRect r;
+		Rect r;
 	
 		if(startPos.line == endPos.line)
 		{
@@ -1050,16 +1050,16 @@ namespace wg
 	
 	//____ printLine() ________________________________________________________
 	
-	void WgGfxDevice::printLine( WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars, WgState state )
+	void GfxDevice::printLine( Pen& pen, const TextAttr& baseAttr, const Char * _pLine, int maxChars, State state )
 	{
 		if( !_pLine )
 			return;
 	
-		WgColor baseCol	= m_tintColor;
-		WgColor	color	= baseCol;
+		Color baseCol	= m_tintColor;
+		Color	color	= baseCol;
 	
 		Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-		WgTextAttr	attr;
+		TextAttr	attr;
 	
 		pen.flushChar();
 	
@@ -1076,7 +1076,7 @@ namespace wg
 	
 				attr = baseAttr;
 	
-				WgTextTool::addPropAttributes( attr, _pLine[i].getProperties(), state );
+				TextTool::addPropAttributes( attr, _pLine[i].getProperties(), state );
 	
 				hProp = _pLine[i].propHandle();
 	
@@ -1098,7 +1098,7 @@ namespace wg
 	
 				if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
 				{
-					WgRect clip = pen.hasClipRect()?pen.getClipRect():WgRect(0,0,65535,65535);
+					Rect clip = pen.hasClipRect()?pen.getClipRect():Rect(0,0,65535,65535);
 					DrawUnderline( clip, pText, pen.getPosX(), pen.getPosY(), i, len-i );
 				}
 	*/
@@ -1135,18 +1135,18 @@ namespace wg
 	
 	//____ _drawUnderline() ________________________________________________________
 	
-	void WgGfxDevice::_drawUnderline( const WgRect& clip, const WgLegacyTextField * pText, int _x, int _y, int ofs, int maxChars )
+	void GfxDevice::_drawUnderline( const Rect& clip, const LegacyTextField * pText, int _x, int _y, int ofs, int maxChars )
 	{
 		Uint32 hProp = 0xFFFF;
 	
-		WgPen pen;
-		const WgChar * pChars = pText->getText();
+		Pen pen;
+		const Char * pChars = pText->getText();
 	
 		for( int i = ofs ; i < ofs + maxChars && !pChars[i].isEndOfLine() ; i++ )
 		{
 			if( pChars[i].propHandle() != hProp )
 			{
-				WgTextAttr attr;
+				TextAttr attr;
 				pText->getCharAttr( attr, i );
 	
 				if( attr.bUnderlined )
@@ -1165,7 +1165,7 @@ namespace wg
 	
 		const WgUnderline * pUnderline = pen.getFont()->getUnderline( pen.getSize() );
 	
-		clipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, WgBorder( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
+		clipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, Border( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
 						_x + pUnderline->bearingX, _y + pUnderline->bearingY, pen.getPosX() );
 	}
 	

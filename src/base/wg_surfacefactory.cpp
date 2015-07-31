@@ -25,31 +25,31 @@
 namespace wg 
 {
 	
-	const char WgSurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
+	const char SurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	bool SurfaceFactory::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSurfaceFactory::className( void ) const
+	const char * SurfaceFactory::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSurfaceFactory_p WgSurfaceFactory::cast( const WgObject_p& pObject )
+	SurfaceFactory_p SurfaceFactory::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSurfaceFactory_p( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
+			return SurfaceFactory_p( static_cast<SurfaceFactory*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

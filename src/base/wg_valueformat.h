@@ -47,45 +47,45 @@
 namespace wg 
 {
 	
-	class WgValueFormat;
-	typedef	WgStrongPtr<WgValueFormat,WgObject_p>		WgValueFormat_p;
-	typedef	WgWeakPtr<WgValueFormat,WgObject_wp>	WgValueFormat_wp;
+	class ValueFormat;
+	typedef	WgStrongPtr<ValueFormat,Object_p>		ValueFormat_p;
+	typedef	WgWeakPtr<ValueFormat,Object_wp>	ValueFormat_wp;
 	
-	//____ WgValueFormat __________________________________________________________
+	//____ ValueFormat __________________________________________________________
 	
-	class WgValueFormat : public WgObject
+	class ValueFormat : public Object
 	{
-		friend class WgLegacyTextField;
+		friend class LegacyTextField;
 		public:
-			static WgValueFormat_p	create() { return WgValueFormat_p(new WgValueFormat()); }
-			static WgValueFormat_p	create( const WgCharSeq& format )  { return WgValueFormat_p(new WgValueFormat(format)); }
-			static WgValueFormat_p	create( const WgValueFormat_p& pIn ) { return WgValueFormat_p(new WgValueFormat(pIn)); }
-			static WgValueFormat_p	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+			static ValueFormat_p	create() { return ValueFormat_p(new ValueFormat()); }
+			static ValueFormat_p	create( const CharSeq& format )  { return ValueFormat_p(new ValueFormat(format)); }
+			static ValueFormat_p	create( const ValueFormat_p& pIn ) { return ValueFormat_p(new ValueFormat(pIn)); }
+			static ValueFormat_p	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 							Uint16 separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
-			{ return WgValueFormat_p(new WgValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
+			{ return ValueFormat_p(new ValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
 	
 			bool		isInstanceOf( const char * pClassName ) const;
 			const char *className( void ) const;
 			static const char	CLASSNAME[];
-			static WgValueFormat_p	cast( const WgObject_p& pObject );
+			static ValueFormat_p	cast( const Object_p& pObject );
 	
-			void setFormat( const WgCharSeq& format );
-			void setFormat( const WgValueFormat_p& pFormat );
+			void setFormat( const CharSeq& format );
+			void setFormat( const ValueFormat_p& pFormat );
 	
 			void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 							Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
 	
-			void setPrefix( const WgString& str );
-			void setPrefix( const WgCharSeq& seq );
-			inline const WgString& getPrefix() const { return prefix; }
+			void setPrefix( const String& str );
+			void setPrefix( const CharSeq& seq );
+			inline const String& getPrefix() const { return prefix; }
 	
-			void setSuffix( const WgString& str );
-			void setSuffix( const WgCharSeq& seq );
-			inline const WgString& getSuffix() const { return suffix; }
+			void setSuffix( const String& str );
+			void setSuffix( const CharSeq& seq );
+			inline const String& getSuffix() const { return suffix; }
 	
-			inline void setTextProperties( WgTextprop_p& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
+			inline void setTextProperties( Textprop_p& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
 			inline void clearTextProperties() { bSetTextprop = false; }
-			inline WgTextprop_p getTextProperties() const { return pTextProperties; }
+			inline Textprop_p getTextProperties() const { return pTextProperties; }
 	
 			inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 			inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -121,10 +121,10 @@ namespace wg
 			inline int		_getScale() const { return scale; }
 	
 	protected:
-			WgValueFormat();
-			WgValueFormat( const WgCharSeq& format );
-			WgValueFormat( const WgValueFormat_p& pIn );
-			WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
+			ValueFormat();
+			ValueFormat( const CharSeq& format );
+			ValueFormat( const ValueFormat_p& pIn );
+			ValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 							Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
 	
 	
@@ -133,19 +133,19 @@ namespace wg
 			Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
 			Uint16		separator;			/// Character to separate integer groups with.
 			Uint16		period;				/// Character used for separating integer and decimal part
-			WgString	prefix;				/// Characters preceding the value, like $, £ or similar.
-			WgString	suffix;				/// Characters following the value.
+			String	prefix;				/// Characters preceding the value, like $, £ or similar.
+			String	suffix;				/// Characters following the value.
 			bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 			bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 			bool		bForcePeriod;		/// Display period even if there are no decimals?
-		WgTextprop_p 	pTextProperties;	/// Text properties for generated text.
+		Textprop_p 	pTextProperties;	/// Text properties for generated text.
 			bool		bSetTextprop;		/// Set if properties should be set for text.
 			bool		bForceDecimals;		/// Display decimals even if they are 0
 			int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
 			int			scale;				/// Value is scaled by this value before being formatted.
 	};
 	
-	//____ WgValueFormatter _______________________________________________________
+	//____ ValueFormatter _______________________________________________________
 	
 	/*
 		Ideas:
@@ -174,27 +174,27 @@ namespace wg
 	*/
 	
 	/*
-	class WgValueFormatter
+	class ValueFormatter
 	{
 	public:
-		WgValueFormatter();
-		WgValueFormatter( const WgCharSeq& format );
-		~WgValueFormatter();
+		ValueFormatter();
+		ValueFormatter( const CharSeq& format );
+		~ValueFormatter();
 	
-		void setFormat( const WgCharSeq& format );
+		void setFormat( const CharSeq& format );
 	
-		WgString prefix() const;
-		WgString suffix() const;
+		String prefix() const;
+		String suffix() const;
 		int		 decimals() const { return m_format.decimals; }
 	
-		WgString format( Sint64 value ) const;
-		WgString formatNoPreSuffix( Sint64 value ) const;
+		String format( Sint64 value ) const;
+		String formatNoPreSuffix( Sint64 value ) const;
 	
 	private:
 	
-		void	_formatValue( WgCharBuffer * pBuffer, Sint64 value ) const;
+		void	_formatValue( CharBuffer * pBuffer, Sint64 value ) const;
 	
-		WgValueFormat	m_format;
+		ValueFormat	m_format;
 	};
 	
 	*/

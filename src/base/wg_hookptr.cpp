@@ -27,13 +27,13 @@
 namespace wg 
 {
 	
-	WgHook_p::WgHook_p( WgHook * pHook )
+	Hook_p::Hook_p( Hook * pHook )
 	{
 		if( pHook )
 		{
 			if( !pHook->m_pPtrHub )
 			{
-				m_pHub = WgBase::allocHookPtrHub();
+				m_pHub = Base::allocHookPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pHook;
 				pHook->m_pPtrHub = m_pHub;
@@ -50,7 +50,7 @@ namespace wg
 		}
 	};
 	
-	WgHook_p::~WgHook_p()
+	Hook_p::~Hook_p()
 	{
 		if( m_pHub )
 		{
@@ -60,12 +60,12 @@ namespace wg
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pPtrHub = 0;
-				WgBase::freeHookPtrHub(m_pHub);
+				Base::freeHookPtrHub(m_pHub);
 			}
 		}
 	}
 	
-	void WgHook_p::copy( WgHook_p const & r)
+	void Hook_p::copy( Hook_p const & r)
 	{
 		if( m_pHub != r.m_pHub )
 		{
@@ -77,7 +77,7 @@ namespace wg
 				{
 					if( m_pHub->pObj )
 						m_pHub->pObj->m_pPtrHub = 0;
-					WgBase::freeHookPtrHub(m_pHub);
+					Base::freeHookPtrHub(m_pHub);
 				}
 			}
 	

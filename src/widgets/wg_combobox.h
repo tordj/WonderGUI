@@ -38,46 +38,46 @@
 namespace wg 
 {
 	
-	class WgMenuItem;
+	class MenuItem;
 	
-	class WgCombobox;
-	typedef	WgStrongPtr<WgCombobox,WgWidget_p>		WgCombobox_p;
-	typedef	WgWeakPtr<WgCombobox,WgWidget_wp>	WgCombobox_wp;
+	class Combobox;
+	typedef	WgStrongPtr<Combobox,Widget_p>		Combobox_p;
+	typedef	WgWeakPtr<Combobox,Widget_wp>	Combobox_wp;
 	
-	class WgCombobox : public WgWidget, protected WgLegacyTextHolder
+	class Combobox : public Widget, protected LegacyTextHolder
 	{
 	public:
-		static WgCombobox_p	create() { return WgCombobox_p(new WgCombobox()); }
+		static Combobox_p	create() { return Combobox_p(new Combobox()); }
 	
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static WgCombobox_p	cast( const WgObject_p& pObject );
+		static Combobox_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgEditText		text;
+		EditText		text;
 	
 		//____ Methods _________________________________________
 	
-		void			setMenu( const WgMenu_p& pMenu );
-		WgMenu_p		menu( ) const;
+		void			setMenu( const Menu_p& pMenu );
+		Menu_p		menu( ) const;
 	
-		WgMenuItem*		selectedItem() const { return m_pSelectedItem; }
+		MenuItem*		selectedItem() const { return m_pSelectedItem; }
 	
-		void			setTextFormat( const WgCharSeq& str );
-		WgString		textFormat() const { return m_textFormat; }
+		void			setTextFormat( const CharSeq& str );
+		String		textFormat() const { return m_textFormat; }
 	
-		void			setPlaceholderText( const WgCharSeq& str );
-		WgString		placeholderText() const { return m_placeholderText; }
+		void			setPlaceholderText( const CharSeq& str );
+		String		placeholderText() const { return m_placeholderText; }
 	
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 		bool			isAutoEllipsisDefault() const { return false; };
 	
-		void			setEditMode(WgTextEditMode mode);
-		WgTextEditMode	editMode() const { return m_text.editMode(); }
+		void			setEditMode(TextEditMode mode);
+		TextEditMode	editMode() const { return m_text.editMode(); }
 	
-		int				insertTextAtCursor( const WgCharSeq& str );
+		int				insertTextAtCursor( const CharSeq& str );
 		bool			insertCharAtCursor( Uint16 c );
 	
 		// Press in textfield:
@@ -92,38 +92,38 @@ namespace wg
 	
 	
 	protected:
-		WgCombobox();
-		virtual ~WgCombobox();
-		virtual WgWidget* _newOfMyType() const { return new WgCombobox(); };
+		Combobox();
+		virtual ~Combobox();
+		virtual Widget* _newOfMyType() const { return new Combobox(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void	_onRefresh();
-		void	_onMsg( const WgMsg_p& pMsg );
-		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onMsg( const Msg_p& pMsg );
+		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
 	private:
 		bool	_isEditable() const { return m_text.isEditable(); }
 		bool	_isSelectable() const { return m_text.isSelectable(); }
 	
-		WgObject * 		_object() { return this; };
-		void			_onFieldDirty( WgField * pField );
-		void 			_onFieldResize( WgField * pField );
+		Object * 		_object() { return this; };
+		void			_onFieldDirty( Field * pField );
+		void 			_onFieldResize( Field * pField );
 	
 		void	_adjustViewOfs();
 		void	_closeMenu();
 	
 		void	_entrySelected(int itemId);
-		static void cbEntrySelected( const WgMsg_p& pMsg, const WgObject_p& pWdg) { WgCombobox::cast(pWdg)->_entrySelected(WgItemsSelectMsg::cast(pMsg)->items()->id); }
+		static void cbEntrySelected( const Msg_p& pMsg, const Object_p& pWdg) { Combobox::cast(pWdg)->_entrySelected(ItemsSelectMsg::cast(pMsg)->items()->id); }
 	
-		WgString		m_textFormat;
-		WgString		m_placeholderText;		// Text displayed when field is empty and has no cursor.
+		String		m_textFormat;
+		String		m_placeholderText;		// Text displayed when field is empty and has no cursor.
 	
-		WgMenu_p		m_pMenu;
-		WgMenuItem*		m_pSelectedItem;
-		WgLegacyTextField		m_text;
+		Menu_p		m_pMenu;
+		MenuItem*		m_pSelectedItem;
+		LegacyTextField		m_text;
 		bool			m_bResetCursorOnFocus;
 		bool			m_bPressInInputRect;
 		bool			m_bFocusPress;

@@ -34,44 +34,44 @@
 namespace wg 
 {
 	
-	class WgOscilloscope;
-	typedef	WgStrongPtr<WgOscilloscope,WgWidget_p>		WgOscilloscope_p;
-	typedef	WgWeakPtr<WgOscilloscope,WgWidget_wp>	WgOscilloscope_wp;
+	class Oscilloscope;
+	typedef	WgStrongPtr<Oscilloscope,Widget_p>		Oscilloscope_p;
+	typedef	WgWeakPtr<Oscilloscope,Widget_wp>	Oscilloscope_wp;
 	
-	//____ WgOscilloscope ____________________________________________________________
+	//____ Oscilloscope ____________________________________________________________
 	
-	class WgOscilloscope : public WgWidget
+	class Oscilloscope : public Widget
 	{
 	public:
-		static WgOscilloscope_p	create() { return WgOscilloscope_p(new WgOscilloscope()); }
+		static Oscilloscope_p	create() { return Oscilloscope_p(new Oscilloscope()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgOscilloscope_p	cast( const WgObject_p& pObject );
+		static Oscilloscope_p	cast( const Object_p& pObject );
 	
-		void	setGridColor( WgColor color );
+		void	setGridColor( Color color );
 		void	setVGridLines( int nLines, float pLines[] );
 		void	setHGridLines( int nLines, float pLines[] );
 	
-		void	setLineColor( WgColor color );
+		void	setLineColor( Color color );
 		void	setLineThickness( float thickness );
 	
 		void	setLinePoints( int nPoints, float pPointValues[] );
 	
 		void	clearMarkers();
 		void	addMarker( int xOfs, float yOfs );
-		void	setMarkerSkin( const WgSkin_p& pSkin );
+		void	setMarkerSkin( const Skin_p& pSkin );
 	
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgOscilloscope();
-		virtual ~WgOscilloscope();
-		virtual WgWidget* _newOfMyType() const { return new WgOscilloscope(); };
+		Oscilloscope();
+		virtual ~Oscilloscope();
+		virtual Widget* _newOfMyType() const { return new Oscilloscope(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 	
 	
 	private:
@@ -82,8 +82,8 @@ namespace wg
 			float	y;		// Offset in y from middle of oscillator. Range: -1.0 to 1.0;
 		};
 	
-		WgColor			m_gridColor;
-		WgColor			m_lineColor;
+		Color			m_gridColor;
+		Color			m_lineColor;
 		float			m_lineThickness;
 	
 		int				m_nVGridLines;
@@ -97,7 +97,7 @@ namespace wg
 		int				m_nMarkers;
 		Marker *		m_pMarkers;
 		
-		WgSkin_p		m_pMarkerSkin;
+		Skin_p		m_pMarkerSkin;
 	};
 	
 	

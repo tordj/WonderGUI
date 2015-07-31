@@ -28,43 +28,43 @@
 namespace wg 
 {
 	
-	const char WgSwitch::CLASSNAME[] = {"Switch"};
+	const char Switch::CLASSNAME[] = {"Switch"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgSwitch::WgSwitch()
+	Switch::Switch()
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgSwitch::~WgSwitch()
+	Switch::~Switch()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSwitch::isInstanceOf( const char * pClassName ) const
+	bool Switch::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSwitch::className( void ) const
+	const char * Switch::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSwitch_p WgSwitch::cast( const WgObject_p& pObject )
+	Switch_p Switch::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSwitch_p( static_cast<WgSwitch*>(pObject.rawPtr()) );
+			return Switch_p( static_cast<Switch*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,16 +72,16 @@ namespace wg
 	
 	//____ setValue() _____________________________________________________________
 	
-	void WgSwitch::setValue( int value )
+	void Switch::setValue( int value )
 	{
 	    //TODO: Implement!
 	}
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgSwitch::preferredSize() const
+	Size Switch::preferredSize() const
 	{
-		WgSize contentSize(40,40);
+		Size contentSize(40,40);
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -92,18 +92,18 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgSwitch::_onCloneContent( const WgWidget * _pOrg )
+	void Switch::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgSwitch * pOrg = static_cast<const WgSwitch*>(_pOrg);
+		const Switch * pOrg = static_cast<const Switch*>(_pOrg);
 	}
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Switch::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 		else
@@ -120,7 +120,7 @@ namespace wg
 			int x = canvas.x + (sz - itemSize) / 2;
 			for( int i = 0 ; i < 3 ; i++ )
 			{
-				pDevice->clipDrawElipse( _clip, WgRect(x,y,itemSize,itemSize), WgColor::white );
+				pDevice->clipDrawElipse( _clip, Rect(x,y,itemSize,itemSize), Color::white );
 				y += itemSize + stepping;
 			}
 		}	
@@ -128,7 +128,7 @@ namespace wg
 	
 	//____ _onAlphaTest() ___________________________________________________________
 	
-	bool WgSwitch::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Switch::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		return true;
 	}

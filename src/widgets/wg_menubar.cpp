@@ -39,12 +39,12 @@
 namespace wg 
 {
 	
-	const char WgMenubar::CLASSNAME[] = {"Menubar"};
+	const char Menubar::CLASSNAME[] = {"Menubar"};
 	
 	
-	//____ WgMenubar() _________________________________________________________________
+	//____ Menubar() _________________________________________________________________
 	
-	WgMenubar::WgMenubar( void )
+	Menubar::Menubar( void )
 	{
 		m_selectedItem	= 0;		// 0 = no item is selected.
 		m_markedItem	= 0;		// 0 = no item is marked:
@@ -53,36 +53,36 @@ namespace wg
 		m_pEntrySkin	= 0;
 	}
 	
-	//____ ~WgMenubar() __________________________________________________________
+	//____ ~Menubar() __________________________________________________________
 	
-	WgMenubar::~WgMenubar( void )
+	Menubar::~Menubar( void )
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgMenubar::isInstanceOf( const char * pClassName ) const
+	bool Menubar::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgMenubar::className( void ) const
+	const char * Menubar::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgMenubar_p WgMenubar::cast( const WgObject_p& pObject )
+	Menubar_p Menubar::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgMenubar_p( static_cast<WgMenubar*>(pObject.rawPtr()) );
+			return Menubar_p( static_cast<Menubar*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -90,7 +90,7 @@ namespace wg
 	
 	//____ setEntrySkin() _______________________________________________________
 	
-	bool WgMenubar::setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties )
+	bool Menubar::setEntrySkin( const Skin_p& pSkin, const Textprop_p& pTextProperties )
 	{
 		//TODO: Possibly resize if needed.
 	
@@ -103,7 +103,7 @@ namespace wg
 	
 	//____ addMenu() ______________________________________________________________
 	
-	bool WgMenubar::addMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey )
+	bool Menubar::addMenu( const char * pTitle, const Menu_p& pMenu, Uint16 navKey )
 	{
 		// Sanity check
 	
@@ -112,24 +112,24 @@ namespace wg
 	
 		// Convert/copy title
 	
-		WgMenuBarItem * pItem = new WgMenuBarItem();
+		MenuBarItem * pItem = new MenuBarItem();
 	
-		Uint32 strlen = WgTextTool::countChars( pTitle );
-		pItem->m_pText = new WgChar[strlen+1];
+		Uint32 strlen = TextTool::countChars( pTitle );
+		pItem->m_pText = new Char[strlen+1];
 	
-		WgTextTool::readString(pTitle, pItem->m_pText, strlen+1);
+		TextTool::readString(pTitle, pItem->m_pText, strlen+1);
 	
 		// Calculate linewidth
 	
-		WgTextAttr	attr;
-		WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL);
-		WgTextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
-		Uint32 lineWidthNormal = WgTextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
+		TextAttr	attr;
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_NORMAL);
+		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
+		Uint32 lineWidthNormal = TextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
 	
 		attr.clear();
-		WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED);
-		WgTextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
-		Uint32 lineWidthMarked = WgTextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_HOVERED);
+		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
+		Uint32 lineWidthMarked = TextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
 	
 		if( lineWidthNormal > lineWidthMarked )
 			pItem->m_width = lineWidthNormal;
@@ -156,9 +156,9 @@ namespace wg
 	}
 	
 	//____ removeMenu() ________________________________________________________
-	bool WgMenubar::removeMenu( const WgMenu_p& pMenu )
+	bool Menubar::removeMenu( const Menu_p& pMenu )
 	{
-		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
+		for( MenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
 			if(pI->m_pMenu == pMenu)
 			{
@@ -172,9 +172,9 @@ namespace wg
 	}
 	
 	//____ menuTitle() ________________________________________________________
-	WgChar *WgMenubar::menuTitle( const WgMenu_p& pMenu) const
+	Char *Menubar::menuTitle( const Menu_p& pMenu) const
 	{
-		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
+		for( MenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
 			if(pI->m_pMenu == pMenu)
 				return pI->m_pText;
@@ -183,9 +183,9 @@ namespace wg
 	}
 	
 	//____ showMenu() ________________________________________________________
-	bool WgMenubar::showMenu( const WgMenu_p& pMenu)
+	bool Menubar::showMenu( const Menu_p& pMenu)
 	{
-		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
+		for( MenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
 			if(pI->m_pMenu == pMenu)
 			{
@@ -197,9 +197,9 @@ namespace wg
 	}
 	
 	//____ hideMenu() ________________________________________________________
-	bool WgMenubar::hideMenu(const WgMenu_p& pMenu)
+	bool Menubar::hideMenu(const Menu_p& pMenu)
 	{
-		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
+		for( MenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
 			if(pI->m_pMenu == pMenu)
 			{
@@ -212,24 +212,24 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgMenubar::preferredSize() const
+	Size Menubar::preferredSize() const
 	{
 		//TODO: Implement!
 	
-		return WgSize(200,20);
+		return Size(200,20);
 	}
 	
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgMenubar::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Menubar::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
 		// Take backgrounds content borders into account
 	
-		WgRect	window;
-		WgRect	clip;
+		Rect	window;
+		Rect	clip;
 	
 		if( m_pSkin )
 		{
@@ -244,15 +244,15 @@ namespace wg
 	
 		// Go throught the MenuBarItems and print their text and render their rectangles.
 	
-		WgMenuBarItem * pI = m_items.first();
+		MenuBarItem * pI = m_items.first();
 		Uint32 posX = window.x;
 	
-		WgPen pen;
+		Pen pen;
 	
 	
-		WgTextAttr	attr;
-		WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL);
-		WgTextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
+		TextAttr	attr;
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_NORMAL);
+		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
 	
 		pen.setAttributes( attr );
 		pen.setClipRect( clip );
@@ -265,7 +265,7 @@ namespace wg
 		{
 			if( pI->isVisible() )
 			{
-				WgState	state = WG_STATE_DISABLED;
+				State	state = WG_STATE_DISABLED;
 				if( m_state.isEnabled() && pI->m_bEnabled )
 				{
 					state = WG_STATE_NORMAL;
@@ -276,27 +276,27 @@ namespace wg
 						state = WG_STATE_HOVERED;
 				}
 	
-				WgBorder b = _getEntryBorder();
+				Border b = _getEntryBorder();
 	
-	//			WgColorsetPtr pTextColors;
+	//			ColorsetPtr pTextColors;
 				
 	//			if( m_pSkin )
 	//				pTextColors = m_pSkin->TextColors();
 	
 				if( m_pEntrySkin )
 				{
-					WgRect	dest( posX, window.y, pI->m_width + b.width(), window.h );
+					Rect	dest( posX, window.y, pI->m_width + b.width(), window.h );
 					m_pEntrySkin->render( pDevice, dest, state, clip );
 	
 	//				pTextColors = m_pEntrySkin->TextColors();
 				}
 	
-				pen.setPos( WgCoord(posX + b.left, printPosY) );
+				pen.setPos( Coord(posX + b.left, printPosY) );
 	
-				WgTextAttr	attr;
-				WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), state );
-	//			WgTextTool::setAttrColor( attr, pTextColors, mode );
-				WgTextTool::addPropAttributes( attr, m_pTextProp, state );
+				TextAttr	attr;
+				TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), state );
+	//			TextTool::setAttrColor( attr, pTextColors, mode );
+				TextTool::addPropAttributes( attr, m_pTextProp, state );
 				pen.setAttributes( attr );
 	
 				pDevice->printLine( pen, attr, pI->m_pText );
@@ -310,16 +310,16 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgMenubar::_onMsg( const WgMsg_p& pMsg )
+	void Menubar::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg(pMsg);
+		Widget::_onMsg(pMsg);
 	
 		switch( pMsg->type() )
 		{
 			case WG_MSG_MOUSE_MOVE:
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgCoord pos = pMsg->pointerPos() - globalPos();
+				Coord pos = pMsg->pointerPos() - globalPos();
 	
 				Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
 	
@@ -365,23 +365,23 @@ namespace wg
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void WgMenubar::_onRefresh( void )
+	void Menubar::_onRefresh( void )
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onAlphaTest() ___________________________________________________
 	
-	bool WgMenubar::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Menubar::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		return true;
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgMenubar::_onCloneContent( const WgWidget * _pOrg )
+	void Menubar::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgMenubar * pOrg = (const WgMenubar *) _pOrg;
+		const Menubar * pOrg = (const Menubar *) _pOrg;
 	
 		m_pEntrySkin	= pOrg->m_pEntrySkin;
 		m_pTextProp		= pOrg->m_pTextProp;
@@ -391,38 +391,38 @@ namespace wg
 	
 	//____ _getEntryBorder() ____________________________________________________
 	
-	WgBorder WgMenubar::_getEntryBorder() const
+	Border Menubar::_getEntryBorder() const
 	{
 		//TODO: This doesn't take ContentShift for different states into account.
 	
 		if( m_pEntrySkin )
 		{
-			WgRect r = m_pEntrySkin->contentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
+			Rect r = m_pEntrySkin->contentRect( Rect(0,0,1000,1000), WG_STATE_NORMAL );
 	
-			return WgBorder(r.x,r.y,1000-r.w,1000-r.h);
+			return Border(r.x,r.y,1000-r.w,1000-r.h);
 		}
 		else
-			return WgBorder(10,0,10,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
+			return Border(10,0,10,0);		// 10 pixels on each side as default margin. Should do something more intelligent here, like taking fonts avgSpacing into account...
 	}
 	
 	
 	
 	//____ _openMenu() _____________________________________________________________
 	
-	bool WgMenubar::_openMenu( int nb )
+	bool Menubar::_openMenu( int nb )
 	{
-		WgMenuBarItem * pItem = m_items.get(nb-1);
+		MenuBarItem * pItem = m_items.get(nb-1);
 		if( pItem == 0 || !pItem->m_pMenu )
 			return false;
 	
-		WgCoord pos = toLocal( WgCoord(0, 0) );
+		Coord pos = toLocal( Coord(0, 0) );
 	
 		if( m_pSkin )
 			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();
 	
 		int bordersWidth = _getEntryBorder().width();
 	
-		WgMenuBarItem * pI = m_items.first();
+		MenuBarItem * pI = m_items.first();
 		while( pI != pItem )
 		{
 			if( pI->isVisible() )
@@ -431,10 +431,10 @@ namespace wg
 			pI = pI->next();
 		}
 	
-		WgRect	r(pos, pI->m_width+bordersWidth, size().h );
+		Rect	r(pos, pI->m_width+bordersWidth, size().h );
 	
 	
-		WgPopupLayer * pLayer = 0;
+		PopupLayer * pLayer = 0;
 		if( parent() )
 			pLayer = parent()->_getPopupLayer();
 		if( !pLayer )
@@ -446,18 +446,18 @@ namespace wg
 	
 	//____ _closeMenu() ____________________________________________________________
 	
-	bool WgMenubar::_closeMenu( int nb )
+	bool Menubar::_closeMenu( int nb )
 	{
 		if( nb == 0 )
 			return false;
 	
-		WgMenuBarItem * pItem = m_items.get(m_selectedItem-1);
+		MenuBarItem * pItem = m_items.get(m_selectedItem-1);
 		if( !pItem || !pItem->m_pMenu )
 			return false;
 	
 	
-		WgPopupLayer * pLayer = 0;
-		WgWidget_p pMenu = pItem->m_pMenu;
+		PopupLayer * pLayer = 0;
+		Widget_p pMenu = pItem->m_pMenu;
 		if( parent() )
 			pLayer = parent()->_getPopupLayer();
 	
@@ -471,9 +471,9 @@ namespace wg
 	
 	//____ _getItemAtPos() _________________________________________________________
 	
-	Uint32 WgMenubar::_getItemAtAbsPos( int x, int y )
+	Uint32 Menubar::_getItemAtAbsPos( int x, int y )
 	{
-		WgCoord pos = toLocal( WgCoord(x, y) );
+		Coord pos = toLocal( Coord(x, y) );
 	
 		if( m_pSkin )
 			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();
@@ -482,7 +482,7 @@ namespace wg
 		{
 			int bordersWidth = _getEntryBorder().width();
 	
-			WgMenuBarItem * pItem = m_items.first();
+			MenuBarItem * pItem = m_items.first();
 			int		item = 1;
 			while( pItem )
 			{
@@ -504,7 +504,7 @@ namespace wg
 	
 	//____ _moveOutsideModal() _____________________________________________________
 	
-	void WgMenubar::_moveOutsideModal( int x, int y )
+	void Menubar::_moveOutsideModal( int x, int y )
 	{
 		Uint32 item = _getItemAtAbsPos( x, y );
 	
@@ -518,7 +518,7 @@ namespace wg
 	
 	//____ _menuOpened() ___________________________________________________________
 	
-	void WgMenubar::_menuOpened( WgMenuBarItem * pItem )
+	void Menubar::_menuOpened( MenuBarItem * pItem )
 	{
 		Uint32 item = pItem->index()+1;
 		m_selectedItem = item;
@@ -527,16 +527,16 @@ namespace wg
 	
 	//____ _menuClosed() ___________________________________________________________
 	
-	void WgMenubar::_menuClosed( WgMenuBarItem * pItem )
+	void Menubar::_menuClosed( MenuBarItem * pItem )
 	{
 		m_selectedItem = 0;
 		_requestRender();
 	}
 	
 	
-	//____ WgMenuBarItem::WgMenuBarItem() _________________________________________
+	//____ MenuBarItem::MenuBarItem() _________________________________________
 	
-	WgMenuBarItem::WgMenuBarItem()
+	MenuBarItem::MenuBarItem()
 	{
 		m_pText		= 0;
 		m_navKey	= 0;
@@ -546,17 +546,17 @@ namespace wg
 		m_bVisible	= true;
 	}
 	
-	//____ WgMenuBarItem::~WgMenuBarItem() ________________________________________
+	//____ MenuBarItem::~MenuBarItem() ________________________________________
 	
-	WgMenuBarItem::~WgMenuBarItem()
+	MenuBarItem::~MenuBarItem()
 	{
 		if(m_pText != 0)
 			delete [] m_pText;
 	}
 	
-	//____ WgMenuBarItem::setEnabled() _______________________________________________
+	//____ MenuBarItem::setEnabled() _______________________________________________
 	
-	void WgMenuBarItem::setEnabled( bool bEnabled )
+	void MenuBarItem::setEnabled( bool bEnabled )
 	{
 		if( m_bEnabled != bEnabled )
 		{
@@ -568,9 +568,9 @@ namespace wg
 		}
 	}
 	
-	//____ WgMenuBarItem::setVisible() ________________________________________________
+	//____ MenuBarItem::setVisible() ________________________________________________
 	
-	void WgMenuBarItem::setVisible( bool bVisible )
+	void MenuBarItem::setVisible( bool bVisible )
 	{
 		if( m_bVisible != bVisible )
 		{

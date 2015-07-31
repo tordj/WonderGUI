@@ -25,39 +25,39 @@
 namespace wg 
 {
 	
-	const char WgIcon::CLASSNAME[] = {"Icon"};
+	const char Icon::CLASSNAME[] = {"Icon"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgIcon::isInstanceOf( const char * pClassName ) const
+	bool Icon::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgIcon::className( void ) const
+	const char * Icon::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgIcon_p WgIcon::cast( const WgInterface_p& pInterface )
+	Icon_p Icon::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgIcon_p( pInterface.getRealObjectPtr(), static_cast<WgIcon*>( pInterface.rawPtr()) );
+			return Icon_p( pInterface.getRealObjectPtr(), static_cast<Icon*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _object() _______________________________________________________________
 	
-	WgObject * WgIcon::_object() const
+	Object * Icon::_object() const
 	{
 		return m_pField->_object();
 	}

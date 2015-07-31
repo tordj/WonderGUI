@@ -49,18 +49,18 @@
 namespace wg 
 {
 	
-	class WgTextStyle;
-	typedef	WgStrongPtr<WgTextStyle,WgObject_p>		WgTextStyle_p;
-	typedef	WgWeakPtr<WgTextStyle,WgObject_wp>		WgTextStyle_wp;
+	class TextStyle;
+	typedef	WgStrongPtr<TextStyle,Object_p>		TextStyle_p;
+	typedef	WgWeakPtr<TextStyle,Object_wp>		TextStyle_wp;
 	
-	struct WgTextAttr2
+	struct TextAttr2
 	{
-			WgFont_p			pFont;
+			Font_p			pFont;
 			int					size;
-			WgColor				color;
-			WgColor				bgColor;
-			WgTextDecoration	decoration;
-			WgTextLink_p		pLink;
+			Color				color;
+			Color				bgColor;
+			TextDecoration	decoration;
+			TextLink_p		pLink;
 			
 			// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
 	};
@@ -69,31 +69,31 @@ namespace wg
 	//TODO: Add support for subscript and superscript font-modifiers.
 	//TODO: Add support for extra spacing between characters.
 	
-	class WgTextStyle : public WgObject
+	class TextStyle : public Object
 	{
 	public:
-		static WgTextStyle_p	create() { return WgTextStyle_p(new WgTextStyle()); }
+		static TextStyle_p	create() { return TextStyle_p(new TextStyle()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgTextStyle_p	cast( const WgObject_p& pObject );
+		static TextStyle_p	cast( const Object_p& pObject );
 	
-		bool			setParent( const WgTextStyle_p& pParent );
+		bool			setParent( const TextStyle_p& pParent );
 		void			cascade();
 	
-		void			setFont( const WgFont_p& pFont );
-		void			setLink( const WgTextLink_p& pLink );
+		void			setFont( const Font_p& pFont );
+		void			setLink( const TextLink_p& pLink );
 	
-		void			setColor( WgColor color );
-		void			setBgColor( WgColor color );
+		void			setColor( Color color );
+		void			setBgColor( Color color );
 		void			setSize( int size );
-		void			setDecoration( WgTextDecoration decoration );
+		void			setDecoration( TextDecoration decoration );
 	
-		void			setColor( WgColor color, WgState state );
-		void			setBgColor( WgColor color, WgState state );
-		void			setSize( int size, WgState state );
-		void			setDecoration( WgTextDecoration decoration, WgState state );
+		void			setColor( Color color, State state );
+		void			setBgColor( Color color, State state );
+		void			setSize( int size, State state );
+		void			setDecoration( TextDecoration decoration, State state );
 	
 		void			clearFont();
 		void			clearLink();
@@ -103,52 +103,52 @@ namespace wg
 		void			clearSize();
 		void			clearDecoration();
 	
-		void			clearColor( WgState state );
-		void			clearBgColor( WgState state );
-		void			clearSize( WgState state );
-		void			clearDecoration( WgState state );
+		void			clearColor( State state );
+		void			clearBgColor( State state );
+		void			clearSize( State state );
+		void			clearDecoration( State state );
 	
-		inline WgFont_p		font() const;
-		inline WgTextLink_p	link() const;
-		inline WgColor			color( WgState state ) const;
-		inline 	WgColor			bgColor( WgState state ) const;
-		inline int				size( WgState state ) const;
-		inline WgTextDecoration decoration( WgState state ) const;
+		inline Font_p		font() const;
+		inline TextLink_p	link() const;
+		inline Color			color( State state ) const;
+		inline 	Color			bgColor( State state ) const;
+		inline int				size( State state ) const;
+		inline TextDecoration decoration( State state ) const;
 	
-		inline WgFont_p		combFont() const;
-		inline WgTextLink_p	combLink() const;
-		inline WgColor			combColor( WgState state ) const;
-		inline WgColor			combBgColor( WgState state ) const;
-		inline int				combSize( WgState state ) const;
-		inline WgTextDecoration combDecoration( WgState state ) const;
+		inline Font_p		combFont() const;
+		inline TextLink_p	combLink() const;
+		inline Color			combColor( State state ) const;
+		inline Color			combBgColor( State state ) const;
+		inline int				combSize( State state ) const;
+		inline TextDecoration combDecoration( State state ) const;
 	
-		void			exportAttr( WgState state, WgTextAttr2 * pDest ) const;
-		void			addToAttr( WgState state, WgTextAttr2 * pDest ) const;
+		void			exportAttr( State state, TextAttr2 * pDest ) const;
+		void			addToAttr( State state, TextAttr2 * pDest ) const;
 	
 	
 	
 	protected:
-		WgTextStyle();
-		virtual ~WgTextStyle();
+		TextStyle();
+		virtual ~TextStyle();
 	
 		struct AttrSet
 		{
-			WgFont_p			pFont;
+			Font_p			pFont;
 			int					size[WG_NB_STATES];
-			WgColor				color[WG_NB_STATES];
-			WgColor				bgColor[WG_NB_STATES];
-			WgTextDecoration	decoration[WG_NB_STATES];
-			WgTextLink_p		pLink;
+			Color				color[WG_NB_STATES];
+			Color				bgColor[WG_NB_STATES];
+			TextDecoration	decoration[WG_NB_STATES];
+			TextLink_p		pLink;
 		};
 	
 		bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
 		bool		_refreshComb();
 		void		_clearSet( AttrSet * pSet );
 	
-		WgTextStyle_p	m_pParent;
-		WgTextStyle *	m_pFirstChild;
-		WgTextStyle *	m_pNextSibling;
-		WgTextStyle *	m_pPrevSibling;
+		TextStyle_p	m_pParent;
+		TextStyle *	m_pFirstChild;
+		TextStyle *	m_pNextSibling;
+		TextStyle *	m_pPrevSibling;
 	
 	
 		AttrSet		m_specAttr;
@@ -159,74 +159,74 @@ namespace wg
 	
 	
 	//______________________________________________________________________________
-	inline WgFont_p WgTextStyle::font() const
+	inline Font_p TextStyle::font() const
 	{
 		return m_specAttr.pFont;
 	}
 	
 	//______________________________________________________________________________
-	inline WgTextLink_p WgTextStyle::link() const
+	inline TextLink_p TextStyle::link() const
 	{
 		return m_specAttr.pLink;
 	}
 	
 	//______________________________________________________________________________
-	inline WgColor WgTextStyle::color( WgState state ) const
+	inline Color TextStyle::color( State state ) const
 	{
 		return m_specAttr.color[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline 	WgColor WgTextStyle::bgColor( WgState state ) const
+	inline 	Color TextStyle::bgColor( State state ) const
 	{
 		return m_specAttr.bgColor[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline int WgTextStyle::size( WgState state ) const
+	inline int TextStyle::size( State state ) const
 	{
 		return m_specAttr.size[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline WgTextDecoration WgTextStyle::decoration( WgState state ) const
+	inline TextDecoration TextStyle::decoration( State state ) const
 	{
 		return m_specAttr.decoration[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	
-	inline WgFont_p WgTextStyle::combFont() const
+	inline Font_p TextStyle::combFont() const
 	{
 		return m_combAttr.pFont;
 	}
 	
 	//______________________________________________________________________________
-	inline WgTextLink_p WgTextStyle::combLink() const
+	inline TextLink_p TextStyle::combLink() const
 	{
 		return m_combAttr.pLink;
 	}
 	
 	//______________________________________________________________________________
-	inline WgColor WgTextStyle::combColor( WgState state ) const
+	inline Color TextStyle::combColor( State state ) const
 	{
 		return m_combAttr.color[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline WgColor WgTextStyle::combBgColor( WgState state ) const
+	inline Color TextStyle::combBgColor( State state ) const
 	{
 		return m_combAttr.bgColor[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline int WgTextStyle::combSize( WgState state ) const
+	inline int TextStyle::combSize( State state ) const
 	{
 		return m_combAttr.size[WgUtil::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
-	inline WgTextDecoration WgTextStyle::combDecoration( WgState state ) const
+	inline TextDecoration TextStyle::combDecoration( State state ) const
 	{
 		return m_combAttr.decoration[WgUtil::_stateToIndex(state)];
 	}

@@ -76,7 +76,7 @@ namespace wg
 	
 	#define	WG_FONTSIZE_INHERIT 0x80000000
 	
-	enum WgStateEnum
+	enum StateEnum
 	{
 		WG_STATE_NORMAL						= 0,			///< Element is neither hovered, pressed, selected or focused.
 		WG_STATE_SELECTED					= 1,			///< Element is in a selected state, like a selected checkbox or item in a list. 
@@ -95,13 +95,13 @@ namespace wg
 	};
 	
 	#define	WG_NB_STATES		14			// Number of states
-	#define	WG_MAX_STATE_VALUE	17			// Highest value for WgStateEnum
+	#define	WG_MAX_STATE_VALUE	17			// Highest value for StateEnum
 	
-	class WgState 
+	class State 
 	{
 	public:
-		WgState() { m_state = WG_STATE_NORMAL; }
-		WgState( WgStateEnum state ) { m_state = state; }
+		State() { m_state = WG_STATE_NORMAL; }
+		State( StateEnum state ) { m_state = state; }
 	
 	//	void		set( WgModeEnum state ) { m_state = state; }
 	//	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
@@ -119,12 +119,12 @@ namespace wg
 		bool	isHovered() const { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
 		bool	isPressed() const { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
 	
-		inline bool operator==(WgStateEnum state) const { return m_state == state; }
-		inline bool operator!=(WgStateEnum state) const { return m_state != state; }
+		inline bool operator==(StateEnum state) const { return m_state == state; }
+		inline bool operator!=(StateEnum state) const { return m_state != state; }
 	
-		inline void operator=(WgStateEnum state) { m_state = state; }
+		inline void operator=(StateEnum state) { m_state = state; }
 	
-		operator WgStateEnum() const { return (WgStateEnum) m_state; }
+		operator StateEnum() const { return (StateEnum) m_state; }
 	
 	private:
 		int		m_state;
@@ -286,9 +286,9 @@ namespace wg
 		WG_BLENDMODE_INVERT				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 	};
 	
-	//____ WgFontAlt ____________________________________________________________
+	//____ FontAlt ____________________________________________________________
 	
-	enum WgFontAlt
+	enum FontAlt
 	{
 		// Needs to stay in sync with WgExtChar::WG_BEGIN_NORMAL and following enums!
 	
@@ -352,9 +352,9 @@ namespace wg
 	#define	WG_MAX_BUTTONS		WG_BUTTON_X2+1	
 	
 	
-	//____ WgAnimMode _____________________________________________________________
+	//____ AnimMode _____________________________________________________________
 	
-	enum WgAnimMode
+	enum AnimMode
 	{
 		WG_FORWARD_ONCE,
 		WG_BACKWARD_ONCE,
@@ -447,9 +447,9 @@ namespace wg
 		WG_VERTICAL
 	};
 	
-	//____ WgSizePolicy ___________________________________________________________
+	//____ SizePolicy ___________________________________________________________
 	/**
-		WgSizePolicy is used by certain containers, including FlexPanel and ScrollPanel, 
+		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel, 
 		to limit/control the geometry of children. Different SizePolicies can be set
 		for horizontal and vertical size.
 	
@@ -457,7 +457,7 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified in the childs hook.
 	*/
-	enum WgSizePolicy
+	enum SizePolicy
 	{
 		WG_DEFAULT = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
 		WG_BOUND,				///< Child is bound to the exact size specified by parent.
@@ -465,9 +465,9 @@ namespace wg
 		WG_EXPANDED,			///< Childs size is set to at least the size specified by parent.
 	};
 	
-	//____ WgMsgType ______________________________________________________________
+	//____ MsgType ______________________________________________________________
 	
-	enum	WgMsgType
+	enum	MsgType
 	{
 		WG_MSG_DUMMY = 0,
 		WG_MSG_TICK,
@@ -560,9 +560,9 @@ namespace wg
 		WG_SELECT_FLIP			///< Multiple entries can be selected at the same time and are switched individually.
 	};
 	
-	//____ WgTextEditMode _________________________________________________________
+	//____ TextEditMode _________________________________________________________
 	
-	enum WgTextEditMode
+	enum TextEditMode
 	{
 		WG_TEXT_STATIC,
 		WG_TEXT_SELECTABLE,
@@ -570,34 +570,34 @@ namespace wg
 	};
 	
 	
-	//____ WgTextPos ______________________________________________________________
+	//____ TextPos ______________________________________________________________
 	
-	class WgTextPos
+	class TextPos
 	{
 	public:
-		WgTextPos() : line(0), col(0) {}
-		WgTextPos( int line, int col ) : line(line), col(col) {}
+		TextPos() : line(0), col(0) {}
+		TextPos( int line, int col ) : line(line), col(col) {}
 	
 		int	line;
 		int col;
 	};
 	
-	//___  WgTextDecoration ________________________________________________________
+	//___  TextDecoration ________________________________________________________
 	
-	enum WgTextDecoration
+	enum TextDecoration
 	{
 		WG_DECORATION_INHERIT,
 		WG_DECORATION_NONE,
 		WG_DECORATION_UNDERLINE
 	};
 	
-	//____ WgRange ____________________________________________________________
+	//____ Range ____________________________________________________________
 	
-	class WgRange
+	class Range
 	{
 	public:
-		WgRange() : ofs(0), len(0) {}
-		WgRange( int ofs, int len ) : ofs(ofs), len(len) {}
+		Range() : ofs(0), len(0) {}
+		Range( int ofs, int len ) : ofs(ofs), len(len) {}
 	
 		inline int	begin() const { return ofs; }
 		inline int	end() const { return ofs+len; }
@@ -652,7 +652,7 @@ namespace wg
 	 * checking the size of a pixel and the color depths and presence and depth of the alpha channel.
 	 *
 	 * Thirdly a pair of mask and shift variables for each individual channel, specifies the position
-	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by WgColor.
+	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
 	 *
 	 * Not all pixel formats (like those of index/palette-based surfaces) can
 	 * be fully described by a WgPixelFormat object. In that case the member type is set to WG_PIXEL_UNKNOWN.
@@ -663,19 +663,19 @@ namespace wg
 	 *
 	 * redValue = (pixel & R_mask) >> R_shift
 	 *
-	 * Thus you can convert any specified pixel type to a WgColor structure using the following routine:
+	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
 	 *
 	 * Uint32	pixel;
 	 * WgPixelFormat * pFormat;
 	 *
-	 * 	WgColor col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
+	 * 	Color col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
 	 *				 (pixel & pFormat->G_mask) >> pFormat->G_shift,
 	 *				 (pixel & pFormat->B_mask) >> pFormat->B_shift,
 	 *				 (pixel & pFormat->A_mask) >> pFormat->A_shift );
 	 *
-	 * To convert a WgColor object to a pixel value you can use:
+	 * To convert a Color object to a pixel value you can use:
 	 *
-	 * WgColor color;
+	 * Color color;
 	 * WgPixelFormat * pFormat;
 	 *
 	 * 	Uint32 pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
@@ -683,7 +683,7 @@ namespace wg
 	 *				 ((color.b << pFormat->B_shift) & pFormat->B_mask) |
 	 *				 ((color.a << pFormat->A_shift) & pFormat->A_mask);
 	 *
-	 * This is essentially what the default implementation for WgSurface::colorToPixel() and WgSurface::pixelToColor() does.
+	 * This is essentially what the default implementation for Surface::colorToPixel() and Surface::pixelToColor() does.
 	 *
 	 **/
 	

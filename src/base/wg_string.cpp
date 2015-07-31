@@ -10,16 +10,16 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgString::WgString()
+	String::String()
 	{
 	}
 	
-	WgString::WgString( const WgString& str )
+	String::String( const String& str )
 	{
 		m_buffer = str.m_buffer;
 	}
 	
-	WgString::WgString( const WgCharBuffer* pBuffer )
+	String::String( const CharBuffer* pBuffer )
 	{
 		if( pBuffer )
 		{
@@ -28,39 +28,39 @@ namespace wg
 		}
 	}
 	
-	WgString::WgString( const WgCharSeq& seq )
+	String::String( const CharSeq& seq )
 	{
 		m_buffer.pushBack( seq );
 	}
 	
 	
-	WgString::~WgString()
+	String::~String()
 	{
 	}
 	
-	const WgChar* WgString::chars() const
+	const Char* String::chars() const
 	{
 		return m_buffer.chars();
 	}
 	
-	int WgString::length() const
+	int String::length() const
 	{
 		return (int) m_buffer.nbChars();
 	}
 	
-	bool WgString::isEmpty() const
+	bool String::isEmpty() const
 	{
 		return m_buffer.nbChars()==0?true:false;
 	}
 	
 	//____ set() ___________________________________________________________________
 	
-	void WgString::set( const WgString& str )
+	void String::set( const String& str )
 	{
 		m_buffer = str.m_buffer;
 	}
 	
-	void WgString::set( const WgCharBuffer* pBuffer )
+	void String::set( const CharBuffer* pBuffer )
 	{
 		if( pBuffer )
 		{	
@@ -71,7 +71,7 @@ namespace wg
 			m_buffer.reset();
 	}
 	
-	void WgString::set( const WgCharSeq& seq )
+	void String::set( const CharSeq& seq )
 	{
 		m_buffer.reset(seq.length());
 		m_buffer.pushBack(seq);
@@ -79,43 +79,43 @@ namespace wg
 	
 	//____ append() ________________________________________________________________
 	
-	void WgString::append( const WgString& str )
+	void String::append( const String& str )
 	{
 		m_buffer.pushBack(str.chars(), str.length());
 	}
 	
-	void WgString::append( const WgCharBuffer* pBuffer )
+	void String::append( const CharBuffer* pBuffer )
 	{
 		if( pBuffer )
 			m_buffer.pushBack( pBuffer->chars(), pBuffer->nbChars() );
 	}
 	
-	void WgString::append( const WgCharSeq& seq )
+	void String::append( const CharSeq& seq )
 	{
 		m_buffer.pushBack(seq);
 	}
 	
 	//____ prepend() _______________________________________________________________
 	
-	void WgString::prepend( const WgString& str )
+	void String::prepend( const String& str )
 	{
 		m_buffer.pushFront(str.chars(), str.length());
 	}
 	
-	void WgString::prepend( const WgCharBuffer* pBuffer )
+	void String::prepend( const CharBuffer* pBuffer )
 	{
 		if( pBuffer )
 			m_buffer.pushFront( pBuffer->chars(), pBuffer->nbChars() );
 	}
 	
-	void WgString::prepend( const WgCharSeq& seq )
+	void String::prepend( const CharSeq& seq )
 	{
 		m_buffer.pushFront(seq);
 	}
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgString::clear()
+	void String::clear()
 	{
 		m_buffer.reset();
 	}

@@ -49,35 +49,35 @@
 namespace wg 
 {
 	
-	//____ WgPen _____________________________________________________________
+	//____ Pen _____________________________________________________________
 	
-	class WgPen
+	class Pen
 	{
-	friend class WgFont;
+	friend class Font;
 	
 	public:
-		WgPen();
-		WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
-		~WgPen() {}
+		Pen();
+		Pen( GfxDevice * pDevice, const Coord& origo, const Rect& clip = Rect() );
+		~Pen() {}
 	
-		void					setClipRect( const WgRect& clip );
-		inline void				setDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
+		void					setClipRect( const Rect& clip );
+		inline void				setDevice( GfxDevice * pDevice ) { m_pDevice = pDevice; }
 	
-		void					setOrigo( const WgCoord& pos ) { m_origo = pos; }
+		void					setOrigo( const Coord& pos ) { m_origo = pos; }
 	
-		bool					setAttributes( const WgTextAttr& attr );
+		bool					setAttributes( const TextAttr& attr );
 		bool					setSize( int size );
-		void					setFont( const WgFont_p& pFont );
-		void					setStyle( WgFontAlt style );
-		void					setColor( WgColor color );
+		void					setFont( const Font_p& pFont );
+		void					setStyle( FontAlt style );
+		void					setColor( Color color );
 	//	void					setCharVisibility( int visibilityFlags );		// We need something better here...
 	
 	
-		inline void				setPos( const WgCoord& pos ) { m_pos = pos; }
+		inline void				setPos( const Coord& pos ) { m_pos = pos; }
 		inline void				setPosX( int x ) { m_pos.x = x; }
 		inline void				setPosY( int y ) { m_pos.y = y; }
 	
-		inline void				move( const WgCoord& pos ) { m_pos += pos; }
+		inline void				move( const Coord& pos ) { m_pos += pos; }
 		inline void				moveX( int x ) { m_pos.x += x; }
 		inline void				moveY( int y ) { m_pos.y += y; }
 	
@@ -89,25 +89,25 @@ namespace wg
 	
 		inline void				advancePos() { m_pos.x += m_pGlyph->advance(); }							///< Advances position past current character.
 		inline void				advancePosMonospaced() { m_pos.x += m_pGlyphs->getMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
-		void					advancePosCursor( const WgCaretInstance& instance );
+		void					advancePosCursor( const CaretInstance& instance );
 	
-		inline WgGlyph_p		getGlyph() const { return m_pGlyph; }
-		inline WgCoord			getPos() const { return m_pos; }
+		inline Glyph_p		getGlyph() const { return m_pGlyph; }
+		inline Coord			getPos() const { return m_pos; }
 		inline int				getPosX() const { return m_pos.x; }
 		inline int				getPosY() const { return m_pos.y; }
 	
-	//	inline WgCoord			getBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->bearingX(), m_pos.y + m_pGlyph->bearingY() ); }
+	//	inline Coord			getBlitPos() const { return Coord( m_pos.x + m_pGlyph->bearingX(), m_pos.y + m_pGlyph->bearingY() ); }
 	//	inline int				getBlitPosX() const { return m_pos.x + m_pGlyph->bearingX(); }
 	//	inline int				getBlitPosY() const { return m_pos.y + m_pGlyph->bearingY(); }
 	
-		inline const WgRect&	getClipRect() const { return m_clipRect; }
+		inline const Rect&	getClipRect() const { return m_clipRect; }
 		inline bool				hasClipRect() const { return m_bClip; }
 	
-		inline WgFont_p		getFont() const { return m_pFont; }
+		inline Font_p		getFont() const { return m_pFont; }
 		inline int				getSize() const { return m_size; }
-		inline WgFontAlt		getStyle() const { return m_style; }
-		inline WgColor			getColor() const { return m_color; }
-		inline WgGlyphset_p	getGlyphset() const { return m_pGlyphs; }
+		inline FontAlt		getStyle() const { return m_style; }
+		inline Color			getColor() const { return m_color; }
+		inline Glyphset_p	getGlyphset() const { return m_pGlyphs; }
 	
 	
 		inline int				getLineSpacing() const { return m_pGlyphs->getLineSpacing(m_size); }
@@ -115,18 +115,18 @@ namespace wg
 		inline int				getBaseline() const { return m_pGlyphs->getBaseline(m_size); }
 	
 		void					blitChar() const;
-		bool					blitCursor( const WgCaretInstance& instance ) const;
+		bool					blitCursor( const CaretInstance& instance ) const;
 	
 	private:
 		void _init();
 	
 		void _onAttrChanged();
 	
-		class DummyGlyph : public WgGlyph
+		class DummyGlyph : public Glyph
 		{
 		public:
-			DummyGlyph() : WgGlyph( 0, 0, 0 ) {}
-			const WgGlyphBitmap * getBitmap() { return 0; }
+			DummyGlyph() : Glyph( 0, 0, 0 ) {}
+			const GlyphBitmap * getBitmap() { return 0; }
 	
 			void setAdvance( int advance ) { m_advance = advance; }
 		};
@@ -135,31 +135,31 @@ namespace wg
 	
 		//
 	
-		WgGlyphset_p	m_pGlyphs;			// Pointer at our glyphs.
+		Glyphset_p	m_pGlyphs;			// Pointer at our glyphs.
 	
-		WgGlyph_p		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
-		WgGlyph_p		m_pGlyph;		// Current glyph.
+		Glyph_p		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
+		Glyph_p		m_pGlyph;		// Current glyph.
 	
-		WgFont_p		m_pFont;		// Pointer back to the font.
+		Font_p		m_pFont;		// Pointer back to the font.
 		int				m_wantedSize;	// Size we requested.
 		int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
-		WgFontAlt		m_style;		// Style of glyphset we requested.
-		WgColor			m_color;		// Color this pen draws in.
+		FontAlt		m_style;		// Style of glyphset we requested.
+		Color			m_color;		// Color this pen draws in.
 	
 		bool			m_bShowSpace;	// Set if space control character should be shown (usually a dot in the middle of the cell).
 		bool			m_bShowCRLF;	// Set if the CR/LF control character should be shown.
 	
-		WgCoord			m_origo;		// Origo position, from where we start printing and count tab-positions.
-		WgCoord			m_pos;			// Position of this pen in screen pixels.
+		Coord			m_origo;		// Origo position, from where we start printing and count tab-positions.
+		Coord			m_pos;			// Position of this pen in screen pixels.
 	
 		DummyGlyph		m_dummyGlyph;	// Dummy glyph used for whitespace, tab etc
 	
 		int				m_tabWidth;		// Tab width in pixels.
 	
-		WgGfxDevice *	m_pDevice;		// Device used for blitting.
+		GfxDevice *	m_pDevice;		// Device used for blitting.
 	
 		bool			m_bClip;		// Set if we have a clipping rectangle.
-		WgRect			m_clipRect;		// Clipping rectangle used for clipBlit().
+		Rect			m_clipRect;		// Clipping rectangle used for clipBlit().
 	
 	
 	};

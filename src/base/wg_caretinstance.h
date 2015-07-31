@@ -40,18 +40,18 @@
 namespace wg 
 {
 	
-	class WgLegacyTextField;
-	class WgCharSeq;
-	class WgPen;
+	class LegacyTextField;
+	class CharSeq;
+	class Pen;
 	
-	//____ WgCaretInstance ________________________________________________________
+	//____ CaretInstance ________________________________________________________
 	
-	class WgCaretInstance
+	class CaretInstance
 	{
-		friend class WgPen;
+		friend class Pen;
 	public:
 	
-		WgCaretInstance( WgLegacyTextField& text );
+		CaretInstance( LegacyTextField& text );
 	
 		bool			incTime( int ms );
 		void			insertMode( bool bInsert );
@@ -68,7 +68,7 @@ namespace wg
 		void			goBOL();
 		void			goEOL();
 	
-		void			gotoSoftLine( int line, const WgRect& container );
+		void			gotoSoftLine( int line, const Rect& container );
 	
 		void			gotoHardPos( int line, int col );
 		void			gotoSoftPos( int line, int col );
@@ -83,7 +83,7 @@ namespace wg
 		void			getSoftPos( int &line, int &col ) const;
 	
 		bool			putChar( Uint16 character );
-		int				putText( const WgCharSeq& seq );
+		int				putText( const CharSeq& seq );
 		void			unputText( int nChar );
 		void 			delPrevWord();
 		void 			delNextWord();
@@ -97,9 +97,9 @@ namespace wg
 		inline int		column() const;
 		inline int		time() const;
 	
-		inline WgLegacyTextField *	text() const;
+		inline LegacyTextField *	text() const;
 	
-		WgCaret::Mode	cursorMode() const;
+		Caret::Mode	cursorMode() const;
 	
 		void			setSelectionMode(bool bOn);
 		bool			getSelectionMode() const { return m_bSelectMode; }
@@ -107,14 +107,14 @@ namespace wg
 		void			delSelection();
 		void			clearSelection();
 		void			selectAll();
-		void			selectRange( WgRange range );
+		void			selectRange( Range range );
 	
 	
 	protected:
 		void			_gotoPos( int line, int col );
 		void			_updateLocation(int line, int col);
 	
-		WgLegacyTextField *		m_pText;
+		LegacyTextField *		m_pText;
 		bool			m_bHidden;
 		bool			m_bInsert;
 		bool			m_bSelectMode;
@@ -131,34 +131,34 @@ namespace wg
 	
 	//____ line() __________________________________________________________________
 	
-	inline int WgCaretInstance::line() const
+	inline int CaretInstance::line() const
 	{
 		return m_line;
 	}
 	
 	//____ column() ________________________________________________________________
 	
-	inline int WgCaretInstance::column() const
+	inline int CaretInstance::column() const
 	{
 		return m_column;
 	}
 	
 	//____ time() __________________________________________________________________
 	
-	inline int WgCaretInstance::time() const
+	inline int CaretInstance::time() const
 	{
 		return m_time;
 	}
 	
 	//____ text() __________________________________________________________________
 	
-	inline WgLegacyTextField * WgCaretInstance::text() const
+	inline LegacyTextField * CaretInstance::text() const
 	{
 		return m_pText;
 	}
 	
 	
-	inline void WgCaretInstance::goLeft( int nChars )
+	inline void CaretInstance::goLeft( int nChars )
 	{
 		//if( m_column <= nChars )
 		//	gotoColumn( 0 );
@@ -166,17 +166,17 @@ namespace wg
 			gotoColumn( m_column - nChars );
 	}
 	
-	inline void WgCaretInstance::goRight( int nChars )
+	inline void CaretInstance::goRight( int nChars )
 	{
 		gotoColumn( m_column + nChars );
 	}
 	
-	inline void WgCaretInstance::goBOF()
+	inline void CaretInstance::goBOF()
 	{
 		gotoSoftPos( 0, 0 );
 	}
 	
-	inline void WgCaretInstance::goEOF()
+	inline void CaretInstance::goEOF()
 	{
 		gotoSoftPos( INT_MAX, INT_MAX );
 	}

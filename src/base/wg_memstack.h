@@ -29,11 +29,11 @@
 namespace wg 
 {
 	
-	class WgMemStack
+	class MemStack
 	{
 	public:
-		WgMemStack( int blockSize );
-		~WgMemStack() {}
+		MemStack( int blockSize );
+		~MemStack() {}
 	
 		char *  alloc( int bytes );
 		void	release( int bytes );
@@ -42,7 +42,7 @@ namespace wg
 	
 	private:
 	
-		class BlockHeader : public WgLink
+		class BlockHeader : public Link
 		{
 		public:
 			BlockHeader(int bytes);
@@ -54,7 +54,7 @@ namespace wg
 		};
 	
 		int						m_blockSize;
-		WgChain<BlockHeader>	m_blocks;
+		Chain<BlockHeader>	m_blocks;
 	};
 	
 

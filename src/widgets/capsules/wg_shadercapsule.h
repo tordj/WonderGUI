@@ -30,40 +30,40 @@
 namespace wg 
 {
 	
-	class WgShaderCapsule;
-	typedef	WgStrongPtr<WgShaderCapsule,WgCapsule_p>		WgShaderCapsule_p;
-	typedef	WgWeakPtr<WgShaderCapsule,WgCapsule_wp>	WgShaderCapsule_wp;
+	class ShaderCapsule;
+	typedef	WgStrongPtr<ShaderCapsule,Capsule_p>		ShaderCapsule_p;
+	typedef	WgWeakPtr<ShaderCapsule,Capsule_wp>	ShaderCapsule_wp;
 	
-	class WgShaderCapsule : public WgCapsule
+	class ShaderCapsule : public Capsule
 	{
 	public:
-		static WgShaderCapsule_p	create() { return WgShaderCapsule_p(new WgShaderCapsule()); }
+		static ShaderCapsule_p	create() { return ShaderCapsule_p(new ShaderCapsule()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgShaderCapsule_p	cast( const WgObject_p& pObject );
+		static ShaderCapsule_p	cast( const Object_p& pObject );
 	
-		void		setColor( const WgColor& color);
+		void		setColor( const Color& color);
 		void		setTintMode( WgTintMode mode );
 		void		setBlendMode( WgBlendMode mode );
 	
-		inline WgColor		color() { return m_tintColor; }
+		inline Color		color() { return m_tintColor; }
 		inline WgBlendMode	blendMode() { return m_blendMode; }
 		inline WgTintMode	tintMode() { return m_tintMode; }
 	
 	
 	protected:
-		WgShaderCapsule();
-		virtual ~WgShaderCapsule();
-		virtual WgWidget* _newOfMyType() const { return new WgShaderCapsule(); };
+		ShaderCapsule();
+		virtual ~ShaderCapsule();
+		virtual Widget* _newOfMyType() const { return new ShaderCapsule(); };
 	
-		void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-		void		_onCloneContent( const WgWidget * _pOrg );
+		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+		void		_onCloneContent( const Widget * _pOrg );
 		WgBlendMode _getBlendMode() const;
 	
 	private:
-		WgColor			m_tintColor;
+		Color			m_tintColor;
 		WgBlendMode		m_blendMode;
 		WgTintMode		m_tintMode;
 	

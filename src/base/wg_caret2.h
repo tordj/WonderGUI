@@ -34,14 +34,14 @@
 namespace wg 
 {
 	
-	class WgGfxDevice;
+	class GfxDevice;
 	
-	class WgCaret2;
-	typedef	WgStrongPtr<WgCaret2,WgObject_p>		WgCaret2_p;
-	typedef	WgWeakPtr<WgCaret2,WgObject_wp>		WgCaret2_wp;
+	class Caret2;
+	typedef	WgStrongPtr<Caret2,Object_p>		Caret2_p;
+	typedef	WgWeakPtr<Caret2,Object_wp>		Caret2_wp;
 	
 	
-	enum WgCaretMode
+	enum CaretMode
 	{
 		WG_CARET_INSERT,
 		WG_CARET_OVERWRITE,
@@ -49,30 +49,30 @@ namespace wg
 	};
 	
 	
-	class WgCaret2 : public WgObject
+	class Caret2 : public Object
 	{
 	public:
-		static WgCaret2_p	create() { return WgCaret2_p(new WgCaret2()); }
+		static Caret2_p	create() { return Caret2_p(new Caret2()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgCaret2_p	cast( const WgObject_p& pObject );
+		static Caret2_p	cast( const Object_p& pObject );
 	
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
 	
 		virtual void		setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend );
-		virtual void		setMode( WgCaretMode mode );
+		virtual void		setMode( CaretMode mode );
 		virtual int			eolWidth( int size, int advance, int ascend, int descend ) const;
-		inline WgCaretMode	mode() const { return m_mode; }
+		inline CaretMode	mode() const { return m_mode; }
 		virtual void		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
-		virtual WgRect		dirtyRect( WgCoord pos ) const;
-		virtual void		render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip );
+		virtual Rect		dirtyRect( Coord pos ) const;
+		virtual void		render( GfxDevice * pDevice, Coord pos, const Rect& clip );
 	
 	protected:
-		WgCaret2();
+		Caret2();
 	
 	
 		Uint16		m_glyph;
@@ -81,7 +81,7 @@ namespace wg
 		int			m_glyphAscend;
 		int			m_glyphDescend;
 	
-		WgCaretMode	m_mode;
+		CaretMode	m_mode;
 		int			m_ticks;
 		int			m_cycleLength;
 		bool		m_bNeedToRender;

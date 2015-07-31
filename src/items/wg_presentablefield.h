@@ -45,58 +45,58 @@ namespace wg
 	
 	//____ WgPresentableHolder ___________________________________________________________
 	
-	struct WgPresentableHolder : public WgFieldHolder
+	struct WgPresentableHolder : public FieldHolder
 	{
 	};
 	
-	//____ WgPresentableField __________________________________________________________________
+	//____ PresentableField __________________________________________________________________
 	
-	class WgPresentableField : public WgField
+	class PresentableField : public Field
 	{
-		friend class WgTextPresenter;
+		friend class TextPresenter;
 	public:
-		WgPresentableField( WgPresentableHolder * pHolder );
-		virtual ~WgPresentableField();
+		PresentableField( WgPresentableHolder * pHolder );
+		virtual ~PresentableField();
 	
-		virtual void		setStyle( const WgTextStyle_p& pStyle );
+		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
-		WgTextStyle_p		style() const { return m_pStyle; }
+		TextStyle_p		style() const { return m_pStyle; }
 	
-		virtual void		setPresenter( const WgTextPresenter_p& pPresenter );
+		virtual void		setPresenter( const TextPresenter_p& pPresenter );
 		virtual void		clearPresenter();
-		WgTextPresenter_p	presenter() const { return m_pPresenter; }
+		TextPresenter_p	presenter() const { return m_pPresenter; }
 	
-		virtual void		setState( WgState state );
-		inline WgState		state() const { return m_state; }
+		virtual void		setState( State state );
+		inline State		state() const { return m_state; }
 	
-		virtual WgSize		preferredSize() const;	
+		virtual Size		preferredSize() const;	
 		virtual int			matchingWidth( int height ) const;
 		virtual int			matchingHeight( int width ) const;
-		inline WgSize		size() const { return m_size; }
+		inline Size		size() const { return m_size; }
 	
-		virtual int			coordToChar( WgCoord pos ) const;
-		virtual WgRect		charToRect( int charOfs ) const;
+		virtual int			coordToChar( Coord pos ) const;
+		virtual Rect		charToRect( int charOfs ) const;
 	
 		virtual void		onRefresh();
 	
-		virtual WgString	tooltip() const;
+		virtual String	tooltip() const;
 	
-		virtual void		onNewSize( const WgSize& size );	
-		virtual void		onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+		virtual void		onNewSize( const Size& size );	
+		virtual void		onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
-		virtual WgRect		rectForRange( int ofs, int length ) const;
+		virtual Rect		rectForRange( int ofs, int length ) const;
 		
-		virtual WgString	getString() const;
+		virtual String	getString() const;
 		
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
 		
 	protected:
 	
-		WgTextPresenter *	_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : WgBase::defaultPresenter().rawPtr(); }
-		WgTextStyle *		_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return WgBase::defaultStyle().rawPtr(); }
+		TextPresenter *	_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
+		TextStyle *		_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 	
-		WgSize					m_size;
+		Size					m_size;
 	
 		union 
 		{
@@ -104,10 +104,10 @@ namespace wg
 			int				m_presenterData;
 		};
 	
-		WgState					m_state;
-		WgTextStyle_p			m_pStyle;
-		WgCharBuffer			m_charBuffer;
-		WgTextPresenter_p		m_pPresenter;
+		State					m_state;
+		TextStyle_p			m_pStyle;
+		CharBuffer			m_charBuffer;
+		TextPresenter_p		m_pPresenter;
 	
 	};
 	

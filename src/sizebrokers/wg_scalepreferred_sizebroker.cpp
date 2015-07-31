@@ -25,45 +25,45 @@ namespace wg
 {
 	
 	
-	const char WgScalePreferredSizeBroker::CLASSNAME[] = {"ScalePreferredSizeBroker"};
+	const char ScalePreferredSizeBroker::CLASSNAME[] = {"ScalePreferredSizeBroker"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgScalePreferredSizeBroker::isInstanceOf( const char * pClassName ) const
+	bool ScalePreferredSizeBroker::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgSizeBroker::isInstanceOf(pClassName);
+		return SizeBroker::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgScalePreferredSizeBroker::className( void ) const
+	const char * ScalePreferredSizeBroker::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgScalePreferredSizeBroker_p WgScalePreferredSizeBroker::cast( const WgObject_p& pObject )
+	ScalePreferredSizeBroker_p ScalePreferredSizeBroker::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgScalePreferredSizeBroker_p( static_cast<WgScalePreferredSizeBroker*>(pObject.rawPtr()) );
+			return ScalePreferredSizeBroker_p( static_cast<ScalePreferredSizeBroker*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setItemLengths() _______________________________________________________
 	
-	int WgScalePreferredSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
+	int ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const
 	{
 	    return setPreferredLengths( pItems, nItems );
 	}
 	
 	//____ setPreferredLengths() __________________________________________________
 	
-	int WgScalePreferredSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
+	int ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
 	    int total = 0;
 	    for( int i = 0 ; i < nItems ; i++ )
@@ -77,7 +77,7 @@ namespace wg
 	
 	//____ MayLaterPreferredLengths() _____________________________________________
 	
-	bool  WgScalePreferredSizeBroker::mayAlterPreferredLengths() const
+	bool  ScalePreferredSizeBroker::mayAlterPreferredLengths() const
 	{
 	    return true;
 	}

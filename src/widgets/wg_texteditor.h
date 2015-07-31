@@ -39,67 +39,67 @@
 namespace wg 
 {
 	
-	class WgTextEditor;
-	typedef	WgStrongPtr<WgTextEditor,WgWidget_p>		WgTextEditor_p;
-	typedef	WgWeakPtr<WgTextEditor,WgWidget_wp>	WgTextEditor_wp;
+	class TextEditor;
+	typedef	WgStrongPtr<TextEditor,Widget_p>		TextEditor_p;
+	typedef	WgWeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
 	
-	class WgTextEditor:public WgWidget, protected WgLegacyTextHolder
+	class TextEditor:public Widget, protected LegacyTextHolder
 	{
 	public:
-		static WgTextEditor_p	create() { return WgTextEditor_p(new WgTextEditor()); }
+		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgTextEditor_p	cast( const WgObject_p& pObject );
+		static TextEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgEditText		text;
+		EditText		text;
 	
 		//____ Methods __________________________________________
 	
 		inline void		setMaxLines( int nLines ) { m_maxLines = nLines; }
 		inline int		maxLines() { return m_maxLines; }
 	
-		int		insertTextAtCursor( const WgCharSeq& str );
+		int		insertTextAtCursor( const CharSeq& str );
 		bool	insertCharAtCursor( Uint16 c );
 	
-		virtual void			setEditMode(WgTextEditMode mode);
-		virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
+		virtual void			setEditMode(TextEditMode mode);
+		virtual TextEditMode	editMode() const { return m_text.editMode(); }
 	
 		WgPointerStyle		pointerStyle() const;
-		WgString			tooltipString() const;
+		String			tooltipString() const;
 	
 		int		matchingHeight( int width ) const;
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 		bool	isAutoEllipsisDefault() const { return true; };
 	
 		bool	isEditable() const { return m_text.isEditable(); }
 		bool	isSelectable() const { return m_text.isSelectable(); }
 	
 	protected:
-		WgTextEditor();
-		virtual ~WgTextEditor();
-		virtual WgWidget* _newOfMyType() const { return new WgTextEditor(); };
+		TextEditor();
+		virtual ~TextEditor();
+		virtual Widget* _newOfMyType() const { return new TextEditor(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onNewSize( const WgSize& size );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onNewSize( const Size& size );
 		void	_onRefresh();
-		void	_onMsg( const WgMsg_p& pMsg );
-		void	_onStateChanged( WgState oldState );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onMsg( const Msg_p& pMsg );
+		void	_onStateChanged( State oldState );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		WgObject * _object() { return this; }
-		void	_onFieldDirty( WgField * pField );
-		void	_onFieldResize( WgField * pField );
+		Object * _object() { return this; }
+		void	_onFieldDirty( Field * pField );
+		void	_onFieldResize( Field * pField );
 	private:
 	
 		bool	_insertCharAtCursor( Uint16 c );
 	
 	
-		WgLegacyTextField			m_text;
+		LegacyTextField			m_text;
 		bool				m_bHasFocus;
 		int					m_maxLines;
 		bool				m_bResetCursorOnFocus;

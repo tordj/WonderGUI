@@ -34,47 +34,47 @@ namespace wg
 {
 	
 	
-	class WgBlockSkin;
-	typedef	WgStrongPtr<WgBlockSkin,WgExtendedSkin_p>	WgBlockSkin_p;
+	class BlockSkin;
+	typedef	WgStrongPtr<BlockSkin,ExtendedSkin_p>	BlockSkin_p;
 	
 	
-	class WgBlockSkin : public WgExtendedSkin
+	class BlockSkin : public ExtendedSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
 	
 	public:
-		static WgBlockSkin_p create();
-		static WgBlockSkin_p createStatic( const WgSurface_p& pSurface, WgRect block, WgBorder frame = WgBorder(0) );
-		static WgBlockSkin_p createEnable( const WgSurface_p& pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorder frame = WgBorder(0) );
-		static WgBlockSkin_p createClickable( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createSelectable( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createClickSelectable(const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createClickSelectableWidget( const WgSurface_p& pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorder blockFrame = WgBorder(0) );
+		static BlockSkin_p create();
+		static BlockSkin_p createStatic( const Surface_p& pSurface, Rect block, Border frame = Border(0) );
+		static BlockSkin_p createEnable( const Surface_p& pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame = Border(0) );
+		static BlockSkin_p createClickable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
+		static BlockSkin_p createSelectable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
+		static BlockSkin_p createClickSelectable(const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
+		static BlockSkin_p createClickSelectableWidget( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
 	
-		static WgBlockSkin_p createStaticFromSurface( const WgSurface_p& pSurface, WgBorder frame = WgBorder(0) );
-		static WgBlockSkin_p createEnableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createClickableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createSelectableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
-		static WgBlockSkin_p createClickSelectableFromSurface( const WgSurface_p& pSurface, int blockSpacing, WgBorder blockFrame = WgBorder(0) );
+		static BlockSkin_p createStaticFromSurface( const Surface_p& pSurface, Border frame = Border(0) );
+		static BlockSkin_p createEnableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
+		static BlockSkin_p createClickableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
+		static BlockSkin_p createSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
+		static BlockSkin_p createClickSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
 	
-		~WgBlockSkin() {};
+		~BlockSkin() {};
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgBlockSkin_p	cast( const WgObject_p& pObject );
+		static BlockSkin_p	cast( const Object_p& pObject );
 	
 	
-		void	setSurface( const WgSurface_p& pSurf );
-		bool	setBlockGeo( WgSize size, WgBorder frame = WgBorder(0) );
-		void	setStateBlock( WgStateEnum state, const WgCoord& ofs );
+		void	setSurface( const Surface_p& pSurf );
+		bool	setBlockGeo( Size size, Border frame = Border(0) );
+		void	setStateBlock( StateEnum state, const Coord& ofs );
 	
-		void	setAllBlocks( const WgCoord& ofs );
-		void	setDisabledBlock( const WgCoord& ofs );
-		void	setHoveredBlocks( const WgCoord& ofs );
-		void	setPressedBlocks( const WgCoord& ofs );
-		void	setSelectedBlocks( const WgCoord& ofs );
+		void	setAllBlocks( const Coord& ofs );
+		void	setDisabledBlock( const Coord& ofs );
+		void	setHoveredBlocks( const Coord& ofs );
+		void	setPressedBlocks( const Coord& ofs );
+		void	setSelectedBlocks( const Coord& ofs );
 	
 		void	setTiled( bool bTiled );
 		void	setTiledTopBorder( bool bTiled );
@@ -85,39 +85,39 @@ namespace wg
 	
 		void	optimizeRenderMethods();
 	
-		void	render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
+		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
 	
-		WgSize	minSize() const;
-		WgSize	preferredSize() const;
+		Size	minSize() const;
+		Size	preferredSize() const;
 	
-		WgSize	sizeForContent( const WgSize contentSize ) const;
+		Size	sizeForContent( const Size contentSize ) const;
 	
-		bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const;
+		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
 	
 		bool	isOpaque() const;
-		bool	isOpaque( WgState state ) const;
-		bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
+		bool	isOpaque( State state ) const;
+		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 	
-		bool	isStateIdentical( WgState state, WgState comparedTo ) const;
+		bool	isStateIdentical( State state, State comparedTo ) const;
 	
 	private:
 		struct StateData
 		{
-			WgCoord	ofs;
+			Coord	ofs;
 			int		opaqueSections;
 			int		invisibleSections;
 		};
 	
-		WgBlockSkin();
+		BlockSkin();
 		void	_setBitFlag( int& bitmask, int bit, bool bSet );
-		void	_renderNoClip( WgGfxDevice * pDevice, const StateData * pState, const WgRect& _canvas ) const;
-		void	_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const WgRect& sectionArea );
+		void	_renderNoClip( GfxDevice * pDevice, const StateData * pState, const Rect& _canvas ) const;
+		void	_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const Rect& sectionArea );
 	
 		static const int ALL_SECTIONS = 0x1FF;
 	
-		WgSurface_p	m_pSurface;
-		WgSize			m_dimensions;
-		WgBorder		m_frame;
+		Surface_p	m_pSurface;
+		Size			m_dimensions;
+		Border		m_frame;
 		int				m_tiledSections;
 		bool			m_bIsOpaque;
 	

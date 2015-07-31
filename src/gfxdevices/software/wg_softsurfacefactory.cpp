@@ -28,40 +28,40 @@ namespace wg
 	
 	
 	
-	const char WgSoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
+	const char SoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSoftSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	bool SoftSurfaceFactory::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgSurfaceFactory::isInstanceOf(pClassName);
+		return SurfaceFactory::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSoftSurfaceFactory::className( void ) const
+	const char * SoftSurfaceFactory::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSoftSurfaceFactory_p WgSoftSurfaceFactory::cast( const WgObject_p& pObject )
+	SoftSurfaceFactory_p SoftSurfaceFactory::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSoftSurfaceFactory_p( static_cast<WgSoftSurfaceFactory*>(pObject.rawPtr()) );
+			return SoftSurfaceFactory_p( static_cast<SoftSurfaceFactory*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
-	//____ WgSoftSurfaceFactory::createSurface() ___________________________________
+	//____ SoftSurfaceFactory::createSurface() ___________________________________
 	
-	WgSurface_p WgSoftSurfaceFactory::createSurface( const WgSize& size, WgPixelType type ) const
+	Surface_p SoftSurfaceFactory::createSurface( const Size& size, WgPixelType type ) const
 	{
-		return new WgSoftSurface( size, type );
+		return new SoftSurface( size, type );
 	}
 
 } // namespace wg

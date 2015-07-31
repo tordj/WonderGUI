@@ -24,7 +24,7 @@
 namespace wg 
 {
 	
-	const char WgBlob::CLASSNAME[] = {"Blob"};
+	const char Blob::CLASSNAME[] = {"Blob"};
 	
 	
 	//____ Create _________________________________________________________________
@@ -41,10 +41,10 @@ namespace wg
 	 * buffer is released.
 	 */
 	
-	WgBlob_p WgBlob::create( int bytes )
+	Blob_p Blob::create( int bytes )
 	{
-		WgBlob * pBlob = new(bytes) WgBlob( bytes );
-		return WgBlob_p(pBlob);
+		Blob * pBlob = new(bytes) Blob( bytes );
+		return Blob_p(pBlob);
 	}
 	
 	/**
@@ -66,24 +66,24 @@ namespace wg
 	 */
 	
 	
-	WgBlob_p WgBlob::create(void * pData, void(*pDestructor)(void*) )
+	Blob_p Blob::create(void * pData, void(*pDestructor)(void*) )
 	{
-		WgBlob * pBlob = new(0) WgBlob( pData, pDestructor );
-		return WgBlob_p(pBlob);
+		Blob * pBlob = new(0) Blob( pData, pDestructor );
+		return Blob_p(pBlob);
 	}
 	
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgBlob::WgBlob( int size )
+	Blob::Blob( int size )
 	{
 		m_size = size;
 		m_pContent = ((char*)this) + sizeof(this);
 		m_pDestructor = 0;
 	}
 	
-	WgBlob::WgBlob( void * pData, void(*pDestructor)(void*) )
+	Blob::Blob( void * pData, void(*pDestructor)(void*) )
 	{
 		m_size = 0;
 		m_pContent = pData;
@@ -93,7 +93,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgBlob::~WgBlob()
+	Blob::~Blob()
 	{
 		if( m_pDestructor )
 			m_pDestructor( m_pContent );
@@ -101,27 +101,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgBlob::isInstanceOf( const char * pClassName ) const
+	bool Blob::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgBlob::className( void ) const
+	const char * Blob::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgBlob_p WgBlob::cast( const WgObject_p& pObject )
+	Blob_p Blob::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgBlob_p( static_cast<WgBlob*>(pObject.rawPtr()) );
+			return Blob_p( static_cast<Blob*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

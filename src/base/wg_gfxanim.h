@@ -42,57 +42,57 @@
 namespace wg 
 {
 	
-	class WgGfxFrame;
+	class GfxFrame;
 	
-	class WgGfxAnim;
-	typedef	WgStrongPtr<WgGfxAnim,WgAnim_p>		WgGfxAnim_p;
-	typedef	WgWeakPtr<WgGfxAnim,WgAnim_wp>	WgGfxAnim_wp;
+	class GfxAnim;
+	typedef	WgStrongPtr<GfxAnim,Anim_p>		GfxAnim_p;
+	typedef	WgWeakPtr<GfxAnim,Anim_wp>	GfxAnim_wp;
 	
-	//____ Class WgGfxAnim ________________________________________________________
+	//____ Class GfxAnim ________________________________________________________
 	
-	class	WgGfxAnim : public WgAnim
+	class	GfxAnim : public Anim
 	{
 	public:
-		static WgGfxAnim_p	create() { return WgGfxAnim_p(new WgGfxAnim()); }
+		static GfxAnim_p	create() { return GfxAnim_p(new GfxAnim()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgGfxAnim_p	cast( const WgObject_p& pObject );
+		static GfxAnim_p	cast( const Object_p& pObject );
 	
-		void		setSize( WgSize size );
-		WgSize		size() const { return m_size; }
+		void		setSize( Size size );
+		Size		size() const { return m_size; }
 	
-		bool		insertFrame( int pos, const WgSurface_p& pSurf, WgCoord ofs, int duration );
-		bool		insertFrame( WgGfxFrame * pBefore, const WgSurface_p& pSurf, WgCoord ofs, int duration );
-		bool		addFrame( const WgSurface_p& pSurf, WgCoord ofs, int duration );
-		int			addFrames( const WgSurface_p& pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
-		int			addFrames(const WgSurface_p& pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+		bool		insertFrame( int pos, const Surface_p& pSurf, Coord ofs, int duration );
+		bool		insertFrame( GfxFrame * pBefore, const Surface_p& pSurf, Coord ofs, int duration );
+		bool		addFrame( const Surface_p& pSurf, Coord ofs, int duration );
+		int			addFrames( const Surface_p& pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames = 0, Size spacing = Size() );
+		int			addFrames(const Surface_p& pSurf, int duration, int nFrames = 0, Size spacing = Size() );
 	
-		WgGfxFrame * getFrame( int64_t ticks, WgGfxFrame * pProximity = 0 ) const;
+		GfxFrame * getFrame( int64_t ticks, GfxFrame * pProximity = 0 ) const;
 	
-		WgGfxFrame * getFirstFrame(void) {return (WgGfxFrame *) WgAnim::_firstKeyFrame(); };
-		WgGfxFrame * getLastFrame(void) {return (WgGfxFrame *) WgAnim::_lastKeyFrame(); };
+		GfxFrame * getFirstFrame(void) {return (GfxFrame *) Anim::_firstKeyFrame(); };
+		GfxFrame * getLastFrame(void) {return (GfxFrame *) Anim::_lastKeyFrame(); };
 	
 	protected:
-		WgGfxAnim();
-		WgGfxAnim( WgSize size );
+		GfxAnim();
+		GfxAnim( Size size );
 	
-		WgSize		m_size;
+		Size		m_size;
 	};
 	
-	//____ Class WgGfxFrame _______________________________________________________
+	//____ Class GfxFrame _______________________________________________________
 	
-	class WgGfxFrame : public WgKeyFrame
+	class GfxFrame : public KeyFrame
 	{
 	public:
-		// Derived from WgKeyFrame: Uint32	timestamp
+		// Derived from KeyFrame: Uint32	timestamp
 	
-		WgGfxFrame * getNext(void) {return (WgGfxFrame *) WgKeyFrame::next();};
-		WgGfxFrame * getPrev(void) {return (WgGfxFrame *) WgKeyFrame::prev();};
+		GfxFrame * getNext(void) {return (GfxFrame *) KeyFrame::next();};
+		GfxFrame * getPrev(void) {return (GfxFrame *) KeyFrame::prev();};
 	
-		WgSurface_p	pSurf;
-		WgRect			rect;
+		Surface_p	pSurf;
+		Rect			rect;
 	};
 	
 

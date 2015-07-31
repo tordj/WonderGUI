@@ -28,30 +28,30 @@ namespace wg
 {
 	
 	
-	class WgStandardFormatter;
-	typedef	WgStrongPtr<WgStandardFormatter,WgValueFormatter_p>		WgStandardFormatter_p;
-	typedef	WgWeakPtr<WgStandardFormatter,WgValueFormatter_wp>	WgStandardFormatter_wp;
+	class StandardFormatter;
+	typedef	WgStrongPtr<StandardFormatter,ValueFormatter_p>		StandardFormatter_p;
+	typedef	WgWeakPtr<StandardFormatter,ValueFormatter_wp>	StandardFormatter_wp;
 	
-	//____ WgStandardFormatter __________________________________________________________
+	//____ StandardFormatter __________________________________________________________
 	
-	class WgStandardFormatter : public WgValueFormatter
+	class StandardFormatter : public ValueFormatter
 	{
 	public:	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgStandardFormatter_p	cast( const WgObject_p& pObject );
+		static StandardFormatter_p	cast( const Object_p& pObject );
 	
-		static WgStandardFormatter_p	create() { return WgStandardFormatter_p(new WgStandardFormatter()); }
-		static WgStandardFormatter_p	create( const WgCharSeq& format ) { return WgStandardFormatter_p(new WgStandardFormatter(format)); }
+		static StandardFormatter_p	create() { return StandardFormatter_p(new StandardFormatter()); }
+		static StandardFormatter_p	create( const CharSeq& format ) { return StandardFormatter_p(new StandardFormatter(format)); }
 	
-		WgString 		format( Sint64 value, int scale ) const;
-		WgString 		format( double value ) const;
+		String 		format( Sint64 value, int scale ) const;
+		String 		format( double value ) const;
 	
 	protected:
-		WgStandardFormatter();
-		WgStandardFormatter( const WgCharSeq& format );
-		~WgStandardFormatter();
+		StandardFormatter();
+		StandardFormatter( const CharSeq& format );
+		~StandardFormatter();
 	
 	
 	};

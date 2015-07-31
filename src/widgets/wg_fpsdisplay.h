@@ -35,52 +35,52 @@ namespace wg
 {
 	
 	
-	class WgFont;
+	class Font;
 	
-	class WgFpsDisplay;
-	typedef	WgStrongPtr<WgFpsDisplay,WgWidget_p>		WgFpsDisplay_p;
-	typedef	WgWeakPtr<WgFpsDisplay,WgWidget_wp>	WgFpsDisplay_wp;
+	class FpsDisplay;
+	typedef	WgStrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
+	typedef	WgWeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
 	
-	class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
+	class FpsDisplay:public Widget, protected LegacyTextHolder
 	{
 	public:
-		static WgFpsDisplay_p	create() { return WgFpsDisplay_p(new WgFpsDisplay()); }
+		static FpsDisplay_p	create() { return FpsDisplay_p(new FpsDisplay()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgFpsDisplay_p	cast( const WgObject_p& pObject );
+		static FpsDisplay_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgLegacyModText		labels;
-		WgLegacyText	values;
+		LegacyModText		labels;
+		LegacyText	values;
 	
 		//____ Methods __________________________________________
 	
-		void	setTextProperties( const WgTextprop_p& pProp );
-		WgSize	preferredSize() const;
+		void	setTextProperties( const Textprop_p& pProp );
+		Size	preferredSize() const;
 	
 	protected:
-		WgFpsDisplay();
-		virtual ~WgFpsDisplay();
-		virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
+		FpsDisplay();
+		virtual ~FpsDisplay();
+		virtual Widget* _newOfMyType() const { return new FpsDisplay(); };
 	
-		void		_onMsg( const WgMsg_p& pMsg );
-		void		_onStateChanged( WgState oldState );
-		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void		_onCloneContent( const WgWidget * _pOrg );
-		void		_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void		_onMsg( const Msg_p& pMsg );
+		void		_onStateChanged( State oldState );
+		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void		_onCloneContent( const Widget * _pOrg );
+		void		_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		WgObject * 	_object() { return this; };
-		void		_onFieldDirty( WgField * pField );
-		void 		_onFieldResize( WgField * pField );
+		Object * 	_object() { return this; };
+		void		_onFieldDirty( Field * pField );
+		void 		_onFieldResize( Field * pField );
 	
 	
 	private:
 	
-		WgLegacyTextField	m_labelsText;
-		WgLegacyTextField	m_valuesText;
+		LegacyTextField	m_labelsText;
+		LegacyTextField	m_valuesText;
 		int *		m_pTickBuffer;
 		int			m_tickBufferOfs;
 		WgRouteId	m_tickRouteId;
@@ -90,4 +90,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WgFpsDisplay_DOT_H
+#endif //FpsDisplay_DOT_H

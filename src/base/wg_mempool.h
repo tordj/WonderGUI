@@ -29,11 +29,11 @@
 namespace wg 
 {
 	
-	class WgMemPool
+	class MemPool
 	{
 	public:
-		WgMemPool( int entriesPerBlock, int entrySize );
-		virtual ~WgMemPool();
+		MemPool( int entriesPerBlock, int entrySize );
+		virtual ~MemPool();
 	
 		void *	allocEntry();
 		void	freeEntry( void * pEntry );
@@ -54,7 +54,7 @@ namespace wg
 	
 		// Block of entries.
 	
-		class Block : public WgLink
+		class Block : public Link
 		{
 		public:
 			Block( int nEntries, int entrySize );
@@ -78,7 +78,7 @@ namespace wg
 	
 		};
 	
-		WgChain<Block>	m_blocks;
+		Chain<Block>	m_blocks;
 		int				m_nEntriesPerBlock;
 		int				m_entrySize;
 		int				m_nAllocEntries;

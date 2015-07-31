@@ -34,11 +34,11 @@ namespace wg
 	
 	
 	
-	const char WgLineEditor::CLASSNAME[] = {"LineEditor"};
+	const char LineEditor::CLASSNAME[] = {"LineEditor"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgLineEditor::WgLineEditor() : m_text(this), text(&m_text)
+	LineEditor::LineEditor() : m_text(this), text(&m_text)
 	{
 		m_text.setWrap(false);
 		m_text.setAutoEllipsis(isAutoEllipsisDefault());
@@ -53,42 +53,42 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgLineEditor::~WgLineEditor()
+	LineEditor::~LineEditor()
 	{
 		if( m_tickRouteId )
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgLineEditor::isInstanceOf( const char * pClassName ) const
+	bool LineEditor::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgLineEditor::className( void ) const
+	const char * LineEditor::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgLineEditor_p WgLineEditor::cast( const WgObject_p& pObject )
+	LineEditor_p LineEditor::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgLineEditor_p( static_cast<WgLineEditor*>(pObject.rawPtr()) );
+			return LineEditor_p( static_cast<LineEditor*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setEditMode() __________________________________________________________
 	
-	void WgLineEditor::setEditMode(WgTextEditMode mode)
+	void LineEditor::setEditMode(TextEditMode mode)
 	{
 		m_text.setEditMode( mode );
 	
@@ -104,7 +104,7 @@ namespace wg
 	
 	//____ setPasswordGlyph() _____________________________________________________
 	
-	void WgLineEditor::setPasswordGlyph( Uint16 glyph )
+	void LineEditor::setPasswordGlyph( Uint16 glyph )
 	{
 		assert(glyph);
 		if(glyph)
@@ -115,7 +115,7 @@ namespace wg
 	
 	//____ insertTextAtCursor() ___________________________________________________
 	
-	int WgLineEditor::insertTextAtCursor( const WgCharSeq& str )
+	int LineEditor::insertTextAtCursor( const CharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -126,7 +126,7 @@ namespace wg
 	
 		int retVal = m_text.putText( str );
 	
-		WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(),false) );
+		Base::msgRouter()->post( new TextEditMsg(text.ptr(),false) );
 	
 		_adjustViewOfs();
 	
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool WgLineEditor::insertCharAtCursor( Uint16 c )
+	bool LineEditor::insertCharAtCursor( Uint16 c )
 	{
 		if( !_isEditable() )
 			return false;
@@ -147,7 +147,7 @@ namespace wg
 		if( !m_text.putChar( c ) )
 			return false;
 	
-		WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(),false) );
+		Base::msgRouter()->post( new TextEditMsg(text.ptr(),false) );
 	
 		_adjustViewOfs();
 		return true;
@@ -155,12 +155,12 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgLineEditor::preferredSize() const
+	Size LineEditor::preferredSize() const
 	{
-		WgTextAttr attr;
+		TextAttr attr;
 		m_text.getBaseAttr( attr );
-		int width = WgTextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
-		WgSize contentSize( m_text.height(), width );
+		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
+		Size contentSize( m_text.height(), width );
 		
 		if( m_pSkin )
 			return m_pSkin->sizeForContent( contentSize );
@@ -170,9 +170,9 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgLineEditor::_onCloneContent( const WgWidget * _pOrg )
+	void LineEditor::_onCloneContent( const Widget * _pOrg )
 	{
-		WgLineEditor * pOrg = (WgLineEditor*) _pOrg;
+		LineEditor * pOrg = (LineEditor*) _pOrg;
 	
 		m_text			= pOrg->m_text;
 		m_bPasswordMode = pOrg->m_bPasswordMode;
@@ -181,11 +181,11 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void LineEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgLegacyTextField * pText = &m_text;
+		LegacyTextField * pText = &m_text;
 	
 	//TODO: Get password mode working again!
 	/*
@@ -196,7 +196,7 @@ namespace wg
 			for( int i = 0 ; i < nChars ; i++ )
 				pContent[i] = m_pwGlyph;
 			pContent[nChars] = 0;
-			pText = new WgLegacyTextField( pContent );
+			pText = new LegacyTextField( pContent );
 			delete [] pContent;
 	
 			pText->setWrap(false);
@@ -217,13 +217,13 @@ namespace wg
 		}
 	*/
 	
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->sizeForContent(_canvas);
 		else
 			canvas = _canvas;
 	
-		WgRect	textClip( _clip, canvas );
+		Rect	textClip( _clip, canvas );
 	
 		canvas.x -= m_viewOfs;
 		canvas.w += m_viewOfs;
@@ -241,24 +241,24 @@ namespace wg
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgLineEditor::_onMsg( const WgMsg_p& pMsg )
+	void LineEditor::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg(pMsg);
+		Widget::_onMsg(pMsg);
 	
-		WgMsgRouter_p	pHandler = WgBase::msgRouter();
-		WgMsgType event = pMsg->type();
+		MsgRouter_p	pHandler = Base::msgRouter();
+		MsgType event = pMsg->type();
 	
 		if( event == WG_MSG_TICK )
 		{
 			if( _isSelectable() && m_state.isFocused() )
 			{
-				m_text.incTime( WgTickMsg::cast(pMsg)->millisec() );
+				m_text.incTime( TickMsg::cast(pMsg)->millisec() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
 			}
 			return;
 		}
 	
-		if( (event == WG_MSG_MOUSE_PRESS || event == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+		if( (event == WG_MSG_MOUSE_PRESS || event == WG_MSG_MOUSE_DRAG) && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 		{
 			if( !m_state.isFocused() )
 				grabFocus();
@@ -270,16 +270,16 @@ namespace wg
 					m_text.setSelectionMode(true);
 				}
 	
-				WgCoord ofs = pMsg->pointerPos() - globalPos();
+				Coord ofs = pMsg->pointerPos() - globalPos();
 				int x = ofs.x + m_viewOfs;
 				int y = 0;
 	
 				if( m_bPasswordMode )
 				{
-					WgTextAttr	attr;
+					TextAttr	attr;
 					m_text.getBaseAttr( attr );
 	
-					WgPen	pen;
+					Pen	pen;
 					pen.setAttributes( attr );
 					pen.setChar(m_pwGlyph);
 					pen.advancePos();
@@ -298,7 +298,7 @@ namespace wg
 				}
 				else
 				{
-					m_text.cursorGotoCoord( WgCoord(x, 0), WgRect(0,0,1000000,1000000) );
+					m_text.cursorGotoCoord( Coord(x, 0), Rect(0,0,1000000,1000000) );
 				}
 	
 				if(_isSelectable() && event == WG_MSG_MOUSE_PRESS && !(pMsg->modKeys() & WG_MODKEY_SHIFT))
@@ -312,13 +312,13 @@ namespace wg
 	
 		if( event == WG_MSG_MOUSE_RELEASE )
 		{
-			if( m_state.isFocused() && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			if( m_state.isFocused() && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 				m_text.setSelectionMode(false);
 		}		
 	
 		if( event == WG_MSG_CHARACTER )
 		{
-			int ch = WgCharacterMsg::cast(pMsg)->character();
+			int ch = CharacterMsg::cast(pMsg)->character();
 	
 			if( _isEditable() && m_state.isFocused() && ch >= 32 && ch != 127)
 			{
@@ -330,7 +330,7 @@ namespace wg
 				if( m_text.putChar( ch ) )
 				{
 					if( pHandler )
-						pHandler->post( new WgTextEditMsg(text.ptr(),false) );
+						pHandler->post( new TextEditMsg(text.ptr(),false) );
 	
 					_adjustViewOfs();
 				}
@@ -339,7 +339,7 @@ namespace wg
 	
 		if( event == WG_MSG_KEY_RELEASE && m_state.isFocused() )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_SHIFT:
@@ -351,7 +351,7 @@ namespace wg
 	
 		if( (event == WG_MSG_KEY_PRESS || event == WG_MSG_KEY_REPEAT) && _isEditable() && m_state.isFocused() )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_LEFT:
@@ -397,7 +397,7 @@ namespace wg
 						m_text.delPrevChar();
 	
 					if( pHandler )
-						pHandler->post( new WgTextEditMsg(text.ptr(),false) );
+						pHandler->post( new TextEditMsg(text.ptr(),false) );
 					break;
 				}
 	
@@ -411,7 +411,7 @@ namespace wg
 						m_text.delNextChar();
 	
 					if( pHandler )
-						pHandler->post( new WgTextEditMsg(text.ptr(),false) );
+						pHandler->post( new TextEditMsg(text.ptr(),false) );
 					break;
 				}
 	
@@ -469,13 +469,13 @@ namespace wg
 	
 		if( pMsg->isMouseButtonMsg() )
 		{
-			if( WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			if( MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 				pMsg->swallow();
 		}
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
-			if( WgKeyMsg::cast(pMsg)->isMovementKey() == true ||
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			if( KeyMsg::cast(pMsg)->isMovementKey() == true ||
 				key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
 					pMsg->swallow();
 			
@@ -486,7 +486,7 @@ namespace wg
 	
 	//____ _adjustViewOfs() ________________________________________________________
 	
-	void WgLineEditor::_adjustViewOfs()
+	void LineEditor::_adjustViewOfs()
 	{
 		// Possibly move viewOfs so that:
 		//	1 Cursor remains inside view.
@@ -495,16 +495,16 @@ namespace wg
 	
 		if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 		{
-			WgCaret_p pCursor = WgTextTool::getCursor( &m_text );
+			Caret_p pCursor = TextTool::getCursor( &m_text );
 			if( !pCursor )
 				return;
 	
 			int cursCol	= m_text.column();
 	
-			WgTextAttr	attr;
+			TextAttr	attr;
 			m_text.getBaseAttr( attr );
 	
-			WgPen	pen;
+			Pen	pen;
 			pen.setAttributes( attr );
 			pen.setChar(m_pwGlyph);
 			pen.advancePos();
@@ -574,9 +574,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgLineEditor::_onStateChanged( WgState oldState )
+	void LineEditor::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 		
 		m_text.setState(m_state);
 		_requestRender();				//TODO: Only request render if text appearance has changed.
@@ -585,7 +585,7 @@ namespace wg
 		{
 			if( _isEditable() )
 			{
-				m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+				m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 				if( m_bResetCursorOnFocus )
 					m_text.goEol();
 				_requestRender(); // render with cursor on
@@ -603,9 +603,9 @@ namespace wg
 	
 			if( _isEditable() || m_viewOfs != 0 )
 			{
-				WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+				Base::msgRouter()->deleteRoute( m_tickRouteId );
 				m_tickRouteId = 0;
-				WgBase::msgRouter()->post( new WgTextEditMsg(text.ptr(),true) );
+				Base::msgRouter()->post( new TextEditMsg(text.ptr(),true) );
 	
 				m_viewOfs = 0;
 				_requestRender();
@@ -615,16 +615,16 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgLineEditor::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void LineEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 		m_text.setColorSkin(pNewSkin);
 	}
 	
 	
 	//____ _onNewSize() ____________________________________________________________
 	
-	void WgLineEditor::_onNewSize( const WgSize& size )
+	void LineEditor::_onNewSize( const Size& size )
 	{
 		_adjustViewOfs();
 		_requestRender();
@@ -632,14 +632,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgLineEditor::_onFieldDirty( WgField * pField )
+	void LineEditor::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgLineEditor::_onFieldResize( WgField * pField )
+	void LineEditor::_onFieldResize( Field * pField )
 	{
 		m_bResetCursorOnFocus = true;
 		_requestResize();

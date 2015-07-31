@@ -30,34 +30,34 @@
 namespace wg 
 {
 	
-	class WgSwitch;
-	typedef	WgStrongPtr<WgSwitch,WgWidget_p>		WgSwitch_p;
-	typedef	WgWeakPtr<WgSwitch,WgWidget_wp>	WgSwitch_wp;
+	class Switch;
+	typedef	WgStrongPtr<Switch,Widget_p>		Switch_p;
+	typedef	WgWeakPtr<Switch,Widget_wp>	Switch_wp;
 	
-	//____ WgSwitch ____________________________________________________________
+	//____ Switch ____________________________________________________________
 	
-	class WgSwitch : public WgWidget
+	class Switch : public Widget
 	{
 	public:
-		static WgSwitch_p	create() { return WgSwitch_p(new WgSwitch()); }
+		static Switch_p	create() { return Switch_p(new Switch()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgSwitch_p	cast( const WgObject_p& pObject );
+		static Switch_p	cast( const Object_p& pObject );
 	
 	    void    setValue( int value );
 	    
-		WgSize	preferredSize() const;
+		Size	preferredSize() const;
 	
 	protected:
-		WgSwitch();
-		virtual ~WgSwitch();
-		virtual WgWidget* _newOfMyType() const { return new WgSwitch(); };
+		Switch();
+		virtual ~Switch();
+		virtual Widget* _newOfMyType() const { return new Switch(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
 	
 	private:
 	

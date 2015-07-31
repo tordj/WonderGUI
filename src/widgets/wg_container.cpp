@@ -34,60 +34,60 @@
 namespace wg 
 {
 	
-	const char WgContainer::CLASSNAME[] = {"Container"};
+	const char Container::CLASSNAME[] = {"Container"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgContainer::WgContainer() : m_bSiblingsOverlap(true)
+	Container::Container() : m_bSiblingsOverlap(true)
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgContainer::isInstanceOf( const char * pClassName ) const
+	bool Container::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);	
+		return Widget::isInstanceOf(pClassName);	
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgContainer::className( void ) const
+	const char * Container::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgContainer_p WgContainer::cast( const WgObject_p& pObject )
+	Container_p Container::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgContainer_p( static_cast<WgContainer*>(pObject.rawPtr()) );
+			return Container_p( static_cast<Container*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ isContainer() ______________________________________________________________
 	
-	bool WgContainer::isContainer() const
+	bool Container::isContainer() const
 	{
 		return true;
 	}
 	
 	//____ _isPanel() ______________________________________________________________
 	
-	bool WgContainer::_isPanel() const
+	bool Container::_isPanel() const
 	{
 		return false;
 	}
 	
 	//____ _firstWidget() __________________________________________________________
 	
-	WgWidget * WgContainer::_firstWidget() const 
+	Widget * Container::_firstWidget() const 
 	{ 
-		WgHook * p = _firstHook(); 
+		Hook * p = _firstHook(); 
 		if( p ) 
 			return p->_widget(); 
 		else 
@@ -96,9 +96,9 @@ namespace wg
 	
 	//____ _lastWidget() ___________________________________________________________
 	
-	WgWidget * WgContainer::_lastWidget() const 
+	Widget * Container::_lastWidget() const 
 	{ 
-		WgHook * p = _lastHook(); 
+		Hook * p = _lastHook(); 
 		if( p ) 
 			return p->_widget(); 
 		else 
@@ -107,11 +107,11 @@ namespace wg
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	WgWidget * WgContainer::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+	Widget * Container::_findWidget( const Coord& ofs, WgSearchMode mode )
 	{
-		WgRect childGeo;
-		WgHook * pHook = _lastHookWithGeo( childGeo );
-		WgWidget * pResult = 0;
+		Rect childGeo;
+		Hook * pHook = _lastHookWithGeo( childGeo );
+		Widget * pResult = 0;
 	
 		while( pHook && !pResult )
 		{
@@ -119,7 +119,7 @@ namespace wg
 			{
 				if( pHook->_widget()->isContainer() )
 				{
-					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
+					pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 				}
 				else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
 				{
@@ -139,12 +139,12 @@ namespace wg
 	
 	//____ _focusRequested() _______________________________________________________
 	
-	bool WgContainer::_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting )
+	bool Container::_focusRequested( Hook * pBranch, Widget * pWidgetRequesting )
 	{
-		WgHook * p = _hook();
+		Hook * p = _hook();
 		if( p )
 		{
-			WgRootPanel * r = p->_root();
+			RootPanel * r = p->_root();
 			if( r )
 				return r->_focusRequested( p, pWidgetRequesting );
 		}
@@ -153,12 +153,12 @@ namespace wg
 	
 	//____ _focusReleased() ________________________________________________________
 	
-	bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing )
+	bool Container::_focusReleased( Hook * pBranch, Widget * pWidgetReleasing )
 	{
-		WgHook * p = _hook();
+		Hook * p = _hook();
 		if( p )
 		{
-			WgRootPanel * r = p->_root();
+			RootPanel * r = p->_root();
 			if( r )
 				return r->_focusReleased( p, pWidgetReleasing );
 		}
@@ -166,9 +166,9 @@ namespace wg
 	}
 	
 	
-	WgModalLayer *  WgContainer::_getModalLayer() const
+	ModalLayer *  Container::_getModalLayer() const
 	{
-		const WgContainer * p = _parent();
+		const Container * p = _parent();
 	
 		if( p )
 			return p->_getModalLayer();
@@ -176,9 +176,9 @@ namespace wg
 			return 0;
 	}
 	
-	WgPopupLayer * WgContainer::_getPopupLayer() const
+	PopupLayer * Container::_getPopupLayer() const
 	{
-		const WgContainer * p = _parent();
+		const Container * p = _parent();
 	
 		if( p )
 			return p->_getPopupLayer();
@@ -188,14 +188,14 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgContainer::_onStateChanged( WgState oldState )
+	void Container::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if( oldState.isEnabled() != m_state.isEnabled() )
 		{
 			bool bEnabled = m_state.isEnabled();
-			WgWidget * p = _firstWidget();
+			Widget * p = _firstWidget();
 			while( p )
 			{
 				p->setEnabled(bEnabled);
@@ -206,10 +206,10 @@ namespace wg
 		if( oldState.isSelected() != m_state.isSelected() )
 		{
 			bool bSelected = m_state.isSelected();
-			WgWidget * p = _firstWidget();
+			Widget * p = _firstWidget();
 			while( p )
 			{
-				WgState old = p->m_state;
+				State old = p->m_state;
 				p->m_state.setSelected(bSelected);
 				p->_onStateChanged( old );
 				p = p->_nextSibling();
@@ -224,36 +224,36 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( WgWidget * pWidget, const WgRect& geo ) : pWidget(pWidget), geo(geo) {}
+		WidgetRenderContext( Widget * pWidget, const Rect& geo ) : pWidget(pWidget), geo(geo) {}
 	
-		WgWidget *	pWidget;
-		WgRect		geo;
-		WgPatches	patches;
+		Widget *	pWidget;
+		Rect		geo;
+		Patches	patches;
 	};
 	
-	void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+	void Container::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
 	
 		// We start by eliminating dirt outside our geometry
 	
-		WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
+		Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 	
-		for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
+		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 		{
 			if( _canvas.intersectsWith( *pRect ) )
-				patches.push( WgRect(*pRect,_canvas) );
+				patches.push( Rect(*pRect,_canvas) );
 		}
 	
 	
 		// Render container itself
 		
-		for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 			_onRender(pDevice, _canvas, _window, *pRect );
 			
 		
 		// Render children
 	
-		WgRect	dirtBounds = patches.getUnion();
+		Rect	dirtBounds = patches.getUnion();
 		
 		if( m_bSiblingsOverlap )
 		{
@@ -262,11 +262,11 @@ namespace wg
 	
 			std::vector<WidgetRenderContext> renderList;
 	
-			WgRect childGeo;
-			WgHook * p = _firstHookWithGeo( childGeo );
+			Rect childGeo;
+			Hook * p = _firstHookWithGeo( childGeo );
 			while(p)
 			{
-				WgRect geo = childGeo + _canvas.pos();
+				Rect geo = childGeo + _canvas.pos();
 	
 				if( p->_isVisible() && geo.intersectsWith( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(p->_widget(), geo ) );
@@ -299,12 +299,12 @@ namespace wg
 		}
 		else
 		{
-			WgRect childGeo;
-			WgHook * p = _firstHookWithGeo( childGeo );
+			Rect childGeo;
+			Hook * p = _firstHookWithGeo( childGeo );
 	
 			while(p)
 			{
-				WgRect canvas = childGeo + _canvas.pos();
+				Rect canvas = childGeo + _canvas.pos();
 				if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
 					p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
 				p = _nextHookWithGeo( childGeo, p );
@@ -315,21 +315,21 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgContainer::_onCloneContent( const WgContainer * _pOrg )
+	void Container::_onCloneContent( const Container * _pOrg )
 	{
 		m_bSiblingsOverlap 	= _pOrg->m_bSiblingsOverlap;
 	}
 	
 	//____ _onCollectPatches() _______________________________________________________
 	
-	void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+	void Container::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		if( m_pSkin )
-			container.add( WgRect( geo, clip ) );
+			container.add( Rect( geo, clip ) );
 		else
 		{
-			WgRect childGeo;
-			WgHook * p = _firstHookWithGeo( childGeo );
+			Rect childGeo;
+			Hook * p = _firstHookWithGeo( childGeo );
 	
 			while(p)
 			{
@@ -342,15 +342,15 @@ namespace wg
 	
 	//____ _onMaskPatches() __________________________________________________________
 	
-	void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+	void Container::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
-			patches.sub( WgRect(geo,clip) );
+			patches.sub( Rect(geo,clip) );
 		else
 		{
-			WgRect childGeo;
-			WgHook * p = _firstHookWithGeo( childGeo );
+			Rect childGeo;
+			Hook * p = _firstHookWithGeo( childGeo );
 	
 			while(p)
 			{

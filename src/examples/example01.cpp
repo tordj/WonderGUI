@@ -10,9 +10,9 @@
  * 
  * In order to keep the example small, we are making some assumptions,
  * for example that the screen surface is either 24 or 32 bits graphics
- * with the RGB elements in the same order as WgSoftSurface keeps them,
+ * with the RGB elements in the same order as SoftSurface keeps them,
  * which is usually the case on normal PC's. In environments where this
- * is not the case, either specific WgSurface and WgGfxDevice classes
+ * is not the case, either specific Surface and GfxDevice classes
  * will need to be provided or graphics needs to be rendered to an interim
  * surface from which blocks can be copied and translated to the output
  * format.
@@ -42,10 +42,10 @@
 namespace wg 
 {
 	
-	void 			translateEvents( WgMsgRouter_p pMsgRouter );
+	void 			translateEvents( MsgRouter_p pMsgRouter );
 	WgMouseButton 	translateMouseButton( Uint8 button );
-	void 			updateWindowRects( WgRootPanel_p pRoot, SDL_Window * pWindow );
-	void 			myButtonClickCallback( const WgMsg_p& pMsg );
+	void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
+	void 			myButtonClickCallback( const Msg_p& pMsg );
 	
 	bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 	
@@ -70,10 +70,10 @@ namespace wg
 	
 		// First we need to initialize the base system
 	
-		WgBase::init();
+		Base::init();
 	
-		// The software renderer needs a WgSoftSurface as its canvas,
-		// so we wrap the SDL WindowSurface into a WgSoftSurface.
+		// The software renderer needs a SoftSurface as its canvas,
+		// so we wrap the SDL WindowSurface into a SoftSurface.
 	
 		WgPixelType type = WG_PIXEL_UNKNOWN;
 	
@@ -82,18 +82,18 @@ namespace wg
 		else if( pWinSurf->format->BitsPerPixel == 24 )
 			type = WG_PIXEL_RGB_8;
 			
-		WgSoftSurface_p pCanvas = WgSoftSurface::create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
+		SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 	
 		// Wg create the GfxDevice that will be used for all rendering, providing
 		// it our canvas to draw up.
 	
-		WgSoftGfxDevice_p pGfxDevice = WgSoftGfxDevice::create( pCanvas );
+		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 	
 		// We create a RootPanel. This is responsible for rendering the
 		// tree of child widgets connected to it and handle their events.
 		// We provide it the GfxDevice to use for rendering.
 	
-		WgRootPanel_p pRoot = WgRootPanel::create( pGfxDevice );
+		RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 	
 		//------------------------------------------------------
 		// Setup a simple GUI consisting of a filled background and 
@@ -104,13 +104,13 @@ namespace wg
 		// No error handling or such to keep this example short and simple.
 	
 		SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-		WgSoftSurface_p pButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+		SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	
 		// First we create and add a FlexPanel to the RootPanel.
 		// The RootPanel can only take one child, but the FlexPanel
 		// provides simple and powerful ways to layout multiple children.
 	
-		WgFlexPanel_p pFlexPanel = WgFlexPanel::create();
+		FlexPanel_p pFlexPanel = FlexPanel::create();
 		pRoot->setWidget(pFlexPanel);
 	
 		// Now we create the background using the simplest widget
@@ -118,8 +118,8 @@ namespace wg
 		// it stretch from the north-west to the south-east corners
 		// of the FlexPanel.
 	
-		WgFiller_p pBackground = WgFiller::create();
-		pBackground->setSkin( WgColorSkin::create(WgColor::aqua) );
+		Filler_p pBackground = Filler::create();
+		pBackground->setSkin( ColorSkin::create(Color::aqua) );
 		pFlexPanel->addWidget(pBackground, WG_NORTHWEST, WG_SOUTHEAST);
 	
 		// Now we create the button, using a clickable skin built from
@@ -132,13 +132,13 @@ namespace wg
 		// When adding it to the FlexPanel we specify its geometry in
 		// pixels and that it should be centered.
 	
-		WgButton_p pButton = WgButton::create();
-		pButton->setSkin( WgBlockSkin::createClickableFromSurface( pButtonSurface, 0, WgBorder(3) ) );
-		pFlexPanel->addWidget( pButton, WgRect(0,0,80,33), WG_CENTER );
+		Button_p pButton = Button::create();
+		pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) ) );
+		pFlexPanel->addWidget( pButton, Rect(0,0,80,33), WG_CENTER );
 	
 		// Finally we add a callback to the click-event of the button.
 	
-		pRoot->msgRouter()->AddCallback( WgMsgFilter::select(), myButtonClickCallback );
+		pRoot->msgRouter()->AddCallback( MsgFilter::select(), myButtonClickCallback );
 		
 	
 		//------------------------------------------------------
@@ -167,7 +167,7 @@ namespace wg
 	
 		// Exit WonderGUI
 	
-		WgBase::exit();
+		Base::exit();
 	
 		// Exit SDL
 	
@@ -178,7 +178,7 @@ namespace wg
 	
 	//____ translateEvents() ___________________________________________________________
 	
-	void translateEvents( WgMsgRouter_p pMsgRouter )
+	void translateEvents( MsgRouter_p pMsgRouter )
 	{
 		// WonderGUI needs Tick-messages to keep track of time passed for things such
 		// key-repeat, double-click detection, animations etc.  So we create one
@@ -195,7 +195,7 @@ namespace wg
 			tickDiff = (int) (ticks - oldTicks);		
 		oldTicks = ticks;
 	
-		pMsgRouter->post( WgTickMsg::create(tickDiff) );
+		pMsgRouter->post( TickMsg::create(tickDiff) );
 	
 		// Process all the SDL events in a loop
 	
@@ -209,15 +209,15 @@ namespace wg
 					break;
 					
 				case SDL_MOUSEMOTION:
-					pMsgRouter->post( WgMouseMoveMsg::create( WgCoord(e.motion.x,e.motion.y)) );
+					pMsgRouter->post( MouseMoveMsg::create( Coord(e.motion.x,e.motion.y)) );
 					break;
 					
 				case SDL_MOUSEBUTTONDOWN:
-					pMsgRouter->post( WgMousePressMsg::create( translateMouseButton(e.button.button)));
+					pMsgRouter->post( MousePressMsg::create( translateMouseButton(e.button.button)));
 					break;
 	
 				case SDL_MOUSEBUTTONUP:
-					pMsgRouter->post( WgMouseReleaseMsg::create( translateMouseButton(e.button.button)));
+					pMsgRouter->post( MouseReleaseMsg::create( translateMouseButton(e.button.button)));
 					break;
 					
 				default:
@@ -255,14 +255,14 @@ namespace wg
 	//
 	// Updates the rectangles of the SDL Window that WonderGUI has modified.
 	//
-	void updateWindowRects( WgRootPanel_p pRoot, SDL_Window * pWindow )
+	void updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow )
 	{	
 		int nRects = pRoot->nbUpdatedRects();
 		if( nRects == 0 )
 			return;
 		
-		const WgRect * pUpdatedRects = pRoot->firstUpdatedRect();
-		SDL_Rect * pSDLRects = (SDL_Rect*) WgBase::memStackAlloc( sizeof(SDL_Rect) * nRects );
+		const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+		SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 	
 		for( int i = 0 ; i < nRects ; i++ )
 		{
@@ -274,12 +274,12 @@ namespace wg
 	
 		SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
 	
-		WgBase::memStackRelease( sizeof(SDL_Rect) * nRects );
+		Base::memStackRelease( sizeof(SDL_Rect) * nRects );
 	}
 	
 	//____ myButtonClickCallback() _________________________________________________
 	
-	void myButtonClickCallback( const WgMsg_p& pMsg )
+	void myButtonClickCallback( const Msg_p& pMsg )
 	{
 		bQuit = true;
 	}

@@ -30,29 +30,29 @@
 namespace wg 
 {
 	
-	class WgField;
-	class WgObject;
+	class Field;
+	class Object;
 	
-	//____ WgField ___________________________________________________________
+	//____ Field ___________________________________________________________
 	
-	class WgFieldHolder : public WgItemHolder
+	class FieldHolder : public ItemHolder
 	{
 	public:
-		virtual void		_onFieldDirty( WgField * pField ) = 0;
-		virtual void		_onFieldResize( WgField * pField ) = 0;
+		virtual void		_onFieldDirty( Field * pField ) = 0;
+		virtual void		_onFieldResize( Field * pField ) = 0;
 	};
 	
-	//____ WgField _________________________________________________________________
+	//____ Field _________________________________________________________________
 	
-	class WgField : public WgItem
+	class Field : public Item
 	{
 	public:
-		WgField( WgFieldHolder * pHolder ) : WgItem(pHolder) {}
+		Field( FieldHolder * pHolder ) : Item(pHolder) {}
 	
 	protected:
 	
-		inline void		_onDirty() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldDirty(this); }
-		inline void		_onResize() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldResize(this); }
+		inline void		_onDirty() { return static_cast<FieldHolder*>(m_pHolder)->_onFieldDirty(this); }
+		inline void		_onResize() { return static_cast<FieldHolder*>(m_pHolder)->_onFieldResize(this); }
 	};
 	
 	

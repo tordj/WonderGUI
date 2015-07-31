@@ -27,10 +27,10 @@
 namespace wg 
 {
 	
-	const char WgFlexPanel::CLASSNAME[] = {"FlexPanel"};
-	const char WgFlexHook::CLASSNAME[] = {"FlexHook"};
+	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
+	const char FlexHook::CLASSNAME[] = {"FlexHook"};
 	
-	float	WgFlexOrigo::s_origoTab[9][2] = {	0.f, 0.f,
+	float	FlexOrigo::s_origoTab[9][2] = {	0.f, 0.f,
 												0.5f, 0.f,
 												1.f, 0.f,
 												1.f, 0.5f,
@@ -40,9 +40,9 @@ namespace wg
 												0.f, 0.5f,
 												0.5f, 0.5f };
 	
-	//____ WgFlexHook::Constructor ________________________________________________
+	//____ FlexHook::Constructor ________________________________________________
 	
-	WgFlexHook::WgFlexHook( WgFlexPanel * pParent, const WgRect& placementGeo, WgBorder padding ) : m_pParent(pParent),
+	FlexHook::FlexHook( FlexPanel * pParent, const Rect& placementGeo, Border padding ) : m_pParent(pParent),
 		m_bFloating(false), m_widthPolicy(WG_BOUND), m_heightPolicy(WG_BOUND),
 		m_origo(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
 		m_placementGeo(placementGeo)
@@ -50,38 +50,38 @@ namespace wg
 	    m_padding = padding;
 	}
 	
-	//____ WgFlexHook::isInstanceOf() __________________________________________
+	//____ FlexHook::isInstanceOf() __________________________________________
 	
-	bool WgFlexHook::isInstanceOf( const char * pClassName ) const
+	bool FlexHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgPanelHook::isInstanceOf(pClassName);
+		return PanelHook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgFlexHook::className() _____________________________________________
+	//____ FlexHook::className() _____________________________________________
 	
-	const char * WgFlexHook::className( void ) const
+	const char * FlexHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgFlexHook::cast() __________________________________________________
+	//____ FlexHook::cast() __________________________________________________
 	
-	WgFlexHook_p WgFlexHook::cast( const WgHook_p& pHook )
+	FlexHook_p FlexHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgFlexHook_p( static_cast<WgFlexHook*>(pHook.rawPtr()) );
+			return FlexHook_p( static_cast<FlexHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
 	
-	//____ WgFlexHook::setStretching() ______________________________________________
+	//____ FlexHook::setStretching() ______________________________________________
 	
-	bool  WgFlexHook::setStretching( const WgFlexOrigo& topLeftOrigo, 
-									 const WgFlexOrigo& bottomRightOrigo, WgBorder padding )
+	bool  FlexHook::setStretching( const FlexOrigo& topLeftOrigo, 
+									 const FlexOrigo& bottomRightOrigo, Border padding )
 	{
 		m_bFloating			= false;
 		m_topLeftOrigo		= topLeftOrigo;
@@ -95,10 +95,10 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setStretching() ______________________________________________
+	//____ FlexHook::setStretching() ______________________________________________
 	
-	bool  WgFlexHook::setStretching( const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-		const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
+	bool  FlexHook::setStretching( const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
+		const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
 	{
 		m_bFloating			= false;
 		m_topLeftOrigo		= topLeftOrigo;
@@ -112,14 +112,14 @@ namespace wg
 	}
 	
 	
-	//____ WgFlexHook::setFloating() ______________________________________________
+	//____ FlexHook::setFloating() ______________________________________________
 	
-	bool WgFlexHook::setFloating( const WgCoord& pos, const WgFlexOrigo& origo )
+	bool FlexHook::setFloating( const Coord& pos, const FlexOrigo& origo )
 	{
 		return setFloating( pos, origo, origo );
 	}
 	
-	bool WgFlexHook::setFloating( const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot )
+	bool FlexHook::setFloating( const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot )
 	{
 		m_widthPolicy	= WG_DEFAULT;
 		m_heightPolicy	= WG_DEFAULT;
@@ -132,12 +132,12 @@ namespace wg
 		return true;
 	}
 	
-	bool WgFlexHook::setFloating( const WgRect& geometry, const WgFlexOrigo& origo )
+	bool FlexHook::setFloating( const Rect& geometry, const FlexOrigo& origo )
 	{
 		return setFloating( geometry, origo, origo );
 	}
 	
-	bool WgFlexHook::setFloating( const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot )
+	bool FlexHook::setFloating( const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot )
 	{
 		m_widthPolicy	= WG_BOUND;
 		m_heightPolicy	= WG_BOUND;
@@ -150,32 +150,32 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::top() ______________________________________________________
+	//____ FlexHook::top() ______________________________________________________
 	
-	void WgFlexHook::top()
+	void FlexHook::top()
 	{
 		moveOver( _chain()->last() );
 	}
 	
-	//____ WgFlexHook::bottom() ___________________________________________________
+	//____ FlexHook::bottom() ___________________________________________________
 	
-	void WgFlexHook::bottom()
+	void FlexHook::bottom()
 	{
 		moveUnder( _chain()->first() );
 	}
 	
-	//____ WgFlexHook::up() _______________________________________________________
+	//____ FlexHook::up() _______________________________________________________
 	
-	bool WgFlexHook::up()
+	bool FlexHook::up()
 	{
-		WgFlexHook * pNext = _next();
+		FlexHook * pNext = _next();
 	
 		if( pNext == 0 )
 			return false;
 	
 		// Get area potentially exposed
 	
-		WgRect cover( m_realGeo, pNext->m_realGeo );
+		Rect cover( m_realGeo, pNext->m_realGeo );
 	
 		// Move up
 	
@@ -191,18 +191,18 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::down() _____________________________________________________
+	//____ FlexHook::down() _____________________________________________________
 	
-	bool WgFlexHook::down()
+	bool FlexHook::down()
 	{
-		WgFlexHook * pPrev = _prev();
+		FlexHook * pPrev = _prev();
 	
 		if( pPrev == 0 )
 			return false;
 	
 		// Get area of sibling potentially exposed
 	
-		WgRect cover( m_realGeo, pPrev->m_realGeo );
+		Rect cover( m_realGeo, pPrev->m_realGeo );
 	
 		// Move down
 	
@@ -218,26 +218,26 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::moveOver() _________________________________________________
+	//____ FlexHook::moveOver() _________________________________________________
 	
-	bool WgFlexHook::moveOver( const WgFlexHook_p& _pSibling )
+	bool FlexHook::moveOver( const FlexHook_p& _pSibling )
 	{
-		WgFlexHook * pSibling = _pSibling.rawPtr();
+		FlexHook * pSibling = _pSibling.rawPtr();
 	
 		if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 			return false;
 	
-		WgFlexHook * pFirst = _chain()->first();
+		FlexHook * pFirst = _chain()->first();
 		while( pFirst != this && pFirst != pSibling )
 			pFirst = pFirst->_next();
 	
-		WgFlexHook * pLast = pFirst->_next();
+		FlexHook * pLast = pFirst->_next();
 		while( pLast != this && pLast != pSibling )
 			pLast = pLast->_next();
 	
 		if( pFirst == this )			// Move us forward
 		{
-			WgFlexHook * p = pFirst->_next();
+			FlexHook * p = pFirst->_next();
 	
 			_moveAfter( pSibling );
 	
@@ -247,7 +247,7 @@ namespace wg
 			{
 				while( p != this )
 				{
-					WgRect cover( m_realGeo, p->m_realGeo );
+					Rect cover( m_realGeo, p->m_realGeo );
 	
 					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 						m_pParent->_onRequestRender( cover, this );
@@ -257,7 +257,7 @@ namespace wg
 		}
 		else							// Move us backward
 		{
-			WgFlexHook * p = pLast->_prev();
+			FlexHook * p = pLast->_prev();
 			_moveAfter( pSibling );
 	
 			// Request render on our siblings for the area we previously have covered.
@@ -266,7 +266,7 @@ namespace wg
 			{
 				while( p != this )
 				{
-					WgRect cover( m_realGeo, p->m_realGeo );
+					Rect cover( m_realGeo, p->m_realGeo );
 	
 					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 						m_pParent->_onRequestRender( cover, p );
@@ -278,26 +278,26 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::moveUnder() ________________________________________________
+	//____ FlexHook::moveUnder() ________________________________________________
 	
-	bool WgFlexHook::moveUnder( const WgFlexHook_p& _pSibling )
+	bool FlexHook::moveUnder( const FlexHook_p& _pSibling )
 	{
-		WgFlexHook * pSibling = _pSibling.rawPtr();
+		FlexHook * pSibling = _pSibling.rawPtr();
 	
 		if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 			return false;
 	
-		WgFlexHook * pFirst = _chain()->first();
+		FlexHook * pFirst = _chain()->first();
 		while( pFirst != this && pFirst != pSibling )
 			pFirst = pFirst->_next();
 	
-		WgFlexHook * pLast = pFirst->_next();
+		FlexHook * pLast = pFirst->_next();
 		while( pLast != this && pLast != pSibling )
 			pLast = pLast->_next();
 	
 		if( pFirst == this )			// Move us forward
 		{
-			WgFlexHook * p = _next();
+			FlexHook * p = _next();
 			_moveBefore( pSibling );
 	
 			// Request render on all areas covered by siblings we have skipped in front of.
@@ -306,7 +306,7 @@ namespace wg
 			{
 				while( p != this )
 				{
-					WgRect cover( m_realGeo, p->m_realGeo );
+					Rect cover( m_realGeo, p->m_realGeo );
 	
 					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 						m_pParent->_onRequestRender( cover, this );
@@ -317,7 +317,7 @@ namespace wg
 		}
 		else							// Move us backward
 		{
-			WgFlexHook * p = _prev();
+			FlexHook * p = _prev();
 			_moveBefore( pSibling );
 	
 			// Request render on our siblings for the area we previously have covered.
@@ -326,7 +326,7 @@ namespace wg
 			{
 				while( p != this )
 				{
-					WgRect cover( m_realGeo, p->m_realGeo );
+					Rect cover( m_realGeo, p->m_realGeo );
 	
 					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
 						m_pParent->_onRequestRender( cover, p );
@@ -339,9 +339,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setOrigo() _________________________________________________
+	//____ FlexHook::setOrigo() _________________________________________________
 	
-	bool WgFlexHook::setOrigo( const WgFlexOrigo& origo )
+	bool FlexHook::setOrigo( const FlexOrigo& origo )
 	{
 		if( !m_bFloating )
 			return false;
@@ -355,9 +355,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setHotspot() _______________________________________________
+	//____ FlexHook::setHotspot() _______________________________________________
 	
-	bool WgFlexHook::setHotspot( const WgFlexOrigo& hotspot )
+	bool FlexHook::setHotspot( const FlexOrigo& hotspot )
 	{
 		if( !m_bFloating )
 			return false;
@@ -371,9 +371,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setSizePolicy() ____________________________________________
+	//____ FlexHook::setSizePolicy() ____________________________________________
 	
-	bool WgFlexHook::setSizePolicy( WgSizePolicy width, WgSizePolicy height )
+	bool FlexHook::setSizePolicy( SizePolicy width, SizePolicy height )
 	{
 		if( !m_bFloating )
 			return false;
@@ -388,9 +388,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setGeo() ___________________________________________________
+	//____ FlexHook::setGeo() ___________________________________________________
 	
-	bool WgFlexHook::setGeo( const WgRect& geometry )
+	bool FlexHook::setGeo( const Rect& geometry )
 	{
 		if( !m_bFloating )
 			return false;
@@ -400,9 +400,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setOfs() ___________________________________________________
+	//____ FlexHook::setOfs() ___________________________________________________
 	
-	bool WgFlexHook::setOfs( const WgCoord& ofs )
+	bool FlexHook::setOfs( const Coord& ofs )
 	{
 		if( !m_bFloating )
 			return false;
@@ -413,9 +413,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setOfsX() __________________________________________________
+	//____ FlexHook::setOfsX() __________________________________________________
 	
-	bool WgFlexHook::setOfsX( int x )
+	bool FlexHook::setOfsX( int x )
 	{
 		if( !m_bFloating )
 			return false;
@@ -425,9 +425,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setOfsY() __________________________________________________
+	//____ FlexHook::setOfsY() __________________________________________________
 	
-	bool WgFlexHook::setOfsY( int y )
+	bool FlexHook::setOfsY( int y )
 	{
 		if( !m_bFloating )
 			return false;
@@ -437,9 +437,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setSize() __________________________________________________
+	//____ FlexHook::setSize() __________________________________________________
 	
-	bool WgFlexHook::setSize( const WgSize& size )
+	bool FlexHook::setSize( const Size& size )
 	{
 		if( !m_bFloating )
 			return false;
@@ -450,9 +450,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setWidth() _________________________________________________
+	//____ FlexHook::setWidth() _________________________________________________
 	
-	bool WgFlexHook::setWidth( int width )
+	bool FlexHook::setWidth( int width )
 	{
 		if( !m_bFloating )
 			return false;
@@ -462,9 +462,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::setHeight() ________________________________________________
+	//____ FlexHook::setHeight() ________________________________________________
 	
-	bool WgFlexHook::setHeight( int height )
+	bool FlexHook::setHeight( int height )
 	{
 		if( !m_bFloating )
 			return false;
@@ -474,9 +474,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::move() _____________________________________________________
+	//____ FlexHook::move() _____________________________________________________
 	
-	bool WgFlexHook::move( const WgCoord& ofs )
+	bool FlexHook::move( const Coord& ofs )
 	{
 		if( !m_bFloating )
 			return false;
@@ -486,9 +486,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::moveX() ____________________________________________________
+	//____ FlexHook::moveX() ____________________________________________________
 	
-	bool WgFlexHook::moveX( int x )
+	bool FlexHook::moveX( int x )
 	{
 		if( !m_bFloating )
 			return false;
@@ -498,9 +498,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::moveY() ____________________________________________________
+	//____ FlexHook::moveY() ____________________________________________________
 	
-	bool WgFlexHook::moveY( int y )
+	bool FlexHook::moveY( int y )
 	{
 		if( !m_bFloating )
 			return false;
@@ -510,57 +510,57 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgFlexHook::globalPos() ________________________________________________
+	//____ FlexHook::globalPos() ________________________________________________
 	
-	WgCoord WgFlexHook::globalPos() const
+	Coord FlexHook::globalPos() const
 	{
 		return m_realGeo.pos() + m_pParent->globalPos();
 	}
 	
-	//____ WgFlexHook::globalGeo() ________________________________________________
+	//____ FlexHook::globalGeo() ________________________________________________
 	
-	WgRect WgFlexHook::globalGeo() const
+	Rect FlexHook::globalGeo() const
 	{
 		return m_realGeo + m_pParent->globalPos();
 	}
 	
-	//____ WgFlexHook::_prevHook() ________________________________________________
+	//____ FlexHook::_prevHook() ________________________________________________
 	
-	WgHook * WgFlexHook::_prevHook() const
+	Hook * FlexHook::_prevHook() const
 	{
 		return _prev();
 	}
 	
-	//____ WgFlexHook::_nextHook() ________________________________________________
+	//____ FlexHook::_nextHook() ________________________________________________
 	
-	WgHook * WgFlexHook::_nextHook() const
+	Hook * FlexHook::_nextHook() const
 	{
 		return _next();
 	}
 	
-	//____ WgFlexHook::_parent() __________________________________________________
+	//____ FlexHook::_parent() __________________________________________________
 	
-	WgContainer * WgFlexHook::_parent() const
+	Container * FlexHook::_parent() const
 	{
 		return m_pParent;
 	}
 	
-	//____ WgFlexHook::_refreshRealGeo() ___________________________________________
+	//____ FlexHook::_refreshRealGeo() ___________________________________________
 	
-	void WgFlexHook::_refreshRealGeo()
+	void FlexHook::_refreshRealGeo()
 	{
-		WgRect	newGeo;
-		WgSize	parentSize = m_pParent->size();
+		Rect	newGeo;
+		Size	parentSize = m_pParent->size();
 	
 		if( m_bFloating )
 		{
 			// Calculate size
 	
-			WgSize sz = _sizeFromPolicy( m_placementGeo.size() + m_padding, m_widthPolicy, m_heightPolicy );
+			Size sz = _sizeFromPolicy( m_placementGeo.size() + m_padding, m_widthPolicy, m_heightPolicy );
 	
 			// Calculate position
 	
-			WgCoord pos = m_origo.position( parentSize );	// Origo,
+			Coord pos = m_origo.position( parentSize );	// Origo,
 			pos -= m_hotspot.position(sz);					// hotspot
 			pos += m_placementGeo.pos();					// and Offset.
 	
@@ -579,14 +579,14 @@ namespace wg
 					pos.y = parentSize.h - sz.h;
 			}
 	
-			newGeo = WgRect( pos, sz );
+			newGeo = Rect( pos, sz );
 		}
 		else
 		{
-			WgCoord topLeft = m_topLeftOrigo.position( parentSize ) + m_topLeftOfs;
-			WgCoord bottomRight = m_bottomRightOrigo.position( parentSize ) + m_bottomRightOfs;
+			Coord topLeft = m_topLeftOrigo.position( parentSize ) + m_topLeftOfs;
+			Coord bottomRight = m_bottomRightOrigo.position( parentSize ) + m_bottomRightOfs;
 	
-			newGeo = WgRect(topLeft,bottomRight);
+			newGeo = Rect(topLeft,bottomRight);
 		}
 	    newGeo.shrink( m_padding );
 	
@@ -602,18 +602,18 @@ namespace wg
 		}
 	}
 	
-	//____ WgFlexHook::_sizeNeededForGeo() ________________________________________
+	//____ FlexHook::_sizeNeededForGeo() ________________________________________
 	
-	WgSize WgFlexHook::_sizeNeededForGeo()
+	Size FlexHook::_sizeNeededForGeo()
 	{
-		WgSize sz;
+		Size sz;
 	
 		if( m_bFloating )
 		{
-	        WgRect geo = m_placementGeo + m_padding;
+	        Rect geo = m_placementGeo + m_padding;
 	        
-			WgCoord hotspot = m_hotspot.position(geo.size());
-			WgCoord offset = geo.pos() - hotspot;
+			Coord hotspot = m_hotspot.position(geo.size());
+			Coord offset = geo.pos() - hotspot;
 	
 			int leftOfOrigo = 0 - offset.x;
 			int rightOfOrigo = offset.x + geo.w;
@@ -644,8 +644,8 @@ namespace wg
 		{
 			sz = m_pWidget->preferredSize() + m_padding;
 	
-			sz += WgSize( m_topLeftOfs.x, m_topLeftOfs.y );
-			sz -= WgSize( m_bottomRightOfs.x, m_bottomRightOfs.y );
+			sz += Size( m_topLeftOfs.x, m_topLeftOfs.y );
+			sz -= Size( m_bottomRightOfs.x, m_bottomRightOfs.y );
 	
 			sz.w = (int) (sz.w / (float) (m_bottomRightOrigo.x - m_topLeftOrigo.x));
 			sz.h = (int) (sz.w / (float) (m_bottomRightOrigo.y - m_topLeftOrigo.y));
@@ -655,23 +655,23 @@ namespace wg
 	}
 	
 	
-	//____ WgFlexHook::_requestRender() ____________________________________________
+	//____ FlexHook::_requestRender() ____________________________________________
 	
-	void WgFlexHook::_requestRender()
+	void FlexHook::_requestRender()
 	{
 		m_pParent->_onRequestRender( m_realGeo, this );
 	}
 	
-	//____ WgFlexHook::_requestRender() ____________________________________________
+	//____ FlexHook::_requestRender() ____________________________________________
 	
-	void WgFlexHook::_requestRender( const WgRect& rect )
+	void FlexHook::_requestRender( const Rect& rect )
 	{
 		m_pParent->_onRequestRender( rect + m_realGeo.pos(), this );
 	}
 	
-	//____ WgFlexHook::_requestResize() ____________________________________________
+	//____ FlexHook::_requestResize() ____________________________________________
 	
-	void WgFlexHook::_requestResize()
+	void FlexHook::_requestResize()
 	{
 		if( m_widthPolicy != WG_BOUND || m_heightPolicy != WG_BOUND )
 			_refreshRealGeo();
@@ -680,53 +680,53 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgFlexPanel::WgFlexPanel() : m_bConfineWidgets(false)
+	FlexPanel::FlexPanel() : m_bConfineWidgets(false)
 	{
 		m_bSiblingsOverlap = true;
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgFlexPanel::~WgFlexPanel()
+	FlexPanel::~FlexPanel()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgFlexPanel::isInstanceOf( const char * pClassName ) const
+	bool FlexPanel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgPanel::isInstanceOf(pClassName);
+		return Panel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgFlexPanel::className( void ) const
+	const char * FlexPanel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgFlexPanel_p WgFlexPanel::cast( const WgObject_p& pObject )
+	FlexPanel_p FlexPanel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgFlexPanel_p( static_cast<WgFlexPanel*>(pObject.rawPtr()) );
+			return FlexPanel_p( static_cast<FlexPanel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setConfineWidgets() ___________________________________________________
 	
-	void WgFlexPanel::setConfineWidgets( bool bConfineWidgets )
+	void FlexPanel::setConfineWidgets( bool bConfineWidgets )
 	{
 		if( bConfineWidgets != m_bConfineWidgets )
 		{
 			m_bConfineWidgets = bConfineWidgets;
 	
-			WgFlexHook * pHook = m_hooks.first();
+			FlexHook * pHook = m_hooks.first();
 			while( pHook )
 			{
 				pHook->_refreshRealGeo();
@@ -739,29 +739,29 @@ namespace wg
 	
 	//____ addWidget() _____________________________________________________________
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), WgBorder(0) );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
 	
 		m_hooks.pushBack(p);
 	
-		p->setFloating( WgCoord(0,0) );
+		p->setFloating( Coord(0,0) );
 		return p;
 	}
 	
 	//____ addWidget() _____________________________________________________________
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgFlexOrigo& topLeftOrigo,
-										 const WgFlexOrigo& bottomRightOrigo, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const FlexOrigo& topLeftOrigo,
+										 const FlexOrigo& bottomRightOrigo, Border padding )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
 	
 		m_hooks.pushBack(p);
@@ -770,13 +770,13 @@ namespace wg
 		return p;
 	}
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-								 const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
+								 const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
 	
 		m_hooks.pushBack(p);
@@ -785,36 +785,36 @@ namespace wg
 		return p;
 	}
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo, Border padding )
 	{
 		return addWidget( pWidget, pos, origo, origo, padding );
 	}
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgSize bestSize = pWidget->preferredSize();
+		Size bestSize = pWidget->preferredSize();
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,bestSize), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,bestSize), padding );
 		p->_setWidget( pWidget.rawPtr() );
 		m_hooks.pushBack(p);
 		p->setFloating( pos, origo, hotspot );
 		return p;
 	}
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo, Border padding )
 	{
 		return addWidget( pWidget, geometry, origo, origo, padding );
 	}
 	
-	WgFlexHook * WgFlexPanel::addWidget( const WgWidget_p& pWidget, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
+	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
 		if( !pWidget )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
 	
 		m_hooks.pushBack(p);
@@ -826,63 +826,63 @@ namespace wg
 	
 	//____ insertWidget() _________________________________________________
 	
-	WgFlexHook * WgFlexPanel::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling )
+	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling )
 	{
 		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), WgBorder(0) );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
-		p->setFloating( WgCoord(0,0) );
+		p->_moveBefore( (FlexHook*)pSibling->_hook() );
+		p->setFloating( Coord(0,0) );
 		return p;
 	}
 	
 	
-	WgFlexHook * WgFlexPanel::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling, const WgFlexOrigo& topLeftOrigo, const WgCoord& topLeftOfs, 
-										   const WgFlexOrigo& bottomRightOrigo, const WgCoord& bottomRightOfs, WgBorder padding )
+	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
+										   const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
 	{
 		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), WgBorder(0) );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
+		p->_moveBefore( (FlexHook*)pSibling->_hook() );
 		p->setStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
 		return p;
 	}
 	
 	
-	WgFlexHook * WgFlexPanel::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, WgBorder padding )
+	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, Border padding )
 	{
 		return insertWidget( pWidget, pSibling, geometry, origo, origo, padding );
 	}
 	
-	WgFlexHook * WgFlexPanel::insertWidget(const WgWidget_p& pWidget, const WgWidget_p& pSibling, const WgRect& geometry, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
+	FlexHook * FlexPanel::insertWidget(const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
 		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
+		p->_moveBefore( (FlexHook*)pSibling->_hook() );
 		p->setFloating( geometry, origo, hotspot );
 		return p;
 	}
 	
-	WgFlexHook * WgFlexPanel::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, WgBorder padding )
+	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, Border padding )
 	{
 		return insertWidget( pWidget, pSibling, pos, origo, origo, padding );
 	}
 	
-	WgFlexHook * WgFlexPanel::insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling, const WgCoord& pos, const WgFlexOrigo& origo, const WgFlexOrigo& hotspot, WgBorder padding )
+	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
 		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
 			return 0;
 	
-		WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,pWidget->preferredSize()), padding );
+		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (WgFlexHook*)pSibling->_hook() );
+		p->_moveBefore( (FlexHook*)pSibling->_hook() );
 		p->setFloating( pos, origo, hotspot );
 		return p;
 	}
@@ -890,14 +890,14 @@ namespace wg
 	
 	//____ removeWidget() _________________________________________________________
 	
-	bool WgFlexPanel::removeWidget( const WgWidget_p& pWidget )
+	bool FlexPanel::removeWidget( const Widget_p& pWidget )
 	{
 		if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
 			return false;
 	
 		// Force rendering of the area the widget was covering
 	
-		WgFlexHook * pHook = (WgFlexHook *) pWidget->_hook();
+		FlexHook * pHook = (FlexHook *) pWidget->_hook();
 		_onRequestRender( pHook->m_realGeo, pHook );
 	
 		// Remove the widget and return
@@ -908,25 +908,25 @@ namespace wg
 	
 	//____ clear() ______________________________________________________
 	
-	bool WgFlexPanel::clear()
+	bool FlexPanel::clear()
 	{
-		WgPatches	dirt;
+		Patches	dirt;
 	
 		// Collect dirty areas and delete hooks.
 	
-		WgFlexHook * pHook = m_hooks.first();
+		FlexHook * pHook = m_hooks.first();
 		while( pHook )
 		{
 			if( pHook->m_bVisible )
 				dirt.add( pHook->m_realGeo );
-			WgFlexHook * pDelete = pHook;
+			FlexHook * pDelete = pHook;
 			pHook = pHook->_next();
 			delete pDelete;
 		}
 	
 		// RequestRender on all dirty patches
 	
-		for( const WgRect * pRect = dirt.begin() ; pRect != dirt.end() ; pRect++ )
+		for( const Rect * pRect = dirt.begin() ; pRect != dirt.end() ; pRect++ )
 			_requestRender( * pRect );
 	
 		return true;
@@ -935,15 +935,15 @@ namespace wg
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	WgSize WgFlexPanel::preferredSize() const
+	Size FlexPanel::preferredSize() const
 	{
-		WgSize minSize;
+		Size minSize;
 	
-		WgFlexHook * pHook = m_hooks.first();
+		FlexHook * pHook = m_hooks.first();
 		while( pHook )
 		{
-			WgSize sz = pHook->_sizeNeededForGeo();
-			minSize = WgSize::max(minSize,sz);
+			Size sz = pHook->_sizeNeededForGeo();
+			minSize = Size::max(minSize,sz);
 			pHook = pHook->_next();
 		}
 		return minSize;
@@ -951,45 +951,45 @@ namespace wg
 	
 	//____ _onRequestRender() ______________________________________________________
 	
-	void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )
+	void FlexPanel::_onRequestRender( const Rect& rect, const FlexHook * pHook )
 	{
 		if( !pHook->m_bVisible )
 			return;
 	
 		// Clip our geometry and put it in a dirtyrect-list
 	
-		WgPatches patches;
-		patches.add( WgRect( rect, WgRect(0,0,size())) );
+		Patches patches;
+		patches.add( Rect( rect, Rect(0,0,size())) );
 	
 		// Remove portions of patches that are covered by opaque upper siblings
 	
-		WgFlexHook * pCover = pHook->_next();
+		FlexHook * pCover = pHook->_next();
 		while( pCover )
 		{
 			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_realGeo, WgRect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_onMaskPatches( patches, pCover->m_realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_next();
 		}
 	
 		// Make request render calls
 	
-		for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgFlexPanel::_onCloneContent( const WgWidget * _pOrg )
+	void FlexPanel::_onCloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement
 	}
 	
 	//____ _onNewSize() ____________________________________________________________
 	
-	void WgFlexPanel::_onNewSize( const WgSize& size )
+	void FlexPanel::_onNewSize( const Size& size )
 	{
-		WgFlexHook * pHook = m_hooks.last();
+		FlexHook * pHook = m_hooks.last();
 	
 		while( pHook )
 		{
@@ -1000,9 +1000,9 @@ namespace wg
 	
 	//____ _firstHookWithGeo() _____________________________________________________
 	
-	WgHook * WgFlexPanel::_firstHookWithGeo( WgRect& writeGeo ) const
+	Hook * FlexPanel::_firstHookWithGeo( Rect& writeGeo ) const
 	{
-		WgFlexHook * p = m_hooks.first();
+		FlexHook * p = m_hooks.first();
 		if( p )
 			writeGeo = p->m_realGeo;
 	
@@ -1011,9 +1011,9 @@ namespace wg
 	
 	//____ _nextHookWithGeo() ______________________________________________________
 	
-	WgHook * WgFlexPanel::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+	Hook * FlexPanel::_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const
 	{
-		WgFlexHook * p = ((WgFlexHook*)pHook)->_next();
+		FlexHook * p = ((FlexHook*)pHook)->_next();
 		if( p )
 			writeGeo = p->m_realGeo;
 	
@@ -1022,9 +1022,9 @@ namespace wg
 	
 	//____ _lastHookWithGeo() _____________________________________________________
 	
-	WgHook * WgFlexPanel::_lastHookWithGeo( WgRect& writeGeo ) const
+	Hook * FlexPanel::_lastHookWithGeo( Rect& writeGeo ) const
 	{
-		WgFlexHook * p = m_hooks.last();
+		FlexHook * p = m_hooks.last();
 		if( p )
 			writeGeo = p->m_realGeo;
 	
@@ -1033,9 +1033,9 @@ namespace wg
 	
 	//____ _prevHookWithGeo() ______________________________________________________
 	
-	WgHook * WgFlexPanel::_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
+	Hook * FlexPanel::_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const
 	{
-		WgFlexHook * p = ((WgFlexHook*)pHook)->_prev();
+		FlexHook * p = ((FlexHook*)pHook)->_prev();
 		if( p )
 			writeGeo = p->m_realGeo;
 	

@@ -15,9 +15,9 @@
 #endif
 
 class WgEventHandler;
-class WgSurface;
-class WgSurfaceFactory;
-class WgFont;
+class Surface;
+class SurfaceFactory;
+class Font;
 
 namespace sdl_wglib
 {
@@ -26,11 +26,11 @@ namespace sdl_wglib
 	void 		TranslateEvent( const WgEventHandlerPtr& pHandler, SDL_Event& event );
 	void 		EndEvents( const WgEventHandlerPtr& pHandler );
 
-	WgSurface_p loadSurface( const char * path, const WgSurfaceFactory_p& factory );
+	Surface_p loadSurface( const char * path, const SurfaceFactory_p& factory );
 
-	WgResDB_p	LoadStdWidgets( const char * pImagePath, const WgSurfaceFactory_p& factory );
+	ResDB_p	LoadStdWidgets( const char * pImagePath, const SurfaceFactory_p& factory );
 
-	WgFont_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory_p& pFactory );
+	Font_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const SurfaceFactory_p& pFactory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

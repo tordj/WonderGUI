@@ -30,30 +30,30 @@
 namespace wg 
 {
 	
-	class WgMsgFunc;
-	typedef	WgStrongPtr<WgMsgFunc,WgReceiver_p>		WgMsgFunc_p;
-	typedef	WgWeakPtr<WgMsgFunc,WgReceiver_wp>	WgMsgFunc_wp;
+	class MsgFunc;
+	typedef	WgStrongPtr<MsgFunc,Receiver_p>		MsgFunc_p;
+	typedef	WgWeakPtr<MsgFunc,Receiver_wp>	MsgFunc_wp;
 	
-	class WgMsgFunc : public WgReceiver
+	class MsgFunc : public Receiver
 	{
 	public:
-		static WgMsgFunc_p	create( void(*fp)( const WgMsg_p& pMsg) ) { return new WgMsgFunc( fp ); }
-		static WgMsgFunc_p	create( void(*fp)( const WgMsg_p& pMsg, int param), int param ) { return new WgMsgFunc( fp, param ); }
-		static WgMsgFunc_p	create( void(*fp)( const WgMsg_p& pMsg, void * pParam), void * pParam ) { return new WgMsgFunc( fp, pParam ); }
-		static WgMsgFunc_p	create( void(*fp)( const WgMsg_p& pMsg, const WgObject_p& pParam), const WgObject_p& pParam ) { return new WgMsgFunc( fp, pParam ); }
+		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg) ) { return new MsgFunc( fp ); }
+		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, int param), int param ) { return new MsgFunc( fp, param ); }
+		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, void * pParam), void * pParam ) { return new MsgFunc( fp, pParam ); }
+		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, const Object_p& pParam), const Object_p& pParam ) { return new MsgFunc( fp, pParam ); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgMsgFunc_p	cast( const WgObject_p& pObject );
+		static MsgFunc_p	cast( const Object_p& pObject );
 	
-		void onMsg( const WgMsg_p& pMsg );
+		void onMsg( const Msg_p& pMsg );
 	
 	protected:
-		WgMsgFunc( void(*fp)( const WgMsg_p& pMsg) );
-		WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, int param), int param );
-		WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, void * pParam), void * pParam );
-		WgMsgFunc( void(*fp)( const WgMsg_p& pMsg, const WgObject_p& pParam), const WgObject_p& pParam );
+		MsgFunc( void(*fp)( const Msg_p& pMsg) );
+		MsgFunc( void(*fp)( const Msg_p& pMsg, int param), int param );
+		MsgFunc( void(*fp)( const Msg_p& pMsg, void * pParam), void * pParam );
+		MsgFunc( void(*fp)( const Msg_p& pMsg, const Object_p& pParam), const Object_p& pParam );
 	
 		void	_onRouteAdded();
 		void	_onRouteRemoved();
@@ -62,7 +62,7 @@ namespace wg
 		void *		m_pCallback;
 		int			m_param;
 		void *		m_pParam;
-		WgObject_p	m_pParamObj;
+		Object_p	m_pParamObj;
 	
 	
 	};

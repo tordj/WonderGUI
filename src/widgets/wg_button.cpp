@@ -32,11 +32,11 @@
 namespace wg 
 {
 	
-	const char WgButton::CLASSNAME[] = {"Button"};
+	const char Button::CLASSNAME[] = {"Button"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgButton::WgButton() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
+	Button::Button() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
 	{
 		m_bDownOutside	 = false;
 		m_bPressed 		 = false;
@@ -45,33 +45,33 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgButton::~WgButton()
+	Button::~Button()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgButton::isInstanceOf( const char * pClassName ) const
+	bool Button::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgButton::className( void ) const
+	const char * Button::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgButton_p WgButton::cast( const WgObject_p& pObject )
+	Button_p Button::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgButton_p( static_cast<WgButton*>(pObject.rawPtr()) );
+			return Button_p( static_cast<Button*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -79,7 +79,7 @@ namespace wg
 	
 	//____ matchingHeight() _______________________________________________________
 	
-	int WgButton::matchingHeight( int width ) const
+	int Button::matchingHeight( int width ) const
 	{
 		int height = 0;
 	
@@ -88,7 +88,7 @@ namespace wg
 	
 		if( !m_text.isEmpty() )
 		{
-			WgSize padding;
+			Size padding;
 	
 			if( m_pSkin )
 				padding = m_pSkin->contentPadding();
@@ -106,9 +106,9 @@ namespace wg
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	WgSize WgButton::preferredSize() const
+	Size Button::preferredSize() const
 	{
-		WgSize preferred;
+		Size preferred;
 	
 		if( !m_text.isEmpty() )
 			preferred = m_text.preferredSize();
@@ -123,9 +123,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgButton::_onStateChanged( WgState oldState )
+	void Button::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if(m_icon.skin() && !m_icon.skin()->isStateIdentical(m_state,oldState))
 				_requestRender();
@@ -135,22 +135,22 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgButton::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void Button::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 	}
 	
 	
 	//____ _onNewSize() ____________________________________________________________
 	
-	void WgButton::_onNewSize( const WgSize& _size )
+	void Button::_onNewSize( const Size& _size )
 	{
-		WgRect	contentRect(0,0,_size);
+		Rect	contentRect(0,0,_size);
 	
 		if( m_pSkin )
 			contentRect -= m_pSkin->contentPadding();
 	
-		WgRect textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
+		Rect textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 	
 		m_text.onNewSize( textRect );
 	}
@@ -158,19 +158,19 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Button::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect	contentRect = _canvas;
+		Rect	contentRect = _canvas;
 	
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(_canvas, m_state);
 	
 		// Get icon and text rect from content rect
 	
-		WgRect iconRect = m_icon.getIconRect( contentRect );
-		WgRect textRect = m_icon.getTextRect( contentRect, iconRect );
+		Rect iconRect = m_icon.getIconRect( contentRect );
+		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
 	
 		// Render icon
 	
@@ -185,15 +185,15 @@ namespace wg
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgButton::_onMsg( const WgMsg_p& _pMsg )
+	void Button::_onMsg( const Msg_p& _pMsg )
 	{
-		WgState oldState = m_state;
-		WgMsgRouter_p	pHandler = WgBase::msgRouter();
+		State oldState = m_state;
+		MsgRouter_p	pHandler = Base::msgRouter();
 	
 		switch( _pMsg->type() )
 		{
 			case WG_MSG_KEY_PRESS:
-				if( WgKeyPressMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyPressMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = true;
 					_pMsg->swallow();
@@ -201,15 +201,15 @@ namespace wg
 				break;
 	
 			case WG_MSG_KEY_REPEAT:
-				if( WgKeyRepeatMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyRepeatMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 					_pMsg->swallow();
 				break;
 	
 			case WG_MSG_KEY_RELEASE:
-				if( WgKeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = false;
-					pHandler->post( new WgSelectMsg(this) );
+					pHandler->post( new SelectMsg(this) );
 					_pMsg->swallow();
 				}
 				break;
@@ -221,30 +221,30 @@ namespace wg
 				m_state.setHovered(false);
 				break;
 			case WG_MSG_MOUSE_PRESS:
-				if( WgMousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 				{
 					m_bPressed = true;
 					_pMsg->swallow();
 				}
 				break;
 			case WG_MSG_MOUSE_RELEASE:
-				if( WgMouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 				{
 					m_bPressed = false;
 					_pMsg->swallow();
 				}
 				break;
 			case WG_MSG_MOUSE_CLICK:
-				if( WgMouseClickMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MouseClickMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 				{
-					pHandler->post( new WgSelectMsg(this) );
+					pHandler->post( new SelectMsg(this) );
 					_pMsg->swallow();
 				}
 				break;
 			case WG_MSG_MOUSE_DOUBLE_CLICK:
 			case WG_MSG_MOUSE_REPEAT:
 			case WG_MSG_MOUSE_DRAG:
-				if( WgMouseButtonMsg::cast(_pMsg)->button() ==WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(_pMsg)->button() ==WG_BUTTON_LEFT )
 					_pMsg->swallow();
 				break;
 	
@@ -271,9 +271,9 @@ namespace wg
 	
 	//____ _onRefresh() ____________________________________________________________
 	
-	void WgButton::_onRefresh( void )
+	void Button::_onRefresh( void )
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 		m_text.onRefresh();
 	
 		//TODO: Handling of icon and text.
@@ -302,16 +302,16 @@ namespace wg
 	 * before the callback that updates the geometry is called.
 	 *
 	 **/
-	void WgButton::setDownWhenMouseOutside( bool bDown )
+	void Button::setDownWhenMouseOutside( bool bDown )
 	{
 			m_bDownOutside		= bDown;
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgButton::_onCloneContent( const WgWidget * _pOrg )
+	void Button::_onCloneContent( const Widget * _pOrg )
 	{
-		WgButton * pOrg = (WgButton *) _pOrg;
+		Button * pOrg = (Button *) _pOrg;
 	
 		m_icon.onCloneContent( &pOrg->m_icon );
 	
@@ -323,26 +323,26 @@ namespace wg
 	
 	//____ _onAlphaTest() ___________________________________________________________
 	
-	bool WgButton::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Button::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		if( m_icon.skin() )
 		{
 			//TODO: Test against icon.
 		}
 	
-		return WgWidget::_onAlphaTest(ofs,sz);
+		return Widget::_onAlphaTest(ofs,sz);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgButton::_onFieldDirty( WgField * pField )
+	void Button::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgButton::_onFieldResize( WgField * pField )
+	void Button::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();

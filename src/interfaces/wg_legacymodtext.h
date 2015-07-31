@@ -50,14 +50,14 @@
 namespace wg 
 {
 	
-	class WgColor;
-	class WgCharSeq;
-	class WgString;
-	class WgCharBuffer;
+	class Color;
+	class CharSeq;
+	class String;
+	class CharBuffer;
 	
-	class WgLegacyModText;
-	typedef	WgIStrongPtr<WgLegacyModText,WgLegacyText_p>	WgLegacyModText_p;
-	typedef	WgIWeakPtr<WgLegacyModText,WgLegacyText_wp>	WgLegacyModText_wp;
+	class LegacyModText;
+	typedef	WgIStrongPtr<LegacyModText,LegacyText_p>	LegacyModText_p;
+	typedef	WgIWeakPtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
 	
 	/**
 	 * @brief Interface to a text field with text that is modifiable through the api
@@ -67,26 +67,26 @@ namespace wg
 	 * 
 	*/
 	 
-	class WgLegacyModText : public WgLegacyText
+	class LegacyModText : public LegacyText
 	{
 	public:
-		WgLegacyModText( WgLegacyTextField * pField ) : WgLegacyText(pField) {};
+		LegacyModText( LegacyTextField * pField ) : LegacyText(pField) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgLegacyModText_p		cast( const WgInterface_p& pInterface );
-		inline WgLegacyModText_p		ptr() { return WgLegacyModText_p(_object(),this); }
+		static LegacyModText_p		cast( const Interface_p& pInterface );
+		inline LegacyModText_p		ptr() { return LegacyModText_p(_object(),this); }
 	
 		inline void				clear() { m_pField->clear(); }
 	
-		inline void				set( const WgCharSeq& seq ) { m_pField->set(seq); }
-		inline void				set( const WgCharBuffer * pBuffer ) { m_pField->set(pBuffer); }
-		inline void				set( const WgString& str ) { m_pField->set(str); }
+		inline void				set( const CharSeq& seq ) { m_pField->set(seq); }
+		inline void				set( const CharBuffer * pBuffer ) { m_pField->set(pBuffer); }
+		inline void				set( const String& str ) { m_pField->set(str); }
 	
-		inline int				append( const WgCharSeq& seq ) { return m_pField->append(seq); }
-		inline int				insert( int ofs, const WgCharSeq& seq ) { return m_pField->insert(ofs,seq); }
-		inline int				replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
+		inline int				append( const CharSeq& seq ) { return m_pField->append(seq); }
+		inline int				insert( int ofs, const CharSeq& seq ) { return m_pField->insert(ofs,seq); }
+		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
 		inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
 	
 	};

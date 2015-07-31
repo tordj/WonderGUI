@@ -5,16 +5,16 @@
 namespace wg 
 {
 	
-	const char WgSimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
+	const char SimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgSimpleVolumeMeter::WgSimpleVolumeMeter()
+	SimpleVolumeMeter::SimpleVolumeMeter()
 	{
-		m_sectionColors[0] = WgColor::green;
-		m_sectionColors[1] = WgColor::yellow;
-		m_sectionColors[2] = WgColor::red;
+		m_sectionColors[0] = Color::green;
+		m_sectionColors[1] = Color::yellow;
+		m_sectionColors[2] = Color::red;
 		
 		m_sectionHeight[0] = 0.75f;
 		m_sectionHeight[1] = 0.18f;
@@ -32,33 +32,33 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgSimpleVolumeMeter::~WgSimpleVolumeMeter()
+	SimpleVolumeMeter::~SimpleVolumeMeter()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
+	bool SimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSimpleVolumeMeter::className( void ) const
+	const char * SimpleVolumeMeter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSimpleVolumeMeter_p WgSimpleVolumeMeter::cast( const WgObject_p& pObject )
+	SimpleVolumeMeter_p SimpleVolumeMeter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSimpleVolumeMeter_p( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
+			return SimpleVolumeMeter_p( static_cast<SimpleVolumeMeter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -66,7 +66,7 @@ namespace wg
 	
 	//____ setColors() ___________________________________________________________
 	
-	void WgSimpleVolumeMeter::setColors( WgColor bottom, WgColor middle, WgColor top )
+	void SimpleVolumeMeter::setColors( Color bottom, Color middle, Color top )
 	{
 		if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
 		{
@@ -79,7 +79,7 @@ namespace wg
 	
 	//____ setSections() _________________________________________________________
 	
-	void WgSimpleVolumeMeter::setSections( float bottomFraction, float topFraction )
+	void SimpleVolumeMeter::setSections( float bottomFraction, float topFraction )
 	{
 		if( bottomFraction < 0.f )
 			bottomFraction = 0.f;
@@ -107,7 +107,7 @@ namespace wg
 	
 	//____ setHoldHeight() ________________________________________________________
 	
-	void WgSimpleVolumeMeter::setHoldHeight( float fraction )
+	void SimpleVolumeMeter::setHoldHeight( float fraction )
 	{
 		LIMIT( fraction, 0.f, 0.25f );
 		
@@ -120,7 +120,7 @@ namespace wg
 	
 	//____ setValue() ______________________________________________________________
 	
-	void WgSimpleVolumeMeter::setValue( float peak, float hold )
+	void SimpleVolumeMeter::setValue( float peak, float hold )
 	{
 		LIMIT( peak, 0.f, 1.f );
 		LIMIT( hold, 0.f, 1.f );
@@ -134,7 +134,7 @@ namespace wg
 		}
 	}
 	
-	void WgSimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
+	void SimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
 	{
 		LIMIT( leftPeak, 0.f, 1.f );
 		LIMIT( leftHold, 0.f, 1.f );
@@ -154,9 +154,9 @@ namespace wg
 	
 	//____ preferredSize() ________________________________________________________________
 	
-	WgSize WgSimpleVolumeMeter::preferredSize() const
+	Size SimpleVolumeMeter::preferredSize() const
 	{
-		WgSize content(9,20);
+		Size content(9,20);
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(content);
@@ -166,7 +166,7 @@ namespace wg
 	
 	//____ _onNewSize() ____________________________________________________________________
 	
-	void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
+	void SimpleVolumeMeter::_onNewSize( const Size& size )
 	{
 		_updateSectionPixelHeight();
 		_requestRender();
@@ -176,14 +176,14 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________________
 	
-	void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void SimpleVolumeMeter::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
 		if( !m_state.isEnabled() )
 			return;
 		
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->sizeForContent(_canvas);
 		else
@@ -191,7 +191,7 @@ namespace wg
 	
 		if( m_bStereo )
 		{
-			WgRect r = canvas;
+			Rect r = canvas;
 			r.w = (r.w - 1) / 2;
 			_renderHold( pDevice, 0, r, _clip );
 			_renderPeak( pDevice, 0, r, _clip );
@@ -210,7 +210,7 @@ namespace wg
 	
 	//____ _renderPeak() ___________________________________________________________________
 	
-	void WgSimpleVolumeMeter::_renderPeak( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
+	void SimpleVolumeMeter::_renderPeak( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip )
 	{
 		int height = (int) (m_peak[nb] * _rect.h);
 		int ofs = 0;
@@ -224,8 +224,8 @@ namespace wg
 			if( sectionHeight > height )
 				sectionHeight = height;
 			
-			WgRect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
-			pDevice->fill( WgRect( r, _clip ), m_sectionColors[i] );
+			Rect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
+			pDevice->fill( Rect( r, _clip ), m_sectionColors[i] );
 			
 			ofs += sectionHeight;
 			height -= sectionHeight;
@@ -234,7 +234,7 @@ namespace wg
 	
 	//____ _renderHold() ___________________________________________________________________
 	
-	void WgSimpleVolumeMeter::_renderHold( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
+	void SimpleVolumeMeter::_renderHold( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip )
 	{
 		if( m_holdHeight == 0.f )
 			return;						// Hold should not be displayed.
@@ -243,7 +243,7 @@ namespace wg
 		if( height < 1 )
 			height = 1;
 	
-		WgColor c;
+		Color c;
 		
 		int ofs = (int) ((1.f - m_hold[nb]) * _rect.h);
 	
@@ -265,13 +265,13 @@ namespace wg
 			c = m_sectionColors[0];
 		}
 	
-		WgRect r( _rect.x, _rect.y + ofs, _rect.w, height );
-		pDevice->fill( WgRect( r, _clip ), c );
+		Rect r( _rect.x, _rect.y + ofs, _rect.w, height );
+		pDevice->fill( Rect( r, _clip ), c );
 	}
 	
 	//____ _updateSectionPixelHeight() ______________________________________________________
 	
-	void WgSimpleVolumeMeter::_updateSectionPixelHeight()
+	void SimpleVolumeMeter::_updateSectionPixelHeight()
 	{
 		int totalHeight = geo().h;
 		if( m_pSkin )
@@ -284,9 +284,9 @@ namespace wg
 	
 	//____ _onCloneContent() _________________________________________________________________ 
 	
-	void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
+	void SimpleVolumeMeter::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgSimpleVolumeMeter * pOrg = static_cast<const WgSimpleVolumeMeter*>(_pOrg);
+		const SimpleVolumeMeter * pOrg = static_cast<const SimpleVolumeMeter*>(_pOrg);
 	
 		for( int i = 0 ; i < 3 ; i++ )
 		{
@@ -306,9 +306,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
+	void  SimpleVolumeMeter::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if( oldState.isEnabled() != m_state.isEnabled() )
 			_requestRender();
@@ -316,9 +316,9 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void  SimpleVolumeMeter::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 		_updateSectionPixelHeight();
 	}
 	

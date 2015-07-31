@@ -21,7 +21,7 @@
 =========================================================================*/
 
 /* TODO: See if we can be better off using multiple size-objects instead of changing size all the time.
-   TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with WgPen).
+   TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with Pen).
 */
 
 #include <wg_userdefines.h>
@@ -40,16 +40,16 @@
 namespace wg 
 {
 	
-	const char WgVectorGlyphs::CLASSNAME[] = {"VectorGlyphs"};
+	const char VectorGlyphs::CLASSNAME[] = {"VectorGlyphs"};
 	
-	WgChain<WgVectorGlyphs::CacheSlot>	WgVectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
-	WgChain<WgVectorGlyphs::CacheSurf>	WgVectorGlyphs::s_cacheSurfaces;
-	WgSurfaceFactory_p					WgVectorGlyphs::s_pSurfaceFactory = 0;
+	Chain<VectorGlyphs::CacheSlot>	VectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
+	Chain<VectorGlyphs::CacheSurf>	VectorGlyphs::s_cacheSurfaces;
+	SurfaceFactory_p					VectorGlyphs::s_pSurfaceFactory = 0;
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgVectorGlyphs::WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
+	VectorGlyphs::VectorGlyphs( char* pTTF_File, int bytes, int faceIndex )
 	{
 		m_pData = pTTF_File;
 		m_ftCharSize	= 0;
@@ -62,7 +62,7 @@ namespace wg
 			m_whitespaceAdvance[i] = 0;
 		}
 	
-		FT_Error err = FT_New_Memory_Face(	WgBase::getFreeTypeLibrary(),
+		FT_Error err = FT_New_Memory_Face(	Base::getFreeTypeLibrary(),
 											(const FT_Byte *)pTTF_File,
 											bytes,
 											0,
@@ -80,7 +80,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgVectorGlyphs::~WgVectorGlyphs()
+	VectorGlyphs::~VectorGlyphs()
 	{
 		for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )
 		{
@@ -102,34 +102,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgVectorGlyphs::isInstanceOf( const char * pClassName ) const
+	bool VectorGlyphs::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgGlyphset::isInstanceOf(pClassName);
+		return Glyphset::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgVectorGlyphs::className( void ) const
+	const char * VectorGlyphs::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgVectorGlyphs_p WgVectorGlyphs::cast( const WgObject_p& pObject )
+	VectorGlyphs_p VectorGlyphs::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgVectorGlyphs_p( static_cast<WgVectorGlyphs*>(pObject.rawPtr()) );
+			return VectorGlyphs_p( static_cast<VectorGlyphs*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _setCharSize() __________________________________________________________
 	
-	bool WgVectorGlyphs::_setCharSize( int size )
+	bool VectorGlyphs::_setCharSize( int size )
 	{
 			FT_Error err = FT_Set_Char_Size( m_ftFace, size*64, 0, 0,0 );
 	//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
@@ -163,7 +163,7 @@ namespace wg
 	
 	//____ setRenderMode() ________________________________________________________
 	
-	bool WgVectorGlyphs::setRenderMode( RenderMode mode, int startSize, int endSize )
+	bool VectorGlyphs::setRenderMode( RenderMode mode, int startSize, int endSize )
 	{
 		if( startSize < 0 || startSize > endSize || startSize > WG_MAX_FONTSIZE )
 			return false;
@@ -184,7 +184,7 @@ namespace wg
 	
 	//____ getKerning() ___________________________________________________________
 	
-	int WgVectorGlyphs::getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size )
+	int VectorGlyphs::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
 	{
 		size += m_sizeOffset;
 	
@@ -207,7 +207,7 @@ namespace wg
 	
 	//____ getWhitespaceAdvance() _________________________________________________
 	
-	int WgVectorGlyphs::getWhitespaceAdvance( int size )
+	int VectorGlyphs::getWhitespaceAdvance( int size )
 	{
 		size += m_sizeOffset;
 	
@@ -236,7 +236,7 @@ namespace wg
 	
 	//____ getHeight() ____________________________________________________________
 	
-	int WgVectorGlyphs::getHeight( int size )
+	int VectorGlyphs::getHeight( int size )
 	{
 		size += m_sizeOffset;
 	
@@ -249,7 +249,7 @@ namespace wg
 	
 	//____ getLineSpacing() ____________________________________________________________
 	
-	int WgVectorGlyphs::getLineSpacing( int size )
+	int VectorGlyphs::getLineSpacing( int size )
 	{
 		size += m_sizeOffset;
 	
@@ -263,7 +263,7 @@ namespace wg
 	
 	//____ getBaseline() ____________________________________________________________
 	
-	int WgVectorGlyphs::getBaseline( int size )
+	int VectorGlyphs::getBaseline( int size )
 	{
 		size += m_sizeOffset;
 	
@@ -277,28 +277,28 @@ namespace wg
 	
 	//____ getNbGlyphs() __________________________________________________________
 	
-	int WgVectorGlyphs::getNbGlyphs()
+	int VectorGlyphs::getNbGlyphs()
 	{
 		return m_ftFace->num_glyphs;
 	}
 	
 	//____ hasGlyphs() ____________________________________________________________
 	
-	bool WgVectorGlyphs::hasGlyphs()
+	bool VectorGlyphs::hasGlyphs()
 	{
 		return m_ftFace->num_glyphs?true:false;
 	}
 	
 	//____ isMonospace() __________________________________________________________
 	
-	bool WgVectorGlyphs::isMonospace()
+	bool VectorGlyphs::isMonospace()
 	{
 		return FT_IS_FIXED_WIDTH( m_ftFace )>0?true:false;
 	}
 	
 	//____ getMaxGlyphAdvance() ___________________________________________________
 	
-	int WgVectorGlyphs::getMaxGlyphAdvance( int size )
+	int VectorGlyphs::getMaxGlyphAdvance( int size )
 	{
 		size += m_sizeOffset;
 	
@@ -308,7 +308,7 @@ namespace wg
 	
 	//____ hasGlyph() _____________________________________________________________
 	
-	bool WgVectorGlyphs::hasGlyph( Uint16 ch )
+	bool VectorGlyphs::hasGlyph( Uint16 ch )
 	{
 		int index = FT_Get_Char_Index( m_ftFace, ch );
 		if( index == 0 )
@@ -319,7 +319,7 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	WgGlyph_p WgVectorGlyphs::getGlyph( Uint16 ch, int size )
+	Glyph_p VectorGlyphs::getGlyph( Uint16 ch, int size )
 	{
 		size += m_sizeOffset;
 	
@@ -330,7 +330,7 @@ namespace wg
 	
 		// Get cached glyph if we have one
 	
-		Glyph * pGlyph = _findGlyph( ch, size );
+		MyGlyph * pGlyph = _findGlyph( ch, size );
 		if( pGlyph == 0 )
 		{
 			FT_Error err;
@@ -341,7 +341,7 @@ namespace wg
 				if( !_setCharSize( size ) )
 					return 0;
 	
-			// Load Glyph
+			// Load MyGlyph
 	
 			FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
 			if( char_index == 0 )
@@ -355,7 +355,7 @@ namespace wg
 	
 			int advance = m_ftFace->glyph->advance.x >> 6;
 	
-			// Get a Glyph object and fill in details
+			// Get a MyGlyph object and fill in details
 	
 			pGlyph = _addGlyph( ch, size, advance, char_index );
 		}
@@ -366,7 +366,7 @@ namespace wg
 	
 	
 	/*
-	WgGlyph_p WgVectorGlyphs::getGlyph( Uint16 ch, int size )
+	Glyph_p VectorGlyphs::getGlyph( Uint16 ch, int size )
 	{
 		size += m_sizeOffset;
 	
@@ -392,7 +392,7 @@ namespace wg
 				if( !SetCharSize( size ) )
 					return 0;
 	
-			// Load Glyph
+			// Load MyGlyph
 	
 			FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
 			if( char_index == 0 )
@@ -428,7 +428,7 @@ namespace wg
 			pSlot->glyph.bearingY = yBearing;
 			pSlot->glyph.kerningIndex = char_index;
 			pSlot->glyph.pSurf = pSlot->pSurf->pSurf;
-			pSlot->glyph.rect = WgRect(pSlot->rect.x, pSlot->rect.y, width, height);
+			pSlot->glyph.rect = Rect(pSlot->rect.x, pSlot->rect.y, width, height);
 	
 			//
 	
@@ -443,7 +443,7 @@ namespace wg
 	
 	//____ _______________________________________________________
 	
-	WgVectorGlyphs::CacheSlot * WgVectorGlyphs::_generateBitmap( Glyph * pGlyph )
+	VectorGlyphs::CacheSlot * VectorGlyphs::_generateBitmap( MyGlyph * pGlyph )
 	{
 		FT_Error err;
 	
@@ -453,7 +453,7 @@ namespace wg
 			if( !_setCharSize( pGlyph->m_size ) )
 				return 0;
 	
-		// Load Glyph
+		// Load MyGlyph
 	
 		err = FT_Load_Glyph( m_ftFace, pGlyph->kerningIndex(), FT_LOAD_RENDER | m_renderFlags );
 		if( err )
@@ -473,7 +473,7 @@ namespace wg
 			// Fill in missing slot details
 	
 			pSlot->pGlyph = pGlyph;
-			pSlot->bitmap.rect = WgRect(pSlot->rect.x, pSlot->rect.y, width, height);
+			pSlot->bitmap.rect = Rect(pSlot->rect.x, pSlot->rect.y, width, height);
 			pSlot->bitmap.bearingX = m_ftFace->glyph->bitmap_left;
 			pSlot->bitmap.bearingY = -m_ftFace->glyph->bitmap_top;
 	
@@ -491,9 +491,9 @@ namespace wg
 	
 	// Currently only supports 32-bit RGBA surfaces!
 	
-	void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
+	void VectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	{
-		WgSurface_p pSurf = pSlot->bitmap.pSurface;
+		Surface_p pSurf = pSlot->bitmap.pSurface;
 	
 		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( WG_WRITE_ONLY, pSlot->bitmap.rect );
 		assert( pDest != 0 );
@@ -536,7 +536,7 @@ namespace wg
 	
 	//____ _copyA8ToRGBA8() _____________________________________________________
 	
-	void WgVectorGlyphs::_copyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
+	void VectorGlyphs::_copyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
 									    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 	
@@ -565,7 +565,7 @@ namespace wg
 	
 	//____ _copyA1ToRGBA8() _____________________________________________________
 	
-	void WgVectorGlyphs::_copyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
+	void VectorGlyphs::_copyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
 									    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 		Uint8 lookup[2] = { 0, 255 };
@@ -598,26 +598,26 @@ namespace wg
 	
 	//___ _addGlyph() ________________________________________________________
 	
-	WgVectorGlyphs::Glyph * WgVectorGlyphs::_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex )
+	VectorGlyphs::MyGlyph * VectorGlyphs::_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex )
 	{
 		if( m_cachedGlyphsIndex[size] == 0 )
 		{
-			Glyph ** p = new Glyph*[256];
-			memset( p, 0, 256*sizeof(Glyph*) );
+			MyGlyph ** p = new MyGlyph*[256];
+			memset( p, 0, 256*sizeof(MyGlyph*) );
 	
 			m_cachedGlyphsIndex[size] = p;
 		}
 	
 		if( m_cachedGlyphsIndex[size][ch>>8] == 0 )
 		{
-			Glyph * p = new Glyph[256];
+			MyGlyph * p = new MyGlyph[256];
 	
 			m_cachedGlyphsIndex[size][ch>>8] = p;
 		}
 	
 		assert( !m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() );
 	
-		m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = Glyph( ch, size, advance, kerningIndex, this );
+		m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = MyGlyph( ch, size, advance, kerningIndex, this );
 	
 		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
 	}
@@ -625,7 +625,7 @@ namespace wg
 	
 	//____ setSurfaceFactory() ____________________________________________________
 	
-	void WgVectorGlyphs::setSurfaceFactory( const WgSurfaceFactory_p& pFactory )
+	void VectorGlyphs::setSurfaceFactory( const SurfaceFactory_p& pFactory )
 	{
 		s_pSurfaceFactory = pFactory;
 	}
@@ -633,7 +633,7 @@ namespace wg
 	
 	//____ clearCache() ___________________________________________________________
 	
-	void WgVectorGlyphs::clearCache()
+	void VectorGlyphs::clearCache()
 	{
 		for( int i = 0 ; i < GLYPH_SLOT_SIZES ; i++ )
 		{
@@ -654,7 +654,7 @@ namespace wg
 	
 	//____ getCacheSlot() _________________________________________________________
 	
-	WgVectorGlyphs::CacheSlot * WgVectorGlyphs::getCacheSlot( int width, int height )
+	VectorGlyphs::CacheSlot * VectorGlyphs::getCacheSlot( int width, int height )
 	{
 		// Calculate size and index
 	
@@ -672,7 +672,7 @@ namespace wg
 		CacheSlot * pSlot = s_cacheSlots[index].last();
 		if( pSlot == 0 || pSlot->pGlyph != 0 )
 		{
-			addCacheSlots( &s_cacheSlots[index], WgSize(size,size), 16 );
+			addCacheSlots( &s_cacheSlots[index], Size(size,size), 16 );
 			pSlot = s_cacheSlots[index].last();
 		}
 	
@@ -687,21 +687,21 @@ namespace wg
 		Creates all slots that can fit into this surface and adds them to the specified chain.
 	*/
 	
-	int WgVectorGlyphs::addCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& slotSize, int minSlots )
+	int VectorGlyphs::addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots )
 	{
 		// Create and add the cache surface
 	
-		WgSize texSize = calcTextureSize( slotSize, 16 );
+		Size texSize = calcTextureSize( slotSize, 16 );
 	
-		WgSurface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
-		pSurf->fill( WgColor( 255,255,255,0 ) );
+		Surface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
+		pSurf->fill( Color( 255,255,255,0 ) );
 	
 		CacheSurf * pCache = new CacheSurf( pSurf );
 		s_cacheSurfaces.pushBack( pCache );
 	
 		// Create the slots
 	
-		WgRect	slot( 0, 0, slotSize );
+		Rect	slot( 0, 0, slotSize );
 		int		nSlots = 0;
 	
 		for( slot.y = 0 ; slot.y + slotSize.h < texSize.h ; slot.y += slotSize.h + 1 )
@@ -721,7 +721,7 @@ namespace wg
 	
 	//____ maxSlotsInSurface() ____________________________________________________
 	
-	int WgVectorGlyphs::maxSlotsInSurface( const WgSize& surf, const WgSize& slot )
+	int VectorGlyphs::maxSlotsInSurface( const Size& surf, const Size& slot )
 	{
 		int rows = (surf.w+1)/(slot.w+1);			// +1 since we need one pixel spacing between each slot.
 		int columns = (surf.h+1)/(surf.h+1);
@@ -732,9 +732,9 @@ namespace wg
 	
 	//____ calcTextureSize() ______________________________________________________
 	
-	WgSize WgVectorGlyphs::calcTextureSize( const WgSize& slotSize, int nSlots )
+	Size VectorGlyphs::calcTextureSize( const Size& slotSize, int nSlots )
 	{
-		WgSize	surfSize( 128, 128 );
+		Size	surfSize( 128, 128 );
 	
 		while( maxSlotsInSurface(surfSize, slotSize) < nSlots )
 		{
@@ -744,8 +744,8 @@ namespace wg
 				surfSize.w *= 2;
 			else
 			{
-				if( maxSlotsInSurface( WgSize( surfSize.w, surfSize.h*2 ), slotSize ) >
-					maxSlotsInSurface( WgSize( surfSize.w*2, surfSize.h ), slotSize ) )
+				if( maxSlotsInSurface( Size( surfSize.w, surfSize.h*2 ), slotSize ) >
+					maxSlotsInSurface( Size( surfSize.w*2, surfSize.h ), slotSize ) )
 					surfSize.h *= 2;
 				else
 					surfSize.w *= 2;
@@ -758,12 +758,12 @@ namespace wg
 	
 	
 	
-	WgVectorGlyphs::CacheSurf::~CacheSurf()
+	VectorGlyphs::CacheSurf::~CacheSurf()
 	{
 	}
 	
-	WgVectorGlyphs::Glyph::Glyph()
-	: WgGlyph( 0, 0, 0 )
+	VectorGlyphs::MyGlyph::MyGlyph()
+	: Glyph( 0, 0, 0 )
 	{
 		m_pSlot = 0;
 		m_size = 0;
@@ -771,15 +771,15 @@ namespace wg
 	}
 	
 	
-	WgVectorGlyphs::Glyph::Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset )
-	: WgGlyph( advance, kerningIndex, pGlyphset )
+	VectorGlyphs::MyGlyph::MyGlyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, Glyphset * pGlyphset )
+	: Glyph( advance, kerningIndex, pGlyphset )
 	{
 		m_pSlot = 0;
 		m_size = size;
 		m_character = character;
 	}
 	
-	WgVectorGlyphs::Glyph::~Glyph()
+	VectorGlyphs::MyGlyph::~MyGlyph()
 	{
 		if(  m_pSlot != 0 )
 		{
@@ -790,14 +790,14 @@ namespace wg
 		}
 	}
 	
-	const WgGlyphBitmap * WgVectorGlyphs::Glyph::getBitmap()
+	const GlyphBitmap * VectorGlyphs::MyGlyph::getBitmap()
 	{
 		if( !m_pSlot )
 		{
-			m_pSlot = ((WgVectorGlyphs*)m_pGlyphset)->_generateBitmap( this );
+			m_pSlot = ((VectorGlyphs*)m_pGlyphset)->_generateBitmap( this );
 		}
 	
-		((WgVectorGlyphs*)m_pGlyphset)->_touchSlot(m_pSlot);
+		((VectorGlyphs*)m_pGlyphset)->_touchSlot(m_pSlot);
 		return &m_pSlot->bitmap;
 	}
 	

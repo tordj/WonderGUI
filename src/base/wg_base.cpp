@@ -40,25 +40,25 @@
 namespace wg 
 {
 	
-	WgBase::Data *			WgBase::s_pData = 0;
+	Base::Data *			Base::s_pData = 0;
 	
 	
 	//____ init() __________________________________________________________________
 	
-	void WgBase::init()
+	void Base::init()
 	{
 		assert( s_pData == 0 );
-		assert( sizeof( WgWeakPtrHub ) == sizeof( WgHook_pHub ) );			// Need to be same as we are sharing object stack!
+		assert( sizeof( WeakPtrHub ) == sizeof( Hook_pHub ) );			// Need to be same as we are sharing object stack!
 		s_pData = new Data;
 	
-		s_pData->pMsgRouter = WgMsgRouter::create();
+		s_pData->pMsgRouter = MsgRouter::create();
 	
 		s_pData->pDefaultCursor = 0;
-		s_pData->pPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
-		s_pData->pMemStack = new WgMemStack( 4096 );
+		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
+		s_pData->pMemStack = new MemStack( 4096 );
 	
-		s_pData->pDefaultPresenter = WgStandardPresenter::create();
-		s_pData->pDefaultStyle = WgTextStyle::create();
+		s_pData->pDefaultPresenter = StandardPresenter::create();
+		s_pData->pDefaultStyle = TextStyle::create();
 	
 		s_pData->doubleClickTimeTreshold 		= 250;
 		s_pData->doubleClickDistanceTreshold 	= 2;
@@ -74,12 +74,12 @@ namespace wg
 		s_pData->bFreeTypeInitialized = false;
 	#endif
 	
-		WgTextTool::setDefaultBreakRules();
+		TextTool::setDefaultBreakRules();
 	}
 	
 	//____ exit() __________________________________________________________________
 	
-	int WgBase::exit()
+	int Base::exit()
 	{
 		
 		if( s_pData == 0 )
@@ -93,8 +93,8 @@ namespace wg
 	
 	#ifdef WG_USE_FREETYPE
 	
-		WgVectorGlyphs::setSurfaceFactory(0);
-		WgVectorGlyphs::clearCache();
+		VectorGlyphs::setSurfaceFactory(0);
+		VectorGlyphs::clearCache();
 	
 		if( s_pData->bFreeTypeInitialized )
 			FT_Done_FreeType( s_pData->freeTypeLibrary );
@@ -111,15 +111,15 @@ namespace wg
 	
 	//____ allocWeakPtrHub() ______________________________________________________
 	
-	WgWeakPtrHub * WgBase::allocWeakPtrHub()
+	WeakPtrHub * Base::allocWeakPtrHub()
 	{
 		assert( s_pData != 0 );
-		return (WgWeakPtrHub*) s_pData->pPtrPool->allocEntry();
+		return (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
 	}
 	
 	//____ freeWeakPtrHub() _______________________________________________________
 	
-	void WgBase::freeWeakPtrHub( WgWeakPtrHub * pHub )
+	void Base::freeWeakPtrHub( WeakPtrHub * pHub )
 	{
 		assert( s_pData != 0 );
 		s_pData->pPtrPool->freeEntry( pHub );
@@ -127,15 +127,15 @@ namespace wg
 	
 	//____ allocHookPtrHub() ______________________________________________________
 	
-	WgHook_pHub * WgBase::allocHookPtrHub()
+	Hook_pHub * Base::allocHookPtrHub()
 	{
 		assert( s_pData != 0 );
-		return (WgHook_pHub*) s_pData->pPtrPool->allocEntry();
+		return (Hook_pHub*) s_pData->pPtrPool->allocEntry();
 	}
 	
 	//____ freeHookPtrHub() _______________________________________________________
 	
-	void WgBase::freeHookPtrHub( WgHook_pHub * pHub )
+	void Base::freeHookPtrHub( Hook_pHub * pHub )
 	{
 		assert( s_pData != 0 );
 		s_pData->pPtrPool->freeEntry( pHub );
@@ -144,7 +144,7 @@ namespace wg
 	//____ initFreeType() _________________________________________________________
 	
 	#ifdef WG_USE_FREETYPE
-	bool WgBase::initFreeType()
+	bool Base::initFreeType()
 	{
 		assert( s_pData != 0 );
 		if( s_pData->bFreeTypeInitialized )
@@ -165,7 +165,7 @@ namespace wg
 	
 	//____ setDefaultTextManager() _________________________________________________
 	
-	/*void WgBase::setDefaultTextManager( const WgTextMgrPtr& pManager )
+	/*void Base::setDefaultTextManager( const TextMgrPtr& pManager )
 	{
 		m_pDefTextMgr = pManager;
 	}
@@ -173,7 +173,7 @@ namespace wg
 	
 	//____ getDefaultTextManager() _________________________________________________
 	
-	const WgTextMgrPtr& WgBase::getDefaultTextManager()
+	const TextMgrPtr& Base::getDefaultTextManager()
 	{
 		return m_pDefTextMgr;
 	}
@@ -181,7 +181,7 @@ namespace wg
 	
 	//____ setDefaultCaret() _______________________________________________________
 	
-	void WgBase::setDefaultCaret( const WgCaret2_p& pCaret )
+	void Base::setDefaultCaret( const Caret2_p& pCaret )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultCaret = pCaret;	
@@ -189,7 +189,7 @@ namespace wg
 	
 	//____ setDefaultPresenter() ___________________________________________________
 	
-	void WgBase::setDefaultPresenter( const WgTextPresenter_p& pPresenter )
+	void Base::setDefaultPresenter( const TextPresenter_p& pPresenter )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultPresenter = pPresenter;	
@@ -197,7 +197,7 @@ namespace wg
 	
 	//____ setDefaultStyle() _______________________________________________________
 	
-	void WgBase::setDefaultStyle( const WgTextStyle_p& pStyle )
+	void Base::setDefaultStyle( const TextStyle_p& pStyle )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultStyle = pStyle;	
@@ -207,7 +207,7 @@ namespace wg
 	
 	//____ setDefaultTextprop() ___________________________________________________
 	
-	void WgBase::setDefaultTextprop( const WgTextprop_p& pProp )
+	void Base::setDefaultTextprop( const Textprop_p& pProp )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultTextprop = pProp;
@@ -215,7 +215,7 @@ namespace wg
 	
 	//____ setDefaultSelectionProp() ___________________________________________________
 	
-	void WgBase::setDefaultSelectionProp( const WgTextprop_p& pProp )
+	void Base::setDefaultSelectionProp( const Textprop_p& pProp )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultSelectionProp = pProp;
@@ -223,7 +223,7 @@ namespace wg
 	
 	//____ setDefaultLinkProp() ___________________________________________________
 	
-	void WgBase::setDefaultLinkProp( const WgTextprop_p& pProp )
+	void Base::setDefaultLinkProp( const Textprop_p& pProp )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultLinkProp = pProp;
@@ -232,7 +232,7 @@ namespace wg
 	
 	//____ setDefaultCursor() ___________________________________________________
 	
-	void WgBase::setDefaultCursor( const WgCaret_p& pCursor )
+	void Base::setDefaultCursor( const Caret_p& pCursor )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultCursor = pCursor;
@@ -240,7 +240,7 @@ namespace wg
 	
 	//____ setDoubleClickTresholds() _______________________________________________
 	
-	bool WgBase::setDoubleClickTresholds( int time, int distance )
+	bool Base::setDoubleClickTresholds( int time, int distance )
 	{
 		assert( s_pData != 0 );
 		if( time <= 0 || distance <= 0 )
@@ -253,7 +253,7 @@ namespace wg
 	
 	//____ setMouseButtonRepeat() ______________________________________________________
 	
-	bool WgBase::setMouseButtonRepeat( int delay, int rate )
+	bool Base::setMouseButtonRepeat( int delay, int rate )
 	{
 		assert( s_pData != 0 );
 		if( delay <= 0 || rate <= 0 )
@@ -266,7 +266,7 @@ namespace wg
 	
 	//____ setKeyRepeat() _________________________________________________________
 	
-	bool WgBase::setKeyRepeat( int delay, int rate )
+	bool Base::setKeyRepeat( int delay, int rate )
 	{
 		assert( s_pData != 0 );
 		if( delay <= 0 || rate <= 0 )
@@ -279,7 +279,7 @@ namespace wg
 	
 	//____ mapKey() _______________________________________________________________
 	
-	void WgBase::mapKey( WgKey translated_keycode, int native_keycode )
+	void Base::mapKey( WgKey translated_keycode, int native_keycode )
 	{
 		assert( s_pData != 0 );
 		s_pData->keycodeMap[native_keycode] = translated_keycode;
@@ -288,7 +288,7 @@ namespace wg
 	
 	//____ unmapKey() _____________________________________________________________
 	
-	void WgBase::unmapKey( WgKey translated_keycode )
+	void Base::unmapKey( WgKey translated_keycode )
 	{
 		assert( s_pData != 0 );
 		std::map<int,WgKey>::iterator it = s_pData->keycodeMap.begin();
@@ -307,7 +307,7 @@ namespace wg
 	
 	//____ clearKeyMap() __________________________________________________________
 	
-	void WgBase::clearKeyMap()
+	void Base::clearKeyMap()
 	{
 		assert( s_pData != 0 );
 		s_pData->keycodeMap.clear();
@@ -315,7 +315,7 @@ namespace wg
 	
 	//____ translateKey() __________________________________________________________
 	
-	WgKey WgBase::translateKey( int native_keycode )
+	WgKey Base::translateKey( int native_keycode )
 	{
 		assert( s_pData != 0 );
 		std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
@@ -327,7 +327,7 @@ namespace wg
 	
 	//____ memStackAlloc() ________________________________________________________
 	
-	char * WgBase::memStackAlloc( int bytes )
+	char * Base::memStackAlloc( int bytes )
 	{ 
 		assert(s_pData!=0); 
 		return s_pData->pMemStack->alloc(bytes);
@@ -335,7 +335,7 @@ namespace wg
 	
 	//____ memStackRelease() ______________________________________________________
 	
-	void WgBase::memStackRelease( int bytes )
+	void Base::memStackRelease( int bytes )
 	{	assert(s_pData!=0); 
 		return s_pData->pMemStack->release(bytes); 
 	}

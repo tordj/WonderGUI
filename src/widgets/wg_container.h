@@ -30,13 +30,13 @@
 namespace wg 
 {
 	
-	class WgPatches;
-	class WgModalLayer;
-	class WgPopupLayer;
+	class Patches;
+	class ModalLayer;
+	class PopupLayer;
 	
-	class WgContainer;
-	typedef	WgStrongPtr<WgContainer,WgWidget_p>			WgContainer_p;
-	typedef	WgWeakPtr<WgContainer,WgWidget_wp>		WgContainer_wp;
+	class Container;
+	typedef	WgStrongPtr<Container,Widget_p>			Container_p;
+	typedef	WgWeakPtr<Container,Widget_wp>		Container_wp;
 	
 	/**
 	 * @brief Base class for all widgets that can hold child widgets.
@@ -44,84 +44,84 @@ namespace wg
 	 * Base class for all widgets that can hold child widgets.
 	 */
 	
-	class WgContainer : public WgWidget
+	class Container : public Widget
 	{
-		friend class WgMsgRouter;
+		friend class MsgRouter;
 	
-		friend class WgHook;
-		friend class WgFlexHook;
-		friend class WgModalHook;
+		friend class Hook;
+		friend class FlexHook;
+		friend class ModalHook;
 	
-		friend class WgMenu;
-		friend class WgMenubar;
-		friend class WgCombobox;
+		friend class Menu;
+		friend class Menubar;
+		friend class Combobox;
 	
-		friend class WgRootPanel;
-		friend class WgFlexPanel;
-		friend class WgPopupLayer;
-		friend class WgModalLayer;
+		friend class RootPanel;
+		friend class FlexPanel;
+		friend class PopupLayer;
+		friend class ModalLayer;
 		friend class WgTablePanel;
-		friend class WgScrollPanel;
-		friend class WgStackPanel;
-		friend class WgVectorPanel;
-		friend class WgListPanel;
-		friend class WgCapsule;
-		friend class WgPackList;
+		friend class ScrollPanel;
+		friend class StackPanel;
+		friend class VectorPanel;
+		friend class ListPanel;
+		friend class Capsule;
+		friend class PackList;
 	
 		public:
 	
 			virtual bool			isInstanceOf( const char * pClassName ) const;
 			virtual const char *	className( void ) const;
 			static const char		CLASSNAME[];
-			static WgContainer_p	cast( const WgObject_p& pObject );
+			static Container_p	cast( const Object_p& pObject );
 	
 	
 			bool					isContainer() const;
 	
-			inline WgWidget_p		firstWidget() const { return WgWidget_p(_firstWidget()); }
-			inline WgWidget_p		lastWidget() const { return WgWidget_p(_lastWidget()); }
+			inline Widget_p		firstWidget() const { return Widget_p(_firstWidget()); }
+			inline Widget_p		lastWidget() const { return Widget_p(_lastWidget()); }
 	
-			inline WgHook_p		firstHook() const { return _firstHook(); }
-			inline WgHook_p		lastHook() const { return _lastHook(); }
+			inline Hook_p		firstHook() const { return _firstHook(); }
+			inline Hook_p		lastHook() const { return _lastHook(); }
 	
-			virtual WgWidget_p		findWidget( const WgCoord& ofs, WgSearchMode mode ) { return WgWidget_p(_findWidget(ofs,mode)); }
+			virtual Widget_p		findWidget( const Coord& ofs, WgSearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
 	
 	
-			virtual bool			removeWidget( const WgWidget_p& pWidget ) = 0;
+			virtual bool			removeWidget( const Widget_p& pWidget ) = 0;
 			virtual bool			clear() = 0;
 				
 		protected:
-			WgContainer();
-			virtual ~WgContainer() {};
+			Container();
+			virtual ~Container() {};
 			
 			virtual bool			_isPanel() const;
 	
-			virtual WgHook*			_firstHook() const = 0;
-			virtual WgHook*			_lastHook() const = 0;
+			virtual Hook*			_firstHook() const = 0;
+			virtual Hook*			_lastHook() const = 0;
 	
-			WgWidget *				_firstWidget() const;
-			WgWidget *				_lastWidget() const;
+			Widget *				_firstWidget() const;
+			Widget *				_lastWidget() const;
 	
 	
-			virtual WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
-			virtual void			_onStateChanged( WgState oldState );
+			virtual Widget * 		_findWidget( const Coord& ofs, WgSearchMode mode );
+			virtual void			_onStateChanged( State oldState );
 	
-			virtual void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-			virtual WgHook*			_firstHookWithGeo( WgRect& geo ) const = 0;
-			virtual WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+			virtual void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+			virtual Hook*			_firstHookWithGeo( Rect& geo ) const = 0;
+			virtual Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const = 0;
 	
-			virtual WgHook*			_lastHookWithGeo( WgRect& geo ) const = 0;
-			virtual WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
+			virtual Hook*			_lastHookWithGeo( Rect& geo ) const = 0;
+			virtual Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const = 0;
 	
-			bool 					_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );		// Needed until WgPanel inherits from WgWidget
-			bool 					_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
+			bool 					_focusRequested( Hook * pBranch, Widget * pWidgetRequesting );		// Needed until Panel inherits from Widget
+			bool 					_focusReleased( Hook * pBranch, Widget * pWidgetReleasing );		// Needed until Panel inherits from Widget
 	
-			virtual WgModalLayer *	_getModalLayer() const;
-			virtual WgPopupLayer*	_getPopupLayer() const;
+			virtual ModalLayer *	_getModalLayer() const;
+			virtual PopupLayer*	_getPopupLayer() const;
 	
-			virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-			virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-			virtual void	_onCloneContent( const WgContainer * _pOrg );
+			virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+			virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
+			virtual void	_onCloneContent( const Container * _pOrg );
 	
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 	

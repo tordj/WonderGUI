@@ -26,49 +26,49 @@ namespace wg
 {
 	#define WG_HOOKPTR_DOT_H
 	
-	class WgHook;
+	class Hook;
 	
-	class WgHook_pHub
+	class Hook_pHub
 	{
 	public:
 		int				refCnt;
-		WgHook *		pObj;
+		Hook *		pObj;
 	};
 	
-	class WgHook_p
+	class Hook_p
 	{
 	public:
-		WgHook_p() : m_pHub(0) {}
-		WgHook_p( WgHook * pObj );
-		WgHook_p(const WgHook_p& r)
+		Hook_p() : m_pHub(0) {}
+		Hook_p( Hook * pObj );
+		Hook_p(const Hook_p& r)
 		{
 			m_pHub = r.m_pHub;
 			if( m_pHub )
 				m_pHub->refCnt++;
 		}
 	
-		~WgHook_p();
+		~Hook_p();
 	
-	    inline WgHook_p& operator=( WgHook_p const & r)
+	    inline Hook_p& operator=( Hook_p const & r)
 		{
 			copy( r );
 			return *this;
 		}
 	
-		inline WgHook& operator*() const { return * rawPtr(); }
-		inline WgHook * operator->() const { return rawPtr(); }
+		inline Hook& operator*() const { return * rawPtr(); }
+		inline Hook * operator->() const { return rawPtr(); }
 	
 		//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
-		inline bool operator==(const WgHook_p& other) const { return m_pHub == other.m_pHub; }
-		inline bool operator!=(const WgHook_p& other) const { return m_pHub != other.m_pHub; }
-		inline bool operator<(const WgHook_p& other) const { return m_pHub < other.m_pHub ? true : false; }
-		inline bool operator>(const WgHook_p& other) const { return m_pHub > other.m_pHub ? true : false; }
-		inline bool operator<=(const WgHook_p& other) const { return m_pHub <= other.m_pHub ? true : false; }
-		inline bool operator>=(const WgHook_p& other) const { return m_pHub >= other.m_pHub ? true : false; }
+		inline bool operator==(const Hook_p& other) const { return m_pHub == other.m_pHub; }
+		inline bool operator!=(const Hook_p& other) const { return m_pHub != other.m_pHub; }
+		inline bool operator<(const Hook_p& other) const { return m_pHub < other.m_pHub ? true : false; }
+		inline bool operator>(const Hook_p& other) const { return m_pHub > other.m_pHub ? true : false; }
+		inline bool operator<=(const Hook_p& other) const { return m_pHub <= other.m_pHub ? true : false; }
+		inline bool operator>=(const Hook_p& other) const { return m_pHub >= other.m_pHub ? true : false; }
 	
 		inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 	
-		inline WgHook * rawPtr() const
+		inline Hook * rawPtr() const
 		{
 			if( m_pHub )
 				return m_pHub->pObj;
@@ -76,30 +76,30 @@ namespace wg
 				return 0;
 		}
 	
-		void copy( WgHook_p const & r );
+		void copy( Hook_p const & r );
 	
 	
 	
 	protected:
-		WgHook_pHub *		m_pHub;
+		Hook_pHub *		m_pHub;
 	
 	};
 	
-	//____ WgHookTypePtr _________________________________________________________
+	//____ HookTypePtr _________________________________________________________
 	
-	template<class T,class P> class WgHookTypePtr : public P
+	template<class T,class P> class HookTypePtr : public P
 	{
 	public:
-		WgHookTypePtr(T* p=0) : P( p ) {};
-		WgHookTypePtr(const WgHookTypePtr<T,P>& r) : P( r.rawPtr() ) {};
+		HookTypePtr(T* p=0) : P( p ) {};
+		HookTypePtr(const HookTypePtr<T,P>& r) : P( r.rawPtr() ) {};
 	//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.rawPtr() ) {};
-		~WgHookTypePtr() {};
+		~HookTypePtr() {};
 	
 		inline T & operator*() const { return * rawPtr(); }
 		inline T * operator->() const{ return rawPtr(); }
 	
-		inline bool operator==(const WgHookTypePtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
-		inline bool operator!=(const WgHookTypePtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
+		inline bool operator==(const HookTypePtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
+		inline bool operator!=(const HookTypePtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
 	
 	//	inline operator bool() const { return (this->m_pObj != 0); }
 	

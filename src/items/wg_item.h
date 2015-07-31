@@ -26,28 +26,28 @@ namespace wg
 {
 	#define	WG_ITEM_DOT_H
 	
-	class WgObject;
+	class Object;
 	
-	//____ WgItemHolder ___________________________________________________________
+	//____ ItemHolder ___________________________________________________________
 	
-	class WgItemHolder
+	class ItemHolder
 	{
 	public:
-		virtual WgObject*	_object() = 0;
+		virtual Object*	_object() = 0;
 	};
 	
-	//____ WgItem _________________________________________________________________
+	//____ Item _________________________________________________________________
 	
-	class WgItem
+	class Item
 	{
 	public:
-		WgItem( WgItemHolder * pHolder ) : m_pHolder(pHolder) {}
+		Item( ItemHolder * pHolder ) : m_pHolder(pHolder) {}
 	
-		inline WgObject* _object() { return m_pHolder->_object(); }
+		inline Object* _object() { return m_pHolder->_object(); }
 	
 	protected:
 	
-		WgItemHolder * m_pHolder;
+		ItemHolder * m_pHolder;
 	};
 	
 	

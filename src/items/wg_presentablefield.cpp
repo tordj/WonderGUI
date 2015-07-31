@@ -27,21 +27,21 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgPresentableField::WgPresentableField( WgPresentableHolder * pHolder ) : WgField( pHolder )
+	PresentableField::PresentableField( WgPresentableHolder * pHolder ) : Field( pHolder )
 	{
 		_presenter()->addField(this);
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgPresentableField::~WgPresentableField()
+	PresentableField::~PresentableField()
 	{
 		_presenter()->removeField(this);
 	}
 	
 	//____ setStyle() ______________________________________________________________
 	
-	void WgPresentableField::setStyle( const WgTextStyle_p& pStyle )
+	void PresentableField::setStyle( const TextStyle_p& pStyle )
 	{
 		m_pStyle = pStyle;
 		_presenter()->onStyleChange(this);
@@ -49,7 +49,7 @@ namespace wg
 	
 	//____ clearStyle() ____________________________________________________________
 	
-	void WgPresentableField::clearStyle()
+	void PresentableField::clearStyle()
 	{
 		m_pStyle = 0;
 		_presenter()->onStyleChange(this);
@@ -57,7 +57,7 @@ namespace wg
 	
 	//____ setPresenter() __________________________________________________________
 	
-	void WgPresentableField::setPresenter( const WgTextPresenter_p& pPresenter )
+	void PresentableField::setPresenter( const TextPresenter_p& pPresenter )
 	{
 		if( pPresenter == m_pPresenter )
 			return;
@@ -69,7 +69,7 @@ namespace wg
 	
 	//____ clearPresenter() ________________________________________________________
 	
-	void WgPresentableField::clearPresenter()
+	void PresentableField::clearPresenter()
 	{
 		if( !m_pPresenter )
 			return;
@@ -81,61 +81,61 @@ namespace wg
 	
 	//____ setState() ______________________________________________________________
 	
-	void WgPresentableField::setState( WgState state )
+	void PresentableField::setState( State state )
 	{
 		if( state == m_state )
 			return;
 	
-		WgState old = m_state;
+		State old = m_state;
 		m_state = state;
 		_presenter()->onStateChange( this, state, old );
 	}
 	
 	//____ preferredSize() _________________________________________________________
 	
-	WgSize WgPresentableField::preferredSize() const
+	Size PresentableField::preferredSize() const
 	{
 		return _presenter()->preferredSize(this);
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int WgPresentableField::matchingWidth( int height ) const
+	int PresentableField::matchingWidth( int height ) const
 	{
 		return _presenter()->matchingWidth(this, height);
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int WgPresentableField::matchingHeight( int width ) const
+	int PresentableField::matchingHeight( int width ) const
 	{
 		return _presenter()->matchingHeight(this, width);
 	}
 	
 	//____ coordToChar() ___________________________________________________________
 	
-	int WgPresentableField::coordToChar( WgCoord pos ) const
+	int PresentableField::coordToChar( Coord pos ) const
 	{
 		return _presenter()->coordToChar(this,pos);
 	}
 	
 	//____ charToRect() ____________________________________________________________
 	
-	WgRect WgPresentableField::charToRect( int charOfs ) const
+	Rect PresentableField::charToRect( int charOfs ) const
 	{
 		return _presenter()->charToRect(this, charOfs);
 	}
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void WgPresentableField::onRefresh()
+	void PresentableField::onRefresh()
 	{
 		_presenter()->onRefresh(this);
 	}
 	
 	//____ onNewSize() _____________________________________________________________
 	
-	void WgPresentableField::onNewSize( const WgSize& size )
+	void PresentableField::onNewSize( const Size& size )
 	{
 		if( size == m_size )
 			return;
@@ -146,42 +146,42 @@ namespace wg
 	
 	//_____ onRender() _____________________________________________________________
 	
-	void  WgPresentableField::onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
+	void  PresentableField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
 		_presenter()->renderField(this, pDevice, _canvas, _clip);
 	}
 	
 	//____ rectForRange() __________________________________________________________
 	
-	WgRect  WgPresentableField::rectForRange( int ofs, int length ) const
+	Rect  PresentableField::rectForRange( int ofs, int length ) const
 	{
 		_presenter()->rectForRange(this, ofs, length);
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	WgString WgPresentableField::tooltip() const
+	String PresentableField::tooltip() const
 	{
 		return _presenter()->tooltip(this);
 	}
 	
 	//____ getString() ___________________________________________________________________
 	
-	WgString WgPresentableField::getString() const
+	String PresentableField::getString() const
 	{
-		return WgString(&m_charBuffer);
+		return String(&m_charBuffer);
 	}
 	
 	//____ selectionBegin() ________________________________________________________
 	
-	int WgPresentableField::selectionBegin() const
+	int PresentableField::selectionBegin() const
 	{
 		return 0;
 	}
 	
 	//____ selectionEnd() __________________________________________________________
 	
-	int WgPresentableField::selectionEnd() const
+	int PresentableField::selectionEnd() const
 	{
 		return 0;
 	}

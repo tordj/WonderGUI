@@ -33,12 +33,12 @@
 namespace wg 
 {
 	
-	const char WgAnimPlayer::CLASSNAME[] = {"AnimPlayer"};
+	const char AnimPlayer::CLASSNAME[] = {"AnimPlayer"};
 	
 	
 	//____ Constructor _________________________________________________________________
 	
-	WgAnimPlayer::WgAnimPlayer()
+	AnimPlayer::AnimPlayer()
 	{
 		m_pAnim			= 0;
 		m_pAnimFrame	= 0;
@@ -49,37 +49,37 @@ namespace wg
 		m_tickRouteId	= 0;
 	}
 	
-	//____ ~WgAnimPlayer() _______________________________________________________
+	//____ ~AnimPlayer() _______________________________________________________
 	
-	WgAnimPlayer::~WgAnimPlayer()
+	AnimPlayer::~AnimPlayer()
 	{
 		if( m_tickRouteId )
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );		
+			Base::msgRouter()->deleteRoute( m_tickRouteId );		
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgAnimPlayer::isInstanceOf( const char * pClassName ) const
+	bool AnimPlayer::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgAnimPlayer::className( void ) const
+	const char * AnimPlayer::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgAnimPlayer_p WgAnimPlayer::cast( const WgObject_p& pObject )
+	AnimPlayer_p AnimPlayer::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgAnimPlayer_p( static_cast<WgAnimPlayer*>(pObject.rawPtr()) );
+			return AnimPlayer_p( static_cast<AnimPlayer*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -87,13 +87,13 @@ namespace wg
 	
 	//____ setAnimation() ____________________________________________________________
 	
-	bool WgAnimPlayer::setAnimation( const WgGfxAnim_p& pAnim )
+	bool AnimPlayer::setAnimation( const GfxAnim_p& pAnim )
 	{
 		m_pAnim			= pAnim;
 		m_playPos		= 0.0;
 	
-		WgSize	currSize = size();
-		WgSize	wantedSize;
+		Size	currSize = size();
+		Size	wantedSize;
 	
 		_requestResize();
 		_requestRender();
@@ -102,14 +102,14 @@ namespace wg
 	
 	//____ playPos() ______________________________________________________________
 	
-	int WgAnimPlayer::playPos()
+	int AnimPlayer::playPos()
 	{
 		return (int) m_playPos;
 	}
 	
 	//____ setPlayPosFractional() _________________________________________________
 	
-	bool WgAnimPlayer::setPlayPosFractional( float _fraction )
+	bool AnimPlayer::setPlayPosFractional( float _fraction )
 	{
 		if( !m_pAnim )
 			return false;
@@ -124,7 +124,7 @@ namespace wg
 	
 	//____ setPlayPos() ___________________________________________________________
 	
-	bool WgAnimPlayer::setPlayPos( int _ticks )
+	bool AnimPlayer::setPlayPos( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -138,7 +138,7 @@ namespace wg
 	
 	//____ rewind() _______________________________________________________________
 	
-	bool WgAnimPlayer::rewind( int _ticks )
+	bool AnimPlayer::rewind( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ fastForward() __________________________________________________________
 	
-	bool WgAnimPlayer::fastForward( int _ticks )
+	bool AnimPlayer::fastForward( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -167,7 +167,7 @@ namespace wg
 	
 	//____ duration() _____________________________________________________________
 	
-	int WgAnimPlayer::duration()
+	int AnimPlayer::duration()
 	{
 		if( !m_pAnim )
 			return 0;
@@ -177,7 +177,7 @@ namespace wg
 	
 	//____ durationScaled() _______________________________________________________
 	
-	int WgAnimPlayer::durationScaled()
+	int AnimPlayer::durationScaled()
 	{
 		if( !m_pAnim )
 			return 0;
@@ -187,14 +187,14 @@ namespace wg
 	
 	//____ speed() ________________________________________________________________
 	
-	float WgAnimPlayer::speed()
+	float AnimPlayer::speed()
 	{
 		return m_speed;
 	}
 	
 	//____ setSpeed() _____________________________________________________________
 	
-	bool WgAnimPlayer::setSpeed( float _speed )
+	bool AnimPlayer::setSpeed( float _speed )
 	{
 		if( _speed <= 0 || _speed > 1000 )
 			return false;
@@ -205,31 +205,31 @@ namespace wg
 	
 	//____ play() _________________________________________________________________
 	
-	bool WgAnimPlayer::play()
+	bool AnimPlayer::play()
 	{
 		if( !m_pAnim )
 			return false;
 	
 		m_bPlaying = true;
-		m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+		m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 		return true;
 	}
 	
 	//____ stop() _________________________________________________________________
 	
-	bool WgAnimPlayer::stop()
+	bool AnimPlayer::stop()
 	{
 		m_bPlaying = false;
-		WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+		Base::msgRouter()->deleteRoute( m_tickRouteId );
 		m_tickRouteId = 0;
 		return true;
 	}
 	
 	//____ preferredSize() ___________________________________________________________
 	
-	WgSize WgAnimPlayer::preferredSize() const
+	Size AnimPlayer::preferredSize() const
 	{
-		WgSize	sz;
+		Size	sz;
 	
 		if( m_pAnim )
 			sz = m_pAnim->size();
@@ -242,28 +242,28 @@ namespace wg
 	
 	//_____ _playPosUpdated() ______________________________________________________
 	
-	void WgAnimPlayer::_playPosUpdated()
+	void AnimPlayer::_playPosUpdated()
 	{
 		if( !m_pAnim )
 			return;
 	
-		WgGfxFrame * pAnimFrame = m_pAnim->getFrame( (int64_t) m_playPos );
+		GfxFrame * pAnimFrame = m_pAnim->getFrame( (int64_t) m_playPos );
 	
 		if( pAnimFrame != m_pAnimFrame )
 		{
 			m_pAnimFrame = pAnimFrame;
 			_requestRender();
 	
-			WgBase::msgRouter()->post( new WgValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
+			Base::msgRouter()->post( new ValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
 		}
 	}
 	
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgAnimPlayer::_onMsg( const WgMsg_p& pMsg )
+	void AnimPlayer::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg( pMsg );
+		Widget::_onMsg( pMsg );
 	
 		switch( pMsg->type() )
 		{
@@ -272,7 +272,7 @@ namespace wg
 				if( !m_pAnim || !m_state.isEnabled() )
 					return;
 	
-				m_playPos += WgTickMsg::cast(pMsg)->millisec() * m_speed;
+				m_playPos += TickMsg::cast(pMsg)->millisec() * m_speed;
 				_playPosUpdated();
 	
 			}
@@ -283,9 +283,9 @@ namespace wg
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void AnimPlayer::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender( pDevice, _canvas, _window, _clip );
+		Widget::_onRender( pDevice, _canvas, _window, _clip );
 	
 		if( m_pAnim && m_state.isEnabled() )
 			pDevice->clipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
@@ -293,16 +293,16 @@ namespace wg
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void WgAnimPlayer::_onRefresh( void )
+	void AnimPlayer::_onRefresh( void )
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
+	void AnimPlayer::_onCloneContent( const Widget * _pOrg )
 	{
-		WgAnimPlayer * pOrg = (WgAnimPlayer *) _pOrg;
+		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
 	
 		m_pAnim				= pOrg->m_pAnim;
 		m_pAnimFrame		= pOrg->m_pAnimFrame;
@@ -315,27 +315,27 @@ namespace wg
 	
 	//____ _onAlphaTest() ______________________________________________________
 	
-	bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool AnimPlayer::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
-		if( m_pAnim && m_state.isEnabled() && WgUtil::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, WgRect(0,0,sz), m_markOpacity ) )
+		if( m_pAnim && m_state.isEnabled() && WgUtil::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,sz), m_markOpacity ) )
 			return true;
 	
-		return WgWidget::_onAlphaTest(ofs,sz);
+		return Widget::_onAlphaTest(ofs,sz);
 	}
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgAnimPlayer::_onStateChanged( WgState oldState )
+	void AnimPlayer::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if( oldState.isEnabled() != m_state.isEnabled() && m_bPlaying )
 		{
 			if( m_state.isEnabled() )
-				m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+				m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 			else
 			{	
-				WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+				Base::msgRouter()->deleteRoute( m_tickRouteId );
 				m_tickRouteId = 0;
 			}
 			_requestRender();

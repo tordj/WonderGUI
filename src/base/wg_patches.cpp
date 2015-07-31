@@ -27,7 +27,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgPatches::WgPatches()
+	Patches::Patches()
 	{
 		m_pFirst	= 0;
 		m_size		= 0;
@@ -35,15 +35,15 @@ namespace wg
 		m_bOwnsArray = true;
 	}
 	
-	WgPatches::WgPatches( int startCapacity )
+	Patches::Patches( int startCapacity )
 	{
-		m_pFirst	= new WgRect[startCapacity];
+		m_pFirst	= new Rect[startCapacity];
 		m_size		= 0;
 		m_capacity	= startCapacity;
 		m_bOwnsArray = true;
 	}
 	
-	WgPatches::WgPatches( WgRect * pArray, int capacity )
+	Patches::Patches( Rect * pArray, int capacity )
 	{
 		m_pFirst 	= pArray;
 		m_size		= 0;
@@ -53,7 +53,7 @@ namespace wg
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgPatches::~WgPatches()
+	Patches::~Patches()
 	{
 		if( m_bOwnsArray )
 			delete [] m_pFirst;
@@ -61,16 +61,16 @@ namespace wg
 	
 	//____ setCapacity() ___________________________________________________________
 	
-	bool WgPatches::setCapacity( int capacity )
+	bool Patches::setCapacity( int capacity )
 	{
 		if( capacity < m_size )
 			return false;
 		
-		WgRect * pNew = 0;
+		Rect * pNew = 0;
 		if( capacity > 0 )
 		{
-			pNew = new WgRect[capacity];
-			memcpy( pNew, m_pFirst, sizeof(WgRect)*m_size );
+			pNew = new Rect[capacity];
+			memcpy( pNew, m_pFirst, sizeof(Rect)*m_size );
 		}
 		
 		if( m_bOwnsArray )
@@ -85,13 +85,13 @@ namespace wg
 	
 	//____ _add() __________________________________________________________________
 	
-	void WgPatches::_add( const WgRect& rect, int startOffset )
+	void Patches::_add( const Rect& rect, int startOffset )
 	{
-		WgRect newR = rect;
+		Rect newR = rect;
 		
 		for( int i = startOffset ; i < m_size ; i++ )
 		{
-			WgRect * pR = m_pFirst + i;
+			Rect * pR = m_pFirst + i;
 	
 			// Bail out early if no intersection at all.
 	
@@ -152,7 +152,7 @@ namespace wg
 			
 			// Clip newR against pR.
 	
-			WgRect	xR;
+			Rect	xR;
 			bool	bExtraRect = false;
 	
 			// Cut off upper part
@@ -236,7 +236,7 @@ namespace wg
 	
 	//____ add() ___________________________________________________________________
 	
-	void WgPatches::add( const WgPatches * pSource, int ofs, int len )
+	void Patches::add( const Patches * pSource, int ofs, int len )
 	{
 		if( ofs > pSource->m_size )
 			return;
@@ -250,7 +250,7 @@ namespace wg
 	
 	//____ sub() ___________________________________________________________________
 	
-	void WgPatches::sub( const WgPatches * pSource, int ofs, int len )
+	void Patches::sub( const Patches * pSource, int ofs, int len )
 	{
 		if( ofs > pSource->m_size )
 			return;
@@ -262,14 +262,14 @@ namespace wg
 			sub( pSource->m_pFirst[ofs++] );	
 	}
 	
-	void WgPatches::sub( const WgRect& subR )
+	void Patches::sub( const Rect& subR )
 	{
 		if( subR.w == 0 || subR.h == 0 )
 			return;
 	
 		for( int i = 0 ; i < m_size ; i++ )
 		{
-			WgRect rect = m_pFirst[i];
+			Rect rect = m_pFirst[i];
 					
 			if( !(rect.x + rect.w > subR.x && rect.y + rect.h > subR.y && 
 				rect.x < subR.x + subR.w && rect.y < subR.y + subR.h) )
@@ -285,12 +285,12 @@ namespace wg
 	
 				if( rect.y < subR.y )													// Top part
 				{
-					push( WgRect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
+					push( Rect( rect.x, rect.y, rect.w, subR.y - rect.y) );				// Not optimal, will cause unnecessary processing later.
 				}
 	
 				if( rect.x < subR.x )													// Left part
 				{
-					WgRect newR;
+					Rect newR;
 	
 					newR.x = rect.x;
 					newR.w = subR.x - rect.x;
@@ -310,7 +310,7 @@ namespace wg
 	
 				if( rect.x + rect.w > subR.x + subR.w )					// Right part
 				{
-					WgRect newR;
+					Rect newR;
 	
 					newR.x = subR.x + subR.w;
 					newR.w = rect.x + rect.w - ( subR.x + subR.w );
@@ -330,7 +330,7 @@ namespace wg
 	
 				if( rect.y + rect.h > subR.y + subR.h )					// Bottom part
 				{
-					push( WgRect( rect.x, 
+					push( Rect( rect.x, 
 								  subR.y + subR.h, 
 								  rect.w, 
 								  rect.y + rect.h - ( subR.y + subR.h )) );				// Not optimal, will cause unnecessary processing later.
@@ -345,7 +345,7 @@ namespace wg
 	
 	//____ push() __________________________________________________________________
 	
-	int WgPatches::push( const WgPatches * pSource, int ofs, int len )
+	int Patches::push( const Patches * pSource, int ofs, int len )
 	{
 		if( ofs > pSource->m_size )
 			return 0;
@@ -356,14 +356,14 @@ namespace wg
 		if( m_capacity - m_size < len )
 			_expandMem(len);
 	
-		memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(WgRect)*len );
+		memcpy( m_pFirst + m_size, pSource->m_pFirst + ofs, sizeof(Rect)*len );
 		m_size += len;
 		return len;
 	}
 	
 	//____ remove() ________________________________________________________________
 	
-	void  WgPatches::remove( int ofs )
+	void  Patches::remove( int ofs )
 	{
 		if( ofs >= m_size )
 			return;
@@ -371,7 +371,7 @@ namespace wg
 		m_pFirst[ofs] = m_pFirst[--m_size];
 	}
 	
-	int WgPatches::remove( int ofs, int len )
+	int Patches::remove( int ofs, int len )
 	{
 		if( ofs > m_size )
 			return 0;
@@ -394,11 +394,11 @@ namespace wg
 	
 	//____ clip() __________________________________________________________________
 	
-	void WgPatches::clip( const WgRect& clip )
+	void Patches::clip( const Rect& clip )
 	{
-		WgRect * pRect = m_pFirst;
+		Rect * pRect = m_pFirst;
 	
-		for( WgRect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
+		for( Rect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 		{
 	
 			if( pRect->x < clip.x || pRect->y < clip.y ||
@@ -413,10 +413,10 @@ namespace wg
 	
 	//____ getUnion() _________________________________________________________________
 	
-	WgRect WgPatches::getUnion() const
+	Rect Patches::getUnion() const
 	{
 		if( m_size == 0 )
-			return WgRect();
+			return Rect();
 	
 		int x1 = m_pFirst->x;
 		int x2 = m_pFirst->x + m_pFirst->w;
@@ -435,12 +435,12 @@ namespace wg
 				y2 = m_pFirst[i].y + m_pFirst[i].h;
 		}
 		
-		return WgRect(x1,y1,x2-x1,y2-y1);
+		return Rect(x1,y1,x2-x1,y2-y1);
 	}
 	
 	//____ repair() ________________________________________________________________
 	
-	int WgPatches::repair()
+	int Patches::repair()
 	{
 		//TODO: Implement
 	
@@ -449,7 +449,7 @@ namespace wg
 	
 	//____ optimize() ______________________________________________________________
 	
-	int WgPatches::optimize()
+	int Patches::optimize()
 	{
 		//TODO: Implement
 	
@@ -458,7 +458,7 @@ namespace wg
 	
 	//____ _expand() _______________________________________________________________
 	
-	void WgPatches::_expandMem( int spaceNeeded )
+	void Patches::_expandMem( int spaceNeeded )
 	{
 		int capacity = m_capacity==0?c_defaultCapacity:m_capacity;
 		

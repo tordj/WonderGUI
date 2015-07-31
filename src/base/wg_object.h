@@ -25,14 +25,14 @@ namespace wg
 {
 	#define WG_OBJECT_DOT_H
 	
-	class WgObject;
-	class WgObject_p;
+	class Object;
+	class Object_p;
 	
-	class WgWeakPtrHub
+	class WeakPtrHub
 	{
 	public:
 		int					refCnt;
-		WgObject *			pObj;
+		Object *			pObj;
 	};
 	
 	
@@ -41,39 +41,39 @@ namespace wg
 	 *
 	 * Base class for all reference counted objects in WonderGUI.
 	 *
-	 * WgObject provides the datastructures needed for smart pointers, weak pointers and
+	 * Object provides the datastructures needed for smart pointers, weak pointers and
 	 * destruction notifiers as well as methods for identifying object types and 
 	 * dynamic cast of smart pointers.
 	 * 
-	 * Objects that are based on WgObject are implicitly destroyed when their last
+	 * Objects that are based on Object are implicitly destroyed when their last
 	 * reference disappears and should never be explicitly destroyed.
 	 *
 	 */
 	
-	class WgObject
+	class Object
 	{
-		friend class WgObject_p;
-		friend class WgObject_wp;
+		friend class Object_p;
+		friend class Object_wp;
 		template<class T, class P> friend class WgStrongPtr;
 		template<class T, class P> friend class WgWeakPtr;
 	
-		friend class WgInterface_p;
-		friend class WgInterface_wp;
+		friend class Interface_p;
+		friend class Interface_wp;
 	
 	public:
 		virtual bool		isInstanceOf( const char * pClassName ) const;
 		virtual const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgObject_p	cast( const WgObject_p& pObject );				// Provided just for completeness sake.
+		static Object_p	cast( const Object_p& pObject );				// Provided just for completeness sake.
 	
 	protected:
-		WgObject() : m_pWeakPtrHub(0), m_refCount(0) {}
-		virtual ~WgObject() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
+		Object() : m_pWeakPtrHub(0), m_refCount(0) {}
+		virtual ~Object() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
 	
 		inline void _incRefCount() { m_refCount++; }
 		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
 	
-		WgWeakPtrHub *	m_pWeakPtrHub;
+		WeakPtrHub *	m_pWeakPtrHub;
 	
 	private:
 		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.

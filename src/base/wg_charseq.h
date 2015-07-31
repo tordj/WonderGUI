@@ -36,65 +36,65 @@
 namespace wg 
 {
 	
-	class WgChar;
-	class WgString;
-	class WgCharBuffer;
+	class Char;
+	class String;
+	class CharBuffer;
 	
 	/*
 	
 		TODO:
 	
-		- copyTo() använder sig av WgTextTool::readString() som inte rensar attributes...
+		- copyTo() använder sig av TextTool::readString() som inte rensar attributes...
 	
 		DÄREFTER REKURSIVT ARBETA IGENOM:
 	
-		- WgString
-		- WgChar (ta bort softbreak-flaggan).
-		- WgText (basera på WgCharBuffer).
-		- WgText (ändra metodparametrar, utnyttja WgCharSeq och WgString).
-		- WgText (inkludera line-variabler).
-		- WgText (stöd för varierande radhöjd).
+		- String
+		- Char (ta bort softbreak-flaggan).
+		- Text (basera på CharBuffer).
+		- Text (ändra metodparametrar, utnyttja CharSeq och String).
+		- Text (inkludera line-variabler).
+		- Text (stöd för varierande radhöjd).
 	
 	*/
 	
 	
 	
 	
-	//____ WgCharSeq _______________________________________________________________
+	//____ CharSeq _______________________________________________________________
 	
-	class WgCharSeq
+	class CharSeq
 	{
 	public:
-		WgCharSeq( const char * pChar );
-		WgCharSeq( const char * pChar, int len );
-		WgCharSeq( const Uint16 * pChar );
-		WgCharSeq( const Uint16 * pChar, int len );
-		WgCharSeq( const WgChar * pChar );
-		WgCharSeq( const WgChar * pChar, int len );
-		WgCharSeq( const WgCharBuffer * pBuffer );
-		WgCharSeq( const WgCharBuffer * pBuffer, int ofs, int len );
-		WgCharSeq( const std::string& str );
-		WgCharSeq( const std::string& str, int ofs, int len );
-		WgCharSeq( const std::wstring& str );
-		WgCharSeq( const std::wstring& str, int ofs, int len );
-		WgCharSeq( const WgString& str );
-		WgCharSeq( const WgString& str, int ofs, int len );
-		WgCharSeq( const WgCharSeq& seq, int ofs = 0, int len = INT_MAX );
+		CharSeq( const char * pChar );
+		CharSeq( const char * pChar, int len );
+		CharSeq( const Uint16 * pChar );
+		CharSeq( const Uint16 * pChar, int len );
+		CharSeq( const Char * pChar );
+		CharSeq( const Char * pChar, int len );
+		CharSeq( const CharBuffer * pBuffer );
+		CharSeq( const CharBuffer * pBuffer, int ofs, int len );
+		CharSeq( const std::string& str );
+		CharSeq( const std::string& str, int ofs, int len );
+		CharSeq( const std::wstring& str );
+		CharSeq( const std::wstring& str, int ofs, int len );
+		CharSeq( const String& str );
+		CharSeq( const String& str, int ofs, int len );
+		CharSeq( const CharSeq& seq, int ofs = 0, int len = INT_MAX );
 	
-		class WgCharBasket
+		class CharBasket
 		{
 		public:
-			friend class WgCharSeq;
+			friend class CharSeq;
 	
-			WgCharBasket() {};
-			WgCharBasket(const WgCharBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
-			~WgCharBasket();
+			CharBasket() {};
+			CharBasket(const CharBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
+			~CharBasket();
 	
-			const WgChar *	ptr;
+			const Char *	ptr;
 			int				length;
 	
 		private:
-			WgCharBasket& operator=(const WgCharBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; return *this; }
+			CharBasket& operator=(const CharBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; return *this; }
 	
 			mutable bool	bIsOwner;
 		};
@@ -102,7 +102,7 @@ namespace wg
 		class UTF8Basket
 		{
 		public:
-			friend class WgCharSeq;
+			friend class CharSeq;
 	
 			UTF8Basket() {};
 			UTF8Basket(const UTF8Basket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
@@ -120,7 +120,7 @@ namespace wg
 		class UnicodeBasket
 		{
 		public:
-			friend class WgCharSeq;
+			friend class CharSeq;
 	
 			UnicodeBasket() {};
 			UnicodeBasket(const UnicodeBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
@@ -137,13 +137,13 @@ namespace wg
 	
 		inline int				length() const { return m_nbChars; }
 		int						lengthUtf8() const;
-		const WgCharBasket		getWgChars() const;
+		const CharBasket		getChars() const;
 		const UnicodeBasket		getUnicode() const;
 		const UTF8Basket		getUtf8() const;
 		std::string				getStdString() const;
 		std::wstring			getStdWstring() const;
 		int						getNbLines() const;
-		void					copyTo( WgChar * pDest ) const;
+		void					copyTo( Char * pDest ) const;
 	//	void					copyTo( char * pDest ) const;			//TODO: implement.
 	//	void					copyTo( Uint16 * pDest ) const;			//TODO: implement.
 	
@@ -151,7 +151,7 @@ namespace wg
 		void					copyFormattedTo( Uint16 * pDest ) const;
 	
 	protected:
-		WgCharSeq() {};
+		CharSeq() {};
 	
 		enum SeqType
 		{
@@ -171,30 +171,30 @@ namespace wg
 	};
 	
 	
-	class WgCharSeqLiteral : public WgCharSeq
+	class CharSeqLiteral : public CharSeq
 	{
 	public:
-		WgCharSeqLiteral( const char * pChar );
-		WgCharSeqLiteral( const char * pChar, int len );
-		WgCharSeqLiteral( const Uint16 * pChar );
-		WgCharSeqLiteral( const Uint16 * pChar, int len );
-		WgCharSeqLiteral( const std::string& str );
-		WgCharSeqLiteral( const std::string& str, int ofs, int len );
-		WgCharSeqLiteral( const std::wstring& str );
-		WgCharSeqLiteral( const std::wstring& str, int ofs, int len );
+		CharSeqLiteral( const char * pChar );
+		CharSeqLiteral( const char * pChar, int len );
+		CharSeqLiteral( const Uint16 * pChar );
+		CharSeqLiteral( const Uint16 * pChar, int len );
+		CharSeqLiteral( const std::string& str );
+		CharSeqLiteral( const std::string& str, int ofs, int len );
+		CharSeqLiteral( const std::wstring& str );
+		CharSeqLiteral( const std::wstring& str, int ofs, int len );
 	};
 	
 	
 	
 	
-	class WgCharSeq8 : public WgCharSeq
+	class CharSeq8 : public CharSeq
 	{
-		friend class WgCharSeq;
+		friend class CharSeq;
 	public:
-		WgCharSeq8( const char * pChar, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
-		WgCharSeq8( const char * pChar, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
-		WgCharSeq8( const std::string& str, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
-		WgCharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+		CharSeq8( const char * pChar, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+		CharSeq8( const char * pChar, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+		CharSeq8( const std::string& str, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
+		CharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage = WG_DEFAULT_CODEPAGE );
 	
 	protected:
 		WgCodePage	m_codepage;

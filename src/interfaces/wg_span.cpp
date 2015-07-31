@@ -26,39 +26,39 @@
 namespace wg 
 {
 	
-	const char WgSpan::CLASSNAME[] = {"Span"};
+	const char Span::CLASSNAME[] = {"Span"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSpan::isInstanceOf( const char * pClassName ) const
+	bool Span::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSpan::className( void ) const
+	const char * Span::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSpan_p WgSpan::cast( const WgInterface_p& pInterface )
+	Span_p Span::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgSpan_p( pInterface.getRealObjectPtr(), static_cast<WgSpan*>( pInterface.rawPtr()) );
+			return Span_p( pInterface.getRealObjectPtr(), static_cast<Span*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _object() _______________________________________________________________
 	
-	WgObject * WgSpan::_object() const
+	Object * Span::_object() const
 	{
 		return m_pItem->_object();
 	}

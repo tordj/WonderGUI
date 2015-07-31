@@ -39,38 +39,38 @@
 namespace wg 
 {
 	
-	class WgString;
-	class WgCharSeq;
-	class WgCharBuffer;
+	class String;
+	class CharSeq;
+	class CharBuffer;
 	
-	//____ WgTextHolder ___________________________________________________________
+	//____ TextHolder ___________________________________________________________
 	
-	struct WgTextHolder : public WgPresentableHolder
+	struct TextHolder : public WgPresentableHolder
 	{
 	};
 	
-	//____ WgTextField __________________________________________________________________
+	//____ TextField __________________________________________________________________
 	
-	class WgTextField : public WgPresentableField
+	class TextField : public PresentableField
 	{
 	public:
-		WgTextField( WgTextHolder * pHolder );
+		TextField( TextHolder * pHolder );
 	
 		virtual void		clear();
 	
-		virtual void		set( const WgCharSeq& seq );
-		virtual void		set( const WgCharBuffer * buffer );
-		virtual void		set( const WgString& str );
+		virtual void		set( const CharSeq& seq );
+		virtual void		set( const CharBuffer * buffer );
+		virtual void		set( const String& str );
 	
-		virtual int			append( const WgCharSeq& seq );
-		virtual int			insert( int ofs, const WgCharSeq& seq );
-		virtual int			replace( int ofs, int nDelete, const WgCharSeq& seq );
+		virtual int			append( const CharSeq& seq );
+		virtual int			insert( int ofs, const CharSeq& seq );
+		virtual int			replace( int ofs, int nDelete, const CharSeq& seq );
 		virtual int			remove( int ofs, int len );
 	
 	
 		inline int			length() const { return m_charBuffer.length(); }
 		inline bool			isEmpty() const { return length()==0?true:false; }
-		WgTextLink_p		getMarkedLink() const;
+		TextLink_p		getMarkedLink() const;
 	
 	protected:
 	

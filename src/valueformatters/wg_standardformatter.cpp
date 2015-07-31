@@ -25,59 +25,59 @@
 namespace wg 
 {
 	
-	const char WgStandardFormatter::CLASSNAME[] = {"StandardFormatter"};
+	const char StandardFormatter::CLASSNAME[] = {"StandardFormatter"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgStandardFormatter::WgStandardFormatter()
+	StandardFormatter::StandardFormatter()
 	{
 	}
 	
-	WgStandardFormatter::WgStandardFormatter( const WgCharSeq& format )
+	StandardFormatter::StandardFormatter( const CharSeq& format )
 	{
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgStandardFormatter::~WgStandardFormatter()
+	StandardFormatter::~StandardFormatter()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgStandardFormatter::isInstanceOf( const char * pClassName ) const
+	bool StandardFormatter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgValueFormatter::isInstanceOf(pClassName);
+		return ValueFormatter::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgStandardFormatter::className( void ) const
+	const char * StandardFormatter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgStandardFormatter_p WgStandardFormatter::cast( const WgObject_p& pObject )
+	StandardFormatter_p StandardFormatter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgStandardFormatter_p( static_cast<WgStandardFormatter*>(pObject.rawPtr()) );
+			return StandardFormatter_p( static_cast<StandardFormatter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ format() _______________________________________________________________
 	
-	WgString WgStandardFormatter::format( Sint64 value, int scale ) const
+	String StandardFormatter::format( Sint64 value, int scale ) const
 	{	
 	}
 	
-	WgString WgStandardFormatter::format( double value ) const
+	String StandardFormatter::format( double value ) const
 	{
 	}
 

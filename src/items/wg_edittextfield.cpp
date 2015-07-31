@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgEditTextField::WgEditTextField( WgEditTextHolder * pHolder ) : WgTextField(pHolder)
+	EditTextField::EditTextField( EditTextHolder * pHolder ) : TextField(pHolder)
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
@@ -40,60 +40,60 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgEditTextField::clear()
+	void EditTextField::clear()
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
 	
-		WgTextField::clear();
+		TextField::clear();
 	}
 	
 	//____ set() ___________________________________________________________________
 	
-	void WgEditTextField::set( const WgCharSeq& seq )
+	void EditTextField::set( const CharSeq& seq )
 	{
-		WgTextField::set( seq );
+		TextField::set( seq );
 		_cursorToEnd();
 	}
 	
-	void WgEditTextField::set( const WgCharBuffer * pBuffer )
+	void EditTextField::set( const CharBuffer * pBuffer )
 	{
-		WgTextField::set( pBuffer );
+		TextField::set( pBuffer );
 		_cursorToEnd();
 	}
 	
-	void WgEditTextField::set( const WgString& str )
+	void EditTextField::set( const String& str )
 	{
-		WgTextField::set( str );
+		TextField::set( str );
 		_cursorToEnd();
 	}
 	
 	//____ append() ________________________________________________________________
 	
-	int WgEditTextField::append( const WgCharSeq& seq )
+	int EditTextField::append( const CharSeq& seq )
 	{
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 				
-		return WgTextField::append( seq );
+		return TextField::append( seq );
 	}
 	
 	//____ insert() ________________________________________________________________
 	
-	int WgEditTextField::insert( int ofs, const WgCharSeq& seq )
+	int EditTextField::insert( int ofs, const CharSeq& seq )
 	{
 		if( ofs < m_editState.caretOfs )
 			m_editState.caretOfs += seq.length();
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 	
-		return WgTextField::insert(ofs,seq);
+		return TextField::insert(ofs,seq);
 	}
 	
 	//____ replace() _______________________________________________________________
 	
-	int WgEditTextField::replace( int ofs, int nDelete, const WgCharSeq& seq )
+	int EditTextField::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs > ofs )
@@ -107,12 +107,12 @@ namespace wg
 		m_editState.selectOfs = caretOfs;
 		m_editState.wantedOfs = -1;
 	
-		return WgTextField::replace(ofs,nDelete,seq);
+		return TextField::replace(ofs,nDelete,seq);
 	}
 	
 	//____ delete() ________________________________________________________________
 	
-	int WgEditTextField::remove( int ofs, int len )
+	int EditTextField::remove( int ofs, int len )
 	{
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs > ofs )
@@ -126,14 +126,14 @@ namespace wg
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 		
-		return WgTextField::remove( ofs, len );
+		return TextField::remove( ofs, len );
 	}
 	
 	//____ setState() ______________________________________________________________
 	
-	void WgEditTextField::setState( WgState state )
+	void EditTextField::setState( State state )
 	{
-		WgTextField::setState(state);
+		TextField::setState(state);
 	
 		if( state.isFocused() && m_editMode == WG_TEXT_EDITABLE )
 			m_editState.bCaret = true;
@@ -144,14 +144,14 @@ namespace wg
 	
 	//____ onRender() ______________________________________________________________
 	
-	void WgEditTextField::onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip )
+	void EditTextField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
 		_presenter()->renderField(this, pDevice, _canvas, _clip);
 	}
 	
 	//____ _cursorToEnd() __________________________________________________________
 	
-	void WgEditTextField::_cursorToEnd()
+	void EditTextField::_cursorToEnd()
 	{
 		int end = m_charBuffer.length();
 		m_editState.caretOfs = end;

@@ -55,177 +55,177 @@
 namespace wg 
 {
 	
-	class	WgSurface;
-	class	WgFont;
-	class	WgGfxAnim;
+	class	Surface;
+	class	Font;
+	class	GfxAnim;
 	
-	class WgMenu;
-	typedef	WgStrongPtr<WgMenu,WgWidget_p>		WgMenu_p;
-	typedef	WgWeakPtr<WgMenu,WgWidget_wp>	WgMenu_wp;
+	class Menu;
+	typedef	WgStrongPtr<Menu,Widget_p>		Menu_p;
+	typedef	WgWeakPtr<Menu,Widget_wp>	Menu_wp;
 	
-	class WgMenu:public WgPanel, private WgScrollbarTarget
+	class Menu:public Panel, private ScrollbarTarget
 	{
-		friend class WgMenuItem;
-		friend class WgMenuSubMenu;
+		friend class MenuItem;
+		friend class MenuSubMenu;
 	
 	public:
-		static WgMenu_p	create() { return WgMenu_p(new WgMenu()); }
+		static Menu_p	create() { return Menu_p(new Menu()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgMenu_p	cast( const WgObject_p& pObject );
+		static Menu_p	cast( const Object_p& pObject );
 	
 		//____ Methods ___________________________________________
 	
-		bool			setSkin( const WgSkin_p& pSkin, int iconFieldWidth, int arrowFieldWidth );
+		bool			setSkin( const Skin_p& pSkin, int iconFieldWidth, int arrowFieldWidth );
 		int				iconFieldWidth() const			{ return m_iconFieldWidth; }
 		int				arrowFieldWidth() const			{ return m_arrowFieldWidth; }
 	
-		void			setEntrySkin( const WgSkin_p& pSkin );
-		WgSkin_p		entrySkin() const { return m_pEntrySkin; }
+		void			setEntrySkin( const Skin_p& pSkin );
+		Skin_p		entrySkin() const { return m_pEntrySkin; }
 	
-		bool			setSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& sepBorder = WgBorder() );
-		WgSkin_p		separatorSkin() const { return m_pSeparatorSkin; }
-		WgBorder		separatorBorder() const { return m_sepBorder; }
+		bool			setSeparatorSkin( const Skin_p& pSkin, const Border& sepBorder = Border() );
+		Skin_p		separatorSkin() const { return m_pSeparatorSkin; }
+		Border		separatorBorder() const { return m_sepBorder; }
 	
-		bool			setCheckBoxSkin( const WgSkin_p& pSkin );
-		WgSkin_p		checkBoxSkin() const { return m_pCheckBoxSkin; }
+		bool			setCheckBoxSkin( const Skin_p& pSkin );
+		Skin_p		checkBoxSkin() const { return m_pCheckBoxSkin; }
 	
-		bool			setRadioButtonSkin( const WgSkin_p& pSkin );
-		WgSkin_p 		radioButtonSkin() const { return m_pRadioButtonSkin; }
+		bool			setRadioButtonSkin( const Skin_p& pSkin );
+		Skin_p 		radioButtonSkin() const { return m_pRadioButtonSkin; }
 	
-		bool			setArrowSource( const WgGfxAnim_p& pAnim );
+		bool			setArrowSource( const GfxAnim_p& pAnim );
 	
-		bool			setTextProperties( const WgTextprop_p& pEntryProperties, const WgTextprop_p& pKeyAccelProperties );
-		WgTextprop_p	getTextEntryProperties() const { return m_pEntryProp; }
-		WgTextprop_p	getKeyAccelProperties() const { return m_pKeyAccelProp; }
+		bool			setTextProperties( const Textprop_p& pEntryProperties, const Textprop_p& pKeyAccelProperties );
+		Textprop_p	getTextEntryProperties() const { return m_pEntryProp; }
+		Textprop_p	getKeyAccelProperties() const { return m_pKeyAccelProp; }
 	
-		bool			setScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin );
-		bool			setScrollbarButtonLayout(  WgScrollbar::BtnLayout layout );
-		WgScrollbar::BtnLayout scrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
-		WgSkin_p 		scrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
-		WgSkin_p 		scrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
-		WgSkin_p 		scrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
-		WgSkin_p 		scrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
+		bool			setScrollbarSkins(  const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin, const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin );
+		bool			setScrollbarButtonLayout(  Scrollbar::BtnLayout layout );
+		Scrollbar::BtnLayout scrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
+		Skin_p 		scrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
+		Skin_p 		scrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
+		Skin_p 		scrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
+		Skin_p 		scrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
 	
 		int			getEntryHeight() const;
 	
-		int			addItem( WgMenuItem * pEntry );
-		int			insertItem( WgMenuItem * pEntry, int pos );
+		int			addItem( MenuItem * pEntry );
+		int			insertItem( MenuItem * pEntry, int pos );
 	
-		bool		removeItem( WgMenuItem * pEntry );
-		WgMenuItem*	removeItem( int pos );
+		bool		removeItem( MenuItem * pEntry );
+		MenuItem*	removeItem( int pos );
 		void		removeAllItems();
 	
-		bool		deleteItem( WgMenuItem * pEntry );
+		bool		deleteItem( MenuItem * pEntry );
 		bool		deleteItem( int pos );
 		void		deleteAllItems();
 	
-		int			getItemPos( WgMenuItem* pEntry );
-		WgMenuItem*	getItem( int pos );
+		int			getItemPos( MenuItem* pEntry );
+		MenuItem*	getItem( int pos );
 		int			getItemCount() const { return (int)m_items.size(); }
 	
 	
-		WgMenuItem *FindItem( int id );
-		WgMenuItem *GetFirstItem() const { return m_items.first(); }
-		WgMenuItem *GetLastItem() const { return m_items.last(); }
-		WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
+		MenuItem *FindItem( int id );
+		MenuItem *GetFirstItem() const { return m_items.first(); }
+		MenuItem *GetLastItem() const { return m_items.last(); }
+		MenuItem *GetSelectedItem() const { return m_pSelectedItem; }
 	
-		void		selectItem(WgMenuItem* pItem);
+		void		selectItem(MenuItem* pItem);
 	
 	
 	
-		//____ Overloaded from WgWidget & WgPanel ___________________________
+		//____ Overloaded from Widget & Panel ___________________________
 	
-		bool		removeWidget(const WgWidget_p& pWidget ) { return false; }
+		bool		removeWidget(const Widget_p& pWidget ) { return false; }
 		bool		clear() { return false; }
 	
 		int			matchingWidth( int height ) const;
 	
-		WgSize		preferredSize() const;
+		Size		preferredSize() const;
 	
 		//
 	
 	protected:
-		WgMenu();
-		virtual ~WgMenu();
-		virtual WgWidget* _newOfMyType() const { return new WgMenu(); };
+		Menu();
+		virtual ~Menu();
+		virtual Widget* _newOfMyType() const { return new Menu(); };
 	
 	private:
 	
-		class ScrollbarHook : public WgHook
+		class ScrollbarHook : public Hook
 		{
-			friend class WgMenu;
+			friend class Menu;
 	
 		public:
 			const char *type( void ) const;
 			static const char * classType();
 	
-			// Standard Hook methods
+			// Standard MyHook methods
 	
-			WgCoord		pos() const;
-			WgSize		size() const;
-			WgRect		geo() const;
+			Coord		pos() const;
+			Size		size() const;
+			Rect		geo() const;
 	
-			WgCoord		globalPos() const;
-			WgRect		globalGeo() const;
+			Coord		globalPos() const;
+			Rect		globalGeo() const;
 	
 			bool		setVisible( bool bVisible ) { return false; }
-			WgMenu* parent() const { return m_pParent; }
+			Menu* parent() const { return m_pParent; }
 	
-			WgScrollbar * Scrollbar() { return m_pWidget?static_cast<WgScrollbar*>(m_pWidget):0; }
+			Scrollbar * scrollbar() { return m_pWidget?static_cast<Scrollbar*>(m_pWidget):0; }
 	
 	
 		protected:
 			ScrollbarHook() : m_pParent(0) {}
 	
 			void			_requestRender();
-			void			_requestRender( const WgRect& rect );
+			void			_requestRender( const Rect& rect );
 			void			_requestResize();
 	
-			WgHook *		_prevHook() const { return 0; }
-			WgHook *		_nextHook() const { return 0; }
-			WgContainer *	_parent() const { return m_pParent; }
+			Hook *		_prevHook() const { return 0; }
+			Hook *		_nextHook() const { return 0; }
+			Container *	_parent() const { return m_pParent; }
 	
-			WgMenu * 		m_pParent;
-			WgSize			m_size;
+			Menu * 		m_pParent;
+			Size			m_size;
 	
 		};
 	
 		//
-		WgWidget * 	_findWidget( const WgCoord& ofs, WgSearchMode mode );
+		Widget * 	_findWidget( const Coord& ofs, WgSearchMode mode );
 	
-		void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-		void		_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		void		_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		void		_onCloneContent( const WgWidget * _pOrg );
-		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void		_onNewSize( const WgSize& size );
+		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+		void		_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void		_onCloneContent( const Widget * _pOrg );
+		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void		_onNewSize( const Size& size );
 		void		_onRefresh();
 	
-		void		_onMsg( const WgMsg_p& pMsg );
-		void		_onStateChanged( WgState oldState );
-		bool		_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void		_onMsg( const Msg_p& pMsg );
+		void		_onStateChanged( State oldState );
+		bool		_onAlphaTest( const Coord& ofs, const Size& sz );
 	
 		//
 	
-		WgHook*		_firstHook() const;
-		WgHook*		_lastHook() const { return _firstHook(); }
+		Hook*		_firstHook() const;
+		Hook*		_lastHook() const { return _firstHook(); }
 	
-		WgHook *	_firstHookWithGeo( WgRect& writeGeo ) const;
-		WgHook *	_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
+		Hook *	_firstHookWithGeo( Rect& writeGeo ) const;
+		Hook *	_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const { return 0; }
 	
-		WgHook *	_lastHookWithGeo( WgRect& writeGeo ) const { return _firstHookWithGeo(writeGeo); }
-		WgHook *	_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const { return 0; }
+		Hook *	_lastHookWithGeo( Rect& writeGeo ) const { return _firstHookWithGeo(writeGeo); }
+		Hook *	_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const { return 0; }
 	
 		//
 	
 		void		_itemModified();
 		void		_adjustSize();
-		WgRect		_scrollbarGeo( const WgRect& menuGeo ) const;
+		Rect		_scrollbarGeo( const Rect& menuGeo ) const;
 	
-		// Overriden for WgScrollbarTarget
+		// Overriden for ScrollbarTarget
 	
 		float		_stepFwd();
 		float		_stepBwd();
@@ -235,23 +235,23 @@ namespace wg
 	
 		float		_setPosition( float fraction );
 	
-		WgWidget*	_getWidget();
+		Widget*	_getWidget();
 		float		_getHandlePosition();
 		float		_getHandleSize();
 	
 		//
 	
-		WgMenuItem *_getItemAtPos( int posX, int posY );
-		void		_calcEntryMinWidth( WgMenuEntry * pEntry );
+		MenuItem *_getItemAtPos( int posX, int posY );
+		void		_calcEntryMinWidth( MenuEntry * pEntry );
 		void		_itemSelected();
 	
-		void		_openSubMenu( WgMenuSubMenu * pItem );
-		void		_closeSubMenu( WgMenuSubMenu * pItem );
+		void		_openSubMenu( MenuSubMenu * pItem );
+		void		_closeSubMenu( MenuSubMenu * pItem );
 	
-		WgBorder	_getPadding() const;
+		Border	_getPadding() const;
 		void		_refreshEntryHeight();
 	
-		void		_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop = false );
+		void		_scrollItemIntoView( MenuItem * pItem, bool bForceAtTop = false );
 		void		_markFirstFilteredEntry();
 	
 		int			_getViewSize();
@@ -260,15 +260,15 @@ namespace wg
 		//____ Members ___________________________________________
 	
 		ScrollbarHook			m_scrollbarHook;
-		WgSize					m_defaultSize;
+		Size					m_defaultSize;
 	
 		// Members defining items.
 	
-		WgChain<WgMenuItem>		m_items;
+		Chain<MenuItem>		m_items;
 		Uint32					m_nItems;
 		Uint32					m_markedItem;		// 0 = no item is selected.
-		WgMenuItem*				m_pSelectedItem;
-		WgMenuSubMenu*			m_pOpenSubMenu;		// Pointer at open submenu (if any).
+		MenuItem*				m_pSelectedItem;
+		MenuSubMenu*			m_pOpenSubMenu;		// Pointer at open submenu (if any).
 	
 		// Members holding data for open menu
 	
@@ -284,7 +284,7 @@ namespace wg
 	
 		// Members defining background
 	
-		WgSkin_p				m_pEntrySkin;
+		Skin_p				m_pEntrySkin;
 	
 		// Members defining content layout
 	
@@ -293,12 +293,12 @@ namespace wg
 	
 		// Members defining separators
 	
-		WgSkin_p				m_pSeparatorSkin;
-		WgBorder				m_sepBorder;
+		Skin_p				m_pSeparatorSkin;
+		Border				m_sepBorder;
 	
 		// Members defining the arrow for submenus
 	
-		WgGfxAnim_p			m_pArrowAnim;
+		GfxAnim_p			m_pArrowAnim;
 		Uint32					m_arrowAnimCount;	// Animation position in milliseconds.
 	
 		//
@@ -306,24 +306,24 @@ namespace wg
 		Uint8					m_entryHeight;		// Height of a menu entry >= font height.
 		Uint8					m_sepHeight;		// Height of a separator menu entry.
 	
-		WgTextprop_p			m_pEntryProp;		// Default text properties for entry.
-		WgTextprop_p			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
+		Textprop_p			m_pEntryProp;		// Default text properties for entry.
+		Textprop_p			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.
 	
 		// Members defining checkbox entries
 	
-		WgSkin_p				m_pCheckBoxSkin;
+		Skin_p				m_pCheckBoxSkin;
 	
 		// Members defining radiobutton entries.
 	
-		WgSkin_p				m_pRadioButtonSkin;
+		Skin_p				m_pRadioButtonSkin;
 	
 		// Members defining dragbar.
 	
-		WgSkin_p					m_pScrollbarBgSkin;
-		WgSkin_p					m_pScrollbarHandleSkin;
-		WgSkin_p					m_pScrollbarBtnFwdSkin;
-		WgSkin_p					m_pScrollbarBtnBwdSkin;
-		WgScrollbar::BtnLayout		m_scrollbarBtnLayout;
+		Skin_p					m_pScrollbarBgSkin;
+		Skin_p					m_pScrollbarHandleSkin;
+		Skin_p					m_pScrollbarBtnFwdSkin;
+		Skin_p					m_pScrollbarBtnBwdSkin;
+		Scrollbar::BtnLayout		m_scrollbarBtnLayout;
 	};
 	
 	

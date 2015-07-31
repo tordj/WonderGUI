@@ -38,51 +38,51 @@
 namespace wg 
 {
 	
-	class WgPatches;
+	class Patches;
 	
-	class WgPanel;
-	typedef	WgStrongPtr<WgPanel,WgContainer_p>		WgPanel_p;
-	typedef	WgWeakPtr<WgPanel,WgContainer_wp>	WgPanel_wp;
+	class Panel;
+	typedef	WgStrongPtr<Panel,Container_p>		Panel_p;
+	typedef	WgWeakPtr<Panel,Container_wp>	Panel_wp;
 	
-	class WgPanelHook;
-	typedef	WgHookTypePtr<WgPanelHook,WgHook_p>	WgPanelHook_p;
+	class PanelHook;
+	typedef	HookTypePtr<PanelHook,Hook_p>	PanelHook_p;
 	
 	
-	//____ WgPanelHook ____________________________________________________________
+	//____ PanelHook ____________________________________________________________
 	
-	class WgPanelHook : public WgHook
+	class PanelHook : public Hook
 	{
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgPanelHook_p	cast( const WgHook_p& pInterface );
+		static PanelHook_p	cast( const Hook_p& pInterface );
 	
-		WgPanelHook_p	prev() const { return static_cast<WgPanelHook*>(_prevHook()); }
-		WgPanelHook_p	next() const { return static_cast<WgPanelHook*>(_nextHook()); }
-		WgPanel_p		parent() const;
+		PanelHook_p	prev() const { return static_cast<PanelHook*>(_prevHook()); }
+		PanelHook_p	next() const { return static_cast<PanelHook*>(_nextHook()); }
+		Panel_p		parent() const;
 	
 		virtual bool	setVisible( bool bVisible );
 		bool			isVisible() { return m_bVisible; }
 	
-		virtual bool	setPadding( WgBorder padding );
-		WgBorder		padding() const { return m_padding; }
+		virtual bool	setPadding( Border padding );
+		Border		padding() const { return m_padding; }
 	
 	protected:
-		WgPanelHook() : m_bVisible(true) {}
-		 virtual ~WgPanelHook() {};
+		PanelHook() : m_bVisible(true) {}
+		 virtual ~PanelHook() {};
 	
-		WgSize		_paddedPreferredSize() const;
-		WgSize		_paddedMinSize() const;
-		WgSize		_paddedMaxSize() const;
+		Size		_paddedPreferredSize() const;
+		Size		_paddedMinSize() const;
+		Size		_paddedMaxSize() const;
 		int			_paddedMatchingWidth( int paddedHeight ) const;
 		int			_paddedMatchingHeight( int paddedWidth ) const;
-		bool		_isVisible() const { return m_bVisible; }				// Overloading WgHook::_isVisible().
+		bool		_isVisible() const { return m_bVisible; }				// Overloading Hook::_isVisible().
 	
-		WgSize		_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPolicy, WgSizePolicy heightPolicy ) const;
+		Size		_sizeFromPolicy( Size specifiedSize, SizePolicy widthPolicy, SizePolicy heightPolicy ) const;
 	
 		bool			m_bVisible;
-		WgBorder		m_padding;
+		Border		m_padding;
 	};
 	
 	/**
@@ -91,15 +91,15 @@ namespace wg
 	 * Base class for layout widgets.
 	 */
 	
-	//____ WgPanel ________________________________________________________________
+	//____ Panel ________________________________________________________________
 	
-	class WgPanel : public WgContainer
+	class Panel : public Container
 	{
 	public:
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgPanel_p	cast( const WgObject_p& pObject );
+		static Panel_p	cast( const Object_p& pObject );
 	
 		void		setFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
 		bool		isFocusGroup() const { return m_bFocusGroup; }
@@ -110,19 +110,19 @@ namespace wg
 		void		setMaskOp( WgMaskOp operation );
 		WgMaskOp	maskOp() const { return m_maskOp; }
 	
-		inline WgPanelHook_p	firstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
-		inline WgPanelHook_p	lastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
+		inline PanelHook_p	firstHook() const { return static_cast<PanelHook*>(_firstHook()); }
+		inline PanelHook_p	lastHook() const { return static_cast<PanelHook*>(_lastHook()); }
 	
-		// Overloaded from WgIWidgets
+		// Overloaded from IWidgets
 	
 	
 	protected:
-		WgPanel();
-		virtual ~WgPanel() {};
+		Panel();
+		virtual ~Panel() {};
 	
 		bool			_isPanel() const;
-		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		virtual void	_onCloneContent( const WgWidget * _pOrg );
+		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		virtual void	_onCloneContent( const Widget * _pOrg );
 	
 	
 		bool		m_bFocusGroup;

@@ -25,12 +25,12 @@
 namespace wg 
 {
 	
-	const char WgCaret2::CLASSNAME[] = {"Caret"};
+	const char Caret2::CLASSNAME[] = {"Caret"};
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgCaret2::WgCaret2()
+	Caret2::Caret2()
 	{
 		m_glyph = 0;
 		m_glyphSize = 0;
@@ -45,34 +45,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgCaret2::isInstanceOf( const char * pClassName ) const
+	bool Caret2::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgCaret2::className( void ) const
+	const char * Caret2::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgCaret2_p WgCaret2::cast( const WgObject_p& pObject )
+	Caret2_p Caret2::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgCaret2_p( static_cast<WgCaret2*>(pObject.rawPtr()) );
+			return Caret2_p( static_cast<Caret2*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setGlyph() ______________________________________________________________
 	
-	void WgCaret2::setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend )
+	void Caret2::setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend )
 	{
 		m_glyph = glyph;
 		m_glyphSize = size;
@@ -86,7 +86,7 @@ namespace wg
 	
 	//____ setMode() _______________________________________________________________
 	
-	void WgCaret2::setMode( WgCaretMode mode )
+	void Caret2::setMode( CaretMode mode )
 	{
 		if( mode != m_mode )
 		{
@@ -98,14 +98,14 @@ namespace wg
 	
 	//____ eolWidth() ______________________________________________________________
 	
-	int WgCaret2::eolWidth( int size, int advance, int ascend, int descend ) const
+	int Caret2::eolWidth( int size, int advance, int ascend, int descend ) const
 	{
 		return WgMax( 1, size / 8);
 	}
 	
 	//____ tick() __________________________________________________________________
 	
-	void WgCaret2::tick( int ms )
+	void Caret2::tick( int ms )
 	{
 		int halfCycle = m_cycleLength / 2;
 		int oldBlink = m_ticks / halfCycle;
@@ -119,29 +119,29 @@ namespace wg
 	
 	//____ dirtyRect() _____________________________________________________________
 	
-	WgRect WgCaret2::dirtyRect( WgCoord pos ) const
+	Rect Caret2::dirtyRect( Coord pos ) const
 	{
 		switch( m_mode )
 		{
 			case WG_CARET_INSERT:
-				return WgRect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+				return Rect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
 			case WG_CARET_OVERWRITE:
-				return WgRect( pos.x, pos.y - m_glyphAscend, m_glyphAdvance, m_glyphAscend + m_glyphDescend );
+				return Rect( pos.x, pos.y - m_glyphAscend, m_glyphAdvance, m_glyphAscend + m_glyphDescend );
 			case WG_CARET_EOL:
-				return WgRect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+				return Rect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
 		}
 	}
 	
 	//____ render() ________________________________________________________________
 	
-	void WgCaret2::render( WgGfxDevice * pDevice, WgCoord pos, const WgRect& clip )
+	void Caret2::render( GfxDevice * pDevice, Coord pos, const Rect& clip )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{
-			WgRect r = dirtyRect(pos);
+			Rect r = dirtyRect(pos);
 			WgBlendMode oldMode = pDevice->getBlendMode();
 			pDevice->setBlendMode(WG_BLENDMODE_INVERT);
-			pDevice->fill( WgRect(r,clip), WgColor::black );
+			pDevice->fill( Rect(r,clip), Color::black );
 			pDevice->setBlendMode(oldMode);
 		}
 	}

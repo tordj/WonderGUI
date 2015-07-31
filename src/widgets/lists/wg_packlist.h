@@ -37,46 +37,46 @@
 namespace wg 
 {
 	
-	class WgPackList;
-	typedef	WgStrongPtr<WgPackList,WgList_p>		WgPackList_p;
-	typedef	WgWeakPtr<WgPackList,WgList_wp>	WgPackList_wp;
+	class PackList;
+	typedef	WgStrongPtr<PackList,List_p>		PackList_p;
+	typedef	WgWeakPtr<PackList,List_wp>	PackList_wp;
 	
-	class WgPackListHook;
-	typedef	WgHookTypePtr<WgPackListHook,WgListHook_p>	WgPackListHook_p;
+	class PackListHook;
+	typedef	HookTypePtr<PackListHook,ListHook_p>	PackListHook_p;
 	
-	class WgPackListHook : public WgListHook
+	class PackListHook : public ListHook
 	{
-		friend class WgPackList;
-		friend class WgHookArray<WgPackListHook>;
+		friend class PackList;
+		friend class HookArray<PackListHook>;
 	public:
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
 		static const char			CLASSNAME[];
-		static WgPackListHook_p	cast( const WgHook_p& pInterface );
+		static PackListHook_p	cast( const Hook_p& pInterface );
 	
-		WgCoord			pos() const;
-		WgSize			size() const;
-		WgRect			geo() const;
-		WgCoord			globalPos() const;
-		WgRect			globalGeo() const;
+		Coord			pos() const;
+		Size			size() const;
+		Rect			geo() const;
+		Coord			globalPos() const;
+		Rect			globalGeo() const;
 	
-		WgPackListHook_p	prev() const { return static_cast<WgPackListHook*>(_prevHook()); }
-		WgPackListHook_p	next() const { return static_cast<WgPackListHook*>(_nextHook()); }
-		WgPackList_p		parent() const { return m_pParent; }
+		PackListHook_p	prev() const { return static_cast<PackListHook*>(_prevHook()); }
+		PackListHook_p	next() const { return static_cast<PackListHook*>(_nextHook()); }
+		PackList_p		parent() const { return m_pParent; }
 	
 	protected:
-		WgPackListHook() {};
+		PackListHook() {};
 	
 		void			_requestRender();
-		void			_requestRender( const WgRect& rect );
+		void			_requestRender( const Rect& rect );
 		void			_requestResize();
 	
-		WgHook *		_prevHook() const;
-		WgHook *		_nextHook() const;
+		Hook *		_prevHook() const;
+		Hook *		_nextHook() const;
 	
-		WgContainer *	_parent() const;
+		Container *	_parent() const;
 		
-		WgPackList *	m_pParent;
+		PackList *	m_pParent;
 		int				m_ofs;				// Offset in pixels for start of this list item.
 		int				m_length;			// Length in pixels of this list item. Includes widget padding.
 		int				m_prefBreadth;		// Prefereed breadth of this widget.
@@ -84,30 +84,30 @@ namespace wg
 	};
 	
 	
-	//____ WgPackList ____________________________________________________________
+	//____ PackList ____________________________________________________________
 	
-	class WgPackList : public WgList, protected WgColumnHeaderHolder
+	class PackList : public List, protected ColumnHeaderHolder
 	{
-		friend class WgPackListHook;
+		friend class PackListHook;
 	public:
-		static WgPackList_p	create() { return WgPackList_p(new WgPackList()); }
+		static PackList_p	create() { return PackList_p(new PackList()); }
 	
 		//____ Interfaces ______________________________________
 	
-		WgColumnHeader			header;
+		ColumnHeader			header;
 	
 		//____ Methods _________________________________________
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgPackList_p	cast( const WgObject_p& pObject );
+		static PackList_p	cast( const Object_p& pObject );
 	
-		WgPackListHook_p		addWidget( const WgWidget_p& pWidget );
-		WgPackListHook_p		insertWidget( const WgWidget_p& pWidget, const WgWidget_p& pSibling );
-		WgPackListHook_p		insertWidgetSorted( const WgWidget_p& pWidget );
+		PackListHook_p		addWidget( const Widget_p& pWidget );
+		PackListHook_p		insertWidget( const Widget_p& pWidget, const Widget_p& pSibling );
+		PackListHook_p		insertWidgetSorted( const Widget_p& pWidget );
 	
-		bool					removeWidget( const WgWidget_p& pWidget );
+		bool					removeWidget( const Widget_p& pWidget );
 		bool					clear();
 	
 		void					setOrientation( WgOrientation orientation );
@@ -117,97 +117,97 @@ namespace wg
 		void					setSortOrder( WgSortOrder order );
 		WgSortOrder				getSortOrder() const { return m_sortOrder; }
 	
-		void					setSortFunction( WgWidgetSortFunc pSortFunc );
-		WgWidgetSortFunc		sortFunction() const { return m_pSortFunc; }
+		void					setSortFunction( WidgetSortFunc pSortFunc );
+		WidgetSortFunc		sortFunction() const { return m_pSortFunc; }
 	
-		WgSize					preferredSize() const;
+		Size					preferredSize() const;
 		int						matchingHeight( int width ) const;
 		int						matchingWidth( int height ) const;
 	
-		bool					setMinEntrySize( WgSize min );
-		bool					setMaxEntrySize( WgSize max );
-		WgSize					minEntrySize() const { return m_minEntrySize; }
-		WgSize					maxEntrySize() const { return m_maxEntrySize; }
+		bool					setMinEntrySize( Size min );
+		bool					setMaxEntrySize( Size max );
+		Size					minEntrySize() const { return m_minEntrySize; }
+		Size					maxEntrySize() const { return m_maxEntrySize; }
 	
 	
 	
 	protected:
-		WgPackList();
-		virtual ~WgPackList();
-		WgWidget*		_newOfMyType() const { return new WgPackList(); };
+		PackList();
+		virtual ~PackList();
+		Widget*		_newOfMyType() const { return new PackList(); };
 	
-		void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		void			_onCloneContent( const WgWidget * _pOrg );
-		void			_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void			_onNewSize( const WgSize& size );
+		void			_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onNewSize( const Size& size );
 		void			_onRefresh();
 		void			_onRefreshList();
 	
-		void			_onMsg( const WgMsg_p& pMsg );
-		void			_onStateChanged( WgState oldState );
+		void			_onMsg( const Msg_p& pMsg );
+		void			_onStateChanged( State oldState );
 	
-		void			_onRequestRender( WgPackListHook * pHook );
-		void			_onRequestRender( WgPackListHook * pHook, const WgRect& rect );
-		void			_onRequestResize( WgPackListHook * pHook );
+		void			_onRequestRender( PackListHook * pHook );
+		void			_onRequestRender( PackListHook * pHook, const Rect& rect );
+		void			_onRequestResize( PackListHook * pHook );
 	
-		void			_requestRenderChildrenFrom( WgPackListHook * pHook );
-		void			_updateChildOfsFrom( WgPackListHook * pHook );
+		void			_requestRenderChildrenFrom( PackListHook * pHook );
+		void			_updateChildOfsFrom( PackListHook * pHook );
 	
-		void			_onWidgetAppeared( WgListHook * pInserted );
-		void			_onWidgetDisappeared( WgListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
+		void			_onWidgetAppeared( ListHook * pInserted );
+		void			_onWidgetDisappeared( ListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 	
-		WgWidget * 		_findWidget( const WgCoord& ofs, WgSearchMode mode );
-		WgListHook *	_findEntry( const WgCoord& ofs );
-		int				_getInsertionPoint( const WgWidget * pWidget ) const;
-		void			_getChildGeo( WgRect& geo, const WgPackListHook * pHook ) const;
-		void			_getEntryGeo( WgRect& geo, const WgListHook * pHook ) const;
+		Widget * 		_findWidget( const Coord& ofs, WgSearchMode mode );
+		ListHook *	_findEntry( const Coord& ofs );
+		int				_getInsertionPoint( const Widget * pWidget ) const;
+		void			_getChildGeo( Rect& geo, const PackListHook * pHook ) const;
+		void			_getEntryGeo( Rect& geo, const ListHook * pHook ) const;
 		int				_getEntryAt( int pixelofs ) const;
-		WgRect			_listArea() const;
-		WgRect			_listWindow() const;
-		WgRect			_listCanvas() const;
-		WgRect			_headerGeo() const;
-		WgSize			_windowPadding() const;
+		Rect			_listArea() const;
+		Rect			_listWindow() const;
+		Rect			_listCanvas() const;
+		Rect			_headerGeo() const;
+		Size			_windowPadding() const;
 	
-		void			_onEntrySkinChanged( WgSize oldPadding, WgSize newPadding );
-		void			_onLassoUpdated( const WgRect& oldLasso, const WgRect& newLasso );
+		void			_onEntrySkinChanged( Size oldPadding, Size newPadding );
+		void			_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso );
 		void			_refreshHeader();
 		bool			_sortEntries();
 	
-		WgObject *		_object() { return this; }
-		void			_onFieldDirty(WgField * pField);
-		void			_onFieldResize(WgField * pField);
+		Object *		_object() { return this; }
+		void			_onFieldDirty(Field * pField);
+		void			_onFieldResize(Field * pField);
 	
-		WgSize			_paddedLimitedPreferredSize( WgWidget * pChild );
-		int				_paddedLimitedMatchingHeight( WgWidget * pChild, int paddedWidth );
-		int				_paddedLimitedMatchingWidth( WgWidget * pChild, int paddedHeight );
+		Size			_paddedLimitedPreferredSize( Widget * pChild );
+		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
+		int				_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight );
 	
-		WgHook*			_firstHook() const;
-		WgHook*			_lastHook() const;
+		Hook*			_firstHook() const;
+		Hook*			_lastHook() const;
 	
-		WgHook*			_firstHookWithGeo( WgRect& geo ) const;
-		WgHook*			_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook*			_firstHookWithGeo( Rect& geo ) const;
+		Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		WgHook*			_lastHookWithGeo( WgRect& geo ) const;
-		WgHook*			_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook*			_lastHookWithGeo( Rect& geo ) const;
+		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		WgColumnHeaderField	m_header;
+		ColumnHeaderField	m_header;
 	
 		bool				m_bHorizontal;
 	
 		WgSortOrder			m_sortOrder;
-		WgWidgetSortFunc	m_pSortFunc;
+		WidgetSortFunc	m_pSortFunc;
 	
-		WgHookArray<WgPackListHook>	m_hooks;
+		HookArray<PackListHook>	m_hooks;
 	
 		int					m_contentBreadth;
 		int					m_contentLength;
-		WgSize				m_size;
+		Size				m_size;
 	
-		WgSize				m_entryPadding;
-		WgSize				m_minEntrySize;
-		WgSize				m_maxEntrySize;
+		Size				m_entryPadding;
+		Size				m_minEntrySize;
+		Size				m_maxEntrySize;
 	
 		//----
 	

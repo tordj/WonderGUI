@@ -37,57 +37,57 @@ namespace wg
 {
 	
 	
-	class WgToggleGroup;
-	typedef	WgStrongPtr<WgToggleGroup,WgObject_p>		WgToggleGroup_p;
-	typedef	WgWeakPtr<WgToggleGroup,WgObject_wp>		WgToggleGroup_wp;
+	class ToggleGroup;
+	typedef	WgStrongPtr<ToggleGroup,Object_p>		ToggleGroup_p;
+	typedef	WgWeakPtr<ToggleGroup,Object_wp>		ToggleGroup_wp;
 	
 	
 	/**
 	 * @brief Groups together StateButtons into RadioButtons.
 	 *
-	 * A WgToggleGroup object groups together a number of RadioButtons, making
+	 * A ToggleGroup object groups together a number of RadioButtons, making
 	 * them operate as mutually exclusive RadioButtons.
 	 *
 	 **/
 	
-	class	WgToggleGroup : public WgObject
+	class	ToggleGroup : public Object
 	{
-	friend class WgToggleButton;
+	friend class ToggleButton;
 	public:
-		static WgToggleGroup_p	create() { return WgToggleGroup_p(new WgToggleGroup()); }
+		static ToggleGroup_p	create() { return ToggleGroup_p(new ToggleGroup()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgToggleGroup_p	cast( const WgObject_p& pObject );	
+		static ToggleGroup_p	cast( const Object_p& pObject );	
 	
 	
 		inline bool			requireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
 		void				setRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
 	
-		void				add( const WgToggleButton_p& pToggleButton );			///< @brief Add widget to this group.
-		bool				remove( const WgToggleButton_p& pToggleButton );		///< @brief Remove a widget from this group.
+		void				add( const ToggleButton_p& pToggleButton );			///< @brief Add widget to this group.
+		bool				remove( const ToggleButton_p& pToggleButton );		///< @brief Remove a widget from this group.
 		void				clear();												///< @brief Remove all widgets from this group.
 		
-		WgToggleButton_p	get( int index );										///< @brief Get widget at specified index in group.
+		ToggleButton_p	get( int index );										///< @brief Get widget at specified index in group.
 		int					size() const;											///< @brief Get number of widgets in group.
 			
-		WgToggleButton_p	selected() const;										///< @brief Get the selected widget.
+		ToggleButton_p	selected() const;										///< @brief Get the selected widget.
 	
 	
 	protected:
-		WgToggleGroup();
-		virtual ~WgToggleGroup();
+		ToggleGroup();
+		virtual ~ToggleGroup();
 	
-		void			_remove( WgToggleButton * pButton );			// Callback for statebuttons destructor. Notifying ToggleGroup.
-		void			_select( WgToggleButton * pButton );			// Callback for statebuttons select. Notifying ToggleGroup.
-		bool			_unselect( WgToggleButton * pButton );		// Callback for statebuttons unselect. Notifying ToggleGroup.
+		void			_remove( ToggleButton * pButton );			// Callback for statebuttons destructor. Notifying ToggleGroup.
+		void			_select( ToggleButton * pButton );			// Callback for statebuttons select. Notifying ToggleGroup.
+		bool			_unselect( ToggleButton * pButton );		// Callback for statebuttons unselect. Notifying ToggleGroup.
 	
 	private:
 	
 		bool						m_bRequireSelected;
-		WgToggleButton *				m_pSelected;
-		std::vector<WgToggleButton*> m_entries;
+		ToggleButton *				m_pSelected;
+		std::vector<ToggleButton*> m_entries;
 	};
 	
 	
@@ -95,4 +95,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //	WgToggleButton_DOT_H
+#endif //	ToggleButton_DOT_H

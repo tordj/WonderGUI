@@ -30,17 +30,17 @@
 namespace wg 
 {
 	
-	class WgCapsule;
-	typedef	WgStrongPtr<WgCapsule,WgContainer_p>	WgCapsule_p;
-	typedef	WgWeakPtr<WgCapsule,WgContainer_p>	WgCapsule_wp;
+	class Capsule;
+	typedef	WgStrongPtr<Capsule,Container_p>	Capsule_p;
+	typedef	WgWeakPtr<Capsule,Container_p>	Capsule_wp;
 	
-	class WgCapsuleHook;
-	typedef	WgHookTypePtr<WgCapsuleHook,WgHook_p>	WgCapsuleHook_p;
+	class CapsuleHook;
+	typedef	HookTypePtr<CapsuleHook,Hook_p>	CapsuleHook_p;
 	
 	/**
 	 * @brief Base class for containers that only holds one child.
 	 *
-	 * WgCapsule is the base class for WonderGUI Capsules, minimalistic container
+	 * Capsule is the base class for WonderGUI Capsules, minimalistic container
 	 * widgets that only can have one child.
 	 *
 	 * Capsules are typically used to "encapsulate" another widget (or branch of widgets) to affect its
@@ -48,94 +48,94 @@ namespace wg
 	 *
 	 **/
 	
-	class WgCapsuleHook : public WgHook
+	class CapsuleHook : public Hook
 	{
-		friend class WgCapsule;
-		friend class WgSizeCapsule;
-		friend class WgShaderCapsule;
+		friend class Capsule;
+		friend class SizeCapsule;
+		friend class ShaderCapsule;
 	
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgCapsuleHook_p	cast( const WgHook_p& pInterface );
+		static CapsuleHook_p	cast( const Hook_p& pInterface );
 	
-		// Standard Hook methods
+		// Standard MyHook methods
 	
-		WgCoord			pos() const;
-		WgSize			size() const;
-		WgRect			geo() const;
+		Coord			pos() const;
+		Size			size() const;
+		Rect			geo() const;
 	
-		WgCoord			globalPos() const;
-		WgRect			globalGeo() const;
+		Coord			globalPos() const;
+		Rect			globalGeo() const;
 	
-		WgCapsule_p 		parent() const;
+		Capsule_p 		parent() const;
 	
 	protected:
 		void			_requestRender();
-		void			_requestRender( const WgRect& rect );
+		void			_requestRender( const Rect& rect );
 		void			_requestResize();
 	
-		WgHook *		_prevHook() const;
-		WgHook *		_nextHook() const;
-		WgContainer *	_parent() const;
+		Hook *		_prevHook() const;
+		Hook *		_nextHook() const;
+		Container *	_parent() const;
 	
 	
-		WgCapsule * 	m_pParent;
+		Capsule * 	m_pParent;
 	};
 	
 	
 	
-	//____ WgCapsule ______________________________________________________________
+	//____ Capsule ______________________________________________________________
 	
-	class WgCapsule : public WgContainer
+	class Capsule : public Container
 	{
-		friend class WgCapsuleHook;
+		friend class CapsuleHook;
 	
 	public:
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgCapsule_p	cast( const WgObject_p& pObject );
+		static Capsule_p	cast( const Object_p& pObject );
 	
-		WgCapsuleHook_p	setWidget( const WgWidget_p& pWidget );
-		WgWidget_p			widget() { return m_hook.widget(); }
-		bool				removeWidget( const WgWidget_p& pWidget );
+		CapsuleHook_p	setWidget( const Widget_p& pWidget );
+		Widget_p			widget() { return m_hook.widget(); }
+		bool				removeWidget( const Widget_p& pWidget );
 		bool				clear();
 	
-		inline WgCapsuleHook_p	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
-		inline WgCapsuleHook_p	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+		inline CapsuleHook_p	firstHook() const { return static_cast<CapsuleHook*>(_firstHook()); }
+		inline CapsuleHook_p	lastHook() const { return static_cast<CapsuleHook*>(_lastHook()); }
 	
 	
-		// Overloaded from WgWidget
+		// Overloaded from Widget
 	
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 	
-		WgSize			preferredSize() const;
+		Size			preferredSize() const;
 	
 	protected:
-		WgCapsule();
-		virtual ~WgCapsule() {}
+		Capsule();
+		virtual ~Capsule() {}
 	
-		WgHook *		_firstHookWithGeo( WgRect& geo ) const;
-		WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook *		_firstHookWithGeo( Rect& geo ) const;
+		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		WgHook *		_lastHookWithGeo( WgRect& geo ) const;
-		WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+		Hook *		_lastHookWithGeo( Rect& geo ) const;
+		Hook *		_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
 		//
 	
-		void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		void			_onCloneContent( const WgWidget * _pOrg );
-		void			_onNewSize( const WgSize& size );
+		void			_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onNewSize( const Size& size );
 	
 	
-		WgHook*			_firstHook() const;
-		WgHook*			_lastHook() const;
+		Hook*			_firstHook() const;
+		Hook*			_lastHook() const;
 	
-		WgCapsuleHook	m_hook;
+		CapsuleHook	m_hook;
 	
 	};
 	

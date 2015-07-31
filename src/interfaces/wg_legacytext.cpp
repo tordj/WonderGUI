@@ -25,39 +25,39 @@
 namespace wg 
 {
 	
-	const char WgLegacyText::CLASSNAME[] = {"LegacyText"};
+	const char LegacyText::CLASSNAME[] = {"LegacyText"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgLegacyText::isInstanceOf( const char * pClassName ) const
+	bool LegacyText::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgInterface::isInstanceOf(pClassName);
+		return Interface::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgLegacyText::className( void ) const
+	const char * LegacyText::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgLegacyText_p WgLegacyText::cast( const WgInterface_p& pInterface )
+	LegacyText_p LegacyText::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgLegacyText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyText*>( pInterface.rawPtr()) );
+			return LegacyText_p( pInterface.getRealObjectPtr(), static_cast<LegacyText*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _object() _______________________________________________________________
 	
-	WgObject * WgLegacyText::_object() const
+	Object * LegacyText::_object() const
 	{
 		return m_pField->_object();
 	}

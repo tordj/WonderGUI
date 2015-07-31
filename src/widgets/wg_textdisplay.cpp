@@ -29,54 +29,54 @@
 namespace wg 
 {
 	
-	const char WgTextDisplay::CLASSNAME[] = {"TextDisplay"};
+	const char TextDisplay::CLASSNAME[] = {"TextDisplay"};
 	
 	
 	
-	//____ WgTextDisplay() _________________________________________________________________
+	//____ TextDisplay() _________________________________________________________________
 	
-	WgTextDisplay::WgTextDisplay() : m_text(this), text(&m_text)
+	TextDisplay::TextDisplay() : m_text(this), text(&m_text)
 	{
 	}
 	
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgTextDisplay::~WgTextDisplay()
+	TextDisplay::~TextDisplay()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgTextDisplay::isInstanceOf( const char * pClassName ) const
+	bool TextDisplay::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgTextDisplay::className( void ) const
+	const char * TextDisplay::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgTextDisplay_p WgTextDisplay::cast( const WgObject_p& pObject )
+	TextDisplay_p TextDisplay::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgTextDisplay_p( static_cast<WgTextDisplay*>(pObject.rawPtr()) );
+			return TextDisplay_p( static_cast<TextDisplay*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ matchingWidth() _______________________________________________________
 	
-	int WgTextDisplay::matchingWidth( int height ) const
+	int TextDisplay::matchingWidth( int height ) const
 	{
 		int textWidth = m_text.matchingWidth( height );
 	
@@ -88,7 +88,7 @@ namespace wg
 	
 	//____ matchingHeight() _______________________________________________________
 	
-	int WgTextDisplay::matchingHeight( int width ) const
+	int TextDisplay::matchingHeight( int width ) const
 	{
 		int textHeight = m_text.matchingHeight( width );
 	
@@ -100,9 +100,9 @@ namespace wg
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	WgSize WgTextDisplay::preferredSize() const
+	Size TextDisplay::preferredSize() const
 	{
-		WgSize contentSize = m_text.preferredSize();
+		Size contentSize = m_text.preferredSize();
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle WgTextDisplay::pointerStyle() const
+	WgPointerStyle TextDisplay::pointerStyle() const
 	{
 		if( m_text.getMarkedLink() )
 			return WG_POINTER_HAND;
@@ -122,7 +122,7 @@ namespace wg
 	
 	//____ tooltipString() _____________________________________________________
 	
-	WgString WgTextDisplay::tooltipString() const
+	String TextDisplay::tooltipString() const
 	{
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
@@ -132,11 +132,11 @@ namespace wg
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void TextDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect canvas;
+		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
@@ -147,18 +147,18 @@ namespace wg
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void WgTextDisplay::_onRefresh( void )
+	void TextDisplay::_onRefresh( void )
 	{
 		//TODO: Implement more I believe...
 	
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgTextDisplay::_onStateChanged( WgState oldState )
+	void TextDisplay::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 		m_text.setState(m_state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
@@ -166,11 +166,11 @@ namespace wg
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgTextDisplay::_onMsg( const WgMsg_p& pMsg )
+	void TextDisplay::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg(pMsg);
+		Widget::_onMsg(pMsg);
 	/*
-		WgRect canvas = geo();
+		Rect canvas = geo();
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(canvas, m_state);
 	
@@ -181,27 +181,27 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
+	void TextDisplay::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgTextDisplay * pOrg = static_cast<const WgTextDisplay*>(_pOrg);
+		const TextDisplay * pOrg = static_cast<const TextDisplay*>(_pOrg);
 	
 		m_text = pOrg->m_text;
 	}
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgTextDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void TextDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 	}
 	
 	//____ _onNewSize() ________________________________________________
 	
-	void WgTextDisplay::_onNewSize( const WgSize& size )
+	void TextDisplay::_onNewSize( const Size& size )
 	{
-		WgWidget::_onNewSize(size);
+		Widget::_onNewSize(size);
 	
-		WgSize textSize = size;
+		Size textSize = size;
 		if( m_pSkin )
 			textSize -= m_pSkin->contentPadding();
 	
@@ -210,14 +210,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgTextDisplay::_onFieldDirty( WgField * pField )
+	void TextDisplay::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgTextDisplay::_onFieldResize( WgField * pField )
+	void TextDisplay::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();

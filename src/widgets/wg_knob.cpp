@@ -28,43 +28,43 @@
 namespace wg 
 {
 	
-	const char WgKnob::CLASSNAME[] = {"Knob"};
+	const char Knob::CLASSNAME[] = {"Knob"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgKnob::WgKnob()
+	Knob::Knob()
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgKnob::~WgKnob()
+	Knob::~Knob()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgKnob::isInstanceOf( const char * pClassName ) const
+	bool Knob::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgKnob::className( void ) const
+	const char * Knob::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgKnob_p WgKnob::cast( const WgObject_p& pObject )
+	Knob_p Knob::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgKnob_p( static_cast<WgKnob*>(pObject.rawPtr()) );
+			return Knob_p( static_cast<Knob*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,43 +72,43 @@ namespace wg
 	
 	//____ setValue() _____________________________________________________________
 	
-	void WgKnob::setValue( float value )
+	void Knob::setValue( float value )
 	{
 	    //TODO: Implement!
 	}
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgKnob::preferredSize() const
+	Size Knob::preferredSize() const
 	{
-		return WgSize(40,40);
+		return Size(40,40);
 	}
 	
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgKnob::_onCloneContent( const WgWidget * _pOrg )
+	void Knob::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgKnob * pOrg = static_cast<const WgKnob*>(_pOrg);
+		const Knob * pOrg = static_cast<const Knob*>(_pOrg);
 	}
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Knob::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice, _canvas, _window, _clip);
+		Widget::_onRender(pDevice, _canvas, _window, _clip);
 	
 		int sz = WgMin( _canvas.w,_canvas.h );
 	
 		if( sz > 1 )
 		{
-			pDevice->clipDrawElipse( _clip, WgRect(_canvas.pos(),sz,sz), WgColor::pink );
+			pDevice->clipDrawElipse( _clip, Rect(_canvas.pos(),sz,sz), Color::pink );
 		}
 	}
 	
 	//____ _onAlphaTest() ___________________________________________________________
 	
-	bool WgKnob::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Knob::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		return true;
 	}

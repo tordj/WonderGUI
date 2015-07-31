@@ -25,7 +25,7 @@
 namespace wg 
 {
 	
-	WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgField(pHolder), icon(this), arrow(this), label(this)
+	ColumnHeaderField::ColumnHeaderField(ColumnHeaderHolder * pHolder) : Field(pHolder), icon(this), arrow(this), label(this)
 	{
 		m_height = 0;
 		m_width = 0;
@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ setSkin() ______________________________________________________
 	
-	void WgColumnHeaderField::setSkin( const WgSkin_p& pSkin )
+	void ColumnHeaderField::setSkin( const Skin_p& pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{
@@ -45,14 +45,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgColumnHeaderField::_onFieldDirty( WgField * pField )
+	void ColumnHeaderField::_onFieldDirty( Field * pField )
 	{
 		_onDirty();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgColumnHeaderField::_onFieldResize( WgField * pField )
+	void ColumnHeaderField::_onFieldResize( Field * pField )
 	{
 		_onResize();
 	}

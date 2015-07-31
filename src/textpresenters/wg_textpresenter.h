@@ -42,66 +42,66 @@
 namespace wg 
 {
 	
-	class WgPresentableField;
+	class PresentableField;
 	
-	class WgGfxDevice;
-	class WgCharBuffer;
-	class WgTextStyle;
+	class GfxDevice;
+	class CharBuffer;
+	class TextStyle;
 	
-	class WgTextPresenter;
-	typedef	WgStrongPtr<WgTextPresenter,WgObject_p>	WgTextPresenter_p;
-	typedef	WgWeakPtr<WgTextPresenter,WgObject_wp>	WgTextPresenter_wp;
+	class TextPresenter;
+	typedef	WgStrongPtr<TextPresenter,Object_p>	TextPresenter_p;
+	typedef	WgWeakPtr<TextPresenter,Object_wp>	TextPresenter_wp;
 	
-	class WgTextPresenter : public WgObject
+	class TextPresenter : public Object
 	{
 	public:
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgTextPresenter_p	cast( const WgObject_p& pObject );
+		static TextPresenter_p	cast( const Object_p& pObject );
 	
-		virtual void	addField( WgPresentableField * pField ) = 0;
-		virtual void	removeField( WgPresentableField * pField ) = 0;
+		virtual void	addField( PresentableField * pField ) = 0;
+		virtual void	removeField( PresentableField * pField ) = 0;
 	
-		virtual int		coordToChar( const WgPresentableField * pField, WgCoord pos ) = 0;
+		virtual int		coordToChar( const PresentableField * pField, Coord pos ) = 0;
 	
-		virtual void 	renderField( WgPresentableField * pText, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip ) = 0;
+		virtual void 	renderField( PresentableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	
-		virtual void	onTextModified( WgPresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onFieldResize( WgPresentableField * pText, WgSize newSize ) = 0;
-		virtual void	onStateChange( WgPresentableField * pText, WgState newState, WgState oldState ) = 0;
-		virtual void	onStyleChange( WgPresentableField * pText ) = 0;
-		virtual void	onRefresh( WgPresentableField * pText ) = 0;
+		virtual void	onTextModified( PresentableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
+		virtual void	onFieldResize( PresentableField * pText, Size newSize ) = 0;
+		virtual void	onStateChange( PresentableField * pText, State newState, State oldState ) = 0;
+		virtual void	onStyleChange( PresentableField * pText ) = 0;
+		virtual void	onRefresh( PresentableField * pText ) = 0;
 	
 	
-		virtual WgSize	preferredSize( const WgPresentableField * pText ) const = 0;
-		virtual int		matchingWidth( const WgPresentableField * pText, int height ) const = 0;
-		virtual int		matchingHeight( const WgPresentableField * pText, int width ) const = 0;
+		virtual Size	preferredSize( const PresentableField * pText ) const = 0;
+		virtual int		matchingWidth( const PresentableField * pText, int height ) const = 0;
+		virtual int		matchingHeight( const PresentableField * pText, int width ) const = 0;
 	
-		virtual WgRect	rectForRange( const WgPresentableField * pText, int ofs, int length ) const = 0;
+		virtual Rect	rectForRange( const PresentableField * pText, int ofs, int length ) const = 0;
 	
-		virtual WgString tooltip( const WgPresentableField * pText ) const;
+		virtual String tooltip( const PresentableField * pText ) const;
 	
-		virtual int		coordToCaretPos( WgPresentableField * pField, WgCoord pos ) = 0;
-		virtual int		moveCaret( WgPresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
-		virtual WgRect	charToRect( const WgPresentableField * pField, int charOfs ) = 0;
+		virtual int		coordToCaretPos( PresentableField * pField, Coord pos ) = 0;
+		virtual int		moveCaret( PresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+		virtual Rect	charToRect( const PresentableField * pField, int charOfs ) = 0;
 	
 	
 	protected:
-		WgTextPresenter() {}
-		virtual ~WgTextPresenter() {};
+		TextPresenter() {}
+		virtual ~TextPresenter() {};
 	
 	
-		WgCharBuffer *  _charBuffer( WgPresentableField * pField ) const;
-		const WgCharBuffer *  _charBuffer( const WgPresentableField * pField ) const;
-		const void *		_fieldDataBlock( const WgPresentableField * pField) const;
-		void *			_fieldDataBlock( WgPresentableField * pField) const;
-		int				_fieldDataInt( WgPresentableField * pField ) const;
-		WgTextStyle *	_baseStyle( WgPresentableField * pField ) const;
-		WgState			_state( WgPresentableField * pField ) const;
+		CharBuffer *  _charBuffer( PresentableField * pField ) const;
+		const CharBuffer *  _charBuffer( const PresentableField * pField ) const;
+		const void *		_fieldDataBlock( const PresentableField * pField) const;
+		void *			_fieldDataBlock( PresentableField * pField) const;
+		int				_fieldDataInt( PresentableField * pField ) const;
+		TextStyle *	_baseStyle( PresentableField * pField ) const;
+		State			_state( PresentableField * pField ) const;
 		
-		void			_setFieldDataBlock( WgPresentableField * pField, void * pBlock );
-		void			_setFieldDataInt( WgPresentableField * pField, int data );
+		void			_setFieldDataBlock( PresentableField * pField, void * pBlock );
+		void			_setFieldDataInt( PresentableField * pField, int data );
 		
 	};
 	

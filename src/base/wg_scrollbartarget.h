@@ -35,9 +35,9 @@ namespace wg
 {
 	
 	
-	class WgScrollbarTarget
+	class ScrollbarTarget
 	{
-		friend class WgScrollbar;
+		friend class Scrollbar;
 	
 	protected:
 	
@@ -52,7 +52,7 @@ namespace wg
 	
 		virtual float	_setPosition( float fraction ) = 0;
 	
-		virtual WgWidget*_getWidget() = 0;
+		virtual Widget*_getWidget() = 0;
 		virtual float	_getHandlePosition() = 0;
 		virtual float	_getHandleSize() = 0;
 	
@@ -62,7 +62,7 @@ namespace wg
 	
 		//
 	
-		WgWidget_wp	m_pScrollbar;
+		Widget_wp	m_pScrollbar;
 	};
 	
 	

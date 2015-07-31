@@ -32,12 +32,12 @@
 namespace wg 
 {
 	
-	WgPen::WgPen()
+	Pen::Pen()
 	{
 		_init();
 	}
 	
-	WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
+	Pen::Pen( GfxDevice * pDevice, const Coord& origo, const Rect& clip )
 	{
 		_init();
 	
@@ -49,7 +49,7 @@ namespace wg
 	
 	//____ _init() _________________________________________________________________
 	
-	void WgPen::_init()
+	void Pen::_init()
 	{
 		m_pDevice = 0;
 	
@@ -73,7 +73,7 @@ namespace wg
 	
 	//____ setClipRect() __________________________________________________________
 	
-	void WgPen::setClipRect( const WgRect& clip )
+	void Pen::setClipRect( const Rect& clip )
 	{
 		m_clipRect = clip;
 		if( m_clipRect.x == 0 && m_clipRect.y == 0 && m_clipRect.w == 0 && m_clipRect.h == 0 )
@@ -86,7 +86,7 @@ namespace wg
 	
 	//____ _onAttrChanged() __________________________________________________________
 	
-	void WgPen::_onAttrChanged()
+	void Pen::_onAttrChanged()
 	{
 		if( !m_pFont )
 		{
@@ -100,7 +100,7 @@ namespace wg
 	
 	//____ setAttributes() ________________________________________________________
 	
-	bool WgPen::setAttributes( const WgTextAttr& attr )
+	bool Pen::setAttributes( const TextAttr& attr )
 	{
 		if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 			return false;
@@ -115,7 +115,7 @@ namespace wg
 	
 	//____ setSize() ______________________________________________________________
 	
-	bool WgPen::setSize( int size )
+	bool Pen::setSize( int size )
 	{
 		if( size < 0 && size > WG_MAX_FONTSIZE )
 			return false;
@@ -127,7 +127,7 @@ namespace wg
 	
 	//____ setFont() ______________________________________________________________
 	
-	void WgPen::setFont( const WgFont_p& pFont )
+	void Pen::setFont( const Font_p& pFont )
 	{
 		m_pFont = pFont;
 		_onAttrChanged();
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ setStyle() _____________________________________________________________
 	
-	void WgPen::setStyle( WgFontAlt style )
+	void Pen::setStyle( FontAlt style )
 	{
 		m_style = style;
 		_onAttrChanged();
@@ -143,7 +143,7 @@ namespace wg
 	
 	//____ setColor() _____________________________________________________________
 	
-	void WgPen::setColor( WgColor color )
+	void Pen::setColor( Color color )
 	{
 		m_color = color;
 	//	_onAttrChanged();
@@ -152,7 +152,7 @@ namespace wg
 	
 	//____ setChar() _____________________________________________________________
 	
-	bool WgPen::setChar( Uint32 chr )
+	bool Pen::setChar( Uint32 chr )
 	{
 		m_pPrevGlyph = m_pGlyph;
 	
@@ -210,7 +210,7 @@ namespace wg
 	
 		// First we try to get the glyph from our Glyphset.
 	
-		WgGlyph_p p = m_pGlyphs->getGlyph( chr, m_size );
+		Glyph_p p = m_pGlyphs->getGlyph( chr, m_size );
 		if( !p )
 		{
 			// If not in glyphset we get the closest match in size/style from Font.
@@ -249,9 +249,9 @@ namespace wg
 	
 	//____ blitChar() _____________________________________________________________
 	
-	void WgPen::blitChar() const
+	void Pen::blitChar() const
 	{
-		const WgGlyphBitmap * pSrc = m_pGlyph->getBitmap();
+		const GlyphBitmap * pSrc = m_pGlyph->getBitmap();
 	
 		if( pSrc )
 		{
@@ -267,22 +267,22 @@ namespace wg
 	
 	//____ blitCursor() ___________________________________________________________
 	
-	bool WgPen::blitCursor( const WgCaretInstance& instance ) const
+	bool Pen::blitCursor( const CaretInstance& instance ) const
 	{
-		WgCaret_p pCursor = WgTextTool::getCursor(instance.m_pText);
+		Caret_p pCursor = TextTool::getCursor(instance.m_pText);
 		if( !pCursor )
 			return false;
 	
-		WgCaret::Mode mode = instance.cursorMode();
+		Caret::Mode mode = instance.cursorMode();
 	
-		WgGfxAnim_p pAnim	= pCursor->anim( mode );
+		GfxAnim_p pAnim	= pCursor->anim( mode );
 		if( !pAnim )
 			return false;
 	
-		WgGfxFrame * pAnimFrame =	pAnim->getFrame( instance.time(), 0 );
+		GfxFrame * pAnimFrame =	pAnim->getFrame( instance.time(), 0 );
 	
-		WgSize	size = pAnim->size();
-		WgCoord  bearing = pCursor->bearing( mode );
+		Size	size = pAnim->size();
+		Coord  bearing = pCursor->bearing( mode );
 	
 		float	scaleValue = (pCursor->sizeRatio(mode)*getLineHeight())/ size.h;
 	
@@ -300,17 +300,17 @@ namespace wg
 	
 		// Set tintcolor/blendmode. Save original modes so we can restore them.
 	
-		WgColor		tintColor;
+		Color		tintColor;
 		WgBlendMode blendMode;
 		switch( pCursor->getBlitMode() )
 		{
-			case WgCaret::NORMAL:
+			case Caret::NORMAL:
 				break;
-			case WgCaret::TINTED:
+			case Caret::TINTED:
 				tintColor = m_pDevice->getTintColor();
 				m_pDevice->setTintColor( tintColor * instance.text()->properties()->color( WG_STATE_NORMAL ) );
 				break;
-			case WgCaret::INVERT_BG:
+			case Caret::INVERT_BG:
 				blendMode = m_pDevice->getBlendMode();
 				m_pDevice->setBlendMode(WG_BLENDMODE_INVERT);
 				break;
@@ -319,20 +319,20 @@ namespace wg
 		//
 	
 		if( m_bClip )
-			m_pDevice->clipStretchBlit( m_clipRect, pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
+			m_pDevice->clipStretchBlit( m_clipRect, pAnimFrame->pSurf, pAnimFrame->rect, Rect(m_pos + bearing, size) );
 		else
-			m_pDevice->stretchBlit( pAnimFrame->pSurf, pAnimFrame->rect, WgRect(m_pos + bearing, size) );
+			m_pDevice->stretchBlit( pAnimFrame->pSurf, pAnimFrame->rect, Rect(m_pos + bearing, size) );
 	
 		// Restore tintcolor/blendmode.
 	
 		switch( pCursor->getBlitMode() )
 		{
-			case WgCaret::NORMAL:
+			case Caret::NORMAL:
 				break;
-			case WgCaret::TINTED:
+			case Caret::TINTED:
 				m_pDevice->setTintColor( tintColor );
 				break;
-			case WgCaret::INVERT_BG:
+			case Caret::INVERT_BG:
 				m_pDevice->setBlendMode( blendMode );
 				break;
 		}
@@ -344,15 +344,15 @@ namespace wg
 	
 	//____ advancePosCursor() _____________________________________________________
 	
-	void WgPen::advancePosCursor( const WgCaretInstance& instance )
+	void Pen::advancePosCursor( const CaretInstance& instance )
 	{
-		WgCaret_p pCursor = WgTextTool::getCursor( instance.m_pText );
+		Caret_p pCursor = TextTool::getCursor( instance.m_pText );
 		if( !pCursor )
 			return;
 	
-		WgCaret::Mode mode = instance.cursorMode();
+		Caret::Mode mode = instance.cursorMode();
 	
-		WgGfxAnim_p pAnim	= pCursor->anim( mode );
+		GfxAnim_p pAnim	= pCursor->anim( mode );
 		if( !pAnim )
 			return;
 	

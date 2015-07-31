@@ -50,14 +50,14 @@
 namespace wg 
 {
 	
-	class WgColor;
-	class WgCharSeq;
-	class WgString;
-	class WgCharBuffer;
+	class Color;
+	class CharSeq;
+	class String;
+	class CharBuffer;
 	
-	class WgModText;
-	typedef	WgIStrongPtr<WgModText,WgText_p>	WgModText_p;
-	typedef	WgIWeakPtr<WgModText,WgText_wp>	WgModText_wp;
+	class ModText;
+	typedef	WgIStrongPtr<ModText,Text_p>	ModText_p;
+	typedef	WgIWeakPtr<ModText,Text_wp>	ModText_wp;
 	
 	/**
 	 * @brief Interface to a text field with text that is modifiable through the api
@@ -67,26 +67,26 @@ namespace wg
 	 * 
 	*/
 	 
-	class WgModText : public WgText
+	class ModText : public Text
 	{
 	public:
-		WgModText( WgTextField * pField ) : WgText(pField) {};
+		ModText( TextField * pField ) : Text(pField) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgModText_p		cast( const WgInterface_p& pInterface );
-		inline WgModText_p		ptr() { return WgModText_p(_object(),this); }
+		static ModText_p		cast( const Interface_p& pInterface );
+		inline ModText_p		ptr() { return ModText_p(_object(),this); }
 	
 		inline void				clear() { m_pField->clear(); }
 	
-		inline void				set( const WgCharSeq& seq ) { m_pField->set(seq); }
-		inline void				set( const WgCharBuffer * pBuffer ) { m_pField->set(pBuffer); }
-		inline void				set( const WgString& str ) { m_pField->set(str); }
+		inline void				set( const CharSeq& seq ) { m_pField->set(seq); }
+		inline void				set( const CharBuffer * pBuffer ) { m_pField->set(pBuffer); }
+		inline void				set( const String& str ) { m_pField->set(str); }
 	
-		inline int				append( const WgCharSeq& seq ) { return m_pField->append(seq); }
-		inline int				insert( int ofs, const WgCharSeq& seq ) { return m_pField->insert(ofs,seq); }
-		inline int				replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
+		inline int				append( const CharSeq& seq ) { return m_pField->append(seq); }
+		inline int				insert( int ofs, const CharSeq& seq ) { return m_pField->insert(ofs,seq); }
+		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
 		inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
 	
 	};

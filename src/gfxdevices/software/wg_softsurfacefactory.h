@@ -35,25 +35,25 @@
 namespace wg 
 {
 	
-	class WgSoftSurfaceFactory;
-	typedef	WgStrongPtr<WgSoftSurfaceFactory,WgSurfaceFactory_p>	WgSoftSurfaceFactory_p;
-	typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactory_wp>	WgSoftSurfaceFactory_wp;
+	class SoftSurfaceFactory;
+	typedef	WgStrongPtr<SoftSurfaceFactory,SurfaceFactory_p>	SoftSurfaceFactory_p;
+	typedef	WgWeakPtr<SoftSurfaceFactory,SurfaceFactory_wp>	SoftSurfaceFactory_wp;
 	
-	//____ WgSoftSurfaceFactory _______________________________________________________
+	//____ SoftSurfaceFactory _______________________________________________________
 	
-	class WgSoftSurfaceFactory : public WgSurfaceFactory
+	class SoftSurfaceFactory : public SurfaceFactory
 	{
 	public:
-		static WgSoftSurfaceFactory_p	create() { return WgSoftSurfaceFactory_p(new WgSoftSurfaceFactory()); }
+		static SoftSurfaceFactory_p	create() { return SoftSurfaceFactory_p(new SoftSurfaceFactory()); }
 	
 		bool							isInstanceOf( const char * pClassName ) const;
 		const char *					className( void ) const;
 		static const char				CLASSNAME[];
-		static WgSoftSurfaceFactory_p	cast( const WgObject_p& pObject );
+		static SoftSurfaceFactory_p	cast( const Object_p& pObject );
 	
-		virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
+		virtual Surface_p createSurface( const Size& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
 	protected:
-		virtual ~WgSoftSurfaceFactory() {}
+		virtual ~SoftSurfaceFactory() {}
 	};
 	
 	//========================================================================================

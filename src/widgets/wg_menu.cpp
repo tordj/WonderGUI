@@ -38,13 +38,13 @@
 namespace wg 
 {
 	
-	const char WgMenu::CLASSNAME[] = {"Menu"};
+	const char Menu::CLASSNAME[] = {"Menu"};
 	static const char	c_hookType[] = {"MenuScrollbarHook"};
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgMenu::WgMenu()
+	Menu::Menu()
 	{
 		m_nItems				= 0;
 		m_markedItem			= 0;
@@ -64,7 +64,7 @@ namespace wg
 		m_entryHeight			= 0;
 		m_sepHeight				= 2;
 	
-		m_scrollbarBtnLayout		= WgScrollbar::DEFAULT;
+		m_scrollbarBtnLayout		= Scrollbar::DEFAULT;
 	
 		m_contentHeight			= 0;
 		m_contentOfs			= 0;
@@ -78,43 +78,43 @@ namespace wg
 		_refreshEntryHeight();
 	}
 	
-	//____ ~WgMenu() __________________________________________________________
+	//____ ~Menu() __________________________________________________________
 	
-	WgMenu::~WgMenu()
+	Menu::~Menu()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgMenu::isInstanceOf( const char * pClassName ) const
+	bool Menu::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgPanel::isInstanceOf(pClassName);
+		return Panel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgMenu::className( void ) const
+	const char * Menu::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgMenu_p WgMenu::cast( const WgObject_p& pObject )
+	Menu_p Menu::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgMenu_p( static_cast<WgMenu*>(pObject.rawPtr()) );
+			return Menu_p( static_cast<Menu*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setSkin() __________________________________________________________
 	
-	bool WgMenu::setSkin( const WgSkin_p& pSkin, int iconFieldWidth, int arrowFieldWidth )
+	bool Menu::setSkin( const Skin_p& pSkin, int iconFieldWidth, int arrowFieldWidth )
 	{
 		m_pSkin			= pSkin;
 	
@@ -129,7 +129,7 @@ namespace wg
 	
 	//____ setEntrySkin() _________________________________________________________
 	
-	void WgMenu::setEntrySkin( const WgSkin_p& pSkin )
+	void Menu::setEntrySkin( const Skin_p& pSkin )
 	{
 		if( pSkin != m_pEntrySkin )
 		{
@@ -143,7 +143,7 @@ namespace wg
 	
 	//____ setSeparatorSkin() ___________________________________________________
 	
-	bool WgMenu::setSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& borders )
+	bool Menu::setSeparatorSkin( const Skin_p& pSkin, const Border& borders )
 	{
 		m_pSeparatorSkin	= pSkin;
 		m_sepBorder		= borders;
@@ -160,7 +160,7 @@ namespace wg
 	
 	//____ setArrowSource() _______________________________________________________
 	
-	bool WgMenu::setArrowSource( const WgGfxAnim_p& pAnim )
+	bool Menu::setArrowSource( const GfxAnim_p& pAnim )
 	{
 		if( !pAnim )
 			return false;
@@ -174,18 +174,18 @@ namespace wg
 	
 	//____ setTextProperties() _____________________________________________________
 	
-	bool WgMenu::setTextProperties( const WgTextprop_p& pEntryProp, const WgTextprop_p& pKeyAccelProp )
+	bool Menu::setTextProperties( const Textprop_p& pEntryProp, const Textprop_p& pKeyAccelProp )
 	{
 		m_pEntryProp 	= pEntryProp;
 		m_pKeyAccelProp = pKeyAccelProp;
 	
 		// We need to modify MinWidth now that fonts might have changed
 	
-		WgMenuItem * pItem = m_items.first();
+		MenuItem * pItem = m_items.first();
 		while( pItem )
 		{
 			if( pItem->getType() != SEPARATOR )
-				_calcEntryMinWidth( (WgMenuEntry*) pItem );
+				_calcEntryMinWidth( (MenuEntry*) pItem );
 			pItem = pItem->next();
 		}
 	
@@ -199,25 +199,25 @@ namespace wg
 	
 	//____ refreshEntryHeight() ____________________________________________________
 	
-	void WgMenu::_refreshEntryHeight()
+	void Menu::_refreshEntryHeight()
 	{
-			WgPen		pen;
-			WgTextAttr	attr;
-			WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
-			WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
+			Pen		pen;
+			TextAttr	attr;
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
+			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
 	
 			pen.setAttributes( attr );
 			int	heightNormal	= pen.getLineSpacing();
 	
 			attr.clear();
-			WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
-			WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
+			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
 			pen.setAttributes( attr );
 			int heightMarked	= pen.getLineSpacing();
 	
 			attr.clear();
-			WgTextTool::addPropAttributes(attr, WgBase::getDefaultTextprop(), WG_STATE_DISABLED );
-			WgTextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_DISABLED );
+			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
 			pen.setAttributes( attr );
 			int heightDisabled	= pen.getLineSpacing();
 	
@@ -239,30 +239,30 @@ namespace wg
 	
 	//____ SetScrollbarSkin() ______________________________________________________
 	
-	bool WgMenu::setScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
+	bool Menu::setScrollbarSkins(  const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin, const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin )
 	{
 		m_pScrollbarBgSkin		= pBackgroundSkin;
 		m_pScrollbarHandleSkin	= pHandleSkin;
 		m_pScrollbarBtnFwdSkin	= pFwdButtonSkin;
 		m_pScrollbarBtnBwdSkin	= pBwdButtonSkin;
 	
-		if( m_scrollbarHook.Scrollbar() )
+		if( m_scrollbarHook.scrollbar() )
 		{
 			//TODO: Adapt to changes in scrollbars minimum width.
 	
-			m_scrollbarHook.Scrollbar()->setSkins( 0, pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
+			m_scrollbarHook.scrollbar()->setSkins( 0, pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
 		}
 		return true;
 	}
 	
 	//____ setScrollbarButtonLayout() ________________________________________________
 	
-	bool WgMenu::setScrollbarButtonLayout(  WgScrollbar::BtnLayout layout )
+	bool Menu::setScrollbarButtonLayout(  Scrollbar::BtnLayout layout )
 	{
 		m_scrollbarBtnLayout = layout;
 	
-		if( m_scrollbarHook.Scrollbar() )
-			m_scrollbarHook.Scrollbar()->setButtonLayout( layout );
+		if( m_scrollbarHook.scrollbar() )
+			m_scrollbarHook.scrollbar()->setButtonLayout( layout );
 	
 		return true;
 	}
@@ -270,7 +270,7 @@ namespace wg
 	
 	//____ setCheckBoxSkin() ____________________________________________________
 	
-	bool WgMenu::setCheckBoxSkin( const WgSkin_p& pSkin )
+	bool Menu::setCheckBoxSkin( const Skin_p& pSkin )
 	{
 		m_pCheckBoxSkin		= pSkin;
 	
@@ -280,7 +280,7 @@ namespace wg
 	
 	//____ setRadioButtonSkin() _________________________________________________
 	
-	bool WgMenu::setRadioButtonSkin( const WgSkin_p& pSkin )
+	bool Menu::setRadioButtonSkin( const Skin_p& pSkin )
 	{
 		m_pRadioButtonSkin			= pSkin;
 	
@@ -290,19 +290,19 @@ namespace wg
 	
 	//____ getEntryHeight() _______________________________________________________
 	
-	int WgMenu::getEntryHeight() const
+	int Menu::getEntryHeight() const
 	{
 		return m_entryHeight;
 	}
 	
 	//____ addItem() ______________________________________________________________
 	
-	int WgMenu::addItem( WgMenuItem * pItem )
+	int Menu::addItem( MenuItem * pItem )
 	{
 		// Calculate minWidth for all derived from ENTRY
 	
 		if( pItem->getType() != SEPARATOR )
-			_calcEntryMinWidth( (WgMenuEntry*) pItem );
+			_calcEntryMinWidth( (MenuEntry*) pItem );
 	
 		// Let item do what it needs to
 	
@@ -323,12 +323,12 @@ namespace wg
 	
 	//____ insertItem() ___________________________________________________________
 	
-	int WgMenu::insertItem( WgMenuItem * pEntry, int pos )
+	int Menu::insertItem( MenuItem * pEntry, int pos )
 	{
 		// Calculate minWidth for all derived from ENTRY
 	
 		if( pEntry->getType() != SEPARATOR )
-			_calcEntryMinWidth( (WgMenuEntry*) pEntry );
+			_calcEntryMinWidth( (MenuEntry*) pEntry );
 	
 		// Let item do what it needs to
 	
@@ -336,7 +336,7 @@ namespace wg
 	
 		// Add the item.
 	
-		WgMenuItem * pPos = m_items.get(pos);
+		MenuItem * pPos = m_items.get(pos);
 		if( pPos )
 			pEntry->moveBefore(pPos);
 		else
@@ -358,7 +358,7 @@ namespace wg
 	
 	//____ removeItem() ___________________________________________________________
 	
-	bool WgMenu::removeItem( WgMenuItem * pEntry )
+	bool Menu::removeItem( MenuItem * pEntry )
 	{
 		if( !m_items.isMemberOf(pEntry) )
 			return false;
@@ -370,18 +370,18 @@ namespace wg
 		return true;
 	}
 	
-	WgMenuItem* WgMenu::removeItem( int pos )
+	MenuItem* Menu::removeItem( int pos )
 	{
-		WgMenuItem * pEntry = getItem(pos);
+		MenuItem * pEntry = getItem(pos);
 		removeItem(pEntry);
 		return pEntry;
 	}
 	
 	//____ removeAllItems() _______________________________________________________
 	
-	void WgMenu::removeAllItems()
+	void Menu::removeAllItems()
 	{
-		WgMenuItem* pItem = m_items.first();
+		MenuItem* pItem = m_items.first();
 		while( pItem )
 		{
 			pItem->setMyMenu(0);
@@ -396,7 +396,7 @@ namespace wg
 	
 	//____ deleteItem() ___________________________________________________________
 	
-	bool WgMenu::deleteItem( WgMenuItem * pEntry )
+	bool Menu::deleteItem( MenuItem * pEntry )
 	{
 		if( !m_items.isMemberOf(pEntry) )
 			return false;
@@ -408,14 +408,14 @@ namespace wg
 		return true;
 	}
 	
-	bool WgMenu::deleteItem( int pos )
+	bool Menu::deleteItem( int pos )
 	{
 		return deleteItem(getItem(pos));
 	}
 	
 	//____ deleteAllItems() _______________________________________________________
 	
-	void WgMenu::deleteAllItems()
+	void Menu::deleteAllItems()
 	{
 		m_items.clear();
 		m_nItems = 0;
@@ -425,7 +425,7 @@ namespace wg
 	
 	//____ getItemPos() ___________________________________________________________
 	
-	int WgMenu::getItemPos( WgMenuItem* pEntry )
+	int Menu::getItemPos( MenuItem* pEntry )
 	{
 		if( m_items.isMemberOf( pEntry ) )
 			return pEntry->index();
@@ -435,16 +435,16 @@ namespace wg
 	
 	//____ getItem() ______________________________________________________________
 	
-	WgMenuItem* WgMenu::getItem( int pos )
+	MenuItem* Menu::getItem( int pos )
 	{
 		return m_items.get(pos);
 	}
 	
 	//____ FindItem() ______________________________________________________________
 	
-	WgMenuItem* WgMenu::FindItem(int id)
+	MenuItem* Menu::FindItem(int id)
 	{
-		WgMenuItem* pItem = m_items.first();
+		MenuItem* pItem = m_items.first();
 		for(; pItem; pItem = pItem->next())
 		{
 			if(pItem->getId() == id)
@@ -455,14 +455,14 @@ namespace wg
 	
 	//____ preferredSize() ___________________________________________________________
 	
-	WgSize WgMenu::preferredSize() const
+	Size Menu::preferredSize() const
 	{
 		return m_defaultSize;
 	}
 	
 	//____ matchingWidth() ________________________________________________________
 	
-	int  WgMenu::matchingWidth( int height ) const
+	int  Menu::matchingWidth( int height ) const
 	{
 		if( height >= m_defaultSize.h )
 			return m_defaultSize.w;
@@ -488,30 +488,30 @@ namespace wg
 	
 	//____ _calcEntryMinWidth() _____________________________________________________
 	
-	void WgMenu::_calcEntryMinWidth( WgMenuEntry * pEntry )
+	void Menu::_calcEntryMinWidth( MenuEntry * pEntry )
 	{
-		WgTextAttr	entryAttr;
-		WgTextTool::addPropAttributes(entryAttr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
-		WgTextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
-		WgTextAttr	accelAttr;
-		WgTextTool::addPropAttributes(accelAttr, WgBase::getDefaultTextprop(), WG_STATE_NORMAL );
-		WgTextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
+		TextAttr	entryAttr;
+		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
+		TextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
+		TextAttr	accelAttr;
+		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
+		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
 	
-		int wNormal = WgTextTool::lineWidth( entryAttr, "  " );
-		int wMarked = WgTextTool::lineWidth( entryAttr, "  " );
+		int wNormal = TextTool::lineWidth( entryAttr, "  " );
+		int wMarked = TextTool::lineWidth( entryAttr, "  " );
 	
-		wNormal += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
-		wNormal += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
+		wNormal += TextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
+		wNormal += TextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
 	
 		entryAttr.clear();
-		WgTextTool::addPropAttributes(entryAttr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
-		WgTextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
+		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
+		TextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
 		accelAttr.clear();
-		WgTextTool::addPropAttributes(accelAttr, WgBase::getDefaultTextprop(), WG_STATE_HOVERED );
-		WgTextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
+		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
+		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
 	
-		wMarked += WgTextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
-		wMarked += WgTextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
+		wMarked += TextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
+		wMarked += TextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
 	
 	
 		if( wNormal > wMarked )
@@ -522,24 +522,24 @@ namespace wg
 	
 	//____ _getPadding() ____________________________________________________
 	
-	WgBorder WgMenu::_getPadding() const
+	Border Menu::_getPadding() const
 	{
 		//TODO: This is ugly and doesn't take ContentShift of various states into account.
 	
 		if( m_pSkin )
 		{
-			WgRect r = m_pSkin->contentRect( WgRect(0,0,1000,1000), WG_STATE_NORMAL );
-			return WgBorder(r.x, r.y, 1000-r.w, 1000-r.h);
+			Rect r = m_pSkin->contentRect( Rect(0,0,1000,1000), WG_STATE_NORMAL );
+			return Border(r.x, r.y, 1000-r.w, 1000-r.h);
 		}
 		else
-			return WgBorder(0);
+			return Border(0);
 	}
 	
 	//____ _scrollItemIntoView() ___________________________________________________
 	
-	void WgMenu::_scrollItemIntoView( WgMenuItem * pItem, bool bForceAtTop )
+	void Menu::_scrollItemIntoView( MenuItem * pItem, bool bForceAtTop )
 	{
-		WgMenuItem * p = m_items.first();
+		MenuItem * p = m_items.first();
 		int ofs = 0;
 	
 		while( p != pItem )
@@ -562,19 +562,19 @@ namespace wg
 	
 	//____ _markFirstFilteredEntry() _______________________________________________
 	
-	void WgMenu::_markFirstFilteredEntry()
+	void Menu::_markFirstFilteredEntry()
 	{
-		WgMenuItem * pItem = m_items.first();
+		MenuItem * pItem = m_items.first();
 	
 		while( pItem )
 		{
 			if( pItem->getType() != SEPARATOR )
 			{
-				WgString str = ((WgMenuEntry*)pItem)->getText();
+				String str = ((MenuEntry*)pItem)->getText();
 	
 				if( str.length() >= m_nSelectorKeys )
 				{
-					const WgChar * pChars = str.chars();
+					const Char * pChars = str.chars();
 	
 					int i = 0;
 					while( i < m_nSelectorKeys && towlower(pChars[i].getGlyph()) == m_selectorKeys[i] )
@@ -601,25 +601,25 @@ namespace wg
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgMenu::_onRender( WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& window, const WgRect& clip )
+	void Menu::_onRender( GfxDevice * pDevice, const Rect& canvas, const Rect& window, const Rect& clip )
 	{
-		WgWidget::_onRender(pDevice,canvas,window,clip);
+		Widget::_onRender(pDevice,canvas,window,clip);
 	
 		// Render the menu-items
 	
-		WgRect		contentRect = m_pSkin?m_pSkin->contentRect(canvas, m_state):canvas;
+		Rect		contentRect = m_pSkin?m_pSkin->contentRect(canvas, m_state):canvas;
 	
-		WgRect		contentClip( contentRect, clip );		// A clip rectangle for content.
+		Rect		contentClip( contentRect, clip );		// A clip rectangle for content.
 	
-		WgMenuItem * pItem = m_items.first();
+		MenuItem * pItem = m_items.first();
 	
 		int		yPos = contentRect.y - m_contentOfs;
 		int		xPosText = contentRect.x + m_iconFieldWidth;
 		int		xPosIcon = contentRect.x;
 		int		textFieldLen = contentRect.w - m_iconFieldWidth - m_arrowFieldWidth;
 	
-		WgPen	entryPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
-		WgPen	accelPen( pDevice, WgCoord( xPosText, yPos ), contentClip );
+		Pen	entryPen( pDevice, Coord( xPosText, yPos ), contentClip );
+		Pen	accelPen( pDevice, Coord( xPosText, yPos ), contentClip );
 	
 	
 		unsigned int	item = 1;
@@ -631,7 +631,7 @@ namespace wg
 				{
 					if( m_pSeparatorSkin )
 					{
-						WgRect	dest( contentRect.x, yPos + m_sepBorder.top,
+						Rect	dest( contentRect.x, yPos + m_sepBorder.top,
 									  contentRect.w, m_pSeparatorSkin->preferredSize().h );
 	
 						m_pSeparatorSkin->render( pDevice, dest, m_state, contentClip );
@@ -640,9 +640,9 @@ namespace wg
 				}
 				else
 				{
-					WgState	state = WG_STATE_DISABLED;
+					State	state = WG_STATE_DISABLED;
 	
-					if( ((WgMenuEntry*)pItem)->isEnabled() )
+					if( ((MenuEntry*)pItem)->isEnabled() )
 						state = WG_STATE_NORMAL;
 	
 					if( item == m_markedItem )
@@ -650,12 +650,12 @@ namespace wg
 	
 					// Render the tile for this entry
 	
-					WgRect tileDest(	contentRect.x,
+					Rect tileDest(	contentRect.x,
 										yPos,
 										contentRect.w,
 										m_entryHeight );
 	
-	//				WgRect tileClip( contentClip, tileDest);
+	//				Rect tileClip( contentClip, tileDest);
 	
 					if( m_pEntrySkin )
 						m_pEntrySkin->render( pDevice, tileDest, state, contentClip );
@@ -663,38 +663,38 @@ namespace wg
 	
 					// Print the text (if any)
 	
-					const WgChar * pText = ((WgMenuEntry*)pItem)->getText().chars();
+					const Char * pText = ((MenuEntry*)pItem)->getText().chars();
 					if( pText->getGlyph() != 0 )
 					{
 	
-						WgTextAttr	attr;
-						WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), state );
+						TextAttr	attr;
+						TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), state );
 	//					if( m_pSkin )
-	//						WgTextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
-						WgTextTool::addPropAttributes( attr, m_pEntryProp, state );
+	//						TextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
+						TextTool::addPropAttributes( attr, m_pEntryProp, state );
 						entryPen.setAttributes( attr );
 						int y = yPos + (m_entryHeight - entryPen.getLineHeight())/2 + entryPen.getBaseline();
-						entryPen.setPos( WgCoord( xPosText, y ) );
+						entryPen.setPos( Coord( xPosText, y ) );
 						pDevice->printLine( entryPen, attr, pText );
 					}
 	
 					// Print the accel text (if any)
 	
-					const WgChar * pAccelText = ((WgMenuEntry*)pItem)->getAccelText().chars();
+					const Char * pAccelText = ((MenuEntry*)pItem)->getAccelText().chars();
 					if( pAccelText->getGlyph() != 0 )
 					{
-						WgTextAttr	attr;
-						WgTextTool::addPropAttributes( attr, WgBase::getDefaultTextprop(), state );
+						TextAttr	attr;
+						TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), state );
 	//					if( m_pSkin )
-	//						WgTextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
-						WgTextTool::addPropAttributes( attr, m_pKeyAccelProp, state );
+	//						TextTool::setAttrColor( attr, m_pSkin->TextColors(), mode );
+						TextTool::addPropAttributes( attr, m_pKeyAccelProp, state );
 						accelPen.setAttributes( attr );
 	
 						int y = yPos + (m_entryHeight - accelPen.getLineHeight())/2 + accelPen.getBaseline();
-						int width = WgTextTool::lineWidth( attr, state, pAccelText );
+						int width = TextTool::lineWidth( attr, state, pAccelText );
 						int x = xPosText + textFieldLen - width;
 	
-						accelPen.setPos( WgCoord(x, y) );
+						accelPen.setPos( Coord(x, y) );
 						pDevice->printLine( accelPen, attr, pAccelText );
 					}
 	
@@ -704,10 +704,10 @@ namespace wg
 					{
 						case ENTRY:
 						{
-							WgSkin_p pIcon = ((WgMenuEntry*)pItem)->getIcon();
+							Skin_p pIcon = ((MenuEntry*)pItem)->getIcon();
 							if( pIcon )
 							{
-								WgSize sz = pIcon->preferredSize();
+								Size sz = pIcon->preferredSize();
 	
 								if( sz.w > m_iconFieldWidth )
 									sz.w = m_iconFieldWidth;
@@ -717,44 +717,44 @@ namespace wg
 								int y = yPos + (m_entryHeight - sz.h)/2;
 								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 	
-								pIcon->render( pDevice, WgRect(x,y,sz), state, contentClip );
+								pIcon->render( pDevice, Rect(x,y,sz), state, contentClip );
 							}
 						}
 						break;
 	
 						case CHECKBOX:
 						{
-							WgState checkboxState = state;
+							State checkboxState = state;
 	
-							if( ((WgMenuCheckBox*)pItem)->isChecked() )
+							if( ((MenuCheckBox*)pItem)->isChecked() )
 								checkboxState.setSelected(true);
 	
 							if( m_pCheckBoxSkin )
 							{
-								WgSize sz = m_pCheckBoxSkin->preferredSize();
+								Size sz = m_pCheckBoxSkin->preferredSize();
 	
 								int y = yPos + (m_entryHeight - sz.h)/2;
 								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 	
-								m_pCheckBoxSkin->render( pDevice, WgRect(x,y,sz), checkboxState, contentClip );
+								m_pCheckBoxSkin->render( pDevice, Rect(x,y,sz), checkboxState, contentClip );
 							}
 						}
 						break;
 						case RADIOBUTTON:
 						{
-							WgState radiobuttonState = state;
+							State radiobuttonState = state;
 	
-							if( ((WgMenuRadioButton*)pItem)->isSelected() )
+							if( ((MenuRadioButton*)pItem)->isSelected() )
 								radiobuttonState.setSelected(true);
 	
 							if( m_pRadioButtonSkin )
 							{
-								WgSize sz = m_pRadioButtonSkin->preferredSize();
+								Size sz = m_pRadioButtonSkin->preferredSize();
 	
 								int y = yPos + (m_entryHeight - sz.h)/2;
 								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
 	
-								m_pRadioButtonSkin->render( pDevice, WgRect(x,y,sz), radiobuttonState, contentClip );
+								m_pRadioButtonSkin->render( pDevice, Rect(x,y,sz), radiobuttonState, contentClip );
 							}
 						}
 						break;
@@ -779,13 +779,13 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgMenu::_onMsg( const WgMsg_p& pMsg )
+	void Menu::_onMsg( const Msg_p& pMsg )
 	{
-		WgPanel::_onMsg(pMsg);
+		Panel::_onMsg(pMsg);
 		
 		// TODO: Not handle or swallow key-messages if some modifier keys are pressed.
 	
-		WgCoord mousePos = pMsg->pointerPos() - globalPos();
+		Coord mousePos = pMsg->pointerPos() - globalPos();
 	
 		switch( pMsg->type() )
 		{
@@ -793,7 +793,7 @@ namespace wg
 			{
 				if( m_selectorCountdown > 0 )
 				{
-					WgTickMsg_p pTick = WgTickMsg::cast(pMsg);
+					TickMsg_p pTick = TickMsg::cast(pMsg);
 	
 					m_selectorCountdown -= pTick->millisec();
 					if( m_selectorCountdown < 0 )
@@ -809,7 +809,7 @@ namespace wg
 			{
 				// Unmark any selected item unless it is a submenu...
 	
-				WgMenuItem * pOldItem = m_items.get(m_markedItem-1);
+				MenuItem * pOldItem = m_items.get(m_markedItem-1);
 				if( pOldItem && pOldItem->getType() != SUBMENU )
 				{
 					m_markedItem = 0;
@@ -821,14 +821,14 @@ namespace wg
 			case WG_MSG_MOUSE_ENTER:
 			case WG_MSG_MOUSE_MOVE:
 			{
-				WgMenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
+				MenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 	
 				Uint32 markedItem = 0;
 				if( pItem )
 				{
 					if( pItem->getType() != SEPARATOR )
 					{
-						if( ((WgMenuEntry*)pItem)->isEnabled() )
+						if( ((MenuEntry*)pItem)->isEnabled() )
 							markedItem = pItem->index()+1;
 					}
 				}
@@ -844,7 +844,7 @@ namespace wg
 	
 					if( pItem && pItem->getType() == SUBMENU )
 					{
-						WgMenuSubMenu * pSubMenu = (WgMenuSubMenu*) pItem;
+						MenuSubMenu * pSubMenu = (MenuSubMenu*) pItem;
 						
 						if( pSubMenu != m_pOpenSubMenu )
 						{
@@ -865,7 +865,7 @@ namespace wg
 	
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
+				MenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 				if( pItem )
 					selectItem(pItem);
 			}
@@ -873,7 +873,7 @@ namespace wg
 	
 			case WG_MSG_WHEEL_ROLL:
 			{
-				WgWheelRollMsg_p pEv = WgWheelRollMsg::cast(pMsg);
+				WheelRollMsg_p pEv = WheelRollMsg::cast(pMsg);
 	
 				if( pEv->wheel() == 1 )
 				{
@@ -886,7 +886,7 @@ namespace wg
 	
 			case WG_MSG_CHARACTER:
 			{
-				Uint16 chr = WgCharacterMsg::cast(pMsg)->character();
+				Uint16 chr = CharacterMsg::cast(pMsg)->character();
 				if( chr != 0 )
 				{
 					m_selectorCountdown = c_selectorCountdownStart;
@@ -903,11 +903,11 @@ namespace wg
 			case WG_MSG_KEY_PRESS:
 			case WG_MSG_KEY_REPEAT:
 			{
-				WgMenuItem * pItem = 0;
+				MenuItem * pItem = 0;
 				if( m_markedItem != 0 )
 					pItem = m_items.get( m_markedItem-1 );
 	
-				int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+				int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 				switch( key )
 				{
 					case WG_KEY_ESCAPE:
@@ -929,7 +929,7 @@ namespace wg
 						{
 							if( pItem->getType() == SUBMENU )
 							{
-								_openSubMenu( (WgMenuSubMenu*) pItem );
+								_openSubMenu( (MenuSubMenu*) pItem );
 							}
 						}
 						break;
@@ -938,7 +938,7 @@ namespace wg
 						if( pItem )
 						{
 							if( pItem->getType() == SUBMENU )
-								_openSubMenu( (WgMenuSubMenu*) pItem );
+								_openSubMenu( (MenuSubMenu*) pItem );
 							else
 							{
 								selectItem(pItem);
@@ -1054,11 +1054,11 @@ namespace wg
 	
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 			pMsg->swallow();
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			if( key == WG_KEY_RIGHT || key == WG_KEY_RETURN || key == WG_KEY_UP || key == WG_KEY_DOWN &&
 				key == WG_KEY_HOME || key == WG_KEY_END || key == WG_KEY_PAGE_UP || key == WG_KEY_PAGE_DOWN &&
 				key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
@@ -1070,9 +1070,9 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgMenu::_onStateChanged( WgState oldState )
+	void Menu::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		if( m_state.isEnabled() != oldState.isEnabled() && m_scrollbarHook._widget() )
 			m_scrollbarHook._widget()->setEnabled(m_state.isEnabled());
@@ -1080,7 +1080,7 @@ namespace wg
 	}
 	
 	//____ selectItem() _________________________________________________
-	void WgMenu::selectItem(WgMenuItem* pItem)
+	void Menu::selectItem(MenuItem* pItem)
 	{
 		m_pSelectedItem = 0;
 	
@@ -1093,27 +1093,27 @@ namespace wg
 			{
 				m_pSelectedItem = pItem;
 	
-				WgItemInfo * pInfo = new WgItemInfo[1];
+				ItemInfo * pInfo = new ItemInfo[1];
 				pInfo->id = pItem->getId();
 												//TODO: Add index (and in the future pObject).
 	
-				WgBase::msgRouter()->post( new WgItemsSelectMsg(this,1,pInfo));
+				Base::msgRouter()->post( new ItemsSelectMsg(this,1,pInfo));
 				_itemSelected();
 			}
 			break;
 			case CHECKBOX:
 			{
-				WgMenuCheckBox * pCheckBox = (WgMenuCheckBox*) pItem;
+				MenuCheckBox * pCheckBox = (MenuCheckBox*) pItem;
 	
 				if( pCheckBox->isChecked() )
 				{
 					pCheckBox->uncheck();
-					WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),true));
+					Base::msgRouter()->post( new ItemToggleMsg(this,pItem->getId(),Object_p(),true));
 				}
 				else
 				{
 					pCheckBox->check();
-					WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),false));
+					Base::msgRouter()->post( new ItemToggleMsg(this,pItem->getId(),Object_p(),false));
 				}
 	
 				_itemSelected();
@@ -1121,10 +1121,10 @@ namespace wg
 			break;
 			case RADIOBUTTON:
 				if( m_pSelectedItem )
-					WgBase::msgRouter()->post( new WgItemToggleMsg(this,m_pSelectedItem->getId(),WgObject_p(),false));
+					Base::msgRouter()->post( new ItemToggleMsg(this,m_pSelectedItem->getId(),Object_p(),false));
 				m_pSelectedItem = pItem;
-				((WgMenuRadioButton*)pItem)->select();
-				WgBase::msgRouter()->post( new WgItemToggleMsg(this,pItem->getId(),WgObject_p(),true));
+				((MenuRadioButton*)pItem)->select();
+				Base::msgRouter()->post( new ItemToggleMsg(this,pItem->getId(),Object_p(),true));
 				_itemSelected();
 			break;
 	
@@ -1135,9 +1135,9 @@ namespace wg
 	
 	//____ _findWidget() _____________________________________________________________
 	
-	WgWidget * WgMenu::_findWidget( const WgCoord& ofs, WgSearchMode mode )
+	Widget * Menu::_findWidget( const Coord& ofs, WgSearchMode mode )
 	{
-		WgWidget * pWidget = WgPanel::_findWidget(ofs, mode);
+		Widget * pWidget = Panel::_findWidget(ofs, mode);
 		if( !pWidget && markTest( ofs ) )
 			return this;
 	
@@ -1146,9 +1146,9 @@ namespace wg
 	
 	//____ _openSubMenu() __________________________________________________________
 	
-	void WgMenu::_openSubMenu( WgMenuSubMenu * pItem )
+	void Menu::_openSubMenu( MenuSubMenu * pItem )
 	{
-		WgWidget_p pMenu = pItem->getSubMenu();
+		Widget_p pMenu = pItem->getSubMenu();
 	
 		if( !pMenu )
 			return;
@@ -1157,7 +1157,7 @@ namespace wg
 	
 		Uint32 yOfs = 0;
 	
-		WgMenuItem * p = m_items.first();
+		MenuItem * p = m_items.first();
 		while( p != pItem )
 		{
 			if( p->isVisible() )
@@ -1172,12 +1172,12 @@ namespace wg
 	
 		// Calculate itemArea
 	
-		WgRect	geo = m_pSkin?m_pSkin->contentRect(globalGeo(), WG_STATE_NORMAL):globalGeo();
-		WgRect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
+		Rect	geo = m_pSkin?m_pSkin->contentRect(globalGeo(), WG_STATE_NORMAL):globalGeo();
+		Rect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 	
 		// 
 	
-		WgPopupLayer * pLayer = 0;
+		PopupLayer * pLayer = 0;
 	
 		if( parent() )
 			pLayer = parent()->_getPopupLayer();
@@ -1192,10 +1192,10 @@ namespace wg
 	
 	//____ _closeSubMenu() _________________________________________________________
 	
-	void WgMenu::_closeSubMenu( WgMenuSubMenu * pItem )
+	void Menu::_closeSubMenu( MenuSubMenu * pItem )
 	{
-		WgPopupLayer * pLayer = 0;
-		WgWidget_p pMenu = pItem->getSubMenu();
+		PopupLayer * pLayer = 0;
+		Widget_p pMenu = pItem->getSubMenu();
 	
 		if( parent() )
 			pLayer = parent()->_getPopupLayer();
@@ -1210,9 +1210,9 @@ namespace wg
 	
 	//____ _itemSelected() ______________________________________________________
 	
-	void WgMenu::_itemSelected()
+	void Menu::_itemSelected()
 	{
-		WgPopupLayer * pLayer = 0;
+		PopupLayer * pLayer = 0;
 	
 		if( parent() )
 			pLayer = parent()->_getPopupLayer();
@@ -1223,15 +1223,15 @@ namespace wg
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void WgMenu::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+	void Menu::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
-		WgRect scrollbarGeo = _scrollbarGeo( _canvas );
+		Rect scrollbarGeo = _scrollbarGeo( _canvas );
 	
-		for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
+		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 		{
 			// Render menu itself
 	
-			WgRect clip( _canvas, *pRect );
+			Rect clip( _canvas, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
 				_onRender( pDevice, _canvas, _window, clip );
 	
@@ -1239,42 +1239,42 @@ namespace wg
 	
 			if( m_scrollbarHook._widget() )
 			{
-				WgRect clip( scrollbarGeo, *pRect );
+				Rect clip( scrollbarGeo, *pRect );
 				if( clip.w > 0 || clip.h > 0 )
-					((WgScrollbar*)m_scrollbarHook._widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
+					((Scrollbar*)m_scrollbarHook._widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
 			}
 		}
 	}
 	
 	//____ _onCollectPatches() _____________________________________________________
 	
-	void WgMenu::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+	void Menu::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		container.add( WgRect( geo, clip ) );
+		container.add( Rect( geo, clip ) );
 	}
 	
 	//____ _onMaskPatches() ________________________________________________________
 	
-	void WgMenu::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+	void Menu::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 		{
-			patches.sub( WgRect( geo, clip ) );
+			patches.sub( Rect( geo, clip ) );
 		}
 		else if( blendMode == WG_BLENDMODE_BLEND && m_pSkin )
 		{
 			if( m_pSkin->isOpaque() )
-				patches.sub( WgRect( geo, clip ) );
+				patches.sub( Rect( geo, clip ) );
 			else if( m_pSkin->isOpaque() )
-				patches.sub( WgRect( geo, clip ) );
+				patches.sub( Rect( geo, clip ) );
 		}
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgMenu::_onCloneContent( const WgWidget * _pOrg )
+	void Menu::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgMenu * pOrg = static_cast<const WgMenu*>(_pOrg);
+		const Menu * pOrg = static_cast<const Menu*>(_pOrg);
 	
 		m_iconFieldWidth 		= pOrg->m_iconFieldWidth;
 		m_arrowFieldWidth 		= pOrg->m_arrowFieldWidth;
@@ -1299,9 +1299,9 @@ namespace wg
 	}
 	
 	//____ _onRefresh() ____________________________________________________________
-	void WgMenu::_onRefresh()
+	void Menu::_onRefresh()
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	
 		//TODO: Implement!
 	}
@@ -1309,21 +1309,21 @@ namespace wg
 	
 	//____ _onNewSize() ____________________________________________________________
 	
-	void WgMenu::_onNewSize( const WgSize& size )
+	void Menu::_onNewSize( const Size& size )
 	{
 			_adjustSize();
 	}
 	
 	//____ _onAlphaTest() ___________________________________________________
 	
-	bool WgMenu::_onAlphaTest( const WgCoord& ofs , const WgSize& sz)
+	bool Menu::_onAlphaTest( const Coord& ofs , const Size& sz)
 	{
-		return WgWidget::_onAlphaTest(ofs, sz);
+		return Widget::_onAlphaTest(ofs, sz);
 	}
 	
 	//____ _firstHook() ____________________________________________________________
 	
-	WgHook * WgMenu::_firstHook() const
+	Hook * Menu::_firstHook() const
 	{
 		if( m_scrollbarHook._widget() )
 			return const_cast<ScrollbarHook*>(&m_scrollbarHook);
@@ -1333,22 +1333,22 @@ namespace wg
 	
 	//____ _scrollbarGeo() ___________________________________________________________
 	
-	WgRect WgMenu::_scrollbarGeo( const WgRect& menuGeo ) const
+	Rect Menu::_scrollbarGeo( const Rect& menuGeo ) const
 	{
 		if( m_scrollbarHook._widget() )
 		{
-			WgRect contentGeo = menuGeo - _getPadding();
-			WgRect scrollbarGeo( contentGeo.x + contentGeo.w - m_scrollbarHook.m_size.w, contentGeo.y, m_scrollbarHook.m_size.w, contentGeo.h );	//TODO: Scrollbar is now hardcoded to right side.
+			Rect contentGeo = menuGeo - _getPadding();
+			Rect scrollbarGeo( contentGeo.x + contentGeo.w - m_scrollbarHook.m_size.w, contentGeo.y, m_scrollbarHook.m_size.w, contentGeo.h );	//TODO: Scrollbar is now hardcoded to right side.
 			return scrollbarGeo;
 		}
 		else
-			return WgRect();
+			return Rect();
 	}
 	
 	
 	//____ _firstHookWithGeo() _____________________________________________________
 	
-	WgHook * WgMenu::_firstHookWithGeo( WgRect& writeGeo ) const
+	Hook * Menu::_firstHookWithGeo( Rect& writeGeo ) const
 	{
 		if( m_scrollbarHook._widget() )
 		{
@@ -1361,9 +1361,9 @@ namespace wg
 	
 	//____ _getItemAtPos() ______________________________________________________
 	
-	WgMenuItem * WgMenu::_getItemAtPos( int x, int y )
+	MenuItem * Menu::_getItemAtPos( int x, int y )
 	{
-		WgBorder	contentBorder = _getPadding();
+		Border	contentBorder = _getPadding();
 	
 		x -= contentBorder.left;
 		y -= contentBorder.top;
@@ -1372,7 +1372,7 @@ namespace wg
 	
 		if( y > 0 && x > 0 && x < (int) ( geo().w - contentBorder.right ) )
 		{
-			WgMenuItem * pItem = m_items.first();
+			MenuItem * pItem = m_items.first();
 			while( pItem )
 			{
 				if( pItem->isVisible() )
@@ -1396,7 +1396,7 @@ namespace wg
 	
 	//____ _itemModified() _________________________________________________________
 	
-	void WgMenu::_itemModified()
+	void Menu::_itemModified()
 	{
 		_adjustSize();
 		_requestRender();
@@ -1404,9 +1404,9 @@ namespace wg
 	
 	//____ _adjustSize() ___________________________________________________________
 	
-	void WgMenu::_adjustSize()
+	void Menu::_adjustSize()
 	{
-		WgBorder contentBorder = _getPadding();
+		Border contentBorder = _getPadding();
 	
 		int  w = contentBorder.width();
 		int	 h = contentBorder.height();
@@ -1415,7 +1415,7 @@ namespace wg
 		if( m_pSeparatorSkin )
 			minSep += m_pSeparatorSkin->minSize().w;
 	
-		WgMenuItem * pItem = m_items.first();
+		MenuItem * pItem = m_items.first();
 		while( pItem )
 		{
 			if( pItem->isVisible() )
@@ -1430,7 +1430,7 @@ namespace wg
 				{
 					h += m_entryHeight;
 	
-					int minW = ((WgMenuEntry*)pItem)->m_minWidth + contentBorder.width() + m_iconFieldWidth + m_arrowFieldWidth;
+					int minW = ((MenuEntry*)pItem)->m_minWidth + contentBorder.width() + m_iconFieldWidth + m_arrowFieldWidth;
 	
 					if( w < minW )
 						w = minW;
@@ -1456,15 +1456,15 @@ namespace wg
 	
 		if( h > size().h )
 		{
-			WgScrollbar * pScrollbar = m_scrollbarHook.Scrollbar();
+			Scrollbar * pScrollbar = m_scrollbarHook.scrollbar();
 			if( !pScrollbar )
 			{
-				pScrollbar = new WgScrollbar();
+				pScrollbar = new Scrollbar();
 				pScrollbar->setSkins( 0, m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
 				pScrollbar->setButtonLayout( m_scrollbarBtnLayout );
 				pScrollbar->setScrollbarTarget(this);
 			}
-			WgSize scrollbarSize = pScrollbar->preferredSize();
+			Size scrollbarSize = pScrollbar->preferredSize();
 	
 			m_scrollbarHook.m_size.w = scrollbarSize.w;
 			m_scrollbarHook.m_size.h = size().h - contentBorder.height();
@@ -1487,7 +1487,7 @@ namespace wg
 	
 	//____ _stepFwd() ______________________________________________________________
 	
-	float WgMenu::_stepFwd()
+	float Menu::_stepFwd()
 	{
 		_setViewOfs( m_contentOfs + m_entryHeight );
 		return _getHandlePosition();
@@ -1495,7 +1495,7 @@ namespace wg
 	
 	//____ _stepBwd() ______________________________________________________________
 	
-	float WgMenu::_stepBwd()
+	float Menu::_stepBwd()
 	{
 		_setViewOfs( m_contentOfs - m_entryHeight );
 		return _getHandlePosition();
@@ -1503,7 +1503,7 @@ namespace wg
 	
 	//____ _jumpFwd() ______________________________________________________________
 	
-	float WgMenu::_jumpFwd()
+	float Menu::_jumpFwd()
 	{
 		int viewHeight = size().h - _getPadding().height();
 		_setViewOfs( m_contentOfs + (viewHeight - m_entryHeight) );
@@ -1512,7 +1512,7 @@ namespace wg
 	
 	//____ _jumpBwd() ______________________________________________________________
 	
-	float WgMenu::_jumpBwd()
+	float Menu::_jumpBwd()
 	{
 		int viewHeight = size().h - _getPadding().height();
 		_setViewOfs( m_contentOfs - (viewHeight - m_entryHeight) );
@@ -1521,7 +1521,7 @@ namespace wg
 	
 	//____ _wheelRolled() ______________________________________________________________
 	
-	float WgMenu::_wheelRolled( int distance )
+	float Menu::_wheelRolled( int distance )
 	{
 		int viewHeight = size().h - _getPadding().height();
 		_setViewOfs( m_contentOfs + m_entryHeight*distance );
@@ -1531,7 +1531,7 @@ namespace wg
 	
 	//____ _setPosition() __________________________________________________________
 	
-	float WgMenu::_setPosition( float fraction )
+	float Menu::_setPosition( float fraction )
 	{
 		if( fraction < 0.f )
 			fraction = 0.f;
@@ -1551,35 +1551,35 @@ namespace wg
 	
 	//____ _getWidget() _____________________________________________________________
 	
-	WgWidget* WgMenu::_getWidget()
+	Widget* Menu::_getWidget()
 	{
 		return this;
 	}
 	
 	//____ _getHandlePosition() ____________________________________________________
 	
-	float WgMenu::_getHandlePosition()
+	float Menu::_getHandlePosition()
 	{
 		return ((float)m_contentOfs) / (m_contentHeight-(size().h-_getPadding().height()));
 	}
 	
 	//____ _getHandleSize() ________________________________________________________
 	
-	float WgMenu::_getHandleSize()
+	float Menu::_getHandleSize()
 	{
 		return ((float)(_getViewSize())) / m_contentHeight;
 	}
 	
 	//____ _getViewSize() ____________________________________________________
 	
-	int WgMenu::_getViewSize()
+	int Menu::_getViewSize()
 	{
 		return size().h-_getPadding().height();
 	}
 	
 	//____ _setViewOfs() ______________________________________________________________
 	
-	void WgMenu::_setViewOfs(int pos)
+	void Menu::_setViewOfs(int pos)
 	{
 		int viewHeight = size().h - _getPadding().height();
 	
@@ -1597,58 +1597,58 @@ namespace wg
 	}
 	
 	
-	const char * WgMenu::ScrollbarHook::type( void ) const
+	const char * Menu::ScrollbarHook::type( void ) const
 	{
 		return classType();
 	}
 	
-	const char * WgMenu::ScrollbarHook::classType()
+	const char * Menu::ScrollbarHook::classType()
 	{
 		return c_hookType;
 	}
 	
-	WgCoord WgMenu::ScrollbarHook::pos() const
+	Coord Menu::ScrollbarHook::pos() const
 	{
-		WgSize parentSize = m_pParent->size();
-		WgBorder borders = m_pParent->_getPadding();
-		return WgCoord(parentSize.w-m_size.w-borders.right,borders.top);
+		Size parentSize = m_pParent->size();
+		Border borders = m_pParent->_getPadding();
+		return Coord(parentSize.w-m_size.w-borders.right,borders.top);
 	}
 	
-	WgSize WgMenu::ScrollbarHook::size() const
+	Size Menu::ScrollbarHook::size() const
 	{
 		return m_size;
 	}
 	
-	WgRect WgMenu::ScrollbarHook::geo() const
+	Rect Menu::ScrollbarHook::geo() const
 	{
-		WgSize parentSize = m_pParent->size();
-		WgBorder borders = m_pParent->_getPadding();
-		return WgRect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
+		Size parentSize = m_pParent->size();
+		Border borders = m_pParent->_getPadding();
+		return Rect(parentSize.w-m_size.w-borders.right,borders.top,m_size);
 	}
 	
-	WgCoord WgMenu::ScrollbarHook::globalPos() const
+	Coord Menu::ScrollbarHook::globalPos() const
 	{
-		WgRect content = m_pParent->globalGeo() - m_pParent->_getPadding();
-		return WgCoord( content.x + content.w - m_size.w, content.y);
+		Rect content = m_pParent->globalGeo() - m_pParent->_getPadding();
+		return Coord( content.x + content.w - m_size.w, content.y);
 	}
 	
-	WgRect WgMenu::ScrollbarHook::globalGeo() const
+	Rect Menu::ScrollbarHook::globalGeo() const
 	{
-		WgRect content = m_pParent->globalGeo() - m_pParent->_getPadding();
-		return WgRect( content.x + content.w - m_size.w, content.y, m_size );
+		Rect content = m_pParent->globalGeo() - m_pParent->_getPadding();
+		return Rect( content.x + content.w - m_size.w, content.y, m_size );
 	}
 	
-	void WgMenu::ScrollbarHook::_requestRender()
+	void Menu::ScrollbarHook::_requestRender()
 	{
 		m_pParent->_requestRender( geo() );
 	}
 	
-	void WgMenu::ScrollbarHook::_requestRender( const WgRect& rect )
+	void Menu::ScrollbarHook::_requestRender( const Rect& rect )
 	{
 		m_pParent->_requestRender( rect + pos() );
 	}
 	
-	void WgMenu::ScrollbarHook::_requestResize()
+	void Menu::ScrollbarHook::_requestResize()
 	{
 		// Do nothing.
 	}

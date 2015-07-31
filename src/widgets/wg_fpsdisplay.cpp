@@ -31,16 +31,16 @@
 namespace wg 
 {
 	
-	const char WgFpsDisplay::CLASSNAME[] = {"FpsDisplay"};
+	const char FpsDisplay::CLASSNAME[] = {"FpsDisplay"};
 	
 	
 	#define		TICK_BUFFER			64
 	
 	
 	
-	//____ WgFpsDisplay() _________________________________________________________________
+	//____ FpsDisplay() _________________________________________________________________
 	
-	WgFpsDisplay::WgFpsDisplay( void ) : m_labelsText(this), m_valuesText(this), labels(&m_labelsText), values(&m_valuesText)
+	FpsDisplay::FpsDisplay( void ) : m_labelsText(this), m_valuesText(this), labels(&m_labelsText), values(&m_valuesText)
 	{
 		m_pTickBuffer		= new int[TICK_BUFFER];
 		for( int i = 0 ; i < TICK_BUFFER ; i++ )
@@ -51,15 +51,15 @@ namespace wg
 		m_labelsText.set( "Now:/nMin:/nAvg:/nMax:/n" );
 		m_valuesText.setAlignment( WG_NORTHEAST );
 	
-		m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+		m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 	}
 	
-	//____ ~WgFpsDisplay() __________________________________________________________
+	//____ ~FpsDisplay() __________________________________________________________
 	
-	WgFpsDisplay::~WgFpsDisplay( void )
+	FpsDisplay::~FpsDisplay( void )
 	{
 		if( m_tickRouteId )
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
 		if( m_pTickBuffer )
 		{
 			delete [] m_pTickBuffer;
@@ -70,27 +70,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgFpsDisplay::isInstanceOf( const char * pClassName ) const
+	bool FpsDisplay::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgFpsDisplay::className( void ) const
+	const char * FpsDisplay::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgFpsDisplay_p WgFpsDisplay::cast( const WgObject_p& pObject )
+	FpsDisplay_p FpsDisplay::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgFpsDisplay_p( static_cast<WgFpsDisplay*>(pObject.rawPtr()) );
+			return FpsDisplay_p( static_cast<FpsDisplay*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -98,7 +98,7 @@ namespace wg
 	
 	//____ setTextProperties() ____________________________________________________
 	
-	void WgFpsDisplay::setTextProperties( const WgTextprop_p& pProp )
+	void FpsDisplay::setTextProperties( const Textprop_p& pProp )
 	{
 		m_labelsText.setProperties(pProp);
 		m_valuesText.setProperties(pProp);
@@ -108,13 +108,13 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgFpsDisplay::preferredSize() const
+	Size FpsDisplay::preferredSize() const
 	{
-		WgSize contentSize = m_labelsText.unwrappedSize();
+		Size contentSize = m_labelsText.unwrappedSize();
 	
-		WgTextAttr attr;
+		TextAttr attr;
 		m_valuesText.getBaseAttr( attr );
-		contentSize.w += WgTextTool::lineWidth( attr, " 1000.00" );
+		contentSize.w += TextTool::lineWidth( attr, " 1000.00" );
 	
 		int valueHeight = m_valuesText.unwrappedSize().h;
 		if( valueHeight > contentSize.h )
@@ -129,11 +129,11 @@ namespace wg
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void FpsDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect content;
+		Rect content;
 		if( m_pSkin )
 			content = m_pSkin->contentRect( _canvas, m_state );
 		else
@@ -146,9 +146,9 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgFpsDisplay::_onMsg( const WgMsg_p& pMsg )
+	void FpsDisplay::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg(pMsg);
+		Widget::_onMsg(pMsg);
 	
 		switch( pMsg->type() )
 		{
@@ -158,7 +158,7 @@ namespace wg
 	
 				m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 	
-				int msDiff = WgTickMsg::cast(pMsg)->millisec();
+				int msDiff = TickMsg::cast(pMsg)->millisec();
 				if( msDiff > 0 )
 					m_pTickBuffer[m_tickBufferOfs] = msDiff;
 				else
@@ -217,38 +217,38 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgFpsDisplay::_onStateChanged( WgState oldState )
+	void FpsDisplay::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		m_labelsText.setState(m_state);
 		m_valuesText.setState(m_state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 	
 		if( m_state.isEnabled() && !oldState.isEnabled() )
-			m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+			m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 	
 		if( !m_state.isEnabled() && oldState.isEnabled() )
 		{
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 		}
 	}
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgFpsDisplay::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void FpsDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 		m_labelsText.setColorSkin(pNewSkin);
 		m_valuesText.setColorSkin(pNewSkin);
 	}
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
+	void FpsDisplay::_onCloneContent( const Widget * _pOrg )
 	{
-		WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
+		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 	
 		m_labelsText.clone( &pOrg->m_labelsText );
 		m_valuesText.clone( &pOrg->m_valuesText );
@@ -261,14 +261,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgFpsDisplay::_onFieldDirty( WgField * pField )
+	void FpsDisplay::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgFpsDisplay::_onFieldResize( WgField * pField )
+	void FpsDisplay::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();

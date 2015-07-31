@@ -25,32 +25,32 @@
 namespace wg 
 {
 	
-	const char WgEditValue::CLASSNAME[] = {"EditValue"};
+	const char EditValue::CLASSNAME[] = {"EditValue"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgEditValue::isInstanceOf( const char * pClassName ) const
+	bool EditValue::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgModValue::isInstanceOf(pClassName);
+		return ModValue::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgEditValue::className( void ) const
+	const char * EditValue::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgEditValue_p WgEditValue::cast( const WgInterface_p& pInterface )
+	EditValue_p EditValue::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgEditValue_p( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
+			return EditValue_p( pInterface.getRealObjectPtr(), static_cast<EditValue*>(pInterface.rawPtr()) );
 	
 		return 0;
 	}

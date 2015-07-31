@@ -27,14 +27,14 @@ namespace wg
 {
 	
 	
-	void WgScrollbarTarget::_updateScrollbar( float pos, float size )
+	void ScrollbarTarget::_updateScrollbar( float pos, float size )
 	{
-			WgWidget * pWidget = m_pScrollbar.rawPtr();
+			Widget * pWidget = m_pScrollbar.rawPtr();
 	
 			if( pWidget )
 			{
-				if( pWidget->isInstanceOf(WgScrollbar::CLASSNAME) )
-						static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
+				if( pWidget->isInstanceOf(Scrollbar::CLASSNAME) )
+						static_cast<Scrollbar*>(pWidget)->_setHandle(pos,size);
 			}
 	
 	}

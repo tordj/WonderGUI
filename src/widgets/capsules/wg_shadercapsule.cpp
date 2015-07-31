@@ -26,43 +26,43 @@
 namespace wg 
 {
 	
-	const char WgShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
+	const char ShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgShaderCapsule::WgShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(WG_TINTMODE_OPAQUE), m_blendMode(WG_BLENDMODE_BLEND)
+	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(WG_TINTMODE_OPAQUE), m_blendMode(WG_BLENDMODE_BLEND)
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgShaderCapsule::~WgShaderCapsule()
+	ShaderCapsule::~ShaderCapsule()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgShaderCapsule::isInstanceOf( const char * pClassName ) const
+	bool ShaderCapsule::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgCapsule::isInstanceOf(pClassName);
+		return Capsule::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgShaderCapsule::className( void ) const
+	const char * ShaderCapsule::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgShaderCapsule_p WgShaderCapsule::cast( const WgObject_p& pObject )
+	ShaderCapsule_p ShaderCapsule::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgShaderCapsule_p( static_cast<WgShaderCapsule*>(pObject.rawPtr()) );
+			return ShaderCapsule_p( static_cast<ShaderCapsule*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -70,7 +70,7 @@ namespace wg
 	
 	//____ setColor() ______________________________________________________________
 	
-	void WgShaderCapsule::setColor( const WgColor& color)
+	void ShaderCapsule::setColor( const Color& color)
 	{
 		if( color != m_tintColor )
 		{
@@ -81,7 +81,7 @@ namespace wg
 	
 	//____ setTintMode() ___________________________________________________________
 	
-	void WgShaderCapsule::setTintMode( WgTintMode mode )
+	void ShaderCapsule::setTintMode( WgTintMode mode )
 	{
 		if( mode != m_tintMode )
 		{
@@ -92,7 +92,7 @@ namespace wg
 	
 	//____ setBlendMode() __________________________________________________________
 	
-	void WgShaderCapsule::setBlendMode( WgBlendMode mode )
+	void ShaderCapsule::setBlendMode( WgBlendMode mode )
 	{
 		if( mode != m_blendMode )
 		{
@@ -104,19 +104,19 @@ namespace wg
 	
 	//____ _getBlendMode() _________________________________________________________
 	
-	WgBlendMode WgShaderCapsule::_getBlendMode() const
+	WgBlendMode ShaderCapsule::_getBlendMode() const
 	{
 		return m_blendMode;
 	}
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
 		// Set our tint color and blend mode.
 	
 		WgBlendMode		oldBM;
-		WgColor			oldTC;
+		Color			oldTC;
 	
 	
 	//	if( (_layer & m_layer) != 0 )
@@ -148,9 +148,9 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgShaderCapsule::_onCloneContent( const WgWidget * _pOrg )
+	void ShaderCapsule::_onCloneContent( const Widget * _pOrg )
 	{
-		WgShaderCapsule * pOrg = (WgShaderCapsule*) _pOrg;
+		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
 	
 		m_tintColor		= pOrg->m_tintColor;
 		m_blendMode		= pOrg->m_blendMode;

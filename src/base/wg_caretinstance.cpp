@@ -42,7 +42,7 @@ namespace wg
 	
 	//____ Constructor() __________________________________________________________
 	
-	WgCaretInstance::WgCaretInstance( WgLegacyTextField& text )
+	CaretInstance::CaretInstance( LegacyTextField& text )
 	{
 		m_pText 		= &text;
 		m_bHidden		= true;
@@ -60,7 +60,7 @@ namespace wg
 	
 	//____ incTime() _______________________________________________________________
 	
-	bool WgCaretInstance::incTime( int ms )
+	bool CaretInstance::incTime( int ms )
 	{
 		m_time += ms;
 		return true; //TODO: Should only return true if cursor needs to be re-rendered.
@@ -68,21 +68,21 @@ namespace wg
 	
 	//____ hide() _________________________________________________________________
 	
-	void WgCaretInstance::hide()
+	void CaretInstance::hide()
 	{
 		m_bHidden = true;
 	}
 	
 	//____ show() _________________________________________________________________
 	
-	void WgCaretInstance::show()
+	void CaretInstance::show()
 	{
 		m_bHidden = false;
 	}
 	
 	//____ isHidden() _____________________________________________________________
 	
-	bool WgCaretInstance::isHidden() const
+	bool CaretInstance::isHidden() const
 	{
 		return m_bHidden;
 	}
@@ -91,7 +91,7 @@ namespace wg
 	
 	//____ insertMode() ____________________________________________________________
 	
-	void WgCaretInstance::insertMode( bool bInsert )
+	void CaretInstance::insertMode( bool bInsert )
 	{
 		m_bInsert = bInsert;
 	}
@@ -99,7 +99,7 @@ namespace wg
 	
 	//____ gotoSoftLine() _________________________________________________________
 	
-	void WgCaretInstance::gotoSoftLine( int line, const WgRect& container )
+	void CaretInstance::gotoSoftLine( int line, const Rect& container )
 	{
 		// First we need to update m_wantedOfsX...
 	
@@ -115,7 +115,7 @@ namespace wg
 		// Set our line and convert to hard
 	
 		int ln = line;
-		int col = m_pText->coordToColumn( line, WgCoord( m_wantedOfsX+container.x, 0), container, true );
+		int col = m_pText->coordToColumn( line, Coord( m_wantedOfsX+container.x, 0), container, true );
 	
 	
 		m_pText->posSoft2Hard( ln, col );
@@ -125,7 +125,7 @@ namespace wg
 	
 	//____ gotoColumn() ____________________________________________________________
 	
-	void WgCaretInstance::gotoColumn( int col )
+	void CaretInstance::gotoColumn( int col )
 	{
 		const int minLine = 0;
 		const int maxLine = m_pText->lines()-1;
@@ -180,7 +180,7 @@ namespace wg
 	
 	//____ gotoPrevWord() _________________________________________________________
 	
-	void WgCaretInstance::gotoPrevWord()
+	void CaretInstance::gotoPrevWord()
 	{
 		gotoBeginningOfWord();
 	
@@ -196,7 +196,7 @@ namespace wg
 		if(col > m_pText->getLine(line)->nChars)
 			col = m_pText->getLine(line)->nChars;
 	
-		const WgChar* pText = m_pText->getLineText(line) + col - 1;
+		const Char* pText = m_pText->getLineText(line) + col - 1;
 	
 		while( !isspace(pText->getGlyph()) && !ispunct(pText->getGlyph()) )
 		{
@@ -221,7 +221,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgCaretInstance::gotoBeginningOfWord()
+	void CaretInstance::gotoBeginningOfWord()
 	{
 		if(m_line == 0 && m_column == 0)
 			return;
@@ -235,7 +235,7 @@ namespace wg
 		if(col > m_pText->getLine(line)->nChars)
 			col = m_pText->getLine(line)->nChars;
 	
-		const WgChar* pText = m_pText->getLineText(line) + col - 1;
+		const Char* pText = m_pText->getLineText(line) + col - 1;
 	
 		while( isspace(pText->getGlyph()) || ispunct(pText->getGlyph()) )
 		{
@@ -261,7 +261,7 @@ namespace wg
 	
 	//____ gotoNextWord() _________________________________________________________
 	
-	void WgCaretInstance::gotoNextWord()
+	void CaretInstance::gotoNextWord()
 	{
 		gotoEndOfWord();
 	
@@ -274,7 +274,7 @@ namespace wg
 		if(col > m_pText->getLine(line)->nChars)
 			col = m_pText->getLine(line)->nChars;
 	
-		const WgChar* pText = m_pText->getLineText(line) + col;
+		const Char* pText = m_pText->getLineText(line) + col;
 	
 		while( !pText->isEndOfText() && (isspace(pText->getGlyph()) || ispunct(pText->getGlyph())) )
 		{
@@ -290,7 +290,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgCaretInstance::gotoEndOfWord()
+	void CaretInstance::gotoEndOfWord()
 	{
 		int line = m_line;
 		int col = m_column;
@@ -301,7 +301,7 @@ namespace wg
 		if(col > m_pText->getLine(line)->nChars)
 			col = m_pText->getLine(line)->nChars;
 	
-		const WgChar* pText = m_pText->getLineText(line) + col;
+		const Char* pText = m_pText->getLineText(line) + col;
 	
 		while( !pText->isEndOfText() && !isspace(pText->getGlyph()) && !ispunct(pText->getGlyph()) )
 		{
@@ -318,7 +318,7 @@ namespace wg
 	
 	//____ gotoHardPos() __________________________________________________________
 	
-	void WgCaretInstance::gotoHardPos( int line, int col )
+	void CaretInstance::gotoHardPos( int line, int col )
 	{
 		_gotoPos( line, col );
 		m_wantedOfsX = -1;
@@ -327,7 +327,7 @@ namespace wg
 	
 	//____ _gotoPos() ______________________________________________________________
 	
-	void WgCaretInstance::_gotoPos( int line, int col )
+	void CaretInstance::_gotoPos( int line, int col )
 	{
 		int maxLine = m_pText->lines()-1;
 		if( line > maxLine )
@@ -342,7 +342,7 @@ namespace wg
 	
 	//____ gotoSoftPos() __________________________________________________________
 	
-	void WgCaretInstance::gotoSoftPos( int line, int col )
+	void CaretInstance::gotoSoftPos( int line, int col )
 	{
 		m_pText->posSoft2Hard( line, col );
 	
@@ -353,7 +353,7 @@ namespace wg
 	
 	//____ getSoftPos() ___________________________________________________________
 	
-	void WgCaretInstance::getSoftPos( int &line, int &col ) const
+	void CaretInstance::getSoftPos( int &line, int &col ) const
 	{
 		line	= m_line;
 		col		= m_column;
@@ -365,7 +365,7 @@ namespace wg
 	
 	//____ putChar() ______________________________________________________________
 	
-	bool WgCaretInstance::putChar( Uint16 character )
+	bool CaretInstance::putChar( Uint16 character )
 	{
 		m_wantedOfsX = -1;
 	
@@ -399,7 +399,7 @@ namespace wg
 	
 	//____ putText() ______________________________________________________________
 	
-	int	WgCaretInstance::putText( const WgCharSeq& seq )
+	int	CaretInstance::putText( const CharSeq& seq )
 	{
 		m_wantedOfsX = -1;
 	
@@ -421,7 +421,7 @@ namespace wg
 	}
 	
 	//______________________________________________________________
-	void WgCaretInstance::unputText( int nChar )
+	void CaretInstance::unputText( int nChar )
 	{
 		if(nChar < 0)
 			return;
@@ -432,7 +432,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________
-	void WgCaretInstance::delPrevWord()
+	void CaretInstance::delPrevWord()
 	{
 		int	ofs1 = m_pText->lineColToOffset( m_line, m_column );
 		gotoPrevWord();
@@ -441,7 +441,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________
-	void WgCaretInstance::delNextWord()
+	void CaretInstance::delNextWord()
 	{
 		int	ofs1 = m_pText->lineColToOffset( m_line, m_column );
 		int line = m_line;
@@ -454,7 +454,7 @@ namespace wg
 	
 	//____ delPrevChar() __________________________________________________________
 	
-	bool WgCaretInstance::delPrevChar()
+	bool CaretInstance::delPrevChar()
 	{
 		m_wantedOfsX = -1;
 	
@@ -480,7 +480,7 @@ namespace wg
 	
 	//____ delNextChar() __________________________________________________________
 	
-	bool WgCaretInstance::delNextChar()
+	bool CaretInstance::delNextChar()
 	{
 		m_wantedOfsX = -1;
 	
@@ -495,7 +495,7 @@ namespace wg
 	
 	//____ ofsX() __________________________________________________________________
 	
-	int WgCaretInstance::ofsX() const
+	int CaretInstance::ofsX() const
 	{
 		int	ln = m_line;
 		int	col = m_column;
@@ -506,7 +506,7 @@ namespace wg
 	
 	//____ ofsY() __________________________________________________________________
 	
-	int WgCaretInstance::ofsY() const
+	int CaretInstance::ofsY() const
 	{
 		//TODO: Need a better way...
 	
@@ -520,20 +520,20 @@ namespace wg
 	
 	//____ mode() __________________________________________________________________
 	
-	WgCaret::Mode WgCaretInstance::cursorMode() const
+	Caret::Mode CaretInstance::cursorMode() const
 	{
 		if( m_line >= m_pText->lines() || m_pText->getLine(m_line)->nChars == m_column )
-			return WgCaret::EOL;
+			return Caret::EOL;
 	
 		if( m_bInsert )
-			return WgCaret::INS;
+			return Caret::INS;
 	
-		return WgCaret::OVR;
+		return Caret::OVR;
 	}
 	
 	//____ goBOL() ________________________________________________________________
 	
-	void WgCaretInstance::goBOL()
+	void CaretInstance::goBOL()
 	{
 		int	ln = m_line;
 		int	col = m_column;
@@ -548,7 +548,7 @@ namespace wg
 	
 	//____ goEOL() ________________________________________________________________
 	
-	void WgCaretInstance::goEOL()
+	void CaretInstance::goEOL()
 	{
 		int	ln = m_line;
 		int	col = m_column;
@@ -563,7 +563,7 @@ namespace wg
 	}
 	
 	//////////////////////////////////////////////////////////////////////////
-	void WgCaretInstance::_updateLocation(int line, int column)
+	void CaretInstance::_updateLocation(int line, int column)
 	{
 		m_line = line;
 		m_column = column;
@@ -579,12 +579,12 @@ namespace wg
 	}
 	
 	//////////////////////////////////////////////////////////////////////////
-	void WgCaretInstance::setSelectionMode(bool bOn)
+	void CaretInstance::setSelectionMode(bool bOn)
 	{
 		m_bSelectMode = bOn;
 	}
 	
-	bool WgCaretInstance::hasSelection()
+	bool CaretInstance::hasSelection()
 	{
 		if(m_selStartLine < 0)
 			return false;
@@ -592,7 +592,7 @@ namespace wg
 		return m_selStartLine != m_line || (m_selStartLine == m_line && m_selStartColumn != m_column);
 	}
 	
-	void WgCaretInstance::delSelection()
+	void CaretInstance::delSelection()
 	{
 		if(!hasSelection())
 			return;
@@ -618,17 +618,17 @@ namespace wg
 		clearSelection();
 	}
 	
-	void WgCaretInstance::clearSelection()
+	void CaretInstance::clearSelection()
 	{
 		m_pText->clearSelection();
 		m_selStartLine = m_line;
 		m_selStartColumn = m_column;
 	}
 	
-	void WgCaretInstance::selectRange( WgRange range )
+	void CaretInstance::selectRange( Range range )
 	{
-		WgTextPos beg = m_pText->ofsToPos( range.ofs );
-		WgTextPos end = m_pText->ofsToPos( range.ofs + range.len );
+		TextPos beg = m_pText->ofsToPos( range.ofs );
+		TextPos end = m_pText->ofsToPos( range.ofs + range.len );
 	
 		m_pText->clearSelection();
 		setSelectionMode(true);
@@ -638,7 +638,7 @@ namespace wg
 		setSelectionMode(false);
 	}
 	
-	void WgCaretInstance::selectAll()
+	void CaretInstance::selectAll()
 	{
 		m_pText->clearSelection();
 		setSelectionMode(true);

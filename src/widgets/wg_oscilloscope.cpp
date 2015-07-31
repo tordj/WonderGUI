@@ -27,14 +27,14 @@
 namespace wg 
 {
 	
-	const char WgOscilloscope::CLASSNAME[] = {"Oscilloscope"};
+	const char Oscilloscope::CLASSNAME[] = {"Oscilloscope"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgOscilloscope::WgOscilloscope()
+	Oscilloscope::Oscilloscope()
 	{
-		m_gridColor = WgColor::black;
-		m_lineColor = WgColor::white;
+		m_gridColor = Color::black;
+		m_lineColor = Color::white;
 		m_lineThickness = 2.f;
 	
 		m_nVGridLines = 0;
@@ -51,7 +51,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgOscilloscope::~WgOscilloscope()
+	Oscilloscope::~Oscilloscope()
 	{
 		delete [] m_pVGridLines;
 		delete [] m_pHGridLines;
@@ -61,27 +61,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgOscilloscope::isInstanceOf( const char * pClassName ) const
+	bool Oscilloscope::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgOscilloscope::className( void ) const
+	const char * Oscilloscope::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgOscilloscope_p WgOscilloscope::cast( const WgObject_p& pObject )
+	Oscilloscope_p Oscilloscope::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgOscilloscope_p( static_cast<WgOscilloscope*>(pObject.rawPtr()) );
+			return Oscilloscope_p( static_cast<Oscilloscope*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -89,9 +89,9 @@ namespace wg
 	
 	//____ preferredSize() ________________________________________________________
 	
-	WgSize WgOscilloscope::preferredSize() const
+	Size Oscilloscope::preferredSize() const
 	{
-		WgSize contentSize(80,64);
+		Size contentSize(80,64);
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -102,7 +102,7 @@ namespace wg
 	
 	//____ setGridColor() _________________________________________________________
 	
-	void WgOscilloscope::setGridColor( WgColor color )
+	void Oscilloscope::setGridColor( Color color )
 	{
 		if( m_gridColor != color )
 		{
@@ -114,7 +114,7 @@ namespace wg
 	
 	//____ setVGridLines() ________________________________________________________
 	
-	void WgOscilloscope::setVGridLines( int nLines, float pLines[] )
+	void Oscilloscope::setVGridLines( int nLines, float pLines[] )
 	{
 		if( nLines != m_nVGridLines )
 		{
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ setHGridLines() ________________________________________________________
 	
-	void WgOscilloscope::setHGridLines( int nLines, float pLines[] )
+	void Oscilloscope::setHGridLines( int nLines, float pLines[] )
 	{
 		if( nLines != m_nHGridLines )
 		{
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ setLineColor() ________________________________________________________
 	
-	void WgOscilloscope::setLineColor( WgColor color )
+	void Oscilloscope::setLineColor( Color color )
 	{
 		if( color != m_lineColor )
 		{
@@ -165,7 +165,7 @@ namespace wg
 	
 	//____ setLineThickness() _____________________________________________________
 	
-	void WgOscilloscope::setLineThickness( float thickness )
+	void Oscilloscope::setLineThickness( float thickness )
 	{
 		LIMIT( thickness, 1.f, 2.f );
 		if( thickness != m_lineThickness )
@@ -177,7 +177,7 @@ namespace wg
 	
 	//____ setLinePoints() ________________________________________________________
 	
-	void WgOscilloscope::setLinePoints( int nPoints, float pPointValues[] )
+	void Oscilloscope::setLinePoints( int nPoints, float pPointValues[] )
 	{
 		if( nPoints != m_nLinePoints )
 		{
@@ -198,7 +198,7 @@ namespace wg
 	
 	//____ clearMarkers() _________________________________________________________
 	
-	void WgOscilloscope::clearMarkers()
+	void Oscilloscope::clearMarkers()
 	{
 		delete [] m_pMarkers;
 		m_pMarkers = 0;
@@ -208,7 +208,7 @@ namespace wg
 	
 	//____ addMarker() ____________________________________________________________
 	
-	void WgOscilloscope::addMarker( int xOfs, float yOfs )
+	void Oscilloscope::addMarker( int xOfs, float yOfs )
 	{
 		Marker * pNew = new Marker[m_nMarkers+1];
 		for( int i = 0 ; i < m_nMarkers ; i++ )
@@ -225,7 +225,7 @@ namespace wg
 	
 	//____ setMarkerSkin() _________________________________________________________
 	
-	void WgOscilloscope::setMarkerSkin( const WgSkin_p& pSkin )
+	void Oscilloscope::setMarkerSkin( const Skin_p& pSkin )
 	{
 		if( m_pMarkerSkin != pSkin )
 		{
@@ -238,9 +238,9 @@ namespace wg
 	
 	//____ _onCloneContent() ______________________________________________________
 	
-	void WgOscilloscope::_onCloneContent( const WgWidget * _pOrg )
+	void Oscilloscope::_onCloneContent( const Widget * _pOrg )
 	{
-		const WgOscilloscope * pOrg = static_cast<const WgOscilloscope*>(_pOrg);
+		const Oscilloscope * pOrg = static_cast<const Oscilloscope*>(_pOrg);
 	
 		m_gridColor = pOrg->m_gridColor;
 		m_lineColor = pOrg->m_lineColor;
@@ -292,11 +292,11 @@ namespace wg
 	
 	//____ _onRender() ____________________________________________________________
 	
-	void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Oscilloscope::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
-		WgRect canvas = _canvas;
+		Rect canvas = _canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 	
@@ -312,7 +312,7 @@ namespace wg
 		for( int i = 0 ; i < m_nHGridLines ; i++ )
 		{
 			int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-			pDevice->clipDrawHorrLine( _clip, WgCoord(canvas.x,ofsY), canvas.w, m_gridColor );
+			pDevice->clipDrawHorrLine( _clip, Coord(canvas.x,ofsY), canvas.w, m_gridColor );
 		}
 	
 		// Draw VGridLines
@@ -320,25 +320,25 @@ namespace wg
 		for( int i = 0 ; i < m_nVGridLines ; i++ )
 		{
 			int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-			pDevice->clipDrawVertLine( _clip, WgCoord(ofsX,canvas.y), canvas.h, m_gridColor );
+			pDevice->clipDrawVertLine( _clip, Coord(ofsX,canvas.y), canvas.h, m_gridColor );
 		}
 	
 		// Draw the oscilloscope line
 	
 		int nPoints = m_nLinePoints > canvas.w ? canvas.w : m_nLinePoints;
 	
-		int allocSize = sizeof(WgCoord)*nPoints;
+		int allocSize = sizeof(Coord)*nPoints;
 	
-		WgCoord * pOut = reinterpret_cast<WgCoord*>(WgBase::memStackAlloc(allocSize));
+		Coord * pOut = reinterpret_cast<Coord*>(Base::memStackAlloc(allocSize));
 	
 		for( int i = 0 ; i < nPoints ; i++ )
 		{
-			pOut[i] = WgCoord(canvas.x + i, (int)(centerY + scaleY*m_pLinePoints[i]));
+			pOut[i] = Coord(canvas.x + i, (int)(centerY + scaleY*m_pLinePoints[i]));
 		}
 	
 		pDevice->clipPlotSoftPixels(_clip, nPoints, pOut, m_lineColor, m_lineThickness);
 	
-		WgBase::memStackRelease(allocSize);
+		Base::memStackRelease(allocSize);
 	
 		// Render markers
 	
@@ -346,7 +346,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < m_nMarkers ; i++ )
 			{
-				WgRect dest;
+				Rect dest;
 	
 				int x = m_pMarkers[i].x;
 				int y = (int) (m_pMarkers[i].y*scaleY+centerY);

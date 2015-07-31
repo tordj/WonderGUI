@@ -38,27 +38,27 @@
 namespace wg 
 {
 	
-	//class WgGfxAnim;
-	class WgGlyphset;
+	//class GfxAnim;
+	class Glyphset;
 	
-	class WgCaret;
-	typedef	WgStrongPtr<WgCaret,WgObject_p>		WgCaret_p;
-	typedef	WgWeakPtr<WgCaret,WgObject_wp>		WgCaret_wp;
+	class Caret;
+	typedef	WgStrongPtr<Caret,Object_p>		Caret_p;
+	typedef	WgWeakPtr<Caret,Object_wp>		Caret_wp;
 	
-	//____ WgCaret _______________________________________________________________
+	//____ Caret _______________________________________________________________
 	
-	class WgCaret : public WgObject
+	class Caret : public Object
 	{
-		friend class WgGlyphset;
+		friend class Glyphset;
 	
 	public:
-		static WgCaret_p	create() { return WgCaret_p(new WgCaret()); }
-		static WgCaret_p	create( const WgCaret_p& in ) { return WgCaret_p(new WgCaret(in.rawPtr())); }
+		static Caret_p	create() { return Caret_p(new Caret()); }
+		static Caret_p	create( const Caret_p& in ) { return Caret_p(new Caret(in.rawPtr())); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgCaret_p	cast( const WgObject_p& pObject );
+		static Caret_p	cast( const Object_p& pObject );
 	
 	
 		enum Mode
@@ -76,13 +76,13 @@ namespace wg
 		};
 	
 	
-		bool				setMode( Mode m, const WgGfxAnim_p& pAnim, WgCoord bearing = WgCoord(), int advance = 0, float size_ratio = 1.f  );
+		bool				setMode( Mode m, const GfxAnim_p& pAnim, Coord bearing = Coord(), int advance = 0, float size_ratio = 1.f  );
 	
 		void				setScaleWidth( Mode m, bool bScaleWidth );
 	
-		void				setBearing( Mode m, WgCoord bearing );
+		void				setBearing( Mode m, Coord bearing );
 		void				setAdvance( Mode m, int advance );
-		void				setAnim( Mode m, const WgGfxAnim_p& pAnim );
+		void				setAnim( Mode m, const GfxAnim_p& pAnim );
 	
 		void				setSizeRatio( Mode m, float ratio );
 	
@@ -91,22 +91,22 @@ namespace wg
 	
 		int					bearingX( Mode m ) const { return m_bearing[m].x; };
 		int					bearingY( Mode m ) const { return m_bearing[m].y; };
-		WgCoord				bearing( Mode m ) const { return m_bearing[m]; }
+		Coord				bearing( Mode m ) const { return m_bearing[m]; }
 		int					advance( Mode m ) const { return m_advance[m]; };
 		int					width( Mode m ) const { return m_pAnim[m]->size().w; }
-		WgGfxAnim_p 		anim( Mode m ) const { return m_pAnim[m]; };
+		GfxAnim_p 		anim( Mode m ) const { return m_pAnim[m]; };
 		float				sizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 		bool				scaleWidth(Mode m ) const { return m_scaleWidth[m]; }
 		
 	
 	private:
-		WgCaret();
-		WgCaret( WgCaret * pIn );
+		Caret();
+		Caret( Caret * pIn );
 	
 		enum { N_MODES = 3 };
 	
-		WgGfxAnim_p		m_pAnim[N_MODES];
-		WgCoord				m_bearing[N_MODES];
+		GfxAnim_p		m_pAnim[N_MODES];
+		Coord				m_bearing[N_MODES];
 		int					m_advance[N_MODES];
 		bool				m_scaleWidth[N_MODES];
 	

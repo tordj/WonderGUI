@@ -33,13 +33,13 @@
 namespace wg 
 {
 	
-	const char WgToggleButton::CLASSNAME[] = {"ToggleButton"};
+	const char ToggleButton::CLASSNAME[] = {"ToggleButton"};
 	
 	
 	
-	//____ WgToggleButton() _________________________________________________________________
+	//____ ToggleButton() _________________________________________________________________
 	
-	WgToggleButton::WgToggleButton() : m_label(this), m_icon(this), label(&m_label), icon(&m_icon)
+	ToggleButton::ToggleButton() : m_label(this), m_icon(this), label(&m_label), icon(&m_icon)
 	{
 		m_bPressed			= false;
 		m_bReturnPressed	= false;
@@ -50,7 +50,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgToggleButton::~WgToggleButton()
+	ToggleButton::~ToggleButton()
 	{
 		if( m_pToggleGroup )
 			m_pToggleGroup->_remove(this);
@@ -59,38 +59,38 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgToggleButton::isInstanceOf( const char * pClassName ) const
+	bool ToggleButton::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgToggleButton::className( void ) const
+	const char * ToggleButton::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgToggleButton_p WgToggleButton::cast( const WgObject_p& pObject )
+	ToggleButton_p ToggleButton::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgToggleButton_p( static_cast<WgToggleButton*>(pObject.rawPtr()) );
+			return ToggleButton_p( static_cast<ToggleButton*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setSelected() __________________________________________________________
 	
-	bool WgToggleButton::setSelected( bool bSelected )
+	bool ToggleButton::setSelected( bool bSelected )
 	{
 		if( m_state.isSelected() != bSelected )
 		{
-			WgState oldState = m_state;
+			State oldState = m_state;
 			m_state.setSelected(bSelected);
 			_onStateChanged(oldState);
 		}
@@ -99,17 +99,17 @@ namespace wg
 	
 	//____ setFlipOnRelease() _____________________________________________________
 	
-	void WgToggleButton::setFlipOnRelease( bool bFlipOnRelease )
+	void ToggleButton::setFlipOnRelease( bool bFlipOnRelease )
 	{
 		m_bFlipOnRelease = bFlipOnRelease;
 	}
 	
 	//____ preferredSize() __________________________________________________
 	
-	WgSize WgToggleButton::preferredSize() const
+	Size ToggleButton::preferredSize() const
 	{
-		WgSize iconPreferredSize;
-		WgSize textPreferredSize;
+		Size iconPreferredSize;
+		Size textPreferredSize;
 	
 		if( !m_label.isEmpty() )
 			textPreferredSize = m_label.preferredSize();
@@ -123,7 +123,7 @@ namespace wg
 	
 		// Apply the skin
 	
-		WgSize preferredSize = WgSize::max( iconPreferredSize, textPreferredSize );
+		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
 	
 		if( m_pSkin )
 			preferredSize = m_pSkin->sizeForContent( preferredSize );
@@ -133,7 +133,7 @@ namespace wg
 	
 	//____ _setToggleGroup() ________________________________________________________
 	
-	void WgToggleButton::_setToggleGroup( WgToggleGroup * pGroup )
+	void ToggleButton::_setToggleGroup( ToggleGroup * pGroup )
 	{
 		if( m_pToggleGroup && pGroup )			// Remove us from current Toggle group if we are not just set to null (then we are being removed by Togglegroup itself).
 			m_pToggleGroup->_remove(this);
@@ -144,14 +144,14 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgToggleButton::_onMsg( const WgMsg_p& _pMsg )
+	void ToggleButton::_onMsg( const Msg_p& _pMsg )
 	{
-		WgState oldState = m_state;
+		State oldState = m_state;
 	
 		switch( _pMsg->type() )
 		{
 			case WG_MSG_KEY_PRESS:
-				if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = true;
 					_pMsg->swallow();
@@ -159,12 +159,12 @@ namespace wg
 				break;
 	
 			case WG_MSG_KEY_REPEAT:
-				if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 					_pMsg->swallow();
 				break;
 	
 			case WG_MSG_KEY_RELEASE:
-				if( WgKeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = false;
 					_pMsg->swallow();
@@ -178,14 +178,14 @@ namespace wg
 				m_state.setHovered(false);
 				break;
 			case WG_MSG_MOUSE_PRESS:
-				if( WgMousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 				{
 					m_bPressed = true;
 					_pMsg->swallow();
 				}
 				break;
 			case WG_MSG_MOUSE_RELEASE:
-				if( WgMouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 				{
 					m_bPressed = false;
 					_pMsg->swallow();
@@ -195,7 +195,7 @@ namespace wg
 			case WG_MSG_MOUSE_DOUBLE_CLICK:
 			case WG_MSG_MOUSE_REPEAT:
 			case WG_MSG_MOUSE_DRAG:
-				if( WgMouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
 					_pMsg->swallow();
 				break;
 	
@@ -232,7 +232,7 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgToggleButton::_onStateChanged( WgState oldState )
+	void ToggleButton::_onStateChanged( State oldState )
 	{
 		// If state has changed from selected to unselected we need to check with Togglegroup
 		
@@ -241,7 +241,7 @@ namespace wg
 		
 		//
 		
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		m_label.setState( m_state );
 	
@@ -250,7 +250,7 @@ namespace wg
 	
 		if( m_state.isSelected() != oldState.isSelected() )
 		{
-			WgBase::msgRouter()->post( new WgToggleMsg(this, m_state.isSelected() ) );
+			Base::msgRouter()->post( new ToggleMsg(this, m_state.isSelected() ) );
 	
 			if( m_pToggleGroup && m_state.isSelected() )
 				m_pToggleGroup->_select(this);
@@ -259,25 +259,25 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgToggleButton::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void ToggleButton::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 	}
 	
 	
 	//____ _onRender() ________________________________________________________
 	
-	void WgToggleButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void ToggleButton::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
 		// Get the content rect and icon rect
 	
-		WgRect contentRect	= _canvas;
+		Rect contentRect	= _canvas;
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(_canvas, m_state );
 	
-		WgRect iconRect		= m_icon.getIconRect( contentRect );
+		Rect iconRect		= m_icon.getIconRect( contentRect );
 	
 		// Blit icon
 	
@@ -288,25 +288,25 @@ namespace wg
 	
 	 	if( !m_label.isEmpty() )
 		{
-			WgRect	textRect = m_icon.getTextRect( contentRect, iconRect );
+			Rect	textRect = m_icon.getTextRect( contentRect, iconRect );
 			m_label.onRender( pDevice, textRect, _clip );
 		}
 	}
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void WgToggleButton::_onRefresh( void )
+	void ToggleButton::_onRefresh( void )
 	{
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	
 		//TODO: Handling of icon and text?
 	}
 	
 	//____ _onNewSize() _______________________________________________________
 	
-	void WgToggleButton::_onNewSize( const WgSize& size )
+	void ToggleButton::_onNewSize( const Size& size )
 	{
-		WgRect contentRect	= WgRect(0,0,size);
+		Rect contentRect	= Rect(0,0,size);
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 	
@@ -316,9 +316,9 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgToggleButton::_onCloneContent( const WgWidget * _pOrg )
+	void ToggleButton::_onCloneContent( const Widget * _pOrg )
 	{
-		WgToggleButton * pOrg = (WgToggleButton *) _pOrg;
+		ToggleButton * pOrg = (ToggleButton *) _pOrg;
 	
 		m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 		m_clickArea			= pOrg->m_clickArea;
@@ -328,15 +328,15 @@ namespace wg
 	
 	//____ _markTestTextArea() ______________________________________________________
 	
-	bool WgToggleButton::_markTestTextArea( int _x, int _y )
+	bool ToggleButton::_markTestTextArea( int _x, int _y )
 	{
-		WgRect contentRect	= WgRect(0,0,size());
+		Rect contentRect	= Rect(0,0,size());
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 	
 		contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 	
-		if( m_label.coordToChar( WgCoord(_x,_y) - contentRect.pos() ) != -1 )
+		if( m_label.coordToChar( Coord(_x,_y) - contentRect.pos() ) != -1 )
 			return true;
 	
 		return false;
@@ -344,15 +344,15 @@ namespace wg
 	
 	//____ _onAlphaTest() ______________________________________________________
 	
-	bool WgToggleButton::_onAlphaTest( const WgCoord& ofs )
+	bool ToggleButton::_onAlphaTest( const Coord& ofs )
 	{
-		WgSize	bgSize		= size();
+		Size	bgSize		= size();
 	
-		WgRect	contentRect = WgRect(0,0,bgSize);
+		Rect	contentRect = Rect(0,0,bgSize);
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect( contentRect, m_state );
 	
-		WgRect	iconRect	= m_icon.getIconRect( contentRect );
+		Rect	iconRect	= m_icon.getIconRect( contentRect );
 	
 		switch( m_clickArea )
 		{
@@ -360,7 +360,7 @@ namespace wg
 			{
 				// Extend iconRect so it connects with textArea before we compare
 	
-				WgRect	textRect = m_icon.getTextRect( contentRect, iconRect);
+				Rect	textRect = m_icon.getTextRect( contentRect, iconRect);
 	
 				if( iconRect.x + iconRect.w < textRect.x )
 					iconRect.w = textRect.x - iconRect.x;
@@ -382,14 +382,14 @@ namespace wg
 	
 				//
 	
-				if( WgWidget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.contains( ofs ) )
+				if( Widget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.contains( ofs ) )
 					return true;
 	
 				return false;
 			}
 			case ALPHA:			// Alpha test on background and icon.
 			{
-				if( WgWidget::_onAlphaTest( ofs, bgSize ) ||
+				if( Widget::_onAlphaTest( ofs, bgSize ) ||
 					( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity )) )
 					return true;
 	
@@ -420,14 +420,14 @@ namespace wg
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgToggleButton::_onFieldDirty( WgField * pField )
+	void ToggleButton::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgToggleButton::_onFieldResize( WgField * pField )
+	void ToggleButton::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 		_requestRender();

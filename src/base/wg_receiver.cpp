@@ -24,46 +24,46 @@
 namespace wg 
 {
 	
-	const char WgReceiver::CLASSNAME[] = {"Receiver"};
+	const char Receiver::CLASSNAME[] = {"Receiver"};
 	
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgReceiver::isInstanceOf( const char * pClassName ) const
+	bool Receiver::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgReceiver::className( void ) const
+	const char * Receiver::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgReceiver_p WgReceiver::cast( const WgObject_p& pObject )
+	Receiver_p Receiver::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgReceiver_p( static_cast<WgReceiver*>(pObject.rawPtr()) );
+			return Receiver_p( static_cast<Receiver*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _onRouteAdded() _________________________________________________________
 	
-	void  WgReceiver::_onRouteAdded()
+	void  Receiver::_onRouteAdded()
 	{	
 	}
 	
 	//____ _onRouteRemoved() _______________________________________________________
 	
-	void  WgReceiver::_onRouteRemoved()
+	void  Receiver::_onRouteRemoved()
 	{
 	}
 

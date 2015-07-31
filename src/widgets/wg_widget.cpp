@@ -30,12 +30,12 @@
 namespace wg 
 {
 	
-	const char WgWidget::CLASSNAME[] = {"Widget"};
+	const char Widget::CLASSNAME[] = {"Widget"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
+	Widget::Widget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
 						m_markOpacity( 1 ), m_bOpaque(false),
 						m_bTabLock(false), m_bPressed(false)
 	{
@@ -43,40 +43,40 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgWidget::~WgWidget()
+	Widget::~Widget()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgWidget::isInstanceOf( const char * pClassName ) const
+	bool Widget::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgReceiver::isInstanceOf(pClassName);
+		return Receiver::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgWidget::className( void ) const
+	const char * Widget::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgWidget_p WgWidget::cast( const WgObject_p& pObject )
+	Widget_p Widget::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgWidget_p( static_cast<WgWidget*>(pObject.rawPtr()) );
+			return Widget_p( static_cast<Widget*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ parent() _______________________________________________________________
 	
-	WgContainer_p WgWidget::parent() const
+	Container_p Widget::parent() const
 	{ 
 		if( m_pHook ) 
 			return m_pHook->parent(); 
@@ -85,18 +85,18 @@ namespace wg
 	
 	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle WgWidget::pointerStyle() const
+	WgPointerStyle Widget::pointerStyle() const
 	{
 		return m_pointerStyle;
 	}
 	
 	//____ setEnabled() _______________________________________________________________
 	
-	void WgWidget::setEnabled( bool bEnabled )
+	void Widget::setEnabled( bool bEnabled )
 	{
 		if( m_state.isEnabled() != bEnabled || isContainer() )
 		{
-			WgState old = m_state;
+			State old = m_state;
 			m_state.setEnabled(bEnabled);
 			_onStateChanged(old);
 		}
@@ -124,12 +124,12 @@ namespace wg
 	 * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
 	 */
 	
-	bool WgWidget::markTest( const WgCoord& ofs )
+	bool Widget::markTest( const Coord& ofs )
 	{
 		if( m_markOpacity <= 0 || ofs.x < 0 || ofs.y < 0 )
 			return false;
 			
-		WgSize sz = size();
+		Size sz = size();
 	
 		if( ofs.x >= sz.w || ofs.y >= sz.h )
 			return false;
@@ -142,9 +142,9 @@ namespace wg
 	
 	//____ setSkin() ______________________________________________________________
 	
-	void WgWidget::setSkin( const WgSkin_p& pSkin )
+	void Widget::setSkin( const Skin_p& pSkin )
 	{
-		WgSkin_p pOldSkin = m_pSkin;
+		Skin_p pOldSkin = m_pSkin;
 		m_pSkin = pSkin;
 		_onSkinChanged( pOldSkin, m_pSkin );
 	}
@@ -153,12 +153,12 @@ namespace wg
 	
 	//____ cloneContent() _________________________________________________________
 	
-	bool WgWidget::cloneContent( const WgWidget_p& _pOrg )
+	bool Widget::cloneContent( const Widget_p& _pOrg )
 	{
 		if( _pOrg->className() != className() )
 			return false;
 	
-		WgWidget * pOrg = _pOrg.rawPtr();
+		Widget * pOrg = _pOrg.rawPtr();
 	
 		m_id			= pOrg->m_id;
 	
@@ -179,14 +179,14 @@ namespace wg
 	
 	//____ _onNewHook() ___________________________________________________________
 	
-	void WgWidget::_onNewHook( WgHook * pHook )
+	void Widget::_onNewHook( Hook * pHook )
 	{
 		m_pHook = pHook;
 	}
 	
 	//____ _onNewRoot() ___________________________________________________________
 	
-	void WgWidget::_onNewRoot( WgRootPanel * pRoot )
+	void Widget::_onNewRoot( RootPanel * pRoot )
 	{
 	}
 	
@@ -206,9 +206,9 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 	 
-	 WgCoord WgWidget::toGlobal( const WgCoord& coord ) const
+	 Coord Widget::toGlobal( const Coord& coord ) const
 	{
-		WgCoord c = globalPos();
+		Coord c = globalPos();
 		c.x += coord.x;
 		c.y += coord.y;
 		return c;
@@ -230,10 +230,10 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 	
-	WgCoord WgWidget::toLocal( const WgCoord& coord ) const
+	Coord Widget::toLocal( const Coord& coord ) const
 	{
-		WgCoord c = globalPos();
-		return WgCoord( coord.x - c.x, coord.y - c.y );
+		Coord c = globalPos();
+		return Coord( coord.x - c.x, coord.y - c.y );
 	}
 	
 	//____ matchingHeight() _______________________________________________________
@@ -250,7 +250,7 @@ namespace wg
 	 * @return The preferred height for the given width in pixels.
 	 */
 	
-	int WgWidget::matchingHeight( int width ) const
+	int Widget::matchingHeight( int width ) const
 	{
 		return preferredSize().h;		// Default is to stick with best height no matter what width.
 	}
@@ -269,7 +269,7 @@ namespace wg
 	 * @return The preferred width for the given height in pixels.
 	 */
 	
-	int WgWidget::matchingWidth( int height ) const
+	int Widget::matchingWidth( int height ) const
 	{
 		return preferredSize().w;		// Default is to stick with best width no matter what height.
 	}
@@ -292,12 +292,12 @@ namespace wg
 	 * @return The preferred size of the widget in pixels.
 	 */
 	
-	WgSize WgWidget::preferredSize() const
+	Size Widget::preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->preferredSize();
 		else
-			return WgSize(0,0);
+			return Size(0,0);
 	}
 	
 	//____ minSize() ______________________________________________________________
@@ -316,17 +316,17 @@ namespace wg
 	 * @return The minimum size of the widget in pixels.
 	 */
 	
-	WgSize WgWidget::minSize() const
+	Size Widget::minSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->minSize();
 		else
-			return WgSize(0,0);
+			return Size(0,0);
 	}
 	
 	//____ onMsg() _______________________________________________________________
 	
-	void WgWidget::onMsg( const WgMsg_p& pMsg )
+	void Widget::onMsg( const Msg_p& pMsg )
 	{
 		// SetRepost before _onMsg() so that subclasses can swallow the respost.
 		
@@ -345,7 +345,7 @@ namespace wg
 			case WG_MSG_KEY_RELEASE:
 			case WG_MSG_WHEEL_ROLL:
 			{
-				WgWidget_p pParent = parent();
+				Widget_p pParent = parent();
 				if( pParent )
 					pMsg->setRepost(pParent,pParent);
 				break;
@@ -372,16 +372,16 @@ namespace wg
 	 * @return The maximum size of the widget in pixels.
 	 */
 	
-	WgSize WgWidget::maxSize() const
+	Size Widget::maxSize() const
 	{
-		return WgSize(2<<24,2<<24);
+		return Size(2<<24,2<<24);
 	}
 	
 	//____ _getBlendMode() _________________________________________________________
 	
-	WgBlendMode WgWidget::_getBlendMode() const
+	WgBlendMode Widget::_getBlendMode() const
 	{
-		WgContainer * pParent = _parent();
+		Container * pParent = _parent();
 		if( pParent )
 			return pParent->_getBlendMode();
 		else
@@ -390,11 +390,11 @@ namespace wg
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+	void Widget::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
-		for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
+		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 		{
-			WgRect clip( _window, *pRect );
+			Rect clip( _window, *pRect );
 			if( clip.w > 0 && clip.h > 0 )
 				_onRender( pDevice, _canvas, _window, clip );
 		}
@@ -402,24 +402,24 @@ namespace wg
 	
 	//____ onCollectPatches()  ____________________________________________________
 	
-	void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+	void Widget::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-			container.add( WgRect( geo, clip ) );
+			container.add( Rect( geo, clip ) );
 	}
 	
 	//____ _onMaskPatches() _______________________________________________________
 	
-	void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+	void Widget::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 		{
-			patches.sub( WgRect( geo, clip ) );
+			patches.sub( Rect( geo, clip ) );
 		}
 	}
 	
 	//____ _onRender() ____________________________________________________________
 	
-	void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void Widget::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		if( m_pSkin )
 			m_pSkin->render( pDevice, _canvas, m_state, _clip );
@@ -427,14 +427,14 @@ namespace wg
 	
 	//____ _onNewSize() ___________________________________________________________
 	
-	void WgWidget::_onNewSize( const WgSize& size )
+	void Widget::_onNewSize( const Size& size )
 	{
 		_requestRender();
 	}
 	
 	//____ _onRefresh() ___________________________________________________________
 	
-	void WgWidget::_onRefresh()
+	void Widget::_onRefresh()
 	{
 		if( m_pSkin && m_pSkin->isOpaque(m_state) )
 			m_bOpaque = true;
@@ -447,7 +447,7 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgWidget::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void Widget::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
 		if( !pOldSkin || !pNewSkin || pOldSkin->contentPadding() != pNewSkin->contentPadding() ||
 			pOldSkin->preferredSize() != pNewSkin->preferredSize() ||
@@ -466,7 +466,7 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void WgWidget::_onStateChanged( WgState oldState )
+	void Widget::_onStateChanged( State oldState )
 	{
 		if( m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState) )
 		{
@@ -477,9 +477,9 @@ namespace wg
 	
 	//____ _onMsg() _____________________________________________________________
 	
-	void WgWidget::_onMsg( const WgMsg_p& _pMsg )
+	void Widget::_onMsg( const Msg_p& _pMsg )
 	{
-		WgState oldState = m_state;
+		State oldState = m_state;
 	
 		switch( _pMsg->type() )
 		{
@@ -494,7 +494,7 @@ namespace wg
 				break;
 			case WG_MSG_MOUSE_PRESS:
 			{
-				WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
+				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
 				if( pMsg->button() == WG_BUTTON_LEFT )
 				{
 					if( m_state.isHovered() )
@@ -506,7 +506,7 @@ namespace wg
 			}
 			case WG_MSG_MOUSE_RELEASE:
 			{
-				WgMouseReleaseMsg_p pMsg = WgMouseReleaseMsg::cast(_pMsg);
+				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 				if( pMsg->button() == WG_BUTTON_LEFT )
 				{
 					if( m_state.isHovered() )
@@ -530,19 +530,19 @@ namespace wg
 	
 	//____ _onAlphaTest() _________________________________________________________
 	
-	bool WgWidget::_onAlphaTest( const WgCoord& ofs, const WgSize& sz )
+	bool Widget::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
 		if( m_pSkin )
-			return m_pSkin->markTest( ofs, WgRect(0,0,sz), m_state, m_markOpacity );
+			return m_pSkin->markTest( ofs, Rect(0,0,sz), m_state, m_markOpacity );
 	
 		return false;
 	}
 	
 	//____ _windowPadding() _______________________________________________________
 	
-	WgSize WgWidget::_windowPadding() const 
+	Size Widget::_windowPadding() const 
 	{
-		return WgSize(0,0);
+		return Size(0,0);
 	}
 
 } // namespace wg

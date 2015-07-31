@@ -27,7 +27,7 @@
 namespace wg 
 {
 	
-	const char WgObject::CLASSNAME[] = {"Object"};
+	const char Object::CLASSNAME[] = {"Object"};
 	
 	
 	/**
@@ -36,7 +36,7 @@ namespace wg
 	 * Check if the object is an instance or subclass of specified class.
 	 *
 	 * @param pClassName	Pointer to the class name. This needs to be a pointer returned by 
-	 * 						a call to WgObject::className() or the CLASSNAME member of a subclass of WgObject.
+	 * 						a call to Object::className() or the CLASSNAME member of a subclass of Object.
 	 * 
 	 * This method compares the specified class name to the CLASSNAME member of all classes implemented by the
 	 * object. This is needed when checking if the object implements a class other than the leaf class.  
@@ -47,7 +47,7 @@ namespace wg
 	 * 
 	 */
 	
-	bool WgObject::isInstanceOf( const char * pClassName ) const
+	bool Object::isInstanceOf( const char * pClassName ) const
 	{ 
 		return (pClassName==CLASSNAME); 
 	}
@@ -67,20 +67,20 @@ namespace wg
 	 * @return Pointer to a char string containing the class name without the Wg prefix.
 	 */
 	
-	const char * WgObject::className( void ) const
+	const char * Object::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	void WgObject::_destroy()
+	void Object::_destroy()
 	{
 		delete this;
 	}
 	
 	/**
-	 * @brief Dynamic casting of smartpointer to a WgObject derived class.
+	 * @brief Dynamic casting of smartpointer to a Object derived class.
 	 *
-	 * Dynamic casting of smartpointer to a WgObject derived class.
+	 * Dynamic casting of smartpointer to a Object derived class.
 	 *
 	 * @param pObject	Pointer to be cast.
 	 * 
@@ -90,7 +90,7 @@ namespace wg
 	 * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
 	 */
 	 
-	WgObject_p WgObject::cast( const WgObject_p& pObject )
+	Object_p Object::cast( const Object_p& pObject )
 	{
 		return pObject;
 	}

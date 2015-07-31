@@ -25,107 +25,107 @@
 namespace wg 
 {
 	
-	const char WgNullGfxDevice::CLASSNAME[] = {"NullGfxDevice"};
+	const char NullGfxDevice::CLASSNAME[] = {"NullGfxDevice"};
 	
 	
 	//____ create() _______________________________________________________________
 	
-	WgNullGfxDevice_p WgNullGfxDevice::create( WgSize size )
+	NullGfxDevice_p NullGfxDevice::create( Size size )
 	{
-		return WgNullGfxDevice_p(new WgNullGfxDevice(size));
+		return NullGfxDevice_p(new NullGfxDevice(size));
 	}
 	
-	WgNullGfxDevice::WgNullGfxDevice( WgSize size ) : WgGfxDevice(size)
+	NullGfxDevice::NullGfxDevice( Size size ) : GfxDevice(size)
 	{
 	}
 	
-	WgNullGfxDevice::~WgNullGfxDevice()
+	NullGfxDevice::~NullGfxDevice()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgNullGfxDevice::isInstanceOf( const char * pClassName ) const
+	bool NullGfxDevice::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgGfxDevice::isInstanceOf(pClassName);
+		return GfxDevice::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgNullGfxDevice::className( void ) const
+	const char * NullGfxDevice::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgNullGfxDevice_p WgNullGfxDevice::cast( const WgObject_p& pObject )
+	NullGfxDevice_p NullGfxDevice::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgNullGfxDevice_p( static_cast<WgNullGfxDevice*>(pObject.rawPtr()) );
+			return NullGfxDevice_p( static_cast<NullGfxDevice*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	
-	void WgNullGfxDevice::fill( const WgRect& rect, const WgColor& col )
+	void NullGfxDevice::fill( const Rect& rect, const Color& col )
 	{
 	}
 	
-	void WgNullGfxDevice::blit( const WgSurface_p& src, const WgRect& srcrect, int dx, int dy  )
+	void NullGfxDevice::blit( const Surface_p& src, const Rect& srcrect, int dx, int dy  )
 	{
 	}
 	
-	void WgNullGfxDevice::tileBlit( const WgSurface_p& src, const WgRect& srcrect, const WgRect& dest )
+	void NullGfxDevice::tileBlit( const Surface_p& src, const Rect& srcrect, const Rect& dest )
 	{
 	}
 	
-	void WgNullGfxDevice::fillSubPixel( const WgRectF& rect, const WgColor& col )
+	void NullGfxDevice::fillSubPixel( const RectF& rect, const Color& col )
 	{
 	}
 	
-	void WgNullGfxDevice::stretchBlitSubPixel( 	const WgSurface_p& pSrc, float sx, float sy, float sw, float sh,
+	void NullGfxDevice::stretchBlitSubPixel( 	const Surface_p& pSrc, float sx, float sy, float sw, float sh,
 							   		 			float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
 	{
 	}
 	
-	void WgNullGfxDevice::clipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+	void NullGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col )
 	{
 	}
 	
-	void WgNullGfxDevice::clipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+	void NullGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col )
 	{
 	}
 	
-	void WgNullGfxDevice::clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness )
+	void NullGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
 	}
 	
 	
-	void WgNullGfxDevice::drawArcNE( const WgRect& rect, WgColor color )
+	void NullGfxDevice::drawArcNE( const Rect& rect, Color color )
 	{
 	}
 	
-	void WgNullGfxDevice::drawElipse( const WgRect& rect, WgColor color )
+	void NullGfxDevice::drawElipse( const Rect& rect, Color color )
 	{
 	}
 	
-	void WgNullGfxDevice::drawFilledElipse( const WgRect& rect, WgColor color )
+	void NullGfxDevice::drawFilledElipse( const Rect& rect, Color color )
 	{
 	}
 	
-	void WgNullGfxDevice::clipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color )
+	void NullGfxDevice::clipDrawArcNE( const Rect& clip, const Rect& rect, Color color )
 	{
 	}
 	
-	void WgNullGfxDevice::clipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+	void NullGfxDevice::clipDrawElipse( const Rect& clip, const Rect& rect, Color color )
 	{
 	}
 	
-	void WgNullGfxDevice::clipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+	void NullGfxDevice::clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color )
 	{
 	}
 

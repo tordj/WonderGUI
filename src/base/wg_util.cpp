@@ -10,7 +10,7 @@ namespace wg
 	
 	//____ markTestStretchRect() __________________________________________________
 	
-	bool WgUtil::markTestStretchRect( WgCoord ofs, const WgSurface_p& pSurface, const WgRect& source, const WgRect& area, int opacityTreshold )
+	bool WgUtil::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
@@ -108,7 +108,7 @@ namespace wg
 	
 	//____ sizeFromPolicy() __________________________________________________________
 	
-	int WgUtil::sizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy )
+	int WgUtil::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
 		{
@@ -223,73 +223,73 @@ namespace wg
 	
 	//____ origoToOfs() ________________________________________________________
 	
-	WgCoord WgUtil::origoToOfs( WgOrigo origo, WgSize base )
+	Coord WgUtil::origoToOfs( WgOrigo origo, Size base )
 	{
 		switch( origo )
 		{
 			default:
 			case WG_NORTHWEST:
-				return WgCoord(0,0);
+				return Coord(0,0);
 	
 			case WG_NORTH:
-				return WgCoord( base.w/2,0 );
+				return Coord( base.w/2,0 );
 	
 			case WG_NORTHEAST:
-				return WgCoord( base.w,0 );
+				return Coord( base.w,0 );
 	
 			case WG_EAST:
-				return WgCoord( base.w, base.h/2 );
+				return Coord( base.w, base.h/2 );
 	
 			case WG_SOUTHEAST:
-				return WgCoord( base.w, base.h );
+				return Coord( base.w, base.h );
 	
 			case WG_SOUTH:
-				return WgCoord( base.w/2, base.h );
+				return Coord( base.w/2, base.h );
 	
 			case WG_SOUTHWEST:
-				return WgCoord( 0, base.h );
+				return Coord( 0, base.h );
 	
 			case WG_WEST:
-				return WgCoord( 0, base.h/2 );
+				return Coord( 0, base.h/2 );
 	
 			case WG_CENTER:
-				return WgCoord( base.w/2, base.h/2 );
+				return Coord( base.w/2, base.h/2 );
 		}
 	}
 	
 	//____ origoToRect() ________________________________________________________
 	
-	WgRect WgUtil::origoToRect( WgOrigo origo, WgSize base, WgSize rect )
+	Rect WgUtil::origoToRect( WgOrigo origo, Size base, Size rect )
 	{
 		switch( origo )
 		{
 			default:
 			case WG_NORTHWEST:
-				return WgRect(0,0, rect);
+				return Rect(0,0, rect);
 	
 			case WG_NORTH:
-				return WgRect( base.w/2 - rect.w/2, 0, rect );
+				return Rect( base.w/2 - rect.w/2, 0, rect );
 	
 			case WG_NORTHEAST:
-				return WgRect( base.w - rect.w, 0, rect );
+				return Rect( base.w - rect.w, 0, rect );
 	
 			case WG_EAST:
-				return WgRect( base.w - rect.w, base.h/2 - rect.h/2, rect );
+				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
 	
 			case WG_SOUTHEAST:
-				return WgRect( base.w - rect.w, base.h - rect.h, rect );
+				return Rect( base.w - rect.w, base.h - rect.h, rect );
 	
 			case WG_SOUTH:
-				return WgRect( base.w/2 - rect.w/2, base.h - rect.h, rect );
+				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
 	
 			case WG_SOUTHWEST:
-				return WgRect( 0, base.h - rect.h, rect );
+				return Rect( 0, base.h - rect.h, rect );
 	
 			case WG_WEST:
-				return WgRect( 0, base.h/2 - rect.h/2, rect );
+				return Rect( 0, base.h/2 - rect.h/2, rect );
 	
 			case WG_CENTER:
-				return WgRect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
+				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}
 	}
 

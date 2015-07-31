@@ -38,21 +38,21 @@
 namespace wg 
 {
 	
-	class WgSpan;
-	typedef	WgIStrongPtr<WgSpan,WgInterface_p>			WgSpan_p;
-	typedef	WgIWeakPtr<WgSpan,WgInterface_wp>		WgSpan_wp;
+	class Span;
+	typedef	WgIStrongPtr<Span,Interface_p>			Span_p;
+	typedef	WgIWeakPtr<Span,Interface_wp>		Span_wp;
 	
 	
-	class WgSpan : public WgInterface
+	class Span : public Interface
 	{
 	public:
-		WgSpan(WgSpanItem* pItem) : m_pItem(pItem) {}
+		Span(SpanItem* pItem) : m_pItem(pItem) {}
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
 		static const char			CLASSNAME[];
-		static WgSpan_p			cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-		inline WgSpan_p			ptr() { return WgSpan_p(_object(),this); }
+		static Span_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline Span_p			ptr() { return Span_p(_object(),this); }
 	
 		inline int		min() const { return m_pItem->min; }
 		inline int		max() const { return m_pItem->max; }
@@ -65,9 +65,9 @@ namespace wg
 	
 	
 	protected:
-		virtual WgObject * 		_object() const;
+		virtual Object * 		_object() const;
 	
-		WgSpanItem *		m_pItem;
+		SpanItem *		m_pItem;
 	};
 	
 	

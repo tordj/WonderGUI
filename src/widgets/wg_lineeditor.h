@@ -38,25 +38,25 @@
 namespace wg 
 {
 	
-	class WgLineEditor;
-	typedef	WgStrongPtr<WgLineEditor,WgWidget_p>		WgLineEditor_p;
-	typedef	WgWeakPtr<WgLineEditor,WgWidget_wp>	WgLineEditor_wp;
+	class LineEditor;
+	typedef	WgStrongPtr<LineEditor,Widget_p>		LineEditor_p;
+	typedef	WgWeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
 	
-	//____ WgLineEditor ____________________________________________________________
+	//____ LineEditor ____________________________________________________________
 	
-	class WgLineEditor : public WgWidget, protected WgLegacyTextHolder
+	class LineEditor : public Widget, protected LegacyTextHolder
 	{
 	public:
-		static WgLineEditor_p	create() { return WgLineEditor_p(new WgLineEditor()); }
+		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgLineEditor_p	cast( const WgObject_p& pObject );
+		static LineEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		WgEditText		text;
+		EditText		text;
 	
 		//____ Methods __________________________________________
 	
@@ -65,40 +65,40 @@ namespace wg
 		inline Uint16 passwordGlyph() const				 { return m_pwGlyph; };
 		void		setPasswordGlyph( Uint16 glyph );
 	
-		int			insertTextAtCursor( const WgCharSeq& str );
+		int			insertTextAtCursor( const CharSeq& str );
 		bool		insertCharAtCursor( Uint16 c );
 	
-		virtual void			setEditMode(WgTextEditMode mode);
-		virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
+		virtual void			setEditMode(TextEditMode mode);
+		virtual TextEditMode	editMode() const { return m_text.editMode(); }
 	
-		WgSize		preferredSize() const;
+		Size		preferredSize() const;
 		bool		isAutoEllipsisDefault() const { return false; };
 	
 	
 	protected:
-		WgLineEditor();
-		virtual ~WgLineEditor();
-		virtual WgWidget* _newOfMyType() const { return new WgLineEditor(); };
+		LineEditor();
+		virtual ~LineEditor();
+		virtual Widget* _newOfMyType() const { return new LineEditor(); };
 	
 		bool	_isEditable() const { return m_text.isEditable(); }
 		bool	_isSelectable() const { return m_text.isSelectable(); }
 	
-		void	_onMsg( const WgMsg_p& pMsg );
-		void	_onStateChanged( WgState oldState );
-		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-		void	_onNewSize( const WgSize& size );
-		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+		void	_onMsg( const Msg_p& pMsg );
+		void	_onStateChanged( State oldState );
+		void	_onCloneContent( const Widget * _pOrg );
+		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_onNewSize( const Size& size );
+		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		WgObject * 		_object() { return this; };
-		void			_onFieldDirty( WgField * pField );
-		void 			_onFieldResize( WgField * pField );
+		Object * 		_object() { return this; };
+		void			_onFieldDirty( Field * pField );
+		void 			_onFieldResize( Field * pField );
 	
 	private:
 	
 		void	_adjustViewOfs();
 	
-		WgLegacyTextField			m_text;
+		LegacyTextField			m_text;
 		WgRouteId			m_tickRouteId;
 	
 		bool				m_bResetCursorOnFocus;

@@ -38,32 +38,32 @@
 namespace wg 
 {
 	
-	class WgSizeScaler;
+	class SizeScaler;
 	
-	typedef	WgStrongPtr<WgSizeScaler,WgObject_p>	WgSizeScaler_p;
+	typedef	WgStrongPtr<SizeScaler,Object_p>	SizeScaler_p;
 	
 	
-	class WgScalable
+	class Scalable
 	{
-		friend class WgSizeScaler;
+		friend class SizeScaler;
 	protected:
-		WgScalable() {}
-		virtual ~WgScalable();
+		Scalable() {}
+		virtual ~Scalable();
 		virtual void _onScaleChanged() = 0;
 		
-		WgSizeScaler_p m_pScaler;
+		SizeScaler_p m_pScaler;
 	};
 	
 	
-	class WgSizeScaler : public WgObject
+	class SizeScaler : public Object
 	{
-		friend class WgScalable;
+		friend class Scalable;
 	public:
-		static WgSizeScaler_p create();
-		static WgSizeScaler_p create( float scale );
-		static WgSizeScaler_p create( float scaleX, float scaleY );
+		static SizeScaler_p create();
+		static SizeScaler_p create( float scale );
+		static SizeScaler_p create( float scaleX, float scaleY );
 	
-		virtual ~WgSizeScaler() {}
+		virtual ~SizeScaler() {}
 	
 		void	setScale( float scale );
 		void	setScale( float scaleX, float scaleY );
@@ -73,22 +73,22 @@ namespace wg
 		inline float	scaleX() const { return m_scaleX; }
 		inline float	scaleY() const { return m_scaleY; }
 	
-		void	addItem( WgScalable * pScalable );
-		void	removeItem( WgScalable * pScalable );
+		void	addItem( Scalable * pScalable );
+		void	removeItem( Scalable * pScalable );
 		void	removeAllItems();
 	
 	private:
-		WgSizeScaler( float scaleX, float scaleY );
-		void	_removeDeadItem( WgScalable * pScalable );
+		SizeScaler( float scaleX, float scaleY );
+		void	_removeDeadItem( Scalable * pScalable );
 	
-		class Node : public WgLink
+		class Node : public Link
 		{
 		public:
 			LINK_METHODS(Node);
-			WgScalable * m_pScalable;
+			Scalable * m_pScalable;
 		};
 	
-		WgChain<Node>	m_nodes;
+		Chain<Node>	m_nodes;
 	
 		float	m_scaleX;
 		float	m_scaleY;

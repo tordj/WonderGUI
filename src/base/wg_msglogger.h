@@ -30,24 +30,24 @@ namespace wg
 {
 	
 	
-	class WgMsgLogger;
-	typedef	WgStrongPtr<WgMsgLogger,WgReceiver_p>		WgMsgLogger_p;
-	typedef	WgWeakPtr<WgMsgLogger,WgReceiver_wp>		WgMsgLogger_wp;
+	class MsgLogger;
+	typedef	WgStrongPtr<MsgLogger,Receiver_p>		MsgLogger_p;
+	typedef	WgWeakPtr<MsgLogger,Receiver_wp>		MsgLogger_wp;
 	
-	class WgMsgLogger : public WgReceiver
+	class MsgLogger : public Receiver
 	{
 	public:
-		static WgMsgLogger_p		create( std::ostream& stream ) { return WgMsgLogger_p( new WgMsgLogger(stream)); }
+		static MsgLogger_p		create( std::ostream& stream ) { return MsgLogger_p( new MsgLogger(stream)); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static WgMsgLogger_p		cast( const WgObject_p& pObject );
+		static MsgLogger_p		cast( const Object_p& pObject );
 	
-		void onMsg( const WgMsg_p& _pMsg );
+		void onMsg( const Msg_p& _pMsg );
 	
-		void ignoreMsg( WgMsgType msg );
-		void logMsg( WgMsgType msg );
+		void ignoreMsg( MsgType msg );
+		void logMsg( MsgType msg );
 	
 		void logPointerMsgs();
 		void ignorePointerMsgs();
@@ -67,21 +67,21 @@ namespace wg
 		void logAllMsgs();
 		void ignoreAllMsgs();
 	
-		bool isMsgLogged( WgMsgType msg ) { return m_msgFilter[msg]; }
+		bool isMsgLogged( MsgType msg ) { return m_msgFilter[msg]; }
 	
 	private:
-		WgMsgLogger( std::ostream& stream );
-		~WgMsgLogger();
+		MsgLogger( std::ostream& stream );
+		~MsgLogger();
 	
 		void	_onRouteAdded();
 		void	_onRouteRemoved();
 	
 		std::string	_formatTimestamp( int64_t ms ) const;
-		std::string _formatSource( const WgMsg_p& _pMsg ) const;
-		std::string _formatCopyTo( const WgMsg_p& _pMsg ) const;
-		std::string _formatModkeys( const WgMsg_p& _pMsg ) const;
-		std::string _formatPointerPos( const WgMsg_p& _pMsg ) const;
-		std::string _formatPointerStyle( const WgPointerChangeMsg_p& _pMsg ) const;
+		std::string _formatSource( const Msg_p& _pMsg ) const;
+		std::string _formatCopyTo( const Msg_p& _pMsg ) const;
+		std::string _formatModkeys( const Msg_p& _pMsg ) const;
+		std::string _formatPointerPos( const Msg_p& _pMsg ) const;
+		std::string _formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const;
 		std::string _formatMouseButton( WgMouseButton button ) const;
 	
 		bool			m_msgFilter[WG_MSG_MAX];

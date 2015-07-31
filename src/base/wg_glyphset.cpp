@@ -30,31 +30,31 @@
 namespace wg 
 {
 	
-	const char WgGlyphset::CLASSNAME[] = {"Glyphset"};
+	const char Glyphset::CLASSNAME[] = {"Glyphset"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgGlyphset::isInstanceOf( const char * pClassName ) const
+	bool Glyphset::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgGlyphset::className( void ) const
+	const char * Glyphset::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgGlyphset_p WgGlyphset::cast( const WgObject_p& pObject )
+	Glyphset_p Glyphset::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgGlyphset_p( static_cast<WgGlyphset*>(pObject.rawPtr()) );
+			return Glyphset_p( static_cast<Glyphset*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -62,18 +62,18 @@ namespace wg
 	
 	
 	
-	//____ WgGlyph::WgGlyph() _______________________________________________________
+	//____ Glyph::Glyph() _______________________________________________________
 	
-	WgGlyph::WgGlyph()
+	Glyph::Glyph()
 	{
 		m_pGlyphset = 0;
 		m_advance = 0;
 		m_kerningIndex = 0;
 	}
 	
-	//____ WgGlyph::WgGlyph() _______________________________________________________
+	//____ Glyph::Glyph() _______________________________________________________
 	
-	WgGlyph::WgGlyph( int advance, int kerningIndex, WgGlyphset * pGlyphset )
+	Glyph::Glyph( int advance, int kerningIndex, Glyphset * pGlyphset )
 	{
 		m_pGlyphset = pGlyphset;
 		m_advance = advance;

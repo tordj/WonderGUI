@@ -26,45 +26,45 @@
 namespace wg 
 {
 	
-	const char WgInputHandler::CLASSNAME[] = {"InputHandler"};
+	const char InputHandler::CLASSNAME[] = {"InputHandler"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgInputHandler::WgInputHandler()
+	InputHandler::InputHandler()
 	{
-		m_tickRoute = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );		
+		m_tickRoute = Base::msgRouter()->addRoute( WG_MSG_TICK, this );		
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgInputHandler::~WgInputHandler()
+	InputHandler::~InputHandler()
 	{
-		WgBase::msgRouter()->deleteRoute(m_tickRoute);
+		Base::msgRouter()->deleteRoute(m_tickRoute);
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgInputHandler::isInstanceOf( const char * pClassName ) const
+	bool InputHandler::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgInputHandler::className( void ) const
+	const char * InputHandler::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgInputHandler_p WgInputHandler::cast( const WgObject_p& pObject )
+	InputHandler_p InputHandler::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgInputHandler_p( static_cast<WgInputHandler*>(pObject.rawPtr()) );
+			return InputHandler_p( static_cast<InputHandler*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -72,15 +72,15 @@ namespace wg
 	//____ setPointer() ___________________________________________________________
 	
 	
-	void WgInputHandler::setPointer( const WgRootPanel_p& pRoot, WgCoord pos )
+	void InputHandler::setPointer( const RootPanel_p& pRoot, Coord pos )
 	{
-		WgCoord	prevPointerPos = m_pointerPos;
+		Coord	prevPointerPos = m_pointerPos;
 		
 		m_pointerPos = pos;
 		m_pMarkedRoot = 0;
 	
-		WgWidget_p pNowMarked = 0;
-		WgWidget_p pWidgetTarget = 0;
+		Widget_p pNowMarked = 0;
+		Widget_p pWidgetTarget = 0;
 	
 		if( pRoot && pRoot->geo().contains( pos ) )
 		{
@@ -108,10 +108,10 @@ namespace wg
 		// Post Enter events for new marked widgets
 		// and Move events for those already marked
 	
-		WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.rawPtr() );
+		Widget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.rawPtr() );
 		
 		if( pFirstAlreadyMarked )
-			WgBase::msgRouter()->post( new WgMouseMoveMsg( pFirstAlreadyMarked ) );
+			Base::msgRouter()->post( new MouseMoveMsg( pFirstAlreadyMarked ) );
 	
 		// Copy content of pNowMarked to m_pMarkedWidget
 	
@@ -122,7 +122,7 @@ namespace wg
 		for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 		{
 			if( m_bButtonPressed[i] )
-				WgBase::msgRouter()->post( new WgMouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->pointerPos(), prevPointerPos, m_pointerPos ) );
+				Base::msgRouter()->post( new MouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->pointerPos(), prevPointerPos, m_pointerPos ) );
 		}
 		
 		// Update PointerStyle
@@ -138,22 +138,22 @@ namespace wg
 	
 		if( newStyle != m_pointerStyle )
 		{
-			WgBase::msgRouter()->post( new WgPointerChangeMsg( newStyle ) );
+			Base::msgRouter()->post( new PointerChangeMsg( newStyle ) );
 			m_pointerStyle = newStyle;
 		}	
 	}
 	
 	//____ _updateEnteredWidgets() _________________________________________________
 	
-	WgWidget * WgInputHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
+	Widget * InputHandler::_updateEnteredWidgets( Widget * pMarkedWidget )
 	{
 		
 		// Loop through our new widgets and check if they already
 		// were entered. Send MouseEnter to all new widgets and notice the first
 		// common ancestor .
 	
-		WgWidget * pFirstAlreadyMarked = 0;
-		for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+		Widget * pFirstAlreadyMarked = 0;
+		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
 		{
 			int ofs = _widgetPosInList( pWidget, m_vEnteredWidgets );
 			if( ofs >= 0 )
@@ -163,19 +163,19 @@ namespace wg
 				m_vEnteredWidgets[ofs] = 0;			
 			}
 			else
-				WgBase::msgRouter()->post( new WgMouseEnterMsg( pWidget ) );		
+				Base::msgRouter()->post( new MouseEnterMsg( pWidget ) );		
 		}
 	
 		// Send MouseLeave to those that were left.
 	
 		for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
 			if(m_vEnteredWidgets[i] )
-				WgBase::msgRouter()->post( new WgMouseLeaveMsg( m_vEnteredWidgets[i].rawPtr()) );
+				Base::msgRouter()->post( new MouseLeaveMsg( m_vEnteredWidgets[i].rawPtr()) );
 		
 		// Replace the old list with a new one.
 		
 		m_vEnteredWidgets.clear();
-		for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
 			m_vEnteredWidgets.push_back( pWidget );
 	
 		// Return first already marked, calling function might need it.
@@ -185,7 +185,7 @@ namespace wg
 	
 	//____ _widgetPosInList() ________________________________________________________
 	
-	int WgInputHandler::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidget_wp>& list )
+	int InputHandler::_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list )
 	{
 		for( size_t i = 0 ; i < list.size() ; i++ )
 			if( list[i].rawPtr() == pWidget )
@@ -198,7 +198,7 @@ namespace wg
 	
 	//____ setButton() _____________________________________________________________
 	
-	void WgInputHandler::setButton( WgMouseButton button, bool bPressed )
+	void InputHandler::setButton( WgMouseButton button, bool bPressed )
 	{
 		// Sanity checks
 		
@@ -219,25 +219,25 @@ namespace wg
 	
 	//____ _processMouseButtonPress() ___________________________________________________
 	
-	void WgInputHandler::_processMouseButtonPress( WgMouseButton button )
+	void InputHandler::_processMouseButtonPress( WgMouseButton button )
 	{
 	
 		// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
 	
-		WgWidget * pWidget = m_pMarkedWidget.rawPtr();
+		Widget * pWidget = m_pMarkedWidget.rawPtr();
 	
-		WgMousePressMsg * pMsg = new WgMousePressMsg( button, pWidget );
-		WgBase::msgRouter()->post( pMsg );
+		MousePressMsg * pMsg = new MousePressMsg( button, pWidget );
+		Base::msgRouter()->post( pMsg );
 	
 		// Handle possible double-click
 	
-		int doubleClickTimeTreshold = WgBase::doubleClickTimeTreshold();
-		int doubleClickDistanceTreshold = WgBase::doubleClickDistanceTreshold();
+		int doubleClickTimeTreshold = Base::doubleClickTimeTreshold();
+		int doubleClickDistanceTreshold = Base::doubleClickDistanceTreshold();
 	
 	
 		if( m_pLatestPressMsgs[button] && m_pLatestPressMsgs[button]->timestamp() + doubleClickTimeTreshold > m_timeStamp )
 		{
-			WgCoord distance = m_pointerPos - m_pLatestPressMsgs[button]->pointerPos();
+			Coord distance = m_pointerPos - m_pLatestPressMsgs[button]->pointerPos();
 	
 			if( distance.x <= doubleClickDistanceTreshold &&
 				distance.x >= -doubleClickDistanceTreshold &&
@@ -245,9 +245,9 @@ namespace wg
 				distance.y >= -doubleClickDistanceTreshold )
 				{
 					if( pWidget && pWidget ==  m_latestPressWidgets[button].rawPtr() )
-						WgBase::msgRouter()->post( new WgMouseDoubleClickMsg(button, pWidget) );
+						Base::msgRouter()->post( new MouseDoubleClickMsg(button, pWidget) );
 					else
-						WgBase::msgRouter()->post( new WgMouseDoubleClickMsg(button) );
+						Base::msgRouter()->post( new MouseDoubleClickMsg(button) );
 				}
 		}
 	
@@ -261,24 +261,24 @@ namespace wg
 	
 	//____ _processMouseButtonRelease() _________________________________________________
 	
-	void WgInputHandler::_processMouseButtonRelease( WgMouseButton button )
+	void InputHandler::_processMouseButtonRelease( WgMouseButton button )
 	{
 		// Post BUTTON_RELEASE events for widget that was pressed
 	
-		WgWidget * pWidget = m_latestPressWidgets[button].rawPtr();
+		Widget * pWidget = m_latestPressWidgets[button].rawPtr();
 		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 	
-		WgMouseReleaseMsg * pMsg = new WgMouseReleaseMsg( button, pWidget, true, bIsInside );
-		WgBase::msgRouter()->post( pMsg );
+		MouseReleaseMsg * pMsg = new MouseReleaseMsg( button, pWidget, true, bIsInside );
+		Base::msgRouter()->post( pMsg );
 	
 		// Post click event.
 	
 		if( m_bButtonPressed[button] )
 		{
 			if( bIsInside )
-				WgBase::msgRouter()->post( new WgMouseClickMsg( button, pWidget ) );
+				Base::msgRouter()->post( new MouseClickMsg( button, pWidget ) );
 			else
-				WgBase::msgRouter()->post( new WgMouseClickMsg( button ) );
+				Base::msgRouter()->post( new MouseClickMsg( button ) );
 		}
 	
 		// Save info for the future
@@ -289,7 +289,7 @@ namespace wg
 	
 	//____ setFocused() ____________________________________________________________
 	
-	void WgInputHandler::setFocused( const WgRootPanel_p& pRoot )
+	void InputHandler::setFocused( const RootPanel_p& pRoot )
 	{
 		
 	}
@@ -297,21 +297,21 @@ namespace wg
 	
 	//____ setKey() ________________________________________________________________
 	
-	void WgInputHandler::setKey( short nativeKeyCode, bool bPressed )
+	void InputHandler::setKey( short nativeKeyCode, bool bPressed )
 	{
 		
 	}
 	
 	//____ setWheelRoll() __________________________________________________________
 	
-	void WgInputHandler::setWheelRoll( int wheel, int steps )
+	void InputHandler::setWheelRoll( int wheel, int steps )
 	{
 		
 	}
 	
 	//____ onMsg() _________________________________________________________________
 	
-	void WgInputHandler::onMsg( const WgMsg_p& pMsg )
+	void InputHandler::onMsg( const Msg_p& pMsg )
 	{
 		
 	}

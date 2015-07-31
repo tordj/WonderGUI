@@ -46,85 +46,85 @@
 namespace wg 
 {
 	
-	class WgGfxDevice;
-	class WgContainer;
-	class WgPanel;
-	class WgList;
-	class WgCapsule;
-	class WgLayer;
-	class WgMsgRouter;
-	class WgPatches;
+	class GfxDevice;
+	class Container;
+	class Panel;
+	class List;
+	class Capsule;
+	class Layer;
+	class MsgRouter;
+	class Patches;
 	
-	class WgWidget;
-	typedef	WgStrongPtr<WgWidget,WgReceiver_p>	WgWidget_p;
-	typedef	WgWeakPtr<WgWidget,WgReceiver_wp>	WgWidget_wp;
+	class Widget;
+	typedef	WgStrongPtr<Widget,Receiver_p>	Widget_p;
+	typedef	WgWeakPtr<Widget,Receiver_wp>	Widget_wp;
 	
-	class WgContainer;
-	typedef	WgStrongPtr<WgContainer,WgWidget_p>		WgContainer_p;
-	typedef	WgWeakPtr<WgContainer,WgWidget_wp>		WgContainer_wp;
+	class Container;
+	typedef	WgStrongPtr<Container,Widget_p>		Container_p;
+	typedef	WgWeakPtr<Container,Widget_wp>		Container_wp;
 	
-	class WgMsg;
-	typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
-	typedef	WgWeakPtr<WgMsg,WgObject_wp>			WgMsg_wp;
+	class Msg;
+	typedef	WgStrongPtr<Msg,Object_p>			Msg_p;
+	typedef	WgWeakPtr<Msg,Object_wp>			Msg_wp;
 	
 	
 	/**
 	 * @brief Base class for widgets.
 	 * 
-	 * WgWidget is the base class for all widgets, providing common functionality.
+	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 	
-	class WgWidget : public WgReceiver
+	class Widget : public Receiver
 	{
-	friend class WgMsgRouter;
-	friend class WgInputHandler;
+	friend class MsgRouter;
+	friend class InputHandler;
 	
-	friend class WgHook;
-	friend class WgFlexHook;
-	friend class WgModalHook;
-	friend class WgListHook;
-	friend class WgStackHook;
+	friend class Hook;
+	friend class FlexHook;
+	friend class ModalHook;
+	friend class ListHook;
+	friend class StackHook;
 	
-	friend class WgRootPanel;
-	friend class WgFlexPanel;
-	friend class WgModalLayer;
-	friend class WgScrollPanel;
-	friend class WgList;
-	friend class WgPackList;
-	friend class WgCapsule;
-	friend class WgLayer;
-	friend class WgStackPanel;
-	friend class WgContainer;
-	friend class WgPanel;
-	friend class WgVectorPanel;
-	friend class WgPackPanel;
-	friend class WgShaderCapsule;
-	friend class WgPopupLayer;
+	friend class RootPanel;
+	friend class FlexPanel;
+	friend class ModalLayer;
+	friend class ScrollPanel;
+	friend class List;
+	friend class PackList;
+	friend class Capsule;
+	friend class Layer;
+	friend class StackPanel;
+	friend class Container;
+	friend class Panel;
+	friend class VectorPanel;
+	friend class PackPanel;
+	friend class ShaderCapsule;
+	friend class PopupLayer;
 	
 	friend class WgTableRow;
 	
 	public:
-		WgWidget();
-		virtual ~WgWidget();
+		Widget();
+		virtual ~Widget();
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgWidget_p	cast( const WgObject_p& pObject );
+		static Widget_p	cast( const Object_p& pObject );
 	
 		inline int			id() const { return m_id; }
 		inline void			setId( int id ) { m_id = id; }
 	
-		virtual WgString	tooltip() const { return m_tooltip; }
-		inline void			setTooltip( const WgString& str ) { m_tooltip = str; }
+		virtual String	tooltip() const { return m_tooltip; }
+		inline void			setTooltip( const String& str ) { m_tooltip = str; }
 	
 		inline void			refresh() { _onRefresh(); }
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const { return m_state.isEnabled(); }
 	
-		inline WgState		state() const { return m_state; }
+		inline State		state() const { return m_state; }
 	
-		bool				cloneContent( const WgWidget_p& _pOrg );
+		bool				cloneContent( const Widget_p& _pOrg );
 	
 		void				setPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
 		virtual WgPointerStyle	pointerStyle() const;
@@ -134,115 +134,115 @@ namespace wg
 	
 		void				setMarkOpacity( int opacity ) { m_markOpacity = opacity; }
 		int					markOpacity() const { return m_markOpacity; }
-		bool				markTest( const WgCoord& ofs );
+		bool				markTest( const Coord& ofs );
 	
-		virtual void		setSkin( const WgSkin_p& pSkin );
-		WgSkin_p			skin( ) const	{ return m_pSkin; }
+		virtual void		setSkin( const Skin_p& pSkin );
+		Skin_p			skin( ) const	{ return m_pSkin; }
 	
 	
-		WgHook_p			hook() const { return m_pHook; }
+		Hook_p			hook() const { return m_pHook; }
 	
-		WgWidget_p		newOfMyType() const { return WgWidget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+		Widget_p		newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 	
-		void 				onMsg( const WgMsg_p& pMsg );
+		void 				onMsg( const Msg_p& pMsg );
 	
 	
 		// Convenient calls to hook
 	
-		inline WgCoord		pos() const;
-		inline WgSize		size() const;
-		inline WgRect		geo() const;
-		inline WgCoord		globalPos() const;
-		inline WgRect		globalGeo() const;
+		inline Coord		pos() const;
+		inline Size		size() const;
+		inline Rect		geo() const;
+		inline Coord		globalPos() const;
+		inline Rect		globalGeo() const;
 		inline bool			grabFocus();
 		inline bool			releaseFocus();
 		inline bool			isFocused();
-		WgContainer_p		parent() const;
+		Container_p		parent() const;
 	
-		inline WgWidget_p	nextSibling() const;
-		inline WgWidget_p	prevSibling() const;
+		inline Widget_p	nextSibling() const;
+		inline Widget_p	prevSibling() const;
 	
-		WgCoord				toGlobal( const WgCoord& coord ) const;
-		WgCoord				toLocal( const WgCoord& coord ) const; 
+		Coord				toGlobal( const Coord& coord ) const;
+		Coord				toLocal( const Coord& coord ) const; 
 		
 		// To be overloaded by Widget
 	
 		virtual int		matchingHeight( int width ) const;
 		virtual int		matchingWidth( int height ) const;
 	
-		virtual WgSize	preferredSize() const;	
-		virtual WgSize	minSize() const;
-		virtual WgSize	maxSize() const;
+		virtual Size	preferredSize() const;	
+		virtual Size	minSize() const;
+		virtual Size	maxSize() const;
 	
 		virtual bool	isContainer() const { return false; }		///< @brief Check if this widget is a container.
 																	///<
 																	///< Check if widget is a container.
 																	///< This method is a quicker way to check if the widget
-																	///< is a container than calling isInstanceOf(WgContainer::CLASS).
-																	///< @return True if the widget is a subclass of WgContainer.
+																	///< is a container than calling isInstanceOf(Container::CLASS).
+																	///< @return True if the widget is a subclass of Container.
 	
 	protected:
-		void			_onNewHook( WgHook * pHook );
+		void			_onNewHook( Hook * pHook );
 	
-		void			_onNewRoot( WgRootPanel * pRoot );
+		void			_onNewRoot( RootPanel * pRoot );
 		virtual WgBlendMode	_getBlendMode() const;
 	
 	
-		virtual WgWidget* _newOfMyType() const = 0;
+		virtual Widget* _newOfMyType() const = 0;
 	
 	
 		// Convenient calls to hook
 	
 		void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
-		void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
+		void			_requestRender( const Rect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
 		void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 	
-		WgWidget *		_nextSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
-		WgWidget *		_prevSibling() const { if( m_pHook ) {WgHook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
-		inline WgHook *	_hook() const { return m_pHook; }
-		WgContainer *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+		Widget *		_nextSibling() const { if( m_pHook ) {Hook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
+		Widget *		_prevSibling() const { if( m_pHook ) {Hook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
+		inline Hook *	_hook() const { return m_pHook; }
+		Container *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	
-		WgRect			_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return WgRect(); }
+		Rect			_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return Rect(); }
 	
 		// To be overloaded by Widget
 	
-		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
-		virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+		virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		virtual void	_onCloneContent( const Widget * _pOrg ) = 0;
+		virtual void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 	
 		virtual void	_onRefresh();
-		virtual void	_onNewSize( const WgSize& size );
-		virtual void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
-		virtual void	_onStateChanged( WgState oldState );
+		virtual void	_onNewSize( const Size& size );
+		virtual void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		virtual void	_onStateChanged( State oldState );
 	
-		virtual void	_onMsg( const WgMsg_p& pMsg );
-		virtual	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		virtual void	_onMsg( const Msg_p& pMsg );
+		virtual	bool	_onAlphaTest( const Coord& ofs, const Size& sz );
 	
-		virtual WgSize	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 	
 		//
 	
 		int				m_id;
-		WgHook *		m_pHook;
+		Hook *		m_pHook;
 	
-		WgSkin_p		m_pSkin;
+		Skin_p		m_pSkin;
 		WgPointerStyle	m_pointerStyle;
 	
-		WgString		m_tooltip;
+		String		m_tooltip;
 		int				m_markOpacity;
 	
 		bool			m_bOpaque;
 		bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
 	
-		WgState			m_state;
+		State			m_state;
 	private:
 		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
 	
 	};
 	
-	typedef	int(*WgWidgetSortFunc)(const WgWidget *,const WgWidget *);
+	typedef	int(*WidgetSortFunc)(const Widget *,const Widget *);
 	
 	
 	
@@ -255,11 +255,11 @@ namespace wg
 	 * 
 	 * @return Local position in pixels. 
 	 */
-	WgCoord WgWidget::pos() const 
+	Coord Widget::pos() const 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->pos(); 
-		return WgCoord(0,0); 
+		return Coord(0,0); 
 	}
 	
 	
@@ -270,11 +270,11 @@ namespace wg
 	 * 
 	 * @return Width and height in pixels.
 	 */
-	WgSize WgWidget::size() const 
+	Size Widget::size() const 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->size(); 
-		return WgSize(256,256); 
+		return Size(256,256); 
 	}
 	
 	/**
@@ -286,11 +286,11 @@ namespace wg
 	 * 
 	 * @return Local geometry in pixels. 
 	 */
-	WgRect WgWidget::geo() const 
+	Rect Widget::geo() const 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->geo(); 
-		return WgRect(0,0,256,256); 
+		return Rect(0,0,256,256); 
 	}
 	
 	/**
@@ -300,11 +300,11 @@ namespace wg
 	 * 
 	 * @return Global position in pixels. 
 	 */
-	WgCoord WgWidget::globalPos() const 
+	Coord Widget::globalPos() const 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->globalPos(); 
-		return WgCoord(0,0); 
+		return Coord(0,0); 
 	}
 	
 	/**
@@ -316,22 +316,22 @@ namespace wg
 	 *
 	 * @return Global geometry in pixels. 
 	 */
-	WgRect WgWidget::globalGeo() const 
+	Rect Widget::globalGeo() const 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->globalGeo(); 
-		return WgRect(0,0,256,256); 
+		return Rect(0,0,256,256); 
 	}
 	
 	
-	bool WgWidget::grabFocus() 
+	bool Widget::grabFocus() 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->_requestFocus(); 
 		return false; 
 	}
 	
-	bool WgWidget::releaseFocus() 
+	bool Widget::releaseFocus() 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->_releaseFocus(); 
@@ -345,7 +345,7 @@ namespace wg
 	 * @return True if widget has focus, otherwise false.
 	 */
 	
-	bool WgWidget::isFocused() 
+	bool Widget::isFocused() 
 	{ 
 		return m_state.isFocused(); 
 	}
@@ -359,11 +359,11 @@ namespace wg
 	 * @return Pointer to next sibling or null if none.
 	 */
 	
-	WgWidget_p WgWidget::nextSibling() const 
+	Widget_p Widget::nextSibling() const 
 	{ 
 		if( m_pHook ) 
 		{
-			WgHook * p = m_pHook->_nextHook(); 
+			Hook * p = m_pHook->_nextHook(); 
 			if( p ) 
 				return p->m_pWidget; 
 		} 
@@ -379,11 +379,11 @@ namespace wg
 	 * @return Pointer to previous sibling or null if none.
 	 */
 	
-	WgWidget_p WgWidget::prevSibling() const 
+	Widget_p Widget::prevSibling() const 
 	{ 
 		if( m_pHook ) 
 		{
-			WgHook * p = m_pHook->_prevHook();
+			Hook * p = m_pHook->_prevHook();
 			if( p ) 
 				return p->m_pWidget; 
 		} 

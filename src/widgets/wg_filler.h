@@ -34,15 +34,15 @@
 namespace wg 
 {
 	
-	class WgFiller;
-	typedef	WgStrongPtr<WgFiller,WgWidget_p>		WgFiller_p;
-	typedef	WgWeakPtr<WgFiller,WgWidget_wp>	WgFiller_wp;
+	class Filler;
+	typedef	WgStrongPtr<Filler,Widget_p>		Filler_p;
+	typedef	WgWeakPtr<Filler,Widget_wp>	Filler_wp;
 	
-	//____ WgFiller ____________________________________________________________
+	//____ Filler ____________________________________________________________
 	/**
 	 * @brief Simplest kind of widget.
 	 *
-	 * WgFiller is the simplest kind of widget that displays nothing but its skin
+	 * Filler is the simplest kind of widget that displays nothing but its skin
 	 * and does nothing but posting the normal mouse messages that every widget does.
 	 *
 	 * It is typically used as backgrounds and for filling out empty spaces in
@@ -51,28 +51,28 @@ namespace wg
 	 **/
 	
 	
-	class WgFiller : public WgWidget
+	class Filler : public Widget
 	{
 	public:
-		static WgFiller_p	create() { return WgFiller_p(new WgFiller()); }
+		static Filler_p	create() { return Filler_p(new Filler()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgFiller_p	cast( const WgObject_p& pObject );
+		static Filler_p	cast( const Object_p& pObject );
 	
-		void	setPreferredSize( const WgSize& size );
-		WgSize	preferredSize() const;
+		void	setPreferredSize( const Size& size );
+		Size	preferredSize() const;
 	
 	protected:
-		WgFiller();
-		virtual ~WgFiller();
-		virtual WgWidget* _newOfMyType() const { return new WgFiller(); };
+		Filler();
+		virtual ~Filler();
+		virtual Widget* _newOfMyType() const { return new Filler(); };
 	
-		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onCloneContent( const Widget * _pOrg );
 	
 	private:
-		WgSize			m_preferredSize;
+		Size			m_preferredSize;
 	};
 	
 	

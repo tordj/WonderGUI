@@ -17,106 +17,106 @@ namespace wg
 {
 	
 	
-	class WgChar;
+	class Char;
 	
-	//____ WgString _____________________________________________________________
+	//____ String _____________________________________________________________
 	/**
 	 * @brief Decorated string.
 	 *
-	 * WgString is a simple string-class for decorated strings. Each character
+	 * String is a simple string-class for decorated strings. Each character
 	 * in the string can have its own style.
 	 *
 	 **/
 	
 	
-	class WgString
+	class String
 	{
 	public:
-		friend class WgCharBuffer;
+		friend class CharBuffer;
 	
-		WgString();
-		WgString( const WgString& str );
-		WgString( const WgCharBuffer* pBuffer );
-		WgString( const WgCharSeq& seq );
-		~WgString();
+		String();
+		String( const String& str );
+		String( const CharBuffer* pBuffer );
+		String( const CharSeq& seq );
+		~String();
 	
-		const WgChar*	chars() const;
+		const Char*	chars() const;
 		int				length() const;
 		bool			isEmpty() const;
 	
-		void			set( const WgString& str );
-		void			set( const WgCharBuffer* pBuffer );
-		void			set( const WgCharSeq& seq );
+		void			set( const String& str );
+		void			set( const CharBuffer* pBuffer );
+		void			set( const CharSeq& seq );
 	
-		void			append( const WgString& str );
-		void			append( const WgCharBuffer* pBuffer );
-		void			append( const WgCharSeq& seq );
+		void			append( const String& str );
+		void			append( const CharBuffer* pBuffer );
+		void			append( const CharSeq& seq );
 	
-		void			prepend( const WgString& str );
-		void			prepend( const WgCharBuffer* pBuffer );
-		void			prepend( const WgCharSeq& seq );
+		void			prepend( const String& str );
+		void			prepend( const CharBuffer* pBuffer );
+		void			prepend( const CharSeq& seq );
 	
 		void			clear();
 	
 	
-		inline WgString& operator = ( const WgString& kSource )
+		inline String& operator = ( const String& kSource )
 		{
 			set( kSource );
 			return *this;
 		}
-		inline WgString& operator = ( const WgCharBuffer* pBuffer )
+		inline String& operator = ( const CharBuffer* pBuffer )
 		{
 			set( pBuffer );
 			return *this;
 		}
-		inline WgString& operator = ( const WgCharSeq& seq )
+		inline String& operator = ( const CharSeq& seq )
 		{
 			set( seq );
 			return *this;
 		}
 	
-		inline WgString& operator += ( const WgString& kSource )
+		inline String& operator += ( const String& kSource )
 		{
 			append( kSource );
 			return *this;
 		}
-		inline WgString& operator += ( const WgCharBuffer* pBuffer )
+		inline String& operator += ( const CharBuffer* pBuffer )
 		{
 			append( pBuffer );
 			return *this;
 		}
-		inline WgString& operator += ( const WgCharSeq& seq )
+		inline String& operator += ( const CharSeq& seq )
 		{
 			append( seq );
 			return *this;
 		}
 	
-		inline WgString operator + ( const WgString& kSource ) const
+		inline String operator + ( const String& kSource ) const
 		{
-			WgString str(*this);
+			String str(*this);
 			str.append( kSource );
 			return str;
 		}
-		inline WgString operator + ( const WgCharBuffer* pBuffer ) const
+		inline String operator + ( const CharBuffer* pBuffer ) const
 		{
-			WgString str(*this);
+			String str(*this);
 			str.append( pBuffer );
 			return str;
 		}
-		inline WgString operator + ( const WgCharSeq& seq ) const
+		inline String operator + ( const CharSeq& seq ) const
 		{
-			WgString str(*this);
+			String str(*this);
 			str.append( seq );
 			return str;
 		}
 	
 	
-		bool operator == ( const WgString& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
+		bool operator == ( const String& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
 	
 	
 	private:
 	
-		WgCharBuffer	m_buffer;
+		CharBuffer	m_buffer;
 	};
 	
 

@@ -30,30 +30,30 @@ namespace wg
 {
 	
 	
-	class WgUniformSizeBroker;
-	typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBroker_p>		WgUniformSizeBroker_p;
-	typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBroker_wp>	WgUniformSizeBroker_wp;
+	class UniformSizeBroker;
+	typedef	WgStrongPtr<UniformSizeBroker,SizeBroker_p>		UniformSizeBroker_p;
+	typedef	WgWeakPtr<UniformSizeBroker,SizeBroker_wp>	UniformSizeBroker_wp;
 	
-	class WgUniformSizeBroker : public WgSizeBroker
+	class UniformSizeBroker : public SizeBroker
 	{
 	public:
-		static WgUniformSizeBroker_p	create() { return WgUniformSizeBroker_p(new WgUniformSizeBroker()); }
+		static UniformSizeBroker_p	create() { return UniformSizeBroker_p(new UniformSizeBroker()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgUniformSizeBroker_p	cast( const WgObject_p& pObject );
+		static UniformSizeBroker_p	cast( const Object_p& pObject );
 	    
-		int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-		int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+		int setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const;
+		int setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const;
 		bool mayAlterPreferredLengths() const;
 	
 	protected:
-	    WgUniformSizeBroker() {};
-	    virtual ~WgUniformSizeBroker() {};
+	    UniformSizeBroker() {};
+	    virtual ~UniformSizeBroker() {};
 	
-		int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
-	    void    _setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const;
+		int     _findLongestUnified( SizeBrokerItem * pItems, int nItems ) const;
+	    void    _setOutputs( SizeBrokerItem * pItems, int nItems, int value ) const;
 	};
 	
 	

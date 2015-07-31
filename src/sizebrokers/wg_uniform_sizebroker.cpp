@@ -25,38 +25,38 @@ namespace wg
 {
 	
 	
-	const char WgUniformSizeBroker::CLASSNAME[] = {"UniformSizeBroker"};
+	const char UniformSizeBroker::CLASSNAME[] = {"UniformSizeBroker"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgUniformSizeBroker::isInstanceOf( const char * pClassName ) const
+	bool UniformSizeBroker::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgSizeBroker::isInstanceOf(pClassName);
+		return SizeBroker::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgUniformSizeBroker::className( void ) const
+	const char * UniformSizeBroker::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgUniformSizeBroker_p WgUniformSizeBroker::cast( const WgObject_p& pObject )
+	UniformSizeBroker_p UniformSizeBroker::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgUniformSizeBroker_p( static_cast<WgUniformSizeBroker*>(pObject.rawPtr()) );
+			return UniformSizeBroker_p( static_cast<UniformSizeBroker*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setItemLengths() _______________________________________________________
 	
-	int WgUniformSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
+	int UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const
 	{
 	    if( nItems == 0 )
 	        return 0;
@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ setPreferredLengths() __________________________________________________
 	
-	int WgUniformSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
+	int UniformSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
 	    if( nItems == 0 )
 	        return 0;
@@ -139,14 +139,14 @@ namespace wg
 	
 	//____ mayAlterPreferredLengths() _____________________________________________
 	
-	bool WgUniformSizeBroker::mayAlterPreferredLengths() const
+	bool UniformSizeBroker::mayAlterPreferredLengths() const
 	{
 	    return true;
 	}
 	
 	//____ _findLongestUnified() __________________________________________________
 	
-	int WgUniformSizeBroker::_findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const
+	int UniformSizeBroker::_findLongestUnified( SizeBrokerItem * pItems, int nItems ) const
 	{
 	    int longest = 0;
 	    for( int i = 0 ; i < nItems ; i++ )
@@ -157,7 +157,7 @@ namespace wg
 	
 	//____ _setOutputs() __________________________________________________________
 	
-	void WgUniformSizeBroker::_setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const
+	void UniformSizeBroker::_setOutputs( SizeBrokerItem * pItems, int nItems, int value ) const
 	{
 	    for( int i = 0 ; i < nItems ; i++ )
 	        pItems[i].output = value;

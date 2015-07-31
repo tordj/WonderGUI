@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgIconField::WgIconField( WgIconHolder * pHolder ) : WgField(pHolder)
+	IconField::IconField( IconHolder * pHolder ) : Field(pHolder)
 	{
 		m_origo			= WG_NORTHWEST;
 		m_scale			= 0.f;
@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool WgIconField::set( const WgSkin_p& pSkin, WgOrigo origo, WgBorder padding, float scale, bool bOverlap )
+	bool IconField::set( const Skin_p& pSkin, WgOrigo origo, Border padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_origo 	= origo;
@@ -52,11 +52,11 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgIconField::clear()
+	void IconField::clear()
 	{
 		m_pSkin 	= 0;
 		m_origo 	= WG_WEST;
-		m_padding 	= WgBorder(0);
+		m_padding 	= Border(0);
 		m_scale 	= 0.f;
 		m_bOverlap 	= false;
 	
@@ -65,7 +65,7 @@ namespace wg
 	
 	//____ setScale() _________________________________________________________
 	
-	bool WgIconField::setScale( float scaleFactor )
+	bool IconField::setScale( float scaleFactor )
 	{
 		if( scaleFactor > 1.f || scaleFactor < 0.f )
 			return false;
@@ -81,7 +81,7 @@ namespace wg
 	
 	//____ setOrigo() ___________________________________________________
 	
-	void WgIconField::setOrigo( WgOrigo origo )
+	void IconField::setOrigo( WgOrigo origo )
 	{
 		if( origo != m_origo )
 		{
@@ -92,7 +92,7 @@ namespace wg
 	
 	//____ setPadding() _______________________________________________________
 	
-	void WgIconField::setPadding( WgBorder borders )
+	void IconField::setPadding( Border borders )
 	{
 		if( borders != m_padding )
 		{
@@ -103,7 +103,7 @@ namespace wg
 	
 	//____ setOverlap() _________________________________________________________
 	
-	void WgIconField::setOverlap( bool bOverlap )
+	void IconField::setOverlap( bool bOverlap )
 	{
 		if( bOverlap != m_bOverlap )
 		{
@@ -114,7 +114,7 @@ namespace wg
 	
 	//____ setSkin() ______________________________________________________________
 	
-	void WgIconField::setSkin( const WgSkin_p& pSkin )
+	void IconField::setSkin( const Skin_p& pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{
@@ -130,17 +130,17 @@ namespace wg
 	
 	*/
 	
-	WgRect WgIconField::getIconRect( const WgRect& contentRect ) const
+	Rect IconField::getIconRect( const Rect& contentRect ) const
 	{
 		if( m_pSkin )
 			return getIconRect(contentRect, m_pSkin->preferredSize());
 		else
-			return WgRect();
+			return Rect();
 	}
 	
-	WgRect WgIconField::getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const
+	Rect IconField::getIconRect( const Rect& contentRect, const Size& iconSize ) const
 	{
-		WgRect rect;
+		Rect rect;
 	
 		int w = iconSize.w;
 		int h = iconSize.h;
@@ -169,7 +169,7 @@ namespace wg
 			w += m_padding.width();
 			h += m_padding.height();
 	
-			rect = WgUtil::origoToRect( m_origo, contentRect.size(), WgSize(w,h) );
+			rect = WgUtil::origoToRect( m_origo, contentRect.size(), Size(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}
@@ -181,9 +181,9 @@ namespace wg
 	
 	//____ getTextRect() _____________________________________________________
 	
-	WgRect WgIconField::getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const
+	Rect IconField::getTextRect( const Rect& contentRect, const Rect& iconRect ) const
 	{
-		WgRect textRect = contentRect;
+		Rect textRect = contentRect;
 	
 		if( !m_bOverlap && iconRect.w > 0 && iconRect.h > 0 )
 		{
@@ -235,7 +235,7 @@ namespace wg
 	
 	//____ onCloneContent() ________________________________________________________
 	
-	void WgIconField::onCloneContent( const WgIconField * _pOrg )
+	void IconField::onCloneContent( const IconField * _pOrg )
 	{
 		m_origo			= _pOrg->m_origo;
 		m_scale			= _pOrg->m_scale;
@@ -246,12 +246,12 @@ namespace wg
 	
 	//____ preferredSize() ________________________________________________________
 	
-	WgSize WgIconField::preferredSize() const
+	Size IconField::preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->preferredSize() + m_padding;
 	
-		return WgSize();
+		return Size();
 	}
 	
 

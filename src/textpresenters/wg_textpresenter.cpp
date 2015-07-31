@@ -26,64 +26,64 @@
 namespace wg 
 {
 	
-	const char WgTextPresenter::CLASSNAME[] = {"TextPresenter"};
+	const char TextPresenter::CLASSNAME[] = {"TextPresenter"};
 	
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgTextPresenter::isInstanceOf( const char * pClassName ) const
+	bool TextPresenter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgTextPresenter::className( void ) const
+	const char * TextPresenter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgTextPresenter_p WgTextPresenter::cast( const WgObject_p& pObject )
+	TextPresenter_p TextPresenter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgTextPresenter_p( static_cast<WgTextPresenter*>(pObject.rawPtr()) );
+			return TextPresenter_p( static_cast<TextPresenter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	WgString WgTextPresenter::tooltip( const WgPresentableField * pField ) const
+	String TextPresenter::tooltip( const PresentableField * pField ) const
 	{
-		return WgString();
+		return String();
 	}
 	
 	//____ _charBuffer() ___________________________________________________________
 	
-	WgCharBuffer * WgTextPresenter::_charBuffer( WgPresentableField * pField ) const
+	CharBuffer * TextPresenter::_charBuffer( PresentableField * pField ) const
 	{
 		return &(pField->m_charBuffer);
 	}
 	
-	const WgCharBuffer * WgTextPresenter::_charBuffer( const WgPresentableField * pField ) const
+	const CharBuffer * TextPresenter::_charBuffer( const PresentableField * pField ) const
 	{
 		return &(pField->m_charBuffer);
 	}
 	
 	//____ _fieldDataBlock() _______________________________________________________
 	
-	void * WgTextPresenter::_fieldDataBlock( WgPresentableField * pField) const
+	void * TextPresenter::_fieldDataBlock( PresentableField * pField) const
 	{
 		return pField->m_pPresenterData;
 	}
 	
-	const void * WgTextPresenter::_fieldDataBlock( const WgPresentableField * pField) const
+	const void * TextPresenter::_fieldDataBlock( const PresentableField * pField) const
 	{
 		return pField->m_pPresenterData;
 	}
@@ -91,39 +91,39 @@ namespace wg
 	
 	//____ _fieldDataInt() _________________________________________________________
 	
-	int WgTextPresenter::_fieldDataInt( WgPresentableField * pField ) const
+	int TextPresenter::_fieldDataInt( PresentableField * pField ) const
 	{
 		return pField->m_presenterData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	WgTextStyle * WgTextPresenter::_baseStyle( WgPresentableField * pField ) const
+	TextStyle * TextPresenter::_baseStyle( PresentableField * pField ) const
 	{
-		WgTextStyle * pStyle = pField->m_pStyle.rawPtr();
+		TextStyle * pStyle = pField->m_pStyle.rawPtr();
 		if( pStyle == 0 )
-			pStyle = WgBase::defaultStyle().rawPtr();
+			pStyle = Base::defaultStyle().rawPtr();
 		
 		return pStyle;
 	}
 	
 	//____ _state() _________________________________________________________
 	
-	WgState WgTextPresenter::_state( WgPresentableField * pField ) const
+	State TextPresenter::_state( PresentableField * pField ) const
 	{
 		return pField->m_state;
 	}
 	
 	//____ _setFieldDataBlock() ____________________________________________________
 	
-	void  WgTextPresenter::_setFieldDataBlock( WgPresentableField * pField, void * pBlock )
+	void  TextPresenter::_setFieldDataBlock( PresentableField * pField, void * pBlock )
 	{
 		pField->m_pPresenterData = pBlock;
 	}
 	
 	//____ _setFieldDataInt() ______________________________________________________
 	
-	void  WgTextPresenter::_setFieldDataInt( WgPresentableField * pField, int data )
+	void  TextPresenter::_setFieldDataInt( PresentableField * pField, int data )
 	{
 		pField->m_presenterData = data;
 	}

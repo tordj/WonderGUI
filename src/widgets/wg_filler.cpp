@@ -28,44 +28,44 @@
 namespace wg 
 {
 	
-	const char WgFiller::CLASSNAME[] = {"Filler"};
+	const char Filler::CLASSNAME[] = {"Filler"};
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgFiller::WgFiller()
+	Filler::Filler()
 	{
-		m_preferredSize = WgSize(-1,-1);
+		m_preferredSize = Size(-1,-1);
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgFiller::~WgFiller()
+	Filler::~Filler()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgFiller::isInstanceOf( const char * pClassName ) const
+	bool Filler::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgFiller::className( void ) const
+	const char * Filler::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgFiller_p WgFiller::cast( const WgObject_p& pObject )
+	Filler_p Filler::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgFiller_p( static_cast<WgFiller*>(pObject.rawPtr()) );
+			return Filler_p( static_cast<Filler*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -73,7 +73,7 @@ namespace wg
 	
 	//____ setPreferredSize() _______________________________________________________
 	
-	void WgFiller::setPreferredSize( const WgSize& size )
+	void Filler::setPreferredSize( const Size& size )
 	{
 		if( size != m_preferredSize )
 		{
@@ -84,20 +84,20 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgFiller::preferredSize() const
+	Size Filler::preferredSize() const
 	{
 		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
 			return m_preferredSize;
 		else
-			return WgWidget::preferredSize();
+			return Widget::preferredSize();
 	}
 	
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgFiller::_onCloneContent( const WgWidget * _pOrg )
+	void Filler::_onCloneContent( const Widget * _pOrg )
 	{
-		WgFiller * pOrg = (WgFiller*) _pOrg;
+		Filler * pOrg = (Filler*) _pOrg;
 	
 		m_preferredSize = pOrg->m_preferredSize;
 	}

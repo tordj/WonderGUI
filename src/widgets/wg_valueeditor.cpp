@@ -36,18 +36,18 @@
 namespace wg 
 {
 	
-	const char WgValueEditor::CLASSNAME[] = {"ValueEditor"};
+	const char ValueEditor::CLASSNAME[] = {"ValueEditor"};
 	
 	
-	//____ WgValueEditor() _________________________________________________________________
+	//____ ValueEditor() _________________________________________________________________
 	
-	WgValueEditor::WgValueEditor() : m_text(this), text(&m_text)
+	ValueEditor::ValueEditor() : m_text(this), text(&m_text)
 	{
 		_regenText();
 		m_buttonDownOfs = 0;
 		m_bSelectAllOnRelease = false;
 		m_maxInputChars = 256;
-		m_viewOfs = WgCoord(0,0);
+		m_viewOfs = Coord(0,0);
 	
 		m_pointerStyle	= WG_POINTER_IBEAM;
 	
@@ -55,43 +55,43 @@ namespace wg
 		m_text.setAutoEllipsis(false);
 		m_text.setEditMode( WG_TEXT_EDITABLE );
 	
-		m_pFormat = WgValueFormat::create();
-		m_pUseFormat = WgValueFormat::create();
+		m_pFormat = ValueFormat::create();
+		m_pUseFormat = ValueFormat::create();
 	
 		m_tickRouteId = 0;
 	}
 	
-	//____ ~WgValueEditor() ___________________________________________________________
+	//____ ~ValueEditor() ___________________________________________________________
 	
-	WgValueEditor::~WgValueEditor()
+	ValueEditor::~ValueEditor()
 	{
 		if( m_tickRouteId )
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgValueEditor::isInstanceOf( const char * pClassName ) const
+	bool ValueEditor::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgWidget::isInstanceOf(pClassName);
+		return Widget::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgValueEditor::className( void ) const
+	const char * ValueEditor::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgValueEditor_p WgValueEditor::cast( const WgObject_p& pObject )
+	ValueEditor_p ValueEditor::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgValueEditor_p( static_cast<WgValueEditor*>(pObject.rawPtr()) );
+			return ValueEditor_p( static_cast<ValueEditor*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -100,7 +100,7 @@ namespace wg
 	
 	//____ setFormat() ____________________________________________________________
 	
-	void WgValueEditor::setFormat( const WgValueFormat_p& pFormat )
+	void ValueEditor::setFormat( const ValueFormat_p& pFormat )
 	{
 		m_pFormat		= pFormat;
 		m_pUseFormat	= pFormat;
@@ -113,7 +113,7 @@ namespace wg
 	
 	//____ clear() ________________________________________________________________
 	
-	void WgValueEditor::clear()
+	void ValueEditor::clear()
 	{
 		// Force value to zero, emit signals and request render
 	
@@ -129,7 +129,7 @@ namespace wg
 	
 	//____ setMaxInputChars() _____________________________________________________
 	
-	bool WgValueEditor::setMaxInputChars( int max )
+	bool ValueEditor::setMaxInputChars( int max )
 	{
 		if( max <= 0 )
 			return false;
@@ -140,20 +140,20 @@ namespace wg
 	
 	//____ preferredSize() __________________________________________________________
 	
-	WgSize WgValueEditor::preferredSize() const
+	Size ValueEditor::preferredSize() const
 	{
-		WgSize	sz;
+		Size	sz;
 	
 		sz.h = m_text.height();
 		sz.w = 0;
 	
-		WgTextAttr	attr;
+		TextAttr	attr;
 		m_text.getBaseAttr( attr );
 		if( attr.pFont )
 			sz.w = attr.pFont->getGlyphset(attr.style,attr.size)->getMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
 	
 		if( sz.h == 0 )
-			return WgWidget::preferredSize();
+			return Widget::preferredSize();
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(sz);
@@ -164,9 +164,9 @@ namespace wg
 	
 	//____ _valueModified() ________________________________________________________
 	
-	void WgValueEditor::_valueModified()
+	void ValueEditor::_valueModified()
 	{
-		WgBase::msgRouter()->post( new WgValueUpdateMsg(this,m_value,fractionalValue(),false) );
+		Base::msgRouter()->post( new ValueUpdateMsg(this,m_value,fractionalValue(),false) );
 	
 		m_pUseFormat->setFormat( m_pFormat );
 	
@@ -182,35 +182,35 @@ namespace wg
 	
 	//____ _rangeModified() ________________________________________________________
 	
-	void WgValueEditor::_rangeModified()
+	void ValueEditor::_rangeModified()
 	{
-			WgBase::msgRouter()->post( new WgValueUpdateMsg(this,m_value,fractionalValue(), false) );
+			Base::msgRouter()->post( new ValueUpdateMsg(this,m_value,fractionalValue(), false) );
 	}
 	
 	//____ _onRefresh() ____________________________________________________________
 	
-	void WgValueEditor::_onRefresh( void )
+	void ValueEditor::_onRefresh( void )
 	{
 		if( m_text.properties() && m_text.properties()->font() )
 			_regenText();
 	
-		WgWidget::_onRefresh();
+		Widget::_onRefresh();
 	}
 	
 	
 	//____ _onRender() _____________________________________________________________
 	
-	void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+	void ValueEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
 		// Adjust text canvas
 	
-		WgRect	canvas = _canvas;
+		Rect	canvas = _canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 	
-		WgRect textClip( canvas, _clip );
+		Rect textClip( canvas, _clip );
 	
 		if( m_text.isCursorShowing() )
 		{
@@ -218,11 +218,11 @@ namespace wg
 			if( textW > canvas.w )
 				canvas.w = textW;
 	
-			WgCaretInstance * pCursor = m_text.getCursor();
-			m_viewOfs = m_text.focusWindowOnRange( canvas.size(), WgRect(m_viewOfs,_canvas.size()), WgRange( pCursor->column(),0 ) );
+			CaretInstance * pCursor = m_text.getCursor();
+			m_viewOfs = m_text.focusWindowOnRange( canvas.size(), Rect(m_viewOfs,_canvas.size()), Range( pCursor->column(),0 ) );
 		}
 		else
-			m_viewOfs = WgCoord(0,0);
+			m_viewOfs = Coord(0,0);
 	
 		// Print the text
 	
@@ -231,7 +231,7 @@ namespace wg
 	
 	//____ _regenText() ____________________________________________________________
 	
-	void WgValueEditor::_regenText()
+	void ValueEditor::_regenText()
 	{
 		m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.rawPtr() );
 		m_text.goEol();
@@ -239,12 +239,12 @@ namespace wg
 	
 	//____ _parseValueFromInput() __________________________________________________
 	
-	bool WgValueEditor::_parseValueFromInput( int64_t * wpResult )
+	bool ValueEditor::_parseValueFromInput( int64_t * wpResult )
 	{
 		// Parse text as value as a positive or negative integer within boundaries
 		// return false if value had to be modified in any way.
 	
-		const WgChar * p = m_text.getBuffer()->chars();
+		const Char * p = m_text.getBuffer()->chars();
 		int		nbChars = m_text.getBuffer()->nbChars();
 	
 		int64_t	value = 0;
@@ -335,17 +335,17 @@ namespace wg
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void WgValueEditor::_onMsg( const WgMsg_p& pMsg )
+	void ValueEditor::_onMsg( const Msg_p& pMsg )
 	{
-		WgWidget::_onMsg(pMsg);
-		WgMsgRouter_p	pHandler = WgBase::msgRouter();
-		WgMsgType type = pMsg->type();
+		Widget::_onMsg(pMsg);
+		MsgRouter_p	pHandler = Base::msgRouter();
+		MsgType type = pMsg->type();
 	
 		if( type == WG_MSG_TICK )
 		{
 			if( m_text.getCursor() )
 			{
-				m_text.getCursor()->incTime( WgTickMsg::cast(pMsg)->millisec() );
+				m_text.getCursor()->incTime( TickMsg::cast(pMsg)->millisec() );
 				_requestRender();					//TODO: Should only render the cursor (and only when updated)!
 			}
 			return;
@@ -356,9 +356,9 @@ namespace wg
 		int		mousebutton = 0;
 	
 		if( pMsg->isMouseButtonMsg() )
-			mousebutton = WgMouseButtonMsg::cast(pMsg)->button();
+			mousebutton = MouseButtonMsg::cast(pMsg)->button();
 	
-		WgCoord ofs = pMsg->pointerPos() - globalPos();
+		Coord ofs = pMsg->pointerPos() - globalPos();
 	
 		if( type == WG_MSG_MOUSE_PRESS && mousebutton == 1 )
 		{
@@ -373,14 +373,14 @@ namespace wg
 			if( pMsg->modKeys() & WG_MODKEY_SHIFT )
 			{
 				m_text.setSelectionMode(true);
-				m_text.cursorGotoCoord( ofs, WgRect(0,0,size()) );
+				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
 				_limitCursor();
 			}
 			else
 			{
 				m_text.setSelectionMode(false);
 				m_text.clearSelection();
-				m_text.cursorGotoCoord( ofs, WgRect(0,0,size()) );
+				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
 				_limitCursor();
 				m_text.setSelectionMode(true);
 			}
@@ -392,7 +392,7 @@ namespace wg
 		{
 			if( m_state.isFocused() && ofs.x != m_buttonDownOfs )
 			{
-				m_text.cursorGotoCoord( ofs, WgRect(0,0,size()) );
+				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
 				_limitCursor();
 				m_buttonDownOfs = ofs.x;
 				m_bSelectAllOnRelease = false;
@@ -420,7 +420,7 @@ namespace wg
 	
 		if( type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_RETURN:
@@ -446,7 +446,7 @@ namespace wg
 					if( bModified )
 					{
 						_updateScrollbar( fractionalValue(), 0.f );
-						WgBase::msgRouter()->post( new WgValueUpdateMsg(this, m_value, fractionalValue(), false) );
+						Base::msgRouter()->post( new ValueUpdateMsg(this, m_value, fractionalValue(), false) );
 	
 						m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.rawPtr() );
 						m_text.goEol();
@@ -603,13 +603,13 @@ namespace wg
 	
 		if( type == WG_MSG_CHARACTER )
 		{
-			int character = WgCharacterMsg::cast(pMsg)->character();
+			int character = CharacterMsg::cast(pMsg)->character();
 	
 			// Period is only allowed if it isn't displayed yet and value has decimals.
 			// It's not allowed before a minus sign.
 			// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
 	
-			WgCaretInstance * pCursor = m_text.getCursor();
+			CaretInstance * pCursor = m_text.getCursor();
 			if( pCursor )
 			{
 				if( character == m_pFormat->getPeriod() )
@@ -625,7 +625,7 @@ namespace wg
 						{
 							if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].getGlyph() == '-' ) )
 							{
-								m_text.insertChar( 0, WgChar('0') );
+								m_text.insertChar( 0, Char('0') );
 								pCursor->goRight();
 							}
 	
@@ -684,7 +684,7 @@ namespace wg
 				m_value = value;
 	
 				if( pHandler )
-					pHandler->post( new WgValueUpdateMsg(this,value,fractionalValue(),false) );
+					pHandler->post( new ValueUpdateMsg(this,value,fractionalValue(),false) );
 	
 				_updateScrollbar( fractionalValue(), 0.f );
 			}
@@ -694,13 +694,13 @@ namespace wg
 	
 		if( pMsg->isMouseButtonMsg() )
 		{
-			if( WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			if( MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 				pMsg->swallow();
 		}
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = WgKeyMsg::cast(pMsg)->translatedKeyCode();
-			if( WgKeyMsg::cast(pMsg)->isMovementKey() == true ||
+			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			if( KeyMsg::cast(pMsg)->isMovementKey() == true ||
 				key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
 				pMsg->swallow();
 			
@@ -710,7 +710,7 @@ namespace wg
 	
 	//____ _selectAll() ___________________________________________________________
 	
-	void WgValueEditor::_selectAll()
+	void ValueEditor::_selectAll()
 	{
 		int min = m_pFormat->getPrefix().length();
 		int max = m_text.length() - m_pFormat->getSuffix().length();
@@ -720,17 +720,17 @@ namespace wg
 	
 	//____ _limitCursor() _________________________________________________________
 	
-	void WgValueEditor::_limitCursor()
+	void ValueEditor::_limitCursor()
 	{
 		int min = m_pFormat->getPrefix().length();
 		int max = m_text.length() - m_pFormat->getSuffix().length();
 	
-		WgCaretInstance * pCursor = m_text.getCursor();
+		CaretInstance * pCursor = m_text.getCursor();
 	
 		// Save selection (might get destroyed by moving cursor)
 	
 	//	bool bSelectionMode = pCursor->getSelectionMode();
-	//	WgRange sel = pCursor->getSelection();
+	//	Range sel = pCursor->getSelection();
 	
 		// Move cursor to within prefix/suffix
 	
@@ -762,11 +762,11 @@ namespace wg
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void WgValueEditor::_onCloneContent( const WgWidget * _pOrg )
+	void ValueEditor::_onCloneContent( const Widget * _pOrg )
 	{
-		WgValueEditor * pOrg = (WgValueEditor *) _pOrg;
+		ValueEditor * pOrg = (ValueEditor *) _pOrg;
 	
-		Wg_Interface_ValueHolder::_onCloneContent( pOrg );
+		_Interface_ValueHolder::_onCloneContent( pOrg );
 	
 		m_maxInputChars = pOrg->m_maxInputChars;
 		m_pFormat		= pOrg->m_pFormat;
@@ -776,9 +776,9 @@ namespace wg
 	
 	//____ onStateChanged() _______________________________________________________
 	
-	void WgValueEditor::_onStateChanged( WgState oldState )
+	void ValueEditor::_onStateChanged( State oldState )
 	{
-		WgWidget::_onStateChanged(oldState);
+		Widget::_onStateChanged(oldState);
 	
 		// Update text
 	
@@ -789,7 +789,7 @@ namespace wg
 	
 		if( m_state.isFocused() && !oldState.isFocused() )
 		{
-			m_tickRouteId = WgBase::msgRouter()->addRoute( WG_MSG_TICK, this );
+			m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
 			m_text.showCursor();
 			m_text.goEol();
 			m_pUseFormat = m_pFormat;
@@ -809,10 +809,10 @@ namespace wg
 	
 		if( !m_state.isFocused() && oldState.isFocused() )
 		{
-			WgBase::msgRouter()->deleteRoute( m_tickRouteId );
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 	
-			WgBase::msgRouter()->post( new WgValueUpdateMsg(this,m_value,fractionalValue(), true) );
+			Base::msgRouter()->post( new ValueUpdateMsg(this,m_value,fractionalValue(), true) );
 	
 			m_text.hideCursor();
 			m_pUseFormat->setFormat(m_pFormat);
@@ -825,22 +825,22 @@ namespace wg
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void WgValueEditor::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	void ValueEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
-		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_onSkinChanged(pOldSkin,pNewSkin);
 		m_text.setColorSkin(pNewSkin);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void WgValueEditor::_onFieldDirty( WgField * pField )
+	void ValueEditor::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void WgValueEditor::_onFieldResize( WgField * pField )
+	void ValueEditor::_onFieldResize( Field * pField )
 	{
 		_requestResize();
 	}

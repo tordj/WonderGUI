@@ -33,42 +33,42 @@
 namespace wg 
 {
 	
-	class WgColorSkin;
+	class ColorSkin;
 	
-	typedef	WgStrongPtr<WgColorSkin,WgSkin_p>	WgColorSkin_p;
+	typedef	WgStrongPtr<ColorSkin,Skin_p>	ColorSkin_p;
 	
 	
-	class WgColorSkin : public WgSkin
+	class ColorSkin : public Skin
 	{
 	public:
-		static WgColorSkin_p create( WgColor col );
-		~WgColorSkin() {};
+		static ColorSkin_p create( Color col );
+		~ColorSkin() {};
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgColorSkin_p	cast( const WgObject_p& pObject );
+		static ColorSkin_p	cast( const Object_p& pObject );
 	
-		void	render( WgGfxDevice * pDevice, const WgRect& _canvas, WgState state, const WgRect& _clip ) const;
+		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
 		bool	isOpaque() const;
-		bool	isOpaque(WgState state) const;
-		bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const;
+		bool	isOpaque(State state) const;
+		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 	
-		WgSize	minSize() const;
-		WgSize	preferredSize() const;
+		Size	minSize() const;
+		Size	preferredSize() const;
 	
-		WgSize	contentPadding() const;
-		WgSize	sizeForContent( const WgSize contentSize ) const;
-		WgRect	contentRect( const WgRect& canvas, WgState state ) const;
+		Size	contentPadding() const;
+		Size	sizeForContent( const Size contentSize ) const;
+		Rect	contentRect( const Rect& canvas, State state ) const;
 	
-		bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const;
+		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
 	
-		bool	isStateIdentical( WgState state, WgState comparedTo ) const;
+		bool	isStateIdentical( State state, State comparedTo ) const;
 	
 	private:
-		WgColorSkin( WgColor col );
+		ColorSkin( Color col );
 	
-		WgColor		m_color;
+		Color		m_color;
 		
 	};
 	

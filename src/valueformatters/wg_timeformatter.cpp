@@ -25,16 +25,16 @@
 namespace wg 
 {
 	
-	const char WgTimeFormatter::CLASSNAME[] = {"TimeFormatter"};
+	const char TimeFormatter::CLASSNAME[] = {"TimeFormatter"};
 	
 	//____ Constructors ____________________________________________________________
 	
-	WgTimeFormatter::WgTimeFormatter( const WgCharSeq& format24 )
+	TimeFormatter::TimeFormatter( const CharSeq& format24 )
 	{
 		m_format24 = format24;
 	}
 	
-	WgTimeFormatter::WgTimeFormatter( const WgCharSeq& formatAM, const WgCharSeq& formatPM )
+	TimeFormatter::TimeFormatter( const CharSeq& formatAM, const CharSeq& formatPM )
 	{ 
 		m_formatAM = formatAM;
 		m_formatPM = formatPM;
@@ -43,40 +43,40 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgTimeFormatter::isInstanceOf( const char * pClassName ) const
+	bool TimeFormatter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgValueFormatter::isInstanceOf(pClassName);
+		return ValueFormatter::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgTimeFormatter::className( void ) const
+	const char * TimeFormatter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgTimeFormatter_p WgTimeFormatter::cast( const WgObject_p& pObject )
+	TimeFormatter_p TimeFormatter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgTimeFormatter_p( static_cast<WgTimeFormatter*>(pObject.rawPtr()) );
+			return TimeFormatter_p( static_cast<TimeFormatter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ format() _______________________________________________________________
 	
-	WgString WgTimeFormatter::format( Sint64 value, int scale ) const
+	String TimeFormatter::format( Sint64 value, int scale ) const
 	{
 		Sint64 seconds = value / scale;
 		
 		// Get right format string
 	
-		const WgString * pFormat;
+		const String * pFormat;
 		
 		if( !m_format24.isEmpty() )
 			pFormat = &m_format24;
@@ -87,13 +87,13 @@ namespace wg
 		}
 		
 		if( pFormat->isEmpty() )
-			return WgString();
+			return String();
 		
 		//
 		
-		WgCharBuffer output(pFormat->length());
+		CharBuffer output(pFormat->length());
 		
-		const WgChar * pSrc = pFormat->chars();
+		const Char * pSrc = pFormat->chars();
 	
 		int unit=1;			// Default to seconds.
 		
@@ -177,7 +177,7 @@ namespace wg
 	
 				while( bar > 0 )
 				{
-					output.pushBack( WgChar( '0' + num/bar, 0 ) );		//TODO: Add property
+					output.pushBack( Char( '0' + num/bar, 0 ) );		//TODO: Add property
 					
 					num %= bar;
 					bar /= 10;		
@@ -191,13 +191,13 @@ namespace wg
 		
 		return &output;
 	error:
-		return WgString("#ERROR#");
+		return String("#ERROR#");
 	overflow:
-		return WgString("#OVERFLOW#");
+		return String("#OVERFLOW#");
 		
 	}
 	
-	WgString WgTimeFormatter::format( double value ) const
+	String TimeFormatter::format( double value ) const
 	{
 		return format( (Sint64)(value*1000000), 1000000);
 	}

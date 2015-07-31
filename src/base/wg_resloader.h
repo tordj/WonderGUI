@@ -35,14 +35,14 @@
 namespace wg 
 {
 	
-	class WgGlyphset;
+	class Glyphset;
 	
-	class WgResLoader
+	class ResLoader
 	{
 	public:
-		virtual WgSurface_p	loadSurface( const std::string& filename, bool bRequired ) = 0;
-		virtual WgGlyphset_p	loadGlyphset( const std::string& filename ) = 0;
-		virtual WgResDB_p		loadDb( const std::string& filename, const WgResDB_p& pDependencies = 0 ) = 0;
+		virtual Surface_p	loadSurface( const std::string& filename, bool bRequired ) = 0;
+		virtual Glyphset_p	loadGlyphset( const std::string& filename ) = 0;
+		virtual ResDB_p		loadDb( const std::string& filename, const ResDB_p& pDependencies = 0 ) = 0;
 		virtual std::string		loadString( const std::string& token ) = 0;
 	};
 	

@@ -38,7 +38,7 @@ namespace wg
 {
 	
 	
-	//_____ WgChar ________________________________________________________________
+	//_____ Char ________________________________________________________________
 	
 	/** The character class in WonderGUI is different from other toolkits in that
 		it not only holds a 16-bit unicode character but also specifies what
@@ -46,49 +46,49 @@ namespace wg
 		containing a handle to a properties specification.
 	
 		This makes the characters slightly heavier (32-bits instead of 16 or 8 bits)
-		and adds some overhead to creation/deletion since WgCharProp objects needs to
+		and adds some overhead to creation/deletion since CharProp objects needs to
 		be referenced and dereferenced. On the flipside it gives all displayed text
 		"rich text"-functionality in an easy and consistent way that hardly affects
 		rendering performance.
 	
-		Because of the overhead involved in manipulation and storing WgChars, it is
-		not recommended that WgChar or any of the WgChar containers (WgCharBuffer,
-		WgString and WgText) is used for general purpose text not meant for display.
+		Because of the overhead involved in manipulation and storing Chars, it is
+		not recommended that Char or any of the Char containers (CharBuffer,
+		String and Text) is used for general purpose text not meant for display.
 	
-		Also, when manipulating chunks of text stored as WgChars it is highly
-		recommended that you use the WgCharBuffer container class instead of
-		manipulating arrays of WgChars. All the container classes
+		Also, when manipulating chunks of text stored as Chars it is highly
+		recommended that you use the CharBuffer container class instead of
+		manipulating arrays of Chars. All the container classes
 		have methods for manipulating properties on multiple characters which are
-		both faster and more convenient than manipulating the WgChars one by one.
+		both faster and more convenient than manipulating the Chars one by one.
 	
 	*/
 	
-	class WgChar
+	class Char
 	{
-	friend class WgLegacyTextField;
-	friend class WgTextprop;
-	friend class WgTextTool;
-	friend class WgCharBuffer;
+	friend class LegacyTextField;
+	friend class Textprop;
+	friend class TextTool;
+	friend class CharBuffer;
 	
 	public:
 		/// Initializes an empty character containing null (End of Text) and no properties.
 	
-		WgChar() { all = 0; };
+		Char() { all = 0; };
 	
 		/// Initializes a character to contain the glyph and properties of the specified character.
 	
-		WgChar( const WgChar& r ) { all = r.all; if( properties) WgTextpropManager::incRef(properties,1); }
+		Char( const Char& r ) { all = r.all; if( properties) TextpropManager::incRef(properties,1); }
 	
 		/// Initializes a character to contain the specified glyph and no properties.
 	
-		WgChar( Uint16 _glyph ) { all = 0; glyph = _glyph; }
+		Char( Uint16 _glyph ) { all = 0; glyph = _glyph; }
 	
 		/// Initializes a character to contain the glyph and properties as specified.
 	
-		WgChar( Uint16 _glyph, const WgTextprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
-		~WgChar() { if( properties ) WgTextpropManager::decRef(properties,1); };
+		Char( Uint16 _glyph, const Textprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; TextpropManager::incRef(properties,1); }
+		~Char() { if( properties ) TextpropManager::decRef(properties,1); };
 	
-		inline WgChar & operator=(const WgChar &ref)
+		inline Char & operator=(const Char &ref)
 		{
 			if(properties == ref.properties)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
 			{										// also speeds things up...
@@ -97,15 +97,15 @@ namespace wg
 			else
 			{
 				if(properties)
-					WgTextpropManager::decRef(properties,1);
+					TextpropManager::decRef(properties,1);
 				all = ref.all;
 				if(properties)
-					WgTextpropManager::incRef(properties,1);
+					TextpropManager::incRef(properties,1);
 			}
 			return *this;
 		}
 	
-		inline bool				equals(const WgChar& ch) const { return all == ch.all; }
+		inline bool				equals(const Char& ch) const { return all == ch.all; }
 	
 								/// Sets the glyph part of the character without affecting the display properties.
 	
@@ -119,7 +119,7 @@ namespace wg
 	
 								/// Sets the properties of the character.
 	
-		inline void				setProperties( const WgTextprop_p& pProperties ) { if(properties) WgTextpropManager::decRef(properties,1); properties = pProperties.m_hProp; WgTextpropManager::incRef(properties,1); }
+		inline void				setProperties( const Textprop_p& pProperties ) { if(properties) TextpropManager::decRef(properties,1); properties = pProperties.m_hProp; TextpropManager::incRef(properties,1); }
 	
 								/// Gets the characters properties as a handle.
 								///
@@ -135,10 +135,10 @@ namespace wg
 								///
 								/// Characters with identical properties always returns identical pointers.
 								///
-								/// @return Read-only pointer to a WgTextprop specifying the properties of the character. A valid pointer
-								/// is always returned, if the character has no properties set a pointer to an empty default WgTextprop is returned.
+								/// @return Read-only pointer to a Textprop specifying the properties of the character. A valid pointer
+								/// is always returned, if the character has no properties set a pointer to an empty default Textprop is returned.
 	
-		inline WgTextprop_p	getProperties() const { return WgTextprop_p(properties); }
+		inline Textprop_p	getProperties() const { return Textprop_p(properties); }
 	
 								/// Checks if the character is set to be underlined in the given state.
 	
@@ -146,7 +146,7 @@ namespace wg
 	
 								/// @return True if the character is set to underlined for the given state.
 	
-		inline bool				isUnderlined( WgState state ) const { return getPropRef().isUnderlined(state); }
+		inline bool				isUnderlined( State state ) const { return getPropRef().isUnderlined(state); }
 	
 								/// Checks if the character has a color specified for the given state.
 	
@@ -154,7 +154,7 @@ namespace wg
 	
 								/// @return True if the character has a color specified for the specified state.
 	
-		inline bool				isColored( WgState state ) const { return getPropRef().isColored(state); }
+		inline bool				isColored( State state ) const { return getPropRef().isColored(state); }
 	
 								/// Returns the characters specified color (if any) for the given state.
 	
@@ -166,7 +166,7 @@ namespace wg
 								/// @return If the character has a color specified for the given state that will be returned,
 								///			otherwise an unspecified value will be returned.
 	
-		inline const WgColor	color( WgState state ) const { return getPropRef().color(state); }
+		inline const Color	color( State state ) const { return getPropRef().color(state); }
 	
 								/// Checks if the character has a background color specified for the given state.
 	
@@ -174,7 +174,7 @@ namespace wg
 	
 								/// @return True if the character has a background color specified for the specified state.
 	
-		inline bool				isBgColored( WgState state ) const { return getPropRef().isBgColored(state); }
+		inline bool				isBgColored( State state ) const { return getPropRef().isBgColored(state); }
 	
 								/// Returns the characters specified background color (if any) for the given state.
 	
@@ -186,22 +186,22 @@ namespace wg
 								/// @return If the character has a background color specified for the given state that will be returned,
 								///			otherwise an unspecified value will be returned.
 	
-		inline const WgColor	bgColor( WgState state ) const { return getPropRef().bgColor(state); }
+		inline const Color	bgColor( State state ) const { return getPropRef().bgColor(state); }
 	
 								/// Returns the text-link (weblink) this character links to, if any.
 								///
-								/// @return Pointer to the WgTextLink this character is part of or NULL if none.
+								/// @return Pointer to the TextLink this character is part of or NULL if none.
 	
-		inline WgTextLink_p	link() const { return getPropRef().link(); }
+		inline TextLink_p	link() const { return getPropRef().link(); }
 	
 								/// Returns the characters specified font (if any).
 								///
 								/// @return Pointer to the font specified for this character or NULL if none.
 	
-		inline WgFont_p		font() const { return getPropRef().font(); }
+		inline Font_p		font() const { return getPropRef().font(); }
 	
 	
-	//	inline WgGlyphset *		glyphset( const WgTextprop_p& pDefProp, WgState state = WG_STATE_NORMAL ) const { return WgTextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
+	//	inline Glyphset *		glyphset( const Textprop_p& pDefProp, State state = WG_STATE_NORMAL ) const { return TextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
 	
 								/// Returns the characters font size for the given state.
 								///
@@ -213,7 +213,7 @@ namespace wg
 								///
 								/// @return Characters font size for the given state.
 	
-		inline int				size( WgState state = WG_STATE_NORMAL ) const { return getPropRef().size(state); }
+		inline int				size( State state = WG_STATE_NORMAL ) const { return getPropRef().size(state); }
 	
 								/// Returns the characters font style specification for the given state.
 								///
@@ -225,7 +225,7 @@ namespace wg
 								/// @return Font style specified for the given state.
 	
 	
-		inline WgFontAlt		style( WgState state = WG_STATE_NORMAL ) const { return getPropRef().style(state); }
+		inline FontAlt		style( State state = WG_STATE_NORMAL ) const { return getPropRef().style(state); }
 	
 								/// Checks if the character terminates the current line.
 								/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
@@ -244,7 +244,7 @@ namespace wg
 	
 	protected:
 	
-		inline const WgTextprop&	getPropRef() const { return WgTextpropManager::getProp(properties); }		// Use with caution! Not safe if adding/removing
+		inline const Textprop&	getPropRef() const { return TextpropManager::getProp(properties); }		// Use with caution! Not safe if adding/removing
 	
 	private:
 	
@@ -253,7 +253,7 @@ namespace wg
 			struct
 			{
 				Uint16	glyph;
-				Uint16	properties;				// 0 = Default properties of WgText.
+				Uint16	properties;				// 0 = Default properties of Text.
 			};
 			Uint32	all;						// For quickly copying all...
 		};

@@ -26,33 +26,33 @@
 namespace wg 
 {
 	
-	const char WgInterface::CLASSNAME[] = {"Interface"};
+	const char Interface::CLASSNAME[] = {"Interface"};
 	
-	bool WgInterface::isInstanceOf( const char * pClassName ) const
+	bool Interface::isInstanceOf( const char * pClassName ) const
 	{ 
 		return (pClassName==CLASSNAME); 
 	}
 	
-	const char * WgInterface::className( void ) const
+	const char * Interface::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	
-	WgInterface_p WgInterface::cast( const WgInterface_p& pInterface )
+	Interface_p Interface::cast( const Interface_p& pInterface )
 	{
 		return pInterface;
 	}
 	
 	
-	WgInterface_p	WgInterface::ptr()
+	Interface_p	Interface::ptr()
 	{
-		return WgInterface_p(_object(),this);
+		return Interface_p(_object(),this);
 	}
 	
-	WgObject_p WgInterface::holder() 
+	Object_p Interface::holder() 
 	{ 
-		return WgObject_p( _object() ); 
+		return Object_p( _object() ); 
 	}
 	
 

@@ -32,15 +32,15 @@
 namespace wg 
 {
 	
-	const char WgValueFormat::CLASSNAME[] = {"ValueFormat"};
+	const char ValueFormat::CLASSNAME[] = {"ValueFormat"};
 	
 	
 	
 	
 	
-	//____ WgValueFormat() ________________________________________________________
+	//____ ValueFormat() ________________________________________________________
 	
-	WgValueFormat::WgValueFormat()
+	ValueFormat::ValueFormat()
 	{
 		integers		= 1;
 		decimals		= 0;
@@ -56,23 +56,23 @@ namespace wg
 		scale			= 1;
 	}
 	
-	//____ WgValueFormat() ________________________________________________________
+	//____ ValueFormat() ________________________________________________________
 	
-	WgValueFormat::WgValueFormat( const WgCharSeq& format )
+	ValueFormat::ValueFormat( const CharSeq& format )
 	{
 		setFormat( format );
 	}
 	
-	//____ WgValueFormat() ________________________________________________________
+	//____ ValueFormat() ________________________________________________________
 	
-	WgValueFormat::WgValueFormat( const WgValueFormat_p& pIn )
+	ValueFormat::ValueFormat( const ValueFormat_p& pIn )
 	{
 		setFormat(pIn);
 	}
 	
-	//____ WgValueFormat() ________________________________________________________
+	//____ ValueFormat() ________________________________________________________
 	
-	WgValueFormat::WgValueFormat( int nInt, int nDec, int grouping, bool bPlus,
+	ValueFormat::ValueFormat( int nInt, int nDec, int grouping, bool bPlus,
 									Uint16 _separator, Uint16 period, bool bForcePeriod,
 									const char * pPrefix, const char * pSuffix )
 	{
@@ -92,27 +92,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgValueFormat::isInstanceOf( const char * pClassName ) const
+	bool ValueFormat::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgValueFormat::className( void ) const
+	const char * ValueFormat::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgValueFormat_p WgValueFormat::cast( const WgObject_p& pObject )
+	ValueFormat_p ValueFormat::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgValueFormat_p( static_cast<WgValueFormat*>(pObject.rawPtr()) );
+			return ValueFormat_p( static_cast<ValueFormat*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -120,7 +120,7 @@ namespace wg
 	
 	//____ setFormat() ____________________________________________________________
 	
-	void WgValueFormat::setFormat( const WgCharSeq& format )
+	void ValueFormat::setFormat( const CharSeq& format )
 	{
 		integers		= 1;
 		decimals		= 0;
@@ -135,21 +135,21 @@ namespace wg
 		noDecimalThreshold	= 0;
 		scale			= 1;
 	
-		WgCharSeq::WgCharBasket basket = format.getWgChars();
+		CharSeq::CharBasket basket = format.getChars();
 	
-		const WgChar * pBeg = basket.ptr;
-		const WgChar * pEnd = basket.ptr + basket.length;
+		const Char * pBeg = basket.ptr;
+		const Char * pEnd = basket.ptr + basket.length;
 	
 		// Copy prefix
 	
-		const WgChar * p = pBeg;
+		const Char * p = pBeg;
 		while(  p < pEnd && p->getGlyph() != '1' )
 		{
 			assert( p->getGlyph() < '0' || p->getGlyph() > '9' );		// No numerics allowed in prefix.
 			p++;
 		}
 	
-		prefix = WgCharSeq( pBeg, p - pBeg );
+		prefix = CharSeq( pBeg, p - pBeg );
 	
 		pBeg = p;
 	
@@ -245,12 +245,12 @@ namespace wg
 	
 		// Copy suffix
 	
-		suffix = WgCharSeq( pBeg, pEnd - pBeg );
+		suffix = CharSeq( pBeg, pEnd - pBeg );
 	}
 	
 	//____ setFormat() ____________________________________________________________
 	
-	void WgValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
+	void ValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
 																Uint16 _separator, Uint16 _period, bool _bForcePeriod )
 	{
 		integers		= _nInt;
@@ -266,9 +266,9 @@ namespace wg
 		scale			= 1;
 	}
 	
-	//____ WgValueFormat() ________________________________________________________
+	//____ ValueFormat() ________________________________________________________
 	
-	void WgValueFormat::setFormat( const WgValueFormat_p& pIn )
+	void ValueFormat::setFormat( const ValueFormat_p& pIn )
 	{
 		integers	= pIn->integers;
 		decimals	= pIn->decimals;
@@ -292,28 +292,28 @@ namespace wg
 	
 	//____ setPrefix(1) ___________________________________________________________
 	
-	void WgValueFormat::setPrefix( const WgString& str )
+	void ValueFormat::setPrefix( const String& str )
 	{
 		prefix = str;
 	}
 	
 	//____ setPrefix(2) ___________________________________________________________
 	
-	void WgValueFormat::setPrefix( const WgCharSeq& seq )
+	void ValueFormat::setPrefix( const CharSeq& seq )
 	{
 		prefix = seq;
 	}
 	
 	//____ setSuffix(1) ___________________________________________________________
 	
-	void WgValueFormat::setSuffix( const WgString& str )
+	void ValueFormat::setSuffix( const String& str )
 	{
 		suffix = str;
 	}
 	
 	//____ setSuffix(2) ___________________________________________________________
 	
-	void WgValueFormat::setSuffix( const WgCharSeq& seq )
+	void ValueFormat::setSuffix( const CharSeq& seq )
 	{
 		suffix = seq;
 	}
@@ -322,80 +322,80 @@ namespace wg
 	/*
 	//____ Constructor ____________________________________________________________
 	
-	WgValueFormatter::WgValueFormatter()
+	ValueFormatter::ValueFormatter()
 	{
 	}
 	
-	WgValueFormatter::WgValueFormatter( const WgCharSeq& format ) : m_format(format)
+	ValueFormatter::ValueFormatter( const CharSeq& format ) : m_format(format)
 	{
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgValueFormatter::~WgValueFormatter()
+	ValueFormatter::~ValueFormatter()
 	{
 	}
 	
 	//____ setFormat() ____________________________________________________________
 	
-	void WgValueFormatter::setFormat( const WgCharSeq& format )
+	void ValueFormatter::setFormat( const CharSeq& format )
 	{
 		m_format.setFormat(format);
 	}
 	
 	//____ prefix() _______________________________________________________________
 	
-	WgString WgValueFormatter::prefix() const
+	String ValueFormatter::prefix() const
 	{
 		return m_format.prefix;
 	}
 	
 	//____ suffix() _______________________________________________________________
 	
-	WgString WgValueFormatter::suffix() const
+	String ValueFormatter::suffix() const
 	{
 		return m_format.suffix;
 	}
 	
 	//____ format() _______________________________________________________________
 	
-	WgString WgValueFormatter::format( Sint64 value ) const
+	String ValueFormatter::format( Sint64 value ) const
 	{
-		WgCharBuffer	buff;
+		CharBuffer	buff;
 		buff.setUnusedCapacity( 32,32 );
 		_formatValue( &buff, value );
 		buff.pushFront( m_format.prefix );
 		buff.pushBack( m_format.suffix );
 	
 		if( value < 0 )
-			buff.pushFront( WgChar('-') );
+			buff.pushFront( Char('-') );
 		else if( value >= 0 && m_format.bPlus )
-			buff.pushFront( WgChar('+') );
+			buff.pushFront( Char('+') );
 	
-		return WgString(&buff);
+		return String(&buff);
 	}
 	
 	//____ formatNoPreSuffix() ____________________________________________________
 	
-	WgString WgValueFormatter::formatNoPreSuffix( Sint64 value ) const
+	String ValueFormatter::formatNoPreSuffix( Sint64 value ) const
 	{
-		WgCharBuffer	buff;
+		CharBuffer	buff;
 		buff.setUnusedCapacity( 32,32 );
 		_formatValue( &buff, value );
 	
 		if( value < 0 )
-			buff.pushFront( WgChar('-') );
+			buff.pushFront( Char('-') );
 		else if( value >= 0 && m_format.bPlus )
-			buff.pushFront( WgChar('+') );
+			buff.pushFront( Char('+') );
 	
-		return WgString(&buff);
+		return String(&buff);
 	}
 	
 	//____ _formatValue() _________________________________________________________
 	
-	void WgValueFormatter::_formatValue( WgCharBuffer * pBuffer, Sint64 value ) const
+	void ValueFormatter::_formatValue( CharBuffer * pBuffer, Sint64 value ) const
 	{
-		const WgValueFormat& f = m_format;
+		const ValueFormat& f = m_format;
 	
 		Sint64 absVal = value >= 0 ? value : -value;
 	
@@ -410,12 +410,12 @@ namespace wg
 			{
 				if( f.bForceDecimals || decPart != 0 )
 				{
-					pBuffer->pushBack( WgChar(f.period) );
+					pBuffer->pushBack( Char(f.period) );
 	
 					for( int i = f.decimals; i > 0 ; i-- )
 					{
 						decPart *= 10;
-						pBuffer->pushBack( WgChar( (Uint16)(decPart/m_format.scale) + 0x30 ));
+						pBuffer->pushBack( Char( (Uint16)(decPart/m_format.scale) + 0x30 ));
 						decPart = decPart % m_format.scale;
 					}
 				}
@@ -439,16 +439,16 @@ namespace wg
 		if( f.grouping == 0 )
 		{
 			for( int i = 0 ; i < n ; i++ )
-				pBuffer->pushFront( WgChar(temp2[i]) );
+				pBuffer->pushFront( Char(temp2[i]) );
 		}
 		else
 		{
 			for( int i = 0 ; i < n ; i++ )
 			{
 				if( i != 0 && (i % f.grouping) == 0 )
-					pBuffer->pushFront( WgChar(f.separator) );
+					pBuffer->pushFront( Char(f.separator) );
 	
-				pBuffer->pushFront( WgChar(temp2[i]) );
+				pBuffer->pushFront( Char(temp2[i]) );
 			}
 		}
 	
@@ -459,9 +459,9 @@ namespace wg
 			for( int i = n ; i < f.integers ; i++ )
 			{
 				if( i != 0 && (i % f.grouping) == 0 )
-					pBuffer->pushFront( WgChar(f.separator) );
+					pBuffer->pushFront( Char(f.separator) );
 	
-				pBuffer->pushFront( WgChar(0x30) );
+				pBuffer->pushFront( Char(0x30) );
 			}
 		}
 	}

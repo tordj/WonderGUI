@@ -30,21 +30,21 @@ namespace wg
 {
 	
 	
-	class WgModSpan;
-	typedef	WgIStrongPtr<WgModSpan,WgSlideSpan_p>		WgModSpan_p;
-	typedef	WgIWeakPtr<WgModSpan,WgSlideSpan_wp>	WgModSpan_wp;
+	class ModSpan;
+	typedef	WgIStrongPtr<ModSpan,SlideSpan_p>		ModSpan_p;
+	typedef	WgIWeakPtr<ModSpan,SlideSpan_wp>	ModSpan_wp;
 	
 	
-	class WgModSpan : public WgSlideSpan
+	class ModSpan : public SlideSpan
 	{
 	public:
-		WgModSpan(WgSpanItem* pItem) : WgSlideSpan(pItem) {}
+		ModSpan(SpanItem* pItem) : SlideSpan(pItem) {}
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
 		static const char			CLASSNAME[];
-		static WgModSpan_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-		inline WgModSpan_p		ptr() { return WgModSpan_p(_object(),this); }
+		static ModSpan_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline ModSpan_p		ptr() { return ModSpan_p(_object(),this); }
 	
 	
 		inline bool	setMin( int min ) { return m_pItem->setMin(min); }

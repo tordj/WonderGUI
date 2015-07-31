@@ -53,19 +53,19 @@ typedef struct  FT_Bitmap_ FT_Bitmap;
 
 namespace wg 
 {
-	class WgVectorGlyphs;
-	typedef	WgStrongPtr<WgVectorGlyphs,WgGlyphset_p>		WgVectorGlyphs_p;
-	typedef	WgWeakPtr<WgVectorGlyphs,WgGlyphset_wp>	WgVectorGlyphs_wp;
+	class VectorGlyphs;
+	typedef	WgStrongPtr<VectorGlyphs,Glyphset_p>		VectorGlyphs_p;
+	typedef	WgWeakPtr<VectorGlyphs,Glyphset_wp>	VectorGlyphs_wp;
 
-	class WgVectorGlyphs : public WgGlyphset
+	class VectorGlyphs : public Glyphset
 	{
 	public:
-		static WgVectorGlyphs_p	create( char* pTTF_File, int bytes, int faceIndex ) { return WgVectorGlyphs_p(new WgVectorGlyphs(pTTF_File,bytes,faceIndex)); }
+		static VectorGlyphs_p	create( char* pTTF_File, int bytes, int faceIndex ) { return VectorGlyphs_p(new VectorGlyphs(pTTF_File,bytes,faceIndex)); }
 
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgVectorGlyphs_p	cast( const WgObject_p& pObject );
+		static VectorGlyphs_p	cast( const Object_p& pObject );
 
 		enum RenderMode
 		{
@@ -78,8 +78,8 @@ namespace wg
 
 		inline Type	getType() const { return VECTOR; }
 
-		int			getKerning( WgGlyph_p pLeftGlyph, WgGlyph_p pRightGlyph, int size );
-		WgGlyph_p	getGlyph( Uint16 chr, int size );
+		int			getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
+		Glyph_p	getGlyph( Uint16 chr, int size );
 		bool		hasGlyph( Uint16 chr );
 
 		int			getHeight( int size );
@@ -98,12 +98,12 @@ namespace wg
 		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
 		inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
-		static void	setSurfaceFactory( const WgSurfaceFactory_p& pFactory );
+		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
 		static void	clearCache();
 
 	private:
-		WgVectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
-		~WgVectorGlyphs();
+		VectorGlyphs( char* pTTF_File, int bytes, int faceIndex );
+		~VectorGlyphs();
 
 		const static int	MIN_GLYPH_PIXEL_SIZE = 12;		
 		const static int	MAX_GLYPH_PIXEL_SIZE = WG_MAX_FONTSIZE*2;
@@ -112,13 +112,13 @@ namespace wg
 
 		class CacheSlot;
 
-		class Glyph : public WgGlyph
+		class MyGlyph : public Glyph
 		{
 		public:
-			Glyph();
-			Glyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, WgGlyphset * pGlyphset );
-			~Glyph();
-			const WgGlyphBitmap * getBitmap();
+			MyGlyph();
+			MyGlyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, Glyphset * pGlyphset );
+			~MyGlyph();
+			const GlyphBitmap * getBitmap();
 
 			void	slotLost() { m_pSlot = 0; }
 			bool	isInitialized() { return m_pGlyphset?true:false; }
@@ -128,33 +128,33 @@ namespace wg
 			Uint16		m_character;	// Unicode for character.
 		};
 
-		class CacheSurf : public WgLink
+		class CacheSurf : public Link
 		{
 		public:
-			CacheSurf( const WgSurface_p& _pSurf ) { pSurf = _pSurf; access = 0; }
+			CacheSurf( const Surface_p& _pSurf ) { pSurf = _pSurf; access = 0; }
 			~CacheSurf();
 
 			LINK_METHODS( CacheSurf );		
 
 			Uint32			access;			// Timestamp of last access.
-			WgSurface_p	pSurf;
+			Surface_p	pSurf;
 		};
 
 
-		class CacheSlot : public WgLink
+		class CacheSlot : public Link
 		{
 		public:
-			CacheSlot( CacheSurf * _pSurf, const WgRect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf, pGlyph = 0; }
+			CacheSlot( CacheSurf * _pSurf, const Rect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf, pGlyph = 0; }
 
 			LINK_METHODS( CacheSlot );		
 
 			Uint32			access;			// Timestamp of last access.
 
-			WgGlyphBitmap	bitmap;
-			Glyph *			pGlyph;
+			GlyphBitmap	bitmap;
+			MyGlyph *			pGlyph;
 
 			CacheSurf *		pSurf;
-			WgRect			rect;				// Rect for the slot - not the glyph itself as in WgGlyphBitmap which might be smaller.
+			Rect			rect;				// Rect for the slot - not the glyph itself as in GlyphBitmap which might be smaller.
 		};
 
 
@@ -164,11 +164,11 @@ namespace wg
 
 		bool				_setCharSize( int size );
 
-		CacheSlot *			_generateBitmap( Glyph * pGlyph );
+		CacheSlot *			_generateBitmap( MyGlyph * pGlyph );
 		void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
 
-		Glyph *				_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
-		inline Glyph *		_findGlyph( Uint16 glyph, int size ) const;
+		MyGlyph *				_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
+		inline MyGlyph *		_findGlyph( Uint16 glyph, int size ) const;
 
 		inline void			_touchSlot( CacheSlot * pSlot );
 
@@ -176,7 +176,7 @@ namespace wg
 		FT_Face				m_ftFace;
 		char*				m_pData;
 		int					m_ftCharSize;
-		Glyph **			m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
+		MyGlyph **			m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
 		Uint32				m_accessCounter;
 		int					m_renderFlags;
 		RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
@@ -187,14 +187,14 @@ namespace wg
 
 
 		static CacheSlot *	getCacheSlot( int width, int height );
-		static int			addCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& slotSize, int minSlots );
-		static int			maxSlotsInSurface( const WgSize& surf, const WgSize& slot );
-		static WgSize		calcTextureSize( const WgSize& slotSize, int nSlots );
+		static int			addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots );
+		static int			maxSlotsInSurface( const Size& surf, const Size& slot );
+		static Size		calcTextureSize( const Size& slotSize, int nSlots );
 
 
-		static WgChain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
-		static WgChain<CacheSurf>	s_cacheSurfaces;
-		static WgSurfaceFactory_p	s_pSurfaceFactory;
+		static Chain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
+		static Chain<CacheSurf>	s_cacheSurfaces;
+		static SurfaceFactory_p	s_pSurfaceFactory;
 
 		//____
 
@@ -204,7 +204,7 @@ namespace wg
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	WgVectorGlyphs::Glyph * WgVectorGlyphs::_findGlyph( Uint16 ch, int size ) const
+	VectorGlyphs::MyGlyph * VectorGlyphs::_findGlyph( Uint16 ch, int size ) const
 	{
 		if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() )
 			return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
@@ -214,7 +214,7 @@ namespace wg
 
 	//____ _touchSlot() _________________________________________________________
 
-	void WgVectorGlyphs::_touchSlot( CacheSlot * pSlot )
+	void VectorGlyphs::_touchSlot( CacheSlot * pSlot )
 	{
 		pSlot->moveFirst();								// Move slot to the top
 

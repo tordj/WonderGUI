@@ -25,39 +25,39 @@
 namespace wg 
 {
 	
-	const char WgModValue::CLASSNAME[] = {"ModValue"};
+	const char ModValue::CLASSNAME[] = {"ModValue"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgModValue::isInstanceOf( const char * pClassName ) const
+	bool ModValue::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgValue::isInstanceOf(pClassName);
+		return Value::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgModValue::className( void ) const
+	const char * ModValue::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgModValue_p WgModValue::cast( const WgInterface_p& pInterface )
+	ModValue_p ModValue::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return WgModValue_p( pInterface.getRealObjectPtr(), static_cast<WgModValue*>( pInterface.rawPtr()) );
+			return ModValue_p( pInterface.getRealObjectPtr(), static_cast<ModValue*>( pInterface.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ clear() _________________________________________________________________
 	
-	void WgModValue::clear() 
+	void ModValue::clear() 
 	{ 
 		bool bModified = _field()->value() != 0;
 		_field()->clear();
@@ -68,7 +68,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool WgModValue::set( Sint64 value, int scale ) 
+	bool ModValue::set( Sint64 value, int scale ) 
 	{ 
 		if( _field()->set(value,scale) )
 		{
@@ -82,7 +82,7 @@ namespace wg
 	
 	//____ setRange() ______________________________________________________________
 	
-	bool WgModValue::setRange( Sint64 min, Sint64 max ) 
+	bool ModValue::setRange( Sint64 min, Sint64 max ) 
 	{ 
 		Sint64 val = _field()->value();
 		

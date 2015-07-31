@@ -26,55 +26,55 @@
 namespace wg 
 {
 	
-	const char WgPackPanel::CLASSNAME[] = {"PackPanel"};
-	const char WgPackHook::CLASSNAME[] = {"PackHook"};
+	const char PackPanel::CLASSNAME[] = {"PackPanel"};
+	const char PackHook::CLASSNAME[] = {"PackHook"};
 	
 	
-	//____ WgPackHook::Constructor ________________________________________________
+	//____ PackHook::Constructor ________________________________________________
 	
-	WgPackHook::WgPackHook( WgPackPanel * pParent )
+	PackHook::PackHook( PackPanel * pParent )
 	{
 		m_pParent = pParent;
 		m_weight = 1.f;
 	}
 	
-	//____ WgPackHook::isInstanceOf() __________________________________________
+	//____ PackHook::isInstanceOf() __________________________________________
 	
-	bool WgPackHook::isInstanceOf( const char * pClassName ) const
+	bool PackHook::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgVectorHook::isInstanceOf(pClassName);
+		return VectorHook::isInstanceOf(pClassName);
 	}
 	
-	//____ WgPackHook::className() _____________________________________________
+	//____ PackHook::className() _____________________________________________
 	
-	const char * WgPackHook::className( void ) const
+	const char * PackHook::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	//____ WgPackHook::cast() __________________________________________________
+	//____ PackHook::cast() __________________________________________________
 	
-	WgPackHook_p WgPackHook::cast( const WgHook_p& pHook )
+	PackHook_p PackHook::cast( const Hook_p& pHook )
 	{
 		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return WgPackHook_p( static_cast<WgPackHook*>(pHook.rawPtr()) );
+			return PackHook_p( static_cast<PackHook*>(pHook.rawPtr()) );
 	
 		return 0;
 	}
 	
-	//____ WgPackHook::parent() ___________________________________________________
+	//____ PackHook::parent() ___________________________________________________
 	
-	WgPackPanel_p WgPackHook::parent() const 
+	PackPanel_p PackHook::parent() const 
 	{ 
 		return m_pParent; 
 	}
 	
-	//____ WgPackHook::setWeight() ________________________________________________
+	//____ PackHook::setWeight() ________________________________________________
 	
-	bool WgPackHook::setWeight( float weight )
+	bool PackHook::setWeight( float weight )
 	{
 		if( weight < 0 )
 			return false;
@@ -87,16 +87,16 @@ namespace wg
 		return true;
 	}
 	
-	//____ WgPackHook::_parent() __________________________________________________
+	//____ PackHook::_parent() __________________________________________________
 	
-	WgContainer * WgPackHook::_parent() const
+	Container * PackHook::_parent() const
 	{
 		return m_pParent;
 	}
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgPackPanel::WgPackPanel()
+	PackPanel::PackPanel()
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = true;
@@ -105,40 +105,40 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgPackPanel::~WgPackPanel()
+	PackPanel::~PackPanel()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgPackPanel::isInstanceOf( const char * pClassName ) const
+	bool PackPanel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgVectorPanel::isInstanceOf(pClassName);
+		return VectorPanel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgPackPanel::className( void ) const
+	const char * PackPanel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgPackPanel_p WgPackPanel::cast( const WgObject_p& pObject )
+	PackPanel_p PackPanel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgPackPanel_p( static_cast<WgPackPanel*>(pObject.rawPtr()) );
+			return PackPanel_p( static_cast<PackPanel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setOrientation() ______________________________________________________
 	
-	void WgPackPanel::setOrientation( WgOrientation orientation )
+	void PackPanel::setOrientation( WgOrientation orientation )
 	{
 		bool bHorizontal = orientation==WG_HORIZONTAL?true:false;
 		if( m_bHorizontal != bHorizontal )
@@ -152,7 +152,7 @@ namespace wg
 	
 	//____ setSizeBroker() _______________________________________________________
 	
-	void WgPackPanel::setSizeBroker( const WgSizeBroker_p& pBroker )
+	void PackPanel::setSizeBroker( const SizeBroker_p& pBroker )
 	{
 		if( m_pSizeBroker != pBroker )
 		{
@@ -164,14 +164,14 @@ namespace wg
 	
 	//____ preferredSize() _______________________________________________________
 	
-	WgSize WgPackPanel::preferredSize() const
+	Size PackPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
 	
 	//____ matchingHeight() _______________________________________________________
 	
-	int WgPackPanel::matchingHeight( int width ) const
+	int PackPanel::matchingHeight( int width ) const
 	{
 		int height = 0;
 	
@@ -181,8 +181,8 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 			
-				int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-				WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+				int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 				int nItems = _populateSizeBrokerArray(pItemArea);		
 			
@@ -190,8 +190,8 @@ namespace wg
 	
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, width );
 	
-				WgPackHook * pH = _firstHook();
-				WgSizeBrokerItem * pI = pItemArea;
+				PackHook * pH = _firstHook();
+				SizeBrokerItem * pI = pItemArea;
 	
 				while( pH )
 				{
@@ -208,11 +208,11 @@ namespace wg
 	
 				// Release temporary memory area
 			
-				WgBase::memStackRelease(arrayBytes);
+				Base::memStackRelease(arrayBytes);
 			}
 			else 
 			{
-				WgPackHook * pH = _firstHook();
+				PackHook * pH = _firstHook();
 	
 				while( pH )
 				{
@@ -229,8 +229,8 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 			
-				int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-				WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+				int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 				int nItems = _populateSizeBrokerArray(pItemArea, width);		
 			
@@ -240,11 +240,11 @@ namespace wg
 					
 				// Release temporary memory area
 			
-				WgBase::memStackRelease(arrayBytes);
+				Base::memStackRelease(arrayBytes);
 			}
 			else 
 			{
-				WgPackHook * p = _firstHook();
+				PackHook * p = _firstHook();
 	
 				while( p )
 				{
@@ -260,7 +260,7 @@ namespace wg
 	
 	//____ matchingWidth() _______________________________________________________
 	
-	int WgPackPanel::matchingWidth( int height ) const
+	int PackPanel::matchingWidth( int height ) const
 	{
 		int width = 0;
 	
@@ -270,8 +270,8 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 			
-				int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-				WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+				int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 				int nItems = _populateSizeBrokerArray(pItemArea);		
 			
@@ -279,8 +279,8 @@ namespace wg
 	
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, height );
 	
-				WgPackHook * pH = _firstHook();
-				WgSizeBrokerItem * pI = pItemArea;
+				PackHook * pH = _firstHook();
+				SizeBrokerItem * pI = pItemArea;
 	
 				while( pH )
 				{
@@ -297,11 +297,11 @@ namespace wg
 	
 				// Release temporary memory area
 			
-				WgBase::memStackRelease(arrayBytes);
+				Base::memStackRelease(arrayBytes);
 			}
 			else 
 			{
-				WgPackHook * pH = _firstHook();
+				PackHook * pH = _firstHook();
 	
 				while( pH )
 				{
@@ -318,8 +318,8 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 			
-				int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-				WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+				int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 				int nItems = _populateSizeBrokerArray(pItemArea, height);		
 			
@@ -329,11 +329,11 @@ namespace wg
 					
 				// Release temporary memory area
 			
-				WgBase::memStackRelease(arrayBytes);
+				Base::memStackRelease(arrayBytes);
 			}
 			else 
 			{
-				WgPackHook * p = _firstHook();
+				PackHook * p = _firstHook();
 	
 				while( p )
 				{
@@ -351,9 +351,9 @@ namespace wg
 	
 	//____ _firstHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackPanel::_firstHookWithGeo( WgRect& geo ) const
+	Hook* PackPanel::_firstHookWithGeo( Rect& geo ) const
 	{	
-		WgPackHook * p = _firstHook();
+		PackHook * p = _firstHook();
 		if( p )
 			geo = p->m_geo;
 		return p;
@@ -361,9 +361,9 @@ namespace wg
 	
 	//____ _nextHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook* PackPanel::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgPackHook * p = static_cast<WgPackHook*>(pHook)->_next();
+		PackHook * p = static_cast<PackHook*>(pHook)->_next();
 		if( p )
 			geo = p->m_geo;
 		return p;	
@@ -371,9 +371,9 @@ namespace wg
 	
 	//____ _lastHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackPanel::_lastHookWithGeo( WgRect& geo ) const
+	Hook* PackPanel::_lastHookWithGeo( Rect& geo ) const
 	{
-		WgPackHook * p = _lastHook();
+		PackHook * p = _lastHook();
 		if( p )
 			geo = p->m_geo;
 		return p;
@@ -381,9 +381,9 @@ namespace wg
 	
 	//____ _prevHookWithGeo() _____________________________________________________
 	
-	WgHook* WgPackPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
+	Hook* PackPanel::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
 	{
-		WgPackHook * p = static_cast<WgPackHook*>(pHook)->_prev();
+		PackHook * p = static_cast<PackHook*>(pHook)->_prev();
 		if( p )
 			geo = p->m_geo;
 		return p;	
@@ -391,32 +391,32 @@ namespace wg
 	
 	//____ _hookGeo() _____________________________________________________________
 	
-	WgRect WgPackPanel::_hookGeo( const WgVectorHook * pHook )
+	Rect PackPanel::_hookGeo( const VectorHook * pHook )
 	{
-		return static_cast<const WgPackHook*>(pHook)->m_geo;
+		return static_cast<const PackHook*>(pHook)->m_geo;
 	}
 	
 	//____ _onRenderRequested() ____________________________________________________
 	
-	void WgPackPanel::_onRenderRequested( WgVectorHook * pHook )
+	void PackPanel::_onRenderRequested( VectorHook * pHook )
 	{
-		WgPackHook * p = static_cast<WgPackHook*>(pHook);
+		PackHook * p = static_cast<PackHook*>(pHook);
 		_requestRender( p->m_geo );
 	}
 	
-	void WgPackPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
+	void PackPanel::_onRenderRequested( VectorHook * pHook, const Rect& rect )
 	{
-		WgPackHook * p = static_cast<WgPackHook*>(pHook);
+		PackHook * p = static_cast<PackHook*>(pHook);
 		_requestRender( rect + p->m_geo.pos() );
 	}
 	
 	//____ _onResizeRequested() _____________________________________________________
 	
-	void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
+	void PackPanel::_onResizeRequested( VectorHook * pHook )
 	{
 		// Update cached preferred size of child
 		
-		WgPackHook * p = static_cast<WgPackHook*>(pHook);
+		PackHook * p = static_cast<PackHook*>(pHook);
 		p->m_preferredSize = p->_paddedPreferredSize();
 	
 		//
@@ -426,11 +426,11 @@ namespace wg
 	
 	//____ _onWidgetAppeared() ______________________________________________________
 	
-	void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
+	void PackPanel::_onWidgetAppeared( VectorHook * pInserted )
 	{
 		// Update cached preferred size of child
 		
-		WgPackHook * p = static_cast<WgPackHook*>(pInserted);
+		PackHook * p = static_cast<PackHook*>(pInserted);
 		p->m_preferredSize = p->_paddedPreferredSize();
 		
 		//
@@ -440,21 +440,21 @@ namespace wg
 	
 	//____ _onWidgetDisappeared() ___________________________________________________
 	
-	void WgPackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
+	void PackPanel::_onWidgetDisappeared( VectorHook * pToBeRemoved )
 	{
 		_refreshAllWidgets();
 	}
 	
 	//____ _onWidgetsReordered() ____________________________________________________
 	
-	void WgPackPanel::_onWidgetsReordered()
+	void PackPanel::_onWidgetsReordered()
 	{
 		_refreshChildGeo();
 	}
 	
 	//____ _refreshAllWidgets() _____________________________________________________
 	
-	void WgPackPanel::_refreshAllWidgets()
+	void PackPanel::_refreshAllWidgets()
 	{
 		_updatePreferredSize();
 		_refreshChildGeo();
@@ -463,14 +463,14 @@ namespace wg
 	
 	//____ _newHook() ____________________________________________________________
 	
-	WgVectorHook * WgPackPanel::_newHook()
+	VectorHook * PackPanel::_newHook()
 	{
-		return new WgPackHook(this);
+		return new PackHook(this);
 	}
 	
 	//____ _onNewSize() ____________________________________________________________
 	
-	void WgPackPanel::_onNewSize( const WgSize& size )
+	void PackPanel::_onNewSize( const Size& size )
 	{
 	    _refreshChildGeo();
 	}
@@ -478,7 +478,7 @@ namespace wg
 	
 	//____ _updatePreferredSize() ______________________________________________________
 	
-	void WgPackPanel::_updatePreferredSize()
+	void PackPanel::_updatePreferredSize()
 	{
 		int length = 0;
 		int breadth = 0;
@@ -487,8 +487,8 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 			
-			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+			int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 			int nItems = _populateSizeBrokerArray(pItemArea);		
 			
@@ -496,8 +496,8 @@ namespace wg
 			
 			length = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
 			
-			WgPackHook * pH = _firstHook();
-			WgSizeBrokerItem * pI = pItemArea;
+			PackHook * pH = _firstHook();
+			SizeBrokerItem * pI = pItemArea;
 			while( pH )
 			{
 				if( pH->isVisible() )
@@ -512,12 +512,12 @@ namespace wg
 			
 			// Release temporary memory area
 			
-			WgBase::memStackRelease(arrayBytes);
+			Base::memStackRelease(arrayBytes);
 			
 		}
 		else
 		{
-			WgPackHook * p = _firstHook();
+			PackHook * p = _firstHook();
 	
 			if( m_bHorizontal )
 			{
@@ -549,7 +549,7 @@ namespace wg
 	
 		//
 		
-		WgSize size = m_bHorizontal?WgSize(length,breadth):WgSize(breadth,length);
+		Size size = m_bHorizontal?Size(length,breadth):Size(breadth,length);
 		if( size != m_preferredSize )
 		{
 			m_preferredSize = size;
@@ -559,12 +559,12 @@ namespace wg
 	
 	//____ _refreshChildGeo() _________________________________________________________
 	
-	void WgPackPanel::_refreshChildGeo()
+	void PackPanel::_refreshChildGeo()
 	{
 	    if( m_hooks.isEmpty() )
 	        return;
 	    
-		WgSize sz = size();
+		Size sz = size();
 		
 		int wantedLength = m_bHorizontal?m_preferredSize.w:m_preferredSize.h;
 		int givenLength = m_bHorizontal?sz.w:sz.h;
@@ -575,9 +575,9 @@ namespace wg
 	
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
-			WgCoord pos;
-			WgPackHook * p = _firstHook();
-	        WgRect geo;
+			Coord pos;
+			PackHook * p = _firstHook();
+	        Rect geo;
 			while( p )
 			{
 				if( p->isVisible() )
@@ -636,8 +636,8 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 	
-			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.size();
-			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::memStackAlloc(arrayBytes));
+			int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 	
 			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);		
 			
@@ -645,11 +645,11 @@ namespace wg
 			
 			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
 			
-			WgPackHook * pH = _firstHook();
-			WgSizeBrokerItem * pI = pItemArea;
+			PackHook * pH = _firstHook();
+			SizeBrokerItem * pI = pItemArea;
 	
-			WgCoord pos;
-			WgRect geo;
+			Coord pos;
+			Rect geo;
 			while( pH )
 			{
 				if( pH->isVisible() )
@@ -706,16 +706,16 @@ namespace wg
 			
 			// Release SizeBroker array
 			
-			WgBase::memStackRelease(arrayBytes);
+			Base::memStackRelease(arrayBytes);
 		}
 	}
 	
 	//____ _populateSizeBrokerArray() ___________________________________________
 	
-	int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
+	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray ) const
 	{
-		WgPackHook * pH = _firstHook();
-		WgSizeBrokerItem * pI = pArray;
+		PackHook * pH = _firstHook();
+		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )
 		{
@@ -751,10 +751,10 @@ namespace wg
 		return pI - pArray;
 	}
 	
-	int WgPackPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const
+	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
 	{
-		WgPackHook * pH = _firstHook();
-		WgSizeBrokerItem * pI = pArray;
+		PackHook * pH = _firstHook();
+		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )
 		{

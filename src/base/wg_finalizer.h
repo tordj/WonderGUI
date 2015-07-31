@@ -31,23 +31,23 @@
 namespace wg 
 {
 	
-	class WgFinalizer;
-	typedef	WgStrongPtr<WgFinalizer,WgObject_p>		WgFinalizer_p;
-	typedef	WgWeakPtr<WgFinalizer,WgObject_wp>	WgFinalizer_wp;
+	class Finalizer;
+	typedef	WgStrongPtr<Finalizer,Object_p>		Finalizer_p;
+	typedef	WgWeakPtr<Finalizer,Object_wp>	Finalizer_wp;
 	
-	class WgFinalizer : public WgObject
+	class Finalizer : public Object
 	{
 	public:
-		static WgFinalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
+		static Finalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new Finalizer(pCallback,pObject); };
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WgFinalizer_p	cast( const WgObject_p& pObject );
+		static Finalizer_p	cast( const Object_p& pObject );
 	
 	protected:
-		WgFinalizer(void(*pCallback)(void*),void * pObject);
-		virtual ~WgFinalizer();
+		Finalizer(void(*pCallback)(void*),void * pObject);
+		virtual ~Finalizer();
 	
 		void(*m_pCallback)(void*);
 		void *	m_pObject;

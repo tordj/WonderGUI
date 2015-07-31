@@ -25,32 +25,32 @@
 namespace wg 
 {
 	
-	const char WgValueFormatter::CLASSNAME[] = {"ValueFormatter"};
+	const char ValueFormatter::CLASSNAME[] = {"ValueFormatter"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgValueFormatter::isInstanceOf( const char * pClassName ) const
+	bool ValueFormatter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgValueFormatter::className( void ) const
+	const char * ValueFormatter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgValueFormatter_p WgValueFormatter::cast( const WgObject_p& pObject )
+	ValueFormatter_p ValueFormatter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgValueFormatter_p( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
+			return ValueFormatter_p( static_cast<ValueFormatter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

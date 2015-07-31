@@ -24,31 +24,31 @@
 namespace wg 
 {
 	
-	const char WgSkin::CLASSNAME[] = {"Skin"};
+	const char Skin::CLASSNAME[] = {"Skin"};
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSkin::isInstanceOf( const char * pClassName ) const
+	bool Skin::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSkin::className( void ) const
+	const char * Skin::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSkin_p WgSkin::cast( const WgObject_p& pObject )
+	Skin_p Skin::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSkin_p( static_cast<WgSkin*>(pObject.rawPtr()) );
+			return Skin_p( static_cast<Skin*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

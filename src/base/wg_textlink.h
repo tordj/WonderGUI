@@ -33,20 +33,20 @@
 namespace wg 
 {
 	
-	class WgCoord;
+	class Coord;
 	
-	class WgTextlink;
-	typedef	WgStrongPtr<class WgTextlink,WgObject_p> WgTextLink_p;
-	typedef	WgWeakPtr<class WgTextlink,WgObject_wp> WgTextLink_wp;
-	
-	
-	//____ WgTextLink _____________________________________________________________
+	class Textlink;
+	typedef	WgStrongPtr<class Textlink,Object_p> TextLink_p;
+	typedef	WgWeakPtr<class Textlink,Object_wp> TextLink_wp;
 	
 	
-	class WgTextlink : public WgObject
+	//____ TextLink _____________________________________________________________
+	
+	
+	class Textlink : public Object
 	{
 	public:
-		static WgTextLink_p create( const std::string& link ) { return new WgTextlink(link); }
+		static TextLink_p create( const std::string& link ) { return new Textlink(link); }
 	
 		const std::string&		link() const { return m_link; }
 		bool					hasBeenAccessed() const { return m_bAccessed; }
@@ -55,8 +55,8 @@ namespace wg
 		bool					m_bAccessed;
 		std::string				m_link;
 	
-		WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-		~WgTextlink() {}
+		Textlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
+		~Textlink() {}
 	};
 	
 

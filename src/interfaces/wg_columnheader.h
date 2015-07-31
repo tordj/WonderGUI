@@ -54,37 +54,37 @@
 namespace wg 
 {
 	
-	class WgColumnHeader;
-	typedef	WgIStrongPtr<WgColumnHeader,WgInterface_p>		WgColumnHeader_p;
-	typedef	WgIWeakPtr<WgColumnHeader,WgInterface_wp>	WgColumnHeader_wp;
+	class ColumnHeader;
+	typedef	WgIStrongPtr<ColumnHeader,Interface_p>		ColumnHeader_p;
+	typedef	WgIWeakPtr<ColumnHeader,Interface_wp>	ColumnHeader_wp;
 	
-	class WgColumnHeader : public WgInterface
+	class ColumnHeader : public Interface
 	{
 	public:
-		WgColumnHeader(WgColumnHeaderField* pField);
+		ColumnHeader(ColumnHeaderField* pField);
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
 		static const char			CLASSNAME[];
-		static WgColumnHeader_p	cast( const WgInterface_p& pInterface );
-		inline WgColumnHeader_p	ptr() { return WgColumnHeader_p(_object(),this); }
+		static ColumnHeader_p	cast( const Interface_p& pInterface );
+		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(),this); }
 	
 		//____ Interfaces ______________________________________
 	
-		WgIcon				icon;
-		WgIcon				arrow;
-		WgModText			label;
+		Icon				icon;
+		Icon				arrow;
+		ModText			label;
 	
 		//____ Methods _________________________________________
 	
-		inline void			setSkin( const WgSkin_p& pSkin ) { m_pField->setSkin(pSkin); }
-		inline WgSkin_p	skin() const { return m_pField->skin(); }
+		inline void			setSkin( const Skin_p& pSkin ) { m_pField->setSkin(pSkin); }
+		inline Skin_p	skin() const { return m_pField->skin(); }
 	
 	
 	protected:
-		WgObject * 			_object() const;
+		Object * 			_object() const;
 	
-		WgColumnHeaderField *		m_pField;
+		ColumnHeaderField *		m_pField;
 	};
 	
 

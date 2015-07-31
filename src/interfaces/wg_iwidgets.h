@@ -38,28 +38,28 @@
 namespace wg 
 {
 	
-	class WgHook;
+	class Hook;
 	
-	class WgIWidgets;
-	typedef	WgIStrongPtr<WgIWidgets,WgInterface_p>		WgIWidgets_p;
-	typedef	WgIWeakPtr<WgIWidgets,WgInterface_wp>	WgIWidgets_wp;
+	class IWidgets;
+	typedef	WgIStrongPtr<IWidgets,Interface_p>		IWidgets_p;
+	typedef	WgIWeakPtr<IWidgets,Interface_wp>	IWidgets_wp;
 	
-	class WgIWidgets : public WgInterface
+	class IWidgets : public Interface
 	{
 		
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WgIWidgets_p	cast( const WgInterface_p& pInterface );
+		static IWidgets_p	cast( const Interface_p& pInterface );
 	
-		inline WgWidget_p	firstWidget() const { return WgWidget_p(_firstWidget()); }
-		inline WgWidget_p	lastWidget() const { return WgWidget_p(_lastWidget()); }
+		inline Widget_p	firstWidget() const { return Widget_p(_firstWidget()); }
+		inline Widget_p	lastWidget() const { return Widget_p(_lastWidget()); }
 	
 	protected:
 	
-		virtual WgWidget *		_firstWidget() const = 0;
-		virtual WgWidget *		_lastWidget() const = 0;
+		virtual Widget *		_firstWidget() const = 0;
+		virtual Widget *		_lastWidget() const = 0;
 	};
 	
 	

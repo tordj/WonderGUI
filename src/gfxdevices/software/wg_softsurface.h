@@ -32,35 +32,35 @@
 namespace wg 
 {
 	
-	class WgSoftSurface;
-	typedef	WgStrongPtr<WgSoftSurface,WgSurface_p>		WgSoftSurface_p;
-	typedef	WgWeakPtr<WgSoftSurface,WgSurface_wp>	WgSoftSurface_wp;
+	class SoftSurface;
+	typedef	WgStrongPtr<SoftSurface,Surface_p>		SoftSurface_p;
+	typedef	WgWeakPtr<SoftSurface,Surface_wp>	SoftSurface_wp;
 	
-	//____ Class WgSoftSurface _____________________________________________________________________
+	//____ Class SoftSurface _____________________________________________________________________
 	
-	class WgSoftSurface : public WgSurface
+	class SoftSurface : public Surface
 	{
-		friend class WgSoftGfxDevice;
-		friend class WgSoftSurfaceFactory;
+		friend class SoftGfxDevice;
+		friend class SoftSurfaceFactory;
 	
 	 public:
-		static WgSoftSurface_p	create( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return WgSoftSurface_p(new WgSoftSurface(size,type)); }
-		static WgSoftSurface_p	create( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObject_p& pBlob ) { return WgSoftSurface_p(new WgSoftSurface(size,type,pPixels,pitch,pBlob)); }
-		static WgSoftSurface_p	create( const WgSoftSurface_p& pOther ) { return WgSoftSurface_p(new WgSoftSurface( pOther.rawPtr() )); }
+		static SoftSurface_p	create( Size size, WgPixelType type = WG_PIXEL_ARGB_8 ) { return SoftSurface_p(new SoftSurface(size,type)); }
+		static SoftSurface_p	create( Size size, WgPixelType type, Uint8 * pPixels, int pitch, const Object_p& pBlob ) { return SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pBlob)); }
+		static SoftSurface_p	create( const SoftSurface_p& pOther ) { return SoftSurface_p(new SoftSurface( pOther.rawPtr() )); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static WgSoftSurface_p	cast( const WgObject_p& pObject );
+		static SoftSurface_p	cast( const Object_p& pObject );
 	
-		WgSize		size() const;
+		Size		size() const;
 		bool		isOpaque() const;
 	
-		Uint32		pixel( WgCoord coord ) const;
-		Uint8		alpha( WgCoord coord ) const;
+		Uint32		pixel( Coord coord ) const;
+		Uint8		alpha( Coord coord ) const;
 	
 		void *		lock( WgAccessMode mode );
-		void *		lockRegion( WgAccessMode mode, const WgRect& region );
+		void *		lockRegion( WgAccessMode mode, const Rect& region );
 		void		unlock();
 	
 		inline float scaleAlpha() { return m_fScaleAlpha; }
@@ -69,15 +69,15 @@ namespace wg
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<Uint32> &col, int length, bool replace);
 	
 	protected:
-		WgSoftSurface( WgSize size, WgPixelType type = WG_PIXEL_ARGB_8 );
-		WgSoftSurface( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgObject_p& pFinalizer );
-		WgSoftSurface( const WgSoftSurface * pOther );
-		virtual ~WgSoftSurface();
+		SoftSurface( Size size, WgPixelType type = WG_PIXEL_ARGB_8 );
+		SoftSurface( Size size, WgPixelType type, Uint8 * pPixels, int pitch, const Object_p& pFinalizer );
+		SoftSurface( const SoftSurface * pOther );
+		virtual ~SoftSurface();
 	
-		void _copy(const WgSoftSurface * pOther);
+		void _copy(const SoftSurface * pOther);
 	
-		WgObject_p	m_pFinalizer;
-		WgSize		m_size;
+		Object_p	m_pFinalizer;
+		Size		m_size;
 		float    	m_fScaleAlpha;
 		bool		m_bOwnsData;
 		Uint8 *		m_pData;

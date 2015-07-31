@@ -11,13 +11,13 @@
 
 using namespace wg;
 
-void 			translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot );
+void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
 WgMouseButton 	translateMouseButton( Uint8 button );
-void 			updateWindowRects( const WgRootPanel_p& pRoot, SDL_Window * pWindow );
-void 			myButtonClickCallback( const WgMsg_p& pMsg );
+void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
+void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
 
-void addResizablePanel( const WgFlexPanel_p& pParent, const WgWidget_p& pChild, const WgMsgRouter_p& pMsgRouter );
+void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
 
 bool	bQuit = false;
@@ -28,7 +28,7 @@ void freeSDLSurfCallback( void * pSDLSurf )
 	SDL_FreeSurface( (SDL_Surface*) pSDLSurf );
 }
 
-WgInputHandler * pDebug;
+InputHandler * pDebug;
 
 //____ main() _________________________________________________________________
 
@@ -51,9 +51,9 @@ int main ( int argc, char** argv )
 	// Init WonderGUI
 	//------------------------------------------------------
 
-	WgBase::init();
+	Base::init();
 
-	WgInputHandler_p pInput = WgInputHandler::create();
+	InputHandler_p pInput = InputHandler::create();
 	pDebug = pInput.rawPtr();
 	
 	WgPixelType type = WG_PIXEL_UNKNOWN;
@@ -63,151 +63,151 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
-	WgSoftSurface_p pCanvas = WgSoftSurface::create( WgSize(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
+	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
-	WgSoftGfxDevice_p pGfxDevice = WgSoftGfxDevice::create( pCanvas );
+	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
-	WgRootPanel_p pRoot = WgRootPanel::create( pGfxDevice );
-	WgBase::msgRouter()->setRoot(pRoot);
+	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
+	Base::msgRouter()->setRoot(pRoot);
 
 	// 
 	
-	WgMsgLogger_p pLogger = WgMsgLogger::create( std::cout );
+	MsgLogger_p pLogger = MsgLogger::create( std::cout );
 	pLogger->ignoreAllMsgs();
 	pLogger->logMouseMsgs();
 	
-	WgBase::msgRouter()->broadcastTo( pLogger );
+	Base::msgRouter()->broadcastTo( pLogger );
 
 
 	// Init font
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
-	WgBlob_p pFontSurfBlob = WgBlob::create( pFontSurf, freeSDLSurfCallback );
-	WgSoftSurface_p pFontImg = WgSoftSurface::create( WgSize(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
+	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
+	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 	char * pFontSpec = (char*) loadFile( "../../../resources/anuvverbubbla_8x8.fnt" );
 
-	WgBitmapGlyphs_p pGlyphs = WgBitmapGlyphs::create( pFontImg, pFontSpec );
-	WgFont_p pFont = WgFont::create( pGlyphs, 8 );
+	BitmapGlyphs_p pGlyphs = BitmapGlyphs::create( pFontImg, pFontSpec );
+	Font_p pFont = Font::create( pGlyphs, 8 );
 
-	WgTextprop prop;
+	Textprop prop;
 	prop.setFont(pFont);
 	prop.setSize(8);
-	WgTextprop_p pProp = prop.reg();
+	Textprop_p pProp = prop.reg();
 
-	WgBase::setDefaultTextprop( pProp );
+	Base::setDefaultTextprop( pProp );
 
-	WgTextStyle_p pStyle = WgTextStyle::create();
+	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(8);
-	WgBase::setDefaultStyle(pStyle);
+	Base::setDefaultStyle(pStyle);
 
 	// Init skins
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../../../resources/simple_button.bmp" );
-	WgSoftSurface_p pButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgBlockSkin_p pSimpleButtonSkin = WgBlockSkin::createClickableFromSurface( pButtonSurface, 0, WgBorder(3) );
-	pSimpleButtonSkin->setContentPadding( WgBorder(5) );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
+	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/state_button.bmp" );
-	WgSoftSurface_p pStateButtonSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgBlockSkin_p pStateButtonSkin = WgBlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, WgBorder(3) );
-	pStateButtonSkin->setContentPadding( WgBorder(5) );
+	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
+	pStateButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/grey_pressable_plate.bmp" );
-	WgSoftSurface_p pPressablePlateSurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkin_p pPressablePlateSkin = WgBlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, WgBorder(3) );
+	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	Skin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	
 	pSDLSurf = IMG_Load( "../../../resources/list_entry.png" );
-	WgSoftSurface_p pListEntrySurface = WgSoftSurface::create( WgSize( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
-	WgSkin_p pListEntrySkin = WgBlockSkin::createClickableFromSurface( pListEntrySurface, 0, WgBorder(3) );
+	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
-	WgFlexPanel_p pFlexPanel = WgFlexPanel::create();
-	pFlexPanel->setSkin( WgColorSkin::create(WgColor::burlywood));
+	FlexPanel_p pFlexPanel = FlexPanel::create();
+	pFlexPanel->setSkin( ColorSkin::create(Color::burlywood));
 	pRoot->setWidget(pFlexPanel);
 
 
-/*	WgFiller_p pBackground = WgFiller::create();
-	pBackground->setSkin( WgColorSkin::create(WgColor::aqua) );
-	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, WgCoord(), WG_SOUTHEAST, WgCoord());
+/*	Filler_p pBackground = Filler::create();
+	pBackground->setSkin( ColorSkin::create(Color::aqua) );
+	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
 */
 
-	WgImage_p pImage = WgImage::create();
+	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->addWidget( pImage, WgRect(0,0,80,33), WG_CENTER );
+	pFlexPanel->addWidget( pImage, Rect(0,0,80,33), WG_CENTER );
 
 
-//	pRoot->msgRouter()->AddCallback( WgMsgFilter::select(), pButton, myButtonClickCallback );
+//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
 
 	// Test transparency issue
 	
 	{
-		WgFlexPanel_p pExtraFlex = WgFlexPanel::create();
-		pExtraFlex->setSkin( WgColorSkin::create( WgColor(0,0,0,128)));
+		FlexPanel_p pExtraFlex = FlexPanel::create();
+		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
 
-		WgTextDisplay_p pText = WgTextDisplay::create();
+		TextDisplay_p pText = TextDisplay::create();
 		pText->text.set( "THIS IS SOME TEST TEXT" );
 		
-		pExtraFlex->addWidget( pText, WgRect( 10,10,100,100) );
+		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
 
-		addResizablePanel( pFlexPanel, pExtraFlex, WgBase::msgRouter() );
+		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
 	}
 
 
 
 /*
-	WgSizeCapsule_p pCapsule = WgSizeCapsule::create();
-	pCapsule->setMaxSize( WgSize(100,1000));
+	SizeCapsule_p pCapsule = SizeCapsule::create();
+	pCapsule->setMaxSize( Size(100,1000));
 	pFlexPanel->addWidget( pCapsule );
 
-	WgStackPanel_p pStack = WgStackPanel::create();
+	StackPanel_p pStack = StackPanel::create();
 	pCapsule->setWidget( pStack );
 
 
-	WgTextDisplay_p pText = WgTextDisplay::create();
+	TextDisplay_p pText = TextDisplay::create();
 	pText->text()->set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
 	pStack->addWidget(pText);
 */
 	
 /*
-	WgCheckBoxPtr pCheckbox = WgCheckBox::create();
+	CheckBoxPtr pCheckbox = CheckBox::create();
 	pCheckbox->Label()->set( "CHECKBOX" );
 	pCheckbox->Icon()->set( pCheckboxSkin );
 */
 
 /*
-	WgToggleGroup_p pGroup = WgToggleGroup::create();
+	ToggleGroup_p pGroup = ToggleGroup::create();
 	
 
 	for( int i = 0 ; i < 4 ; i++ )
 	{
-		WgToggleButton_p pCheckbox = WgToggleButton::create();
+		ToggleButton_p pCheckbox = ToggleButton::create();
 		pCheckbox->label.set( "CHECKBOX" );
 		pCheckbox->setSkin( pStateButtonSkin );
-		pFlexPanel->addWidget( pCheckbox, WgCoord(10,20*i) );
+		pFlexPanel->addWidget( pCheckbox, Coord(10,20*i) );
 		pGroup->add( pCheckbox );
 	}
 */
 
 /*
-	WgTextDisplay_p pText = WgTextDisplay::create();
+	TextDisplay_p pText = TextDisplay::create();
 	pText->text.set( "THIS IS THE TEXT\nLINE TWO.\nAN EXTRA LONG LONG LONG LINE TO TEST THE CLIPPING AND RAND BEHAVIOURS." );
 	pFlexPanel->addWidget( pText, WG_NORTHWEST, WG_EAST );
 	
 
-	WgStandardPresenter_p pPresenter = WgStandardPresenter::create();
+	StandardPresenter_p pPresenter = StandardPresenter::create();
 	pPresenter->setAlignment( WG_CENTER );
 	pText->text.setPresenter( pPresenter );
 
 
-	WgValueDisplay_p pValue = WgValueDisplay::create();
-	pValue->value.setFormatter( WgTimeFormatter::create("%2H:%2M:%2S"));
+	ValueDisplay_p pValue = ValueDisplay::create();
+	pValue->value.setFormatter( TimeFormatter::create("%2H:%2M:%2S"));
 	pValue->value.set(3600+60+12);
 	pValue->value.setPresenter( pPresenter );
 	pFlexPanel->addWidget( pValue, WG_WEST, WG_SOUTHEAST );
@@ -232,7 +232,7 @@ int main ( int argc, char** argv )
 
 	// Exit WonderGUI
 
-	WgBase::exit();
+	Base::exit();
 
 	// Exit SDL
 
@@ -244,7 +244,7 @@ int main ( int argc, char** argv )
 
 //____ translateEvents() ___________________________________________________________
 
-void translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot )
+void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 {
 	// WonderGUI needs Tick-events to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
@@ -261,7 +261,7 @@ void translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	WgBase::msgRouter()->post( WgTickMsg::create(tickDiff) );
+	Base::msgRouter()->post( TickMsg::create(tickDiff) );
 
 	// Process all the SDL events in a loop
 
@@ -275,7 +275,7 @@ void translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, WgCoord(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -291,7 +291,7 @@ void translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot
 		}
 	}
 	
-	WgBase::msgRouter()->dispatch();	
+	Base::msgRouter()->dispatch();	
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -320,14 +320,14 @@ WgMouseButton translateMouseButton( Uint8 button )
 //
 // Updates the rectangles of the SDL Window that WonderGUI has modified.
 //
-void updateWindowRects( const WgRootPanel_p& pRoot, SDL_Window * pWindow )
+void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 {	
 	int nRects = pRoot->nbUpdatedRects();
 	if( nRects == 0 )
 		return;
 	
-	const WgRect * pUpdatedRects = pRoot->firstUpdatedRect();
-	SDL_Rect * pSDLRects = (SDL_Rect*) WgBase::memStackAlloc( sizeof(SDL_Rect) * nRects );
+	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
@@ -339,12 +339,12 @@ void updateWindowRects( const WgRootPanel_p& pRoot, SDL_Window * pWindow )
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
 
-	WgBase::memStackRelease( sizeof(SDL_Rect) * nRects );
+	Base::memStackRelease( sizeof(SDL_Rect) * nRects );
 }
 
 //____ myButtonClickCallback() _________________________________________________
 
-void myButtonClickCallback( const WgMsg_p& pMsg )
+void myButtonClickCallback( const Msg_p& pMsg )
 {
 	bQuit = true;
 }
@@ -377,15 +377,15 @@ void * loadFile( const char * pPath )
 
 }
 
-WgCoord dragStartPos;
+Coord dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
-void cbInitDrag( const WgMsg_p& _pMsg, const WgObject_p& pObject )
+void cbInitDrag( const Msg_p& _pMsg, const Object_p& pObject )
 {
-	WgWidget_p pWidget = WgWidget::cast(pObject);
+	Widget_p pWidget = Widget::cast(pObject);
 
-	WgFlexHook_p pHook = WgFlexHook::cast(pWidget->hook());
+	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
 
 
 	dragStartPos = pHook->floatOfs();
@@ -394,39 +394,39 @@ void cbInitDrag( const WgMsg_p& _pMsg, const WgObject_p& pObject )
 
 //____ cbDragWidget() __________________________________________________________
 
-void cbDragWidget( const WgMsg_p& _pMsg, const WgObject_p& pObject )
+void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 {
-	WgWidget_p pWidget = WgWidget::cast(pObject);
+	Widget_p pWidget = Widget::cast(pObject);
 	
 	if( _pMsg->type() != WG_MSG_MOUSE_DRAG || !pWidget->parent() )
 		return;
 
-	const WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
+	const MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 
 
 
-	WgCoord	dragDistance = pMsg->draggedTotal();
+	Coord	dragDistance = pMsg->draggedTotal();
 
-	WgCoord	ofs = dragStartPos + dragDistance;
+	Coord	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
 
-	WgFlexHook_p pHook = WgFlexHook::cast(pWidget->hook());
+	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
 	pHook->setOfs(dragStartPos+dragDistance);
 }
 
 
 //____ cbResizeWidget() _________________________________________________________
 /*
-void cbResize( const WgMsg_p _pMsg, WgObject_p _pFlexHook )
+void cbResize( const Msg_p _pMsg, Object_p _pFlexHook )
 {
-	WgFlexHook * pHook = static_cast<WgFlexHook*>(_pFlexHook);
-	const WgMsg::MouseButtonDrag* pMsg = static_cast<const WgMsg::MouseButtonDrag*>(_pMsg);
+	FlexHook * pHook = static_cast<FlexHook*>(_pFlexHook);
+	const Msg::MouseButtonDrag* pMsg = static_cast<const Msg::MouseButtonDrag*>(_pMsg);
 
-	WgCoord dragged = pMsg->draggedNow();
+	Coord dragged = pMsg->draggedNow();
 
-	pHook->setSize( pHook->size() + WgSize(dragged.x,dragged.y) );
+	pHook->setSize( pHook->size() + Size(dragged.x,dragged.y) );
 }
 */
 
@@ -434,11 +434,11 @@ void cbResize( const WgMsg_p _pMsg, WgObject_p _pFlexHook )
 
 //____ addResizablePanel() _________________________________________________
 
-void addResizablePanel( const WgFlexPanel_p& pParent, const WgWidget_p& pChild, const WgMsgRouter_p& pMsgRouter )
+void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	WgHook * pHook = pParent->addWidget( pChild );
-//	pMsgRouter->AddCallback( WgMsgFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
+	Hook * pHook = pParent->addWidget( pChild );
+//	pMsgRouter->AddCallback( MsgFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
 
-	pMsgRouter->addRoute( WgMsgFilter::mousePress(WG_BUTTON_LEFT), pChild, WgMsgFunc::create(cbInitDrag, pChild) );
-	pMsgRouter->addRoute( WgMsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, WgMsgFunc::create(cbDragWidget, pChild) );
+	pMsgRouter->addRoute( MsgFilter::mousePress(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbInitDrag, pChild) );
+	pMsgRouter->addRoute( MsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbDragWidget, pChild) );
 }

@@ -31,24 +31,24 @@ namespace wg
 	
 	#define NB_CURVETAB_ENTRIES	1024
 	
-	const char WgSoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
+	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 	
 	//____ create() _______________________________________________________________
 	
-	WgSoftGfxDevice_p WgSoftGfxDevice::create()
+	SoftGfxDevice_p SoftGfxDevice::create()
 	{
-		return WgSoftGfxDevice_p(new WgSoftGfxDevice());
+		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
 	
-	WgSoftGfxDevice_p WgSoftGfxDevice::create( const WgSoftSurface_p& pCanvas )
+	SoftGfxDevice_p SoftGfxDevice::create( const SoftSurface_p& pCanvas )
 	{
-		return WgSoftGfxDevice_p(new WgSoftGfxDevice(pCanvas));
+		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
 	}
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgSoftGfxDevice::WgSoftGfxDevice() : WgGfxDevice(WgSize(0,0))
+	SoftGfxDevice::SoftGfxDevice() : GfxDevice(Size(0,0))
 	{
 		m_bBilinearFiltering = true;
 		m_pCanvas = 0;
@@ -56,7 +56,7 @@ namespace wg
 		_genCurveTab();
 	}
 	
-	WgSoftGfxDevice::WgSoftGfxDevice( const WgSoftSurface_p& pCanvas ) : WgGfxDevice( pCanvas?pCanvas->size():WgSize() )
+	SoftGfxDevice::SoftGfxDevice( const SoftSurface_p& pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
 		m_bBilinearFiltering = true;
 		m_pCanvas = pCanvas;
@@ -66,7 +66,7 @@ namespace wg
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgSoftGfxDevice::~WgSoftGfxDevice()
+	SoftGfxDevice::~SoftGfxDevice()
 	{
 		delete [] m_pDivTab;
 		delete [] m_pCurveTab;
@@ -74,27 +74,27 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgSoftGfxDevice::isInstanceOf( const char * pClassName ) const
+	bool SoftGfxDevice::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgGfxDevice::isInstanceOf(pClassName);
+		return GfxDevice::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgSoftGfxDevice::className( void ) const
+	const char * SoftGfxDevice::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgSoftGfxDevice_p WgSoftGfxDevice::cast( const WgObject_p& pObject )
+	SoftGfxDevice_p SoftGfxDevice::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgSoftGfxDevice_p( static_cast<WgSoftGfxDevice*>(pObject.rawPtr()) );
+			return SoftGfxDevice_p( static_cast<SoftGfxDevice*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -102,23 +102,23 @@ namespace wg
 	
 	//____ setCanvas() _______________________________________________________________
 	
-	void WgSoftGfxDevice::setCanvas( const WgSoftSurface_p& pCanvas )
+	void SoftGfxDevice::setCanvas( const SoftSurface_p& pCanvas )
 	{
 		m_pCanvas = pCanvas;
 		if( pCanvas )
 			m_canvasSize = pCanvas->size();
 		else
-			m_canvasSize = WgSize();
+			m_canvasSize = Size();
 	}
 	
 	//____ fill() ____________________________________________________________________
 	
-	void WgSoftGfxDevice::fill( const WgRect& rect, const WgColor& col )
+	void SoftGfxDevice::fill( const Rect& rect, const Color& col )
 	{
 		if( !m_pCanvas || !m_pCanvas->m_pData )
 			return;
 	
-		WgColor fillColor = col * m_tintColor;
+		Color fillColor = col * m_tintColor;
 	
 		// Skip calls that won't affect destination
 	
@@ -243,12 +243,12 @@ namespace wg
 	
 	//____ fillSubPixel() ____________________________________________________________________
 	
-	void WgSoftGfxDevice::fillSubPixel( const WgRectF& rect, const WgColor& col )
+	void SoftGfxDevice::fillSubPixel( const RectF& rect, const Color& col )
 	{
 		if( !m_pCanvas || !m_pCanvas->m_pData )
 			return;
 	
-		WgColor fillColor = col * m_tintColor;
+		Color fillColor = col * m_tintColor;
 	
 		// Skip calls that won't affect destination
 	
@@ -262,7 +262,7 @@ namespace wg
 		int x2 = (int) (rect.x + rect.w);
 		int y2 = (int) (rect.y + rect.h);
 	
-		fill( WgRect( x1,y1,x2-x1,y2-y1 ), col );
+		fill( Rect( x1,y1,x2-x1,y2-y1 ), col );
 	
 		// Optimize calls
 	
@@ -311,7 +311,7 @@ namespace wg
 	
 	//____ clipDrawHorrLine() _____________________________________________________
 	
-	void WgSoftGfxDevice::clipDrawHorrLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+	void SoftGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col )
 	{
 		if( start.y < clip.y || start.y >= clip.y + clip.h || start.x >= clip.x + clip.w || start.x + length <= clip.x )
 			return;
@@ -332,7 +332,7 @@ namespace wg
 	
 	//____ clipDrawVertLine() _____________________________________________________
 	
-	void WgSoftGfxDevice::clipDrawVertLine( const WgRect& clip, const WgCoord& start, int length, const WgColor& col )
+	void SoftGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col )
 	{
 		if( start.x < clip.x || start.x >= clip.x + clip.w || start.y >= clip.y + clip.h || start.y + length <= clip.y )
 			return;
@@ -353,7 +353,7 @@ namespace wg
 	
 	//____ clipPlotSoftPixels() _______________________________________________________
 	
-	void WgSoftGfxDevice::clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness )
+	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
@@ -419,7 +419,7 @@ namespace wg
 		}
 	}
 	/*
-	void WgSoftGfxDevice::clipPlotSoftPixels( const WgRect& clip, int nCoords, const WgCoord * pCoords, const WgColor& col, float thickness )
+	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
@@ -460,12 +460,12 @@ namespace wg
 	
 	//____ _drawHorrVertLine() ________________________________________________
 	
-	void WgSoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const WgColor& _col, WgOrientation orientation  )
+	void SoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, WgOrientation orientation  )
 	{
 		if( !m_pCanvas || !m_pCanvas->m_pData || _length <= 0  )
 			return;
 	
-		WgColor fillColor = _col * m_tintColor;
+		Color fillColor = _col * m_tintColor;
 	
 		// Skip calls that won't affect destination
 	
@@ -578,7 +578,7 @@ namespace wg
 	
 	//____ _drawHorrVertLineAA() ________________________________________________
 	
-	void WgSoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const WgColor& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation )
+	void SoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation )
 	{
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
@@ -688,7 +688,7 @@ namespace wg
 	
 	//____ _plotAA() ________________________________________________
 	
-	void WgSoftGfxDevice::_plotAA( int _x, int _y, const WgColor& _col, WgBlendMode blendMode, int _aa )
+	void SoftGfxDevice::_plotAA( int _x, int _y, const Color& _col, WgBlendMode blendMode, int _aa )
 	{
 		//TODO: Translate to use m_pDivTab
 	
@@ -777,7 +777,7 @@ namespace wg
 	
 	//____ _genCurveTab() ___________________________________________________________
 	
-	void WgSoftGfxDevice::_genCurveTab()
+	void SoftGfxDevice::_genCurveTab()
 	{
 		m_pCurveTab = new int[NB_CURVETAB_ENTRIES];
 	
@@ -793,7 +793,7 @@ namespace wg
 	
 	//____ drawElipse() _______________________________________________________________
 	
-	void WgSoftGfxDevice::drawElipse( const WgRect& rect, WgColor color )
+	void SoftGfxDevice::drawElipse( const Rect& rect, Color color )
 	{
 		if( rect.h < 2 || rect.w < 1 )
 			return;
@@ -831,7 +831,7 @@ namespace wg
 	
 	//____ _clipDrawHorrFadeLine() _______________________________________________________________
 	
-	void WgSoftGfxDevice::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
+	void SoftGfxDevice::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
 	{
 		//TODO: Translate to use m_pDivTab
 	
@@ -905,7 +905,7 @@ namespace wg
 	
 	//____ _drawHorrFadeLine() _______________________________________________________________
 	
-	void WgSoftGfxDevice::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, WgColor color )
+	void SoftGfxDevice::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
 	{
 		//TODO: Translate to use m_pDivTab
 	
@@ -971,7 +971,7 @@ namespace wg
 	
 	//____ clipDrawElipse() _______________________________________________________________
 	
-	void WgSoftGfxDevice::clipDrawElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+	void SoftGfxDevice::clipDrawElipse( const Rect& clip, const Rect& rect, Color color )
 	{
 		if( rect.h < 2 || rect.w < 1 )
 			return;
@@ -1022,7 +1022,7 @@ namespace wg
 	
 	//____ drawFilledElipse() _____________________________________________________
 	
-	void WgSoftGfxDevice::drawFilledElipse( const WgRect& rect, WgColor color )
+	void SoftGfxDevice::drawFilledElipse( const Rect& rect, Color color )
 	{
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	
@@ -1056,7 +1056,7 @@ namespace wg
 	
 	//____ clipDrawFilledElipse() _____________________________________________________
 	
-	void WgSoftGfxDevice::clipDrawFilledElipse( const WgRect& clip, const WgRect& rect, WgColor color )
+	void SoftGfxDevice::clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color )
 	{
 		if( !rect.intersectsWith(clip) )
 			return;
@@ -1114,7 +1114,7 @@ namespace wg
 	
 	//____ drawArcNE() ____________________________________________________________
 	
-	void WgSoftGfxDevice::drawArcNE( const WgRect& rect, WgColor color )
+	void SoftGfxDevice::drawArcNE( const Rect& rect, Color color )
 	{
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	
@@ -1142,7 +1142,7 @@ namespace wg
 	
 	//____ clipDrawArcNE() _________________________________________________________
 	
-	void WgSoftGfxDevice::clipDrawArcNE( const WgRect& clip, const WgRect& rect, WgColor color )
+	void SoftGfxDevice::clipDrawArcNE( const Rect& clip, const Rect& rect, Color color )
 	{
 		//TODO: Implement!!!
 	}
@@ -1150,9 +1150,9 @@ namespace wg
 	
 	//____ blit() __________________________________________________________________
 	
-	void WgSoftGfxDevice::blit( const WgSurface_p& pSrcSurf, const WgRect& srcrect, int dx, int dy  )
+	void SoftGfxDevice::blit( const Surface_p& pSrcSurf, const Rect& srcrect, int dx, int dy  )
 	{
-		WgSurface * pSrc = pSrcSurf.rawPtr();
+		Surface * pSrc = pSrcSurf.rawPtr();
 	
 		if( m_tintColor.argb == 0xFFFFFFFF )
 			_blit( pSrc, srcrect, dx, dy );
@@ -1162,12 +1162,12 @@ namespace wg
 	
 	//____ _blit() _____________________________________________________________
 	
-	void WgSoftGfxDevice::_blit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  )
+	void SoftGfxDevice::_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  )
 	{
-		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(WgSoftSurface::CLASSNAME) )
+		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
 	
-		WgSoftSurface * pSrcSurf = (WgSoftSurface*) _pSrcSurf;
+		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
 	
 		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
 			return;
@@ -1331,12 +1331,12 @@ namespace wg
 	
 	//____ _tintBlit() _____________________________________________________________
 	
-	void WgSoftGfxDevice::_tintBlit( const WgSurface* _pSrcSurf, const WgRect& srcrect, int dx, int dy  )
+	void SoftGfxDevice::_tintBlit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  )
 	{
-		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(WgSoftSurface::CLASSNAME) )
+		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
 	
-		WgSoftSurface * pSrcSurf = (WgSoftSurface*) _pSrcSurf;
+		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
 	
 		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
 			return;
@@ -1542,17 +1542,17 @@ namespace wg
 	
 	//____ stretchBlit() ___________________________________________________________
 	
-	void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, bool bTriLinear, float mipmapBias )
+	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, bool bTriLinear, float mipmapBias )
 	{
-		stretchBlit( pSrc, WgRect(0, 0, pSrc->width(),pSrc->height()), WgRect(0,0,m_canvasSize.w,m_canvasSize.h), bTriLinear, mipmapBias );
+		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), Rect(0,0,m_canvasSize.w,m_canvasSize.h), bTriLinear, mipmapBias );
 	}
 	
-	void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipmapBias )
+	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipmapBias )
 	{
-		stretchBlit( pSrc, WgRect(0, 0, pSrc->width(),pSrc->height()), dest, bTriLinear, mipmapBias );
+		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), dest, bTriLinear, mipmapBias );
 	}
 	
-	void WgSoftGfxDevice::stretchBlit( const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipmapBias )
+	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipmapBias )
 	{
 		float srcW = (float) src.w;
 		float srcH = (float) src.h;
@@ -1574,22 +1574,22 @@ namespace wg
 	
 	//____ clipStretchBlit() _______________________________________________________
 	
-	void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, bool bTriLinear, float mipBias )
+	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, bool bTriLinear, float mipBias )
 	{
-		clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), WgRect( 0,0,m_canvasSize), bTriLinear, mipBias );
+		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), Rect( 0,0,m_canvasSize), bTriLinear, mipBias );
 	}
 	
-	void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& dest, bool bTriLinear, float mipBias )
+	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipBias )
 	{
-		clipStretchBlit( clip, pSrc, WgRect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
+		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
 	}
 	
-	void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, const WgRect& src, const WgRect& dest, bool bTriLinear, float mipBias )
+	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipBias )
 	{
 		clipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
 	}
 	
-	void WgSoftGfxDevice::clipStretchBlit( const WgRect& clip, const WgSurface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
+	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
 	{
 		if( m_bBilinearFiltering )
 		{
@@ -1634,13 +1634,13 @@ namespace wg
 	
 	//____ stretchBlitSubPixel() ___________________________________________________
 	
-	void WgSoftGfxDevice::stretchBlitSubPixel( const WgSurface_p& _pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::stretchBlitSubPixel( const Surface_p& _pSrcSurf, float sx, float sy, float sw, float sh,
 							   		 float _dx, float _dy, float _dw, float _dh, bool bTriLinear, float mipBias )
 	{
-		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(WgSoftSurface::CLASSNAME) )
+		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
 	
-		WgSoftSurface * pSrcSurf = (WgSoftSurface*) _pSrcSurf.rawPtr();
+		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf.rawPtr();
 	
 		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
 			return;
@@ -1807,7 +1807,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedOpaque() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedOpaque( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedOpaque( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1827,7 +1827,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedBlend32() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedBlend32( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedBlend32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															 int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( true,
@@ -1856,7 +1856,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedBlend24() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedBlend24( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedBlend24( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															 int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1879,7 +1879,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedAdd32() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedAdd32( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedAdd32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( true,
@@ -1907,7 +1907,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedAdd24() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedAdd24( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedAdd24( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1929,7 +1929,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedMultiply() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedMultiply( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedMultiply( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 															  int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1953,7 +1953,7 @@ namespace wg
 	
 	//____ _stretchBlitTintedInvert() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitTintedInvert( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitTintedInvert( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 												      int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1978,7 +1978,7 @@ namespace wg
 	
 	//____ _stretchBlitOpaque() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitOpaque( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitOpaque( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 													  int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -1994,7 +1994,7 @@ namespace wg
 	
 	//____ _stretchBlitBlend32() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitBlend32( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitBlend32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 													   int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( true,
@@ -2012,7 +2012,7 @@ namespace wg
 	
 	//____ _stretchBlitAdd32() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitAdd32( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitAdd32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 													 int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( true,
@@ -2029,7 +2029,7 @@ namespace wg
 	
 	//____ _stretchBlitAdd24() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitAdd24( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitAdd24( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 													 int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -2046,7 +2046,7 @@ namespace wg
 	
 	//____ _stretchBlitMultiply() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitMultiply( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitMultiply( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 													    int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -2062,7 +2062,7 @@ namespace wg
 	
 	//____ _stretchBlitInvert() ____________________________________________
 	
-	void WgSoftGfxDevice::_stretchBlitInvert( const WgSoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::_stretchBlitInvert( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 												      int dx, int dy, int dw, int dh )
 	{
 		STRETCHBLIT( false,
@@ -2080,7 +2080,7 @@ namespace wg
 	
 	//____ _initTables() ___________________________________________________________
 	
-	void WgSoftGfxDevice::_initTables()
+	void SoftGfxDevice::_initTables()
 	{
 		// Init limitTable
 	

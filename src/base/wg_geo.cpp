@@ -26,7 +26,7 @@
 namespace wg 
 {
 	
-	//____ WgRect() _______________________________________________________________
+	//____ Rect() _______________________________________________________________
 	/**
 	 * Create rectangle from intersection of specified rectangles.
 	 *
@@ -36,7 +36,7 @@ namespace wg
 	 * If specified rectangles don't intersect, width and height will be set to zero.
 	 * 
 	 **/
-	WgRect::WgRect( const WgRect& r1, const WgRect& r2 )
+	Rect::Rect( const Rect& r1, const Rect& r2 )
 	{
 		intersection( r1, r2 );
 	}
@@ -52,7 +52,7 @@ namespace wg
 	 * 
 	 **/
 	
-	WgRect::WgRect( const WgCoord& p1, const WgCoord& p2 )
+	Rect::Rect( const Coord& p1, const Coord& p2 )
 	{
 		if( p1.x < p2.x )
 		{
@@ -92,7 +92,7 @@ namespace wg
 	 * @return	True if the specified rectangles intersected.
 	 **/
 	 
-	bool WgRect::intersection( const WgRect& _r1, const WgRect& _r2 )
+	bool Rect::intersection( const Rect& _r1, const Rect& _r2 )
 	{
 		int		x1, y1;						// So we can use ourself as inparameter.
 		int		x2, y2;
@@ -148,9 +148,9 @@ namespace wg
 	
 	//TODO: Inconsistency between how Union and Intersection methods work. Both should be members of static.
 	
-	WgRect WgRect::getUnion( const WgRect& r1, const WgRect& r2 )
+	Rect Rect::getUnion( const Rect& r1, const Rect& r2 )
 	{
-		WgRect out;
+		Rect out;
 		out.x = r1.x < r2.x ? r1.x : r2.x;
 		out.y = r1.y < r2.y ? r1.y : r2.y;
 		out.w = r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w;
@@ -176,7 +176,7 @@ namespace wg
 	 * The rectangle is constrained to a minimum width and height of 0.
 	 **/
 	
-	void WgRect::shrink( int top, int right, int bottom, int left )
+	void Rect::shrink( int top, int right, int bottom, int left )
 	{
 		x += left;
 		y += top;
@@ -203,7 +203,7 @@ namespace wg
 	 * The rectangle is constrained to a minimum width and height of 0.
 	 **/
 	
-	void WgRect::shrink(const WgBorder &_borders)
+	void Rect::shrink(const Border &_borders)
 	{
 		x += _borders.left;
 		y += _borders.top;
@@ -232,7 +232,7 @@ namespace wg
 	 * Top and left borders also affects the position of the rectangle.
 	 **/
 	
-	void WgRect::grow(int top, int right, int bottom, int left)
+	void Rect::grow(int top, int right, int bottom, int left)
 	{
 		x -= left;
 		y -= top;
@@ -250,7 +250,7 @@ namespace wg
 	 * Width and height of rectangle is increased by the thickness of the borders.
 	 * Top and left borders also affects the position of the rectangle.
 	 **/
-	void WgRect::grow(const WgBorder &_borders)
+	void Rect::grow(const Border &_borders)
 	{
 		x -= _borders.left;
 		y -= _borders.top;
@@ -270,7 +270,7 @@ namespace wg
 	 * Position of rectangle is affected if coordinate is above or left of coordinate.
 	 **/
 	
-	void WgRect::growToContain( int _x, int _y )
+	void Rect::growToContain( int _x, int _y )
 	{
 		if( _x < x )
 		{
@@ -303,7 +303,7 @@ namespace wg
 	 * Position of rectangle is affected if coordinate is above or left of coordinate.
 	 **/
 	
-	void WgRect::growToContain( const WgCoord& _coord )
+	void Rect::growToContain( const Coord& _coord )
 	{
 		if( _coord.x < x )
 		{
@@ -336,7 +336,7 @@ namespace wg
 	 * Position of our rectangle is affected if parameter rectangle is (partly or fully) above or left of coordinate.
 	 **/
 	
-	void WgRect::growToContain( const WgRect& r )
+	void Rect::growToContain( const Rect& r )
 	{
 		if( r.x < x )
 		{
@@ -362,14 +362,14 @@ namespace wg
 	}
 	
 	
-	WgRectF::WgRectF( const WgRectF& r1, const WgRectF& r2 )
+	RectF::RectF( const RectF& r1, const RectF& r2 )
 	{
 		intersection( r1, r2 );
 	}
 	
 	//____ intersection() ________________________________________________________________
 	
-	bool WgRectF::intersection( const WgRectF& _r1, const WgRectF& _r2 )
+	bool RectF::intersection( const RectF& _r1, const RectF& _r2 )
 	{
 		float	x1, y1;						// So we can use ourself as inparameter.
 		float	x2, y2;

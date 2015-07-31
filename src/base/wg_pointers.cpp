@@ -29,7 +29,7 @@ namespace wg
 	
 	
 	class FreeWeakPtrHub;
-	WgObject_p::WgObject_p( const WgObject_wp& r )
+	Object_p::Object_p( const Object_wp& r )
 	{
 		m_pObj = r.rawPtr();
 		if( m_pObj )
@@ -37,13 +37,13 @@ namespace wg
 	}
 	
 	
-	WgObject_wp::WgObject_wp( WgObject * pObj )
+	Object_wp::Object_wp( Object * pObj )
 	{
 		if( pObj )
 		{
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub = Base::allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -60,15 +60,15 @@ namespace wg
 		}
 	};
 	
-	WgObject_wp::WgObject_wp( const WgObject_p& pObject )
+	Object_wp::Object_wp( const Object_p& pObject )
 	{
-		WgObject * pObj = pObject.rawPtr();
+		Object * pObj = pObject.rawPtr();
 	
 		if( pObj )
 		{
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub = Base::allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -85,7 +85,7 @@ namespace wg
 		}
 	};
 	
-	WgObject_wp::~WgObject_wp()
+	Object_wp::~Object_wp()
 	{
 		if( m_pHub )
 		{
@@ -95,14 +95,14 @@ namespace wg
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				WgBase::freeWeakPtrHub(m_pHub);
+				Base::freeWeakPtrHub(m_pHub);
 			}
 		}
 	}
 	
 	
 	
-	void WgObject_wp::copy( WgObject_wp const & r)
+	void Object_wp::copy( Object_wp const & r)
 	{
 		if( m_pHub != r.m_pHub )
 		{
@@ -114,7 +114,7 @@ namespace wg
 				{
 					if( m_pHub->pObj )
 						m_pHub->pObj->m_pWeakPtrHub = 0;
-					WgBase::freeWeakPtrHub(m_pHub);
+					Base::freeWeakPtrHub(m_pHub);
 				}
 			}
 	
@@ -125,7 +125,7 @@ namespace wg
 	}
 	
 	
-	WgInterface_wp::WgInterface_wp( WgObject * pObj, WgInterface * pInterface )
+	Interface_wp::Interface_wp( Object * pObj, Interface * pInterface )
 	{
 		if( pObj && pInterface )
 		{
@@ -133,7 +133,7 @@ namespace wg
 	
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub = Base::allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -152,7 +152,7 @@ namespace wg
 	};
 	
 	
-	WgInterface_wp::~WgInterface_wp()
+	Interface_wp::~Interface_wp()
 	{
 		if( m_pHub )
 		{
@@ -162,14 +162,14 @@ namespace wg
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				WgBase::freeWeakPtrHub(m_pHub);
+				Base::freeWeakPtrHub(m_pHub);
 			}
 		}
 	}
 	
 	
 	
-	void WgInterface_wp::copy( WgInterface_wp const & r)
+	void Interface_wp::copy( Interface_wp const & r)
 	{
 		m_pInterface = r.m_pInterface;
 	
@@ -183,7 +183,7 @@ namespace wg
 				{
 					if( m_pHub->pObj )
 						m_pHub->pObj->m_pWeakPtrHub = 0;
-					WgBase::freeWeakPtrHub(m_pHub);
+					Base::freeWeakPtrHub(m_pHub);
 				}
 			}
 	

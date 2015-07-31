@@ -35,12 +35,12 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgTextprop::WgTextprop()
+	Textprop::Textprop()
 	{
 		clearAll();
 	}
 	
-	WgTextprop::WgTextprop( const WgTextprop_p& pProp )
+	Textprop::Textprop( const Textprop_p& pProp )
 	{
 		m_pLink				= pProp->m_pLink;
 		m_pFont				= pProp->m_pFont;
@@ -62,14 +62,14 @@ namespace wg
 	
 	//____ reg() _____________________________________________________________
 	
-	WgTextprop_p WgTextprop::reg() const
+	Textprop_p Textprop::reg() const
 	{
-		return	WgTextprop_p(WgTextpropManager::registerProp(*this));
+		return	Textprop_p(TextpropManager::registerProp(*this));
 	}
 	
 	//____ clearAll() _____________________________________________________________
 	
-	void WgTextprop::clearAll()
+	void Textprop::clearAll()
 	{
 		m_visibilityFlags = 0;
 		m_pFont = 0;
@@ -94,7 +94,7 @@ namespace wg
 	
 	//____ setColor() _____________________________________________________________
 	
-	void WgTextprop::setColor( WgColor col )
+	void Textprop::setColor( Color col )
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -103,7 +103,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextprop::setColor( WgColor col, WgState state )
+	void Textprop::setColor( Color col, State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bColored	= true;
@@ -113,7 +113,7 @@ namespace wg
 	
 	//____ setBgColor() ___________________________________________________________
 	
-	void WgTextprop::setBgColor( WgColor col )
+	void Textprop::setBgColor( Color col )
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -122,7 +122,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextprop::setBgColor( WgColor col, WgState state )
+	void Textprop::setBgColor( Color col, State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bBgColor	= true;
@@ -133,7 +133,7 @@ namespace wg
 	
 	//____ setStyle() _____________________________________________________________
 	
-	void WgTextprop::setStyle( WgFontAlt style )
+	void Textprop::setStyle( FontAlt style )
 	{
 		assert( style<WG_NB_FONTSTYLES );
 	
@@ -141,7 +141,7 @@ namespace wg
 			m_stateProp[i].m_style = style;
 	}
 	
-	void WgTextprop::setStyle( WgFontAlt style, WgState state )
+	void Textprop::setStyle( FontAlt style, State state )
 	{
 		assert( style<WG_NB_FONTSTYLES );
 	
@@ -151,7 +151,7 @@ namespace wg
 	
 	//____ setSize() ______________________________________________________________
 	
-	void WgTextprop::setSize( int size )
+	void Textprop::setSize( int size )
 	{
 		assert( size >= 0 && size < 2048 );
 	
@@ -159,7 +159,7 @@ namespace wg
 			m_stateProp[i].m_size = size;
 	}
 	
-	void WgTextprop::setSize( int size, WgState state )
+	void Textprop::setSize( int size, State state )
 	{
 		assert( size >= 0 && size < 2048 );
 	
@@ -170,13 +170,13 @@ namespace wg
 	
 	//____ setUnderlined() ________________________________________________________
 	
-	void WgTextprop::setUnderlined()
+	void Textprop::setUnderlined()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			m_stateProp[i].m_bUnderlined	= true;
 	}
 	
-	void WgTextprop::setUnderlined( WgState state )
+	void Textprop::setUnderlined( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bUnderlined = true;
@@ -184,7 +184,7 @@ namespace wg
 	
 	//____ clearColor() _____________________________________________________________
 	
-	void WgTextprop::clearColor()
+	void Textprop::clearColor()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -193,7 +193,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextprop::clearColor( WgState state )
+	void Textprop::clearColor( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bColored	= false;
@@ -202,7 +202,7 @@ namespace wg
 	
 	//____ clearBgColor() _________________________________________________________
 	
-	void WgTextprop::clearBgColor()
+	void Textprop::clearBgColor()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -211,7 +211,7 @@ namespace wg
 		}
 	}
 	
-	void WgTextprop::clearBgColor( WgState state )
+	void Textprop::clearBgColor( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bBgColor	= false;
@@ -221,13 +221,13 @@ namespace wg
 	
 	//____ clearStyle() _____________________________________________________________
 	
-	void WgTextprop::clearStyle()
+	void Textprop::clearStyle()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			m_stateProp[i].m_style = WG_FONT_NORMAL;
 	}
 	
-	void WgTextprop::clearStyle( WgState state )
+	void Textprop::clearStyle( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_style = WG_FONT_NORMAL;
@@ -236,13 +236,13 @@ namespace wg
 	
 	//____ clearSize() ______________________________________________________________
 	
-	void WgTextprop::clearSize()
+	void Textprop::clearSize()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			m_stateProp[i].m_size = 0;
 	}
 	
-	void WgTextprop::clearSize( WgState state )
+	void Textprop::clearSize( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_size = 0;
@@ -251,13 +251,13 @@ namespace wg
 	
 	//____ clearUnderlined() ________________________________________________________
 	
-	void WgTextprop::clearUnderlined()
+	void Textprop::clearUnderlined()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			m_stateProp[i].m_bUnderlined = false;
 	}
 	
-	void WgTextprop::clearUnderlined( WgState state )
+	void Textprop::clearUnderlined( State state )
 	{
 		int i = _stateToIndex(state);
 		m_stateProp[i].m_bUnderlined = false;
@@ -266,7 +266,7 @@ namespace wg
 	
 	//____ isColorStatic() _________________________________________________________
 	
-	bool WgTextprop::isColorStatic() const
+	bool Textprop::isColorStatic() const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[0].m_bColored != m_stateProp[i].m_bColored || m_stateProp[0].m_color != m_stateProp[i].m_color )
@@ -277,7 +277,7 @@ namespace wg
 	
 	//____ isBgColorStatic() _______________________________________________________
 	
-	bool WgTextprop::isBgColorStatic() const
+	bool Textprop::isBgColorStatic() const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[0].m_bBgColor != m_stateProp[i].m_bBgColor || m_stateProp[0].m_bgColor != m_stateProp[i].m_bgColor )
@@ -289,7 +289,7 @@ namespace wg
 	
 	//____ isStyleStatic() _________________________________________________________
 	
-	bool WgTextprop::isStyleStatic() const
+	bool Textprop::isStyleStatic() const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[0].m_style != m_stateProp[i].m_style )
@@ -300,7 +300,7 @@ namespace wg
 	
 	//____ isSizeStatic() __________________________________________________________
 	
-	bool WgTextprop::isSizeStatic() const
+	bool Textprop::isSizeStatic() const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[0].m_size != m_stateProp[i].m_size )
@@ -312,7 +312,7 @@ namespace wg
 	
 	//____ isUnderlineStatic() _____________________________________________________
 	
-	bool WgTextprop::isUnderlineStatic() const
+	bool Textprop::isUnderlineStatic() const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[0].m_bUnderlined != m_stateProp[i].m_bUnderlined )
@@ -323,7 +323,7 @@ namespace wg
 	
 	//____ compareColorTo() ________________________________________________________
 	
-	bool WgTextprop::compareColorTo( const WgTextprop_p& pProp ) const
+	bool Textprop::compareColorTo( const Textprop_p& pProp ) const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[i].m_bColored != pProp->m_stateProp[i].m_bColored || m_stateProp[i].m_color != pProp->m_stateProp[i].m_color )
@@ -334,7 +334,7 @@ namespace wg
 	
 	//____ compareBgColorTo() ______________________________________________________
 	
-	bool WgTextprop::compareBgColorTo( const WgTextprop_p& pProp ) const
+	bool Textprop::compareBgColorTo( const Textprop_p& pProp ) const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[i].m_bBgColor != pProp->m_stateProp[i].m_bBgColor || m_stateProp[i].m_bgColor != pProp->m_stateProp[i].m_bgColor )
@@ -346,7 +346,7 @@ namespace wg
 	
 	//____ compareStyleTo() ________________________________________________________
 	
-	bool WgTextprop::compareStyleTo( const WgTextprop_p& pProp ) const
+	bool Textprop::compareStyleTo( const Textprop_p& pProp ) const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[i].m_style != pProp->m_stateProp[i].m_style )
@@ -357,7 +357,7 @@ namespace wg
 	
 	//____ compareSizeTo() _________________________________________________________
 	
-	bool WgTextprop::compareSizeTo( const WgTextprop_p& pProp ) const
+	bool Textprop::compareSizeTo( const Textprop_p& pProp ) const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[i].m_size != pProp->m_stateProp[i].m_size )
@@ -368,7 +368,7 @@ namespace wg
 	
 	
 	//____ compareUnderlineTo() ____________________________________________________
-	bool WgTextprop::compareUnderlineTo( const WgTextprop_p& pProp ) const
+	bool Textprop::compareUnderlineTo( const Textprop_p& pProp ) const
 	{
 		for( int i = 1 ; i < WG_NB_STATES ; i++ )
 			if( m_stateProp[i].m_bUnderlined != pProp->m_stateProp[i].m_bUnderlined )
@@ -380,14 +380,14 @@ namespace wg
 	
 	//____ _calculateChecksum() ____________________________________________________
 	
-	Uint8 WgTextprop::_calculateChecksum() const
+	Uint8 Textprop::_calculateChecksum() const
 	{
 		WgUtil::Checksum8	chk;
 	
 		chk.add8( m_visibilityFlags );
 		chk.add8( m_breakLevel );
-		chk.add( &m_pLink, sizeof(WgTextLink_p) );
-		chk.add( &m_pFont, sizeof(WgFont_p) );
+		chk.add( &m_pLink, sizeof(TextLink_p) );
+		chk.add( &m_pFont, sizeof(Font_p) );
 	
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -405,7 +405,7 @@ namespace wg
 	
 	//____ _compareTo() ____________________________________________________________
 	
-	bool WgTextprop::_compareTo( const WgTextprop * pProp ) const
+	bool Textprop::_compareTo( const Textprop * pProp ) const
 	{
 		if( m_pFont != pProp->m_pFont || m_pLink != pProp->m_pLink ||
 			m_visibilityFlags != pProp->m_visibilityFlags ||
@@ -429,7 +429,7 @@ namespace wg
 	
 	//____ setCharVisibility() ____________________________________________________
 	
-	bool WgTextprop::setCharVisibility( Uint16 specialCharacter, bool bVisible )
+	bool Textprop::setCharVisibility( Uint16 specialCharacter, bool bVisible )
 	{
 		switch( specialCharacter )
 		{
@@ -458,7 +458,7 @@ namespace wg
 	
 	//____ charVisibility() ________________________________________________________
 	
-	bool WgTextprop::charVisibility( Uint16 specialCharacter ) const
+	bool Textprop::charVisibility( Uint16 specialCharacter ) const
 	{
 		switch( specialCharacter )
 		{
@@ -480,83 +480,83 @@ namespace wg
 	}
 	
 	//=============================================================================
-	//							>>> WgTextprop_p <<<
+	//							>>> Textprop_p <<<
 	//=============================================================================
 	
 	//____ Constructor ____________________________________________________________
 	
-	WgTextprop_p::WgTextprop_p( WgTextpropHolder * pProp )
+	Textprop_p::Textprop_p( TextpropHolder * pProp )
 	{
 		if( pProp )
 			m_hProp = pProp->m_id;
 		else
 			m_hProp = 0;
 	
-		WgTextpropManager::incRef(m_hProp, 1);
+		TextpropManager::incRef(m_hProp, 1);
 	}
 	
-	WgTextprop_p::WgTextprop_p( Uint16 hProp )
+	Textprop_p::Textprop_p( Uint16 hProp )
 	{
 		m_hProp = hProp;
-		WgTextpropManager::incRef(m_hProp);
+		TextpropManager::incRef(m_hProp);
 	}
 	
 	
-	WgTextprop_p::WgTextprop_p(const WgTextprop_p& r)
+	Textprop_p::Textprop_p(const Textprop_p& r)
 	{
 		m_hProp = r.m_hProp;
-		WgTextpropManager::incRef(m_hProp);
+		TextpropManager::incRef(m_hProp);
 	}
 	
 	
 	//____ Destructor _____________________________________________________________
 	
-	WgTextprop_p::~WgTextprop_p()
+	Textprop_p::~Textprop_p()
 	{
-		WgTextpropManager::decRef(m_hProp, 1);
+		TextpropManager::decRef(m_hProp, 1);
 	}
 	
 	
 	//____ operator= ______________________________________________________________
 	
-	WgTextprop_p& WgTextprop_p::operator=(const WgTextprop_p& ref)
+	Textprop_p& Textprop_p::operator=(const Textprop_p& ref)
 	{
 		if(m_hProp != ref.m_hProp)
 		{
-			WgTextpropManager::decRef(m_hProp);
+			TextpropManager::decRef(m_hProp);
 			m_hProp = ref.m_hProp;
-			WgTextpropManager::incRef(m_hProp);
+			TextpropManager::incRef(m_hProp);
 		}
 		return *this;
 	}
 	
-	WgTextprop_p& WgTextprop_p::operator=(int handle)
+	Textprop_p& Textprop_p::operator=(int handle)
 	{
 		if(m_hProp != handle)
 		{
-			WgTextpropManager::decRef(m_hProp);
+			TextpropManager::decRef(m_hProp);
 			m_hProp = handle;
-			WgTextpropManager::incRef(m_hProp);
+			TextpropManager::incRef(m_hProp);
 		}
 		return *this;
 	}
 	
 	//____ operator* ______________________________________________________________
 	
-	const WgTextprop & WgTextprop_p::operator*() const
+	const Textprop & Textprop_p::operator*() const
 	{
-		return WgTextpropManager::getProp(m_hProp);
+		return TextpropManager::getProp(m_hProp);
 	}
 	
 	//____ operator-> _____________________________________________________________
 	
-	const WgTextprop * WgTextprop_p::operator->() const
+	const Textprop * Textprop_p::operator->() const
 	{
-		return WgTextpropManager::getPropPtr(m_hProp);
+		return TextpropManager::getPropPtr(m_hProp);
 	}
 	
 	//_____________________________________________________________________________
-	void WgTextprop::assertIntegrity() const
+	void Textprop::assertIntegrity() const
 	{
 		for( int i = 0; i<WG_NB_STATES; i++ )
 			assert( m_stateProp[i].m_style<WG_NB_FONTSTYLES );
@@ -564,7 +564,7 @@ namespace wg
 	
 	//_____________________________________________________________________________
 	
-	bool WgTextprop::isEqual(WgState state0, WgState state1) const
+	bool Textprop::isEqual(State state0, State state1) const
 	{
 		return	m_stateProp[state0].m_bColored == m_stateProp[state1].m_bColored &&
 				m_stateProp[state0].m_bBgColor == m_stateProp[state1].m_bBgColor &&

@@ -30,53 +30,53 @@
 namespace wg 
 {
 	
-	const char WgStandardPresenter::CLASSNAME[] = {"StandardPresenter"};
+	const char StandardPresenter::CLASSNAME[] = {"StandardPresenter"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgStandardPresenter::WgStandardPresenter() : m_alignment(WG_NORTHWEST)
+	StandardPresenter::StandardPresenter() : m_alignment(WG_NORTHWEST)
 	{
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgStandardPresenter::~WgStandardPresenter()
+	StandardPresenter::~StandardPresenter()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgStandardPresenter::isInstanceOf( const char * pClassName ) const
+	bool StandardPresenter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgTextPresenter::isInstanceOf(pClassName);
+		return TextPresenter::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgStandardPresenter::className( void ) const
+	const char * StandardPresenter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgStandardPresenter_p WgStandardPresenter::cast( const WgObject_p& pObject )
+	StandardPresenter_p StandardPresenter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgStandardPresenter_p( static_cast<WgStandardPresenter*>(pObject.rawPtr()) );
+			return StandardPresenter_p( static_cast<StandardPresenter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ addField() _________________________________________________________
 	
-	void WgStandardPresenter::addField( WgPresentableField * pField )
+	void StandardPresenter::addField( PresentableField * pField )
 	{
-		WgCharBuffer * pBuffer = _charBuffer(pField);
+		CharBuffer * pBuffer = _charBuffer(pField);
 		int nLines = _countLines( pBuffer );
 	
 		_setFieldDataBlock(pField,0);					// Make sure pointer is null for the realloc call.
@@ -88,7 +88,7 @@ namespace wg
 	
 	//____ removeField() _________________________________________________________
 	
-	void WgStandardPresenter::removeField( WgPresentableField * pField )
+	void StandardPresenter::removeField( PresentableField * pField )
 	{
 		free( _fieldDataBlock(pField) );
 		_setFieldDataBlock(pField, 0);
@@ -96,7 +96,7 @@ namespace wg
 	
 	//____ setAlignment() __________________________________________________________
 	
-	void WgStandardPresenter::setAlignment( WgOrigo alignment )
+	void StandardPresenter::setAlignment( WgOrigo alignment )
 	{
 		if( alignment != m_alignment )
 		{
@@ -107,46 +107,46 @@ namespace wg
 	}
 	
 	
-	int WgStandardPresenter::coordToChar( const WgPresentableField * pField, WgCoord pos )
+	int StandardPresenter::coordToChar( const PresentableField * pField, Coord pos )
 	{
 	}
 	
-	WgRect WgStandardPresenter::charToRect( const WgPresentableField * pField, int charOfs )
+	Rect StandardPresenter::charToRect( const PresentableField * pField, int charOfs )
 	{
 	}
 	
-	int WgStandardPresenter::coordToCaretPos( WgPresentableField * pField, WgCoord pos )
+	int StandardPresenter::coordToCaretPos( PresentableField * pField, Coord pos )
 	{
 	}
 	
-	void WgStandardPresenter::renderField( WgPresentableField * pField, WgGfxDevice * pDevice, const WgRect& canvas, const WgRect& clip )
+	void StandardPresenter::renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
 	{
 		void * pBlock = _fieldDataBlock(pField);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
-		const WgChar * pCharArray = _charBuffer(pField)->chars();
+		const Char * pCharArray = _charBuffer(pField)->chars();
 		
-		WgCoord lineStart = canvas.pos();
+		Coord lineStart = canvas.pos();
 		lineStart.y += _textOfsY( pHeader, canvas.h );
 	
-		WgTextAttr2		baseAttr;
+		TextAttr2		baseAttr;
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
 	
-		WgTextAttr2		attr = baseAttr;
-		WgFont_p pFont = attr.pFont;
-		WgGlyphset_p pGlyphSet = pFont->getGlyphset( WG_FONT_NORMAL, attr.size);
+		TextAttr2		attr = baseAttr;
+		Font_p pFont = attr.pFont;
+		Glyphset_p pGlyphSet = pFont->getGlyphset( WG_FONT_NORMAL, attr.size);
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
 			{		
 				lineStart.x = canvas.x + _lineOfsX( pLineInfo, canvas.w );
-				const WgChar * pChars = pCharArray + pLineInfo->offset;
+				const Char * pChars = pCharArray + pLineInfo->offset;
 	
-				WgGlyph_p	pGlyph;
-				WgGlyph_p	pPrevGlyph;
+				Glyph_p	pGlyph;
+				Glyph_p	pPrevGlyph;
 				
-				WgCoord pos = lineStart;
+				Coord pos = lineStart;
 				pos.y += pLineInfo->base;
 				
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
@@ -158,7 +158,7 @@ namespace wg
 	
 					if( pGlyph )
 					{
-						const WgGlyphBitmap * pBitmap = pGlyph->getBitmap();
+						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
 						pDevice->clipBlit( clip, pBitmap->pSurface, pBitmap->rect, pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY  );
 	
 						pos.x += pGlyph->advance();
@@ -180,29 +180,29 @@ namespace wg
 	}
 	
 	
-	void WgStandardPresenter::onTextModified( WgPresentableField * pField, int ofs, int charsRemoved, int charsAdded )
+	void StandardPresenter::onTextModified( PresentableField * pField, int ofs, int charsRemoved, int charsAdded )
 	{
 		onRefresh(pField);
 	}
 	
-	void WgStandardPresenter::onFieldResize( WgPresentableField * pField, WgSize newSize )
+	void StandardPresenter::onFieldResize( PresentableField * pField, Size newSize )
 	{
 		// Do nothing?
 	}
 	
-	void WgStandardPresenter::onStateChange( WgPresentableField * pField, WgState newState, WgState oldState )
+	void StandardPresenter::onStateChange( PresentableField * pField, State newState, State oldState )
 	{
 	}
 	
-	void WgStandardPresenter::onStyleChange( WgPresentableField * pField )
+	void StandardPresenter::onStyleChange( PresentableField * pField )
 	{
 	}
 	
 	
 	
-	void WgStandardPresenter::onRefresh( WgPresentableField * pField )
+	void StandardPresenter::onRefresh( PresentableField * pField )
 	{
-		WgCharBuffer * pBuffer = _charBuffer(pField);
+		CharBuffer * pBuffer = _charBuffer(pField);
 		int nLines = _countLines( pBuffer );
 	
 		void * pBlock = _fieldDataBlock(pField);
@@ -213,50 +213,50 @@ namespace wg
 		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 	}
 	
-	int WgStandardPresenter::moveCaret( WgPresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
+	int StandardPresenter::moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
 	{
 	}
 	
-	WgRect WgStandardPresenter::rectForRange( const WgPresentableField * pField, int ofs, int length ) const
+	Rect StandardPresenter::rectForRange( const PresentableField * pField, int ofs, int length ) const
 	{
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	WgString WgStandardPresenter::tooltip( const WgPresentableField * pField ) const
+	String StandardPresenter::tooltip( const PresentableField * pField ) const
 	{
 		//TODO: Return the text if it overflows the field.
 		
-		return WgString();
+		return String();
 	}
 	
 	
 	//____ preferredSize() _________________________________________________________
 	
-	WgSize WgStandardPresenter::preferredSize( const WgPresentableField * pField ) const
+	Size StandardPresenter::preferredSize( const PresentableField * pField ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize;
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int WgStandardPresenter::matchingWidth( const WgPresentableField * pField, int height ) const
+	int StandardPresenter::matchingWidth( const PresentableField * pField, int height ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int WgStandardPresenter::matchingHeight( const WgPresentableField * pField, int width ) const
+	int StandardPresenter::matchingHeight( const PresentableField * pField, int width ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize.h;
 	}
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int WgStandardPresenter::_countLines( const WgCharBuffer * pBuffer )
+	int StandardPresenter::_countLines( const CharBuffer * pBuffer )
 	{
-		const WgChar * pChars = pBuffer->chars();
+		const Char * pChars = pBuffer->chars();
 		int lines = 0;
 		while( true )
 		{
@@ -272,7 +272,7 @@ namespace wg
 	
 	//____ _reallocBlock() _________________________________________________________
 	
-	void * WgStandardPresenter::_reallocBlock( WgPresentableField* pField, int nLines )
+	void * StandardPresenter::_reallocBlock( PresentableField* pField, int nLines )
 	{
 		void * pBlock = _fieldDataBlock(pField);
 		if( pBlock )
@@ -288,18 +288,18 @@ namespace wg
 	
 	//____ _updateLineInfo() _______________________________________________________
 	
-	void WgStandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const WgCharBuffer * pBuffer, const WgTextStyle * pBaseStyle,
-												WgState state )
+	void StandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+												State state )
 	{
-		const WgChar * pChars = pBuffer->chars();
+		const Char * pChars = pBuffer->chars();
 	
-		WgTextAttr2		baseAttr;
+		TextAttr2		baseAttr;
 		pBaseStyle->exportAttr( state, &baseAttr );
 	
 	
-		WgTextAttr2		attr = baseAttr;
-		WgFont_p pFont = attr.pFont;
-		WgGlyphset_p pGlyphSet = pFont->getGlyphset(WG_FONT_NORMAL, attr.size);
+		TextAttr2		attr = baseAttr;
+		Font_p pFont = attr.pFont;
+		Glyphset_p pGlyphSet = pFont->getGlyphset(WG_FONT_NORMAL, attr.size);
 	
 		
 		
@@ -312,8 +312,8 @@ namespace wg
 			int spacing = pGlyphSet->getLineSpacing(attr.size);
 			int base = pGlyphSet->getBaseline(attr.size);
 	
-			WgGlyph_p	pGlyph;
-			WgGlyph_p	pPrevGlyph;
+			Glyph_p	pGlyph;
+			Glyph_p	pPrevGlyph;
 	
 			while( !pChars->isEndOfLine() )
 			{
@@ -352,9 +352,9 @@ namespace wg
 		
 	//____ _updatePreferredSize() __________________________________________________	
 		
-	bool WgStandardPresenter::_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines )
+	bool StandardPresenter::_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines )
 	{	
-		WgSize size;
+		Size size;
 		
 		int i;
 		for( i = 0 ; i < pHeader->nbLines-1 ; i++ )
@@ -379,7 +379,7 @@ namespace wg
 	
 	//____ _lineOfsX() _______________________________________________________________
 	
-	int WgStandardPresenter::_lineOfsX( LineInfo * pLine, int fieldWidth ) const
+	int StandardPresenter::_lineOfsX( LineInfo * pLine, int fieldWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -401,7 +401,7 @@ namespace wg
 	
 	//____ _textOfsY() _____________________________________________________________
 	
-	int	WgStandardPresenter::_textOfsY( BlockHeader * pHeader, int fieldHeight ) const
+	int	StandardPresenter::_textOfsY( BlockHeader * pHeader, int fieldHeight ) const
 	{
 		switch( m_alignment )
 		{

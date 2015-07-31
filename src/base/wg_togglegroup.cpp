@@ -25,12 +25,12 @@
 namespace wg 
 {
 	
-	const char WgToggleGroup::CLASSNAME[] = {"ToggleGroup"};
+	const char ToggleGroup::CLASSNAME[] = {"ToggleGroup"};
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	WgToggleGroup::WgToggleGroup()
+	ToggleGroup::ToggleGroup()
 	{
 		m_bRequireSelected = true;
 		m_pSelected = 0;
@@ -38,34 +38,34 @@ namespace wg
 	
 	//____ Destructor ______________________________________________________________
 	
-	WgToggleGroup::~WgToggleGroup()
+	ToggleGroup::~ToggleGroup()
 	{
 		for( int i = 0 ; i < m_entries.size() ; i++ )
 			m_entries[i]->_setToggleGroup(0);}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool WgToggleGroup::isInstanceOf( const char * pClassName ) const
+	bool ToggleGroup::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return WgObject::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * WgToggleGroup::className( void ) const
+	const char * ToggleGroup::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	WgToggleGroup_p WgToggleGroup::cast( const WgObject_p& pObject )
+	ToggleGroup_p ToggleGroup::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WgToggleGroup_p( static_cast<WgToggleGroup*>(pObject.rawPtr()) );
+			return ToggleGroup_p( static_cast<ToggleGroup*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
@@ -89,7 +89,7 @@ namespace wg
 	 *
 	 **/
 	
-	void WgToggleGroup::setRequireSelected(bool bRequire)
+	void ToggleGroup::setRequireSelected(bool bRequire)
 	{
 		m_bRequireSelected = bRequire;
 		
@@ -99,7 +99,7 @@ namespace wg
 	
 	//____ add() ___________________________________________________________________
 	/**
-	 * Add specified WgToggleButton to this group, making it behave like a RadioButton
+	 * Add specified ToggleButton to this group, making it behave like a RadioButton
 	 * against the rest of the members of this group.
 	 *
 	 * @pToggleButton	ToggleButton to be added to this ToggleGroup.
@@ -115,9 +115,9 @@ namespace wg
 	 *
 	 **/
 	
-	void WgToggleGroup::add( const WgToggleButton_p& pToggleButton )
+	void ToggleGroup::add( const ToggleButton_p& pToggleButton )
 	{
-		WgToggleButton * p = pToggleButton.rawPtr();
+		ToggleButton * p = pToggleButton.rawPtr();
 		if( p )
 		{
 			if( p->isSelected() )
@@ -149,7 +149,7 @@ namespace wg
 	 **/
 	
 	
-	bool WgToggleGroup::remove( const WgToggleButton_p& pToggleButton )
+	bool ToggleGroup::remove( const ToggleButton_p& pToggleButton )
 	{
 		if( pToggleButton && pToggleButton->_toggleGroup() == this )
 		{
@@ -169,7 +169,7 @@ namespace wg
 	 *
 	 **/
 	
-	void WgToggleGroup::clear()
+	void ToggleGroup::clear()
 	{
 		for( int i = 0 ; i < m_entries.size() ; i++ )
 			m_entries[i]->_setToggleGroup(0);
@@ -188,12 +188,12 @@ namespace wg
 	 * @return Pointer to member at index or null if index was out of bounds.
 	 **/
 	
-	WgToggleButton_p WgToggleGroup::get( int index )
+	ToggleButton_p ToggleGroup::get( int index )
 	{
 		if( index >= 0 && index < m_entries.size() )
-			return WgToggleButton_p(m_entries[index]);
+			return ToggleButton_p(m_entries[index]);
 	
-		return WgToggleButton_p();
+		return ToggleButton_p();
 	}
 	
 	//____ size() __________________________________________________________________
@@ -203,7 +203,7 @@ namespace wg
 	 * @return Number of members in this ToggleGroup.
 	 **/
 	
-	int WgToggleGroup::size() const
+	int ToggleGroup::size() const
 	{
 		return m_entries.size();
 	}
@@ -216,16 +216,16 @@ namespace wg
 	 *
 	 **/
 	
-	WgToggleButton_p WgToggleGroup::selected() const
+	ToggleButton_p ToggleGroup::selected() const
 	{
-		return WgToggleButton_p(m_pSelected);
+		return ToggleButton_p(m_pSelected);
 	}
 	
 	//____ _remove() _______________________________________________________________
 	
-	void WgToggleGroup::_remove( WgToggleButton * pButton )
+	void ToggleGroup::_remove( ToggleButton * pButton )
 	{
-		for( std::vector<WgToggleButton*>::iterator it = m_entries.begin() ; it != m_entries.end() ; ++it )
+		for( std::vector<ToggleButton*>::iterator it = m_entries.begin() ; it != m_entries.end() ; ++it )
 		{
 			if( * it == pButton )
 			{
@@ -244,9 +244,9 @@ namespace wg
 	
 	//____ _select() _______________________________________________________________
 	
-	void WgToggleGroup::_select( WgToggleButton * pButton )
+	void ToggleGroup::_select( ToggleButton * pButton )
 	{
-		WgToggleButton * pOldSelected = m_pSelected;
+		ToggleButton * pOldSelected = m_pSelected;
 	
 		m_pSelected = pButton;
 		
@@ -257,7 +257,7 @@ namespace wg
 	
 	//____ _unselect() _____________________________________________________________
 	
-	bool WgToggleGroup::_unselect( WgToggleButton * pButton )
+	bool ToggleGroup::_unselect( ToggleButton * pButton )
 	{
 		if( pButton ==  m_pSelected )
 		{

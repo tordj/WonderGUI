@@ -33,7 +33,7 @@ namespace wg
 		Static class containing code pages for tanslating 8-bit characters from various
 		encodings to unicode.
 		
-		These code pages are used by WgCharSeq8, which provides a convenient way of reading
+		These code pages are used by CharSeq8, which provides a convenient way of reading
 		text in various legacy encodings, but can also be accessed directly.
 	
 		The code pages are simply static arrays of 256 16-bit entries each, where each
@@ -41,7 +41,7 @@ namespace wg
 		to the array index.
 	**/
 	
-	class WgCodePages
+	class CodePages
 	{
 	public:
 		static inline Uint16* getCodePage( WgCodePage codePage ) { return LookupTable[codePage]; }
