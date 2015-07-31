@@ -236,7 +236,7 @@ void printWidgetSizes()
 
 int sortWidgetId( const WgWidget * p1, const WgWidget * p2 )
 {
-	return p1->Id() - p2->Id();
+	return p1->id() - p2->id();
 }
 
 
@@ -357,13 +357,13 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 //		pVBox->addWidget( pValue );
 
 //		WgScrollbar * pScrollbar = (WgScrollbar*) pDB->cloneWidget( "hscrollbar" );
-//		pScrollbar->SetScrollbarTarget(pValue);
+//		pScrollbar->setScrollbarTarget(pValue);
 //		pVBox->addWidget( pScrollbar );
 
 		addResizablePanel( pFlex, pStack, pEventHandler );
 
 //		pValue->setValue( 100 );
-//		pValue->GrabFocus();
+//		pValue->grabFocus();
 	}
 */
 /*
@@ -406,7 +406,7 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 			pLabel->text()->set( str );
 			pLabel->text()->setAlignment(WG_CENTER);
 			pLabel->text()->setWrap(true);
-			pLabel->SetMarkOpacity(0);
+			pLabel->setMarkOpacity(0);
 			pLabel->setId(id);
 /*			pEntry->addWidget(pLabel);
 			
@@ -477,7 +477,7 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 		pFlex->addWidget(pMenu);
 
 //		addResizablePanel( pFlex, pMenu, pEventHandler );
-		pMenu->GrabFocus();
+		pMenu->grabFocus();
 
 //		pMenuPanel->OpenMenu( pMenu, WgRect(10,10,100,10), WG_SOUTHWEST );
 
@@ -493,13 +493,13 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 		pFileMenu->addItem( new WgMenuEntry( WgString("Save"), WgString("Save the file"), WgBlocksetPtr(), 0 ));
 		pFileMenu->addItem( new WgMenuSeparator() );
 		pFileMenu->addItem( new WgMenuEntry( WgString("Quit"), WgString("Quit this program"), WgBlocksetPtr(), 0 ));
-		pMenubar->AddMenu( "FILE", pFileMenu );
+		pMenubar->addMenu( "FILE", pFileMenu );
 	
 		WgMenu * pHelpMenu = (WgMenu*) pDB->cloneWidget( "menu" );
 		pHelpMenu->addItem( new WgMenuEntry( WgString("Help"), WgString("Get some help"), WgBlocksetPtr(), 0 ));
 		pHelpMenu->addItem( new WgMenuSeparator() );
 		pHelpMenu->addItem( new WgMenuEntry( WgString("About"), WgString("About this program"), WgBlocksetPtr(), 0 ));
-		pMenubar->AddMenu( "HELP", pHelpMenu );
+		pMenubar->addMenu( "HELP", pHelpMenu );
 
 		addResizablePanel( pFlex, pMenubar, pEventHandler );
 	}
@@ -517,12 +517,12 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 		pOsc->SetBackground( WgColorSkin::create( WgColor(0,0,96) ) );
 
 		float grid[] = {-1.f,-0.5f,0.f,0.5f,1.f};
-		pOsc->SetHGridLines( 5, grid );
-		pOsc->SetVGridLines( 5, grid );
-		pOsc->SetGridColor( WgColor(64,64,64) );
+		pOsc->setHGridLines( 5, grid );
+		pOsc->setVGridLines( 5, grid );
+		pOsc->setGridColor( WgColor(64,64,64) );
 
 		pOsc->SetMarkerGfx( pMarkerBlock );
-		pOsc->AddMarker( 30, 0.f );
+		pOsc->addMarker( 30, 0.f );
 
 
 		float points[256];
@@ -532,7 +532,7 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 			points[i] = (float) sin(i/25.f)*0.90f;
 		}
 
-		pOsc->SetLinePoints(256,points);
+		pOsc->setLinePoints(256,points);
 
 
 		addResizablePanel( pFlex, pOsc, pEventHandler );
@@ -546,7 +546,7 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 		WgMenu * pComboMenu = (WgMenu*) pDB->cloneWidget( "menu" );
 		pComboMenu->addItem( new WgMenuEntry( 1, WgString("Alfa"), WgString("First"), WgBlocksetPtr(), 0 ) );
 		pComboMenu->addItem( new WgMenuEntry( 2, WgString("Beta"), WgString("Second"), WgBlocksetPtr(), 0 ) );
-		pCombobox->SetMenu( pComboMenu );
+		pCombobox->setMenu( pComboMenu );
 
 		addResizablePanel( pFlex, pCombobox, pEventHandler );
 
@@ -575,13 +575,13 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 /*
 	{
 		WgFiller * pCovered = new WgFiller();
-		pCovered->SetColors( WgColorset::create( WgColor::aliceblue ) );
+		pCovered->setColors( WgColorset::create( WgColor::aliceblue ) );
 		pFlex->addWidget( pCovered, WgRect( 10,10,20,20 ) );
 
 		g_pCovered = pCovered;
 
 		WgFiller * pCovering = new WgFiller();
-		pCovering->SetColors( WgColorset::create( WgColor::wheat ) );
+		pCovering->setColors( WgColorset::create( WgColor::wheat ) );
 		WgFlexHook * pHook = pFlex->addWidget( pCovering, WgRect( 0,0,50,50 ) );
 		pHook->setVisible(false);
 	}
@@ -661,7 +661,7 @@ WgRootPanel_p setupGUI( const WgGfxDevice_p& pDevice )
 //	pText2->setEditMode(WG_TEXT_EDITABLE);
 //	pVBox->addWidget(pText2);
 
-//	pText1->GrabFocus();
+//	pText1->grabFocus();
 
 	// Radiobuttons test
 
@@ -814,7 +814,7 @@ void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const WgObject_p& _pWidg
 	padding.top++;
 	padding.left++;
 	pSkin->setContentPadding(padding);
-	pWidget->Refresh();
+	pWidget->refresh();
 
 //	WgList_p pList = WgList::cast(pWidget);
 //	pList->setEntrySkin(pSkin);

@@ -34,10 +34,10 @@ namespace wg
 		
 		//____ Methods __________________________________________
 		
-		void			AddLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset );
+		void			addLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset );
 	 	WgSize			preferredSize() const;
-		void			SetDirection( WgDirection direction );
-		WgModText_p	GetLabel(int index);
+		void			setDirection( WgDirection direction );
+		WgModText_p	getLabel(int index);
 	
 	
 	protected:

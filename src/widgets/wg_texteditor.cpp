@@ -41,7 +41,7 @@ namespace wg
 		m_maxLines		= 0;
 	
 		m_text.setLineWidth( size().w );
-		m_text.setAutoEllipsis(IsAutoEllipsisDefault());
+		m_text.setAutoEllipsis(isAutoEllipsisDefault());
 		m_text.setEditMode( WG_TEXT_STATIC );
 		m_bResetCursorOnFocus = true;
 		m_tickRouteId = 0;
@@ -114,9 +114,9 @@ namespace wg
 			return contentSize;
 	}
 	
-	//____ PointerStyle() ________________________________________
+	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle WgTextEditor::PointerStyle() const
+	WgPointerStyle WgTextEditor::pointerStyle() const
 	{
 		if( m_text.getMarkedLink() )
 			return WG_POINTER_HAND;
@@ -124,9 +124,9 @@ namespace wg
 		return m_pointerStyle;
 	}
 	
-	//____ TooltipString() _____________________________________________________
+	//____ tooltipString() _____________________________________________________
 	
-	WgString WgTextEditor::TooltipString() const
+	WgString WgTextEditor::tooltipString() const
 	{
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
@@ -238,7 +238,7 @@ namespace wg
 		}
 		else if( !m_state.isFocused() && isEditable() && type == WG_MSG_MOUSE_PRESS && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 		{
-			GrabFocus();
+			grabFocus();
 		}
 	
 	
@@ -414,15 +414,15 @@ namespace wg
 	
 	
 	
-	//____ InsertTextAtCursor() ___________________________________________________
+	//____ insertTextAtCursor() ___________________________________________________
 	
-	int WgTextEditor::InsertTextAtCursor( const WgCharSeq& str )
+	int WgTextEditor::insertTextAtCursor( const WgCharSeq& str )
 	{
 		if( !isEditable() )
 			return 0;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return 0;				// Couldn't get input focus...
 	
 		int nChars = m_text.putText( str );
@@ -436,15 +436,15 @@ namespace wg
 		return nChars;
 	}
 	
-	//____ InsertCharAtCursor() ___________________________________________________
+	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool WgTextEditor::InsertCharAtCursor( Uint16 c )
+	bool WgTextEditor::insertCharAtCursor( Uint16 c )
 	{
 		if( !isEditable() )
 			return 0;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return false;				// Couldn't get input focus...
 	
 		return _insertCharAtCursor(c);

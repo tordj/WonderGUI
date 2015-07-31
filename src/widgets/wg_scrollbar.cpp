@@ -119,7 +119,7 @@ namespace wg
 	}
 	
 	
-	//____ SetBackgroundPressMode() _______________________________________________________
+	//____ setBackgroundPressMode() _______________________________________________________
 	/**
 	 * Set scrollbar behavior for pressing left mouse button on scrollbar background.
 	 *
@@ -136,14 +136,14 @@ namespace wg
 	 *
 	 **/
 	
-	void WgScrollbar::SetBackgroundPressMode( BgPressMode mode )
+	void WgScrollbar::setBackgroundPressMode( BgPressMode mode )
 	{
 		m_bgPressMode = mode;
 	}
 	
 	
 	
-	//____ SetHandle() ____________________________________________________________
+	//____ setHandle() ____________________________________________________________
 	/**
 	 * Set relative size and position of the scrollbar handle.
 	 *
@@ -153,7 +153,7 @@ namespace wg
 	 * Both parameters will be limited to their respective range.
 	 * The size of the handle will not get smaller than the skin of the
 	 * handle allows, but the value set is still the value later
-	 * returned by HandlePos(). A size of 1.0 means that the handle will cover
+	 * returned by handlePos(). A size of 1.0 means that the handle will cover
 	 * the whole background and make position void.
 	 *
 	 * The positon of the handle is independent of the size of the handle. A
@@ -161,7 +161,7 @@ namespace wg
 	 *
 	 **/
 	
-	void WgScrollbar::SetHandle( float _pos, float _size )
+	void WgScrollbar::setHandle( float _pos, float _size )
 	{
 		LIMIT( _size, 0.0001f, 1.f );
 		LIMIT( _pos, 0.f, 1.f );
@@ -175,7 +175,7 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetHandlePos() _________________________________________________________
+	//____ setHandlePos() _________________________________________________________
 	/**
 	 * Set relative position of scrollbar handle.
 	 *
@@ -187,7 +187,7 @@ namespace wg
 	 *
 	 **/
 	
-	void WgScrollbar::SetHandlePos( float pos )
+	void WgScrollbar::setHandlePos( float pos )
 	{
 		LIMIT( pos, 0.f, 1.f );
 	
@@ -198,7 +198,7 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetHandlePixelPos() ___________________________________________________
+	//____ setHandlePixelPos() ___________________________________________________
 	/**
 	 * Set position of scrollbar handle in pixels.
 	 *
@@ -213,7 +213,7 @@ namespace wg
 	 *
 	 **/
 	
-	void WgScrollbar::SetHandlePixelPos( int pos )
+	void WgScrollbar::setHandlePixelPos( int pos )
 	{
 		int		handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
@@ -238,10 +238,10 @@ namespace wg
 		if( m_handleSize < 1.f)
 			scrollhandlePos = ((float)(pos - (handleLen >> 1))) / (length - handleLen);
 	
-		SetHandlePos(scrollhandlePos);
+		setHandlePos(scrollhandlePos);
 	}
 	
-	//____ SetHandleSize() ________________________________________________________
+	//____ setHandleSize() ________________________________________________________
 	/**
 	 * Set relative size of scrollbar handle.
 	 *
@@ -251,12 +251,12 @@ namespace wg
 	 *
 	 * The size of the handle will not get smaller than the skin of the
 	 * handle allows, but the value set is still the value later
-	 * returned by HandlePos(). A size of 1.0 means that the handle will cover
+	 * returned by handlePos(). A size of 1.0 means that the handle will cover
 	 * the whole background and make position void.
 	 *
 	 **/
 	
-	void WgScrollbar::SetHandleSize( float _size )
+	void WgScrollbar::setHandleSize( float _size )
 	{
 		LIMIT( _size, 0.0001f, 1.f );
 	
@@ -268,7 +268,7 @@ namespace wg
 	}
 	
 	
-	//____ SetSkins() ____________________________________________________________
+	//____ setSkins() ____________________________________________________________
 	/**
 	 * Set all skins in one go.
 	 *
@@ -289,7 +289,7 @@ namespace wg
 	 **/
 	
 	
-	void WgScrollbar::SetSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin,
+	void WgScrollbar::setSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin,
 								const WgSkin_p& pHandleSkin,
 								const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
 	{
@@ -304,7 +304,7 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetButtonLayout() ______________________________________________________
+	//____ setButtonLayout() ______________________________________________________
 	/**
 	 * Set the layout of the scrollbar buttons
 	 *
@@ -321,16 +321,16 @@ namespace wg
 	 *
 	 **/
 	
-	void WgScrollbar::SetButtonLayout(  BtnLayout layout )
+	void WgScrollbar::setButtonLayout(  BtnLayout layout )
 	{
 		m_btnLayout = layout;
 	
 		_headerFooterChanged();
 	}
 	
-	//____ SetScrollbarTarget() _______________________________________________________
+	//____ setScrollbarTarget() _______________________________________________________
 	
-	bool WgScrollbar::SetScrollbarTarget( WgScrollbarTarget * pTarget )
+	bool WgScrollbar::setScrollbarTarget( WgScrollbarTarget * pTarget )
 	{
 		// Release previous target (if any)
 	
@@ -903,9 +903,9 @@ namespace wg
 						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						{
 							if( pointerOfs - handlePos < handleLen/2 )
-								SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
+								setHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 							else
-								SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
+								setHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 						}
 	
 						int pxlPos, pxlLen;
@@ -917,7 +917,7 @@ namespace wg
 						m_states[C_HANDLE].setPressed(true);
 						m_states[C_BG].setHovered(true);
 						m_handlePressOfs = handleLen/2;
-						SetHandlePixelPos( pointerOfs );
+						setHandlePixelPos( pointerOfs );
 						break;
 					default:
 	//					assert( false );
@@ -928,12 +928,12 @@ namespace wg
 				else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 				{
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
+						setHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 				}
 				else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 				{
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
+						setHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 				}
 	
 	
@@ -958,23 +958,23 @@ namespace wg
 					if( pointerOfs - handlePos < handleLen/2 )
 					{
 						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-							SetHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
+							setHandlePos( m_pScrollbarTargetInterface->_jumpBwd() );
 					}
 					else
 					{
 						if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-							SetHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
+							setHandlePos( m_pScrollbarTargetInterface->_jumpFwd() );
 					}
 				}
 				else if( c == C_HEADER_FWD || c == C_FOOTER_FWD )
 				{
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						SetHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
+						setHandlePos( m_pScrollbarTargetInterface->_stepFwd() );
 				}
 				else if( c == C_HEADER_BWD || c == C_FOOTER_BWD )
 				{
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						SetHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
+						setHandlePos( m_pScrollbarTargetInterface->_stepBwd() );
 				}
 	
 				int pxlPos, pxlLen;
@@ -1021,7 +1021,7 @@ namespace wg
 				{
 					int distance = p->distance();
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
-						SetHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
+						setHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 					
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );

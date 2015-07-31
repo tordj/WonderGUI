@@ -279,7 +279,7 @@ namespace wg
 		//TODO: Handling of icon and text.
 	}
 	
-	//____ SetDownWhenMouseOutside() _______________________________________________
+	//____ setDownWhenMouseOutside() _______________________________________________
 	/**
 	 * Set whether the button will stay in pressed state even if the mouse goes outside.
 	 *
@@ -302,7 +302,7 @@ namespace wg
 	 * before the callback that updates the geometry is called.
 	 *
 	 **/
-	void WgButton::SetDownWhenMouseOutside( bool bDown )
+	void WgButton::setDownWhenMouseOutside( bool bDown )
 	{
 			m_bDownOutside		= bDown;
 	}

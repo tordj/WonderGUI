@@ -110,9 +110,9 @@ namespace wg
 			return contentSize;
 	}
 	
-	//____ PointerStyle() ________________________________________
+	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle WgTextDisplay::PointerStyle() const
+	WgPointerStyle WgTextDisplay::pointerStyle() const
 	{
 		if( m_text.getMarkedLink() )
 			return WG_POINTER_HAND;
@@ -120,9 +120,9 @@ namespace wg
 		return m_pointerStyle;
 	}
 	
-	//____ TooltipString() _____________________________________________________
+	//____ tooltipString() _____________________________________________________
 	
-	WgString WgTextDisplay::TooltipString() const
+	WgString WgTextDisplay::tooltipString() const
 	{
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;

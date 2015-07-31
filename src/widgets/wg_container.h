@@ -76,7 +76,7 @@ namespace wg
 			static WgContainer_p	cast( const WgObject_p& pObject );
 	
 	
-			bool					IsContainer() const;
+			bool					isContainer() const;
 	
 			inline WgWidget_p		firstWidget() const { return WgWidget_p(_firstWidget()); }
 			inline WgWidget_p		lastWidget() const { return WgWidget_p(_lastWidget()); }

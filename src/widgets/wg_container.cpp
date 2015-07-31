@@ -69,9 +69,9 @@ namespace wg
 		return 0;
 	}
 	
-	//____ IsContainer() ______________________________________________________________
+	//____ isContainer() ______________________________________________________________
 	
-	bool WgContainer::IsContainer() const
+	bool WgContainer::isContainer() const
 	{
 		return true;
 	}
@@ -117,7 +117,7 @@ namespace wg
 		{
 			if( pHook->_isVisible() && childGeo.contains( ofs ) )
 			{
-				if( pHook->_widget()->IsContainer() )
+				if( pHook->_widget()->isContainer() )
 				{
 					pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 				}

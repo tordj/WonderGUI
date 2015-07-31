@@ -64,9 +64,9 @@ namespace wg
 	}
 	
 	
-	//____ SetColors() ___________________________________________________________
+	//____ setColors() ___________________________________________________________
 	
-	void WgSimpleVolumeMeter::SetColors( WgColor bottom, WgColor middle, WgColor top )
+	void WgSimpleVolumeMeter::setColors( WgColor bottom, WgColor middle, WgColor top )
 	{
 		if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
 		{
@@ -77,9 +77,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetSections() _________________________________________________________
+	//____ setSections() _________________________________________________________
 	
-	void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
+	void WgSimpleVolumeMeter::setSections( float bottomFraction, float topFraction )
 	{
 		if( bottomFraction < 0.f )
 			bottomFraction = 0.f;
@@ -105,9 +105,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetHoldHeight() ________________________________________________________
+	//____ setHoldHeight() ________________________________________________________
 	
-	void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
+	void WgSimpleVolumeMeter::setHoldHeight( float fraction )
 	{
 		LIMIT( fraction, 0.f, 0.25f );
 		

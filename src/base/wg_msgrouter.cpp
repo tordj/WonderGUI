@@ -980,7 +980,7 @@ namespace wg
 		WgPointerStyle newStyle;
 		
 		if( pNowMarked && pNowMarked->isEnabled() )
-			newStyle = pNowMarked->PointerStyle();
+			newStyle = pNowMarked->pointerStyle();
 		else if( button != 0 )
 			newStyle = m_pointerStyle;
 		else

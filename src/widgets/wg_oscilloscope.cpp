@@ -100,9 +100,9 @@ namespace wg
 	}
 	
 	
-	//____ SetGridColor() _________________________________________________________
+	//____ setGridColor() _________________________________________________________
 	
-	void WgOscilloscope::SetGridColor( WgColor color )
+	void WgOscilloscope::setGridColor( WgColor color )
 	{
 		if( m_gridColor != color )
 		{
@@ -112,9 +112,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetVGridLines() ________________________________________________________
+	//____ setVGridLines() ________________________________________________________
 	
-	void WgOscilloscope::SetVGridLines( int nLines, float pLines[] )
+	void WgOscilloscope::setVGridLines( int nLines, float pLines[] )
 	{
 		if( nLines != m_nVGridLines )
 		{
@@ -132,9 +132,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetHGridLines() ________________________________________________________
+	//____ setHGridLines() ________________________________________________________
 	
-	void WgOscilloscope::SetHGridLines( int nLines, float pLines[] )
+	void WgOscilloscope::setHGridLines( int nLines, float pLines[] )
 	{
 		if( nLines != m_nHGridLines )
 		{
@@ -152,9 +152,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetLineColor() ________________________________________________________
+	//____ setLineColor() ________________________________________________________
 	
-	void WgOscilloscope::SetLineColor( WgColor color )
+	void WgOscilloscope::setLineColor( WgColor color )
 	{
 		if( color != m_lineColor )
 		{
@@ -163,9 +163,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetLineThickness() _____________________________________________________
+	//____ setLineThickness() _____________________________________________________
 	
-	void WgOscilloscope::SetLineThickness( float thickness )
+	void WgOscilloscope::setLineThickness( float thickness )
 	{
 		LIMIT( thickness, 1.f, 2.f );
 		if( thickness != m_lineThickness )
@@ -175,9 +175,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetLinePoints() ________________________________________________________
+	//____ setLinePoints() ________________________________________________________
 	
-	void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
+	void WgOscilloscope::setLinePoints( int nPoints, float pPointValues[] )
 	{
 		if( nPoints != m_nLinePoints )
 		{
@@ -196,9 +196,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ ClearMarkers() _________________________________________________________
+	//____ clearMarkers() _________________________________________________________
 	
-	void WgOscilloscope::ClearMarkers()
+	void WgOscilloscope::clearMarkers()
 	{
 		delete [] m_pMarkers;
 		m_pMarkers = 0;
@@ -206,9 +206,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ AddMarker() ____________________________________________________________
+	//____ addMarker() ____________________________________________________________
 	
-	void WgOscilloscope::AddMarker( int xOfs, float yOfs )
+	void WgOscilloscope::addMarker( int xOfs, float yOfs )
 	{
 		Marker * pNew = new Marker[m_nMarkers+1];
 		for( int i = 0 ; i < m_nMarkers ; i++ )
@@ -223,9 +223,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetMarkerSkin() _________________________________________________________
+	//____ setMarkerSkin() _________________________________________________________
 	
-	void WgOscilloscope::SetMarkerSkin( const WgSkin_p& pSkin )
+	void WgOscilloscope::setMarkerSkin( const WgSkin_p& pSkin )
 	{
 		if( m_pMarkerSkin != pSkin )
 		{

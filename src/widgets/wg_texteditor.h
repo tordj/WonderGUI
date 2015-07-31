@@ -59,21 +59,21 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
-		inline int		MaxLines() { return m_maxLines; }
+		inline void		setMaxLines( int nLines ) { m_maxLines = nLines; }
+		inline int		maxLines() { return m_maxLines; }
 	
-		int		InsertTextAtCursor( const WgCharSeq& str );
-		bool	InsertCharAtCursor( Uint16 c );
+		int		insertTextAtCursor( const WgCharSeq& str );
+		bool	insertCharAtCursor( Uint16 c );
 	
 		virtual void			setEditMode(WgTextEditMode mode);
 		virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
 	
-		WgPointerStyle		PointerStyle() const;
-		WgString			TooltipString() const;
+		WgPointerStyle		pointerStyle() const;
+		WgString			tooltipString() const;
 	
 		int		matchingHeight( int width ) const;
 		WgSize	preferredSize() const;
-		bool	IsAutoEllipsisDefault() const { return true; };
+		bool	isAutoEllipsisDefault() const { return true; };
 	
 		bool	isEditable() const { return m_text.isEditable(); }
 		bool	isSelectable() const { return m_text.isSelectable(); }

@@ -123,18 +123,18 @@ namespace wg
 		//____ Methods __________________________________________
 	
 		bool			setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties );
-		WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
-		WgTextprop_p	TextProp() const { return m_pTextProp; }
+		WgSkin_p		entrySkin() const { return m_pEntrySkin; }
+		WgTextprop_p	textProp() const { return m_pTextProp; }
 	
-		bool			AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey = 0 );
-		bool			RemoveMenu( const WgMenu_p& pMenu );
+		bool			addMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey = 0 );
+		bool			removeMenu( const WgMenu_p& pMenu );
 	
-		WgMenuBarItem*	FirstMenuBarItem() { return m_items.first(); }
+		WgMenuBarItem*	firstMenuBarItem() { return m_items.first(); }
 	
-		WgChar *		MenuTitle(const WgMenu_p& pMenu) const;
+		WgChar *		menuTitle(const WgMenu_p& pMenu) const;
 	
-		bool			ShowMenu(const WgMenu_p& pMenu);
-		bool			HideMenu(const WgMenu_p& pMenu);
+		bool			showMenu(const WgMenu_p& pMenu);
+		bool			hideMenu(const WgMenu_p& pMenu);
 	
 		WgSize			preferredSize() const;
 	

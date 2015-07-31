@@ -57,11 +57,11 @@ namespace wg
 		static WgImage_p	cast( const WgObject_p& pObject );
 		
 	
-		void				SetImage( const WgSurface_p& pSurface, const WgRect& rect );	///< @brief Set image to display.
-		void				SetImage( const WgSurface_p& pSurface );						///< @brief Set image to display.
+		void				setImage( const WgSurface_p& pSurface, const WgRect& rect );	///< @brief Set image to display.
+		void				setImage( const WgSurface_p& pSurface );						///< @brief Set image to display.
 	
-		inline WgSurface_p	ImageSurface() const;											///< @brief Get surface of image displayed.
-		inline WgRect		ImageRect() const;												///< @brief Get area of surface rectangle of image displayed.
+		inline WgSurface_p	imageSurface() const;											///< @brief Get surface of image displayed.
+		inline WgRect		imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 	
 		WgSize				preferredSize() const;
 	
@@ -82,12 +82,12 @@ namespace wg
 	};
 	
 	
-	WgSurface_p WgImage::ImageSurface() const
+	WgSurface_p WgImage::imageSurface() const
 	{
 		return m_pSurface;
 	}
 	
-	WgRect WgImage::ImageRect() const
+	WgRect WgImage::imageRect() const
 	{
 		return m_rect;
 	}

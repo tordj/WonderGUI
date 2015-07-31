@@ -60,19 +60,19 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		inline void	SetPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
-		inline bool PasswordMode() {return m_bPasswordMode;};
-		inline Uint16 PasswordGlyph() const				 { return m_pwGlyph; };
-		void		SetPasswordGlyph( Uint16 glyph );
+		inline void	setPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
+		inline bool passwordMode() {return m_bPasswordMode;};
+		inline Uint16 passwordGlyph() const				 { return m_pwGlyph; };
+		void		setPasswordGlyph( Uint16 glyph );
 	
-		int			InsertTextAtCursor( const WgCharSeq& str );
-		bool		InsertCharAtCursor( Uint16 c );
+		int			insertTextAtCursor( const WgCharSeq& str );
+		bool		insertCharAtCursor( Uint16 c );
 	
 		virtual void			setEditMode(WgTextEditMode mode);
 		virtual WgTextEditMode	editMode() const { return m_text.editMode(); }
 	
 		WgSize		preferredSize() const;
-		bool		IsAutoEllipsisDefault() const { return false; };
+		bool		isAutoEllipsisDefault() const { return false; };
 	
 	
 	protected:

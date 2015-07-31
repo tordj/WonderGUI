@@ -83,9 +83,9 @@ namespace wg
 		return 0; 
 	}
 	
-	//____ PointerStyle() ________________________________________
+	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle WgWidget::PointerStyle() const
+	WgPointerStyle WgWidget::pointerStyle() const
 	{
 		return m_pointerStyle;
 	}
@@ -94,7 +94,7 @@ namespace wg
 	
 	void WgWidget::setEnabled( bool bEnabled )
 	{
-		if( m_state.isEnabled() != bEnabled || IsContainer() )
+		if( m_state.isEnabled() != bEnabled || isContainer() )
 		{
 			WgState old = m_state;
 			m_state.setEnabled(bEnabled);
@@ -117,7 +117,7 @@ namespace wg
 	 * test succeeds and MarkTest returns true.
 	 * 
 	 * MarkOpacity is by default set to 1, which means that all but totally transparent pixels
-	 * will be marked. See SetMarkOpacity() for more info. 
+	 * will be marked. See setMarkOpacity() for more info. 
 	 * 
 	 * This method is mainly used to determine if the pointer hovers over the widget or not. 
 	 * 
@@ -151,9 +151,9 @@ namespace wg
 	
 	
 	
-	//____ CloneContent() _________________________________________________________
+	//____ cloneContent() _________________________________________________________
 	
-	bool WgWidget::CloneContent( const WgWidget_p& _pOrg )
+	bool WgWidget::cloneContent( const WgWidget_p& _pOrg )
 	{
 		if( _pOrg->className() != className() )
 			return false;
@@ -190,7 +190,7 @@ namespace wg
 	{
 	}
 	
-	//____ ToGlobal() ____________________________________________________________
+	//____ toGlobal() ____________________________________________________________
 	/**
 	 * @brief Convert coordinate from local to global coordinate system
 	 *
@@ -206,7 +206,7 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 	 
-	 WgCoord WgWidget::ToGlobal( const WgCoord& coord ) const
+	 WgCoord WgWidget::toGlobal( const WgCoord& coord ) const
 	{
 		WgCoord c = globalPos();
 		c.x += coord.x;
@@ -214,7 +214,7 @@ namespace wg
 		return c;
 	}
 	
-	//____ ToLocal() ____________________________________________________________
+	//____ toLocal() ____________________________________________________________
 	/**
 	 * @brief Convert coordinate from local to global coordinate system
 	 *
@@ -230,7 +230,7 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 	
-	WgCoord WgWidget::ToLocal( const WgCoord& coord ) const
+	WgCoord WgWidget::toLocal( const WgCoord& coord ) const
 	{
 		WgCoord c = globalPos();
 		return WgCoord( coord.x - c.x, coord.y - c.y );

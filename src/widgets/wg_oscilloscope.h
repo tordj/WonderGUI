@@ -50,18 +50,18 @@ namespace wg
 		static const char	CLASSNAME[];
 		static WgOscilloscope_p	cast( const WgObject_p& pObject );
 	
-		void	SetGridColor( WgColor color );
-		void	SetVGridLines( int nLines, float pLines[] );
-		void	SetHGridLines( int nLines, float pLines[] );
+		void	setGridColor( WgColor color );
+		void	setVGridLines( int nLines, float pLines[] );
+		void	setHGridLines( int nLines, float pLines[] );
 	
-		void	SetLineColor( WgColor color );
-		void	SetLineThickness( float thickness );
+		void	setLineColor( WgColor color );
+		void	setLineThickness( float thickness );
 	
-		void	SetLinePoints( int nPoints, float pPointValues[] );
+		void	setLinePoints( int nPoints, float pPointValues[] );
 	
-		void	ClearMarkers();
-		void	AddMarker( int xOfs, float yOfs );
-		void	SetMarkerSkin( const WgSkin_p& pSkin );
+		void	clearMarkers();
+		void	addMarker( int xOfs, float yOfs );
+		void	setMarkerSkin( const WgSkin_p& pSkin );
 	
 		WgSize	preferredSize() const;
 	

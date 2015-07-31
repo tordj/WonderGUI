@@ -544,7 +544,7 @@ namespace wg
 		// Remove us as target target from current Scrollbar (if we have any)
 	
 		if( m_elements[XDRAG]._widget() )
-			((WgScrollbar*)m_elements[XDRAG]._widget())->SetScrollbarTarget(0);
+			((WgScrollbar*)m_elements[XDRAG]._widget())->setScrollbarTarget(0);
 	
 		// 
 	
@@ -556,8 +556,8 @@ namespace wg
 	
 		if( pScrollbar )
 		{
-			pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[1] );
-			pScrollbar->SetHandle( viewOfsX(), viewLenX() );
+			pScrollbar->setScrollbarTarget( &m_scrollbarTargets[1] );
+			pScrollbar->setHandle( viewOfsX(), viewLenX() );
 			return &m_elements[YDRAG];
 		}
 	
@@ -571,7 +571,7 @@ namespace wg
 		// Remove us as target from current Scrollbar (if we have any)
 	
 		if( m_elements[YDRAG]._widget() )
-			((WgScrollbar*)m_elements[YDRAG]._widget())->SetScrollbarTarget(0);
+			((WgScrollbar*)m_elements[YDRAG]._widget())->setScrollbarTarget(0);
 	
 		//
 	
@@ -583,8 +583,8 @@ namespace wg
 	
 		if( pScrollbar )
 		{
-			pScrollbar->SetScrollbarTarget( &m_scrollbarTargets[0] );
-			pScrollbar->SetHandle( viewOfsY(), viewLenY() );
+			pScrollbar->setScrollbarTarget( &m_scrollbarTargets[0] );
+			pScrollbar->setHandle( viewOfsY(), viewLenY() );
 			return &m_elements[YDRAG];
 		}
 	
@@ -714,7 +714,7 @@ namespace wg
 		{
 			if( p->isVisible() && p->_widget() && p->m_windowGeo.contains( pos ) )
 			{
-				if( p->_widget()->IsContainer() )
+				if( p->_widget()->isContainer() )
 				{
 					WgWidget * pFound = static_cast<WgContainer*>(p->_widget())->_findWidget( pos - p->m_canvasGeo.pos(), mode );
 					if( pFound )
@@ -1116,7 +1116,7 @@ namespace wg
 			{			
 				WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
 	
-				if( m_elements[WINDOW].m_windowGeo.contains( ToLocal(pMsg->pointerPos())) )
+				if( m_elements[WINDOW].m_windowGeo.contains( toLocal(pMsg->pointerPos())) )
 				{
 					int wheel = pMsg->wheel();
 	
@@ -1330,8 +1330,8 @@ namespace wg
 		if( pOrg->m_elements[XDRAG]._widget() )
 		{
 			WgScrollbar * pScrollbar = (WgScrollbar*) pOrg->m_elements[XDRAG]._widget()->_newOfMyType();
-			pScrollbar->CloneContent( pOrg->m_elements[XDRAG]._widget() );
-			pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[1]);
+			pScrollbar->cloneContent( pOrg->m_elements[XDRAG]._widget() );
+			pScrollbar->setScrollbarTarget(&m_scrollbarTargets[1]);
 			m_elements[XDRAG]._setWidget(pScrollbar);		
 		}
 	
@@ -1343,8 +1343,8 @@ namespace wg
 		if( pOrg->m_elements[YDRAG]._widget() )
 		{
 			WgScrollbar * pScrollbar = (WgScrollbar*) pOrg->m_elements[YDRAG]._widget()->_newOfMyType();
-			pScrollbar->CloneContent( pOrg->m_elements[YDRAG]._widget() );
-			pScrollbar->SetScrollbarTarget(&m_scrollbarTargets[0]);
+			pScrollbar->cloneContent( pOrg->m_elements[YDRAG]._widget() );
+			pScrollbar->setScrollbarTarget(&m_scrollbarTargets[0]);
 			m_elements[YDRAG]._setWidget(pScrollbar);
 		}
 	

@@ -79,52 +79,52 @@ namespace wg
 		//____ Methods ___________________________________________
 	
 		bool			setSkin( const WgSkin_p& pSkin, int iconFieldWidth, int arrowFieldWidth );
-		int				IconFieldWidth() const			{ return m_iconFieldWidth; }
-		int				ArrowFieldWidth() const			{ return m_arrowFieldWidth; }
+		int				iconFieldWidth() const			{ return m_iconFieldWidth; }
+		int				arrowFieldWidth() const			{ return m_arrowFieldWidth; }
 	
 		void			setEntrySkin( const WgSkin_p& pSkin );
-		WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
+		WgSkin_p		entrySkin() const { return m_pEntrySkin; }
 	
-		bool			SetSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& sepBorder = WgBorder() );
-		WgSkin_p		SeparatorSkin() const { return m_pSeparatorSkin; }
-		WgBorder		SeparatorBorder() const { return m_sepBorder; }
+		bool			setSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& sepBorder = WgBorder() );
+		WgSkin_p		separatorSkin() const { return m_pSeparatorSkin; }
+		WgBorder		separatorBorder() const { return m_sepBorder; }
 	
-		bool			SetCheckBoxSkin( const WgSkin_p& pSkin );
-		WgSkin_p		CheckBoxSkin() const { return m_pCheckBoxSkin; }
+		bool			setCheckBoxSkin( const WgSkin_p& pSkin );
+		WgSkin_p		checkBoxSkin() const { return m_pCheckBoxSkin; }
 	
-		bool			SetRadioButtonSkin( const WgSkin_p& pSkin );
-		WgSkin_p 		RadioButtonSkin() const { return m_pRadioButtonSkin; }
+		bool			setRadioButtonSkin( const WgSkin_p& pSkin );
+		WgSkin_p 		radioButtonSkin() const { return m_pRadioButtonSkin; }
 	
-		bool			SetArrowSource( const WgGfxAnim_p& pAnim );
+		bool			setArrowSource( const WgGfxAnim_p& pAnim );
 	
-		bool			SetTextProperties( const WgTextprop_p& pEntryProperties, const WgTextprop_p& pKeyAccelProperties );
-		WgTextprop_p	GetTextEntryProperties() const { return m_pEntryProp; }
-		WgTextprop_p	GetKeyAccelProperties() const { return m_pKeyAccelProp; }
+		bool			setTextProperties( const WgTextprop_p& pEntryProperties, const WgTextprop_p& pKeyAccelProperties );
+		WgTextprop_p	getTextEntryProperties() const { return m_pEntryProp; }
+		WgTextprop_p	getKeyAccelProperties() const { return m_pKeyAccelProp; }
 	
-		bool			SetScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin );
-		bool			SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout );
-		WgScrollbar::BtnLayout ScrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
-		WgSkin_p 		ScrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
-		WgSkin_p 		ScrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
-		WgSkin_p 		ScrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
-		WgSkin_p 		ScrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
+		bool			setScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin );
+		bool			setScrollbarButtonLayout(  WgScrollbar::BtnLayout layout );
+		WgScrollbar::BtnLayout scrollbarButtonLayout() const { return m_scrollbarBtnLayout; }
+		WgSkin_p 		scrollbarBackgroundSkin() const { return m_pScrollbarBgSkin; }
+		WgSkin_p 		scrollbarHandleSkin() const { return m_pScrollbarHandleSkin; }
+		WgSkin_p 		scrollbarBwdButtonSkin() const { return m_pScrollbarBtnBwdSkin; }
+		WgSkin_p 		scrollbarFwdButtonSkin() const { return m_pScrollbarBtnFwdSkin; }
 	
-		int			GetEntryHeight() const;
+		int			getEntryHeight() const;
 	
 		int			addItem( WgMenuItem * pEntry );
-		int			InsertItem( WgMenuItem * pEntry, int pos );
+		int			insertItem( WgMenuItem * pEntry, int pos );
 	
 		bool		removeItem( WgMenuItem * pEntry );
 		WgMenuItem*	removeItem( int pos );
 		void		removeAllItems();
 	
-		bool		DeleteItem( WgMenuItem * pEntry );
-		bool		DeleteItem( int pos );
-		void		DeleteAllItems();
+		bool		deleteItem( WgMenuItem * pEntry );
+		bool		deleteItem( int pos );
+		void		deleteAllItems();
 	
-		int			GetItemPos( WgMenuItem* pEntry );
-		WgMenuItem*	GetItem( int pos );
-		int			GetItemCount() const { return (int)m_items.size(); }
+		int			getItemPos( WgMenuItem* pEntry );
+		WgMenuItem*	getItem( int pos );
+		int			getItemCount() const { return (int)m_items.size(); }
 	
 	
 		WgMenuItem *FindItem( int id );
@@ -132,7 +132,7 @@ namespace wg
 		WgMenuItem *GetLastItem() const { return m_items.last(); }
 		WgMenuItem *GetSelectedItem() const { return m_pSelectedItem; }
 	
-		void		SelectItem(WgMenuItem* pItem);
+		void		selectItem(WgMenuItem* pItem);
 	
 	
 	

@@ -64,9 +64,9 @@ namespace wg
 		return 0;
 	}
 	
-	//____ SetDirection() ________________________________________________________
+	//____ setDirection() ________________________________________________________
 	
-	void WgVolumeMeter::SetDirection( WgDirection direction )
+	void WgVolumeMeter::setDirection( WgDirection direction )
 	{
 		if( direction != m_direction )
 		{
@@ -77,9 +77,9 @@ namespace wg
 	}
 	
 	
-	//____ SetLEDColors() ___________________________________________________________
+	//____ setLEDColors() ___________________________________________________________
 	
-	void WgVolumeMeter::SetLEDColors(	WgColor bottomOn, WgColor middleOn, WgColor topOn, 
+	void WgVolumeMeter::setLEDColors(	WgColor bottomOn, WgColor middleOn, WgColor topOn, 
 										WgColor bottomOff, WgColor middleOff, WgColor topOff )
 	{
 		m_LEDColors[0][0] = bottomOff;
@@ -94,9 +94,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetNbLEDs() _________________________________________________________
+	//____ setNbLEDs() _________________________________________________________
 	
-	void WgVolumeMeter::SetNbLEDs( int bottomSection, int middleSection, int topSection )
+	void WgVolumeMeter::setNbLEDs( int bottomSection, int middleSection, int topSection )
 	{
 		if( bottomSection < 0 )
 			bottomSection = 0;
@@ -116,9 +116,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetLEDSpacing() ___________________________________________________________
+	//____ setLEDSpacing() ___________________________________________________________
 	
-	void WgVolumeMeter::SetLEDSpacing( float spacing )
+	void WgVolumeMeter::setLEDSpacing( float spacing )
 	{
 		if( spacing < 0.f )
 			spacing = 0.f;

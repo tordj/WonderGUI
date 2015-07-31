@@ -112,28 +112,28 @@ namespace wg
 		static const char	CLASSNAME[];
 		static WgWidget_p	cast( const WgObject_p& pObject );
 	
-		inline int			Id() const { return m_id; }
+		inline int			id() const { return m_id; }
 		inline void			setId( int id ) { m_id = id; }
 	
 		virtual WgString	tooltip() const { return m_tooltip; }
-		inline void			SetTooltip( const WgString& str ) { m_tooltip = str; }
+		inline void			setTooltip( const WgString& str ) { m_tooltip = str; }
 	
-		inline void			Refresh() { _onRefresh(); }
+		inline void			refresh() { _onRefresh(); }
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const { return m_state.isEnabled(); }
 	
 		inline WgState		state() const { return m_state; }
 	
-		bool				CloneContent( const WgWidget_p& _pOrg );
+		bool				cloneContent( const WgWidget_p& _pOrg );
 	
-		void				SetPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
-		virtual WgPointerStyle	PointerStyle() const;
+		void				setPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
+		virtual WgPointerStyle	pointerStyle() const;
 	
-		void				SetTabLock( bool bLock ) { m_bTabLock = bLock; }
-		bool				IsTabLocked() const { return m_bTabLock; }
+		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
+		bool				isTabLocked() const { return m_bTabLock; }
 	
-		void				SetMarkOpacity( int opacity ) { m_markOpacity = opacity; }
-		int					MarkOpacity() const { return m_markOpacity; }
+		void				setMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+		int					markOpacity() const { return m_markOpacity; }
 		bool				markTest( const WgCoord& ofs );
 	
 		virtual void		setSkin( const WgSkin_p& pSkin );
@@ -142,7 +142,7 @@ namespace wg
 	
 		WgHook_p			hook() const { return m_pHook; }
 	
-		WgWidget_p		NewOfMyType() const { return WgWidget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+		WgWidget_p		newOfMyType() const { return WgWidget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 	
 		void 				onMsg( const WgMsg_p& pMsg );
 	
@@ -154,16 +154,16 @@ namespace wg
 		inline WgRect		geo() const;
 		inline WgCoord		globalPos() const;
 		inline WgRect		globalGeo() const;
-		inline bool			GrabFocus();
-		inline bool			ReleaseFocus();
+		inline bool			grabFocus();
+		inline bool			releaseFocus();
 		inline bool			isFocused();
 		WgContainer_p		parent() const;
 	
-		inline WgWidget_p	NextSibling() const;
-		inline WgWidget_p	PrevSibling() const;
+		inline WgWidget_p	nextSibling() const;
+		inline WgWidget_p	prevSibling() const;
 	
-		WgCoord				ToGlobal( const WgCoord& coord ) const;
-		WgCoord				ToLocal( const WgCoord& coord ) const; 
+		WgCoord				toGlobal( const WgCoord& coord ) const;
+		WgCoord				toLocal( const WgCoord& coord ) const; 
 		
 		// To be overloaded by Widget
 	
@@ -174,7 +174,7 @@ namespace wg
 		virtual WgSize	minSize() const;
 		virtual WgSize	maxSize() const;
 	
-		virtual bool	IsContainer() const { return false; }		///< @brief Check if this widget is a container.
+		virtual bool	isContainer() const { return false; }		///< @brief Check if this widget is a container.
 																	///<
 																	///< Check if widget is a container.
 																	///< This method is a quicker way to check if the widget
@@ -324,14 +324,14 @@ namespace wg
 	}
 	
 	
-	bool WgWidget::GrabFocus() 
+	bool WgWidget::grabFocus() 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->_requestFocus(); 
 		return false; 
 	}
 	
-	bool WgWidget::ReleaseFocus() 
+	bool WgWidget::releaseFocus() 
 	{ 
 		if( m_pHook ) 
 			return m_pHook->_releaseFocus(); 
@@ -359,7 +359,7 @@ namespace wg
 	 * @return Pointer to next sibling or null if none.
 	 */
 	
-	WgWidget_p WgWidget::NextSibling() const 
+	WgWidget_p WgWidget::nextSibling() const 
 	{ 
 		if( m_pHook ) 
 		{
@@ -379,7 +379,7 @@ namespace wg
 	 * @return Pointer to previous sibling or null if none.
 	 */
 	
-	WgWidget_p WgWidget::PrevSibling() const 
+	WgWidget_p WgWidget::prevSibling() const 
 	{ 
 		if( m_pHook ) 
 		{

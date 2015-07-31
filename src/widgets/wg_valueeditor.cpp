@@ -127,9 +127,9 @@ namespace wg
 		m_pUseFormat->setDecimals(0);
 	}
 	
-	//____ SetMaxInputChars() _____________________________________________________
+	//____ setMaxInputChars() _____________________________________________________
 	
-	bool WgValueEditor::SetMaxInputChars( int max )
+	bool WgValueEditor::setMaxInputChars( int max )
 	{
 		if( max <= 0 )
 			return false;
@@ -364,7 +364,7 @@ namespace wg
 		{
 			if( !m_state.isFocused() )
 			{
-				GrabFocus();
+				grabFocus();
 				m_bSelectAllOnRelease = true;
 			}
 			else
@@ -454,7 +454,7 @@ namespace wg
 					}
 					else
 					{
-						ReleaseFocus();
+						releaseFocus();
 					}
 	
 				}

@@ -69,15 +69,15 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		void			SetDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
-		bool			DownWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
+		void			setDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
+		bool			downWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
 		
 		virtual int		matchingHeight( int width ) const;
 	//	virtual int		matchingWidth( int height ) const;
 	
 		WgSize			preferredSize() const;
 	
-		bool			IsAutoEllipsisDefault() const { return false; };
+		bool			isAutoEllipsisDefault() const { return false; };
 	
 	
 	protected:

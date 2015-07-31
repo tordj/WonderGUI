@@ -41,7 +41,7 @@ namespace wg
 	WgLineEditor::WgLineEditor() : m_text(this), text(&m_text)
 	{
 		m_text.setWrap(false);
-		m_text.setAutoEllipsis(IsAutoEllipsisDefault());
+		m_text.setAutoEllipsis(isAutoEllipsisDefault());
 		m_text.setEditMode( WG_TEXT_EDITABLE );
 		m_bPasswordMode = false;
 		m_pwGlyph		= '*';
@@ -102,9 +102,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetPasswordGlyph() _____________________________________________________
+	//____ setPasswordGlyph() _____________________________________________________
 	
-	void WgLineEditor::SetPasswordGlyph( Uint16 glyph )
+	void WgLineEditor::setPasswordGlyph( Uint16 glyph )
 	{
 		assert(glyph);
 		if(glyph)
@@ -113,15 +113,15 @@ namespace wg
 		}
 	}
 	
-	//____ InsertTextAtCursor() ___________________________________________________
+	//____ insertTextAtCursor() ___________________________________________________
 	
-	int WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
+	int WgLineEditor::insertTextAtCursor( const WgCharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return 0;				// Couldn't get input focus...
 	
 		int retVal = m_text.putText( str );
@@ -133,15 +133,15 @@ namespace wg
 		return retVal;
 	}
 	
-	//____ InsertCharAtCursor() ___________________________________________________
+	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool WgLineEditor::InsertCharAtCursor( Uint16 c )
+	bool WgLineEditor::insertCharAtCursor( Uint16 c )
 	{
 		if( !_isEditable() )
 			return false;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return false;				// Couldn't get input focus...
 	
 		if( !m_text.putChar( c ) )
@@ -261,7 +261,7 @@ namespace wg
 		if( (event == WG_MSG_MOUSE_PRESS || event == WG_MSG_MOUSE_DRAG) && WgMouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 		{
 			if( !m_state.isFocused() )
-				GrabFocus();
+				grabFocus();
 	
 			if( m_state.isFocused() )
 			{

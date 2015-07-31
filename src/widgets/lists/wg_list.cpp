@@ -200,7 +200,7 @@ namespace wg
 		{
 			case WG_MSG_MOUSE_ENTER:
 			{	
-				WgListHook * pEntry = _findEntry(ToLocal(_pMsg->pointerPos()));
+				WgListHook * pEntry = _findEntry(toLocal(_pMsg->pointerPos()));
 				if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
 				{
 					WgRect geo;
@@ -218,7 +218,7 @@ namespace wg
 			}
 			case WG_MSG_MOUSE_LEAVE:
 			{
-				WgListHook * pEntry = _findEntry(ToLocal(_pMsg->pointerPos()));
+				WgListHook * pEntry = _findEntry(toLocal(_pMsg->pointerPos()));
 				if( m_pHoveredEntry && !pEntry )
 				{
 					WgRect geo;
@@ -233,7 +233,7 @@ namespace wg
 				WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
 				if( m_selectMode != WG_SELECT_NONE && pMsg->button() == WG_BUTTON_LEFT )
 				{
-					WgCoord ofs = ToLocal(pMsg->pointerPos());
+					WgCoord ofs = toLocal(pMsg->pointerPos());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 					
@@ -336,7 +336,7 @@ namespace wg
 				WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 				if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->button() == WG_BUTTON_LEFT )
 				{
-					WgCoord ofs = _listArea().limit(ToLocal(pMsg->pointerPos()));
+					WgCoord ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
 					ofs = _listWindow().limit(ofs);
 	
 					WgRect oldLasso( m_lassoBegin, m_lassoEnd );
@@ -374,7 +374,7 @@ namespace wg
 			{
 				WgItemInfo * pItemInfo	= new WgItemInfo[1];
 				pItemInfo->pObject	= pHook->_widget();
-				pItemInfo->id		= pHook->_widget()->Id();
+				pItemInfo->id		= pHook->_widget()->id();
 	
 				WgMsg * pMsg;
 				if( bSelected )
@@ -439,7 +439,7 @@ namespace wg
 				if( bPostMsg )
 				{
 					pItemInfo[nModified].pObject	= pHook->_widget();
-					pItemInfo[nModified].id			= pHook->_widget()->Id();
+					pItemInfo[nModified].id			= pHook->_widget()->id();
 	
 				}
 				nModified++;
@@ -518,7 +518,7 @@ namespace wg
 					p = &pSelectedItemsInfo[nDeselected++];
 	
 				p->pObject	= pHook->_widget();
-				p->id		= pHook->_widget()->Id();
+				p->id		= pHook->_widget()->id();
 			}
 		}
 	

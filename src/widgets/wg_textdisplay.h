@@ -55,8 +55,8 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		WgPointerStyle		PointerStyle() const;
-		WgString			TooltipString() const;
+		WgPointerStyle		pointerStyle() const;
+		WgString			tooltipString() const;
 	
 		int		matchingWidth( int height ) const;
 		int		matchingHeight( int width ) const;

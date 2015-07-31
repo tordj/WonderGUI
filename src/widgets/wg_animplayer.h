@@ -52,25 +52,25 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		bool			SetAnimation( const WgGfxAnim_p& pAnim );
-		WgGfxAnim_p	Animation() const { return m_pAnim; }
+		bool			setAnimation( const WgGfxAnim_p& pAnim );
+		WgGfxAnim_p		animation() const { return m_pAnim; }
 			
-		int				PlayPos();										/// Returns play position in ticks.
-		bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
-		bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
+		int				playPos();										/// Returns play position in ticks.
+		bool			setPlayPos( int ticks );						/// Position in ticks for next update.
+		bool			setPlayPosFractional( float fraction );			/// Position in fractions of duration.
 		
-		bool			Rewind( int ticks );
-		bool			FastForward( int ticks );
+		bool			rewind( int ticks );
+		bool			fastForward( int ticks );
 	
 		int				duration();										/// Returns duration of animation (one-shot-through, no looping).
 		int				durationScaled();								/// Returns duration of animation, scaled by speed.
 	
-		float			Speed();
-		bool			SetSpeed( float speed );
+		float			speed();
+		bool			setSpeed( float speed );
 	
-		bool			Play();
-		bool			Stop();
-		bool			IsPlaying() { return m_bPlaying; };
+		bool			play();
+		bool			stop();
+		bool			isPlaying() { return m_bPlaying; };
 	
 		WgSize			preferredSize() const;
 	

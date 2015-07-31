@@ -250,13 +250,13 @@ namespace sdl_wglib
 		// Create standard horizontal scrollbar
 
 		WgScrollbar_p pHScrollbar = WgScrollbar::create();
-		pHScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pHScrollbarBwdButtonSkin, pHScrollbarFwdButtonSkin );
+		pHScrollbar->setSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pHScrollbarBwdButtonSkin, pHScrollbarFwdButtonSkin );
 		pDB->addWidget( "hscrollbar", pHScrollbar );
 
 		// Create standard vertical scrollbar
 
 		WgScrollbar_p pVScrollbar = WgScrollbar::create();
-		pVScrollbar->SetSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
+		pVScrollbar->setSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
 		pDB->addWidget( "vscrollbar", pVScrollbar );
 
 		// Create standard menubar
@@ -279,10 +279,10 @@ namespace sdl_wglib
 
 		WgMenu_p pMenu = WgMenu::create();
 		pMenu->setSkin( pPlateSkin, 16, 16 );
-		pMenu->SetSeparatorSkin( pHSplitSkin, WgBorder(1) );
-		pMenu->SetCheckBoxSkin( pCheckboxIconSkin );
-		pMenu->SetRadioButtonSkin( pRadiobuttonIconSkin );
-		pMenu->SetScrollbarSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
+		pMenu->setSeparatorSkin( pHSplitSkin, WgBorder(1) );
+		pMenu->setCheckBoxSkin( pCheckboxIconSkin );
+		pMenu->setRadioButtonSkin( pRadiobuttonIconSkin );
+		pMenu->setScrollbarSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );
 		pMenu->setEntrySkin( pPlateSkin );
 		pDB->addWidget( "menu", pMenu );
 

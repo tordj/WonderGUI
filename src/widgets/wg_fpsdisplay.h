@@ -58,7 +58,7 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		void	SetTextProperties( const WgTextprop_p& pProp );
+		void	setTextProperties( const WgTextprop_p& pProp );
 		WgSize	preferredSize() const;
 	
 	protected:

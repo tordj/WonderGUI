@@ -60,25 +60,25 @@ namespace wg
 	
 		//____ Methods _________________________________________
 	
-		void			SetMenu( const WgMenu_p& pMenu );
-		WgMenu_p		Menu( ) const;
+		void			setMenu( const WgMenu_p& pMenu );
+		WgMenu_p		menu( ) const;
 	
-		WgMenuItem*		SelectedItem() const { return m_pSelectedItem; }
+		WgMenuItem*		selectedItem() const { return m_pSelectedItem; }
 	
-		void			SetTextFormat( const WgCharSeq& str );
-		WgString		TextFormat() const { return m_textFormat; }
+		void			setTextFormat( const WgCharSeq& str );
+		WgString		textFormat() const { return m_textFormat; }
 	
-		void			SetPlaceholderText( const WgCharSeq& str );
-		WgString		PlaceholderText() const { return m_placeholderText; }
+		void			setPlaceholderText( const WgCharSeq& str );
+		WgString		placeholderText() const { return m_placeholderText; }
 	
 		WgSize			preferredSize() const;
-		bool			IsAutoEllipsisDefault() const { return false; };
+		bool			isAutoEllipsisDefault() const { return false; };
 	
 		void			setEditMode(WgTextEditMode mode);
 		WgTextEditMode	editMode() const { return m_text.editMode(); }
 	
-		int				InsertTextAtCursor( const WgCharSeq& str );
-		bool			InsertCharAtCursor( Uint16 c );
+		int				insertTextAtCursor( const WgCharSeq& str );
+		bool			insertCharAtCursor( Uint16 c );
 	
 		// Press in textfield:
 		//		Editable - Grab input focus.

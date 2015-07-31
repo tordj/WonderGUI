@@ -93,18 +93,18 @@ namespace wg
 	
 		//____ Methods() _______________________________________
 	
-	 	void				SetClickArea( ClickArea clickArea );
-		inline ClickArea	GetClickArea() const;
+	 	void				setClickArea( ClickArea clickArea );
+		inline ClickArea	getClickArea() const;
 	
 		inline bool			isSelected();
 		virtual bool		setSelected( bool bSelected );
 	
-		void				SetFlipOnRelease( bool bFlipOnRelease );
-		inline bool			FlipOnRelease();
+		void				setFlipOnRelease( bool bFlipOnRelease );
+		inline bool			flipOnRelease();
 	
-		inline WgToggleGroup_p ToggleGroup() const;
+		inline WgToggleGroup_p toggleGroup() const;
 		WgSize				preferredSize() const;
-		inline bool			IsAutoEllipsisDefault() const;
+		inline bool			isAutoEllipsisDefault() const;
 	
 	
 	protected:
@@ -145,7 +145,7 @@ namespace wg
 	};
 	
 	
-	inline WgToggleButton::ClickArea WgToggleButton::GetClickArea() const
+	inline WgToggleButton::ClickArea WgToggleButton::getClickArea() const
 	{
 		return m_clickArea;
 	}
@@ -155,17 +155,17 @@ namespace wg
 		return m_state.isSelected();
 	};
 	
-	inline bool WgToggleButton::FlipOnRelease()
+	inline bool WgToggleButton::flipOnRelease()
 	{
 		return m_bFlipOnRelease;
 	}
 	
-	inline WgToggleGroup_p WgToggleButton::ToggleGroup() const
+	inline WgToggleGroup_p WgToggleButton::toggleGroup() const
 	{
 		return m_pToggleGroup;
 	}
 	
-	inline bool WgToggleButton::IsAutoEllipsisDefault() const
+	inline bool WgToggleButton::isAutoEllipsisDefault() const
 	{
 		return false;
 	};

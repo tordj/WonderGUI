@@ -96,9 +96,9 @@ namespace wg
 	}
 	
 	
-	//____ SetTextProperties() ____________________________________________________
+	//____ setTextProperties() ____________________________________________________
 	
-	void WgFpsDisplay::SetTextProperties( const WgTextprop_p& pProp )
+	void WgFpsDisplay::setTextProperties( const WgTextprop_p& pProp )
 	{
 		m_labelsText.setProperties(pProp);
 		m_valuesText.setProperties(pProp);

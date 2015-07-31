@@ -87,7 +87,7 @@ namespace wg
 	
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::SetRefreshAnimation( const WgGfxAnim_p& pAnimation )
+	void WgRefreshButton::setRefreshAnimation( const WgGfxAnim_p& pAnimation )
 	{
 		m_pRefreshAnim		= pAnimation;
 	
@@ -96,7 +96,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::SetRefreshMode( RefreshMode mode )
+	void WgRefreshButton::setRefreshMode( RefreshMode mode )
 	{
 		m_refreshMode = mode;
 		if( m_bRefreshing )
@@ -104,7 +104,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::SetAnimTarget( AnimTarget target )
+	void WgRefreshButton::setAnimTarget( AnimTarget target )
 	{
 		m_animTarget = target;
 		if( m_bRefreshing )
@@ -112,13 +112,13 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::SetRestartable( bool bRestartable )
+	void WgRefreshButton::setRestartable( bool bRestartable )
 	{
 		m_bRestartable = bRestartable;
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::StartRefresh()
+	void WgRefreshButton::startRefresh()
 	{
 		if( m_pRefreshAnim && (!m_bRefreshing || m_bRestartable) )
 		{
@@ -133,7 +133,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::StopRefresh()
+	void WgRefreshButton::stopRefresh()
 	{
 		if( m_pRefreshAnim && m_pRefreshAnim->durationScaled())
 		{
@@ -143,12 +143,12 @@ namespace wg
 		}
 		else
 		{
-			StopRefreshNow();
+			stopRefreshNow();
 		}
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::StopRefreshNow()
+	void WgRefreshButton::stopRefreshNow()
 	{
 		m_refreshProgress = 1.f;
 		m_bRefreshing = false;
@@ -158,7 +158,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	void WgRefreshButton::SetRefreshProgress( float fraction )
+	void WgRefreshButton::setRefreshProgress( float fraction )
 	{
 		if( m_refreshMode == PROGRESS )
 		{
@@ -236,7 +236,7 @@ namespace wg
 				WgKeyReleaseMsg_p pKeyRelease = WgKeyReleaseMsg::cast(pMsg);
 	
 				if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == WG_KEY_RETURN )
-					StartRefresh();
+					startRefresh();
 	
 				break;
 			}
@@ -246,7 +246,7 @@ namespace wg
 				WgMouseReleaseMsg_p pBtnRelease = WgMouseReleaseMsg::cast(pMsg);
 	
 				if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == WG_BUTTON_LEFT )
-					StartRefresh();
+					startRefresh();
 	
 				break;
 			}

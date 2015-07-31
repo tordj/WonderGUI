@@ -422,7 +422,7 @@ namespace wg
 			{
 				if( pHook->m_geo.contains( ofs ) )
 				{
-					if( pHook->_widget()->IsContainer() )
+					if( pHook->_widget()->isContainer() )
 						pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->m_geo.pos(), mode );
 					else if( pHook->_widget()->markTest( ofs - pHook->m_geo.pos() ) )
 						pResult = pHook->_widget();

@@ -34,12 +34,12 @@ namespace wg
 		
 		//____ Methods __________________________________________
 		
-		void			SetLEDColors( WgColor bottomOn, WgColor middleOn, WgColor topOn, 
+		void			setLEDColors( WgColor bottomOn, WgColor middleOn, WgColor topOn, 
 								   WgColor bottomOff, WgColor middleOff, WgColor topOff );
-		void			SetNbLEDs( int bottomSection, int middleSection, int topSection );
-		void			SetLEDSpacing( float spacing );
+		void			setNbLEDs( int bottomSection, int middleSection, int topSection );
+		void			setLEDSpacing( float spacing );
 		void			setValue( float peak, float hold );
-		void			SetDirection( WgDirection direction );
+		void			setDirection( WgDirection direction );
 			
 		WgSize			preferredSize() const;
 		

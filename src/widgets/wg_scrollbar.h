@@ -106,36 +106,36 @@ namespace wg
 	
 			//____ Methods __________________________________________
 	
-			inline float			HandlePos() const;						///< @brief Get position of the scrollbar handle.
-			inline float			HandleSize() const;						///< @brief Get the size of the scrollbar handle.
-			inline WgSkin_p 		BackgroundSkin() const;					///< @brief Get the skin used as a background for the handle slide area.
-			inline WgSkin_p 		HandleSkin() const;						///< @brief Get the skin used for the scrollbar handle.
-			inline WgSkin_p 		BwdButtonSkin() const;					///< @brief Get the skin used for the backward button.
-			inline WgSkin_p 		FwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
-			inline BtnLayout		ButtonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
+			inline float			handlePos() const;						///< @brief Get position of the scrollbar handle.
+			inline float			handleSize() const;						///< @brief Get the size of the scrollbar handle.
+			inline WgSkin_p 		backgroundSkin() const;					///< @brief Get the skin used as a background for the handle slide area.
+			inline WgSkin_p 		handleSkin() const;						///< @brief Get the skin used for the scrollbar handle.
+			inline WgSkin_p 		bwdButtonSkin() const;					///< @brief Get the skin used for the backward button.
+			inline WgSkin_p 		fwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
+			inline BtnLayout		buttonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
 	
 			void			setOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
 			inline WgOrientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 	
-			void		SetBackgroundPressMode( BgPressMode mode );			///< @brief Set action for mouse press on scrollbar background.
-			inline BgPressMode BackgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
+			void		setBackgroundPressMode( BgPressMode mode );			///< @brief Set action for mouse press on scrollbar background.
+			inline BgPressMode backgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
 	
-			void	SetHandle( float pos, float size );						///< @brief Set relative size and position of scrollbar handle.
-			void	SetHandlePos( float pos );								///< @brief Set relative position of scrollbar handle.
-			void	SetHandlePixelPos( int pos );								///< @brief Set pixel position of scrollbar handle.
-			void	SetHandleSize( float size );							///< @brief Set size of scrollbar handle.
+			void	setHandle( float pos, float size );						///< @brief Set relative size and position of scrollbar handle.
+			void	setHandlePos( float pos );								///< @brief Set relative position of scrollbar handle.
+			void	setHandlePixelPos( int pos );								///< @brief Set pixel position of scrollbar handle.
+			void	setHandleSize( float size );							///< @brief Set size of scrollbar handle.
 	
-			void	SetBackgroundSkin( const WgSkin_p& pSkin );			///< @brief Set skin for background of handle slide area.
-			void	SetHandleSkin( const WgSkin_p& pSkin );				///< @brief Set skin for scrollbar handle.
-			void	SetBwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for forward button.
-			void	SetFwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for backward button.
+			void	setBackgroundSkin( const WgSkin_p& pSkin );			///< @brief Set skin for background of handle slide area.
+			void	setHandleSkin( const WgSkin_p& pSkin );				///< @brief Set skin for scrollbar handle.
+			void	setBwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for forward button.
+			void	setFwdButtonSkin( const WgSkin_p& pSkin );				///< @brief Set skin for backward button.
 	
 	
-			void	SetSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin,
+			void	setSkins( const WgSkin_p& pBaseSkin, const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin,
 							  const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin ); ///< @brief Set all skins in one go.
-			void	SetButtonLayout(  BtnLayout layout );				///< @brief Set the layout for the forward/backward buttons.
+			void	setButtonLayout(  BtnLayout layout );				///< @brief Set the layout for the forward/backward buttons.
 	
-			bool	SetScrollbarTarget( WgScrollbarTarget * pTarget );
+			bool	setScrollbarTarget( WgScrollbarTarget * pTarget );
 	
 			WgSize	preferredSize() const;
 	
@@ -225,7 +225,7 @@ namespace wg
 	 * @return The position of the scrollbar handle in the range 0.0-1.0.
 	 **/
 	
-	float WgScrollbar::HandlePos() const
+	float WgScrollbar::handlePos() const
 	{
 		return m_handlePos;
 	}
@@ -244,7 +244,7 @@ namespace wg
 	 * @return A value in the range 0.0001-1.0 representing the specified size of the handle.
 	 **/
 	
-	float WgScrollbar::HandleSize() const
+	float WgScrollbar::handleSize() const
 	{
 		return m_handleSize;
 	}
@@ -263,7 +263,7 @@ namespace wg
 	 * @return Pointer to skin used as a background for the area of the handle or null.
 	 **/
 	
-	WgSkin_p WgScrollbar::BackgroundSkin() const
+	WgSkin_p WgScrollbar::backgroundSkin() const
 	{
 		return m_pBgSkin;
 	}
@@ -275,7 +275,7 @@ namespace wg
 	 * @return Pointer to the skin used for the scrollbar handle or null.
 	 **/
 	
-	WgSkin_p WgScrollbar::HandleSkin() const
+	WgSkin_p WgScrollbar::handleSkin() const
 	{
 		return m_pHandleSkin;
 	}
@@ -290,7 +290,7 @@ namespace wg
 	 * @return Pointer to the skin used for the backward button or null.
 	 **/
 	
-	WgSkin_p WgScrollbar::BwdButtonSkin() const
+	WgSkin_p WgScrollbar::bwdButtonSkin() const
 	{
 		return m_pBtnBwdSkin;
 	}
@@ -305,7 +305,7 @@ namespace wg
 	 * @return Pointer to the skin used for the forward button or null.
 	 **/
 	
-	WgSkin_p WgScrollbar::FwdButtonSkin() const
+	WgSkin_p WgScrollbar::fwdButtonSkin() const
 	{
 		return m_pBtnFwdSkin;
 	}
@@ -323,7 +323,7 @@ namespace wg
 	 * @return enum/bitmask specifying what buttons are displayed.
 	 **/
 	
-	WgScrollbar::BtnLayout WgScrollbar::ButtonLayout() const
+	WgScrollbar::BtnLayout WgScrollbar::buttonLayout() const
 	{
 		return m_btnLayout;
 	}
@@ -358,7 +358,7 @@ namespace wg
 	 * @return JUMP_PAGE or GOTO_POS.
 	 **/
 	
-	WgScrollbar::BgPressMode WgScrollbar::BackgroundPressMode() const
+	WgScrollbar::BgPressMode WgScrollbar::backgroundPressMode() const
 	{
 		return m_bgPressMode;
 	}

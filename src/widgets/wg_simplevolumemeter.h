@@ -35,9 +35,9 @@ namespace wg
 		
 		//____ Methods __________________________________________
 	
-		void			SetColors( WgColor bottom, WgColor middle, WgColor top );
-		void			SetSections( float bottomFraction, float topFraction );
-		void			SetHoldHeight( float fraction );
+		void			setColors( WgColor bottom, WgColor middle, WgColor top );
+		void			setSections( float bottomFraction, float topFraction );
+		void			setHoldHeight( float fraction );
 		
 		void			setValue( float peak, float hold );
 		void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );

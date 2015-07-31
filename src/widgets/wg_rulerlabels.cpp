@@ -49,9 +49,9 @@ namespace wg
 	}
 	
 	
-	//____ AddLabel() ____________________________________________________________
+	//____ addLabel() ____________________________________________________________
 	
-	void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset )
+	void WgRulerLabels::addLabel( const WgCharSeq& text, const WgTextStyle_p& pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
 		pLabel->textField.set(text);
@@ -63,18 +63,18 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ SetDirection() __________________________________________________________
+	//____ setDirection() __________________________________________________________
 	
-	void WgRulerLabels::SetDirection( WgDirection direction )
+	void WgRulerLabels::setDirection( WgDirection direction )
 	{
 		m_direction = direction;
 		_requestResize();
 		_requestRender();
 	}
 	
-	//____ GetLabel() ________________________________________________________________
+	//____ getLabel() ________________________________________________________________
 	
-	WgModText_p	WgRulerLabels::GetLabel(int index)
+	WgModText_p	WgRulerLabels::getLabel(int index)
 	{
 		if( index >= m_labels.size() )
 			return WgModText_p();

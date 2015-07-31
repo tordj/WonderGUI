@@ -732,7 +732,7 @@ namespace wg
 			case WG_MSG_MOUSE_MOVE:
 			{
 				WgMouseMoveMsg_p pMsg = WgMouseMoveMsg::cast(_pMsg);
-				WgCoord ofs = ToLocal(pMsg->pointerPos());
+				WgCoord ofs = toLocal(pMsg->pointerPos());
 				WgRect headerGeo = _headerGeo();
 				bool bHeaderHovered = headerGeo.contains(ofs) && (!WgBase::msgRouter()->isAnyMouseButtonPressed() || 
 																 (WgBase::msgRouter()->isMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
@@ -761,7 +761,7 @@ namespace wg
 			case WG_MSG_MOUSE_PRESS:
 			{
 				WgMousePressMsg_p pMsg = WgMousePressMsg::cast(_pMsg);
-				WgCoord ofs = ToLocal(pMsg->pointerPos());
+				WgCoord ofs = toLocal(pMsg->pointerPos());
 				WgRect headerGeo = _headerGeo();
 				if(pMsg->button() == WG_BUTTON_LEFT && headerGeo.contains(ofs))
 				{
@@ -780,7 +780,7 @@ namespace wg
 				WgMouseDragMsg_p pMsg = WgMouseDragMsg::cast(_pMsg);
 				if( m_header.m_bPressed )
 				{
-					WgCoord ofs = ToLocal(pMsg->pointerPos());
+					WgCoord ofs = toLocal(pMsg->pointerPos());
 					WgRect headerGeo = _headerGeo();
 					bool bHeaderHovered = headerGeo.contains(ofs);
 					if( bHeaderHovered != m_header.m_state.isHovered() )
@@ -806,7 +806,7 @@ namespace wg
 					WgRect headerGeo = _headerGeo();
 					_requestRender( headerGeo );
 	
-					WgCoord ofs = ToLocal(pMsg->pointerPos());
+					WgCoord ofs = toLocal(pMsg->pointerPos());
 					if( headerGeo.contains(ofs) )
 					{
 						if( m_sortOrder == WG_SORT_ASCENDING )
@@ -1208,7 +1208,7 @@ namespace wg
 				_getChildGeo( childGeo, pHook );
 				if( childGeo.contains(ofs) )
 				{
-					if( pHook->_widget()->IsContainer() )
+					if( pHook->_widget()->isContainer() )
 					{
 						pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}

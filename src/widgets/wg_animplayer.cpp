@@ -85,9 +85,9 @@ namespace wg
 	}
 	
 	
-	//____ SetAnimation() ____________________________________________________________
+	//____ setAnimation() ____________________________________________________________
 	
-	bool WgAnimPlayer::SetAnimation( const WgGfxAnim_p& pAnim )
+	bool WgAnimPlayer::setAnimation( const WgGfxAnim_p& pAnim )
 	{
 		m_pAnim			= pAnim;
 		m_playPos		= 0.0;
@@ -100,16 +100,16 @@ namespace wg
 		return true;
 	}
 	
-	//____ PlayPos() ______________________________________________________________
+	//____ playPos() ______________________________________________________________
 	
-	int WgAnimPlayer::PlayPos()
+	int WgAnimPlayer::playPos()
 	{
 		return (int) m_playPos;
 	}
 	
-	//____ SetPlayPosFractional() _________________________________________________
+	//____ setPlayPosFractional() _________________________________________________
 	
-	bool WgAnimPlayer::SetPlayPosFractional( float _fraction )
+	bool WgAnimPlayer::setPlayPosFractional( float _fraction )
 	{
 		if( !m_pAnim )
 			return false;
@@ -122,9 +122,9 @@ namespace wg
 	}
 	
 	
-	//____ SetPlayPos() ___________________________________________________________
+	//____ setPlayPos() ___________________________________________________________
 	
-	bool WgAnimPlayer::SetPlayPos( int _ticks )
+	bool WgAnimPlayer::setPlayPos( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -136,9 +136,9 @@ namespace wg
 	
 	
 	
-	//____ Rewind() _______________________________________________________________
+	//____ rewind() _______________________________________________________________
 	
-	bool WgAnimPlayer::Rewind( int _ticks )
+	bool WgAnimPlayer::rewind( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -152,9 +152,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ FastForward() __________________________________________________________
+	//____ fastForward() __________________________________________________________
 	
-	bool WgAnimPlayer::FastForward( int _ticks )
+	bool WgAnimPlayer::fastForward( int _ticks )
 	{
 		if( !m_pAnim )
 			return false;
@@ -185,16 +185,16 @@ namespace wg
 		return	(int) (m_pAnim->durationScaled() / m_speed);
 	}
 	
-	//____ Speed() ________________________________________________________________
+	//____ speed() ________________________________________________________________
 	
-	float WgAnimPlayer::Speed()
+	float WgAnimPlayer::speed()
 	{
 		return m_speed;
 	}
 	
-	//____ SetSpeed() _____________________________________________________________
+	//____ setSpeed() _____________________________________________________________
 	
-	bool WgAnimPlayer::SetSpeed( float _speed )
+	bool WgAnimPlayer::setSpeed( float _speed )
 	{
 		if( _speed <= 0 || _speed > 1000 )
 			return false;
@@ -203,9 +203,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ Play() _________________________________________________________________
+	//____ play() _________________________________________________________________
 	
-	bool WgAnimPlayer::Play()
+	bool WgAnimPlayer::play()
 	{
 		if( !m_pAnim )
 			return false;
@@ -215,9 +215,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ Stop() _________________________________________________________________
+	//____ stop() _________________________________________________________________
 	
-	bool WgAnimPlayer::Stop()
+	bool WgAnimPlayer::stop()
 	{
 		m_bPlaying = false;
 		WgBase::msgRouter()->deleteRoute( m_tickRouteId );

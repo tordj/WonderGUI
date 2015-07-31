@@ -68,8 +68,8 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		bool	SetMaxInputChars( int max );
-		int		MaxInputChars() const { return m_maxInputChars; }
+		bool	setMaxInputChars( int max );
+		int		maxInputChars() const { return m_maxInputChars; }
 		void	setFormat( const WgValueFormat_p& pFormat );
 		WgValueFormat_p format() const { return m_pFormat; }
 		void	clear();									// Sets value to 0 and clears input field.

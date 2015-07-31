@@ -97,9 +97,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ SetFlipOnRelease() _____________________________________________________
+	//____ setFlipOnRelease() _____________________________________________________
 	
-	void WgToggleButton::SetFlipOnRelease( bool bFlipOnRelease )
+	void WgToggleButton::setFlipOnRelease( bool bFlipOnRelease )
 	{
 		m_bFlipOnRelease = bFlipOnRelease;
 	}

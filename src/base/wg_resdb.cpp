@@ -556,8 +556,8 @@ namespace wg
 	
 		WgWidget_p pWidget = widgetRes->res;
 	
-		WgWidget_p pClone = pWidget->NewOfMyType();
-		pClone->CloneContent(pWidget.rawPtr());
+		WgWidget_p pClone = pWidget->newOfMyType();
+		pClone->cloneContent(pWidget.rawPtr());
 		return pClone;
 	}
 	

@@ -68,27 +68,27 @@ namespace wg
 			BUTTON_STRETCHED
 		};
 	
-		void			SetRefreshAnimation( const WgGfxAnim_p& pAnimation );
-		WgGfxAnim_p	GetRefreshAnimation() const { return m_pRefreshAnim; }
+		void			setRefreshAnimation( const WgGfxAnim_p& pAnimation );
+		WgGfxAnim_p	getRefreshAnimation() const { return m_pRefreshAnim; }
 	
-		void			SetRefreshMode( RefreshMode mode );
-		RefreshMode		GetRefreshMode() const { return m_refreshMode; }
+		void			setRefreshMode( RefreshMode mode );
+		RefreshMode		getRefreshMode() const { return m_refreshMode; }
 	
-		void			SetAnimTarget( AnimTarget target );
-		AnimTarget		GetAnimTarget() const { return m_animTarget; }
+		void			setAnimTarget( AnimTarget target );
+		AnimTarget		getAnimTarget() const { return m_animTarget; }
 	
-		void			SetRestartable( bool bRestartable );
-		bool			IsRestartable() const { return m_bRestartable; }
+		void			setRestartable( bool bRestartable );
+		bool			isRestartable() const { return m_bRestartable; }
 	
-		void			SetAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
-		bool			IsAutoStartRefresh( ) const { return m_bAutoRefresh; }
+		void			setAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
+		bool			isAutoStartRefresh( ) const { return m_bAutoRefresh; }
 	
-		void			StartRefresh();
-		void			StopRefresh();
-		void			StopRefreshNow();
-		void			SetRefreshProgress( float fraction );
-		float			GetRefreshProgress() const { return m_refreshProgress; }
-		bool			IsRefreshing() const { return m_bRefreshing; }
+		void			startRefresh();
+		void			stopRefresh();
+		void			stopRefreshNow();
+		void			setRefreshProgress( float fraction );
+		float			getRefreshProgress() const { return m_refreshProgress; }
+		bool			isRefreshing() const { return m_bRefreshing; }
 	
 	protected:
 		WgRefreshButton();

@@ -141,9 +141,9 @@ namespace wg
 		}
 	}
 	
-	//____ SetSeparatorSkin() ___________________________________________________
+	//____ setSeparatorSkin() ___________________________________________________
 	
-	bool WgMenu::SetSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& borders )
+	bool WgMenu::setSeparatorSkin( const WgSkin_p& pSkin, const WgBorder& borders )
 	{
 		m_pSeparatorSkin	= pSkin;
 		m_sepBorder		= borders;
@@ -158,9 +158,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ SetArrowSource() _______________________________________________________
+	//____ setArrowSource() _______________________________________________________
 	
-	bool WgMenu::SetArrowSource( const WgGfxAnim_p& pAnim )
+	bool WgMenu::setArrowSource( const WgGfxAnim_p& pAnim )
 	{
 		if( !pAnim )
 			return false;
@@ -172,9 +172,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ SetTextProperties() _____________________________________________________
+	//____ setTextProperties() _____________________________________________________
 	
-	bool WgMenu::SetTextProperties( const WgTextprop_p& pEntryProp, const WgTextprop_p& pKeyAccelProp )
+	bool WgMenu::setTextProperties( const WgTextprop_p& pEntryProp, const WgTextprop_p& pKeyAccelProp )
 	{
 		m_pEntryProp 	= pEntryProp;
 		m_pKeyAccelProp = pKeyAccelProp;
@@ -239,7 +239,7 @@ namespace wg
 	
 	//____ SetScrollbarSkin() ______________________________________________________
 	
-	bool WgMenu::SetScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
+	bool WgMenu::setScrollbarSkins(  const WgSkin_p& pBackgroundSkin, const WgSkin_p& pHandleSkin, const WgSkin_p& pBwdButtonSkin, const WgSkin_p& pFwdButtonSkin )
 	{
 		m_pScrollbarBgSkin		= pBackgroundSkin;
 		m_pScrollbarHandleSkin	= pHandleSkin;
@@ -250,27 +250,27 @@ namespace wg
 		{
 			//TODO: Adapt to changes in scrollbars minimum width.
 	
-			m_scrollbarHook.Scrollbar()->SetSkins( 0, pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
+			m_scrollbarHook.Scrollbar()->setSkins( 0, pBackgroundSkin, pHandleSkin, pBwdButtonSkin, pFwdButtonSkin );
 		}
 		return true;
 	}
 	
-	//____ SetScrollbarButtonLayout() ________________________________________________
+	//____ setScrollbarButtonLayout() ________________________________________________
 	
-	bool WgMenu::SetScrollbarButtonLayout(  WgScrollbar::BtnLayout layout )
+	bool WgMenu::setScrollbarButtonLayout(  WgScrollbar::BtnLayout layout )
 	{
 		m_scrollbarBtnLayout = layout;
 	
 		if( m_scrollbarHook.Scrollbar() )
-			m_scrollbarHook.Scrollbar()->SetButtonLayout( layout );
+			m_scrollbarHook.Scrollbar()->setButtonLayout( layout );
 	
 		return true;
 	}
 	
 	
-	//____ SetCheckBoxSkin() ____________________________________________________
+	//____ setCheckBoxSkin() ____________________________________________________
 	
-	bool WgMenu::SetCheckBoxSkin( const WgSkin_p& pSkin )
+	bool WgMenu::setCheckBoxSkin( const WgSkin_p& pSkin )
 	{
 		m_pCheckBoxSkin		= pSkin;
 	
@@ -278,9 +278,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ SetRadioButtonSkin() _________________________________________________
+	//____ setRadioButtonSkin() _________________________________________________
 	
-	bool WgMenu::SetRadioButtonSkin( const WgSkin_p& pSkin )
+	bool WgMenu::setRadioButtonSkin( const WgSkin_p& pSkin )
 	{
 		m_pRadioButtonSkin			= pSkin;
 	
@@ -288,9 +288,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ GetEntryHeight() _______________________________________________________
+	//____ getEntryHeight() _______________________________________________________
 	
-	int WgMenu::GetEntryHeight() const
+	int WgMenu::getEntryHeight() const
 	{
 		return m_entryHeight;
 	}
@@ -321,9 +321,9 @@ namespace wg
 		return m_nItems-1;		// Position of this item.
 	}
 	
-	//____ InsertItem() ___________________________________________________________
+	//____ insertItem() ___________________________________________________________
 	
-	int WgMenu::InsertItem( WgMenuItem * pEntry, int pos )
+	int WgMenu::insertItem( WgMenuItem * pEntry, int pos )
 	{
 		// Calculate minWidth for all derived from ENTRY
 	
@@ -372,7 +372,7 @@ namespace wg
 	
 	WgMenuItem* WgMenu::removeItem( int pos )
 	{
-		WgMenuItem * pEntry = GetItem(pos);
+		WgMenuItem * pEntry = getItem(pos);
 		removeItem(pEntry);
 		return pEntry;
 	}
@@ -394,9 +394,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ DeleteItem() ___________________________________________________________
+	//____ deleteItem() ___________________________________________________________
 	
-	bool WgMenu::DeleteItem( WgMenuItem * pEntry )
+	bool WgMenu::deleteItem( WgMenuItem * pEntry )
 	{
 		if( !m_items.isMemberOf(pEntry) )
 			return false;
@@ -408,14 +408,14 @@ namespace wg
 		return true;
 	}
 	
-	bool WgMenu::DeleteItem( int pos )
+	bool WgMenu::deleteItem( int pos )
 	{
-		return DeleteItem(GetItem(pos));
+		return deleteItem(getItem(pos));
 	}
 	
-	//____ DeleteAllItems() _______________________________________________________
+	//____ deleteAllItems() _______________________________________________________
 	
-	void WgMenu::DeleteAllItems()
+	void WgMenu::deleteAllItems()
 	{
 		m_items.clear();
 		m_nItems = 0;
@@ -423,9 +423,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ GetItemPos() ___________________________________________________________
+	//____ getItemPos() ___________________________________________________________
 	
-	int WgMenu::GetItemPos( WgMenuItem* pEntry )
+	int WgMenu::getItemPos( WgMenuItem* pEntry )
 	{
 		if( m_items.isMemberOf( pEntry ) )
 			return pEntry->index();
@@ -433,9 +433,9 @@ namespace wg
 			return -1;
 	}
 	
-	//____ GetItem() ______________________________________________________________
+	//____ getItem() ______________________________________________________________
 	
-	WgMenuItem* WgMenu::GetItem( int pos )
+	WgMenuItem* WgMenu::getItem( int pos )
 	{
 		return m_items.get(pos);
 	}
@@ -867,7 +867,7 @@ namespace wg
 			{
 				WgMenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 				if( pItem )
-					SelectItem(pItem);
+					selectItem(pItem);
 			}
 			break;
 	
@@ -941,7 +941,7 @@ namespace wg
 								_openSubMenu( (WgMenuSubMenu*) pItem );
 							else
 							{
-								SelectItem(pItem);
+								selectItem(pItem);
 								pItem = 0;				// So we won't mark an item in the closed menu.
 							}
 						}
@@ -1079,8 +1079,8 @@ namespace wg
 	
 	}
 	
-	//____ SelectItem() _________________________________________________
-	void WgMenu::SelectItem(WgMenuItem* pItem)
+	//____ selectItem() _________________________________________________
+	void WgMenu::selectItem(WgMenuItem* pItem)
 	{
 		m_pSelectedItem = 0;
 	
@@ -1460,9 +1460,9 @@ namespace wg
 			if( !pScrollbar )
 			{
 				pScrollbar = new WgScrollbar();
-				pScrollbar->SetSkins( 0, m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
-				pScrollbar->SetButtonLayout( m_scrollbarBtnLayout );
-				pScrollbar->SetScrollbarTarget(this);
+				pScrollbar->setSkins( 0, m_pScrollbarBgSkin, m_pScrollbarHandleSkin, m_pScrollbarBtnBwdSkin, m_pScrollbarBtnFwdSkin );
+				pScrollbar->setButtonLayout( m_scrollbarBtnLayout );
+				pScrollbar->setScrollbarTarget(this);
 			}
 			WgSize scrollbarSize = pScrollbar->preferredSize();
 	

@@ -404,7 +404,7 @@ namespace wg
 	
 			if( pHook )
 			{
-				if( pHook->_widget()->IsContainer() )
+				if( pHook->_widget()->isContainer() )
 				{
 					WgWidget * pResult = static_cast<WgContainer*>(pHook->_widget())->_findWidget( ofs - pHook->pos(), mode );
 					if( pResult )
@@ -420,7 +420,7 @@ namespace wg
 			}
 			else if( m_baseHook._widget() )
 			{
-				if( m_baseHook._widget()->IsContainer() )
+				if( m_baseHook._widget()->isContainer() )
 				{
 					WgWidget * pResult = static_cast<WgContainer*>(m_baseHook._widget())->_findWidget( ofs - m_baseHook.pos(), mode );
 					if( pResult )

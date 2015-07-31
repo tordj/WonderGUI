@@ -101,9 +101,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ AddMenu() ______________________________________________________________
+	//____ addMenu() ______________________________________________________________
 	
-	bool WgMenubar::AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey )
+	bool WgMenubar::addMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey )
 	{
 		// Sanity check
 	
@@ -155,8 +155,8 @@ namespace wg
 		return true;
 	}
 	
-	//____ RemoveMenu() ________________________________________________________
-	bool WgMenubar::RemoveMenu( const WgMenu_p& pMenu )
+	//____ removeMenu() ________________________________________________________
+	bool WgMenubar::removeMenu( const WgMenu_p& pMenu )
 	{
 		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
@@ -171,8 +171,8 @@ namespace wg
 		return false;
 	}
 	
-	//____ MenuTitle() ________________________________________________________
-	WgChar *WgMenubar::MenuTitle( const WgMenu_p& pMenu) const
+	//____ menuTitle() ________________________________________________________
+	WgChar *WgMenubar::menuTitle( const WgMenu_p& pMenu) const
 	{
 		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
@@ -182,8 +182,8 @@ namespace wg
 		return 0;
 	}
 	
-	//____ ShowMenu() ________________________________________________________
-	bool WgMenubar::ShowMenu( const WgMenu_p& pMenu)
+	//____ showMenu() ________________________________________________________
+	bool WgMenubar::showMenu( const WgMenu_p& pMenu)
 	{
 		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
@@ -196,8 +196,8 @@ namespace wg
 		return false;
 	}
 	
-	//____ HideMenu() ________________________________________________________
-	bool WgMenubar::HideMenu(const WgMenu_p& pMenu)
+	//____ hideMenu() ________________________________________________________
+	bool WgMenubar::hideMenu(const WgMenu_p& pMenu)
 	{
 		for( WgMenuBarItem * pI = m_items.first(); pI; pI = pI->next() )
 		{
@@ -415,7 +415,7 @@ namespace wg
 		if( pItem == 0 || !pItem->m_pMenu )
 			return false;
 	
-		WgCoord pos = ToLocal( WgCoord(0, 0) );
+		WgCoord pos = toLocal( WgCoord(0, 0) );
 	
 		if( m_pSkin )
 			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();
@@ -473,7 +473,7 @@ namespace wg
 	
 	Uint32 WgMenubar::_getItemAtAbsPos( int x, int y )
 	{
-		WgCoord pos = ToLocal( WgCoord(x, y) );
+		WgCoord pos = toLocal( WgCoord(x, y) );
 	
 		if( m_pSkin )
 			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();

@@ -72,9 +72,9 @@ namespace wg
 		return 0;
 	}
 	
-	//____ SetImage() _____________________________________________________________
+	//____ setImage() _____________________________________________________________
 	
-	void WgImage::SetImage( const WgSurface_p& pSurface, const WgRect& rect )
+	void WgImage::setImage( const WgSurface_p& pSurface, const WgRect& rect )
 	{
 		if( pSurface != m_pSurface || rect != m_rect )
 		{
@@ -95,7 +95,7 @@ namespace wg
 		}
 	}
 	
-	void WgImage::SetImage( const WgSurface_p& pSurface )
+	void WgImage::setImage( const WgSurface_p& pSurface )
 	{
 		if( pSurface != m_pSurface )
 		{

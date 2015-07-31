@@ -42,7 +42,7 @@ namespace wg
 	{
 		m_text.setAlignment( WG_WEST );
 		m_text.setWrap(false);
-		m_text.setAutoEllipsis(IsAutoEllipsisDefault());	
+		m_text.setAutoEllipsis(isAutoEllipsisDefault());	
 	//	m_textColor = m_text.color();
 	//	m_textDisabledColor	= 0xFFFF;
 	
@@ -110,9 +110,9 @@ namespace wg
 	}
 	
 	
-	//____ SetMenu() ______________________________________________________________
+	//____ setMenu() ______________________________________________________________
 	
-	void WgCombobox::SetMenu( const WgMenu_p& pMenu )
+	void WgCombobox::setMenu( const WgMenu_p& pMenu )
 	{
 		if( pMenu == m_pMenu )
 			return;
@@ -122,9 +122,9 @@ namespace wg
 			_entrySelected(m_pMenu->GetSelectedItem()->getId());
 	}
 	
-	//____ Menu() __________________________________________________________
+	//____ menu() __________________________________________________________
 	
-	WgMenu_p WgCombobox::Menu() const
+	WgMenu_p WgCombobox::menu() const
 	{
 		return m_pMenu;
 	}
@@ -136,33 +136,33 @@ namespace wg
 		m_text.setEditMode(mode);
 	}
 	
-	//____ SetTextFormat() ________________________________________________________
+	//____ setTextFormat() ________________________________________________________
 	
-	void WgCombobox::SetTextFormat( const WgCharSeq& str )
+	void WgCombobox::setTextFormat( const WgCharSeq& str )
 	{
 		m_textFormat = str;
 		if( m_pMenu && m_pMenu->GetSelectedItem() )
 			_entrySelected(m_pMenu->GetSelectedItem()->getId());
 	}
 	
-	//____ SetPlaceholderText() ___________________________________________________
+	//____ setPlaceholderText() ___________________________________________________
 	
-	void WgCombobox::SetPlaceholderText( const WgCharSeq& str )
+	void WgCombobox::setPlaceholderText( const WgCharSeq& str )
 	{
 		m_placeholderText = str;
 		if( m_text.isEmpty() && !m_text.isCursorShowing() )
 			_requestRender();
 	}
 	
-	//____ InsertTextAtCursor() ___________________________________________________
+	//____ insertTextAtCursor() ___________________________________________________
 	
-	int WgCombobox::InsertTextAtCursor( const WgCharSeq& str )
+	int WgCombobox::insertTextAtCursor( const WgCharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return 0;				// Couldn't get input focus...
 	
 		int retVal = 0;
@@ -185,15 +185,15 @@ namespace wg
 		return retVal;
 	}
 	
-	//____ InsertCharAtCursor() ___________________________________________________
+	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool WgCombobox::InsertCharAtCursor( Uint16 c )
+	bool WgCombobox::insertCharAtCursor( Uint16 c )
 	{
 		if( !_isEditable() )
 			return 0;
 	
 		if( !m_state.isFocused() )
-			if( !GrabFocus() )
+			if( !grabFocus() )
 				return false;				// Couldn't get input focus...
 	
 		if( m_maxCharacters != 0 && m_maxCharacters < m_text.length() )
@@ -289,7 +289,7 @@ namespace wg
 					{
 						if( !m_state.isFocused() )
 						{
-							GrabFocus();
+							grabFocus();
 							if( m_state.isFocused() )
 								m_bFocusPress = true;		// Current button press brought focus.
 						}
@@ -386,7 +386,7 @@ namespace wg
 			case WG_MSG_WHEEL_ROLL:
 			{		
 				WgWheelRollMsg_p pMsg = WgWheelRollMsg::cast(_pMsg);
-				if( !m_state.isFocused() && m_pMenu && m_pMenu->GetItemCount() != 0 )
+				if( !m_state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
 				{
 					WgMenuItem * pItem = m_pSelectedItem;
 					int distance = pMsg->distance();
@@ -417,7 +417,7 @@ namespace wg
 						distance++;
 					}
 	
-					m_pMenu->SelectItem( pItem );
+					m_pMenu->selectItem( pItem );
 					_entrySelected( pItem->getId() );
 					_pMsg->swallow();
 				}
