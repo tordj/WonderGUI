@@ -19,6 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef WG_MEMSTACK_DOT_H
+#define WG_MEMSTACK_DOT_H
 
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
@@ -51,3 +53,5 @@ private:
 	int						m_blockSize;
 	WgChain<BlockHeader>	m_blocks;
 };
+
+#endif //WG_MEMSTACK_DOT_H
