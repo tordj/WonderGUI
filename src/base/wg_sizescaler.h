@@ -35,61 +35,66 @@
 #	include <wg_types.h>
 #endif
 
-class WgSizeScaler;
-
-typedef	WgStrongPtr<WgSizeScaler,WgObject_p>	WgSizeScaler_p;
-
-
-class WgScalable
+namespace wg 
 {
-	friend class WgSizeScaler;
-protected:
-	WgScalable() {}
-	virtual ~WgScalable();
-	virtual void _onScaleChanged() = 0;
 	
-	WgSizeScaler_p m_pScaler;
-};
-
-
-class WgSizeScaler : public WgObject
-{
-	friend class WgScalable;
-public:
-	static WgSizeScaler_p create();
-	static WgSizeScaler_p create( float scale );
-	static WgSizeScaler_p create( float scaleX, float scaleY );
-
-	virtual ~WgSizeScaler() {}
-
-	void	setScale( float scale );
-	void	setScale( float scaleX, float scaleY );
-	void	setScaleX( float scaleX );
-	void	setScaleY( float scaleY );
-
-	inline float	scaleX() const { return m_scaleX; }
-	inline float	scaleY() const { return m_scaleY; }
-
-	void	addItem( WgScalable * pScalable );
-	void	removeItem( WgScalable * pScalable );
-	void	removeAllItems();
-
-private:
-	WgSizeScaler( float scaleX, float scaleY );
-	void	_removeDeadItem( WgScalable * pScalable );
-
-	class Node : public WgLink
+	class WgSizeScaler;
+	
+	typedef	WgStrongPtr<WgSizeScaler,WgObject_p>	WgSizeScaler_p;
+	
+	
+	class WgScalable
 	{
-	public:
-		LINK_METHODS(Node);
-		WgScalable * m_pScalable;
+		friend class WgSizeScaler;
+	protected:
+		WgScalable() {}
+		virtual ~WgScalable();
+		virtual void _onScaleChanged() = 0;
+		
+		WgSizeScaler_p m_pScaler;
 	};
+	
+	
+	class WgSizeScaler : public WgObject
+	{
+		friend class WgScalable;
+	public:
+		static WgSizeScaler_p create();
+		static WgSizeScaler_p create( float scale );
+		static WgSizeScaler_p create( float scaleX, float scaleY );
+	
+		virtual ~WgSizeScaler() {}
+	
+		void	setScale( float scale );
+		void	setScale( float scaleX, float scaleY );
+		void	setScaleX( float scaleX );
+		void	setScaleY( float scaleY );
+	
+		inline float	scaleX() const { return m_scaleX; }
+		inline float	scaleY() const { return m_scaleY; }
+	
+		void	addItem( WgScalable * pScalable );
+		void	removeItem( WgScalable * pScalable );
+		void	removeAllItems();
+	
+	private:
+		WgSizeScaler( float scaleX, float scaleY );
+		void	_removeDeadItem( WgScalable * pScalable );
+	
+		class Node : public WgLink
+		{
+		public:
+			LINK_METHODS(Node);
+			WgScalable * m_pScalable;
+		};
+	
+		WgChain<Node>	m_nodes;
+	
+		float	m_scaleX;
+		float	m_scaleY;
+	};
+	
+	
 
-	WgChain<Node>	m_nodes;
-
-	float	m_scaleX;
-	float	m_scaleY;
-};
-
-
+} // namespace wg
 #endif //WG_SIZESCALER_DOT_H

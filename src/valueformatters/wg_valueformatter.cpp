@@ -22,32 +22,37 @@
 
 #include <wg_valueformatter.h>
 
-const char WgValueFormatter::CLASSNAME[] = {"ValueFormatter"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgValueFormatter::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgValueFormatter::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgValueFormatter_p WgValueFormatter::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgValueFormatter_p( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
+	
+	const char WgValueFormatter::CLASSNAME[] = {"ValueFormatter"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgValueFormatter::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgValueFormatter::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgValueFormatter_p WgValueFormatter::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgValueFormatter_p( static_cast<WgValueFormatter*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
 
-	return 0;
-}
+} // namespace wg

@@ -23,4 +23,9 @@
 #include <wg_char.h>
 #include <wg_font.h>
 
+namespace wg 
+{
+	
+	
 
+} // namespace wg

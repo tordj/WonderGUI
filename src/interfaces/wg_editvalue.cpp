@@ -22,33 +22,38 @@
 
 #include <wg_editvalue.h>
 
-const char WgEditValue::CLASSNAME[] = {"EditValue"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgEditValue::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgModValue::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgEditValue::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgEditValue_p WgEditValue::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgEditValue_p( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
+	
+	const char WgEditValue::CLASSNAME[] = {"EditValue"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgEditValue::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgModValue::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgEditValue::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgEditValue_p WgEditValue::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgEditValue_p( pInterface.getRealObjectPtr(), static_cast<WgEditValue*>(pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
 
-	return 0;
-}
-
+} // namespace wg

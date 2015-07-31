@@ -28,55 +28,60 @@
 #	include <wg_textfield.h>
 #endif
 
-
-//____ WgEditTextHolder ___________________________________________________________
-
-struct WgEditTextHolder : public WgTextHolder
+namespace wg 
 {
-};
-
-//____ WgEditTextField __________________________________________________________________
-
-class WgEditTextField : public WgTextField
-{
-public:
-	WgEditTextField( WgEditTextHolder * pHolder );
-
-	// Overloaded so we can update cursor and selection
-
-	void				clear();
-
-	void				set( const WgCharSeq& seq );
-	void				set( const WgCharBuffer * buffer );
-	void				set( const WgString& str );
-
-	int					append( const WgCharSeq& seq );
-	int					insert( int ofs, const WgCharSeq& seq );
-	int					replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					remove( int ofs, int len );
-
-	void				setState( WgState state );
-	void				onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
-
-	//
-
-	void				setEditMode( WgTextEditMode mode );
-	WgTextEditMode		editMode() const;
 	
-	void				setCaret( const WgCaret2_p& pCaret );
-	WgCaret2_p 		caret() { return m_pCaret; }
 	
-	int					selectionBegin() const;
-	int					selectionEnd() const;
+	//____ WgEditTextHolder ___________________________________________________________
+	
+	struct WgEditTextHolder : public WgTextHolder
+	{
+	};
+	
+	//____ WgEditTextField __________________________________________________________________
+	
+	class WgEditTextField : public WgTextField
+	{
+	public:
+		WgEditTextField( WgEditTextHolder * pHolder );
+	
+		// Overloaded so we can update cursor and selection
+	
+		void				clear();
+	
+		void				set( const WgCharSeq& seq );
+		void				set( const WgCharBuffer * buffer );
+		void				set( const WgString& str );
+	
+		int					append( const WgCharSeq& seq );
+		int					insert( int ofs, const WgCharSeq& seq );
+		int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+		int					remove( int ofs, int len );
+	
+		void				setState( WgState state );
+		void				onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _clip );
+	
+		//
+	
+		void				setEditMode( WgTextEditMode mode );
+		WgTextEditMode		editMode() const;
+		
+		void				setCaret( const WgCaret2_p& pCaret );
+		WgCaret2_p 		caret() { return m_pCaret; }
+		
+		int					selectionBegin() const;
+		int					selectionEnd() const;
+	
+	
+	protected:
+	
+		void			_cursorToEnd();
+	
+		WgTextEditMode	m_editMode;
+		WgEditState		m_editState;
+		WgCaret2_p		m_pCaret;
+	};
+	
 
-
-protected:
-
-	void			_cursorToEnd();
-
-	WgTextEditMode	m_editMode;
-	WgEditState		m_editState;
-	WgCaret2_p		m_pCaret;
-};
-
+} // namespace wg
 #endif //WG_EDITTEXTFIELD_DOT_H

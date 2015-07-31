@@ -20,51 +20,56 @@
 
 =========================================================================*/
 #ifndef WG_INTERFACE_DOT_H
-#define WG_INTERFACE_DOT_H
 
-class WgInterface_p;
-class WgInterface_wp;
-
-class WgObject;
-class WgObject_p;
-
-
-/**
- * @brief Provides access to items embedded into a Widget or Object.
- *
- * Interfaces are provided by Widgets and other reference counted Objects
- * to provide API access to their embedded items such as labels and
- * icons.
- *
- * The interface concept of WonderGUI serves two purposes:
- *
- * First it
- * provides a nice API-level abstraction to keep methods for accessing
- * different components of a widget logically separated while providing
- * an identical way to access embedded items in all widgets that
- * contains them.
- *
- * Secondly it provides a safe way to pass around pointers to the embedded
- * items since interface pointers do reference counting on the object
- * providing the interface, while pointing at the interface directly.
- *
- **/
-
-class WgInterface
+namespace wg 
 {
-	friend class WgInterface_p;
-	friend class WgInterface_wp;
-public:
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgInterface_p	cast( const WgInterface_p& pInterface );			// Provided just for completeness sake.
-	WgInterface_p			ptr();												///< @brief Get a pointer to this interface.
-	WgObject_p				holder();											///< @breif Get a pointer to the object providing this interface.
+	#define WG_INTERFACE_DOT_H
+	
+	class WgInterface_p;
+	class WgInterface_wp;
+	
+	class WgObject;
+	class WgObject_p;
+	
+	
+	/**
+	 * @brief Provides access to items embedded into a Widget or Object.
+	 *
+	 * Interfaces are provided by Widgets and other reference counted Objects
+	 * to provide API access to their embedded items such as labels and
+	 * icons.
+	 *
+	 * The interface concept of WonderGUI serves two purposes:
+	 *
+	 * First it
+	 * provides a nice API-level abstraction to keep methods for accessing
+	 * different components of a widget logically separated while providing
+	 * an identical way to access embedded items in all widgets that
+	 * contains them.
+	 *
+	 * Secondly it provides a safe way to pass around pointers to the embedded
+	 * items since interface pointers do reference counting on the object
+	 * providing the interface, while pointing at the interface directly.
+	 *
+	 **/
+	
+	class WgInterface
+	{
+		friend class WgInterface_p;
+		friend class WgInterface_wp;
+	public:
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgInterface_p	cast( const WgInterface_p& pInterface );			// Provided just for completeness sake.
+		WgInterface_p			ptr();												///< @brief Get a pointer to this interface.
+		WgObject_p				holder();											///< @breif Get a pointer to the object providing this interface.
+	
+	protected:
+		virtual WgObject * 		_object() const = 0;
+	};
+	
+	
 
-protected:
-	virtual WgObject * 		_object() const = 0;
-};
-
-
+} // namespace wg
 #endif //WG_INTERFACE_DOT_H

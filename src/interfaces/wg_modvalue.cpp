@@ -22,71 +22,76 @@
 
 #include <wg_modvalue.h>
 
-const char WgModValue::CLASSNAME[] = {"ModValue"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgModValue::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgValue::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgModValue::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgModValue_p WgModValue::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgModValue_p( pInterface.getRealObjectPtr(), static_cast<WgModValue*>( pInterface.rawPtr()) );
-
-	return 0;
-}
-
-//____ clear() _________________________________________________________________
-
-void WgModValue::clear() 
-{ 
-	bool bModified = _field()->value() != 0;
-	_field()->clear();
-
-	if( bModified )
-		_field()->onValueModified(); 
-}
-
-//____ set() ___________________________________________________________________
-
-bool WgModValue::set( Sint64 value, int scale ) 
-{ 
-	if( _field()->set(value,scale) )
+	
+	const char WgModValue::CLASSNAME[] = {"ModValue"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgModValue::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgValue::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgModValue::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgModValue_p WgModValue::cast( const WgInterface_p& pInterface )
 	{
-		_field()->onValueModified();
-		return true;
-	} 
-	else
-		return false;
-
-}
-
-//____ setRange() ______________________________________________________________
-
-bool WgModValue::setRange( Sint64 min, Sint64 max ) 
-{ 
-	Sint64 val = _field()->value();
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgModValue_p( pInterface.getRealObjectPtr(), static_cast<WgModValue*>( pInterface.rawPtr()) );
 	
-	bool retVal = _field()->setRange(min,max); 
-	if( val != _field()->value() )
-		_field()->onValueModified();
+		return 0;
+	}
 	
-	return retVal;
-}
+	//____ clear() _________________________________________________________________
+	
+	void WgModValue::clear() 
+	{ 
+		bool bModified = _field()->value() != 0;
+		_field()->clear();
+	
+		if( bModified )
+			_field()->onValueModified(); 
+	}
+	
+	//____ set() ___________________________________________________________________
+	
+	bool WgModValue::set( Sint64 value, int scale ) 
+	{ 
+		if( _field()->set(value,scale) )
+		{
+			_field()->onValueModified();
+			return true;
+		} 
+		else
+			return false;
+	
+	}
+	
+	//____ setRange() ______________________________________________________________
+	
+	bool WgModValue::setRange( Sint64 min, Sint64 max ) 
+	{ 
+		Sint64 val = _field()->value();
+		
+		bool retVal = _field()->setRange(min,max); 
+		if( val != _field()->value() )
+			_field()->onValueModified();
+		
+		return retVal;
+	}
+	
 
+} // namespace wg

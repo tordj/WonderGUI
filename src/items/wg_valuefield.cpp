@@ -23,104 +23,109 @@
 #include <wg_widget.h>
 #include <wg_valuefield.h>
 
-
-//____ Constructor _____________________________________________________________
-
-WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder)
+namespace wg 
 {
-	m_value = 0;
-	m_scale = 1;
-}
-
-//____ setFormatter() __________________________________________________________
-
-void WgValueField::setFormatter( const WgValueFormatter_p& pFormatter )
-{
-	if( m_pFormatter != pFormatter )
-	{
-		m_pFormatter = pFormatter;
-		_regenText();
-	}
-}
-
-//____ clearFormatter() ________________________________________________________
-
-void WgValueField::clearFormatter()
-{
-	if( m_pFormatter )
-	{
-		m_pFormatter = 0;
-		_regenText();
-	}
-}
-
-//____ clear() _________________________________________________________________
-
-void WgValueField::clear()
-{
-	if( m_value != 0 )
+	
+	
+	//____ Constructor _____________________________________________________________
+	
+	WgValueField::WgValueField(WgValueHolder * pHolder) : WgPresentableField(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
-		_regenText();
 	}
-}
-
-//____ set() ___________________________________________________________________
-
-bool WgValueField::set( Sint64 value, int scale )
-{
-	if( m_value != value || m_scale != scale )
-	{
-		if( scale <= 0 )
-			return false;
-		
-		m_value = value;
-		m_scale = scale;
-		_regenText();
-	}
-	return true;
-}
-/*
-void WgValueField::set( float value )
-{
-	value *= m_scale;
-	Sint64 intVal = (Sint64) value;
-	if( intVal != m_value )
-	{
-		m_value = intVal;
-		_regenText();
-	}
-}
-
-void WgValueField::set( double value )
-{
-	value *= m_scale;
-	Sint64 intVal = (Sint64) value;
-	if( intVal != value )
-	{
-		m_value = intVal;
-		_regenText();
-	}
-}
-*/
-
-//____ onRefresh() _____________________________________________________________
-
-void WgValueField::onRefresh()
-{	
-	_regenText();
-	WgPresentableField::onRefresh();
-}
-
-//____ _regenText() ____________________________________________________________
-
-void WgValueField::_regenText()
-{
-	WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //WgBase::DefaultValueFormatter();
-	if( m_pFormatter )
-		m_charBuffer = pFormatter->format(m_value, m_scale);
-	_onDirty();
 	
-	//TODO: Conditional call to _onResize();
-}
+	//____ setFormatter() __________________________________________________________
+	
+	void WgValueField::setFormatter( const WgValueFormatter_p& pFormatter )
+	{
+		if( m_pFormatter != pFormatter )
+		{
+			m_pFormatter = pFormatter;
+			_regenText();
+		}
+	}
+	
+	//____ clearFormatter() ________________________________________________________
+	
+	void WgValueField::clearFormatter()
+	{
+		if( m_pFormatter )
+		{
+			m_pFormatter = 0;
+			_regenText();
+		}
+	}
+	
+	//____ clear() _________________________________________________________________
+	
+	void WgValueField::clear()
+	{
+		if( m_value != 0 )
+		{
+			m_value = 0;
+			m_scale = 1;
+			_regenText();
+		}
+	}
+	
+	//____ set() ___________________________________________________________________
+	
+	bool WgValueField::set( Sint64 value, int scale )
+	{
+		if( m_value != value || m_scale != scale )
+		{
+			if( scale <= 0 )
+				return false;
+			
+			m_value = value;
+			m_scale = scale;
+			_regenText();
+		}
+		return true;
+	}
+	/*
+	void WgValueField::set( float value )
+	{
+		value *= m_scale;
+		Sint64 intVal = (Sint64) value;
+		if( intVal != m_value )
+		{
+			m_value = intVal;
+			_regenText();
+		}
+	}
+	
+	void WgValueField::set( double value )
+	{
+		value *= m_scale;
+		Sint64 intVal = (Sint64) value;
+		if( intVal != value )
+		{
+			m_value = intVal;
+			_regenText();
+		}
+	}
+	*/
+	
+	//____ onRefresh() _____________________________________________________________
+	
+	void WgValueField::onRefresh()
+	{	
+		_regenText();
+		WgPresentableField::onRefresh();
+	}
+	
+	//____ _regenText() ____________________________________________________________
+	
+	void WgValueField::_regenText()
+	{
+		WgValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //WgBase::DefaultValueFormatter();
+		if( m_pFormatter )
+			m_charBuffer = pFormatter->format(m_value, m_scale);
+		_onDirty();
+		
+		//TODO: Conditional call to _onResize();
+	}
+
+} // namespace wg

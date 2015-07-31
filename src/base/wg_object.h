@@ -20,62 +20,67 @@
 
 =========================================================================*/
 #ifndef WG_OBJECT_DOT_H
-#define WG_OBJECT_DOT_H
 
-class WgObject;
-class WgObject_p;
-
-class WgWeakPtrHub
+namespace wg 
 {
-public:
-	int					refCnt;
-	WgObject *			pObj;
-};
+	#define WG_OBJECT_DOT_H
+	
+	class WgObject;
+	class WgObject_p;
+	
+	class WgWeakPtrHub
+	{
+	public:
+		int					refCnt;
+		WgObject *			pObj;
+	};
+	
+	
+	/**
+	 * @brief Base class for all reference counted objects in WonderGUI.
+	 *
+	 * Base class for all reference counted objects in WonderGUI.
+	 *
+	 * WgObject provides the datastructures needed for smart pointers, weak pointers and
+	 * destruction notifiers as well as methods for identifying object types and 
+	 * dynamic cast of smart pointers.
+	 * 
+	 * Objects that are based on WgObject are implicitly destroyed when their last
+	 * reference disappears and should never be explicitly destroyed.
+	 *
+	 */
+	
+	class WgObject
+	{
+		friend class WgObject_p;
+		friend class WgObject_wp;
+		template<class T, class P> friend class WgStrongPtr;
+		template<class T, class P> friend class WgWeakPtr;
+	
+		friend class WgInterface_p;
+		friend class WgInterface_wp;
+	
+	public:
+		virtual bool		isInstanceOf( const char * pClassName ) const;
+		virtual const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgObject_p	cast( const WgObject_p& pObject );				// Provided just for completeness sake.
+	
+	protected:
+		WgObject() : m_pWeakPtrHub(0), m_refCount(0) {}
+		virtual ~WgObject() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
+	
+		inline void _incRefCount() { m_refCount++; }
+		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
+	
+		WgWeakPtrHub *	m_pWeakPtrHub;
+	
+	private:
+		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
+		int				m_refCount;
+	};
+	
+	
 
-
-/**
- * @brief Base class for all reference counted objects in WonderGUI.
- *
- * Base class for all reference counted objects in WonderGUI.
- *
- * WgObject provides the datastructures needed for smart pointers, weak pointers and
- * destruction notifiers as well as methods for identifying object types and 
- * dynamic cast of smart pointers.
- * 
- * Objects that are based on WgObject are implicitly destroyed when their last
- * reference disappears and should never be explicitly destroyed.
- *
- */
-
-class WgObject
-{
-	friend class WgObject_p;
-	friend class WgObject_wp;
-	template<class T, class P> friend class WgStrongPtr;
-	template<class T, class P> friend class WgWeakPtr;
-
-	friend class WgInterface_p;
-	friend class WgInterface_wp;
-
-public:
-	virtual bool		isInstanceOf( const char * pClassName ) const;
-	virtual const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgObject_p	cast( const WgObject_p& pObject );				// Provided just for completeness sake.
-
-protected:
-	WgObject() : m_pWeakPtrHub(0), m_refCount(0) {}
-	virtual ~WgObject() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
-
-	inline void _incRefCount() { m_refCount++; }
-	inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
-
-	WgWeakPtrHub *	m_pWeakPtrHub;
-
-private:
-	virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
-	int				m_refCount;
-};
-
-
+} // namespace wg
 #endif //WG_OBJECT_DOT_H

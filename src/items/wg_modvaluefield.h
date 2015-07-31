@@ -26,41 +26,46 @@
 #	include <wg_valuefield.h>
 #endif
 
-
-class WgModValueField;
-
-//____ WgModValueHolder ___________________________________________________________
-
-class WgModValueHolder : public WgValueHolder
+namespace wg 
 {
-public:
-	virtual void		_onValueModified( WgModValueField * pField ) = 0;
-};
-
-
-//____ WgModValueField ____________________________________________________________
-
-class WgModValueField : public WgValueField
-{
-public:
-	WgModValueField( WgModValueHolder * pHolder ) : WgValueField(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
-	~WgModValueField() {}
-
-	// ModValue methods
-
-	void				clear();
-	bool				set( Sint64 value, int scale );
 	
-	bool				setRange( Sint64 min, Sint64 max );
-	inline Sint64		min() const { return m_minValue; }
-	inline Sint64		max() const { return m_maxValue; }
+	
+	class WgModValueField;
+	
+	//____ WgModValueHolder ___________________________________________________________
+	
+	class WgModValueHolder : public WgValueHolder
+	{
+	public:
+		virtual void		_onValueModified( WgModValueField * pField ) = 0;
+	};
+	
+	
+	//____ WgModValueField ____________________________________________________________
+	
+	class WgModValueField : public WgValueField
+	{
+	public:
+		WgModValueField( WgModValueHolder * pHolder ) : WgValueField(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
+		~WgModValueField() {}
+	
+		// ModValue methods
+	
+		void				clear();
+		bool				set( Sint64 value, int scale );
+		
+		bool				setRange( Sint64 min, Sint64 max );
+		inline Sint64		min() const { return m_minValue; }
+		inline Sint64		max() const { return m_maxValue; }
+	
+		void				onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
+	
+	protected:
+		Sint64				m_minValue;
+		Sint64				m_maxValue;
+	};
+	
+	
 
-	void				onValueModified() { static_cast<WgModValueHolder*>(m_pHolder)->_onValueModified(this); }
-
-protected:
-	Sint64				m_minValue;
-	Sint64				m_maxValue;
-};
-
-
+} // namespace wg
 #endif //WG_MODVALUEFIELD_DOT_H

@@ -31,38 +31,43 @@
 #	include <wg_widget.h>
 #endif
 
-
-class WgScrollbarTarget
+namespace wg 
 {
-	friend class WgScrollbar;
+	
+	
+	class WgScrollbarTarget
+	{
+		friend class WgScrollbar;
+	
+	protected:
+	
+		// Calls for Scrollbar
+	
+		virtual float	_stepFwd() = 0;
+		virtual float	_stepBwd() = 0;
+		virtual float	_jumpFwd() = 0;
+		virtual float	_jumpBwd() = 0;
+	
+		virtual float	_wheelRolled( int distance ) = 0;
+	
+		virtual float	_setPosition( float fraction ) = 0;
+	
+		virtual WgWidget*_getWidget() = 0;
+		virtual float	_getHandlePosition() = 0;
+		virtual float	_getHandleSize() = 0;
+	
+		// Calls for Target
+	
+		void			_updateScrollbar( float pos, float size );
+	
+		//
+	
+		WgWidget_wp	m_pScrollbar;
+	};
+	
+	
+	
 
-protected:
-
-	// Calls for Scrollbar
-
-	virtual float	_stepFwd() = 0;
-	virtual float	_stepBwd() = 0;
-	virtual float	_jumpFwd() = 0;
-	virtual float	_jumpBwd() = 0;
-
-	virtual float	_wheelRolled( int distance ) = 0;
-
-	virtual float	_setPosition( float fraction ) = 0;
-
-	virtual WgWidget*_getWidget() = 0;
-	virtual float	_getHandlePosition() = 0;
-	virtual float	_getHandleSize() = 0;
-
-	// Calls for Target
-
-	void			_updateScrollbar( float pos, float size );
-
-	//
-
-	WgWidget_wp	m_pScrollbar;
-};
-
-
-
+} // namespace wg
 #endif
 

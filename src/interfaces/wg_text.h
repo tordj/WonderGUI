@@ -51,56 +51,61 @@
 #	include <wg_textstyle.h>
 #endif
 
-class WgColor;
-class WgCharSeq;
-class WgString;
-class WgCharBuffer;
-
-class WgText;
-typedef	WgIStrongPtr<WgText,WgInterface_p>		WgText_p;
-typedef	WgIWeakPtr<WgText,WgInterface_wp>	WgText_wp;
-
-/**
- * @brief Interface to a basic text field.
- *
- * Interface to a basic text field.
- *
- * The text in a basic text field is set by the widget itself and can
- * not be modified directly either through the API or UI. Only the appearance
- * of the text can be modified through this interface.
- * 
- */
-
-class WgText : public WgInterface
+namespace wg 
 {
-public:
-	WgText( WgTextField * pField ) : m_pField(pField) {};
+	
+	class WgColor;
+	class WgCharSeq;
+	class WgString;
+	class WgCharBuffer;
+	
+	class WgText;
+	typedef	WgIStrongPtr<WgText,WgInterface_p>		WgText_p;
+	typedef	WgIWeakPtr<WgText,WgInterface_wp>	WgText_wp;
+	
+	/**
+	 * @brief Interface to a basic text field.
+	 *
+	 * Interface to a basic text field.
+	 *
+	 * The text in a basic text field is set by the widget itself and can
+	 * not be modified directly either through the API or UI. Only the appearance
+	 * of the text can be modified through this interface.
+	 * 
+	 */
+	
+	class WgText : public WgInterface
+	{
+	public:
+		WgText( WgTextField * pField ) : m_pField(pField) {};
+	
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+		inline WgText_p		ptr() { return WgText_p(_object(),this); }
+	
+		inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
+		inline void				clearStyle() { m_pField->clearStyle(); }
+		inline WgTextStyle_p	style() const { return m_pField->style(); }
+	
+		inline void					setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
+		inline void					clearPresenter() { m_pField->clearPresenter(); }
+		inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
+	
+		inline 	WgString			get() const { return m_pField->getString(); }
+	
+		inline WgState			state() const { return m_pField->state(); }
+		inline int				length() const { return m_pField->length(); }
+		inline bool				isEmpty() const { return m_pField->isEmpty(); }
+	
+	protected:
+		WgObject *				_object() const;
+	
+		WgTextField * 			m_pField;
+	};
+	
+	
 
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgText_p		cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-	inline WgText_p		ptr() { return WgText_p(_object(),this); }
-
-	inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
-	inline void				clearStyle() { m_pField->clearStyle(); }
-	inline WgTextStyle_p	style() const { return m_pField->style(); }
-
-	inline void					setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
-	inline void					clearPresenter() { m_pField->clearPresenter(); }
-	inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
-
-	inline 	WgString			get() const { return m_pField->getString(); }
-
-	inline WgState			state() const { return m_pField->state(); }
-	inline int				length() const { return m_pField->length(); }
-	inline bool				isEmpty() const { return m_pField->isEmpty(); }
-
-protected:
-	WgObject *				_object() const;
-
-	WgTextField * 			m_pField;
-};
-
-
+} // namespace wg
 #endif //WG_TEXT_DOT_H

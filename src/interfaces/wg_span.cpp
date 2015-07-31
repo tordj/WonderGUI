@@ -23,39 +23,44 @@
 #include <wg_span.h>
 #include <wg_spanitem.h>
 
-const char WgSpan::CLASSNAME[] = {"Span"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSpan::isInstanceOf( const char * pClassName ) const
+namespace wg 
 {
-	if( pClassName==CLASSNAME )
-		return true;
+	
+	const char WgSpan::CLASSNAME[] = {"Span"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSpan::isInstanceOf( const char * pClassName ) const
+	{
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSpan::className( void ) const
+	{
+		return CLASSNAME;
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSpan_p WgSpan::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgSpan_p( pInterface.getRealObjectPtr(), static_cast<WgSpan*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ _object() _______________________________________________________________
+	
+	WgObject * WgSpan::_object() const
+	{
+		return m_pItem->_object();
+	}
 
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSpan::className( void ) const
-{
-	return CLASSNAME;
-}
-
-//____ cast() _________________________________________________________________
-
-WgSpan_p WgSpan::cast( const WgInterface_p& pInterface )
-{
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgSpan_p( pInterface.getRealObjectPtr(), static_cast<WgSpan*>( pInterface.rawPtr()) );
-
-	return 0;
-}
-
-//____ _object() _______________________________________________________________
-
-WgObject * WgSpan::_object() const
-{
-	return m_pItem->_object();
-}
+} // namespace wg

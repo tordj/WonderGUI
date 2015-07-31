@@ -26,97 +26,102 @@
 #include <wg_types.h>
 #include <wg_textprop.h>
 
-
-class WgTextprop;
-class WgTextpropHolder;
-class WgTextprop_p;
-
-
-//____ WgTextpropHolder _______________________________________________________
-
-class WgTextpropHolder
+namespace wg 
 {
-	friend class WgTextprop_p;
-	friend class WgTextpropManager;
+	
+	
+	class WgTextprop;
+	class WgTextpropHolder;
+	class WgTextprop_p;
+	
+	
+	//____ WgTextpropHolder _______________________________________________________
+	
+	class WgTextpropHolder
+	{
+		friend class WgTextprop_p;
+		friend class WgTextpropManager;
+	
+	private:
+		WgTextpropHolder() {};
+		~WgTextpropHolder() {};
+	
+		Uint16			m_id;				///< Handle of this WgTextprop.
+		Uint8			m_indexOfs;			///< Offset in index table, need to know for quick removal.
+		Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and WgChar referencing this prop.
+		Sint16			m_next;				///< Handle of next WgTextprop with same checksum or -1.
+		Sint16			m_prev;				///< Handle of next WgTextprop with same checksum or -1.
+	
+		WgTextprop		m_prop;
+	};
+	
+	//____ WgTextpropManager ______________________________________________________
+	
+	class WgTextpropManager
+	{
+		friend class WgChar;
+		friend class WgTextprop;
+		friend class WgTextprop_p;
+		friend class WgTextTool;
+		friend class WgCharBuffer;
+		friend class WgTextMgr;
+	
+	public:
+		WgTextpropManager();
+	//	~WgTextpropManager();
+	
+	
+		// These are here for test- and debugging purposes.
+	
+		inline static Uint32 getNbProperties() { return g_nPropUsed; }
+		inline static Uint32 getPropBufferSize() { return g_nPropTotal; }
+		inline static Uint32 getRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
+	
+		inline static void setMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
+	
+	private:
+	
+		static const int NB_START_PROPS = 16;
+	
+		static inline void incRef( Uint16 hProp, Uint32 incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
+	
+		static inline void decRef( Uint16 hProp, Uint32 decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
+																	if( g_pPropBuffer[hProp].m_refCnt == 0 )
+																		freeProp( hProp ); }
+	
+		static Uint16	registerProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
+	
+	//	static Uint16 	getProp( const WgFont_p& pFont, const WgColor color, bool bColored,
+	//							 bool bUnderlined, bool bSelected, WgTextLink_p& pLink );
+	
+		static const WgTextprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
+		static const WgTextprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
+	
+	
+	
+		static void		freeProp( Uint16 hProp );
+		static void		increaseBuffer( void );
+	
+	
+		// Table for finding a certain WgTextprop quickly.
+		// Uses a checksum on properties to choose one out of 256 linked lists which
+		// is then searched linearly for any already existing object with same properties.
+	
+		static Sint16  				g_propIndex[256];
+	
+		static WgTextpropHolder		g_nullProp;
+	
+	
+		static WgTextpropHolder *	g_pPropBuffer;
+		static Uint32				g_nPropUsed;
+		static Uint32				g_nPropTotal;
+		static Sint16				g_firstFreeProp;
+		static bool					g_bMergeSimilar;
+	};
+	
+	
 
-private:
-	WgTextpropHolder() {};
-	~WgTextpropHolder() {};
-
-	Uint16			m_id;				///< Handle of this WgTextprop.
-	Uint8			m_indexOfs;			///< Offset in index table, need to know for quick removal.
-	Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and WgChar referencing this prop.
-	Sint16			m_next;				///< Handle of next WgTextprop with same checksum or -1.
-	Sint16			m_prev;				///< Handle of next WgTextprop with same checksum or -1.
-
-	WgTextprop		m_prop;
-};
-
-//____ WgTextpropManager ______________________________________________________
-
-class WgTextpropManager
-{
-	friend class WgChar;
-	friend class WgTextprop;
-	friend class WgTextprop_p;
-	friend class WgTextTool;
-	friend class WgCharBuffer;
-	friend class WgTextMgr;
-
-public:
-	WgTextpropManager();
-//	~WgTextpropManager();
-
-
-	// These are here for test- and debugging purposes.
-
-	inline static Uint32 getNbProperties() { return g_nPropUsed; }
-	inline static Uint32 getPropBufferSize() { return g_nPropTotal; }
-	inline static Uint32 getRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
-
-	inline static void setMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
-
-private:
-
-	static const int NB_START_PROPS = 16;
-
-	static inline void incRef( Uint16 hProp, Uint32 incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
-
-	static inline void decRef( Uint16 hProp, Uint32 decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
-																if( g_pPropBuffer[hProp].m_refCnt == 0 )
-																	freeProp( hProp ); }
-
-	static Uint16	registerProp( const WgTextprop& prop );			// DOES NOT INCREASE REFCNT!
-
-//	static Uint16 	getProp( const WgFont_p& pFont, const WgColor color, bool bColored,
-//							 bool bUnderlined, bool bSelected, WgTextLink_p& pLink );
-
-	static const WgTextprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
-	static const WgTextprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
-
-
-
-	static void		freeProp( Uint16 hProp );
-	static void		increaseBuffer( void );
-
-
-	// Table for finding a certain WgTextprop quickly.
-	// Uses a checksum on properties to choose one out of 256 linked lists which
-	// is then searched linearly for any already existing object with same properties.
-
-	static Sint16  				g_propIndex[256];
-
-	static WgTextpropHolder		g_nullProp;
-
-
-	static WgTextpropHolder *	g_pPropBuffer;
-	static Uint32				g_nPropUsed;
-	static Uint32				g_nPropTotal;
-	static Sint16				g_firstFreeProp;
-	static bool					g_bMergeSimilar;
-};
-
-
+} // namespace wg
 #endif // WG_TEXTPROPMANAGER_DOT_H
 
 

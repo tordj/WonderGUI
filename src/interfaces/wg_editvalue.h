@@ -36,65 +36,70 @@
 #	include <wg_caret.h>
 #endif
 
-class WgEditValue;
-typedef	WgIStrongPtr<WgEditValue,WgModValue_p>		WgEditValue_p;
-typedef	WgIWeakPtr<WgEditValue,WgModValue_wp>	WgEditValue_wp;
-
-/**
- * @brief Interface to a value display field with editable text.
- *
- * Interface to a value display field with editable text.
- *
- * The value in an editable value field can be set through the API, and is
- * editable through the UI.
- * 
- */
- 
-class WgEditValue : public WgModValue
+namespace wg 
 {
-public:
-	WgEditValue(WgEditValueField * pField) : WgModValue(pField) {}
+	
+	class WgEditValue;
+	typedef	WgIStrongPtr<WgEditValue,WgModValue_p>		WgEditValue_p;
+	typedef	WgIWeakPtr<WgEditValue,WgModValue_wp>	WgEditValue_wp;
+	
+	/**
+	 * @brief Interface to a value display field with editable text.
+	 *
+	 * Interface to a value display field with editable text.
+	 *
+	 * The value in an editable value field can be set through the API, and is
+	 * editable through the UI.
+	 * 
+	 */
+	 
+	class WgEditValue : public WgModValue
+	{
+	public:
+		WgEditValue(WgEditValueField * pField) : WgModValue(pField) {}
+	
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgEditValue_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+		inline WgEditValue_p	ptr() { return WgEditValue_p(_object(),this); }
+	
+		virtual void			setEditMode(WgTextEditMode mode) = 0;
+		virtual WgTextEditMode	editMode() const = 0;
+	
+		virtual bool			isEditable() const = 0;
+		virtual bool			isSelectable() const = 0;
+	
+		virtual void			setCursorSkin( const WgCaret_p& pCursor ) = 0;
+		virtual WgCaret_p		cursorSkin() const = 0;
+	
+		// Calling these methods gets field into edit mode, displaying cursor.
+	
+		virtual int				insertAtCursor( const WgCharSeq& str ) = 0;
+		virtual bool			insertAtCursor( Uint16 c ) = 0;
+	
+		virtual int				append( const WgCharSeq& seq ) = 0;
+		virtual int				insert( int ofs, const WgCharSeq& seq ) = 0;
+		virtual int				replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
+		virtual int				remove( int ofs, int len ) = 0;
+		virtual void			deleteSelected() = 0;
+	
+		virtual void			select( int ofs, int len ) = 0;
+		virtual void			selectAll() = 0;
+		virtual int				selectionStart() const = 0;
+		virtual int				selectionLength() const = 0;
+		virtual void			clearSelection() = 0;
+	
+		virtual void			goBol() = 0;
+		virtual void			goEol() = 0;
+		virtual void			goBof() = 0;
+		virtual void			goEof() = 0;
+	
+	private:
+		inline	WgEditValueField * 	_field() { return static_cast<WgEditValueField*>(m_pField); }
+	};
+	
+	
 
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgEditValue_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-	inline WgEditValue_p	ptr() { return WgEditValue_p(_object(),this); }
-
-	virtual void			setEditMode(WgTextEditMode mode) = 0;
-	virtual WgTextEditMode	editMode() const = 0;
-
-	virtual bool			isEditable() const = 0;
-	virtual bool			isSelectable() const = 0;
-
-	virtual void			setCursorSkin( const WgCaret_p& pCursor ) = 0;
-	virtual WgCaret_p		cursorSkin() const = 0;
-
-	// Calling these methods gets field into edit mode, displaying cursor.
-
-	virtual int				insertAtCursor( const WgCharSeq& str ) = 0;
-	virtual bool			insertAtCursor( Uint16 c ) = 0;
-
-	virtual int				append( const WgCharSeq& seq ) = 0;
-	virtual int				insert( int ofs, const WgCharSeq& seq ) = 0;
-	virtual int				replace( int ofs, int nDelete, const WgCharSeq& seq ) = 0;
-	virtual int				remove( int ofs, int len ) = 0;
-	virtual void			deleteSelected() = 0;
-
-	virtual void			select( int ofs, int len ) = 0;
-	virtual void			selectAll() = 0;
-	virtual int				selectionStart() const = 0;
-	virtual int				selectionLength() const = 0;
-	virtual void			clearSelection() = 0;
-
-	virtual void			goBol() = 0;
-	virtual void			goEol() = 0;
-	virtual void			goBof() = 0;
-	virtual void			goEof() = 0;
-
-private:
-	inline	WgEditValueField * 	_field() { return static_cast<WgEditValueField*>(m_pField); }
-};
-
-
+} // namespace wg
 #endif //WG_EDITVALUE_DOT_H

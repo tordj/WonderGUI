@@ -21,74 +21,79 @@
 =========================================================================*/
 #include <wg_sizebroker.h>
 
-const char WgSizeBroker::CLASSNAME[] = {"SizeBroker"};
-
-//____ Constructor ____________________________________________________________
-
-WgSizeBroker::WgSizeBroker()
+namespace wg 
 {
-}
-
-//____ Destructor _____________________________________________________________
-
-WgSizeBroker::~WgSizeBroker()
-{
-}
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSizeBroker::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSizeBroker::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgSizeBroker_p WgSizeBroker::cast( const WgObject_p& pObject )
-{
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSizeBroker_p( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
-
-	return 0;
-}
-
-
-/*
-int WgSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int _totalLength ) const
-{
-	int totalLength = 0;
-	for( int i = 0 ; i < nItems ; i++ )
+	
+	const char WgSizeBroker::CLASSNAME[] = {"SizeBroker"};
+	
+	//____ Constructor ____________________________________________________________
+	
+	WgSizeBroker::WgSizeBroker()
 	{
-		totalLength += pItems[i].preferred;
-		pItems[i].output = pItems[i].preferred;
 	}
-	return totalLength;
-}
-
-int WgSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
-{
-	int totalLength = 0;
-	for( int i = 0 ; i < nItems ; i++ )
-	{	
-		totalLength += pItems[i].preferred;
-		pItems[i].output = pItems[i].preferred;
+	
+	//____ Destructor _____________________________________________________________
+	
+	WgSizeBroker::~WgSizeBroker()
+	{
 	}
-	return totalLength;
-}
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSizeBroker::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSizeBroker::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSizeBroker_p WgSizeBroker::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgSizeBroker_p( static_cast<WgSizeBroker*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+	
+	/*
+	int WgSizeBroker::setItemLengths( WgSizeBrokerItem * pItems, int nItems, int _totalLength ) const
+	{
+		int totalLength = 0;
+		for( int i = 0 ; i < nItems ; i++ )
+		{
+			totalLength += pItems[i].preferred;
+			pItems[i].output = pItems[i].preferred;
+		}
+		return totalLength;
+	}
+	
+	int WgSizeBroker::setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
+	{
+		int totalLength = 0;
+		for( int i = 0 ; i < nItems ; i++ )
+		{	
+			totalLength += pItems[i].preferred;
+			pItems[i].output = pItems[i].preferred;
+		}
+		return totalLength;
+	}
+	
+	bool WgSizeBroker::mayAlterPreferredLengths() const
+	{
+		return false;
+	}
+	*/
+	
 
-bool WgSizeBroker::mayAlterPreferredLengths() const
-{
-	return false;
-}
-*/
-
+} // namespace wg

@@ -21,31 +21,36 @@
 =========================================================================*/
 #include <wg_skin.h>
 
-const char WgSkin::CLASSNAME[] = {"Skin"};
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSkin::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSkin::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgSkin_p WgSkin::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSkin_p( static_cast<WgSkin*>(pObject.rawPtr()) );
+	
+	const char WgSkin::CLASSNAME[] = {"Skin"};
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSkin::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSkin::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSkin_p WgSkin::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgSkin_p( static_cast<WgSkin*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
 
-	return 0;
-}
+} // namespace wg

@@ -31,54 +31,59 @@
 #	include <wg_modvaluefield.h>
 #endif
 
-class WgCharSeq;
-class WgString;
-class WgCharBuffer;
-
-class WgModValue;
-typedef	WgIStrongPtr<WgModValue,WgValue_p>	WgModValue_p;
-typedef	WgIWeakPtr<WgModValue,WgValue_wp>	WgModValue_wp;
-
-/**
- * @brief Interface to a value field where the value is modifiable through the api
- * 
- * The value in a modifiable value field can be set through the API, but isn't
- * editable through the UI.
- * 
-*/
-
-class WgModValue : public WgValue
+namespace wg 
 {
-public:
-	WgModValue(WgModValueField * pField) : WgValue(pField) {}
+	
+	class WgCharSeq;
+	class WgString;
+	class WgCharBuffer;
+	
+	class WgModValue;
+	typedef	WgIStrongPtr<WgModValue,WgValue_p>	WgModValue_p;
+	typedef	WgIWeakPtr<WgModValue,WgValue_wp>	WgModValue_wp;
+	
+	/**
+	 * @brief Interface to a value field where the value is modifiable through the api
+	 * 
+	 * The value in a modifiable value field can be set through the API, but isn't
+	 * editable through the UI.
+	 * 
+	*/
+	
+	class WgModValue : public WgValue
+	{
+	public:
+		WgModValue(WgModValueField * pField) : WgValue(pField) {}
+	
+		virtual bool				isInstanceOf( const char * pClassName ) const;
+		virtual const char *		className( void ) const;
+		static const char			CLASSNAME[];
+		static WgModValue_p		cast( const WgInterface_p& pInterface );
+		inline WgModValue_p		ptr() { return WgModValue_p(_object(),this); }
+	
+	
+		void						clear();
+		bool						set( Sint64 value, int scale = 1);
+	
+	
+	/*	For the future...
+		inline void					set( float value );
+		inline void					set( double value );
+	*/
+	
+		inline Sint64				value() const { return _field()->value(); }
+		inline int					scale() const { return _field()->scale(); }
+	
+		bool						setRange( Sint64 min, Sint64 max );
+		inline Sint64				min() const { return _field()->min(); }
+		inline Sint64				max() const { return _field()->max(); }
+	
+	private:
+		inline	WgModValueField * 		_field() { return static_cast<WgModValueField*>(m_pField); }
+		inline	const WgModValueField * _field() const { return static_cast<WgModValueField*>(m_pField); }
+	};
+	
+	
 
-	virtual bool				isInstanceOf( const char * pClassName ) const;
-	virtual const char *		className( void ) const;
-	static const char			CLASSNAME[];
-	static WgModValue_p		cast( const WgInterface_p& pInterface );
-	inline WgModValue_p		ptr() { return WgModValue_p(_object(),this); }
-
-
-	void						clear();
-	bool						set( Sint64 value, int scale = 1);
-
-
-/*	For the future...
-	inline void					set( float value );
-	inline void					set( double value );
-*/
-
-	inline Sint64				value() const { return _field()->value(); }
-	inline int					scale() const { return _field()->scale(); }
-
-	bool						setRange( Sint64 min, Sint64 max );
-	inline Sint64				min() const { return _field()->min(); }
-	inline Sint64				max() const { return _field()->max(); }
-
-private:
-	inline	WgModValueField * 		_field() { return static_cast<WgModValueField*>(m_pField); }
-	inline	const WgModValueField * _field() const { return static_cast<WgModValueField*>(m_pField); }
-};
-
-
+} // namespace wg
 #endif //WG_MODVALUE_DOT_H

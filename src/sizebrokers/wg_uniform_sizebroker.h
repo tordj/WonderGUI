@@ -26,33 +26,38 @@
 #	include <wg_sizebroker.h>
 #endif
 
-
-class WgUniformSizeBroker;
-typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBroker_p>		WgUniformSizeBroker_p;
-typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBroker_wp>	WgUniformSizeBroker_wp;
-
-class WgUniformSizeBroker : public WgSizeBroker
+namespace wg 
 {
-public:
-	static WgUniformSizeBroker_p	create() { return WgUniformSizeBroker_p(new WgUniformSizeBroker()); }
+	
+	
+	class WgUniformSizeBroker;
+	typedef	WgStrongPtr<WgUniformSizeBroker,WgSizeBroker_p>		WgUniformSizeBroker_p;
+	typedef	WgWeakPtr<WgUniformSizeBroker,WgSizeBroker_wp>	WgUniformSizeBroker_wp;
+	
+	class WgUniformSizeBroker : public WgSizeBroker
+	{
+	public:
+		static WgUniformSizeBroker_p	create() { return WgUniformSizeBroker_p(new WgUniformSizeBroker()); }
+	
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static WgUniformSizeBroker_p	cast( const WgObject_p& pObject );
+	    
+		int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+		int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+		bool mayAlterPreferredLengths() const;
+	
+	protected:
+	    WgUniformSizeBroker() {};
+	    virtual ~WgUniformSizeBroker() {};
+	
+		int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
+	    void    _setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const;
+	};
+	
+	
+	
 
-	bool				isInstanceOf( const char * pClassName ) const;
-	const char *		className( void ) const;
-	static const char	CLASSNAME[];
-	static WgUniformSizeBroker_p	cast( const WgObject_p& pObject );
-    
-	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool mayAlterPreferredLengths() const;
-
-protected:
-    WgUniformSizeBroker() {};
-    virtual ~WgUniformSizeBroker() {};
-
-	int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
-    void    _setOutputs( WgSizeBrokerItem * pItems, int nItems, int value ) const;
-};
-
-
-
+} // namespace wg
 #endif //WG_UNIFORM_SIZEBROKER_DOT_H

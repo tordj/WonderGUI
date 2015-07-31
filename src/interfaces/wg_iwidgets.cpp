@@ -23,33 +23,38 @@
 #include <wg_iwidgets.h>
 #include <wg_widget.h>
 
-
-const char WgIWidgets::CLASSNAME[] = {"IWidgets"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgIWidgets::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgIWidgets::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgIWidgets_p WgIWidgets::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgIWidgets_p( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
+	
+	
+	const char WgIWidgets::CLASSNAME[] = {"IWidgets"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgIWidgets::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgIWidgets::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgIWidgets_p WgIWidgets::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgIWidgets_p( pInterface.getRealObjectPtr(), static_cast<WgIWidgets*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
 
-	return 0;
-}
+} // namespace wg

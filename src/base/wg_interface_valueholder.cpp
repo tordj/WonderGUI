@@ -25,276 +25,281 @@
 #include <wg_string.h>
 
 #include <math.h>
-//#include <stdint.h>
 
-//____ Constructor ____________________________________________________________
-
-Wg_Interface_ValueHolder::Wg_Interface_ValueHolder()
+namespace wg 
 {
-	m_rangeMin						= LLONG_MIN >> 2;
-	m_rangeMax						= LLONG_MAX >> 2;
-	m_value							= 0;
-	m_stepSize						= 1;
-	m_unitSize						= 1;
-	m_nValueDigits					= 0;
-	m_modulator						= 1;
-}
-
-//____ setRange() _____________________________________________________________
-
-bool Wg_Interface_ValueHolder::setRange( Sint64 min, Sint64 max )
-{
-	if( min > max )
-		return false;
-
-	if( min == m_rangeMin && max == m_rangeMax )
-		return true;
-
-	m_rangeMin = min;
-	m_rangeMax = max;
-
-	if( m_value < m_rangeMin )
+	//#include <stdint.h>
+	
+	//____ Constructor ____________________________________________________________
+	
+	Wg_Interface_ValueHolder::Wg_Interface_ValueHolder()
 	{
-		m_value = m_rangeMin;
-		_valueModified();
+		m_rangeMin						= LLONG_MIN >> 2;
+		m_rangeMax						= LLONG_MAX >> 2;
+		m_value							= 0;
+		m_stepSize						= 1;
+		m_unitSize						= 1;
+		m_nValueDigits					= 0;
+		m_modulator						= 1;
 	}
-	else if( m_value > m_rangeMax )
+	
+	//____ setRange() _____________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setRange( Sint64 min, Sint64 max )
 	{
-		m_value = m_rangeMax;
-		_valueModified();
-	}
-
-	_rangeModified();
-	_updateScrollbar( fractionalValue(), 0.f );
-	return true;
-}
-
-//____ setFractionalRounding() ________________________________________________
-
-bool Wg_Interface_ValueHolder::setFractionalRounding( int nValueDigits, int lastDigitModulo )
-{
-	if( nValueDigits < 0 || nValueDigits > 12 || (lastDigitModulo != 1 && lastDigitModulo != 2 && lastDigitModulo != 5 ) )
-		return false;
-
-	m_nValueDigits	= nValueDigits;
-	m_modulator		= lastDigitModulo;
-	return true;
-}
-
-
-//____ setUnitSize() __________________________________________________________
-
-bool Wg_Interface_ValueHolder::setUnitSize( int unitsize )
-{
-	if( unitsize <= 0 )
-		return false;
-
-	m_unitSize = unitsize;
-	return true;
-}
-
-//____ setValue() _____________________________________________________________
-
-bool Wg_Interface_ValueHolder::setValue( Sint64 value )
-{
-	bool b = _setValue(value);
-	_updateScrollbar( fractionalValue(), 0.f );
-	return b;
-}
-
-//____ setFractionalValue() ___________________________________________________
-
-bool Wg_Interface_ValueHolder::setFractionalValue( float fraction )
-{
-	// First we check if fraction is identical to what we might have sent out
-	// ourselves. In that case we ignore it even if it would result in a slightly
-	// different value due to rounding. This prevents signal-looping and making
-	// it impossible to step up/down at certain values if we are connected to a scrollbar.
-
-	float currFracValue = (m_value - m_rangeMin) / (float)(m_rangeMax - m_rangeMin);
-	if( fraction > currFracValue-0.000001 && fraction < currFracValue+0.000001 )
-		return true;
-
-	bool b = _setFractionalValue(fraction);
-	_updateScrollbar( fractionalValue(), 0.f );
-	return b;
-}
-
-//____ fractionalValue() ______________________________________________________
-
-float Wg_Interface_ValueHolder::fractionalValue()
-{
-	if( m_rangeMax == m_rangeMin )
-		return 0.0f;
-
-	return( (m_value - m_rangeMin) / (float)(m_rangeMax - m_rangeMin) );
-}
-
-//____ setStepSize() __________________________________________________________
-
-bool Wg_Interface_ValueHolder::setStepSize( int size )
-{
-	if( size <= 0 )
-		return false;
-
-	m_stepSize = size;
-	return true;
-}
-
-//____ incValue() _____________________________________________________________
-
-bool Wg_Interface_ValueHolder::incValue()
-{
-	return setValue( m_value + m_stepSize );
-}
-
-bool Wg_Interface_ValueHolder::incValue( int increment )
-{
-	return setValue( m_value + increment );
-}
-
-//____ decValue() _____________________________________________________________
-
-bool Wg_Interface_ValueHolder::decValue()
-{
-	return setValue( m_value - m_stepSize );
-}
-
-bool Wg_Interface_ValueHolder::decValue( int decrement )
-{
-	return setValue( m_value - decrement );
-}
-
-//____ _stepFwd() ______________________________________________________________
-
-float Wg_Interface_ValueHolder::_stepFwd()
-{
-	_setValue( m_value + m_stepSize );
-	return fractionalValue();
-}
-
-//____ _stepBwd() ______________________________________________________________
-
-float Wg_Interface_ValueHolder::_stepBwd()
-{
-	_setValue( m_value - m_stepSize );
-	return fractionalValue();
-}
-
-//____ _jumpFwd() ______________________________________________________________
-
-float Wg_Interface_ValueHolder::_jumpFwd()
-{
-	_setValue( m_value + 10*m_stepSize );
-	return fractionalValue();
-}
-
-//____ _jumpBwd() ______________________________________________________________
-
-float Wg_Interface_ValueHolder::_jumpBwd()
-{
-	_setValue( m_value - 10*m_stepSize );
-	return fractionalValue();
-}
-
-//____ _wheelRolled() __________________________________________________________
-
-float Wg_Interface_ValueHolder::_wheelRolled( int distance )
-{
-	_setValue( m_value + distance*m_stepSize );
-	return fractionalValue();
-}
-
-//____ _setPosition() __________________________________________________________
-
-float Wg_Interface_ValueHolder::_setPosition( float fraction )
-{
-	_setFractionalValue(fraction);
-	return fractionalValue();
-}
-
-//____ _getHandlePosition() ____________________________________________________
-
-float Wg_Interface_ValueHolder::_getHandlePosition()
-{
-	return fractionalValue();
-}
-
-//____ _getHandleSize() ________________________________________________________
-
-float Wg_Interface_ValueHolder::_getHandleSize()
-{
-	return 0.f;
-}
-
-
-//____ _setFractionalValue() ___________________________________________________
-
-bool Wg_Interface_ValueHolder::_setFractionalValue( float fraction )
-{
-	// Calculate new value and set it.
-
-	Sint64 value = (Sint64)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
-
-	if( m_nValueDigits != 0 && value != m_rangeMin && value != m_rangeMax )
-	{
-		int ceiling = (int) pow( 10.f, (float) m_nValueDigits );
-
-		int mulVal = 1;
-		while( value > ceiling )
+		if( min > max )
+			return false;
+	
+		if( min == m_rangeMin && max == m_rangeMax )
+			return true;
+	
+		m_rangeMin = min;
+		m_rangeMax = max;
+	
+		if( m_value < m_rangeMin )
 		{
-			value /=10;
-			mulVal *= 10;
+			m_value = m_rangeMin;
+			_valueModified();
 		}
-
-		if( mulVal > 1 || value > ceiling/10 )
-			value -= value%m_modulator;					// Modulate lowest value-digit.
-
-		value *= mulVal;
+		else if( m_value > m_rangeMax )
+		{
+			m_value = m_rangeMax;
+			_valueModified();
+		}
+	
+		_rangeModified();
+		_updateScrollbar( fractionalValue(), 0.f );
+		return true;
 	}
-
-	return _setValue( value );
-}
-
-//____ _setValue() _____________________________________________________________
-
-bool Wg_Interface_ValueHolder::_setValue( Sint64 value )
-{
-	bool	retVal = true;
-
-	if( value < m_rangeMin )
+	
+	//____ setFractionalRounding() ________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setFractionalRounding( int nValueDigits, int lastDigitModulo )
 	{
-		value = m_rangeMin;
-		retVal = false;
+		if( nValueDigits < 0 || nValueDigits > 12 || (lastDigitModulo != 1 && lastDigitModulo != 2 && lastDigitModulo != 5 ) )
+			return false;
+	
+		m_nValueDigits	= nValueDigits;
+		m_modulator		= lastDigitModulo;
+		return true;
 	}
-
-	if( value > m_rangeMax )
+	
+	
+	//____ setUnitSize() __________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setUnitSize( int unitsize )
 	{
-		value = m_rangeMax;
-		retVal = false;
+		if( unitsize <= 0 )
+			return false;
+	
+		m_unitSize = unitsize;
+		return true;
 	}
-
-	value -= value % m_unitSize;
-
-	if( value != m_value )
+	
+	//____ setValue() _____________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setValue( Sint64 value )
 	{
-		m_value = value;
-		_valueModified();
+		bool b = _setValue(value);
+		_updateScrollbar( fractionalValue(), 0.f );
+		return b;
 	}
+	
+	//____ setFractionalValue() ___________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setFractionalValue( float fraction )
+	{
+		// First we check if fraction is identical to what we might have sent out
+		// ourselves. In that case we ignore it even if it would result in a slightly
+		// different value due to rounding. This prevents signal-looping and making
+		// it impossible to step up/down at certain values if we are connected to a scrollbar.
+	
+		float currFracValue = (m_value - m_rangeMin) / (float)(m_rangeMax - m_rangeMin);
+		if( fraction > currFracValue-0.000001 && fraction < currFracValue+0.000001 )
+			return true;
+	
+		bool b = _setFractionalValue(fraction);
+		_updateScrollbar( fractionalValue(), 0.f );
+		return b;
+	}
+	
+	//____ fractionalValue() ______________________________________________________
+	
+	float Wg_Interface_ValueHolder::fractionalValue()
+	{
+		if( m_rangeMax == m_rangeMin )
+			return 0.0f;
+	
+		return( (m_value - m_rangeMin) / (float)(m_rangeMax - m_rangeMin) );
+	}
+	
+	//____ setStepSize() __________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::setStepSize( int size )
+	{
+		if( size <= 0 )
+			return false;
+	
+		m_stepSize = size;
+		return true;
+	}
+	
+	//____ incValue() _____________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::incValue()
+	{
+		return setValue( m_value + m_stepSize );
+	}
+	
+	bool Wg_Interface_ValueHolder::incValue( int increment )
+	{
+		return setValue( m_value + increment );
+	}
+	
+	//____ decValue() _____________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::decValue()
+	{
+		return setValue( m_value - m_stepSize );
+	}
+	
+	bool Wg_Interface_ValueHolder::decValue( int decrement )
+	{
+		return setValue( m_value - decrement );
+	}
+	
+	//____ _stepFwd() ______________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_stepFwd()
+	{
+		_setValue( m_value + m_stepSize );
+		return fractionalValue();
+	}
+	
+	//____ _stepBwd() ______________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_stepBwd()
+	{
+		_setValue( m_value - m_stepSize );
+		return fractionalValue();
+	}
+	
+	//____ _jumpFwd() ______________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_jumpFwd()
+	{
+		_setValue( m_value + 10*m_stepSize );
+		return fractionalValue();
+	}
+	
+	//____ _jumpBwd() ______________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_jumpBwd()
+	{
+		_setValue( m_value - 10*m_stepSize );
+		return fractionalValue();
+	}
+	
+	//____ _wheelRolled() __________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_wheelRolled( int distance )
+	{
+		_setValue( m_value + distance*m_stepSize );
+		return fractionalValue();
+	}
+	
+	//____ _setPosition() __________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_setPosition( float fraction )
+	{
+		_setFractionalValue(fraction);
+		return fractionalValue();
+	}
+	
+	//____ _getHandlePosition() ____________________________________________________
+	
+	float Wg_Interface_ValueHolder::_getHandlePosition()
+	{
+		return fractionalValue();
+	}
+	
+	//____ _getHandleSize() ________________________________________________________
+	
+	float Wg_Interface_ValueHolder::_getHandleSize()
+	{
+		return 0.f;
+	}
+	
+	
+	//____ _setFractionalValue() ___________________________________________________
+	
+	bool Wg_Interface_ValueHolder::_setFractionalValue( float fraction )
+	{
+		// Calculate new value and set it.
+	
+		Sint64 value = (Sint64)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
+	
+		if( m_nValueDigits != 0 && value != m_rangeMin && value != m_rangeMax )
+		{
+			int ceiling = (int) pow( 10.f, (float) m_nValueDigits );
+	
+			int mulVal = 1;
+			while( value > ceiling )
+			{
+				value /=10;
+				mulVal *= 10;
+			}
+	
+			if( mulVal > 1 || value > ceiling/10 )
+				value -= value%m_modulator;					// Modulate lowest value-digit.
+	
+			value *= mulVal;
+		}
+	
+		return _setValue( value );
+	}
+	
+	//____ _setValue() _____________________________________________________________
+	
+	bool Wg_Interface_ValueHolder::_setValue( Sint64 value )
+	{
+		bool	retVal = true;
+	
+		if( value < m_rangeMin )
+		{
+			value = m_rangeMin;
+			retVal = false;
+		}
+	
+		if( value > m_rangeMax )
+		{
+			value = m_rangeMax;
+			retVal = false;
+		}
+	
+		value -= value % m_unitSize;
+	
+		if( value != m_value )
+		{
+			m_value = value;
+			_valueModified();
+		}
+	
+		return retVal;
+	}
+	
+	
+	//____ _onCloneContent() _______________________________________________________
+	
+	void Wg_Interface_ValueHolder::_onCloneContent( const Wg_Interface_ValueHolder * pOrg )
+	{
+		m_rangeMin 	= pOrg->m_rangeMin;
+		m_rangeMax 	= pOrg->m_rangeMax;
+		m_value		= pOrg->m_value;
+		m_stepSize	= pOrg->m_stepSize;
+		m_unitSize	= pOrg->m_unitSize;
+	}
+	
+	
 
-	return retVal;
-}
-
-
-//____ _onCloneContent() _______________________________________________________
-
-void Wg_Interface_ValueHolder::_onCloneContent( const Wg_Interface_ValueHolder * pOrg )
-{
-	m_rangeMin 	= pOrg->m_rangeMin;
-	m_rangeMax 	= pOrg->m_rangeMax;
-	m_value		= pOrg->m_value;
-	m_stepSize	= pOrg->m_stepSize;
-	m_unitSize	= pOrg->m_unitSize;
-}
-
-
+} // namespace wg

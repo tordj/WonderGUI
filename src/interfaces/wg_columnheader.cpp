@@ -24,48 +24,53 @@
 #include <wg_columnheader.h>
 #include <wg_columnheaderfield.h>
 
-const char WgColumnHeader::CLASSNAME[] = {"ColumnHeader"};
-
-
-//____ Constructor() ___________________________________________________________
-
-
-WgColumnHeader::WgColumnHeader(WgColumnHeaderField* pField) : m_pField(pField), icon(&pField->icon), arrow(&pField->arrow), label(&pField->label)
+namespace wg 
 {
-}
+	
+	const char WgColumnHeader::CLASSNAME[] = {"ColumnHeader"};
+	
+	
+	//____ Constructor() ___________________________________________________________
+	
+	
+	WgColumnHeader::WgColumnHeader(WgColumnHeaderField* pField) : m_pField(pField), icon(&pField->icon), arrow(&pField->arrow), label(&pField->label)
+	{
+	}
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgColumnHeader::isInstanceOf( const char * pClassName ) const
+	{
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgColumnHeader::className( void ) const
+	{
+		return CLASSNAME;
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgColumnHeader_p WgColumnHeader::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgColumnHeader_p( pInterface.getRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ _object() _______________________________________________________________
+	
+	WgObject * WgColumnHeader::_object() const
+	{
+		return m_pField->_object();
+	}
+	
+	
 
-//____ isInstanceOf() _________________________________________________________
-
-bool WgColumnHeader::isInstanceOf( const char * pClassName ) const
-{
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgColumnHeader::className( void ) const
-{
-	return CLASSNAME;
-}
-
-//____ cast() _________________________________________________________________
-
-WgColumnHeader_p WgColumnHeader::cast( const WgInterface_p& pInterface )
-{
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgColumnHeader_p( pInterface.getRealObjectPtr(), static_cast<WgColumnHeader*>( pInterface.rawPtr()) );
-
-	return 0;
-}
-
-//____ _object() _______________________________________________________________
-
-WgObject * WgColumnHeader::_object() const
-{
-	return m_pField->_object();
-}
-
-
+} // namespace wg

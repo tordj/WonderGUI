@@ -21,32 +21,37 @@
 =========================================================================*/
 
 #ifndef	WG_ITEM_DOT_H
-#define	WG_ITEM_DOT_H
 
-class WgObject;
-
-//____ WgItemHolder ___________________________________________________________
-
-class WgItemHolder
+namespace wg 
 {
-public:
-	virtual WgObject*	_object() = 0;
-};
+	#define	WG_ITEM_DOT_H
+	
+	class WgObject;
+	
+	//____ WgItemHolder ___________________________________________________________
+	
+	class WgItemHolder
+	{
+	public:
+		virtual WgObject*	_object() = 0;
+	};
+	
+	//____ WgItem _________________________________________________________________
+	
+	class WgItem
+	{
+	public:
+		WgItem( WgItemHolder * pHolder ) : m_pHolder(pHolder) {}
+	
+		inline WgObject* _object() { return m_pHolder->_object(); }
+	
+	protected:
+	
+		WgItemHolder * m_pHolder;
+	};
+	
+	
+	
 
-//____ WgItem _________________________________________________________________
-
-class WgItem
-{
-public:
-	WgItem( WgItemHolder * pHolder ) : m_pHolder(pHolder) {}
-
-	inline WgObject* _object() { return m_pHolder->_object(); }
-
-protected:
-
-	WgItemHolder * m_pHolder;
-};
-
-
-
+} // namespace wg
 #endif //WG_ITEM_DOT_H

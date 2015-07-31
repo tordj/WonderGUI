@@ -36,41 +36,46 @@
 #	include <wg_base.h>
 #endif
 
-class WgString;
-class WgCharSeq;
-class WgCharBuffer;
-
-//____ WgTextHolder ___________________________________________________________
-
-struct WgTextHolder : public WgPresentableHolder
+namespace wg 
 {
-};
+	
+	class WgString;
+	class WgCharSeq;
+	class WgCharBuffer;
+	
+	//____ WgTextHolder ___________________________________________________________
+	
+	struct WgTextHolder : public WgPresentableHolder
+	{
+	};
+	
+	//____ WgTextField __________________________________________________________________
+	
+	class WgTextField : public WgPresentableField
+	{
+	public:
+		WgTextField( WgTextHolder * pHolder );
+	
+		virtual void		clear();
+	
+		virtual void		set( const WgCharSeq& seq );
+		virtual void		set( const WgCharBuffer * buffer );
+		virtual void		set( const WgString& str );
+	
+		virtual int			append( const WgCharSeq& seq );
+		virtual int			insert( int ofs, const WgCharSeq& seq );
+		virtual int			replace( int ofs, int nDelete, const WgCharSeq& seq );
+		virtual int			remove( int ofs, int len );
+	
+	
+		inline int			length() const { return m_charBuffer.length(); }
+		inline bool			isEmpty() const { return length()==0?true:false; }
+		WgTextLink_p		getMarkedLink() const;
+	
+	protected:
+	
+	};
+	
 
-//____ WgTextField __________________________________________________________________
-
-class WgTextField : public WgPresentableField
-{
-public:
-	WgTextField( WgTextHolder * pHolder );
-
-	virtual void		clear();
-
-	virtual void		set( const WgCharSeq& seq );
-	virtual void		set( const WgCharBuffer * buffer );
-	virtual void		set( const WgString& str );
-
-	virtual int			append( const WgCharSeq& seq );
-	virtual int			insert( int ofs, const WgCharSeq& seq );
-	virtual int			replace( int ofs, int nDelete, const WgCharSeq& seq );
-	virtual int			remove( int ofs, int len );
-
-
-	inline int			length() const { return m_charBuffer.length(); }
-	inline bool			isEmpty() const { return length()==0?true:false; }
-	WgTextLink_p		getMarkedLink() const;
-
-protected:
-
-};
-
+} // namespace wg
 #endif //WG_TEXTFIELD_DOT_H

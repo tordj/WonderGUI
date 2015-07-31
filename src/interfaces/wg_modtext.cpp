@@ -22,33 +22,38 @@
 
 #include <wg_modtext.h>
 
-const char WgModText::CLASSNAME[] = {"ModText"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgModText::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgText::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgModText::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgModText_p WgModText::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgModText_p( pInterface.getRealObjectPtr(), static_cast<WgModText*>( pInterface.rawPtr()) );
+	
+	const char WgModText::CLASSNAME[] = {"ModText"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgModText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgText::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgModText::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgModText_p WgModText::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgModText_p( pInterface.getRealObjectPtr(), static_cast<WgModText*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
 
-	return 0;
-}
-
+} // namespace wg

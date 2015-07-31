@@ -23,40 +23,45 @@
 #include <wg_softsurfacefactory.h>
 #include <wg_util.h>
 
-
-
-const char WgSoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSoftSurfaceFactory::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgSurfaceFactory::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSoftSurfaceFactory::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgSoftSurfaceFactory_p WgSoftSurfaceFactory::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSoftSurfaceFactory_p( static_cast<WgSoftSurfaceFactory*>(pObject.rawPtr()) );
+	
+	
+	
+	const char WgSoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSoftSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgSurfaceFactory::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSoftSurfaceFactory::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSoftSurfaceFactory_p WgSoftSurfaceFactory::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgSoftSurfaceFactory_p( static_cast<WgSoftSurfaceFactory*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ WgSoftSurfaceFactory::createSurface() ___________________________________
+	
+	WgSurface_p WgSoftSurfaceFactory::createSurface( const WgSize& size, WgPixelType type ) const
+	{
+		return new WgSoftSurface( size, type );
+	}
 
-	return 0;
-}
-
-//____ WgSoftSurfaceFactory::createSurface() ___________________________________
-
-WgSurface_p WgSoftSurfaceFactory::createSurface( const WgSize& size, WgPixelType type ) const
-{
-	return new WgSoftSurface( size, type );
-}
+} // namespace wg

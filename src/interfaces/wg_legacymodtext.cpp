@@ -22,33 +22,38 @@
 
 #include <wg_legacymodtext.h>
 
-const char WgLegacyModText::CLASSNAME[] = {"LegacyModText"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgLegacyModText::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgLegacyText::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgLegacyModText::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgLegacyModText_p WgLegacyModText::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgLegacyModText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.rawPtr()) );
+	
+	const char WgLegacyModText::CLASSNAME[] = {"LegacyModText"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgLegacyModText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgLegacyText::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgLegacyModText::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgLegacyModText_p WgLegacyModText::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgLegacyModText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyModText*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
 
-	return 0;
-}
-
+} // namespace wg

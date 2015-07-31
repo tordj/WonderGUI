@@ -24,70 +24,75 @@
 #include <wg_mempool.h>
 #include <wg_pointers.h>
 
-const char WgObject::CLASSNAME[] = {"Object"};
-
-
-/**
- * @brief	Check if the object is an instance or subclass of specified class.
- *
- * Check if the object is an instance or subclass of specified class.
- *
- * @param pClassName	Pointer to the class name. This needs to be a pointer returned by 
- * 						a call to WgObject::className() or the CLASSNAME member of a subclass of WgObject.
- * 
- * This method compares the specified class name to the CLASSNAME member of all classes implemented by the
- * object. This is needed when checking if the object implements a class other than the leaf class.  
- * When just checking for a leaf class, a direct comparison between object->className() and Foo::CLASSNAME
- * is faster.
- * 
- * @return True if the object implements the specied class.
- * 
- */
-
-bool WgObject::isInstanceOf( const char * pClassName ) const
-{ 
-	return (pClassName==CLASSNAME); 
-}
-
-/**
- * @brief Get a char pointer which identifies the class of the object.
- *
- * Get a char pointer which identifies the class of the object.
- *
- * The char pointer points to a char string containing the class name without the Wg prefix.
- * The pointer itself can be used for object type comparison since it is always the same for 
- * objects of the same type. There is no need to do a string compare on the string content.
- * 
- * To see if an object is an instance of class WgFoo you can compare the pointer to WgFoo::CLASSNAME.
- * To see if an object is an instance of a subclass of WgFoo, you will need to call object->isInstanceOf( WgFoo::CLASSNAME ).
- * 
- * @return Pointer to a char string containing the class name without the Wg prefix.
- */
-
-const char * WgObject::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-void WgObject::_destroy()
+namespace wg 
 {
-	delete this;
-}
+	
+	const char WgObject::CLASSNAME[] = {"Object"};
+	
+	
+	/**
+	 * @brief	Check if the object is an instance or subclass of specified class.
+	 *
+	 * Check if the object is an instance or subclass of specified class.
+	 *
+	 * @param pClassName	Pointer to the class name. This needs to be a pointer returned by 
+	 * 						a call to WgObject::className() or the CLASSNAME member of a subclass of WgObject.
+	 * 
+	 * This method compares the specified class name to the CLASSNAME member of all classes implemented by the
+	 * object. This is needed when checking if the object implements a class other than the leaf class.  
+	 * When just checking for a leaf class, a direct comparison between object->className() and Foo::CLASSNAME
+	 * is faster.
+	 * 
+	 * @return True if the object implements the specied class.
+	 * 
+	 */
+	
+	bool WgObject::isInstanceOf( const char * pClassName ) const
+	{ 
+		return (pClassName==CLASSNAME); 
+	}
+	
+	/**
+	 * @brief Get a char pointer which identifies the class of the object.
+	 *
+	 * Get a char pointer which identifies the class of the object.
+	 *
+	 * The char pointer points to a char string containing the class name without the Wg prefix.
+	 * The pointer itself can be used for object type comparison since it is always the same for 
+	 * objects of the same type. There is no need to do a string compare on the string content.
+	 * 
+	 * To see if an object is an instance of class WgFoo you can compare the pointer to WgFoo::CLASSNAME.
+	 * To see if an object is an instance of a subclass of WgFoo, you will need to call object->isInstanceOf( WgFoo::CLASSNAME ).
+	 * 
+	 * @return Pointer to a char string containing the class name without the Wg prefix.
+	 */
+	
+	const char * WgObject::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	void WgObject::_destroy()
+	{
+		delete this;
+	}
+	
+	/**
+	 * @brief Dynamic casting of smartpointer to a WgObject derived class.
+	 *
+	 * Dynamic casting of smartpointer to a WgObject derived class.
+	 *
+	 * @param pObject	Pointer to be cast.
+	 * 
+	 * This method is needed to cast a smartpointer to one of its subclasses. It can also be used to
+	 * cast from a subclass to a baseclass, but is more expensive than a normal static cast.
+	 * 
+	 * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
+	 */
+	 
+	WgObject_p WgObject::cast( const WgObject_p& pObject )
+	{
+		return pObject;
+	}
 
-/**
- * @brief Dynamic casting of smartpointer to a WgObject derived class.
- *
- * Dynamic casting of smartpointer to a WgObject derived class.
- *
- * @param pObject	Pointer to be cast.
- * 
- * This method is needed to cast a smartpointer to one of its subclasses. It can also be used to
- * cast from a subclass to a baseclass, but is more expensive than a normal static cast.
- * 
- * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
- */
- 
-WgObject_p WgObject::cast( const WgObject_p& pObject )
-{
-	return pObject;
-}
+} // namespace wg

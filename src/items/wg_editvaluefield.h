@@ -26,65 +26,70 @@
 #	include <wg_modvaluefield.h>
 #endif
 
-
-class WgEditValueField;
-
-//____ WgEditValueHolder ___________________________________________________________
-
-class WgEditValueHolder : public WgModValueHolder
+namespace wg 
 {
-public:
-	virtual void		_onValueEdited( WgEditValueField * pField ) = 0;
-	virtual WgObject*	_object() = 0;
-};
+	
+	
+	class WgEditValueField;
+	
+	//____ WgEditValueHolder ___________________________________________________________
+	
+	class WgEditValueHolder : public WgModValueHolder
+	{
+	public:
+		virtual void		_onValueEdited( WgEditValueField * pField ) = 0;
+		virtual WgObject*	_object() = 0;
+	};
+	
+	
+	//____ WgEditValueField ____________________________________________________________
+	
+	class WgEditValueField : public WgModValueField
+	{
+	public:
+		WgEditValueField( WgEditValueHolder * pHolder );
+		~WgEditValueField();
+	
+		void				setEditMode(WgTextEditMode mode);
+		inline WgTextEditMode editMode() const { return m_editMode; }
+	
+		inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
+		inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+	
+		void				setCursorSkin( const WgCaret_p& pCursor );
+		inline WgCaret_p	cursorSkin() const { return m_pCursorSkin; }
+	
+		int					insertAtCursor( const WgCharSeq& str );
+		bool				insertAtCursor( Uint16 c );
+	
+		int					append( const WgCharSeq& seq );
+		int					insert( int ofs, const WgCharSeq& seq );
+		int					replace( int ofs, int nDelete, const WgCharSeq& seq );
+		int					remove( int ofs, int len );
+		void				deleteSelected();
+	
+		void				select( int ofs, int len );
+		void				selectAll();
+		inline int			selectionStart() const { return m_selBeg; }
+		inline int			selectionLength() const { return m_selEnd - m_selBeg; }
+		void				clearSelection();
+	
+		void				goBol();
+		void				goEol();
+		void				goBof();
+		void				goEof();
+	
+	protected:
+		void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }
+	
+		WgTextEditMode		m_editMode;
+		WgCaret_p			m_pCursorSkin;
+		int					m_cursorOfs;		// -1 = No cursor.
+		int					m_selBeg;
+		int					m_selEnd;
+	};
+	
+	
 
-
-//____ WgEditValueField ____________________________________________________________
-
-class WgEditValueField : public WgModValueField
-{
-public:
-	WgEditValueField( WgEditValueHolder * pHolder );
-	~WgEditValueField();
-
-	void				setEditMode(WgTextEditMode mode);
-	inline WgTextEditMode editMode() const { return m_editMode; }
-
-	inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-	inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
-
-	void				setCursorSkin( const WgCaret_p& pCursor );
-	inline WgCaret_p	cursorSkin() const { return m_pCursorSkin; }
-
-	int					insertAtCursor( const WgCharSeq& str );
-	bool				insertAtCursor( Uint16 c );
-
-	int					append( const WgCharSeq& seq );
-	int					insert( int ofs, const WgCharSeq& seq );
-	int					replace( int ofs, int nDelete, const WgCharSeq& seq );
-	int					remove( int ofs, int len );
-	void				deleteSelected();
-
-	void				select( int ofs, int len );
-	void				selectAll();
-	inline int			selectionStart() const { return m_selBeg; }
-	inline int			selectionLength() const { return m_selEnd - m_selBeg; }
-	void				clearSelection();
-
-	void				goBol();
-	void				goEol();
-	void				goBof();
-	void				goEof();
-
-protected:
-	void				_onValueEdited() { static_cast<WgEditValueHolder*>(m_pHolder)->_onValueEdited(this); }
-
-	WgTextEditMode		m_editMode;
-	WgCaret_p			m_pCursorSkin;
-	int					m_cursorOfs;		// -1 = No cursor.
-	int					m_selBeg;
-	int					m_selEnd;
-};
-
-
+} // namespace wg
 #endif //WG_EDITVALUEFIELD_DOT_H

@@ -44,135 +44,140 @@
 #	include <wg_menu.h>
 #endif
 
-
-class	WgSurface;
-class	WgFont;
-
-class	WgChar;
-
-
-class	WgMenubar;
-/*
-	Att stödja:
-
-	- Ikon/checkbox till vänster.
-	- Accelerator till höger (innan pilen).
-	- Separator.
-	- Cascading menus med pil till höger.
-	- Disablade entries.
-	- Navigera menyerna med tangenter + keybindings.
-
-	- Drop down/Pull down.
-
-	- "End of menu"-section with info.
-	- Baloon help.
-	- Automatiskt öppna uppåt eller nedåt beroende på plats.
-
-	* Press on head drar ner menyn, release på entry aktiverar entry (så fungerar alla fallen).
-	* Click på öppen header samt Release/press utanför menyn stänger menyn.
-	* Mouse over på annan header byter meny.
-
-
-*/
-
-//____ WgMenuBarItem __________________________________________________________
-
-class WgMenuBarItem:public WgLink
+namespace wg 
 {
-public:
-	WgMenuBarItem();
-	virtual ~WgMenuBarItem();
-	LINK_METHODS( WgMenuBarItem );
+	
+	
+	class	WgSurface;
+	class	WgFont;
+	
+	class	WgChar;
+	
+	
+	class	WgMenubar;
+	/*
+		Att stödja:
+	
+		- Ikon/checkbox till vänster.
+		- Accelerator till höger (innan pilen).
+		- Separator.
+		- Cascading menus med pil till höger.
+		- Disablade entries.
+		- Navigera menyerna med tangenter + keybindings.
+	
+		- Drop down/Pull down.
+	
+		- "End of menu"-section with info.
+		- Baloon help.
+		- Automatiskt öppna uppåt eller nedåt beroende på plats.
+	
+		* Press on head drar ner menyn, release på entry aktiverar entry (så fungerar alla fallen).
+		* Click på öppen header samt Release/press utanför menyn stänger menyn.
+		* Mouse over på annan header byter meny.
+	
+	
+	*/
+	
+	//____ WgMenuBarItem __________________________________________________________
+	
+	class WgMenuBarItem:public WgLink
+	{
+	public:
+		WgMenuBarItem();
+		virtual ~WgMenuBarItem();
+		LINK_METHODS( WgMenuBarItem );
+	
+		inline bool	isEnabled() { return m_bEnabled; }
+		inline bool isVisible() { return m_bVisible; }
+	
+		void	setEnabled( bool bEnabled );
+		void	setVisible( bool bVisible );
+	
+		WgChar *		m_pText;
+		Uint16			m_navKey;
+		WgMenu_p		m_pMenu;
+		Uint16			m_width;		// Width of this item.
+		bool			m_bEnabled;
+		bool			m_bVisible;
+		WgMenubar *	m_pMenuBar;		// Pointer at the menubar, needed for some callbacks.
+	};
+	
+	class WgMenubar;
+	typedef	WgStrongPtr<WgMenubar,WgWidget_p>		WgMenubar_p;
+	typedef	WgWeakPtr<WgMenubar,WgWidget_wp>	WgMenubar_wp;
+	
+	//____ WgMenubar ____________________________________________________________
+	
+	class WgMenubar:public WgWidget
+	{
+		friend class WgMenuBarItem;
+	
+	public:
+		static WgMenubar_p	create() { return WgMenubar_p(new WgMenubar()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgMenubar_p	cast( const WgObject_p& pObject );
+	
+		//____ Methods __________________________________________
+	
+		bool			setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties );
+		WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
+		WgTextprop_p	TextProp() const { return m_pTextProp; }
+	
+		bool			AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey = 0 );
+		bool			RemoveMenu( const WgMenu_p& pMenu );
+	
+		WgMenuBarItem*	FirstMenuBarItem() { return m_items.first(); }
+	
+		WgChar *		MenuTitle(const WgMenu_p& pMenu) const;
+	
+		bool			ShowMenu(const WgMenu_p& pMenu);
+		bool			HideMenu(const WgMenu_p& pMenu);
+	
+		WgSize			preferredSize() const;
+	
+	
+	protected:
+		WgMenubar();
+		virtual ~WgMenubar();
+		virtual WgWidget* _newOfMyType() const { return new WgMenubar(); };
+	
+		//TODO: Should handle disable/enable (close open menu?) and cloning.
+	
+		void	_onMsg( const WgMsg_p& pMsg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void	_onRefresh();
+		void	_onCloneContent( const WgWidget * _pOrg );
+	
+	
+	private:
+	
+		WgBorder	_getEntryBorder() const;
+	
+		Uint32		_getItemAtAbsPos( int x, int y );
+		bool		_openMenu( int nb );
+		bool		_closeMenu( int nb );
+	
+		static void	_cbMoveOutsideModal( void * pWdg, int x, int y ) { ((WgMenubar*)pWdg)->_moveOutsideModal(x,y);}
+		static void	_cbMenuClosed( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuClosed((WgMenuBarItem*)pItem);}
+		static void	_cbMenuOpened( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuOpened((WgMenuBarItem*)pItem);}
+	
+		void		_moveOutsideModal( int x, int y );
+		void		_menuOpened( WgMenuBarItem * pItem );
+		void		_menuClosed( WgMenuBarItem * pItem );
+	
+		WgChain<WgMenuBarItem>	m_items;
+		Uint32					m_selectedItem;		// 0 = no item is selected.
+		Uint32					m_markedItem;		// 0 = no item is marked:
+	
+		WgSkin_p				m_pEntrySkin;
+		WgTextprop_p			m_pTextProp;
+	};
+	
+	
 
-	inline bool	isEnabled() { return m_bEnabled; }
-	inline bool isVisible() { return m_bVisible; }
-
-	void	setEnabled( bool bEnabled );
-	void	setVisible( bool bVisible );
-
-	WgChar *		m_pText;
-	Uint16			m_navKey;
-	WgMenu_p		m_pMenu;
-	Uint16			m_width;		// Width of this item.
-	bool			m_bEnabled;
-	bool			m_bVisible;
-	WgMenubar *	m_pMenuBar;		// Pointer at the menubar, needed for some callbacks.
-};
-
-class WgMenubar;
-typedef	WgStrongPtr<WgMenubar,WgWidget_p>		WgMenubar_p;
-typedef	WgWeakPtr<WgMenubar,WgWidget_wp>	WgMenubar_wp;
-
-//____ WgMenubar ____________________________________________________________
-
-class WgMenubar:public WgWidget
-{
-	friend class WgMenuBarItem;
-
-public:
-	static WgMenubar_p	create() { return WgMenubar_p(new WgMenubar()); }
-
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgMenubar_p	cast( const WgObject_p& pObject );
-
-	//____ Methods __________________________________________
-
-	bool			setEntrySkin( const WgSkin_p& pSkin, const WgTextprop_p& pTextProperties );
-	WgSkin_p		EntrySkin() const { return m_pEntrySkin; }
-	WgTextprop_p	TextProp() const { return m_pTextProp; }
-
-	bool			AddMenu( const char * pTitle, const WgMenu_p& pMenu, Uint16 navKey = 0 );
-	bool			RemoveMenu( const WgMenu_p& pMenu );
-
-	WgMenuBarItem*	FirstMenuBarItem() { return m_items.first(); }
-
-	WgChar *		MenuTitle(const WgMenu_p& pMenu) const;
-
-	bool			ShowMenu(const WgMenu_p& pMenu);
-	bool			HideMenu(const WgMenu_p& pMenu);
-
-	WgSize			preferredSize() const;
-
-
-protected:
-	WgMenubar();
-	virtual ~WgMenubar();
-	virtual WgWidget* _newOfMyType() const { return new WgMenubar(); };
-
-	//TODO: Should handle disable/enable (close open menu?) and cloning.
-
-	void	_onMsg( const WgMsg_p& pMsg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-	void	_onRefresh();
-	void	_onCloneContent( const WgWidget * _pOrg );
-
-
-private:
-
-	WgBorder	_getEntryBorder() const;
-
-	Uint32		_getItemAtAbsPos( int x, int y );
-	bool		_openMenu( int nb );
-	bool		_closeMenu( int nb );
-
-	static void	_cbMoveOutsideModal( void * pWdg, int x, int y ) { ((WgMenubar*)pWdg)->_moveOutsideModal(x,y);}
-	static void	_cbMenuClosed( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuClosed((WgMenuBarItem*)pItem);}
-	static void	_cbMenuOpened( void * pItem ) { ((WgMenuBarItem*)pItem)->m_pMenuBar->_menuOpened((WgMenuBarItem*)pItem);}
-
-	void		_moveOutsideModal( int x, int y );
-	void		_menuOpened( WgMenuBarItem * pItem );
-	void		_menuClosed( WgMenuBarItem * pItem );
-
-	WgChain<WgMenuBarItem>	m_items;
-	Uint32					m_selectedItem;		// 0 = no item is selected.
-	Uint32					m_markedItem;		// 0 = no item is marked:
-
-	WgSkin_p				m_pEntrySkin;
-	WgTextprop_p			m_pTextProp;
-};
-
-
+} // namespace wg
 #endif //	WG_MENUBAR_DOT_H

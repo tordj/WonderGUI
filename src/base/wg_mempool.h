@@ -26,63 +26,68 @@
 #include <wg_types.h>
 #include <wg_chain.h>
 
-class WgMemPool
+namespace wg 
 {
-public:
-	WgMemPool( int entriesPerBlock, int entrySize );
-	virtual ~WgMemPool();
-
-	void *	allocEntry();
-	void	freeEntry( void * pEntry );
-
-	inline int		entriesAllocated() const { return m_nAllocEntries; }
-	inline int		entriesAvailable() const { return m_blocks.size()*m_nEntriesPerBlock - m_nAllocEntries; }
-	inline int		capacity() const { return m_blocks.size()*m_nEntriesPerBlock; }
-	inline bool		isEmpty() const { return (m_nAllocEntries == 0); }
-
-
-private:
-
-	class Block;
-
-	Block *	_addBlock();
-
-
-
-	// Block of entries.
-
-	class Block : public WgLink
+	
+	class WgMemPool
 	{
 	public:
-		Block( int nEntries, int entrySize );
-		~Block();
-
-		LINK_METHODS( Block );
-
-
-		void * allocEntry();
-		bool freeEntry( void * pEntry );
-
-		void *		pMemBlock;			// Memory area containing our entries.
-		int			blockSize;			// Size of memory area containing our entries.
-		int			nAllocEntries;		// Number of entires currently in used.
-		int			nCleanEntries;		// Number of clean entries, all entries after this
-										// are free AND uninitzialised.
-		int			maxEntries;			// Number of entries in block.
-		int			firstFreeEntry;		// Number of first free entry, entry contains number of next
-										// unless firstFreeEntry==nCleanEntries.
-		int			entrySize;			// Size of each individual entry.
-
+		WgMemPool( int entriesPerBlock, int entrySize );
+		virtual ~WgMemPool();
+	
+		void *	allocEntry();
+		void	freeEntry( void * pEntry );
+	
+		inline int		entriesAllocated() const { return m_nAllocEntries; }
+		inline int		entriesAvailable() const { return m_blocks.size()*m_nEntriesPerBlock - m_nAllocEntries; }
+		inline int		capacity() const { return m_blocks.size()*m_nEntriesPerBlock; }
+		inline bool		isEmpty() const { return (m_nAllocEntries == 0); }
+	
+	
+	private:
+	
+		class Block;
+	
+		Block *	_addBlock();
+	
+	
+	
+		// Block of entries.
+	
+		class Block : public WgLink
+		{
+		public:
+			Block( int nEntries, int entrySize );
+			~Block();
+	
+			LINK_METHODS( Block );
+	
+	
+			void * allocEntry();
+			bool freeEntry( void * pEntry );
+	
+			void *		pMemBlock;			// Memory area containing our entries.
+			int			blockSize;			// Size of memory area containing our entries.
+			int			nAllocEntries;		// Number of entires currently in used.
+			int			nCleanEntries;		// Number of clean entries, all entries after this
+											// are free AND uninitzialised.
+			int			maxEntries;			// Number of entries in block.
+			int			firstFreeEntry;		// Number of first free entry, entry contains number of next
+											// unless firstFreeEntry==nCleanEntries.
+			int			entrySize;			// Size of each individual entry.
+	
+		};
+	
+		WgChain<Block>	m_blocks;
+		int				m_nEntriesPerBlock;
+		int				m_entrySize;
+		int				m_nAllocEntries;
 	};
+	
+	
+	
+	
 
-	WgChain<Block>	m_blocks;
-	int				m_nEntriesPerBlock;
-	int				m_entrySize;
-	int				m_nAllocEntries;
-};
-
-
-
-
+} // namespace wg
 #endif //WG_MEMPOOL_DOT_H
 

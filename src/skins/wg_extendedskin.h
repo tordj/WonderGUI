@@ -26,39 +26,44 @@
 #	include <wg_skin.h>
 #endif
 
-class WgExtendedSkin;
-typedef	WgStrongPtr<WgExtendedSkin,WgSkin_p>	WgExtendedSkin_p;
-
-class WgExtendedSkin : public WgSkin
+namespace wg 
 {
-public:
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgExtendedSkin_p	cast( const WgObject_p& pObject );
+	
+	class WgExtendedSkin;
+	typedef	WgStrongPtr<WgExtendedSkin,WgSkin_p>	WgExtendedSkin_p;
+	
+	class WgExtendedSkin : public WgSkin
+	{
+	public:
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgExtendedSkin_p	cast( const WgObject_p& pObject );
+	
+		virtual void	setContentPadding( WgBorder padding );
+		virtual void	setContentShift( WgStateEnum state, WgCoord shift );
+	
+		virtual void	setHoveredContentShift( WgCoord shift );
+		virtual void	setPressedContentShift( WgCoord shift );
+		virtual void	setSelectedContentShift( WgCoord shift );
+		virtual void	setFocusedContentShift( WgCoord shift );
+	
+		virtual WgSize	minSize() const;
+		virtual WgSize	preferredSize() const;
+	
+		virtual WgSize	contentPadding() const;
+		virtual WgSize	sizeForContent( const WgSize contentSize ) const;
+		virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const;
+	
+		virtual	bool	isStateIdentical( WgState state, WgState comparedTo ) const;
+	
+	
+	protected:
+		WgBorder	m_contentPadding;
+		WgCoord		m_contentShift[WG_NB_STATES];	
+	};
+	
+	
 
-	virtual void	setContentPadding( WgBorder padding );
-	virtual void	setContentShift( WgStateEnum state, WgCoord shift );
-
-	virtual void	setHoveredContentShift( WgCoord shift );
-	virtual void	setPressedContentShift( WgCoord shift );
-	virtual void	setSelectedContentShift( WgCoord shift );
-	virtual void	setFocusedContentShift( WgCoord shift );
-
-	virtual WgSize	minSize() const;
-	virtual WgSize	preferredSize() const;
-
-	virtual WgSize	contentPadding() const;
-	virtual WgSize	sizeForContent( const WgSize contentSize ) const;
-	virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const;
-
-	virtual	bool	isStateIdentical( WgState state, WgState comparedTo ) const;
-
-
-protected:
-	WgBorder	m_contentPadding;
-	WgCoord		m_contentShift[WG_NB_STATES];	
-};
-
-
+} // namespace wg
 #endif //WG_EXTENDEDSKIN_DOT_H

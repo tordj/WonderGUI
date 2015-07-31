@@ -22,39 +22,44 @@
 
 #include <wg_legacytext.h>
 
-const char WgLegacyText::CLASSNAME[] = {"LegacyText"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgLegacyText::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgLegacyText::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgLegacyText_p WgLegacyText::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgLegacyText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyText*>( pInterface.rawPtr()) );
+	
+	const char WgLegacyText::CLASSNAME[] = {"LegacyText"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgLegacyText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgLegacyText::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgLegacyText_p WgLegacyText::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgLegacyText_p( pInterface.getRealObjectPtr(), static_cast<WgLegacyText*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ _object() _______________________________________________________________
+	
+	WgObject * WgLegacyText::_object() const
+	{
+		return m_pField->_object();
+	}
 
-	return 0;
-}
-
-//____ _object() _______________________________________________________________
-
-WgObject * WgLegacyText::_object() const
-{
-	return m_pField->_object();
-}
+} // namespace wg

@@ -35,29 +35,34 @@
 #	include <wg_widget.h>
 #endif
 
-class WgHook;
-
-class WgIWidgets;
-typedef	WgIStrongPtr<WgIWidgets,WgInterface_p>		WgIWidgets_p;
-typedef	WgIWeakPtr<WgIWidgets,WgInterface_wp>	WgIWidgets_wp;
-
-class WgIWidgets : public WgInterface
+namespace wg 
 {
 	
-public:
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgIWidgets_p	cast( const WgInterface_p& pInterface );
+	class WgHook;
+	
+	class WgIWidgets;
+	typedef	WgIStrongPtr<WgIWidgets,WgInterface_p>		WgIWidgets_p;
+	typedef	WgIWeakPtr<WgIWidgets,WgInterface_wp>	WgIWidgets_wp;
+	
+	class WgIWidgets : public WgInterface
+	{
+		
+	public:
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgIWidgets_p	cast( const WgInterface_p& pInterface );
+	
+		inline WgWidget_p	firstWidget() const { return WgWidget_p(_firstWidget()); }
+		inline WgWidget_p	lastWidget() const { return WgWidget_p(_lastWidget()); }
+	
+	protected:
+	
+		virtual WgWidget *		_firstWidget() const = 0;
+		virtual WgWidget *		_lastWidget() const = 0;
+	};
+	
+	
 
-	inline WgWidget_p	firstWidget() const { return WgWidget_p(_firstWidget()); }
-	inline WgWidget_p	lastWidget() const { return WgWidget_p(_lastWidget()); }
-
-protected:
-
-	virtual WgWidget *		_firstWidget() const = 0;
-	virtual WgWidget *		_lastWidget() const = 0;
-};
-
-
+} // namespace wg
 #endif //WG_IWIDGETS_DOT_H

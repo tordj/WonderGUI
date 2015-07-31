@@ -47,46 +47,51 @@
 #	include <wg_textprop.h>
 #endif
 
-class WgColor;
-class WgCharSeq;
-class WgString;
-class WgCharBuffer;
-
-class WgLegacyModText;
-typedef	WgIStrongPtr<WgLegacyModText,WgLegacyText_p>	WgLegacyModText_p;
-typedef	WgIWeakPtr<WgLegacyModText,WgLegacyText_wp>	WgLegacyModText_wp;
-
-/**
- * @brief Interface to a text field with text that is modifiable through the api
- * 
- * The text in a modifiable text field can be set through the API, but isn't
- * editable through the UI.
- * 
-*/
- 
-class WgLegacyModText : public WgLegacyText
+namespace wg 
 {
-public:
-	WgLegacyModText( WgLegacyTextField * pField ) : WgLegacyText(pField) {};
+	
+	class WgColor;
+	class WgCharSeq;
+	class WgString;
+	class WgCharBuffer;
+	
+	class WgLegacyModText;
+	typedef	WgIStrongPtr<WgLegacyModText,WgLegacyText_p>	WgLegacyModText_p;
+	typedef	WgIWeakPtr<WgLegacyModText,WgLegacyText_wp>	WgLegacyModText_wp;
+	
+	/**
+	 * @brief Interface to a text field with text that is modifiable through the api
+	 * 
+	 * The text in a modifiable text field can be set through the API, but isn't
+	 * editable through the UI.
+	 * 
+	*/
+	 
+	class WgLegacyModText : public WgLegacyText
+	{
+	public:
+		WgLegacyModText( WgLegacyTextField * pField ) : WgLegacyText(pField) {};
+	
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgLegacyModText_p		cast( const WgInterface_p& pInterface );
+		inline WgLegacyModText_p		ptr() { return WgLegacyModText_p(_object(),this); }
+	
+		inline void				clear() { m_pField->clear(); }
+	
+		inline void				set( const WgCharSeq& seq ) { m_pField->set(seq); }
+		inline void				set( const WgCharBuffer * pBuffer ) { m_pField->set(pBuffer); }
+		inline void				set( const WgString& str ) { m_pField->set(str); }
+	
+		inline int				append( const WgCharSeq& seq ) { return m_pField->append(seq); }
+		inline int				insert( int ofs, const WgCharSeq& seq ) { return m_pField->insert(ofs,seq); }
+		inline int				replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
+		inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
+	
+	};
+	
+	
 
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgLegacyModText_p		cast( const WgInterface_p& pInterface );
-	inline WgLegacyModText_p		ptr() { return WgLegacyModText_p(_object(),this); }
-
-	inline void				clear() { m_pField->clear(); }
-
-	inline void				set( const WgCharSeq& seq ) { m_pField->set(seq); }
-	inline void				set( const WgCharBuffer * pBuffer ) { m_pField->set(pBuffer); }
-	inline void				set( const WgString& str ) { m_pField->set(str); }
-
-	inline int				append( const WgCharSeq& seq ) { return m_pField->append(seq); }
-	inline int				insert( int ofs, const WgCharSeq& seq ) { return m_pField->insert(ofs,seq); }
-	inline int				replace( int ofs, int len, const WgCharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
-	inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
-
-};
-
-
+} // namespace wg
 #endif //WG_LEGACYMODTEXT_DOT_H

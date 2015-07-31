@@ -22,39 +22,44 @@
 
 #include <wg_text.h>
 
-const char WgText::CLASSNAME[] = {"Text"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgText::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgText::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgText_p WgText::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgText_p( pInterface.getRealObjectPtr(), static_cast<WgText*>( pInterface.rawPtr()) );
+	
+	const char WgText::CLASSNAME[] = {"Text"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgText::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgText_p WgText::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgText_p( pInterface.getRealObjectPtr(), static_cast<WgText*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ _object() _______________________________________________________________
+	
+	WgObject * WgText::_object() const
+	{
+		return m_pField->_object();
+	}
 
-	return 0;
-}
-
-//____ _object() _______________________________________________________________
-
-WgObject * WgText::_object() const
-{
-	return m_pField->_object();
-}
+} // namespace wg

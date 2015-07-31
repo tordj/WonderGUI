@@ -21,49 +21,54 @@
 =========================================================================*/
 #include <wg_finalizer.h>
 
-const char WgFinalizer::CLASSNAME[] = {"Finalizer"};
-
-
-//____ Constructor ____________________________________________________________
-
-WgFinalizer::WgFinalizer( void(*pCallback)(void*), void * pObject )
+namespace wg 
 {
-	m_pCallback = pCallback;
-	m_pObject = pObject;
-}
+	
+	const char WgFinalizer::CLASSNAME[] = {"Finalizer"};
+	
+	
+	//____ Constructor ____________________________________________________________
+	
+	WgFinalizer::WgFinalizer( void(*pCallback)(void*), void * pObject )
+	{
+		m_pCallback = pCallback;
+		m_pObject = pObject;
+	}
+	
+	
+	//____ Destructor _____________________________________________________________
+	
+	WgFinalizer::~WgFinalizer()
+	{
+		if( m_pCallback )
+			m_pCallback( m_pObject );
+	}
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgFinalizer::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgFinalizer::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgFinalizer_p WgFinalizer::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgFinalizer_p( static_cast<WgFinalizer*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
 
-
-//____ Destructor _____________________________________________________________
-
-WgFinalizer::~WgFinalizer()
-{
-	if( m_pCallback )
-		m_pCallback( m_pObject );
-}
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgFinalizer::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgFinalizer::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgFinalizer_p WgFinalizer::cast( const WgObject_p& pObject )
-{
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgFinalizer_p( static_cast<WgFinalizer*>(pObject.rawPtr()) );
-
-	return 0;
-}
+} // namespace wg

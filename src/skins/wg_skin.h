@@ -34,42 +34,47 @@
 #	include <wg_types.h>
 #endif
 
-class WgSkin;
-class WgGfxDevice;
-
-typedef	WgStrongPtr<WgSkin,WgObject_p>	WgSkin_p;
-
-
-class WgSkin : public WgObject
+namespace wg 
 {
-public:
-	virtual ~WgSkin() {};
+	
+	class WgSkin;
+	class WgGfxDevice;
+	
+	typedef	WgStrongPtr<WgSkin,WgObject_p>	WgSkin_p;
+	
+	
+	class WgSkin : public WgObject
+	{
+	public:
+		virtual ~WgSkin() {};
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgSkin_p	cast( const WgObject_p& pObject );
+	
+	
+		virtual void render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
+	
+		virtual WgSize	minSize() const = 0;
+		virtual WgSize	preferredSize() const = 0;
+	
+		virtual WgSize	contentPadding() const = 0;
+		virtual WgSize	sizeForContent( const WgSize contentSize ) const = 0;
+		virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const = 0;
+	
+		virtual bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const = 0;
+	
+		virtual bool	isOpaque() const = 0;
+		virtual bool	isOpaque( WgState state ) const = 0;
+		virtual bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const = 0;
+	
+		virtual bool	isStateIdentical( WgState state, WgState comparedTo ) const = 0;
+	
+	protected:
+		WgSkin() {};
+	};
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgSkin_p	cast( const WgObject_p& pObject );
-
-
-	virtual void render( WgGfxDevice * pDevice, const WgRect& canvas, WgState state, const WgRect& clip ) const = 0;
-
-	virtual WgSize	minSize() const = 0;
-	virtual WgSize	preferredSize() const = 0;
-
-	virtual WgSize	contentPadding() const = 0;
-	virtual WgSize	sizeForContent( const WgSize contentSize ) const = 0;
-	virtual WgRect	contentRect( const WgRect& canvas, WgState state ) const = 0;
-
-	virtual bool	markTest( const WgCoord& ofs, const WgRect& canvas, WgState state, int opacityTreshold ) const = 0;
-
-	virtual bool	isOpaque() const = 0;
-	virtual bool	isOpaque( WgState state ) const = 0;
-	virtual bool	isOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state ) const = 0;
-
-	virtual bool	isStateIdentical( WgState state, WgState comparedTo ) const = 0;
-
-protected:
-	WgSkin() {};
-};
-
+} // namespace wg
 #endif //WG_SKIN_DOT_H

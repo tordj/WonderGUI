@@ -33,44 +33,49 @@
 #	include <wg_sizescaler.h>
 #endif
 
-class WgSizeCapsule;
-typedef	WgStrongPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_p;
-typedef	WgWeakPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_wp;
-
-class WgSizeCapsule : public WgCapsule, public WgScalable
+namespace wg 
 {
-public:
-	static WgSizeCapsule_p	create() { return WgSizeCapsule_p(new WgSizeCapsule()); }
+	
+	class WgSizeCapsule;
+	typedef	WgStrongPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_p;
+	typedef	WgWeakPtr<WgSizeCapsule,WgCapsule_p>		WgSizeCapsule_wp;
+	
+	class WgSizeCapsule : public WgCapsule, public WgScalable
+	{
+	public:
+		static WgSizeCapsule_p	create() { return WgSizeCapsule_p(new WgSizeCapsule()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgSizeCapsule_p	cast( const WgObject_p& pObject );
+	
+		void	setSizes( WgSize min, WgSize preferred, WgSize max );
+	
+		void	setPreferredSize( WgSize size );
+		void	setMinSize( WgSize size );
+		void	setMaxSize( WgSize size );
+	
+		WgSize	preferredSize() const;
+		WgSize	minSize() const;
+		WgSize	maxSize() const;
+	
+		int		matchingHeight( int width ) const;
+		int		matchingWidth( int height ) const;
+	
+	protected:
+		WgSizeCapsule();
+		virtual ~WgSizeCapsule();
+		virtual WgWidget* _newOfMyType() const { return new WgSizeCapsule(); };
+	
+	private:
+		void	_onScaleChanged();
+	
+		WgSize			m_min;
+		WgSize			m_max;
+		WgSize			m_preferred;
+	};
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgSizeCapsule_p	cast( const WgObject_p& pObject );
-
-	void	setSizes( WgSize min, WgSize preferred, WgSize max );
-
-	void	setPreferredSize( WgSize size );
-	void	setMinSize( WgSize size );
-	void	setMaxSize( WgSize size );
-
-	WgSize	preferredSize() const;
-	WgSize	minSize() const;
-	WgSize	maxSize() const;
-
-	int		matchingHeight( int width ) const;
-	int		matchingWidth( int height ) const;
-
-protected:
-	WgSizeCapsule();
-	virtual ~WgSizeCapsule();
-	virtual WgWidget* _newOfMyType() const { return new WgSizeCapsule(); };
-
-private:
-	void	_onScaleChanged();
-
-	WgSize			m_min;
-	WgSize			m_max;
-	WgSize			m_preferred;
-};
-
+} // namespace wg
 #endif //WG_SIZECAPSULE_DOT_H

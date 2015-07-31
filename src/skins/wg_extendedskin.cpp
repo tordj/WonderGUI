@@ -23,141 +23,146 @@
 #include <wg_extendedskin.h>
 #include <wg_util.h>
 
-using namespace WgUtil;
-
-const char WgExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgExtendedSkin::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgSkin::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgExtendedSkin::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgExtendedSkin_p WgExtendedSkin::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgExtendedSkin_p( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
+	
+	using namespace WgUtil;
+	
+	const char WgExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgExtendedSkin::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgSkin::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgExtendedSkin::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgExtendedSkin_p WgExtendedSkin::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgExtendedSkin_p( static_cast<WgExtendedSkin*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+	
+	//____ setContentPadding() ____________________________________________________
+	
+	void WgExtendedSkin::setContentPadding( WgBorder padding )
+	{
+		m_contentPadding = padding;
+	}
+	
+	//____ setContentShift() ______________________________________________________
+	
+	void WgExtendedSkin::setContentShift( WgStateEnum state, WgCoord shift )
+	{
+		int index = _stateToIndex(state);
+		m_contentShift[index] = shift;
+	}
+	
+	//____ setHoveredContentShift() _______________________________________________
+	
+	void WgExtendedSkin::setHoveredContentShift( WgCoord shift )
+	{
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
+	
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+	}
+	
+	//____ setPressedContentShift() _______________________________________________
+	
+	void WgExtendedSkin::setPressedContentShift( WgCoord shift )
+	{
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+	}
+	
+	//____ setSelectedContentShift() ______________________________________________
+	
+	void WgExtendedSkin::setSelectedContentShift( WgCoord shift )
+	{
+		m_contentShift[_stateToIndex(WG_STATE_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+	}
+	
+	//____ setFocusedContentShift() _______________________________________________
+	
+	void WgExtendedSkin::setFocusedContentShift( WgCoord shift )
+	{
+		m_contentShift[_stateToIndex(WG_STATE_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
+		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+	}
+	
+	//____ minSize() ______________________________________________________________
+	
+	WgSize WgExtendedSkin::minSize() const
+	{
+		return WgSize(m_contentPadding.width(), m_contentPadding.height() );
+	}
+	
+	//____ minSize() ______________________________________________________________
+	
+	WgSize WgExtendedSkin::preferredSize() const
+	{
+		return WgSize(m_contentPadding.width(), m_contentPadding.height() );
+	}
+	
+	//____ sizeForContent() _______________________________________________________
+	
+	WgSize WgExtendedSkin::sizeForContent( const WgSize contentSize ) const
+	{
+		return contentSize + m_contentPadding;
+	}
+	
+	//____ contentPadding() _______________________________________________________
+	
+	WgSize WgExtendedSkin::contentPadding() const
+	{
+		return m_contentPadding.size();
+	}
+	
+	
+	//____ contentRect() __________________________________________________________
+	
+	WgRect WgExtendedSkin::contentRect( const WgRect& canvas, WgState state ) const
+	{
+		return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
+	}
+	
+	//____ isStateIdentical() ______________________________________________________
+	
+	bool WgExtendedSkin::isStateIdentical( WgState state, WgState comparedTo ) const
+	{
+		return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
+	}
 
-	return 0;
-}
-
-
-//____ setContentPadding() ____________________________________________________
-
-void WgExtendedSkin::setContentPadding( WgBorder padding )
-{
-	m_contentPadding = padding;
-}
-
-//____ setContentShift() ______________________________________________________
-
-void WgExtendedSkin::setContentShift( WgStateEnum state, WgCoord shift )
-{
-	int index = _stateToIndex(state);
-	m_contentShift[index] = shift;
-}
-
-//____ setHoveredContentShift() _______________________________________________
-
-void WgExtendedSkin::setHoveredContentShift( WgCoord shift )
-{
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
-
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
-}
-
-//____ setPressedContentShift() _______________________________________________
-
-void WgExtendedSkin::setPressedContentShift( WgCoord shift )
-{
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
-}
-
-//____ setSelectedContentShift() ______________________________________________
-
-void WgExtendedSkin::setSelectedContentShift( WgCoord shift )
-{
-	m_contentShift[_stateToIndex(WG_STATE_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
-}
-
-//____ setFocusedContentShift() _______________________________________________
-
-void WgExtendedSkin::setFocusedContentShift( WgCoord shift )
-{
-	m_contentShift[_stateToIndex(WG_STATE_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-	m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
-}
-
-//____ minSize() ______________________________________________________________
-
-WgSize WgExtendedSkin::minSize() const
-{
-	return WgSize(m_contentPadding.width(), m_contentPadding.height() );
-}
-
-//____ minSize() ______________________________________________________________
-
-WgSize WgExtendedSkin::preferredSize() const
-{
-	return WgSize(m_contentPadding.width(), m_contentPadding.height() );
-}
-
-//____ sizeForContent() _______________________________________________________
-
-WgSize WgExtendedSkin::sizeForContent( const WgSize contentSize ) const
-{
-	return contentSize + m_contentPadding;
-}
-
-//____ contentPadding() _______________________________________________________
-
-WgSize WgExtendedSkin::contentPadding() const
-{
-	return m_contentPadding.size();
-}
-
-
-//____ contentRect() __________________________________________________________
-
-WgRect WgExtendedSkin::contentRect( const WgRect& canvas, WgState state ) const
-{
-	return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
-}
-
-//____ isStateIdentical() ______________________________________________________
-
-bool WgExtendedSkin::isStateIdentical( WgState state, WgState comparedTo ) const
-{
-	return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
-}
+} // namespace wg

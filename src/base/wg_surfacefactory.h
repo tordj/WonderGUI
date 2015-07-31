@@ -28,34 +28,39 @@
 #	include <wg_surface.h>
 #endif
 
-
-class WgSurfaceFactory;
-typedef	WgStrongPtr<WgSurfaceFactory,WgObject_p>	WgSurfaceFactory_p;
-typedef	WgWeakPtr<WgSurfaceFactory,WgObject_wp>	WgSurfaceFactory_wp;
-
-
-//____ WgSurfaceFactory _______________________________________________________
-/**
- * @brief Factory class for creating surfaces.
- *
- * WgSurfaceFactory is the base class for all surface factories. The surface factories
- * are used by WonderGUI components that needs to dynamically create surfaces as
- * part of their operation, like WgVectorFont.
- *
- **/
-class WgSurfaceFactory : public WgObject
+namespace wg 
 {
-public:
-	bool						isInstanceOf( const char * pClassName ) const;
-	const char *				className( void ) const;
-	static const char			CLASSNAME[];
-	static WgSurfaceFactory_p	cast( const WgObject_p& pObject );
+	
+	
+	class WgSurfaceFactory;
+	typedef	WgStrongPtr<WgSurfaceFactory,WgObject_p>	WgSurfaceFactory_p;
+	typedef	WgWeakPtr<WgSurfaceFactory,WgObject_wp>	WgSurfaceFactory_wp;
+	
+	
+	//____ WgSurfaceFactory _______________________________________________________
+	/**
+	 * @brief Factory class for creating surfaces.
+	 *
+	 * WgSurfaceFactory is the base class for all surface factories. The surface factories
+	 * are used by WonderGUI components that needs to dynamically create surfaces as
+	 * part of their operation, like WgVectorFont.
+	 *
+	 **/
+	class WgSurfaceFactory : public WgObject
+	{
+	public:
+		bool						isInstanceOf( const char * pClassName ) const;
+		const char *				className( void ) const;
+		static const char			CLASSNAME[];
+		static WgSurfaceFactory_p	cast( const WgObject_p& pObject );
+	
+		virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
+	protected:
+		virtual ~WgSurfaceFactory() {}
+	};
+	
+	
+	//==============================================================================
 
-	virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const = 0;
-protected:
-	virtual ~WgSurfaceFactory() {}
-};
-
-
-//==============================================================================
+} // namespace wg
 #endif // WG_SURFACE_DOT_H

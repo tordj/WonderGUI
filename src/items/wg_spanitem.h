@@ -26,68 +26,73 @@
 #	include <wg_item.h>
 #endif
 
-class WgSpanItem;
-
-//____ WgSpanHolder ___________________________________________________________
-
-class WgSpanHolder : public WgItemHolder
+namespace wg 
 {
-public:
-	virtual void	_onSpanModified( WgSpanItem * pItem ) = 0;
-	virtual int		_spanStepSize( WgSpanItem * pItem ) = 0;
-	virtual int		_spanSkipSize( WgSpanItem * pItem ) = 0;
-};
+	
+	class WgSpanItem;
+	
+	//____ WgSpanHolder ___________________________________________________________
+	
+	class WgSpanHolder : public WgItemHolder
+	{
+	public:
+		virtual void	_onSpanModified( WgSpanItem * pItem ) = 0;
+		virtual int		_spanStepSize( WgSpanItem * pItem ) = 0;
+		virtual int		_spanSkipSize( WgSpanItem * pItem ) = 0;
+	};
+	
+	//____ WgSpanItem _____________________________________________________________
+	
+	class WgSpanItem : public WgItem
+	{
+		friend class WgSpanHolder;
+	public:
+		WgSpanItem( WgSpanHolder * pHolder );
+		virtual ~WgSpanItem() {};
+	
+		bool	setMin( int min );
+		bool	setMax( int max );
+		bool	setRange( int min, int max );
+	
+		void	setSpan( int begin, int length );
+		void	setBegin( int begin );
+		void	setLength( int length );
+	
+		void	setRelativeSpan( float begin, float length );
+		void	setRelativePos( float pos );
+		void	setRelativeBegin( float begin );
+		void	setRelativeLength( float length );
+	
+		bool	stepForward();
+		bool	stepBackward();
+		bool	skipForward();
+		bool	skipBackward();
+	
+		inline float	relativePos() const { return (begin+length/2)/(float)(max-min); }
+		inline float	relativeBegin() const { return begin/(float)(max-min); }
+		inline float	relativeLength() const { return length/(float)(max-min); };
+	
+	
+		const static int	MAX = 0x00FFFFFF;
+		const static int	MIN = 0xFF000000;
+	
+		// Directly accessible for holder.
+	
+		int		min;
+		int		max;
+	
+		int		begin;
+		int		length;
+	
+	
+	protected:
+		void	_onModified() { static_cast<WgSpanHolder*>(m_pHolder)->_onSpanModified(this); }
+		int		_stepSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
+		int		_skipSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
+	};
+	
+	
+	
 
-//____ WgSpanItem _____________________________________________________________
-
-class WgSpanItem : public WgItem
-{
-	friend class WgSpanHolder;
-public:
-	WgSpanItem( WgSpanHolder * pHolder );
-	virtual ~WgSpanItem() {};
-
-	bool	setMin( int min );
-	bool	setMax( int max );
-	bool	setRange( int min, int max );
-
-	void	setSpan( int begin, int length );
-	void	setBegin( int begin );
-	void	setLength( int length );
-
-	void	setRelativeSpan( float begin, float length );
-	void	setRelativePos( float pos );
-	void	setRelativeBegin( float begin );
-	void	setRelativeLength( float length );
-
-	bool	stepForward();
-	bool	stepBackward();
-	bool	skipForward();
-	bool	skipBackward();
-
-	inline float	relativePos() const { return (begin+length/2)/(float)(max-min); }
-	inline float	relativeBegin() const { return begin/(float)(max-min); }
-	inline float	relativeLength() const { return length/(float)(max-min); };
-
-
-	const static int	MAX = 0x00FFFFFF;
-	const static int	MIN = 0xFF000000;
-
-	// Directly accessible for holder.
-
-	int		min;
-	int		max;
-
-	int		begin;
-	int		length;
-
-
-protected:
-	void	_onModified() { static_cast<WgSpanHolder*>(m_pHolder)->_onSpanModified(this); }
-	int		_stepSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanStepSize(this); }
-	int		_skipSize() { return static_cast<WgSpanHolder*>(m_pHolder)->_spanSkipSize(this); }
-};
-
-
-
+} // namespace wg
 #endif //WG_SPANITEM_DOT_H

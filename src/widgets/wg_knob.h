@@ -27,38 +27,43 @@
 #	include <wg_widget.h>
 #endif
 
-class WgKnob;
-typedef	WgStrongPtr<WgKnob,WgWidget_p>		WgKnob_p;
-typedef	WgWeakPtr<WgKnob,WgWidget_wp>	WgKnob_wp;
-
-//____ WgKnob ____________________________________________________________
-
-class WgKnob : public WgWidget
+namespace wg 
 {
-public:
-	static WgKnob_p	create() { return WgKnob_p(new WgKnob()); }
+	
+	class WgKnob;
+	typedef	WgStrongPtr<WgKnob,WgWidget_p>		WgKnob_p;
+	typedef	WgWeakPtr<WgKnob,WgWidget_wp>	WgKnob_wp;
+	
+	//____ WgKnob ____________________________________________________________
+	
+	class WgKnob : public WgWidget
+	{
+	public:
+		static WgKnob_p	create() { return WgKnob_p(new WgKnob()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgKnob_p	cast( const WgObject_p& pObject );
+	
+	    void    setValue( float value );
+	    
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgKnob();
+		virtual ~WgKnob();
+		virtual WgWidget* _newOfMyType() const { return new WgKnob(); };
+	
+		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+	
+	private:
+	
+	};
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgKnob_p	cast( const WgObject_p& pObject );
-
-    void    setValue( float value );
-    
-	WgSize	preferredSize() const;
-
-protected:
-	WgKnob();
-	virtual ~WgKnob();
-	virtual WgWidget* _newOfMyType() const { return new WgKnob(); };
-
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-
-private:
-
-};
-
-
+} // namespace wg
 #endif //WG_KNOB_DOT_H

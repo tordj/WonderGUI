@@ -27,43 +27,48 @@
 #	include <wg_capsule.h>
 #endif
 
-class WgShaderCapsule;
-typedef	WgStrongPtr<WgShaderCapsule,WgCapsule_p>		WgShaderCapsule_p;
-typedef	WgWeakPtr<WgShaderCapsule,WgCapsule_wp>	WgShaderCapsule_wp;
-
-class WgShaderCapsule : public WgCapsule
+namespace wg 
 {
-public:
-	static WgShaderCapsule_p	create() { return WgShaderCapsule_p(new WgShaderCapsule()); }
+	
+	class WgShaderCapsule;
+	typedef	WgStrongPtr<WgShaderCapsule,WgCapsule_p>		WgShaderCapsule_p;
+	typedef	WgWeakPtr<WgShaderCapsule,WgCapsule_wp>	WgShaderCapsule_wp;
+	
+	class WgShaderCapsule : public WgCapsule
+	{
+	public:
+		static WgShaderCapsule_p	create() { return WgShaderCapsule_p(new WgShaderCapsule()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgShaderCapsule_p	cast( const WgObject_p& pObject );
+	
+		void		setColor( const WgColor& color);
+		void		setTintMode( WgTintMode mode );
+		void		setBlendMode( WgBlendMode mode );
+	
+		inline WgColor		color() { return m_tintColor; }
+		inline WgBlendMode	blendMode() { return m_blendMode; }
+		inline WgTintMode	tintMode() { return m_tintMode; }
+	
+	
+	protected:
+		WgShaderCapsule();
+		virtual ~WgShaderCapsule();
+		virtual WgWidget* _newOfMyType() const { return new WgShaderCapsule(); };
+	
+		void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+		void		_onCloneContent( const WgWidget * _pOrg );
+		WgBlendMode _getBlendMode() const;
+	
+	private:
+		WgColor			m_tintColor;
+		WgBlendMode		m_blendMode;
+		WgTintMode		m_tintMode;
+	
+	};
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgShaderCapsule_p	cast( const WgObject_p& pObject );
-
-	void		setColor( const WgColor& color);
-	void		setTintMode( WgTintMode mode );
-	void		setBlendMode( WgBlendMode mode );
-
-	inline WgColor		color() { return m_tintColor; }
-	inline WgBlendMode	blendMode() { return m_blendMode; }
-	inline WgTintMode	tintMode() { return m_tintMode; }
-
-
-protected:
-	WgShaderCapsule();
-	virtual ~WgShaderCapsule();
-	virtual WgWidget* _newOfMyType() const { return new WgShaderCapsule(); };
-
-	void		_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-	void		_onCloneContent( const WgWidget * _pOrg );
-	WgBlendMode _getBlendMode() const;
-
-private:
-	WgColor			m_tintColor;
-	WgBlendMode		m_blendMode;
-	WgTintMode		m_tintMode;
-
-};
-
+} // namespace wg
 #endif //WG_SHADERCAPSULE_DOT_H

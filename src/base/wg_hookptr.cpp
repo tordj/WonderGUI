@@ -24,52 +24,38 @@
 #include <wg_hook.h>
 #include <wg_base.h>
 
-WgHook_p::WgHook_p( WgHook * pHook )
+namespace wg 
 {
-	if( pHook )
+	
+	WgHook_p::WgHook_p( WgHook * pHook )
 	{
-		if( !pHook->m_pPtrHub )
+		if( pHook )
 		{
-			m_pHub = WgBase::allocHookPtrHub();
-			m_pHub->refCnt = 1;
-			m_pHub->pObj = pHook;
-			pHook->m_pPtrHub = m_pHub;
+			if( !pHook->m_pPtrHub )
+			{
+				m_pHub = WgBase::allocHookPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pHook;
+				pHook->m_pPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pHook->m_pPtrHub;
+				m_pHub->refCnt++;
+			}
 		}
 		else
 		{
-			m_pHub = pHook->m_pPtrHub;
-			m_pHub->refCnt++;
+			m_pHub = 0;
 		}
-	}
-	else
-	{
-		m_pHub = 0;
-	}
-};
-
-WgHook_p::~WgHook_p()
-{
-	if( m_pHub )
-	{
-		m_pHub->refCnt--;
-
-		if( m_pHub->refCnt == 0 )
-		{
-			if( m_pHub->pObj )
-				m_pHub->pObj->m_pPtrHub = 0;
-			WgBase::freeHookPtrHub(m_pHub);
-		}
-	}
-}
-
-void WgHook_p::copy( WgHook_p const & r)
-{
-	if( m_pHub != r.m_pHub )
+	};
+	
+	WgHook_p::~WgHook_p()
 	{
 		if( m_pHub )
 		{
 			m_pHub->refCnt--;
-
+	
 			if( m_pHub->refCnt == 0 )
 			{
 				if( m_pHub->pObj )
@@ -77,9 +63,28 @@ void WgHook_p::copy( WgHook_p const & r)
 				WgBase::freeHookPtrHub(m_pHub);
 			}
 		}
-
-		m_pHub = r.m_pHub;
-		if( m_pHub )
-			m_pHub->refCnt++;
 	}
-}
+	
+	void WgHook_p::copy( WgHook_p const & r)
+	{
+		if( m_pHub != r.m_pHub )
+		{
+			if( m_pHub )
+			{
+				m_pHub->refCnt--;
+	
+				if( m_pHub->refCnt == 0 )
+				{
+					if( m_pHub->pObj )
+						m_pHub->pObj->m_pPtrHub = 0;
+					WgBase::freeHookPtrHub(m_pHub);
+				}
+			}
+	
+			m_pHub = r.m_pHub;
+			if( m_pHub )
+				m_pHub->refCnt++;
+		}
+	}
+
+} // namespace wg

@@ -31,58 +31,63 @@
 #	include	<wg_legacymodtext.h>
 #endif
 
-
-class WgFont;
-
-class WgFpsDisplay;
-typedef	WgStrongPtr<WgFpsDisplay,WgWidget_p>		WgFpsDisplay_p;
-typedef	WgWeakPtr<WgFpsDisplay,WgWidget_wp>	WgFpsDisplay_wp;
-
-class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
+namespace wg 
 {
-public:
-	static WgFpsDisplay_p	create() { return WgFpsDisplay_p(new WgFpsDisplay()); }
+	
+	
+	class WgFont;
+	
+	class WgFpsDisplay;
+	typedef	WgStrongPtr<WgFpsDisplay,WgWidget_p>		WgFpsDisplay_p;
+	typedef	WgWeakPtr<WgFpsDisplay,WgWidget_wp>	WgFpsDisplay_wp;
+	
+	class WgFpsDisplay:public WgWidget, protected WgLegacyTextHolder
+	{
+	public:
+		static WgFpsDisplay_p	create() { return WgFpsDisplay_p(new WgFpsDisplay()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgFpsDisplay_p	cast( const WgObject_p& pObject );
+	
+		//____ Interfaces ______________________________________
+	
+		WgLegacyModText		labels;
+		WgLegacyText	values;
+	
+		//____ Methods __________________________________________
+	
+		void	SetTextProperties( const WgTextprop_p& pProp );
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgFpsDisplay();
+		virtual ~WgFpsDisplay();
+		virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
+	
+		void		_onMsg( const WgMsg_p& pMsg );
+		void		_onStateChanged( WgState oldState );
+		void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void		_onCloneContent( const WgWidget * _pOrg );
+		void		_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+	
+		WgObject * 	_object() { return this; };
+		void		_onFieldDirty( WgField * pField );
+		void 		_onFieldResize( WgField * pField );
+	
+	
+	private:
+	
+		WgLegacyTextField	m_labelsText;
+		WgLegacyTextField	m_valuesText;
+		int *		m_pTickBuffer;
+		int			m_tickBufferOfs;
+		WgRouteId	m_tickRouteId;
+	};
+	
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgFpsDisplay_p	cast( const WgObject_p& pObject );
-
-	//____ Interfaces ______________________________________
-
-	WgLegacyModText		labels;
-	WgLegacyText	values;
-
-	//____ Methods __________________________________________
-
-	void	SetTextProperties( const WgTextprop_p& pProp );
-	WgSize	preferredSize() const;
-
-protected:
-	WgFpsDisplay();
-	virtual ~WgFpsDisplay();
-	virtual WgWidget* _newOfMyType() const { return new WgFpsDisplay(); };
-
-	void		_onMsg( const WgMsg_p& pMsg );
-	void		_onStateChanged( WgState oldState );
-	void		_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void		_onCloneContent( const WgWidget * _pOrg );
-	void		_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
-
-	WgObject * 	_object() { return this; };
-	void		_onFieldDirty( WgField * pField );
-	void 		_onFieldResize( WgField * pField );
-
-
-private:
-
-	WgLegacyTextField	m_labelsText;
-	WgLegacyTextField	m_valuesText;
-	int *		m_pTickBuffer;
-	int			m_tickBufferOfs;
-	WgRouteId	m_tickRouteId;
-};
-
-
-
+} // namespace wg
 #endif //WgFpsDisplay_DOT_H

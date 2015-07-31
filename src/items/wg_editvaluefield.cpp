@@ -23,6 +23,11 @@
 #include <wg_widget.h>
 #include <wg_editvaluefield.h>
 
+namespace wg 
+{
+	
+	
+	
+	
 
-
-
+} // namespace wg

@@ -32,16 +32,21 @@
 #	include <wg_resdb.h>
 #endif
 
-class WgGlyphset;
-
-class WgResLoader
+namespace wg 
 {
-public:
-	virtual WgSurface_p	loadSurface( const std::string& filename, bool bRequired ) = 0;
-	virtual WgGlyphset_p	loadGlyphset( const std::string& filename ) = 0;
-	virtual WgResDB_p		loadDb( const std::string& filename, const WgResDB_p& pDependencies = 0 ) = 0;
-	virtual std::string		loadString( const std::string& token ) = 0;
-};
+	
+	class WgGlyphset;
+	
+	class WgResLoader
+	{
+	public:
+		virtual WgSurface_p	loadSurface( const std::string& filename, bool bRequired ) = 0;
+		virtual WgGlyphset_p	loadGlyphset( const std::string& filename ) = 0;
+		virtual WgResDB_p		loadDb( const std::string& filename, const WgResDB_p& pDependencies = 0 ) = 0;
+		virtual std::string		loadString( const std::string& token ) = 0;
+	};
+	
+	
 
-
+} // namespace wg
 #endif //WG_RESLOADER_DOT_H

@@ -32,54 +32,59 @@
 #	include <wg_modtext.h>
 #endif
 
-class WgTextDisplay;
-typedef	WgStrongPtr<WgTextDisplay,WgWidget_p>		WgTextDisplay_p;
-typedef	WgWeakPtr<WgTextDisplay,WgWidget_wp>	WgTextDisplay_wp;
-
-class WgTextDisplay:public WgWidget, protected WgTextHolder
+namespace wg 
 {
-public:
-	static WgTextDisplay_p	create() { return WgTextDisplay_p(new WgTextDisplay()); }
+	
+	class WgTextDisplay;
+	typedef	WgStrongPtr<WgTextDisplay,WgWidget_p>		WgTextDisplay_p;
+	typedef	WgWeakPtr<WgTextDisplay,WgWidget_wp>	WgTextDisplay_wp;
+	
+	class WgTextDisplay:public WgWidget, protected WgTextHolder
+	{
+	public:
+		static WgTextDisplay_p	create() { return WgTextDisplay_p(new WgTextDisplay()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgTextDisplay_p	cast( const WgObject_p& pObject );
+	
+		//____ Interfaces ______________________________________
+	
+		WgModText		text;
+	
+		//____ Methods __________________________________________
+	
+		WgPointerStyle		PointerStyle() const;
+		WgString			TooltipString() const;
+	
+		int		matchingWidth( int height ) const;
+		int		matchingHeight( int width ) const;
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgTextDisplay();
+		virtual ~WgTextDisplay();
+		virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
+	
+		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void	_onNewSize( const WgSize& size );
+		void	_onRefresh();
+		void	_onMsg( const WgMsg_p& pMsg );
+		void	_onStateChanged( WgState oldState );
+		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+	
+		WgObject * _object() { return this; }
+		void	_onFieldDirty( WgField * pField );
+		void	_onFieldResize( WgField * pField );
+	private:
+	
+		WgTextField			m_text;
+	};
+	
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgTextDisplay_p	cast( const WgObject_p& pObject );
-
-	//____ Interfaces ______________________________________
-
-	WgModText		text;
-
-	//____ Methods __________________________________________
-
-	WgPointerStyle		PointerStyle() const;
-	WgString			TooltipString() const;
-
-	int		matchingWidth( int height ) const;
-	int		matchingHeight( int width ) const;
-	WgSize	preferredSize() const;
-
-protected:
-	WgTextDisplay();
-	virtual ~WgTextDisplay();
-	virtual WgWidget* _newOfMyType() const { return new WgTextDisplay(); };
-
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onNewSize( const WgSize& size );
-	void	_onRefresh();
-	void	_onMsg( const WgMsg_p& pMsg );
-	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
-
-	WgObject * _object() { return this; }
-	void	_onFieldDirty( WgField * pField );
-	void	_onFieldResize( WgField * pField );
-private:
-
-	WgTextField			m_text;
-};
-
-
-
+} // namespace wg
 #endif // WG_TEXTDISPLAY_DOT_H

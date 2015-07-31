@@ -22,33 +22,38 @@
 
 #include <wg_edittext.h>
 
-const char WgEditText::CLASSNAME[] = {"EditText"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgEditText::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgLegacyModText::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgEditText::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgEditText_p WgEditText::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgEditText_p( pInterface.getRealObjectPtr(), static_cast<WgEditText*>(pInterface.rawPtr()) );
+	
+	const char WgEditText::CLASSNAME[] = {"EditText"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgEditText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgLegacyModText::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgEditText::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgEditText_p WgEditText::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgEditText_p( pInterface.getRealObjectPtr(), static_cast<WgEditText*>(pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
 
-	return 0;
-}
-
+} // namespace wg

@@ -31,48 +31,53 @@
 #	include <wg_modvalue.h>
 #endif
 
-
-class WgValueDisplay;
-typedef	WgStrongPtr<WgValueDisplay,WgWidget_p>		WgValueDisplay_p;
-typedef	WgWeakPtr<WgValueDisplay,WgWidget_wp>	WgValueDisplay_wp;
-
-class WgValueDisplay : public WgWidget, protected WgModValueHolder
+namespace wg 
 {
-public:
-	static WgValueDisplay_p	create() { return WgValueDisplay_p(new WgValueDisplay()); }
+	
+	
+	class WgValueDisplay;
+	typedef	WgStrongPtr<WgValueDisplay,WgWidget_p>		WgValueDisplay_p;
+	typedef	WgWeakPtr<WgValueDisplay,WgWidget_wp>	WgValueDisplay_wp;
+	
+	class WgValueDisplay : public WgWidget, protected WgModValueHolder
+	{
+	public:
+		static WgValueDisplay_p	create() { return WgValueDisplay_p(new WgValueDisplay()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgValueDisplay_p	cast( const WgObject_p& pObject );
+	
+		//____ Interfaces _______________________________________
+	
+		WgModValue		value;
+	
+		//____ Methods __________________________________________
+	
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgValueDisplay();
+		virtual ~WgValueDisplay();
+		virtual WgWidget* _newOfMyType() const { return new WgValueDisplay(); };
+	
+		void	_onRefresh();
+		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void	_onStateChanged( WgState oldState );
+		void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
+	
+	private:
+		WgObject * _object() { return this; }
+		void	_onFieldDirty( WgField * pField );
+		void	_onFieldResize( WgField * pField );
+		void	_onValueModified( WgModValueField * pField );
+	
+		WgModValueField		m_field;
+	};
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgValueDisplay_p	cast( const WgObject_p& pObject );
-
-	//____ Interfaces _______________________________________
-
-	WgModValue		value;
-
-	//____ Methods __________________________________________
-
-	WgSize	preferredSize() const;
-
-protected:
-	WgValueDisplay();
-	virtual ~WgValueDisplay();
-	virtual WgWidget* _newOfMyType() const { return new WgValueDisplay(); };
-
-	void	_onRefresh();
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void	_onStateChanged( WgState oldState );
-	void	_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin );
-
-private:
-	WgObject * _object() { return this; }
-	void	_onFieldDirty( WgField * pField );
-	void	_onFieldResize( WgField * pField );
-	void	_onValueModified( WgModValueField * pField );
-
-	WgModValueField		m_field;
-};
-
-
+} // namespace wg
 #endif // WG_VALUEDISPLAY_DOT_H

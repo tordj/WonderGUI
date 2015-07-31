@@ -32,26 +32,31 @@
 
 #include <vector>
 
-class WgSoftSurfaceFactory;
-typedef	WgStrongPtr<WgSoftSurfaceFactory,WgSurfaceFactory_p>	WgSoftSurfaceFactory_p;
-typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactory_wp>	WgSoftSurfaceFactory_wp;
-
-//____ WgSoftSurfaceFactory _______________________________________________________
-
-class WgSoftSurfaceFactory : public WgSurfaceFactory
+namespace wg 
 {
-public:
-	static WgSoftSurfaceFactory_p	create() { return WgSoftSurfaceFactory_p(new WgSoftSurfaceFactory()); }
+	
+	class WgSoftSurfaceFactory;
+	typedef	WgStrongPtr<WgSoftSurfaceFactory,WgSurfaceFactory_p>	WgSoftSurfaceFactory_p;
+	typedef	WgWeakPtr<WgSoftSurfaceFactory,WgSurfaceFactory_wp>	WgSoftSurfaceFactory_wp;
+	
+	//____ WgSoftSurfaceFactory _______________________________________________________
+	
+	class WgSoftSurfaceFactory : public WgSurfaceFactory
+	{
+	public:
+		static WgSoftSurfaceFactory_p	create() { return WgSoftSurfaceFactory_p(new WgSoftSurfaceFactory()); }
+	
+		bool							isInstanceOf( const char * pClassName ) const;
+		const char *					className( void ) const;
+		static const char				CLASSNAME[];
+		static WgSoftSurfaceFactory_p	cast( const WgObject_p& pObject );
+	
+		virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
+	protected:
+		virtual ~WgSoftSurfaceFactory() {}
+	};
+	
+	//========================================================================================
 
-	bool							isInstanceOf( const char * pClassName ) const;
-	const char *					className( void ) const;
-	static const char				CLASSNAME[];
-	static WgSoftSurfaceFactory_p	cast( const WgObject_p& pObject );
-
-	virtual WgSurface_p createSurface( const WgSize& size, WgPixelType type = WG_PIXEL_ARGB_8 ) const;
-protected:
-	virtual ~WgSoftSurfaceFactory() {}
-};
-
-//========================================================================================
+} // namespace wg
 #endif // WG_SOFTSURFACEFACTORY_DOT_H

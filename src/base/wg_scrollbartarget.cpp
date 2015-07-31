@@ -23,15 +23,20 @@
 #include <wg_scrollbartarget.h>
 #include <wg_scrollbar.h>
 
-
-void WgScrollbarTarget::_updateScrollbar( float pos, float size )
+namespace wg 
 {
-		WgWidget * pWidget = m_pScrollbar.rawPtr();
+	
+	
+	void WgScrollbarTarget::_updateScrollbar( float pos, float size )
+	{
+			WgWidget * pWidget = m_pScrollbar.rawPtr();
+	
+			if( pWidget )
+			{
+				if( pWidget->isInstanceOf(WgScrollbar::CLASSNAME) )
+						static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
+			}
+	
+	}
 
-		if( pWidget )
-		{
-			if( pWidget->isInstanceOf(WgScrollbar::CLASSNAME) )
-					static_cast<WgScrollbar*>(pWidget)->_setHandle(pos,size);
-		}
-
-}
+} // namespace wg

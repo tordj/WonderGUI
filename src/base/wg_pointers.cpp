@@ -24,89 +24,73 @@
 
 #include <wg_base.h>
 
-
-class FreeWeakPtrHub;
-WgObject_p::WgObject_p( const WgObject_wp& r )
+namespace wg 
 {
-	m_pObj = r.rawPtr();
-	if( m_pObj )
-		m_pObj->_incRefCount();
-}
-
-
-WgObject_wp::WgObject_wp( WgObject * pObj )
-{
-	if( pObj )
+	
+	
+	class FreeWeakPtrHub;
+	WgObject_p::WgObject_p( const WgObject_wp& r )
 	{
-		if( !pObj->m_pWeakPtrHub )
+		m_pObj = r.rawPtr();
+		if( m_pObj )
+			m_pObj->_incRefCount();
+	}
+	
+	
+	WgObject_wp::WgObject_wp( WgObject * pObj )
+	{
+		if( pObj )
 		{
-			m_pHub = WgBase::allocWeakPtrHub();
-			m_pHub->refCnt = 1;
-			m_pHub->pObj = pObj;
-			pObj->m_pWeakPtrHub = m_pHub;
+			if( !pObj->m_pWeakPtrHub )
+			{
+				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pObj;
+				pObj->m_pWeakPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pObj->m_pWeakPtrHub;
+				m_pHub->refCnt++;
+			}
 		}
 		else
 		{
-			m_pHub = pObj->m_pWeakPtrHub;
-			m_pHub->refCnt++;
+			m_pHub = 0;
 		}
-	}
-	else
+	};
+	
+	WgObject_wp::WgObject_wp( const WgObject_p& pObject )
 	{
-		m_pHub = 0;
-	}
-};
-
-WgObject_wp::WgObject_wp( const WgObject_p& pObject )
-{
-	WgObject * pObj = pObject.rawPtr();
-
-	if( pObj )
-	{
-		if( !pObj->m_pWeakPtrHub )
+		WgObject * pObj = pObject.rawPtr();
+	
+		if( pObj )
 		{
-			m_pHub = WgBase::allocWeakPtrHub();
-			m_pHub->refCnt = 1;
-			m_pHub->pObj = pObj;
-			pObj->m_pWeakPtrHub = m_pHub;
+			if( !pObj->m_pWeakPtrHub )
+			{
+				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pObj;
+				pObj->m_pWeakPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pObj->m_pWeakPtrHub;
+				m_pHub->refCnt++;
+			}
 		}
 		else
 		{
-			m_pHub = pObj->m_pWeakPtrHub;
-			m_pHub->refCnt++;
+			m_pHub = 0;
 		}
-	}
-	else
-	{
-		m_pHub = 0;
-	}
-};
-
-WgObject_wp::~WgObject_wp()
-{
-	if( m_pHub )
-	{
-		m_pHub->refCnt--;
-
-		if( m_pHub->refCnt == 0 )
-		{
-			if( m_pHub->pObj )
-				m_pHub->pObj->m_pWeakPtrHub = 0;
-			WgBase::freeWeakPtrHub(m_pHub);
-		}
-	}
-}
-
-
-
-void WgObject_wp::copy( WgObject_wp const & r)
-{
-	if( m_pHub != r.m_pHub )
+	};
+	
+	WgObject_wp::~WgObject_wp()
 	{
 		if( m_pHub )
 		{
 			m_pHub->refCnt--;
-
+	
 			if( m_pHub->refCnt == 0 )
 			{
 				if( m_pHub->pObj )
@@ -114,68 +98,66 @@ void WgObject_wp::copy( WgObject_wp const & r)
 				WgBase::freeWeakPtrHub(m_pHub);
 			}
 		}
-
-		m_pHub = r.m_pHub;
-		if( m_pHub )
-			m_pHub->refCnt++;
 	}
-}
-
-
-WgInterface_wp::WgInterface_wp( WgObject * pObj, WgInterface * pInterface )
-{
-	if( pObj && pInterface )
+	
+	
+	
+	void WgObject_wp::copy( WgObject_wp const & r)
 	{
-		m_pInterface = pInterface;
-
-		if( !pObj->m_pWeakPtrHub )
+		if( m_pHub != r.m_pHub )
 		{
-			m_pHub = WgBase::allocWeakPtrHub();
-			m_pHub->refCnt = 1;
-			m_pHub->pObj = pObj;
-			pObj->m_pWeakPtrHub = m_pHub;
+			if( m_pHub )
+			{
+				m_pHub->refCnt--;
+	
+				if( m_pHub->refCnt == 0 )
+				{
+					if( m_pHub->pObj )
+						m_pHub->pObj->m_pWeakPtrHub = 0;
+					WgBase::freeWeakPtrHub(m_pHub);
+				}
+			}
+	
+			m_pHub = r.m_pHub;
+			if( m_pHub )
+				m_pHub->refCnt++;
+		}
+	}
+	
+	
+	WgInterface_wp::WgInterface_wp( WgObject * pObj, WgInterface * pInterface )
+	{
+		if( pObj && pInterface )
+		{
+			m_pInterface = pInterface;
+	
+			if( !pObj->m_pWeakPtrHub )
+			{
+				m_pHub = WgBase::allocWeakPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pObj;
+				pObj->m_pWeakPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pObj->m_pWeakPtrHub;
+				m_pHub->refCnt++;
+			}
 		}
 		else
 		{
-			m_pHub = pObj->m_pWeakPtrHub;
-			m_pHub->refCnt++;
+			m_pHub = 0;
+			m_pInterface = 0;
 		}
-	}
-	else
-	{
-		m_pHub = 0;
-		m_pInterface = 0;
-	}
-};
-
-
-WgInterface_wp::~WgInterface_wp()
-{
-	if( m_pHub )
-	{
-		m_pHub->refCnt--;
-
-		if( m_pHub->refCnt == 0 )
-		{
-			if( m_pHub->pObj )
-				m_pHub->pObj->m_pWeakPtrHub = 0;
-			WgBase::freeWeakPtrHub(m_pHub);
-		}
-	}
-}
-
-
-
-void WgInterface_wp::copy( WgInterface_wp const & r)
-{
-	m_pInterface = r.m_pInterface;
-
-	if( m_pHub != r.m_pHub )
+	};
+	
+	
+	WgInterface_wp::~WgInterface_wp()
 	{
 		if( m_pHub )
 		{
 			m_pHub->refCnt--;
-
+	
 			if( m_pHub->refCnt == 0 )
 			{
 				if( m_pHub->pObj )
@@ -183,9 +165,32 @@ void WgInterface_wp::copy( WgInterface_wp const & r)
 				WgBase::freeWeakPtrHub(m_pHub);
 			}
 		}
-
-		m_pHub = r.m_pHub;
-		if( m_pHub )
-			m_pHub->refCnt++;
 	}
-}
+	
+	
+	
+	void WgInterface_wp::copy( WgInterface_wp const & r)
+	{
+		m_pInterface = r.m_pInterface;
+	
+		if( m_pHub != r.m_pHub )
+		{
+			if( m_pHub )
+			{
+				m_pHub->refCnt--;
+	
+				if( m_pHub->refCnt == 0 )
+				{
+					if( m_pHub->pObj )
+						m_pHub->pObj->m_pWeakPtrHub = 0;
+					WgBase::freeWeakPtrHub(m_pHub);
+				}
+			}
+	
+			m_pHub = r.m_pHub;
+			if( m_pHub )
+				m_pHub->refCnt++;
+		}
+	}
+
+} // namespace wg

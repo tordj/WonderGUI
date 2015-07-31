@@ -44,50 +44,55 @@
 #	include <wg_valuefield.h>
 #endif
 
-
-class WgValue;
-typedef	WgIStrongPtr<WgValue,WgInterface_p>	WgValue_p;
-typedef	WgIWeakPtr<WgValue,WgInterface_wp>	WgValue_wp;
-
-/**
- * @brief Interface to a basic value display field
- * 
- * The value in a basic value field is set by the widget itself and can
- * not be modified directly either through the API or UI. Only the formatting
- * and appearance of the value can be modified through this API.
- * 
- */
-
-class WgValue : public WgInterface
+namespace wg 
 {
-public:
-	WgValue(WgValueField* pField) : m_pField(pField) {}
+	
+	
+	class WgValue;
+	typedef	WgIStrongPtr<WgValue,WgInterface_p>	WgValue_p;
+	typedef	WgIWeakPtr<WgValue,WgInterface_wp>	WgValue_wp;
+	
+	/**
+	 * @brief Interface to a basic value display field
+	 * 
+	 * The value in a basic value field is set by the widget itself and can
+	 * not be modified directly either through the API or UI. Only the formatting
+	 * and appearance of the value can be modified through this API.
+	 * 
+	 */
+	
+	class WgValue : public WgInterface
+	{
+	public:
+		WgValue(WgValueField* pField) : m_pField(pField) {}
+	
+		virtual bool				isInstanceOf( const char * pClassName ) const;
+		virtual const char *		className( void ) const;
+		static const char			CLASSNAME[];
+		static WgValue_p			cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+		inline WgValue_p			ptr() { return WgValue_p(_object(),this); }
+	
+		inline void				setFormatter( const WgValueFormatter_p& pFormatter ) { m_pField->setFormatter(pFormatter); }
+		inline void				clearFormatter() { m_pField->clearFormatter(); }
+		inline WgValueFormatter_p	formatter() const { return m_pField->formatter(); }
+	
+		inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
+		inline void				clearStyle() { m_pField->clearStyle(); }
+		inline WgTextStyle_p	style() const { return m_pField->style(); }
+	
+		inline void				setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
+		inline void				clearPresenter() { m_pField->clearPresenter(); }
+		inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
+	
+		inline WgState			state() const { return m_pField->state(); }
+	protected:
+		WgObject * 			_object() const;
+	
+	
+		WgValueField *		m_pField;
+	};
+	
+	
 
-	virtual bool				isInstanceOf( const char * pClassName ) const;
-	virtual const char *		className( void ) const;
-	static const char			CLASSNAME[];
-	static WgValue_p			cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-	inline WgValue_p			ptr() { return WgValue_p(_object(),this); }
-
-	inline void				setFormatter( const WgValueFormatter_p& pFormatter ) { m_pField->setFormatter(pFormatter); }
-	inline void				clearFormatter() { m_pField->clearFormatter(); }
-	inline WgValueFormatter_p	formatter() const { return m_pField->formatter(); }
-
-	inline void				setStyle( const WgTextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
-	inline void				clearStyle() { m_pField->clearStyle(); }
-	inline WgTextStyle_p	style() const { return m_pField->style(); }
-
-	inline void				setPresenter( const WgTextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
-	inline void				clearPresenter() { m_pField->clearPresenter(); }
-	inline WgTextPresenter_p	presenter() const { return m_pField->presenter(); }
-
-	inline WgState			state() const { return m_pField->state(); }
-protected:
-	WgObject * 			_object() const;
-
-
-	WgValueField *		m_pField;
-};
-
-
+} // namespace wg
 #endif //WG_VALUE_DOT_H

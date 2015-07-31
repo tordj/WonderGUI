@@ -29,194 +29,199 @@
 
 #include <memory.h>
 
-Sint16				WgTextpropManager::g_propIndex[256];
-
-WgTextpropHolder	WgTextpropManager::g_nullProp;
-
-
-WgTextpropHolder *	WgTextpropManager::g_pPropBuffer = &g_nullProp;
-Uint32				WgTextpropManager::g_nPropUsed  = 1;
-Uint32				WgTextpropManager::g_nPropTotal = 1;
-Sint16				WgTextpropManager::g_firstFreeProp = -1;
-bool				WgTextpropManager::g_bMergeSimilar = true;
-
-WgTextpropManager	dummy;		// Used to bootstrap the system...
-
-
-//____ Constructor ____________________________________________________________
-
-WgTextpropManager::WgTextpropManager()
+namespace wg 
 {
-	// Initialize nullProp
-
-	g_nullProp.m_id				= 0;
-	g_nullProp.m_indexOfs		= 0;			// To be set with CalculateChecksum after Prop finalized...
-	g_nullProp.m_refCnt			= 1;			// Never delete this one...
-	g_nullProp.m_next			= -1;
-	g_nullProp.m_prev			= -1;
-
-	g_nullProp.m_indexOfs = g_nullProp.m_prop._calculateChecksum();
-
-	// Initialize the index table
-
-//	g_propIndex[0] = 0;
-	for( int i = 0 ; i < 256 ; i++ )
-		g_propIndex[i] = -1;
-
-	// Insert nullProp into the index table
-
-	g_propIndex[g_nullProp.m_indexOfs] = 0;
-}
-
-//____ registerProp() _________________________________________________________
-
-Uint16 WgTextpropManager::registerProp( const WgTextprop& prop )
-{
-	prop.assertIntegrity();
-
-	Uint8 ofs = prop._calculateChecksum();
-
-	// Check s_propIndex for indentical property, increase ref and return if found.
-
-	Sint16 h = g_propIndex[ofs];
-
-	while( h >= 0 )
+	
+	Sint16				WgTextpropManager::g_propIndex[256];
+	
+	WgTextpropHolder	WgTextpropManager::g_nullProp;
+	
+	
+	WgTextpropHolder *	WgTextpropManager::g_pPropBuffer = &g_nullProp;
+	Uint32				WgTextpropManager::g_nPropUsed  = 1;
+	Uint32				WgTextpropManager::g_nPropTotal = 1;
+	Sint16				WgTextpropManager::g_firstFreeProp = -1;
+	bool				WgTextpropManager::g_bMergeSimilar = true;
+	
+	WgTextpropManager	dummy;		// Used to bootstrap the system...
+	
+	
+	//____ Constructor ____________________________________________________________
+	
+	WgTextpropManager::WgTextpropManager()
 	{
-		WgTextpropHolder * p = &g_pPropBuffer[h];
-
-		if( g_bMergeSimilar && prop._compareTo( &p->m_prop ) )
-			return p->m_id;
-
-		h = (Sint16) p->m_next;
+		// Initialize nullProp
+	
+		g_nullProp.m_id				= 0;
+		g_nullProp.m_indexOfs		= 0;			// To be set with CalculateChecksum after Prop finalized...
+		g_nullProp.m_refCnt			= 1;			// Never delete this one...
+		g_nullProp.m_next			= -1;
+		g_nullProp.m_prev			= -1;
+	
+		g_nullProp.m_indexOfs = g_nullProp.m_prop._calculateChecksum();
+	
+		// Initialize the index table
+	
+	//	g_propIndex[0] = 0;
+		for( int i = 0 ; i < 256 ; i++ )
+			g_propIndex[i] = -1;
+	
+		// Insert nullProp into the index table
+	
+		g_propIndex[g_nullProp.m_indexOfs] = 0;
 	}
-
-	// Get an available WgTextprop, fill in data, link and return id.
-
-	if( g_firstFreeProp < 0 )
-		increaseBuffer();
-
-	Uint16 id = g_firstFreeProp;
-	WgTextpropHolder * p = &g_pPropBuffer[id];
-
-
-	g_firstFreeProp = p->m_next;
-	if( g_firstFreeProp >= 0 )
-		g_pPropBuffer[g_firstFreeProp].m_prev = -1;
-
-	p->m_prev = -1;
-	p->m_next = g_propIndex[ofs];
-	g_propIndex[ofs] = id;
-
-	if( p->m_next >= 0 )
-		g_pPropBuffer[p->m_next].m_prev = id;
-
-	p->m_id 			= id;
-	p->m_indexOfs		= ofs;
-	p->m_refCnt 		= 0;
-
-	p->m_prop			= prop;
-
-	g_nPropUsed++;
-	return id;
-}
-
-
-//____ increaseBuffer() ________________________________________________________
-
-void WgTextpropManager::increaseBuffer()
-{
-	if( g_nPropTotal == 32768 )
-		return;
-
-	// Determine size of new buffer
-
-	int newSize;
-
-	if( g_nPropTotal == 1 )
-		newSize = NB_START_PROPS;
-	else
-		newSize = g_nPropTotal*2;
-
-	if( newSize > 32768 )
-		newSize = 32768;
-
-	// Allocate new buffer and make binary copy from old before destroying it.
-	// Binary copy and constructing/deleting as char to avoid overhead and
-	// problems with smartpointers that otherwise would increase/decrease
-	// references etc.
-
-	char * pNewBuffer = new char[sizeof(WgTextpropHolder)*newSize];
-
-	memcpy( pNewBuffer, g_pPropBuffer, sizeof(WgTextpropHolder)*g_nPropTotal );
-	memset( pNewBuffer+sizeof(WgTextpropHolder)*g_nPropTotal, 0, (newSize - g_nPropTotal)*sizeof(WgTextpropHolder) );
-
-	if( g_pPropBuffer != &g_nullProp )
-		delete [] (char*)g_pPropBuffer;
-
-	// Construct the s_firstFreeProp chain.
-
-	WgTextpropHolder * p = (WgTextpropHolder*) pNewBuffer;
-
-	for( int i = g_nPropTotal ; i < newSize ; i++ )
+	
+	//____ registerProp() _________________________________________________________
+	
+	Uint16 WgTextpropManager::registerProp( const WgTextprop& prop )
 	{
-		p[i].m_next = i+1;
-		p[i].m_prev = i-1;
+		prop.assertIntegrity();
+	
+		Uint8 ofs = prop._calculateChecksum();
+	
+		// Check s_propIndex for indentical property, increase ref and return if found.
+	
+		Sint16 h = g_propIndex[ofs];
+	
+		while( h >= 0 )
+		{
+			WgTextpropHolder * p = &g_pPropBuffer[h];
+	
+			if( g_bMergeSimilar && prop._compareTo( &p->m_prop ) )
+				return p->m_id;
+	
+			h = (Sint16) p->m_next;
+		}
+	
+		// Get an available WgTextprop, fill in data, link and return id.
+	
+		if( g_firstFreeProp < 0 )
+			increaseBuffer();
+	
+		Uint16 id = g_firstFreeProp;
+		WgTextpropHolder * p = &g_pPropBuffer[id];
+	
+	
+		g_firstFreeProp = p->m_next;
+		if( g_firstFreeProp >= 0 )
+			g_pPropBuffer[g_firstFreeProp].m_prev = -1;
+	
+		p->m_prev = -1;
+		p->m_next = g_propIndex[ofs];
+		g_propIndex[ofs] = id;
+	
+		if( p->m_next >= 0 )
+			g_pPropBuffer[p->m_next].m_prev = id;
+	
+		p->m_id 			= id;
+		p->m_indexOfs		= ofs;
+		p->m_refCnt 		= 0;
+	
+		p->m_prop			= prop;
+	
+		g_nPropUsed++;
+		return id;
 	}
-	p[g_nPropTotal].m_prev 	= -1;	// First has no previous...
-	p[newSize-1].m_next 	= -1;	// Last has no next...
-
-	g_firstFreeProp = g_nPropTotal;
-
-	// Set the global data.
-
-	g_pPropBuffer = (WgTextpropHolder*) pNewBuffer;
-	g_nPropTotal = newSize;
-}
-
-//____ freeProp() ______________________________________________
-
-void WgTextpropManager::freeProp( Uint16 hProp )
-{
-	WgTextpropHolder * p = &g_pPropBuffer[hProp];
-
-	// Remove prop from its g_propIndex chain.
-
-	if( p->m_prev != -1 )
-		g_pPropBuffer[p->m_prev].m_next = p->m_next;
-	else
-		g_propIndex[p->m_indexOfs] = p->m_next;
-
-	if( p->m_next != -1 )
-		g_pPropBuffer[p->m_next].m_prev = p->m_prev;
-
-
-	// Insert prop into g_firstFreeProp chain.
-
-	p->m_next = g_firstFreeProp;
-	p->m_prev = -1;
-
-	if( g_firstFreeProp != -1 )
-		g_pPropBuffer[g_firstFreeProp].m_prev = hProp;
-	g_firstFreeProp = hProp;
-
-	// Dereference smartpointers
-
-	if( p->m_prop.m_pLink )
-		p->m_prop.m_pLink = 0;
-
-	// Decrease counter, also delete buffer if we are back to only the dummy...
-
-	g_nPropUsed--;
-
-	if( g_nPropUsed == 1 )
+	
+	
+	//____ increaseBuffer() ________________________________________________________
+	
+	void WgTextpropManager::increaseBuffer()
 	{
-		memcpy( &g_nullProp, g_pPropBuffer, sizeof(WgTextpropHolder) );	// Copy content of prop 0 to nullProp.
-
-		delete [] (char*) g_pPropBuffer;	// Typecast to avoid dereferencing Normal delete, so smartpointers gets dereferenced.
-
-		g_pPropBuffer 		= &g_nullProp;
-		g_nPropTotal 		= 1;
-		g_firstFreeProp 	= -1;
+		if( g_nPropTotal == 32768 )
+			return;
+	
+		// Determine size of new buffer
+	
+		int newSize;
+	
+		if( g_nPropTotal == 1 )
+			newSize = NB_START_PROPS;
+		else
+			newSize = g_nPropTotal*2;
+	
+		if( newSize > 32768 )
+			newSize = 32768;
+	
+		// Allocate new buffer and make binary copy from old before destroying it.
+		// Binary copy and constructing/deleting as char to avoid overhead and
+		// problems with smartpointers that otherwise would increase/decrease
+		// references etc.
+	
+		char * pNewBuffer = new char[sizeof(WgTextpropHolder)*newSize];
+	
+		memcpy( pNewBuffer, g_pPropBuffer, sizeof(WgTextpropHolder)*g_nPropTotal );
+		memset( pNewBuffer+sizeof(WgTextpropHolder)*g_nPropTotal, 0, (newSize - g_nPropTotal)*sizeof(WgTextpropHolder) );
+	
+		if( g_pPropBuffer != &g_nullProp )
+			delete [] (char*)g_pPropBuffer;
+	
+		// Construct the s_firstFreeProp chain.
+	
+		WgTextpropHolder * p = (WgTextpropHolder*) pNewBuffer;
+	
+		for( int i = g_nPropTotal ; i < newSize ; i++ )
+		{
+			p[i].m_next = i+1;
+			p[i].m_prev = i-1;
+		}
+		p[g_nPropTotal].m_prev 	= -1;	// First has no previous...
+		p[newSize-1].m_next 	= -1;	// Last has no next...
+	
+		g_firstFreeProp = g_nPropTotal;
+	
+		// Set the global data.
+	
+		g_pPropBuffer = (WgTextpropHolder*) pNewBuffer;
+		g_nPropTotal = newSize;
 	}
-}
+	
+	//____ freeProp() ______________________________________________
+	
+	void WgTextpropManager::freeProp( Uint16 hProp )
+	{
+		WgTextpropHolder * p = &g_pPropBuffer[hProp];
+	
+		// Remove prop from its g_propIndex chain.
+	
+		if( p->m_prev != -1 )
+			g_pPropBuffer[p->m_prev].m_next = p->m_next;
+		else
+			g_propIndex[p->m_indexOfs] = p->m_next;
+	
+		if( p->m_next != -1 )
+			g_pPropBuffer[p->m_next].m_prev = p->m_prev;
+	
+	
+		// Insert prop into g_firstFreeProp chain.
+	
+		p->m_next = g_firstFreeProp;
+		p->m_prev = -1;
+	
+		if( g_firstFreeProp != -1 )
+			g_pPropBuffer[g_firstFreeProp].m_prev = hProp;
+		g_firstFreeProp = hProp;
+	
+		// Dereference smartpointers
+	
+		if( p->m_prop.m_pLink )
+			p->m_prop.m_pLink = 0;
+	
+		// Decrease counter, also delete buffer if we are back to only the dummy...
+	
+		g_nPropUsed--;
+	
+		if( g_nPropUsed == 1 )
+		{
+			memcpy( &g_nullProp, g_pPropBuffer, sizeof(WgTextpropHolder) );	// Copy content of prop 0 to nullProp.
+	
+			delete [] (char*) g_pPropBuffer;	// Typecast to avoid dereferencing Normal delete, so smartpointers gets dereferenced.
+	
+			g_pPropBuffer 		= &g_nullProp;
+			g_nPropTotal 		= 1;
+			g_firstFreeProp 	= -1;
+		}
+	}
+	
 
+} // namespace wg

@@ -26,32 +26,37 @@
 #	include <wg_chain.h>
 #endif
 
-class WgMemStack
+namespace wg 
 {
-public:
-	WgMemStack( int blockSize );
-	~WgMemStack() {}
-
-	char *  alloc( int bytes );
-	void	release( int bytes );
-	void	clear();
-	bool	isEmpty() const;
-
-private:
-
-	class BlockHeader : public WgLink
+	
+	class WgMemStack
 	{
 	public:
-		BlockHeader(int bytes);
-		~BlockHeader();
-
-		char *	pBlock;
-		int		size;
-		int		allocated;
+		WgMemStack( int blockSize );
+		~WgMemStack() {}
+	
+		char *  alloc( int bytes );
+		void	release( int bytes );
+		void	clear();
+		bool	isEmpty() const;
+	
+	private:
+	
+		class BlockHeader : public WgLink
+		{
+		public:
+			BlockHeader(int bytes);
+			~BlockHeader();
+	
+			char *	pBlock;
+			int		size;
+			int		allocated;
+		};
+	
+		int						m_blockSize;
+		WgChain<BlockHeader>	m_blocks;
 	};
+	
 
-	int						m_blockSize;
-	WgChain<BlockHeader>	m_blocks;
-};
-
+} // namespace wg
 #endif //WG_MEMSTACK_DOT_H

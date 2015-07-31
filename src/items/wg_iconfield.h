@@ -39,57 +39,62 @@
 #	include <wg_skin.h>
 #endif
 
-class WgIconField;
-
-//____ WgIconHolder ___________________________________________________________
-
-class WgIconHolder : public WgFieldHolder
+namespace wg 
 {
-};
+	
+	class WgIconField;
+	
+	//____ WgIconHolder ___________________________________________________________
+	
+	class WgIconHolder : public WgFieldHolder
+	{
+	};
+	
+	//____ WgIconField _____________________________________________________________
+	
+	class WgIconField : public WgField
+	{
+		friend class WgIconHolder;
+	public:
+		WgIconField( WgIconHolder * pHolder );
+		virtual ~WgIconField() {};
+	
+	
+		bool			set( const WgSkin_p& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
+									float _scale = 0.f, bool _bOverlap = false );
+		void			clear();
+	
+		inline bool		isEmpty() const { return !m_pSkin; }
+	
+		bool			setScale( float scaleFactor );
+		void			setOrigo( WgOrigo origo );
+		void			setPadding( WgBorder borders );
+		void			setOverlap( bool bOverlap );
+		void			setSkin( const WgSkin_p& pSkin );
+	
+		float			scale() const { return m_scale; }
+		WgOrigo			origo() const { return m_origo; }
+		WgBorder		padding() const { return m_padding; }
+		bool			overlap() const { return m_bOverlap; }
+		WgSkin_p		skin() const { return  m_pSkin; }
+	
+	
+		WgRect			getIconRect( const WgRect& contentRect ) const;
+		WgRect			getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
+		WgRect			getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
+		void			onCloneContent( const WgIconField * _pOrg );
+		WgSize			preferredSize() const;
+	
+	protected:
+	
+		WgOrigo			m_origo;
+		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
+		bool			m_bOverlap;
+		WgBorder		m_padding;
+		WgSkin_p		m_pSkin;
+	
+	};
+	
 
-//____ WgIconField _____________________________________________________________
-
-class WgIconField : public WgField
-{
-	friend class WgIconHolder;
-public:
-	WgIconField( WgIconHolder * pHolder );
-	virtual ~WgIconField() {};
-
-
-	bool			set( const WgSkin_p& pIconGfx, WgOrigo origo = WG_WEST, WgBorder padding = WgBorder(0), 
-								float _scale = 0.f, bool _bOverlap = false );
-	void			clear();
-
-	inline bool		isEmpty() const { return !m_pSkin; }
-
-	bool			setScale( float scaleFactor );
-	void			setOrigo( WgOrigo origo );
-	void			setPadding( WgBorder borders );
-	void			setOverlap( bool bOverlap );
-	void			setSkin( const WgSkin_p& pSkin );
-
-	float			scale() const { return m_scale; }
-	WgOrigo			origo() const { return m_origo; }
-	WgBorder		padding() const { return m_padding; }
-	bool			overlap() const { return m_bOverlap; }
-	WgSkin_p		skin() const { return  m_pSkin; }
-
-
-	WgRect			getIconRect( const WgRect& contentRect ) const;
-	WgRect			getIconRect( const WgRect& contentRect, const WgSize& iconSize ) const;
-	WgRect			getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
-	void			onCloneContent( const WgIconField * _pOrg );
-	WgSize			preferredSize() const;
-
-protected:
-
-	WgOrigo			m_origo;
-	float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
-	bool			m_bOverlap;
-	WgBorder		m_padding;
-	WgSkin_p		m_pSkin;
-
-};
-
+} // namespace wg
 #endif	// WG_ICONFIELD_DOT_H

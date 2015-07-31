@@ -27,30 +27,35 @@
 #	include <wg_pointers.h>
 #endif
 
-class WgMsg;
-typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
-
-class WgReceiver;
-typedef	WgStrongPtr<WgReceiver,WgObject_p>		WgReceiver_p;
-typedef	WgWeakPtr<WgReceiver,WgObject_wp>		WgReceiver_wp;
-
-class WgReceiver : public WgObject
+namespace wg 
 {
-	friend class WgMsgRouter;
-public:
-	bool						isInstanceOf( const char * pClassName ) const;
-	const char *				className( void ) const;
-	static const char			CLASSNAME[];
-	static WgReceiver_p	cast( const WgObject_p& pObject );
-
-	virtual void onMsg( const WgMsg_p& pMsg ) = 0;
-
-protected:
-	WgReceiver() {};
 	
-	virtual void	_onRouteAdded();
-	virtual void	_onRouteRemoved();
-};
+	class WgMsg;
+	typedef	WgStrongPtr<WgMsg,WgObject_p>			WgMsg_p;
+	
+	class WgReceiver;
+	typedef	WgStrongPtr<WgReceiver,WgObject_p>		WgReceiver_p;
+	typedef	WgWeakPtr<WgReceiver,WgObject_wp>		WgReceiver_wp;
+	
+	class WgReceiver : public WgObject
+	{
+		friend class WgMsgRouter;
+	public:
+		bool						isInstanceOf( const char * pClassName ) const;
+		const char *				className( void ) const;
+		static const char			CLASSNAME[];
+		static WgReceiver_p	cast( const WgObject_p& pObject );
+	
+		virtual void onMsg( const WgMsg_p& pMsg ) = 0;
+	
+	protected:
+		WgReceiver() {};
+		
+		virtual void	_onRouteAdded();
+		virtual void	_onRouteRemoved();
+	};
+	
+	
 
-
+} // namespace wg
 #endif //WG_RECEIVER_DOT_H

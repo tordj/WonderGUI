@@ -9,6 +9,8 @@
 #include <wg_softsurface.h>
 #include <wg_softgfxdevice.h>
 
+using namespace wg;
+
 void 			translateEvents( const WgInputHandler_p& pInput, const WgRootPanel_p& pRoot );
 WgMouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const WgRootPanel_p& pRoot, SDL_Window * pWindow );

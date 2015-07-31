@@ -23,39 +23,44 @@
 #include <wg_value.h>
 #include <wg_valuefield.h>
 
-const char WgValue::CLASSNAME[] = {"Value"};
-
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgValue::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgInterface::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgValue::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgValue_p WgValue::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-		return WgValue_p( pInterface.getRealObjectPtr(), static_cast<WgValue*>( pInterface.rawPtr()) );
+	
+	const char WgValue::CLASSNAME[] = {"Value"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgValue::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgInterface::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgValue::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgValue_p WgValue::cast( const WgInterface_p& pInterface )
+	{
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return WgValue_p( pInterface.getRealObjectPtr(), static_cast<WgValue*>( pInterface.rawPtr()) );
+	
+		return 0;
+	}
+	
+	//____ _object() _______________________________________________________________
+	
+	WgObject * WgValue::_object() const
+	{
+		return m_pField->_object();
+	}
 
-	return 0;
-}
-
-//____ _object() _______________________________________________________________
-
-WgObject * WgValue::_object() const
-{
-	return m_pField->_object();
-}
+} // namespace wg

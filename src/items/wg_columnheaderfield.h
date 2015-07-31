@@ -30,42 +30,47 @@
 #	include <wg_textfield.h>
 #endif
 
-
-class WgColumnHeaderHolder : public WgFieldHolder
+namespace wg 
 {
-};
+	
+	
+	class WgColumnHeaderHolder : public WgFieldHolder
+	{
+	};
+	
+	
+	class WgColumnHeaderField : public WgField, protected WgIconHolder, protected WgTextHolder
+	{
+	public:
+		WgColumnHeaderField(WgColumnHeaderHolder * pHolder);
+	
+		//____ Subfields __________________________________
+	
+		WgIconField		icon;
+		WgIconField		arrow;
+		WgTextField		label;
+	
+		//____ Methods _____________________________________
+	
+		void				setSkin( const WgSkin_p& pSkin );
+		inline WgSkin_p	skin() const { return m_pSkin; }
+	
+		WgObject * 			_object() { return m_pHolder->_object(); };
+	//private:
+		void				_onFieldDirty( WgField * pField );
+		void 				_onFieldResize( WgField * pField );
+	
+	
+		WgColumnHeaderHolder *	m_pHolder;
+		WgSkin_p			m_pSkin;
+		int					m_height;
+		int					m_width;
+		WgState				m_state;
+		bool				m_bPressed;
+	
+	};
+	
+	
 
-
-class WgColumnHeaderField : public WgField, protected WgIconHolder, protected WgTextHolder
-{
-public:
-	WgColumnHeaderField(WgColumnHeaderHolder * pHolder);
-
-	//____ Subfields __________________________________
-
-	WgIconField		icon;
-	WgIconField		arrow;
-	WgTextField		label;
-
-	//____ Methods _____________________________________
-
-	void				setSkin( const WgSkin_p& pSkin );
-	inline WgSkin_p	skin() const { return m_pSkin; }
-
-	WgObject * 			_object() { return m_pHolder->_object(); };
-//private:
-	void				_onFieldDirty( WgField * pField );
-	void 				_onFieldResize( WgField * pField );
-
-
-	WgColumnHeaderHolder *	m_pHolder;
-	WgSkin_p			m_pSkin;
-	int					m_height;
-	int					m_width;
-	WgState				m_state;
-	bool				m_bPressed;
-
-};
-
-
+} // namespace wg
 #endif //WG_COLUMNHEADERFIELD_DOT_H

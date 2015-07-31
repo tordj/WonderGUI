@@ -30,40 +30,45 @@
 #	include <wg_valueformatter.h>
 #endif
 
-
-//____ WgValueHolder ___________________________________________________________
-
-class WgValueHolder : public WgPresentableHolder
+namespace wg 
 {
-public:
-};
-
-//____ WgValueField ____________________________________________________________
-
-class WgValueField : public WgPresentableField
-{
-public:
-	WgValueField(WgValueHolder * pHolder);
-
-	void				setFormatter( const WgValueFormatter_p& pFormatter );
-	void				clearFormatter();
-	inline WgValueFormatter_p	formatter() const { return m_pFormatter; }
-
-	virtual void		clear();
-	virtual bool		set( Sint64 value, int scale );
 	
-	void				onRefresh();
-	inline Sint64		value() const { return m_value; }
-	inline int			scale() const { return m_scale; }
-
-protected:
-	void				_regenText();
-
-	Sint64					m_value;
-	int						m_scale;
 	
-	WgValueFormatter_p		m_pFormatter;
-};
+	//____ WgValueHolder ___________________________________________________________
+	
+	class WgValueHolder : public WgPresentableHolder
+	{
+	public:
+	};
+	
+	//____ WgValueField ____________________________________________________________
+	
+	class WgValueField : public WgPresentableField
+	{
+	public:
+		WgValueField(WgValueHolder * pHolder);
+	
+		void				setFormatter( const WgValueFormatter_p& pFormatter );
+		void				clearFormatter();
+		inline WgValueFormatter_p	formatter() const { return m_pFormatter; }
+	
+		virtual void		clear();
+		virtual bool		set( Sint64 value, int scale );
+		
+		void				onRefresh();
+		inline Sint64		value() const { return m_value; }
+		inline int			scale() const { return m_scale; }
+	
+	protected:
+		void				_regenText();
+	
+		Sint64					m_value;
+		int						m_scale;
+		
+		WgValueFormatter_p		m_pFormatter;
+	};
+	
+	
 
-
+} // namespace wg
 #endif //WG_VALUEFIELD_DOT_H

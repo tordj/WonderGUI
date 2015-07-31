@@ -27,54 +27,59 @@
 #include <wg_glyphset.h>
 #include <wg_texttool.h>
 
-const char WgGlyphset::CLASSNAME[] = {"Glyphset"};
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgGlyphset::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgGlyphset::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgGlyphset_p WgGlyphset::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgGlyphset_p( static_cast<WgGlyphset*>(pObject.rawPtr()) );
+	
+	const char WgGlyphset::CLASSNAME[] = {"Glyphset"};
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgGlyphset::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgGlyphset::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgGlyphset_p WgGlyphset::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgGlyphset_p( static_cast<WgGlyphset*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+	
+	
+	
+	//____ WgGlyph::WgGlyph() _______________________________________________________
+	
+	WgGlyph::WgGlyph()
+	{
+		m_pGlyphset = 0;
+		m_advance = 0;
+		m_kerningIndex = 0;
+	}
+	
+	//____ WgGlyph::WgGlyph() _______________________________________________________
+	
+	WgGlyph::WgGlyph( int advance, int kerningIndex, WgGlyphset * pGlyphset )
+	{
+		m_pGlyphset = pGlyphset;
+		m_advance = advance;
+		m_kerningIndex = kerningIndex;
+	}
+	
+	
 
-	return 0;
-}
-
-
-
-
-//____ WgGlyph::WgGlyph() _______________________________________________________
-
-WgGlyph::WgGlyph()
-{
-	m_pGlyphset = 0;
-	m_advance = 0;
-	m_kerningIndex = 0;
-}
-
-//____ WgGlyph::WgGlyph() _______________________________________________________
-
-WgGlyph::WgGlyph( int advance, int kerningIndex, WgGlyphset * pGlyphset )
-{
-	m_pGlyphset = pGlyphset;
-	m_advance = advance;
-	m_kerningIndex = kerningIndex;
-}
-
-
+} // namespace wg

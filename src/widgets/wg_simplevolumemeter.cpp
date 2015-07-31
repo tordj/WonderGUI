@@ -2,320 +2,325 @@
 #include <wg_simplevolumemeter.h>
 #include <wg_gfxdevice.h>
 
-const char WgSimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
-
-
-//____ Constructor ____________________________________________________________
-
-WgSimpleVolumeMeter::WgSimpleVolumeMeter()
+namespace wg 
 {
-	m_sectionColors[0] = WgColor::green;
-	m_sectionColors[1] = WgColor::yellow;
-	m_sectionColors[2] = WgColor::red;
 	
-	m_sectionHeight[0] = 0.75f;
-	m_sectionHeight[1] = 0.18f;
-	m_sectionHeight[2] = 0.07f;
+	const char WgSimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
 	
-	m_holdHeight = 0.10f;
-	m_bStereo = false;
-	m_peak[0] = 0.f;
-	m_peak[1] = 0.f;
-	m_hold[0] = 0.f;
-	m_hold[1] = 0.f;
 	
-//	_updateSectionPixelHeight();
-}
-
-//____ Destructor _____________________________________________________________
-
-WgSimpleVolumeMeter::~WgSimpleVolumeMeter()
-{
-}
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgWidget::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSimpleVolumeMeter::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgSimpleVolumeMeter_p WgSimpleVolumeMeter::cast( const WgObject_p& pObject )
-{
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSimpleVolumeMeter_p( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
-
-	return 0;
-}
-
-
-//____ SetColors() ___________________________________________________________
-
-void WgSimpleVolumeMeter::SetColors( WgColor bottom, WgColor middle, WgColor top )
-{
-	if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
+	//____ Constructor ____________________________________________________________
+	
+	WgSimpleVolumeMeter::WgSimpleVolumeMeter()
 	{
-		m_sectionColors[0] = bottom;
-		m_sectionColors[1] = middle;
-		m_sectionColors[2] = top;
-		_requestRender();
-	}
-}
-
-//____ SetSections() _________________________________________________________
-
-void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
-{
-	if( bottomFraction < 0.f )
-		bottomFraction = 0.f;
-	if( bottomFraction > 1.f )
-		bottomFraction = 1.f;
+		m_sectionColors[0] = WgColor::green;
+		m_sectionColors[1] = WgColor::yellow;
+		m_sectionColors[2] = WgColor::red;
 		
-	if( topFraction < 0.f )
-		topFraction = 0.f;
-
-	float middleFraction = 1.f - bottomFraction - topFraction;
-	if( middleFraction < 0.f )
-		middleFraction = 0.f;
+		m_sectionHeight[0] = 0.75f;
+		m_sectionHeight[1] = 0.18f;
+		m_sectionHeight[2] = 0.07f;
+		
+		m_holdHeight = 0.10f;
+		m_bStereo = false;
+		m_peak[0] = 0.f;
+		m_peak[1] = 0.f;
+		m_hold[0] = 0.f;
+		m_hold[1] = 0.f;
+		
+	//	_updateSectionPixelHeight();
+	}
 	
-	topFraction = 1.f - bottomFraction - middleFraction;
+	//____ Destructor _____________________________________________________________
 	
-	if( bottomFraction != m_sectionHeight[0] || topFraction != m_sectionHeight[2] )
+	WgSimpleVolumeMeter::~WgSimpleVolumeMeter()
 	{
-		m_sectionHeight[0] = bottomFraction;
-		m_sectionHeight[1] = middleFraction;
-		m_sectionHeight[2] = topFraction;
+	}
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgWidget::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSimpleVolumeMeter::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSimpleVolumeMeter_p WgSimpleVolumeMeter::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgSimpleVolumeMeter_p( static_cast<WgSimpleVolumeMeter*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+	
+	//____ SetColors() ___________________________________________________________
+	
+	void WgSimpleVolumeMeter::SetColors( WgColor bottom, WgColor middle, WgColor top )
+	{
+		if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
+		{
+			m_sectionColors[0] = bottom;
+			m_sectionColors[1] = middle;
+			m_sectionColors[2] = top;
+			_requestRender();
+		}
+	}
+	
+	//____ SetSections() _________________________________________________________
+	
+	void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
+	{
+		if( bottomFraction < 0.f )
+			bottomFraction = 0.f;
+		if( bottomFraction > 1.f )
+			bottomFraction = 1.f;
+			
+		if( topFraction < 0.f )
+			topFraction = 0.f;
+	
+		float middleFraction = 1.f - bottomFraction - topFraction;
+		if( middleFraction < 0.f )
+			middleFraction = 0.f;
+		
+		topFraction = 1.f - bottomFraction - middleFraction;
+		
+		if( bottomFraction != m_sectionHeight[0] || topFraction != m_sectionHeight[2] )
+		{
+			m_sectionHeight[0] = bottomFraction;
+			m_sectionHeight[1] = middleFraction;
+			m_sectionHeight[2] = topFraction;
+			_updateSectionPixelHeight();
+			_requestRender();
+		}
+	}
+	
+	//____ SetHoldHeight() ________________________________________________________
+	
+	void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
+	{
+		LIMIT( fraction, 0.f, 0.25f );
+		
+		if( m_holdHeight != fraction )
+		{
+			m_holdHeight = fraction;
+			_requestRender();
+		}
+	}
+	
+	//____ setValue() ______________________________________________________________
+	
+	void WgSimpleVolumeMeter::setValue( float peak, float hold )
+	{
+		LIMIT( peak, 0.f, 1.f );
+		LIMIT( hold, 0.f, 1.f );
+	
+		if( m_bStereo || m_peak[0] != peak || m_hold[0] != hold )
+		{
+			m_bStereo = false;
+			m_peak[0] = peak;
+			m_hold[0] = hold;
+			_requestRender();
+		}
+	}
+	
+	void WgSimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
+	{
+		LIMIT( leftPeak, 0.f, 1.f );
+		LIMIT( leftHold, 0.f, 1.f );
+		LIMIT( rightPeak, 0.f, 1.f );
+		LIMIT( rightHold, 0.f, 1.f );
+		
+		if( !m_bStereo || m_peak[0] != leftPeak || m_hold[0] != leftHold || m_peak[1] != rightPeak || m_hold[1] != rightHold )
+		{
+			m_bStereo = true;
+			m_peak[0] = leftPeak;
+			m_peak[1] = rightPeak;
+			m_hold[0] = leftHold;
+			m_hold[1] = rightHold;
+			_requestRender();
+		}
+	}
+	
+	//____ preferredSize() ________________________________________________________________
+	
+	WgSize WgSimpleVolumeMeter::preferredSize() const
+	{
+		WgSize content(9,20);
+	
+		if( m_pSkin )
+			return m_pSkin->sizeForContent(content);
+		else
+			return content;
+	}
+	
+	//____ _onNewSize() ____________________________________________________________________
+	
+	void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
+	{
 		_updateSectionPixelHeight();
 		_requestRender();
 	}
-}
-
-//____ SetHoldHeight() ________________________________________________________
-
-void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
-{
-	LIMIT( fraction, 0.f, 0.25f );
 	
-	if( m_holdHeight != fraction )
-	{
-		m_holdHeight = fraction;
-		_requestRender();
-	}
-}
-
-//____ setValue() ______________________________________________________________
-
-void WgSimpleVolumeMeter::setValue( float peak, float hold )
-{
-	LIMIT( peak, 0.f, 1.f );
-	LIMIT( hold, 0.f, 1.f );
-
-	if( m_bStereo || m_peak[0] != peak || m_hold[0] != hold )
-	{
-		m_bStereo = false;
-		m_peak[0] = peak;
-		m_hold[0] = hold;
-		_requestRender();
-	}
-}
-
-void WgSimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
-{
-	LIMIT( leftPeak, 0.f, 1.f );
-	LIMIT( leftHold, 0.f, 1.f );
-	LIMIT( rightPeak, 0.f, 1.f );
-	LIMIT( rightHold, 0.f, 1.f );
 	
-	if( !m_bStereo || m_peak[0] != leftPeak || m_hold[0] != leftHold || m_peak[1] != rightPeak || m_hold[1] != rightHold )
-	{
-		m_bStereo = true;
-		m_peak[0] = leftPeak;
-		m_peak[1] = rightPeak;
-		m_hold[0] = leftHold;
-		m_hold[1] = rightHold;
-		_requestRender();
-	}
-}
-
-//____ preferredSize() ________________________________________________________________
-
-WgSize WgSimpleVolumeMeter::preferredSize() const
-{
-	WgSize content(9,20);
-
-	if( m_pSkin )
-		return m_pSkin->sizeForContent(content);
-	else
-		return content;
-}
-
-//____ _onNewSize() ____________________________________________________________________
-
-void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
-{
-	_updateSectionPixelHeight();
-	_requestRender();
-}
-
-
-
-//____ _onRender() _____________________________________________________________________
-
-void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
-{
-	WgWidget::_onRender(pDevice,_canvas,_window,_clip);
-
-	if( !m_state.isEnabled() )
-		return;
 	
-	WgRect canvas;
-	if( m_pSkin )
-		canvas = m_pSkin->sizeForContent(_canvas);
-	else
-		canvas = _canvas;
-
-	if( m_bStereo )
+	//____ _onRender() _____________________________________________________________________
+	
+	void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
 	{
-		WgRect r = canvas;
-		r.w = (r.w - 1) / 2;
-		_renderHold( pDevice, 0, r, _clip );
-		_renderPeak( pDevice, 0, r, _clip );
-
-		r.x += r.w + 1;
-		_renderHold( pDevice, 1, r, _clip );
-		_renderPeak( pDevice, 1, r, _clip );
+		WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+	
+		if( !m_state.isEnabled() )
+			return;
 		
-	}
-	else 
-	{
-		_renderHold( pDevice, 0, canvas, _clip );
-		_renderPeak( pDevice, 0, canvas, _clip );			
-	}
-}
-
-//____ _renderPeak() ___________________________________________________________________
-
-void WgSimpleVolumeMeter::_renderPeak( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
-{
-	int height = (int) (m_peak[nb] * _rect.h);
-	int ofs = 0;
+		WgRect canvas;
+		if( m_pSkin )
+			canvas = m_pSkin->sizeForContent(_canvas);
+		else
+			canvas = _canvas;
 	
-	for( int i = 0 ; i < 3 ; i++ )
+		if( m_bStereo )
+		{
+			WgRect r = canvas;
+			r.w = (r.w - 1) / 2;
+			_renderHold( pDevice, 0, r, _clip );
+			_renderPeak( pDevice, 0, r, _clip );
+	
+			r.x += r.w + 1;
+			_renderHold( pDevice, 1, r, _clip );
+			_renderPeak( pDevice, 1, r, _clip );
+			
+		}
+		else 
+		{
+			_renderHold( pDevice, 0, canvas, _clip );
+			_renderPeak( pDevice, 0, canvas, _clip );			
+		}
+	}
+	
+	//____ _renderPeak() ___________________________________________________________________
+	
+	void WgSimpleVolumeMeter::_renderPeak( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
 	{
-		if( height <= 0 )
-			break;
+		int height = (int) (m_peak[nb] * _rect.h);
+		int ofs = 0;
 		
-		int sectionHeight = m_sectionPixelHeight[i];
-		if( sectionHeight > height )
-			sectionHeight = height;
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			if( height <= 0 )
+				break;
+			
+			int sectionHeight = m_sectionPixelHeight[i];
+			if( sectionHeight > height )
+				sectionHeight = height;
+			
+			WgRect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
+			pDevice->fill( WgRect( r, _clip ), m_sectionColors[i] );
+			
+			ofs += sectionHeight;
+			height -= sectionHeight;
+		}
+	}
+	
+	//____ _renderHold() ___________________________________________________________________
+	
+	void WgSimpleVolumeMeter::_renderHold( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
+	{
+		if( m_holdHeight == 0.f )
+			return;						// Hold should not be displayed.
 		
-		WgRect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
-		pDevice->fill( WgRect( r, _clip ), m_sectionColors[i] );
+		int height = (int) (m_holdHeight * _rect.h);
+		if( height < 1 )
+			height = 1;
+	
+		WgColor c;
 		
-		ofs += sectionHeight;
-		height -= sectionHeight;
+		int ofs = (int) ((1.f - m_hold[nb]) * _rect.h);
+	
+		if( ofs < m_sectionPixelHeight[2] )
+		{
+			c = m_sectionColors[2];
+			if( ofs + height > m_sectionPixelHeight[2] )
+				ofs = m_sectionPixelHeight[2] - height;
+			
+		}
+		else if( ofs < m_sectionPixelHeight[2] + m_sectionPixelHeight[1] )
+		{
+			c = m_sectionColors[1];
+			if( ofs + height > m_sectionPixelHeight[2] + m_sectionPixelHeight[1] )
+				ofs = m_sectionPixelHeight[2] + m_sectionPixelHeight[1] - height;
+		}
+		else 
+		{
+			c = m_sectionColors[0];
+		}
+	
+		WgRect r( _rect.x, _rect.y + ofs, _rect.w, height );
+		pDevice->fill( WgRect( r, _clip ), c );
 	}
-}
-
-//____ _renderHold() ___________________________________________________________________
-
-void WgSimpleVolumeMeter::_renderHold( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
-{
-	if( m_holdHeight == 0.f )
-		return;						// Hold should not be displayed.
 	
-	int height = (int) (m_holdHeight * _rect.h);
-	if( height < 1 )
-		height = 1;
-
-	WgColor c;
+	//____ _updateSectionPixelHeight() ______________________________________________________
 	
-	int ofs = (int) ((1.f - m_hold[nb]) * _rect.h);
-
-	if( ofs < m_sectionPixelHeight[2] )
+	void WgSimpleVolumeMeter::_updateSectionPixelHeight()
 	{
-		c = m_sectionColors[2];
-		if( ofs + height > m_sectionPixelHeight[2] )
-			ofs = m_sectionPixelHeight[2] - height;
+		int totalHeight = geo().h;
+		if( m_pSkin )
+			totalHeight -= m_pSkin->contentPadding().h;
+	
+		m_sectionPixelHeight[0] = (int) (m_sectionHeight[0] * totalHeight + 0.5f);
+		m_sectionPixelHeight[1] =  ((int)((m_sectionHeight[0] + m_sectionHeight[1]) * totalHeight + 0.5f)) - m_sectionPixelHeight[0];
+		m_sectionPixelHeight[2] = totalHeight - m_sectionPixelHeight[1] - m_sectionPixelHeight[0];
+	}
+	
+	//____ _onCloneContent() _________________________________________________________________ 
+	
+	void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
+	{
+		const WgSimpleVolumeMeter * pOrg = static_cast<const WgSimpleVolumeMeter*>(_pOrg);
+	
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			m_sectionColors[i] 	= pOrg->m_sectionColors[i];
+			m_sectionHeight[i] = pOrg->m_sectionHeight[i];
+		}
 		
-	}
-	else if( ofs < m_sectionPixelHeight[2] + m_sectionPixelHeight[1] )
-	{
-		c = m_sectionColors[1];
-		if( ofs + height > m_sectionPixelHeight[2] + m_sectionPixelHeight[1] )
-			ofs = m_sectionPixelHeight[2] + m_sectionPixelHeight[1] - height;
-	}
-	else 
-	{
-		c = m_sectionColors[0];
-	}
-
-	WgRect r( _rect.x, _rect.y + ofs, _rect.w, height );
-	pDevice->fill( WgRect( r, _clip ), c );
-}
-
-//____ _updateSectionPixelHeight() ______________________________________________________
-
-void WgSimpleVolumeMeter::_updateSectionPixelHeight()
-{
-	int totalHeight = geo().h;
-	if( m_pSkin )
-		totalHeight -= m_pSkin->contentPadding().h;
-
-	m_sectionPixelHeight[0] = (int) (m_sectionHeight[0] * totalHeight + 0.5f);
-	m_sectionPixelHeight[1] =  ((int)((m_sectionHeight[0] + m_sectionHeight[1]) * totalHeight + 0.5f)) - m_sectionPixelHeight[0];
-	m_sectionPixelHeight[2] = totalHeight - m_sectionPixelHeight[1] - m_sectionPixelHeight[0];
-}
-
-//____ _onCloneContent() _________________________________________________________________ 
-
-void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
-{
-	const WgSimpleVolumeMeter * pOrg = static_cast<const WgSimpleVolumeMeter*>(_pOrg);
-
-	for( int i = 0 ; i < 3 ; i++ )
-	{
-		m_sectionColors[i] 	= pOrg->m_sectionColors[i];
-		m_sectionHeight[i] = pOrg->m_sectionHeight[i];
+		m_holdHeight = pOrg->m_holdHeight;
+		m_bStereo = pOrg->m_bStereo;
+		m_peak[0] = pOrg->m_peak[0];
+		m_peak[1] = pOrg->m_peak[1];
+		m_hold[0] = pOrg->m_hold[0];
+		m_hold[1] = pOrg->m_hold[1];
+		
+		_updateSectionPixelHeight();
 	}
 	
-	m_holdHeight = pOrg->m_holdHeight;
-	m_bStereo = pOrg->m_bStereo;
-	m_peak[0] = pOrg->m_peak[0];
-	m_peak[1] = pOrg->m_peak[1];
-	m_hold[0] = pOrg->m_hold[0];
-	m_hold[1] = pOrg->m_hold[1];
+	//____ _onStateChanged() ______________________________________________________
 	
-	_updateSectionPixelHeight();
-}
+	void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
+	{
+		WgWidget::_onStateChanged(oldState);
+	
+		if( oldState.isEnabled() != m_state.isEnabled() )
+			_requestRender();
+	}
+	
+	//____ _onSkinChanged() _______________________________________________________
+	
+	void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
+	{
+		WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
+		_updateSectionPixelHeight();
+	}
+	
 
-//____ _onStateChanged() ______________________________________________________
-
-void  WgSimpleVolumeMeter::_onStateChanged( WgState oldState )
-{
-	WgWidget::_onStateChanged(oldState);
-
-	if( oldState.isEnabled() != m_state.isEnabled() )
-		_requestRender();
-}
-
-//____ _onSkinChanged() _______________________________________________________
-
-void  WgSimpleVolumeMeter::_onSkinChanged( const WgSkin_p& pOldSkin, const WgSkin_p& pNewSkin )
-{
-	WgWidget::_onSkinChanged(pOldSkin,pNewSkin);
-	_updateSectionPixelHeight();
-}
-
+} // namespace wg

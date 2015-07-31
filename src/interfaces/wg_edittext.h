@@ -31,54 +31,59 @@
 #	include <wg_caret.h>
 #endif
 
-class WgEditText;
-typedef	WgIStrongPtr<WgEditText,WgLegacyModText_p>		WgEditText_p;
-typedef	WgIWeakPtr<WgEditText,WgLegacyModText_wp>		WgEditText_wp;
-
-/**
- * @brief Interface to a text field with editable text.
- *
- * Interface to a text field with editable text.
- * The text in an editable text field can be set through the API, and is
- * editable through the UI.
- * 
- */
- 
-class WgEditText : public WgLegacyModText
+namespace wg 
 {
-public:
-	WgEditText( WgLegacyTextField * pField ) : WgLegacyModText(pField) {};
+	
+	class WgEditText;
+	typedef	WgIStrongPtr<WgEditText,WgLegacyModText_p>		WgEditText_p;
+	typedef	WgIWeakPtr<WgEditText,WgLegacyModText_wp>		WgEditText_wp;
+	
+	/**
+	 * @brief Interface to a text field with editable text.
+	 *
+	 * Interface to a text field with editable text.
+	 * The text in an editable text field can be set through the API, and is
+	 * editable through the UI.
+	 * 
+	 */
+	 
+	class WgEditText : public WgLegacyModText
+	{
+	public:
+		WgEditText( WgLegacyTextField * pField ) : WgLegacyModText(pField) {};
+	
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgEditText_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
+		inline WgEditText_p	ptr() { return WgEditText_p(_object(),this); }
+	
+		inline void			setEditMode(WgTextEditMode mode) { m_pField->setEditMode(mode); }
+		inline WgTextEditMode	editMode() const { return m_pField->editMode(); }
+	
+		inline bool			isEditable() const { return m_pField->isEditable(); }
+		inline bool			isSelectable() const { return m_pField->isSelectable(); }
+	
+		inline void			setCursorSkin( const WgCaret_p& pCursor ) { m_pField->setCursorSkin(pCursor); }
+		inline WgCaret_p	cursorSkin() const { return m_pField->cursorSkin(); }
+	
+		inline int			insertAtCursor( const WgCharSeq& str ) { return m_pField->insertAtCursor(str); }
+		inline bool			insertAtCursor( Uint16 c ) { return m_pField->insertAtCursor(c); }
+	
+		inline void			goBol() { m_pField->goBol(); }
+		inline void			goEol() { m_pField->goEol(); }
+		inline void			goBot() { m_pField->goBot(); }
+		inline void			goEot() { m_pField->goEot(); }
+	
+		inline void			select( int ofs, int len ) { m_pField->select(ofs,len); }
+		inline void			selectAll() { m_pField->selectAll(); }
+		inline int			selectionStart() const { return m_pField->selectionStart(); }
+		inline int			selectionLength() const { return m_pField->selectionLength(); }
+		inline void			clearSelection() { m_pField->clearSelection(); }
+		inline void			deleteSelected() { m_pField->deleteSelected(); }
+	};
+	
+	
 
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgEditText_p	cast( const WgInterface_p& pInterface );				// Provided just for completeness sake.
-	inline WgEditText_p	ptr() { return WgEditText_p(_object(),this); }
-
-	inline void			setEditMode(WgTextEditMode mode) { m_pField->setEditMode(mode); }
-	inline WgTextEditMode	editMode() const { return m_pField->editMode(); }
-
-	inline bool			isEditable() const { return m_pField->isEditable(); }
-	inline bool			isSelectable() const { return m_pField->isSelectable(); }
-
-	inline void			setCursorSkin( const WgCaret_p& pCursor ) { m_pField->setCursorSkin(pCursor); }
-	inline WgCaret_p	cursorSkin() const { return m_pField->cursorSkin(); }
-
-	inline int			insertAtCursor( const WgCharSeq& str ) { return m_pField->insertAtCursor(str); }
-	inline bool			insertAtCursor( Uint16 c ) { return m_pField->insertAtCursor(c); }
-
-	inline void			goBol() { m_pField->goBol(); }
-	inline void			goEol() { m_pField->goEol(); }
-	inline void			goBot() { m_pField->goBot(); }
-	inline void			goEot() { m_pField->goEot(); }
-
-	inline void			select( int ofs, int len ) { m_pField->select(ofs,len); }
-	inline void			selectAll() { m_pField->selectAll(); }
-	inline int			selectionStart() const { return m_pField->selectionStart(); }
-	inline int			selectionLength() const { return m_pField->selectionLength(); }
-	inline void			clearSelection() { m_pField->clearSelection(); }
-	inline void			deleteSelected() { m_pField->deleteSelected(); }
-};
-
-
+} // namespace wg
 #endif //WG_EDITTEXT_DOT_H

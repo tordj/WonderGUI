@@ -28,27 +28,32 @@
 #	include <wg_pointers.h>
 #endif
 
-class WgFinalizer;
-typedef	WgStrongPtr<WgFinalizer,WgObject_p>		WgFinalizer_p;
-typedef	WgWeakPtr<WgFinalizer,WgObject_wp>	WgFinalizer_wp;
-
-class WgFinalizer : public WgObject
+namespace wg 
 {
-public:
-	static WgFinalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
+	
+	class WgFinalizer;
+	typedef	WgStrongPtr<WgFinalizer,WgObject_p>		WgFinalizer_p;
+	typedef	WgWeakPtr<WgFinalizer,WgObject_wp>	WgFinalizer_wp;
+	
+	class WgFinalizer : public WgObject
+	{
+	public:
+		static WgFinalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new WgFinalizer(pCallback,pObject); };
+	
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static WgFinalizer_p	cast( const WgObject_p& pObject );
+	
+	protected:
+		WgFinalizer(void(*pCallback)(void*),void * pObject);
+		virtual ~WgFinalizer();
+	
+		void(*m_pCallback)(void*);
+		void *	m_pObject;
+	};
+	
+	
 
-	bool				isInstanceOf( const char * pClassName ) const;
-	const char *		className( void ) const;
-	static const char	CLASSNAME[];
-	static WgFinalizer_p	cast( const WgObject_p& pObject );
-
-protected:
-	WgFinalizer(void(*pCallback)(void*),void * pObject);
-	virtual ~WgFinalizer();
-
-	void(*m_pCallback)(void*);
-	void *	m_pObject;
-};
-
-
+} // namespace wg
 #endif //WG_FINALIZER_DOT_H

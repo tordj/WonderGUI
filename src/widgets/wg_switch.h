@@ -27,38 +27,43 @@
 #	include <wg_widget.h>
 #endif
 
-class WgSwitch;
-typedef	WgStrongPtr<WgSwitch,WgWidget_p>		WgSwitch_p;
-typedef	WgWeakPtr<WgSwitch,WgWidget_wp>	WgSwitch_wp;
-
-//____ WgSwitch ____________________________________________________________
-
-class WgSwitch : public WgWidget
+namespace wg 
 {
-public:
-	static WgSwitch_p	create() { return WgSwitch_p(new WgSwitch()); }
+	
+	class WgSwitch;
+	typedef	WgStrongPtr<WgSwitch,WgWidget_p>		WgSwitch_p;
+	typedef	WgWeakPtr<WgSwitch,WgWidget_wp>	WgSwitch_wp;
+	
+	//____ WgSwitch ____________________________________________________________
+	
+	class WgSwitch : public WgWidget
+	{
+	public:
+		static WgSwitch_p	create() { return WgSwitch_p(new WgSwitch()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgSwitch_p	cast( const WgObject_p& pObject );
+	
+	    void    setValue( int value );
+	    
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgSwitch();
+		virtual ~WgSwitch();
+		virtual WgWidget* _newOfMyType() const { return new WgSwitch(); };
+	
+		void	_onCloneContent( const WgWidget * _pOrg );
+		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+	
+	private:
+	
+	};
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgSwitch_p	cast( const WgObject_p& pObject );
-
-    void    setValue( int value );
-    
-	WgSize	preferredSize() const;
-
-protected:
-	WgSwitch();
-	virtual ~WgSwitch();
-	virtual WgWidget* _newOfMyType() const { return new WgSwitch(); };
-
-	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	bool	_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-
-private:
-
-};
-
-
+} // namespace wg
 #endif //WG_SWITCH_DOT_H

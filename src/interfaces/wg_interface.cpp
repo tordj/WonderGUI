@@ -23,32 +23,37 @@
 #include <wg_interface.h>
 #include <wg_pointers.h>
 
-const char WgInterface::CLASSNAME[] = {"Interface"};
-
-bool WgInterface::isInstanceOf( const char * pClassName ) const
-{ 
-	return (pClassName==CLASSNAME); 
-}
-
-const char * WgInterface::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-
-WgInterface_p WgInterface::cast( const WgInterface_p& pInterface )
+namespace wg 
 {
-	return pInterface;
-}
+	
+	const char WgInterface::CLASSNAME[] = {"Interface"};
+	
+	bool WgInterface::isInstanceOf( const char * pClassName ) const
+	{ 
+		return (pClassName==CLASSNAME); 
+	}
+	
+	const char * WgInterface::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	
+	WgInterface_p WgInterface::cast( const WgInterface_p& pInterface )
+	{
+		return pInterface;
+	}
+	
+	
+	WgInterface_p	WgInterface::ptr()
+	{
+		return WgInterface_p(_object(),this);
+	}
+	
+	WgObject_p WgInterface::holder() 
+	{ 
+		return WgObject_p( _object() ); 
+	}
+	
 
-
-WgInterface_p	WgInterface::ptr()
-{
-	return WgInterface_p(_object(),this);
-}
-
-WgObject_p WgInterface::holder() 
-{ 
-	return WgObject_p( _object() ); 
-}
-
+} // namespace wg

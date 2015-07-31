@@ -31,46 +31,51 @@
 #	include <wg_skin.h>
 #endif
 
-class WgFiller;
-typedef	WgStrongPtr<WgFiller,WgWidget_p>		WgFiller_p;
-typedef	WgWeakPtr<WgFiller,WgWidget_wp>	WgFiller_wp;
-
-//____ WgFiller ____________________________________________________________
-/**
- * @brief Simplest kind of widget.
- *
- * WgFiller is the simplest kind of widget that displays nothing but its skin
- * and does nothing but posting the normal mouse messages that every widget does.
- *
- * It is typically used as backgrounds and for filling out empty spaces in
- * organized layouts.
- *
- **/
-
-
-class WgFiller : public WgWidget
+namespace wg 
 {
-public:
-	static WgFiller_p	create() { return WgFiller_p(new WgFiller()); }
+	
+	class WgFiller;
+	typedef	WgStrongPtr<WgFiller,WgWidget_p>		WgFiller_p;
+	typedef	WgWeakPtr<WgFiller,WgWidget_wp>	WgFiller_wp;
+	
+	//____ WgFiller ____________________________________________________________
+	/**
+	 * @brief Simplest kind of widget.
+	 *
+	 * WgFiller is the simplest kind of widget that displays nothing but its skin
+	 * and does nothing but posting the normal mouse messages that every widget does.
+	 *
+	 * It is typically used as backgrounds and for filling out empty spaces in
+	 * organized layouts.
+	 *
+	 **/
+	
+	
+	class WgFiller : public WgWidget
+	{
+	public:
+		static WgFiller_p	create() { return WgFiller_p(new WgFiller()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgFiller_p	cast( const WgObject_p& pObject );
+	
+		void	setPreferredSize( const WgSize& size );
+		WgSize	preferredSize() const;
+	
+	protected:
+		WgFiller();
+		virtual ~WgFiller();
+		virtual WgWidget* _newOfMyType() const { return new WgFiller(); };
+	
+		void	_onCloneContent( const WgWidget * _pOrg );
+	
+	private:
+		WgSize			m_preferredSize;
+	};
+	
+	
 
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgFiller_p	cast( const WgObject_p& pObject );
-
-	void	setPreferredSize( const WgSize& size );
-	WgSize	preferredSize() const;
-
-protected:
-	WgFiller();
-	virtual ~WgFiller();
-	virtual WgWidget* _newOfMyType() const { return new WgFiller(); };
-
-	void	_onCloneContent( const WgWidget * _pOrg );
-
-private:
-	WgSize			m_preferredSize;
-};
-
-
+} // namespace wg
 #endif //WG_FILLER_DOT_H

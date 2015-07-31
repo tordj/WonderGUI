@@ -34,23 +34,28 @@
 #	include <wg_string.h>
 #endif
 
-class WgValueFormatter;
-typedef	WgStrongPtr<WgValueFormatter,WgObject_p>		WgValueFormatter_p;
-typedef	WgWeakPtr<WgValueFormatter,WgObject_wp>	WgValueFormatter_wp;
-
-//____ WgValueFormatter __________________________________________________________
-
-class WgValueFormatter : public WgObject
+namespace wg 
 {
-public:
 	
-	bool						isInstanceOf( const char * pClassName ) const;
-	const char *				className( void ) const;
-	static const char			CLASSNAME[];
-	static WgValueFormatter_p	cast( const WgObject_p& pObject );
+	class WgValueFormatter;
+	typedef	WgStrongPtr<WgValueFormatter,WgObject_p>		WgValueFormatter_p;
+	typedef	WgWeakPtr<WgValueFormatter,WgObject_wp>	WgValueFormatter_wp;
+	
+	//____ WgValueFormatter __________________________________________________________
+	
+	class WgValueFormatter : public WgObject
+	{
+	public:
+		
+		bool						isInstanceOf( const char * pClassName ) const;
+		const char *				className( void ) const;
+		static const char			CLASSNAME[];
+		static WgValueFormatter_p	cast( const WgObject_p& pObject );
+	
+		virtual WgString format( Sint64 value, int scale ) const = 0;
+		virtual WgString format( double value ) const = 0;
+	};
+	
 
-	virtual WgString format( Sint64 value, int scale ) const = 0;
-	virtual WgString format( double value ) const = 0;
-};
-
+} // namespace wg
 #endif //WG_VALUEFORMATTER_DOT_H

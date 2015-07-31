@@ -27,31 +27,36 @@
 #	include <wg_item.h>
 #endif
 
-class WgField;
-class WgObject;
-
-//____ WgField ___________________________________________________________
-
-class WgFieldHolder : public WgItemHolder
+namespace wg 
 {
-public:
-	virtual void		_onFieldDirty( WgField * pField ) = 0;
-	virtual void		_onFieldResize( WgField * pField ) = 0;
-};
+	
+	class WgField;
+	class WgObject;
+	
+	//____ WgField ___________________________________________________________
+	
+	class WgFieldHolder : public WgItemHolder
+	{
+	public:
+		virtual void		_onFieldDirty( WgField * pField ) = 0;
+		virtual void		_onFieldResize( WgField * pField ) = 0;
+	};
+	
+	//____ WgField _________________________________________________________________
+	
+	class WgField : public WgItem
+	{
+	public:
+		WgField( WgFieldHolder * pHolder ) : WgItem(pHolder) {}
+	
+	protected:
+	
+		inline void		_onDirty() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldDirty(this); }
+		inline void		_onResize() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldResize(this); }
+	};
+	
+	
+	
 
-//____ WgField _________________________________________________________________
-
-class WgField : public WgItem
-{
-public:
-	WgField( WgFieldHolder * pHolder ) : WgItem(pHolder) {}
-
-protected:
-
-	inline void		_onDirty() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldDirty(this); }
-	inline void		_onResize() { return static_cast<WgFieldHolder*>(m_pHolder)->_onFieldResize(this); }
-};
-
-
-
+} // namespace wg
 #endif //WG_FIELD_DOT_H

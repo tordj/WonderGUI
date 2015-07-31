@@ -51,37 +51,42 @@
 #	include <wg_modtext.h>
 #endif
 
-class WgColumnHeader;
-typedef	WgIStrongPtr<WgColumnHeader,WgInterface_p>		WgColumnHeader_p;
-typedef	WgIWeakPtr<WgColumnHeader,WgInterface_wp>	WgColumnHeader_wp;
-
-class WgColumnHeader : public WgInterface
+namespace wg 
 {
-public:
-	WgColumnHeader(WgColumnHeaderField* pField);
+	
+	class WgColumnHeader;
+	typedef	WgIStrongPtr<WgColumnHeader,WgInterface_p>		WgColumnHeader_p;
+	typedef	WgIWeakPtr<WgColumnHeader,WgInterface_wp>	WgColumnHeader_wp;
+	
+	class WgColumnHeader : public WgInterface
+	{
+	public:
+		WgColumnHeader(WgColumnHeaderField* pField);
+	
+		virtual bool				isInstanceOf( const char * pClassName ) const;
+		virtual const char *		className( void ) const;
+		static const char			CLASSNAME[];
+		static WgColumnHeader_p	cast( const WgInterface_p& pInterface );
+		inline WgColumnHeader_p	ptr() { return WgColumnHeader_p(_object(),this); }
+	
+		//____ Interfaces ______________________________________
+	
+		WgIcon				icon;
+		WgIcon				arrow;
+		WgModText			label;
+	
+		//____ Methods _________________________________________
+	
+		inline void			setSkin( const WgSkin_p& pSkin ) { m_pField->setSkin(pSkin); }
+		inline WgSkin_p	skin() const { return m_pField->skin(); }
+	
+	
+	protected:
+		WgObject * 			_object() const;
+	
+		WgColumnHeaderField *		m_pField;
+	};
+	
 
-	virtual bool				isInstanceOf( const char * pClassName ) const;
-	virtual const char *		className( void ) const;
-	static const char			CLASSNAME[];
-	static WgColumnHeader_p	cast( const WgInterface_p& pInterface );
-	inline WgColumnHeader_p	ptr() { return WgColumnHeader_p(_object(),this); }
-
-	//____ Interfaces ______________________________________
-
-	WgIcon				icon;
-	WgIcon				arrow;
-	WgModText			label;
-
-	//____ Methods _________________________________________
-
-	inline void			setSkin( const WgSkin_p& pSkin ) { m_pField->setSkin(pSkin); }
-	inline WgSkin_p	skin() const { return m_pField->skin(); }
-
-
-protected:
-	WgObject * 			_object() const;
-
-	WgColumnHeaderField *		m_pField;
-};
-
+} // namespace wg
 #endif	// WG_COLUMNHEADER_DOT_H

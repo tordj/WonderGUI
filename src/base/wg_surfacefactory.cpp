@@ -22,32 +22,37 @@
 
 #include <wg_surfacefactory.h>
 
-const char WgSurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
-
-//____ isInstanceOf() _________________________________________________________
-
-bool WgSurfaceFactory::isInstanceOf( const char * pClassName ) const
-{ 
-	if( pClassName==CLASSNAME )
-		return true;
-
-	return WgObject::isInstanceOf(pClassName);
-}
-
-//____ className() ____________________________________________________________
-
-const char * WgSurfaceFactory::className( void ) const
-{ 
-	return CLASSNAME; 
-}
-
-//____ cast() _________________________________________________________________
-
-WgSurfaceFactory_p WgSurfaceFactory::cast( const WgObject_p& pObject )
+namespace wg 
 {
-	if( pObject && pObject->isInstanceOf(CLASSNAME) )
-		return WgSurfaceFactory_p( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
+	
+	const char WgSurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool WgSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return WgObject::isInstanceOf(pClassName);
+	}
+	
+	//____ className() ____________________________________________________________
+	
+	const char * WgSurfaceFactory::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	//____ cast() _________________________________________________________________
+	
+	WgSurfaceFactory_p WgSurfaceFactory::cast( const WgObject_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return WgSurfaceFactory_p( static_cast<WgSurfaceFactory*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
 
-	return 0;
-}
-
+} // namespace wg

@@ -30,30 +30,35 @@
 #	include <wg_pointers.h>
 #endif
 
-class WgCoord;
-
-class WgTextlink;
-typedef	WgStrongPtr<class WgTextlink,WgObject_p> WgTextLink_p;
-typedef	WgWeakPtr<class WgTextlink,WgObject_wp> WgTextLink_wp;
-
-
-//____ WgTextLink _____________________________________________________________
-
-
-class WgTextlink : public WgObject
+namespace wg 
 {
-public:
-	static WgTextLink_p create( const std::string& link ) { return new WgTextlink(link); }
+	
+	class WgCoord;
+	
+	class WgTextlink;
+	typedef	WgStrongPtr<class WgTextlink,WgObject_p> WgTextLink_p;
+	typedef	WgWeakPtr<class WgTextlink,WgObject_wp> WgTextLink_wp;
+	
+	
+	//____ WgTextLink _____________________________________________________________
+	
+	
+	class WgTextlink : public WgObject
+	{
+	public:
+		static WgTextLink_p create( const std::string& link ) { return new WgTextlink(link); }
+	
+		const std::string&		link() const { return m_link; }
+		bool					hasBeenAccessed() const { return m_bAccessed; }
+	
+	private:
+		bool					m_bAccessed;
+		std::string				m_link;
+	
+		WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
+		~WgTextlink() {}
+	};
+	
 
-	const std::string&		link() const { return m_link; }
-	bool					hasBeenAccessed() const { return m_bAccessed; }
-
-private:
-	bool					m_bAccessed;
-	std::string				m_link;
-
-	WgTextlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-	~WgTextlink() {}
-};
-
+} // namespace wg
 #endif //WG_TEXTLINK_DOT_H

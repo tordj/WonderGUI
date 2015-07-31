@@ -32,69 +32,74 @@
 #	include <wg_gfxanim.h>
 #endif
 
-class WgAnimPlayer;
-typedef	WgStrongPtr<WgAnimPlayer,WgWidget_p>		WgAnimPlayer_p;
-typedef	WgWeakPtr<WgAnimPlayer,WgWidget_wp>	WgAnimPlayer_wp;
-
-
-class WgAnimPlayer:public WgWidget
+namespace wg 
 {
-public:
-	static WgAnimPlayer_p	create() { return WgAnimPlayer_p(new WgAnimPlayer()); }
-
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgAnimPlayer_p	cast( const WgObject_p& pObject );
-
-	//____ Methods __________________________________________
-
-	bool			SetAnimation( const WgGfxAnim_p& pAnim );
-	WgGfxAnim_p	Animation() const { return m_pAnim; }
-		
-	int				PlayPos();										/// Returns play position in ticks.
-	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
-	bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
 	
-	bool			Rewind( int ticks );
-	bool			FastForward( int ticks );
+	class WgAnimPlayer;
+	typedef	WgStrongPtr<WgAnimPlayer,WgWidget_p>		WgAnimPlayer_p;
+	typedef	WgWeakPtr<WgAnimPlayer,WgWidget_wp>	WgAnimPlayer_wp;
+	
+	
+	class WgAnimPlayer:public WgWidget
+	{
+	public:
+		static WgAnimPlayer_p	create() { return WgAnimPlayer_p(new WgAnimPlayer()); }
+	
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgAnimPlayer_p	cast( const WgObject_p& pObject );
+	
+		//____ Methods __________________________________________
+	
+		bool			SetAnimation( const WgGfxAnim_p& pAnim );
+		WgGfxAnim_p	Animation() const { return m_pAnim; }
+			
+		int				PlayPos();										/// Returns play position in ticks.
+		bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
+		bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
+		
+		bool			Rewind( int ticks );
+		bool			FastForward( int ticks );
+	
+		int				duration();										/// Returns duration of animation (one-shot-through, no looping).
+		int				durationScaled();								/// Returns duration of animation, scaled by speed.
+	
+		float			Speed();
+		bool			SetSpeed( float speed );
+	
+		bool			Play();
+		bool			Stop();
+		bool			IsPlaying() { return m_bPlaying; };
+	
+		WgSize			preferredSize() const;
+	
+	protected:
+		WgAnimPlayer();
+		virtual ~WgAnimPlayer();
+		virtual WgWidget* _newOfMyType() const { return new WgAnimPlayer(); };
+	
+		void			_onCloneContent( const WgWidget * _pOrg );
+		void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+		void			_onRefresh();
+		void			_onMsg( const WgMsg_p& pMsg );
+		bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
+		void			_onStateChanged( WgState oldState );
+	
+		void			_playPosUpdated();
+	
+	private:
+	
+		WgGfxAnim_p	m_pAnim;
+		WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
+		WgRouteId		m_tickRouteId;
+	
+		bool			m_bPlaying;
+		double			m_playPos;
+		float			m_speed;
+	};
+	
+	
 
-	int				duration();										/// Returns duration of animation (one-shot-through, no looping).
-	int				durationScaled();								/// Returns duration of animation, scaled by speed.
-
-	float			Speed();
-	bool			SetSpeed( float speed );
-
-	bool			Play();
-	bool			Stop();
-	bool			IsPlaying() { return m_bPlaying; };
-
-	WgSize			preferredSize() const;
-
-protected:
-	WgAnimPlayer();
-	virtual ~WgAnimPlayer();
-	virtual WgWidget* _newOfMyType() const { return new WgAnimPlayer(); };
-
-	void			_onCloneContent( const WgWidget * _pOrg );
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
-	void			_onRefresh();
-	void			_onMsg( const WgMsg_p& pMsg );
-	bool			_onAlphaTest( const WgCoord& ofs, const WgSize& sz );
-	void			_onStateChanged( WgState oldState );
-
-	void			_playPosUpdated();
-
-private:
-
-	WgGfxAnim_p	m_pAnim;
-	WgGfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
-	WgRouteId		m_tickRouteId;
-
-	bool			m_bPlaying;
-	double			m_playPos;
-	float			m_speed;
-};
-
-
+} // namespace wg
 #endif //	WG_ANIMPLAYER_DOT_H

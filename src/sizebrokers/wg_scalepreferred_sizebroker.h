@@ -26,29 +26,34 @@
 #	include <wg_sizebroker.h>
 #endif
 
-class WgScalePreferredSizeBroker;
-typedef	WgStrongPtr<WgScalePreferredSizeBroker,WgSizeBroker_p>		WgScalePreferredSizeBroker_p;
-typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBroker_wp>	WgScalePreferredSizeBroker_wp;
-
-class WgScalePreferredSizeBroker : public WgSizeBroker
+namespace wg 
 {
-public:
-	static WgScalePreferredSizeBroker_p	create() { return WgScalePreferredSizeBroker_p(new WgScalePreferredSizeBroker()); }
+	
+	class WgScalePreferredSizeBroker;
+	typedef	WgStrongPtr<WgScalePreferredSizeBroker,WgSizeBroker_p>		WgScalePreferredSizeBroker_p;
+	typedef	WgWeakPtr<WgScalePreferredSizeBroker,WgSizeBroker_wp>	WgScalePreferredSizeBroker_wp;
+	
+	class WgScalePreferredSizeBroker : public WgSizeBroker
+	{
+	public:
+		static WgScalePreferredSizeBroker_p	create() { return WgScalePreferredSizeBroker_p(new WgScalePreferredSizeBroker()); }
+	
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static WgScalePreferredSizeBroker_p	cast( const WgObject_p& pObject );
+	
+		int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+		int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
+		bool mayAlterPreferredLengths() const;
+	    
+	protected:
+		WgScalePreferredSizeBroker() {};
+	    virtual ~WgScalePreferredSizeBroker() {};
+	    
+	};
+	
+	
 
-	bool				isInstanceOf( const char * pClassName ) const;
-	const char *		className( void ) const;
-	static const char	CLASSNAME[];
-	static WgScalePreferredSizeBroker_p	cast( const WgObject_p& pObject );
-
-	int setItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int setPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool mayAlterPreferredLengths() const;
-    
-protected:
-	WgScalePreferredSizeBroker() {};
-    virtual ~WgScalePreferredSizeBroker() {};
-    
-};
-
-
+} // namespace wg
 #endif //WG_SCALEPREFERRED_SIZEBROKER_DOT_H

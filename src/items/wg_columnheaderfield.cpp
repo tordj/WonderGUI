@@ -22,34 +22,39 @@
 
 #include <wg_columnheaderfield.h>
 
-WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgField(pHolder), icon(this), arrow(this), label(this)
+namespace wg 
 {
-	m_height = 0;
-	m_width = 0;
-	m_bPressed = false;
-}
-
-//____ setSkin() ______________________________________________________
-
-void WgColumnHeaderField::setSkin( const WgSkin_p& pSkin )
-{
-	if( pSkin != m_pSkin )
+	
+	WgColumnHeaderField::WgColumnHeaderField(WgColumnHeaderHolder * pHolder) : WgField(pHolder), icon(this), arrow(this), label(this)
 	{
-		m_pSkin = pSkin;
+		m_height = 0;
+		m_width = 0;
+		m_bPressed = false;
+	}
+	
+	//____ setSkin() ______________________________________________________
+	
+	void WgColumnHeaderField::setSkin( const WgSkin_p& pSkin )
+	{
+		if( pSkin != m_pSkin )
+		{
+			m_pSkin = pSkin;
+			_onResize();
+		}
+	}
+	
+	//____ _onFieldDirty() _________________________________________________________
+	
+	void WgColumnHeaderField::_onFieldDirty( WgField * pField )
+	{
+		_onDirty();
+	}
+	
+	//____ _onFieldResize() ________________________________________________________
+	
+	void WgColumnHeaderField::_onFieldResize( WgField * pField )
+	{
 		_onResize();
 	}
-}
 
-//____ _onFieldDirty() _________________________________________________________
-
-void WgColumnHeaderField::_onFieldDirty( WgField * pField )
-{
-	_onDirty();
-}
-
-//____ _onFieldResize() ________________________________________________________
-
-void WgColumnHeaderField::_onFieldResize( WgField * pField )
-{
-	_onResize();
-}
+} // namespace wg

@@ -27,113 +27,118 @@
 #	include <wg_container.h>
 #endif
 
-class WgCapsule;
-typedef	WgStrongPtr<WgCapsule,WgContainer_p>	WgCapsule_p;
-typedef	WgWeakPtr<WgCapsule,WgContainer_p>	WgCapsule_wp;
-
-class WgCapsuleHook;
-typedef	WgHookTypePtr<WgCapsuleHook,WgHook_p>	WgCapsuleHook_p;
-
-/**
- * @brief Base class for containers that only holds one child.
- *
- * WgCapsule is the base class for WonderGUI Capsules, minimalistic container
- * widgets that only can have one child.
- *
- * Capsules are typically used to "encapsulate" another widget (or branch of widgets) to affect its
- * geometry, appearance or behavior.
- *
- **/
-
-class WgCapsuleHook : public WgHook
+namespace wg 
 {
-	friend class WgCapsule;
-	friend class WgSizeCapsule;
-	friend class WgShaderCapsule;
+	
+	class WgCapsule;
+	typedef	WgStrongPtr<WgCapsule,WgContainer_p>	WgCapsule_p;
+	typedef	WgWeakPtr<WgCapsule,WgContainer_p>	WgCapsule_wp;
+	
+	class WgCapsuleHook;
+	typedef	WgHookTypePtr<WgCapsuleHook,WgHook_p>	WgCapsuleHook_p;
+	
+	/**
+	 * @brief Base class for containers that only holds one child.
+	 *
+	 * WgCapsule is the base class for WonderGUI Capsules, minimalistic container
+	 * widgets that only can have one child.
+	 *
+	 * Capsules are typically used to "encapsulate" another widget (or branch of widgets) to affect its
+	 * geometry, appearance or behavior.
+	 *
+	 **/
+	
+	class WgCapsuleHook : public WgHook
+	{
+		friend class WgCapsule;
+		friend class WgSizeCapsule;
+		friend class WgShaderCapsule;
+	
+	public:
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
+		static WgCapsuleHook_p	cast( const WgHook_p& pInterface );
+	
+		// Standard Hook methods
+	
+		WgCoord			pos() const;
+		WgSize			size() const;
+		WgRect			geo() const;
+	
+		WgCoord			globalPos() const;
+		WgRect			globalGeo() const;
+	
+		WgCapsule_p 		parent() const;
+	
+	protected:
+		void			_requestRender();
+		void			_requestRender( const WgRect& rect );
+		void			_requestResize();
+	
+		WgHook *		_prevHook() const;
+		WgHook *		_nextHook() const;
+		WgContainer *	_parent() const;
+	
+	
+		WgCapsule * 	m_pParent;
+	};
+	
+	
+	
+	//____ WgCapsule ______________________________________________________________
+	
+	class WgCapsule : public WgContainer
+	{
+		friend class WgCapsuleHook;
+	
+	public:
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static WgCapsule_p	cast( const WgObject_p& pObject );
+	
+		WgCapsuleHook_p	setWidget( const WgWidget_p& pWidget );
+		WgWidget_p			widget() { return m_hook.widget(); }
+		bool				removeWidget( const WgWidget_p& pWidget );
+		bool				clear();
+	
+		inline WgCapsuleHook_p	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
+		inline WgCapsuleHook_p	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
+	
+	
+		// Overloaded from WgWidget
+	
+		int				matchingHeight( int width ) const;
+		int				matchingWidth( int height ) const;
+	
+		WgSize			preferredSize() const;
+	
+	protected:
+		WgCapsule();
+		virtual ~WgCapsule() {}
+	
+		WgHook *		_firstHookWithGeo( WgRect& geo ) const;
+		WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	
+		WgHook *		_lastHookWithGeo( WgRect& geo ) const;
+		WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
+	
+		//
+	
+		void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+		void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+		void			_onCloneContent( const WgWidget * _pOrg );
+		void			_onNewSize( const WgSize& size );
+	
+	
+		WgHook*			_firstHook() const;
+		WgHook*			_lastHook() const;
+	
+		WgCapsuleHook	m_hook;
+	
+	};
+	
 
-public:
-	virtual bool			isInstanceOf( const char * pClassName ) const;
-	virtual const char *	className( void ) const;
-	static const char		CLASSNAME[];
-	static WgCapsuleHook_p	cast( const WgHook_p& pInterface );
-
-	// Standard Hook methods
-
-	WgCoord			pos() const;
-	WgSize			size() const;
-	WgRect			geo() const;
-
-	WgCoord			globalPos() const;
-	WgRect			globalGeo() const;
-
-	WgCapsule_p 		parent() const;
-
-protected:
-	void			_requestRender();
-	void			_requestRender( const WgRect& rect );
-	void			_requestResize();
-
-	WgHook *		_prevHook() const;
-	WgHook *		_nextHook() const;
-	WgContainer *	_parent() const;
-
-
-	WgCapsule * 	m_pParent;
-};
-
-
-
-//____ WgCapsule ______________________________________________________________
-
-class WgCapsule : public WgContainer
-{
-	friend class WgCapsuleHook;
-
-public:
-	bool		isInstanceOf( const char * pClassName ) const;
-	const char *className( void ) const;
-	static const char	CLASSNAME[];
-	static WgCapsule_p	cast( const WgObject_p& pObject );
-
-	WgCapsuleHook_p	setWidget( const WgWidget_p& pWidget );
-	WgWidget_p			widget() { return m_hook.widget(); }
-	bool				removeWidget( const WgWidget_p& pWidget );
-	bool				clear();
-
-	inline WgCapsuleHook_p	firstHook() const { return static_cast<WgCapsuleHook*>(_firstHook()); }
-	inline WgCapsuleHook_p	lastHook() const { return static_cast<WgCapsuleHook*>(_lastHook()); }
-
-
-	// Overloaded from WgWidget
-
-	int				matchingHeight( int width ) const;
-	int				matchingWidth( int height ) const;
-
-	WgSize			preferredSize() const;
-
-protected:
-	WgCapsule();
-	virtual ~WgCapsule() {}
-
-	WgHook *		_firstHookWithGeo( WgRect& geo ) const;
-	WgHook *		_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const;
-
-	WgHook *		_lastHookWithGeo( WgRect& geo ) const;
-	WgHook *		_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
-
-	//
-
-	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	void			_onCloneContent( const WgWidget * _pOrg );
-	void			_onNewSize( const WgSize& size );
-
-
-	WgHook*			_firstHook() const;
-	WgHook*			_lastHook() const;
-
-	WgCapsuleHook	m_hook;
-
-};
-
+} // namespace wg
 #endif //WG_CAPSULE_DOT_H
