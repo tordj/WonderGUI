@@ -61,7 +61,7 @@ namespace wg
 	
 		void setPointer( const RootPanel_p& pRoot, Coord pos );
 		void setButton( WgMouseButton button, bool bPressed );
-		void setWheelRoll( int wheel, int steps );
+		void setWheelRoll( int wheel, Coord distance );
 		void setFocused( const RootPanel_p& pRoot );
 		void setKey( short nativeKeyCode, bool bPressed );
 		
@@ -76,6 +76,8 @@ namespace wg
 	
 		void		_processMouseButtonPress( WgMouseButton button );
 		void		_processMouseButtonRelease( WgMouseButton button );
+	
+		void		_handleMouseButtonRepeats( int millisec );
 	
 		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
 	
@@ -98,12 +100,12 @@ namespace wg
 	
 		// Current button states
 	
-		bool						m_bButtonPressed[WG_MAX_BUTTONS+1];
-	
-		MousePressMsg_p			m_pLatestPressMsgs[WG_MAX_BUTTONS+1];			// Saved info for the last time each button was pressed.
-		MouseReleaseMsg_p		m_pLatestReleaseMsgs[WG_MAX_BUTTONS+1];	// Saved info for the last time each button was released.
+		bool					m_bButtonPressed[WG_MAX_BUTTONS+1];
 	
 		Widget_wp				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+		int64_t					m_latestPressTimestamps[WG_MAX_BUTTONS+1];	// Timestamp of the latest press, for each button.
+		Coord					m_latestPressPosition[WG_MAX_BUTTONS+1];	// Coord of the latest press, for each button.
+		bool					m_latestPressDoubleClick[WG_MAX_BUTTONS+1];	// Set if latest press resulted in a double-click.	
 	};
 	
 	

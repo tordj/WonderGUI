@@ -170,11 +170,8 @@ namespace wg
 		bool	viewIncludeY( Rect& rect );
 	*/
 	
-		bool		setScrollWheels( int wheelForX, int wheelForY );
-		int			scrollWheelX() const { return m_wheelForScrollX; }
-		int			scrollWheelY() const { return m_wheelForScrollY; }
-	
-	
+		bool		setScrollWheel( int wheel );
+		int			scrollWheel() const { return m_wheelForScroll; }
 	
 		bool		setAutoscroll( bool bAutoX, bool bAutoY	);
 		bool		autoScrollX() const { return m_bAutoScrollX; }
@@ -322,8 +319,7 @@ namespace wg
 		bool		m_bAutoScrollX;
 		bool		m_bAutoScrollY;
 	
-		int			m_wheelForScrollX;		// What wheel should be used for horizontal scrolling. (0=none)
-		int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
+		int			m_wheelForScroll;		// What wheel should be used for scrolling. (0=none)
 	
 		bool		m_bOverlayScrollbars;
 		

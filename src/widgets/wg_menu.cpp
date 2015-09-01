@@ -877,7 +877,7 @@ namespace wg
 	
 				if( pEv->wheel() == 1 )
 				{
-					int distance = pEv->distance();
+					int distance = pEv->distance().y;
 	
 					_setViewOfs( m_contentOfs - m_entryHeight*distance );
 					_updateScrollbar( _getHandlePosition(), _getHandleSize() );

@@ -389,7 +389,7 @@ namespace wg
 				if( !m_state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
 				{
 					MenuItem * pItem = m_pSelectedItem;
-					int distance = pMsg->distance();
+					int distance = pMsg->distance().y;
 	
 					if( !pItem )
 					{

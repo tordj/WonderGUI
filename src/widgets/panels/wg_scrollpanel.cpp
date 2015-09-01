@@ -70,8 +70,7 @@ namespace wg
 		
 		m_bOverlayScrollbars	= false;
 	
-		m_wheelForScrollX	= 2;
-		m_wheelForScrollY	= 1;
+		m_wheelForScroll	= 1;
 	
 		m_elements[WINDOW]._setParent(this);
 		m_elements[XDRAG]._setParent(this);
@@ -1115,18 +1114,19 @@ namespace wg
 			case WG_MSG_WHEEL_ROLL:
 			{			
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
-	
-				if( m_elements[WINDOW].m_windowGeo.contains( toLocal(pMsg->pointerPos())) )
+
+				if( pMsg->wheel() == m_wheelForScroll )
 				{
-					int wheel = pMsg->wheel();
-	
-					if( wheel == m_wheelForScrollY )
-						_wheelRollY( pMsg->distance() );
-					else if( wheel == m_wheelForScrollX )
-						_wheelRollX( pMsg->distance() );
+					if( m_elements[WINDOW].m_windowGeo.contains( toLocal(pMsg->pointerPos())) )
+					{
+						Coord dist = pMsg->distance();
+						if( dist.x != 0 )
+							_wheelRollX( dist.x );
+						if( dist.y != 0 )
+							_wheelRollY( dist.y );
+					}		
+					_pMsg->swallow();
 				}
-	
-				_pMsg->swallow();
 			}
 			break;
 	
@@ -1352,10 +1352,9 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	bool ScrollPanel::setScrollWheels( int wheelForX, int wheelForY )
+	bool ScrollPanel::setScrollWheel( int wheel )
 	{
-		m_wheelForScrollX = wheelForX;
-		m_wheelForScrollY = wheelForY;
+		m_wheelForScroll = wheel;
 		return true;
 	}
 	

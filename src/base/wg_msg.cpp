@@ -747,14 +747,14 @@ namespace wg
 	
 	const char WheelRollMsg::CLASSNAME[] = {"WheelRollMsg"};
 	
-	WheelRollMsg::WheelRollMsg( int wheel, int distance )
+	WheelRollMsg::WheelRollMsg( int wheel, Coord distance )
 	{
 		m_type = WG_MSG_WHEEL_ROLL;
 		m_wheel = wheel;
 		m_distance = distance;
 	}
 	
-	WheelRollMsg::WheelRollMsg( int wheel, int distance, Widget * pWidget )
+	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget )
 	{
 		m_type			= WG_MSG_WHEEL_ROLL;
 		m_wheel			= wheel;
@@ -768,7 +768,7 @@ namespace wg
 		return m_wheel;
 	}
 	
-	int WheelRollMsg::distance() const
+	Coord WheelRollMsg::distance() const
 	{
 		return m_distance;
 	}

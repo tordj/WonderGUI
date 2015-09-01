@@ -1019,7 +1019,7 @@ namespace wg
 	
 				if( p->wheel() == 1 )
 				{
-					int distance = p->distance();
+					int distance = p->distance().y;		//TODO: Should we support horizontal wheel roll for horizontal scrollbar?
 					if( m_pScrollbarTargetWidget.rawPtr() != 0 )
 						setHandlePos( m_pScrollbarTargetInterface->_wheelRolled(distance) );
 					

@@ -314,7 +314,7 @@ namespace wg
 			case WG_MSG_WHEEL_ROLL:
 			{
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
-				sprintf( params, "wheel=%d distance=%d", pMsg->wheel(), pMsg->distance() );
+				sprintf( params, "wheel=%d distance=(%d,%d)", pMsg->wheel(), pMsg->distance().x, pMsg->distance().y );
 				break;
 			}
 	

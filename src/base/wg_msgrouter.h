@@ -124,7 +124,6 @@ namespace wg
 	
 	
 		void	_finalizeMsg( const Msg_p& pMsg );
-		void	_processGeneralMsg( const Msg_p& pMsg );
 		void	_broadcast( const Msg_p& pMsg );
 		void	_dispatchToSourceRoutes( const Msg_p& pMsg );
 		void	_dispatchToTypeRoutes( const Msg_p& pMsg );
@@ -133,21 +132,7 @@ namespace wg
 	
 		void	_processFocusGained( FocusGainedMsg * pMsg );
 		void	_processFocusLost( FocusLostMsg * pMsg );
-	
-		void	_processMouseEnter( MouseEnterMsg * pMsg );
-		void	_processMouseMove( MouseMoveMsg * pMsg );
-		void	_processMousePosition( MousePositionMsg * pMsg );
-		void	_processMouseLeave( MouseLeaveMsg * pMsg );
-	
-		void	_processMouseButtonPress( MousePressMsg * pMsg );
-		void	_processMouseButtonRepeat( MouseRepeatMsg * pMsg );
-		void	_processMouseButtonDrag( MouseDragMsg * pMsg );
-		void	_processMouseButtonRelease( MouseReleaseMsg * pMsg );
-		void	_processMouseButtonClick( MouseClickMsg * pMsg );
-		void	_processMouseButtonDoubleClick( MouseDoubleClickMsg * pMsg );
-	
-		void	_processMouseWheelRoll( WheelRollMsg * pMsg );
-	
+				
 		void	_processKeyPress( KeyPressMsg * pMsg );
 		void	_processKeyRepeat( KeyRepeatMsg * pMsg );
 		void	_processKeyRelease( KeyReleaseMsg * pMsg );

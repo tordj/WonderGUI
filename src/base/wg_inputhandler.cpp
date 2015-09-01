@@ -32,7 +32,14 @@ namespace wg
 	
 	InputHandler::InputHandler()
 	{
-		m_tickRoute = Base::msgRouter()->addRoute( WG_MSG_TICK, this );		
+		m_tickRoute = Base::msgRouter()->addRoute( WG_MSG_TICK, this );	
+		m_timeStamp = 0;
+		
+		for( int i = 0 ; i < WG_MAX_BUTTONS+1 ; i++ )
+		{
+			m_bButtonPressed[i] = false;
+			m_latestPressTimestamps[i] = 0;
+		}
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -94,7 +101,7 @@ namespace wg
 		int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
 		for( int i = 1 ; i <= WG_MAX_BUTTONS ; i++ )
 		{
-			if( m_bButtonPressed[i] && (button == 0 || m_pLatestPressMsgs[i]->timestamp() < m_pLatestPressMsgs[button]->timestamp()) )
+			if( m_bButtonPressed[i] && (button == 0 || m_latestPressTimestamps[i] < m_latestPressTimestamps[button]) )
 				button = i;
 		}
 	
@@ -122,7 +129,7 @@ namespace wg
 		for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 		{
 			if( m_bButtonPressed[i] )
-				Base::msgRouter()->post( new MouseDragMsg( (WgMouseButton) i, m_pLatestPressMsgs[i]->pointerPos(), prevPointerPos, m_pointerPos ) );
+				Base::msgRouter()->post( new MouseDragMsg( (WgMouseButton) i, m_latestPressPosition[i], prevPointerPos, m_pointerPos ) );
 		}
 		
 		// Update PointerStyle
@@ -220,8 +227,8 @@ namespace wg
 	//____ _processMouseButtonPress() ___________________________________________________
 	
 	void InputHandler::_processMouseButtonPress( WgMouseButton button )
-	{
-	
+	{			
+		
 		// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
 	
 		Widget * pWidget = m_pMarkedWidget.rawPtr();
@@ -233,11 +240,12 @@ namespace wg
 	
 		int doubleClickTimeTreshold = Base::doubleClickTimeTreshold();
 		int doubleClickDistanceTreshold = Base::doubleClickDistanceTreshold();
+
+		bool doubleClick = false;
 	
-	
-		if( m_pLatestPressMsgs[button] && m_pLatestPressMsgs[button]->timestamp() + doubleClickTimeTreshold > m_timeStamp )
+		if( m_latestPressTimestamps[button] + doubleClickTimeTreshold > m_timeStamp )
 		{
-			Coord distance = m_pointerPos - m_pLatestPressMsgs[button]->pointerPos();
+			Coord distance = m_pointerPos - m_latestPressPosition[button];
 	
 			if( distance.x <= doubleClickDistanceTreshold &&
 				distance.x >= -doubleClickDistanceTreshold &&
@@ -248,13 +256,17 @@ namespace wg
 						Base::msgRouter()->post( new MouseDoubleClickMsg(button, pWidget) );
 					else
 						Base::msgRouter()->post( new MouseDoubleClickMsg(button) );
-				}
+					
+					doubleClick = true;
+				}				
 		}
 	
 		// Save info for the future
 	
-		m_latestPressWidgets[button] = pWidget;
-		m_pLatestPressMsgs[button] = pMsg;
+		m_latestPressWidgets[button]		= pWidget;
+		m_latestPressTimestamps[button] 	= m_timeStamp;
+		m_latestPressPosition[button] 		= m_pointerPos;
+		m_latestPressDoubleClick[button] 	= doubleClick;
 	}
 	
 	
@@ -271,19 +283,15 @@ namespace wg
 		MouseReleaseMsg * pMsg = new MouseReleaseMsg( button, pWidget, true, bIsInside );
 		Base::msgRouter()->post( pMsg );
 	
-		// Post click event.
+		// Post click event, if press didn't already resulted in a double click.
 	
-		if( m_bButtonPressed[button] )
+		if( m_bButtonPressed[button] && !m_latestPressDoubleClick[button] )
 		{
 			if( bIsInside )
 				Base::msgRouter()->post( new MouseClickMsg( button, pWidget ) );
 			else
 				Base::msgRouter()->post( new MouseClickMsg( button ) );
-		}
-	
-		// Save info for the future
-	
-		m_pLatestReleaseMsgs[button] = pMsg;
+		}	
 	}
 	
 	
@@ -304,9 +312,10 @@ namespace wg
 	
 	//____ setWheelRoll() __________________________________________________________
 	
-	void InputHandler::setWheelRoll( int wheel, int steps )
+	void InputHandler::setWheelRoll( int wheel, Coord distance )
 	{
-		
+		if( m_pMarkedWidget )
+			Base::msgRouter()->post( new WheelRollMsg( wheel, distance, m_pMarkedWidget.rawPtr() ) );
 	}
 	
 	//____ onMsg() _________________________________________________________________
@@ -314,6 +323,54 @@ namespace wg
 	void InputHandler::onMsg( const Msg_p& pMsg )
 	{
 		
+		if( pMsg->type() == WG_MSG_TICK ) {
+						
+			_handleMouseButtonRepeats( TickMsg::cast(pMsg)->millisec() );
+
+			m_timeStamp += TickMsg::cast(pMsg)->millisec();			
+		}		
 	}
+
+	//____ _handleMouseButtonRepeats() _________________________________________
+
+	void InputHandler::_handleMouseButtonRepeats( int millisec )
+	{
+		for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
+		{
+			if( m_bButtonPressed[button] )
+			{
+				int buttonDelay = Base::mouseButtonRepeatDelay();
+				int buttonRate = Base::mouseButtonRepeatRate();
+	
+				int msSinceRepeatStart = (int) (m_timeStamp - m_latestPressTimestamps[button] - buttonDelay );
+	
+				// First BUTTON_REPEAT event posted separately.
+	
+				if( msSinceRepeatStart < 0 && msSinceRepeatStart + millisec >= 0 )
+				{
+					MouseRepeatMsg * pMsg = new MouseRepeatMsg( (WgMouseButton)button, m_latestPressWidgets[button].rawPtr() );
+					Base::msgRouter()->post( pMsg );
+
+				}
+	
+				// Calculate ms since last BUTTON_REPEAT event
+	
+				int msToProcess;
+				if( msSinceRepeatStart < 0 )
+					msToProcess = msSinceRepeatStart + millisec;
+				else
+					msToProcess = (msSinceRepeatStart % buttonRate) + millisec;
+	
+				// Post the amount of BUTTON_REPEAT that should be posted.
+	
+				while( msToProcess >= buttonRate )
+				{
+					Base::msgRouter()->post( new MouseRepeatMsg((WgMouseButton)button, m_latestPressWidgets[button].rawPtr()) );
+					msToProcess -= buttonRate;
+				}
+			}
+		}		
+	}
+
 
 } // namespace wg

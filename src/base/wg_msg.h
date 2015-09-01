@@ -580,7 +580,7 @@ namespace wg
 		friend class InputHandler;
 		friend class MsgRouter;
 	public:
-		static WheelRollMsg_p			create( int wheel, int distance ) { return new WheelRollMsg(wheel,distance); }
+		static WheelRollMsg_p			create( int wheel, Coord distance ) { return new WheelRollMsg(wheel,distance); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -588,13 +588,13 @@ namespace wg
 		static WheelRollMsg_p	cast( const Object_p& pObject );
 
 		int			wheel() const;
-		int			distance() const;
+		Coord		distance() const;
 	protected:
-		WheelRollMsg( int wheel, int distance );
-		WheelRollMsg( int wheel, int distance, Widget * pWidget );
+		WheelRollMsg( int wheel, Coord distance );
+		WheelRollMsg( int wheel, Coord distance, Widget * pWidget );
 
 		int			m_wheel;
-		int			m_distance;
+		Coord		m_distance;
 	};
 
 	//____ TickMsg _____________________________________________________________

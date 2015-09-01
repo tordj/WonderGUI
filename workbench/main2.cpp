@@ -286,6 +286,15 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				pInput->setButton( translateMouseButton(e.button.button), false );
 				break;
 				
+			case SDL_MOUSEWHEEL:
+			{
+				Coord distance( e.wheel.x, e.wheel.y );
+//				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
+//					distance *= -1;
+			
+				pInput->setWheelRoll( 1, distance );
+				break;
+			}	
 			default:
 				break;
 		}
