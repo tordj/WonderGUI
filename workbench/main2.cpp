@@ -53,8 +53,7 @@ int main ( int argc, char** argv )
 
 	Base::init();
 
-	InputHandler_p pInput = InputHandler::create();
-	pDebug = pInput.rawPtr();
+	InputHandler_p pInput = Base::inputHandler();
 	
 	WgPixelType type = WG_PIXEL_UNKNOWN;
 
@@ -68,13 +67,14 @@ int main ( int argc, char** argv )
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
-	Base::msgRouter()->setRoot(pRoot);
+	
+	Base::inputHandler()->setFocusedWindow( pRoot );
 
 	// 
 	
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
-	pLogger->ignoreAllMsgs();
-	pLogger->logMouseMsgs();
+	pLogger->logAllMsgs();
+	pLogger->ignoreMsg( WG_MSG_TICK );
 	
 	Base::msgRouter()->broadcastTo( pLogger );
 
@@ -295,6 +295,19 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				pInput->setWheelRoll( 1, distance );
 				break;
 			}	
+			
+			case SDL_KEYDOWN:
+			{
+				pInput->setKey( (short) e.key.keysym.sym, true );
+				break;
+			}
+			
+			case SDL_KEYUP:
+			{
+				pInput->setKey( (short) e.key.keysym.sym, false );
+				break;
+			}
+			
 			default:
 				break;
 		}

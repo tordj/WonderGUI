@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	Panel::Panel() : m_bFocusGroup(false), m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
+	Panel::Panel() : m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
 	{
 	}
 	
@@ -94,7 +94,6 @@ namespace wg
 	{
 		const Panel * pOrg = static_cast<const Panel*>(_pOrg);
 	
-		m_bFocusGroup 		= pOrg->m_bFocusGroup;
 		m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
 		m_maskOp 			= pOrg->m_maskOp;
 	

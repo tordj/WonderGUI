@@ -287,17 +287,41 @@ namespace wg
 	
 	//____ _focusRequested() _______________________________________________________
 	
-	bool RootPanel::_focusRequested( Hook * pBranch, Widget * pWidgetRequesting )
+	bool RootPanel::_focusRequested( Widget * pWidgetRequesting )
 	{
-		return Base::msgRouter()->setKeyboardFocus(pWidgetRequesting);
+		if( pWidgetRequesting == m_pFocusedChild.rawPtr() )
+			return true;
+
+		Widget * pOldFocus = m_pFocusedChild.rawPtr();
+		m_pFocusedChild = pWidgetRequesting;
+		return Base::inputHandler()->_focusChanged( pOldFocus, pWidgetRequesting );
 	}
 	
 	//____ _focusReleased() ________________________________________________________
 	
-	bool RootPanel::_focusReleased( Hook * pBranch, Widget * pWidgetReleasing )
+	bool RootPanel::_focusReleased( Widget * pWidgetReleasing )
 	{
-		return Base::msgRouter()->setKeyboardFocus(0);
+		if( pWidgetReleasing != m_pFocusedChild.rawPtr() )
+			return true;					// Never had focus, although widget seems to believe it.
+
+		if( pWidgetReleasing == m_hook._widget() )
+			return false;
+			
+		Widget * pOldFocus = m_pFocusedChild.rawPtr();
+		m_pFocusedChild = m_hook._widget();
+		return Base::inputHandler()->_focusChanged( pOldFocus, m_hook._widget());
 	}
+
+	//____ _focusedChild() ______________________________________________________
+
+	Widget * RootPanel::_focusedChild() const
+	{ 
+		if( !m_pFocusedChild )
+			return m_hook._widget();
+
+		return m_pFocusedChild.rawPtr(); 
+	}
+
 	
 	///////////////////////////////////////////////////////////////////////////////
 	
@@ -361,6 +385,17 @@ namespace wg
 	{
 		// Do nothing, root ignores size requests.
 	}
+	
+	bool RootPanel::MyHook::_requestFocus( Widget * pWidget )
+	{
+		m_pRoot->_focusRequested( pWidget );
+	}
+	
+	bool RootPanel::MyHook::_releaseFocus( Widget * pWidget )
+	{
+		m_pRoot->_focusReleased( pWidget );
+	}
+	
 	
 	Hook * RootPanel::MyHook::_prevHook() const
 	{

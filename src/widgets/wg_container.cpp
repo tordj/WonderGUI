@@ -143,11 +143,7 @@ namespace wg
 	{
 		Hook * p = _hook();
 		if( p )
-		{
-			RootPanel * r = p->_root();
-			if( r )
-				return r->_focusRequested( p, pWidgetRequesting );
-		}
+			return p->_requestFocus(pWidgetRequesting);
 		return false;
 	}
 	
@@ -157,11 +153,7 @@ namespace wg
 	{
 		Hook * p = _hook();
 		if( p )
-		{
-			RootPanel * r = p->_root();
-			if( r )
-				return r->_focusReleased( p, pWidgetReleasing );
-		}
+			return p->_requestFocus(pWidgetReleasing);
 		return false;
 	}
 	

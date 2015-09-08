@@ -64,6 +64,10 @@
 #	include <wg_msgrouter.h>
 #endif
 
+#ifndef WG_INPUTHANDLER_DOT_H
+#	include <wg_inputhandler.h>
+#endif
+
 #ifdef WG_USE_FREETYPE
 
 typedef struct FT_LibraryRec_  *FT_Library;
@@ -129,29 +133,12 @@ namespace wg
 		static void		setDefaultStyle( const TextStyle_p& pStyle );
 		static TextStyle_p defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 	
-	
-		static void		mapKey( WgKey translated_keycode, int native_keycode );
-		static void		unmapKey( WgKey translated_keycode );
-		static void		clearKeyMap();
-		static WgKey	translateKey( int native_keycode );
-	
-		static bool		setMouseButtonRepeat( int delay, int rate );
-		static bool		setKeyRepeat( int delay, int rate );
-	
-		static int		mouseButtonRepeatDelay() { assert(s_pData!=0); return s_pData->buttonRepeatDelay; }
-		static int		mouseButtonRepeatRate() { assert(s_pData!=0); return s_pData->buttonRepeatRate; }
-	
-		static int		keyRepeatDelay() { assert(s_pData!=0); return s_pData->keyRepeatDelay; }
-		static int		keyRepeatRate() { assert(s_pData!=0); return s_pData->keyRepeatRate; }
-	
-		static bool		setDoubleClickTresholds( int time, int distance );
-		static int		doubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
-		static int		doubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
-	
+		
 		static char *	memStackAlloc( int bytes );
 		static void		memStackRelease( int bytes );
 	
 		static MsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
+		static InputHandler_p	inputHandler() { return s_pData->pInputHandler; }
 	 
 		//____
 	
@@ -165,7 +152,8 @@ namespace wg
 	
 		struct Data
 		{
-			MsgRouter_p	pMsgRouter;
+			MsgRouter_p		pMsgRouter;
+			InputHandler_p	pInputHandler;
 			
 			Textprop_p		pDefaultTextprop;
 			Textprop_p		pDefaultSelectionProp;
@@ -175,19 +163,6 @@ namespace wg
 			Caret2_p			pDefaultCaret;
 			TextPresenter_p	pDefaultPresenter;
 			TextStyle_p		pDefaultStyle;
-	
-			// Settings for keyboard/pointer input
-	
-			int					doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
-			int					doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
-	
-			int					buttonRepeatDelay;
-			int					buttonRepeatRate;
-	
-			int					keyRepeatDelay;
-			int					keyRepeatRate;
-	
-			std::map<int,WgKey>	keycodeMap;		// Maps native keycodes to WgKey.
 	
 			//
 	

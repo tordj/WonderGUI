@@ -444,16 +444,12 @@ namespace wg
 	{
 		// Get message handler, verify that we have a root
 	
-		if( !hook() )
+		if( !hook() || !hook()->_root() )
 			return;
-	
-		MsgRouter * pHandler = hook()->msgRouter().rawPtr();
-		if( !pHandler )
-			return;
-	
+		
 		// Retrieve focused Widget and verify it being a descendant to us.
 	
-		Widget * pFocused = pHandler->keyboardFocus().rawPtr();
+		Widget * pFocused = Base::inputHandler()->focusedWidget().rawPtr();
 	
 		Widget * p = pFocused;
 		while( p && p->parent() && p->parent() != this )
@@ -515,7 +511,7 @@ namespace wg
 	
 		// Switch to previously saved focus, or null if not applicable
 	
-		pHandler->setKeyboardFocus( pSavedFocus );
+		_hook()->parent()->_focusRequested(_hook(), pSavedFocus);
 	}
 	
 	//____ _onNewSize() ___________________________________________________________

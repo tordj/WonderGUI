@@ -58,11 +58,7 @@ namespace wg
 	class RootPanel;
 	typedef	WgStrongPtr<RootPanel,Object_p>		RootPanel_p;
 	typedef	WgWeakPtr<RootPanel,Object_wp>		RootPanel_wp;
-	
-	class MsgRouter;
-	typedef	WgStrongPtr<MsgRouter,Object_p>		MsgRouter_p;
-	typedef	WgWeakPtr<MsgRouter,Object_wp>	MsgRouter_wp;
-	
+		
 	class IWidgets;
 	typedef	WgIStrongPtr<IWidgets,Interface_p>		IWidgets_p;
 	typedef	WgIWeakPtr<IWidgets,Interface_wp>	IWidgets_wp;
@@ -97,7 +93,6 @@ namespace wg
 		Container_p 		parent() const;
 	
 		RootPanel_p		root() const;
-		MsgRouter_p	msgRouter() const;
 	
 	protected:
 	
@@ -115,8 +110,10 @@ namespace wg
 		virtual void	_requestRender( const Rect& rect ) = 0;
 		virtual void	_requestResize() = 0;
 	
-		virtual bool	_requestFocus();
-		virtual bool	_releaseFocus();
+		inline  bool	_requestFocus() { return _requestFocus(m_pWidget); }
+		virtual bool	_requestFocus( Widget * pWidget );					// Request focus on behalf of child/grandchild.
+		inline  bool	_releaseFocus() { return _releaseFocus(m_pWidget); }
+		virtual bool	_releaseFocus( Widget * pWidget );
 	
 		virtual Rect	_windowSection() const { return geo(); }			// Returns the window section within the canvas.
 	

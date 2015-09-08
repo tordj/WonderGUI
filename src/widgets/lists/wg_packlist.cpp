@@ -734,8 +734,8 @@ namespace wg
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				Coord ofs = toLocal(pMsg->pointerPos());
 				Rect headerGeo = _headerGeo();
-				bool bHeaderHovered = headerGeo.contains(ofs) && (!Base::msgRouter()->isAnyMouseButtonPressed() || 
-																 (Base::msgRouter()->isMouseButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
+				bool bHeaderHovered = headerGeo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() || 
+																 (Base::inputHandler()->isButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
 				if( bHeaderHovered != m_header.m_state.isHovered() )
 				{
 					m_header.m_state.setHovered(bHeaderHovered);

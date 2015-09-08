@@ -32,8 +32,21 @@ namespace wg
 	
 	InputHandler::InputHandler()
 	{
-		m_tickRoute = Base::msgRouter()->addRoute( WG_MSG_TICK, this );	
-		m_timeStamp = 0;
+		m_tickRoute 	= Base::msgRouter()->addRoute( WG_MSG_TICK, this );	
+		m_timeStamp 	= 0;
+		m_pointerStyle 	= WG_POINTER_DEFAULT;
+		m_modKeys 		= WG_MODKEY_NONE;
+
+		m_doubleClickTimeTreshold 		= 250;
+		m_doubleClickDistanceTreshold 	= 2;
+	
+		m_buttonRepeatDelay 	= 300;
+		m_buttonRepeatRate 		= 200;
+	
+		m_keyRepeatDelay 		= 300;
+		m_keyRepeatRate 		= 150;
+
+
 		
 		for( int i = 0 ; i < WG_MAX_BUTTONS+1 ; i++ )
 		{
@@ -74,6 +87,86 @@ namespace wg
 			return InputHandler_p( static_cast<InputHandler*>(pObject.rawPtr()) );
 	
 		return 0;
+	}
+	
+	//____ setDoubleClickTresholds() _______________________________________________
+	
+	bool InputHandler::setDoubleClickTresholds( int time, int distance )
+	{
+		if( time <= 0 || distance <= 0 )
+			return false;
+	
+		m_doubleClickTimeTreshold		= time;
+		m_doubleClickDistanceTreshold	= distance;
+		return true;
+	}
+	
+	//____ setButtonRepeat() ______________________________________________________
+	
+	bool InputHandler::setButtonRepeat( int delay, int rate )
+	{
+		if( delay <= 0 || rate <= 0 )
+			return false;
+	
+		m_buttonRepeatDelay	= delay;
+		m_buttonRepeatRate	= rate;
+		return true;
+	}
+	
+	//____ setKeyRepeat() _________________________________________________________
+	
+	bool InputHandler::setKeyRepeat( int delay, int rate )
+	{
+		if( delay <= 0 || rate <= 0 )
+			return false;
+	
+		m_keyRepeatDelay	= delay;
+		m_keyRepeatRate		= rate;
+		return true;
+	}
+	
+	//____ mapKey() _______________________________________________________________
+	
+	void InputHandler::mapKey( WgKey translated_keycode, int native_keycode )
+	{
+		m_keycodeMap[native_keycode] = translated_keycode;
+	}
+	
+	
+	//____ unmapKey() _____________________________________________________________
+	
+	void InputHandler::unmapKey( WgKey translated_keycode )
+	{
+		auto it = m_keycodeMap.begin();
+	
+		while( it != m_keycodeMap.end() )
+		{
+			if( it->second == translated_keycode )
+			{
+				auto it2 = it++;
+				m_keycodeMap.erase(it2);
+			}
+			else
+				++it;
+		}
+	}
+	
+	//____ clearKeyMap() __________________________________________________________
+	
+	void InputHandler::clearKeyMap()
+	{
+		m_keycodeMap.clear();
+	}
+	
+	//____ translateKey() __________________________________________________________
+	
+	WgKey InputHandler::translateKey( int native_keycode )
+	{
+		auto it = m_keycodeMap.find(native_keycode);
+		if( it != m_keycodeMap.end() )
+			return  it->second;
+		else
+			return WG_KEY_UNMAPPED;
 	}
 	
 	//____ setPointer() ___________________________________________________________
@@ -215,18 +308,18 @@ namespace wg
 		//
 		
 		if( bPressed )
-			_processMouseButtonPress( button );
+			_processButtonPress( button );
 		else
-			_processMouseButtonRelease( button );
+			_processButtonRelease( button );
 		
 		m_bButtonPressed[button] = bPressed;
 	}
 	
 	
 	
-	//____ _processMouseButtonPress() ___________________________________________________
+	//____ _processButtonPress() ___________________________________________________
 	
-	void InputHandler::_processMouseButtonPress( WgMouseButton button )
+	void InputHandler::_processButtonPress( WgMouseButton button )
 	{			
 		
 		// Post BUTTON_PRESS events for marked widgets and remember which one we have posted it for
@@ -238,19 +331,16 @@ namespace wg
 	
 		// Handle possible double-click
 	
-		int doubleClickTimeTreshold = Base::doubleClickTimeTreshold();
-		int doubleClickDistanceTreshold = Base::doubleClickDistanceTreshold();
-
 		bool doubleClick = false;
 	
-		if( m_latestPressTimestamps[button] + doubleClickTimeTreshold > m_timeStamp )
+		if( m_latestPressTimestamps[button] + m_doubleClickTimeTreshold > m_timeStamp )
 		{
 			Coord distance = m_pointerPos - m_latestPressPosition[button];
 	
-			if( distance.x <= doubleClickDistanceTreshold &&
-				distance.x >= -doubleClickDistanceTreshold &&
-				distance.y <= doubleClickDistanceTreshold &&
-				distance.y >= -doubleClickDistanceTreshold )
+			if( distance.x <= m_doubleClickDistanceTreshold &&
+				distance.x >= -m_doubleClickDistanceTreshold &&
+				distance.y <= m_doubleClickDistanceTreshold &&
+				distance.y >= -m_doubleClickDistanceTreshold )
 				{
 					if( pWidget && pWidget ==  m_latestPressWidgets[button].rawPtr() )
 						Base::msgRouter()->post( new MouseDoubleClickMsg(button, pWidget) );
@@ -271,9 +361,9 @@ namespace wg
 	
 	
 	
-	//____ _processMouseButtonRelease() _________________________________________________
+	//____ _processButtonRelease() _________________________________________________
 	
-	void InputHandler::_processMouseButtonRelease( WgMouseButton button )
+	void InputHandler::_processButtonRelease( WgMouseButton button )
 	{
 		// Post BUTTON_RELEASE events for widget that was pressed
 	
@@ -294,21 +384,201 @@ namespace wg
 		}	
 	}
 	
+
+	//____ isButtonPressed() _________________________________________________________
 	
-	//____ setFocused() ____________________________________________________________
-	
-	void InputHandler::setFocused( const RootPanel_p& pRoot )
+	bool InputHandler::isButtonPressed( WgMouseButton button ) const
 	{
-		
+		if( button >= 1 && button <= WG_MAX_BUTTONS )
+			return m_bButtonPressed[button];
+	
+		return false;
 	}
 	
+	//____ isAnyButtonPressed() ________________________________________________________
+	
+	bool InputHandler::isAnyButtonPressed() const
+	{
+		for( int i = 0 ; i < WG_MAX_BUTTONS ; i++ )
+			if( m_bButtonPressed[i] )
+				return true;
+	
+		return false;
+	}
+
+	
+	//____ setFocusedWindow() ____________________________________________________________
+	
+	void InputHandler::setFocusedWindow( const RootPanel_p& pRoot )
+	{
+		if( pRoot == m_pFocusedRoot )
+			return;
+			
+		if( m_pFocusedRoot )
+		{
+			Widget * p = m_pFocusedRoot->_focusedChild();
+			if( p )
+				_setUnfocused( p );			
+		}
+		m_pFocusedRoot = pRoot.rawPtr();
+		
+		if( pRoot )
+		{
+			Widget * p = pRoot->_focusedChild();
+
+			if( p )
+				_setFocused( p );
+			else
+				_setFocused( pRoot->widget().rawPtr() );				// Bottom container gets focus per default.			
+		}
+	}
+	
+	//____ _focusChanged() _____________________________________________________
+	
+	bool InputHandler::_focusChanged( Widget * pOldFocused, Widget * pNewFocused )
+	{
+		if( pOldFocused && pOldFocused->hook()->root() == m_pFocusedRoot )
+			_setUnfocused( pOldFocused );
+			
+		if( pNewFocused && pNewFocused->hook()->root() == m_pFocusedRoot )
+			_setFocused( pNewFocused );
+	}
+	
+	//____ _focusedWidget() ____________________________________________________
+
+	Widget * InputHandler::_focusedWidget() const
+	{
+		if( m_pFocusedRoot )
+			return m_pFocusedRoot->_focusedChild();
+		
+		return 0;
+	}
+	
+	//____ _setFocused() _______________________________________________________
+	
+	void InputHandler::_setFocused( Widget * pWidget ) 
+	{
+		FocusGainedMsg * pMsg = new FocusGainedMsg( pWidget );
+		Base::msgRouter()->post( pMsg );
+	}
+
+	//____ _setUnfocused() _______________________________________________________
+	
+	void InputHandler::_setUnfocused( Widget * pWidget ) 
+	{
+		FocusLostMsg * pMsg = new FocusLostMsg( pWidget );
+		Base::msgRouter()->post( pMsg );
+	}
 	
 	//____ setKey() ________________________________________________________________
 	
 	void InputHandler::setKey( short nativeKeyCode, bool bPressed )
 	{
-		
+		if( bPressed )
+			_processKeyPress( nativeKeyCode );
+		else
+			_processKeyRelease( nativeKeyCode );
 	}
+	
+	
+	//____ _processKeyPress() ______________________________________________________
+	
+	void InputHandler::_processKeyPress( short nativeKeyCode )
+	{
+		// Verify that this key isn't already pressed
+		
+		for( auto i : m_keysDown )
+		{
+			if( i.nativeKeyCode == nativeKeyCode )
+				return;
+		}
+
+		//
+		
+		WgKey translatedKeyCode = translateKey(nativeKeyCode);
+		
+		// Create and fill in the info-structure.
+	
+		KeyDownInfo info;
+		info.nativeKeyCode = nativeKeyCode;
+		info.translatedKeyCode = translatedKeyCode;
+		info.pressTimestamp = m_timeStamp;
+		info.pWidget = _focusedWidget();
+
+		m_keysDown.push_back( info );
+
+		// Post KEY_PRESS message
+	
+		Widget * pWidget = _focusedWidget();
+		Base::msgRouter()->post( new KeyPressMsg( nativeKeyCode, translatedKeyCode, pWidget ) );
+		
+		// Update modkeys
+	
+		switch( translatedKeyCode )
+		{
+			case WG_KEY_SHIFT:
+				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
+				break;
+			case WG_KEY_CONTROL:
+				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_CTRL);
+				break;
+			case WG_KEY_ALT:
+				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
+				break;
+			case WG_KEY_SUPER:
+				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
+				break;
+			default:
+				break;
+		}
+	}
+
+
+	//____ _processKeyRelease() ___________________________________________________
+	
+	void InputHandler::_processKeyRelease( short nativeKeyCode )
+	{
+		// Find right KeyDownInfo structure and remove it from m_keysDown.
+	
+		auto it = m_keysDown.begin();
+		while( it != m_keysDown.end() )
+		{
+			if( nativeKeyCode == it->nativeKeyCode )
+			{
+				m_keysDown.erase(it);
+				break;
+			}
+			it++;
+		}
+	
+		// Post KEY_RELEASE message
+	
+		WgKey translatedKeyCode = translateKey(nativeKeyCode);
+
+		Widget * pWidget = _focusedWidget();
+		Base::msgRouter()->post( new KeyReleaseMsg( nativeKeyCode, translatedKeyCode, pWidget ) );
+	
+		// Update modkeys
+	
+		switch( translatedKeyCode )
+		{
+			case WG_KEY_SHIFT:
+				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
+				break;
+			case WG_KEY_CONTROL:
+				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_CTRL);
+				break;
+			case WG_KEY_ALT:
+				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
+				break;
+			case WG_KEY_SUPER:
+				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
+				break;
+			default:
+				break;
+		}
+	}
+	
 	
 	//____ setWheelRoll() __________________________________________________________
 	
@@ -317,6 +587,17 @@ namespace wg
 		if( m_pMarkedWidget )
 			Base::msgRouter()->post( new WheelRollMsg( wheel, distance, m_pMarkedWidget.rawPtr() ) );
 	}
+
+	//____ isKeyPressed() ______________________________________________________
+	
+	bool InputHandler::isKeyPressed( short nativeKeyCode ) const
+	{
+		for( auto key : m_keysDown )
+			if( key.nativeKeyCode == nativeKeyCode )
+				return true;
+
+		return false;	
+	}
 	
 	//____ onMsg() _________________________________________________________________
 	
@@ -324,25 +605,25 @@ namespace wg
 	{
 		
 		if( pMsg->type() == WG_MSG_TICK ) {
-						
-			_handleMouseButtonRepeats( TickMsg::cast(pMsg)->millisec() );
+					
+			int ms = TickMsg::cast(pMsg)->millisec();
+	
+			_handleButtonRepeats( ms );
+			_handleKeyRepeats( ms );
 
-			m_timeStamp += TickMsg::cast(pMsg)->millisec();			
+			m_timeStamp += ms;			
 		}		
 	}
 
-	//____ _handleMouseButtonRepeats() _________________________________________
+	//____ _handleButtonRepeats() _________________________________________
 
-	void InputHandler::_handleMouseButtonRepeats( int millisec )
+	void InputHandler::_handleButtonRepeats( int millisec )
 	{
 		for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
 		{
 			if( m_bButtonPressed[button] )
-			{
-				int buttonDelay = Base::mouseButtonRepeatDelay();
-				int buttonRate = Base::mouseButtonRepeatRate();
-	
-				int msSinceRepeatStart = (int) (m_timeStamp - m_latestPressTimestamps[button] - buttonDelay );
+			{	
+				int msSinceRepeatStart = (int) (m_timeStamp - m_latestPressTimestamps[button] - m_buttonRepeatDelay );
 	
 				// First BUTTON_REPEAT event posted separately.
 	
@@ -359,17 +640,41 @@ namespace wg
 				if( msSinceRepeatStart < 0 )
 					msToProcess = msSinceRepeatStart + millisec;
 				else
-					msToProcess = (msSinceRepeatStart % buttonRate) + millisec;
+					msToProcess = (msSinceRepeatStart % m_buttonRepeatRate) + millisec;
 	
 				// Post the amount of BUTTON_REPEAT that should be posted.
 	
-				while( msToProcess >= buttonRate )
+				while( msToProcess >= m_buttonRepeatRate )
 				{
 					Base::msgRouter()->post( new MouseRepeatMsg((WgMouseButton)button, m_latestPressWidgets[button].rawPtr()) );
-					msToProcess -= buttonRate;
+					msToProcess -= m_buttonRepeatRate;
 				}
 			}
 		}		
+	}
+
+
+	//____ _handleKeyRepeats() _________________________________________
+
+	void InputHandler::_handleKeyRepeats( int millisec )
+	{	
+		for( auto key : m_keysDown )
+		{
+			int time = ((int)(m_timeStamp - key.pressTimestamp)) - m_keyRepeatDelay;
+						
+			if( time < 0 && time + millisec >= 0 )
+			{
+				Base::msgRouter()->post( new KeyRepeatMsg( key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr() ));
+				time = (time+millisec) % m_keyRepeatRate;
+			}
+			else if( time >= 0 )
+				time = (time%m_keyRepeatRate) + millisec;
+			
+			while( time >= m_keyRepeatRate )
+			{				
+				Base::msgRouter()->post( new KeyRepeatMsg( key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr() ));
+				time -= m_keyRepeatRate;			}
+		}	
 	}
 
 

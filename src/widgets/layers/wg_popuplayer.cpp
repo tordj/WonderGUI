@@ -602,51 +602,40 @@ namespace wg
 	
 	void PopupLayer::_stealKeyboardFocus()
 	{
-		// Get event handler, verify that we have a root
+		// Verify that we have a root
 	
-		if( !hook() )
-			return;
-	
-		MsgRouter_p pHandler = hook()->msgRouter();
-		if( !pHandler )
+		if( !hook() || !hook()->root() )
 			return;
 	
 		// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 	
 		if( m_popupHooks.size() < 2 )
-			m_pKeyFocus = pHandler->keyboardFocus().rawPtr();
+			m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 		else
-			m_popupHooks.last()->prev()->m_pKeyFocus = pHandler->keyboardFocus().rawPtr();
+			m_popupHooks.last()->prev()->m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 	
 		// Steal keyboard focus to top menu
 	
 		Widget * pWidget = m_popupHooks.last()->_widget();
-	
-		if( pWidget->isInstanceOf( Panel::CLASSNAME ) && static_cast<Panel*>(pWidget)->isFocusGroup() )
-			pHandler->setFocusGroup(static_cast<Panel*>(pWidget));
-		else
-			pHandler->setKeyboardFocus(pWidget);
+
+		_hook()->parent()->_focusRequested(_hook(), pWidget);
 	}
 	
 	//____ _restoreKeyboardFocus() _________________________________________________
 	
 	void PopupLayer::_restoreKeyboardFocus()
 	{
-		// Get event handler, verify that we have a root
+		// Verify that we have a root
 	
-		if( !hook() )
-			return;
-	
-		MsgRouter_p pHandler = hook()->msgRouter();
-		if( !pHandler )
+		if( !hook() || !hook()->root() )
 			return;
 	
 		//
 	
 		if( m_popupHooks.isEmpty() )
-			pHandler->setKeyboardFocus( m_pKeyFocus.rawPtr() );
+			_hook()->parent()->_focusRequested(_hook(), m_pKeyFocus.rawPtr());
 		else
-			pHandler->setKeyboardFocus( m_popupHooks.last()->m_pKeyFocus.rawPtr() );
+			_hook()->parent()->_focusRequested(_hook(), m_popupHooks.last()->m_pKeyFocus.rawPtr());
 	}
 	
 

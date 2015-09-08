@@ -343,7 +343,7 @@ namespace wg
 			switch( key )
 			{
 				case WG_KEY_SHIFT:
-					if(!pHandler->isMouseButtonPressed(1))
+					if(!Base::inputHandler()->isButtonPressed(WG_BUTTON_LEFT))
 						m_text.setSelectionMode(false);
 				break;
 			}

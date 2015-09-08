@@ -208,9 +208,11 @@ namespace wg
 	
 	const char FocusGainedMsg::CLASSNAME[] = {"FocusGainedMsg"};
 	
-	FocusGainedMsg::FocusGainedMsg()
+	FocusGainedMsg::FocusGainedMsg( Widget * pWidget )
 	{
 		m_type = WG_MSG_FOCUS_GAINED;
+		m_pSource	= pWidget;
+		m_pCopyTo 	= pWidget;
 	}
 	
 	bool FocusGainedMsg::isInstanceOf( const char * pClassName ) const
@@ -239,9 +241,11 @@ namespace wg
 	
 	const char FocusLostMsg::CLASSNAME[] = {"FocusLostMsg"};
 	
-	FocusLostMsg::FocusLostMsg()
+	FocusLostMsg::FocusLostMsg( Widget * pWidget )
 	{
 		m_type = WG_MSG_FOCUS_LOST;
+		m_pSource	= pWidget;
+		m_pCopyTo 	= pWidget;
 	}
 	
 	bool FocusLostMsg::isInstanceOf( const char * pClassName ) const
@@ -590,13 +594,8 @@ namespace wg
 	//____ KeyPressMsg ___________________________________________________________
 	
 	const char KeyPressMsg::CLASSNAME[] = {"KeyPressMsg"};
-	
-	KeyPressMsg::KeyPressMsg( int native_keycode ) : KeyMsg(native_keycode)
-	{
-		m_type 			= WG_MSG_KEY_PRESS;
-	}
-	
-	KeyPressMsg::KeyPressMsg( int native_keycode, Widget * pWidget ) : KeyMsg(native_keycode)
+		
+	KeyPressMsg::KeyPressMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget ) : KeyMsg(nativeKeyCode,translatedKeyCode)
 	{
 		m_type 			= WG_MSG_KEY_PRESS;
 		m_pSource		= pWidget;
@@ -627,13 +626,8 @@ namespace wg
 	//____ KeyRepeatMsg ___________________________________________________________
 	
 	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
-	
-	KeyRepeatMsg::KeyRepeatMsg( int native_keycode ) : KeyMsg(native_keycode)
-	{
-		m_type 			= WG_MSG_KEY_REPEAT;
-	}
-	
-	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, Widget * pWidget ) : KeyMsg(native_keycode)
+		
+	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget ) : KeyMsg(native_keycode, translated_keycode)
 	{
 		m_type 			= WG_MSG_KEY_REPEAT;
 		m_pSource		= pWidget;
@@ -664,13 +658,8 @@ namespace wg
 	//____ KeyReleaseMsg ________________________________________________________
 	
 	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
-	
-	KeyReleaseMsg::KeyReleaseMsg( int native_keycode ) : KeyMsg(native_keycode)
-	{
-		m_type 		= WG_MSG_KEY_RELEASE;
-	}
-	
-	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, Widget * pWidget ) : KeyMsg(native_keycode)
+		
+	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, int translated_keycode, Widget * pWidget ) : KeyMsg(native_keycode,translated_keycode)
 	{
 		m_type 			= WG_MSG_KEY_RELEASE;
 		m_pSource		= pWidget;

@@ -378,7 +378,7 @@ namespace wg
 		bool	isCursorKey() const;
 		bool	isMovementKey() const;
 	protected:
-		KeyMsg( int nativeKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(0) {}
+		KeyMsg( int nativeKeyCode, int translatedKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
 
 		int		m_nativeKeyCode;
 		int		m_translatedKeyCode;
@@ -391,14 +391,14 @@ namespace wg
 		friend class InputHandler;
 		friend class MsgRouter;
 	public:
-		static FocusGainedMsg_p	create() { return new FocusGainedMsg(); }
+		static FocusGainedMsg_p	create( Widget * pWidget ) { return new FocusGainedMsg( pWidget ); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusGainedMsg_p	cast( const Object_p& pObject );
 	protected:
-		FocusGainedMsg();
+		FocusGainedMsg( Widget * pWidget );
 	};
 
 	//____ FocusLostMsg ________________________________________________________
@@ -408,14 +408,14 @@ namespace wg
 		friend class InputHandler;
 		friend class MsgRouter;
 	public:
-		static FocusLostMsg_p	create() { return new FocusLostMsg(); }
+		static FocusLostMsg_p	create( Widget * pWidget ) { return new FocusLostMsg( pWidget ); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusLostMsg_p	cast( const Object_p& pObject );
 	protected:
-		FocusLostMsg();
+		FocusLostMsg( Widget * pWidget );
 	};
 
 	//____ MouseEnterMsg _______________________________________________________
@@ -522,15 +522,12 @@ namespace wg
 		friend class InputHandler;
 		friend class MsgRouter;
 	public:
-		static KeyPressMsg_p			create( int native_keycode ) { return new KeyPressMsg(native_keycode); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static KeyPressMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyPressMsg( int native_keycode );
-		KeyPressMsg( int native_keycode, Widget * pWidget );
+		KeyPressMsg( int native_keycode, int translated_keycode, Widget * pWidget );
 	};
 
 	//____ KeyReleaseMsg _______________________________________________________
@@ -540,15 +537,12 @@ namespace wg
 		friend class InputHandler;
 		friend class MsgRouter;
 	public:
-		static KeyReleaseMsg_p			create( int native_keycode ) { return new KeyReleaseMsg(native_keycode); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static KeyReleaseMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyReleaseMsg( int native_keycode );
-		KeyReleaseMsg( int native_keycode, Widget * pWidget );
+		KeyReleaseMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget );
 	};
 
 	//____ CharacterMsg ________________________________________________________
@@ -1116,8 +1110,7 @@ namespace wg
 		static KeyRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		KeyRepeatMsg( int native_keycode );
-		KeyRepeatMsg( int native_keycode, Widget * pWidget );
+		KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget );
 	};
 
 } // namespace wg

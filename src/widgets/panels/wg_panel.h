@@ -100,10 +100,7 @@ namespace wg
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
 		static Panel_p	cast( const Object_p& pObject );
-	
-		void		setFocusGroup( bool bFocusGroup ) { m_bFocusGroup = bFocusGroup; }
-		bool		isFocusGroup() const { return m_bFocusGroup; }
-	
+		
 		void		setTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
 		bool		isTooltipGroup() const { return m_bTooltipGroup; }
 	
@@ -125,7 +122,6 @@ namespace wg
 		virtual void	_onCloneContent( const Widget * _pOrg );
 	
 	
-		bool		m_bFocusGroup;
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
 		WgMaskOp	m_maskOp;			// Specifies how container masks background.
 	};

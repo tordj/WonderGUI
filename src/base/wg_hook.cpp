@@ -114,16 +114,16 @@ namespace wg
 	
 	//____ _requestFocus() _________________________________________________________
 	
-	bool Hook::_requestFocus()
+	bool Hook::_requestFocus(Widget * pWidget)
 	{
-		return parent()->_focusRequested(this, m_pWidget);
+		return _parent()->_focusRequested(this, pWidget);
 	}
 	
 	//____ _releaseFocus() _________________________________________________________
 	
-	bool Hook::_releaseFocus()
+	bool Hook::_releaseFocus(Widget * pWidget)
 	{
-		return parent()->_focusReleased(this, m_pWidget);
+		return _parent()->_focusReleased(this, pWidget);
 	}
 	
 	//____ root() _________________________________________________________________

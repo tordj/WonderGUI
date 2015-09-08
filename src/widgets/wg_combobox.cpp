@@ -451,7 +451,7 @@ namespace wg
 					switch( pMsg->translatedKeyCode() )
 					{
 						case WG_KEY_SHIFT:
-							if(!Base::msgRouter()->isMouseButtonPressed(1))
+							if(!Base::inputHandler()->isButtonPressed(WG_BUTTON_LEFT))
 								m_text.setSelectionMode(false);
 							_pMsg->swallow();
 						break;

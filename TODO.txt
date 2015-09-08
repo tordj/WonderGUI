@@ -1,4 +1,17 @@
 
+IMPORTANT
+=========
+
+- The rule that "if there is a hook, there is a parent" breaks with RootPanel, what to do?
+	Do nothing, remember that the old rule doesn't apply anymore. Code checked and should be fine.
+
+- LayerModal doesn't block focus requests from children.
+
+
+
+
+
+
 Event System
 ============
 

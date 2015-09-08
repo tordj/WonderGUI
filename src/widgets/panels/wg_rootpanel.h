@@ -67,6 +67,7 @@ namespace wg
 	class RootPanel : public Object
 	{
 		friend class Container;
+		friend class InputHandler;
 	
 	public:
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
@@ -86,10 +87,14 @@ namespace wg
 		bool					setVisible( bool bVisible );
 		bool					isVisible() const { return m_bVisible; }
 	
-		inline Widget_p		widget() const { return m_hook._widget(); }
-		Hook_p				setWidget( const Widget_p& pWidget );
+		Hook_p					setWidget( const Widget_p& pWidget );
+		inline Widget_p			widget() const { return m_hook._widget(); }
 		bool					removeWidget();
 		bool					clear();
+		
+		inline Widget_p			focusedChild() const { return _focusedChild(); }
+		
+		
 	
 		Widget_p				findWidget( const Coord& ofs, WgSearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
@@ -137,6 +142,10 @@ namespace wg
 			void			_requestRender();
 			void			_requestRender( const Rect& rect );
 			void			_requestResize();
+
+			bool			_requestFocus( Widget * pWidget );
+			bool			_releaseFocus( Widget * pWidget );
+
 	
 			Hook *		_prevHook() const;
 			Hook *		_nextHook() const;
@@ -151,8 +160,12 @@ namespace wg
 		Hook*				_firstHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
 		Hook*				_lastHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
 	
-		bool 				_focusRequested( Hook * pBranch, Widget * pWidgetRequesting );
-		bool 				_focusReleased( Hook * pBranch, Widget * pWidgetReleasing );
+		bool 				_focusRequested( Widget * pWidgetRequesting );
+		bool 				_focusReleased( Widget * pWidgetReleasing );
+
+//		void				_setFocusedChild( Widget * pWidget );
+		Widget *			_focusedChild() const;
+
 	
 		Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 		Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
@@ -162,6 +175,8 @@ namespace wg
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;
+		
+		Widget_wp			m_pFocusedChild;
 	};
 	
 	

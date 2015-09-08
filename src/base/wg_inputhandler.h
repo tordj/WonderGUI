@@ -34,8 +34,16 @@
 #	include <wg_widget.h>
 #endif
 
+#ifndef WG_KEY_DOT_H
+#	include <wg_key.h>
+#endif
+
 #ifndef WG_MSG_DOT_H
 #	include <wg_msg.h>
+#endif
+
+#ifndef WG_ROOTPANEL_DOT_H
+#	include <wg_rootpanel.h>
 #endif
 
 namespace wg 
@@ -51,21 +59,56 @@ namespace wg
 	
 	class InputHandler : public Receiver
 	{
+		
+	friend class RootPanel;	
 	public:
 		static InputHandler_p	create() { return new InputHandler(); }
 	
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static InputHandler_p	cast( const Object_p& pObject );
 	
-		void setPointer( const RootPanel_p& pRoot, Coord pos );
-		void setButton( WgMouseButton button, bool bPressed );
-		void setWheelRoll( int wheel, Coord distance );
-		void setFocused( const RootPanel_p& pRoot );
-		void setKey( short nativeKeyCode, bool bPressed );
+		void 		setPointer( const RootPanel_p& pRoot, Coord pos );
+		void 		setButton( WgMouseButton button, bool bPressed );
+		void 		setWheelRoll( int wheel, Coord distance );
+
+		void 		setFocusedWindow( const RootPanel_p& pRoot );
+
+		void 		setKey( short nativeKeyCode, bool bPressed );
 		
-		void onMsg( const Msg_p& pMsg );
+		
+		Widget_p 	focusedWidget() const { return _focusedWidget(); }
+		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
+		
+		bool		isButtonPressed( WgMouseButton button ) const;
+		bool		isAnyButtonPressed() const;
+		
+		bool		isKeyPressed( short nativeKeyCode ) const;
+	
+		
+		void 		onMsg( const Msg_p& pMsg );
+
+
+		void		mapKey( WgKey translated_keycode, int native_keycode );
+		void		unmapKey( WgKey translated_keycode );
+		void		clearKeyMap();
+		WgKey		translateKey( int native_keycode );
+
+		bool		setButtonRepeat( int delay, int rate );
+		bool		setKeyRepeat( int delay, int rate );
+
+		inline int	buttonRepeatDelay() { return m_buttonRepeatDelay; }
+		inline int	buttonRepeatRate() { return m_buttonRepeatRate; }
+
+		inline int	keyRepeatDelay() { return m_keyRepeatDelay; }
+		inline int	keyRepeatRate() { return m_keyRepeatRate; }
+
+		inline bool	setDoubleClickTresholds( int millisec, int pixels );
+		inline int	doubleClickTimeTreshold() { m_doubleClickTimeTreshold; }
+		inline int	doubleClickDistanceTreshold() { m_doubleClickDistanceTreshold; }
+
+
 		
 	protected:
 		InputHandler();
@@ -74,22 +117,34 @@ namespace wg
 		void 		_updateMarkedWidget(bool bPostMouseMoveMsgs);
 		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget );
 	
-		void		_processMouseButtonPress( WgMouseButton button );
-		void		_processMouseButtonRelease( WgMouseButton button );
-	
-		void		_handleMouseButtonRepeats( int millisec );
+		void		_processButtonPress( WgMouseButton button );
+		void		_processButtonRelease( WgMouseButton button );
+		void		_handleButtonRepeats( int millisec );
+
+		void 		_processKeyPress( short nativeKeyCode );
+		void 		_processKeyRelease( short nativeKeyCode );
+		void		_handleKeyRepeats( int millisec );
+		
+
+		bool		_focusChanged( Widget * pOldFocused, Widget * pNewFocused );
 	
 		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
 	
+		void 		_setFocused( Widget * pWidget );
+		void 		_setUnfocused( Widget * pWidget );
+
+		Widget *	_focusedWidget() const;
 	
 	
-		WgRouteId			m_tickRoute;
-		int64_t				m_timeStamp;
+		WgRouteId		m_tickRoute;
+		int64_t			m_timeStamp;
 		
-		Coord				m_pointerPos;
+		Coord			m_pointerPos;
 		
 		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside". 
 		Widget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
+
+		RootPanel_wp	m_pFocusedRoot;		// RootPanel that is focused (has the focused widget).
 	
 		std::vector<Widget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
 		
@@ -100,12 +155,41 @@ namespace wg
 	
 		// Current button states
 	
-		bool					m_bButtonPressed[WG_MAX_BUTTONS+1];
+		bool			m_bButtonPressed[WG_MAX_BUTTONS+1];
 	
-		Widget_wp				m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
-		int64_t					m_latestPressTimestamps[WG_MAX_BUTTONS+1];	// Timestamp of the latest press, for each button.
-		Coord					m_latestPressPosition[WG_MAX_BUTTONS+1];	// Coord of the latest press, for each button.
-		bool					m_latestPressDoubleClick[WG_MAX_BUTTONS+1];	// Set if latest press resulted in a double-click.	
+		Widget_wp		m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
+		int64_t			m_latestPressTimestamps[WG_MAX_BUTTONS+1];	// Timestamp of the latest press, for each button.
+		Coord			m_latestPressPosition[WG_MAX_BUTTONS+1];	// Coord of the latest press, for each button.
+		bool			m_latestPressDoubleClick[WG_MAX_BUTTONS+1];	// Set if latest press resulted in a double-click.	
+
+		// Current key states
+
+
+		struct KeyDownInfo
+		{
+			int			nativeKeyCode;
+			WgKey		translatedKeyCode;
+			int64_t		pressTimestamp;	
+			Widget_wp	pWidget;
+		};
+	
+		std::vector<KeyDownInfo>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
+
+
+		// Settings for keyboard/pointer input
+	
+		int				m_doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
+		int				m_doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
+
+		int				m_buttonRepeatDelay;
+		int				m_buttonRepeatRate;
+
+		int				m_keyRepeatDelay;
+		int				m_keyRepeatRate;
+
+		std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
+	
+
 	};
 	
 	

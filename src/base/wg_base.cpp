@@ -50,25 +50,16 @@ namespace wg
 		assert( s_pData == 0 );
 		assert( sizeof( WeakPtrHub ) == sizeof( Hook_pHub ) );			// Need to be same as we are sharing object stack!
 		s_pData = new Data;
-	
-		s_pData->pMsgRouter = MsgRouter::create();
-	
+		
 		s_pData->pDefaultCursor = 0;
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 	
 		s_pData->pDefaultPresenter = StandardPresenter::create();
 		s_pData->pDefaultStyle = TextStyle::create();
-	
-		s_pData->doubleClickTimeTreshold 		= 250;
-		s_pData->doubleClickDistanceTreshold 	= 2;
-	
-		s_pData->buttonRepeatDelay 	= 300;
-		s_pData->buttonRepeatRate 	= 200;
-	
-		s_pData->keyRepeatDelay 	= 300;
-		s_pData->keyRepeatRate 		= 150;
-	
+		
+		s_pData->pMsgRouter = MsgRouter::create();
+		s_pData->pInputHandler = InputHandler::create();
 	
 	#ifdef WG_USE_FREETYPE
 		s_pData->bFreeTypeInitialized = false;
@@ -238,92 +229,6 @@ namespace wg
 		s_pData->pDefaultCursor = pCursor;
 	}
 	
-	//____ setDoubleClickTresholds() _______________________________________________
-	
-	bool Base::setDoubleClickTresholds( int time, int distance )
-	{
-		assert( s_pData != 0 );
-		if( time <= 0 || distance <= 0 )
-			return false;
-	
-		s_pData->doubleClickTimeTreshold		= time;
-		s_pData->doubleClickDistanceTreshold	= distance;
-		return true;
-	}
-	
-	//____ setMouseButtonRepeat() ______________________________________________________
-	
-	bool Base::setMouseButtonRepeat( int delay, int rate )
-	{
-		assert( s_pData != 0 );
-		if( delay <= 0 || rate <= 0 )
-			return false;
-	
-		s_pData->buttonRepeatDelay	= delay;
-		s_pData->buttonRepeatRate	= rate;
-		return true;
-	}
-	
-	//____ setKeyRepeat() _________________________________________________________
-	
-	bool Base::setKeyRepeat( int delay, int rate )
-	{
-		assert( s_pData != 0 );
-		if( delay <= 0 || rate <= 0 )
-			return false;
-	
-		s_pData->keyRepeatDelay	= delay;
-		s_pData->keyRepeatRate	= rate;
-		return true;
-	}
-	
-	//____ mapKey() _______________________________________________________________
-	
-	void Base::mapKey( WgKey translated_keycode, int native_keycode )
-	{
-		assert( s_pData != 0 );
-		s_pData->keycodeMap[native_keycode] = translated_keycode;
-	}
-	
-	
-	//____ unmapKey() _____________________________________________________________
-	
-	void Base::unmapKey( WgKey translated_keycode )
-	{
-		assert( s_pData != 0 );
-		std::map<int,WgKey>::iterator it = s_pData->keycodeMap.begin();
-	
-		while( it != s_pData->keycodeMap.end() )
-		{
-			if( it->second == translated_keycode )
-			{
-				std::map<int,WgKey>::iterator it2 = it++;
-				s_pData->keycodeMap.erase(it2);
-			}
-			else
-				++it;
-		}
-	}
-	
-	//____ clearKeyMap() __________________________________________________________
-	
-	void Base::clearKeyMap()
-	{
-		assert( s_pData != 0 );
-		s_pData->keycodeMap.clear();
-	}
-	
-	//____ translateKey() __________________________________________________________
-	
-	WgKey Base::translateKey( int native_keycode )
-	{
-		assert( s_pData != 0 );
-		std::map<int,WgKey>::iterator it = s_pData->keycodeMap.find(native_keycode);
-		if( it != s_pData->keycodeMap.end() )
-			return  it->second;
-		else
-			return WG_KEY_UNMAPPED;
-	}
 	
 	//____ memStackAlloc() ________________________________________________________
 	
