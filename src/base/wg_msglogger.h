@@ -79,8 +79,8 @@ namespace wg
 		std::string	_formatTimestamp( int64_t ms ) const;
 		std::string _formatSource( const Msg_p& _pMsg ) const;
 		std::string _formatCopyTo( const Msg_p& _pMsg ) const;
-		std::string _formatModkeys( const Msg_p& _pMsg ) const;
-		std::string _formatPointerPos( const Msg_p& _pMsg ) const;
+		std::string _formatModkeys( const InputMsg_p& _pMsg ) const;
+		std::string _formatPointerPos( const InputMsg_p& _pMsg ) const;
 		std::string _formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const;
 		std::string _formatMouseButton( WgMouseButton button ) const;
 	

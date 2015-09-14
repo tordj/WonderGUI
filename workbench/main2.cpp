@@ -261,7 +261,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 
-	Base::msgRouter()->post( TickMsg::create(tickDiff) );
+	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
 
 	// Process all the SDL events in a loop
 

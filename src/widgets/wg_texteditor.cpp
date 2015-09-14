@@ -201,13 +201,12 @@ namespace wg
 		Widget::_onMsg(pMsg);
 	
 		int type 				= pMsg->type();
-		WgModifierKeys modKeys 	= pMsg->modKeys();
 	
 		if( type == WG_MSG_TICK )
 		{
 			if( isSelectable() && m_state.isFocused() )
 			{
-				m_text.incTime( TickMsg::cast(pMsg)->millisec() );
+				m_text.incTime( TickMsg::cast(pMsg)->timediff() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
 			}
 			return;
@@ -217,13 +216,17 @@ namespace wg
 	
 		if( m_state.isFocused() && (type == WG_MSG_MOUSE_PRESS || type == WG_MSG_MOUSE_DRAG) && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 		{
+			MouseButtonMsg_p p = MouseButtonMsg::cast(pMsg);
+			
+			WgModifierKeys modKeys 	= p->modKeys();
+			Coord pointerPos = p->pointerPos();
 	
 			if( isSelectable() && (modKeys & WG_MODKEY_SHIFT) )
 			{
 				m_text.setSelectionMode(true);
 			}
 	
-			m_text.cursorGotoCoord( pMsg->pointerPos(), globalGeo() );
+			m_text.cursorGotoCoord( pointerPos, globalGeo() );
 	
 			if(isSelectable() && type == WG_MSG_MOUSE_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 			{
@@ -276,7 +279,10 @@ namespace wg
 	
 		if( (type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT) && isEditable() )
 		{
-			switch( KeyMsg::cast(pMsg)->translatedKeyCode() )
+			KeyMsg_p p = KeyMsg::cast(pMsg);
+			WgModifierKeys modKeys = p->modKeys();
+			
+			switch( p->translatedKeyCode() )
 			{
 				case WG_KEY_LEFT:
 					if( modKeys & WG_MODKEY_SHIFT )

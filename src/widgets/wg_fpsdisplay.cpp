@@ -158,7 +158,7 @@ namespace wg
 	
 				m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
 	
-				int msDiff = TickMsg::cast(pMsg)->millisec();
+				int msDiff = TickMsg::cast(pMsg)->timediff();
 				if( msDiff > 0 )
 					m_pTickBuffer[m_tickBufferOfs] = msDiff;
 				else

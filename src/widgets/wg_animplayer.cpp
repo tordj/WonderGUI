@@ -272,7 +272,7 @@ namespace wg
 				if( !m_pAnim || !m_state.isEnabled() )
 					return;
 	
-				m_playPos += TickMsg::cast(pMsg)->millisec() * m_speed;
+				m_playPos += TickMsg::cast(pMsg)->timediff() * m_speed;
 				_playPosUpdated();
 	
 			}

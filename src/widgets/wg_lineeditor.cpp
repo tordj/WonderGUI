@@ -252,7 +252,7 @@ namespace wg
 		{
 			if( _isSelectable() && m_state.isFocused() )
 			{
-				m_text.incTime( TickMsg::cast(pMsg)->millisec() );
+				m_text.incTime( TickMsg::cast(pMsg)->timediff() );
 				_requestRender();					//TODO: Should only render the cursor and selection!
 			}
 			return;
@@ -260,17 +260,19 @@ namespace wg
 	
 		if( (event == WG_MSG_MOUSE_PRESS || event == WG_MSG_MOUSE_DRAG) && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
 		{
+			MouseButtonMsg_p pButtonMsg = MouseButtonMsg::cast(pMsg);
+			
 			if( !m_state.isFocused() )
 				grabFocus();
 	
 			if( m_state.isFocused() )
 			{
-				if( _isSelectable() && (pMsg->modKeys() & WG_MODKEY_SHIFT) )
+				if( _isSelectable() && (pButtonMsg->modKeys() & WG_MODKEY_SHIFT) )
 				{
 					m_text.setSelectionMode(true);
 				}
 	
-				Coord ofs = pMsg->pointerPos() - globalPos();
+				Coord ofs = pButtonMsg->pointerPos() - globalPos();
 				int x = ofs.x + m_viewOfs;
 				int y = 0;
 	
@@ -301,7 +303,7 @@ namespace wg
 					m_text.cursorGotoCoord( Coord(x, 0), Rect(0,0,1000000,1000000) );
 				}
 	
-				if(_isSelectable() && event == WG_MSG_MOUSE_PRESS && !(pMsg->modKeys() & WG_MODKEY_SHIFT))
+				if(_isSelectable() && event == WG_MSG_MOUSE_PRESS && !(pButtonMsg->modKeys() & WG_MODKEY_SHIFT))
 				{
 					m_text.clearSelection();
 					m_text.setSelectionMode(true);
@@ -351,14 +353,15 @@ namespace wg
 	
 		if( (event == WG_MSG_KEY_PRESS || event == WG_MSG_KEY_REPEAT) && _isEditable() && m_state.isFocused() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			KeyMsg_p pKeyMsg = KeyMsg::cast(pMsg);
+			int key = pKeyMsg->translatedKeyCode();
 			switch( key )
 			{
 				case WG_KEY_LEFT:
-					if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+					if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( pMsg->modKeys() & WG_MODKEY_CTRL )
+					if( pKeyMsg->modKeys() & WG_MODKEY_CTRL )
 					{
 						if( m_bPasswordMode )
 							m_text.goBol();
@@ -371,10 +374,10 @@ namespace wg
 					}
 					break;
 				case WG_KEY_RIGHT:
-					if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+					if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( pMsg->modKeys() & WG_MODKEY_CTRL )
+					if( pKeyMsg->modKeys() & WG_MODKEY_CTRL )
 					{
 						if( m_bPasswordMode )
 							m_text.goEol();
@@ -391,7 +394,7 @@ namespace wg
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( (pMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					else if( (pKeyMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
 						m_text.delPrevWord();
 					else
 						m_text.delPrevChar();
@@ -405,7 +408,7 @@ namespace wg
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( (pMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					else if( (pKeyMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
 						m_text.delNextWord();
 					else
 						m_text.delNextChar();
@@ -421,14 +424,14 @@ namespace wg
 					 *	I am not sure if this is the proper way to this, but in my opinion, the default
 					 *	"actions" has to be separated from any modifier key action combination
 					 */
-					switch( pMsg->modKeys() )
+					switch( pKeyMsg->modKeys() )
 					{
 	
 					case WG_MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if(pMsg->modKeys() & WG_MODKEY_SHIFT )
+						if(pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goBol();
@@ -443,14 +446,14 @@ namespace wg
 				 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
 			 		 *	"actions" has to be separated from any modifier key action combination
 					 */
-					switch( pMsg->modKeys() )
+					switch( pKeyMsg->modKeys() )
 					{
 	
 					case WG_MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+						if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goEol();

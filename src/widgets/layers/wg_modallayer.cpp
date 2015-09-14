@@ -548,31 +548,36 @@ namespace wg
 	{
 		Layer::_onMsg(_pMsg);
 	
-		if( !m_modalHooks.isEmpty() && _findWidget( _pMsg->pointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
+		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
 		{
-			switch( _pMsg->type() )
+			InputMsg_p pMsg = InputMsg::cast(_pMsg);
+			
+			if( !m_modalHooks.isEmpty() && _findWidget( pMsg->pointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
 			{
-				case WG_MSG_MOUSE_PRESS:
+				switch( pMsg->type() )
 				{
-					MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-					Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this) );
+					case WG_MSG_MOUSE_PRESS:
+					{
+						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+					}
+					break;
+		
+					case WG_MSG_MOUSE_RELEASE:
+					{
+						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+					}
+					break;
+		
+					case WG_MSG_MOUSE_MOVE:
+					{
+						Base::msgRouter()->post( new ModalMoveOutsideMsg(this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+					}
+					break;
 				}
-				break;
-	
-				case WG_MSG_MOUSE_RELEASE:
-				{
-					MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-					Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this) );
-				}
-				break;
-	
-				case WG_MSG_MOUSE_MOVE:
-				{
-					Base::msgRouter()->post( new ModalMoveOutsideMsg(this) );
-				}
-				break;
 			}
-		}	
+		}
 	}
 	
 

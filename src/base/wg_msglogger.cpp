@@ -94,7 +94,6 @@ namespace wg
 	{
 		m_msgFilter[WG_MSG_MOUSE_ENTER] = false;
 		m_msgFilter[WG_MSG_MOUSE_MOVE] = false;
-		m_msgFilter[WG_MSG_MOUSE_POSITION] = false;
 		m_msgFilter[WG_MSG_MOUSE_LEAVE] = false;
 	}
 	
@@ -104,7 +103,6 @@ namespace wg
 	{
 		m_msgFilter[WG_MSG_MOUSE_ENTER] = true;
 		m_msgFilter[WG_MSG_MOUSE_MOVE] = true;
-		m_msgFilter[WG_MSG_MOUSE_POSITION] = true;
 		m_msgFilter[WG_MSG_MOUSE_LEAVE] = true;
 	}
 	
@@ -215,23 +213,18 @@ namespace wg
 		if( m_msgFilter[_pMsg->type()] == false )
 			return;
 	
-		string	timestamp;
 		string	source;
 		string	copyTo;
-		string	modkeys;
-		string	pointerPos;
 	
 		char	params[256]; params[0] = 0;			// Msg specific parameters
 	
-	
-		timestamp = _formatTimestamp( _pMsg->timestamp() );
-	
+		
 		switch( _pMsg->type() )
 		{
 			case WG_MSG_DUMMY:
 				break;
 			case WG_MSG_TICK:
-				sprintf( params, " millisec=%d", TickMsg::cast(_pMsg)->millisec() );
+				sprintf( params, " millisec=%d", TickMsg::cast(_pMsg)->timediff() );
 				break;
 			case WG_MSG_POINTER_CHANGE:
 				sprintf( params, " style=%s", _formatPointerStyle( PointerChangeMsg::cast(_pMsg)).c_str() );
@@ -239,8 +232,6 @@ namespace wg
 			case WG_MSG_MOUSE_ENTER:
 				break;
 			case WG_MSG_MOUSE_MOVE:
-				break;
-			case WG_MSG_MOUSE_POSITION:
 				break;
 			case WG_MSG_MOUSE_LEAVE:
 				break;
@@ -273,14 +264,11 @@ namespace wg
 				const static char inside[] = "inside";
 				const char * pPress = outside;
 				const char * pRelease = outside;
-	
-				if( pMsg->pressInside() )
-					pPress = inside;
-	
+		
 				if( pMsg->releaseInside() )
 					pRelease = inside;
 	
-				sprintf( params, " button=%s press=%s release=%s", _formatMouseButton(pMsg->button()).c_str(), pPress, pRelease );
+				sprintf( params, " button=%s release=%s", _formatMouseButton(pMsg->button()).c_str(), pRelease );
 				break;
 			}
 			case WG_MSG_MOUSE_CLICK:
@@ -387,10 +375,20 @@ namespace wg
 	
 		source = _formatSource( _pMsg );
 		copyTo = _formatCopyTo( _pMsg );
-		modkeys = _formatModkeys( _pMsg );
-		pointerPos = _formatPointerPos( _pMsg );
-	
-		m_out << timestamp << " - " << _pMsg->className() << " - " << source << copyTo << pointerPos << modkeys << params;
+
+		string	timestamp;
+		string	modkeys;
+		string	pointerPos;
+
+		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
+		{
+			InputMsg_p p = InputMsg::cast(_pMsg);
+			timestamp = _formatTimestamp( p->timestamp() );
+			modkeys = _formatModkeys( p );
+			pointerPos = _formatPointerPos( p );
+		}
+		
+		m_out << " - " << _pMsg->className() << " - " << source << copyTo << pointerPos << modkeys << params;
 		m_out << std::endl;
 	}
 	
@@ -456,7 +454,7 @@ namespace wg
 	
 	//____ _formatModkeys() __________________________________________________________
 	
-	string MsgLogger::_formatModkeys( const Msg_p& _pMsg ) const
+	string MsgLogger::_formatModkeys( const InputMsg_p& _pMsg ) const
 	{
 		WgModifierKeys keys = _pMsg->modKeys();
 	
@@ -474,7 +472,7 @@ namespace wg
 	
 	//____ _formatPointerPos() _____________________________________________________
 	
-	string MsgLogger::_formatPointerPos( const Msg_p& _pMsg ) const
+	string MsgLogger::_formatPointerPos( const InputMsg_p& _pMsg ) const
 	{
 		Coord globalPos = _pMsg->pointerPos();
 	

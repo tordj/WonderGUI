@@ -333,7 +333,6 @@ namespace wg
 		switch( pMsg->type() )
 		{
 			case WG_MSG_MOUSE_MOVE:
-			case WG_MSG_MOUSE_POSITION:
 			case WG_MSG_MOUSE_PRESS:
 			case WG_MSG_MOUSE_REPEAT:
 			case WG_MSG_MOUSE_DRAG:

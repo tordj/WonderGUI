@@ -784,9 +784,7 @@ namespace wg
 		Panel::_onMsg(pMsg);
 		
 		// TODO: Not handle or swallow key-messages if some modifier keys are pressed.
-	
-		Coord mousePos = pMsg->pointerPos() - globalPos();
-	
+		
 		switch( pMsg->type() )
 		{
 			case WG_MSG_TICK:
@@ -795,7 +793,7 @@ namespace wg
 				{
 					TickMsg_p pTick = TickMsg::cast(pMsg);
 	
-					m_selectorCountdown -= pTick->millisec();
+					m_selectorCountdown -= pTick->timediff();
 					if( m_selectorCountdown < 0 )
 					{
 						m_selectorCountdown = 0;
@@ -821,6 +819,8 @@ namespace wg
 			case WG_MSG_MOUSE_ENTER:
 			case WG_MSG_MOUSE_MOVE:
 			{
+				Coord mousePos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+
 				MenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 	
 				Uint32 markedItem = 0;
@@ -865,6 +865,8 @@ namespace wg
 	
 			case WG_MSG_MOUSE_RELEASE:
 			{
+				Coord mousePos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+
 				MenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 				if( pItem )
 					selectItem(pItem);

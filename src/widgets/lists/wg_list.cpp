@@ -200,7 +200,8 @@ namespace wg
 		{
 			case WG_MSG_MOUSE_ENTER:
 			{	
-				ListHook * pEntry = _findEntry(toLocal(_pMsg->pointerPos()));
+				MouseEnterMsg_p pMsg = MouseEnterMsg::cast(_pMsg);
+				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
 				{
 					Rect geo;
@@ -218,7 +219,8 @@ namespace wg
 			}
 			case WG_MSG_MOUSE_LEAVE:
 			{
-				ListHook * pEntry = _findEntry(toLocal(_pMsg->pointerPos()));
+				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
+				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( m_pHoveredEntry && !pEntry )
 				{
 					Rect geo;
@@ -230,7 +232,7 @@ namespace wg
 			}
 			case WG_MSG_MOUSE_PRESS:
 			{
-				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
+				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 				if( m_selectMode != WG_SELECT_NONE && pMsg->button() == WG_BUTTON_LEFT )
 				{
 					Coord ofs = toLocal(pMsg->pointerPos());

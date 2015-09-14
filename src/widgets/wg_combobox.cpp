@@ -232,7 +232,7 @@ namespace wg
 			case WG_MSG_TICK:
 				if( _isEditable() && m_state.isFocused() )
 				{
-					m_text.incTime( TickMsg::cast(_pMsg)->millisec() );
+					m_text.incTime( TickMsg::cast(_pMsg)->timediff() );
 					_requestRender();					//TODO: Should only render the cursor and selection!
 				}
 			break;
@@ -253,9 +253,9 @@ namespace wg
 					m_state.setHovered(false);
 				break;
 	
-			case WG_MSG_MOUSE_POSITION:
+			case WG_MSG_MOUSE_MOVE:
 			{
-				Coord pos = MousePositionMsg::cast(_pMsg)->pointerPos() - globalPos();
+				Coord pos = MouseMoveMsg::cast(_pMsg)->pointerPos() - globalPos();
 				Rect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): Rect( 0,0, size() );
 	
 				if( _isSelectable() && inputRect.contains( pos ) )

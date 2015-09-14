@@ -46,6 +46,23 @@
 #	include <wg_rootpanel.h>
 #endif
 
+
+/* LEFT TO DO:
+ * 
+ * Remove timestamp, modkeys and pointer pos from Msg-class.
+ * Base class InputMsg with modkeys and pointer position.
+ * 
+ * MsgRouter friend only on Msg baseclass?
+ * Remove unnecessary Msg constructors.
+ * 
+ * 
+ * Optional timestamp on calls to input?
+ * 
+ * Automatic garbage collection on msgRouter.
+ * 
+ */
+
+
 namespace wg 
 {
 	
@@ -69,13 +86,13 @@ namespace wg
 		static const char		CLASSNAME[];
 		static InputHandler_p	cast( const Object_p& pObject );
 	
-		void 		setPointer( const RootPanel_p& pRoot, Coord pos );
-		void 		setButton( WgMouseButton button, bool bPressed );
-		void 		setWheelRoll( int wheel, Coord distance );
+		void 		setPointer( const RootPanel_p& pRoot, Coord pos, int64_t timestamp = 0 );
+		void 		setButton( WgMouseButton button, bool bPressed, int64_t timestamp = 0 );
+		void 		setWheelRoll( int wheel, Coord distance, int64_t timestamp = 0 );
 
 		void 		setFocusedWindow( const RootPanel_p& pRoot );
 
-		void 		setKey( short nativeKeyCode, bool bPressed );
+		void 		setKey( short nativeKeyCode, bool bPressed, int64_t timestamp = 0 );
 		
 		
 		Widget_p 	focusedWidget() const { return _focusedWidget(); }
@@ -114,16 +131,15 @@ namespace wg
 		InputHandler();
 		~InputHandler();
 	
-		void 		_updateMarkedWidget(bool bPostMouseMoveMsgs);
-		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget );
+		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp );
 	
-		void		_processButtonPress( WgMouseButton button );
-		void		_processButtonRelease( WgMouseButton button );
-		void		_handleButtonRepeats( int millisec );
+		void		_processButtonPress( WgMouseButton button, int64_t timestamp );
+		void		_processButtonRelease( WgMouseButton button, int64_t timestamp );
+		void		_handleButtonRepeats( int64_t timestamp );
 
-		void 		_processKeyPress( short nativeKeyCode );
-		void 		_processKeyRelease( short nativeKeyCode );
-		void		_handleKeyRepeats( int millisec );
+		void 		_processKeyPress( short nativeKeyCode, int64_t timestamp );
+		void 		_processKeyRelease( short nativeKeyCode, int64_t timestamp );
+		void		_handleKeyRepeats( int64_t timestamp );
 		
 
 		bool		_focusChanged( Widget * pOldFocused, Widget * pNewFocused );

@@ -801,7 +801,7 @@ namespace wg
 		_viewToPosLen( &handlePos, &handleLen );
 	
 		MsgRouter_p	pHandler = Base::msgRouter();
-		Coord pos = pMsg->pointerPos() - globalPos();
+		Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 	
 		int		pointerOfs;
 		int		length;

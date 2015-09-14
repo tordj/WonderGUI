@@ -319,7 +319,7 @@ namespace wg
 			case WG_MSG_MOUSE_MOVE:
 			case WG_MSG_MOUSE_PRESS:
 			{
-				Coord pos = pMsg->pointerPos() - globalPos();
+				Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 	
 				Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
 	

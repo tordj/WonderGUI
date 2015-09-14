@@ -91,6 +91,11 @@ namespace wg
 	typedef	WgStrongPtr<Msg,Object_p>		Msg_p;
 	typedef	WgWeakPtr<Msg,Object_wp>	Msg_wp;
 
+	class InputMsg;
+	typedef	WgStrongPtr<InputMsg,Msg_p>		InputMsg_p;
+	typedef	WgWeakPtr<InputMsg,Msg_wp>	InputMsg_wp;
+
+
 	class FocusGainedMsg;
 	typedef	WgStrongPtr<FocusGainedMsg,Msg_p>		FocusGainedMsg_p;
 	typedef	WgWeakPtr<FocusGainedMsg,Msg_wp>	FocusGainedMsg_wp;
@@ -100,24 +105,20 @@ namespace wg
 	typedef	WgWeakPtr<FocusLostMsg,Msg_wp>	FocusLostMsg_wp;
 
 	class MouseEnterMsg;
-	typedef	WgStrongPtr<MouseEnterMsg,Msg_p>		MouseEnterMsg_p;
-	typedef	WgWeakPtr<MouseEnterMsg,Msg_wp>	MouseEnterMsg_wp;
+	typedef	WgStrongPtr<MouseEnterMsg,InputMsg_p>		MouseEnterMsg_p;
+	typedef	WgWeakPtr<MouseEnterMsg,InputMsg_wp>	MouseEnterMsg_wp;
 
 	class MouseLeaveMsg;
-	typedef	WgStrongPtr<MouseLeaveMsg,Msg_p>		MouseLeaveMsg_p;
-	typedef	WgWeakPtr<MouseLeaveMsg,Msg_wp>	MouseLeaveMsg_wp;
+	typedef	WgStrongPtr<MouseLeaveMsg,InputMsg_p>		MouseLeaveMsg_p;
+	typedef	WgWeakPtr<MouseLeaveMsg,InputMsg_wp>	MouseLeaveMsg_wp;
 
 	class MouseMoveMsg;
-	typedef	WgStrongPtr<MouseMoveMsg,Msg_p>		MouseMoveMsg_p;
-	typedef	WgWeakPtr<MouseMoveMsg,Msg_wp>	MouseMoveMsg_wp;
-
-	class MousePositionMsg;
-	typedef	WgStrongPtr<MousePositionMsg,Msg_p>		MousePositionMsg_p;
-	typedef	WgWeakPtr<MousePositionMsg,Msg_wp>	MousePositionMsg_wp;
+	typedef	WgStrongPtr<MouseMoveMsg,InputMsg_p>		MouseMoveMsg_p;
+	typedef	WgWeakPtr<MouseMoveMsg,InputMsg_wp>		MouseMoveMsg_wp;
 
 	class MouseButtonMsg;
-	typedef	WgStrongPtr<MouseButtonMsg,Msg_p>		MouseButtonMsg_p;
-	typedef	WgWeakPtr<MouseButtonMsg,Msg_wp>	MouseButtonMsg_wp;
+	typedef	WgStrongPtr<MouseButtonMsg,InputMsg_p>		MouseButtonMsg_p;
+	typedef	WgWeakPtr<MouseButtonMsg,InputMsg_wp>	MouseButtonMsg_wp;
 
 	class MousePressMsg;
 	typedef	WgStrongPtr<MousePressMsg,MouseButtonMsg_p>		MousePressMsg_p;
@@ -144,8 +145,8 @@ namespace wg
 	typedef	WgWeakPtr<MouseDragMsg,MouseButtonMsg_wp>	MouseDragMsg_wp;
 
 	class KeyMsg;
-	typedef	WgStrongPtr<KeyMsg,Msg_p>		KeyMsg_p;
-	typedef	WgWeakPtr<KeyMsg,Msg_wp>	KeyMsg_wp;
+	typedef	WgStrongPtr<KeyMsg,InputMsg_p>		KeyMsg_p;
+	typedef	WgWeakPtr<KeyMsg,InputMsg_wp>	KeyMsg_wp;
 
 	class KeyPressMsg;
 	typedef	WgStrongPtr<KeyPressMsg,KeyMsg_p>		KeyPressMsg_p;
@@ -164,8 +165,8 @@ namespace wg
 	typedef	WgWeakPtr<CharacterMsg,Msg_wp>	CharacterMsg_wp;
 
 	class WheelRollMsg;
-	typedef	WgStrongPtr<WheelRollMsg,Msg_p>		WheelRollMsg_p;
-	typedef	WgWeakPtr<WheelRollMsg,Msg_wp>	WheelRollMsg_wp;
+	typedef	WgStrongPtr<WheelRollMsg,InputMsg_p>		WheelRollMsg_p;
+	typedef	WgWeakPtr<WheelRollMsg,InputMsg_wp>	WheelRollMsg_wp;
 
 	class TickMsg;
 	typedef	WgStrongPtr<TickMsg,Msg_p>		TickMsg_p;
@@ -295,22 +296,19 @@ namespace wg
 			bool				isInstanceOf( const char * pClassName ) const;
 			const char *		className( void ) const;
 			static const char	CLASSNAME[];
-			static Msg_p	cast( const Object_p& pObject );
+			static Msg_p		cast( const Object_p& pObject );
 
-			MsgType			type() const { return m_type; }
-			int64_t				timestamp() const { return m_timestamp; }
+			MsgType				type() const { return m_type; }
 			bool				hasSource() const { return m_pSource; } 
 			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-			Object_wp		source() const { return m_pSource; } 
-			WgModifierKeys		modKeys() const { return m_modKeys; }
-			Coord				pointerPos() const { return m_pointerPos; }
+			Object_wp			source() const { return m_pSource; } 
 				
 			bool				isMouseMsg() const;
 			bool				isMouseButtonMsg() const;
 			bool				isKeyMsg() const;
 
 			bool				hasCopyTo() { return m_pCopyTo; }
-			Receiver_p		getCopyTo() { return m_pCopyTo; }
+			Receiver_p			getCopyTo() { return m_pCopyTo; }
 			bool				hasRepost() { return m_pRepostSource; }
 
 			void				setCopyTo( const Receiver_p& pReceiver );
@@ -319,19 +317,45 @@ namespace wg
 			bool				doRepost();
 
 		protected:
-			Msg() : m_type(WG_MSG_DUMMY), m_modKeys(WG_MODKEY_NONE), m_timestamp(0) {}
+			Msg() : m_type(WG_MSG_DUMMY) {}
 			virtual ~Msg() {}
 			
-			MsgType			m_type;				// Type of message
-			int64_t				m_timestamp;		// Timestamp of posting this message.
+			MsgType				m_type;				// Type of message
 			Object_p			m_pSource;			// The source of this message, if any.
-			Receiver_p		m_pCopyTo;			// Receiver to receive a copy of this message, if any.
+			Receiver_p			m_pCopyTo;			// Receiver to receive a copy of this message, if any.
 			Object_p			m_pRepostSource;	// Object to repost this message from, if any.
-			Receiver_p		m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.
+			Receiver_p			m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.
 
-			WgModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
-			Coord				m_pointerPos;		// Screen position of pointer.
 	};
+
+
+	//____ InputMsg ______________________________________________________
+	/**
+	 * @brief Base class for all mouse and key messages.
+	 * 
+	 */
+
+	class InputMsg : public Msg
+	{
+		friend class InputHandler;
+	public:
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static InputMsg_p	cast( const Object_p& pObject );
+
+		int64_t				timestamp() const { return m_timestamp; }
+		WgModifierKeys		modKeys() const { return m_modKeys; }
+		Coord				pointerPos() const { return m_pointerPos; }
+
+	protected:
+		InputMsg(WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
+
+		WgModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
+		Coord				m_pointerPos;		// Screen position of pointer.
+		int64_t				m_timestamp;		// Timestamp of input event.
+	};
+
 
 	//____ MouseButtonMsg ______________________________________________________
 	/**
@@ -339,10 +363,9 @@ namespace wg
 	 * 
 	 */
 
-	class MouseButtonMsg : public Msg
+	class MouseButtonMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -351,10 +374,11 @@ namespace wg
 
 		WgMouseButton		button() const { return m_button; }
 	protected:
-		MouseButtonMsg(WgMouseButton button) : m_button(button) {}
+		MouseButtonMsg(WgMouseButton button, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
 
 		WgMouseButton		m_button;
 	};
+
 
 	//____ KeyMsg ______________________________________________________________
 	/**
@@ -363,22 +387,21 @@ namespace wg
 	 * Base class for all keyboard messages.
 	 */
 
-	class KeyMsg : public Msg
+	class KeyMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static KeyMsg_p	cast( const Object_p& pObject );
+		static KeyMsg_p		cast( const Object_p& pObject );
 
 		int		nativeKeyCode() const { return m_nativeKeyCode; }
 		int		translatedKeyCode() const { return m_translatedKeyCode; }
 		bool	isCursorKey() const;
 		bool	isMovementKey() const;
 	protected:
-		KeyMsg( int nativeKeyCode, int translatedKeyCode ) : m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
+		KeyMsg( int nativeKeyCode, int translatedKeyCode, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
 
 		int		m_nativeKeyCode;
 		int		m_translatedKeyCode;
@@ -420,56 +443,44 @@ namespace wg
 
 	//____ MouseEnterMsg _______________________________________________________
 
-	class MouseEnterMsg : public Msg
+	class MouseEnterMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static MouseEnterMsg_p			create( const Coord& pos ) { return new MouseEnterMsg(pos); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseEnterMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseEnterMsg( const Coord& pos );
-		MouseEnterMsg( Widget * pWidget );
+		MouseEnterMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseLeaveMsg _______________________________________________________
 
-	class MouseLeaveMsg : public Msg
+	class MouseLeaveMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static MouseLeaveMsg_p			create() { return new MouseLeaveMsg(); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseLeaveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseLeaveMsg();
-		MouseLeaveMsg( Widget * pWidget );
+		MouseLeaveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseMoveMsg ________________________________________________________
 
-	class MouseMoveMsg : public Msg
+	class MouseMoveMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static MouseMoveMsg_p			create( const Coord& pos ) { return new MouseMoveMsg(pos); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseMoveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseMoveMsg( Widget * pWidget );
-		MouseMoveMsg( const Coord& pos );
+		MouseMoveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MousePressMsg _______________________________________________________
@@ -477,17 +488,13 @@ namespace wg
 	class MousePressMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static MousePressMsg_p			create( WgMouseButton button ) { return new MousePressMsg(button); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MousePressMsg_p	cast( const Object_p& pObject );
 	protected:
-		MousePressMsg( WgMouseButton button, Widget * pWidget );
-		MousePressMsg( WgMouseButton button );
+		MousePressMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseReleaseMsg _____________________________________________________
@@ -495,23 +502,18 @@ namespace wg
 	class MouseReleaseMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static MouseReleaseMsg_p		create( WgMouseButton button ) { return new MouseReleaseMsg(button); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseReleaseMsg_p	cast( const Object_p& pObject );
 
-		bool			pressInside() const;
 		bool			releaseInside() const;
 
 	protected:
 		MouseReleaseMsg( WgMouseButton button );
-		MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bPressInside, bool bReleaseInside );
+		MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
-		bool			m_bPressInside;
 		bool			m_bReleaseInside;
 	};
 
@@ -520,14 +522,13 @@ namespace wg
 	class KeyPressMsg : public KeyMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static KeyPressMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyPressMsg( int native_keycode, int translated_keycode, Widget * pWidget );
+		KeyPressMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ KeyReleaseMsg _______________________________________________________
@@ -535,14 +536,13 @@ namespace wg
 	class KeyReleaseMsg : public KeyMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static KeyReleaseMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyReleaseMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget );
+		KeyReleaseMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ CharacterMsg ________________________________________________________
@@ -569,13 +569,10 @@ namespace wg
 
 	//____ WheelRollMsg ________________________________________________________
 
-	class WheelRollMsg : public Msg
+	class WheelRollMsg : public InputMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static WheelRollMsg_p			create( int wheel, Coord distance ) { return new WheelRollMsg(wheel,distance); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -585,7 +582,7 @@ namespace wg
 		Coord		distance() const;
 	protected:
 		WheelRollMsg( int wheel, Coord distance );
-		WheelRollMsg( int wheel, Coord distance, Widget * pWidget );
+		WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		int			m_wheel;
 		Coord		m_distance;
@@ -595,22 +592,21 @@ namespace wg
 
 	class TickMsg : public Msg
 	{
-		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static TickMsg_p				create( int ms ) { return new TickMsg(ms); }
+		static TickMsg_p	create( int64_t timestamp, int timediff ) { return new TickMsg(timestamp, timediff); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TickMsg_p	cast( const Object_p& pObject );
 
-		int				millisec() const;
+		inline int			timediff() const { return m_timediff; }
+		inline int64_t		timestamp() const { return m_timestamp; }
 	protected:
-		TickMsg( int ms );
-		TickMsg( int ms, Receiver * pReceiver );
+		TickMsg( int64_t timestamp, int ms );
 
-		int			m_millisec;
+		int64_t		m_timestamp;
+		int			m_timediff;
 	};
 
 	//____ PointerChangeMsg ____________________________________________________
@@ -618,7 +614,6 @@ namespace wg
 	class PointerChangeMsg : public Msg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -865,7 +860,7 @@ namespace wg
 
 	//____ WidgetModalLayer messages _________________________________________________
 
-	class ModalMoveOutsideMsg : public Msg
+	class ModalMoveOutsideMsg : public InputMsg
 	{
 		friend class ModalLayer;
 	public:
@@ -875,7 +870,7 @@ namespace wg
 		static ModalMoveOutsideMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalMoveOutsideMsg( Widget * pWidget );
+		ModalMoveOutsideMsg( Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedPressMsg : public MouseButtonMsg
@@ -888,7 +883,7 @@ namespace wg
 		static ModalBlockedPressMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedPressMsg( WgMouseButton button, Widget * pModalWidget );
+		ModalBlockedPressMsg( WgMouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedReleaseMsg : public MouseButtonMsg
@@ -901,7 +896,7 @@ namespace wg
 		static ModalBlockedReleaseMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedReleaseMsg( WgMouseButton button, Widget * pModalWidget );
+		ModalBlockedReleaseMsg( WgMouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ Link messages _________________________________________________________
@@ -1019,26 +1014,11 @@ namespace wg
 
 	//____ Internally posted messages ____________________________________________
 
-	class MousePositionMsg : public Msg
-	{
-		friend class MsgRouter;
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static MousePositionMsg_p	cast( const Object_p& pObject );
-
-	protected:
-		MousePositionMsg();
-	};
-
 	class MouseDragMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	protected:
-		MouseDragMsg( WgMouseButton button, const Coord& startPos, const Coord& prevPos, const Coord& currPos );
-		MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, const Coord& currPos );
+		MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -1053,41 +1033,37 @@ namespace wg
 	protected:
 		Coord			m_startPos;
 		Coord			m_prevPos;
-		Coord			m_currPos;
 	};
 
 	class MouseRepeatMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
-	protected:
-		MouseRepeatMsg( WgMouseButton button, Widget * pWidget );
-		MouseRepeatMsg( WgMouseButton button );
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseRepeatMsg_p	cast( const Object_p& pObject );
+
+	protected:
+		MouseRepeatMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseClickMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
-	protected:
-		MouseClickMsg( WgMouseButton button );
-		MouseClickMsg( WgMouseButton button, Widget * pWidget );
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseClickMsg_p	cast( const Object_p& pObject );
+
+	protected:
+		MouseClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -1095,14 +1071,12 @@ namespace wg
 		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseDoubleClickMsg( WgMouseButton button );
-		MouseDoubleClickMsg( WgMouseButton button, Widget * pWidget );
+		MouseDoubleClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class KeyRepeatMsg : public KeyMsg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -1110,7 +1084,7 @@ namespace wg
 		static KeyRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget );
+		KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 } // namespace wg

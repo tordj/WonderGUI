@@ -208,7 +208,7 @@ namespace wg
 						TickMsg_p pTick = TickMsg::cast(pMsg);
 	
 						GfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
-						m_animTimer += pTick->millisec();
+						m_animTimer += pTick->timediff();
 						GfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
 	
 						// RequestRender if animation has moved.

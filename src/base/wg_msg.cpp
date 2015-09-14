@@ -103,7 +103,6 @@ namespace wg
 			m_type == WG_MSG_MOUSE_ENTER ||
 			m_type == WG_MSG_MOUSE_LEAVE ||	
 			m_type == WG_MSG_MOUSE_MOVE ||	
-			m_type == WG_MSG_MOUSE_POSITION ||
 			isMouseButtonMsg() )
 			return true;
 		else
@@ -133,6 +132,33 @@ namespace wg
 		else
 			return false;
 	}
+
+	//____ InputMsg __________________________________________________________
+	
+	const char InputMsg::CLASSNAME[] = {"InputMsg"};
+	
+	bool InputMsg::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return Msg::isInstanceOf(pClassName);
+	}
+	
+	const char * InputMsg::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	InputMsg_p InputMsg::cast( const Object_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return InputMsg_p( static_cast<InputMsg*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+	
+
 	
 	//____ KeyMsg ____________________________________________________________
 	
@@ -143,7 +169,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * KeyMsg::className( void ) const
@@ -187,7 +213,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * MouseButtonMsg::className( void ) const
@@ -273,15 +299,8 @@ namespace wg
 	//____ MouseEnterMsg _______________________________________________________
 	
 	const char MouseEnterMsg::CLASSNAME[] = {"MouseEnterMsg"};
-	
-	MouseEnterMsg::MouseEnterMsg( const Coord& pos )
-	{
-		m_type = WG_MSG_MOUSE_ENTER;
-	
-		m_pointerPos = pos;
-	}
-	
-	MouseEnterMsg::MouseEnterMsg( Widget * pWidget )
+		
+	MouseEnterMsg::MouseEnterMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = WG_MSG_MOUSE_ENTER;
 		m_pSource	= pWidget;
@@ -293,7 +312,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * MouseEnterMsg::className( void ) const
@@ -313,13 +332,8 @@ namespace wg
 	//____ MouseLeaveMsg ________________________________________________________
 	
 	const char MouseLeaveMsg::CLASSNAME[] = {"MouseLeaveMsg"};
-	
-	MouseLeaveMsg::MouseLeaveMsg()
-	{
-		m_type = WG_MSG_MOUSE_LEAVE;
-	}
-	
-	MouseLeaveMsg::MouseLeaveMsg( Widget * pWidget )
+		
+	MouseLeaveMsg::MouseLeaveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = WG_MSG_MOUSE_LEAVE;
 		m_pSource		= pWidget;
@@ -331,7 +345,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * MouseLeaveMsg::className( void ) const
@@ -350,15 +364,8 @@ namespace wg
 	//____ MouseMoveMsg __________________________________________________________
 	
 	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
-	
-	MouseMoveMsg::MouseMoveMsg( const Coord& pos )
-	{
-		m_type = WG_MSG_MOUSE_MOVE;
-	
-		m_pointerPos = pos;
-	}
-	
-	MouseMoveMsg::MouseMoveMsg( Widget * pWidget )
+		
+	MouseMoveMsg::MouseMoveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = WG_MSG_MOUSE_MOVE;
 		m_pSource		= pWidget;
@@ -370,7 +377,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * MouseMoveMsg::className( void ) const
@@ -390,13 +397,8 @@ namespace wg
 	//____ MousePressMsg ______________________________________________________
 	
 	const char MousePressMsg::CLASSNAME[] = {"MousePressMsg"};
-	
-	MousePressMsg::MousePressMsg( WgMouseButton button ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_PRESS;
-	}
-	
-	MousePressMsg::MousePressMsg( WgMouseButton button, Widget * pWidget ) : MouseButtonMsg(button)
+		
+	MousePressMsg::MousePressMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= WG_MSG_MOUSE_PRESS;
 		m_pSource		= pWidget;
@@ -427,13 +429,8 @@ namespace wg
 	//____ MouseRepeatMsg ______________________________________________________
 	
 	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
-	
-	MouseRepeatMsg::MouseRepeatMsg( WgMouseButton button ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_REPEAT;
-	}
-	
-	MouseRepeatMsg::MouseRepeatMsg( WgMouseButton button, Widget * pWidget ) : MouseButtonMsg(button)
+		
+	MouseRepeatMsg::MouseRepeatMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= WG_MSG_MOUSE_REPEAT;
 		m_pSource		= pWidget;
@@ -466,21 +463,13 @@ namespace wg
 	
 	const char MouseReleaseMsg::CLASSNAME[] = {"MouseReleaseMsg"};
 	
-	MouseReleaseMsg::MouseReleaseMsg( WgMouseButton button ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_RELEASE;
 	
-		m_bReleaseInside = true;			// Always assumed to have had the press inside our window.
-		m_bReleaseInside = true;			// Always assumed to be inside our window now.
-	}
-	
-	MouseReleaseMsg::MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bPressInside, bool bReleaseInside ) : MouseButtonMsg(button)
+	MouseReleaseMsg::MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= WG_MSG_MOUSE_RELEASE;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	
-		m_bPressInside = bPressInside;
 		m_bReleaseInside = bReleaseInside;
 	}
 	
@@ -504,12 +493,7 @@ namespace wg
 	
 		return 0;
 	}
-	
-	bool MouseReleaseMsg::pressInside() const
-	{
-		return m_bPressInside;
-	}
-	
+		
 	bool MouseReleaseMsg::releaseInside() const
 	{
 		return m_bReleaseInside;
@@ -520,13 +504,8 @@ namespace wg
 	//____ MouseClickMsg _____________________________________________________
 	
 	const char MouseClickMsg::CLASSNAME[] = {"MouseClickMsg"};
-	
-	MouseClickMsg::MouseClickMsg( WgMouseButton button ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_CLICK;
-	}
-	
-	MouseClickMsg::MouseClickMsg( WgMouseButton button, Widget * pWidget ) : MouseButtonMsg(button)
+		
+	MouseClickMsg::MouseClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type = WG_MSG_MOUSE_CLICK;
 		m_pSource		= pWidget;
@@ -558,12 +537,7 @@ namespace wg
 	
 	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
 	
-	MouseDoubleClickMsg::MouseDoubleClickMsg( WgMouseButton button ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_DOUBLE_CLICK;
-	}
-	
-	MouseDoubleClickMsg::MouseDoubleClickMsg( WgMouseButton button, Widget * pWidget ) : MouseButtonMsg(button)
+	MouseDoubleClickMsg::MouseDoubleClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type = WG_MSG_MOUSE_DOUBLE_CLICK;
 		m_pSource		= pWidget;
@@ -595,7 +569,7 @@ namespace wg
 	
 	const char KeyPressMsg::CLASSNAME[] = {"KeyPressMsg"};
 		
-	KeyPressMsg::KeyPressMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget ) : KeyMsg(nativeKeyCode,translatedKeyCode)
+	KeyPressMsg::KeyPressMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= WG_MSG_KEY_PRESS;
 		m_pSource		= pWidget;
@@ -627,7 +601,7 @@ namespace wg
 	
 	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
 		
-	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget ) : KeyMsg(native_keycode, translated_keycode)
+	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= WG_MSG_KEY_REPEAT;
 		m_pSource		= pWidget;
@@ -659,7 +633,7 @@ namespace wg
 	
 	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
 		
-	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, int translated_keycode, Widget * pWidget ) : KeyMsg(native_keycode,translated_keycode)
+	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= WG_MSG_KEY_RELEASE;
 		m_pSource		= pWidget;
@@ -735,15 +709,8 @@ namespace wg
 	//____ WheelRollMsg __________________________________________________________
 	
 	const char WheelRollMsg::CLASSNAME[] = {"WheelRollMsg"};
-	
-	WheelRollMsg::WheelRollMsg( int wheel, Coord distance )
-	{
-		m_type = WG_MSG_WHEEL_ROLL;
-		m_wheel = wheel;
-		m_distance = distance;
-	}
-	
-	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget )
+		
+	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( modKeys, pointerPos, timestamp )
 	{
 		m_type			= WG_MSG_WHEEL_ROLL;
 		m_wheel			= wheel;
@@ -767,7 +734,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * WheelRollMsg::className( void ) const
@@ -787,24 +754,13 @@ namespace wg
 	
 	const char TickMsg::CLASSNAME[] = {"TickMsg"};
 	
-	TickMsg::TickMsg( int ms )
+	TickMsg::TickMsg( int64_t timestamp, int timediff )
 	{
 		m_type = WG_MSG_TICK;
-		m_millisec = ms;
+		m_timestamp = timestamp;
+		m_timediff = timediff;
 	}
-	
-	TickMsg::TickMsg( int ms, Receiver * pReceiver )
-	{
-		m_type 			= WG_MSG_TICK;
-		m_millisec 		= ms;
-		m_pCopyTo 		= pReceiver;
-	}
-		
-	int TickMsg::millisec() const
-	{
-		return m_millisec;
-	}
-	
+				
 	bool TickMsg::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
@@ -1339,7 +1295,7 @@ namespace wg
 	
 	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
 	
-	ModalMoveOutsideMsg::ModalMoveOutsideMsg( Widget * pSource )
+	ModalMoveOutsideMsg::ModalMoveOutsideMsg( Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys, pointerPos, timestamp)
 	{
 		m_type = WG_MSG_MODAL_MOVE_OUTSIDE;
 		m_pSource		= pSource;
@@ -1350,7 +1306,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return InputMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * ModalMoveOutsideMsg::className( void ) const
@@ -1371,7 +1327,7 @@ namespace wg
 	
 	const char ModalBlockedPressMsg::CLASSNAME[] = {"ModalBlockedPressMsg"};
 	
-	ModalBlockedPressMsg::ModalBlockedPressMsg( WgMouseButton button, Widget * pSource ) : MouseButtonMsg(button)
+	ModalBlockedPressMsg::ModalBlockedPressMsg( WgMouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button, modKeys, pointerPos, timestamp )
 	{
 		m_type			= WG_MSG_MODAL_BLOCKED_PRESS;
 		m_pSource 		= pSource;
@@ -1382,7 +1338,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return MouseButtonMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * ModalBlockedPressMsg::className( void ) const
@@ -1402,7 +1358,7 @@ namespace wg
 	
 	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
 	
-	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( WgMouseButton button, Widget * pSource ) : MouseButtonMsg(button)
+	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( WgMouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= WG_MSG_MODAL_BLOCKED_RELEASE;
 		m_pSource 		= pSource;
@@ -1413,7 +1369,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Msg::isInstanceOf(pClassName);
+		return MouseButtonMsg::isInstanceOf(pClassName);
 	}
 	
 	const char * ModalBlockedReleaseMsg::className( void ) const
@@ -1737,51 +1693,13 @@ namespace wg
 		return 0;
 	}
 	
-	
-	//____ MousePositionMsg _______________________________________________________
-	
-	const char MousePositionMsg::CLASSNAME[] = {"MousePositionMsg"};
-	
-	MousePositionMsg::MousePositionMsg()
-	{
-		m_type = WG_MSG_MOUSE_POSITION;
-	}
-	
-	bool MousePositionMsg::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Msg::isInstanceOf(pClassName);
-	}
-	
-	const char * MousePositionMsg::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	MousePositionMsg_p MousePositionMsg::cast( const Object_p& pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MousePositionMsg_p( static_cast<MousePositionMsg*>(pObject.rawPtr()) );
-	
-		return 0;
-	}
-	
+		
 	//____ MouseDragMsg _________________________________________________________
 	
 	const char MouseDragMsg::CLASSNAME[] = {"MouseDragMsg"};
 	
-	MouseDragMsg::MouseDragMsg( WgMouseButton button, const Coord& startPos, const Coord& prevPos, const Coord& currPos ) : MouseButtonMsg(button)
-	{
-		m_type = WG_MSG_MOUSE_DRAG;
 	
-		m_startPos = startPos;
-		m_prevPos = prevPos;
-		m_currPos = currPos;
-	}
-	
-	MouseDragMsg::MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, const Coord& currPos ) : MouseButtonMsg(button)
+	MouseDragMsg::MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= WG_MSG_MOUSE_DRAG;
 		m_pSource		= pWidget;
@@ -1789,7 +1707,6 @@ namespace wg
 	
 		m_startPos = startPos;
 		m_prevPos = prevPos;
-		m_currPos = currPos;
 	}
 	
 	bool MouseDragMsg::isInstanceOf( const char * pClassName ) const
@@ -1815,17 +1732,17 @@ namespace wg
 	
 	Coord MouseDragMsg::draggedTotal() const
 	{
-		return m_currPos - m_startPos;
+		return m_pointerPos - m_startPos;
 	}
 	
 	Coord MouseDragMsg::draggedNow() const
 	{
-		return m_currPos - m_prevPos;
+		return m_pointerPos - m_prevPos;
 	}
 	
 	Coord MouseDragMsg::currPos() const
 	{
-		return m_currPos;
+		return m_pointerPos;
 	}
 	
 	Coord MouseDragMsg::startPos() const
