@@ -886,18 +886,21 @@ namespace wg
 				}
 			}
 	
-			case WG_MSG_CHARACTER:
+			case WG_MSG_TEXT_INPUT:
 			{
-				Uint16 chr = CharacterMsg::cast(pMsg)->character();
-				if( chr != 0 )
+				String text = TextInputMsg::cast(pMsg)->text();
+				if( text.length() != 0 )
 				{
 					m_selectorCountdown = c_selectorCountdownStart;
 	
-					if( m_nSelectorKeys < c_maxSelectorKeys )
+					for( int i = 0 ; i < text.length() ; i++ )
 					{
-						m_selectorKeys[m_nSelectorKeys++] = towlower( chr );
-						_markFirstFilteredEntry();
+						if( m_nSelectorKeys < c_maxSelectorKeys )
+						{
+							m_selectorKeys[m_nSelectorKeys++] = towlower( text.chars()[i].getGlyph() );
+						}
 					}
+					_markFirstFilteredEntry();
 				}
 			}
 			break;
@@ -1066,7 +1069,7 @@ namespace wg
 				key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
 				pMsg->swallow();
 		}
-		else if( pMsg->type() == WG_MSG_CHARACTER || pMsg->type() == WG_MSG_WHEEL_ROLL )
+		else if( pMsg->type() == WG_MSG_TEXT_INPUT || pMsg->type() == WG_MSG_WHEEL_ROLL )
 			pMsg->swallow();
 	}
 	

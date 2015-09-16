@@ -318,24 +318,36 @@ namespace wg
 				m_text.setSelectionMode(false);
 		}		
 	
-		if( event == WG_MSG_CHARACTER )
+		if( event == WG_MSG_TEXT_INPUT )
 		{
-			int ch = CharacterMsg::cast(pMsg)->character();
+			String str = TextInputMsg::cast(pMsg)->text();
 	
-			if( _isEditable() && m_state.isFocused() && ch >= 32 && ch != 127)
+			if( _isEditable() && m_state.isFocused() )
 			{
-	
 				if(m_text.hasSelection())
 					m_text.delSelection();
 				m_text.setSelectionMode(false);
-	
-				if( m_text.putChar( ch ) )
+
+				bool bModified = false;
+				for( int i = 0 ; i < str.length() ; i++ )
+				{
+					unsigned short ch = str.chars()[i].getGlyph();
+					
+					if( ch >= 32 && ch != 127 )
+					{
+						if( m_text.putChar( ch ) )
+							bModified = true;
+					}
+				}
+
+				if( bModified )
 				{
 					if( pHandler )
 						pHandler->post( new TextEditMsg(text.ptr(),false) );
-	
+
 					_adjustViewOfs();
 				}
+	
 			}
 		}
 	

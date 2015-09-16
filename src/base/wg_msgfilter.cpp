@@ -212,16 +212,11 @@ namespace wg
 		return MsgFilter( WG_MSG_KEY_REPEAT, _filterNativeKeyMsgs, native_keycode );
 	}
 	
-	//____ character() ____________________________________________________________
+	//____ textInput() ____________________________________________________________
 	
-	MsgFilter	MsgFilter::character()
+	MsgFilter	MsgFilter::textInput()
 	{
-		return MsgFilter( WG_MSG_CHARACTER, _filterCharacterMsgs, 0 );
-	}
-	
-	MsgFilter	MsgFilter::character( unsigned short character)
-	{
-		return MsgFilter( WG_MSG_CHARACTER, _filterCharacterMsgs, character );
+		return MsgFilter( WG_MSG_TEXT_INPUT, _filterType );
 	}
 	
 	//____ wheelRoll() ____________________________________________________________
@@ -398,19 +393,7 @@ namespace wg
 		}
 		return false;
 	}
-	
-	bool MsgFilter::_filterCharacterMsgs( const Msg_p& pMsg, const MsgFilter& filter )
-	{
-		if( pMsg->type() == filter.msgType() )
-		{
-			int chr = CharacterMsg::cast(pMsg)->character();
-	
-			if( chr == filter.m_data1 )
-				return true;
-		}
-		return false;
-	}
-	
+		
 	bool MsgFilter::_filterWheelRollMsgs( const Msg_p& pMsg, const MsgFilter& filter )
 	{
 		if( pMsg->type() == filter.msgType() )

@@ -100,8 +100,7 @@ namespace wg
 	
 		static MsgFilter	keyRepeatNative( int native_keycode );
 	
-		static MsgFilter	character();
-		static MsgFilter	character( unsigned short character);
+		static MsgFilter	textInput();
 	
 		static MsgFilter	wheelRoll();
 		static MsgFilter	wheelRoll( int wheel );
@@ -151,7 +150,6 @@ namespace wg
 		static bool _filterMouseButtonMsgs( const Msg_p& pMsg, const MsgFilter& filter );
 		static bool _filterKeyMsgs( const Msg_p& pMsg, const MsgFilter& filter );
 		static bool _filterNativeKeyMsgs( const Msg_p& pMsg, const MsgFilter& filter );
-		static bool _filterCharacterMsgs( const Msg_p& pMsg, const MsgFilter& filter );
 		static bool _filterWheelRollMsgs( const Msg_p& pMsg, const MsgFilter& filter );
 		static bool _filterItemToggleMsgs( const Msg_p& pMsg, const MsgFilter& filter );
 		static bool _filterItemMousePressMsgs( const Msg_p& pMsg, const MsgFilter& filter );

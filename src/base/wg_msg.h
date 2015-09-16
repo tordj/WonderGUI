@@ -160,9 +160,9 @@ namespace wg
 	typedef	WgStrongPtr<KeyRepeatMsg,KeyMsg_p>		KeyRepeatMsg_p;
 	typedef	WgWeakPtr<KeyRepeatMsg,KeyMsg_wp>	KeyRepeatMsg_wp;
 
-	class CharacterMsg;
-	typedef	WgStrongPtr<CharacterMsg,Msg_p>		CharacterMsg_p;
-	typedef	WgWeakPtr<CharacterMsg,Msg_wp>	CharacterMsg_wp;
+	class TextInputMsg;
+	typedef	WgStrongPtr<TextInputMsg,Msg_p>		TextInputMsg_p;
+	typedef	WgWeakPtr<TextInputMsg,Msg_wp>	TextInputMsg_wp;
 
 	class WheelRollMsg;
 	typedef	WgStrongPtr<WheelRollMsg,InputMsg_p>		WheelRollMsg_p;
@@ -288,8 +288,6 @@ namespace wg
 
 	class Msg : public Object
 	{
-		friend class MsgRouter;
-		friend class Widget;
 
 		public:
 
@@ -337,7 +335,6 @@ namespace wg
 
 	class InputMsg : public Msg
 	{
-		friend class InputHandler;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -365,7 +362,6 @@ namespace wg
 
 	class MouseButtonMsg : public InputMsg
 	{
-		friend class InputHandler;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -389,7 +385,6 @@ namespace wg
 
 	class KeyMsg : public InputMsg
 	{
-		friend class InputHandler;
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -412,7 +407,6 @@ namespace wg
 	class FocusGainedMsg : public Msg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		static FocusGainedMsg_p	create( Widget * pWidget ) { return new FocusGainedMsg( pWidget ); }
 
@@ -429,7 +423,6 @@ namespace wg
 	class FocusLostMsg : public Msg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
 		static FocusLostMsg_p	create( Widget * pWidget ) { return new FocusLostMsg( pWidget ); }
 
@@ -511,7 +504,6 @@ namespace wg
 		bool			releaseInside() const;
 
 	protected:
-		MouseReleaseMsg( WgMouseButton button );
 		MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		bool			m_bReleaseInside;
@@ -545,26 +537,22 @@ namespace wg
 		KeyReleaseMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
-	//____ CharacterMsg ________________________________________________________
+	//____ TextInputMsg ________________________________________________________
 
-	class CharacterMsg : public Msg
+	class TextInputMsg : public Msg
 	{
 		friend class InputHandler;
-		friend class MsgRouter;
 	public:
-		static CharacterMsg_p			create( unsigned short character ) { return new CharacterMsg(character); }
-
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static CharacterMsg_p	cast( const Object_p& pObject );
+		static TextInputMsg_p	cast( const Object_p& pObject );
 
-		unsigned short	character() const;
+		String	text() const;
 	protected:
-		CharacterMsg( unsigned short character );
-		CharacterMsg( unsigned short character, Widget * pWidget );
+		TextInputMsg( String text, Widget * pWidget );
 	protected:
-		unsigned short	m_char;
+		String	m_text;
 	};
 
 	//____ WheelRollMsg ________________________________________________________
@@ -581,7 +569,6 @@ namespace wg
 		int			wheel() const;
 		Coord		distance() const;
 	protected:
-		WheelRollMsg( int wheel, Coord distance );
 		WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		int			m_wheel;
@@ -1017,8 +1004,6 @@ namespace wg
 	class MouseDragMsg : public MouseButtonMsg
 	{
 		friend class InputHandler;
-	protected:
-		MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -1031,6 +1016,8 @@ namespace wg
 		Coord			prevPos() const;
 		Coord			currPos() const;
 	protected:
+		MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+
 		Coord			m_startPos;
 		Coord			m_prevPos;
 	};

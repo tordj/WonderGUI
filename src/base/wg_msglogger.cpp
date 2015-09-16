@@ -138,7 +138,7 @@ namespace wg
 		m_msgFilter[WG_MSG_KEY_PRESS] = false;
 		m_msgFilter[WG_MSG_KEY_REPEAT] = false;
 		m_msgFilter[WG_MSG_KEY_RELEASE] = false;
-		m_msgFilter[WG_MSG_CHARACTER] = false;
+		m_msgFilter[WG_MSG_TEXT_INPUT] = false;
 	}
 	
 	//____ LogKeyboardMsgs _______________________________________________________________
@@ -148,7 +148,7 @@ namespace wg
 		m_msgFilter[WG_MSG_KEY_PRESS] = true;
 		m_msgFilter[WG_MSG_KEY_REPEAT] = true;
 		m_msgFilter[WG_MSG_KEY_RELEASE] = true;
-		m_msgFilter[WG_MSG_CHARACTER] = true;
+		m_msgFilter[WG_MSG_TEXT_INPUT] = true;
 	}
 	
 	//____ logMouseMsgs() _______________________________________________________
@@ -296,8 +296,8 @@ namespace wg
 				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
-			case WG_MSG_CHARACTER:
-				sprintf( params, " char=%X", CharacterMsg::cast(_pMsg)->character() );
+			case WG_MSG_TEXT_INPUT:
+				sprintf( params, " chars=%s", TextInputMsg::cast(_pMsg)->text().chars() );
 				break;
 			case WG_MSG_WHEEL_ROLL:
 			{

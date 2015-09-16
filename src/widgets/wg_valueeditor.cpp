@@ -611,9 +611,9 @@ namespace wg
 			}
 		}
 	
-		if( type == WG_MSG_CHARACTER )
+		if( type == WG_MSG_TEXT_INPUT )
 		{
-			int character = CharacterMsg::cast(pMsg)->character();
+			String str = TextInputMsg::cast(pMsg)->text();
 	
 			// Period is only allowed if it isn't displayed yet and value has decimals.
 			// It's not allowed before a minus sign.
@@ -622,63 +622,67 @@ namespace wg
 			CaretInstance * pCursor = m_text.getCursor();
 			if( pCursor )
 			{
-				if( character == m_pFormat->getPeriod() )
+				for( int i = 0 ; i < str.length() ; i++ )
 				{
-					if( m_pFormat->getDecimals() > 0 && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
-						(pCursor->column() != 0 || (*m_text.getBuffer())[0].getGlyph() != '-' ) )
+					Uint16 character = str.chars()[i].getGlyph();
+					if( character == m_pFormat->getPeriod() )
 					{
-						if(m_text.hasSelection())
-							m_text.delSelection();
-						m_text.setSelectionMode(false);
-	
-						if( m_text.length() < m_maxInputChars )
+						if( m_pFormat->getDecimals() > 0 && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
+							(pCursor->column() != 0 || (*m_text.getBuffer())[0].getGlyph() != '-' ) )
 						{
-							if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].getGlyph() == '-' ) )
+							if(m_text.hasSelection())
+								m_text.delSelection();
+							m_text.setSelectionMode(false);
+		
+							if( m_text.length() < m_maxInputChars )
 							{
-								m_text.insertChar( 0, Char('0') );
-								pCursor->goRight();
+								if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].getGlyph() == '-' ) )
+								{
+									m_text.insertChar( 0, Char('0') );
+									pCursor->goRight();
+								}
+		
+								pCursor->putChar( m_pFormat->getPeriod() );
 							}
-	
-							pCursor->putChar( m_pFormat->getPeriod() );
+							bTextChanged = true;
 						}
-						bTextChanged = true;
 					}
-				}
-	
-				// Handle minus
-				// Only allow minus at start of text and only if range allows negative values.
-	
-				if( character == '-' )
-				{
-					if( pCursor->column() == m_pFormat->getPrefix().length() && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
-						m_rangeMin < 0 )
+		
+					// Handle minus
+					// Only allow minus at start of text and only if range allows negative values.
+		
+					if( character == '-' )
 					{
-						if(m_text.hasSelection())
-							m_text.delSelection();
-						m_text.setSelectionMode(false);
-	
-						if( m_text.length() < m_maxInputChars )
-							pCursor->putChar( '-' );
-						bTextChanged = true;
+						if( pCursor->column() == m_pFormat->getPrefix().length() && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
+							m_rangeMin < 0 )
+						{
+							if(m_text.hasSelection())
+								m_text.delSelection();
+							m_text.setSelectionMode(false);
+		
+							if( m_text.length() < m_maxInputChars )
+								pCursor->putChar( '-' );
+							bTextChanged = true;
+						}
 					}
-				}
-	
-				// Take care of typed numbers 0 through 9.
-	
-				if( character >= '0' && character <= '9' )
-				{
-					if( pCursor->column() == 0 && (*m_text.getBuffer())[0].getGlyph() == '-' )
+		
+					// Take care of typed numbers 0 through 9.
+		
+					if( character >= '0' && character <= '9' )
 					{
-					}
-					else
-					{
-						if(m_text.hasSelection())
-							m_text.delSelection();
-						m_text.setSelectionMode(false);
-	
-						if( m_text.length() < m_maxInputChars )
-							pCursor->putChar( character );
-						bTextChanged = true;
+						if( pCursor->column() == 0 && (*m_text.getBuffer())[0].getGlyph() == '-' )
+						{
+						}
+						else
+						{
+							if(m_text.hasSelection())
+								m_text.delSelection();
+							m_text.setSelectionMode(false);
+		
+							if( m_text.length() < m_maxInputChars )
+								pCursor->putChar( character );
+							bTextChanged = true;
+						}
 					}
 				}
 			}

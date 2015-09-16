@@ -245,23 +245,28 @@ namespace wg
 		}
 	
 	
-		if( type == WG_MSG_CHARACTER )
+		if( type == WG_MSG_TEXT_INPUT )
 		{
 			if( isEditable() )
 			{
-				int  chr = CharacterMsg::cast(pMsg)->character();
+				String text = TextInputMsg::cast(pMsg)->text();
 	
-				if( chr >= 32 && chr != 127)
+				for( int i = 0 ; i < text.length() ; i++ )
 				{
-					_insertCharAtCursor(chr);
-				}
-				else if( chr == 13 )
-				{
-					_insertCharAtCursor('\n');
-				}
-				else if( chr == '\t' && m_bTabLock )
-				{
-					_insertCharAtCursor( '\t' );
+					unsigned short chr = text.chars()[i].getGlyph();
+	
+					if( chr >= 32 && chr != 127)
+					{
+						_insertCharAtCursor(chr);
+					}
+					else if( chr == 13 )
+					{
+						_insertCharAtCursor('\n');
+					}
+					else if( chr == '\t' && m_bTabLock )
+					{
+						_insertCharAtCursor( '\t' );
+					}
 				}
 			}
 		}
@@ -383,7 +388,7 @@ namespace wg
 			
 			//TODO: Would be good if we didn't forward any character-creating keys either...
 		}
-		else if( type == WG_MSG_CHARACTER )
+		else if( type == WG_MSG_TEXT_INPUT )
 			pMsg->swallow();
 	}
 	

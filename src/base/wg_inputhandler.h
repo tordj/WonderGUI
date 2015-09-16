@@ -49,17 +49,10 @@
 
 /* LEFT TO DO:
  * 
- * Remove timestamp, modkeys and pointer pos from Msg-class.
- * Base class InputMsg with modkeys and pointer position.
- * 
- * MsgRouter friend only on Msg baseclass?
- * Remove unnecessary Msg constructors.
- * 
- * 
- * Optional timestamp on calls to input?
  * 
  * Automatic garbage collection on msgRouter.
  * 
+ * Character handling.
  */
 
 
@@ -94,6 +87,7 @@ namespace wg
 
 		void 		setKey( short nativeKeyCode, bool bPressed, int64_t timestamp = 0 );
 		
+		bool		putText( const CharSeq& text );
 		
 		Widget_p 	focusedWidget() const { return _focusedWidget(); }
 		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
@@ -122,9 +116,8 @@ namespace wg
 		inline int	keyRepeatRate() { return m_keyRepeatRate; }
 
 		inline bool	setDoubleClickTresholds( int millisec, int pixels );
-		inline int	doubleClickTimeTreshold() { m_doubleClickTimeTreshold; }
-		inline int	doubleClickDistanceTreshold() { m_doubleClickDistanceTreshold; }
-
+		inline int	doubleClickTimeTreshold() { return m_doubleClickTimeTreshold; }
+		inline int	doubleClickDistanceTreshold() { return m_doubleClickDistanceTreshold; }
 
 		
 	protected:

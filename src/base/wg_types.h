@@ -490,7 +490,7 @@ namespace wg
 		WG_MSG_KEY_PRESS,
 		WG_MSG_KEY_REPEAT,
 		WG_MSG_KEY_RELEASE,
-		WG_MSG_CHARACTER,
+		WG_MSG_TEXT_INPUT,
 		WG_MSG_WHEEL_ROLL,
 	
 		WG_MSG_SELECT,						// Non-value widget triggered, like a button being pressed.

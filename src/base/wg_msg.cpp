@@ -661,30 +661,25 @@ namespace wg
 		return 0;
 	}
 	
-	//____ CharacterMsg __________________________________________________________
+	//____ TextInputMsg __________________________________________________________
 	
-	const char CharacterMsg::CLASSNAME[] = {"CharacterMsg"};
+	const char TextInputMsg::CLASSNAME[] = {"TextInputMsg"};
 	
-	CharacterMsg::CharacterMsg( unsigned short character )
+	
+	TextInputMsg::TextInputMsg( String text, Widget * pWidget )
 	{
-		m_type = WG_MSG_CHARACTER;
-		m_char = character;
-	}
-	
-	CharacterMsg::CharacterMsg( unsigned short character, Widget * pWidget )
-	{
-		m_type			= WG_MSG_CHARACTER;
-		m_char			= character;
+		m_type			= WG_MSG_TEXT_INPUT;
+		m_text			= text;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
 	}
 	
-	unsigned short CharacterMsg::character() const
+	String TextInputMsg::text() const
 	{
-		return m_char;
+		return m_text;
 	}
 	
-	bool CharacterMsg::isInstanceOf( const char * pClassName ) const
+	bool TextInputMsg::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -692,15 +687,15 @@ namespace wg
 		return Msg::isInstanceOf(pClassName);
 	}
 	
-	const char * CharacterMsg::className( void ) const
+	const char * TextInputMsg::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
-	CharacterMsg_p CharacterMsg::cast( const Object_p& pObject )
+	TextInputMsg_p TextInputMsg::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return CharacterMsg_p( static_cast<CharacterMsg*>(pObject.rawPtr()) );
+			return TextInputMsg_p( static_cast<TextInputMsg*>(pObject.rawPtr()) );
 	
 		return 0;
 	}

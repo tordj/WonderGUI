@@ -169,6 +169,18 @@ namespace wg
 			return WG_KEY_UNMAPPED;
 	}
 	
+	//____ putText() ___________________________________________________________
+	
+	bool InputHandler::putText( const CharSeq& text )
+	{
+		if( text.length() > 0 )
+		{
+			Base::msgRouter()->post( new TextInputMsg( text, m_pMarkedWidget.rawPtr() ));
+		}
+		return true;
+	}
+
+	
 	//____ setPointer() ___________________________________________________________
 	
 	

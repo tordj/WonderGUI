@@ -424,9 +424,9 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_CHARACTER:
+			case WG_MSG_TEXT_INPUT:
 			{
-				CharacterMsg_p pMsg = CharacterMsg::cast(_pMsg);
+				TextInputMsg_p pMsg = TextInputMsg::cast(_pMsg);
 				if( _isEditable() && m_state.isFocused() )
 				{
 	
@@ -435,8 +435,8 @@ namespace wg
 					m_text.setSelectionMode(false);
 	
 					// by default - no max limit
-					if( m_maxCharacters == 0 || m_maxCharacters > m_text.length() )
-						m_text.putChar( pMsg->character() );
+					if( m_maxCharacters == 0 || m_maxCharacters >= m_text.length() + pMsg->text().length() )
+						m_text.putText( pMsg->text() );
 	
 					Base::msgRouter()->post( new TextEditMsg(text.ptr(),false) );
 					_adjustViewOfs();

@@ -421,7 +421,7 @@ namespace wg
 			do
 			{
 				if( pMsg->hasCopyTo()  )
-					pMsg->m_pCopyTo->onMsg( pMsg );
+					pMsg->getCopyTo()->onMsg( pMsg );
 				
 				if( pMsg->hasSource() )
 					_dispatchToSourceRoutes( pMsg );
