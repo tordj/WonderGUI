@@ -472,7 +472,7 @@ namespace wg
 		const WgPixelFormat * pFormat = m_pSurface->PixelFormat();
 		int pitch = m_pSurface->pitch();
 	
-		if( pFormat->type != WG_PIXEL_ARGB_8 )
+		if( pFormat->type != WG_PIXEL_RGBA_8 )
 			return;												// Only supports ARGB_8 for the moment.
 	
 		unsigned char * p = ((unsigned char*)m_pSurface->pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;

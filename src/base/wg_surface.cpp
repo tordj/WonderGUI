@@ -345,10 +345,9 @@ namespace wg
 			pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
 	
 	
-			if( (pSrcFormat->type == pDstFormat->type && pSrcFormat->type != WG_PIXEL_CUSTOM) ||
-				(pSrcFormat->bits == pDstFormat->bits && pSrcFormat->R_mask == pDstFormat->R_mask &&
-				 pSrcFormat->G_mask == pDstFormat->G_mask && pSrcFormat->B_mask == pDstFormat->B_mask &&
-				 pSrcFormat->A_mask == pDstFormat->A_mask) )
+			if( pSrcFormat->bits == pDstFormat->bits && pSrcFormat->R_mask == pDstFormat->R_mask &&
+				pSrcFormat->G_mask == pDstFormat->G_mask && pSrcFormat->B_mask == pDstFormat->B_mask &&
+				pSrcFormat->A_mask == pDstFormat->A_mask)
 			{
 				// We have identical formats so we can do a fast straight copy
 	
@@ -360,8 +359,8 @@ namespace wg
 					pDst += dstPitch;
 				}
 			}
-			else if( (pSrcFormat->type == WG_PIXEL_ARGB_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
-					 (pDstFormat->type == WG_PIXEL_ARGB_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
+			else if( (pSrcFormat->type == WG_PIXEL_RGBA_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
+					 (pDstFormat->type == WG_PIXEL_RGBA_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
 			{
 				// We are just switching between RGBA_8 and RGB_8, just copy RGB components and skip alpha
 	

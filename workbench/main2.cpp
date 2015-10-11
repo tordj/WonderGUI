@@ -58,7 +58,7 @@ int main ( int argc, char** argv )
 	WgPixelType type = WG_PIXEL_UNKNOWN;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		type = WG_PIXEL_ARGB_8;
+		type = WG_PIXEL_RGBA_8;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = WG_PIXEL_RGB_8;
 		
@@ -83,7 +83,7 @@ int main ( int argc, char** argv )
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
 	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), WG_PIXEL_ARGB_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
+	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), WG_PIXEL_RGBA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 	char * pFontSpec = (char*) loadFile( "../../../resources/anuvverbubbla_8x8.fnt" );
 

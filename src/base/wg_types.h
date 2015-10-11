@@ -64,6 +64,37 @@ namespace wg
 	#ifndef INT64_MAX
 	#define INT64_MAX ((9223372036854775807 ## L))__
 	#endif
+
+	#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
+	#	 if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+	#		define WG_IS_BIG_ENDIAN 1
+	#		define WG_IS_LITTLE_ENDIAN 0
+	#	elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	#		define WG_IS_BIG_ENDIAN 0
+	#		define WG_IS_LITTLE_ENDIAN 1
+	#	endif
+	#else
+	#	ifdef __BIG_ENDIAN__
+	#		if __BIG_ENDIAN__
+	#			define WG_IS_BIG_ENDIAN 1
+	#			define WG_IS_LITTLE_ENDIAN 0
+	#		endif
+	#	endif
+
+	#	ifdef __LITTLE_ENDIAN__
+	#		if __LITTLE_ENDIAN__
+	#			define WG_IS_BIG_ENDIAN 0
+	#			define WG_IS_LITTLE_ENDIAN 1
+	#		endif
+	#	endif
+	#endif
+
+
+	#ifndef WG_IS_BIG_ENDIAN
+	#error Could not detect endianness. You need to define WG_IS_BIG_ENDIAN and WG_IS_LITTLE_ENDIAN in wg_types.h
+	#define WG_IS_BIG_ENDIAN 0
+	#define WG_IS_LITTLE_ENDIAN 0
+	#endif
 	
 	template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
 	template<typename T> inline T WgMin(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
@@ -630,8 +661,8 @@ namespace wg
 	{
 		WG_PIXEL_UNKNOWN,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 		WG_PIXEL_CUSTOM,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		WG_PIXEL_RGB_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
-		WG_PIXEL_ARGB_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
+		WG_PIXEL_RGB_8,				///< One byte of red, green and blue respectively in memory in exactly that order.
+		WG_PIXEL_RGBA_8				///< One byte of red, green, blue and alpha respectively in memory in exactly that order.
 	};
 	
 	

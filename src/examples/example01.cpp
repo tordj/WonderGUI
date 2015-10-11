@@ -78,7 +78,7 @@ namespace wg
 		WgPixelType type = WG_PIXEL_UNKNOWN;
 	
 		if( pWinSurf->format->BitsPerPixel == 32 )
-			type = WG_PIXEL_ARGB_8;
+			type = WG_PIXEL_RGBA_8;
 		else if( pWinSurf->format->BitsPerPixel == 24 )
 			type = WG_PIXEL_RGB_8;
 			
