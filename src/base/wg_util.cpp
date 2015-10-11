@@ -90,7 +90,7 @@ namespace wg
 				wFormat.G_mask = 0xFF0000;
 				wFormat.B_mask = 0xFF00;
 				wFormat.A_mask = 0xFF;
-	 
+				
 				wFormat.R_shift = 24;
 				wFormat.G_shift = 16;
 				wFormat.B_shift = 8;

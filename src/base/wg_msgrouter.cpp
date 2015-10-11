@@ -22,7 +22,6 @@
 
 #include <assert.h>
 #include <wg_msg.h>
-#include <wg_msgfilter.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_rootpanel.h>
@@ -80,18 +79,11 @@ namespace wg
 	
 	bool  MsgRouter::broadcastTo( const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( MsgFilter(), pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr() );
 		m_broadcasts.pushBack( p );
 		return true;
 	}
-	
-	bool  MsgRouter::broadcastTo( const MsgFilter& filter, const Receiver_p& pReceiver )
-	{
-		Route * p = new Route( filter, pReceiver.rawPtr() );
-		m_broadcasts.pushBack( p );
-		return true;
-	}
-	
+		
 	//____ endBroadcast() __________________________________________________________
 	
 	bool  MsgRouter::endBroadcast( const Receiver_p& _pReceiver )
@@ -116,35 +108,23 @@ namespace wg
 	
 	WgRouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( MsgFilter(), pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr() );
 		return _addRoute( pSource, p );
 	}
 	
-	WgRouteId MsgRouter::addRoute( const MsgFilter& filter, const Object_p& pSource, const Receiver_p& pReceiver )
-	{
-		Route * p = new Route( filter, pReceiver.rawPtr() );
-		return _addRoute( pSource, p );
-	}
 	
 	WgRouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( MsgFilter(), pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr() );
 		return _addRoute( msgType, p );	
 	}
 	
 	WgRouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
 	{
-		Route * p = new Route( MsgFilter(), pReceiver );
+		Route * p = new Route( pReceiver );
 		return _addRoute( msgType, p );	
 	}
-	
-	WgRouteId MsgRouter::addRoute( const MsgFilter& filter, MsgType msgType, const Receiver_p& pReceiver )
-	{
-		Route * p = new Route( filter, pReceiver.rawPtr() );
-		return _addRoute( msgType, p );	
-	}
-	
-	
+
 	
 	//____ deleteRoutesTo() _______________________________________________________
 	
@@ -489,13 +469,10 @@ namespace wg
 			}
 		}
 	}
+		
 	
-
-	
-	
-	MsgRouter::Route::Route( const MsgFilter& filter, Receiver * pReceiver )
+	MsgRouter::Route::Route( Receiver * pReceiver )
 	{
-		m_filter = filter;
 		m_pReceiver = pReceiver;
 		pReceiver->_onRouteAdded();
 	}
@@ -508,8 +485,7 @@ namespace wg
 	
 	void MsgRouter::Route::dispatch( const Msg_p& pMsg )
 	{
-		if( m_filter.filterMsg(pMsg) )
-			m_pReceiver->onMsg( pMsg );
+		m_pReceiver->onMsg( pMsg );
 	}
 	
 	bool MsgRouter::Route::isAlive() const

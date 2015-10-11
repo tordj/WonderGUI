@@ -461,6 +461,6 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 	Hook * pHook = pParent->addWidget( pChild );
 //	pMsgRouter->AddCallback( MsgFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
 
-	pMsgRouter->addRoute( MsgFilter::mousePress(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbInitDrag, pChild) );
-	pMsgRouter->addRoute( MsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbDragWidget, pChild) );
+//	pMsgRouter->addRoute( MsgFilter::mousePress(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbInitDrag, pChild) );
+//	pMsgRouter->addRoute( MsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbDragWidget, pChild) );
 }

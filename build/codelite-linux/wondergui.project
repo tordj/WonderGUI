@@ -294,8 +294,6 @@
     <File Name="../../src/base/wg_msgrouter.h"/>
     <File Name="../../src/base/wg_msglogger.cpp"/>
     <File Name="../../src/base/wg_msglogger.h"/>
-    <File Name="../../src/base/wg_msgfilter.cpp"/>
-    <File Name="../../src/base/wg_msgfilter.h"/>
     <File Name="../../src/base/wg_receiver.cpp"/>
     <File Name="../../src/base/wg_receiver.h"/>
     <File Name="../../src/base/wg_msg.cpp"/>

@@ -45,15 +45,14 @@ typedef unsigned __int64  uint64_t;
 namespace wg 
 {
 	
-	
 	#ifndef Uint8
 		typedef unsigned char	Uint8;
 		typedef signed char		Sint8;
 		typedef unsigned short	Uint16;
-		typedef signed short		Sint16;
-		typedef unsigned int		Uint32;
+		typedef signed short	Sint16;
+		typedef unsigned int	Uint32;
 		typedef signed int		Sint32;
-		typedef uint64_t			Uint64;
+		typedef uint64_t		Uint64;
 		typedef int64_t			Sint64;
 	#endif
 	

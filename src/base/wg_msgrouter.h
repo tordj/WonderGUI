@@ -30,10 +30,6 @@
 #	include <wg_msg.h>
 #endif
 
-#ifndef WG_MSGFILTER_DOT_H
-#	include <wg_msgfilter.h>
-#endif
-
 #ifndef WG_PANEL_DOT_H
 #	include <wg_panel.h>
 #endif
@@ -72,14 +68,10 @@ namespace wg
 		//----
 	
 		bool		broadcastTo( const Receiver_p& pReceiver );
-		bool		broadcastTo( const MsgFilter& filter, const Receiver_p& pReceiver );
 		bool		endBroadcast( const Receiver_p& pReceiver );
 		
 		WgRouteId	addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
-		WgRouteId	addRoute( const MsgFilter& filter, const Object_p& pSource, const Receiver_p& pReceiver );
-	
 		WgRouteId	addRoute( MsgType type, const Receiver_p& pReceiver );
-		WgRouteId	addRoute( const MsgFilter& filter, MsgType type, const Receiver_p& pReceiver );
 	
 		WgRouteId	addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
@@ -116,7 +108,7 @@ namespace wg
 		{
 		friend class MsgRouter;
 		public:
-			Route( const MsgFilter& filter, Receiver * pReceiver );
+			Route( Receiver * pReceiver );
 			virtual ~Route();
 	
 			LINK_METHODS(Route);
@@ -124,10 +116,8 @@ namespace wg
 			void 	dispatch( const Msg_p& pMsg );
 			bool 	isAlive() const;
 			Receiver *	receiver() const;
-			inline const MsgFilter& 	filter() const { return m_filter; }
 	
 		protected:
-			MsgFilter			m_filter;
 			WgRouteId			m_handle;
 			Receiver_wp			m_pReceiver;
 		};

@@ -150,7 +150,7 @@ namespace wg
 			// Loop through SDL events, translate them to WonderGUI events
 			// and process them.
 			
-			translateEvents( pRoot->msgRouter() );
+			translateEvents( WgBase::msgRouter() );
 	
 			// Let WonderGUI render any updated/dirty regions of the screen.
 	
