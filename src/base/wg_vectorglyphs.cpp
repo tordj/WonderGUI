@@ -308,7 +308,7 @@ namespace wg
 	
 	//____ hasGlyph() _____________________________________________________________
 	
-	bool VectorGlyphs::hasGlyph( Uint16 ch )
+	bool VectorGlyphs::hasGlyph( uint16_t ch )
 	{
 		int index = FT_Get_Char_Index( m_ftFace, ch );
 		if( index == 0 )
@@ -319,7 +319,7 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	Glyph_p VectorGlyphs::getGlyph( Uint16 ch, int size )
+	Glyph_p VectorGlyphs::getGlyph( uint16_t ch, int size )
 	{
 		size += m_sizeOffset;
 	
@@ -366,7 +366,7 @@ namespace wg
 	
 	
 	/*
-	Glyph_p VectorGlyphs::getGlyph( Uint16 ch, int size )
+	Glyph_p VectorGlyphs::getGlyph( uint16_t ch, int size )
 	{
 		size += m_sizeOffset;
 	
@@ -536,8 +536,8 @@ namespace wg
 	
 	//____ _copyA8ToRGBA8() _____________________________________________________
 	
-	void VectorGlyphs::_copyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
-									    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
+	void VectorGlyphs::_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+									    uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 	
 		int y = 0;
@@ -565,10 +565,10 @@ namespace wg
 	
 	//____ _copyA1ToRGBA8() _____________________________________________________
 	
-	void VectorGlyphs::_copyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch,
-									    Uint8 * pDest, int dest_width, int dest_height, int dest_pitch )
+	void VectorGlyphs::_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+									    uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
-		Uint8 lookup[2] = { 0, 255 };
+		uint8_t lookup[2] = { 0, 255 };
 	
 		int y = 0;
 		for( ; y < src_height ; y++ )
@@ -598,7 +598,7 @@ namespace wg
 	
 	//___ _addGlyph() ________________________________________________________
 	
-	VectorGlyphs::MyGlyph * VectorGlyphs::_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex )
+	VectorGlyphs::MyGlyph * VectorGlyphs::_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex )
 	{
 		if( m_cachedGlyphsIndex[size] == 0 )
 		{
@@ -771,7 +771,7 @@ namespace wg
 	}
 	
 	
-	VectorGlyphs::MyGlyph::MyGlyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, Glyphset * pGlyphset )
+	VectorGlyphs::MyGlyph::MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Glyphset * pGlyphset )
 	: Glyph( advance, kerningIndex, pGlyphset )
 	{
 		m_pSlot = 0;

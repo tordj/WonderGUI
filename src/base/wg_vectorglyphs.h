@@ -79,8 +79,8 @@ namespace wg
 		inline Type	getType() const { return VECTOR; }
 
 		int			getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
-		Glyph_p	getGlyph( Uint16 chr, int size );
-		bool		hasGlyph( Uint16 chr );
+		Glyph_p	getGlyph( uint16_t chr, int size );
+		bool		hasGlyph( uint16_t chr );
 
 		int			getHeight( int size );
 		int			getLineSpacing( int size );
@@ -116,7 +116,7 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( Uint16 character, Uint16 size, int advance, Uint32 kerningIndex, Glyphset * pGlyphset );
+			MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Glyphset * pGlyphset );
 			~MyGlyph();
 			const GlyphBitmap * getBitmap();
 
@@ -124,8 +124,8 @@ namespace wg
 			bool	isInitialized() { return m_pGlyphset?true:false; }
 
 			CacheSlot * m_pSlot;
-			Uint16		m_size;			// size of character in points.
-			Uint16		m_character;	// Unicode for character.
+			uint16_t		m_size;			// size of character in points.
+			uint16_t		m_character;	// Unicode for character.
 		};
 
 		class CacheSurf : public Link
@@ -136,7 +136,7 @@ namespace wg
 
 			LINK_METHODS( CacheSurf );		
 
-			Uint32			access;			// Timestamp of last access.
+			uint32_t			access;			// Timestamp of last access.
 			Surface_p	pSurf;
 		};
 
@@ -148,7 +148,7 @@ namespace wg
 
 			LINK_METHODS( CacheSlot );		
 
-			Uint32			access;			// Timestamp of last access.
+			uint32_t			access;			// Timestamp of last access.
 
 			GlyphBitmap	bitmap;
 			MyGlyph *			pGlyph;
@@ -158,8 +158,8 @@ namespace wg
 		};
 
 
-		void				_copyA8ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
-		void				_copyA1ToRGBA8( const Uint8 * pSrc, int src_width, int src_height, int src_pitch, Uint8 * pDest, int dest_width, int dest_height, int dest_pitch );
+		void				_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_width, int dest_height, int dest_pitch );
+		void				_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch, uint8_t * pDest, int dest_width, int dest_height, int dest_pitch );
 
 
 		bool				_setCharSize( int size );
@@ -167,8 +167,8 @@ namespace wg
 		CacheSlot *			_generateBitmap( MyGlyph * pGlyph );
 		void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
 
-		MyGlyph *				_addGlyph( Uint16 ch, int size, int advance, Uint32 kerningIndex );
-		inline MyGlyph *		_findGlyph( Uint16 glyph, int size ) const;
+		MyGlyph *				_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex );
+		inline MyGlyph *		_findGlyph( uint16_t glyph, int size ) const;
 
 		inline void			_touchSlot( CacheSlot * pSlot );
 
@@ -177,7 +177,7 @@ namespace wg
 		char*				m_pData;
 		int					m_ftCharSize;
 		MyGlyph **			m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
-		Uint32				m_accessCounter;
+		uint32_t				m_accessCounter;
 		int					m_renderFlags;
 		RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
 		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
@@ -204,7 +204,7 @@ namespace wg
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	VectorGlyphs::MyGlyph * VectorGlyphs::_findGlyph( Uint16 ch, int size ) const
+	VectorGlyphs::MyGlyph * VectorGlyphs::_findGlyph( uint16_t ch, int size ) const
 	{
 		if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() )
 			return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];

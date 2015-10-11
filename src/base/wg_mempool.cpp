@@ -55,7 +55,7 @@ namespace wg
 	
 		Block * pBlock = m_blocks.first();
 	
-		while( (pBlock && pEntry < pBlock->pMemBlock) || (pEntry >= ((Uint8*)pBlock->pMemBlock) + pBlock->blockSize) )
+		while( (pBlock && pEntry < pBlock->pMemBlock) || (pEntry >= ((uint8_t*)pBlock->pMemBlock) + pBlock->blockSize) )
 		{
 			pBlock = pBlock->next();
 		}
@@ -113,7 +113,7 @@ namespace wg
 		if( nAllocEntries == maxEntries )
 			return 0;
 	
-		void * p = ((Uint8*)pMemBlock) + firstFreeEntry*entrySize;
+		void * p = ((uint8_t*)pMemBlock) + firstFreeEntry*entrySize;
 		nAllocEntries++;
 	
 		if( firstFreeEntry == nCleanEntries )
@@ -132,7 +132,7 @@ namespace wg
 	
 	bool MemPool::Block::freeEntry( void * pEntry )
 	{
-		if( pEntry < pMemBlock || pEntry >= ((Uint8*)pMemBlock) + blockSize )
+		if( pEntry < pMemBlock || pEntry >= ((uint8_t*)pMemBlock) + blockSize )
 			return false;
 	
 		* ((int*)pEntry) = firstFreeEntry;

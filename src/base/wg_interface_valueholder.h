@@ -45,13 +45,13 @@ namespace wg
 		_Interface_ValueHolder();
 	
 		bool	setFonts( const Font_p& _pFonts );
-		bool	setRange( Sint64 min, Sint64 max );
+		bool	setRange( int64_t min, int64_t max );
 		bool	setUnitSize( int unitSize );
 	
 		virtual void					setFormat( const ValueFormat_p& format ) = 0;
 		virtual ValueFormat_p		format() const = 0;
 	
-		bool	setValue( Sint64 value );
+		bool	setValue( int64_t value );
 		bool	setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
 		bool	setFractionalRounding( int nValueDigits = 0, int lastDigitModulo = 1 );
 	
@@ -62,14 +62,14 @@ namespace wg
 		bool	incValue( int increment );					///< Increase value by parameter.
 		bool	decValue( int decrement );					///< Decrease value by parameter.
 	
-		inline Sint64	value() {return m_value;};
+		inline int64_t	value() {return m_value;};
 		float			fractionalValue();
-		inline Uint32	unitSize() {return m_unitSize;}
-		inline Uint32	stepSize() { return m_stepSize;}
-		inline Sint64	minLimit() { return m_rangeMin; }
-		inline Sint64	maxLimit() { return m_rangeMax; }
-		inline Uint32	valueDigits() { return m_nValueDigits; }
-		inline Uint32	modulator() { return m_modulator; }
+		inline uint32_t	unitSize() {return m_unitSize;}
+		inline uint32_t	stepSize() { return m_stepSize;}
+		inline int64_t	minLimit() { return m_rangeMin; }
+		inline int64_t	maxLimit() { return m_rangeMax; }
+		inline uint32_t	valueDigits() { return m_nValueDigits; }
+		inline uint32_t	modulator() { return m_modulator; }
 	
 	protected:
 		virtual void	_valueModified() = 0;				///< Called when value has been modified.
@@ -77,7 +77,7 @@ namespace wg
 	
 		void			_onCloneContent( const _Interface_ValueHolder * pOrg );
 	
-		bool			_setValue( Sint64 value );
+		bool			_setValue( int64_t value );
 		bool			_setFractionalValue( float fraction );		///< Set value as fraction of range (0 -> 1.f)
 	
 		// Inherited from scrollbartarget
@@ -93,9 +93,9 @@ namespace wg
 	
 		//
 	
-		Sint64			m_rangeMin;
-		Sint64			m_rangeMax;
-		Sint64			m_value;
+		int64_t			m_rangeMin;
+		int64_t			m_rangeMax;
+		int64_t			m_value;
 		int				m_stepSize;
 		int				m_unitSize;
 	

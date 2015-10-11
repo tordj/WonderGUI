@@ -51,9 +51,9 @@ namespace wg
 	public:
 		inline Color() {};
 		inline Color( const Color& col );
-		inline Color( Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255 );
-		inline Color( Uint32 argb );
-		inline Color( Uint32 rgb, Uint8 a );
+		inline Color( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
+		inline Color( uint32_t argb );
+		inline Color( uint32_t rgb, uint8_t a );
 	
 		inline bool operator==( const Color& k ) const;
 		inline bool operator!=( const Color& k ) const;
@@ -66,19 +66,19 @@ namespace wg
 	
 		static Color blend( const Color& start, const Color& dest, float grade );
 	
-		void	setCMYK( float c, float m, float y, float k, Uint8 alpha = 255 );
+		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
 		void	getCMYK( float* c, float* m, float* y, float* k );
 	
 		union
 		{
 			struct
 			{
-				Uint8 b;
-				Uint8 g;
-				Uint8 r;
-				Uint8 a;
+				uint8_t b;
+				uint8_t g;
+				uint8_t r;
+				uint8_t a;
 			};
-			Uint32 argb;
+			uint32_t argb;
 		};
 	
 	
@@ -280,10 +280,10 @@ namespace wg
 	inline Color Color::operator*( float f ) const
 	{
 		Color kNewColor;
-		kNewColor.r = (Uint8)( (float)r * f );
-		kNewColor.g = (Uint8)( (float)g * f );
-		kNewColor.b = (Uint8)( (float)b * f );
-		kNewColor.a = (Uint8)( (float)a * f );
+		kNewColor.r = (uint8_t)( (float)r * f );
+		kNewColor.g = (uint8_t)( (float)g * f );
+		kNewColor.b = (uint8_t)( (float)b * f );
+		kNewColor.a = (uint8_t)( (float)a * f );
 		return kNewColor;
 	}
 	
@@ -291,10 +291,10 @@ namespace wg
 	inline Color Color::operator*( const Color& k ) const
 	{
 		Color kNewColor;
-		kNewColor.r = (Uint8)(((int)r * (int)k.r )/255);
-		kNewColor.g = (Uint8)(((int)g * (int)k.g )/255);
-		kNewColor.b = (Uint8)(((int)b * (int)k.b )/255);
-		kNewColor.a = (Uint8)(((int)a * (int)k.a )/255);
+		kNewColor.r = (uint8_t)(((int)r * (int)k.r )/255);
+		kNewColor.g = (uint8_t)(((int)g * (int)k.g )/255);
+		kNewColor.b = (uint8_t)(((int)b * (int)k.b )/255);
+		kNewColor.a = (uint8_t)(((int)a * (int)k.a )/255);
 		return kNewColor;
 	}
 	
@@ -307,12 +307,12 @@ namespace wg
 		argb = _col.argb;
 	}
 	
-	inline Color::Color( Uint32 _argb )
+	inline Color::Color( uint32_t _argb )
 	{
 		argb = _argb;
 	}
 	
-	inline Color::Color( Uint8 _r, Uint8 _g, Uint8 _b, Uint8 _a )
+	inline Color::Color( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
 	{
 		a = _a;
 		r = _r;
@@ -320,7 +320,7 @@ namespace wg
 		b = _b;
 	}
 	
-	inline Color::Color( Uint32 rgb, Uint8 _a )
+	inline Color::Color( uint32_t rgb, uint8_t _a )
 	{
 		argb = rgb;
 		a = _a;

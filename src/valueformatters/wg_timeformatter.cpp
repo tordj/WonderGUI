@@ -70,9 +70,9 @@ namespace wg
 	
 	//____ format() _______________________________________________________________
 	
-	String TimeFormatter::format( Sint64 value, int scale ) const
+	String TimeFormatter::format( int64_t value, int scale ) const
 	{
-		Sint64 seconds = value / scale;
+		int64_t seconds = value / scale;
 		
 		// Get right format string
 	
@@ -99,8 +99,8 @@ namespace wg
 		
 		while( !pSrc->isEndOfText() )
 		{
-			Uint16 glyph = pSrc->getGlyph();
-			Uint16 decoration = pSrc->propHandle();
+			uint16_t glyph = pSrc->getGlyph();
+			uint16_t decoration = pSrc->propHandle();
 			
 			if( glyph == '%' )
 			{
@@ -199,7 +199,7 @@ namespace wg
 	
 	String TimeFormatter::format( double value ) const
 	{
-		return format( (Sint64)(value*1000000), 1000000);
+		return format( (int64_t)(value*1000000), 1000000);
 	}
 
 } // namespace wg

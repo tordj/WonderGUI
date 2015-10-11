@@ -73,7 +73,7 @@ namespace wg
 	
 	//____ format() _______________________________________________________________
 	
-	String StandardFormatter::format( Sint64 value, int scale ) const
+	String StandardFormatter::format( int64_t value, int scale ) const
 	{	
 	}
 	

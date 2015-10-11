@@ -72,7 +72,7 @@ namespace wg
 	
 	//____ setGlyph() ______________________________________________________________
 	
-	void Caret2::setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend )
+	void Caret2::setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend )
 	{
 		m_glyph = glyph;
 		m_glyphSize = size;

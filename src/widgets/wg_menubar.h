@@ -94,9 +94,9 @@ namespace wg
 		void	setVisible( bool bVisible );
 	
 		Char *		m_pText;
-		Uint16			m_navKey;
+		uint16_t			m_navKey;
 		Menu_p		m_pMenu;
-		Uint16			m_width;		// Width of this item.
+		uint16_t			m_width;		// Width of this item.
 		bool			m_bEnabled;
 		bool			m_bVisible;
 		Menubar *	m_pMenuBar;		// Pointer at the menubar, needed for some callbacks.
@@ -126,7 +126,7 @@ namespace wg
 		Skin_p		entrySkin() const { return m_pEntrySkin; }
 		Textprop_p	textProp() const { return m_pTextProp; }
 	
-		bool			addMenu( const char * pTitle, const Menu_p& pMenu, Uint16 navKey = 0 );
+		bool			addMenu( const char * pTitle, const Menu_p& pMenu, uint16_t navKey = 0 );
 		bool			removeMenu( const Menu_p& pMenu );
 	
 		MenuBarItem*	firstMenuBarItem() { return m_items.first(); }
@@ -157,7 +157,7 @@ namespace wg
 	
 		Border	_getEntryBorder() const;
 	
-		Uint32		_getItemAtAbsPos( int x, int y );
+		uint32_t		_getItemAtAbsPos( int x, int y );
 		bool		_openMenu( int nb );
 		bool		_closeMenu( int nb );
 	
@@ -170,8 +170,8 @@ namespace wg
 		void		_menuClosed( MenuBarItem * pItem );
 	
 		Chain<MenuBarItem>	m_items;
-		Uint32					m_selectedItem;		// 0 = no item is selected.
-		Uint32					m_markedItem;		// 0 = no item is marked:
+		uint32_t					m_selectedItem;		// 0 = no item is selected.
+		uint32_t					m_markedItem;		// 0 = no item is marked:
 	
 		Skin_p				m_pEntrySkin;
 		Textprop_p			m_pTextProp;

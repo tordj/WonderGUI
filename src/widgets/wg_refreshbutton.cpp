@@ -167,7 +167,7 @@ namespace wg
 			if( m_pRefreshAnim )
 			{
 				GfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
-				m_animTimer = (Uint32) (fraction * m_pRefreshAnim->duration());
+				m_animTimer = (uint32_t) (fraction * m_pRefreshAnim->duration());
 				GfxFrame * pNewFrame = m_pRefreshAnim->getFrame( m_animTimer );
 	
 				if( pOldFrame != pNewFrame )
@@ -182,7 +182,7 @@ namespace wg
 	
 	void RefreshButton::_onNewSize( const Size& size )
 	{
-		Uint32 w = size.w;
+		uint32_t w = size.w;
 	
 		Size contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
 		m_refreshText.onNewSize(contentSize);

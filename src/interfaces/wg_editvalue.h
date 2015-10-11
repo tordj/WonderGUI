@@ -76,7 +76,7 @@ namespace wg
 		// Calling these methods gets field into edit mode, displaying cursor.
 	
 		virtual int				insertAtCursor( const CharSeq& str ) = 0;
-		virtual bool			insertAtCursor( Uint16 c ) = 0;
+		virtual bool			insertAtCursor( uint16_t c ) = 0;
 	
 		virtual int				append( const CharSeq& seq ) = 0;
 		virtual int				insert( int ofs, const CharSeq& seq ) = 0;

@@ -73,7 +73,7 @@ namespace wg
 	//____ ValueFormat() ________________________________________________________
 	
 	ValueFormat::ValueFormat( int nInt, int nDec, int grouping, bool bPlus,
-									Uint16 _separator, Uint16 period, bool bForcePeriod,
+									uint16_t _separator, uint16_t period, bool bForcePeriod,
 									const char * pPrefix, const char * pSuffix )
 	{
 		separator		= _separator /*0xA0=NO_BREAK_SPACE*/;
@@ -174,8 +174,8 @@ namespace wg
 	
 		if( pEnd - pBeg >= 2 )
 		{
-			Uint16 sep = pBeg->getGlyph();
-			Uint16 after = pBeg[1].getGlyph();
+			uint16_t sep = pBeg->getGlyph();
+			uint16_t after = pBeg[1].getGlyph();
 	
 			if( (sep < '0' || sep > '9') && after == '0' )
 			{
@@ -212,8 +212,8 @@ namespace wg
 	
 		if( pEnd - pBeg >= 2 )
 		{
-			Uint16 sep = pBeg->getGlyph();
-			Uint16 after = pBeg[1].getGlyph();
+			uint16_t sep = pBeg->getGlyph();
+			uint16_t after = pBeg[1].getGlyph();
 	
 			if( after == '0' || after == 'x' || after == 'X' )
 			{
@@ -251,7 +251,7 @@ namespace wg
 	//____ setFormat() ____________________________________________________________
 	
 	void ValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
-																Uint16 _separator, Uint16 _period, bool _bForcePeriod )
+																uint16_t _separator, uint16_t _period, bool _bForcePeriod )
 	{
 		integers		= _nInt;
 		decimals		= _nDec;
@@ -359,7 +359,7 @@ namespace wg
 	
 	//____ format() _______________________________________________________________
 	
-	String ValueFormatter::format( Sint64 value ) const
+	String ValueFormatter::format( int64_t value ) const
 	{
 		CharBuffer	buff;
 		buff.setUnusedCapacity( 32,32 );
@@ -377,7 +377,7 @@ namespace wg
 	
 	//____ formatNoPreSuffix() ____________________________________________________
 	
-	String ValueFormatter::formatNoPreSuffix( Sint64 value ) const
+	String ValueFormatter::formatNoPreSuffix( int64_t value ) const
 	{
 		CharBuffer	buff;
 		buff.setUnusedCapacity( 32,32 );
@@ -393,14 +393,14 @@ namespace wg
 	
 	//____ _formatValue() _________________________________________________________
 	
-	void ValueFormatter::_formatValue( CharBuffer * pBuffer, Sint64 value ) const
+	void ValueFormatter::_formatValue( CharBuffer * pBuffer, int64_t value ) const
 	{
 		const ValueFormat& f = m_format;
 	
-		Sint64 absVal = value >= 0 ? value : -value;
+		int64_t absVal = value >= 0 ? value : -value;
 	
-		Sint64 intPart = absVal / m_format.scale;
-		Sint64 decPart = absVal % m_format.scale;
+		int64_t intPart = absVal / m_format.scale;
+		int64_t decPart = absVal % m_format.scale;
 	
 		// Write period and decimal part
 	
@@ -415,7 +415,7 @@ namespace wg
 					for( int i = f.decimals; i > 0 ; i-- )
 					{
 						decPart *= 10;
-						pBuffer->pushBack( Char( (Uint16)(decPart/m_format.scale) + 0x30 ));
+						pBuffer->pushBack( Char( (uint16_t)(decPart/m_format.scale) + 0x30 ));
 						decPart = decPart % m_format.scale;
 					}
 				}
@@ -424,13 +424,13 @@ namespace wg
 	
 		// Write integer part to temp area (backwards)
 	
-		Uint16	temp2[32];
+		uint16_t	temp2[32];
 	
 		int			n = 0;
 	
 		while( intPart > 0 )
 		{
-			temp2[n++] = (Uint16) ((intPart % 10) + 0x30);
+			temp2[n++] = (uint16_t) ((intPart % 10) + 0x30);
 			intPart /= 10;
 		}
 	

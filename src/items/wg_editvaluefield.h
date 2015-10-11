@@ -60,7 +60,7 @@ namespace wg
 		inline Caret_p	cursorSkin() const { return m_pCursorSkin; }
 	
 		int					insertAtCursor( const CharSeq& str );
-		bool				insertAtCursor( Uint16 c );
+		bool				insertAtCursor( uint16_t c );
 	
 		int					append( const CharSeq& seq );
 		int					insert( int ofs, const CharSeq& seq );

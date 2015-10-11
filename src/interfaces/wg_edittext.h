@@ -68,7 +68,7 @@ namespace wg
 		inline Caret_p	cursorSkin() const { return m_pField->cursorSkin(); }
 	
 		inline int			insertAtCursor( const CharSeq& str ) { return m_pField->insertAtCursor(str); }
-		inline bool			insertAtCursor( Uint16 c ) { return m_pField->insertAtCursor(c); }
+		inline bool			insertAtCursor( uint16_t c ) { return m_pField->insertAtCursor(c); }
 	
 		inline void			goBol() { m_pField->goBol(); }
 		inline void			goEol() { m_pField->goEol(); }

@@ -71,7 +71,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool ValueField::set( Sint64 value, int scale )
+	bool ValueField::set( int64_t value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
@@ -88,7 +88,7 @@ namespace wg
 	void ValueField::set( float value )
 	{
 		value *= m_scale;
-		Sint64 intVal = (Sint64) value;
+		int64_t intVal = (int64_t) value;
 		if( intVal != m_value )
 		{
 			m_value = intVal;
@@ -99,7 +99,7 @@ namespace wg
 	void ValueField::set( double value )
 	{
 		value *= m_scale;
-		Sint64 intVal = (Sint64) value;
+		int64_t intVal = (int64_t) value;
 		if( intVal != value )
 		{
 			m_value = intVal;

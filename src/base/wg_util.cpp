@@ -153,12 +153,12 @@ namespace wg
 	
 	//____ Checksum8::add() ________________________________________________________
 	
-	void WgUtil::Checksum8::add( const void * pData, Uint32 nBytes )
+	void WgUtil::Checksum8::add( const void * pData, uint32_t nBytes )
 	{
-		Uint32 x = remainder;
+		uint32_t x = remainder;
 	
-		for( Uint32 i = 0 ; i < nBytes ; i++ )
-			x = ((x << 8) + ((Uint8*)pData)[i])%dividend;
+		for( uint32_t i = 0 ; i < nBytes ; i++ )
+			x = ((x << 8) + ((uint8_t*)pData)[i])%dividend;
 	
 		remainder = x;
 	}
@@ -167,7 +167,7 @@ namespace wg
 	
 	//____ decodeBase64() _________________________________________________________
 	
-	Uint32 WgUtil::decodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
+	uint32_t WgUtil::decodeBase64( const char * pSrc, uint32_t nIn, char * pDest )
 	{
 		const static unsigned char conv[256] =
 						{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -210,24 +210,24 @@ namespace wg
 	
 		for( unsigned int i = 0 ; i < nIn/4 ; i++ )
 		{
-			Uint32	acc = 0;
+			uint32_t	acc = 0;
 	
-			unsigned char x = conv[(Uint8) * pSrc++];
+			unsigned char x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF )	return 0;
 			acc += x;
 			acc <<= 6;
 	
-			x = conv[(Uint8) * pSrc++];
+			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
 			acc <<= 6;
 	
-			x = conv[(Uint8) * pSrc++];
+			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
 			acc <<= 6;
 	
-			x = conv[(Uint8) * pSrc++];
+			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
 	
@@ -236,7 +236,7 @@ namespace wg
 			* pDest++ = (char) acc;
 		}
 	
-		Uint32 nChar = (nIn/4) * 3;
+		uint32_t nChar = (nIn/4) * 3;
 	
 		if( pSrc[-2] == '=' )
 			nChar-=2;

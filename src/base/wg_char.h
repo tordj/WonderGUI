@@ -81,11 +81,11 @@ namespace wg
 	
 		/// Initializes a character to contain the specified glyph and no properties.
 	
-		Char( Uint16 _glyph ) { all = 0; glyph = _glyph; }
+		Char( uint16_t _glyph ) { all = 0; glyph = _glyph; }
 	
 		/// Initializes a character to contain the glyph and properties as specified.
 	
-		Char( Uint16 _glyph, const Textprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; TextpropManager::incRef(properties,1); }
+		Char( uint16_t _glyph, const Textprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; TextpropManager::incRef(properties,1); }
 		~Char() { if( properties ) TextpropManager::decRef(properties,1); };
 	
 		inline Char & operator=(const Char &ref)
@@ -109,13 +109,13 @@ namespace wg
 	
 								/// Sets the glyph part of the character without affecting the display properties.
 	
-		inline void				setGlyph( Uint16 _glyph ) { glyph = _glyph; }
+		inline void				setGlyph( uint16_t _glyph ) { glyph = _glyph; }
 	
 								/// Gets the glyph part of the character.
 								///
 								/// @return The glyph part of the character.
 	
-		inline Uint16			getGlyph() const { return glyph; }
+		inline uint16_t			getGlyph() const { return glyph; }
 	
 								/// Sets the properties of the character.
 	
@@ -129,7 +129,7 @@ namespace wg
 								///
 								/// @return The properties of the character as a handle.
 	
-		inline Uint16			propHandle() const { return (Uint16) properties; }
+		inline uint16_t			propHandle() const { return (uint16_t) properties; }
 	
 								/// Gets read-access to the properties of the character.
 								///
@@ -252,10 +252,10 @@ namespace wg
 		{
 			struct
 			{
-				Uint16	glyph;
-				Uint16	properties;				// 0 = Default properties of Text.
+				uint16_t	glyph;
+				uint16_t	properties;				// 0 = Default properties of Text.
 			};
-			Uint32	all;						// For quickly copying all...
+			uint32_t	all;						// For quickly copying all...
 		};
 	};
 	

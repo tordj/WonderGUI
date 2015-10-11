@@ -103,7 +103,7 @@ namespace wg
 	
 	//____ addMenu() ______________________________________________________________
 	
-	bool Menubar::addMenu( const char * pTitle, const Menu_p& pMenu, Uint16 navKey )
+	bool Menubar::addMenu( const char * pTitle, const Menu_p& pMenu, uint16_t navKey )
 	{
 		// Sanity check
 	
@@ -114,7 +114,7 @@ namespace wg
 	
 		MenuBarItem * pItem = new MenuBarItem();
 	
-		Uint32 strlen = TextTool::countChars( pTitle );
+		uint32_t strlen = TextTool::countChars( pTitle );
 		pItem->m_pText = new Char[strlen+1];
 	
 		TextTool::readString(pTitle, pItem->m_pText, strlen+1);
@@ -124,12 +124,12 @@ namespace wg
 		TextAttr	attr;
 		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_NORMAL);
 		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
-		Uint32 lineWidthNormal = TextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
+		uint32_t lineWidthNormal = TextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
 	
 		attr.clear();
 		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_HOVERED);
 		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
-		Uint32 lineWidthMarked = TextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
+		uint32_t lineWidthMarked = TextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
 	
 		if( lineWidthNormal > lineWidthMarked )
 			pItem->m_width = lineWidthNormal;
@@ -245,7 +245,7 @@ namespace wg
 		// Go throught the MenuBarItems and print their text and render their rectangles.
 	
 		MenuBarItem * pI = m_items.first();
-		Uint32 posX = window.x;
+		uint32_t posX = window.x;
 	
 		Pen pen;
 	
@@ -258,9 +258,9 @@ namespace wg
 		pen.setClipRect( clip );
 		pen.setDevice( pDevice );
 	
-		Uint32 printPosY = window.y + ( window.h - pen.getLineHeight() )/2 + pen.getBaseline();
+		uint32_t printPosY = window.y + ( window.h - pen.getLineHeight() )/2 + pen.getBaseline();
 	
-		Uint32 itemNb = 1;
+		uint32_t itemNb = 1;
 		while( pI )
 		{
 			if( pI->isVisible() )
@@ -321,7 +321,7 @@ namespace wg
 			{
 				Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 	
-				Uint32 item = _getItemAtAbsPos( pos.x, pos.y );
+				uint32_t item = _getItemAtAbsPos( pos.x, pos.y );
 	
 				if( item && !m_items.get(item-1)->m_bEnabled )
 					item = 0;								// Item is disabled and can't be marked.
@@ -471,7 +471,7 @@ namespace wg
 	
 	//____ _getItemAtPos() _________________________________________________________
 	
-	Uint32 Menubar::_getItemAtAbsPos( int x, int y )
+	uint32_t Menubar::_getItemAtAbsPos( int x, int y )
 	{
 		Coord pos = toLocal( Coord(x, y) );
 	
@@ -506,7 +506,7 @@ namespace wg
 	
 	void Menubar::_moveOutsideModal( int x, int y )
 	{
-		Uint32 item = _getItemAtAbsPos( x, y );
+		uint32_t item = _getItemAtAbsPos( x, y );
 	
 		if( item && item != m_selectedItem && m_items.get(item-1)->m_bEnabled )
 		{
@@ -520,7 +520,7 @@ namespace wg
 	
 	void Menubar::_menuOpened( MenuBarItem * pItem )
 	{
-		Uint32 item = pItem->index()+1;
+		uint32_t item = pItem->index()+1;
 		m_selectedItem = item;
 		_requestRender();
 	}

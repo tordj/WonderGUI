@@ -121,10 +121,10 @@ namespace wg
 	
 		struct LegoSource : public Resource
 		{
-			LegoSource(const std::string& id, const std::string& surface, Rect rect, Uint32 nStates, MetaData* meta) : Resource(id, meta), surface(surface), rect(rect), nStates(nStates) { }
+			LegoSource(const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData* meta) : Resource(id, meta), surface(surface), rect(rect), nStates(nStates) { }
 			std::string surface;
 			Rect rect;
-			Uint32 nStates;
+			uint32_t nStates;
 		};
 	
 		struct ConnectRes : public Resource
@@ -181,7 +181,7 @@ namespace wg
 		bool				addCursor( const std::string& id, const Caret_p& pCursor, MetaData * pMetaData = 0 );
 		bool				addTextprop( const std::string& id, const Textprop_p& pProp, MetaData * pMetaData = 0 );
 		bool				addColor( const std::string& id, Color col, MetaData * pMetaData = 0 );
-		bool				addLegoSource( const std::string& id, const std::string& surface, Rect rect, Uint32 nStates, MetaData * pMetaData = 0 );
+		bool				addLegoSource( const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData * pMetaData = 0 );
 		bool				addSkin( const std::string& id, const Skin_p& pSkin, MetaData * pMetaData = 0 );
 		bool				addConnect( MetaData * pMetaData );
 		bool				addWidget( const std::string& id, const Widget_p& pWidget, MetaData * pMetaData = 0 );

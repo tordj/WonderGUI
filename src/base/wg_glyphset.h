@@ -49,8 +49,8 @@ namespace wg
 	{
 		Surface_p pSurface;
 		Rect		rect;
-		Sint8		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-		Sint8		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+		int8_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 	
 	
@@ -88,10 +88,10 @@ namespace wg
 	
 		Surface_p pSurf;
 		Rect		rect;
-		Sint8		bearingX;
-		Sint8		bearingY;
-		Uint8		leftBorder;
-		Uint8		rightBorder;
+		int8_t		bearingX;
+		int8_t		bearingY;
+		uint8_t		leftBorder;
+		uint8_t		rightBorder;
 	};
 	
 	class Glyphset;
@@ -118,8 +118,8 @@ namespace wg
 		virtual	Type			getType() const = 0;
 	
 		virtual int				getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size ) = 0;
-		virtual Glyph_p		getGlyph( Uint16 chr, int size ) = 0;
-		virtual bool			hasGlyph( Uint16 chr ) = 0;
+		virtual Glyph_p		getGlyph( uint16_t chr, int size ) = 0;
+		virtual bool			hasGlyph( uint16_t chr ) = 0;
 	
 		virtual int				getHeight( int size ) = 0;
 		virtual int				getLineSpacing( int size ) = 0;

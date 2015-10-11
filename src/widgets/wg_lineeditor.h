@@ -62,11 +62,11 @@ namespace wg
 	
 		inline void	setPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
 		inline bool passwordMode() {return m_bPasswordMode;};
-		inline Uint16 passwordGlyph() const				 { return m_pwGlyph; };
-		void		setPasswordGlyph( Uint16 glyph );
+		inline uint16_t passwordGlyph() const				 { return m_pwGlyph; };
+		void		setPasswordGlyph( uint16_t glyph );
 	
 		int			insertTextAtCursor( const CharSeq& str );
-		bool		insertCharAtCursor( Uint16 c );
+		bool		insertCharAtCursor( uint16_t c );
 	
 		virtual void			setEditMode(TextEditMode mode);
 		virtual TextEditMode	editMode() const { return m_text.editMode(); }
@@ -103,7 +103,7 @@ namespace wg
 	
 		bool				m_bResetCursorOnFocus;
 		bool				m_bPasswordMode;
-		Uint16				m_pwGlyph;
+		uint16_t				m_pwGlyph;
 		int					m_viewOfs;
 	};
 	

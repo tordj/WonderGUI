@@ -52,17 +52,17 @@ namespace wg
 		// ModValue methods
 	
 		void				clear();
-		bool				set( Sint64 value, int scale );
+		bool				set( int64_t value, int scale );
 		
-		bool				setRange( Sint64 min, Sint64 max );
-		inline Sint64		min() const { return m_minValue; }
-		inline Sint64		max() const { return m_maxValue; }
+		bool				setRange( int64_t min, int64_t max );
+		inline int64_t		min() const { return m_minValue; }
+		inline int64_t		max() const { return m_maxValue; }
 	
 		void				onValueModified() { static_cast<ModValueHolder*>(m_pHolder)->_onValueModified(this); }
 	
 	protected:
-		Sint64				m_minValue;
-		Sint64				m_maxValue;
+		int64_t				m_minValue;
+		int64_t				m_maxValue;
 	};
 	
 	

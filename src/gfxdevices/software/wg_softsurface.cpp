@@ -42,12 +42,12 @@ namespace wg
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
-		m_pData = new Uint8[ m_pitch*size.h ];
+		m_pData = new uint8_t[ m_pitch*size.h ];
 		m_bOwnsData = true;
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, WgPixelType type, Uint8 * pPixels, int pitch, const Object_p& pFinalizer )
+	SoftSurface::SoftSurface( Size size, WgPixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
 	{
 		assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
@@ -109,7 +109,7 @@ namespace wg
 		m_bOwnsData		= true;
 		m_fScaleAlpha 	= pOther->m_fScaleAlpha;
 	
-		m_pData = new Uint8[ m_pitch*m_size.h ];
+		m_pData = new uint8_t[ m_pitch*m_size.h ];
 	
 		int linebytes = m_size.w * m_pixelFormat.bits/8;
 		for( int y = 0 ; y < m_size.h ; y++ )
@@ -118,18 +118,18 @@ namespace wg
 	
 	//____ pixel() _________________________________________________________________
 	
-	Uint32 SoftSurface::pixel( Coord coord ) const
+	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
 		if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
 	    {
-			Uint32 k = * ((Uint32*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
+			uint32_t k = * ((uint32_t*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
 			return k;
 	    }
 		else
 	    {
-			Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
+			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
 	
-			Uint32 k = pPixel[0] + (((Uint32)pPixel[1]) << 8) + (((Uint32)pPixel[2]) << 8);
+			uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 8);
 			return k;
 	    }
 	
@@ -137,12 +137,12 @@ namespace wg
 	
 	//____ alpha() _______________________________________________________________
 	
-	Uint8 SoftSurface::alpha( Coord coord ) const
+	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
 		if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
 		  {
-			Uint8 * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
-		    return (Uint8)(m_fScaleAlpha * (float)pPixel[3]);
+			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
+		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
 		  }
 		else
 		  return 0xff;
@@ -204,7 +204,7 @@ namespace wg
 	
 	#define PCLIP(x,y) (((x)>(y))?(y):(x))
 	
-	void SoftSurface::putPixels(const vector<int> &x, const vector<int> &y, const vector<Uint32> &col, int length, bool replace)
+	void SoftSurface::putPixels(const vector<int> &x, const vector<int> &y, const vector<uint32_t> &col, int length, bool replace)
 	{
 		Color color1;
 		Color color2;
@@ -220,18 +220,18 @@ namespace wg
 				  ind = y[n]*m_pitch + x[n]*4;
 				  if(!replace) {
 					// Get old (1) and new (2) pixel
-					color1.argb = *((Uint32*)&m_pData[ind]);
+					color1.argb = *((uint32_t*)&m_pData[ind]);
 					color2.argb = col[n];
 					// Blend
-					color1.r = (Uint8)(PCLIP((int)color1.r + (int)color2.r,0xFF));
-					color1.g = (Uint8)(PCLIP((int)color1.g + (int)color2.g,0xFF));
-					color1.b = (Uint8)(PCLIP((int)color1.b + (int)color2.b,0xFF));
-					color1.a = (Uint8)(PCLIP((int)color1.a + (int)color2.a,0xFF));
+					color1.r = (uint8_t)(PCLIP((int)color1.r + (int)color2.r,0xFF));
+					color1.g = (uint8_t)(PCLIP((int)color1.g + (int)color2.g,0xFF));
+					color1.b = (uint8_t)(PCLIP((int)color1.b + (int)color2.b,0xFF));
+					color1.a = (uint8_t)(PCLIP((int)color1.a + (int)color2.a,0xFF));
 					// Store
-					*((Uint32*)&m_pData[ind]) = color1.argb;
+					*((uint32_t*)&m_pData[ind]) = color1.argb;
 				  } else {
 					// Overwrite old pixel with new pixel
-					*((Uint32*)&m_pData[ind]) = col[n];
+					*((uint32_t*)&m_pData[ind]) = col[n];
 				  }
 				}
 				break;

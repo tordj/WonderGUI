@@ -181,7 +181,7 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	Glyph_p Font::getGlyph( Uint32 chr, FontAlt style, int size ) const
+	Glyph_p Font::getGlyph( uint32_t chr, FontAlt style, int size ) const
 	{
 		Glyph_p p;
 	
@@ -279,7 +279,7 @@ namespace wg
 	
 	//____ isGlyphProvided() ______________________________________________________
 	
-	Font::GlyphProvided Font::isGlyphProvided( Uint32 chr, FontAlt style, int size ) const
+	Font::GlyphProvided Font::isGlyphProvided( uint32_t chr, FontAlt style, int size ) const
 	{
 		// Find the right glyph to the following priorities:
 	

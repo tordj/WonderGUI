@@ -355,7 +355,7 @@ namespace wg
 		const Char * pString = m_buffer.chars() + pLine->ofs;
 	
 		Pen pen;
-		Uint16 hProp = 0xFFFF;
+		uint16_t hProp = 0xFFFF;
 	
 		TextAttr	attr;
 	
@@ -709,7 +709,7 @@ namespace wg
 	{
 	
 		int	diff = 0;
-		Uint32	line = 0;
+		uint32_t	line = 0;
 	
 		Char * pMine = getLineText( 0 );
 		Char * pOther = _pOther->getLineText( 0 );
@@ -783,7 +783,7 @@ namespace wg
 	
 	//____ setScaledValue() _______________________________________________________
 	
-	void LegacyTextField::setScaledValue( Sint64 value, Uint32 scale, const ValueFormat_p& pFormat )
+	void LegacyTextField::setScaledValue( int64_t value, uint32_t scale, const ValueFormat_p& pFormat )
 	{
 		Char	str[s_parseBufLen];
 		Char * pStr = _parseScaledValue( value, scale, pFormat.rawPtr(), str );
@@ -816,7 +816,7 @@ namespace wg
 					for( int i = pF->decimals; i > 0 ; i-- )
 					{
 						decPart *= 10;
-						p->setGlyph((Uint16)decPart + 0x30);
+						p->setGlyph((uint16_t)decPart + 0x30);
 						p++;
 						decPart = decPart - (int) decPart;
 					}
@@ -838,9 +838,9 @@ namespace wg
 	
 		// Write integer part to temp area (backwards)
 	
-		Uint16	temp2[32];
+		uint16_t	temp2[32];
 	
-		Uint32	intPart = (Uint32) value;
+		uint32_t	intPart = (uint32_t) value;
 		int			n = 0;
 	
 		while( intPart > 0 )
@@ -923,13 +923,13 @@ namespace wg
 	
 	//____ _parseScaledValue() _____________________________________________________
 	
-	Char * LegacyTextField::_parseScaledValue( Sint64 value, Uint32 scale, const ValueFormat * pF, Char tempstring[s_parseBufLen] )
+	Char * LegacyTextField::_parseScaledValue( int64_t value, uint32_t scale, const ValueFormat * pF, Char tempstring[s_parseBufLen] )
 	{
 	
-		Sint64 absVal = value >= 0 ? value : -value;
+		int64_t absVal = value >= 0 ? value : -value;
 	
-		Sint64 intPart = absVal / scale;
-		Sint64 decPart = absVal % scale;
+		int64_t intPart = absVal / scale;
+		int64_t decPart = absVal % scale;
 	
 		// Write period and decimal part
 	
@@ -948,7 +948,7 @@ namespace wg
 					for( int i = pF->decimals; i > 0 ; i-- )
 					{
 						decPart *= 10;
-						p++->setGlyph(((Uint16)(decPart/scale)) + 0x30);
+						p++->setGlyph(((uint16_t)(decPart/scale)) + 0x30);
 						decPart = decPart % scale;
 					}
 				}
@@ -966,13 +966,13 @@ namespace wg
 	
 		// Write integer part to temp area (backwards)
 	
-		Uint16	temp2[32];
+		uint16_t	temp2[32];
 	
 		int			n = 0;
 	
 		while( intPart > 0 )
 		{
-			temp2[n++] = (Uint16) ((intPart % 10) + 0x30);
+			temp2[n++] = (uint16_t) ((intPart % 10) + 0x30);
 			intPart /= 10;
 		}
 	
@@ -1429,7 +1429,7 @@ namespace wg
 	{
 		const Char *	p = pStart;
 		int			nSoftLines = 0;
-		Uint16		hProp = 0xFFFF;					// Force immediate update of textprop.
+		uint16_t		hProp = 0xFFFF;					// Force immediate update of textprop.
 		bool		bEndOfText = false;
 	
 		Pen		pen;
@@ -1529,7 +1529,7 @@ namespace wg
 	
 				// Check if we need to put a softbreak.
 	
-	//			Uint32 len = pen.getBlitPosX() + pen.getGlyph()->rect.w; // No advance on last character of line, just bearingX + width
+	//			uint32_t len = pen.getBlitPosX() + pen.getGlyph()->rect.w; // No advance on last character of line, just bearingX + width
 				int len = pen.getPosX() + pen.getGlyph()->advance();
 				if( len > maxWidth )
 				{
@@ -1661,7 +1661,7 @@ namespace wg
 	
 		const Char * pChars = m_buffer.chars() + pLine->ofs;
 		int		nChars = pLine->nChars;
-		Uint16	hProp = 0xFFFF;
+		uint16_t	hProp = 0xFFFF;
 	
 		Pen pen;
 	
@@ -1893,7 +1893,7 @@ namespace wg
 			return bCursorMode?pLine->nChars:-1;
 	
 		const Char * pChars = m_buffer.chars() + pLine->ofs;
-		Uint16	hProp = 0xFFFF;
+		uint16_t	hProp = 0xFFFF;
 		Pen pen;
 		pen.setOrigo( Coord(xStart,0) );
 		pen.setPosX(xStart);
@@ -2028,7 +2028,7 @@ namespace wg
 		LegacyTextLine * pLine = &m_pSoftLines[pos.line];
 	
 		const Char * pChars = m_buffer.chars() + pLine->ofs;
-		Uint16	hProp = 0xFFFF;
+		uint16_t	hProp = 0xFFFF;
 		Pen pen;
 		
 		int startX = lineStartX( pos.line, container );

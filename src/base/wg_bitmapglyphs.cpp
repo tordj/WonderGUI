@@ -169,7 +169,7 @@ namespace wg
 	
 	//____ hasGlyph() _________________________________________________
 	
-	inline bool BitmapGlyphs::hasGlyph( Uint16 chr )
+	inline bool BitmapGlyphs::hasGlyph( uint16_t chr )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
@@ -186,7 +186,7 @@ namespace wg
 	
 	//____ getGlyph() _________________________________________________________
 	
-	inline Glyph_p BitmapGlyphs::getGlyph( Uint16 chr, int size )
+	inline Glyph_p BitmapGlyphs::getGlyph( uint16_t chr, int size )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
@@ -240,11 +240,11 @@ namespace wg
 			#pragma pack(1)
 			struct headerBlock
 			{
-				Uint32 blockSize;
-				Uint32 sectionCount;
-				Uint16 spaceSpacing;
-				Uint16 height;
-				Uint16 ascend;
+				uint32_t blockSize;
+				uint32_t sectionCount;
+				uint16_t spaceSpacing;
+				uint16_t height;
+				uint16_t ascend;
 	
 				static headerBlock create(char* pData)
 				{
@@ -256,17 +256,17 @@ namespace wg
 			#pragma pack(1)
 			struct charsBlock
 			{
-				Uint32 blockSize;
+				uint32_t blockSize;
 				struct charInfo
 				{
-					Uint16 character;
-					Uint16 x;
-					Uint16 y;
-					Uint16 width;
-					Uint16 height;
-					Sint16 advance;
-					Sint16 xoffset;
-					Sint16 yoffset;
+					uint16_t character;
+					uint16_t x;
+					uint16_t y;
+					uint16_t width;
+					uint16_t height;
+					int16_t advance;
+					int16_t xoffset;
+					int16_t yoffset;
 	
 					static charInfo create(char* pData)
 					{
@@ -286,12 +286,12 @@ namespace wg
 			#pragma pack(1)
 			struct kerningPairsBlock
 			{
-				Uint32 blockSize;
+				uint32_t blockSize;
 				struct kerningPair
 				{
-					Uint16  first;
-					Uint16  second;
-					Sint16 amount;
+					uint16_t  first;
+					uint16_t  second;
+					int16_t amount;
 	
 					static kerningPair create(char* pData)
 					{
@@ -363,7 +363,7 @@ namespace wg
 							charsBlock::charInfo info = charsBlock::charInfo::create(&pGlyphSpec[innerIndex]);
 							innerIndex += sizeof(charsBlock::charInfo);
 	
-							Uint16 c = info.character;
+							uint16_t c = info.character;
 	
 							int tab = c >> 8;
 							if( m_glyphTab[tab] == 0 )
@@ -376,7 +376,7 @@ namespace wg
 							}
 	
 							c &= 0xff;
-							m_glyphTab[tab][c] = MyGlyph( (Uint8)info.advance, (Sint8)info.xoffset, (Sint8)info.yoffset, m_nGlyphs, this, pSurf, Rect( info.x, info.y, info.width, info.height) );
+							m_glyphTab[tab][c] = MyGlyph( (uint8_t)info.advance, (int8_t)info.xoffset, (int8_t)info.yoffset, m_nGlyphs, this, pSurf, Rect( info.x, info.y, info.width, info.height) );
 	
 							if(firstInsert)
 							{
@@ -402,7 +402,7 @@ namespace wg
 						int innerIndex = currentIndex + sizeof(pBlock);
 						currentIndex += pBlock.blockSize;
 	
-						Sint8* pNewKerningTable = new Sint8[ m_nGlyphs * m_nGlyphs ];
+						int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
 						int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
 						int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
 						if( m_pKerningTable )
@@ -421,13 +421,13 @@ namespace wg
 							kerningPairsBlock::kerningPair info = kerningPairsBlock::kerningPair::create(&pGlyphSpec[innerIndex]);
 							innerIndex += sizeof(kerningPairsBlock::kerningPair);
 	
-							Uint16 cLeft = info.first;
-							Uint16 cRight = info.second;
+							uint16_t cLeft = info.first;
+							uint16_t cRight = info.second;
 	
 							int indexLeft = getGlyph( cLeft )->kerningIndex();
 							int indexRight = getGlyph( cRight )->kerningIndex();
 	
-							m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = (Sint8)info.amount;
+							m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = (int8_t)info.amount;
 						}
 					}
 					break;
@@ -497,7 +497,7 @@ namespace wg
 				//
 	
 				const char * pChr = chr;
-				Uint16 c = TextTool::parseChar( pChr );
+				uint16_t c = TextTool::parseChar( pChr );
 	
 				int tab = c >> 8;
 				if( m_glyphTab[tab] == 0 )
@@ -544,7 +544,7 @@ namespace wg
 				{
 					char* pKerningSpec = TextTool::nextLine( pKerningStart );
 	
-					Sint8* pNewKerningTable = new Sint8[ m_nGlyphs * m_nGlyphs ];
+					int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
 					int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
 					int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
 					if( m_pKerningTable )
@@ -569,8 +569,8 @@ namespace wg
 					{
 						const char* pChrLeft = chrLeft;
 						const char* pChrRight = chrRight;
-						Uint16 cLeft = TextTool::parseChar( pChrLeft );
-						Uint16 cRight = TextTool::parseChar( pChrRight );
+						uint16_t cLeft = TextTool::parseChar( pChrLeft );
+						uint16_t cRight = TextTool::parseChar( pChrRight );
 	
 						int indexLeft = getGlyph( cLeft )->kerningIndex();
 						int indexRight = getGlyph( cRight )->kerningIndex();
@@ -595,7 +595,7 @@ namespace wg
 		m_src.pSurface = 0;
 	}
 	
-	BitmapGlyphs::MyGlyph::MyGlyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect )
+	BitmapGlyphs::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect )
 	: Glyph( advance, kerningIndex, pGlyphset )
 	{
 			m_src.pSurface	= pSurf;

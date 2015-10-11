@@ -101,9 +101,9 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	Uint32 GfxDevice::setRenderFlags( Uint32 flags )
+	uint32_t GfxDevice::setRenderFlags( uint32_t flags )
 	{
-		Uint32 oldFlags = m_renderFlags;
+		uint32_t oldFlags = m_renderFlags;
 		m_renderFlags = flags;
 		return oldFlags;
 	}
@@ -695,7 +695,7 @@ namespace wg
 		Color	color	= baseCol;
 	
 		const Char * pChars = pText->getText();
-		Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+		uint16_t	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 		TextAttr		attr;
 	
 		Range	selection = pText->getSelection();
@@ -737,7 +737,7 @@ namespace wg
 	
 			// Calculate position and blit the glyph.
 	
-			Uint16 ch = pChars[i].getGlyph();
+			uint16_t ch = pChars[i].getGlyph();
 	
 			bool bBlit = pen.setChar( ch );
 			pen.applyKerning();
@@ -792,7 +792,7 @@ namespace wg
 		Color	color	= baseCol;
 	
 		const Char * pChars = pText->getText();
-		Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+		uint16_t	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 		TextAttr		attr;
 		TextAttr		baseAttr;
 	
@@ -805,7 +805,7 @@ namespace wg
 		pText->getBaseAttr( baseAttr );	// Ellipsis are always rendered using the base attributes.
 		pen.setAttributes( baseAttr );
 	
-		Uint16	ellipsisChar = WG_ELLIPSIS;
+		uint16_t	ellipsisChar = WG_ELLIPSIS;
 		ellipsisWidth = 0;
 		Glyph_p pEllipsis = pen.getFont()->getGlyph( WG_ELLIPSIS, pen.getStyle(), pen.getSize() );
 	
@@ -863,7 +863,7 @@ namespace wg
 	
 			// Calculate position and blit the glyph.
 	
-			Uint16 ch = pChars[i].getGlyph();
+			uint16_t ch = pChars[i].getGlyph();
 	
 			bool bBlit = pen.setChar( ch );
 	
@@ -949,7 +949,7 @@ namespace wg
 		// Scan through the text, drawing character specific backgrounds
 		// (and in the future punching holes in the general background?)
 	
-		Uint16	hProp = 0xFFFF;
+		uint16_t	hProp = 0xFFFF;
 		Color	color;
 		int		startOfs = 0;
 	
@@ -1058,7 +1058,7 @@ namespace wg
 		Color baseCol	= m_tintColor;
 		Color	color	= baseCol;
 	
-		Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+		uint16_t	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
 		TextAttr	attr;
 	
 		pen.flushChar();
@@ -1106,7 +1106,7 @@ namespace wg
 	
 			// Calculate position and blit the glyph.
 	
-			Uint16 ch = _pLine[i].getGlyph();
+			uint16_t ch = _pLine[i].getGlyph();
 	
 			bool bBlit = pen.setChar( ch );
 			pen.applyKerning();
@@ -1137,7 +1137,7 @@ namespace wg
 	
 	void GfxDevice::_drawUnderline( const Rect& clip, const LegacyTextField * pText, int _x, int _y, int ofs, int maxChars )
 	{
-		Uint32 hProp = 0xFFFF;
+		uint32_t hProp = 0xFFFF;
 	
 		Pen pen;
 		const Char * pChars = pText->getText();

@@ -111,16 +111,16 @@ namespace wg
 		friend class Menu;
 	public:
 		MenuEntry();
-		MenuEntry( int id, const String& text, const String& helpText, const Skin_p& pIcon, Uint16 navKey,
-			WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const String& accelText = String() );
+		MenuEntry( int id, const String& text, const String& helpText, const Skin_p& pIcon, uint16_t navKey,
+			WgModifierKeys accelModif = WG_MODKEY_NONE, uint16_t accelKey = 0, const String& accelText = String() );
 		virtual ~MenuEntry();
 	
 		void 	setText(const String& text);
 		void 	setHelpText(const String& helpText);
 		void 	setIcon(const Skin_p& pIcon);
-		void 	setNavKey(Uint16 navKey);
+		void 	setNavKey(uint16_t navKey);
 		void 	setAccelModifier(WgModifierKeys accelModif);
-		void 	setAccelKey(Uint16 accelKey);
+		void 	setAccelKey(uint16_t accelKey);
 		void 	setAccelText(const String& accelText);
 	
 		inline bool isEnabled() { return m_bEnabled; }
@@ -131,12 +131,12 @@ namespace wg
 		inline String getAccelText() { return m_accelText; }
 	
 		inline const Skin_p getIcon() { return m_pIcon; }
-		inline Uint16			getNavKey()		{ return m_navKey; }
+		inline uint16_t			getNavKey()		{ return m_navKey; }
 		inline WgModifierKeys	getAccelModif()	{ return m_accelModif; }
-		inline Uint16			getAccelKey()	{ return m_accelKey; }
+		inline uint16_t			getAccelKey()	{ return m_accelKey; }
 	
 	protected:
-		Uint16			m_minWidth;
+		uint16_t			m_minWidth;
 	private:
 		String		m_text;
 		String		m_accelText;
@@ -145,9 +145,9 @@ namespace wg
 		Skin_p		m_pIcon;
 		bool			m_bEnabled;
 	
-		Uint16			m_navKey;
+		uint16_t			m_navKey;
 		WgModifierKeys	m_accelModif;
-		Uint16			m_accelKey;
+		uint16_t			m_accelKey;
 	};
 	
 	//____ MenuCheckBox _________________________________________________________
@@ -156,8 +156,8 @@ namespace wg
 	{
 	public:
 		MenuCheckBox();
-		MenuCheckBox(	int id, const String& text, const String& helpText, Uint16 navKey, bool bChecked,
-						WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const String& accelText = String() );
+		MenuCheckBox(	int id, const String& text, const String& helpText, uint16_t navKey, bool bChecked,
+						WgModifierKeys accelModif = WG_MODKEY_NONE, uint16_t accelKey = 0, const String& accelText = String() );
 		virtual ~MenuCheckBox() {};
 	
 		inline bool isChecked() { return m_bChecked; }
@@ -174,8 +174,8 @@ namespace wg
 	{
 	public:
 		MenuRadioButton();
-		MenuRadioButton(	int id, const String& text, const String& helpText, Uint16 navKey, bool bSelected,
-						WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const String& accelText = String() );
+		MenuRadioButton(	int id, const String& text, const String& helpText, uint16_t navKey, bool bSelected,
+						WgModifierKeys accelModif = WG_MODKEY_NONE, uint16_t accelKey = 0, const String& accelText = String() );
 		virtual ~MenuRadioButton() {};
 	
 		inline	bool isSelected() { return m_bSelected; }
@@ -192,8 +192,8 @@ namespace wg
 	{
 	public:
 		MenuSubMenu();
-		MenuSubMenu(	int id, const String& text, const String& helpText, const Skin_p& pIcon, Uint16 navKey, const Menu_p& pSubMenu,
-						WgModifierKeys accelModif = WG_MODKEY_NONE, Uint16 accelKey = 0, const String& accelText = String() );
+		MenuSubMenu(	int id, const String& text, const String& helpText, const Skin_p& pIcon, uint16_t navKey, const Menu_p& pSubMenu,
+						WgModifierKeys accelModif = WG_MODKEY_NONE, uint16_t accelKey = 0, const String& accelText = String() );
 		virtual ~MenuSubMenu() {};
 	
 		inline Menu_p	getSubMenu()					{return m_pSubMenu;};

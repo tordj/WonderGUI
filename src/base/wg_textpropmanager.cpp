@@ -32,15 +32,15 @@
 namespace wg 
 {
 	
-	Sint16				TextpropManager::g_propIndex[256];
+	int16_t				TextpropManager::g_propIndex[256];
 	
 	TextpropHolder	TextpropManager::g_nullProp;
 	
 	
 	TextpropHolder *	TextpropManager::g_pPropBuffer = &g_nullProp;
-	Uint32				TextpropManager::g_nPropUsed  = 1;
-	Uint32				TextpropManager::g_nPropTotal = 1;
-	Sint16				TextpropManager::g_firstFreeProp = -1;
+	uint32_t				TextpropManager::g_nPropUsed  = 1;
+	uint32_t				TextpropManager::g_nPropTotal = 1;
+	int16_t				TextpropManager::g_firstFreeProp = -1;
 	bool				TextpropManager::g_bMergeSimilar = true;
 	
 	TextpropManager	dummy;		// Used to bootstrap the system...
@@ -73,15 +73,15 @@ namespace wg
 	
 	//____ registerProp() _________________________________________________________
 	
-	Uint16 TextpropManager::registerProp( const Textprop& prop )
+	uint16_t TextpropManager::registerProp( const Textprop& prop )
 	{
 		prop.assertIntegrity();
 	
-		Uint8 ofs = prop._calculateChecksum();
+		uint8_t ofs = prop._calculateChecksum();
 	
 		// Check s_propIndex for indentical property, increase ref and return if found.
 	
-		Sint16 h = g_propIndex[ofs];
+		int16_t h = g_propIndex[ofs];
 	
 		while( h >= 0 )
 		{
@@ -90,7 +90,7 @@ namespace wg
 			if( g_bMergeSimilar && prop._compareTo( &p->m_prop ) )
 				return p->m_id;
 	
-			h = (Sint16) p->m_next;
+			h = (int16_t) p->m_next;
 		}
 	
 		// Get an available Textprop, fill in data, link and return id.
@@ -98,7 +98,7 @@ namespace wg
 		if( g_firstFreeProp < 0 )
 			increaseBuffer();
 	
-		Uint16 id = g_firstFreeProp;
+		uint16_t id = g_firstFreeProp;
 		TextpropHolder * p = &g_pPropBuffer[id];
 	
 	
@@ -178,7 +178,7 @@ namespace wg
 	
 	//____ freeProp() ______________________________________________
 	
-	void TextpropManager::freeProp( Uint16 hProp )
+	void TextpropManager::freeProp( uint16_t hProp )
 	{
 		TextpropHolder * p = &g_pPropBuffer[hProp];
 	

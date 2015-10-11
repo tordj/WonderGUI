@@ -46,8 +46,8 @@ namespace wg
 		m_accelKey		= 0;
 	}
 	
-	MenuEntry::MenuEntry(	int id, const String& text, const String& helpText, const Skin_p& pIcon, Uint16 navKey,
-								WgModifierKeys accelModif, Uint16 accelKey, const String& accelText ):MenuItem(ENTRY,id)
+	MenuEntry::MenuEntry(	int id, const String& text, const String& helpText, const Skin_p& pIcon, uint16_t navKey,
+								WgModifierKeys accelModif, uint16_t accelKey, const String& accelText ):MenuItem(ENTRY,id)
 	{
 	
 		m_text			= text;
@@ -80,7 +80,7 @@ namespace wg
 		modified();
 	}
 	
-	void MenuEntry::setNavKey(Uint16 navKey)
+	void MenuEntry::setNavKey(uint16_t navKey)
 	{
 		m_navKey		= navKey;
 		modified();
@@ -92,7 +92,7 @@ namespace wg
 		modified();
 	}
 	
-	void MenuEntry::setAccelKey(Uint16 accelKey)
+	void MenuEntry::setAccelKey(uint16_t accelKey)
 	{
 		m_accelKey		= accelKey;
 		modified();
@@ -119,8 +119,8 @@ namespace wg
 		m_bChecked = false;
 	}
 	
-	MenuCheckBox::MenuCheckBox(	int id, const String& text, const String& helpText, Uint16 navKey, bool bChecked,
-									WgModifierKeys accelModif, Uint16 accelKey, const String& accelText )
+	MenuCheckBox::MenuCheckBox(	int id, const String& text, const String& helpText, uint16_t navKey, bool bChecked,
+									WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = CHECKBOX;
@@ -136,8 +136,8 @@ namespace wg
 	}
 	
 	MenuRadioButton::MenuRadioButton(	int id, const String& text, const String& helpText,
-											Uint16 navKey, bool bSelected,
-											WgModifierKeys accelModif, Uint16 accelKey, const String& accelText )
+											uint16_t navKey, bool bSelected,
+											WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = RADIOBUTTON;
@@ -183,8 +183,8 @@ namespace wg
 	
 	
 	MenuSubMenu::MenuSubMenu(	int id, const String& text, const String& helpText,
-									const Skin_p& pIcon, Uint16 navKey, const Menu_p& pSubMenu,
-									WgModifierKeys accelModif, Uint16 accelKey, const String& accelText )
+									const Skin_p& pIcon, uint16_t navKey, const Menu_p& pSubMenu,
+									WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = SUBMENU;

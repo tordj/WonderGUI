@@ -96,7 +96,7 @@ namespace wg
 	
 	void CharBuffer::_clearCharsNoDeref( int ofs, int n )
 	{
-		Uint32 * p = (Uint32*) _ptr(ofs);
+		uint32_t * p = (uint32_t*) _ptr(ofs);
 	
 		for( int i = 0 ; i < (int) n ; i++ )
 			* p++ = c_emptyChar;
@@ -142,7 +142,7 @@ namespace wg
 			m_pHead->m_beg = 0;
 			m_pHead->m_len = 0;
 	
-			*((Uint32*) _ptr(0))= 0;	// NULL-terminate content.
+			*((uint32_t*) _ptr(0))= 0;	// NULL-terminate content.
 		}
 		else
 		{
@@ -168,7 +168,7 @@ namespace wg
 	
 		BufferHead * p = _createBuffer( begMargin + copyLen + endMargin );
 		_copyChars( p, begMargin, m_pHead, m_pHead->m_beg + copyOfs, copyLen );
-		((Uint32*)&p[1])[begMargin + copyLen] = 0;	// Terminate the buffer content.
+		((uint32_t*)&p[1])[begMargin + copyLen] = 0;	// Terminate the buffer content.
 	
 	
 		p->m_beg = begMargin;
@@ -300,7 +300,7 @@ namespace wg
 		{
 			_derefProps( m_pHead->m_len - nChars, nChars );
 			m_pHead->m_len -= nChars;
-			* ((Uint32 *) _ptr(m_pHead->m_len)) = 0;		// null terminate.
+			* ((uint32_t *) _ptr(m_pHead->m_len)) = 0;		// null terminate.
 		}
 	
 		return nChars;
@@ -343,9 +343,9 @@ namespace wg
 	
 	//____ _setChars() _____________________________________________________________
 	
-	void CharBuffer::_setChars( int ofs, int nChars, Uint32 value )
+	void CharBuffer::_setChars( int ofs, int nChars, uint32_t value )
 	{
-		Uint32 * pChar = ((Uint32 *) &m_pHead[1]) + m_pHead->m_beg + ofs;
+		uint32_t * pChar = ((uint32_t *) &m_pHead[1]) + m_pHead->m_beg + ofs;
 	
 		for( int i = 0 ; i < (int) nChars ; i++ )
 			pChar[i] = value;
@@ -362,7 +362,7 @@ namespace wg
 	int CharBuffer::pushFront( const Char& character )
 	{
 		_pushFront(1);
-		*((Uint32*)_ptr(0)) = character.all;
+		*((uint32_t*)_ptr(0)) = character.all;
 	
 		if( character.properties )
 			TextpropManager::incRef(character.properties, 1 );
@@ -454,7 +454,7 @@ namespace wg
 	int CharBuffer::pushBack( const Char& character )
 	{
 		_pushBack(1);
-		*((Uint32*)_ptr( m_pHead->m_len - 1)) = character.all;
+		*((uint32_t*)_ptr( m_pHead->m_len - 1)) = character.all;
 	
 		if( character.properties )
 			TextpropManager::incRef(character.properties, 1 );
@@ -600,7 +600,7 @@ namespace wg
 		}
 	
 		m_pHead->m_len += nChars;
-		* ((Uint32*) _ptr(m_pHead->m_len)) = 0;					// Null terminate the string.
+		* ((uint32_t*) _ptr(m_pHead->m_len)) = 0;					// Null terminate the string.
 	}
 	
 	//____ insert() ________________________________________________________________
@@ -1017,7 +1017,7 @@ namespace wg
 		pBuffer->m_refCnt   = 0;
 		pBuffer->m_size     = size;
 	
-		* ((Uint32 *) &pBuffer[1]) = 0;		// null terminate.
+		* ((uint32_t *) &pBuffer[1]) = 0;		// null terminate.
 		g_nBuffers++;
 	
 		if( size == 0 )
@@ -1116,7 +1116,7 @@ namespace wg
 	/// This method sets the glyph for all characters in the specified range. If the
 	/// range spans outside the buffer content it will be adjusted properly.
 	
-	void CharBuffer::setGlyphs( Uint16 glyph, int ofs, int len )
+	void CharBuffer::setGlyphs( uint16_t glyph, int ofs, int len )
 	{
 		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 			return;
@@ -1421,7 +1421,7 @@ namespace wg
 	///
 	/// @return Offset in buffer for first match found or -1 if none found.
 	
-	int CharBuffer::findFirst( Uint16 character, int ofs )
+	int CharBuffer::findFirst( uint16_t character, int ofs )
 	{
 		if( ofs < 0 )
 			ofs = 0;

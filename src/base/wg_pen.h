@@ -83,7 +83,7 @@ namespace wg
 	
 	
 		void					setTab( int width ) { m_tabWidth = width; }
-		bool					setChar( Uint32 chr );
+		bool					setChar( uint32_t chr );
 		void					flushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.setAdvance(0); }
 		void					applyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->getKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
 	

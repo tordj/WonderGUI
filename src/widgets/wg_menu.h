@@ -265,8 +265,8 @@ namespace wg
 		// Members defining items.
 	
 		Chain<MenuItem>		m_items;
-		Uint32					m_nItems;
-		Uint32					m_markedItem;		// 0 = no item is selected.
+		uint32_t					m_nItems;
+		uint32_t					m_markedItem;		// 0 = no item is selected.
 		MenuItem*				m_pSelectedItem;
 		MenuSubMenu*			m_pOpenSubMenu;		// Pointer at open submenu (if any).
 	
@@ -278,7 +278,7 @@ namespace wg
 		const static int		c_maxSelectorKeys = 20;
 		const static int		c_selectorCountdownStart = 1000;
 	
-		Uint16					m_selectorKeys[c_maxSelectorKeys];	// Filter for marking entry on keyboard input.
+		uint16_t					m_selectorKeys[c_maxSelectorKeys];	// Filter for marking entry on keyboard input.
 		int						m_nSelectorKeys;					// Number of characters in the filter.
 		int						m_selectorCountdown;				// Countdown in ms for clearing filter due to no keyboard input.
 	
@@ -299,12 +299,12 @@ namespace wg
 		// Members defining the arrow for submenus
 	
 		GfxAnim_p			m_pArrowAnim;
-		Uint32					m_arrowAnimCount;	// Animation position in milliseconds.
+		uint32_t					m_arrowAnimCount;	// Animation position in milliseconds.
 	
 		//
 	
-		Uint8					m_entryHeight;		// Height of a menu entry >= font height.
-		Uint8					m_sepHeight;		// Height of a separator menu entry.
+		uint8_t					m_entryHeight;		// Height of a menu entry >= font height.
+		uint8_t					m_sepHeight;		// Height of a separator menu entry.
 	
 		Textprop_p			m_pEntryProp;		// Default text properties for entry.
 		Textprop_p			m_pKeyAccelProp;	// Default text properties for keyboard shortcuts.

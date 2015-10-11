@@ -82,7 +82,7 @@ namespace wg
 	
 		void			getSoftPos( int &line, int &col ) const;
 	
-		bool			putChar( Uint16 character );
+		bool			putChar( uint16_t character );
 		int				putText( const CharSeq& seq );
 		void			unputText( int nChar );
 		void 			delPrevWord();

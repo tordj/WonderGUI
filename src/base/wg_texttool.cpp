@@ -49,14 +49,14 @@ namespace wg
 	
 	//____ parseChar() ____________________________________________________________
 	
-	Uint16 TextTool::parseChar( const char * pChar )
+	uint16_t TextTool::parseChar( const char * pChar )
 	{
 		if( pChar[0] == 0 )
 			return 0;
 	
 		if( pChar[0] == '0' && pChar[1] == 'x' )
 		{
-			Uint16 value = 0;
+			uint16_t value = 0;
 			pChar += 2;
 	
 			for( char in = * pChar++ ; in != 0 ; in = * pChar++ )
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ isBreakAllowed() _______________________________________________________
 	
-	WgBreakRules TextTool::isBreakAllowed( Uint16 chr, int breakLevel )
+	WgBreakRules TextTool::isBreakAllowed( uint16_t chr, int breakLevel )
 	{
 		if( chr > 255 )
 			return WG_NO_BREAK;
@@ -194,7 +194,7 @@ namespace wg
 	
 	//____ readString() ___________________________________________________________
 	
-	Uint32 TextTool::readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, uint16_t * pDst, uint32_t maxChars )
 	{
 		if( !pSrc )
 		{
@@ -202,7 +202,7 @@ namespace wg
 				pDst[0] = 0;
 			return 0;
 		}
-		Uint32 n = 0;
+		uint32_t n = 0;
 	
 		while( * pSrc != 0 && n < maxChars )
 			pDst[n++] = readChar(pSrc);
@@ -213,7 +213,7 @@ namespace wg
 	}
 	
 	
-	Uint32 TextTool::readString( const char *& pSrc, Char * pDst, Uint32 maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, Char * pDst, uint32_t maxChars )
 	{
 		if( !pSrc )
 		{
@@ -221,7 +221,7 @@ namespace wg
 	            pDst[0].setGlyph(0);
 			return 0;
 		}
-		Uint32 n = 0;
+		uint32_t n = 0;
 	
 		while( * pSrc != 0 && n < maxChars )
 		{
@@ -232,7 +232,7 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 TextTool::readString( const Uint16 *& pSrc, Char * pDst, Uint32 maxChars )
+	uint32_t TextTool::readString( const uint16_t *& pSrc, Char * pDst, uint32_t maxChars )
 	{
 		if( !pSrc )
 		{
@@ -240,7 +240,7 @@ namespace wg
 	            pDst[0].setGlyph(0);
 			return 0;
 		}
-		Uint32 n = 0;
+		uint32_t n = 0;
 	
 		while( * pSrc != 0 && n < maxChars )
 			pDst[n++].setGlyph( * pSrc++);
@@ -251,9 +251,9 @@ namespace wg
 	}
 	
 	
-	Uint32 TextTool::readString( const char *& pSrc, WgCodePage codepage, Char * pDst, Uint32 maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, WgCodePage codepage, Char * pDst, uint32_t maxChars )
 	{
-		Uint16 * pCP = CodePages::getCodePage( codepage );
+		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -261,7 +261,7 @@ namespace wg
 			return 0;
 		}
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
 			pDst[n].setGlyph( pCP[p[n]] );
 	
@@ -270,9 +270,9 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 TextTool::readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, WgCodePage codepage, uint16_t * pDst, uint32_t maxChars )
 	{
-		Uint16 * pCP = CodePages::getCodePage( codepage );
+		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -280,7 +280,7 @@ namespace wg
 			return 0;
 		}
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
 			pDst[n] = pCP[p[n]];
 	
@@ -292,12 +292,12 @@ namespace wg
 	
 	//____ CountWhitespaces() ______________________________________________________
 	
-	Uint32 TextTool::countWhitespaces( const char * pStr, Uint32 len )
+	uint32_t TextTool::countWhitespaces( const char * pStr, uint32_t len )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && pStr[i] != 0 ; i++ )
 		{
 			if( pStr[i] == ' ' || pStr[i] == WG_NO_BREAK_SPACE )
@@ -306,12 +306,12 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 TextTool::countWhitespaces( const Uint16 * pStr, Uint32 len  )
+	uint32_t TextTool::countWhitespaces( const uint16_t * pStr, uint32_t len  )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && pStr[i] != 0 ; i++ )
 		{
 			if( pStr[i] == ' ' || pStr[i] == WG_NO_BREAK_SPACE )
@@ -320,12 +320,12 @@ namespace wg
 		return n;
 	}
 	
-	Uint32 TextTool::countWhitespaces( const Char * pStr, Uint32 len  )
+	uint32_t TextTool::countWhitespaces( const Char * pStr, uint32_t len  )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && !pStr[i].isEndOfText() ; i++ )
 		{
 			if( pStr[i].isWhitespace() )
@@ -338,16 +338,16 @@ namespace wg
 	
 	//____ countNonFormattingChars() ______________________________________________
 	
-	Uint32 TextTool::countNonFormattingChars( const char * pStr, Uint32 strlen )
+	uint32_t TextTool::countNonFormattingChars( const char * pStr, uint32_t strlen )
 	{
 		if( !pStr )
 			return 0;
 	
 		const char * pEnd = pStr + strlen;
-		Uint32 n = 0;
+		uint32_t n = 0;
 		while( * pStr != 0 && pStr != pEnd )
 		{
-			Uint16 c = readChar(pStr);
+			uint16_t c = readChar(pStr);
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -384,16 +384,16 @@ namespace wg
 	}
 	
 	
-	Uint32 TextTool::countNonFormattingChars( const Uint16 * pStr, Uint32 strlen )
+	uint32_t TextTool::countNonFormattingChars( const uint16_t * pStr, uint32_t strlen )
 	{
 		if( !pStr )
 			return 0;
 	
-		const Uint16 * pEnd = pStr + strlen;
-		Uint32 n = 0;
+		const uint16_t * pEnd = pStr + strlen;
+		uint32_t n = 0;
 		while( * pStr != 0 && pStr != pEnd )
 		{
-			Uint16 c = * pStr++;
+			uint16_t c = * pStr++;
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -432,9 +432,9 @@ namespace wg
 	
 	//____ getTextSizeStripped() ______________________________________________
 	
-	Uint32 TextTool::getTextSizeStripped( const char * pStr, Uint32 maxChars )
+	uint32_t TextTool::getTextSizeStripped( const char * pStr, uint32_t maxChars )
 	{
-		Uint32 nChar = 0;
+		uint32_t nChar = 0;
 	
 		while( * pStr != 0 && nChar < maxChars )
 		{
@@ -476,13 +476,13 @@ namespace wg
 	
 	}
 	
-	Uint32 TextTool::getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars )
+	uint32_t TextTool::getTextSizeStripped( const uint16_t * pStr, uint32_t maxChars )
 	{
-		Uint32 nChar = 0;
+		uint32_t nChar = 0;
 	
 		while( * pStr != 0 && nChar < maxChars )
 		{
-			Uint16 c = * pStr++;
+			uint16_t c = * pStr++;
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -521,10 +521,10 @@ namespace wg
 	
 	//____ getTextSizeStrippedUTF8() ______________________________________________
 	
-	Uint32 TextTool::getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars )
+	uint32_t TextTool::getTextSizeStrippedUTF8( const char * pStr, uint32_t maxChars )
 	{
-		Uint32 nChar = 0;
-		Uint32 nBytes = 0;
+		uint32_t nChar = 0;
+		uint32_t nBytes = 0;
 	
 		while( * pStr != 0 && nChar < maxChars )
 		{
@@ -575,14 +575,14 @@ namespace wg
 	
 	}
 	
-	Uint32 TextTool::getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars )
+	uint32_t TextTool::getTextSizeStrippedUTF8( const uint16_t * pStr, uint32_t maxChars )
 	{
-		Uint32 nChar = 0;
-		Uint32 nBytes = 0;
+		uint32_t nChar = 0;
+		uint32_t nBytes = 0;
 	
 		while( * pStr != 0 && nChar < maxChars )
 		{
-			Uint16 c = * pStr++;
+			uint16_t c = * pStr++;
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -647,7 +647,7 @@ namespace wg
 						destination is not null-terminated.
 	*/
 	
-	Uint32 TextTool::readFormattedString( const char * _pSrc, Char * pDst, Uint32 maxChars, const ResDB * pResDB )
+	uint32_t TextTool::readFormattedString( const char * _pSrc, Char * pDst, uint32_t maxChars, const ResDB * pResDB )
 	{
 		if( maxChars == 0 )
 			return 0;
@@ -659,23 +659,23 @@ namespace wg
 		}
 	
 		Char *	pBeginUnderlined = 0;
-		Uint32		nUnderlinedRecursions = 0;
+		uint32_t		nUnderlinedRecursions = 0;
 	
 		Char *	pBeginStyle = 0;
 		FontAlt	styleStack[16];
-		Uint32		nStyleRecursions = 0;
+		uint32_t		nStyleRecursions = 0;
 	
 		Char *	pBeginColor = 0;
 		Color		colorStack[16];
-		Uint32		nColorRecursions = 0;
+		uint32_t		nColorRecursions = 0;
 	
 		Char *	pBeginSize = 0;
 		int			sizeStack[16];
-		Uint32		nSizeRecursions = 0;
+		uint32_t		nSizeRecursions = 0;
 	
 		Char *	pBeginBreakLevel = 0;
 		int			breakLevelStack[16];
-		Uint32		nBreakLevelRecursions = 0;
+		uint32_t		nBreakLevelRecursions = 0;
 	
 	
 	
@@ -683,14 +683,14 @@ namespace wg
 	
 		const char * pSrc = _pSrc;		// We need a pointer that can be increased.
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		while( * pSrc != 0 )
 		{
-			Uint16 c = readChar(pSrc);
+			uint16_t c = readChar(pSrc);
 	
 			if( c == WG_ESCAPE_CODE )
 			{
-				Uint8 cmd = * pSrc++;
+				uint8_t cmd = * pSrc++;
 	
 				switch( cmd )
 				{
@@ -766,10 +766,10 @@ namespace wg
 							}
 							else
 	*/						{
-								col.a = TextTool::asciiToUint8( &pSrc[0] );
-								col.r = TextTool::asciiToUint8( &pSrc[2] );
-								col.g = TextTool::asciiToUint8( &pSrc[4] );
-								col.b = TextTool::asciiToUint8( &pSrc[6] );
+								col.a = TextTool::asciiTouint8_t( &pSrc[0] );
+								col.r = TextTool::asciiTouint8_t( &pSrc[2] );
+								col.g = TextTool::asciiTouint8_t( &pSrc[4] );
+								col.b = TextTool::asciiTouint8_t( &pSrc[6] );
 								pSrc += 8;
 							}
 	
@@ -862,26 +862,26 @@ namespace wg
 								break;
 							case 'h':
 							{
-								Uint8 c = * pSrc++;
+								uint8_t c = * pSrc++;
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
 								{
 									style = (FontAlt) (WG_FONT_HEADING_1 + c - '1');
-									if((Uint32)style >= WG_NB_FONTSTYLES)
+									if((uint32_t)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
 								break;
 							}
 							case 'u':
 							{
-								Uint8 c = * pSrc++;
+								uint8_t c = * pSrc++;
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
 								{
 									style = (FontAlt) (WG_FONT_USER_1 + c - '1');
-									if((Uint32)style >= WG_NB_FONTSTYLES)
+									if((uint32_t)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
 								break;
@@ -926,9 +926,9 @@ namespace wg
 	}
 	
 	/**
-		@brief	Reads a formatted Uint16 string into Chars.
+		@brief	Reads a formatted uint16_t string into Chars.
 	
-		Reads a Uint16 string equipped with escape codes for text properties into
+		Reads a uint16_t string equipped with escape codes for text properties into
 		an array of Char.
 	
 		@param pSrc		Pointer at source to read from. This must be a null-terminated
@@ -943,7 +943,7 @@ namespace wg
 						destination is not null-terminated.
 	*/
 	
-	Uint32 TextTool::readFormattedString( const Uint16 * _pSrc, Char * pDst, Uint32 maxChars, const ResDB * pResDB )
+	uint32_t TextTool::readFormattedString( const uint16_t * _pSrc, Char * pDst, uint32_t maxChars, const ResDB * pResDB )
 	{
 		if( maxChars == 0 )
 			return 0;
@@ -955,36 +955,36 @@ namespace wg
 		}
 	
 		Char *	pBeginUnderlined = 0;
-		Uint32		nUnderlinedRecursions = 0;
+		uint32_t		nUnderlinedRecursions = 0;
 	
 		Char *	pBeginStyle = 0;
 		FontAlt	styleStack[16];
-		Uint32		nStyleRecursions = 0;
+		uint32_t		nStyleRecursions = 0;
 	
 		Char *	pBeginColor = 0;
 		Color		colorStack[16];
-		Uint32		nColorRecursions = 0;
+		uint32_t		nColorRecursions = 0;
 	
 		Char *	pBeginSize = 0;
 		int			sizeStack[16];
-		Uint32		nSizeRecursions = 0;
+		uint32_t		nSizeRecursions = 0;
 	
 		Char *	pBeginBreakLevel = 0;
 		int			breakLevelStack[16];
-		Uint32		nBreakLevelRecursions = 0;
+		uint32_t		nBreakLevelRecursions = 0;
 	
 		Char		myChar;
 	
-		const Uint16 * pSrc = _pSrc;		// We need a pointer that can be increased.
+		const uint16_t * pSrc = _pSrc;		// We need a pointer that can be increased.
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		while( * pSrc != 0  )
 		{
-			Uint16 c = * pSrc++;
+			uint16_t c = * pSrc++;
 	
 			if( c == WG_ESCAPE_CODE )
 			{
-				Uint16 cmd = * pSrc++;
+				uint16_t cmd = * pSrc++;
 	
 				switch( cmd )
 				{
@@ -1052,10 +1052,10 @@ namespace wg
 							pBeginColor = &pDst[n];
 	
 							Color col;
-							col.a = TextTool::asciiToUint8( &pSrc[0] );
-							col.r = TextTool::asciiToUint8( &pSrc[2] );
-							col.g = TextTool::asciiToUint8( &pSrc[4] );
-							col.b = TextTool::asciiToUint8( &pSrc[6] );
+							col.a = TextTool::asciiTouint8_t( &pSrc[0] );
+							col.r = TextTool::asciiTouint8_t( &pSrc[2] );
+							col.g = TextTool::asciiTouint8_t( &pSrc[4] );
+							col.b = TextTool::asciiTouint8_t( &pSrc[6] );
 							pSrc += 8;
 	
 							colorStack[nColorRecursions++] = col;
@@ -1148,7 +1148,7 @@ namespace wg
 								break;
 							case 'h':
 							{
-								Uint16 c = * pSrc++;
+								uint16_t c = * pSrc++;
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
@@ -1157,7 +1157,7 @@ namespace wg
 							}
 							case 'u':
 							{
-								Uint16 c = * pSrc++;
+								uint16_t c = * pSrc++;
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
@@ -1209,14 +1209,14 @@ namespace wg
 	
 	//____ getTextFormattedUTF8() __________________________________________________
 	
-	Uint32 TextTool::getTextFormattedUTF8( const Char * pSrc, char * pDst, Uint32 maxBytes, const ResDB * pResDB )
+	uint32_t TextTool::getTextFormattedUTF8( const Char * pSrc, char * pDst, uint32_t maxBytes, const ResDB * pResDB )
 	{
-		Uint32	ofs			= 0;
-		Uint16	hActiveProp = 0;
+		uint32_t	ofs			= 0;
+		uint16_t	hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
 	
-		Uint32 n = enc.beginString();
+		uint32_t n = enc.beginString();
 		assert( n == 0 );						// If this has changed we need to add some code here...
 	
 		while( !pSrc->isEndOfText() )
@@ -1240,7 +1240,7 @@ namespace wg
 	
 			// Copy the glyph.
 	
-			Uint16 glyph = pSrc->getGlyph();
+			uint16_t glyph = pSrc->getGlyph();
 	
 			if( glyph < 128 )
 			{
@@ -1289,13 +1289,13 @@ namespace wg
 	
 	//____ getTextFormatted() _____________________________________________________
 	
-	Uint32 TextTool::getTextFormatted( const Char * pSrc, Uint16 * pDst, Uint32 maxBytes, const ResDB * pResDB )
+	uint32_t TextTool::getTextFormatted( const Char * pSrc, uint16_t * pDst, uint32_t maxBytes, const ResDB * pResDB )
 	{
-		Uint32	ofs			= 0;
-		Uint16	hActiveProp = 0;
+		uint32_t	ofs			= 0;
+		uint16_t	hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
-		Uint32 n = enc.beginString();
+		uint32_t n = enc.beginString();
 		assert( n == 0 );						// If this has changed we need to add some code here...
 	
 		while( !pSrc->isEndOfText() )
@@ -1346,13 +1346,13 @@ namespace wg
 	
 	//____ getTextSizeFormattedUTF8() _____________________________________________
 	
-	Uint32 TextTool::getTextSizeFormattedUTF8( const Char * pSrc, Uint32 maxChars, const ResDB * pResDB )
+	uint32_t TextTool::getTextSizeFormattedUTF8( const Char * pSrc, uint32_t maxChars, const ResDB * pResDB )
 	{
-		Uint32 ofs = 0;
-		Uint32 charsRead = 0;
+		uint32_t ofs = 0;
+		uint32_t charsRead = 0;
 	
 		Textprop_p	pActiveProp;
-		Uint16			hActiveProp = 0;
+		uint16_t			hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
 		ofs += enc.beginString();
@@ -1370,7 +1370,7 @@ namespace wg
 	
 			// Add the glyph
 	
-			Uint16 glyph = pSrc->getGlyph();
+			uint16_t glyph = pSrc->getGlyph();
 	
 			if( glyph < 128 )
 				ofs++;
@@ -1394,13 +1394,13 @@ namespace wg
 	
 	//____ getTextSizeFormatted() _________________________________________________
 	
-	Uint32 TextTool::getTextSizeFormatted( const Char * pSrc, Uint32 maxChars, const ResDB * pResDB )
+	uint32_t TextTool::getTextSizeFormatted( const Char * pSrc, uint32_t maxChars, const ResDB * pResDB )
 	{
-		Uint32 ofs = 0;
-		Uint32 charsRead = 0;
+		uint32_t ofs = 0;
+		uint32_t charsRead = 0;
 	
 		Textprop_p	pActiveProp;
-		Uint16			hActiveProp = 0;
+		uint16_t			hActiveProp = 0;
 	
 		TextpropEncoder	enc(pResDB);
 		ofs += enc.beginString();
@@ -1434,18 +1434,18 @@ namespace wg
 	
 	//____ copyChars() ____________________________________________________________
 	
-	Uint32 TextTool::copyChars( const Char * pSrc, Char * pDst, Uint32 maxChars )
+	uint32_t TextTool::copyChars( const Char * pSrc, Char * pDst, uint32_t maxChars )
 	{
 		// Special refProps() equivalent which also counts characters and stops at NULL.
 	
-		Uint16	hProp = 0;
-		Uint16	nProp = 0;
+		uint16_t	hProp = 0;
+		uint16_t	nProp = 0;
 	
 		unsigned int n = 0;					// Also number of characters after the for-loop...
 		for( ; n < maxChars ; n++ )
 		{
 	
-			Uint16 h = pSrc[n].propHandle();
+			uint16_t h = pSrc[n].propHandle();
 			if( h == hProp )
 				nProp++;
 			else
@@ -1481,15 +1481,15 @@ namespace wg
 	
 	//____ derefProps() ____________________________________________________________
 	
-	void TextTool::derefProps( Char * p, Uint32 n )
+	void TextTool::derefProps( Char * p, uint32_t n )
 	{
-		Uint16	hProp = 0;
-		Uint16	nProp = 0;
+		uint16_t	hProp = 0;
+		uint16_t	nProp = 0;
 	
 		for( int i = 0 ; i < (int) n ; i++ )
 		{
 	
-			Uint16 h = p[i].propHandle();
+			uint16_t h = p[i].propHandle();
 			if( h == hProp )
 				nProp++;
 			else
@@ -1509,15 +1509,15 @@ namespace wg
 	
 	//____ refProps() ______________________________________________________________
 	
-	void TextTool::refProps( Char * p, Uint32 n )
+	void TextTool::refProps( Char * p, uint32_t n )
 	{
-		Uint16	hProp = 0;
-		Uint16	nProp = 0;
+		uint16_t	hProp = 0;
+		uint16_t	nProp = 0;
 	
 		for( unsigned int i = 0 ; i < n ; i++ )
 		{
 	
-			Uint16 h = p[i].propHandle();
+			uint16_t h = p[i].propHandle();
 			if( h == hProp )
 				nProp++;
 			else
@@ -1537,13 +1537,13 @@ namespace wg
 	
 	//____ countChars() ___________________________________________________________
 	
-	Uint32	TextTool::countChars( const char * pStr, Uint32 strlen )
+	uint32_t	TextTool::countChars( const char * pStr, uint32_t strlen )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 0;
-		for( const char * p = pStr ; (Uint32) (p - pStr) < strlen ; n++ )
+		uint32_t n = 0;
+		for( const char * p = pStr ; (uint32_t) (p - pStr) < strlen ; n++ )
 			if( readChar(p) == 0 )
 				break;
 	
@@ -1553,12 +1553,12 @@ namespace wg
 	
 	//____ countLines() ___________________________________________________________
 	
-	Uint32	TextTool::countLines( const char * pStr )
+	uint32_t	TextTool::countLines( const char * pStr )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 1;
+		uint32_t n = 1;
 		while( * pStr != 0 )
 		{
 			if( * pStr++ == '\n' )
@@ -1568,12 +1568,12 @@ namespace wg
 		return n;
 	}
 	
-	Uint32	TextTool::countLines( const Uint16 * pStr )
+	uint32_t	TextTool::countLines( const uint16_t * pStr )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 1;
+		uint32_t n = 1;
 		while( * pStr != 0 )
 		{
 			if( * pStr++ == '\n' )
@@ -1583,12 +1583,12 @@ namespace wg
 		return n;
 	}
 	
-	Uint32	TextTool::countLines( const Char * pStr )
+	uint32_t	TextTool::countLines( const Char * pStr )
 	{
 		if( !pStr )
 			return 0;
 	
-		Uint32 n = 1;
+		uint32_t n = 1;
 		while( !pStr->isEndOfText() )
 		{
 			if( pStr->isEndOfLine() )
@@ -1606,15 +1606,15 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	TextTool::countLineChars( const char * pStr, Uint32 len )
+	uint32_t	TextTool::countLineChars( const char * pStr, uint32_t len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 		const char * pEnd = pStr + len;
 	
-		Uint16 ch = readChar(pStr);
+		uint16_t ch = readChar(pStr);
 		while( ch != 0 && ch != 10 && ch != 13 && pStr < pEnd )
 		{
 			n++;
@@ -1628,14 +1628,14 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	TextTool::countLineChars( const Uint16 * pStr, Uint32 len )
+	uint32_t	TextTool::countLineChars( const uint16_t * pStr, uint32_t len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 	
-		Uint16 ch = * pStr++;
+		uint16_t ch = * pStr++;
 		while( ch != 0 && ch != 10 && ch != 13 && n < len )
 		{
 			n++;
@@ -1649,12 +1649,12 @@ namespace wg
 		Count characters up until (but not including) the end of the string
 		or the first line termination character (CR or LF) found.
 	*/
-	Uint32	TextTool::countLineChars( const Char * pStr, Uint32 len )
+	uint32_t	TextTool::countLineChars( const Char * pStr, uint32_t len )
 	{
 		if( !pStr || len == 0 )
 			return 0;
 	
-		Uint32 n = 0;
+		uint32_t n = 0;
 	
 		while( !pStr->isEndOfLine() && n < len )
 			n++;
@@ -1665,7 +1665,7 @@ namespace wg
 	
 	//____ countCharsLines() ______________________________________________________
 	
-	void	TextTool::countCharsLines( const char * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const char * pStr, uint32_t& nChars, uint32_t& nLines, uint32_t strlen )
 	{
 		if( !pStr )
 			return;
@@ -1677,34 +1677,34 @@ namespace wg
 	
 		while( pStr != pEnd )
 		{
-			Uint16 c = readChar(pStr);
+			uint16_t c = readChar(pStr);
 			if( c == 0 )
 				break;
 	
-			if( c == (Uint16) '\n' )
+			if( c == (uint16_t) '\n' )
 				nLines++;
 	
 			nChars++;
 		}
 	}
 	
-	void	TextTool::countCharsLines( const Uint16 * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const uint16_t * pStr, uint32_t& nChars, uint32_t& nLines, uint32_t strlen )
 	{
 		if( !pStr )
 			return;
 	
-		const Uint16 * pEnd = pStr + strlen;
+		const uint16_t * pEnd = pStr + strlen;
 	
 		nChars = 0;
 		nLines = 1;
 	
 		while( pStr != pEnd )
 		{
-			Uint16 c = * pStr++;
+			uint16_t c = * pStr++;
 			if( c == 0 )
 				break;
 	
-			if( c == (Uint16) '\n' )
+			if( c == (uint16_t) '\n' )
 				nLines++;
 	
 			nChars++;
@@ -1712,7 +1712,7 @@ namespace wg
 	}
 	
 	
-	void	TextTool::countCharsLines( const Char * pStr, Uint32& nChars, Uint32& nLines, Uint32 strlen )
+	void	TextTool::countCharsLines( const Char * pStr, uint32_t& nChars, uint32_t& nLines, uint32_t strlen )
 	{
 		if( !pStr )
 			return;
@@ -1755,7 +1755,7 @@ namespace wg
 	
 	//____ writeUTF8() ____________________________________________________________
 	
-	Uint32 TextTool::writeUTF8( Uint16 glyph, char * pDest )
+	uint32_t TextTool::writeUTF8( uint16_t glyph, char * pDest )
 	{
 		if( glyph < 128 )
 		{
@@ -1779,9 +1779,9 @@ namespace wg
 	
 	
 	//____ strlen() ____________________________________________________________
-	Uint32 TextTool::strlen( const Uint16 * pSrc )
+	uint32_t TextTool::strlen( const uint16_t * pSrc )
 	{
-		Uint32 nChars = 0;
+		uint32_t nChars = 0;
 		while( * pSrc != 0 )
 		{
 			++nChars;
@@ -1792,9 +1792,9 @@ namespace wg
 	
 	
 	//____ strlen() ____________________________________________________________
-	Uint32 TextTool::strlen( const Char * pSrc )
+	uint32_t TextTool::strlen( const Char * pSrc )
 	{
-		Uint32 nChars = 0;
+		uint32_t nChars = 0;
 		while( !pSrc->isEndOfText() )
 		{
 			++nChars;
@@ -1804,7 +1804,7 @@ namespace wg
 	}
 	
 	//____ strcmp() ____________________________________________________________
-	int TextTool::strcmp( const Uint16* pStr1, const Uint16* pStr2 )
+	int TextTool::strcmp( const uint16_t* pStr1, const uint16_t* pStr2 )
 	{
 		while( *pStr1 != L'\0' && *pStr1 == *pStr2 )
 		{
@@ -1863,7 +1863,7 @@ namespace wg
 	
 	
 	//____ nibbleToAscii() ____________________________________________________________
-	inline Uint8 TextTool::nibbleToAscii( Uint8 nibble )
+	inline uint8_t TextTool::nibbleToAscii( uint8_t nibble )
 	{
 		if( nibble <= 9 )
 			return '0' + nibble;
@@ -1872,7 +1872,7 @@ namespace wg
 	}
 	
 	//____ asciiToNibble() ____________________________________________________________
-	inline Uint8 TextTool::asciiToNibble( Uint8 ascii )
+	inline uint8_t TextTool::asciiToNibble( uint8_t ascii )
 	{
 		if( ascii >= '0' && ascii <= '9' )
 			return 0x00 + ascii - '0';
@@ -1885,30 +1885,30 @@ namespace wg
 	}
 	
 	//____ uint16ToAscii() ____________________________________________________________
-	bool TextTool::uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars )
+	bool TextTool::uint16ToAscii( uint16_t value, uint16_t * pDest, uint32_t maxChars )
 	{
 		if( 0 == pDest || maxChars < 4 )
 			return false;
 	
-		uint8ToAscii( value >> 8, (Uint16*)&pDest[0], 2 );
-		uint8ToAscii( value & 0xFF, (Uint16*)&pDest[2], 2 );
+		uint8ToAscii( value >> 8, (uint16_t*)&pDest[0], 2 );
+		uint8ToAscii( value & 0xFF, (uint16_t*)&pDest[2], 2 );
 	
 		return true;
 	}
 	
-	//____ asciiToUint16() ____________________________________________________________
-	Uint16 TextTool::asciiToUint16( const Uint16 * pAscii )
+	//____ asciiTouint16_t() ____________________________________________________________
+	uint16_t TextTool::asciiTouint16_t( const uint16_t * pAscii )
 	{
-		Uint16 high = asciiToUint8( (Uint16*)&pAscii[0] );
-		Uint16 low = asciiToUint8( (Uint16*)&pAscii[2] );
+		uint16_t high = asciiTouint8_t( (uint16_t*)&pAscii[0] );
+		uint16_t low = asciiTouint8_t( (uint16_t*)&pAscii[2] );
 	
-		Uint16 value = high << 8 | low;
+		uint16_t value = high << 8 | low;
 	
 		return value;
 	}
 	
 	//____ uint16ToAscii() ____________________________________________________________
-	bool TextTool::uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars )
+	bool TextTool::uint16ToAscii( uint16_t value, char * pDest, uint32_t maxChars )
 	{
 		if( 0 == pDest || maxChars < 4 )
 			return false;
@@ -1919,25 +1919,25 @@ namespace wg
 		return true;
 	}
 	
-	//____ asciiToUint16() ____________________________________________________________
-	Uint16 TextTool::asciiToUint16( const char * pAscii )
+	//____ asciiTouint16_t() ____________________________________________________________
+	uint16_t TextTool::asciiTouint16_t( const char * pAscii )
 	{
-		Uint16 high = asciiToUint8( (char*)&pAscii[0] );
-		Uint16 low = asciiToUint8( (char*)&pAscii[2] );
+		uint16_t high = asciiTouint8_t( (char*)&pAscii[0] );
+		uint16_t low = asciiTouint8_t( (char*)&pAscii[2] );
 	
-		Uint16 value = high << 8 | low;
+		uint16_t value = high << 8 | low;
 	
 		return value;
 	}
 	
-	//____ uint8ToAscii( Uint16* ) ____________________________________________________________
-	bool TextTool::uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars )
+	//____ uint8ToAscii( uint16_t* ) ____________________________________________________________
+	bool TextTool::uint8ToAscii( uint8_t value, uint16_t * pDest, uint32_t maxChars )
 	{
 		if( 0 == pDest || maxChars < 2 )
 			return false;
 	
-		Uint8 high = nibbleToAscii( value >> 4 );
-		Uint8 low = nibbleToAscii( value & 0x0F );
+		uint8_t high = nibbleToAscii( value >> 4 );
+		uint8_t low = nibbleToAscii( value & 0x0F );
 	
 		pDest[ 0 ] = high;
 		pDest[ 1 ] = low;
@@ -1945,25 +1945,25 @@ namespace wg
 		return true;
 	}
 	
-	//____ asciiToUint8() ____________________________________________________________
-	Uint8 TextTool::asciiToUint8( const Uint16 * pAscii )
+	//____ asciiTouint8_t() ____________________________________________________________
+	uint8_t TextTool::asciiTouint8_t( const uint16_t * pAscii )
 	{
-		Uint8 high = asciiToNibble( (Uint8)pAscii[ 0 ] );
-		Uint8 low = asciiToNibble( (Uint8)pAscii[ 1 ] );
+		uint8_t high = asciiToNibble( (uint8_t)pAscii[ 0 ] );
+		uint8_t low = asciiToNibble( (uint8_t)pAscii[ 1 ] );
 	
-		Uint8 value = high << 4 | low;
+		uint8_t value = high << 4 | low;
 	
 		return value;
 	}
 	
 	//____ uint8ToAscii( char* ) ____________________________________________________________
-	bool TextTool::uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars )
+	bool TextTool::uint8ToAscii( uint8_t value, char * pDest, uint32_t maxChars )
 	{
 		if( 0 == pDest || maxChars < 2 )
 			return false;
 	
-		Uint8 high = nibbleToAscii( value >> 4 );
-		Uint8 low = nibbleToAscii( value & 0x0F );
+		uint8_t high = nibbleToAscii( value >> 4 );
+		uint8_t low = nibbleToAscii( value & 0x0F );
 	
 		pDest[ 0 ] = high;
 		pDest[ 1 ] = low;
@@ -1971,26 +1971,26 @@ namespace wg
 		return true;
 	}
 	
-	//____ asciiToUint8() ____________________________________________________________
-	Uint8 TextTool::asciiToUint8( const char * pAscii )
+	//____ asciiTouint8_t() ____________________________________________________________
+	uint8_t TextTool::asciiTouint8_t( const char * pAscii )
 	{
-		Uint8 high = asciiToNibble( pAscii[ 0 ] );
-		Uint8 low = asciiToNibble( pAscii[ 1 ] );
+		uint8_t high = asciiToNibble( pAscii[ 0 ] );
+		uint8_t low = asciiToNibble( pAscii[ 1 ] );
 	
-		Uint8 value = high << 4 | low;
+		uint8_t value = high << 4 | low;
 	
 		return value;
 	}
 	
 	//____ uint16ToUtf8() ____________________________________________________________
-	Uint32 TextTool::uint16ToUtf8( Uint16 value, char * pDest, Uint32 maxChars )
+	uint32_t TextTool::uint16ToUtf8( uint16_t value, char * pDest, uint32_t maxChars )
 	{
 		if( maxChars < 1 )
 			return 0;
 	
 		unsigned int nChars = 0;
 	
-		Uint16 glyph = value;
+		uint16_t glyph = value;
 		if( glyph < 128 )
 		{
 			pDest[nChars++] = (char) glyph;
@@ -2027,7 +2027,7 @@ namespace wg
 	
 	//____ formatBeginColor() _____________________________________________________
 	
-	Uint32 TextTool::formatBeginColor( const Color& color, char * pDest )
+	uint32_t TextTool::formatBeginColor( const Color& color, char * pDest )
 	{
 		pDest += writeUTF8( WG_ESCAPE_CODE, pDest );
 		* pDest++ = '{';
@@ -2061,13 +2061,13 @@ namespace wg
 	
 	*/
 	
-	Uint32 TextTool::getTextUTF8( const Char * pSrc, char * pDest, Uint32 maxBytes )
+	uint32_t TextTool::getTextUTF8( const Char * pSrc, char * pDest, uint32_t maxBytes )
 	{
 		if( maxBytes < 1 || pSrc == 0 || pDest == 0 )
 			return 0;
 	
-		Uint32 nChars = 0;
-		Uint16 glyph;
+		uint32_t nChars = 0;
+		uint16_t glyph;
 	
 		while( (glyph = pSrc->getGlyph()) != 0 )
 		{
@@ -2103,13 +2103,13 @@ namespace wg
 		return nChars;
 	}
 	
-	Uint32 TextTool::getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes )
+	uint32_t TextTool::getTextUTF8( const uint16_t * pSrc, char * pDest, uint32_t maxBytes )
 	{
 		if( maxBytes < 1 || pSrc == 0 || pDest == 0 )
 			return 0;
 	
-		Uint32 nChars = 0;
-		Uint16 glyph;
+		uint32_t nChars = 0;
+		uint16_t glyph;
 	
 		while( (glyph = * pSrc) != 0 )
 		{
@@ -2147,9 +2147,9 @@ namespace wg
 	
 	//____ getTextUTF8() __________________________________________________________
 	
-	Uint32 TextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
+	uint32_t TextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
 	{
-		Uint16 * pCP = CodePages::getCodePage( codepage );
+		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 		{
 			pDest[0] = 0;
@@ -2170,11 +2170,11 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ______________________________________________________
 	
-	Uint32 TextTool::getTextSizeUTF8( const Char* pSrc, Uint32 len )
+	uint32_t TextTool::getTextSizeUTF8( const Char* pSrc, uint32_t len )
 	{
-		Uint32 size = 0;
-		Uint16 glyph = 0;
-		for( Uint32 i = 0 ; i < len && (0 != ( glyph = pSrc->getGlyph()) ) ; i++ )
+		uint32_t size = 0;
+		uint16_t glyph = 0;
+		for( uint32_t i = 0 ; i < len && (0 != ( glyph = pSrc->getGlyph()) ) ; i++ )
 		{
 			size++;
 			if( glyph > 127 )
@@ -2191,11 +2191,11 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ____________________________________________________________
 	
-	Uint32 TextTool::getTextSizeUTF8( const Uint16* pSrc, Uint32 len )
+	uint32_t TextTool::getTextSizeUTF8( const uint16_t* pSrc, uint32_t len )
 	{
-		Uint32 size = 0;
-		Uint16 glyph = 0;
-		for( Uint32 i = 0 ; i < len && (0 != ( glyph = * pSrc) ) ; i++ )
+		uint32_t size = 0;
+		uint16_t glyph = 0;
+		for( uint32_t i = 0 ; i < len && (0 != ( glyph = * pSrc) ) ; i++ )
 		{
 			size++;
 			if( glyph > 127 )
@@ -2212,9 +2212,9 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ____________________________________________________________
 	
-	Uint32 TextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
+	uint32_t TextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
 	{
-		Uint16 * pCP = CodePages::getCodePage( codepage );
+		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 			return 0;
 	
@@ -2230,7 +2230,7 @@ namespace wg
 	
 	//____ lineWidth() ____________________________________________________________
 	
-	Uint32 TextTool::lineWidth( const TextAttr& attr, const char * pString )
+	uint32_t TextTool::lineWidth( const TextAttr& attr, const char * pString )
 	{
 		Pen pen;
 		pen.setAttributes( attr );
@@ -2251,7 +2251,7 @@ namespace wg
 		return pen.getPosX();
 	}
 	
-	Uint32 TextTool::lineWidth( const TextAttr& attr, const Uint16 * pString )
+	uint32_t TextTool::lineWidth( const TextAttr& attr, const uint16_t * pString )
 	{
 		Pen pen;
 		pen.setAttributes( attr );
@@ -2273,12 +2273,12 @@ namespace wg
 	}
 	
 	
-	Uint32 TextTool::lineWidth( const TextAttr& attr, State state, const Char * pString )
+	uint32_t TextTool::lineWidth( const TextAttr& attr, State state, const Char * pString )
 	{
 		TextAttr	attr2;
 	
 		Pen pen;
-		Uint16 hProp = 0xFFFF;
+		uint16_t hProp = 0xFFFF;
 	
 		while( !pString->isEndOfLine() )
 		{
@@ -2305,7 +2305,7 @@ namespace wg
 	
 	//____ forwardCharacters() ____________________________________________________
 	
-	void TextTool::forwardCharacters( const char *& pChar, Uint32 nChars )
+	void TextTool::forwardCharacters( const char *& pChar, uint32_t nChars )
 	{
 		for( unsigned int i = 0 ; i < nChars && * pChar != 0 ; i++ )
 		{
@@ -2329,12 +2329,12 @@ namespace wg
 	
 	//____ forwardEscapedCharacters() ____________________________________________________
 	
-	void TextTool::forwardEscapedCharacters( const char *& pStr, Uint32 nChars )
+	void TextTool::forwardEscapedCharacters( const char *& pStr, uint32_t nChars )
 	{
-		Uint32 n = 0;
+		uint32_t n = 0;
 		while( * pStr != 0 && n < nChars )
 		{
-			Uint16 c = readChar(pStr);
+			uint16_t c = readChar(pStr);
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -2372,12 +2372,12 @@ namespace wg
 	
 	//____ forwardEscapedCharacters() ____________________________________________________
 	
-	void TextTool::forwardEscapedCharacters( const Uint16 *& pStr, Uint32 nChars )
+	void TextTool::forwardEscapedCharacters( const uint16_t *& pStr, uint32_t nChars )
 	{
-		Uint32 n = 0;
+		uint32_t n = 0;
 		while( * pStr != 0 && n < nChars )
 		{
-			Uint16 c = * pStr++;
+			uint16_t c = * pStr++;
 	
 			if( c == WG_ESCAPE_CODE )
 			{
@@ -2415,12 +2415,12 @@ namespace wg
 	
 	//____ stripTextCommands() ____________________________________________________
 	
-	int TextTool::stripTextCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextCommands( const uint16_t* pSrc, uint16_t* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
 		{
-			Uint16 c = * pSrc++;
+			uint16_t c = * pSrc++;
 	
 			if( c == 0 )
 			{
@@ -2456,7 +2456,7 @@ namespace wg
 		int n = 0;
 		while( n < maxChars )
 		{
-			Uint16 c = readChar( pSrc );
+			uint16_t c = readChar( pSrc );
 	
 			if( c == 0 )
 			{
@@ -2487,12 +2487,12 @@ namespace wg
 	}
 	
 	
-	int TextTool::stripTextColorCommands( const Uint16* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextColorCommands( const uint16_t* pSrc, uint16_t* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
 		{
-			Uint16 c = * pSrc++;
+			uint16_t c = * pSrc++;
 	
 			if( c == 0 )
 			{
@@ -2517,7 +2517,7 @@ namespace wg
 		int n = 0;
 		while( n < maxBytes )
 		{
-			Uint16 c = readChar( pSrc );
+			uint16_t c = readChar( pSrc );
 	
 			if( c == 0 )
 			{
@@ -2539,13 +2539,13 @@ namespace wg
 	
 	//____ stripTextCommandsConvert() _____________________________________________
 	
-	int TextTool::stripTextCommandsConvert( const Uint16* pSrc, char* pDest, int maxChars )
+	int TextTool::stripTextCommandsConvert( const uint16_t* pSrc, char* pDest, int maxChars )
 	{
 		int n = 0;
 		int ofs = 0;
 		while( n < maxChars )
 		{
-			Uint16 c = * pSrc++;
+			uint16_t c = * pSrc++;
 	
 			if( c == 0 )
 			{
@@ -2579,12 +2579,12 @@ namespace wg
 	}
 	
 	
-	int TextTool::stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int maxChars )
+	int TextTool::stripTextCommandsConvert( const char* pSrc, uint16_t* pDest, int maxChars )
 	{
 		int n = 0;
 		while( n < maxChars )
 		{
-			Uint16 c = readChar( pSrc );
+			uint16_t c = readChar( pSrc );
 	
 			if( c == 0 )
 			{
@@ -2616,12 +2616,12 @@ namespace wg
 	
 	//____ setSize() _____________________________________________________________
 	
-	void TextTool::setSize( int size, Char * pChar, Uint32 nb )
+	void TextTool::setSize( int size, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropSizeModifier(size), pChar, nb );
 	}
 	
-	void TextTool::setSize( int size, Char * pChar, Uint32 nb, State state )
+	void TextTool::setSize( int size, Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateSizeModifier(size,state), pChar, nb );
 	}
@@ -2629,24 +2629,24 @@ namespace wg
 	
 	//____ clearSize() ___________________________________________________________
 	
-	void TextTool::clearSize( Char * pChar, Uint32 nb )
+	void TextTool::clearSize( Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropSizeClearer(), pChar, nb );
 	}
 	
-	void TextTool::clearSize( Char * pChar, Uint32 nb, State state )
+	void TextTool::clearSize( Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateSizeClearer(state), pChar, nb );
 	}
 	
 	//____ setColor() _____________________________________________________________
 	
-	void TextTool::setColor( const Color col, Char * pChar, Uint32 nb )
+	void TextTool::setColor( const Color col, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropColorModifier(col), pChar, nb );
 	}
 	
-	void TextTool::setColor( const Color col, Char * pChar, Uint32 nb, State state )
+	void TextTool::setColor( const Color col, Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateColorModifier(col,state), pChar, nb );
 	}
@@ -2654,12 +2654,12 @@ namespace wg
 	
 	//____ clearColor() ___________________________________________________________
 	
-	void TextTool::clearColor( Char * pChar, Uint32 nb )
+	void TextTool::clearColor( Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropColorClearer(), pChar, nb );
 	}
 	
-	void TextTool::clearColor( Char * pChar, Uint32 nb, State state )
+	void TextTool::clearColor( Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateColorClearer(state), pChar, nb );
 	}
@@ -2667,24 +2667,24 @@ namespace wg
 	
 	//____ setStyle() _____________________________________________________________
 	
-	void TextTool::setStyle( FontAlt style, Char * pChar, Uint32 nb )
+	void TextTool::setStyle( FontAlt style, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropStyleModifier(style), pChar, nb );
 	}
 	
-	void TextTool::setStyle( FontAlt style, Char * pChar, Uint32 nb, State state )
+	void TextTool::setStyle( FontAlt style, Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateStyleModifier(style,state), pChar, nb );
 	}
 	
 	//____ clearStyle() ___________________________________________________________
 	
-	void TextTool::clearStyle( Char * pChar, Uint32 nb )
+	void TextTool::clearStyle( Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
 	}
 	
-	void TextTool::clearStyle( Char * pChar, Uint32 nb, State state )
+	void TextTool::clearStyle( Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
 	}
@@ -2692,38 +2692,38 @@ namespace wg
 	
 	//____ setUnderlined() ________________________________________________________
 	
-	void TextTool::setUnderlined( Char * pChar, Uint32 nb )
+	void TextTool::setUnderlined( Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropUnderlinedModifier(true), pChar, nb );
 	}
 	
-	void TextTool::setUnderlined( Char * pChar, Uint32 nb, State state )
+	void TextTool::setUnderlined( Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateUnderlinedModifier(true,state), pChar, nb );
 	}
 	
 	//____ clearUnderlined() ________________________________________________________
 	
-	void TextTool::clearUnderlined( Char * pChar, Uint32 nb )
+	void TextTool::clearUnderlined( Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropUnderlinedModifier(false), pChar, nb );
 	}
 	
-	void TextTool::clearUnderlined( Char * pChar, Uint32 nb, State state )
+	void TextTool::clearUnderlined( Char * pChar, uint32_t nb, State state )
 	{
 		modifyProperties( PropStateUnderlinedModifier(false,state), pChar, nb );
 	}
 	
 	//____ setBreakLevel() ________________________________________________________
 	
-	void TextTool::setBreakLevel( int breakLevel, Char * pChar, Uint32 nb )
+	void TextTool::setBreakLevel( int breakLevel, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropBreakLevelModifier(breakLevel), pChar, nb );
 	}
 	
 	//____ setLink() ______________________________________________________________
 	
-	void TextTool::setLink( const TextLink_p& pLink, Char * pChar, Uint32 nb )
+	void TextTool::setLink( const TextLink_p& pLink, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropLinkModifier(pLink), pChar, nb );
 	}
@@ -2731,14 +2731,14 @@ namespace wg
 	
 	//____ setFont() ______________________________________________________________
 	
-	void TextTool::setFont( const Font_p& pFont, Char * pChar, Uint32 nb )
+	void TextTool::setFont( const Font_p& pFont, Char * pChar, uint32_t nb )
 	{
 		modifyProperties( PropFontModifier(pFont), pChar, nb );
 	}
 	
 	//____ setGlyph() ______________________________________________________________
 	
-	void TextTool::setGlyph( Uint16 glyph, Char * pChar, Uint32 nb )
+	void TextTool::setGlyph( uint16_t glyph, Char * pChar, uint32_t nb )
 	{
 		for( unsigned int i = 0 ; i < nb ; i++ )
 			pChar[i].glyph = glyph;
@@ -2746,7 +2746,7 @@ namespace wg
 	
 	//____ setChars() ______________________________________________________________
 	
-	void TextTool::setChars( const Char& ch, Char * pChar, Uint32 nb )
+	void TextTool::setChars( const Char& ch, Char * pChar, uint32_t nb )
 	{
 		derefProps( pChar, nb );
 	
@@ -2761,12 +2761,12 @@ namespace wg
 	
 	//____ setProperties() ________________________________________________________
 	
-	void TextTool::setProperties( const Textprop_p& pProp, Char * pChar, Uint32 nb )
+	void TextTool::setProperties( const Textprop_p& pProp, Char * pChar, uint32_t nb )
 	{
-		Uint32		refCnt = 0;
-		Uint32		refCntTotal = 0;
-		Uint16		old_prop = 0xFFFF;
-		Uint16		new_prop = pProp.getHandle();
+		uint32_t		refCnt = 0;
+		uint32_t		refCntTotal = 0;
+		uint16_t		old_prop = 0xFFFF;
+		uint16_t		new_prop = pProp.getHandle();
 	
 		for( unsigned int i = 0 ; i < nb ; i++ )
 		{
@@ -2796,11 +2796,11 @@ namespace wg
 	
 	//____ modifyProperties() __________________________________________________________
 	
-	void TextTool::modifyProperties( const PropModifier& modif, Char * pChar, Uint32 nb  )
+	void TextTool::modifyProperties( const PropModifier& modif, Char * pChar, uint32_t nb  )
 	{
-		Uint32		refCnt = 0;
-		Uint16		old_prop = 0xFFFF;
-		Uint16		new_prop = 0xFFFF;
+		uint32_t		refCnt = 0;
+		uint16_t		old_prop = 0xFFFF;
+		uint16_t		new_prop = 0xFFFF;
 	
 		for( unsigned int i = 0 ; i < nb ; i++ )
 		{
@@ -2928,7 +2928,7 @@ namespace wg
 	
 	//____ TextpropEncoder::beginString() _________________________________________
 	
-	Uint32 TextTool::TextpropEncoder::beginString()
+	uint32_t TextTool::TextpropEncoder::beginString()
 	{
 		m_bColorTagOpen = false;
 		m_bStyleTagOpen = false;
@@ -2943,9 +2943,9 @@ namespace wg
 	
 	//____ TextpropEncoder::setProp() _____________________________________________
 	
-	Uint32 TextTool::TextpropEncoder::setProp( const Textprop_p& pNewProp )
+	uint32_t TextTool::TextpropEncoder::setProp( const Textprop_p& pNewProp )
 	{
-		Uint32 i = 0;
+		uint32_t i = 0;
 	
 		// First, see if we can do this using only current "baseprop" + style/color/size/underline settings.
 	
@@ -3172,9 +3172,9 @@ namespace wg
 	
 	//____ TextpropEncoder::endString() ___________________________________________
 	
-	Uint32 TextTool::TextpropEncoder::endString()
+	uint32_t TextTool::TextpropEncoder::endString()
 	{
-		Uint32 i = 0;
+		uint32_t i = 0;
 	
 		if( m_pActiveProp->style() != WG_FONT_NORMAL )
 		{

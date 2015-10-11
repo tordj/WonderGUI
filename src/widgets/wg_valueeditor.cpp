@@ -255,7 +255,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < nbChars ; i++ )
 			{
-				Uint16 glyph = p[i].getGlyph();
+				uint16_t glyph = p[i].getGlyph();
 	
 				if( glyph == '-' )
 					continue;
@@ -624,7 +624,7 @@ namespace wg
 			{
 				for( int i = 0 ; i < str.length() ; i++ )
 				{
-					Uint16 character = str.chars()[i].getGlyph();
+					uint16_t character = str.chars()[i].getGlyph();
 					if( character == m_pFormat->getPeriod() )
 					{
 						if( m_pFormat->getDecimals() > 0 && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&

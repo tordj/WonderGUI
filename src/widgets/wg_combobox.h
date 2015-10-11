@@ -78,7 +78,7 @@ namespace wg
 		TextEditMode	editMode() const { return m_text.editMode(); }
 	
 		int				insertTextAtCursor( const CharSeq& str );
-		bool			insertCharAtCursor( Uint16 c );
+		bool			insertCharAtCursor( uint16_t c );
 	
 		// Press in textfield:
 		//		Editable - Grab input focus.

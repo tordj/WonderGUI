@@ -23,39 +23,12 @@
 #ifndef	WG_TYPES_DOT_H
 #define WG_TYPES_DOT_H
 
-#ifdef WIN32
-#ifndef for
-//#	define		for		if(false){}else for
-#endif
-#endif
 
-#ifdef _MSC_VER
-typedef signed __int8     int8_t;
-typedef signed __int16    int16_t;
-typedef signed __int32    int32_t;
-typedef signed __int64    int64_t;
-typedef unsigned __int8   uint8_t;
-typedef unsigned __int16  uint16_t;
-typedef unsigned __int32  uint32_t;
-typedef unsigned __int64  uint64_t;
-#else
-#	include <stdint.h>			// Use the C99 official header
-#endif
+#include <stdint.h>			// Use the C99 official header
 
 namespace wg 
 {
-	
-	#ifndef Uint8
-		typedef unsigned char	Uint8;
-		typedef signed char		Sint8;
-		typedef unsigned short	Uint16;
-		typedef signed short	Sint16;
-		typedef unsigned int	Uint32;
-		typedef signed int		Sint32;
-		typedef uint64_t		Uint64;
-		typedef int64_t			Sint64;
-	#endif
-	
+		
 	#ifndef INT64_MIN
 	#define INT64_MIN (-(9223372036854775807 ## L)-1)
 	#endif
@@ -307,7 +280,7 @@ namespace wg
 	
 	// BlendModes control how blits and fills are blended against the background.
 	
-	enum WgBlendMode //: Uint8
+	enum WgBlendMode //: uint8_t
 	{
 		WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 		WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
@@ -694,7 +667,7 @@ namespace wg
 	 *
 	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
 	 *
-	 * Uint32	pixel;
+	 * uint32_t	pixel;
 	 * WgPixelFormat * pFormat;
 	 *
 	 * 	Color col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
@@ -707,7 +680,7 @@ namespace wg
 	 * Color color;
 	 * WgPixelFormat * pFormat;
 	 *
-	 * 	Uint32 pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
+	 * 	uint32_t pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
 	 *				 ((color.g << pFormat->G_shift) & pFormat->G_mask) |
 	 *				 ((color.b << pFormat->B_shift) & pFormat->B_mask) |
 	 *				 ((color.a << pFormat->A_shift) & pFormat->A_mask);
@@ -722,20 +695,20 @@ namespace wg
 		WgPixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 	
-		Uint32	R_mask;				///< bitmask for getting the red bits out of the pixel
-		Uint32	G_mask;				///< bitmask for getting the green bits out of the pixel
-		Uint32	B_mask;				///< bitmask for getting the blue bits out of the pixel
-		Uint32	A_mask;				///< bitmask for getting the alpha bits out of the pixel
+		uint32_t	R_mask;				///< bitmask for getting the red bits out of the pixel
+		uint32_t	G_mask;				///< bitmask for getting the green bits out of the pixel
+		uint32_t	B_mask;				///< bitmask for getting the blue bits out of the pixel
+		uint32_t	A_mask;				///< bitmask for getting the alpha bits out of the pixel
 	
 		int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
 		int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
 		int		B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
 		int		A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
 	
-		Uint8	R_bits;				///< number of bits for red in the pixel
-		Uint8	G_bits;				///< number of bits for green in the pixel
-		Uint8	B_bits;				///< number of bits for blue in the pixel
-		Uint8	A_bits;				///< number of bits for alpha in the pixel
+		uint8_t	R_bits;				///< number of bits for red in the pixel
+		uint8_t	G_bits;				///< number of bits for green in the pixel
+		uint8_t	B_bits;				///< number of bits for blue in the pixel
+		uint8_t	A_bits;				///< number of bits for alpha in the pixel
 	};
 	
 	

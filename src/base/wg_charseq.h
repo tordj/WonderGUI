@@ -67,8 +67,8 @@ namespace wg
 	public:
 		CharSeq( const char * pChar );
 		CharSeq( const char * pChar, int len );
-		CharSeq( const Uint16 * pChar );
-		CharSeq( const Uint16 * pChar, int len );
+		CharSeq( const uint16_t * pChar );
+		CharSeq( const uint16_t * pChar, int len );
 		CharSeq( const Char * pChar );
 		CharSeq( const Char * pChar, int len );
 		CharSeq( const CharBuffer * pBuffer );
@@ -126,7 +126,7 @@ namespace wg
 			UnicodeBasket(const UnicodeBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
 			~UnicodeBasket() { if( bIsOwner ) delete [] ptr; }
 	
-			const Uint16 *	ptr;
+			const uint16_t *	ptr;
 			int				length;
 	
 		private:
@@ -145,10 +145,10 @@ namespace wg
 		int						getNbLines() const;
 		void					copyTo( Char * pDest ) const;
 	//	void					copyTo( char * pDest ) const;			//TODO: implement.
-	//	void					copyTo( Uint16 * pDest ) const;			//TODO: implement.
+	//	void					copyTo( uint16_t * pDest ) const;			//TODO: implement.
 	
 		void					copyFormattedTo( char * pDest ) const;
-		void					copyFormattedTo( Uint16 * pDest ) const;
+		void					copyFormattedTo( uint16_t * pDest ) const;
 	
 	protected:
 		CharSeq() {};
@@ -176,8 +176,8 @@ namespace wg
 	public:
 		CharSeqLiteral( const char * pChar );
 		CharSeqLiteral( const char * pChar, int len );
-		CharSeqLiteral( const Uint16 * pChar );
-		CharSeqLiteral( const Uint16 * pChar, int len );
+		CharSeqLiteral( const uint16_t * pChar );
+		CharSeqLiteral( const uint16_t * pChar, int len );
 		CharSeqLiteral( const std::string& str );
 		CharSeqLiteral( const std::string& str, int ofs, int len );
 		CharSeqLiteral( const std::wstring& str );

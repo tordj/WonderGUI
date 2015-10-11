@@ -61,8 +61,8 @@ namespace wg
 		void					copyGlyphs( BitmapGlyphs* pOtherGlyphset );
 	
 	
-		Glyph_p				getGlyph( Uint16 chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
-		bool					hasGlyph( Uint16 chr );
+		Glyph_p				getGlyph( uint16_t chr, int size = 0 );						// Size is just a dummy for BitmapGlyphs...
+		bool					hasGlyph( uint16_t chr );
 		int						getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
 	
 		inline int				getHeight( int size ) { return m_height; }
@@ -82,7 +82,7 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect );
+			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect );
 	
 			const GlyphBitmap * getBitmap() { return &m_src; }
 	
@@ -95,14 +95,14 @@ namespace wg
 		MyGlyph * 	m_glyphTab[256];
 	
 		int			m_nKerningGlyphs;
-		Sint8*		m_pKerningTable;
+		int8_t*		m_pKerningTable;
 	
 		bool		m_bMonospace;
 		float		m_avgSpacing;
 		int			m_maxSpacing;
-		Uint32		m_spaceSpacing;
-		Uint32		m_nGlyphs;
-		Uint32		m_height;
+		uint32_t		m_spaceSpacing;
+		uint32_t		m_nGlyphs;
+		uint32_t		m_height;
 		int			m_baseline;
 	};
 	

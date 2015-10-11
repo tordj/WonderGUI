@@ -44,10 +44,10 @@ namespace wg
 	class CodePages
 	{
 	public:
-		static inline Uint16* getCodePage( WgCodePage codePage ) { return LookupTable[codePage]; }
+		static inline uint16_t* getCodePage( WgCodePage codePage ) { return LookupTable[codePage]; }
 			
 	private:		
-		static Uint16* LookupTable[WG_NB_CODEPAGES];
+		static uint16_t* LookupTable[WG_NB_CODEPAGES];
 	};
 	
 

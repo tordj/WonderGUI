@@ -77,149 +77,149 @@ namespace wg
 	
 	public:
 	
-		inline static bool	cmpUTF8( const char * pChar1, Uint16 char2 );
-		inline static int	sizeUTF8( Uint16 ch );
+		inline static bool	cmpUTF8( const char * pChar1, uint16_t char2 );
+		inline static int	sizeUTF8( uint16_t ch );
 	
-		inline static Uint16 readChar( const char *& pStr );
-		static Uint16	parseChar( const char * pStr );	// Should be null terminated
+		inline static uint16_t readChar( const char *& pStr );
+		static uint16_t	parseChar( const char * pStr );	// Should be null terminated
 	
-		static Uint32	readString( const char *& pSrc, Uint16 * pDst, Uint32 maxChars = INT_MAX );
-		static Uint32	readString( const char *& pSrc, Char * pDst, Uint32 maxChars = INT_MAX );
-		static Uint32	readString( const Uint16 *& pSrc, Char * pDst, Uint32 maxChars = INT_MAX );
-		static Uint32	readString( const char *& pSrc, WgCodePage codepage, Char * pDst, Uint32 maxChars = INT_MAX );
-		static Uint32	readString( const char *& pSrc, WgCodePage codepage, Uint16 * pDst, Uint32 maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, uint16_t * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, Char * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const uint16_t *& pSrc, Char * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, WgCodePage codepage, Char * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, WgCodePage codepage, uint16_t * pDst, uint32_t maxChars = INT_MAX );
 	
-		static Uint32	countChars( const char * pStr, Uint32 strlen = INT_MAX );
+		static uint32_t	countChars( const char * pStr, uint32_t strlen = INT_MAX );
 	
-		static Uint32	countLines( const char * pStr );
-		static Uint32	countLines( const Uint16 * pStr );
-		static Uint32	countLines( const Char * pStr );
+		static uint32_t	countLines( const char * pStr );
+		static uint32_t	countLines( const uint16_t * pStr );
+		static uint32_t	countLines( const Char * pStr );
 	
-		static Uint32	countWhitespaces( const char * pStr, Uint32 len = INT_MAX );
-		static Uint32	countWhitespaces( const Uint16 * pStr, Uint32 len = INT_MAX  );
-		static Uint32	countWhitespaces( const Char * pStr, Uint32 len = INT_MAX  );
+		static uint32_t	countWhitespaces( const char * pStr, uint32_t len = INT_MAX );
+		static uint32_t	countWhitespaces( const uint16_t * pStr, uint32_t len = INT_MAX  );
+		static uint32_t	countWhitespaces( const Char * pStr, uint32_t len = INT_MAX  );
 	
-		static Uint32	countLineChars( const char * pStr, Uint32 len = INT_MAX );
-		static Uint32	countLineChars( const Uint16 * pStr, Uint32 len = INT_MAX );
-		static Uint32	countLineChars( const Char * pStr, Uint32 len = INT_MAX );
+		static uint32_t	countLineChars( const char * pStr, uint32_t len = INT_MAX );
+		static uint32_t	countLineChars( const uint16_t * pStr, uint32_t len = INT_MAX );
+		static uint32_t	countLineChars( const Char * pStr, uint32_t len = INT_MAX );
 	
-		static void		countCharsLines( const char * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
-		static void		countCharsLines( const Uint16 * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
-		static void		countCharsLines( const Char * pStr, Uint32& putChars, Uint32& putLines, Uint32 strlen = INT_MAX );
+		static void		countCharsLines( const char * pStr, uint32_t& putChars, uint32_t& putLines, uint32_t strlen = INT_MAX );
+		static void		countCharsLines( const uint16_t * pStr, uint32_t& putChars, uint32_t& putLines, uint32_t strlen = INT_MAX );
+		static void		countCharsLines( const Char * pStr, uint32_t& putChars, uint32_t& putLines, uint32_t strlen = INT_MAX );
 	
-		static Uint32	countNonFormattingChars( const char * pStr, Uint32 strlen = INT_MAX );
-		static Uint32	countNonFormattingChars( const Uint16 * pStr, Uint32 strlen = INT_MAX );
+		static uint32_t	countNonFormattingChars( const char * pStr, uint32_t strlen = INT_MAX );
+		static uint32_t	countNonFormattingChars( const uint16_t * pStr, uint32_t strlen = INT_MAX );
 	
 	
 	
-		static Uint32	readFormattedString( const char * pSrc, Char * pDst, Uint32 maxChars = INT_MAX, const ResDB * pResDB = 0 );
-		static Uint32	readFormattedString( const Uint16 * pSrc, Char * pDst, Uint32 maxChars = INT_MAX, const ResDB * pResDB = 0 );
+		static uint32_t	readFormattedString( const char * pSrc, Char * pDst, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
+		static uint32_t	readFormattedString( const uint16_t * pSrc, Char * pDst, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
 	
-		static Uint32	copyChars( const Char * pSrc, Char * pDst, Uint32 maxChars = INT_MAX );
+		static uint32_t	copyChars( const Char * pSrc, Char * pDst, uint32_t maxChars = INT_MAX );
 	
 		static char * nextLine( char * pStr );
 	
 	
-		static Uint32	writeUTF8( Uint16 charcode, char * pDest );
+		static uint32_t	writeUTF8( uint16_t charcode, char * pDest );
 	
 		//____
 	
-		static bool		uint16ToAscii( Uint16 value, Uint16 * pDest, Uint32 maxChars );
-		static Uint16	asciiToUint16( const Uint16 * pAscii );
-		static bool		uint16ToAscii( Uint16 value, char * pDest, Uint32 maxChars );
-		static Uint16	asciiToUint16( const char * pAscii );
+		static bool		uint16ToAscii( uint16_t value, uint16_t * pDest, uint32_t maxChars );
+		static uint16_t	asciiTouint16_t( const uint16_t * pAscii );
+		static bool		uint16ToAscii( uint16_t value, char * pDest, uint32_t maxChars );
+		static uint16_t	asciiTouint16_t( const char * pAscii );
 	
-		static bool		uint8ToAscii( Uint8 value, Uint16 * pDest, Uint32 maxChars );
-		static Uint8	asciiToUint8( const Uint16 * pAscii );
-		static bool		uint8ToAscii( Uint8 value, char * pDest, Uint32 maxChars );
-		static Uint8	asciiToUint8( const char * pAscii );
+		static bool		uint8ToAscii( uint8_t value, uint16_t * pDest, uint32_t maxChars );
+		static uint8_t	asciiTouint8_t( const uint16_t * pAscii );
+		static bool		uint8ToAscii( uint8_t value, char * pDest, uint32_t maxChars );
+		static uint8_t	asciiTouint8_t( const char * pAscii );
 	
-	//	static Uint32	formatColor( const Color& color, Uint16 * pDest, Uint32 maxChars );
-		static Uint32	formatBeginColor( const Color& color, char * pDest );
+	//	static uint32_t	formatColor( const Color& color, uint16_t * pDest, uint32_t maxChars );
+		static uint32_t	formatBeginColor( const Color& color, char * pDest );
 	
-		static Uint32	uint16ToUtf8( Uint16 value, char * pDest, Uint32 maxChars );
-	
-	
-		static Uint32	getTextUTF8( const Char * pSrc, char * pDest, Uint32 maxBytes );
-		static Uint32	getTextUTF8( const Uint16 * pSrc, char * pDest, Uint32 maxBytes );
-		static Uint32	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars = INT_MAX );
-	
-		static Uint32	getTextSizeUTF8( const Char * pSrc, Uint32 maxChars = INT_MAX );
-		static Uint32	getTextSizeUTF8( const Uint16 * pSrc, Uint32 maxChars = INT_MAX );
-		static Uint32	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars = INT_MAX );
-	
-		static Uint32	getTextFormatted( const Char * pSrc, Uint16 * pDest, Uint32 maxChars, const ResDB * pResDB = 0 );
-		static Uint32	getTextSizeFormatted( const Char * pSrc, Uint32 maxChars = INT_MAX, const ResDB * pResDB = 0 );
-	
-		static Uint32	getTextFormattedUTF8( const Char * pSrc, char * pDest, Uint32 maxBytes, const ResDB * pResDB = 0 );
-		static Uint32	getTextSizeFormattedUTF8( const Char * pSrc, Uint32 maxChars = INT_MAX, const ResDB * pResDB = 0 );
-	
-		static Uint32	getTextSizeStrippedUTF8( const char * pStr, Uint32 maxChars = INT_MAX );
-		static Uint32	getTextSizeStrippedUTF8( const Uint16 * pStr, Uint32 maxChars = INT_MAX );
-		static Uint32	getTextSizeStripped( const char * pStr, Uint32 maxChars = INT_MAX );
-		static Uint32	getTextSizeStripped( const Uint16 * pStr, Uint32 maxChars = INT_MAX );
+		static uint32_t	uint16ToUtf8( uint16_t value, char * pDest, uint32_t maxChars );
 	
 	
+		static uint32_t	getTextUTF8( const Char * pSrc, char * pDest, uint32_t maxBytes );
+		static uint32_t	getTextUTF8( const uint16_t * pSrc, char * pDest, uint32_t maxBytes );
+		static uint32_t	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars = INT_MAX );
 	
-		static int		stripTextCommands( const Uint16* pSrc, Uint16* pDest, int maxChars );
+		static uint32_t	getTextSizeUTF8( const Char * pSrc, uint32_t maxChars = INT_MAX );
+		static uint32_t	getTextSizeUTF8( const uint16_t * pSrc, uint32_t maxChars = INT_MAX );
+		static uint32_t	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars = INT_MAX );
+	
+		static uint32_t	getTextFormatted( const Char * pSrc, uint16_t * pDest, uint32_t maxChars, const ResDB * pResDB = 0 );
+		static uint32_t	getTextSizeFormatted( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
+	
+		static uint32_t	getTextFormattedUTF8( const Char * pSrc, char * pDest, uint32_t maxBytes, const ResDB * pResDB = 0 );
+		static uint32_t	getTextSizeFormattedUTF8( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
+	
+		static uint32_t	getTextSizeStrippedUTF8( const char * pStr, uint32_t maxChars = INT_MAX );
+		static uint32_t	getTextSizeStrippedUTF8( const uint16_t * pStr, uint32_t maxChars = INT_MAX );
+		static uint32_t	getTextSizeStripped( const char * pStr, uint32_t maxChars = INT_MAX );
+		static uint32_t	getTextSizeStripped( const uint16_t * pStr, uint32_t maxChars = INT_MAX );
+	
+	
+	
+		static int		stripTextCommands( const uint16_t* pSrc, uint16_t* pDest, int maxChars );
 		static int		stripTextCommands( const char* pSrc, char* pDest, int maxBytes );
 	
-		static int		stripTextCommandsConvert( const Uint16* pSrc, char* pDest, int maxChars );
-		static int		stripTextCommandsConvert( const char* pSrc, Uint16* pDest, int maxChars );
+		static int		stripTextCommandsConvert( const uint16_t* pSrc, char* pDest, int maxChars );
+		static int		stripTextCommandsConvert( const char* pSrc, uint16_t* pDest, int maxChars );
 	
 	
-		static int		stripTextColorCommands( const Uint16* pSrc, Uint16* pDest, int maxChars );
+		static int		stripTextColorCommands( const uint16_t* pSrc, uint16_t* pDest, int maxChars );
 		static int		stripTextColorCommands( const char* pSrc, char* pDest, int maxChars );
 	
-		static Uint32	strlen( const Uint16 * pSrc );
-		static Uint32	strlen( const Char * pSrc );
-		static int		strcmp( const Uint16 * pStr1, const Uint16 * pStr2 );
+		static uint32_t	strlen( const uint16_t * pSrc );
+		static uint32_t	strlen( const Char * pSrc );
+		static int		strcmp( const uint16_t * pStr1, const uint16_t * pStr2 );
 		static int		strcmp( const Char * pStr1, const Char * pStr2 );
 		static int		glyphcmp( const Char * pStr1, const Char * pStr2 );
 		static int		glyphcmpIgnoreCase( const Char * pStr1, const Char * pStr2 );
 	
 	
-		static Uint32	lineWidth( const TextAttr& attr, const char * pString );
-		static Uint32	lineWidth( const TextAttr& attr, const Uint16 * pString );
-		static Uint32	lineWidth( const TextAttr& attr, State mode, const Char * pString );
+		static uint32_t	lineWidth( const TextAttr& attr, const char * pString );
+		static uint32_t	lineWidth( const TextAttr& attr, const uint16_t * pString );
+		static uint32_t	lineWidth( const TextAttr& attr, State mode, const Char * pString );
 	
-		static void		forwardCharacters( const char *& pChar, Uint32 nChars );
-		static void		forwardEscapedCharacters( const char *& pChar, Uint32 nChars );
-		static void		forwardEscapedCharacters( const Uint16 *& pChar, Uint32 nChars );
+		static void		forwardCharacters( const char *& pChar, uint32_t nChars );
+		static void		forwardEscapedCharacters( const char *& pChar, uint32_t nChars );
+		static void		forwardEscapedCharacters( const uint16_t *& pChar, uint32_t nChars );
 	
-		static void			setGlyph( Uint16 glyph, Char * pChar, Uint32 nb );
-		static void			setChars( const Char& ch, Char * pChar, Uint32 nb );
+		static void			setGlyph( uint16_t glyph, Char * pChar, uint32_t nb );
+		static void			setChars( const Char& ch, Char * pChar, uint32_t nb );
 	
-		static void			setProperties( const Textprop_p& pProp, Char * pChar, Uint32 nb );
-		static void			setLink( const TextLink_p& pLink, Char * pChar, Uint32 nb );
-		static void			setFont( const Font_p& pFont, Char * pChar, Uint32 nb );
-		static void			setBreakLevel( int breakLevel, Char * pChar, Uint32 nb );
+		static void			setProperties( const Textprop_p& pProp, Char * pChar, uint32_t nb );
+		static void			setLink( const TextLink_p& pLink, Char * pChar, uint32_t nb );
+		static void			setFont( const Font_p& pFont, Char * pChar, uint32_t nb );
+		static void			setBreakLevel( int breakLevel, Char * pChar, uint32_t nb );
 	
-		static void			setColor( const Color col, Char * pChar, Uint32 nb );
-		static void			setSize( int size, Char * pChar, Uint32 nb );
-		static void			setStyle( FontAlt style, Char * pChar, Uint32 nb );
-		static void			setUnderlined( Char * pChar, Uint32 nb );
+		static void			setColor( const Color col, Char * pChar, uint32_t nb );
+		static void			setSize( int size, Char * pChar, uint32_t nb );
+		static void			setStyle( FontAlt style, Char * pChar, uint32_t nb );
+		static void			setUnderlined( Char * pChar, uint32_t nb );
 	
-		static void			setColor( const Color col, Char * pChar, Uint32 nb, State state );
-		static void			setSize( int size, Char * pChar, Uint32 nb, State state );
-		static void			setStyle( FontAlt style, Char * pChar, Uint32 nb, State state );
-		static void			setUnderlined( Char * pChar, Uint32 nb, State state );
+		static void			setColor( const Color col, Char * pChar, uint32_t nb, State state );
+		static void			setSize( int size, Char * pChar, uint32_t nb, State state );
+		static void			setStyle( FontAlt style, Char * pChar, uint32_t nb, State state );
+		static void			setUnderlined( Char * pChar, uint32_t nb, State state );
 	
 	
-		inline static void	clearProperties( Char * pChar, Uint32 nb ) { setProperties( 0, pChar, nb ); }
-		inline static void	clearLink( Char * pChar, Uint32 nb ) { setLink(0,pChar,nb); }
-		inline static void	clearFont( Char * pChar, Uint32 nb ) { setFont(0,pChar,nb); }
-		inline static void	clearBreakLevel( Char * pChar, Uint32 nb ) { setBreakLevel(-1,pChar,nb); }
+		inline static void	clearProperties( Char * pChar, uint32_t nb ) { setProperties( 0, pChar, nb ); }
+		inline static void	clearLink( Char * pChar, uint32_t nb ) { setLink(0,pChar,nb); }
+		inline static void	clearFont( Char * pChar, uint32_t nb ) { setFont(0,pChar,nb); }
+		inline static void	clearBreakLevel( Char * pChar, uint32_t nb ) { setBreakLevel(-1,pChar,nb); }
 	
-		static void			clearColor( Char * pChar, Uint32 nb );
-		static void			clearSize( Char * pChar, Uint32 nb );
-		static void			clearStyle( Char * pChar, Uint32 nb );
-		static void			clearUnderlined( Char * pChar, Uint32 nb );
+		static void			clearColor( Char * pChar, uint32_t nb );
+		static void			clearSize( Char * pChar, uint32_t nb );
+		static void			clearStyle( Char * pChar, uint32_t nb );
+		static void			clearUnderlined( Char * pChar, uint32_t nb );
 	
-		static void			clearColor( Char * pChar, Uint32 nb, State state );
-		static void			clearSize( Char * pChar, Uint32 nb, State state );
-		static void			clearStyle( Char * pChar, Uint32 nb, State state );
-		static void			clearUnderlined( Char * pChar, Uint32 nb, State state );
+		static void			clearColor( Char * pChar, uint32_t nb, State state );
+		static void			clearSize( Char * pChar, uint32_t nb, State state );
+		static void			clearStyle( Char * pChar, uint32_t nb, State state );
+		static void			clearUnderlined( Char * pChar, uint32_t nb, State state );
 	
 	
 	
@@ -232,7 +232,7 @@ namespace wg
 	
 	    static char *           itoa( int value, char * str, int base );
 	
-		static WgBreakRules		isBreakAllowed( Uint16 chr, int breakLevel );
+		static WgBreakRules		isBreakAllowed( uint16_t chr, int breakLevel );
 	
 		static void				clearBreakRules();
 		static bool				setBreakRule( unsigned char character, int level, WgBreakRules rule );
@@ -245,9 +245,9 @@ namespace wg
 		public:
 			TextpropEncoder( const ResDB * pResDB );
 	
-			Uint32	beginString();
-			Uint32	setProp( const Textprop_p& pNewProp );
-			Uint32	endString();
+			uint32_t	beginString();
+			uint32_t	setProp( const Textprop_p& pNewProp );
+			uint32_t	endString();
 	
 			inline const char * getCodes() const { return m_temp; }
 	
@@ -420,25 +420,25 @@ namespace wg
 	
 		//____
 	
-		static void modifyProperties( const PropModifier& modif, Char * pChar, Uint32 nb );
+		static void modifyProperties( const PropModifier& modif, Char * pChar, uint32_t nb );
 	
-		inline static Uint8	nibbleToAscii( Uint8 nibble );
-		inline static Uint8	asciiToNibble( Uint8 ascii );
+		inline static uint8_t	nibbleToAscii( uint8_t nibble );
+		inline static uint8_t	asciiToNibble( uint8_t ascii );
 	
-		static void	refProps( Char * p, Uint32 n );
-		static void	derefProps( Char * p, Uint32 n );
+		static void	refProps( Char * p, uint32_t n );
+		static void	derefProps( Char * p, uint32_t n );
 	};
 	
 	//____ readChar() _____________________________________________________________
 	
-	inline Uint16 TextTool::readChar( const char *& pStr )
+	inline uint16_t TextTool::readChar( const char *& pStr )
 	{
 	
 	#ifdef WG_USE_UTF8
 	
 	#ifdef WG_SAFE_UTF8	// SAFE UTF8 VERSION
 	
-		Uint16 g = * ((const unsigned char *&)pStr)++;
+		uint16_t g = * ((const unsigned char *&)pStr)++;
 	
 		if( g < 128 )
 			return g;											// 1 byte character (7 bits data).
@@ -489,7 +489,7 @@ namespace wg
 	
 	#else // FAST UTF8 VERSION
 	
-		Uint32 g = *((const unsigned char *&)pStr)++;
+		uint32_t g = *((const unsigned char *&)pStr)++;
 	
 		if( g < 128 )
 			return g;											// 1 byte character (7 bits data).
@@ -508,15 +508,15 @@ namespace wg
 		return g;
 	
 	#else // 8 BIT CHARACTER VERSION
-		return (Uint32) * ((const unsigned char *&)pStr)++;
+		return (uint32_t) * ((const unsigned char *&)pStr)++;
 	#endif
 	}
 	
 	//____ cmpUTF8() ______________________________________________________________
 	
-	inline bool TextTool::cmpUTF8( const char * pChar1, Uint16 char2 )
+	inline bool TextTool::cmpUTF8( const char * pChar1, uint16_t char2 )
 	{
-		Uint32 g = (unsigned char) pChar1[0];
+		uint32_t g = (unsigned char) pChar1[0];
 	
 		if( g >= 128 )
 		{
@@ -537,7 +537,7 @@ namespace wg
 	
 	//____ sizeUTF8() _____________________________________________________________
 	
-	inline int TextTool::sizeUTF8( Uint16 ch )
+	inline int TextTool::sizeUTF8( uint16_t ch )
 	{
 		if( ch < 128 )
 			return 1;

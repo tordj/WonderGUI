@@ -104,7 +104,7 @@ namespace wg
 	
 	//____ setPasswordGlyph() _____________________________________________________
 	
-	void LineEditor::setPasswordGlyph( Uint16 glyph )
+	void LineEditor::setPasswordGlyph( uint16_t glyph )
 	{
 		assert(glyph);
 		if(glyph)
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool LineEditor::insertCharAtCursor( Uint16 c )
+	bool LineEditor::insertCharAtCursor( uint16_t c )
 	{
 		if( !_isEditable() )
 			return false;
@@ -192,7 +192,7 @@ namespace wg
 		if( m_bPasswordMode )
 		{
 			int nChars = m_text.length();
-			Uint16 * pContent = new Uint16[nChars+1];
+			uint16_t * pContent = new uint16_t[nChars+1];
 			for( int i = 0 ; i < nChars ; i++ )
 				pContent[i] = m_pwGlyph;
 			pContent[nChars] = 0;

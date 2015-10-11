@@ -39,14 +39,14 @@ namespace wg
 	{
 	public:
 		Coord8() : x(0), y(0) {}
-		Coord8( Sint8 x, Sint8 y ) : x(x), y(y) {}
+		Coord8( int8_t x, int8_t y ) : x(x), y(y) {}
 	
 		inline Coord8 operator=(const Coord8& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const Coord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const Coord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 	
-		Sint8		x, y;
+		int8_t		x, y;
 	};
 	
 	//____ Class: Coord16 ________________________________________________________
@@ -55,14 +55,14 @@ namespace wg
 	{
 	public:
 		Coord16() : x(0), y(0) {}
-		Coord16( Sint16 x, Sint16 y ) : x(x), y(y) {}
+		Coord16( int16_t x, int16_t y ) : x(x), y(y) {}
 	
 		inline Coord16 operator=(const Coord16& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const Coord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const Coord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 	
-		Sint16	x, y;
+		int16_t	x, y;
 	};
 	
 	//____ Class: UCord16 _______________________________________________________
@@ -71,14 +71,14 @@ namespace wg
 	{
 	public:
 		UCord16() : x(0), y(0) {}
-		UCord16( Uint16 _x, Uint16 _y ) {x=_x;y=_y;};
+		UCord16( uint16_t _x, uint16_t _y ) {x=_x;y=_y;};
 	
 		inline UCord16 operator=(const UCord16& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const UCord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const UCord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 	
-		Uint16	x, y;
+		uint16_t	x, y;
 	};
 	
 	//____ Class: Coord ________________________________________________________

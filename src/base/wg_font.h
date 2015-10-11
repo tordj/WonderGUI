@@ -85,8 +85,8 @@ namespace wg
 	
 	
 		Glyphset_p		getGlyphset( FontAlt style, int size ) const;
-		Glyph_p			getGlyph( Uint32 chr, FontAlt style, int size ) const;
-		GlyphProvided		isGlyphProvided( Uint32 chr, FontAlt style, int size ) const;
+		Glyph_p			getGlyph( uint32_t chr, FontAlt style, int size ) const;
+		GlyphProvided		isGlyphProvided( uint32_t chr, FontAlt style, int size ) const;
 	
 	#ifdef	WG_USE_FREETYPE
 		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style  );

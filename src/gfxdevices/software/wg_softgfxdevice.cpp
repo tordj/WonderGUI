@@ -134,7 +134,7 @@ namespace wg
 		//
 	
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * pDst = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
 	
 	
 	
@@ -397,7 +397,7 @@ namespace wg
 	
 			for( int y = begY ; y <= endY ; y++ )
 			{
-				Uint8 * pDst = m_pCanvas->m_pData + y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+				uint8_t * pDst = m_pCanvas->m_pData + y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
 	
 				if( y > clip.y && y < clip.y + clip.h -1 && x > clip.x && x < clip.x + clip.w -1 )
 				{
@@ -441,7 +441,7 @@ namespace wg
 	
 		for( int i = 0 ; i < nCoords ; i++ )
 		{
-			Uint8 * pDst = m_pCanvas->m_pData + pCoords[i].y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+			uint8_t * pDst = m_pCanvas->m_pData + pCoords[i].y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
 	
 			pDst[0] = col.b;
 			pDst[1] = col.g;
@@ -450,9 +450,9 @@ namespace wg
 			for( int x = 0 ; x < 4 ; x++ )
 			{
 				int ofs = offset[x];
-				pDst[ofs] = (Uint8) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
-				pDst[ofs+1] = (Uint8) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
-				pDst[ofs+2] = (Uint8) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
+				pDst[ofs] = (uint8_t) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
+				pDst[ofs+1] = (uint8_t) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
+				pDst[ofs+2] = (uint8_t) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
 			}
 		}
 	}
@@ -482,7 +482,7 @@ namespace wg
 	
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
 	
 		int inc;
 	
@@ -582,7 +582,7 @@ namespace wg
 	{
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
 	
 		int inc;
 		if( orientation == WG_HORIZONTAL )
@@ -693,7 +693,7 @@ namespace wg
 		//TODO: Translate to use m_pDivTab
 	
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
 	
 		switch( blendMode )
 		{
@@ -704,9 +704,9 @@ namespace wg
 				int storedBlue = ((int)_col.b) * _aa;
 				int invAlpha = 255- _aa;
 	
-				pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
-				pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
-				pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
+				pDst[0] = (uint8_t) ((pDst[0]*invAlpha + storedBlue) >> 8);
+				pDst[1] = (uint8_t) ((pDst[1]*invAlpha + storedGreen) >> 8);
+				pDst[2] = (uint8_t) ((pDst[2]*invAlpha + storedRed) >> 8);
 				break;
 			}
 			case WG_BLENDMODE_BLEND:
@@ -718,9 +718,9 @@ namespace wg
 				int storedBlue = (((int)_col.b) * aa) >> 8;
 				int invAlpha = 255-(aa>>8);
 	
-				pDst[0] = (Uint8) ((pDst[0]*invAlpha + storedBlue) >> 8);
-				pDst[1] = (Uint8) ((pDst[1]*invAlpha + storedGreen) >> 8);
-				pDst[2] = (Uint8) ((pDst[2]*invAlpha + storedRed) >> 8);
+				pDst[0] = (uint8_t) ((pDst[0]*invAlpha + storedBlue) >> 8);
+				pDst[1] = (uint8_t) ((pDst[1]*invAlpha + storedGreen) >> 8);
+				pDst[2] = (uint8_t) ((pDst[2]*invAlpha + storedRed) >> 8);
 				break;
 			}
 			case WG_BLENDMODE_ADD:
@@ -801,7 +801,7 @@ namespace wg
 		int sectionHeight = rect.h/2;
 		int maxWidth = rect.w/2;
 	
-		Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
+		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
 		int pitch = m_pCanvas->m_pitch;
 	
 		int center = (rect.x + rect.w/2) << 8;
@@ -831,15 +831,15 @@ namespace wg
 	
 	//____ _clipDrawHorrFadeLine() _______________________________________________________________
 	
-	void SoftGfxDevice::_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
+	void SoftGfxDevice::_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
 	{
 		//TODO: Translate to use m_pDivTab
 	
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
-		Uint8 * pClip1 = pLineStart + clipX1*pixelBytes;
-		Uint8 * pClip2 = pLineStart + clipX2*pixelBytes;
+		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
+		uint8_t * pClip1 = pLineStart + clipX1*pixelBytes;
+		uint8_t * pClip2 = pLineStart + clipX2*pixelBytes;
 	
 		int alphaInc, alpha, len;
 	
@@ -905,13 +905,13 @@ namespace wg
 	
 	//____ _drawHorrFadeLine() _______________________________________________________________
 	
-	void SoftGfxDevice::_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
+	void SoftGfxDevice::_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
 	{
 		//TODO: Translate to use m_pDivTab
 	
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		Uint8 * p = pLineStart + (begOfs>>8) * pixelBytes;
+		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
 	
 		int alphaInc, alpha, len;
 	
@@ -985,7 +985,7 @@ namespace wg
 		int sectionHeight = rect.h/2;
 		int maxWidth = rect.w/2;
 	
-		Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y*m_pCanvas->m_pitch;
+		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y*m_pCanvas->m_pitch;
 		int pitch = m_pCanvas->m_pitch;
 	
 		int center = (rect.x + rect.w/2) << 8;
@@ -1026,7 +1026,7 @@ namespace wg
 	{
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	
-		Uint8 * pLineCenter = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + (rect.x+rect.w/2) * pixelBytes;
+		uint8_t * pLineCenter = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + (rect.x+rect.w/2) * pixelBytes;
 	
 		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
@@ -1036,10 +1036,10 @@ namespace wg
 			for( int i = 0 ; i < rect.h/2 ; i++ )
 			{
 				int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16)*pixelBytes;
-				Uint8 * pLineBeg = pLineCenter - lineLen;
-				Uint8 * pLineEnd = pLineCenter + lineLen;
+				uint8_t * pLineBeg = pLineCenter - lineLen;
+				uint8_t * pLineEnd = pLineCenter + lineLen;
 	
-				for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+				for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
 				{
 					p[0] = color.b;
 					p[1] = color.g;
@@ -1066,7 +1066,7 @@ namespace wg
 	
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	
-		Uint8 * pLine = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
+		uint8_t * pLine = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
 	
 		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
@@ -1090,10 +1090,10 @@ namespace wg
 	
 					if( beg < end )
 					{
-						Uint8 * pLineBeg = pLine + beg * pixelBytes;
-						Uint8 * pLineEnd = pLine + end * pixelBytes;
+						uint8_t * pLineBeg = pLine + beg * pixelBytes;
+						uint8_t * pLineEnd = pLine + end * pixelBytes;
 	
-						for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+						for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
 						{
 							p[0] = color.b;
 							p[1] = color.g;
@@ -1118,16 +1118,16 @@ namespace wg
 	{
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 	
-		Uint8 * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
+		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
 	
 		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / rect.h;
 		int sinOfs = sinOfsInc >> 1;
 	
 		for( int i = 0 ; i < rect.h ; i++ )
 		{
-			Uint8 * pLineEnd = pLineBeg + ((m_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
+			uint8_t * pLineEnd = pLineBeg + ((m_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
 	
-			for( Uint8 * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
+			for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
 			{
 				p[0] = color.b;
 				p[1] = color.g;
@@ -1178,8 +1178,8 @@ namespace wg
 		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
 		int	dstPitchAdd = m_pCanvas->m_pitch - srcrect.w*dstPixelBytes;
 	
-		Uint8 * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
-		Uint8 * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
+		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		WgBlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND )
@@ -1195,7 +1195,7 @@ namespace wg
 					{
 						for( int x = 0 ; x < srcrect.w ; x++ )
 						{
-							* ((Uint32*)pDst) = * ((Uint32*)pSrc) & 0x00FFFFFF;
+							* ((uint32_t*)pDst) = * ((uint32_t*)pSrc) & 0x00FFFFFF;
 							pSrc += 4;
 							pDst += 4;
 						}
@@ -1347,8 +1347,8 @@ namespace wg
 		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
 		int	dstPitchAdd = m_pCanvas->m_pitch - srcrect.w*dstPixelBytes;
 	
-		Uint8 * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
-		Uint8 * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
+		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
+		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		WgBlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
@@ -1734,15 +1734,15 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				Uint8 * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
-				Uint8 * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
+				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
+				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
 				{																			\
 					int fracX2 = ofsX & 0x7FFF;												\
 					int fracX1 = 32768 - fracX2;											\
 																							\
-					Uint8 * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
+					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
 																							\
 					int mul11 = fracX1*fracY1 >> 15;										\
 					int mul12 = fracX2*fracY1 >> 15;										\
@@ -1779,12 +1779,12 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				Uint8 * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
-				Uint8 * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
+				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
+				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
 				{																			\
-					Uint8 * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
+					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
 																							\
 					int srcBlue = p[0]; 													\
 					int srcGreen = p[1];													\
@@ -2092,7 +2092,7 @@ namespace wg
 	
 		// Init divTable
 	
-		m_pDivTab = new Uint8[65536];
+		m_pDivTab = new uint8_t[65536];
 	
 		for( int i = 0 ; i < 65536 ; i++ )
 			m_pDivTab[i] = i / 255;

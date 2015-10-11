@@ -111,9 +111,9 @@ namespace wg
 	 * @return Pixel value in surface's native format that closest resembles specified color.
 	 *
 	 **/
-	Uint32 Surface::colorToPixel( const Color& col ) const
+	uint32_t Surface::colorToPixel( const Color& col ) const
 	{
-		Uint32 pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
+		uint32_t pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
 					 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
 					 ((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
 					 ((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
@@ -136,7 +136,7 @@ namespace wg
 	 * @return Color structure with RGBA values for the specified pixel value.
 	 *
 	 **/
-	Color Surface::pixelToColor( Uint32 pixel ) const
+	Color Surface::pixelToColor( uint32_t pixel ) const
 	{
 		Color col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
 					 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
@@ -212,11 +212,11 @@ namespace wg
 		//
 	
 	
-		Uint32 pixel = colorToPixel( col );
+		uint32_t pixel = colorToPixel( col );
 		int w = width();
 		int h = height();
 		int p = pitch();
-		Uint8 * pDest = m_pPixels;
+		uint8_t * pDest = m_pPixels;
 	
 		bool ret = true;
 		switch( m_pixelFormat.bits )
@@ -225,7 +225,7 @@ namespace wg
 				for( int y = 0 ; y < h ; y++ )
 				{
 					for( int x = 0 ; x < w ; x++ )
-						pDest[x] = (Uint8) pixel;
+						pDest[x] = (uint8_t) pixel;
 					pDest += p;
 				}
 				break;
@@ -233,15 +233,15 @@ namespace wg
 				for( int y = 0 ; y < h ; y++ )
 				{
 					for( int x = 0 ; x < w ; x++ )
-						((Uint16*)pDest)[x] = (Uint16) pixel;
+						((uint16_t*)pDest)[x] = (uint16_t) pixel;
 					pDest += p;
 				}
 				break;
 			case 24:
 			{
-				Uint8 one = (Uint8) pixel;
-				Uint8 two = (Uint8) (pixel>>8);
-				Uint8 three = (Uint8) (pixel>>16);
+				uint8_t one = (uint8_t) pixel;
+				uint8_t two = (uint8_t) (pixel>>8);
+				uint8_t three = (uint8_t) (pixel>>16);
 	
 				for( int y = 0 ; y < h ; y++ )
 				{
@@ -259,7 +259,7 @@ namespace wg
 				for( int y = 0 ; y < h ; y++ )
 				{
 					for( int x = 0 ; x < w ; x++ )
-						((Uint32*)pDest)[x] = pixel;
+						((uint32_t*)pDest)[x] = pixel;
 					pDest += p;
 				}
 				break;

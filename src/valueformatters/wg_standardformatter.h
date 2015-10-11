@@ -45,7 +45,7 @@ namespace wg
 		static StandardFormatter_p	create() { return StandardFormatter_p(new StandardFormatter()); }
 		static StandardFormatter_p	create( const CharSeq& format ) { return StandardFormatter_p(new StandardFormatter(format)); }
 	
-		String 		format( Sint64 value, int scale ) const;
+		String 		format( int64_t value, int scale ) const;
 		String 		format( double value ) const;
 	
 	protected:

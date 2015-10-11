@@ -96,8 +96,8 @@ namespace wg
 		void	_initTables();
 		void	_genCurveTab();
 	
-		void	_drawHorrFadeLine( Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
-		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, Uint8 * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
+		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
+		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 	
 		void	_plotAA( int _x, int _y, const Color& _col, WgBlendMode blendMode, int _aa );
 		void	_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation );
@@ -138,9 +138,9 @@ namespace wg
 	
 		bool			m_bBilinearFiltering;
 		SoftSurface_p m_pCanvas;
-		Uint8			m_limitTable[512];
+		uint8_t			m_limitTable[512];
 		int *			m_pCurveTab;
-		Uint8 *			m_pDivTab;
+		uint8_t *			m_pDivTab;
 	};
 	
 

@@ -184,8 +184,8 @@ namespace wg
 		void			    fill( const Char& ch, int ofs, int len );
 	
 	
-		inline void			setGlyphs( Uint16 glyph );
-		void			    setGlyphs( Uint16 glyph, int ofs, int len );
+		inline void			setGlyphs( uint16_t glyph );
+		void			    setGlyphs( uint16_t glyph, int ofs, int len );
 	
 		inline void			setProperties( const Textprop_p& pProp );
 		void				setProperties( const Textprop_p& pProp, int ofs, int len);
@@ -234,7 +234,7 @@ namespace wg
 	
 	
 		int					findFirst( const CharSeq& seq, int ofs = 0 );
-		int					findFirst( Uint16 character, int ofs = 0 );
+		int					findFirst( uint16_t character, int ofs = 0 );
 	
 	
 		int					compareTo( const CharBuffer * pBuffer );
@@ -286,7 +286,7 @@ namespace wg
 		void			_copyChars( BufferHead * pDst, int ofsDst, const Char * pChars, int nChars );
 		void			_reshapeBuffer( int begMargin, int copyOfs, int copyLen, int endMargin );
 	
-		void			_setChars( int ofs, int nChars, Uint32 value );
+		void			_setChars( int ofs, int nChars, uint32_t value );
 	
 		inline void		_derefProps( int ofs, int n ) { TextTool::derefProps( (Char*) _ptr(ofs), n ); }
 		inline void		_refProps( int ofs, int n ) { TextTool::refProps( (Char*) _ptr(ofs), n ); }
@@ -296,7 +296,7 @@ namespace wg
 		void			_modifyProperties( int ofs, int len, const TextTool::PropModifier& modif );
 	
 	
-		const static Uint32		c_emptyChar = 0x00000020;	// Value to fill out empty Chars with.
+		const static uint32_t		c_emptyChar = 0x00000020;	// Value to fill out empty Chars with.
 	    static int				g_nBuffers;					// Number of real buffers, <= number of CharBuffer.
 		static	BufferHead *	g_pEmptyBuffer;				// We keep one common empty buffer as an optimization
 	
@@ -477,7 +477,7 @@ namespace wg
 	/// Only the used section of the buffer is affected, unused capacity is not
 	/// filled with the glyph.
 	
-	void CharBuffer::setGlyphs( Uint16 glyph )
+	void CharBuffer::setGlyphs( uint16_t glyph )
 	{
 		setGlyphs( glyph, 0, INT_MAX );
 	}

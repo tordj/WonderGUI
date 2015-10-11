@@ -63,7 +63,7 @@ namespace wg
 	
 	
 		void						clear();
-		bool						set( Sint64 value, int scale = 1);
+		bool						set( int64_t value, int scale = 1);
 	
 	
 	/*	For the future...
@@ -71,12 +71,12 @@ namespace wg
 		inline void					set( double value );
 	*/
 	
-		inline Sint64				value() const { return _field()->value(); }
+		inline int64_t				value() const { return _field()->value(); }
 		inline int					scale() const { return _field()->scale(); }
 	
-		bool						setRange( Sint64 min, Sint64 max );
-		inline Sint64				min() const { return _field()->min(); }
-		inline Sint64				max() const { return _field()->max(); }
+		bool						setRange( int64_t min, int64_t max );
+		inline int64_t				min() const { return _field()->min(); }
+		inline int64_t				max() const { return _field()->max(); }
 	
 	private:
 		inline	ModValueField * 		_field() { return static_cast<ModValueField*>(m_pField); }

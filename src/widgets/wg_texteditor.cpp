@@ -449,7 +449,7 @@ namespace wg
 	
 	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool TextEditor::insertCharAtCursor( Uint16 c )
+	bool TextEditor::insertCharAtCursor( uint16_t c )
 	{
 		if( !isEditable() )
 			return 0;
@@ -463,7 +463,7 @@ namespace wg
 	
 	//____ _insertCharAtCursor() ___________________________________________
 	
-	bool TextEditor::_insertCharAtCursor( Uint16 c )
+	bool TextEditor::_insertCharAtCursor( uint16_t c )
 	{
 		if(m_text.hasSelection())
 			m_text.delSelection();

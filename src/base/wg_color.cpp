@@ -178,11 +178,11 @@ namespace wg
 	
 	//____ setCMYK ___________________________________________________________________
 	
-	void Color::setCMYK( float c, float m, float y, float k, Uint8 alpha )
+	void Color::setCMYK( float c, float m, float y, float k, uint8_t alpha )
 	{
-		r = (Uint8) (255*(1.f-c)*(1.f-k));
-		g = (Uint8) (255*(1.f-m)*(1.f-k));
-		b = (Uint8) (255*(1.f-y)*(1.f-k));
+		r = (uint8_t) (255*(1.f-c)*(1.f-k));
+		g = (uint8_t) (255*(1.f-m)*(1.f-k));
+		b = (uint8_t) (255*(1.f-y)*(1.f-k));
 		a = alpha;
 	}
 	
@@ -210,10 +210,10 @@ namespace wg
 	{
 		Color col;
 	
-		col.r = start.r + (Uint8) (((int)dest.r) - ((int)start.r)*grade);
-		col.g = start.g + (Uint8) (((int)dest.g) - ((int)start.g)*grade);
-		col.b = start.b + (Uint8) (((int)dest.b) - ((int)start.b)*grade);
-		col.a = start.a + (Uint8) (((int)dest.a) - ((int)start.a)*grade);
+		col.r = start.r + (uint8_t) (((int)dest.r) - ((int)start.r)*grade);
+		col.g = start.g + (uint8_t) (((int)dest.g) - ((int)start.g)*grade);
+		col.b = start.b + (uint8_t) (((int)dest.b) - ((int)start.b)*grade);
+		col.a = start.a + (uint8_t) (((int)dest.a) - ((int)start.a)*grade);
 	
 		return col;
 	}

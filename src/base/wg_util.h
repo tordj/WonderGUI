@@ -50,22 +50,22 @@ namespace wg
 		public:
 			Checksum8() { remainder = 0; }
 	
-			inline void add8( Uint8 x ) { remainder = ((remainder << 8) + x)%dividend;}
-			inline void add16( Uint16 x ) { remainder = ((remainder << 16) + x)%dividend;}
-			inline void add32( Uint32 x ) { remainder = (Uint32)(((((Uint64)remainder) << 32) + x)%dividend);}
+			inline void add8( uint8_t x ) { remainder = ((remainder << 8) + x)%dividend;}
+			inline void add16( uint16_t x ) { remainder = ((remainder << 16) + x)%dividend;}
+			inline void add32( uint32_t x ) { remainder = (uint32_t)(((((uint64_t)remainder) << 32) + x)%dividend);}
 	
-			void add( const void * pData, Uint32 nBytes );
+			void add( const void * pData, uint32_t nBytes );
 	
-			Uint8 getChecksum() { return (remainder & 0xFF); }
+			uint8_t getChecksum() { return (remainder & 0xFF); }
 			inline void clear() { remainder = 0; }
 	
 		private:
-			Uint32	remainder;
+			uint32_t	remainder;
 			const static int dividend = 0x107;
 		};
 	
 	
-		Uint32 decodeBase64( const char * pSrc, Uint32 nIn, char * pDest );
+		uint32_t decodeBase64( const char * pSrc, uint32_t nIn, char * pDest );
 	
 		template<typename T>
 		inline std::string toString(T value)
@@ -76,8 +76,8 @@ namespace wg
 		}
 	
 		// These two are needed to print the value as an integer instead of an ascii character
-		template<> inline std::string toString(Sint8 value) { return toString<int>(value); }
-		template<> inline std::string toString(Uint8 value) { return toString<Uint32>(value); }
+		template<> inline std::string toString(int8_t value) { return toString<int>(value); }
+		template<> inline std::string toString(uint8_t value) { return toString<uint32_t>(value); }
 	
 		template<>
 		inline std::string toString(bool value)
@@ -157,12 +157,12 @@ namespace wg
 		}
 	
 		template<>
-		inline bool fromString(const std::string& str, Sint8& a)
+		inline bool fromString(const std::string& str, int8_t& a)
 		{
 			int i;
 			if(fromString<int>(str, i))
 			{
-				if(Sint8(i) == i)
+				if(int8_t(i) == i)
 				{
 					a = i;
 					return true;
@@ -172,12 +172,12 @@ namespace wg
 		}
 	
 		template<>
-		inline bool fromString(const std::string& str, Uint8& a)
+		inline bool fromString(const std::string& str, uint8_t& a)
 		{
-			Uint32 i;
-			if(fromString<Uint32>(str, i))
+			uint32_t i;
+			if(fromString<uint32_t>(str, i))
 			{
-				if(Uint8(i) == i)
+				if(uint8_t(i) == i)
 				{
 					a = i;
 					return true;
@@ -230,13 +230,13 @@ namespace wg
 	
 	
 		inline bool 	toBool(const std::string& value, bool def = false)	{ bool 	 v = def; fromString(value, v); return v; }
-		inline Sint8	toSint8(const std::string& value, Sint8 def = 0)	{ Sint8	 v = def; fromString(value, v); return v; }
-		inline Sint16	toSint16(const std::string& value, Sint16 def = 0)	{ Sint16 v = def; fromString(value, v); return v; }
-		inline int		toSint32(const std::string& value, int def = 0)	{ int v = def; fromString(value, v); return v; }
-		inline Sint64	toSint64(const std::string& value, Sint64 def = 0)	{ Sint64 v = def; fromString(value, v); return v; }
-		inline Uint8	toUint8(const std::string& value, Uint8 def = 0)	{ Uint8	 v = def; fromString(value, v); return v; }
-		inline Uint16	toUint16(const std::string& value, Uint16 def = 0)	{ Uint16 v = def; fromString(value, v); return v; }
-		inline Uint32	toUint32(const std::string& value, Uint32 def = 0)	{ Uint32 v = def; fromString(value, v); return v; }
+		inline int8_t	toint8_t(const std::string& value, int8_t def = 0)	{ int8_t	 v = def; fromString(value, v); return v; }
+		inline int16_t	toint16_t(const std::string& value, int16_t def = 0)	{ int16_t v = def; fromString(value, v); return v; }
+		inline int		toint32_t(const std::string& value, int def = 0)	{ int v = def; fromString(value, v); return v; }
+		inline int64_t	toint64_t(const std::string& value, int64_t def = 0)	{ int64_t v = def; fromString(value, v); return v; }
+		inline uint8_t	touint8_t(const std::string& value, uint8_t def = 0)	{ uint8_t	 v = def; fromString(value, v); return v; }
+		inline uint16_t	touint16_t(const std::string& value, uint16_t def = 0)	{ uint16_t v = def; fromString(value, v); return v; }
+		inline uint32_t	touint32_t(const std::string& value, uint32_t def = 0)	{ uint32_t v = def; fromString(value, v); return v; }
 		inline float	toFloat(const std::string& value, float def = 0)	{ float	 v = def; fromString(value, v); return v; }
 	
 		inline void tokenize(const std::string& str, std::vector<std::string>& tokens)

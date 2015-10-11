@@ -183,8 +183,8 @@ namespace wg
 			Coord			m_lastCursorDownPos;
 	
 			BtnLayout		m_btnLayout;
-			Uint8			m_headerLen;
-			Uint8			m_footerLen;
+			uint8_t			m_headerLen;
+			uint8_t			m_footerLen;
 	
 			State			m_states[C_NUMBER_OF_COMPONENTS];
 	

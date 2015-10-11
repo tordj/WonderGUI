@@ -52,7 +52,7 @@ namespace wg
 		static const char			CLASSNAME[];
 		static ValueFormatter_p	cast( const Object_p& pObject );
 	
-		virtual String format( Sint64 value, int scale ) const = 0;
+		virtual String format( int64_t value, int scale ) const = 0;
 		virtual String format( double value ) const = 0;
 	};
 	

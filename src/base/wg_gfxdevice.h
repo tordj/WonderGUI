@@ -89,12 +89,12 @@ namespace wg
 	
 		virtual void	setTintColor( Color color );
 		virtual bool	setBlendMode( WgBlendMode blendMode );
-		virtual Uint32	setRenderFlags( Uint32 flags );
+		virtual uint32_t	setRenderFlags( uint32_t flags );
 		virtual bool	setSaveDirtyRects( bool bSave );
 	
 		inline const Color&	getTintColor() const { return m_tintColor; }
 		inline WgBlendMode 	getBlendMode() const { return m_blendMode; }
-		inline Uint32		getRenderFlags() const { return m_renderFlags; }
+		inline uint32_t		getRenderFlags() const { return m_renderFlags; }
 		inline bool			getSaveDirtyRects() const { return m_bSaveDirtyRects; }
 	
 		// Geometry related methods.
@@ -209,7 +209,7 @@ namespace wg
 	
 		Color		m_tintColor;		// Current Tint color.
 		WgBlendMode	m_blendMode;		// Current BlendMode.
-		Uint32		m_renderFlags;		// Current flags.
+		uint32_t		m_renderFlags;		// Current flags.
 	
 		Size		m_canvasSize;
 		bool		m_bSaveDirtyRects;

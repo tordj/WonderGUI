@@ -68,7 +68,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool ModValue::set( Sint64 value, int scale ) 
+	bool ModValue::set( int64_t value, int scale ) 
 	{ 
 		if( _field()->set(value,scale) )
 		{
@@ -82,9 +82,9 @@ namespace wg
 	
 	//____ setRange() ______________________________________________________________
 	
-	bool ModValue::setRange( Sint64 min, Sint64 max ) 
+	bool ModValue::setRange( int64_t min, int64_t max ) 
 	{ 
-		Sint64 val = _field()->value();
+		int64_t val = _field()->value();
 		
 		bool retVal = _field()->setRange(min,max); 
 		if( val != _field()->value() )

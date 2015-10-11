@@ -63,7 +63,7 @@ namespace wg
 		inline int		maxLines() { return m_maxLines; }
 	
 		int		insertTextAtCursor( const CharSeq& str );
-		bool	insertCharAtCursor( Uint16 c );
+		bool	insertCharAtCursor( uint16_t c );
 	
 		virtual void			setEditMode(TextEditMode mode);
 		virtual TextEditMode	editMode() const { return m_text.editMode(); }
@@ -96,7 +96,7 @@ namespace wg
 		void	_onFieldResize( Field * pField );
 	private:
 	
-		bool	_insertCharAtCursor( Uint16 c );
+		bool	_insertCharAtCursor( uint16_t c );
 	
 	
 		LegacyTextField			m_text;

@@ -53,16 +53,16 @@ namespace wg
 		inline ValueFormatter_p	formatter() const { return m_pFormatter; }
 	
 		virtual void		clear();
-		virtual bool		set( Sint64 value, int scale );
+		virtual bool		set( int64_t value, int scale );
 		
 		void				onRefresh();
-		inline Sint64		value() const { return m_value; }
+		inline int64_t		value() const { return m_value; }
 		inline int			scale() const { return m_scale; }
 	
 	protected:
 		void				_regenText();
 	
-		Sint64					m_value;
+		int64_t					m_value;
 		int						m_scale;
 		
 		ValueFormatter_p		m_pFormatter;

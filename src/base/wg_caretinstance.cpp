@@ -365,7 +365,7 @@ namespace wg
 	
 	//____ putChar() ______________________________________________________________
 	
-	bool CaretInstance::putChar( Uint16 character )
+	bool CaretInstance::putChar( uint16_t character )
 	{
 		m_wantedOfsX = -1;
 	

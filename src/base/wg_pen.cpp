@@ -152,7 +152,7 @@ namespace wg
 	
 	//____ setChar() _____________________________________________________________
 	
-	bool Pen::setChar( Uint32 chr )
+	bool Pen::setChar( uint32_t chr )
 	{
 		m_pPrevGlyph = m_pGlyph;
 	

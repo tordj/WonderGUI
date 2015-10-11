@@ -43,7 +43,7 @@ namespace wg
 {
 	
 	void 			translateEvents( MsgRouter_p pMsgRouter );
-	WgMouseButton 	translateMouseButton( Uint8 button );
+	WgMouseButton 	translateMouseButton( uint8_t button );
 	void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
 	void 			myButtonClickCallback( const Msg_p& pMsg );
 	
@@ -232,7 +232,7 @@ namespace wg
 	//
 	// Translate SDL mouse button enums to WonderGUI equivalents.
 	//
-	WgMouseButton translateMouseButton( Uint8 button )
+	WgMouseButton translateMouseButton( uint8_t button )
 	{
 		switch( button )
 		{

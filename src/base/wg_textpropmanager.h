@@ -46,11 +46,11 @@ namespace wg
 		TextpropHolder() {};
 		~TextpropHolder() {};
 	
-		Uint16			m_id;				///< Handle of this Textprop.
-		Uint8			m_indexOfs;			///< Offset in index table, need to know for quick removal.
-		Uint32			m_refCnt;			///< Reference count. Nb of WgStrongPtr and Char referencing this prop.
-		Sint16			m_next;				///< Handle of next Textprop with same checksum or -1.
-		Sint16			m_prev;				///< Handle of next Textprop with same checksum or -1.
+		uint16_t			m_id;				///< Handle of this Textprop.
+		uint8_t			m_indexOfs;			///< Offset in index table, need to know for quick removal.
+		uint32_t			m_refCnt;			///< Reference count. Nb of WgStrongPtr and Char referencing this prop.
+		int16_t			m_next;				///< Handle of next Textprop with same checksum or -1.
+		int16_t			m_prev;				///< Handle of next Textprop with same checksum or -1.
 	
 		Textprop		m_prop;
 	};
@@ -73,9 +73,9 @@ namespace wg
 	
 		// These are here for test- and debugging purposes.
 	
-		inline static Uint32 getNbProperties() { return g_nPropUsed; }
-		inline static Uint32 getPropBufferSize() { return g_nPropTotal; }
-		inline static Uint32 getRefCnt( Uint16 hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
+		inline static uint32_t getNbProperties() { return g_nPropUsed; }
+		inline static uint32_t getPropBufferSize() { return g_nPropTotal; }
+		inline static uint32_t getRefCnt( uint16_t hProp ) { return g_pPropBuffer[hProp].m_refCnt; }
 	
 		inline static void setMergeSimilar(bool bMerge) { g_bMergeSimilar = bMerge; }
 	
@@ -83,23 +83,23 @@ namespace wg
 	
 		static const int NB_START_PROPS = 16;
 	
-		static inline void incRef( Uint16 hProp, Uint32 incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
+		static inline void incRef( uint16_t hProp, uint32_t incCnt = 1 ) { g_pPropBuffer[hProp].m_refCnt += incCnt; }
 	
-		static inline void decRef( Uint16 hProp, Uint32 decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
+		static inline void decRef( uint16_t hProp, uint32_t decCnt = 1 ) {	g_pPropBuffer[hProp].m_refCnt -= decCnt;
 																	if( g_pPropBuffer[hProp].m_refCnt == 0 )
 																		freeProp( hProp ); }
 	
-		static Uint16	registerProp( const Textprop& prop );			// DOES NOT INCREASE REFCNT!
+		static uint16_t	registerProp( const Textprop& prop );			// DOES NOT INCREASE REFCNT!
 	
-	//	static Uint16 	getProp( const Font_p& pFont, const Color color, bool bColored,
+	//	static uint16_t 	getProp( const Font_p& pFont, const Color color, bool bColored,
 	//							 bool bUnderlined, bool bSelected, TextLink_p& pLink );
 	
-		static const Textprop&	getProp( Uint16 hProp ) { return g_pPropBuffer[hProp].m_prop; }
-		static const Textprop *	getPropPtr( Uint16 hProp ) { return &g_pPropBuffer[hProp].m_prop; }
+		static const Textprop&	getProp( uint16_t hProp ) { return g_pPropBuffer[hProp].m_prop; }
+		static const Textprop *	getPropPtr( uint16_t hProp ) { return &g_pPropBuffer[hProp].m_prop; }
 	
 	
 	
-		static void		freeProp( Uint16 hProp );
+		static void		freeProp( uint16_t hProp );
 		static void		increaseBuffer( void );
 	
 	
@@ -107,15 +107,15 @@ namespace wg
 		// Uses a checksum on properties to choose one out of 256 linked lists which
 		// is then searched linearly for any already existing object with same properties.
 	
-		static Sint16  				g_propIndex[256];
+		static int16_t  				g_propIndex[256];
 	
 		static TextpropHolder		g_nullProp;
 	
 	
 		static TextpropHolder *	g_pPropBuffer;
-		static Uint32				g_nPropUsed;
-		static Uint32				g_nPropTotal;
-		static Sint16				g_firstFreeProp;
+		static uint32_t				g_nPropUsed;
+		static uint32_t				g_nPropTotal;
+		static int16_t				g_firstFreeProp;
 		static bool					g_bMergeSimilar;
 	};
 	

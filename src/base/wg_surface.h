@@ -96,7 +96,7 @@ namespace wg
 		// Slow, simple methods for reading and parsing individual pixels.
 	
 	
-		virtual Uint32		pixel( Coord coord ) const = 0;	///< @brief Get pixel at specified coordinate.
+		virtual uint32_t		pixel( Coord coord ) const = 0;	///< @brief Get pixel at specified coordinate.
 																///<
 																///< Get the raw pixel value from the specified coordinate of the surface.
 																///<
@@ -111,9 +111,9 @@ namespace wg
 																///<
 																///< @return Pixel value in surface's native format.
 	
-		inline Uint32		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
+		inline uint32_t		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
 	
-		virtual Uint8		alpha( Coord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual uint8_t		alpha( Coord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
 																///<
 																///< Get the alpha value from the specified coordinate of the surface.
 																///<
@@ -128,10 +128,10 @@ namespace wg
 																///<
 																///< @return Alpha value of pixel at coordinate.
 	
-		inline Uint8		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
+		inline uint8_t		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
 	
-		virtual	Uint32		colorToPixel( const Color& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
-		virtual	Color		pixelToColor( Uint32 pixel ) const;		///< @brief Get the color and alpha values of a pixel.
+		virtual	uint32_t		colorToPixel( const Color& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
+		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 	
 		// Enums and methods for locking/unlocking of surface.
 	
@@ -224,7 +224,7 @@ namespace wg
 		int					m_pitch;
 	
 		WgAccessMode		m_accessMode;
-		Uint8 *				m_pPixels;			// Pointer at pixels when surface locked.
+		uint8_t *				m_pPixels;			// Pointer at pixels when surface locked.
 		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 	};
 	
@@ -278,7 +278,7 @@ namespace wg
 	 *
 	 * @return Pixel value in surface's native format.
 	 **/
-	Uint32 Surface::pixel( int x, int y ) const
+	uint32_t Surface::pixel( int x, int y ) const
 	{
 		return pixel( Coord(x,y) );
 	}
@@ -298,7 +298,7 @@ namespace wg
 	 *
 	 * @return Alpha value of pixel at coordinate.
 	 **/
-	Uint8 Surface::alpha( int x, int y ) const
+	uint8_t Surface::alpha( int x, int y ) const
 	{
 		return alpha( Coord(x,y) );
 	}

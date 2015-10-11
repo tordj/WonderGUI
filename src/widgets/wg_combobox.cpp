@@ -187,7 +187,7 @@ namespace wg
 	
 	//____ insertCharAtCursor() ___________________________________________________
 	
-	bool Combobox::insertCharAtCursor( Uint16 c )
+	bool Combobox::insertCharAtCursor( uint16_t c )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -774,7 +774,7 @@ namespace wg
 				Textprop_p pProp = buff[ofs].getProperties();
 	
 				const Char * pEntry = ((MenuEntry*)pItem)->getText().chars();
-				Uint32 len = TextTool::strlen( pEntry );
+				uint32_t len = TextTool::strlen( pEntry );
 	
 				buff.replace( ofs, 2, pEntry );
 	

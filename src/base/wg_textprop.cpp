@@ -380,7 +380,7 @@ namespace wg
 	
 	//____ _calculateChecksum() ____________________________________________________
 	
-	Uint8 Textprop::_calculateChecksum() const
+	uint8_t Textprop::_calculateChecksum() const
 	{
 		WgUtil::Checksum8	chk;
 	
@@ -391,9 +391,9 @@ namespace wg
 	
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
-			chk.add8( (Uint8) m_stateProp[i].m_bColored );
-			chk.add8( (Uint8) m_stateProp[i].m_bBgColor );
-			chk.add8( (Uint8) m_stateProp[i].m_bUnderlined );
+			chk.add8( (uint8_t) m_stateProp[i].m_bColored );
+			chk.add8( (uint8_t) m_stateProp[i].m_bBgColor );
+			chk.add8( (uint8_t) m_stateProp[i].m_bUnderlined );
 			chk.add32( m_stateProp[i].m_color.argb );
 			chk.add32( m_stateProp[i].m_bgColor.argb );
 			chk.add16( m_stateProp[i].m_style );
@@ -429,7 +429,7 @@ namespace wg
 	
 	//____ setCharVisibility() ____________________________________________________
 	
-	bool Textprop::setCharVisibility( Uint16 specialCharacter, bool bVisible )
+	bool Textprop::setCharVisibility( uint16_t specialCharacter, bool bVisible )
 	{
 		switch( specialCharacter )
 		{
@@ -458,7 +458,7 @@ namespace wg
 	
 	//____ charVisibility() ________________________________________________________
 	
-	bool Textprop::charVisibility( Uint16 specialCharacter ) const
+	bool Textprop::charVisibility( uint16_t specialCharacter ) const
 	{
 		switch( specialCharacter )
 		{
@@ -495,7 +495,7 @@ namespace wg
 		TextpropManager::incRef(m_hProp, 1);
 	}
 	
-	Textprop_p::Textprop_p( Uint16 hProp )
+	Textprop_p::Textprop_p( uint16_t hProp )
 	{
 		m_hProp = hProp;
 		TextpropManager::incRef(m_hProp);

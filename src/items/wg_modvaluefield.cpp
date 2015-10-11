@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool ModValueField::set( Sint64 value, int scale )
+	bool ModValueField::set( int64_t value, int scale )
 	{
 		if( value > m_maxValue )
 			value = m_maxValue;
@@ -48,7 +48,7 @@ namespace wg
 	
 	//____ setRange() ______________________________________________________________
 	
-	bool ModValueField::setRange( Sint64 min, Sint64 max )
+	bool ModValueField::setRange( int64_t min, int64_t max )
 	{
 		if( min > max )
 			return false;
@@ -56,7 +56,7 @@ namespace wg
 		m_minValue = min;
 		m_maxValue = max;
 		
-		Sint64 val = m_value;
+		int64_t val = m_value;
 		LIMIT( val, min, max );
 		m_value = val;
 		if( val != m_value )

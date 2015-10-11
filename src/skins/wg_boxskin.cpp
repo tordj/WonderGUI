@@ -158,7 +158,7 @@ namespace wg
 	{
 		int i = _stateToIndex(state);
 	
-		Uint8	oldAlpha = m_color[i].a;
+		uint8_t	oldAlpha = m_color[i].a;
 		m_color[i] = color;
 		if( (color.a < 255 && m_bOpaque) || (color.a == 255 && oldAlpha < 255 ) )
 			_updateOpaqueFlag();

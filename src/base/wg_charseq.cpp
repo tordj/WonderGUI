@@ -49,14 +49,14 @@ namespace wg
 	    m_nbChars	= TextTool::countNonFormattingChars(pChar, len);
 	}
 	
-	CharSeq::CharSeq( const Uint16 * pChar )
+	CharSeq::CharSeq( const uint16_t * pChar )
 	{
 		m_type 		= ESCAPED_UTF16;
 		m_pChar		= (void *) pChar;
 	    m_nbChars	= TextTool::countNonFormattingChars(pChar);
 	
 	}
-	CharSeq::CharSeq( const Uint16 * pChar, int len )
+	CharSeq::CharSeq( const uint16_t * pChar, int len )
 	{
 		m_type 		= ESCAPED_UTF16;
 		m_pChar		= (void *) pChar;
@@ -91,7 +91,7 @@ namespace wg
 	{
 	    m_type      = ESCAPED_UTF16;
 	    m_pChar     = (void *) str.c_str();
-	    m_nbChars   = TextTool::countNonFormattingChars( (Uint16*) str.c_str());
+	    m_nbChars   = TextTool::countNonFormattingChars( (uint16_t*) str.c_str());
 	}
 	
 	CharSeq::CharSeq( const std::wstring& str, int ofs, int len )
@@ -108,7 +108,7 @@ namespace wg
 	
 	    m_type      = ESCAPED_UTF16;
 	    m_pChar     = p + ofs;
-	    m_nbChars   = TextTool::countNonFormattingChars( ((Uint16*)p)+ofs, len);
+	    m_nbChars   = TextTool::countNonFormattingChars( ((uint16_t*)p)+ofs, len);
 	}
 	
 	
@@ -196,7 +196,7 @@ namespace wg
 				break;
 			}
 			case UTF16:
-				m_pChar = ((const Uint16 *)seq.m_pChar) + ofs;
+				m_pChar = ((const uint16_t *)seq.m_pChar) + ofs;
 				break;
 			case ESCAPED_UTF8:
 			{
@@ -207,7 +207,7 @@ namespace wg
 			}
 			case ESCAPED_UTF16:
 			{
-				const Uint16 * p = (const Uint16 *) seq.m_pChar;
+				const uint16_t * p = (const uint16_t *) seq.m_pChar;
 				TextTool::forwardEscapedCharacters( p, ofs );
 				m_pChar = p;
 				break;
@@ -240,11 +240,11 @@ namespace wg
 			return p - (const char *) m_pChar;
 		}
 		case UTF16:
-			return (int) TextTool::getTextSizeUTF8( (const Uint16*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeUTF8( (const uint16_t*) m_pChar, m_nbChars );
 		case ESCAPED_UTF8:
 			return (int) TextTool::getTextSizeStrippedUTF8( (const char*) m_pChar, m_nbChars );
 		case ESCAPED_UTF16:
-			return (int) TextTool::getTextSizeStrippedUTF8( (const Uint16*) m_pChar, m_nbChars );
+			return (int) TextTool::getTextSizeStrippedUTF8( (const uint16_t*) m_pChar, m_nbChars );
 		case MAP8:
 			return (int) TextTool::getTextSizeUTF8( (const char *) m_pChar, ((CharSeq8*)this)->m_codepage, m_nbChars );
 		default:						// EMPTY
@@ -278,7 +278,7 @@ namespace wg
 			case UTF16:
 			case ESCAPED_UTF16:
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					if( ((const Uint16*)m_pChar)[i] == '\n' )
+					if( ((const uint16_t*)m_pChar)[i] == '\n' )
 						nbLines++;
 				break;
 			case MAP8:
@@ -315,7 +315,7 @@ namespace wg
 			}
 			case UTF16:
 			{
-				const Uint16 * pSrc = (const Uint16*) m_pChar;
+				const uint16_t * pSrc = (const uint16_t*) m_pChar;
 	
 				TextTool::derefProps( pDest, m_nbChars );
 				TextTool::readString( pSrc, pDest, m_nbChars );
@@ -330,7 +330,7 @@ namespace wg
 			}
 			case ESCAPED_UTF16:
 			{
-				const Uint16 * pSrc = (const Uint16*) m_pChar;
+				const uint16_t * pSrc = (const uint16_t*) m_pChar;
 				TextTool::derefProps( pDest, m_nbChars );
 				TextTool::readFormattedString( pSrc, pDest, m_nbChars );
 				break;
@@ -382,7 +382,7 @@ namespace wg
 	
 				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
-				const Uint16 * pSrc = (Uint16*) m_pChar;
+				const uint16_t * pSrc = (uint16_t*) m_pChar;
 				TextTool::readString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
@@ -410,7 +410,7 @@ namespace wg
 	
 				Char * p = (Char *) new char[bytes];
 				memset( p, 0, bytes);
-				const Uint16 * pSrc = (Uint16*) m_pChar;
+				const uint16_t * pSrc = (uint16_t*) m_pChar;
 				TextTool::readFormattedString( pSrc, p, m_nbChars );
 	
 				basket.ptr = p;
@@ -456,7 +456,7 @@ namespace wg
 		{
 			case WGCHAR:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
 					p[i] = ((Char*)m_pChar)[i].getGlyph();
 				basket.ptr = p;
@@ -466,7 +466,7 @@ namespace wg
 			}
 			case UTF8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::readString( pSrc, p, m_nbChars );
 				basket.ptr = p;
@@ -475,14 +475,14 @@ namespace wg
 				return basket;
 			}
 			case UTF16:
-				basket.ptr = (const Uint16 *) m_pChar;
+				basket.ptr = (const uint16_t *) m_pChar;
 				basket.length = m_nbChars;
 				basket.bIsOwner = false;
 				return basket;
 	
 			case ESCAPED_UTF8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
 				basket.ptr = p;
@@ -493,8 +493,8 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
-				const Uint16 * pSrc = (const Uint16 *) m_pChar;
+				uint16_t * p = new uint16_t[m_nbChars];
+				const uint16_t * pSrc = (const uint16_t *) m_pChar;
 				TextTool::stripTextCommands( pSrc, p, m_nbChars );
 				basket.ptr = p;
 				basket.length = m_nbChars;
@@ -504,7 +504,7 @@ namespace wg
 	
 			case MAP8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, p, m_nbChars );
 				basket.ptr = p;
@@ -531,7 +531,7 @@ namespace wg
 		{
 			case WGCHAR:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
 					p[i] = ((Char*)m_pChar)[i].getGlyph();
 				str.assign( (const wchar_t *)p, m_nbChars );
@@ -540,7 +540,7 @@ namespace wg
 			}
 			case UTF8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::readString( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
@@ -553,7 +553,7 @@ namespace wg
 	
 			case ESCAPED_UTF8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::stripTextCommandsConvert( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
@@ -563,8 +563,8 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
-				const Uint16 * pSrc = (const Uint16 *) m_pChar;
+				uint16_t * p = new uint16_t[m_nbChars];
+				const uint16_t * pSrc = (const uint16_t *) m_pChar;
 				TextTool::stripTextCommands( pSrc, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
@@ -573,7 +573,7 @@ namespace wg
 	
 			case MAP8:
 			{
-				Uint16 * p = new Uint16[m_nbChars];
+				uint16_t * p = new uint16_t[m_nbChars];
 				const char * pSrc = (const char *) m_pChar;
 				TextTool::readString( pSrc, ((CharSeq8*)this)->m_codepage, p, m_nbChars );
 				str.assign( (const wchar_t *)p, m_nbChars );
@@ -615,9 +615,9 @@ namespace wg
 			}
 			case UTF16:
 			{
-				int size = TextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (uint16_t*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				TextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (uint16_t*) m_pChar, p, size+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -636,9 +636,9 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				int size = TextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (uint16_t *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				TextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
+				TextTool::stripTextCommandsConvert( (uint16_t*) m_pChar, p, m_nbChars+1 );
 				basket.ptr = p;
 				basket.length = size;
 				basket.bIsOwner = true;
@@ -691,9 +691,9 @@ namespace wg
 			}
 			case UTF16:
 			{
-				int size = TextTool::getTextSizeUTF8( (Uint16*) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeUTF8( (uint16_t*) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				TextTool::getTextUTF8( (Uint16*) m_pChar, p, size+1 );
+				TextTool::getTextUTF8( (uint16_t*) m_pChar, p, size+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -710,9 +710,9 @@ namespace wg
 	
 			case ESCAPED_UTF16:
 			{
-				int size = TextTool::getTextSizeStrippedUTF8( (Uint16 *) m_pChar, m_nbChars );
+				int size = TextTool::getTextSizeStrippedUTF8( (uint16_t *) m_pChar, m_nbChars );
 				char * p = new char[size+1];
-				TextTool::stripTextCommandsConvert( (Uint16*) m_pChar, p, m_nbChars+1 );
+				TextTool::stripTextCommandsConvert( (uint16_t*) m_pChar, p, m_nbChars+1 );
 				std::string str( p, size );
 				delete p;
 				return str;
@@ -762,14 +762,14 @@ namespace wg
 	    m_nbChars	= len;
 	}
 	
-	CharSeqLiteral::CharSeqLiteral( const Uint16 * pChar )
+	CharSeqLiteral::CharSeqLiteral( const uint16_t * pChar )
 	{
 	    m_type		= UTF16;
 	    m_pChar		= (void *) pChar;
 	    m_nbChars	= TextTool::strlen(pChar);
 	}
 	
-	CharSeqLiteral::CharSeqLiteral( const Uint16 * pChar, int len )
+	CharSeqLiteral::CharSeqLiteral( const uint16_t * pChar, int len )
 	{
 	    m_type		= UTF16;
 	    m_pChar		= (void *) pChar;

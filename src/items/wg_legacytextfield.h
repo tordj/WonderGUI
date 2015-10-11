@@ -165,7 +165,7 @@ namespace wg
 		inline Caret_p	cursorSkin() const { return m_pCursorStyle; }
 	
 		int					insertAtCursor( const CharSeq& str ) { return putText(str); }
-		bool				insertAtCursor( Uint16 c ) { return putChar(c); }
+		bool				insertAtCursor( uint16_t c ) { return putChar(c); }
 	
 		inline void			goBot(){ if(m_pCursor) m_pCursor->goBOF(); }
 		inline void			goEot(){ if(m_pCursor) m_pCursor->goEOF(); }
@@ -247,7 +247,7 @@ namespace wg
 	// -------------
 	
 		void				setValue( double value, const ValueFormat_p& pFormat );
-		void				setScaledValue( Sint64 value, Uint32 scale, const ValueFormat_p& pFormat );
+		void				setScaledValue( int64_t value, uint32_t scale, const ValueFormat_p& pFormat );
 	//	int				compareTo( const LegacyTextField * pOther, bool bCheckCase = true ) const;	// Textual compare in the style of strcmp().
 	
 		Size				unwrappedSize() const;
@@ -315,7 +315,7 @@ namespace wg
 	
 		void			getSoftPos( int &line, int &col ) const{if(m_pCursor) m_pCursor->getSoftPos( line, col );}
 	
-		bool			putChar( Uint16 character ){return m_pCursor ? m_pCursor->putChar( character ):false;}
+		bool			putChar( uint16_t character ){return m_pCursor ? m_pCursor->putChar( character ):false;}
 		int				putText( const CharSeq& seq ){return m_pCursor ? m_pCursor->putText( seq ):0;}
 		void			unputText( int nChar ){if(m_pCursor) m_pCursor->unputText( nChar );}
 		void 			delPrevWord(){if(m_pCursor) m_pCursor->delPrevWord();}
@@ -384,7 +384,7 @@ namespace wg
 	
 		static const int	s_parseBufLen = 9+16+1+16+8;
 		Char *		_parseValue( double value, const ValueFormat * pFormat, Char[s_parseBufLen] );
-		Char *		_parseScaledValue( Sint64 value, Uint32 scale, const ValueFormat * pFormat, Char[s_parseBufLen] );
+		Char *		_parseScaledValue( int64_t value, uint32_t scale, const ValueFormat * pFormat, Char[s_parseBufLen] );
 	
 	
 		void			_regenHardLines();		// regenerate the softlines-array (if necessary).

@@ -112,7 +112,7 @@ namespace wg
 	
 		bool			m_bRefreshing;
 		bool			m_bAutoRefresh;
-		Uint32			m_animTimer;
+		uint32_t			m_animTimer;
 		float			m_refreshProgress;
 		bool			m_bStopping;
 	};

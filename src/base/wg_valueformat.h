@@ -61,7 +61,7 @@ namespace wg
 			static ValueFormat_p	create( const CharSeq& format )  { return ValueFormat_p(new ValueFormat(format)); }
 			static ValueFormat_p	create( const ValueFormat_p& pIn ) { return ValueFormat_p(new ValueFormat(pIn)); }
 			static ValueFormat_p	create(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
-							Uint16 separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
+							uint16_t separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, uint16_t period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 )
 			{ return ValueFormat_p(new ValueFormat(nInt,nDec,grouping,bPlus,separator,period,bForcePeriod,pPrefix,pSuffix)); }
 	
 			bool		isInstanceOf( const char * pClassName ) const;
@@ -73,7 +73,7 @@ namespace wg
 			void setFormat( const ValueFormat_p& pFormat );
 	
 			void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
-							Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
+							uint16_t _separator = 0, uint16_t period = 0, bool bForcePeriod = false );
 	
 			void setPrefix( const String& str );
 			void setPrefix( const CharSeq& seq );
@@ -97,26 +97,26 @@ namespace wg
 			inline void setZeroIsNegative( bool bNegative ) { bZeroIsNegative = bNegative; }
 			inline bool	getZeroIsNegative() const { return bZeroIsNegative; }
 	
-			inline void		setPeriod(Uint16 _period) { period = _period; }
-			inline Uint16	getPeriod() const { return period; }
+			inline void		setPeriod(uint16_t _period) { period = _period; }
+			inline uint16_t	getPeriod() const { return period; }
 	
 			inline void		setForcePeriod(bool _bForcePeriod) { bForcePeriod = _bForcePeriod; }
 			inline bool		getForcePeriod() const { return bForcePeriod; }
 	
 			inline void		setIntegers(int nInt) { integers = nInt; }
-			inline Uint8	getIntegers() const { return integers; }
+			inline uint8_t	getIntegers() const { return integers; }
 	
 			inline void		setDecimals(int nDec) { decimals= nDec; }
-			inline Uint8	getDecimals() const { return decimals; }
+			inline uint8_t	getDecimals() const { return decimals; }
 	
 			inline void		setGrouping(int _grouping) { grouping = _grouping; }
-			inline Uint8	getGrouping() const { return grouping; }
+			inline uint8_t	getGrouping() const { return grouping; }
 	
 			inline void		setPlus(bool _bPlus) { bPlus = _bPlus; }
 			inline bool		getPlus() const { return bPlus; }
 	
-			inline void		setSeparator(Uint16 _separator) { separator = _separator; }
-			inline Uint16	getSeparator() const { return separator; }
+			inline void		setSeparator(uint16_t _separator) { separator = _separator; }
+			inline uint16_t	getSeparator() const { return separator; }
 	
 			inline int		_getScale() const { return scale; }
 	
@@ -125,14 +125,14 @@ namespace wg
 			ValueFormat( const CharSeq& format );
 			ValueFormat( const ValueFormat_p& pIn );
 			ValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
-							Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
+							uint16_t _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, uint16_t period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
 	
 	
-			Uint8		integers;			/// Lowest number of integers to display, padded with zeroes.
-			Uint8		decimals;			/// Number of decimals to display.
-			Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
-			Uint16		separator;			/// Character to separate integer groups with.
-			Uint16		period;				/// Character used for separating integer and decimal part
+			uint8_t		integers;			/// Lowest number of integers to display, padded with zeroes.
+			uint8_t		decimals;			/// Number of decimals to display.
+			uint8_t		grouping;			/// Number of integers to group together. 0 = no grouping
+			uint16_t		separator;			/// Character to separate integer groups with.
+			uint16_t		period;				/// Character used for separating integer and decimal part
 			String	prefix;				/// Characters preceding the value, like $, £ or similar.
 			String	suffix;				/// Characters following the value.
 			bool		bPlus;				/// Set if a plus sign should be preceding positive value.
@@ -187,12 +187,12 @@ namespace wg
 		String suffix() const;
 		int		 decimals() const { return m_format.decimals; }
 	
-		String format( Sint64 value ) const;
-		String formatNoPreSuffix( Sint64 value ) const;
+		String format( int64_t value ) const;
+		String formatNoPreSuffix( int64_t value ) const;
 	
 	private:
 	
-		void	_formatValue( CharBuffer * pBuffer, Sint64 value ) const;
+		void	_formatValue( CharBuffer * pBuffer, int64_t value ) const;
 	
 		ValueFormat	m_format;
 	};

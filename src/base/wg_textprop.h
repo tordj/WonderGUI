@@ -67,7 +67,7 @@ namespace wg
 		friend class Pen;
 	
 		Textprop_p( TextpropHolder * pProp = 0 );
-		explicit Textprop_p( Uint16 hProp );
+		explicit Textprop_p( uint16_t hProp );
 		Textprop_p(const Textprop_p& r);
 		~Textprop_p();
 	
@@ -82,10 +82,10 @@ namespace wg
 		const Textprop * operator->() const;
 		inline operator bool() const { return (m_hProp != 0); }
 	
-		inline	Uint16 getHandle() const { return m_hProp; }
+		inline	uint16_t getHandle() const { return m_hProp; }
 	
 	private:
-		Uint16			m_hProp;
+		uint16_t			m_hProp;
 	};
 	
 	
@@ -121,7 +121,7 @@ namespace wg
 		inline void		setBreakLevel( int level ) { m_breakLevel = (char) level; }
 		inline void		setLink( const TextLink_p& pLink ) { m_pLink = pLink; }
 		inline void		setFont( const Font_p& pFont ) { m_pFont = pFont; }
-		bool			setCharVisibility( Uint16 specialCharacter, bool bVisible );
+		bool			setCharVisibility( uint16_t specialCharacter, bool bVisible );
 	
 		void			clearColor();
 		void			clearBgColor();
@@ -149,7 +149,7 @@ namespace wg
 		inline const Color&	bgColor( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
 		inline FontAlt		style( State state = WG_STATE_NORMAL ) const { return (FontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
 		inline int				size( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
-		bool					charVisibility( Uint16 specialCharacter ) const;
+		bool					charVisibility( uint16_t specialCharacter ) const;
 		inline int				charVisibilityFlags() const { return m_visibilityFlags; }
 	
 		inline TextLink_p	link() const { return m_pLink; }
@@ -175,15 +175,15 @@ namespace wg
 	private:
 		bool			_compareTo( const Textprop * pProp ) const;
 	
-		Uint8			_calculateChecksum() const;
+		uint8_t			_calculateChecksum() const;
 	
 	
 		// Struct holding State-specific parameters.
 	
 		struct StateProp
 		{
-			Uint16			m_style:5;		///< FontAlt for this state, WG_FONT_NORMAL is same as none and overriden if set higher in hierarchy.
-			Uint16			m_size:11;		///< Size in pixels of font. 0 = none specified, use sized specified higher up in hierarchy.
+			uint16_t			m_style:5;		///< FontAlt for this state, WG_FONT_NORMAL is same as none and overriden if set higher in hierarchy.
+			uint16_t			m_size:11;		///< Size in pixels of font. 0 = none specified, use sized specified higher up in hierarchy.
 			bool			m_bUnderlined;	///< Hierarchally cumulative, anyone in hierarchy set gives underlined.
 			bool			m_bColored;		///< Set if color of this struct should be used.
 			Color			m_color;		///< Color for character if m_bColored is set. Search order is character, text.
@@ -198,14 +198,14 @@ namespace wg
 		{
 			struct							///< Hierarchally cumulative, anyone in hierarchy set will set the flag.
 			{
-				Uint8 m_bShowLF						:1;
-				Uint8 m_bShowTAB					:1;
-				Uint8 m_bShowNoBreakSpace			:1;
-				Uint8 m_bShowBreakPermitted			:1;
-				Uint8 m_bShowHyphenBreakPermitted	:1;
-				Uint8 m_bShowSpace					:1;
+				uint8_t m_bShowLF						:1;
+				uint8_t m_bShowTAB					:1;
+				uint8_t m_bShowNoBreakSpace			:1;
+				uint8_t m_bShowBreakPermitted			:1;
+				uint8_t m_bShowHyphenBreakPermitted	:1;
+				uint8_t m_bShowSpace					:1;
 			};
-			Uint8 m_visibilityFlags;
+			uint8_t m_visibilityFlags;
 		};
 	
 		char				m_breakLevel;		///< How aggressively lines should be breaked. Higher value breaks on more characters. -1 = not set.

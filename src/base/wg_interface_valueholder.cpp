@@ -45,7 +45,7 @@ namespace wg
 	
 	//____ setRange() _____________________________________________________________
 	
-	bool _Interface_ValueHolder::setRange( Sint64 min, Sint64 max )
+	bool _Interface_ValueHolder::setRange( int64_t min, int64_t max )
 	{
 		if( min > max )
 			return false;
@@ -98,7 +98,7 @@ namespace wg
 	
 	//____ setValue() _____________________________________________________________
 	
-	bool _Interface_ValueHolder::setValue( Sint64 value )
+	bool _Interface_ValueHolder::setValue( int64_t value )
 	{
 		bool b = _setValue(value);
 		_updateScrollbar( fractionalValue(), 0.f );
@@ -237,7 +237,7 @@ namespace wg
 	{
 		// Calculate new value and set it.
 	
-		Sint64 value = (Sint64)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
+		int64_t value = (int64_t)(fraction * (m_rangeMax - m_rangeMin) + m_rangeMin);
 	
 		if( m_nValueDigits != 0 && value != m_rangeMin && value != m_rangeMax )
 		{
@@ -261,7 +261,7 @@ namespace wg
 	
 	//____ _setValue() _____________________________________________________________
 	
-	bool _Interface_ValueHolder::_setValue( Sint64 value )
+	bool _Interface_ValueHolder::_setValue( int64_t value )
 	{
 		bool	retVal = true;
 	

@@ -823,7 +823,7 @@ namespace wg
 
 				MenuItem * pItem = _getItemAtPos( mousePos.x, mousePos.y );
 	
-				Uint32 markedItem = 0;
+				uint32_t markedItem = 0;
 				if( pItem )
 				{
 					if( pItem->getType() != SEPARATOR )
@@ -1040,7 +1040,7 @@ namespace wg
 	
 				if( pItem )
 				{
-					Uint32 markedItem = pItem->index()+1;
+					uint32_t markedItem = pItem->index()+1;
 					if( markedItem != m_markedItem )
 					{
 						m_markedItem = markedItem;
@@ -1160,7 +1160,7 @@ namespace wg
 	
 		// Figure out Y-offset for pItem
 	
-		Uint32 yOfs = 0;
+		uint32_t yOfs = 0;
 	
 		MenuItem * p = m_items.first();
 		while( p != pItem )

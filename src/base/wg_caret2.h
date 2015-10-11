@@ -62,7 +62,7 @@ namespace wg
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
 	
-		virtual void		setGlyph( Uint16 glyph, int size, int advance, int ascend, int descend );
+		virtual void		setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend );
 		virtual void		setMode( CaretMode mode );
 		virtual int			eolWidth( int size, int advance, int ascend, int descend ) const;
 		inline CaretMode	mode() const { return m_mode; }
@@ -75,7 +75,7 @@ namespace wg
 		Caret2();
 	
 	
-		Uint16		m_glyph;
+		uint16_t		m_glyph;
 		int			m_glyphSize;
 		int			m_glyphAdvance;
 		int			m_glyphAscend;
