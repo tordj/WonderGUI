@@ -42,7 +42,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	PopupHook::PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, WgOrigo attachPoint, Size maxSize )
+	PopupHook::PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, Size maxSize )
 	{
 		m_pParent 		= pParent;
 		m_pOpener		= pOpener;
@@ -339,7 +339,7 @@ namespace wg
 	
 	//____ openPopup() _______________________________________________________________
 	
-	PopupHook_p PopupLayer::openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, WgOrigo attachPoint, Size maxSize )
+	PopupHook_p PopupLayer::openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint, Size maxSize )
 	{
 		// Create MyHook and fill in members.
 	
@@ -406,7 +406,7 @@ namespace wg
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	Widget *  PopupLayer::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget *  PopupLayer::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.

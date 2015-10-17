@@ -114,8 +114,8 @@ namespace wg
 			inline Skin_p 		fwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
 			inline BtnLayout		buttonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
 	
-			void			setOrientation( WgOrientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
-			inline WgOrientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
+			void			setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
+			inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 	
 			void		setBackgroundPressMode( BgPressMode mode );			///< @brief Set action for mouse press on scrollbar background.
 			inline BgPressMode backgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
@@ -338,7 +338,7 @@ namespace wg
 	 * 		   	WG_VERTICAL if scrollbar is vertical.
 	 **/
 	
-	WgOrientation Scrollbar::orientation() const
+	Orientation Scrollbar::orientation() const
 	{
 		return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL;
 	}

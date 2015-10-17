@@ -85,7 +85,7 @@ namespace wg
 	
 	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle Widget::pointerStyle() const
+	PointerStyle Widget::pointerStyle() const
 	{
 		return m_pointerStyle;
 	}
@@ -378,7 +378,7 @@ namespace wg
 	
 	//____ _getBlendMode() _________________________________________________________
 	
-	WgBlendMode Widget::_getBlendMode() const
+	BlendMode Widget::_getBlendMode() const
 	{
 		Container * pParent = _parent();
 		if( pParent )
@@ -408,7 +408,7 @@ namespace wg
 	
 	//____ _onMaskPatches() _______________________________________________________
 	
-	void Widget::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void Widget::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 		{

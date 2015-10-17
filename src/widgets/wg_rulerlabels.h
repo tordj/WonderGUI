@@ -36,7 +36,7 @@ namespace wg
 		
 		void			addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset );
 	 	Size			preferredSize() const;
-		void			setDirection( WgDirection direction );
+		void			setDirection( Direction direction );
 		ModText_p	getLabel(int index);
 	
 	
@@ -66,7 +66,7 @@ namespace wg
 		};
 		
 		Chain<Label>	m_labels;
-		WgDirection		m_direction;
+		Direction		m_direction;
 	};
 	
 	

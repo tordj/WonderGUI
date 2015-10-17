@@ -1140,7 +1140,7 @@ namespace wg
 	
 	//____ _findWidget() _____________________________________________________________
 	
-	Widget * Menu::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget * Menu::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		Widget * pWidget = Panel::_findWidget(ofs, mode);
 		if( !pWidget && markTest( ofs ) )
@@ -1260,7 +1260,7 @@ namespace wg
 	
 	//____ _onMaskPatches() ________________________________________________________
 	
-	void Menu::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void Menu::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
 		{

@@ -93,7 +93,7 @@ namespace wg
 	
 	//____ addBreakRule() _________________________________________________________
 	
-	bool TextTool::setBreakRule( unsigned char character, int level, WgBreakRules rule )
+	bool TextTool::setBreakRule( unsigned char character, int level, BreakRules rule )
 	{
 		if( level < 0 || level > 15 )
 			return false;
@@ -154,13 +154,13 @@ namespace wg
 	
 	//____ isBreakAllowed() _______________________________________________________
 	
-	WgBreakRules TextTool::isBreakAllowed( uint16_t chr, int breakLevel )
+	BreakRules TextTool::isBreakAllowed( uint16_t chr, int breakLevel )
 	{
 		if( chr > 255 )
 			return WG_NO_BREAK;
 	
 		if( breakLevel >= (breakRulesTab[chr] & 0xF) )
-			return (WgBreakRules) (breakRulesTab[chr] & 0xF0);
+			return (BreakRules) (breakRulesTab[chr] & 0xF0);
 	
 		return WG_NO_BREAK;
 	}
@@ -251,7 +251,7 @@ namespace wg
 	}
 	
 	
-	uint32_t TextTool::readString( const char *& pSrc, WgCodePage codepage, Char * pDst, uint32_t maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, CodePage codepage, Char * pDst, uint32_t maxChars )
 	{
 		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
@@ -270,7 +270,7 @@ namespace wg
 		return n;
 	}
 	
-	uint32_t TextTool::readString( const char *& pSrc, WgCodePage codepage, uint16_t * pDst, uint32_t maxChars )
+	uint32_t TextTool::readString( const char *& pSrc, CodePage codepage, uint16_t * pDst, uint32_t maxChars )
 	{
 		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
@@ -2147,7 +2147,7 @@ namespace wg
 	
 	//____ getTextUTF8() __________________________________________________________
 	
-	uint32_t TextTool::getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars )
+	uint32_t TextTool::getTextUTF8( const char * pSrc, CodePage codepage, char * pDest, int maxChars )
 	{
 		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
@@ -2212,7 +2212,7 @@ namespace wg
 	
 	//____ getTextSizeUTF8() ____________________________________________________________
 	
-	uint32_t TextTool::getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars )
+	uint32_t TextTool::getTextSizeUTF8( const char * pSrc, CodePage codepage, int maxChars )
 	{
 		uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )

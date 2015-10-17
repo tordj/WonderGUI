@@ -96,7 +96,7 @@ namespace wg
 	
 	//____ setAlignment() __________________________________________________________
 	
-	void StandardPresenter::setAlignment( WgOrigo alignment )
+	void StandardPresenter::setAlignment( Origo alignment )
 	{
 		if( alignment != m_alignment )
 		{

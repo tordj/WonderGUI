@@ -80,7 +80,7 @@ namespace wg
 		static InputHandler_p	cast( const Object_p& pObject );
 	
 		void 		setPointer( const RootPanel_p& pRoot, Coord pos, int64_t timestamp = 0 );
-		void 		setButton( WgMouseButton button, bool bPressed, int64_t timestamp = 0 );
+		void 		setButton( MouseButton button, bool bPressed, int64_t timestamp = 0 );
 		void 		setWheelRoll( int wheel, Coord distance, int64_t timestamp = 0 );
 
 		void 		setFocusedWindow( const RootPanel_p& pRoot );
@@ -92,7 +92,7 @@ namespace wg
 		Widget_p 	focusedWidget() const { return _focusedWidget(); }
 		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
 		
-		bool		isButtonPressed( WgMouseButton button ) const;
+		bool		isButtonPressed( MouseButton button ) const;
 		bool		isAnyButtonPressed() const;
 		
 		bool		isKeyPressed( short nativeKeyCode ) const;
@@ -126,8 +126,8 @@ namespace wg
 	
 		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp );
 	
-		void		_processButtonPress( WgMouseButton button, int64_t timestamp );
-		void		_processButtonRelease( WgMouseButton button, int64_t timestamp );
+		void		_processButtonPress( MouseButton button, int64_t timestamp );
+		void		_processButtonRelease( MouseButton button, int64_t timestamp );
 		void		_handleButtonRepeats( int64_t timestamp );
 
 		void 		_processKeyPress( short nativeKeyCode, int64_t timestamp );
@@ -145,7 +145,7 @@ namespace wg
 		Widget *	_focusedWidget() const;
 	
 	
-		WgRouteId		m_tickRoute;
+		RouteId		m_tickRoute;
 		int64_t			m_timeStamp;
 		
 		Coord			m_pointerPos;
@@ -158,7 +158,7 @@ namespace wg
 		std::vector<Widget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
 		
 	
-		WgPointerStyle	m_pointerStyle;
+		PointerStyle	m_pointerStyle;
 		WgModifierKeys	m_modKeys;
 	
 	

@@ -685,7 +685,7 @@ namespace wg
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	Widget * ScrollPanel::_findWidget( const Coord& pos, WgSearchMode mode )
+	Widget * ScrollPanel::_findWidget( const Coord& pos, SearchMode mode )
 	{
 		// Check XDRAG
 	
@@ -772,7 +772,7 @@ namespace wg
 	
 	//____ setContentOrigo() _________________________________________________
 	
-	void  ScrollPanel::setContentOrigo( WgOrigo origo )
+	void  ScrollPanel::setContentOrigo( Origo origo )
 	{
 		m_contentOrigo = origo;
 	
@@ -1066,7 +1066,7 @@ namespace wg
 	
 	//____ _genContentCanvasGeo() __________________________________________________
 	
-	Rect ScrollPanel::_genContentCanvasGeo( const Rect& window, Size contentSize, WgOrigo origo, Coord viewOfs )
+	Rect ScrollPanel::_genContentCanvasGeo( const Rect& window, Size contentSize, Origo origo, Coord viewOfs )
 	{
 		Rect	out( window.pos() - viewOfs, contentSize);
 	
@@ -1216,7 +1216,7 @@ namespace wg
 	
 	//____ _onMaskPatches() __________________________________________________________
 	
-	void ScrollPanel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void ScrollPanel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE ||

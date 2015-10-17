@@ -51,8 +51,8 @@ namespace wg
 	
 		void	top();								// Put us ontop of all our siblings.
 	
-		bool	setGeo( const Rect& geometry, WgOrigo origo = WG_NORTHWEST );
-		bool	setGeo( const Coord& ofs, WgOrigo origo = WG_NORTHWEST );
+		bool	setGeo( const Rect& geometry, Origo origo = WG_NORTHWEST );
+		bool	setGeo( const Coord& ofs, Origo origo = WG_NORTHWEST );
 	
 		bool	setOfs( const Coord& ofs );
 		bool	setOfsX( int x );
@@ -91,7 +91,7 @@ namespace wg
 	
 		ModalLayer *	m_pParent;
 	
-		WgOrigo	m_origo;
+		Origo	m_origo;
 		Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 											// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 	
@@ -111,8 +111,8 @@ namespace wg
 		static const char	CLASSNAME[];
 		static ModalLayer_p	cast( const Object_p& pObject );
 	
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Rect& geometry, WgOrigo origo = WG_NORTHWEST );
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Coord& pos, WgOrigo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, Rect(pos,0,0), origo); }
+		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo = WG_NORTHWEST );
+		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Coord& pos, Origo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, Rect(pos,0,0), origo); }
 	
 		bool			removeModalWidgets();
 	
@@ -144,7 +144,7 @@ namespace wg
 	
 		// Overloaded from Panel
 	
-		Widget *		_findWidget( const Coord& ofs, WgSearchMode mode );
+		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
 	
 	
 		// Overloaded from Layer

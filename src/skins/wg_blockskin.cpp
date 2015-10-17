@@ -467,9 +467,9 @@ namespace wg
 	
 	//_____ _scanStateBlockSectionArea() __________________________________________
 	
-	void BlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const Rect& sectionArea )
+	void BlockSkin::_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea )
 	{
-		const WgPixelFormat * pFormat = m_pSurface->PixelFormat();
+		const PixelFormat * pFormat = m_pSurface->pixelFormat();
 		int pitch = m_pSurface->pitch();
 	
 		if( pFormat->type != WG_PIXEL_RGBA_8 )

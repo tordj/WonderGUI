@@ -527,7 +527,7 @@ namespace wg
 	
 	//____ _formatMouseButton() ____________________________________________________
 	
-	std::string MsgLogger::_formatMouseButton( WgMouseButton button ) const
+	std::string MsgLogger::_formatMouseButton( MouseButton button ) const
 	{
 		switch( button )
 		{

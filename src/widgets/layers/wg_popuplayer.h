@@ -61,7 +61,7 @@ namespace wg
 	
 		PROTECTED_LINK_METHODS( PopupHook );
 	
-		PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, WgOrigo attachPoint, Size maxSize );
+		PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, Size maxSize );
 	
 		void			_requestRender();
 		void			_requestRender( const Rect& rect );
@@ -77,7 +77,7 @@ namespace wg
 		PopupLayer *	m_pParent;
 	
 		Rect			m_launcherGeo;		// Launcher geo relative sibling or parent.
-		WgOrigo			m_attachPoint;
+		Origo			m_attachPoint;
 		Size			m_maxSize;
 		Widget_wp	m_pOpener;			// Widget that opened this popup.
 		Widget_wp	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
@@ -98,7 +98,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static PopupLayer_p	cast( const Object_p& pObject );
 	
-		PopupHook_p	openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, WgOrigo attachPoint = WG_NORTHEAST, Size maxSize = Size(INT_MAX,INT_MAX) );
+		PopupHook_p	openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = WG_NORTHEAST, Size maxSize = Size(INT_MAX,INT_MAX) );
 	
 		bool			closePopup( const Widget_p& pPopup );
 		bool			closeAllPopups();
@@ -116,7 +116,7 @@ namespace wg
 		virtual ~PopupLayer();
 		virtual Widget* _newOfMyType() const { return new PopupLayer(); };
 	
-		Widget *		_findWidget( const Coord& ofs, WgSearchMode mode );
+		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
 	
 	private:
 	

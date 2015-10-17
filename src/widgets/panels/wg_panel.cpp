@@ -79,7 +79,7 @@ namespace wg
 	
 	//____ setMaskOp() _____________________________________________________________
 	
-	void Panel::setMaskOp( WgMaskOp operation )
+	void Panel::setMaskOp( MaskOp operation )
 	{
 		if( operation != m_maskOp )
 		{
@@ -103,7 +103,7 @@ namespace wg
 	
 	//____ _onMaskPatches() __________________________________________________________
 	
-	void Panel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void Panel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )

@@ -105,7 +105,7 @@ namespace wg
 	 * By default a scrollbar is vertical.
 	 **/
 	
-	void Scrollbar::setOrientation( WgOrientation orientation )
+	void Scrollbar::setOrientation( Orientation orientation )
 	{
 		bool bHorizontal = (orientation == WG_HORIZONTAL);
 	

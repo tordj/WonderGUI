@@ -269,7 +269,7 @@ namespace wg
 	
 	//____ setOrientation() _______________________________________________________
 	
-	void PackList::setOrientation( WgOrientation orientation )
+	void PackList::setOrientation( Orientation orientation )
 	{
 		bool bHorizontal = (orientation == WG_HORIZONTAL);
 	
@@ -289,7 +289,7 @@ namespace wg
 	
 	//____ setSortOrder() _________________________________________________________
 	
-	void PackList::setSortOrder( WgSortOrder order )
+	void PackList::setSortOrder( SortOrder order )
 	{
 		if( order != m_sortOrder )
 		{
@@ -453,7 +453,7 @@ namespace wg
 	
 	//____ _onMaskPatches() _______________________________________________________
 	
-	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
 			patches.sub( Rect(geo,clip) );
@@ -1188,7 +1188,7 @@ namespace wg
 	
 	//____ _findWidget() __________________________________________________________
 	
-	Widget * PackList::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget * PackList::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		Widget * pResult = 0;
 		Rect list = _listArea();

@@ -116,7 +116,7 @@ namespace wg
 	
 	//____ pointerStyle() ________________________________________
 	
-	WgPointerStyle TextEditor::pointerStyle() const
+	PointerStyle TextEditor::pointerStyle() const
 	{
 		if( m_text.getMarkedLink() )
 			return WG_POINTER_HAND;

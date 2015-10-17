@@ -194,11 +194,11 @@ namespace wg
 		};
 	
 		//
-		Widget * 	_findWidget( const Coord& ofs, WgSearchMode mode );
+		Widget * 	_findWidget( const Coord& ofs, SearchMode mode );
 	
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void		_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_onCloneContent( const Widget * _pOrg );
 		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void		_onNewSize( const Size& size );

@@ -116,11 +116,11 @@ namespace wg
 		bool				setMaxChars( int max );
 		int					maxChars() const { return m_maxChars; }
 	
-		inline void			setAlignment( WgOrigo alignment ) { m_alignment = alignment; }
-		inline WgOrigo		alignment() const { return m_alignment; }
+		inline void			setAlignment( Origo alignment ) { m_alignment = alignment; }
+		inline Origo		alignment() const { return m_alignment; }
 	
-		inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
-		inline WgTintMode	tintMode() const { return m_tintMode; }
+		inline void			setTintMode( TintMode mode ) { m_tintMode = mode; }
+		inline TintMode	tintMode() const { return m_tintMode; }
 	
 		void				clear();
 	
@@ -405,8 +405,8 @@ namespace wg
 		TextEditMode	m_editMode;
 	
 	
-		WgTintMode		m_tintMode;
-		WgOrigo	m_alignment;
+		TintMode		m_tintMode;
+		Origo	m_alignment;
 		State			m_state;
 	
 		TextLink_p	m_pMarkedLink;

@@ -1483,7 +1483,7 @@ namespace wg
 	
 				// Check if we can move the breakpoint up to this character.
 	
-				WgBreakRules breakStatus = TextTool::isBreakAllowed( p->glyph, attr.breakLevel );
+				BreakRules breakStatus = TextTool::isBreakAllowed( p->glyph, attr.breakLevel );
 				switch( breakStatus )
 				{
 				case WG_BREAK_BEFORE:

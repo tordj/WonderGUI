@@ -170,7 +170,7 @@ namespace wg
 	
 	//____ setSelectMode() ________________________________________________________
 	
-	bool List::setSelectMode( WgSelectMode mode )
+	bool List::setSelectMode( SelectMode mode )
 	{
 		if( mode != m_selectMode )
 		{

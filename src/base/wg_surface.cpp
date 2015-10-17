@@ -36,7 +36,7 @@ namespace wg
 		m_accessMode	= WG_NO_ACCESS;
 		m_pPixels		= 0;
 	
-		memset( &m_pixelFormat, 0, sizeof(WgPixelFormat) );
+		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
 	}
 	
 	//____ ~Surface() ____________________________________________________________
@@ -148,7 +148,7 @@ namespace wg
 	
 	//____ _lockAndAdjustRegion() __________________________________________________
 	
-	Rect Surface::_lockAndAdjustRegion( WgAccessMode modeNeeded, const Rect& region )
+	Rect Surface::_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region )
 	{
 		if( m_accessMode == WG_NO_ACCESS )
 		{
@@ -203,7 +203,7 @@ namespace wg
 	bool Surface::fill( Color col, const Rect& region )
 	{
 	
-		WgAccessMode oldMode = m_accessMode;
+		AccessMode oldMode = m_accessMode;
 		Rect rect = _lockAndAdjustRegion(WG_WRITE_ONLY,region);
 	
 		if( rect.w == 0 )
@@ -322,8 +322,8 @@ namespace wg
 	
 		// Save old locks and lock the way we want.
 	
-		WgAccessMode 	dstOldMode 		= m_accessMode;
-		WgAccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
+		AccessMode 	dstOldMode 		= m_accessMode;
+		AccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
 	
 		Rect srcRect = pSrcSurface->_lockAndAdjustRegion( WG_READ_ONLY, _srcRect );
 		Rect dstRect = _lockAndAdjustRegion( WG_WRITE_ONLY, Rect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
@@ -332,8 +332,8 @@ namespace wg
 	
 		if( srcRect.w > 0 && dstRect.w > 0 )
 		{
-			const WgPixelFormat * pSrcFormat = pSrcSurface->PixelFormat();
-			const WgPixelFormat * pDstFormat = &m_pixelFormat;
+			const PixelFormat * pSrcFormat = pSrcSurface->pixelFormat();
+			const PixelFormat * pDstFormat = &m_pixelFormat;
 	
 			int		srcPitch = pSrcSurface->pitch();
 			int		dstPitch = m_pitch;

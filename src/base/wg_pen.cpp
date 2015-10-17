@@ -301,7 +301,7 @@ namespace wg
 		// Set tintcolor/blendmode. Save original modes so we can restore them.
 	
 		Color		tintColor;
-		WgBlendMode blendMode;
+		BlendMode blendMode;
 		switch( pCursor->getBlitMode() )
 		{
 			case Caret::NORMAL:

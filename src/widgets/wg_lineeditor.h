@@ -99,7 +99,7 @@ namespace wg
 		void	_adjustViewOfs();
 	
 		LegacyTextField			m_text;
-		WgRouteId			m_tickRouteId;
+		RouteId			m_tickRouteId;
 	
 		bool				m_bResetCursorOnFocus;
 		bool				m_bPasswordMode;

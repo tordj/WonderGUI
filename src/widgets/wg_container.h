@@ -84,7 +84,7 @@ namespace wg
 			inline Hook_p		firstHook() const { return _firstHook(); }
 			inline Hook_p		lastHook() const { return _lastHook(); }
 	
-			virtual Widget_p		findWidget( const Coord& ofs, WgSearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
+			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
 	
 	
 			virtual bool			removeWidget( const Widget_p& pWidget ) = 0;
@@ -103,7 +103,7 @@ namespace wg
 			Widget *				_lastWidget() const;
 	
 	
-			virtual Widget * 		_findWidget( const Coord& ofs, WgSearchMode mode );
+			virtual Widget * 		_findWidget( const Coord& ofs, SearchMode mode );
 			virtual void			_onStateChanged( State oldState );
 	
 			virtual void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
@@ -119,7 +119,7 @@ namespace wg
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*	_getPopupLayer() const;
 	
-			virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+			virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 			virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
 			virtual void	_onCloneContent( const Container * _pOrg );
 	

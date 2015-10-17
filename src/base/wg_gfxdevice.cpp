@@ -94,7 +94,7 @@ namespace wg
 	
 	//____ setBlendMode() __________________________________________________________
 	
-	bool GfxDevice::setBlendMode( WgBlendMode blendMode )
+	bool GfxDevice::setBlendMode( BlendMode blendMode )
 	{
 		m_blendMode = blendMode;
 		return false;				// Not implemented.

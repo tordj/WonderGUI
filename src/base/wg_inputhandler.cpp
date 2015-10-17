@@ -236,12 +236,12 @@ namespace wg
 		for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
 		{
 			if( m_bButtonPressed[i] )
-				Base::msgRouter()->post( new MouseDragMsg( (WgMouseButton) i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, m_modKeys, m_pointerPos, timestamp ) );
+				Base::msgRouter()->post( new MouseDragMsg( (MouseButton) i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, m_modKeys, m_pointerPos, timestamp ) );
 		}
 		
 		// Update PointerStyle
 		
-		WgPointerStyle newStyle;
+		PointerStyle newStyle;
 		
 		if( pNowMarked && pNowMarked->isEnabled() )
 			newStyle = pNowMarked->pointerStyle();
@@ -312,7 +312,7 @@ namespace wg
 	
 	//____ setButton() _____________________________________________________________
 	
-	void InputHandler::setButton( WgMouseButton button, bool bPressed, int64_t timestamp )
+	void InputHandler::setButton( MouseButton button, bool bPressed, int64_t timestamp )
 	{
 		// Sanity checks
 		
@@ -333,7 +333,7 @@ namespace wg
 	
 	//____ _processButtonPress() ___________________________________________________
 	
-	void InputHandler::_processButtonPress( WgMouseButton button, int64_t timestamp )
+	void InputHandler::_processButtonPress( MouseButton button, int64_t timestamp )
 	{			
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
@@ -379,7 +379,7 @@ namespace wg
 	
 	//____ _processButtonRelease() _________________________________________________
 	
-	void InputHandler::_processButtonRelease( WgMouseButton button, int64_t timestamp )
+	void InputHandler::_processButtonRelease( MouseButton button, int64_t timestamp )
 	{
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
@@ -407,7 +407,7 @@ namespace wg
 
 	//____ isButtonPressed() _________________________________________________________
 	
-	bool InputHandler::isButtonPressed( WgMouseButton button ) const
+	bool InputHandler::isButtonPressed( MouseButton button ) const
 	{
 		if( button >= 1 && button <= WG_MAX_BUTTONS )
 			return m_bButtonPressed[button];
@@ -660,7 +660,7 @@ namespace wg
 
 				while( repeatPos <= timestamp )
 				{
-					Base::msgRouter()->post( new MouseRepeatMsg( (WgMouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, repeatPos ));
+					Base::msgRouter()->post( new MouseRepeatMsg( (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, repeatPos ));
 					repeatPos += m_keyRepeatRate;
 				}
 			}

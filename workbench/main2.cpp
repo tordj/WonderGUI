@@ -12,7 +12,7 @@
 using namespace wg;
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
-WgMouseButton 	translateMouseButton( Uint8 button );
+MouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
@@ -55,7 +55,7 @@ int main ( int argc, char** argv )
 
 	InputHandler_p pInput = Base::inputHandler();
 	
-	WgPixelType type = WG_PIXEL_UNKNOWN;
+	PixelType type = WG_PIXEL_UNKNOWN;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
 		type = WG_PIXEL_RGBA_8;
@@ -320,7 +320,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 //
 // Translate SDL mouse button enums to WonderGUI equivalents.
 //
-WgMouseButton translateMouseButton( Uint8 button )
+MouseButton translateMouseButton( Uint8 button )
 {
 	switch( button )
 	{

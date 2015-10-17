@@ -130,8 +130,8 @@ namespace wg
 		int				m_maxCharacters;
 		int				m_viewOfs;
 	
-		WgRouteId	m_tickRouteId;
-		WgRouteId	m_routeId;
+		RouteId	m_tickRouteId;
+		RouteId	m_routeId;
 	};
 	
 

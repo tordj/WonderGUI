@@ -95,8 +95,8 @@ namespace wg
 		virtual void		setLassoSkin( const Skin_p& pSkin );
 		Skin_p			lassoSkin() const { return m_pLassoSkin; }
 	
-		virtual bool		setSelectMode( WgSelectMode mode );
-		WgSelectMode		selectMode() const { return m_selectMode; }
+		virtual bool		setSelectMode( SelectMode mode );
+		SelectMode		selectMode() const { return m_selectMode; }
 	
 	
 	
@@ -129,7 +129,7 @@ namespace wg
 										const Skin_p& pSkin, TextField * pText, IconField * pLabelIcon, 
 										IconField * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort );
 	
-		WgSelectMode	m_selectMode;
+		SelectMode	m_selectMode;
 		Skin_p		m_pEntrySkin[2];
 		Skin_p		m_pLassoSkin;
 		bool			m_bOpaqueEntries;

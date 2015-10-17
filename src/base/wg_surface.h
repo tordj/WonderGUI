@@ -135,7 +135,7 @@ namespace wg
 	
 		// Enums and methods for locking/unlocking of surface.
 	
-		virtual void *		lock( WgAccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
+		virtual void *		lock( AccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
 																///<
 																///< Locks the surface to gain direct access to the pixel data.
 																///<
@@ -164,7 +164,7 @@ namespace wg
 																///<
 																///< @return Pointer to start of pixel data or null if failed.
 	
-		virtual void *		lockRegion( WgAccessMode mode, const Rect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
+		virtual void *		lockRegion( AccessMode mode, const Rect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
 																///<
 																///< Locks a limited region of the surface to gain direct access to its pixel data.
 																///<
@@ -190,14 +190,14 @@ namespace wg
 																							///<
 																							///< Check if surface is locked.
 																							///< @return True if surface is locked, otherwise false.
-		inline	WgAccessMode 	lockStatus() const { return m_accessMode; }	///< @brief Check if surface is locked and in what way.
+		inline	AccessMode 	lockStatus() const { return m_accessMode; }	///< @brief Check if surface is locked and in what way.
 																			///<
 																			///< Check if surface is locked and if so, what kind of access is allowed.
 																			///< @return WG_READ_ONLY, WG_WRITE_ONLY or WG_READ_WRITE if the surface is locked,
 																			///< otherwise WG_NO_ACCESS.
 		inline  Rect			regionLocked() const;						///< @brief Get the locked region of the surface.
 		inline  int				pitch() const;								///< @brief Get the pitch of the locked region.
-		inline const WgPixelFormat *PixelFormat() const;					///< @brief Get the pixel format of the locked region.
+		inline const PixelFormat *pixelFormat() const;					///< @brief Get the pixel format of the locked region.
 		inline void *			pixels() const { return m_pPixels; }		///< @brief Get a pointer to the raw pixels of the locked region.
 																			///< Get a pointer to the first line of raw pixels of the locked region.
 																			///<
@@ -218,12 +218,12 @@ namespace wg
 		Surface();
 		virtual ~Surface();
 	
-		Rect				_lockAndAdjustRegion( WgAccessMode modeNeeded, const Rect& region );
+		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
 	
-		WgPixelFormat		m_pixelFormat;
+		PixelFormat		m_pixelFormat;
 		int					m_pitch;
 	
-		WgAccessMode		m_accessMode;
+		AccessMode		m_accessMode;
 		uint8_t *				m_pPixels;			// Pointer at pixels when surface locked.
 		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 	};
@@ -250,11 +250,11 @@ namespace wg
 	
 	//____ Surface::PixelFormat() _______________________________________________
 	/**
-	 * Get a pointer to a WgPixelFormat struct describing the pixel format of the locked region.
+	 * Get a pointer to a PixelFormat struct describing the pixel format of the locked region.
 	 *
 	 * @return Pointer to a pixel format struct or nullptr if the surface isn't locked.
 	 **/
-	const WgPixelFormat *  Surface::PixelFormat() const
+	const PixelFormat *  Surface::pixelFormat() const
 	{
 		if( m_accessMode == WG_NO_ACCESS )
 			return 0;

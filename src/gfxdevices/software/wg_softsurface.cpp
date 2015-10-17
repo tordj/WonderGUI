@@ -35,7 +35,7 @@ namespace wg
 	
 	//____ Constructor ________________________________________________________________
 	
-	SoftSurface::SoftSurface( Size size, WgPixelType type )
+	SoftSurface::SoftSurface( Size size, PixelType type )
 	{
 		assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
@@ -47,7 +47,7 @@ namespace wg
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, WgPixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
+	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
 	{
 		assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
@@ -165,7 +165,7 @@ namespace wg
 	
 	//____ lock() __________________________________________________________________
 	
-	void * SoftSurface::lock( WgAccessMode mode )
+	void * SoftSurface::lock( AccessMode mode )
 	{
 		m_accessMode = WG_READ_WRITE;
 		m_pPixels = m_pData;
@@ -175,7 +175,7 @@ namespace wg
 	
 	//____ lockRegion() ____________________________________________________________
 	
-	void * SoftSurface::lockRegion( WgAccessMode mode, const Rect& region )
+	void * SoftSurface::lockRegion( AccessMode mode, const Rect& region )
 	{
 		m_accessMode = mode;
 		m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;

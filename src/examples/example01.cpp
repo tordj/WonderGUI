@@ -43,7 +43,7 @@ namespace wg
 {
 	
 	void 			translateEvents( MsgRouter_p pMsgRouter );
-	WgMouseButton 	translateMouseButton( uint8_t button );
+	MouseButton 	translateMouseButton( uint8_t button );
 	void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
 	void 			myButtonClickCallback( const Msg_p& pMsg );
 	
@@ -75,7 +75,7 @@ namespace wg
 		// The software renderer needs a SoftSurface as its canvas,
 		// so we wrap the SDL WindowSurface into a SoftSurface.
 	
-		WgPixelType type = WG_PIXEL_UNKNOWN;
+		PixelType type = WG_PIXEL_UNKNOWN;
 	
 		if( pWinSurf->format->BitsPerPixel == 32 )
 			type = WG_PIXEL_RGBA_8;
@@ -232,7 +232,7 @@ namespace wg
 	//
 	// Translate SDL mouse button enums to WonderGUI equivalents.
 	//
-	WgMouseButton translateMouseButton( uint8_t button )
+	MouseButton translateMouseButton( uint8_t button )
 	{
 		switch( button )
 		{

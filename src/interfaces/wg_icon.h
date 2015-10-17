@@ -65,18 +65,18 @@ namespace wg
 		static Icon_p			cast( const Interface_p& pInterface );
 		inline Icon_p			ptr() { return Icon_p(_object(),this); }
 	
-		inline bool			set( const Skin_p& pIconGfx, WgOrigo origo = WG_WEST, Border padding = Border(0),
+		inline bool			set( const Skin_p& pIconGfx, Origo origo = WG_WEST, Border padding = Border(0),
 								 float scale = 0.f, bool bOverlap = false ) { return m_pField->set(pIconGfx,origo,padding,scale,bOverlap); }
 		inline void			clear() { m_pField->clear(); }
 	
 		inline bool			setScale( float scaleFactor ) { return m_pField->setScale(scaleFactor); }
-		inline void			setOrigo( WgOrigo origo ) { m_pField->setOrigo(origo); }
+		inline void			setOrigo( Origo origo ) { m_pField->setOrigo(origo); }
 		inline void			setPadding( Border padding ) { m_pField->setPadding(padding); }
 		inline void			setOverlap( bool bOverlap ) { m_pField->setOverlap(bOverlap); }
 		inline void			setSkin( const Skin_p& pSkin ) { m_pField->setSkin(pSkin); }
 	
 		inline float		scale() const { return m_pField->scale(); }
-		inline WgOrigo		origo() const { return m_pField->origo(); }
+		inline Origo		origo() const { return m_pField->origo(); }
 		inline Border		padding() const { return m_pField->padding(); }
 		inline bool			overlap() const { return m_pField->overlap(); }
 		inline Skin_p	skin() const { return m_pField->skin(); }

@@ -96,7 +96,7 @@ namespace wg
 		
 		
 	
-		Widget_p				findWidget( const Coord& ofs, WgSearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
+		Widget_p				findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
 		inline int				nbDirtyRects() const { return m_dirtyPatches.size(); }
 		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
@@ -155,7 +155,7 @@ namespace wg
 			RootPanel *	m_pRoot;
 		};
 	
-		Widget *			_findWidget( const Coord& ofs, WgSearchMode mode );
+		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
 	
 		Hook*				_firstHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
 		Hook*				_lastHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }

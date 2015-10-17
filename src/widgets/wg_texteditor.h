@@ -68,7 +68,7 @@ namespace wg
 		virtual void			setEditMode(TextEditMode mode);
 		virtual TextEditMode	editMode() const { return m_text.editMode(); }
 	
-		WgPointerStyle		pointerStyle() const;
+		PointerStyle		pointerStyle() const;
 		String			tooltipString() const;
 	
 		int		matchingHeight( int width ) const;
@@ -103,7 +103,7 @@ namespace wg
 		bool				m_bHasFocus;
 		int					m_maxLines;
 		bool				m_bResetCursorOnFocus;
-		WgRouteId			m_tickRouteId;
+		RouteId			m_tickRouteId;
 	};
 	
 	

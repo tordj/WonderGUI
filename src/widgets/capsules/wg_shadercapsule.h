@@ -45,12 +45,12 @@ namespace wg
 		static ShaderCapsule_p	cast( const Object_p& pObject );
 	
 		void		setColor( const Color& color);
-		void		setTintMode( WgTintMode mode );
-		void		setBlendMode( WgBlendMode mode );
+		void		setTintMode( TintMode mode );
+		void		setBlendMode( BlendMode mode );
 	
 		inline Color		color() { return m_tintColor; }
-		inline WgBlendMode	blendMode() { return m_blendMode; }
-		inline WgTintMode	tintMode() { return m_tintMode; }
+		inline BlendMode	blendMode() { return m_blendMode; }
+		inline TintMode	tintMode() { return m_tintMode; }
 	
 	
 	protected:
@@ -60,12 +60,12 @@ namespace wg
 	
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void		_onCloneContent( const Widget * _pOrg );
-		WgBlendMode _getBlendMode() const;
+		BlendMode _getBlendMode() const;
 	
 	private:
 		Color			m_tintColor;
-		WgBlendMode		m_blendMode;
-		WgTintMode		m_tintMode;
+		BlendMode		m_blendMode;
+		TintMode		m_tintMode;
 	
 	};
 	

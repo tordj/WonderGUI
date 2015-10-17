@@ -97,11 +97,11 @@ namespace wg
 		inline void				clearLinkProperties() { m_pField->clearLinkProperties(); }
 		inline Textprop_p	linkProperties() const { return m_pField->linkProperties(); }
 	
-		inline void				setAlignment( WgOrigo alignment ) { m_pField->setAlignment(alignment); }
-		inline WgOrigo			alignment() const { return m_pField->alignment(); }
+		inline void				setAlignment( Origo alignment ) { m_pField->setAlignment(alignment); }
+		inline Origo			alignment() const { return m_pField->alignment(); }
 	
-		inline void				setTintMode( WgTintMode mode ) { m_pField->setTintMode(mode); }
-		inline WgTintMode		tintMode() const { return m_pField->tintMode(); }
+		inline void				setTintMode( TintMode mode ) { m_pField->setTintMode(mode); }
+		inline TintMode		tintMode() const { return m_pField->tintMode(); }
 	
 		inline void				setLineSpacing( float adjustment ) { m_pField->setLineSpacing(adjustment); }
 		inline float			lineSpacing() const { return m_pField->lineSpacing(); }

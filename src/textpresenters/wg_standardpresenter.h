@@ -48,8 +48,8 @@ namespace wg
 		static const char			CLASSNAME[];
 		static StandardPresenter_p	cast( const Object_p& pObject );
 	
-		void			setAlignment( WgOrigo alignment );
-		WgOrigo			alignment() const { return m_alignment; }
+		void			setAlignment( Origo alignment );
+		Origo			alignment() const { return m_alignment; }
 	
 		virtual void	addField( PresentableField * pField );
 		virtual void	removeField( PresentableField * pField );
@@ -115,7 +115,7 @@ namespace wg
 		int				_textOfsY( BlockHeader * pHeader, int fieldHeight ) const;
 		
 		
-		WgOrigo		m_alignment;
+		Origo		m_alignment;
 		
 	};
 	

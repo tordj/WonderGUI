@@ -138,7 +138,7 @@ namespace wg
 	
 	//____ setOrientation() ______________________________________________________
 	
-	void PackPanel::setOrientation( WgOrientation orientation )
+	void PackPanel::setOrientation( Orientation orientation )
 	{
 		bool bHorizontal = orientation==WG_HORIZONTAL?true:false;
 		if( m_bHorizontal != bHorizontal )

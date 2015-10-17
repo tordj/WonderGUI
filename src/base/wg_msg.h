@@ -368,11 +368,11 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseButtonMsg_p	cast( const Object_p& pObject );
 
-		WgMouseButton		button() const { return m_button; }
+		MouseButton		button() const { return m_button; }
 	protected:
-		MouseButtonMsg(WgMouseButton button, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
+		MouseButtonMsg(MouseButton button, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
 
-		WgMouseButton		m_button;
+		MouseButton		m_button;
 	};
 
 
@@ -487,7 +487,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MousePressMsg_p	cast( const Object_p& pObject );
 	protected:
-		MousePressMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MousePressMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseReleaseMsg _____________________________________________________
@@ -504,7 +504,7 @@ namespace wg
 		bool			releaseInside() const;
 
 	protected:
-		MouseReleaseMsg( WgMouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		bool			m_bReleaseInside;
 	};
@@ -607,12 +607,12 @@ namespace wg
 		static const char	CLASSNAME[];
 		static PointerChangeMsg_p	cast( const Object_p& pObject );
 
-		WgPointerStyle	style() const;
+		PointerStyle	style() const;
 			
 	protected:
-		PointerChangeMsg( WgPointerStyle style );
+		PointerChangeMsg( PointerStyle style );
 			
-		WgPointerStyle	m_style;
+		PointerStyle	m_style;
 	};
 
 
@@ -774,11 +774,11 @@ namespace wg
 		static const char	CLASSNAME[];
 		static ItemMousePressMsg_p	cast( const Object_p& pObject );
 
-		WgMouseButton		button() const;
+		MouseButton		button() const;
 	//protected:
-		ItemMousePressMsg( Object * pSource, int itemId, const Object_p& pItemObject, WgMouseButton button );
+		ItemMousePressMsg( Object * pSource, int itemId, const Object_p& pItemObject, MouseButton button );
 
-		WgMouseButton		m_button;
+		MouseButton		m_button;
 	};
 
 
@@ -870,7 +870,7 @@ namespace wg
 		static ModalBlockedPressMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedPressMsg( WgMouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedPressMsg( MouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedReleaseMsg : public MouseButtonMsg
@@ -883,7 +883,7 @@ namespace wg
 		static ModalBlockedReleaseMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedReleaseMsg( WgMouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedReleaseMsg( MouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ Link messages _________________________________________________________
@@ -939,9 +939,9 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseButtonMsg_p	cast( const Object_p& pObject );
 
-		WgMouseButton		button() const;
+		MouseButton		button() const;
 	protected:
-		WgMouseButton		m_button;
+		MouseButton		m_button;
 	};
 
 	class LinkMousePressMsg : public LinkMouseButtonMsg
@@ -952,7 +952,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMousePressMsg_p	cast( const Object_p& pObject );
 
-		LinkMousePressMsg(  const TextLink_p& pLink, WgMouseButton button );
+		LinkMousePressMsg(  const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseRepeatMsg : public LinkMouseButtonMsg
@@ -963,7 +963,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseRepeatMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseRepeatMsg( const TextLink_p& pLink, WgMouseButton button );
+		LinkMouseRepeatMsg( const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseReleaseMsg : public LinkMouseButtonMsg
@@ -974,7 +974,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseReleaseMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseReleaseMsg( const TextLink_p& pLink, WgMouseButton button );
+		LinkMouseReleaseMsg( const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseClickMsg : public LinkMouseButtonMsg
@@ -985,7 +985,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseClickMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseClickMsg(  const TextLink_p& pLink, WgMouseButton button );
+		LinkMouseClickMsg(  const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseDoubleClickMsg : public LinkMouseButtonMsg
@@ -996,7 +996,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseDoubleClickMsg(  const TextLink_p& pLink, WgMouseButton button );
+		LinkMouseDoubleClickMsg(  const TextLink_p& pLink, MouseButton button );
 	};
 
 	//____ Internally posted messages ____________________________________________
@@ -1016,7 +1016,7 @@ namespace wg
 		Coord			prevPos() const;
 		Coord			currPos() const;
 	protected:
-		MouseDragMsg( WgMouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		Coord			m_startPos;
 		Coord			m_prevPos;
@@ -1032,7 +1032,7 @@ namespace wg
 		static MouseRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseRepeatMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseRepeatMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseClickMsg : public MouseButtonMsg
@@ -1045,7 +1045,7 @@ namespace wg
 		static MouseClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
@@ -1058,7 +1058,7 @@ namespace wg
 		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseDoubleClickMsg( WgMouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDoubleClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class KeyRepeatMsg : public KeyMsg

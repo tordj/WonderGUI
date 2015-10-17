@@ -40,7 +40,7 @@ namespace wg
 	
 	//____ pixelTypeToFormat() _____________________________________________________
 	
-	bool WgUtil::pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
+	bool WgUtil::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
 	{
 		switch( type )
 		{
@@ -248,7 +248,7 @@ namespace wg
 	
 	//____ origoToOfs() ________________________________________________________
 	
-	Coord WgUtil::origoToOfs( WgOrigo origo, Size base )
+	Coord WgUtil::origoToOfs( Origo origo, Size base )
 	{
 		switch( origo )
 		{
@@ -284,7 +284,7 @@ namespace wg
 	
 	//____ origoToRect() ________________________________________________________
 	
-	Rect WgUtil::origoToRect( WgOrigo origo, Size base, Size rect )
+	Rect WgUtil::origoToRect( Origo origo, Size base, Size rect )
 	{
 		switch( origo )
 		{
