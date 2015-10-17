@@ -83,7 +83,7 @@ namespace wg
 		LegacyTextField	m_valuesText;
 		int *		m_pTickBuffer;
 		int			m_tickBufferOfs;
-		WgRouteId	m_tickRouteId;
+		RouteId	m_tickRouteId;
 	};
 	
 	

@@ -212,7 +212,7 @@ namespace wg
 		Size content = ExtendedSkin::minSize();
 		Size frame = m_frame.size();
 	
-		return Size( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
+		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
 	}
 	
 	//____ preferredSize() ________________________________________________________
@@ -222,7 +222,7 @@ namespace wg
 		Size content = ExtendedSkin::preferredSize();
 		Size frame = m_frame.size();
 	
-		return Size( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
+		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
 	}
 	
 	//____ sizeForContent() _______________________________________________________
@@ -232,7 +232,7 @@ namespace wg
 		Size content = ExtendedSkin::sizeForContent(contentSize);
 		Size frame = m_frame.size();
 	
-		return Size( WgMax(content.w,frame.w), WgMax(content.h,frame.h) );
+		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
 	}
 	
 	//____ markTest() _____________________________________________________________

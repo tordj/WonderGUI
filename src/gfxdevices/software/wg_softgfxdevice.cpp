@@ -127,7 +127,7 @@ namespace wg
 	
 		// Optimize calls
 	
-		WgBlendMode blendMode = m_blendMode;
+		BlendMode blendMode = m_blendMode;
 		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	
@@ -266,7 +266,7 @@ namespace wg
 	
 		// Optimize calls
 	
-		WgBlendMode blendMode = m_blendMode;
+		BlendMode blendMode = m_blendMode;
 		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	
@@ -460,7 +460,7 @@ namespace wg
 	
 	//____ _drawHorrVertLine() ________________________________________________
 	
-	void SoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, WgOrientation orientation  )
+	void SoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, Orientation orientation  )
 	{
 		if( !m_pCanvas || !m_pCanvas->m_pData || _length <= 0  )
 			return;
@@ -474,7 +474,7 @@ namespace wg
 	
 		// Optimize calls
 	
-		WgBlendMode blendMode = m_blendMode;
+		BlendMode blendMode = m_blendMode;
 		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	
@@ -578,7 +578,7 @@ namespace wg
 	
 	//____ _drawHorrVertLineAA() ________________________________________________
 	
-	void SoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation )
+	void SoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation )
 	{
 		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
@@ -688,7 +688,7 @@ namespace wg
 	
 	//____ _plotAA() ________________________________________________
 	
-	void SoftGfxDevice::_plotAA( int _x, int _y, const Color& _col, WgBlendMode blendMode, int _aa )
+	void SoftGfxDevice::_plotAA( int _x, int _y, const Color& _col, BlendMode blendMode, int _aa )
 	{
 		//TODO: Translate to use m_pDivTab
 	
@@ -1181,7 +1181,7 @@ namespace wg
 		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
-		WgBlendMode		blendMode = m_blendMode;
+		BlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	
@@ -1350,7 +1350,7 @@ namespace wg
 		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
-		WgBlendMode		blendMode = m_blendMode;
+		BlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	
@@ -1650,7 +1650,7 @@ namespace wg
 		int dw = (int) _dw;
 		int dh = (int) _dh;
 	
-		WgBlendMode		blendMode = m_blendMode;
+		BlendMode		blendMode = m_blendMode;
 		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
 			blendMode = WG_BLENDMODE_OPAQUE;
 	

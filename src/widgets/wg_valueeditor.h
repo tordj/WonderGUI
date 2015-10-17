@@ -113,7 +113,7 @@ namespace wg
 		bool				m_bSelectAllOnRelease;
 		int					m_maxInputChars;
 		Coord				m_viewOfs;
-		WgRouteId			m_tickRouteId;
+		RouteId			m_tickRouteId;
 	};
 	
 	

@@ -106,20 +106,20 @@ namespace wg
 	
 	//____ addRoute() __________________________________________________________
 	
-	WgRouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
+	RouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
 	{
 		Route * p = new Route( pReceiver.rawPtr() );
 		return _addRoute( pSource, p );
 	}
 	
 	
-	WgRouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
+	RouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
 	{
 		Route * p = new Route( pReceiver.rawPtr() );
 		return _addRoute( msgType, p );	
 	}
 	
-	WgRouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
+	RouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
 	{
 		Route * p = new Route( pReceiver );
 		return _addRoute( msgType, p );	
@@ -204,7 +204,7 @@ namespace wg
 	
 	//____ deleteRoute() ______________________________________________________
 	
-	bool MsgRouter::deleteRoute( WgRouteId id )
+	bool MsgRouter::deleteRoute( RouteId id )
 	{
 		for( auto it = m_typeRoutes.begin() ; it != m_typeRoutes.end() ; ++it )
 		{
@@ -325,7 +325,7 @@ namespace wg
 	
 	//____ _addRoute() _________________________________________________________
 	
-	WgRouteId MsgRouter::_addRoute( const Object_p& pSource, Route * pRoute )
+	RouteId MsgRouter::_addRoute( const Object_p& pSource, Route * pRoute )
 	{
 		if( !pSource )
 			return 0;
@@ -338,7 +338,7 @@ namespace wg
 	
 	//____ _addRoute() _________________________________________________________
 	
-	WgRouteId MsgRouter::_addRoute( MsgType type, Route * pRoute )
+	RouteId MsgRouter::_addRoute( MsgType type, Route * pRoute )
 	{
 		if( type == WG_MSG_DUMMY || type >= WG_MSG_MAX )
 			return 0;

@@ -58,8 +58,8 @@ namespace wg
 		void			setSizePolicy( SizePolicy policy );
 		SizePolicy		getSizePolicy() const { return m_sizePolicy; }
 			
-		void			setOrigo( WgOrigo origo );
-		WgOrigo	origo() const { return m_origo; }
+		void			setOrigo( Origo origo );
+		Origo	origo() const { return m_origo; }
 	
 		StackHook_p	prev() const { return _prev(); }
 		StackHook_p 	next() const { return _next(); }
@@ -77,7 +77,7 @@ namespace wg
 	
 		StackPanel *	m_pParent;
 		
-		WgOrigo	m_origo;
+		Origo	m_origo;
 		SizePolicy		m_sizePolicy;
 		
 	};

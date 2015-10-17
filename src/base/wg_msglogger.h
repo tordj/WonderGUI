@@ -82,7 +82,7 @@ namespace wg
 		std::string _formatModkeys( const InputMsg_p& _pMsg ) const;
 		std::string _formatPointerPos( const InputMsg_p& _pMsg ) const;
 		std::string _formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const;
-		std::string _formatMouseButton( WgMouseButton button ) const;
+		std::string _formatMouseButton( MouseButton button ) const;
 	
 		bool			m_msgFilter[WG_MSG_MAX];
 	

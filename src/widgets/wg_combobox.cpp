@@ -717,7 +717,7 @@ namespace wg
 				maxOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol-1 );
 	
 				if( lineWidth < maxOfs + geoWidth )
-					maxOfs = WgMax( lineWidth - geoWidth, 0 );
+					maxOfs = wg::max( lineWidth - geoWidth, 0 );
 			}
 			else
 				maxOfs = cursOfs;

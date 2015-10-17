@@ -66,7 +66,7 @@ namespace wg
 	
 	//____ setDirection() ________________________________________________________
 	
-	void VolumeMeter::setDirection( WgDirection direction )
+	void VolumeMeter::setDirection( Direction direction )
 	{
 		if( direction != m_direction )
 		{

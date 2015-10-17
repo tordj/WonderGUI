@@ -92,7 +92,7 @@ namespace wg
 	
 		GfxAnim_p	m_pAnim;
 		GfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
-		WgRouteId		m_tickRouteId;
+		RouteId		m_tickRouteId;
 	
 		bool			m_bPlaying;
 		double			m_playPos;

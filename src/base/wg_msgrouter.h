@@ -70,13 +70,13 @@ namespace wg
 		bool		broadcastTo( const Receiver_p& pReceiver );
 		bool		endBroadcast( const Receiver_p& pReceiver );
 		
-		WgRouteId	addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
-		WgRouteId	addRoute( MsgType type, const Receiver_p& pReceiver );
+		RouteId	addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
+		RouteId	addRoute( MsgType type, const Receiver_p& pReceiver );
 	
-		WgRouteId	addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
+		RouteId	addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
 	
-		bool		deleteRoute( WgRouteId handle );
+		bool		deleteRoute( RouteId handle );
 		int			deleteRoutesTo( const Receiver_p& pReceiver );
 		int			deleteRoutesFrom( const Object_p& pSource );
 		int			deleteRoutesFrom( MsgType type );
@@ -99,8 +99,8 @@ namespace wg
 		void		_dispatchToSourceRoutes( const Msg_p& pMsg );
 		void		_dispatchToTypeRoutes( const Msg_p& pMsg );
 			
-		WgRouteId	_addRoute( const Object_p& pSource, Route * pRoute );
-		WgRouteId	_addRoute( MsgType type, Route * pRoute );
+		RouteId	_addRoute( const Object_p& pSource, Route * pRoute );
+		RouteId	_addRoute( MsgType type, Route * pRoute );
 	
 		//
 			
@@ -118,7 +118,7 @@ namespace wg
 			Receiver *	receiver() const;
 	
 		protected:
-			WgRouteId			m_handle;
+			RouteId			m_handle;
 			Receiver_wp			m_pReceiver;
 		};
 	
@@ -126,7 +126,7 @@ namespace wg
 		bool						m_bIsProcessing;		// Set when we are inside dispatch().
 		std::deque<Msg_p>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
 	
-		WgRouteId				m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
+		RouteId				m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
 		Chain<Route>			m_broadcasts;
 	
 		std::map<Object_wp,Chain<Route> >	m_sourceRoutes;

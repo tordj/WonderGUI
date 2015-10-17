@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool IconField::set( const Skin_p& pSkin, WgOrigo origo, Border padding, float scale, bool bOverlap )
+	bool IconField::set( const Skin_p& pSkin, Origo origo, Border padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_origo 	= origo;
@@ -81,7 +81,7 @@ namespace wg
 	
 	//____ setOrigo() ___________________________________________________
 	
-	void IconField::setOrigo( WgOrigo origo )
+	void IconField::setOrigo( Origo origo )
 	{
 		if( origo != m_origo )
 		{

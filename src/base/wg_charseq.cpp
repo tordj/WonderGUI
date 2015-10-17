@@ -829,7 +829,7 @@ namespace wg
 	//____ CharSeq8::Constructors _________________________________________
 	
 	
-	CharSeq8::CharSeq8( const char * pChar, WgCodePage codePage )
+	CharSeq8::CharSeq8( const char * pChar, CodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= (void *) pChar;
@@ -838,7 +838,7 @@ namespace wg
 	}
 	
 	
-	CharSeq8::CharSeq8( const char * pChar, int len, WgCodePage codePage )
+	CharSeq8::CharSeq8( const char * pChar, int len, CodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= (void *) pChar;
@@ -846,7 +846,7 @@ namespace wg
 		m_codepage	= codePage;
 	}
 	
-	CharSeq8::CharSeq8( const std::string& str, WgCodePage codePage )
+	CharSeq8::CharSeq8( const std::string& str, CodePage codePage )
 	{
 		m_type 		= MAP8;
 	    m_pChar		= str.c_str();
@@ -854,7 +854,7 @@ namespace wg
 		m_codepage	= codePage;
 	}
 	
-	CharSeq8::CharSeq8( const std::string& str, int ofs, int len, WgCodePage codePage )
+	CharSeq8::CharSeq8( const std::string& str, int ofs, int len, CodePage codePage )
 	{
 		const char * p = str.c_str();
 		int strlen = str.length();

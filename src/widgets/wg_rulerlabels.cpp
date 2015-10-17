@@ -65,7 +65,7 @@ namespace wg
 	
 	//____ setDirection() __________________________________________________________
 	
-	void RulerLabels::setDirection( WgDirection direction )
+	void RulerLabels::setDirection( Direction direction )
 	{
 		m_direction = direction;
 		_requestResize();

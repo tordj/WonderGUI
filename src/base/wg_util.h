@@ -26,19 +26,15 @@ namespace wg
 	{
 		bool		markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold );
 	
-		bool		pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
+		bool		pixelTypeToFormat( PixelType type, PixelFormat& wFormat );
 	
-		Coord 	origoToOfs( WgOrigo origo, Size base );
-		Rect		origoToRect( WgOrigo origo, Size base, Size rect );
+		Coord 	origoToOfs( Origo origo, Size base );
+		Rect		origoToRect( Origo origo, Size base, Size rect );
 	
 		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 	
-	    inline WgOrientation dirToOrient( WgDirection dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
+	    inline Orientation dirToOrient( Direction dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
 	    
-	
-		template <class T> inline T max (T a, T b) {return (a>b?a:b); }
-		template <class T> inline T min (T a, T b) {return (a<b?a:b); }
-	
 	
 		// A simple checksum algorithm that just performs a long division
 		// with a standard CRC polynomial. Quicker and less complex than a standard
@@ -89,7 +85,7 @@ namespace wg
 		inline std::string toString(const T0& a, const T1& b, const T2& c, const T3& d);
 	
 		template<>
-		inline std::string toString(WgOrigo value)
+		inline std::string toString(Origo value)
 		{
 			switch( value )
 			{
@@ -209,7 +205,7 @@ namespace wg
 		inline int fromString(const std::string& str, T0& a, T1& b, T2& c, T3& d);
 	
 		template<>
-		inline bool fromString(const std::string& str, WgOrigo& a)
+		inline bool fromString(const std::string& str, Origo& a)
 		{
 			if(str.empty() || str == "northwest") a = WG_NORTHWEST;
 			else if(str == "north") a = WG_NORTH;

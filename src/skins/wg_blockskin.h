@@ -111,7 +111,7 @@ namespace wg
 		BlockSkin();
 		void	_setBitFlag( int& bitmask, int bit, bool bSet );
 		void	_renderNoClip( GfxDevice * pDevice, const StateData * pState, const Rect& _canvas ) const;
-		void	_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const Rect& sectionArea );
+		void	_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea );
 	
 		static const int ALL_SECTIONS = 0x1FF;
 	

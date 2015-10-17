@@ -110,12 +110,12 @@ namespace wg
 		bool					removeWidget( const Widget_p& pWidget );
 		bool					clear();
 	
-		void					setOrientation( WgOrientation orientation );
-		WgOrientation			orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+		void					setOrientation( Orientation orientation );
+		Orientation			orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 	
 		void					sortWidgets();
-		void					setSortOrder( WgSortOrder order );
-		WgSortOrder				getSortOrder() const { return m_sortOrder; }
+		void					setSortOrder( SortOrder order );
+		SortOrder				getSortOrder() const { return m_sortOrder; }
 	
 		void					setSortFunction( WidgetSortFunc pSortFunc );
 		WidgetSortFunc		sortFunction() const { return m_pSortFunc; }
@@ -137,7 +137,7 @@ namespace wg
 		Widget*		_newOfMyType() const { return new PackList(); };
 	
 		void			_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void			_onCloneContent( const Widget * _pOrg );
 		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
@@ -158,7 +158,7 @@ namespace wg
 		void			_onWidgetAppeared( ListHook * pInserted );
 		void			_onWidgetDisappeared( ListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 	
-		Widget * 		_findWidget( const Coord& ofs, WgSearchMode mode );
+		Widget * 		_findWidget( const Coord& ofs, SearchMode mode );
 		ListHook *	_findEntry( const Coord& ofs );
 		int				_getInsertionPoint( const Widget * pWidget ) const;
 		void			_getChildGeo( Rect& geo, const PackListHook * pHook ) const;
@@ -196,7 +196,7 @@ namespace wg
 	
 		bool				m_bHorizontal;
 	
-		WgSortOrder			m_sortOrder;
+		SortOrder			m_sortOrder;
 		WidgetSortFunc	m_pSortFunc;
 	
 		HookArray<PackListHook>	m_hooks;

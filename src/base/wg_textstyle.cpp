@@ -225,7 +225,7 @@ namespace wg
 	
 	void TextStyle::setSize( int size )
 	{
-		if( size == WG_FONTSIZE_INHERIT )
+		if( size == FONTSIZE_INHERIT )
 			clearSize();
 		else
 		{
@@ -239,7 +239,7 @@ namespace wg
 	
 	void TextStyle::setSize( int size, State state )
 	{
-		if( size == WG_FONTSIZE_INHERIT )
+		if( size == FONTSIZE_INHERIT )
 			clearSize(state);
 		else
 		{
@@ -369,7 +369,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.size[i] = WG_FONTSIZE_INHERIT;
+				m_specAttr.size[i] = FONTSIZE_INHERIT;
 				m_combAttr.size[i] = m_pParent->m_combAttr.size[i];
 			}
 		}
@@ -377,8 +377,8 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.size[i] = WG_FONTSIZE_INHERIT;
-				m_combAttr.size[i] = WG_FONTSIZE_INHERIT;
+				m_specAttr.size[i] = FONTSIZE_INHERIT;
+				m_combAttr.size[i] = FONTSIZE_INHERIT;
 			}
 		}
 	}
@@ -387,8 +387,8 @@ namespace wg
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
-		m_specAttr.size[idx] = WG_FONTSIZE_INHERIT;
-		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : WG_FONTSIZE_INHERIT;
+		m_specAttr.size[idx] = FONTSIZE_INHERIT;
+		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : FONTSIZE_INHERIT;
 	}
 	
 	//____ clearDecoration() ____________________________________________________________
@@ -434,7 +434,7 @@ namespace wg
 		pDest->bgColor		= m_combAttr.bgColor[idx];
 		pDest->decoration	= m_combAttr.decoration[idx];
 				
-		if( pDest->size == WG_FONTSIZE_INHERIT )
+		if( pDest->size == FONTSIZE_INHERIT )
 			pDest->size = 12;								// Default to size 12.
 	}
 	
@@ -448,7 +448,7 @@ namespace wg
 			pDest->pFont = m_combAttr.pFont;
 		if( m_combAttr.pLink )
 			pDest->pLink = m_combAttr.pLink;
-		if( m_combAttr.size[idx] != WG_FONTSIZE_INHERIT )
+		if( m_combAttr.size[idx] != FONTSIZE_INHERIT )
 			pDest->size	= m_combAttr.size[idx];
 		if( m_combAttr.color[idx] != Color::none )
 			pDest->color = m_combAttr.color[idx];
@@ -473,7 +473,7 @@ namespace wg
 	
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				newComb.size[i] = m_specAttr.size[i] != WG_FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
+				newComb.size[i] = m_specAttr.size[i] != FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
 				newComb.color[i] = m_specAttr.color[i] != Color::none ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
 				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::none ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
 				newComb.decoration[i] = m_specAttr.decoration[i] != WG_DECORATION_INHERIT ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
@@ -503,7 +503,7 @@ namespace wg
 	
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
-			pSet->size[i] 		= WG_FONTSIZE_INHERIT;
+			pSet->size[i] 		= FONTSIZE_INHERIT;
 			pSet->color[i] 		= Color::none;
 			pSet->bgColor[i] 	= Color::none;
 			pSet->decoration[i] = WG_DECORATION_INHERIT;

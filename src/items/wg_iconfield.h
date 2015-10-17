@@ -60,20 +60,20 @@ namespace wg
 		virtual ~IconField() {};
 	
 	
-		bool			set( const Skin_p& pIconGfx, WgOrigo origo = WG_WEST, Border padding = Border(0), 
+		bool			set( const Skin_p& pIconGfx, Origo origo = WG_WEST, Border padding = Border(0), 
 									float _scale = 0.f, bool _bOverlap = false );
 		void			clear();
 	
 		inline bool		isEmpty() const { return !m_pSkin; }
 	
 		bool			setScale( float scaleFactor );
-		void			setOrigo( WgOrigo origo );
+		void			setOrigo( Origo origo );
 		void			setPadding( Border borders );
 		void			setOverlap( bool bOverlap );
 		void			setSkin( const Skin_p& pSkin );
 	
 		float			scale() const { return m_scale; }
-		WgOrigo			origo() const { return m_origo; }
+		Origo			origo() const { return m_origo; }
 		Border		padding() const { return m_padding; }
 		bool			overlap() const { return m_bOverlap; }
 		Skin_p		skin() const { return  m_pSkin; }
@@ -87,7 +87,7 @@ namespace wg
 	
 	protected:
 	
-		WgOrigo			m_origo;
+		Origo			m_origo;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
 		Border		m_padding;

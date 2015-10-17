@@ -92,8 +92,8 @@ namespace wg
 		inline PackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<PackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
 		inline PackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<PackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 	    
-		void			setOrientation( WgOrientation orientaiton );
-		WgOrientation	orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+		void			setOrientation( Orientation orientaiton );
+		Orientation	orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
 		
 		PackHook_p	firstHook() const { return static_cast<PackHook*>(_firstHook()); }
 		PackHook_p	lastHook() const { return static_cast<PackHook*>(_lastHook()); }

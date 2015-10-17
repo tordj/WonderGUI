@@ -99,9 +99,9 @@ namespace wg
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 	
-		void	_plotAA( int _x, int _y, const Color& _col, WgBlendMode blendMode, int _aa );
-		void	_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, WgBlendMode blendMode, int _aa, WgOrientation orientation );
-		void	_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, WgOrientation orientation );
+		void	_plotAA( int _x, int _y, const Color& _col, BlendMode blendMode, int _aa );
+		void	_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation );
+		void	_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, Orientation orientation );
 	
 		void 	_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );
 		void 	_tintBlit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );

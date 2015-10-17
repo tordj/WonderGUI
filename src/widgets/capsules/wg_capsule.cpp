@@ -189,7 +189,7 @@ namespace wg
 	
 	//____ _onMaskPatches() ________________________________________________________
 	
-	void Capsule::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void Capsule::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( m_hook._widget() )
 			m_hook._widget()->_onMaskPatches( patches, geo, clip, blendMode );

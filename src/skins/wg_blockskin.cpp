@@ -467,9 +467,9 @@ namespace wg
 	
 	//_____ _scanStateBlockSectionArea() __________________________________________
 	
-	void BlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const Rect& sectionArea )
+	void BlockSkin::_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea )
 	{
-		const WgPixelFormat * pFormat = m_pSurface->PixelFormat();
+		const PixelFormat * pFormat = m_pSurface->pixelFormat();
 		int pitch = m_pSurface->pitch();
 	
 		if( pFormat->type != WG_PIXEL_RGBA_8 )
@@ -731,7 +731,7 @@ namespace wg
 	{
 		Size content = ExtendedSkin::minSize();
 		Size frame = m_frame.size();
-		return Size( WgMax(content.w, frame.w), WgMax(content.h, frame.h) );
+		return Size( wg::max(content.w, frame.w), wg::max(content.h, frame.h) );
 	}
 	
 	//____ preferredSize() ________________________________________________________
@@ -739,7 +739,7 @@ namespace wg
 	Size BlockSkin::preferredSize() const
 	{
 		Size sz = ExtendedSkin::preferredSize();
-		return Size( WgMax(m_dimensions.w,sz.w),WgMax(m_dimensions.h,sz.h) );
+		return Size( wg::max(m_dimensions.w,sz.w),wg::max(m_dimensions.h,sz.h) );
 	}
 	
 	//____ sizeForContent() _______________________________________________________
@@ -749,7 +749,7 @@ namespace wg
 		Size sz = ExtendedSkin::sizeForContent(contentSize);
 		Size min = m_frame.size();
 	
-		return Size( WgMax(sz.w,min.w), WgMax(sz.h,min.h) );
+		return Size( wg::max(sz.w,min.w), wg::max(sz.h,min.h) );
 	}
 	
 	//____ markTest() _____________________________________________________________

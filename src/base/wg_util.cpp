@@ -40,7 +40,7 @@ namespace wg
 	
 	//____ pixelTypeToFormat() _____________________________________________________
 	
-	bool WgUtil::pixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
+	bool WgUtil::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
 	{
 		switch( type )
 		{
@@ -53,7 +53,7 @@ namespace wg
 				wFormat.R_bits = 8;
 				wFormat.A_bits = 0;
 
-#if WG_IS_BIG_ENDIAN
+#if IS_BIG_ENDIAN
 				wFormat.R_mask = 0xFF0000;
 				wFormat.G_mask = 0xFF00;
 				wFormat.B_mask = 0xFF;
@@ -85,7 +85,7 @@ namespace wg
 				wFormat.R_bits = 8;
 				wFormat.A_bits = 8;
 
-#if WG_IS_BIG_ENDIAN
+#if IS_BIG_ENDIAN
 				wFormat.R_mask = 0xFF000000;
 				wFormat.G_mask = 0xFF0000;
 				wFormat.B_mask = 0xFF00;
@@ -248,7 +248,7 @@ namespace wg
 	
 	//____ origoToOfs() ________________________________________________________
 	
-	Coord WgUtil::origoToOfs( WgOrigo origo, Size base )
+	Coord WgUtil::origoToOfs( Origo origo, Size base )
 	{
 		switch( origo )
 		{
@@ -284,7 +284,7 @@ namespace wg
 	
 	//____ origoToRect() ________________________________________________________
 	
-	Rect WgUtil::origoToRect( WgOrigo origo, Size base, Size rect )
+	Rect WgUtil::origoToRect( Origo origo, Size base, Size rect )
 	{
 		switch( origo )
 		{

@@ -170,7 +170,7 @@ namespace wg
 	
 	//____ setSelectMode() ________________________________________________________
 	
-	bool List::setSelectMode( WgSelectMode mode )
+	bool List::setSelectMode( SelectMode mode )
 	{
 		if( mode != m_selectMode )
 		{
@@ -270,8 +270,8 @@ namespace wg
 									// Select range from focused to clicked entry.
 	
 									ListHook * pFocused = m_pFocusedEntry.rawPtr();
-									ListHook * pFirstSel = WgMin( pEntry, pFocused );
-									ListHook * pLastSel = WgMax( pEntry, pFocused );
+									ListHook * pFirstSel = wg::min( pEntry, pFocused );
+									ListHook * pLastSel = wg::max( pEntry, pFocused );
 									_selectRange( pFirstSel, pLastSel, true, true );
 	
 									// Unselect the rest if not CTRL-click.

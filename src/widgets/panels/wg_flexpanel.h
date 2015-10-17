@@ -47,7 +47,7 @@ namespace wg
 	public:
 		inline FlexOrigo() : x(0.f), y(0.f) {}
 		inline FlexOrigo( float _x, float _y ) : x(_x), y(_y) {}
-		inline FlexOrigo( WgOrigo origo ) : x(s_origoTab[origo][0]), y(s_origoTab[origo][1]) {}
+		inline FlexOrigo( Origo origo ) : x(s_origoTab[origo][0]), y(s_origoTab[origo][1]) {}
 	
 		inline Coord position( Size sz ) { return Coord((int)(x*(sz.w+0.5f)),(int)(y*(sz.h+0.5f))); }
 	

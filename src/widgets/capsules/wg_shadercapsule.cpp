@@ -81,7 +81,7 @@ namespace wg
 	
 	//____ setTintMode() ___________________________________________________________
 	
-	void ShaderCapsule::setTintMode( WgTintMode mode )
+	void ShaderCapsule::setTintMode( TintMode mode )
 	{
 		if( mode != m_tintMode )
 		{
@@ -92,7 +92,7 @@ namespace wg
 	
 	//____ setBlendMode() __________________________________________________________
 	
-	void ShaderCapsule::setBlendMode( WgBlendMode mode )
+	void ShaderCapsule::setBlendMode( BlendMode mode )
 	{
 		if( mode != m_blendMode )
 		{
@@ -104,7 +104,7 @@ namespace wg
 	
 	//____ _getBlendMode() _________________________________________________________
 	
-	WgBlendMode ShaderCapsule::_getBlendMode() const
+	BlendMode ShaderCapsule::_getBlendMode() const
 	{
 		return m_blendMode;
 	}
@@ -115,7 +115,7 @@ namespace wg
 	{
 		// Set our tint color and blend mode.
 	
-		WgBlendMode		oldBM;
+		BlendMode		oldBM;
 		Color			oldTC;
 	
 	

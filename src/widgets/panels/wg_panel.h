@@ -104,8 +104,8 @@ namespace wg
 		void		setTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
 		bool		isTooltipGroup() const { return m_bTooltipGroup; }
 	
-		void		setMaskOp( WgMaskOp operation );
-		WgMaskOp	maskOp() const { return m_maskOp; }
+		void		setMaskOp( MaskOp operation );
+		MaskOp	maskOp() const { return m_maskOp; }
 	
 		inline PanelHook_p	firstHook() const { return static_cast<PanelHook*>(_firstHook()); }
 		inline PanelHook_p	lastHook() const { return static_cast<PanelHook*>(_lastHook()); }
@@ -118,12 +118,12 @@ namespace wg
 		virtual ~Panel() {};
 	
 		bool			_isPanel() const;
-		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		virtual void	_onCloneContent( const Widget * _pOrg );
 	
 	
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
-		WgMaskOp	m_maskOp;			// Specifies how container masks background.
+		MaskOp	m_maskOp;			// Specifies how container masks background.
 	};
 	
 	

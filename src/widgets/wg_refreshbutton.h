@@ -103,7 +103,7 @@ namespace wg
 		State			_getRenderState();
 	
 	
-		WgRouteId		m_tickRouteId;
+		RouteId		m_tickRouteId;
 		GfxAnim_p	m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.

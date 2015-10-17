@@ -1483,7 +1483,7 @@ namespace wg
 	
 				// Check if we can move the breakpoint up to this character.
 	
-				WgBreakRules breakStatus = TextTool::isBreakAllowed( p->glyph, attr.breakLevel );
+				BreakRules breakStatus = TextTool::isBreakAllowed( p->glyph, attr.breakLevel );
 				switch( breakStatus )
 				{
 				case WG_BREAK_BEFORE:
@@ -1742,7 +1742,7 @@ namespace wg
 			int lenOvr = p->advance(Caret::OVR);
 			int lenEOL = p->bearingX(Caret::EOL) + p->width(Caret::EOL);
 	
-			return WgMax( lenEOL, WgMax(lenInsert,lenOvr) );
+			return wg::max( lenEOL, wg::max(lenInsert,lenOvr) );
 		}
 		else
 			return 0;
@@ -2239,7 +2239,7 @@ namespace wg
 					maxOfs = m_pText->getSoftLineWidthPart( 0, 0, cursCol-1 );
 	
 				if( lineWidth < maxOfs + geoWidth )
-					maxOfs = WgMax( lineWidth - geoWidth, 0 );
+					maxOfs = wg::max( lineWidth - geoWidth, 0 );
 			}
 			else
 				maxOfs = cursOfs;

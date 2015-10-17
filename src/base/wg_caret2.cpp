@@ -100,7 +100,7 @@ namespace wg
 	
 	int Caret2::eolWidth( int size, int advance, int ascend, int descend ) const
 	{
-		return WgMax( 1, size / 8);
+		return wg::max( 1, size / 8);
 	}
 	
 	//____ tick() __________________________________________________________________
@@ -124,11 +124,11 @@ namespace wg
 		switch( m_mode )
 		{
 			case WG_CARET_INSERT:
-				return Rect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+				return Rect( pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
 			case WG_CARET_OVERWRITE:
 				return Rect( pos.x, pos.y - m_glyphAscend, m_glyphAdvance, m_glyphAscend + m_glyphDescend );
 			case WG_CARET_EOL:
-				return Rect( pos.x, pos.y - m_glyphAscend, WgMax(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+				return Rect( pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
 		}
 	}
 	
@@ -139,7 +139,7 @@ namespace wg
 		if( m_ticks < m_cycleLength / 2 )
 		{
 			Rect r = dirtyRect(pos);
-			WgBlendMode oldMode = pDevice->getBlendMode();
+			BlendMode oldMode = pDevice->getBlendMode();
 			pDevice->setBlendMode(WG_BLENDMODE_INVERT);
 			pDevice->fill( Rect(r,clip), Color::black );
 			pDevice->setBlendMode(oldMode);

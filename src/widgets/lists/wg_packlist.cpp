@@ -269,7 +269,7 @@ namespace wg
 	
 	//____ setOrientation() _______________________________________________________
 	
-	void PackList::setOrientation( WgOrientation orientation )
+	void PackList::setOrientation( Orientation orientation )
 	{
 		bool bHorizontal = (orientation == WG_HORIZONTAL);
 	
@@ -289,7 +289,7 @@ namespace wg
 	
 	//____ setSortOrder() _________________________________________________________
 	
-	void PackList::setSortOrder( WgSortOrder order )
+	void PackList::setSortOrder( SortOrder order )
 	{
 		if( order != m_sortOrder )
 		{
@@ -445,24 +445,24 @@ namespace wg
 		else
 		{
 			if( m_bHorizontal )
-				container.add( Rect( Rect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+				container.add( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				container.add( Rect( Rect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+				container.add( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
 		}
 	}
 	
 	//____ _onMaskPatches() _______________________________________________________
 	
-	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
 			patches.sub( Rect(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == WG_BLENDMODE_BLEND )
 		{
 			if( m_bHorizontal )
-				patches.sub( Rect( Rect( geo.x, geo.y, WgMin(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( Rect( Rect( geo.x, geo.y, geo.w, WgMin(geo.h,m_contentLength) ), clip ) );
+				patches.sub( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
@@ -932,16 +932,16 @@ namespace wg
 		{
 			if( oldFirst != newFirst )
 			{
-				int beg = WgMin(oldFirst,newFirst);
-				int end = WgMax(oldFirst,newFirst)-1;
+				int beg = wg::min(oldFirst,newFirst);
+				int end = wg::max(oldFirst,newFirst)-1;
 	
 				_flipRange( m_hooks.hook(beg), m_hooks.hook(end), true );
 			}
 	
 			if( oldLast != newLast )
 			{
-				int beg = WgMin(oldLast,newLast)+1;
-				int end = WgMax(oldLast,newLast);
+				int beg = wg::min(oldLast,newLast)+1;
+				int end = wg::max(oldLast,newLast);
 	
 				_flipRange( m_hooks.hook(beg), m_hooks.hook(end), true );
 			}
@@ -1188,7 +1188,7 @@ namespace wg
 	
 	//____ _findWidget() __________________________________________________________
 	
-	Widget * PackList::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget * PackList::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		Widget * pResult = 0;
 		Rect list = _listArea();
@@ -1579,15 +1579,15 @@ namespace wg
 		//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
 		//TODO: Assumes text not wrapping.
 	
-		wantedSize.h = WgMax(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
+		wantedSize.h = wg::max(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
 		wantedSize.w = wantedTextSize.w;
 		if( m_header.icon.overlap() )
-			wantedSize.w = WgMax(wantedSize.w,wantedIconSize.w);
+			wantedSize.w = wg::max(wantedSize.w,wantedIconSize.w);
 		else
 			wantedSize.w += wantedIconSize.w;
 	
 		if( m_header.arrow.overlap() )
-			wantedSize.w = WgMax(wantedSize.w,wantedArrowSize.w);
+			wantedSize.w = wg::max(wantedSize.w,wantedArrowSize.w);
 		else
 			wantedSize.w += wantedArrowSize.w;
 	

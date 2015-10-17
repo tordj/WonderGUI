@@ -72,7 +72,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	bool ModalHook::setGeo( const Rect& geometry, WgOrigo origo )
+	bool ModalHook::setGeo( const Rect& geometry, Origo origo )
 	{
 		m_placementGeo 	= geometry;
 		m_origo 		= origo;
@@ -87,7 +87,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	bool ModalHook::setGeo( const Coord& ofs, WgOrigo origo )
+	bool ModalHook::setGeo( const Coord& ofs, Origo origo )
 	{
 		m_placementGeo.setPos(ofs);
 		m_origo	= origo;
@@ -291,7 +291,7 @@ namespace wg
 	
 	//____ addModalWidget() ________________________________________________________
 	
-	ModalHook_p ModalLayer::addModalWidget( const Widget_p& pWidget, const Rect& geometry, WgOrigo origo )
+	ModalHook_p ModalLayer::addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo )
 	{
 		// Create MyHook and fill in members.
 	
@@ -393,7 +393,7 @@ namespace wg
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	Widget *  ModalLayer::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget *  ModalLayer::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.

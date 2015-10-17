@@ -126,8 +126,8 @@ namespace wg
 	
 		bool				cloneContent( const Widget_p& _pOrg );
 	
-		void				setPointerStyle( WgPointerStyle style )	{ m_pointerStyle = style; }
-		virtual WgPointerStyle	pointerStyle() const;
+		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
+		virtual PointerStyle	pointerStyle() const;
 	
 		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
 		bool				isTabLocked() const { return m_bTabLock; }
@@ -185,7 +185,7 @@ namespace wg
 		void			_onNewHook( Hook * pHook );
 	
 		void			_onNewRoot( RootPanel * pRoot );
-		virtual WgBlendMode	_getBlendMode() const;
+		virtual BlendMode	_getBlendMode() const;
 	
 	
 		virtual Widget* _newOfMyType() const = 0;
@@ -208,7 +208,7 @@ namespace wg
 	
 		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		virtual void	_onCloneContent( const Widget * _pOrg ) = 0;
 		virtual void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 	
@@ -228,7 +228,7 @@ namespace wg
 		Hook *		m_pHook;
 	
 		Skin_p		m_pSkin;
-		WgPointerStyle	m_pointerStyle;
+		PointerStyle	m_pointerStyle;
 	
 		String		m_tooltip;
 		int				m_markOpacity;

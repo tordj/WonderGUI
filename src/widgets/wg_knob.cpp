@@ -98,7 +98,7 @@ namespace wg
 	{
 		Widget::_onRender(pDevice, _canvas, _window, _clip);
 	
-		int sz = WgMin( _canvas.w,_canvas.h );
+		int sz = wg::min( _canvas.w,_canvas.h );
 	
 		if( sz > 1 )
 		{

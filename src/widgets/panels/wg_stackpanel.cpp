@@ -42,7 +42,7 @@ namespace wg
 		};
 	}
 	
-	void StackHook::setOrigo( WgOrigo origo )
+	void StackHook::setOrigo( Origo origo )
 	{
 		if( origo != m_origo )
 		{

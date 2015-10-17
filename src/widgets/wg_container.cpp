@@ -107,7 +107,7 @@ namespace wg
 	
 	//____ _findWidget() ____________________________________________________________
 	
-	Widget * Container::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget * Container::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		Rect childGeo;
 		Hook * pHook = _lastHookWithGeo( childGeo );
@@ -334,7 +334,7 @@ namespace wg
 	
 	//____ _onMaskPatches() __________________________________________________________
 	
-	void Container::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode )
+	void Container::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)

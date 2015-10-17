@@ -39,45 +39,45 @@ namespace wg
 
 	#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
 	#	 if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	#		define WG_IS_BIG_ENDIAN 1
-	#		define WG_IS_LITTLE_ENDIAN 0
+	#		define IS_BIG_ENDIAN 1
+	#		define IS_LITTLE_ENDIAN 0
 	#	elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	#		define WG_IS_BIG_ENDIAN 0
-	#		define WG_IS_LITTLE_ENDIAN 1
+	#		define IS_BIG_ENDIAN 0
+	#		define IS_LITTLE_ENDIAN 1
 	#	endif
 	#else
 	#	ifdef __BIG_ENDIAN__
 	#		if __BIG_ENDIAN__
-	#			define WG_IS_BIG_ENDIAN 1
-	#			define WG_IS_LITTLE_ENDIAN 0
+	#			define IS_BIG_ENDIAN 1
+	#			define IS_LITTLE_ENDIAN 0
 	#		endif
 	#	endif
 
 	#	ifdef __LITTLE_ENDIAN__
 	#		if __LITTLE_ENDIAN__
-	#			define WG_IS_BIG_ENDIAN 0
-	#			define WG_IS_LITTLE_ENDIAN 1
+	#			define IS_BIG_ENDIAN 0
+	#			define IS_LITTLE_ENDIAN 1
 	#		endif
 	#	endif
 	#endif
 
 
-	#ifndef WG_IS_BIG_ENDIAN
-	#error Could not detect endianness. You need to define WG_IS_BIG_ENDIAN and WG_IS_LITTLE_ENDIAN in wg_types.h
-	#define WG_IS_BIG_ENDIAN 0
-	#define WG_IS_LITTLE_ENDIAN 0
+	#ifndef IS_BIG_ENDIAN
+	#error Could not detect endianness. You need to define IS_BIG_ENDIAN and IS_LITTLE_ENDIAN in wg_types.h
+	#define IS_BIG_ENDIAN 0
+	#define IS_LITTLE_ENDIAN 0
 	#endif
 	
-	template<typename T> inline T WgMin(const T &a, const T &b) { return a < b ? a : b; }
-	template<typename T> inline T WgMin(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
-	template<typename T> inline T WgMax(const T &a, const T &b) { return a > b ? a : b; }
-	template<typename T> inline T WgMax(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
-	template<typename T> inline T WgAbs(T x)					{ return x >= 0 ? x : -x; }
-	template<typename T> inline void WgSwap(T &a, T &b) { T c = a; a = b; b = c; }
+	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
+	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
+	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
+	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
+	template<typename T> inline T abs(T x)					{ return x >= 0 ? x : -x; }
+	template<typename T> inline void swap(T &a, T &b) { T c = a; a = b; b = c; }
 	
 	#define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 	
-	#define	WG_FONTSIZE_INHERIT 0x80000000
+	#define	FONTSIZE_INHERIT 0x80000000
 	
 	enum StateEnum
 	{
@@ -134,21 +134,21 @@ namespace wg
 	};
 	
 	
-	typedef unsigned int	WgRouteId;
+	typedef unsigned int	RouteId;
 	
 	
-	//____ WgTxtAttr ______________________________________________________________
+	//____ TxtAttr ______________________________________________________________
 	
 	// Bitmask for various text attributes.
 	
-	enum WgTxtAttr
+	enum TxtAttr
 	{
 		WG_TXT_UNDERLINED	= 0x1,
 		WG_TXT_SELECTED		= 0x2
 	};
 	
 	
-	//____ WgExtChar __________________________________________________________
+	//____ ExtChar __________________________________________________________
 	
 	
 	//0x1b
@@ -235,7 +235,7 @@ namespace wg
 	*/
 	
 	
-	enum WgExtChar
+	enum ExtChar
 	{
 		// Code inside WonderGUI assumes these are all
 		// in the range 0x80-0xA0, but that might change in the future.
@@ -247,9 +247,9 @@ namespace wg
 		WG_ELLIPSIS					= 0x2026
 	};
 	
-	//____ WgCodePage ______________________________________________________________
+	//____ CodePage ______________________________________________________________
 	
-	enum WgCodePage
+	enum CodePage
 	{
 		WG_CODEPAGE_LATIN1 = 0,
 		WG_CODEPAGE_1250 = 1,		///< Windows Cental Europe
@@ -266,9 +266,9 @@ namespace wg
 	
 	#define WG_NB_CODEPAGES 11
 	
-	//____ WgBreakRules ____________________________________________________________
+	//____ BreakRules ____________________________________________________________
 	
-	enum WgBreakRules
+	enum BreakRules
 	{
 		WG_NO_BREAK		= 0,
 		WG_BREAK_BEFORE	= 16,
@@ -276,11 +276,11 @@ namespace wg
 		WG_BREAK_AFTER	= 64
 	};
 	
-	//____ WgBlendMode ____________________________________________________________
+	//____ BlendMode ____________________________________________________________
 	
 	// BlendModes control how blits and fills are blended against the background.
 	
-	enum WgBlendMode //: uint8_t
+	enum BlendMode //: uint8_t
 	{
 		WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 		WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
@@ -293,7 +293,7 @@ namespace wg
 	
 	enum FontAlt
 	{
-		// Needs to stay in sync with WgExtChar::WG_BEGIN_NORMAL and following enums!
+		// Needs to stay in sync with ExtChar::WG_BEGIN_NORMAL and following enums!
 	
 		WG_FONT_NORMAL		= 0,
 		WG_FONT_BOLD		= 1,
@@ -320,9 +320,9 @@ namespace wg
 	#define WG_NB_FONTSTYLES	17
 	
 	
-	//____ WgPointerStyle __________________________________________________________
+	//____ PointerStyle __________________________________________________________
 	
-	enum WgPointerStyle
+	enum PointerStyle
 	{
 		WG_POINTER_ARROW,						// default arrow
 		WG_POINTER_DEFAULT = WG_POINTER_ARROW,	// default arrow
@@ -340,9 +340,9 @@ namespace wg
 		WG_POINTER_SIZE_W_E,						// double-pointed arrow pointing west and east
 	};
 	
-	//____ WgMouseButton _________________________________________________________
+	//____ MouseButton _________________________________________________________
 	
-	enum WgMouseButton
+	enum MouseButton
 	{
 		WG_BUTTON_NONE = 0,
 		WG_BUTTON_LEFT,
@@ -368,11 +368,11 @@ namespace wg
 	};
 	
 	
-	//____ WgTintMode _____________________________________________________________
+	//____ TintMode _____________________________________________________________
 	
-	// WgTintMode controls how TintColors are blended hierarchically.
+	// TintMode controls how TintColors are blended hierarchically.
 	
-	enum WgTintMode
+	enum TintMode
 	{
 		WG_TINTMODE_OPAQUE,
 		WG_TINTMODE_MULTIPLY
@@ -380,7 +380,7 @@ namespace wg
 	
 	
 	/*
-	enum	WgExtChar
+	enum	ExtChar
 	{
 			BREAK_PERMITTED_HERE	= 0x82,
 	//		BEGIN_SELECTED_AREA		= 0x86,
@@ -406,18 +406,18 @@ namespace wg
 	*/
 	
 	
-	//____ WgSearchMode _____________________________________________________________
+	//____ SearchMode _____________________________________________________________
 	
-	enum WgSearchMode
+	enum SearchMode
 	{
 		WG_SEARCH_MARKPOLICY,			///< Perform a mark test on Widget.
 		WG_SEARCH_GEOMETRY,				///< Goes strictly on geometry, ignores alpha.
 		WG_SEARCH_ACTION_TARGET,		///< Like MARKPOLICY, but takes modality into account.
 	};
 	
-	//____ WgOrigo _____________________________________________________________
+	//____ Origo _____________________________________________________________
 	
-	enum WgOrigo
+	enum Origo
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
 	
@@ -432,9 +432,9 @@ namespace wg
 		WG_CENTER		= 8
 	};
 	
-	//____ WgDirection ____________________________________________________________
+	//____ Direction ____________________________________________________________
 	
-	enum WgDirection
+	enum Direction
 	{
 		WG_UP,
 		WG_DOWN,
@@ -442,9 +442,9 @@ namespace wg
 		WG_RIGHT
 	};
 	
-	//____ WgOrientation __________________________________________________________
+	//____ Orientation __________________________________________________________
 	
-	enum WgOrientation
+	enum Orientation
 	{
 		WG_HORIZONTAL,
 		WG_VERTICAL
@@ -535,26 +535,26 @@ namespace wg
 	};
 	
 	
-	//____ WgSortOrder ____________________________________________________________
+	//____ SortOrder ____________________________________________________________
 	
-	enum WgSortOrder
+	enum SortOrder
 	{
 		WG_SORT_ASCENDING,
 		WG_SORT_DESCENDING
 	};
 	
-	//____ WgUnit ____________________________________________________________
+	//____ Unit ____________________________________________________________
 	
-	enum WgUnit
+	enum Unit
 	{
 		WG_PX,
 		WG_EM
 	};
 	
 	
-	//____ WgSelectMode ___________________________________________________________
+	//____ SelectMode ___________________________________________________________
 	
-	enum WgSelectMode
+	enum SelectMode
 	{
 		WG_SELECT_NONE,			///< Entries can not be selected.
 		WG_SELECT_SINGLE,		///< Only a single entry can be selected at a time.
@@ -609,17 +609,17 @@ namespace wg
 	};
 	
 	
-	//____ WgSortContext __________________________________________________________
+	//____ SortContext __________________________________________________________
 	
-	struct WgSortContext
+	struct SortContext
 	{
 	public:
 		bool	bAscend;
 	};
 	
-	//____ WgAccessMode ____________________________________________________________
+	//____ AccessMode ____________________________________________________________
 	
-	enum WgAccessMode
+	enum AccessMode
 	{
 		WG_NO_ACCESS,
 		WG_READ_ONLY,
@@ -627,9 +627,9 @@ namespace wg
 		WG_READ_WRITE
 	};
 	
-	//____ WgPixelType _____________________________________________________________
+	//____ PixelType _____________________________________________________________
 	
-	enum WgPixelType
+	enum PixelType
 	{
 		WG_PIXEL_UNKNOWN,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 		WG_PIXEL_CUSTOM,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
@@ -638,15 +638,15 @@ namespace wg
 	};
 	
 	
-	//____ WgPixelFormat __________________________________________________________
+	//____ PixelFormat __________________________________________________________
 	/**
 	 * @brief Describes the format of a pixel.
 	 *
 	 * Describes the format of a pixel.
 	 *
-	 * The format of the pixel is described in three ways by a WgPixelFormat object:
+	 * The format of the pixel is described in three ways by a PixelFormat object:
 	 *
-	 * First a WgPixelType enum that contains predefined values for common pixel formats.
+	 * First a PixelType enum that contains predefined values for common pixel formats.
 	 * This allows for human readable information and quick lockups.
 	 *
 	 * Secondly a set of variables containing the number of bits for each pixel and the
@@ -657,7 +657,7 @@ namespace wg
 	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
 	 *
 	 * Not all pixel formats (like those of index/palette-based surfaces) can
-	 * be fully described by a WgPixelFormat object. In that case the member type is set to WG_PIXEL_UNKNOWN.
+	 * be fully described by a PixelFormat object. In that case the member type is set to WG_PIXEL_UNKNOWN.
 	 *
 	 * As long as the type member is not set to WG_PIXEL_UNKNOWN, you can extract the value of any channel of a
 	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
@@ -668,7 +668,7 @@ namespace wg
 	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
 	 *
 	 * uint32_t	pixel;
-	 * WgPixelFormat * pFormat;
+	 * PixelFormat * pFormat;
 	 *
 	 * 	Color col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
 	 *				 (pixel & pFormat->G_mask) >> pFormat->G_shift,
@@ -678,7 +678,7 @@ namespace wg
 	 * To convert a Color object to a pixel value you can use:
 	 *
 	 * Color color;
-	 * WgPixelFormat * pFormat;
+	 * PixelFormat * pFormat;
 	 *
 	 * 	uint32_t pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
 	 *				 ((color.g << pFormat->G_shift) & pFormat->G_mask) |
@@ -690,9 +690,9 @@ namespace wg
 	 **/
 	
 	
-	struct WgPixelFormat
+	struct PixelFormat
 	{
-		WgPixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
+		PixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 	
 		uint32_t	R_mask;				///< bitmask for getting the red bits out of the pixel
@@ -712,9 +712,9 @@ namespace wg
 	};
 	
 	
-	//____ WgMaskOp ____________________________________________________________
+	//____ MaskOp ____________________________________________________________
 	
-	enum WgMaskOp
+	enum MaskOp
 	{
 		WG_MASKOP_RECURSE = 0,	///< Recurse through children, let them mask background individually.
 		WG_MASKOP_SKIP = 1,		///< Do not mask background against container or children.

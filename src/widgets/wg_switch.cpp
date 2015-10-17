@@ -109,7 +109,7 @@ namespace wg
 		else
 			canvas = _canvas;
 	
-		int sz = WgMin( canvas.w,canvas.h );
+		int sz = wg::min( canvas.w,canvas.h );
 	
 		if( sz > 12 )
 		{

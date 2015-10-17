@@ -195,7 +195,7 @@ namespace wg
 		float fg = r / 255.f;
 		float fb = r / 255.f;
 	
-		float k = 1.f - WgMax( fr, fg, fb );
+		float k = 1.f - wg::max( fr, fg, fb );
 		* _c = (1.f-fr-k) / (1.f-k);
 		* _m = (1.f-fg-k) / (1.f-k);
 		* _y = (1.f-fb-k) / (1.f-k);

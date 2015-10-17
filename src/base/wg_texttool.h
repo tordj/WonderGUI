@@ -86,8 +86,8 @@ namespace wg
 		static uint32_t	readString( const char *& pSrc, uint16_t * pDst, uint32_t maxChars = INT_MAX );
 		static uint32_t	readString( const char *& pSrc, Char * pDst, uint32_t maxChars = INT_MAX );
 		static uint32_t	readString( const uint16_t *& pSrc, Char * pDst, uint32_t maxChars = INT_MAX );
-		static uint32_t	readString( const char *& pSrc, WgCodePage codepage, Char * pDst, uint32_t maxChars = INT_MAX );
-		static uint32_t	readString( const char *& pSrc, WgCodePage codepage, uint16_t * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, CodePage codepage, Char * pDst, uint32_t maxChars = INT_MAX );
+		static uint32_t	readString( const char *& pSrc, CodePage codepage, uint16_t * pDst, uint32_t maxChars = INT_MAX );
 	
 		static uint32_t	countChars( const char * pStr, uint32_t strlen = INT_MAX );
 	
@@ -142,11 +142,11 @@ namespace wg
 	
 		static uint32_t	getTextUTF8( const Char * pSrc, char * pDest, uint32_t maxBytes );
 		static uint32_t	getTextUTF8( const uint16_t * pSrc, char * pDest, uint32_t maxBytes );
-		static uint32_t	getTextUTF8( const char * pSrc, WgCodePage codepage, char * pDest, int maxChars = INT_MAX );
+		static uint32_t	getTextUTF8( const char * pSrc, CodePage codepage, char * pDest, int maxChars = INT_MAX );
 	
 		static uint32_t	getTextSizeUTF8( const Char * pSrc, uint32_t maxChars = INT_MAX );
 		static uint32_t	getTextSizeUTF8( const uint16_t * pSrc, uint32_t maxChars = INT_MAX );
-		static uint32_t	getTextSizeUTF8( const char * pSrc, WgCodePage codepage, int maxChars = INT_MAX );
+		static uint32_t	getTextSizeUTF8( const char * pSrc, CodePage codepage, int maxChars = INT_MAX );
 	
 		static uint32_t	getTextFormatted( const Char * pSrc, uint16_t * pDest, uint32_t maxChars, const ResDB * pResDB = 0 );
 		static uint32_t	getTextSizeFormatted( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
@@ -232,10 +232,10 @@ namespace wg
 	
 	    static char *           itoa( int value, char * str, int base );
 	
-		static WgBreakRules		isBreakAllowed( uint16_t chr, int breakLevel );
+		static BreakRules		isBreakAllowed( uint16_t chr, int breakLevel );
 	
 		static void				clearBreakRules();
-		static bool				setBreakRule( unsigned char character, int level, WgBreakRules rule );
+		static bool				setBreakRule( unsigned char character, int level, BreakRules rule );
 		static void				setDefaultBreakRules();
 	
 		//____

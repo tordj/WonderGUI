@@ -273,7 +273,7 @@ namespace wg
 	
 	//____ _findWidget() _____________________________________________________________
 	
-	Widget * RootPanel::_findWidget( const Coord& ofs, WgSearchMode mode )
+	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		if( !geo().contains(ofs) || !m_hook._widget() )
 			return 0;

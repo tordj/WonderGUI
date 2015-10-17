@@ -39,7 +39,7 @@ namespace wg
 		void			setNbLEDs( int bottomSection, int middleSection, int topSection );
 		void			setLEDSpacing( float spacing );
 		void			setValue( float peak, float hold );
-		void			setDirection( WgDirection direction );
+		void			setDirection( Direction direction );
 			
 		Size			preferredSize() const;
 		
@@ -52,7 +52,7 @@ namespace wg
 		void			_onStateChanged( State oldState );
 		void			_onCloneContent( const Widget * _pOrg );
 		
-		WgDirection		m_direction;
+		Direction		m_direction;
 		Color			m_LEDColors[3][2];
 		int				m_nSectionLEDs[3];
 		int				m_nLEDs;

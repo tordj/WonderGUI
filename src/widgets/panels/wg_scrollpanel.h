@@ -132,8 +132,8 @@ namespace wg
 		int			contentHeight() { return m_contentSize.h; };
 		Size		contentSize() { return m_contentSize; };
 	
-		void		setContentOrigo( WgOrigo origo );
-		WgOrigo contentOrigo() const { return m_contentOrigo; }
+		void		setContentOrigo( Origo origo );
+		Origo contentOrigo() const { return m_contentOrigo; }
 	
 		void		setContentSizePolicy( SizePolicy widthPolicy, SizePolicy heightPolicy );
 		SizePolicy	contentWidthPolicy() const { return m_widthPolicy; }
@@ -266,14 +266,14 @@ namespace wg
 	
 		// Overloaded from Panel
 	
-		Widget *	_findWidget( const Coord& pos, WgSearchMode mode );
+		Widget *	_findWidget( const Coord& pos, SearchMode mode );
 	
 		//
 	
 		void		_onMsg( const Msg_p& pMsg );
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void		_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, WgBlendMode blendMode );
+		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_onRequestResize( ScrollHook * pHook );
 	
 		bool		_onAlphaTest( const Coord& ofs, const Size& sz );
@@ -289,7 +289,7 @@ namespace wg
 		Size		_calcContentSize( Size mySize );
 		void		_updateElementGeo( Size mySize );
 	
-		Rect		_genContentCanvasGeo( const Rect& window, Size contentSize, WgOrigo origo, Coord viewOfs );
+		Rect		_genContentCanvasGeo( const Rect& window, Size contentSize, Origo origo, Coord viewOfs );
 	
 		bool		_wheelRollX(int distance);
 		bool		_wheelRollY(int distance);
@@ -327,7 +327,7 @@ namespace wg
 	
 		SizePolicy	m_widthPolicy;
 		SizePolicy	m_heightPolicy;
-		WgOrigo	m_contentOrigo;		// Origo when content is smaller than window
+		Origo	m_contentOrigo;		// Origo when content is smaller than window
 	
 		MyScrollbarTarget	m_scrollbarTargets[2];			// Order: Vertical, horizontal
 	
