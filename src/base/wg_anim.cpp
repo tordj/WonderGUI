@@ -33,7 +33,7 @@ namespace wg
 	{ 
 		m_scale			= 1.f;
 		m_duration		= 0;
-		m_playMode	= WG_FORWARD_ONCE;
+		m_playMode	= AnimMode::Forward;
 	}
 	
 	//____ ~Anim() ______________________________________________________________
@@ -166,7 +166,7 @@ namespace wg
 	
 		switch( m_playMode )
 		{
-			case WG_FORWARD_ONCE:
+			case AnimMode::Forward:
 			{
 				if( ticks >= m_duration )
 				{
@@ -189,7 +189,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_BACKWARD_ONCE:
+			case AnimMode::Backward:
 			{
 				if( ticks >= m_duration )
 				{
@@ -212,7 +212,7 @@ namespace wg
 				break;
 			}
 		
-			case WG_FORWARD_LOOPING:
+			case AnimMode::Looping:
 			{
 				ticks = ticks % m_duration;
 	
@@ -227,7 +227,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_BACKWARD_LOOPING:
+			case AnimMode::BackwardLooping:
 			{
 				ticks = ticks % m_duration;
 	
@@ -243,7 +243,7 @@ namespace wg
 			}
 	
 	
-			case WG_FORWARD_PINGPONG:
+			case AnimMode::PingPong:
 			{
 				int64_t	ts;
 	
@@ -276,7 +276,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_BACKWARD_PINGPONG:
+			case AnimMode::BackwardPingPong:
 			{
 				int64_t		ts;
 	
@@ -356,32 +356,32 @@ namespace wg
 		
 		switch( m_playMode )
 		{
-			case WG_FORWARD_ONCE:
+			case AnimMode::Forward:
 				if( ticks >= m_duration )
 					return m_duration;
 	
 				return (int) ticks;
 	
-			case WG_BACKWARD_ONCE:
+			case AnimMode::Backward:
 				if( ticks >= m_duration )
 					return 0;
 	
 				return m_duration - (int)ticks;
 		
-			case WG_FORWARD_LOOPING:
+			case AnimMode::Looping:
 				return (int) (ticks % m_duration);
 	
-			case WG_BACKWARD_LOOPING:
+			case AnimMode::BackwardLooping:
 				return m_duration - (int)(ticks % m_duration);
 	
 	
-			case WG_FORWARD_PINGPONG:
+			case AnimMode::PingPong:
 				if( ((ticks/m_duration) % 2) == 0 )
 					return (int) (ticks % m_duration);
 				else
 					return m_duration - (int)(ticks % m_duration);
 	
-			case WG_BACKWARD_PINGPONG:
+			case AnimMode::BackwardPingPong:
 				if( ((ticks/m_duration) % 2) == 1 )
 					return (int) (ticks % m_duration);
 				else

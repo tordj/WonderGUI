@@ -142,13 +142,13 @@ namespace wg
 		void			clearAll();
 	
 	
-		inline bool				isUnderlined( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
-		inline bool				isColored( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
-		inline const Color&	color( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
-		inline bool				isBgColored( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
-		inline const Color&	bgColor( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
-		inline FontAlt		style( State state = WG_STATE_NORMAL ) const { return (FontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
-		inline int				size( State state = WG_STATE_NORMAL ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
+		inline bool				isUnderlined( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
+		inline bool				isColored( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
+		inline const Color&	color( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
+		inline bool				isBgColored( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
+		inline const Color&	bgColor( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
+		inline FontAlt		style( State state = StateEnum::Normal ) const { return (FontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
+		inline int				size( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
 		bool					charVisibility( uint16_t specialCharacter ) const;
 		inline int				charVisibilityFlags() const { return m_visibilityFlags; }
 	
@@ -182,7 +182,7 @@ namespace wg
 	
 		struct StateProp
 		{
-			uint16_t			m_style:5;		///< FontAlt for this state, WG_FONT_NORMAL is same as none and overriden if set higher in hierarchy.
+			uint16_t			m_style:5;		///< FontAlt for this state, FontAlt::Normal is same as none and overriden if set higher in hierarchy.
 			uint16_t			m_size:11;		///< Size in pixels of font. 0 = none specified, use sized specified higher up in hierarchy.
 			bool			m_bUnderlined;	///< Hierarchally cumulative, anyone in hierarchy set gives underlined.
 			bool			m_bColored;		///< Set if color of this struct should be used.
@@ -235,10 +235,10 @@ namespace wg
 	class TextAttr
 	{
 	public:
-		TextAttr() : pFont(0), size(0), style(WG_FONT_NORMAL), color(Color::white), bgColor(Color::transparent),
+		TextAttr() : pFont(0), size(0), style(FontAlt::Normal), color(Color::white), bgColor(Color::transparent),
 					   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 	
-		inline void	clear() {	pFont = 0; size = 0; style = WG_FONT_NORMAL; color = Color::white;
+		inline void	clear() {	pFont = 0; size = 0; style = FontAlt::Normal; color = Color::white;
 								bgColor = Color::transparent; bUnderlined = false; breakLevel = 3;
 								visibilityFlags = 0; pLink = 0; }
 	

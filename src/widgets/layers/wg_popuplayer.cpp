@@ -142,56 +142,56 @@ namespace wg
 	
 		switch( m_attachPoint )
 		{
-			case WG_NORTHEAST:					// Right side of launcherGeo, going down.
+			case Origo::NorthEast:					// Right side of launcherGeo, going down.
 			{
 				geo.x = m_launcherGeo.right();
 				geo.y = m_launcherGeo.top();
 				break;
 			}
 	
-			case WG_SOUTHEAST:					// Right side of launcherGeo, going up.
+			case Origo::SouthEast:					// Right side of launcherGeo, going up.
 			{
 				geo.x = m_launcherGeo.right();
 				geo.y = m_launcherGeo.bottom() - geo.h;
 				break;
 			}
 	
-			case WG_NORTHWEST:					// Left-aligned above launcher.
+			case Origo::NorthWest:					// Left-aligned above launcher.
 			{
 				geo.x = m_launcherGeo.left();
 				geo.y = m_launcherGeo.top() - geo.h;
 				break;
 			}
 	
-			case WG_SOUTHWEST:					// Left-aligned below launcher.
+			case Origo::SouthWest:					// Left-aligned below launcher.
 			{
 				geo.x = m_launcherGeo.left();
 				geo.y = m_launcherGeo.bottom();
 				break;
 			}
 	
-			case WG_EAST:						// Centered left of launcherGeo.
+			case Origo::East:						// Centered left of launcherGeo.
 			{
 				geo.x = m_launcherGeo.left() - geo.w;
 				geo.y = m_launcherGeo.top() + m_launcherGeo.h/2 - geo.h/2;
 				break;
 			}
 	
-			case WG_NORTH:						// Centered above launcherGeo.
+			case Origo::North:						// Centered above launcherGeo.
 			{
 				geo.x = m_launcherGeo.left() + m_launcherGeo.w/2 + geo.w/2;
 				geo.y = m_launcherGeo.top() - geo.h;
 				break;
 			}
 	
-			case WG_WEST:						// Centered right of launcherGeo.
+			case Origo::West:						// Centered right of launcherGeo.
 			{
 				geo.x = m_launcherGeo.right();
 				geo.y = m_launcherGeo.top() + m_launcherGeo.h/2 - geo.h/2;
 				break;
 			}
 	
-			case WG_SOUTH:						// Centered below launcherGeo.
+			case Origo::South:						// Centered below launcherGeo.
 			{
 				geo.x = m_launcherGeo.left() + m_launcherGeo.w/2 + geo.w/2;
 				geo.y = m_launcherGeo.bottom();
@@ -411,7 +411,7 @@ namespace wg
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
 	
-		if( mode == WG_SEARCH_ACTION_TARGET && !m_popupHooks.isEmpty() )
+		if( mode == SearchMode::ActionTarget && !m_popupHooks.isEmpty() )
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 	
@@ -551,7 +551,7 @@ namespace wg
 				if( !m_popupHooks.isEmpty() )							// Process only if we have at least one open menu.
 				{
 					Coord ofs = _pMsg->pointerPos();
-					Widget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
+					Widget * p = _findWidget( ofs, SearchMode::ActionTarget );
 					if( p != this )
 					{
 						while( p->parent() != this )
@@ -562,13 +562,13 @@ namespace wg
 				}
 			break;
 	*/		
-			case WG_MSG_MOUSE_RELEASE:
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MouseRelease:
+			case MsgType::MousePress:
 			{
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 	
 				Coord ofs = pMsg->pointerPos() - globalPos();
-				Widget * p = _findWidget( ofs, WG_SEARCH_ACTION_TARGET );
+				Widget * p = _findWidget( ofs, SearchMode::ActionTarget );
 				if( p == this )
 				{
 					closeAllPopups();
@@ -578,8 +578,8 @@ namespace wg
 			}
 			break;
 	
-			case WG_MSG_KEY_PRESS:
-			case WG_MSG_KEY_REPEAT:
+			case MsgType::KeyPress:
+			case MsgType::KeyRepeat:
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	

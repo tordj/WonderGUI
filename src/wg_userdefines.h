@@ -50,7 +50,7 @@
 
 #define WG_ESCAPE_CODE		0xA4
 
-#define WG_DEFAULT_CODEPAGE WG_CODEPAGE_1252
+#define DEFAULT_CODEPAGE CodePage::_1252
 
 
 //____ enum WgModifierKeys ____________________________________________________

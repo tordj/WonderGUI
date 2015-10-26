@@ -44,7 +44,7 @@ namespace wg
 	GfxDevice::GfxDevice( Size canvasSize )
 	{
 		m_tintColor 		= Color(255,255,255);
-		m_blendMode 		= WG_BLENDMODE_BLEND;
+		m_blendMode 		= BlendMode::Blend;
 		m_bSaveDirtyRects 	= false;
 		m_renderFlags		= 0;
 		m_canvasSize		= canvasSize;
@@ -761,10 +761,10 @@ namespace wg
 	
 		if( bLineEnding )
 		{
-			// If character after line-end was a WG_HYPHEN_BREAK_PERMITTED we need
+			// If character after line-end was a ExtChar::HyphenBreakPermitted we need
 			// to render a normal hyphen.
 	
-			if( pChars[ofs+len].getGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+			if( pChars[ofs+len].getGlyph() == (uint16_t) ExtChar::HyphenBreakPermitted )
 			{
 				if( pen.setChar( '-' ) )
 				{
@@ -805,9 +805,9 @@ namespace wg
 		pText->getBaseAttr( baseAttr );	// Ellipsis are always rendered using the base attributes.
 		pen.setAttributes( baseAttr );
 	
-		uint16_t	ellipsisChar = WG_ELLIPSIS;
+		uint16_t	ellipsisChar = (uint16_t) ExtChar::Ellipsis;
 		ellipsisWidth = 0;
-		Glyph_p pEllipsis = pen.getFont()->getGlyph( WG_ELLIPSIS, pen.getStyle(), pen.getSize() );
+		Glyph_p pEllipsis = pen.getFont()->getGlyph( (uint16_t) ExtChar::Ellipsis, pen.getStyle(), pen.getSize() );
 	
 		if( !pEllipsis )
 		{
@@ -820,7 +820,7 @@ namespace wg
 			const GlyphBitmap * pBitmap = pEllipsis->getBitmap();
 			if( pBitmap )
 			{
-				if( ellipsisChar == WG_ELLIPSIS )
+				if( ellipsisChar == (uint16_t) ExtChar::Ellipsis )
 					ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
 				else
 					ellipsisWidth = pEllipsis->advance()*2+pBitmap->rect.w + pBitmap->bearingX;

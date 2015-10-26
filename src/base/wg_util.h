@@ -33,7 +33,7 @@ namespace wg
 	
 		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 	
-	    inline Orientation dirToOrient( Direction dir ) { return (dir == WG_UP || dir == WG_DOWN) ? WG_VERTICAL : WG_HORIZONTAL; }
+	    inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 	    
 	
 		// A simple checksum algorithm that just performs a long division
@@ -89,23 +89,23 @@ namespace wg
 		{
 			switch( value )
 			{
-				case WG_NORTHWEST:
+				case Origo::NorthWest:
 					return "northwest";
-				case WG_NORTH:
+				case Origo::North:
 					return "north";
-				case WG_NORTHEAST:
+				case Origo::NorthEast:
 					return "northeast";
-				case WG_EAST:
+				case Origo::East:
 					return "east";
-				case WG_SOUTHEAST:
+				case Origo::SouthEast:
 					return "southeast";
-				case WG_SOUTH:
+				case Origo::South:
 					return "south";
-				case WG_SOUTHWEST:
+				case Origo::SouthWest:
 					return "southwest";
-				case WG_WEST:
+				case Origo::West:
 					return "west";
-				case WG_CENTER:
+				case Origo::Center:
 					return "center";
 			}
 	
@@ -207,18 +207,18 @@ namespace wg
 		template<>
 		inline bool fromString(const std::string& str, Origo& a)
 		{
-			if(str.empty() || str == "northwest") a = WG_NORTHWEST;
-			else if(str == "north") a = WG_NORTH;
-			else if(str == "northeast") a = WG_NORTHEAST;
-			else if(str == "east") a = WG_EAST;
-			else if(str == "southeast") a = WG_SOUTHEAST;
-			else if(str == "south") a = WG_SOUTH;
-			else if(str == "southwest") a = WG_SOUTHWEST;
-			else if(str == "west") a = WG_WEST;
-			else if(str == "center") a = WG_CENTER;
+			if(str.empty() || str == "northwest") a = Origo::NorthWest;
+			else if(str == "north") a = Origo::North;
+			else if(str == "northeast") a = Origo::NorthEast;
+			else if(str == "east") a = Origo::East;
+			else if(str == "southeast") a = Origo::SouthEast;
+			else if(str == "south") a = Origo::South;
+			else if(str == "southwest") a = Origo::SouthWest;
+			else if(str == "west") a = Origo::West;
+			else if(str == "center") a = Origo::Center;
 			else
 			{
-				a = WG_NORTHWEST;
+				a = Origo::NorthWest;
 				return false;
 			}
 			return true;
@@ -315,7 +315,7 @@ namespace wg
 		inline int _stateToIndex(StateEnum state)
 		{ 
 			static int	s_stateToIndexTable[WG_MAX_STATE_VALUE+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
-			return s_stateToIndexTable[state]; 
+			return s_stateToIndexTable[(uint8_t)state]; 
 		}
 	
 	}

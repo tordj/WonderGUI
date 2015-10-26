@@ -34,7 +34,7 @@ namespace wg
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
-		m_editMode = WG_TEXT_EDITABLE;
+		m_editMode = TextEditMode::Editable;
 	}
 	
 	
@@ -135,7 +135,7 @@ namespace wg
 	{
 		TextField::setState(state);
 	
-		if( state.isFocused() && m_editMode == WG_TEXT_EDITABLE )
+		if( state.isFocused() && m_editMode == TextEditMode::Editable )
 			m_editState.bCaret = true;
 		else
 			m_editState.bCaret = false;

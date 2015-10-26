@@ -33,7 +33,7 @@ namespace wg
 	
 	Surface::Surface()
 	{
-		m_accessMode	= WG_NO_ACCESS;
+		m_accessMode	= AccessMode::None;
 		m_pPixels		= 0;
 	
 		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
@@ -150,12 +150,12 @@ namespace wg
 	
 	Rect Surface::_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region )
 	{
-		if( m_accessMode == WG_NO_ACCESS )
+		if( m_accessMode == AccessMode::None )
 		{
 			lock( modeNeeded );
 			return region;
 		}
-		else if( m_accessMode != WG_READ_WRITE && m_accessMode != modeNeeded )
+		else if( m_accessMode != AccessMode::ReadWrite && m_accessMode != modeNeeded )
 			return Rect(0,0,0,0);
 	
 		if( !m_lockRegion.contains( region ) )
@@ -204,7 +204,7 @@ namespace wg
 	{
 	
 		AccessMode oldMode = m_accessMode;
-		Rect rect = _lockAndAdjustRegion(WG_WRITE_ONLY,region);
+		Rect rect = _lockAndAdjustRegion(AccessMode::WriteOnly,region);
 	
 		if( rect.w == 0 )
 			return false;
@@ -269,7 +269,7 @@ namespace wg
 	
 		//
 	
-		if( oldMode == WG_NO_ACCESS )
+		if( oldMode == AccessMode::None )
 			unlock();
 	
 		return ret;
@@ -317,7 +317,7 @@ namespace wg
 	 **/
 	bool Surface::copyFrom( const Surface_p& pSrcSurface, const Rect& _srcRect, Coord _dst )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == WG_PIXEL_UNKNOWN || m_pixelFormat.type == WG_PIXEL_UNKNOWN )
+		if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == PixelType::Unknown || m_pixelFormat.type == PixelType::Unknown )
 			return false;
 	
 		// Save old locks and lock the way we want.
@@ -325,8 +325,8 @@ namespace wg
 		AccessMode 	dstOldMode 		= m_accessMode;
 		AccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
 	
-		Rect srcRect = pSrcSurface->_lockAndAdjustRegion( WG_READ_ONLY, _srcRect );
-		Rect dstRect = _lockAndAdjustRegion( WG_WRITE_ONLY, Rect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
+		Rect srcRect = pSrcSurface->_lockAndAdjustRegion( AccessMode::ReadOnly, _srcRect );
+		Rect dstRect = _lockAndAdjustRegion( AccessMode::WriteOnly, Rect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
 	
 		// Do the copying
 	
@@ -359,8 +359,8 @@ namespace wg
 					pDst += dstPitch;
 				}
 			}
-			else if( (pSrcFormat->type == WG_PIXEL_RGBA_8 || pSrcFormat->type == WG_PIXEL_RGB_8) &&
-					 (pDstFormat->type == WG_PIXEL_RGBA_8 || pDstFormat->type == WG_PIXEL_RGB_8) )
+			else if( (pSrcFormat->type == PixelType::RGBA_8 || pSrcFormat->type == PixelType::RGB_8) &&
+					 (pDstFormat->type == PixelType::RGBA_8 || pDstFormat->type == PixelType::RGB_8) )
 			{
 				// We are just switching between RGBA_8 and RGB_8, just copy RGB components and skip alpha
 	
@@ -566,10 +566,10 @@ namespace wg
 	
 		// Release any temporary locks
 	
-		if( dstOldMode == WG_NO_ACCESS )
+		if( dstOldMode == AccessMode::None )
 			unlock();
 	
-		if( srcOldMode == WG_NO_ACCESS )
+		if( srcOldMode == AccessMode::None )
 			pSrcSurface->unlock();
 	
 		return true;

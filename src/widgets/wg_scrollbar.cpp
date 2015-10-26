@@ -58,7 +58,7 @@ namespace wg
 		m_lastCursorDownPos = Coord(-4096, -4096);
 	
 		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
-			m_states[i] = WG_STATE_NORMAL;
+			m_states[i] = StateEnum::Normal;
 	}
 	
 	//____ ~Scrollbar() _________________________________________________________
@@ -99,15 +99,15 @@ namespace wg
 	/**
 	 * Set if scrollbar should be horizontal or vertical.
 	 *
-	 * @param orientation	Set to WG_HORIZONTAL to make widget horizontal or
-	 * 						WG_VERTICAL to make widget vertical.
+	 * @param orientation	Set to Orientation::Horizontal to make widget horizontal or
+	 * 						Orientation::Vertical to make widget vertical.
 	 *
 	 * By default a scrollbar is vertical.
 	 **/
 	
 	void Scrollbar::setOrientation( Orientation orientation )
 	{
-		bool bHorizontal = (orientation == WG_HORIZONTAL);
+		bool bHorizontal = (orientation == Orientation::Horizontal);
 	
 		if( m_bHorizontal != bHorizontal )
 		{
@@ -828,9 +828,9 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
 					return;
 	
 				// Just put them all to NORMAL and request render.
@@ -840,7 +840,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 			{
 				// Turn any MARKED/SELECTED button/bg back to NORMAL.
 				// Turn handle back to NORMAL only if MARKED (selected handle should remain selected).
@@ -853,8 +853,8 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_ENTER:
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
 			{
 				if( m_states[C_HANDLE].isPressed() )
 					return;
@@ -879,9 +879,9 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
 					return;
 	
 				Component c = _findMarkedComponent(pos);
@@ -943,9 +943,9 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_REPEAT:
+			case MsgType::MouseRepeat:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
 					return;
 	
 				if( m_states[C_HANDLE].isPressed() )
@@ -983,9 +983,9 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_DRAG:
+			case MsgType::MouseDrag:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != WG_BUTTON_LEFT )
+				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
 					return;
 	
 				if( m_states[C_HANDLE].isPressed() )
@@ -1013,7 +1013,7 @@ namespace wg
 				break;
 			}
 			
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p p = WheelRollMsg::cast(pMsg);
 	
@@ -1037,7 +1037,7 @@ namespace wg
 	
 		// Swallow all button 1 messages.
 	
-		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
 	
 	}

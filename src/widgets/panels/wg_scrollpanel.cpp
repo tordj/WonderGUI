@@ -46,9 +46,9 @@ namespace wg
 		m_scrollbarTargets[1].m_bHorizontal = true;
 		m_scrollbarTargets[1].m_pParent = this;
 	
-		m_contentOrigo = WG_NORTHWEST;
-		m_widthPolicy = WG_DEFAULT;
-		m_heightPolicy = WG_DEFAULT;
+		m_contentOrigo = Origo::NorthWest;
+		m_widthPolicy = SizePolicy::Default;
+		m_heightPolicy = SizePolicy::Default;
 	
 	
 		m_stepSizeX		= 1;
@@ -547,7 +547,7 @@ namespace wg
 	
 		// 
 	
-		pScrollbar->setOrientation( WG_HORIZONTAL );
+		pScrollbar->setOrientation( Orientation::Horizontal );
 	
 		m_elements[XDRAG]._setWidget(pScrollbar.rawPtr());
 		_updateElementGeo( size() );
@@ -574,7 +574,7 @@ namespace wg
 	
 		//
 	
-		pScrollbar->setOrientation( WG_VERTICAL );
+		pScrollbar->setOrientation( Orientation::Vertical );
 	
 		m_elements[YDRAG]._setWidget(pScrollbar.rawPtr());
 		_updateElementGeo( size() );
@@ -692,7 +692,7 @@ namespace wg
 		ScrollHook * p = &m_elements[XDRAG];
 		if( p->isVisible() && p->_widget() && p->m_windowGeo.contains( pos ) )
 		{
-			if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->markTest( pos - p->m_windowGeo.pos() ) )
+			if( mode != SearchMode::MarkPolicy || p->_widget()->markTest( pos - p->m_windowGeo.pos() ) )
 				return p->_widget();
 		}
 	
@@ -701,7 +701,7 @@ namespace wg
 		p = &m_elements[YDRAG];
 		if( p->isVisible() && p->_widget() && p->m_windowGeo.contains( pos ) )
 		{
-			if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->markTest( pos - p->m_windowGeo.pos() ) )
+			if( mode != SearchMode::MarkPolicy || p->_widget()->markTest( pos - p->m_windowGeo.pos() ) )
 				return p->_widget();
 		}
 	
@@ -719,7 +719,7 @@ namespace wg
 					if( pFound )
 						return pFound;
 				}
-				else if( mode != WG_SEARCH_MARKPOLICY || p->_widget()->markTest( pos - p->m_canvasGeo.pos() ) )
+				else if( mode != SearchMode::MarkPolicy || p->_widget()->markTest( pos - p->m_canvasGeo.pos() ) )
 					return p->_widget();
 			}
 	
@@ -734,7 +734,7 @@ namespace wg
 	
 		// Check our little corner square and geometry
 	
-		if( mode == WG_SEARCH_GEOMETRY || markTest( pos ) )
+		if( mode == SearchMode::Geometry || markTest( pos ) )
 			return this;
 	
 		//
@@ -1111,7 +1111,7 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::WheelRoll:
 			{			
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
 
@@ -1219,7 +1219,7 @@ namespace wg
 	void ScrollPanel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE ||
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque ||
 			(m_pSkin && m_pSkin->isOpaque(m_state)) )
 		{
 			patches.sub( Rect(geo,clip) );
@@ -1228,7 +1228,7 @@ namespace wg
 	
 		switch( m_maskOp )
 		{
-			case WG_MASKOP_RECURSE:
+			case MaskOp::Recurse:
 			{
 				// Mask against view
 	
@@ -1256,9 +1256,9 @@ namespace wg
 	
 				break;
 			}
-			case WG_MASKOP_SKIP:
+			case MaskOp::Skip:
 				break;
-			case WG_MASKOP_MASK:
+			case MaskOp::Mask:
 				patches.sub( Rect(geo,clip) );
 				break;
 		}

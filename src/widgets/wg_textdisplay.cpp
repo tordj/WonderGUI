@@ -115,7 +115,7 @@ namespace wg
 	PointerStyle TextDisplay::pointerStyle() const
 	{
 		if( m_text.getMarkedLink() )
-			return WG_POINTER_HAND;
+			return PointerStyle::Hand;
 	
 		return m_pointerStyle;
 	}

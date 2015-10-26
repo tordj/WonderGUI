@@ -201,31 +201,31 @@ namespace wg
 		inline Font_p		font() const { return getPropRef().font(); }
 	
 	
-	//	inline Glyphset *		glyphset( const Textprop_p& pDefProp, State state = WG_STATE_NORMAL ) const { return TextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
+	//	inline Glyphset *		glyphset( const Textprop_p& pDefProp, State state = StateEnum::Normal ) const { return TextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
 	
 								/// Returns the characters font size for the given state.
 								///
 								/// @param state			The state of the Widget or Item containing the text.
 								///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
 								///
-								///	Default value for all states is WG_STATE_NORMAL which is considered "no state specified"
+								///	Default value for all states is StateEnum::Normal which is considered "no state specified"
 								/// by most text managers who therefore will decide the characters style themselves.
 								///
 								/// @return Characters font size for the given state.
 	
-		inline int				size( State state = WG_STATE_NORMAL ) const { return getPropRef().size(state); }
+		inline int				size( State state = StateEnum::Normal ) const { return getPropRef().size(state); }
 	
 								/// Returns the characters font style specification for the given state.
 								///
 								/// @param state			The state of the Widget or Item containing the text.
 								///
-								///	Default value for all states is WG_STATE_NORMAL which is considered "no state specified"
+								///	Default value for all states is StateEnum::Normal which is considered "no state specified"
 								/// by most text managers who therefore will decide the characters style themselves.
 								///
 								/// @return Font style specified for the given state.
 	
 	
-		inline FontAlt		style( State state = WG_STATE_NORMAL ) const { return getPropRef().style(state); }
+		inline FontAlt		style( State state = StateEnum::Normal ) const { return getPropRef().style(state); }
 	
 								/// Checks if the character terminates the current line.
 								/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
@@ -238,9 +238,9 @@ namespace wg
 		inline bool				isEndOfText() const { if( glyph == 0 ) return true; return false; }
 	
 								/// Checks if the character is a whitespace.
-								/// @return True if the glyph portion of the characer contains a space or WG_NO_BREAK_SPACE.
+								/// @return True if the glyph portion of the characer contains a space or ExtChar::NoBreakSpace.
 	
-		inline bool 			isWhitespace() const { if( glyph == ' ' || glyph == WG_NO_BREAK_SPACE ) return true; return false; }
+		inline bool 			isWhitespace() const { if( glyph == ' ' || glyph == (uint16_t)ExtChar::NoBreakSpace ) return true; return false; }
 	
 	protected:
 	

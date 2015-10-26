@@ -181,7 +181,7 @@ namespace wg
 	
 		// Low-level print methods
 	
-		virtual void		printLine( Pen& pen, const TextAttr& baseAttr, const Char * _pLine, int maxChars = INT_MAX, State state = WG_STATE_NORMAL );
+		virtual void		printLine( Pen& pen, const TextAttr& baseAttr, const Char * _pLine, int maxChars = INT_MAX, State state = StateEnum::Normal );
 	
 		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
 		virtual void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,

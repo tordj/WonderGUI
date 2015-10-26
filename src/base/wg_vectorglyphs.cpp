@@ -495,9 +495,9 @@ namespace wg
 	{
 		Surface_p pSurf = pSlot->bitmap.pSurface;
 	
-		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( WG_WRITE_ONLY, pSlot->bitmap.rect );
+		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( AccessMode::WriteOnly, pSlot->bitmap.rect );
 		assert( pDest != 0 );
-		assert( pSurf->pixelFormat()->type == WG_PIXEL_RGBA_8 );
+		assert( pSurf->pixelFormat()->type == PixelType::RGBA_8 );
 	
 		int dest_pitch = pSurf->pitch();
 	

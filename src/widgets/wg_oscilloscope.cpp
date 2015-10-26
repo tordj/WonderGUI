@@ -355,7 +355,7 @@ namespace wg
 				dest.x = x - dest.w / 2;
 				dest.y = y - dest.h / 2;
 	
-				m_pMarkerSkin->render( pDevice, dest, WG_STATE_NORMAL, _clip );
+				m_pMarkerSkin->render( pDevice, dest, StateEnum::Normal, _clip );
 			}
 		}
 	}

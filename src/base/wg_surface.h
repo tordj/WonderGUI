@@ -139,8 +139,8 @@ namespace wg
 																///<
 																///< Locks the surface to gain direct access to the pixel data.
 																///<
-																///< @param mode	AccessMode for the locked surface, can be WG_READ_ONLY, WG_WRITE_ONLY
-																///<				or WG_READ_WRITE.
+																///< @param mode	AccessMode for the locked surface, can be AccessMode::ReadOnly, AccessMode::WriteOnly
+																///<				or AccessMode::ReadWrite.
 																///<
 																///< Locking a surface gives the user direct access to the raw pixel data of the surface.
 																///< The mode of access can be limited to read-only or write-only, which might yield
@@ -168,8 +168,8 @@ namespace wg
 																///<
 																///< Locks a limited region of the surface to gain direct access to its pixel data.
 																///<
-																///< @param mode	AccessMode for the locked surface, can be WG_READ_ONLY, WG_WRITE_ONLY
-																///<				or WG_READ_WRITE.
+																///< @param mode	AccessMode for the locked surface, can be AccessMode::ReadOnly, AccessMode::WriteOnly
+																///<				or AccessMode::ReadWrite.
 																///< @param region	The rectangular region of the surface to lock.
 																///<
 																///< Identical to lock() except that just a specific region of the surface may be accessed
@@ -186,15 +186,15 @@ namespace wg
 																///<
 																///< Unlocks a surface that has previously been locked by a call to lock() or lockRegion().
 	
-		inline 	bool			isLocked() const { return (m_accessMode != WG_NO_ACCESS); }	///< @brief Check if surface is locked.
+		inline 	bool			isLocked() const { return (m_accessMode != AccessMode::None); }	///< @brief Check if surface is locked.
 																							///<
 																							///< Check if surface is locked.
 																							///< @return True if surface is locked, otherwise false.
 		inline	AccessMode 	lockStatus() const { return m_accessMode; }	///< @brief Check if surface is locked and in what way.
 																			///<
 																			///< Check if surface is locked and if so, what kind of access is allowed.
-																			///< @return WG_READ_ONLY, WG_WRITE_ONLY or WG_READ_WRITE if the surface is locked,
-																			///< otherwise WG_NO_ACCESS.
+																			///< @return AccessMode::ReadOnly, AccessMode::WriteOnly or AccessMode::ReadWrite if the surface is locked,
+																			///< otherwise AccessMode::None.
 		inline  Rect			regionLocked() const;						///< @brief Get the locked region of the surface.
 		inline  int				pitch() const;								///< @brief Get the pitch of the locked region.
 		inline const PixelFormat *pixelFormat() const;					///< @brief Get the pixel format of the locked region.
@@ -241,7 +241,7 @@ namespace wg
 	 **/
 	int Surface::pitch() const
 	{
-		if( m_accessMode == WG_NO_ACCESS )
+		if( m_accessMode == AccessMode::None )
 			return 0;
 	
 		return m_pitch;
@@ -256,7 +256,7 @@ namespace wg
 	 **/
 	const PixelFormat *  Surface::pixelFormat() const
 	{
-		if( m_accessMode == WG_NO_ACCESS )
+		if( m_accessMode == AccessMode::None )
 			return 0;
 	
 		return &m_pixelFormat;
@@ -314,7 +314,7 @@ namespace wg
 	 **/
 	Rect Surface::regionLocked() const
 	{
-		if( m_accessMode==WG_NO_ACCESS )
+		if( m_accessMode==AccessMode::None )
 			return Rect();
 		else
 			return m_lockRegion;

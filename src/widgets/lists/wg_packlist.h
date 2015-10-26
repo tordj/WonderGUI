@@ -111,7 +111,7 @@ namespace wg
 		bool					clear();
 	
 		void					setOrientation( Orientation orientation );
-		Orientation			orientation() const { return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL; }
+		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 	
 		void					sortWidgets();
 		void					setSortOrder( SortOrder order );

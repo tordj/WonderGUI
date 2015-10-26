@@ -97,7 +97,7 @@ namespace wg
 	
 	List::List()
 	{
-		m_selectMode = WG_SELECT_SINGLE;
+		m_selectMode = SelectMode::SingleEntry;
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -198,7 +198,7 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_MOUSE_ENTER:
+			case MsgType::MouseEnter:
 			{	
 				MouseEnterMsg_p pMsg = MouseEnterMsg::cast(_pMsg);
 				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
@@ -217,7 +217,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
 				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
@@ -230,10 +230,10 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-				if( m_selectMode != WG_SELECT_NONE && pMsg->button() == WG_BUTTON_LEFT )
+				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
 					Coord ofs = toLocal(pMsg->pointerPos());
 					if( !_listWindow().contains(ofs) )
@@ -250,9 +250,9 @@ namespace wg
 					{
 						switch( m_selectMode )
 						{
-							case WG_SELECT_NONE:
+							case SelectMode::Unselectable:
 								break;
-							case WG_SELECT_SINGLE:
+							case SelectMode::SingleEntry:
 								if( !pEntry->isSelected() )
 								{
 									_clearSelected( true );
@@ -260,11 +260,11 @@ namespace wg
 									m_pFocusedEntry = pEntry;	
 								}
 								break;
-							case WG_SELECT_FLIP:
+							case SelectMode::FlipOnSelect:
 								_selectEntry( pEntry, !pEntry->isSelected(), true );
 								m_pFocusedEntry = pEntry;
 								break;
-							case WG_SELECT_MULTI:
+							case SelectMode::MultiEntries:
 								if( pMsg->modKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
 								{
 									// Select range from focused to clicked entry.
@@ -304,7 +304,7 @@ namespace wg
 								break;
 						}
 					}
-					else if( WG_SELECT_SINGLE || WG_SELECT_MULTI )
+					else if( m_selectMode == SelectMode::SingleEntry || m_selectMode == SelectMode::MultiEntries )
 					{
 						_clearSelected(true);
 						m_pFocusedEntry = 0;
@@ -314,8 +314,8 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MSG_MOUSE_RELEASE:
-				if( m_selectMode != WG_SELECT_NONE && MouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MouseRelease:
+				if( m_selectMode != SelectMode::Unselectable && MouseReleaseMsg::cast(_pMsg)->button() == MouseButton::Left )
 				{
 					Rect dirtyRect( m_lassoBegin, m_lassoEnd );
 					_requestRender(dirtyRect);
@@ -324,19 +324,19 @@ namespace wg
 					_pMsg->swallow();
 				}
 				break;
-			case WG_MSG_MOUSE_CLICK:
-				if( m_selectMode != WG_SELECT_NONE && MouseClickMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MouseClick:
+				if( m_selectMode != SelectMode::Unselectable && MouseClickMsg::cast(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
-			case WG_MSG_MOUSE_DOUBLE_CLICK:
-			case WG_MSG_MOUSE_REPEAT:
-				if( m_selectMode != WG_SELECT_NONE && MouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MouseDoubleClick:
+			case MsgType::MouseRepeat:
+				if( m_selectMode != SelectMode::Unselectable && MouseButtonMsg::cast(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
-			case WG_MSG_MOUSE_DRAG:
+			case MsgType::MouseDrag:
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
-				if( (m_selectMode == WG_SELECT_FLIP || m_selectMode == WG_SELECT_MULTI) && pMsg->button() == WG_BUTTON_LEFT )
+				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
 					Coord ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
 					ofs = _listWindow().limit(ofs);

@@ -122,14 +122,14 @@ namespace wg
 		// Calculate linewidth
 	
 		TextAttr	attr;
-		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_NORMAL);
-		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
-		uint32_t lineWidthNormal = TextTool::lineWidth( attr, WG_STATE_NORMAL, pItem->m_pText );
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), StateEnum::Normal);
+		TextTool::addPropAttributes( attr, m_pTextProp, StateEnum::Normal);
+		uint32_t lineWidthNormal = TextTool::lineWidth( attr, StateEnum::Normal, pItem->m_pText );
 	
 		attr.clear();
-		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_HOVERED);
-		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_HOVERED);
-		uint32_t lineWidthMarked = TextTool::lineWidth( attr, WG_STATE_HOVERED, pItem->m_pText );
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), StateEnum::Hovered);
+		TextTool::addPropAttributes( attr, m_pTextProp, StateEnum::Hovered);
+		uint32_t lineWidthMarked = TextTool::lineWidth( attr, StateEnum::Hovered, pItem->m_pText );
 	
 		if( lineWidthNormal > lineWidthMarked )
 			pItem->m_width = lineWidthNormal;
@@ -251,8 +251,8 @@ namespace wg
 	
 	
 		TextAttr	attr;
-		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), WG_STATE_NORMAL);
-		TextTool::addPropAttributes( attr, m_pTextProp, WG_STATE_NORMAL);
+		TextTool::addPropAttributes( attr, Base::getDefaultTextprop(), StateEnum::Normal);
+		TextTool::addPropAttributes( attr, m_pTextProp, StateEnum::Normal);
 	
 		pen.setAttributes( attr );
 		pen.setClipRect( clip );
@@ -265,15 +265,15 @@ namespace wg
 		{
 			if( pI->isVisible() )
 			{
-				State	state = WG_STATE_DISABLED;
+				State	state = StateEnum::Disabled;
 				if( m_state.isEnabled() && pI->m_bEnabled )
 				{
-					state = WG_STATE_NORMAL;
+					state = StateEnum::Normal;
 	
 					if( itemNb == m_selectedItem )
-						state = WG_STATE_PRESSED;
+						state = StateEnum::Pressed;
 					else if( itemNb == m_markedItem )
-						state = WG_STATE_HOVERED;
+						state = StateEnum::Hovered;
 				}
 	
 				Border b = _getEntryBorder();
@@ -316,8 +316,8 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_MOUSE_MOVE:
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MouseMove:
+			case MsgType::MousePress:
 			{
 				Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 	
@@ -348,14 +348,14 @@ namespace wg
 	
 				//TODO: A click on an already open entry should close the menu.
 	
-				if( item && pMsg->type()== WG_MSG_MOUSE_PRESS )
+				if( item && pMsg->type()== MsgType::MousePress )
 				{
 					_openMenu( item );
 				}
 	
 			}
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 				m_markedItem = 0;
 				_requestRender();
 			break;
@@ -397,7 +397,7 @@ namespace wg
 	
 		if( m_pEntrySkin )
 		{
-			Rect r = m_pEntrySkin->contentRect( Rect(0,0,1000,1000), WG_STATE_NORMAL );
+			Rect r = m_pEntrySkin->contentRect( Rect(0,0,1000,1000), StateEnum::Normal );
 	
 			return Border(r.x,r.y,1000-r.w,1000-r.h);
 		}
@@ -418,7 +418,7 @@ namespace wg
 		Coord pos = toLocal( Coord(0, 0) );
 	
 		if( m_pSkin )
-			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();
+			pos = m_pSkin->contentRect( pos, StateEnum::Normal ).pos();
 	
 		int bordersWidth = _getEntryBorder().width();
 	
@@ -440,7 +440,7 @@ namespace wg
 		if( !pLayer )
 			return false;
 	
-		pLayer->openPopup( pItem->m_pMenu, this, r - pLayer->globalPos(), WG_SOUTHWEST );
+		pLayer->openPopup( pItem->m_pMenu, this, r - pLayer->globalPos(), Origo::SouthWest );
 		return true;
 	}
 	
@@ -476,7 +476,7 @@ namespace wg
 		Coord pos = toLocal( Coord(x, y) );
 	
 		if( m_pSkin )
-			pos = m_pSkin->contentRect( pos, WG_STATE_NORMAL ).pos();
+			pos = m_pSkin->contentRect( pos, StateEnum::Normal ).pos();
 	
 		if( y > 0 && x > 0 && y < (int) size().h )
 		{

@@ -35,7 +35,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Widget::Widget():m_id(0), m_pHook(0), m_pointerStyle(WG_POINTER_DEFAULT),
+	Widget::Widget():m_id(0), m_pHook(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false),
 						m_bTabLock(false), m_bPressed(false)
 	{
@@ -332,17 +332,17 @@ namespace wg
 		
 		switch( pMsg->type() )
 		{
-			case WG_MSG_MOUSE_MOVE:
-			case WG_MSG_MOUSE_PRESS:
-			case WG_MSG_MOUSE_REPEAT:
-			case WG_MSG_MOUSE_DRAG:
-			case WG_MSG_MOUSE_RELEASE:
-			case WG_MSG_MOUSE_CLICK:
-			case WG_MSG_MOUSE_DOUBLE_CLICK:
-			case WG_MSG_KEY_PRESS:
-			case WG_MSG_KEY_REPEAT:
-			case WG_MSG_KEY_RELEASE:
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::MouseMove:
+			case MsgType::MousePress:
+			case MsgType::MouseRepeat:
+			case MsgType::MouseDrag:
+			case MsgType::MouseRelease:
+			case MsgType::MouseClick:
+			case MsgType::MouseDoubleClick:
+			case MsgType::KeyPress:
+			case MsgType::KeyRepeat:
+			case MsgType::KeyRelease:
+			case MsgType::WheelRoll:
 			{
 				Widget_p pParent = parent();
 				if( pParent )
@@ -384,7 +384,7 @@ namespace wg
 		if( pParent )
 			return pParent->_getBlendMode();
 		else
-			return WG_BLENDMODE_BLEND;		// We always start out with WG_BLENDMODE_BLEND.
+			return BlendMode::Blend;		// We always start out with BlendMode::Blend.
 	}
 	
 	//____ _renderPatches() ________________________________________________________
@@ -410,7 +410,7 @@ namespace wg
 	
 	void Widget::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
 		{
 			patches.sub( Rect( geo, clip ) );
 		}
@@ -482,19 +482,19 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_MOUSE_ENTER:
+			case MsgType::MouseEnter:
 				if( m_bPressed )
 					m_state.setPressed(true);
 				else
 					m_state.setHovered(true);
 				break;
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 				m_state.setHovered(false);			// Also clears any pressed flag.
 				break;
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
-				if( pMsg->button() == WG_BUTTON_LEFT )
+				if( pMsg->button() == MouseButton::Left )
 				{
 					if( m_state.isHovered() )
 						m_state.setPressed(true);
@@ -503,10 +503,10 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
-				if( pMsg->button() == WG_BUTTON_LEFT )
+				if( pMsg->button() == MouseButton::Left )
 				{
 					if( m_state.isHovered() )
 						m_state.setPressed(false);
@@ -515,10 +515,10 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MSG_FOCUS_GAINED:
+			case MsgType::FocusGained:
 				m_state.setFocused(true);
 				break;
-			case WG_MSG_FOCUS_LOST:
+			case MsgType::FocusLost:
 				m_state.setFocused(false);
 				break;
 		}

@@ -40,13 +40,13 @@ namespace wg
 	
 	Combobox::Combobox( void ) : m_text(this), text(&m_text)
 	{
-		m_text.setAlignment( WG_WEST );
+		m_text.setAlignment( Origo::West );
 		m_text.setWrap(false);
 		m_text.setAutoEllipsis(isAutoEllipsisDefault());	
 	//	m_textColor = m_text.color();
 	//	m_textDisabledColor	= 0xFFFF;
 	
-		m_state = WG_STATE_NORMAL;
+		m_state = StateEnum::Normal;
 	
 		m_bResetCursorOnFocus = true;
 		m_bPressInInputRect = false;
@@ -229,7 +229,7 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 				if( _isEditable() && m_state.isFocused() )
 				{
 					m_text.incTime( TickMsg::cast(_pMsg)->timediff() );
@@ -237,46 +237,46 @@ namespace wg
 				}
 			break;
 	
-			case WG_MSG_POPUP_CLOSED:
+			case MsgType::PopupClosed:
 				m_state.setPressed(false);
 			break;
 	
-			case WG_MSG_ITEMS_SELECT:
+			case MsgType::ItemsSelect:
 			break;
 	
-			case WG_MSG_MOUSE_ENTER:
+			case MsgType::MouseEnter:
 				m_state.setHovered(true);
 				break;
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 				if( !m_state.isPressed() )
 					m_state.setHovered(false);
 				break;
 	
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseMove:
 			{
 				Coord pos = MouseMoveMsg::cast(_pMsg)->pointerPos() - globalPos();
 				Rect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): Rect( 0,0, size() );
 	
 				if( _isSelectable() && inputRect.contains( pos ) )
 				{
-					m_pointerStyle = WG_POINTER_IBEAM;
+					m_pointerStyle = PointerStyle::Ibeam;
 				}
 				else
 				{
-					m_pointerStyle = WG_POINTER_DEFAULT;
+					m_pointerStyle = PointerStyle::Default;
 				}
 				break;
 			}
 	
 	
 	
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
 				Coord pos = pMsg->pointerPos() - globalPos();
 	
-				if( pMsg->button() == WG_BUTTON_LEFT )
+				if( pMsg->button() == MouseButton::Left )
 				{
 					Rect inputRect = m_pSkin ? m_pSkin->contentRect( size(), m_state ): Rect( 0,0, size() );
 	
@@ -328,7 +328,7 @@ namespace wg
 							PopupLayer * pLayer = parent()->_getPopupLayer();
 							if( pLayer )
 							{
-								pLayer->openPopup( m_pMenu, this, m_pHook->globalGeo() - pLayer->globalPos(), WG_SOUTHWEST );
+								pLayer->openPopup( m_pMenu, this, m_pHook->globalGeo() - pLayer->globalPos(), Origo::SouthWest );
 	//TODO: Fix					m_routeId = Base::msgRouter()->addRoute( MsgFilter::itemsSelect(), m_pMenu, cbEntrySelected, this );
 							}
 						}
@@ -340,10 +340,10 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_DRAG:
+			case MsgType::MouseDrag:
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
-				if( pMsg->button() == WG_BUTTON_LEFT )
+				if( pMsg->button() == MouseButton::Left )
 				{
 					if( m_state.isFocused() && m_bPressInInputRect )
 					{
@@ -363,10 +363,10 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
-				if( pMsg->button() == WG_BUTTON_LEFT )
+				if( pMsg->button() == MouseButton::Left )
 				{
 					if( m_state.isFocused() )
 					{
@@ -383,7 +383,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::WheelRoll:
 			{		
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
 				if( !m_state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
@@ -424,7 +424,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_TEXT_INPUT:
+			case MsgType::TextInput:
 			{
 				TextInputMsg_p pMsg = TextInputMsg::cast(_pMsg);
 				if( _isEditable() && m_state.isFocused() )
@@ -444,14 +444,14 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_KEY_RELEASE:
+			case MsgType::KeyRelease:
 				if( m_state.isFocused() )
 				{
 					KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
 					switch( pMsg->translatedKeyCode() )
 					{
 						case WG_KEY_SHIFT:
-							if(!Base::inputHandler()->isButtonPressed(WG_BUTTON_LEFT))
+							if(!Base::inputHandler()->isButtonPressed(MouseButton::Left))
 								m_text.setSelectionMode(false);
 							_pMsg->swallow();
 						break;
@@ -459,8 +459,8 @@ namespace wg
 				}
 			break;
 	
-			case WG_MSG_KEY_PRESS:
-			case WG_MSG_KEY_REPEAT:
+			case MsgType::KeyPress:
+			case MsgType::KeyRepeat:
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
@@ -585,7 +585,7 @@ namespace wg
 		{
 			if( _isEditable() )
 			{
-				m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 				m_text.showCursor();
 				if( m_bResetCursorOnFocus )
 				{

@@ -111,7 +111,7 @@ namespace sdl_wglib
 
 		WgSDLSurfacePtr	wrapper = WgSDLSurface::create( bmp );
 
-		Surface_p pSurf = pFactory->createSurface( wrapper->size(), wrapper->isOpaque()? WG_PIXEL_RGB_8 : WG_PIXEL_ARGB_8 );
+		Surface_p pSurf = pFactory->createSurface( wrapper->size(), wrapper->isOpaque()? PixelType::RGB_8 : WG_PIXEL_ARGB_8 );
 
 		if( !pSurf )
 		{
@@ -181,7 +181,7 @@ namespace sdl_wglib
 
 		BlockSkin_p pButtonSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1,BUTTON_OFS), Size(10,0), Border(3) );
 		pButtonSkin->setContentPadding(Border(4));
-		pButtonSkin->setContentShift( WG_STATE_PRESSED, Coord(2,2) );
+		pButtonSkin->setContentShift( StateEnum::Pressed, Coord(2,2) );
 
 		BlockSkin_p pHSplitSkin = BlockSkin::createStatic(pSurface, Rect(1,SPLITS_AND_FRAME_OFS,8,2), Border(0) );
 

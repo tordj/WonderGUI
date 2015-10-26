@@ -77,49 +77,49 @@ namespace wg
 	
 	void ExtendedSkin::setHoveredContentShift( Coord shift )
 	{
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::Hovered)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredFocused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredFocusedSelected)] = shift;
 	
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::Pressed)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocusedSelected)] = shift;
 	}
 	
 	//____ setPressedContentShift() _______________________________________________
 	
 	void ExtendedSkin::setPressedContentShift( Coord shift )
 	{
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::Pressed)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocusedSelected)] = shift;
 	}
 	
 	//____ setSelectedContentShift() ______________________________________________
 	
 	void ExtendedSkin::setSelectedContentShift( Coord shift )
 	{
-		m_contentShift[_stateToIndex(WG_STATE_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::Selected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::FocusedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredFocusedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocusedSelected)] = shift;
 	}
 	
 	//____ setFocusedContentShift() _______________________________________________
 	
 	void ExtendedSkin::setFocusedContentShift( Coord shift )
 	{
-		m_contentShift[_stateToIndex(WG_STATE_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_FOCUSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED)] = shift;
-		m_contentShift[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::Focused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::FocusedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredFocused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::HoveredFocusedSelected)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
+		m_contentShift[_stateToIndex(StateEnum::PressedFocusedSelected)] = shift;
 	}
 	
 	//____ minSize() ______________________________________________________________

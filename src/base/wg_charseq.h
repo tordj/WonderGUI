@@ -191,10 +191,10 @@ namespace wg
 	{
 		friend class CharSeq;
 	public:
-		CharSeq8( const char * pChar, CodePage codePage = WG_DEFAULT_CODEPAGE );
-		CharSeq8( const char * pChar, int len, CodePage codePage = WG_DEFAULT_CODEPAGE );
-		CharSeq8( const std::string& str, CodePage codePage = WG_DEFAULT_CODEPAGE );
-		CharSeq8( const std::string& str, int ofs, int len, CodePage codePage = WG_DEFAULT_CODEPAGE );
+		CharSeq8( const char * pChar, CodePage codePage = DEFAULT_CODEPAGE );
+		CharSeq8( const char * pChar, int len, CodePage codePage = DEFAULT_CODEPAGE );
+		CharSeq8( const std::string& str, CodePage codePage = DEFAULT_CODEPAGE );
+		CharSeq8( const std::string& str, int ofs, int len, CodePage codePage = DEFAULT_CODEPAGE );
 	
 	protected:
 		CodePage	m_codepage;

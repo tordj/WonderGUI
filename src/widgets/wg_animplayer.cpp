@@ -211,7 +211,7 @@ namespace wg
 			return false;
 	
 		m_bPlaying = true;
-		m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 		return true;
 	}
 	
@@ -267,7 +267,7 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 			{
 				if( !m_pAnim || !m_state.isEnabled() )
 					return;
@@ -332,7 +332,7 @@ namespace wg
 		if( oldState.isEnabled() != m_state.isEnabled() && m_bPlaying )
 		{
 			if( m_state.isEnabled() )
-				m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			else
 			{	
 				Base::msgRouter()->deleteRoute( m_tickRouteId );

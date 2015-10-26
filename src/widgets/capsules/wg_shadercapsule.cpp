@@ -30,7 +30,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(WG_TINTMODE_OPAQUE), m_blendMode(WG_BLENDMODE_BLEND)
+	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(TintMode::Opaque), m_blendMode(BlendMode::Blend)
 	{
 	}
 	
@@ -126,7 +126,7 @@ namespace wg
 	
 			pDevice->setBlendMode(m_blendMode);
 	
-			if( m_tintMode == WG_TINTMODE_OPAQUE )
+			if( m_tintMode == TintMode::Opaque )
 				pDevice->setTintColor(m_tintColor);
 			else	// MULTIPLY
 				pDevice->setTintColor(m_tintColor*oldTC);

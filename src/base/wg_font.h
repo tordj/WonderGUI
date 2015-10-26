@@ -93,7 +93,7 @@ namespace wg
 		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style, int size );
 		bool				setDefaultVectorGlyphs( const VectorGlyphs_p& pGlyphs );
 	
-		inline VectorGlyphs_p	getVectorGlyphs( FontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[style] != 0 ) return m_aVectorGlyphs[style][size]; else return 0; }
+		inline VectorGlyphs_p	getVectorGlyphs( FontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[(int)style] != 0 ) return m_aVectorGlyphs[(int)style][size]; else return 0; }
 		inline VectorGlyphs_p	getDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
 	
 		int					replaceVectorGlyphs( const VectorGlyphs_p& pOld, const VectorGlyphs_p& pNew );

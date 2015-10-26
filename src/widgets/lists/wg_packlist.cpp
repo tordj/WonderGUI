@@ -133,7 +133,7 @@ namespace wg
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
-		m_sortOrder = WG_SORT_ASCENDING;
+		m_sortOrder = SortOrder::Ascending;
 		m_pSortFunc = 0;
 	
 		m_maxEntrySize = Size(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
@@ -271,7 +271,7 @@ namespace wg
 	
 	void PackList::setOrientation( Orientation orientation )
 	{
-		bool bHorizontal = (orientation == WG_HORIZONTAL);
+		bool bHorizontal = (orientation == Orientation::Horizontal);
 	
 		if( bHorizontal != m_bHorizontal )
 		{
@@ -455,9 +455,9 @@ namespace wg
 	
 	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque)
 			patches.sub( Rect(geo,clip) );
-		else if( m_bOpaqueEntries && blendMode == WG_BLENDMODE_BLEND )
+		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
 				patches.sub( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
@@ -527,7 +527,7 @@ namespace wg
 	
 		if( m_header.m_height != 0 )
 		{
-			bool bInvertedSort = (m_sortOrder == WG_SORT_DESCENDING);
+			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			Rect canvas = _headerGeo() + _canvas.pos();
 	
 			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
@@ -729,13 +729,13 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				Coord ofs = toLocal(pMsg->pointerPos());
 				Rect headerGeo = _headerGeo();
 				bool bHeaderHovered = headerGeo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() || 
-																 (Base::inputHandler()->isButtonPressed(WG_BUTTON_LEFT) && m_header.m_bPressed));
+																 (Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_header.m_bPressed));
 				if( bHeaderHovered != m_header.m_state.isHovered() )
 				{
 					m_header.m_state.setHovered(bHeaderHovered);
@@ -745,7 +745,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
 				if( pMsg->source() == this && m_header.m_state.isHovered() )
@@ -758,12 +758,12 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
 				Coord ofs = toLocal(pMsg->pointerPos());
 				Rect headerGeo = _headerGeo();
-				if(pMsg->button() == WG_BUTTON_LEFT && headerGeo.contains(ofs))
+				if(pMsg->button() == MouseButton::Left && headerGeo.contains(ofs))
 				{
 					m_header.m_bPressed = true;
 					m_header.m_state.setPressed(true);
@@ -775,7 +775,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_DRAG:
+			case MsgType::MouseDrag:
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( m_header.m_bPressed )
@@ -796,10 +796,10 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
-				if(pMsg->button() == WG_BUTTON_LEFT && m_header.m_bPressed )
+				if(pMsg->button() == MouseButton::Left && m_header.m_bPressed )
 				{
 					m_header.m_bPressed = false;
 					m_header.m_state.setPressed(false);
@@ -809,10 +809,10 @@ namespace wg
 					Coord ofs = toLocal(pMsg->pointerPos());
 					if( headerGeo.contains(ofs) )
 					{
-						if( m_sortOrder == WG_SORT_ASCENDING )
-							m_sortOrder = WG_SORT_DESCENDING;
+						if( m_sortOrder == SortOrder::Ascending )
+							m_sortOrder = SortOrder::Descending;
 						else
-							m_sortOrder = WG_SORT_ASCENDING;
+							m_sortOrder = SortOrder::Ascending;
 						_sortEntries();
 					}
 					pMsg->swallow();
@@ -821,9 +821,9 @@ namespace wg
 					List::_onMsg( _pMsg );
 				break;
 			}
-			case WG_MSG_KEY_PRESS:
+			case MsgType::KeyPress:
 			{
-				if( m_selectMode == WG_SELECT_NONE )
+				if( m_selectMode == SelectMode::Unselectable )
 					break;
 	
 				int				keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
@@ -831,16 +831,16 @@ namespace wg
 				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
-					(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
+					(m_selectMode == SelectMode::FlipOnSelect && keyCode == WG_KEY_SPACE ) )
 						_pMsg->swallow();
 				List::_onMsg( _pMsg );
 				break;
 			}
 	
-			case WG_MSG_KEY_REPEAT:
-			case WG_MSG_KEY_RELEASE:
+			case MsgType::KeyRepeat:
+			case MsgType::KeyRelease:
 			{
-				if( m_selectMode == WG_SELECT_NONE )
+				if( m_selectMode == SelectMode::Unselectable )
 					break;
 	
 				int				keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
@@ -848,7 +848,7 @@ namespace wg
 				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
 					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
 					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
-					(m_selectMode == WG_SELECT_FLIP && keyCode == WG_KEY_SPACE ) )
+					(m_selectMode == SelectMode::FlipOnSelect && keyCode == WG_KEY_SPACE ) )
 						_pMsg->swallow();
 				List::_onMsg( _pMsg );
 				break;
@@ -1141,7 +1141,7 @@ namespace wg
 		int first = 0;
 		int last = m_hooks.size() - 1;
 		int middle = (first+last)/2;
-	 	int negator = m_sortOrder == WG_SORT_ASCENDING ? 1 : -1;
+	 	int negator = m_sortOrder == SortOrder::Ascending ? 1 : -1;
 	
 		while( first <= last )
 		{
@@ -1212,13 +1212,13 @@ namespace wg
 					{
 						pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
-					else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
+					else if( mode == SearchMode::Geometry || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
 					{
 							pResult = pHook->_widget();
 					}
 				}
 	
-				if( !pResult && mode == WG_SEARCH_ACTION_TARGET )
+				if( !pResult && mode == SearchMode::ActionTarget )
 					pResult = pHook->_widget();						// Entries are opaque as action targets.
 	
 			}
@@ -1226,7 +1226,7 @@ namespace wg
 	
 		// Check against ourselves
 	
-		if( !pResult && ( mode == WG_SEARCH_GEOMETRY || markTest(ofs)) )
+		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )
 			pResult = this;
 			
 		return pResult;
@@ -1636,7 +1636,7 @@ namespace wg
 	
 		int listSize = sizeof(int) * m_hooks.size();
 		int * pOrderList = (int*) Base::memStackAlloc( listSize );
-		int negator = m_sortOrder == WG_SORT_ASCENDING ? 1 : -1;
+		int negator = m_sortOrder == SortOrder::Ascending ? 1 : -1;
 	
 		pOrderList[0] = 0;
 		for( int entry = 1 ; entry < m_hooks.size() ; entry++ )

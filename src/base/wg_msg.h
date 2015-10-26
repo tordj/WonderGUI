@@ -315,7 +315,7 @@ namespace wg
 			bool				doRepost();
 
 		protected:
-			Msg() : m_type(WG_MSG_DUMMY) {}
+			Msg() : m_type(MsgType::Dummy) {}
 			virtual ~Msg() {}
 			
 			MsgType				m_type;				// Type of message

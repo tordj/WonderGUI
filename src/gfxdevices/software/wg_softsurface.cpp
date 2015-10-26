@@ -37,7 +37,7 @@ namespace wg
 	
 	SoftSurface::SoftSurface( Size size, PixelType type )
 	{
-		assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
+		assert( type == PixelType::RGB_8 || type == PixelType::RGBA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
@@ -49,7 +49,7 @@ namespace wg
 	
 	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
 	{
-		assert( type == WG_PIXEL_RGB_8 || type == WG_PIXEL_RGBA_8 );
+		assert( type == PixelType::RGB_8 || type == PixelType::RGBA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 		m_pFinalizer = pFinalizer;
 		m_pitch = pitch;
@@ -120,7 +120,7 @@ namespace wg
 	
 	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
-		if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
+		if( m_pixelFormat.type == PixelType::RGBA_8 )
 	    {
 			uint32_t k = * ((uint32_t*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
 			return k;
@@ -139,7 +139,7 @@ namespace wg
 	
 	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
-		if( m_pixelFormat.type == WG_PIXEL_RGBA_8 )
+		if( m_pixelFormat.type == PixelType::RGBA_8 )
 		  {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
 		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
@@ -167,7 +167,7 @@ namespace wg
 	
 	void * SoftSurface::lock( AccessMode mode )
 	{
-		m_accessMode = WG_READ_WRITE;
+		m_accessMode = AccessMode::ReadWrite;
 		m_pPixels = m_pData;
 		m_lockRegion = Rect(0,0,m_size);
 		return m_pPixels;
@@ -187,7 +187,7 @@ namespace wg
 	
 	void SoftSurface::unlock()
 	{
-		m_accessMode = WG_NO_ACCESS;
+		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
 		m_lockRegion.clear();
 	}
@@ -212,9 +212,9 @@ namespace wg
 	
 		switch(m_pixelFormat.type)
 		{
-			case WG_PIXEL_RGB_8:
+			case PixelType::RGB_8:
 				break;
-			case WG_PIXEL_RGBA_8:
+			case PixelType::RGBA_8:
 				for(int n=0; n<length; n++)
 				{
 				  ind = y[n]*m_pitch + x[n]*4;

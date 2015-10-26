@@ -84,7 +84,7 @@ namespace wg
 			m_stateProp[i].m_bBgColor	= false;
 			m_stateProp[i].m_bgColor.argb = 0xFFFFFFFF;
 	
-			m_stateProp[i].m_style = WG_FONT_NORMAL;
+			m_stateProp[i].m_style = (uint16_t) FontAlt::Normal;
 			m_stateProp[i].m_size = 0;
 			m_stateProp[i].m_bUnderlined = false;
 		}
@@ -135,18 +135,18 @@ namespace wg
 	
 	void Textprop::setStyle( FontAlt style )
 	{
-		assert( style<WG_NB_FONTSTYLES );
+		assert( (int)style<WG_NB_FONTSTYLES );
 	
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
-			m_stateProp[i].m_style = style;
+			m_stateProp[i].m_style = (uint16_t) style;
 	}
 	
 	void Textprop::setStyle( FontAlt style, State state )
 	{
-		assert( style<WG_NB_FONTSTYLES );
+		assert( (uint16_t)style<WG_NB_FONTSTYLES );
 	
 		int i = _stateToIndex(state);
-		m_stateProp[i].m_style = style;
+		m_stateProp[i].m_style = (uint16_t)style;
 	}
 	
 	//____ setSize() ______________________________________________________________
@@ -224,13 +224,13 @@ namespace wg
 	void Textprop::clearStyle()
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
-			m_stateProp[i].m_style = WG_FONT_NORMAL;
+			m_stateProp[i].m_style = (uint16_t) FontAlt::Normal;
 	}
 	
 	void Textprop::clearStyle( State state )
 	{
 		int i = _stateToIndex(state);
-		m_stateProp[i].m_style = WG_FONT_NORMAL;
+		m_stateProp[i].m_style = (uint16_t) FontAlt::Normal;
 	}
 	
 	
@@ -439,13 +439,13 @@ namespace wg
 			case '\t':
 				m_bShowTAB = bVisible;
 				break;
-			case WG_BREAK_PERMITTED:
+			case (uint16_t) ExtChar::BreakPermitted:
 				m_bShowBreakPermitted = bVisible;
 				break;
-			case WG_HYPHEN_BREAK_PERMITTED:
+			case (uint16_t) ExtChar::HyphenBreakPermitted:
 				m_bShowHyphenBreakPermitted = bVisible;
 				break;
-			case WG_NO_BREAK_SPACE:
+			case (uint16_t) ExtChar::NoBreakSpace:
 				m_bShowNoBreakSpace = bVisible;
 				break;
 	
@@ -468,11 +468,11 @@ namespace wg
 				return m_bShowLF;
 			case '\t':
 				return m_bShowTAB;
-			case WG_BREAK_PERMITTED:
+			case (uint16_t) ExtChar::BreakPermitted:
 				return m_bShowBreakPermitted;
-			case WG_HYPHEN_BREAK_PERMITTED:
+			case (uint16_t) ExtChar::HyphenBreakPermitted:
 				return m_bShowHyphenBreakPermitted;
-			case WG_NO_BREAK_SPACE:
+			case (uint16_t) ExtChar::NoBreakSpace:
 				return m_bShowNoBreakSpace;
 			default:
 				return true;		// All other characters are always visible
@@ -564,8 +564,11 @@ namespace wg
 	
 	//_____________________________________________________________________________
 	
-	bool Textprop::isEqual(State state0, State state1) const
+	bool Textprop::isEqual(State _state0, State _state1) const
 	{
+		int state0 = (int) ((StateEnum) _state0);
+		int state1 = (int) ((StateEnum) _state1);
+		
 		return	m_stateProp[state0].m_bColored == m_stateProp[state1].m_bColored &&
 				m_stateProp[state0].m_bBgColor == m_stateProp[state1].m_bBgColor &&
 				m_stateProp[state0].m_bUnderlined == m_stateProp[state1].m_bUnderlined &&

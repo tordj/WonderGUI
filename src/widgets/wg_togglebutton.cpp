@@ -150,7 +150,7 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_KEY_PRESS:
+			case MsgType::KeyPress:
 				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = true;
@@ -158,12 +158,12 @@ namespace wg
 				}
 				break;
 	
-			case WG_MSG_KEY_REPEAT:
+			case MsgType::KeyRepeat:
 				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 					_pMsg->swallow();
 				break;
 	
-			case WG_MSG_KEY_RELEASE:
+			case MsgType::KeyRelease:
 				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
 				{
 					m_bReturnPressed = false;
@@ -171,38 +171,38 @@ namespace wg
 				}
 				break;
 		
-			case WG_MSG_MOUSE_ENTER:
+			case MsgType::MouseEnter:
 				m_state.setHovered(true);
 				break;
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 				m_state.setHovered(false);
 				break;
-			case WG_MSG_MOUSE_PRESS:
-				if( MousePressMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MousePress:
+				if( MousePressMsg::cast(_pMsg)->button() == MouseButton::Left )
 				{
 					m_bPressed = true;
 					_pMsg->swallow();
 				}
 				break;
-			case WG_MSG_MOUSE_RELEASE:
-				if( MouseReleaseMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MouseRelease:
+				if( MouseReleaseMsg::cast(_pMsg)->button() == MouseButton::Left )
 				{
 					m_bPressed = false;
 					_pMsg->swallow();
 				}
 				break;
-			case WG_MSG_MOUSE_CLICK:
-			case WG_MSG_MOUSE_DOUBLE_CLICK:
-			case WG_MSG_MOUSE_REPEAT:
-			case WG_MSG_MOUSE_DRAG:
-				if( MouseButtonMsg::cast(_pMsg)->button() == WG_BUTTON_LEFT )
+			case MsgType::MouseClick:
+			case MsgType::MouseDoubleClick:
+			case MsgType::MouseRepeat:
+			case MsgType::MouseDrag:
+				if( MouseButtonMsg::cast(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
 	
-			case WG_MSG_FOCUS_GAINED:
+			case MsgType::FocusGained:
 				m_state.setFocused(true);
 				break;
-			case WG_MSG_FOCUS_LOST:
+			case MsgType::FocusLost:
 				m_state.setFocused(false);
 				m_bReturnPressed = false;
 				m_bPressed = false;

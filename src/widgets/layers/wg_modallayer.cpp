@@ -398,7 +398,7 @@ namespace wg
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
 	
-		if( mode == WG_SEARCH_ACTION_TARGET )
+		if( mode == SearchMode::ActionTarget )
 		{
 			ModalHook * pHook = m_modalHooks.last();
 	
@@ -552,25 +552,25 @@ namespace wg
 		{
 			InputMsg_p pMsg = InputMsg::cast(_pMsg);
 			
-			if( !m_modalHooks.isEmpty() && _findWidget( pMsg->pointerPos(), WG_SEARCH_ACTION_TARGET ) == this )
+			if( !m_modalHooks.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{
-					case WG_MSG_MOUSE_PRESS:
+					case MsgType::MousePress:
 					{
 						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 		
-					case WG_MSG_MOUSE_RELEASE:
+					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 		
-					case WG_MSG_MOUSE_MOVE:
+					case MsgType::MouseMove:
 					{
 						Base::msgRouter()->post( new ModalMoveOutsideMsg(this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}

@@ -47,7 +47,7 @@ namespace wg
 	public:
 		inline FlexOrigo() : x(0.f), y(0.f) {}
 		inline FlexOrigo( float _x, float _y ) : x(_x), y(_y) {}
-		inline FlexOrigo( Origo origo ) : x(s_origoTab[origo][0]), y(s_origoTab[origo][1]) {}
+		inline FlexOrigo( Origo origo ) : x(s_origoTab[(int)origo][0]), y(s_origoTab[(int)origo][1]) {}
 	
 		inline Coord position( Size sz ) { return Coord((int)(x*(sz.w+0.5f)),(int)(y*(sz.h+0.5f))); }
 	
@@ -82,9 +82,9 @@ namespace wg
 		bool	setStretching( const FlexOrigo& topLeftOrigo, const FlexOrigo& bottomRightOrigo, Border padding = 0 );
 		bool	setStretching( const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding = 0 );
 	
-		bool	setFloating( const Coord& pos, const FlexOrigo& origo = WG_NORTHWEST );
+		bool	setFloating( const Coord& pos, const FlexOrigo& origo = Origo::NorthWest );
 		bool	setFloating( const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot );
-		bool	setFloating( const Rect& geometry, const FlexOrigo& origo = WG_NORTHWEST );
+		bool	setFloating( const Rect& geometry, const FlexOrigo& origo = Origo::NorthWest );
 		bool	setFloating( const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot );
 	
 	
@@ -228,9 +228,9 @@ namespace wg
 		FlexHook *	addWidget( const Widget_p& pWidget, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
 								  const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding = 0 );
 	
-		FlexHook *	addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo = WG_NORTHWEST, Border padding = 0 );
+		FlexHook *	addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo = Origo::NorthWest, Border padding = 0 );
 		FlexHook *	addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding = 0 );
-		FlexHook *	addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo = WG_NORTHWEST, Border padding = 0 );
+		FlexHook *	addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo = Origo::NorthWest, Border padding = 0 );
 		FlexHook *	addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding = 0 );
 	
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling );
@@ -239,9 +239,9 @@ namespace wg
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
 									 const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding = 0 );
 	
-		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo = WG_NORTHWEST, Border padding = 0 );
+		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo = Origo::NorthWest, Border padding = 0 );
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding = 0 );
-		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo = WG_NORTHWEST, Border padding = 0 );
+		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo = Origo::NorthWest, Border padding = 0 );
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding = 0 );
 	
 		bool			removeWidget( const Widget_p& pWidget );

@@ -60,7 +60,7 @@ namespace wg
 		virtual ~IconField() {};
 	
 	
-		bool			set( const Skin_p& pIconGfx, Origo origo = WG_WEST, Border padding = Border(0), 
+		bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0), 
 									float _scale = 0.f, bool _bOverlap = false );
 		void			clear();
 	

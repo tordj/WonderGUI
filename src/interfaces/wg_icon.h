@@ -65,7 +65,7 @@ namespace wg
 		static Icon_p			cast( const Interface_p& pInterface );
 		inline Icon_p			ptr() { return Icon_p(_object(),this); }
 	
-		inline bool			set( const Skin_p& pIconGfx, Origo origo = WG_WEST, Border padding = Border(0),
+		inline bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0),
 								 float scale = 0.f, bool bOverlap = false ) { return m_pField->set(pIconGfx,origo,padding,scale,bOverlap); }
 		inline void			clear() { m_pField->clear(); }
 	

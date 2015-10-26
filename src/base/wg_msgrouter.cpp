@@ -340,7 +340,7 @@ namespace wg
 	
 	RouteId MsgRouter::_addRoute( MsgType type, Route * pRoute )
 	{
-		if( type == WG_MSG_DUMMY || type >= WG_MSG_MAX )
+		if( type == MsgType::Dummy || type >= MsgType::Max )
 			return 0;
 	
 		Chain<Route>& chain = m_typeRoutes[type];

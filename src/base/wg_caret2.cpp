@@ -140,7 +140,7 @@ namespace wg
 		{
 			Rect r = dirtyRect(pos);
 			BlendMode oldMode = pDevice->getBlendMode();
-			pDevice->setBlendMode(WG_BLENDMODE_INVERT);
+			pDevice->setBlendMode(BlendMode::Invert);
 			pDevice->fill( Rect(r,clip), Color::black );
 			pDevice->setBlendMode(oldMode);
 		}

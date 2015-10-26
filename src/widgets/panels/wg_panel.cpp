@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	Panel::Panel() : m_bTooltipGroup(false), m_maskOp(WG_MASKOP_RECURSE)
+	Panel::Panel() : m_bTooltipGroup(false), m_maskOp(MaskOp::Recurse)
 	{
 	}
 	
@@ -106,7 +106,7 @@ namespace wg
 	void Panel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
 		{
 			patches.sub( Rect(geo,clip) );
 			return;
@@ -114,7 +114,7 @@ namespace wg
 		
 		switch( m_maskOp )
 		{
-			case WG_MASKOP_RECURSE:
+			case MaskOp::Recurse:
 			{
 				Rect childGeo;
 				PanelHook * p = static_cast<PanelHook*>(_firstHookWithGeo( childGeo ));
@@ -127,9 +127,9 @@ namespace wg
 				}
 				break;
 			}
-			case WG_MASKOP_SKIP:
+			case MaskOp::Skip:
 				break;
-			case WG_MASKOP_MASK:
+			case MaskOp::Mask:
 				patches.sub( Rect(geo,clip) );
 				break;
 		}
@@ -212,16 +212,16 @@ namespace wg
 	
 		switch( widthPolicy )
 		{
-			case WG_DEFAULT:
+			case SizePolicy::Default:
 			{
 				sz.h = WgUtil::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
 				sz.w = _paddedMatchingWidth(sz.h);
 				break;
-			case WG_BOUND:
+			case SizePolicy::Bound:
 				sz.w = specifiedSize.w;
 				sz.h = WgUtil::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 				break;
-			case WG_CONFINED:
+			case SizePolicy::Confined:
 				if( defaultSize.w > specifiedSize.w )
 				{
 					sz.w = specifiedSize.w;
@@ -235,7 +235,7 @@ namespace wg
 						sz.w = specifiedSize.w;
 				}
 				break;
-			case WG_EXPANDED:
+			case SizePolicy::Expanded:
 				if( defaultSize.w < specifiedSize.w )
 				{
 					sz.w = specifiedSize.w;

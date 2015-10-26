@@ -55,13 +55,13 @@ namespace wg
 		m_pCursor		= 0;
 		m_pCursorStyle	= 0;
 	
-		m_markedLinkState = WG_STATE_NORMAL;
+		m_markedLinkState = StateEnum::Normal;
 	
-		m_alignment		= WG_NORTHWEST;
-		m_tintMode		= WG_TINTMODE_MULTIPLY;
+		m_alignment		= Origo::NorthWest;
+		m_tintMode		= TintMode::Multiply;
 		m_lineSpaceAdj	= 1.f;
 	
-		m_state			= WG_STATE_NORMAL;
+		m_state			= StateEnum::Normal;
 	
 		m_pHardLines	= new LegacyTextLine[1];
 		m_nHardLines	= 1;
@@ -77,7 +77,7 @@ namespace wg
 		m_bWrap			= true;
 		m_bAutoEllipsis = true;
 	
-		m_editMode		= WG_TEXT_STATIC;
+		m_editMode		= TextEditMode::Static;
 	
 		m_selStartLine = 0;
 		m_selEndLine = 0;
@@ -1443,7 +1443,7 @@ namespace wg
 			const Char * 	pLineStart = p;
 			const Char *	pbp = 0;				// BreakPoint-pointer.
 			bool			bBreakSkips = false;	// Set if the character on the breakpoint should be skipped.
-			bool			bBreakAfterPrev = false;// Set if we can break here due to a WG_BREAK_BEFORE on previous character.
+			bool			bBreakAfterPrev = false;// Set if we can break here due to a BreakRules::BreakBefore on previous character.
 	
 			while( true )
 			{
@@ -1486,14 +1486,14 @@ namespace wg
 				BreakRules breakStatus = TextTool::isBreakAllowed( p->glyph, attr.breakLevel );
 				switch( breakStatus )
 				{
-				case WG_BREAK_BEFORE:
+				case BreakRules::BreakBefore:
 					pbp = p;
 					bBreakSkips = false;
 					break;
 	
-				case WG_BREAK_ON:
+				case BreakRules::BreakOn:
 	
-					if( p->getGlyph() == WG_HYPHEN_BREAK_PERMITTED )
+					if( p->getGlyph() == (uint8_t) ExtChar::HyphenBreakPermitted )
 					{
 						// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 						// We don't take kerning into account here, not so important.
@@ -1507,7 +1507,7 @@ namespace wg
 					bBreakSkips = true;
 					break;
 	
-				case WG_BREAK_AFTER:
+				case BreakRules::BreakAfter:
 					if( bBreakAfterPrev )
 					{
 						pbp = p;
@@ -1516,7 +1516,7 @@ namespace wg
 					bBreakAfterPrev = true;
 					break;
 	
-				default:				// WG_NO_BREAK
+				default:				// BreakRules::NoBreak
 					break;
 	
 				}
@@ -1736,7 +1736,7 @@ namespace wg
 	{
 		Caret_p p = m_pCursorStyle?m_pCursorStyle:Base::getDefaultCursor();
 	
-		if( p && m_editMode == WG_TEXT_EDITABLE )
+		if( p && m_editMode == TextEditMode::Editable )
 		{
 			int lenInsert = p->advance(Caret::INS);
 			int lenOvr = p->advance(Caret::OVR);
@@ -1811,7 +1811,7 @@ namespace wg
 	{
 		int		ofs = 0;
 	
-		if( m_alignment != WG_NORTHWEST && m_alignment != WG_NORTH && m_alignment != WG_NORTHEAST )
+		if( m_alignment != Origo::NorthWest && m_alignment != Origo::North && m_alignment != Origo::NorthEast )
 		{
 			ofs = WgUtil::origoToRect( m_alignment, container.size(), Size(0,height() )).y;
 			if( ofs < 0 )
@@ -1832,7 +1832,7 @@ namespace wg
 	{
 		int		ofs = 0;
 	
-		if( m_alignment != WG_NORTHWEST && m_alignment != WG_WEST && m_alignment != WG_SOUTHWEST )
+		if( m_alignment != Origo::NorthWest && m_alignment != Origo::West && m_alignment != Origo::SouthWest )
 		{
 			ofs = WgUtil::origoToRect( m_alignment, container.size(), Size(getSoftLineWidth(line),0 )).x;
 			if( ofs < 0 )
@@ -2290,8 +2290,8 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_MOUSE_ENTER:
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
 			{
 	/*
 				Coord pointerOfs = pMsg->pointerPos();
@@ -2311,7 +2311,7 @@ namespace wg
 						pMsgRouter->post( new LinkMouseEnterMsg( pLink ));
 	
 						m_pMarkedLink = pLink;
-						m_markedLinkState = WG_STATE_HOVERED;
+						m_markedLinkState = StateEnum::Hovered;
 						bRefresh = true;
 					}
 				}
@@ -2320,7 +2320,7 @@ namespace wg
 			}
 	
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 			{
 				if( m_pMarkedLink )
 				{
@@ -2331,18 +2331,18 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 			{
 				if( m_pMarkedLink )
 				{
 					pMsgRouter->post( new LinkMousePressMsg( m_pMarkedLink, MouseButtonMsg::cast(pMsg)->button() ));
-					m_markedLinkState = WG_STATE_PRESSED;
+					m_markedLinkState = StateEnum::Pressed;
 					bRefresh = true;
 				}
 				break;
 			}
 	
-			case WG_MSG_MOUSE_REPEAT:
+			case MsgType::MouseRepeat:
 			{
 				if( m_pMarkedLink )
 				{
@@ -2351,24 +2351,24 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				if( m_pMarkedLink )
 				{
 					pMsgRouter->post( new LinkMouseReleaseMsg( m_pMarkedLink, MouseButtonMsg::cast(pMsg)->button() ));
 	
-					if( m_markedLinkState == WG_STATE_PRESSED )
+					if( m_markedLinkState == StateEnum::Pressed )
 					{
 						pMsgRouter->post( new LinkMouseClickMsg( m_pMarkedLink, MouseButtonMsg::cast(pMsg)->button() ));
 						pMsgRouter->post( new LinkSelectMsg( m_pMarkedLink ));				
 					}
-					m_markedLinkState = WG_STATE_HOVERED;
+					m_markedLinkState = StateEnum::Hovered;
 					bRefresh = true;
 				}
 				break;
 			}
 	
-			case WG_MSG_MOUSE_DOUBLE_CLICK:
+			case MsgType::MouseDoubleClick:
 				if( m_pMarkedLink )
 					pMsgRouter->post( new LinkMouseDoubleClickMsg( m_pMarkedLink, MouseButtonMsg::cast(pMsg)->button() ));
 				break;
@@ -2564,12 +2564,12 @@ namespace wg
 			}
 			else
 			{
-				if( m_state == WG_STATE_DISABLED )
-					state = WG_STATE_DISABLED;
+				if( m_state == StateEnum::Disabled )
+					state = StateEnum::Disabled;
 				else if( pLink->hasBeenAccessed() )
-					state = WG_STATE_SELECTED;
+					state = StateEnum::Selected;
 				else
-					state = WG_STATE_NORMAL;
+					state = StateEnum::Normal;
 			}
 	
 	

@@ -53,8 +53,8 @@ namespace wg
 		void				setEditMode(TextEditMode mode);
 		inline TextEditMode editMode() const { return m_editMode; }
 	
-		inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-		inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
+		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
 		void				setCursorSkin( const Caret_p& pCursor );
 		inline Caret_p	cursorSkin() const { return m_pCursorSkin; }

@@ -57,7 +57,7 @@ namespace wg
 	
 		m_size = 0;
 		m_wantedSize = 0;
-		m_style = WG_FONT_NORMAL;
+		m_style = FontAlt::Normal;
 	
 		m_pGlyph = &m_dummyGlyph;
 		m_pPrevGlyph = &m_dummyGlyph;
@@ -193,7 +193,7 @@ namespace wg
 			}
 		}
 	
-		if( chr == WG_BREAK_PERMITTED || chr == WG_HYPHEN_BREAK_PERMITTED )
+		if( chr == (uint16_t) ExtChar::BreakPermitted || chr == (uint16_t) ExtChar::HyphenBreakPermitted )
 		{
 			m_dummyGlyph.setAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
@@ -308,11 +308,11 @@ namespace wg
 				break;
 			case Caret::TINTED:
 				tintColor = m_pDevice->getTintColor();
-				m_pDevice->setTintColor( tintColor * instance.text()->properties()->color( WG_STATE_NORMAL ) );
+				m_pDevice->setTintColor( tintColor * instance.text()->properties()->color( StateEnum::Normal ) );
 				break;
 			case Caret::INVERT_BG:
 				blendMode = m_pDevice->getBlendMode();
-				m_pDevice->setBlendMode(WG_BLENDMODE_INVERT);
+				m_pDevice->setBlendMode(BlendMode::Invert);
 				break;
 		}
 	

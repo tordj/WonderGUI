@@ -1310,12 +1310,12 @@ namespace wg
 	
 	void CharBuffer::clearStyle( int ofs, int len, State state )
 	{
-		_modifyProperties( ofs, len, TextTool::PropStateStyleModifier(WG_FONT_NORMAL,state) );
+		_modifyProperties( ofs, len, TextTool::PropStateStyleModifier(FontAlt::Normal,state) );
 	}
 	
 	void CharBuffer::clearStyle( int ofs, int len )
 	{
-		_modifyProperties( ofs, len, TextTool::PropStyleModifier(WG_FONT_NORMAL) );
+		_modifyProperties( ofs, len, TextTool::PropStyleModifier(FontAlt::Normal) );
 	}
 	
 	//___ clearFont() ______________________________________________________________

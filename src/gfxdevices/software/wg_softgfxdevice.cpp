@@ -122,14 +122,14 @@ namespace wg
 	
 		// Skip calls that won't affect destination
 	
-		if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
+		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add) )
 			return;
 	
 		// Optimize calls
 	
 		BlendMode blendMode = m_blendMode;
-		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
+			blendMode = BlendMode::Opaque;
 	
 		//
 	
@@ -141,7 +141,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				for( int y = 0 ; y < rect.h ; y++ )
 				{
@@ -155,7 +155,7 @@ namespace wg
 				}
 			}
 			break;
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				int storedRed = ((int)fillColor.r) * fillColor.a;
 				int storedGreen = ((int)fillColor.g) * fillColor.a;
@@ -174,7 +174,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
 				int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
@@ -195,7 +195,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
@@ -213,7 +213,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
@@ -252,7 +252,7 @@ namespace wg
 	
 		// Skip calls that won't affect destination
 	
-		if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
+		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add) )
 			return;
 	
 		// Fill all but anti-aliased edges
@@ -267,8 +267,8 @@ namespace wg
 		// Optimize calls
 	
 		BlendMode blendMode = m_blendMode;
-		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
+			blendMode = BlendMode::Opaque;
 	
 		// Draw the sides
 	
@@ -278,16 +278,16 @@ namespace wg
 		int aaBottom = ((int)((rect.y + rect.h) * 256)) & 0xFF;
 	
 		if( aaTop != 0 )
-			_drawHorrVertLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, WG_HORIZONTAL );
+			_drawHorrVertLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, Orientation::Horizontal );
 	
 		if( aaBottom != 0 )
-			_drawHorrVertLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, WG_HORIZONTAL );
+			_drawHorrVertLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, Orientation::Horizontal );
 	
 		if( aaLeft != 0 )
-			_drawHorrVertLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, WG_VERTICAL );
+			_drawHorrVertLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, Orientation::Vertical );
 	
 		if( aaRight != 0 )
-			_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, WG_VERTICAL );
+			_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, Orientation::Vertical );
 	
 		// Draw corner pieces
 	
@@ -327,7 +327,7 @@ namespace wg
 		if( x + length > clip.x + clip.w )
 			length = clip.x + clip.w - x;
 	
-		_drawHorrVertLine( x, start.y, length, col, WG_HORIZONTAL );
+		_drawHorrVertLine( x, start.y, length, col, Orientation::Horizontal );
 	}
 	
 	//____ clipDrawVertLine() _____________________________________________________
@@ -348,7 +348,7 @@ namespace wg
 		if( y + length > clip.y + clip.h )
 			length = clip.y + clip.h - y;
 	
-		_drawHorrVertLine( start.x, y, length, col, WG_VERTICAL );
+		_drawHorrVertLine( start.x, y, length, col, Orientation::Vertical );
 	}
 	
 	//____ clipPlotSoftPixels() _______________________________________________________
@@ -469,14 +469,14 @@ namespace wg
 	
 		// Skip calls that won't affect destination
 	
-		if( fillColor.a == 0 && (m_blendMode == WG_BLENDMODE_BLEND || m_blendMode == WG_BLENDMODE_ADD) )
+		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add) )
 			return;
 	
 		// Optimize calls
 	
 		BlendMode blendMode = m_blendMode;
-		if( blendMode == WG_BLENDMODE_BLEND && fillColor.a == 255 )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
+			blendMode = BlendMode::Opaque;
 	
 		//
 	
@@ -486,7 +486,7 @@ namespace wg
 	
 		int inc;
 	
-		if( orientation == WG_HORIZONTAL )
+		if( orientation == Orientation::Horizontal )
 			inc = pixelBytes;
 		else
 			inc = pitch;
@@ -495,7 +495,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				for( int x = 0 ; x < _length*inc ; x+=inc )
 				{
@@ -505,7 +505,7 @@ namespace wg
 				}
 			}
 			break;
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				int storedRed = ((int)fillColor.r) * fillColor.a;
 				int storedGreen = ((int)fillColor.g) * fillColor.a;
@@ -521,7 +521,7 @@ namespace wg
 	
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				int storedRed = m_pDivTab[fillColor.r * (int) fillColor.a];
 				int storedGreen = m_pDivTab[fillColor.g * (int) fillColor.a];
@@ -538,7 +538,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
@@ -552,7 +552,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
@@ -585,14 +585,14 @@ namespace wg
 		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
 	
 		int inc;
-		if( orientation == WG_HORIZONTAL )
+		if( orientation == Orientation::Horizontal )
 			inc = pixelBytes;
 		else
 			inc = pitch;
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				int storedRed = ((int)_col.r) * _aa;
 				int storedGreen = ((int)_col.g) * _aa;
@@ -607,7 +607,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				int aa = m_pDivTab[_col.a * _aa];
 				
@@ -624,7 +624,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				int aa = m_pDivTab[_col.a * _aa];
 				
@@ -643,7 +643,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				int storedRed = (int) m_pDivTab[_col.r*_aa];
 				int storedGreen = (int) m_pDivTab[_col.g*_aa];
@@ -659,7 +659,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				//TODO: Translate to use m_pDivTab
 	
@@ -697,7 +697,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				int storedRed = ((int)_col.r) * _aa;
 				int storedGreen = ((int)_col.g) * _aa;
@@ -709,7 +709,7 @@ namespace wg
 				pDst[2] = (uint8_t) ((pDst[2]*invAlpha + storedRed) >> 8);
 				break;
 			}
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				int aa = _col.a * _aa;
 	
@@ -723,7 +723,7 @@ namespace wg
 				pDst[2] = (uint8_t) ((pDst[2]*invAlpha + storedRed) >> 8);
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				int aa = _col.a * _aa;
 	
@@ -739,7 +739,7 @@ namespace wg
 				pDst[2] = m_limitTable[pDst[2] + storedRed];
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				int storedRed = (int)_col.r;
 				int storedGreen = (int)_col.g;
@@ -752,7 +752,7 @@ namespace wg
 				pDst[2] = ( (pDst[2]*invAlpha) + (_aa * pDst[2] * storedRed) ) >> 16;
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				int storedRed = (int)_col.r;
 				int storedGreen = (int)_col.g;
@@ -1182,12 +1182,12 @@ namespace wg
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		BlendMode		blendMode = m_blendMode;
-		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend )
+			blendMode = BlendMode::Opaque;
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				if( srcPixelBytes == 4 && dstPixelBytes == 4 )
 				{
@@ -1223,7 +1223,7 @@ namespace wg
 	
 				break;
 			}
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				if( srcPixelBytes == 4 )
 				{
@@ -1250,7 +1250,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				if( srcPixelBytes == 4 )
 				{
@@ -1288,7 +1288,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
@@ -1305,7 +1305,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
@@ -1351,12 +1351,12 @@ namespace wg
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		BlendMode		blendMode = m_blendMode;
-		if( srcPixelBytes == 3 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
+			blendMode = BlendMode::Opaque;
 	
 		switch( blendMode )
 		{
-			case WG_BLENDMODE_OPAQUE:
+			case BlendMode::Opaque:
 			{
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
@@ -1377,7 +1377,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_BLEND:
+			case BlendMode::Blend:
 			{
 				if( srcPixelBytes == 4 )
 				{
@@ -1432,7 +1432,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_ADD:
+			case BlendMode::Add:
 			{
 				if( srcPixelBytes == 4 )
 				{
@@ -1484,7 +1484,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_MULTIPLY:
+			case BlendMode::Multiply:
 			{
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
@@ -1510,7 +1510,7 @@ namespace wg
 				}
 				break;
 			}
-			case WG_BLENDMODE_INVERT:
+			case BlendMode::Invert:
 			{
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
@@ -1651,32 +1651,32 @@ namespace wg
 		int dh = (int) _dh;
 	
 		BlendMode		blendMode = m_blendMode;
-		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == WG_BLENDMODE_BLEND && m_tintColor.a == 255 )
-			blendMode = WG_BLENDMODE_OPAQUE;
+		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
+			blendMode = BlendMode::Opaque;
 	
 		if( m_tintColor == 0xFFFFFFFF )
 		{
 			switch( blendMode )
 			{
-				case WG_BLENDMODE_OPAQUE:
+				case BlendMode::Opaque:
 					_stretchBlitOpaque( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_BLEND:
+				case BlendMode::Blend:
 					if( pSrcSurf->m_pixelFormat.bits == 24 )
 						assert(0);							// SHOULD NEVER GET HERE!
 					else
 						_stretchBlitBlend32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_ADD:
+				case BlendMode::Add:
 					if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitAdd24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitAdd32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_MULTIPLY:
+				case BlendMode::Multiply:
 					_stretchBlitMultiply( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_INVERT:
+				case BlendMode::Invert:
 					_stretchBlitInvert( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 			}
@@ -1685,25 +1685,25 @@ namespace wg
 		{
 			switch( blendMode )
 			{
-				case WG_BLENDMODE_OPAQUE:
+				case BlendMode::Opaque:
 					_stretchBlitTintedOpaque( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_BLEND:
+				case BlendMode::Blend:
 					if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitTintedBlend24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedBlend32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_ADD:
+				case BlendMode::Add:
 					if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitTintedAdd24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedAdd32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_MULTIPLY:
+				case BlendMode::Multiply:
 					_stretchBlitTintedMultiply( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
-				case WG_BLENDMODE_INVERT:
+				case BlendMode::Invert:
 					_stretchBlitTintedInvert( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 			}

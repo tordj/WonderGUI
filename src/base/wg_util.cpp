@@ -44,7 +44,7 @@ namespace wg
 	{
 		switch( type )
 		{
-			case WG_PIXEL_RGB_8:
+			case PixelType::RGB_8:
 				wFormat.type = type;
 				wFormat.bits = 24;
 	
@@ -76,7 +76,7 @@ namespace wg
 #endif	
 				return true;
 	
-			case WG_PIXEL_RGBA_8:
+			case PixelType::RGBA_8:
 				wFormat.type = type;
 				wFormat.bits = 32;
 	
@@ -110,7 +110,7 @@ namespace wg
 				return true;
 	
 			default:
-				wFormat.type = WG_PIXEL_UNKNOWN;
+				wFormat.type = PixelType::Unknown;
 				wFormat.bits = 0;
 	
 				wFormat.R_mask = 0;
@@ -137,14 +137,14 @@ namespace wg
 	{
 		switch( policy )
 		{
-			case WG_DEFAULT:
+			case SizePolicy::Default:
 				return defaultSize;
-			case WG_BOUND:
+			case SizePolicy::Bound:
 				return specifiedSize;
-			case WG_CONFINED:
+			case SizePolicy::Confined:
 				if( defaultSize > specifiedSize )
 					return specifiedSize;
-			case WG_EXPANDED:
+			case SizePolicy::Expanded:
 				if( defaultSize < specifiedSize )
 					return specifiedSize;
 		}
@@ -253,31 +253,31 @@ namespace wg
 		switch( origo )
 		{
 			default:
-			case WG_NORTHWEST:
+			case Origo::NorthWest:
 				return Coord(0,0);
 	
-			case WG_NORTH:
+			case Origo::North:
 				return Coord( base.w/2,0 );
 	
-			case WG_NORTHEAST:
+			case Origo::NorthEast:
 				return Coord( base.w,0 );
 	
-			case WG_EAST:
+			case Origo::East:
 				return Coord( base.w, base.h/2 );
 	
-			case WG_SOUTHEAST:
+			case Origo::SouthEast:
 				return Coord( base.w, base.h );
 	
-			case WG_SOUTH:
+			case Origo::South:
 				return Coord( base.w/2, base.h );
 	
-			case WG_SOUTHWEST:
+			case Origo::SouthWest:
 				return Coord( 0, base.h );
 	
-			case WG_WEST:
+			case Origo::West:
 				return Coord( 0, base.h/2 );
 	
-			case WG_CENTER:
+			case Origo::Center:
 				return Coord( base.w/2, base.h/2 );
 		}
 	}
@@ -289,31 +289,31 @@ namespace wg
 		switch( origo )
 		{
 			default:
-			case WG_NORTHWEST:
+			case Origo::NorthWest:
 				return Rect(0,0, rect);
 	
-			case WG_NORTH:
+			case Origo::North:
 				return Rect( base.w/2 - rect.w/2, 0, rect );
 	
-			case WG_NORTHEAST:
+			case Origo::NorthEast:
 				return Rect( base.w - rect.w, 0, rect );
 	
-			case WG_EAST:
+			case Origo::East:
 				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
 	
-			case WG_SOUTHEAST:
+			case Origo::SouthEast:
 				return Rect( base.w - rect.w, base.h - rect.h, rect );
 	
-			case WG_SOUTH:
+			case Origo::South:
 				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
 	
-			case WG_SOUTHWEST:
+			case Origo::SouthWest:
 				return Rect( 0, base.h - rect.h, rect );
 	
-			case WG_WEST:
+			case Origo::West:
 				return Rect( 0, base.h/2 - rect.h/2, rect );
 	
-			case WG_CENTER:
+			case Origo::Center:
 				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}
 	}

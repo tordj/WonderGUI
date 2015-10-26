@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	StandardPresenter::StandardPresenter() : m_alignment(WG_NORTHWEST)
+	StandardPresenter::StandardPresenter() : m_alignment(Origo::NorthWest)
 	{
 	}
 	
@@ -134,7 +134,7 @@ namespace wg
 	
 		TextAttr2		attr = baseAttr;
 		Font_p pFont = attr.pFont;
-		Glyphset_p pGlyphSet = pFont->getGlyphset( WG_FONT_NORMAL, attr.size);
+		Glyphset_p pGlyphSet = pFont->getGlyphset( FontAlt::Normal, attr.size);
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
@@ -299,7 +299,7 @@ namespace wg
 	
 		TextAttr2		attr = baseAttr;
 		Font_p pFont = attr.pFont;
-		Glyphset_p pGlyphSet = pFont->getGlyphset(WG_FONT_NORMAL, attr.size);
+		Glyphset_p pGlyphSet = pFont->getGlyphset(FontAlt::Normal, attr.size);
 	
 		
 		
@@ -383,18 +383,18 @@ namespace wg
 	{
 		switch( m_alignment )
 		{
-			case WG_NORTHWEST:
-			case WG_WEST:
-			case WG_SOUTHWEST:
+			case Origo::NorthWest:
+			case Origo::West:
+			case Origo::SouthWest:
 			default:
 				return 0;
-			case WG_NORTH:
-			case WG_CENTER:
-			case WG_SOUTH:
+			case Origo::North:
+			case Origo::Center:
+			case Origo::South:
 				return (fieldWidth - pLine->width) / 2;
-			case WG_NORTHEAST:
-			case WG_EAST:
-			case WG_SOUTHEAST:
+			case Origo::NorthEast:
+			case Origo::East:
+			case Origo::SouthEast:
 				return fieldWidth - pLine->width;
 		}	
 	}
@@ -405,18 +405,18 @@ namespace wg
 	{
 		switch( m_alignment )
 		{
-			case WG_NORTHWEST:
-			case WG_NORTH:
-			case WG_NORTHEAST:
+			case Origo::NorthWest:
+			case Origo::North:
+			case Origo::NorthEast:
 			default:
 				return 0;
-			case WG_WEST:
-			case WG_CENTER:
-			case WG_EAST:
+			case Origo::West:
+			case Origo::Center:
+			case Origo::East:
 				return (fieldHeight - pHeader->preferredSize.h) / 2;
-			case WG_SOUTHWEST:
-			case WG_SOUTH:
-			case WG_SOUTHEAST:
+			case Origo::SouthWest:
+			case Origo::South:
+			case Origo::SouthEast:
 				return fieldHeight - pHeader->preferredSize.h;
 		}	
 	}

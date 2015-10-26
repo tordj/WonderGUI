@@ -223,8 +223,8 @@ namespace wg
 	
 	
 	
-		static void			addPropAttributes( TextAttr& attr, const Textprop_p& pProp, State state = WG_STATE_NORMAL );
-	//	static void			setAttrColor( TextAttr& attr, const ColorsetPtr& pColors, State state = WG_STATE_NORMAL );
+		static void			addPropAttributes( TextAttr& attr, const Textprop_p& pProp, State state = StateEnum::Normal );
+	//	static void			setAttrColor( TextAttr& attr, const ColorsetPtr& pColors, State state = StateEnum::Normal );
 	
 		static Caret_p		getCursor( const LegacyTextField * pText );
 		static Textprop_p	getSelectionProperties( const LegacyTextField * pText );

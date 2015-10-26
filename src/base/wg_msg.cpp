@@ -99,10 +99,10 @@ namespace wg
 	
 	bool Msg::isMouseMsg() const
 	{
-		if( m_type == WG_MSG_WHEEL_ROLL ||
-			m_type == WG_MSG_MOUSE_ENTER ||
-			m_type == WG_MSG_MOUSE_LEAVE ||	
-			m_type == WG_MSG_MOUSE_MOVE ||	
+		if( m_type == MsgType::WheelRoll ||
+			m_type == MsgType::MouseEnter ||
+			m_type == MsgType::MouseLeave ||	
+			m_type == MsgType::MouseMove ||	
 			isMouseButtonMsg() )
 			return true;
 		else
@@ -112,12 +112,12 @@ namespace wg
 		
 	bool Msg::isMouseButtonMsg() const
 	{
-		if( m_type == WG_MSG_MOUSE_CLICK ||
-			m_type == WG_MSG_MOUSE_DOUBLE_CLICK ||
-			m_type == WG_MSG_MOUSE_DRAG ||
-			m_type == WG_MSG_MOUSE_PRESS ||
-			m_type == WG_MSG_MOUSE_RELEASE ||
-			m_type == WG_MSG_MOUSE_REPEAT )
+		if( m_type == MsgType::MouseClick ||
+			m_type == MsgType::MouseDoubleClick ||
+			m_type == MsgType::MouseDrag ||
+			m_type == MsgType::MousePress ||
+			m_type == MsgType::MouseRelease ||
+			m_type == MsgType::MouseRepeat )
 			return true;
 		else
 			return false;
@@ -125,9 +125,9 @@ namespace wg
 		
 	bool Msg::isKeyMsg() const
 	{
-		if( m_type == WG_MSG_KEY_PRESS ||
-			m_type == WG_MSG_KEY_RELEASE ||
-			m_type == WG_MSG_KEY_REPEAT )
+		if( m_type == MsgType::KeyPress ||
+			m_type == MsgType::KeyRelease ||
+			m_type == MsgType::KeyRepeat )
 			return true;
 		else
 			return false;
@@ -236,7 +236,7 @@ namespace wg
 	
 	FocusGainedMsg::FocusGainedMsg( Widget * pWidget )
 	{
-		m_type = WG_MSG_FOCUS_GAINED;
+		m_type = MsgType::FocusGained;
 		m_pSource	= pWidget;
 		m_pCopyTo 	= pWidget;
 	}
@@ -269,7 +269,7 @@ namespace wg
 	
 	FocusLostMsg::FocusLostMsg( Widget * pWidget )
 	{
-		m_type = WG_MSG_FOCUS_LOST;
+		m_type = MsgType::FocusLost;
 		m_pSource	= pWidget;
 		m_pCopyTo 	= pWidget;
 	}
@@ -302,7 +302,7 @@ namespace wg
 		
 	MouseEnterMsg::MouseEnterMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
-		m_type = WG_MSG_MOUSE_ENTER;
+		m_type = MsgType::MouseEnter;
 		m_pSource	= pWidget;
 		m_pCopyTo 	= pWidget;
 	}
@@ -335,7 +335,7 @@ namespace wg
 		
 	MouseLeaveMsg::MouseLeaveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
-		m_type = WG_MSG_MOUSE_LEAVE;
+		m_type = MsgType::MouseLeave;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -367,7 +367,7 @@ namespace wg
 		
 	MouseMoveMsg::MouseMoveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
-		m_type = WG_MSG_MOUSE_MOVE;
+		m_type = MsgType::MouseMove;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -400,7 +400,7 @@ namespace wg
 		
 	MousePressMsg::MousePressMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type			= WG_MSG_MOUSE_PRESS;
+		m_type			= MsgType::MousePress;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -432,7 +432,7 @@ namespace wg
 		
 	MouseRepeatMsg::MouseRepeatMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type			= WG_MSG_MOUSE_REPEAT;
+		m_type			= MsgType::MouseRepeat;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -466,7 +466,7 @@ namespace wg
 	
 	MouseReleaseMsg::MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type			= WG_MSG_MOUSE_RELEASE;
+		m_type			= MsgType::MouseRelease;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	
@@ -507,7 +507,7 @@ namespace wg
 		
 	MouseClickMsg::MouseClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type = WG_MSG_MOUSE_CLICK;
+		m_type = MsgType::MouseClick;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -539,7 +539,7 @@ namespace wg
 	
 	MouseDoubleClickMsg::MouseDoubleClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type = WG_MSG_MOUSE_DOUBLE_CLICK;
+		m_type = MsgType::MouseDoubleClick;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
 	}
@@ -571,7 +571,7 @@ namespace wg
 		
 	KeyPressMsg::KeyPressMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
 	{
-		m_type 			= WG_MSG_KEY_PRESS;
+		m_type 			= MsgType::KeyPress;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
 	}
@@ -603,7 +603,7 @@ namespace wg
 		
 	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
 	{
-		m_type 			= WG_MSG_KEY_REPEAT;
+		m_type 			= MsgType::KeyRepeat;
 		m_pSource		= pWidget;
 		m_pCopyTo 		= pWidget;
 	}
@@ -635,7 +635,7 @@ namespace wg
 		
 	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
 	{
-		m_type 			= WG_MSG_KEY_RELEASE;
+		m_type 			= MsgType::KeyRelease;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
 	}
@@ -668,7 +668,7 @@ namespace wg
 	
 	TextInputMsg::TextInputMsg( String text, Widget * pWidget )
 	{
-		m_type			= WG_MSG_TEXT_INPUT;
+		m_type			= MsgType::TextInput;
 		m_text			= text;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
@@ -707,7 +707,7 @@ namespace wg
 		
 	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( modKeys, pointerPos, timestamp )
 	{
-		m_type			= WG_MSG_WHEEL_ROLL;
+		m_type			= MsgType::WheelRoll;
 		m_wheel			= wheel;
 		m_distance		= distance;
 		m_pSource		= pWidget;
@@ -751,7 +751,7 @@ namespace wg
 	
 	TickMsg::TickMsg( int64_t timestamp, int timediff )
 	{
-		m_type = WG_MSG_TICK;
+		m_type = MsgType::Tick;
 		m_timestamp = timestamp;
 		m_timediff = timediff;
 	}
@@ -783,7 +783,7 @@ namespace wg
 	
 	PointerChangeMsg::PointerChangeMsg( PointerStyle style )
 	{
-		m_type = WG_MSG_POINTER_CHANGE;
+		m_type = MsgType::PointerChange;
 		m_style = style;
 	}
 		
@@ -819,7 +819,7 @@ namespace wg
 	
 	SelectMsg::SelectMsg( Object * pSource )
 	{
-		m_type 			= WG_MSG_SELECT;
+		m_type 			= MsgType::Select;
 		m_pSource 		= pSource;
 	}
 	
@@ -850,7 +850,7 @@ namespace wg
 	
 	ToggleMsg::ToggleMsg( Object * pSource, bool bSet )
 	{
-		m_type = WG_MSG_TOGGLE;
+		m_type = MsgType::Toggle;
 		m_pSource = pSource;
 		m_bSet = bSet;
 	}
@@ -887,7 +887,7 @@ namespace wg
 	
 	ValueUpdateMsg::ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal )
 	{
-		m_type = WG_MSG_VALUE_UPDATE;
+		m_type = MsgType::ValueUpdate;
 		m_pSource = pSource;
 		m_value = value;
 		m_fraction = fraction;
@@ -936,7 +936,7 @@ namespace wg
 	
 	RangeUpdateMsg::RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
 	{
-		m_type = WG_MSG_RANGE_UPDATE;
+		m_type = MsgType::RangeUpdate;
 		m_pSource 	= pSource;
 		m_ofs		= intOfs;
 		m_length	= intLength;
@@ -1003,7 +1003,7 @@ namespace wg
 	
 	TextEditMsg::TextEditMsg( const EditText_p& pText, bool bFinal )
 	{
-		m_type 		= WG_MSG_TEXT_EDIT;
+		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->holder();
 		m_pText 	= pText;
 		m_bFinal	= bFinal;
@@ -1081,7 +1081,7 @@ namespace wg
 	
 	ItemToggleMsg::ItemToggleMsg( Object * pSource, int itemId, const Object_p& pItemObject, bool bSet ) : ItemMsg(pSource,itemId,pItemObject)
 	{
-		m_type = WG_MSG_ITEM_TOGGLE;
+		m_type = MsgType::ItemToggle;
 		m_bSet = bSet;
 	}
 	
@@ -1117,7 +1117,7 @@ namespace wg
 	
 	ItemMousePressMsg::ItemMousePressMsg( Object * pSource, int itemId, const Object_p& pItemObject, MouseButton button ) : ItemMsg(pSource,itemId,pItemObject)
 	{
-		m_type = WG_MSG_ITEM_MOUSE_PRESS;
+		m_type = MsgType::ItemMousePress;
 		m_button = button;
 	}
 	
@@ -1200,7 +1200,7 @@ namespace wg
 	
 	ItemsSelectMsg::ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems ) : ItemListMsg(pSource,nbItems,pItems)
 	{
-		m_type = WG_MSG_ITEMS_SELECT;
+		m_type = MsgType::ItemsSelect;
 	}
 	
 	bool ItemsSelectMsg::isInstanceOf( const char * pClassName ) const
@@ -1230,7 +1230,7 @@ namespace wg
 	
 	ItemsUnselectMsg::ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems ) : ItemListMsg(pSource,nbItems,pItems)
 	{
-		m_type = WG_MSG_ITEMS_UNSELECT;
+		m_type = MsgType::ItemsUnselect;
 	}
 	
 	bool ItemsUnselectMsg::isInstanceOf( const char * pClassName ) const
@@ -1260,7 +1260,7 @@ namespace wg
 	
 	PopupClosedMsg::PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller )
 	{
-		m_type			= WG_MSG_POPUP_CLOSED;
+		m_type			= MsgType::PopupClosed;
 		m_pCopyTo		= pCaller.rawPtr();
 		m_pSource		= pPopup;
 	}
@@ -1292,7 +1292,7 @@ namespace wg
 	
 	ModalMoveOutsideMsg::ModalMoveOutsideMsg( Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys, pointerPos, timestamp)
 	{
-		m_type = WG_MSG_MODAL_MOVE_OUTSIDE;
+		m_type = MsgType::ModalMoveOutside;
 		m_pSource		= pSource;
 	}
 	
@@ -1324,7 +1324,7 @@ namespace wg
 	
 	ModalBlockedPressMsg::ModalBlockedPressMsg( MouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button, modKeys, pointerPos, timestamp )
 	{
-		m_type			= WG_MSG_MODAL_BLOCKED_PRESS;
+		m_type			= MsgType::ModalBlockedPress;
 		m_pSource 		= pSource;
 	}
 	
@@ -1355,7 +1355,7 @@ namespace wg
 	
 	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( MouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type			= WG_MSG_MODAL_BLOCKED_RELEASE;
+		m_type			= MsgType::ModalBlockedRelease;
 		m_pSource 		= pSource;
 	}
 	
@@ -1411,7 +1411,7 @@ namespace wg
 	
 	LinkSelectMsg::LinkSelectMsg( const TextLink_p& pLink )
 	{
-		m_type			= WG_MSG_LINK_SELECT;
+		m_type			= MsgType::LinkSelect;
 		m_pSource		= pLink;
 	}
 	
@@ -1442,7 +1442,7 @@ namespace wg
 	
 	LinkMouseEnterMsg::LinkMouseEnterMsg( const TextLink_p& pLink )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_ENTER;
+		m_type			= MsgType::LinkMouseEnter;
 		m_pSource		= pLink;
 	}
 	
@@ -1473,7 +1473,7 @@ namespace wg
 	
 	LinkMouseLeaveMsg::LinkMouseLeaveMsg( const TextLink_p& pLink )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_LEAVE;
+		m_type			= MsgType::LinkMouseLeave;
 		m_pSource		= pLink;
 	}
 	
@@ -1534,7 +1534,7 @@ namespace wg
 	
 	LinkMousePressMsg::LinkMousePressMsg( const TextLink_p& pLink, MouseButton button )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_PRESS;
+		m_type			= MsgType::LinkMousePress;
 		m_pSource		= pLink;
 		m_button		= button;
 	}
@@ -1566,7 +1566,7 @@ namespace wg
 	
 	LinkMouseRepeatMsg::LinkMouseRepeatMsg( const TextLink_p& pLink, MouseButton button )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_REPEAT;
+		m_type			= MsgType::LinkMouseRepeat;
 		m_pSource		= pLink;
 		m_button		= button;
 	}
@@ -1598,7 +1598,7 @@ namespace wg
 	
 	LinkMouseReleaseMsg::LinkMouseReleaseMsg( const TextLink_p& pLink, MouseButton button )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_RELEASE;
+		m_type			= MsgType::LinkMouseRelease;
 		m_pSource		= pLink;
 		m_button		= button;
 	}
@@ -1630,7 +1630,7 @@ namespace wg
 	
 	LinkMouseClickMsg::LinkMouseClickMsg( const TextLink_p& pLink, MouseButton button )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_CLICK;
+		m_type			= MsgType::LinkMouseClick;
 		m_pSource		= pLink;
 		m_button		= button;
 	}
@@ -1662,7 +1662,7 @@ namespace wg
 	
 	LinkMouseDoubleClickMsg::LinkMouseDoubleClickMsg( const TextLink_p& pLink, MouseButton button )
 	{
-		m_type			= WG_MSG_LINK_MOUSE_DOUBLE_CLICK;
+		m_type			= MsgType::LinkMouseDoubleClick;
 		m_pSource		= pLink;
 		m_button		= button;
 	}
@@ -1696,7 +1696,7 @@ namespace wg
 	
 	MouseDragMsg::MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
-		m_type 			= WG_MSG_MOUSE_DRAG;
+		m_type 			= MsgType::MouseDrag;
 		m_pSource		= pWidget;
 		m_pCopyTo	= pWidget;
 	

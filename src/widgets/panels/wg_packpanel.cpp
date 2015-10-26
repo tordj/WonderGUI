@@ -140,7 +140,7 @@ namespace wg
 	
 	void PackPanel::setOrientation( Orientation orientation )
 	{
-		bool bHorizontal = orientation==WG_HORIZONTAL?true:false;
+		bool bHorizontal = orientation==Orientation::Horizontal?true:false;
 		if( m_bHorizontal != bHorizontal )
 		{
 			m_bHorizontal = bHorizontal;

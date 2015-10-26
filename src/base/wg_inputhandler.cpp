@@ -32,9 +32,9 @@ namespace wg
 	
 	InputHandler::InputHandler()
 	{
-		m_tickRoute 	= Base::msgRouter()->addRoute( WG_MSG_TICK, this );	
+		m_tickRoute 	= Base::msgRouter()->addRoute( MsgType::Tick, this );	
 		m_timeStamp 	= 0;
-		m_pointerStyle 	= WG_POINTER_DEFAULT;
+		m_pointerStyle 	= PointerStyle::Default;
 		m_modKeys 		= WG_MODKEY_NONE;
 
 		m_doubleClickTimeTreshold 		= 250;
@@ -199,7 +199,7 @@ namespace wg
 		if( pRoot && pRoot->geo().contains( pos ) )
 		{
 			m_pMarkedRoot = pRoot.rawPtr();
-			pWidgetTarget = pRoot->findWidget( m_pointerPos, WG_SEARCH_ACTION_TARGET );
+			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );
 		}
 	
 		// Figure out which button of currently pressed has been pressed the longest.
@@ -248,7 +248,7 @@ namespace wg
 		else if( button != 0 )
 			newStyle = m_pointerStyle;
 		else
-			newStyle = WG_POINTER_DEFAULT;
+			newStyle = PointerStyle::Default;
 	
 		if( newStyle != m_pointerStyle )
 		{
@@ -316,7 +316,7 @@ namespace wg
 	{
 		// Sanity checks
 		
-		if( m_bButtonPressed[button] == bPressed )
+		if( m_bButtonPressed[(int)button] == bPressed )
 			return;
 			
 		//
@@ -326,7 +326,7 @@ namespace wg
 		else
 			_processButtonRelease( button, timestamp );
 		
-		m_bButtonPressed[button] = bPressed;
+		m_bButtonPressed[(int)button] = bPressed;
 	}
 	
 	
@@ -349,16 +349,16 @@ namespace wg
 	
 		bool doubleClick = false;
 	
-		if( m_latestPressTimestamps[button] + m_doubleClickTimeTreshold > timestamp )
+		if( m_latestPressTimestamps[(int)button] + m_doubleClickTimeTreshold > timestamp )
 		{
-			Coord distance = m_pointerPos - m_latestPressPosition[button];
+			Coord distance = m_pointerPos - m_latestPressPosition[(int)button];
 	
 			if( distance.x <= m_doubleClickDistanceTreshold &&
 				distance.x >= -m_doubleClickDistanceTreshold &&
 				distance.y <= m_doubleClickDistanceTreshold &&
 				distance.y >= -m_doubleClickDistanceTreshold )
 				{
-					if( pWidget && pWidget ==  m_latestPressWidgets[button].rawPtr() )
+					if( pWidget && pWidget ==  m_latestPressWidgets[(int)button].rawPtr() )
 						Base::msgRouter()->post( new MouseDoubleClickMsg(button, pWidget, m_modKeys, m_pointerPos, timestamp) );
 					else
 						Base::msgRouter()->post( new MouseDoubleClickMsg(button, 0, m_modKeys, m_pointerPos, timestamp) );
@@ -369,10 +369,10 @@ namespace wg
 	
 		// Save info for the future
 	
-		m_latestPressWidgets[button]		= pWidget;
-		m_latestPressTimestamps[button] 	= timestamp;
-		m_latestPressPosition[button] 		= m_pointerPos;
-		m_latestPressDoubleClick[button] 	= doubleClick;
+		m_latestPressWidgets[(int)button]		= pWidget;
+		m_latestPressTimestamps[(int)button] 	= timestamp;
+		m_latestPressPosition[(int)button] 		= m_pointerPos;
+		m_latestPressDoubleClick[(int)button] 	= doubleClick;
 	}
 	
 	
@@ -387,7 +387,7 @@ namespace wg
 		
 		// Post BUTTON_RELEASE events for widget that was pressed
 	
-		Widget * pWidget = m_latestPressWidgets[button].rawPtr();
+		Widget * pWidget = m_latestPressWidgets[(int)button].rawPtr();
 		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 	
 		MouseReleaseMsg * pMsg = new MouseReleaseMsg( button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
@@ -395,7 +395,7 @@ namespace wg
 	
 		// Post click event, if press didn't already resulted in a double click.
 	
-		if( m_bButtonPressed[button] && !m_latestPressDoubleClick[button] )
+		if( m_bButtonPressed[(int)button] && !m_latestPressDoubleClick[(int)button] )
 		{
 			if( bIsInside )
 				Base::msgRouter()->post( new MouseClickMsg( button, pWidget, m_modKeys, m_pointerPos, timestamp ) );
@@ -409,10 +409,7 @@ namespace wg
 	
 	bool InputHandler::isButtonPressed( MouseButton button ) const
 	{
-		if( button >= 1 && button <= WG_MAX_BUTTONS )
-			return m_bButtonPressed[button];
-	
-		return false;
+		return m_bButtonPressed[(int)button];
 	}
 	
 	//____ isAnyButtonPressed() ________________________________________________________
@@ -631,7 +628,7 @@ namespace wg
 	void InputHandler::onMsg( const Msg_p& pMsg )
 	{
 		
-		if( pMsg->type() == WG_MSG_TICK ) {
+		if( pMsg->type() == MsgType::Tick ) {
 					
 			int64_t timestamp = TickMsg::cast(pMsg)->timestamp();
 	

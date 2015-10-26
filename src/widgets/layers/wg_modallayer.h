@@ -51,8 +51,8 @@ namespace wg
 	
 		void	top();								// Put us ontop of all our siblings.
 	
-		bool	setGeo( const Rect& geometry, Origo origo = WG_NORTHWEST );
-		bool	setGeo( const Coord& ofs, Origo origo = WG_NORTHWEST );
+		bool	setGeo( const Rect& geometry, Origo origo = Origo::NorthWest );
+		bool	setGeo( const Coord& ofs, Origo origo = Origo::NorthWest );
 	
 		bool	setOfs( const Coord& ofs );
 		bool	setOfsX( int x );
@@ -111,8 +111,8 @@ namespace wg
 		static const char	CLASSNAME[];
 		static ModalLayer_p	cast( const Object_p& pObject );
 	
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo = WG_NORTHWEST );
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Coord& pos, Origo origo = WG_NORTHWEST ) { return addModalWidget( pWidget, Rect(pos,0,0), origo); }
+		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
+		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return addModalWidget( pWidget, Rect(pos,0,0), origo); }
 	
 		bool			removeModalWidgets();
 	

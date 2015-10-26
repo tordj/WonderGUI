@@ -121,7 +121,7 @@ namespace wg
 				{
 					pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 				}
-				else if( mode == WG_SEARCH_GEOMETRY || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
+				else if( mode == SearchMode::Geometry || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
 				{
 						pResult = pHook->_widget();
 				}
@@ -131,7 +131,7 @@ namespace wg
 	
 		// Check against ourselves
 	
-		if( !pResult && ( mode == WG_SEARCH_GEOMETRY || markTest(ofs)) )
+		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )
 			pResult = this;
 			
 		return pResult;
@@ -337,7 +337,7 @@ namespace wg
 	void Container::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE)
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque)
 			patches.sub( Rect(geo,clip) );
 		else
 		{

@@ -147,8 +147,8 @@ namespace wg
 		int					length() const;
 		int					lines() const;
 		inline bool			isEmpty() const { return length()==0?true:false; }
-		inline bool			isEditable() const { return m_editMode == WG_TEXT_EDITABLE; }
-		inline bool			isSelectable() const { return m_editMode != WG_TEXT_STATIC; }
+		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
+		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
 		int					width() const;
 		int					height() const;

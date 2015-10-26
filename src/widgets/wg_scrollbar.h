@@ -334,13 +334,13 @@ namespace wg
 	 *
 	 *
 	 *
-	 * @return 	WG_HORIZONTAL if scrollbar is horizontal,
-	 * 		   	WG_VERTICAL if scrollbar is vertical.
+	 * @return 	Orientation::Horizontal if scrollbar is horizontal,
+	 * 		   	Orientation::Vertical if scrollbar is vertical.
 	 **/
 	
 	Orientation Scrollbar::orientation() const
 	{
-		return m_bHorizontal?WG_HORIZONTAL:WG_VERTICAL;
+		return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical;
 	}
 	
 	//______________________________________________________________________________

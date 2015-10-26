@@ -101,27 +101,27 @@ namespace wg
 	
 		Coord blockOfs = blockStartOfs;
 	
-		pSkin->setStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
-		pSkin->setStateBlock( WG_STATE_FOCUSED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Normal, blockOfs );				// Normal
+		pSkin->setStateBlock( StateEnum::Focused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered, not selected
-		pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_PRESSED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Hovered, blockOfs );				// Hovered, not selected
+		pSkin->setStateBlock( StateEnum::HoveredFocused, blockOfs );
+		pSkin->setStateBlock( StateEnum::Pressed, blockOfs );
+		pSkin->setStateBlock( StateEnum::PressedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_SELECTED, blockOfs );			// Selected, not hovered
-		pSkin->setStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Selected, blockOfs );			// Selected, not hovered
+		pSkin->setStateBlock( StateEnum::FocusedSelected, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );	// Selected and hovered
-		pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::HoveredSelected, blockOfs );	// Selected and hovered
+		pSkin->setStateBlock( StateEnum::HoveredFocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::PressedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::PressedFocusedSelected, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_DISABLED, blockOfs );			// Disabled
+		pSkin->setStateBlock( StateEnum::Disabled, blockOfs );			// Disabled
 		return BlockSkin_p(pSkin);
 	}
 	
@@ -135,34 +135,34 @@ namespace wg
 	
 		Coord blockOfs = blockStartOfs;
 	
-		pSkin->setStateBlock( WG_STATE_NORMAL, blockOfs );				// Normal
-		pSkin->setStateBlock( WG_STATE_FOCUSED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Normal, blockOfs );				// Normal
+		pSkin->setStateBlock( StateEnum::Focused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_HOVERED, blockOfs );				// Hovered
-		pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Hovered, blockOfs );				// Hovered
+		pSkin->setStateBlock( StateEnum::HoveredFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_PRESSED, blockOfs );				// Pressed
-		pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Pressed, blockOfs );				// Pressed
+		pSkin->setStateBlock( StateEnum::PressedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_SELECTED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_FOCUSED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Selected, blockOfs );
+		pSkin->setStateBlock( StateEnum::FocusedSelected, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_HOVERED_SELECTED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_HOVERED_FOCUSED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::HoveredSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::HoveredFocusedSelected, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_PRESSED_SELECTED, blockOfs );
-		pSkin->setStateBlock( WG_STATE_PRESSED_FOCUSED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::PressedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::PressedFocusedSelected, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_DISABLED, blockOfs );
+		pSkin->setStateBlock( StateEnum::Disabled, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( WG_STATE_DISABLED_SELECTED, blockOfs );
+		pSkin->setStateBlock( StateEnum::DisabledSelected, blockOfs );
 	
 		return BlockSkin_p(pSkin);
 	}
@@ -297,17 +297,17 @@ namespace wg
 	
 	void BlockSkin::setDisabledBlock( const Coord& ofs )
 	{
-		m_state[_stateToIndex(WG_STATE_DISABLED)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::Disabled)].ofs = ofs;
 	}
 	
 	//____ setHoveredBlocks() _____________________________________________________
 	
 	void BlockSkin::setHoveredBlocks( const Coord& ofs )
 	{
-		m_state[_stateToIndex(WG_STATE_HOVERED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_HOVERED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_HOVERED_FOCUSED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::Hovered)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::HoveredSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::HoveredFocused)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::HoveredFocusedSelected)].ofs = ofs;
 	
 		setPressedBlocks( ofs );
 	}
@@ -316,68 +316,68 @@ namespace wg
 	
 	void BlockSkin::setPressedBlocks( const Coord& ofs )
 	{
-		m_state[_stateToIndex(WG_STATE_PRESSED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_PRESSED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_PRESSED_FOCUSED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::Pressed)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::PressedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::PressedFocused)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::PressedFocusedSelected)].ofs = ofs;
 	}
 	
 	//____ setSelectedBlocks() ____________________________________________________
 	
 	void BlockSkin::setSelectedBlocks( const Coord& ofs )
 	{
-		m_state[_stateToIndex(WG_STATE_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_FOCUSED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_HOVERED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_HOVERED_FOCUSED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_PRESSED_SELECTED)].ofs = ofs;
-		m_state[_stateToIndex(WG_STATE_PRESSED_FOCUSED_SELECTED)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::Selected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::FocusedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::HoveredSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::HoveredFocusedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::PressedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::PressedFocusedSelected)].ofs = ofs;
 	}
 	
 	//____ setTiled() _____________________________________________________________
 	
 	void BlockSkin::setTiled( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_NORTH, bTiled );
-		_setBitFlag( m_tiledSections, WG_SOUTH, bTiled );
-		_setBitFlag( m_tiledSections, WG_EAST, bTiled );
-		_setBitFlag( m_tiledSections, WG_WEST, bTiled );
-		_setBitFlag( m_tiledSections, WG_CENTER, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::North, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::South, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::East, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::West, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::Center, bTiled );
 	}
 	
 	//____ setTiledTopBorder() ____________________________________________________
 	
 	void BlockSkin::setTiledTopBorder( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_NORTH, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::North, bTiled );
 	}
 	
 	//____ setTiledBottomBorder() _________________________________________________
 	
 	void BlockSkin::setTiledBottomBorder( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_SOUTH, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::South, bTiled );
 	}
 	
 	//____ setTiledLeftBorder() ___________________________________________________
 	
 	void BlockSkin::setTiledLeftBorder( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_WEST, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::West, bTiled );
 	}
 	
 	//____ setTiledRightBorder() __________________________________________________
 	
 	void BlockSkin::setTiledRightBorder( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_EAST, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::East, bTiled );
 	}
 	
 	//____ setTiledCenter() _______________________________________________________
 	
 	void BlockSkin::setTiledCenter( bool bTiled )
 	{
-		_setBitFlag( m_tiledSections, WG_CENTER, bTiled );
+		_setBitFlag( m_tiledSections, (int)Origo::Center, bTiled );
 	}
 	
 	//____ optimizeRenderMethods() ________________________________________________
@@ -411,7 +411,7 @@ namespace wg
 	
 		//
 	
-		m_pSurface->lock(WG_READ_ONLY);
+		m_pSurface->lock(AccessMode::ReadOnly);
 	
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -431,34 +431,34 @@ namespace wg
 			if( m_frame.top > 0 )
 			{
 				if( m_frame.left > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_NORTHWEST, Rect(x1, y1, m_frame.left, m_frame.top) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::NorthWest, Rect(x1, y1, m_frame.left, m_frame.top) );
 	
-				_scanStateBlockSectionArea( &m_state[i], WG_NORTH, Rect(x2, y1, centerW, m_frame.top) );
+				_scanStateBlockSectionArea( &m_state[i], Origo::North, Rect(x2, y1, centerW, m_frame.top) );
 	
 				if( m_frame.right > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_NORTHEAST, Rect(x3, y1, m_frame.right, m_frame.top) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::NorthEast, Rect(x3, y1, m_frame.right, m_frame.top) );
 			}
 	
 			if( centerH > 0 )
 			{
 				if( m_frame.left > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_WEST, Rect(x1, y2, m_frame.left, centerH) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::West, Rect(x1, y2, m_frame.left, centerH) );
 	
-				_scanStateBlockSectionArea( &m_state[i], WG_CENTER, Rect(x2, y2, centerW, centerH) );
+				_scanStateBlockSectionArea( &m_state[i], Origo::Center, Rect(x2, y2, centerW, centerH) );
 	
 				if( m_frame.right > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_EAST, Rect(x3, y2, m_frame.right, centerH) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::East, Rect(x3, y2, m_frame.right, centerH) );
 			}
 	
 			if( m_frame.bottom > 0 )
 			{
 				if( m_frame.left > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_SOUTHWEST, Rect(x1, y3, m_frame.left, m_frame.bottom) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::SouthWest, Rect(x1, y3, m_frame.left, m_frame.bottom) );
 	
-				_scanStateBlockSectionArea( &m_state[i], WG_SOUTH, Rect(x2, y3, centerW, m_frame.bottom) );
+				_scanStateBlockSectionArea( &m_state[i], Origo::South, Rect(x2, y3, centerW, m_frame.bottom) );
 	
 				if( m_frame.right > 0 )
-					_scanStateBlockSectionArea( &m_state[i], WG_SOUTHEAST, Rect(x3, y3, m_frame.right, m_frame.bottom) );
+					_scanStateBlockSectionArea( &m_state[i], Origo::SouthEast, Rect(x3, y3, m_frame.right, m_frame.bottom) );
 			}
 		}
 	
@@ -472,7 +472,7 @@ namespace wg
 		const PixelFormat * pFormat = m_pSurface->pixelFormat();
 		int pitch = m_pSurface->pitch();
 	
-		if( pFormat->type != WG_PIXEL_RGBA_8 )
+		if( pFormat->type != PixelType::RGBA_8 )
 			return;												// Only supports ARGB_8 for the moment.
 	
 		unsigned char * p = ((unsigned char*)m_pSurface->pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
@@ -488,9 +488,9 @@ namespace wg
 		}
 	
 		if( alphaAcc == 0 )
-			pState->invisibleSections |= 1 << section;
+			pState->invisibleSections |= 1 << (int)section;
 		else if( alphaAcc == ((unsigned)(sectionArea.w * sectionArea.h)) * 255 )
-			pState->opaqueSections |= 1 << section;
+			pState->opaqueSections |= 1 << (int)section;
 	}
 	
 	
@@ -528,7 +528,7 @@ namespace wg
 	
 		if( borderSize.w == 0 && borderSize.h == 0 )
 		{
-			if( m_tiledSections & (1 << WG_CENTER) )
+			if( m_tiledSections & (1 << (int)Origo::Center) )
 				pDevice->clipTileBlit( _clip, m_pSurface, src, _canvas );
 			else
 				pDevice->clipStretchBlit( _clip, m_pSurface, src, _canvas );
@@ -538,14 +538,14 @@ namespace wg
 		if( src.w == _canvas.w )
 		{
 			pDevice->clipBlitVertBar( _clip, m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.h );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.h );
 			return;
 		}
 	
 		if( src.h == _canvas.h )
 		{
 			pDevice->clipBlitHorrBar( _clip, m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.w );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.w );
 			return;
 		}
 	
@@ -557,7 +557,7 @@ namespace wg
 		{
 			Rect rect( src.x, src.y, src.w, borders.top );
 	
-			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
+			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::North)) != 0,
 									_canvas.x, _canvas.y, _canvas.w );
 		}
 	
@@ -567,7 +567,7 @@ namespace wg
 		{
 			Rect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 	
-			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
+			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::South)) != 0,
 									_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
 		}
 	
@@ -580,7 +580,7 @@ namespace wg
 				Rect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
 				Rect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.height() );
 	
-				if( m_tiledSections & (1<<WG_WEST) )
+				if( m_tiledSections & (1<<(int)Origo::West) )
 					pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 				else
 					pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
@@ -593,7 +593,7 @@ namespace wg
 				Rect dr(	_canvas.x + _canvas.w - borders.right, _canvas.y + borders.top,
 							borders.right, _canvas.h - borders.height() );
 	
-				if( m_tiledSections & (1<<WG_EAST) )
+				if( m_tiledSections & (1<<(int)Origo::East) )
 					pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 				else
 					pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
@@ -611,7 +611,7 @@ namespace wg
 			Rect dr(	_canvas.x + borders.left, _canvas.y + borders.top,
 						_canvas.w - borders.width(), _canvas.h - borders.height() );
 	
-			if( m_tiledSections & (1<<WG_CENTER) )
+			if( m_tiledSections & (1<<(int)Origo::Center) )
 				pDevice->clipTileBlit( _clip, m_pSurface, sr, dr );
 			else
 				pDevice->clipStretchBlit( _clip, m_pSurface, sr, dr );
@@ -633,7 +633,7 @@ namespace wg
 	
 		if( borderSize.w == 0 && borderSize.h == 0 )
 		{
-			if( m_tiledSections & (1 << WG_CENTER) )
+			if( m_tiledSections & (1 << (int)Origo::Center) )
 				pDevice->tileBlit( m_pSurface, src, _canvas );
 			else
 				pDevice->stretchBlit( m_pSurface, src, _canvas );
@@ -643,14 +643,14 @@ namespace wg
 		if( src.w == _canvas.w )
 		{
 			pDevice->blitVertBar( m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.h );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.h );
 			return;
 		}
 	
 		if( src.h == _canvas.h )
 		{
 			pDevice->blitHorrBar( m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<WG_CENTER)) != 0, _canvas.x, _canvas.y, _canvas.w );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.w );
 			return;
 		}
 	
@@ -662,7 +662,7 @@ namespace wg
 		{
 			Rect rect( src.x, src.y, src.w, borders.top );
 	
-			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_NORTH)) != 0,
+			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::North)) != 0,
 									_canvas.x, _canvas.y, _canvas.w );
 		}
 	
@@ -672,7 +672,7 @@ namespace wg
 		{
 			Rect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 	
-			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<WG_SOUTH)) != 0,
+			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::South)) != 0,
 									_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
 		}
 	
@@ -685,7 +685,7 @@ namespace wg
 				Rect sr( src.x, src.y + borders.top, borders.left, src.h - borders.height() );
 				Rect dr( _canvas.x, _canvas.y + borders.top, borders.left, _canvas.h - borders.height() );
 	
-				if( m_tiledSections & (1<<WG_WEST) )
+				if( m_tiledSections & (1<<(int)Origo::West) )
 					pDevice->tileBlit( m_pSurface, sr, dr );
 				else
 					pDevice->stretchBlit( m_pSurface, sr, dr );
@@ -698,7 +698,7 @@ namespace wg
 				Rect dr(	_canvas.x + _canvas.w - borders.right, _canvas.y + borders.top,
 							borders.right, _canvas.h - borders.height() );
 	
-				if( m_tiledSections & (1<<WG_EAST) )
+				if( m_tiledSections & (1<<(int)Origo::East) )
 					pDevice->tileBlit( m_pSurface, sr, dr );
 				else
 					pDevice->stretchBlit( m_pSurface, sr, dr );
@@ -716,7 +716,7 @@ namespace wg
 			Rect dr(	_canvas.x + borders.left, _canvas.y + borders.top,
 						_canvas.w - borders.width(), _canvas.h - borders.height() );
 	
-			if( m_tiledSections & (1<<WG_CENTER) )
+			if( m_tiledSections & (1<<(int)Origo::Center) )
 				pDevice->tileBlit( m_pSurface, sr, dr );
 			else
 				pDevice->stretchBlit( m_pSurface, sr, dr );
@@ -794,11 +794,11 @@ namespace wg
 				bool bTile;
 	
 				if( ySection == 0 )
-					bTile = (m_tiledSections & (1 << WG_NORTH)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::North)) != 0;
 				else if( ySection == 1 )
-					bTile = (m_tiledSections & (1 << WG_CENTER)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::Center)) != 0;
 				else
-					bTile = (m_tiledSections & (1 << WG_SOUTH)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::South)) != 0;
 	
 				if( bTile )
 					ofs.x = ((ofs.x - m_frame.left) % tileAreaWidth) + m_frame.left;
@@ -823,11 +823,11 @@ namespace wg
 				bool bTile;
 	
 				if( xSection == 0 )
-					bTile = (m_tiledSections & (1 << WG_WEST)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::West)) != 0;
 				else if( xSection == 1 )
-					bTile = (m_tiledSections & (1 << WG_CENTER)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::Center)) != 0;
 				else
-					bTile = (m_tiledSections & (1 << WG_EAST)) != 0;
+					bTile = (m_tiledSections & (1 << (int)Origo::East)) != 0;
 	
 				if( bTile )
 					ofs.y = ((ofs.y - m_frame.top) % tileAreaHeight) + m_frame.top;
@@ -878,7 +878,7 @@ namespace wg
 		Rect center = Rect(canvasSize) - m_frame;
 		if( center.contains(rect) )
 		{
-			if( m_state[index].opaqueSections & (1<<WG_CENTER) )
+			if( m_state[index].opaqueSections & (1<<(int)Origo::Center) )
 				return true;
 			else
 				return false;
@@ -913,31 +913,31 @@ namespace wg
 		if( rect.y < center.y )
 		{
 			if( rect.x < center.x )
-				bitmask |= (1<<WG_NORTHWEST);
+				bitmask |= (1<<(int)Origo::NorthWest);
 			if( rect.x < center.x + center.w && rect.x + rect.w > center.x )
-				bitmask |= (1<<WG_NORTH);
+				bitmask |= (1<<(int)Origo::North);
 			if( rect.x + rect.w > center.x + center.w )
-				bitmask |= (1<<WG_NORTHEAST);
+				bitmask |= (1<<(int)Origo::NorthEast);
 		}
 	
 		if( rect.y < center.y + center.h && rect.y + rect.h > center.y )
 		{
 			if( rect.x < center.x )
-				bitmask |= (1<<WG_WEST);
+				bitmask |= (1<<(int)Origo::West);
 			if( rect.x < center.x + center.w && rect.x + rect.w > center.x )
-				bitmask |= (1<<WG_CENTER);
+				bitmask |= (1<<(int)Origo::Center);
 			if( rect.x + rect.w > center.x + center.w )
-				bitmask |= (1<<WG_EAST);
+				bitmask |= (1<<(int)Origo::East);
 		}
 	
 		if( rect.y + rect.h > center.y + center.h )
 		{
 			if( rect.x < center.x )
-				bitmask |= (1<<WG_SOUTHWEST);
+				bitmask |= (1<<(int)Origo::SouthWest);
 			if( rect.x < center.x + center.w && rect.x + rect.w > center.x )
-				bitmask |= (1<<WG_SOUTH);
+				bitmask |= (1<<(int)Origo::South);
 			if( rect.x + rect.w > center.x + center.w )
-				bitmask |= (1<<WG_SOUTHEAST);
+				bitmask |= (1<<(int)Origo::SouthEast);
 		}
 	
 	

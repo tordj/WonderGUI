@@ -52,7 +52,7 @@ namespace wg
 		}
 	}
 	
-	StackHook::StackHook( StackPanel * pParent ): m_pParent(pParent), m_origo( WG_NORTHWEST ), m_sizePolicy( STRETCH )
+	StackHook::StackHook( StackPanel * pParent ): m_pParent(pParent), m_origo( Origo::NorthWest ), m_sizePolicy( STRETCH )
 	{
 	}
 	

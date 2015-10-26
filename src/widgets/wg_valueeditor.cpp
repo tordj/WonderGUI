@@ -49,11 +49,11 @@ namespace wg
 		m_maxInputChars = 256;
 		m_viewOfs = Coord(0,0);
 	
-		m_pointerStyle	= WG_POINTER_IBEAM;
+		m_pointerStyle	= PointerStyle::Ibeam;
 	
 		m_text.setWrap(false);
 		m_text.setAutoEllipsis(false);
-		m_text.setEditMode( WG_TEXT_EDITABLE );
+		m_text.setEditMode( TextEditMode::Editable );
 	
 		m_pFormat = ValueFormat::create();
 		m_pUseFormat = ValueFormat::create();
@@ -341,7 +341,7 @@ namespace wg
 		MsgRouter_p	pHandler = Base::msgRouter();
 		MsgType type = pMsg->type();
 	
-		if( type == WG_MSG_TICK )
+		if( type == MsgType::Tick )
 		{
 			if( m_text.getCursor() )
 			{
@@ -353,7 +353,7 @@ namespace wg
 	
 	
 		bool	bTextChanged = false;
-		int		mousebutton = 0;
+		MouseButton	mousebutton = MouseButton::None;
 		WgModifierKeys	modKeys = WG_MODKEY_NONE;
 		Coord	pointerPos;
 		
@@ -370,7 +370,7 @@ namespace wg
 	
 		Coord ofs = pointerPos - globalPos();
 	
-		if( type == WG_MSG_MOUSE_PRESS && mousebutton == 1 )
+		if( type == MsgType::MousePress && mousebutton == MouseButton::Left )
 		{
 			if( !m_state.isFocused() )
 			{
@@ -398,7 +398,7 @@ namespace wg
 			m_buttonDownOfs = ofs.x;
 		}
 	
-		if( type == WG_MSG_MOUSE_DRAG && mousebutton == 1 )
+		if( type == MsgType::MouseDrag && mousebutton == MouseButton::Left )
 		{
 			if( m_state.isFocused() && ofs.x != m_buttonDownOfs )
 			{
@@ -409,9 +409,9 @@ namespace wg
 			}
 		}
 	
-		if( type == WG_MSG_MOUSE_RELEASE )
+		if( type == MsgType::MouseRelease )
 		{
-			if( m_state.isFocused() && mousebutton == 1 )
+			if( m_state.isFocused() && mousebutton == MouseButton::Left )
 			{
 				m_text.setSelectionMode(false);
 	
@@ -421,14 +421,14 @@ namespace wg
 		}
 	
 	
-		if( type == WG_MSG_MOUSE_DOUBLE_CLICK && mousebutton == 1 )
+		if( type == MsgType::MouseDoubleClick && mousebutton == MouseButton::Left )
 		{
 			_selectAll();
 			m_text.setSelectionMode(true);
 		}
 	
 	
-		if( type == WG_MSG_KEY_PRESS || type == WG_MSG_KEY_REPEAT )
+		if( type == MsgType::KeyPress || type == MsgType::KeyRepeat )
 		{
 			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
@@ -611,7 +611,7 @@ namespace wg
 			}
 		}
 	
-		if( type == WG_MSG_TEXT_INPUT )
+		if( type == MsgType::TextInput )
 		{
 			String str = TextInputMsg::cast(pMsg)->text();
 	
@@ -708,7 +708,7 @@ namespace wg
 	
 		if( pMsg->isMouseButtonMsg() )
 		{
-			if( MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+			if( MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
 		}
 		else if( pMsg->isKeyMsg() )
@@ -803,7 +803,7 @@ namespace wg
 	
 		if( m_state.isFocused() && !oldState.isFocused() )
 		{
-			m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			m_text.showCursor();
 			m_text.goEol();
 			m_pUseFormat = m_pFormat;

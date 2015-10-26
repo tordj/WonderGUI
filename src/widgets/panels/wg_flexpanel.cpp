@@ -43,8 +43,8 @@ namespace wg
 	//____ FlexHook::Constructor ________________________________________________
 	
 	FlexHook::FlexHook( FlexPanel * pParent, const Rect& placementGeo, Border padding ) : m_pParent(pParent),
-		m_bFloating(false), m_widthPolicy(WG_BOUND), m_heightPolicy(WG_BOUND),
-		m_origo(WG_NORTHWEST), m_hotspot(WG_NORTHWEST),
+		m_bFloating(false), m_widthPolicy(SizePolicy::Bound), m_heightPolicy(SizePolicy::Bound),
+		m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest),
 		m_placementGeo(placementGeo)
 	{
 	    m_padding = padding;
@@ -121,8 +121,8 @@ namespace wg
 	
 	bool FlexHook::setFloating( const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot )
 	{
-		m_widthPolicy	= WG_DEFAULT;
-		m_heightPolicy	= WG_DEFAULT;
+		m_widthPolicy	= SizePolicy::Default;
+		m_heightPolicy	= SizePolicy::Default;
 		m_bFloating		= true;
 		m_origo			= origo;
 		m_hotspot		= hotspot;
@@ -139,8 +139,8 @@ namespace wg
 	
 	bool FlexHook::setFloating( const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot )
 	{
-		m_widthPolicy	= WG_BOUND;
-		m_heightPolicy	= WG_BOUND;
+		m_widthPolicy	= SizePolicy::Bound;
+		m_heightPolicy	= SizePolicy::Bound;
 		m_bFloating		= true;
 		m_origo			= origo;
 		m_hotspot		= hotspot;
@@ -673,7 +673,7 @@ namespace wg
 	
 	void FlexHook::_requestResize()
 	{
-		if( m_widthPolicy != WG_BOUND || m_heightPolicy != WG_BOUND )
+		if( m_widthPolicy != SizePolicy::Bound || m_heightPolicy != SizePolicy::Bound )
 			_refreshRealGeo();
 	}
 	

@@ -87,7 +87,7 @@ namespace wg
 	void TextTool::clearBreakRules()
 	{
 		for( int i = 0 ; i < 256 ; i++ )
-			breakRulesTab[i] = WG_NO_BREAK | 0xF;
+			breakRulesTab[i] = ((char)BreakRules::NoBreak) | 0xF;
 	}
 	
 	
@@ -98,7 +98,7 @@ namespace wg
 		if( level < 0 || level > 15 )
 			return false;
 	
-		breakRulesTab[character] = rule | level;
+		breakRulesTab[character] = ((char)rule) | level;
 		return true;
 	}
 	
@@ -110,45 +110,45 @@ namespace wg
 	
 		// Set level 1 breaks
 	
-		breakRulesTab[WG_BREAK_PERMITTED] = WG_BREAK_ON | 0x1;
-		breakRulesTab[WG_HYPHEN_BREAK_PERMITTED] = WG_BREAK_ON | 0x1;
+		breakRulesTab[(int)ExtChar::BreakPermitted] = ((char)BreakRules::BreakOn) | 0x1;
+		breakRulesTab[(int)ExtChar::HyphenBreakPermitted] = ((char)BreakRules::BreakOn) | 0x1;
 	
 		// Set level 2 breaks
 	
-		breakRulesTab[0x20] = WG_BREAK_ON | 0x2;			// Whitespace
-		breakRulesTab[0x09] = WG_BREAK_ON | 0x2;			// Tab
+		breakRulesTab[0x20] = ((char)BreakRules::BreakOn) | 0x2;			// Whitespace
+		breakRulesTab[0x09] = ((char)BreakRules::BreakOn) | 0x2;			// Tab
 	
 		// Set level 3 breaks
 	
-		breakRulesTab['\\']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['/']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['-']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['+']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['*']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['~']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['=']	= WG_BREAK_AFTER | 0x3;
+		breakRulesTab['\\']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['/']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['-']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['+']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['*']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['~']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['=']	= ((char)BreakRules::BreakAfter) | 0x3;
 	
-		breakRulesTab[')']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['}']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab[']']	= WG_BREAK_AFTER | 0x3;
-		breakRulesTab['>']	= WG_BREAK_AFTER | 0x3;
+		breakRulesTab[')']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['}']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab[']']	= ((char)BreakRules::BreakAfter) | 0x3;
+		breakRulesTab['>']	= ((char)BreakRules::BreakAfter) | 0x3;
 	
-		breakRulesTab['(']	= WG_BREAK_BEFORE | 0x3;
-		breakRulesTab['{']	= WG_BREAK_BEFORE | 0x3;
-		breakRulesTab['[']	= WG_BREAK_BEFORE | 0x3;
-		breakRulesTab['<']	= WG_BREAK_BEFORE | 0x3;
+		breakRulesTab['(']	= ((char)BreakRules::BreakBefore) | 0x3;
+		breakRulesTab['{']	= ((char)BreakRules::BreakBefore) | 0x3;
+		breakRulesTab['[']	= ((char)BreakRules::BreakBefore) | 0x3;
+		breakRulesTab['<']	= ((char)BreakRules::BreakBefore) | 0x3;
 	
 		// Set level 4 breaks
 	
-		breakRulesTab[0xbf]	= WG_BREAK_BEFORE | 0x5;	// inverted question mark (beginning of question).
-		breakRulesTab['?']	= WG_BREAK_AFTER | 0x5;
-		breakRulesTab[':']	= WG_BREAK_AFTER | 0x4;
-		breakRulesTab[';']	= WG_BREAK_AFTER | 0x4;
-		breakRulesTab['.']	= WG_BREAK_AFTER | 0x5;
-		breakRulesTab[',']	= WG_BREAK_AFTER | 0x5;
-		breakRulesTab['!']	= WG_BREAK_AFTER | 0x5;
-		breakRulesTab['_']	= WG_BREAK_AFTER | 0x4;
-		breakRulesTab['|']	= WG_BREAK_AFTER | 0x4;
+		breakRulesTab[0xbf]	= ((char)BreakRules::BreakBefore) | 0x5;	// inverted question mark (beginning of question).
+		breakRulesTab['?']	= ((char)BreakRules::BreakAfter) | 0x5;
+		breakRulesTab[':']	= ((char)BreakRules::BreakAfter) | 0x4;
+		breakRulesTab[';']	= ((char)BreakRules::BreakAfter) | 0x4;
+		breakRulesTab['.']	= ((char)BreakRules::BreakAfter) | 0x5;
+		breakRulesTab[',']	= ((char)BreakRules::BreakAfter) | 0x5;
+		breakRulesTab['!']	= ((char)BreakRules::BreakAfter) | 0x5;
+		breakRulesTab['_']	= ((char)BreakRules::BreakAfter) | 0x4;
+		breakRulesTab['|']	= ((char)BreakRules::BreakAfter) | 0x4;
 	}
 	
 	
@@ -157,12 +157,12 @@ namespace wg
 	BreakRules TextTool::isBreakAllowed( uint16_t chr, int breakLevel )
 	{
 		if( chr > 255 )
-			return WG_NO_BREAK;
+			return BreakRules::NoBreak;
 	
 		if( breakLevel >= (breakRulesTab[chr] & 0xF) )
 			return (BreakRules) (breakRulesTab[chr] & 0xF0);
 	
-		return WG_NO_BREAK;
+		return BreakRules::NoBreak;
 	}
 	
 	
@@ -300,7 +300,7 @@ namespace wg
 		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && pStr[i] != 0 ; i++ )
 		{
-			if( pStr[i] == ' ' || pStr[i] == WG_NO_BREAK_SPACE )
+			if( pStr[i] == ' ' || pStr[i] == (uint16_t) ExtChar::NoBreakSpace )
 				n++;
 		}
 		return n;
@@ -314,7 +314,7 @@ namespace wg
 		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && pStr[i] != 0 ; i++ )
 		{
-			if( pStr[i] == ' ' || pStr[i] == WG_NO_BREAK_SPACE )
+			if( pStr[i] == ' ' || pStr[i] == (uint16_t) ExtChar::NoBreakSpace )
 				n++;
 		}
 		return n;
@@ -840,25 +840,25 @@ namespace wg
 						switch( cmd )
 						{
 							case 'd':
-								style = WG_FONT_NORMAL;
+								style = FontAlt::Normal;
 								break;
 							case 'b':
-								style = WG_FONT_BOLD;
+								style = FontAlt::Bold;
 								break;
 							case 'i':
-								style = WG_FONT_ITALIC;
+								style = FontAlt::Italic;
 								break;
 							case 'I':
-								style = WG_FONT_BOLD_ITALIC;
+								style = FontAlt::BoldItalic;
 								break;
 							case 'S':
-								style = WG_FONT_SUPERSCRIPT;
+								style = FontAlt::Superscript;
 								break;
 							case 's':
-								style = WG_FONT_SUBSCRIPT;
+								style = FontAlt::Subscript;
 								break;
 							case 'm':
-								style = WG_FONT_MONOSPACE;
+								style = FontAlt::Monospace;
 								break;
 							case 'h':
 							{
@@ -867,7 +867,7 @@ namespace wg
 									bOk = false;
 								else
 								{
-									style = (FontAlt) (WG_FONT_HEADING_1 + c - '1');
+									style = (FontAlt) (((int)FontAlt::Heading_1) + c - '1');
 									if((uint32_t)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
@@ -880,7 +880,7 @@ namespace wg
 									bOk = false;
 								else
 								{
-									style = (FontAlt) (WG_FONT_USER_1 + c - '1');
+									style = (FontAlt) (((int)FontAlt::User_1) + c - '1');
 									if((uint32_t)style >= WG_NB_FONTSTYLES)
 										bOk = false;
 								}
@@ -1126,25 +1126,25 @@ namespace wg
 						switch( cmd )
 						{
 							case 'd':
-								style = WG_FONT_NORMAL;
+								style = FontAlt::Normal;
 								break;
 							case 'b':
-								style = WG_FONT_BOLD;
+								style = FontAlt::Bold;
 								break;
 							case 'i':
-								style = WG_FONT_ITALIC;
+								style = FontAlt::Italic;
 								break;
 							case 'I':
-								style = WG_FONT_BOLD_ITALIC;
+								style = FontAlt::BoldItalic;
 								break;
 							case 'S':
-								style = WG_FONT_SUPERSCRIPT;
+								style = FontAlt::Superscript;
 								break;
 							case 's':
-								style = WG_FONT_SUBSCRIPT;
+								style = FontAlt::Subscript;
 								break;
 							case 'm':
-								style = WG_FONT_MONOSPACE;
+								style = FontAlt::Monospace;
 								break;
 							case 'h':
 							{
@@ -1152,7 +1152,7 @@ namespace wg
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
-									style = (FontAlt) (WG_FONT_HEADING_1 + c - '1');
+									style = (FontAlt) (((int)FontAlt::Heading_1) + c - '1');
 								break;
 							}
 							case 'u':
@@ -1161,7 +1161,7 @@ namespace wg
 								if( c < '1' || c > '5' )
 									bOk = false;
 								else
-									style = (FontAlt) (WG_FONT_USER_1 + c - '1');
+									style = (FontAlt) (((int)FontAlt::User_1) + c - '1');
 								break;
 							}
 							default:
@@ -2681,12 +2681,12 @@ namespace wg
 	
 	void TextTool::clearStyle( Char * pChar, uint32_t nb )
 	{
-		modifyProperties( PropStyleModifier(WG_FONT_NORMAL), pChar, nb );
+		modifyProperties( PropStyleModifier(FontAlt::Normal), pChar, nb );
 	}
 	
 	void TextTool::clearStyle( Char * pChar, uint32_t nb, State state )
 	{
-		modifyProperties( PropStateStyleModifier(WG_FONT_NORMAL,state), pChar, nb );
+		modifyProperties( PropStateStyleModifier(FontAlt::Normal,state), pChar, nb );
 	}
 	
 	
@@ -2853,7 +2853,7 @@ namespace wg
 		if( pProp->size(state) != 0 )
 			attr.size = pProp->size(state);
 	
-		if( pProp->style(state) != WG_FONT_NORMAL )
+		if( pProp->style(state) != FontAlt::Normal )
 			attr.style = pProp->style(state);
 	
 		if( pProp->isColored(state) )
@@ -3100,42 +3100,42 @@ namespace wg
 	
 			switch( pNewProp->style() )
 			{
-				case WG_FONT_NORMAL:
+				case FontAlt::Normal:
 					m_temp[i++] = 'd';
 					break;
-				case WG_FONT_BOLD:
+				case FontAlt::Bold:
 					m_temp[i++] = 'b';
 					break;
-				case WG_FONT_BOLD_ITALIC:
+				case FontAlt::BoldItalic:
 					m_temp[i++] = 'i';
 					break;
-				case WG_FONT_ITALIC:
+				case FontAlt::Italic:
 					m_temp[i++] = 'I';
 					break;
-				case WG_FONT_SUPERSCRIPT:
+				case FontAlt::Superscript:
 					m_temp[i++] = 'S';
 					break;
-				case WG_FONT_SUBSCRIPT:
+				case FontAlt::Subscript:
 					m_temp[i++] = 's';
 					break;
-				case WG_FONT_MONOSPACE:
+				case FontAlt::Monospace:
 					m_temp[i++] = 'm';
 					break;
-				case WG_FONT_HEADING_1:
-				case WG_FONT_HEADING_2:
-				case WG_FONT_HEADING_3:
-				case WG_FONT_HEADING_4:
-				case WG_FONT_HEADING_5:
+				case FontAlt::Heading_1:
+				case FontAlt::Heading_2:
+				case FontAlt::Heading_3:
+				case FontAlt::Heading_4:
+				case FontAlt::Heading_5:
 					m_temp[i++] = 'h';
-					m_temp[i++] = '1' + (pNewProp->style() - WG_FONT_HEADING_1);
+					m_temp[i++] = '1' + (((int)pNewProp->style()) - (int)FontAlt::Heading_1);
 					break;
-				case WG_FONT_USER_1:
-				case WG_FONT_USER_2:
-				case WG_FONT_USER_3:
-				case WG_FONT_USER_4:
-				case WG_FONT_USER_5:
+				case FontAlt::User_1:
+				case FontAlt::User_2:
+				case FontAlt::User_3:
+				case FontAlt::User_4:
+				case FontAlt::User_5:
 					m_temp[i++] = 'u';
-					m_temp[i++] = '1' + (pNewProp->style() - WG_FONT_USER_1);
+					m_temp[i++] = '1' + (((int)pNewProp->style()) - (int)FontAlt::User_1);
 					break;
 			}
 	
@@ -3176,7 +3176,7 @@ namespace wg
 	{
 		uint32_t i = 0;
 	
-		if( m_pActiveProp->style() != WG_FONT_NORMAL )
+		if( m_pActiveProp->style() != FontAlt::Normal )
 		{
 			i += writeUTF8( WG_ESCAPE_CODE, m_temp+i );
 			m_temp[i++] = '#';

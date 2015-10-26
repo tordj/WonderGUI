@@ -12,7 +12,7 @@ namespace wg
 	
 	RulerLabels::RulerLabels()
 	{
-		m_direction = WG_RIGHT;
+		m_direction = Direction::Right;
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -92,7 +92,7 @@ namespace wg
 	    
 	    Size preferred;
 	 
-	    if( m_direction == WG_UP || m_direction == WG_DOWN )
+	    if( m_direction == Direction::Up || m_direction == Direction::Down )
 	    {
 			Label * pLabel = m_labels.first();
 			while( pLabel )
@@ -139,32 +139,32 @@ namespace wg
 		else
 			canvas = _canvas;
 	
-		if( m_direction == WG_UP || m_direction == WG_DOWN )
+		if( m_direction == Direction::Up || m_direction == Direction::Down )
 		{
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
 				int height = pLabel->textField.size().h;
 				int ofs = (int) (canvas.h * pLabel->offset);
-				if( m_direction == WG_UP )
+				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
 	/*
 	TODO: Reinstate!!!
 				
 				switch( pLabel->textField.alignment() )
 				{
-					case WG_NORTHWEST:
-					case WG_NORTH:
-					case WG_NORTHEAST:				
+					case Origo::NorthWest:
+					case Origo::North:
+					case Origo::NorthEast:				
 						break;
-					case WG_SOUTHEAST:
-					case WG_SOUTH:
-					case WG_SOUTHWEST:
+					case Origo::SouthEast:
+					case Origo::South:
+					case Origo::SouthWest:
 						ofs -= height;
 						break;
-					case WG_EAST:
-					case WG_WEST:
-					case WG_CENTER:
+					case Origo::East:
+					case Origo::West:
+					case Origo::Center:
 						ofs -= height/2;
 						break;
 				}
@@ -180,25 +180,25 @@ namespace wg
 			{
 				int width = pLabel->textField.size().w;
 				int ofs = (int) (canvas.w * pLabel->offset);
-				if( m_direction == WG_LEFT )
+				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
 	/*			
 	TODO: Reinstate!
 	
 				switch( pLabel->textField.alignment() )
 				{
-					case WG_NORTHWEST:
-					case WG_SOUTHWEST:
-					case WG_WEST:
+					case Origo::NorthWest:
+					case Origo::SouthWest:
+					case Origo::West:
 						break;
-					case WG_SOUTHEAST:
-					case WG_NORTHEAST:				
-					case WG_EAST:
+					case Origo::SouthEast:
+					case Origo::NorthEast:				
+					case Origo::East:
 						ofs -= width;
 						break;
-					case WG_NORTH:
-					case WG_CENTER:
-					case WG_SOUTH:
+					case Origo::North:
+					case Origo::Center:
+					case Origo::South:
 						ofs -= width/2;
 						break;
 				}

@@ -55,12 +55,12 @@ int main ( int argc, char** argv )
 
 	InputHandler_p pInput = Base::inputHandler();
 	
-	PixelType type = WG_PIXEL_UNKNOWN;
+	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		type = WG_PIXEL_RGBA_8;
+		type = PixelType::RGBA_8;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
-		type = WG_PIXEL_RGB_8;
+		type = PixelType::RGB_8;
 		
 	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
@@ -74,7 +74,7 @@ int main ( int argc, char** argv )
 	
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
 	pLogger->logAllMsgs();
-	pLogger->ignoreMsg( WG_MSG_TICK );
+	pLogger->ignoreMsg( MsgType::Tick );
 	
 	Base::msgRouter()->broadcastTo( pLogger );
 
@@ -83,7 +83,7 @@ int main ( int argc, char** argv )
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
 	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), WG_PIXEL_RGBA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
+	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::RGBA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 	char * pFontSpec = (char*) loadFile( "../../../resources/anuvverbubbla_8x8.fnt" );
 
@@ -105,21 +105,21 @@ int main ( int argc, char** argv )
 	// Init skins
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/state_button.bmp" );
-	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
 	pStateButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/grey_pressable_plate.bmp" );
-	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	Skin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	
 	pSDLSurf = IMG_Load( "../../../resources/list_entry.png" );
-	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), WG_PIXEL_RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
 
 	//------------------------------------------------------
@@ -139,7 +139,7 @@ int main ( int argc, char** argv )
 
 	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->addWidget( pImage, Rect(0,0,80,33), WG_CENTER );
+	pFlexPanel->addWidget( pImage, Rect(0,0,80,33), Origo::Center );
 
 
 //	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -326,15 +326,15 @@ MouseButton translateMouseButton( Uint8 button )
 	{
 		default:
 		case SDL_BUTTON_LEFT:
-			return WG_BUTTON_LEFT;
+			return MouseButton::Left;
 		case SDL_BUTTON_MIDDLE:
-			return WG_BUTTON_MIDDLE;
+			return MouseButton::Middle;
 		case SDL_BUTTON_RIGHT:
-			return WG_BUTTON_RIGHT;
+			return MouseButton::Right;
 		case SDL_BUTTON_X1:
-			return WG_BUTTON_X1;
+			return MouseButton::X1;
 		case SDL_BUTTON_X2:
-			return WG_BUTTON_X2;
+			return MouseButton::X2;
 	}
 }
 
@@ -420,7 +420,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 {
 	Widget_p pWidget = Widget::cast(pObject);
 	
-	if( _pMsg->type() != WG_MSG_MOUSE_DRAG || !pWidget->parent() )
+	if( _pMsg->type() != MsgType::MouseDrag || !pWidget->parent() )
 		return;
 
 	const MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);

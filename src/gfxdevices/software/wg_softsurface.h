@@ -44,7 +44,7 @@ namespace wg
 		friend class SoftSurfaceFactory;
 	
 	 public:
-		static SoftSurface_p	create( Size size, PixelType type = WG_PIXEL_RGBA_8 ) { return SoftSurface_p(new SoftSurface(size,type)); }
+		static SoftSurface_p	create( Size size, PixelType type = PixelType::RGBA_8 ) { return SoftSurface_p(new SoftSurface(size,type)); }
 		static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pBlob ) { return SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pBlob)); }
 		static SoftSurface_p	create( const SoftSurface_p& pOther ) { return SoftSurface_p(new SoftSurface( pOther.rawPtr() )); }
 	
@@ -69,7 +69,7 @@ namespace wg
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
 	
 	protected:
-		SoftSurface( Size size, PixelType type = WG_PIXEL_RGBA_8 );
+		SoftSurface( Size size, PixelType type = PixelType::RGBA_8 );
 		SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer );
 		SoftSurface( const SoftSurface * pOther );
 		virtual ~SoftSurface();

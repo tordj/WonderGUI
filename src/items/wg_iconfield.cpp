@@ -31,7 +31,7 @@ namespace wg
 	
 	IconField::IconField( IconHolder * pHolder ) : Field(pHolder)
 	{
-		m_origo			= WG_NORTHWEST;
+		m_origo			= Origo::NorthWest;
 		m_scale			= 0.f;
 		m_bOverlap		= true;
 	}
@@ -55,7 +55,7 @@ namespace wg
 	void IconField::clear()
 	{
 		m_pSkin 	= 0;
-		m_origo 	= WG_WEST;
+		m_origo 	= Origo::West;
 		m_padding 	= Border(0);
 		m_scale 	= 0.f;
 		m_bOverlap 	= false;
@@ -189,9 +189,9 @@ namespace wg
 		{
 			switch( m_origo )
 			{
-				case WG_NORTHWEST:
-				case WG_SOUTHWEST:
-				case WG_WEST:
+				case Origo::NorthWest:
+				case Origo::SouthWest:
+				case Origo::West:
 				{
 					int diff = iconRect.x - contentRect.x + iconRect.w + m_padding.right;
 					textRect.x += diff;
@@ -200,9 +200,9 @@ namespace wg
 						textRect.w = 0;
 					break;
 				}
-				case WG_NORTHEAST:
-				case WG_EAST:
-				case WG_SOUTHEAST:
+				case Origo::NorthEast:
+				case Origo::East:
+				case Origo::SouthEast:
 				{
 					textRect.w = iconRect.x - contentRect.x - m_padding.left;
 					if( textRect.w < 0 )
@@ -210,8 +210,8 @@ namespace wg
 					break;
 				}
 	
-				case WG_NORTH:
-				case WG_CENTER:
+				case Origo::North:
+				case Origo::Center:
 				{
 					int diff = iconRect.y - contentRect.y + iconRect.h + m_padding.bottom;
 					textRect.y += diff;
@@ -220,7 +220,7 @@ namespace wg
 						textRect.h = 0;
 					break;
 				}
-				case WG_SOUTH:
+				case Origo::South:
 				{
 					textRect.h = iconRect.y - contentRect.y - m_padding.top;
 					if( textRect.h < 0 )

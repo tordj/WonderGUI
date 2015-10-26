@@ -79,22 +79,22 @@ namespace wg
 	
 	#define	FONTSIZE_INHERIT 0x80000000
 	
-	enum StateEnum
+	enum class StateEnum : uint8_t
 	{
-		WG_STATE_NORMAL						= 0,			///< Element is neither hovered, pressed, selected or focused.
-		WG_STATE_SELECTED					= 1,			///< Element is in a selected state, like a selected checkbox or item in a list. 
-		WG_STATE_FOCUSED					= 2,			///< Element has keyboard focus
-		WG_STATE_FOCUSED_SELECTED			= 2+1,
-		WG_STATE_HOVERED					= 4,			///< Mouse pointer is hovering over element.
-		WG_STATE_HOVERED_SELECTED			= 4+1,
-		WG_STATE_HOVERED_FOCUSED			= 4+2,
-		WG_STATE_HOVERED_FOCUSED_SELECTED	= 4+2+1,
-		WG_STATE_PRESSED					= 8+4,			///< Mouse button (usually left one) is pressed on element.
-		WG_STATE_PRESSED_SELECTED			= 8+4+1,
-		WG_STATE_PRESSED_FOCUSED			= 8+4+2,
-		WG_STATE_PRESSED_FOCUSED_SELECTED	= 8+4+2+1,
-		WG_STATE_DISABLED					= 16,			///< Element is disabled and can't be focused or pressed.
-		WG_STATE_DISABLED_SELECTED			= 16+1,
+		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
+		Selected				= 1,			///< Element is in a selected state, like a selected checkbox or item in a list. 
+		Focused					= 2,			///< Element has keyboard focus
+		FocusedSelected			= 2+1,
+		Hovered					= 4,			///< Mouse pointer is hovering over element.
+		HoveredSelected			= 4+1,
+		HoveredFocused			= 4+2,
+		HoveredFocusedSelected	= 4+2+1,
+		Pressed					= 8+4,			///< Mouse button (usually left one) is pressed on element.
+		PressedSelected			= 8+4+1,
+		PressedFocused			= 8+4+2,
+		PressedFocusedSelected	= 8+4+2+1,
+		Disabled				= 16,			///< Element is disabled and can't be focused or pressed.
+		DisabledSelected		= 16+1,
 	};
 	
 	#define	WG_NB_STATES		14			// Number of states
@@ -103,34 +103,34 @@ namespace wg
 	class State 
 	{
 	public:
-		State() { m_state = WG_STATE_NORMAL; }
-		State( StateEnum state ) { m_state = state; }
+		State() { m_state = (uint8_t) StateEnum::Normal; }
+		State( StateEnum state ) { m_state = (uint8_t) state; }
 	
 	//	void		set( WgModeEnum state ) { m_state = state; }
 	//	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
 	
-		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~WG_STATE_DISABLED; else m_state = (m_state & WG_STATE_SELECTED) | WG_STATE_DISABLED; return true; }
-		bool	setSelected(bool bSelected) { if(bSelected) m_state |= WG_STATE_SELECTED; else m_state &= ~WG_STATE_SELECTED; return true; }
-		bool	setFocused(bool bFocused) { if( m_state == WG_STATE_DISABLED ) return false; if(bFocused) m_state |= WG_STATE_FOCUSED; else m_state &= ~WG_STATE_FOCUSED; return true; }
-		bool	setHovered(bool bHovered) { if( m_state == WG_STATE_DISABLED ) return false; if(bHovered) m_state |= WG_STATE_HOVERED; else m_state &= ~WG_STATE_PRESSED; return true; }
-		bool	setPressed(bool bPressed) { if( m_state == WG_STATE_DISABLED ) return false; if(bPressed) m_state |= WG_STATE_PRESSED; else m_state &= ~(WG_STATE_PRESSED - WG_STATE_HOVERED); return true; }
+		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
+		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
+		bool	setFocused(bool bFocused) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
+		bool	setHovered(bool bHovered) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~((uint8_t)StateEnum::Pressed); return true; }
+		bool	setPressed(bool bPressed) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
 	
 	
-		bool	isEnabled() const { return (m_state & WG_STATE_DISABLED) == WG_STATE_NORMAL; }
-		bool	isSelected() const { return (m_state & WG_STATE_SELECTED) == WG_STATE_SELECTED; }
-		bool	isFocused() const { return (m_state & WG_STATE_FOCUSED) == WG_STATE_FOCUSED; }
-		bool	isHovered() const { return (m_state & WG_STATE_HOVERED) == WG_STATE_HOVERED; }
-		bool	isPressed() const { return (m_state & WG_STATE_PRESSED) == WG_STATE_PRESSED; }
+		bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
+		bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
+		bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
+		bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
+		bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
 	
-		inline bool operator==(StateEnum state) const { return m_state == state; }
-		inline bool operator!=(StateEnum state) const { return m_state != state; }
+		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
+		inline bool operator!=(StateEnum state) const { return m_state != ((uint8_t)state); }
 	
-		inline void operator=(StateEnum state) { m_state = state; }
+		inline void operator=(StateEnum state) { m_state = ((uint8_t)state); }
 	
 		operator StateEnum() const { return (StateEnum) m_state; }
 	
 	private:
-		int		m_state;
+		uint8_t		m_state;
 	};
 	
 	
@@ -141,10 +141,10 @@ namespace wg
 	
 	// Bitmask for various text attributes.
 	
-	enum TxtAttr
+	enum class TxtAttr
 	{
-		WG_TXT_UNDERLINED	= 0x1,
-		WG_TXT_SELECTED		= 0x2
+		Underlined	= 0x1,
+		Selected		= 0x2
 	};
 	
 	
@@ -235,86 +235,86 @@ namespace wg
 	*/
 	
 	
-	enum ExtChar
+	enum class ExtChar
 	{
 		// Code inside WonderGUI assumes these are all
 		// in the range 0x80-0xA0, but that might change in the future.
 	
-		WG_BREAK_PERMITTED			= 0x82,
-		WG_HYPHEN_BREAK_PERMITTED	= 0x83,
-		WG_NO_BREAK_SPACE			= 0xA0,
+		BreakPermitted			= 0x82,
+		HyphenBreakPermitted	= 0x83,
+		NoBreakSpace			= 0xA0,
 	
-		WG_ELLIPSIS					= 0x2026
+		Ellipsis					= 0x2026
 	};
 	
 	//____ CodePage ______________________________________________________________
 	
-	enum CodePage
+	enum class CodePage
 	{
-		WG_CODEPAGE_LATIN1 = 0,
-		WG_CODEPAGE_1250 = 1,		///< Windows Cental Europe
-		WG_CODEPAGE_1251 = 2,		///< Windows Cyrillic
-		WG_CODEPAGE_1252 = 3,		///< Windows Latin-1 extended
-		WG_CODEPAGE_1253 = 4,		///< Windows Greek
-		WG_CODEPAGE_1254 = 5,		///< Windows Turkish
-		WG_CODEPAGE_1255 = 6,		///< Windows Hebrew
-		WG_CODEPAGE_1256 = 7,		///< Windows Arabic
-		WG_CODEPAGE_1257 = 8,		///< Windows Baltic
-		WG_CODEPAGE_1258 = 9,		///< Windows Vietnam
-		WG_CODEPAGE_874 = 10,		///< Windows Thai
+		Latin1,
+		_1250,		///< Windows Cental Europe
+		_1251,		///< Windows Cyrillic
+		_1252,		///< Windows Latin-1 extended
+		_1253,		///< Windows Greek
+		_1254,		///< Windows Turkish
+		_1255,		///< Windows Hebrew
+		_1256,		///< Windows Arabic
+		_1257,		///< Windows Baltic
+		_1258,		///< Windows Vietnam
+		_874,		///< Windows Thai
 	};
 	
 	#define WG_NB_CODEPAGES 11
 	
 	//____ BreakRules ____________________________________________________________
 	
-	enum BreakRules
+	enum class BreakRules
 	{
-		WG_NO_BREAK		= 0,
-		WG_BREAK_BEFORE	= 16,
-		WG_BREAK_ON		= 32,
-		WG_BREAK_AFTER	= 64
+		NoBreak		= 0,
+		BreakBefore	= 16,
+		BreakOn		= 32,
+		BreakAfter	= 64
 	};
 	
 	//____ BlendMode ____________________________________________________________
 	
 	// BlendModes control how blits and fills are blended against the background.
 	
-	enum BlendMode //: uint8_t
+	enum class BlendMode //: uint8_t
 	{
-		WG_BLENDMODE_OPAQUE,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
-		WG_BLENDMODE_BLEND,				///< Normal mode, alpha of source and tint-color is taken into account.
-		WG_BLENDMODE_ADD,				///< RGBA Additive, alpha of source and tint-color is taken into account.
-		WG_BLENDMODE_MULTIPLY,			///< RGBA Multiply, alpha of source and tint-color is taken into account.
-		WG_BLENDMODE_INVERT				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
+		Opaque,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
+		Blend,				///< Normal mode, alpha of source and tint-color is taken into account.
+		Add,				///< RGBA Additive, alpha of source and tint-color is taken into account.
+		Multiply,			///< RGBA Multiply, alpha of source and tint-color is taken into account.
+		Invert				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 	};
 	
 	//____ FontAlt ____________________________________________________________
 	
-	enum FontAlt
+	enum class FontAlt
 	{
 		// Needs to stay in sync with ExtChar::WG_BEGIN_NORMAL and following enums!
 	
-		WG_FONT_NORMAL		= 0,
-		WG_FONT_BOLD		= 1,
-		WG_FONT_BOLD_ITALIC= 2,
-		WG_FONT_ITALIC		= 3,
-		WG_FONT_SUPERSCRIPT= 4,
-		WG_FONT_SUBSCRIPT	= 5,
-		WG_FONT_MONOSPACE	= 6,
-		WG_FONT_HEADING_1	= 7,
-		WG_FONT_HEADING_2	= 8,
-		WG_FONT_HEADING_3	= 9,
-		WG_FONT_HEADING_4	= 10,
-		WG_FONT_HEADING_5	= 11,
+		Normal		= 0,
+		Bold		= 1,
+		BoldItalic  = 2,
+		Italic		= 3,
+		Superscript	= 4,
+		Subscript	= 5,
+		Monospace	= 6,
+		Heading_1	= 7,
+		Heading_2	= 8,
+		Heading_3	= 9,
+		Heading_4	= 10,
+		Heading_5	= 11,
 	
-		WG_FONT_USER_1		= 12,
-		WG_FONT_USER_2		= 13,
-		WG_FONT_USER_3		= 14,
-		WG_FONT_USER_4		= 15,
-		WG_FONT_USER_5		= 16,
+		User_1		= 12,
+		User_2		= 13,
+		User_3		= 14,
+		User_4		= 15,
+		User_5		= 16,
 	
-		WG_FONT_INHERIT	= 99,
+		Inherit	= 99,
 	};
 	
 	#define WG_NB_FONTSTYLES	17
@@ -322,49 +322,49 @@ namespace wg
 	
 	//____ PointerStyle __________________________________________________________
 	
-	enum PointerStyle
+	enum class PointerStyle
 	{
-		WG_POINTER_ARROW,						// default arrow
-		WG_POINTER_DEFAULT = WG_POINTER_ARROW,	// default arrow
-		WG_POINTER_HOURGLASS,					// hourglass
-		WG_POINTER_HAND,							// hand
-		WG_POINTER_CROSSHAIR,					// crosshair
-		WG_POINTER_HELP,							// help
-		WG_POINTER_IBEAM,						// I-beam
-		WG_POINTER_STOP,							// slashed circle
-		WG_POINTER_UP_ARROW,						// arrow pointing up
-		WG_POINTER_SIZE_ALL,						// four-pointed arrow in all directions
-		WG_POINTER_SIZE_NE_SW,					// double-pointed arrow pointing northeast and southwest
-		WG_POINTER_SIZE_NW_SE,					// double-pointed arrow pointing northwest and southeast
-		WG_POINTER_SIZE_N_S,						// double-pointed arrow pointing north and south
-		WG_POINTER_SIZE_W_E,						// double-pointed arrow pointing west and east
+		Arrow,						// default arrow
+		Default = Arrow,	// default arrow
+		Hourglass,					// hourglass
+		Hand,							// hand
+		Crosshair,					// crosshair
+		Help,							// help
+		Ibeam,						// I-beam
+		Stop,							// slashed circle
+		UpArrow,						// arrow pointing up
+		ResizeAll,						// four-pointed arrow in all directions
+		ResizeNeSw,					// double-pointed arrow pointing northeast and southwest
+		ResizeNwSe,					// double-pointed arrow pointing northwest and southeast
+		ResizeNS,						// double-pointed arrow pointing north and south
+		ResizeWE,						// double-pointed arrow pointing west and east
 	};
 	
 	//____ MouseButton _________________________________________________________
 	
-	enum MouseButton
+	enum class MouseButton
 	{
-		WG_BUTTON_NONE = 0,
-		WG_BUTTON_LEFT,
-		WG_BUTTON_MIDDLE,
-		WG_BUTTON_RIGHT,
-		WG_BUTTON_X1,
-		WG_BUTTON_X2,
+		None = 0,
+		Left,
+		Middle,
+		Right,
+		X1,
+		X2,
 	};
 	
-	#define	WG_MAX_BUTTONS		WG_BUTTON_X2+1	
+	#define	WG_MAX_BUTTONS		((int)MouseButton::X2)+1	
 	
 	
 	//____ AnimMode _____________________________________________________________
 	
-	enum AnimMode
+	enum class AnimMode
 	{
-		WG_FORWARD_ONCE,
-		WG_BACKWARD_ONCE,
-		WG_FORWARD_LOOPING,
-		WG_BACKWARD_LOOPING,
-		WG_FORWARD_PINGPONG,
-		WG_BACKWARD_PINGPONG
+		Forward,
+		Backward,
+		Looping,
+		BackwardLooping,
+		PingPong,
+		BackwardPingPong
 	};
 	
 	
@@ -372,10 +372,10 @@ namespace wg
 	
 	// TintMode controls how TintColors are blended hierarchically.
 	
-	enum TintMode
+	enum class TintMode
 	{
-		WG_TINTMODE_OPAQUE,
-		WG_TINTMODE_MULTIPLY
+		Opaque,
+		Multiply
 	};
 	
 	
@@ -408,46 +408,46 @@ namespace wg
 	
 	//____ SearchMode _____________________________________________________________
 	
-	enum SearchMode
+	enum class SearchMode
 	{
-		WG_SEARCH_MARKPOLICY,			///< Perform a mark test on Widget.
-		WG_SEARCH_GEOMETRY,				///< Goes strictly on geometry, ignores alpha.
-		WG_SEARCH_ACTION_TARGET,		///< Like MARKPOLICY, but takes modality into account.
+		MarkPolicy,			///< Perform a mark test on Widget.
+		Geometry,				///< Goes strictly on geometry, ignores alpha.
+		ActionTarget,		///< Like MARKPOLICY, but takes modality into account.
 	};
 	
 	//____ Origo _____________________________________________________________
 	
-	enum Origo
+	enum class Origo
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
 	
-		WG_NORTHWEST	= 0,
-		WG_NORTH		= 1,
-		WG_NORTHEAST	= 2,
-		WG_EAST			= 3,
-		WG_SOUTHEAST	= 4,
-		WG_SOUTH		= 5,
-		WG_SOUTHWEST	= 6,
-		WG_WEST			= 7,
-		WG_CENTER		= 8
+		NorthWest	= 0,
+		North		= 1,
+		NorthEast	= 2,
+		East		= 3,
+		SouthEast	= 4,
+		South		= 5,
+		SouthWest	= 6,
+		West		= 7,
+		Center		= 8
 	};
 	
 	//____ Direction ____________________________________________________________
 	
-	enum Direction
+	enum class Direction
 	{
-		WG_UP,
-		WG_DOWN,
-		WG_LEFT,
-		WG_RIGHT
+		Up,
+		Down,
+		Left,
+		Right
 	};
 	
 	//____ Orientation __________________________________________________________
 	
-	enum Orientation
+	enum class Orientation
 	{
-		WG_HORIZONTAL,
-		WG_VERTICAL
+		Horizontal,
+		Vertical
 	};
 	
 	//____ SizePolicy ___________________________________________________________
@@ -460,115 +460,115 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified in the childs hook.
 	*/
-	enum SizePolicy
+	enum class SizePolicy
 	{
-		WG_DEFAULT = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
-		WG_BOUND,				///< Child is bound to the exact size specified by parent.
-		WG_CONFINED,			///< Childs size is limited to the size specified by parent.
-		WG_EXPANDED,			///< Childs size is set to at least the size specified by parent.
+		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
+		Bound,				///< Child is bound to the exact size specified by parent.
+		Confined,			///< Childs size is limited to the size specified by parent.
+		Expanded,			///< Childs size is set to at least the size specified by parent.
 	};
 	
 	//____ MsgType ______________________________________________________________
 	
-	enum	MsgType
+	enum class MsgType
 	{
-		WG_MSG_DUMMY = 0,
-		WG_MSG_TICK,
-		WG_MSG_POINTER_CHANGE,
+		Dummy = 0,
+		Tick,
+		PointerChange,
 	
-		WG_MSG_FOCUS_GAINED,
-		WG_MSG_FOCUS_LOST,
+		FocusGained,
+		FocusLost,
 	
-		WG_MSG_MOUSE_ENTER,
-		WG_MSG_MOUSE_MOVE,
-		WG_MSG_MOUSE_LEAVE,
+		MouseEnter,
+		MouseMove,
+		MouseLeave,
 	
-		WG_MSG_MOUSE_PRESS,
-		WG_MSG_MOUSE_REPEAT,
-		WG_MSG_MOUSE_DRAG,
-		WG_MSG_MOUSE_RELEASE,
-		WG_MSG_MOUSE_CLICK,
-		WG_MSG_MOUSE_DOUBLE_CLICK,
+		MousePress,
+		MouseRepeat,
+		MouseDrag,
+		MouseRelease,
+		MouseClick,
+		MouseDoubleClick,
 	
-		WG_MSG_KEY_PRESS,
-		WG_MSG_KEY_REPEAT,
-		WG_MSG_KEY_RELEASE,
-		WG_MSG_TEXT_INPUT,
-		WG_MSG_WHEEL_ROLL,
+		KeyPress,
+		KeyRepeat,
+		KeyRelease,
+		TextInput,
+		WheelRoll,
 	
-		WG_MSG_SELECT,						// Non-value widget triggered, like a button being pressed.
-		WG_MSG_TOGGLE,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
-		WG_MSG_VALUE_UPDATE,					// Value of widget changed, like for editvalue, animations, sliders etc
-		WG_MSG_RANGE_UPDATE,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
+		Select,						// Non-value widget triggered, like a button being pressed.
+		Toggle,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
+		ValueUpdate,					// Value of widget changed, like for editvalue, animations, sliders etc
+		RangeUpdate,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
 	
-		WG_MSG_TEXT_EDIT,						// Text widget edited, like texteditor, editline, etc.
+		TextEdit,						// Text widget edited, like texteditor, editline, etc.
 	
 	
-		WG_MSG_ITEM_TOGGLE,
-	//	WG_MSG_ITEM_MOUSE_ENTER,
-	//	WG_MSG_ITEM_MOUSE_LEAVE,
-		WG_MSG_ITEM_MOUSE_PRESS,
-	//	WG_MSG_ITEM_MOUSE_DRAG,
-	//	WG_MSG_ITEM_MOUSE_REPEAT,
-	//	WG_MSG_ITEM_MOUSE_RELEASE,
-	//	WG_MSG_ITEM_MOUSE_CLICK,
-	//	WG_MSG_ITEM_MOUSE_DOUBLE_CLICK,
-		WG_MSG_ITEMS_SELECT,
-		WG_MSG_ITEMS_UNSELECT,
+		ItemToggle,
+	//	ItemMouseEnter,
+	//	ItemMouseLeave,
+		ItemMousePress,
+	//	ItemMouseDrag,
+	//	ItemMouseRepeat,
+	//	ItemMouseRelease,
+	//	ItemMouseClick,
+	//	ItemMouseDoubleClick,
+		ItemsSelect,
+		ItemsUnselect,
 	
-		WG_MSG_POPUP_CLOSED,
+		PopupClosed,
 	
-		WG_MSG_MODAL_MOVE_OUTSIDE,
-		WG_MSG_MODAL_BLOCKED_PRESS,
-		WG_MSG_MODAL_BLOCKED_RELEASE,
+		ModalMoveOutside,
+		ModalBlockedPress,
+		ModalBlockedRelease,
 	
-		WG_MSG_LINK_SELECT,
-		WG_MSG_LINK_MOUSE_ENTER,
-		WG_MSG_LINK_MOUSE_LEAVE,
-		WG_MSG_LINK_MOUSE_PRESS,
-		WG_MSG_LINK_MOUSE_REPEAT,
-		WG_MSG_LINK_MOUSE_RELEASE,
-		WG_MSG_LINK_MOUSE_CLICK,
-		WG_MSG_LINK_MOUSE_DOUBLE_CLICK,
+		LinkSelect,
+		LinkMouseEnter,
+		LinkMouseLeave,
+		LinkMousePress,
+		LinkMouseRepeat,
+		LinkMouseRelease,
+		LinkMouseClick,
+		LinkMouseDoubleClick,
 		
-		WG_MSG_MAX
+		Max
 	};
 	
 	
 	//____ SortOrder ____________________________________________________________
 	
-	enum SortOrder
+	enum class SortOrder
 	{
-		WG_SORT_ASCENDING,
-		WG_SORT_DESCENDING
+		Ascending,
+		Descending
 	};
 	
 	//____ Unit ____________________________________________________________
 	
-	enum Unit
+	enum class Unit
 	{
-		WG_PX,
-		WG_EM
+		Px,
+		Em
 	};
 	
 	
 	//____ SelectMode ___________________________________________________________
 	
-	enum SelectMode
+	enum class SelectMode
 	{
-		WG_SELECT_NONE,			///< Entries can not be selected.
-		WG_SELECT_SINGLE,		///< Only a single entry can be selected at a time.
-		WG_SELECT_MULTI,		///< Multiple entries can be selected at the same time.
-		WG_SELECT_FLIP			///< Multiple entries can be selected at the same time and are switched individually.
+		Unselectable,			///< Entries can not be selected.
+		SingleEntry,		///< Only a single entry can be selected at a time.
+		MultiEntries,		///< Multiple entries can be selected at the same time.
+		FlipOnSelect			///< Multiple entries can be selected at the same time and are switched individually.
 	};
 	
 	//____ TextEditMode _________________________________________________________
 	
-	enum TextEditMode
+	enum class TextEditMode
 	{
-		WG_TEXT_STATIC,
-		WG_TEXT_SELECTABLE,
-		WG_TEXT_EDITABLE,
+		Static,
+		Selectable,
+		Editable,
 	};
 	
 	
@@ -586,11 +586,11 @@ namespace wg
 	
 	//___  TextDecoration ________________________________________________________
 	
-	enum TextDecoration
+	enum class TextDecoration
 	{
-		WG_DECORATION_INHERIT,
-		WG_DECORATION_NONE,
-		WG_DECORATION_UNDERLINE
+		Inherit,
+		None,
+		Underline
 	};
 	
 	//____ Range ____________________________________________________________
@@ -619,22 +619,22 @@ namespace wg
 	
 	//____ AccessMode ____________________________________________________________
 	
-	enum AccessMode
+	enum class AccessMode
 	{
-		WG_NO_ACCESS,
-		WG_READ_ONLY,
-		WG_WRITE_ONLY,
-		WG_READ_WRITE
+		None,
+		ReadOnly,
+		WriteOnly,
+		ReadWrite
 	};
 	
 	//____ PixelType _____________________________________________________________
 	
-	enum PixelType
+	enum class PixelType
 	{
-		WG_PIXEL_UNKNOWN,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
-		WG_PIXEL_CUSTOM,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		WG_PIXEL_RGB_8,				///< One byte of red, green and blue respectively in memory in exactly that order.
-		WG_PIXEL_RGBA_8				///< One byte of red, green, blue and alpha respectively in memory in exactly that order.
+		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
+		Custom,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
+		RGB_8,				///< One byte of red, green and blue respectively in memory in exactly that order.
+		RGBA_8				///< One byte of red, green, blue and alpha respectively in memory in exactly that order.
 	};
 	
 	
@@ -657,9 +657,9 @@ namespace wg
 	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
 	 *
 	 * Not all pixel formats (like those of index/palette-based surfaces) can
-	 * be fully described by a PixelFormat object. In that case the member type is set to WG_PIXEL_UNKNOWN.
+	 * be fully described by a PixelFormat object. In that case the member type is set to Unknown.
 	 *
-	 * As long as the type member is not set to WG_PIXEL_UNKNOWN, you can extract the value of any channel of a
+	 * As long as the type member is not set to Unknown, you can extract the value of any channel of a
 	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
 	 * as an 8-bit value in the range 0-255, you use the formula:
 	 *
@@ -714,11 +714,11 @@ namespace wg
 	
 	//____ MaskOp ____________________________________________________________
 	
-	enum MaskOp
+	enum class MaskOp
 	{
-		WG_MASKOP_RECURSE = 0,	///< Recurse through children, let them mask background individually.
-		WG_MASKOP_SKIP = 1,		///< Do not mask background against container or children.
-		WG_MASKOP_MASK = 2		///< Mask background against whole container.
+		Recurse = 0,	///< Recurse through children, let them mask background individually.
+		Skip = 1,		///< Do not mask background against container or children.
+		Mask = 2		///< Mask background against whole container.
 	};
 	
 	

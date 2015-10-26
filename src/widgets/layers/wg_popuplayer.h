@@ -98,7 +98,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static PopupLayer_p	cast( const Object_p& pObject );
 	
-		PopupHook_p	openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = WG_NORTHEAST, Size maxSize = Size(INT_MAX,INT_MAX) );
+		PopupHook_p	openPopup( const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX,INT_MAX) );
 	
 		bool			closePopup( const Widget_p& pPopup );
 		bool			closeAllPopups();

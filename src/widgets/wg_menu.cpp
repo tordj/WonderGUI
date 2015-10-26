@@ -203,21 +203,21 @@ namespace wg
 	{
 			Pen		pen;
 			TextAttr	attr;
-			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
-			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_NORMAL );
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), StateEnum::Normal );
+			TextTool::addPropAttributes(attr, m_pEntryProp, StateEnum::Normal );
 	
 			pen.setAttributes( attr );
 			int	heightNormal	= pen.getLineSpacing();
 	
 			attr.clear();
-			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
-			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_HOVERED );
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), StateEnum::Hovered );
+			TextTool::addPropAttributes(attr, m_pEntryProp, StateEnum::Hovered );
 			pen.setAttributes( attr );
 			int heightMarked	= pen.getLineSpacing();
 	
 			attr.clear();
-			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), WG_STATE_DISABLED );
-			TextTool::addPropAttributes(attr, m_pEntryProp, WG_STATE_DISABLED );
+			TextTool::addPropAttributes(attr, Base::getDefaultTextprop(), StateEnum::Disabled );
+			TextTool::addPropAttributes(attr, m_pEntryProp, StateEnum::Disabled );
 			pen.setAttributes( attr );
 			int heightDisabled	= pen.getLineSpacing();
 	
@@ -491,27 +491,27 @@ namespace wg
 	void Menu::_calcEntryMinWidth( MenuEntry * pEntry )
 	{
 		TextAttr	entryAttr;
-		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
-		TextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_NORMAL);
+		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), StateEnum::Normal );
+		TextTool::addPropAttributes(entryAttr, m_pEntryProp, StateEnum::Normal);
 		TextAttr	accelAttr;
-		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), WG_STATE_NORMAL );
-		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_NORMAL);
+		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), StateEnum::Normal );
+		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, StateEnum::Normal);
 	
 		int wNormal = TextTool::lineWidth( entryAttr, "  " );
 		int wMarked = TextTool::lineWidth( entryAttr, "  " );
 	
-		wNormal += TextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
-		wNormal += TextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
+		wNormal += TextTool::lineWidth( entryAttr, StateEnum::Normal, pEntry->getText().chars() );
+		wNormal += TextTool::lineWidth( accelAttr, StateEnum::Normal, pEntry->getAccelText().chars() );
 	
 		entryAttr.clear();
-		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
-		TextTool::addPropAttributes(entryAttr, m_pEntryProp, WG_STATE_HOVERED);
+		TextTool::addPropAttributes(entryAttr, Base::getDefaultTextprop(), StateEnum::Hovered );
+		TextTool::addPropAttributes(entryAttr, m_pEntryProp, StateEnum::Hovered);
 		accelAttr.clear();
-		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), WG_STATE_HOVERED );
-		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, WG_STATE_HOVERED);
+		TextTool::addPropAttributes(accelAttr, Base::getDefaultTextprop(), StateEnum::Hovered );
+		TextTool::addPropAttributes(accelAttr, m_pKeyAccelProp, StateEnum::Hovered);
 	
-		wMarked += TextTool::lineWidth( entryAttr, WG_STATE_NORMAL, pEntry->getText().chars() );
-		wMarked += TextTool::lineWidth( accelAttr, WG_STATE_NORMAL, pEntry->getAccelText().chars() );
+		wMarked += TextTool::lineWidth( entryAttr, StateEnum::Normal, pEntry->getText().chars() );
+		wMarked += TextTool::lineWidth( accelAttr, StateEnum::Normal, pEntry->getAccelText().chars() );
 	
 	
 		if( wNormal > wMarked )
@@ -528,7 +528,7 @@ namespace wg
 	
 		if( m_pSkin )
 		{
-			Rect r = m_pSkin->contentRect( Rect(0,0,1000,1000), WG_STATE_NORMAL );
+			Rect r = m_pSkin->contentRect( Rect(0,0,1000,1000), StateEnum::Normal );
 			return Border(r.x, r.y, 1000-r.w, 1000-r.h);
 		}
 		else
@@ -640,13 +640,13 @@ namespace wg
 				}
 				else
 				{
-					State	state = WG_STATE_DISABLED;
+					State	state = StateEnum::Disabled;
 	
 					if( ((MenuEntry*)pItem)->isEnabled() )
-						state = WG_STATE_NORMAL;
+						state = StateEnum::Normal;
 	
 					if( item == m_markedItem )
-						state = WG_STATE_HOVERED;
+						state = StateEnum::Hovered;
 	
 					// Render the tile for this entry
 	
@@ -787,7 +787,7 @@ namespace wg
 		
 		switch( pMsg->type() )
 		{
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 			{
 				if( m_selectorCountdown > 0 )
 				{
@@ -803,7 +803,7 @@ namespace wg
 				return;
 			}
 	
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 			{
 				// Unmark any selected item unless it is a submenu...
 	
@@ -816,8 +816,8 @@ namespace wg
 			}
 			break;
 	
-			case WG_MSG_MOUSE_ENTER:
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
 			{
 				Coord mousePos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 
@@ -863,7 +863,7 @@ namespace wg
 			}
 			break;
 	
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				Coord mousePos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 
@@ -873,7 +873,7 @@ namespace wg
 			}
 			break;
 	
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pEv = WheelRollMsg::cast(pMsg);
 	
@@ -886,7 +886,7 @@ namespace wg
 				}
 			}
 	
-			case WG_MSG_TEXT_INPUT:
+			case MsgType::TextInput:
 			{
 				String text = TextInputMsg::cast(pMsg)->text();
 				if( text.length() != 0 )
@@ -905,8 +905,8 @@ namespace wg
 			}
 			break;
 	
-			case WG_MSG_KEY_PRESS:
-			case WG_MSG_KEY_REPEAT:
+			case MsgType::KeyPress:
+			case MsgType::KeyRepeat:
 			{
 				MenuItem * pItem = 0;
 				if( m_markedItem != 0 )
@@ -1059,7 +1059,7 @@ namespace wg
 	
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == WG_BUTTON_LEFT )
+		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 			pMsg->swallow();
 		else if( pMsg->isKeyMsg() )
 		{
@@ -1069,7 +1069,7 @@ namespace wg
 				key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
 				pMsg->swallow();
 		}
-		else if( pMsg->type() == WG_MSG_TEXT_INPUT || pMsg->type() == WG_MSG_WHEEL_ROLL )
+		else if( pMsg->type() == MsgType::TextInput || pMsg->type() == MsgType::WheelRoll )
 			pMsg->swallow();
 	}
 	
@@ -1177,7 +1177,7 @@ namespace wg
 	
 		// Calculate itemArea
 	
-		Rect	geo = m_pSkin?m_pSkin->contentRect(globalGeo(), WG_STATE_NORMAL):globalGeo();
+		Rect	geo = m_pSkin?m_pSkin->contentRect(globalGeo(), StateEnum::Normal):globalGeo();
 		Rect itemArea( geo.x, geo.y + yOfs, geo.w, m_entryHeight );
 	
 		// 
@@ -1189,7 +1189,7 @@ namespace wg
 	
 		if( pLayer )
 		{
-			pLayer->openPopup( pMenu, this, itemArea - pLayer->globalPos(), WG_NORTHEAST );
+			pLayer->openPopup( pMenu, this, itemArea - pLayer->globalPos(), Origo::NorthEast );
 			m_pOpenSubMenu = pItem;
 		}
 	}
@@ -1262,11 +1262,11 @@ namespace wg
 	
 	void Menu::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if( (m_bOpaque && blendMode == WG_BLENDMODE_BLEND) || blendMode == WG_BLENDMODE_OPAQUE )
+		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
 		{
 			patches.sub( Rect( geo, clip ) );
 		}
-		else if( blendMode == WG_BLENDMODE_BLEND && m_pSkin )
+		else if( blendMode == BlendMode::Blend && m_pSkin )
 		{
 			if( m_pSkin->isOpaque() )
 				patches.sub( Rect( geo, clip ) );

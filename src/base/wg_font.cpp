@@ -41,14 +41,14 @@ namespace wg
 	Font::Font( const VectorGlyphs_p& pNormal )
 	{
 		_init();
-		setVectorGlyphs( pNormal, WG_FONT_NORMAL );
+		setVectorGlyphs( pNormal, FontAlt::Normal );
 	}
 	#endif
 	
 	Font::Font( const BitmapGlyphs_p& pNormal, int size )
 	{
 		_init();
-		setBitmapGlyphs( pNormal, WG_FONT_NORMAL, size );
+		setBitmapGlyphs( pNormal, FontAlt::Normal, size );
 	}
 	
 	//____ _init() _________________________________________________________________
@@ -115,7 +115,7 @@ namespace wg
 	
 	//____ getGlyphset() _______________________________________________________________
 	
-	Glyphset_p Font::getGlyphset( FontAlt style, int size ) const
+	Glyphset_p Font::getGlyphset( FontAlt _style, int size ) const
 	{
 		// Find the right glyphset to the following priorities:
 		//
@@ -124,6 +124,8 @@ namespace wg
 		// 3. VectorGlyphs of the right style.
 		// 4. Default VectorGlyphs.
 		// 5. BitmapGlyphs of the closest smaller size (preferably same style, otherwise default).
+	
+		int	style = (int) _style;
 	
 		if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
 			return m_aBitmapGlyphs[size][style];
@@ -155,7 +157,7 @@ namespace wg
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
 	
-		Glyph_p pUnder = getGlyph('_', WG_FONT_NORMAL, size);
+		Glyph_p pUnder = getGlyph('_', FontAlt::Normal, size);
 	
 		const GlyphBitmap * pSrc = pUnder->getBitmap();
 	
@@ -181,9 +183,11 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	Glyph_p Font::getGlyph( uint32_t chr, FontAlt style, int size ) const
+	Glyph_p Font::getGlyph( uint32_t chr, FontAlt _style, int size ) const
 	{
 		Glyph_p p;
+	
+		int style = (int) _style;
 	
 		// Special case: For whitespace we give vector glyphs top priority
 	
@@ -279,8 +283,10 @@ namespace wg
 	
 	//____ isGlyphProvided() ______________________________________________________
 	
-	Font::GlyphProvided Font::isGlyphProvided( uint32_t chr, FontAlt style, int size ) const
+	Font::GlyphProvided Font::isGlyphProvided( uint32_t chr, FontAlt _style, int size ) const
 	{
+		int style = (int) _style;
+		
 		// Find the right glyph to the following priorities:
 	
 		//TODO: Vector glyphs generate the bitmap on this call, that is totally unnecessary!
@@ -345,8 +351,10 @@ namespace wg
 	#ifdef WG_USE_FREETYPE
 	//____ setVectorGlyphs() ______________________________________________________
 	
-	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt style )
+	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt _style )
 	{
+		int style = (int) _style;
+
 		if( m_aVectorGlyphs[style] == 0 )
 			m_aVectorGlyphs[style] = new VectorGlyphs_p[WG_MAX_FONTSIZE+1];
 	
@@ -356,8 +364,10 @@ namespace wg
 		return true;
 	}
 	
-	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt style, int size )
+	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt _style, int size )
 	{
+		int style = (int) _style;
+
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return false;
 	
@@ -465,7 +475,7 @@ namespace wg
 			m_aBitmapGlyphs[size] = p;
 		}
 	
-		m_aBitmapGlyphs[size][style] = pGlyph;
+		m_aBitmapGlyphs[size][(int)style] = pGlyph;
 		return true;
 	}
 	
@@ -488,8 +498,8 @@ namespace wg
 		if( size < 0 || size > WG_MAX_FONTSIZE )
 			return 0;
 	
-		if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][style] )
-			return m_aBitmapGlyphs[size][style];
+		if( m_aBitmapGlyphs[size] != 0 && m_aBitmapGlyphs[size][(int)style] )
+			return m_aBitmapGlyphs[size][(int)style];
 	
 		return 0;
 	}

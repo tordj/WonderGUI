@@ -49,9 +49,9 @@ namespace wg
 		m_tickBufferOfs		= 0;
 	
 		m_labelsText.set( "Now:/nMin:/nAvg:/nMax:/n" );
-		m_valuesText.setAlignment( WG_NORTHEAST );
+		m_valuesText.setAlignment( Origo::NorthEast );
 	
-		m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 	}
 	
 	//____ ~FpsDisplay() __________________________________________________________
@@ -152,7 +152,7 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 			{
 				// Update tick buffer
 	
@@ -226,7 +226,7 @@ namespace wg
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 	
 		if( m_state.isEnabled() && !oldState.isEnabled() )
-			m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 	
 		if( !m_state.isEnabled() && oldState.isEnabled() )
 		{

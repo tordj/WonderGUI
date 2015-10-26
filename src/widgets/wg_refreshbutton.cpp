@@ -126,8 +126,8 @@ namespace wg
 			m_bStopping = false;
 			m_refreshProgress = 0.f;
 			m_animTimer = 0;
-			m_pRefreshAnim->setPlayMode( WG_FORWARD_LOOPING );		//UGLY! Should change once the animation system has been updated.
-			m_tickRouteId = Base::msgRouter()->addRoute( WG_MSG_TICK, this );
+			m_pRefreshAnim->setPlayMode( AnimMode::Looping );		//UGLY! Should change once the animation system has been updated.
+			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			_requestRender();
 		}
 	}
@@ -139,7 +139,7 @@ namespace wg
 		{
 			m_bStopping = true;
 			m_animTimer = m_animTimer % m_pRefreshAnim->durationScaled();	// So it doesn't stop immmediately.
-			m_pRefreshAnim->setPlayMode( WG_FORWARD_ONCE );	//UGLY! Should change once the animation system has been updated.
+			m_pRefreshAnim->setPlayMode( AnimMode::Forward );	//UGLY! Should change once the animation system has been updated.
 		}
 		else
 		{
@@ -199,7 +199,7 @@ namespace wg
 	
 		switch( pMsg->type() )
 		{
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 			{
 				if( m_bRefreshing && m_pRefreshAnim )
 				{
@@ -231,7 +231,7 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_KEY_RELEASE:
+			case MsgType::KeyRelease:
 			{
 				KeyReleaseMsg_p pKeyRelease = KeyReleaseMsg::cast(pMsg);
 	
@@ -241,11 +241,11 @@ namespace wg
 				break;
 			}
 	
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pBtnRelease = MouseReleaseMsg::cast(pMsg);
 	
-				if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == WG_BUTTON_LEFT )
+				if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == MouseButton::Left )
 					startRefresh();
 	
 				break;

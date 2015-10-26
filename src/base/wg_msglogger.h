@@ -67,7 +67,7 @@ namespace wg
 		void logAllMsgs();
 		void ignoreAllMsgs();
 	
-		bool isMsgLogged( MsgType msg ) { return m_msgFilter[msg]; }
+		bool isMsgLogged( MsgType msg ) { return m_msgFilter[(int)msg]; }
 	
 	private:
 		MsgLogger( std::ostream& stream );
@@ -84,7 +84,7 @@ namespace wg
 		std::string _formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const;
 		std::string _formatMouseButton( MouseButton button ) const;
 	
-		bool			m_msgFilter[WG_MSG_MAX];
+		bool			m_msgFilter[(int)MsgType::Max];
 	
 		std::ostream&	m_out;
 	

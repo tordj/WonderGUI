@@ -37,7 +37,7 @@ namespace wg
 	MsgLogger::MsgLogger( std::ostream& stream ) : m_out(stream)
 	{
 		logAllMsgs();
-		ignoreMsg( WG_MSG_TICK );
+		ignoreMsg( MsgType::Tick );
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -78,32 +78,32 @@ namespace wg
 	
 	void MsgLogger::ignoreMsg( MsgType type )
 	{
-		m_msgFilter[type] = false;
+		m_msgFilter[(int)type] = false;
 	}
 	
 	//____ LogMsg _______________________________________________________________
 	
 	void MsgLogger::logMsg( MsgType type )
 	{
-		m_msgFilter[type] = true;
+		m_msgFilter[(int)type] = true;
 	}
 	
 	//____ IgnorePointerMsgs ____________________________________________________________
 	
 	void MsgLogger::ignorePointerMsgs()
 	{
-		m_msgFilter[WG_MSG_MOUSE_ENTER] = false;
-		m_msgFilter[WG_MSG_MOUSE_MOVE] = false;
-		m_msgFilter[WG_MSG_MOUSE_LEAVE] = false;
+		m_msgFilter[(int)MsgType::MouseEnter] = false;
+		m_msgFilter[(int)MsgType::MouseMove] = false;
+		m_msgFilter[(int)MsgType::MouseLeave] = false;
 	}
 	
 	//____ LogPointerMsgs _______________________________________________________________
 	
 	void MsgLogger::logPointerMsgs()
 	{
-		m_msgFilter[WG_MSG_MOUSE_ENTER] = true;
-		m_msgFilter[WG_MSG_MOUSE_MOVE] = true;
-		m_msgFilter[WG_MSG_MOUSE_LEAVE] = true;
+		m_msgFilter[(int)MsgType::MouseEnter] = true;
+		m_msgFilter[(int)MsgType::MouseMove] = true;
+		m_msgFilter[(int)MsgType::MouseLeave] = true;
 	}
 	
 	
@@ -111,44 +111,44 @@ namespace wg
 	
 	void MsgLogger::ignoreMouseButtonMsgs()
 	{
-		m_msgFilter[WG_MSG_MOUSE_PRESS] = false;
-		m_msgFilter[WG_MSG_MOUSE_REPEAT] = false;
-		m_msgFilter[WG_MSG_MOUSE_DRAG] = false;
-		m_msgFilter[WG_MSG_MOUSE_RELEASE] = false;
-		m_msgFilter[WG_MSG_MOUSE_CLICK] = false;
-		m_msgFilter[WG_MSG_MOUSE_DOUBLE_CLICK] = false;
+		m_msgFilter[(int)MsgType::MousePress] = false;
+		m_msgFilter[(int)MsgType::MouseRepeat] = false;
+		m_msgFilter[(int)MsgType::MouseDrag] = false;
+		m_msgFilter[(int)MsgType::MouseRelease] = false;
+		m_msgFilter[(int)MsgType::MouseClick] = false;
+		m_msgFilter[(int)MsgType::MouseDoubleClick] = false;
 	}
 	
 	//____ LogMouseButtonMsgs _______________________________________________________________
 	
 	void MsgLogger::logMouseButtonMsgs()
 	{
-		m_msgFilter[WG_MSG_MOUSE_PRESS] = true;
-		m_msgFilter[WG_MSG_MOUSE_REPEAT] = true;
-		m_msgFilter[WG_MSG_MOUSE_DRAG] = true;
-		m_msgFilter[WG_MSG_MOUSE_RELEASE] = true;
-		m_msgFilter[WG_MSG_MOUSE_CLICK] = true;
-		m_msgFilter[WG_MSG_MOUSE_DOUBLE_CLICK] = true;
+		m_msgFilter[(int)MsgType::MousePress] = true;
+		m_msgFilter[(int)MsgType::MouseRepeat] = true;
+		m_msgFilter[(int)MsgType::MouseDrag] = true;
+		m_msgFilter[(int)MsgType::MouseRelease] = true;
+		m_msgFilter[(int)MsgType::MouseClick] = true;
+		m_msgFilter[(int)MsgType::MouseDoubleClick] = true;
 	}
 	
 	//____ IgnoreKeyboardMsgs ____________________________________________________________
 	
 	void MsgLogger::ignoreKeyboardMsgs()
 	{
-		m_msgFilter[WG_MSG_KEY_PRESS] = false;
-		m_msgFilter[WG_MSG_KEY_REPEAT] = false;
-		m_msgFilter[WG_MSG_KEY_RELEASE] = false;
-		m_msgFilter[WG_MSG_TEXT_INPUT] = false;
+		m_msgFilter[(int)MsgType::KeyPress] = false;
+		m_msgFilter[(int)MsgType::KeyRepeat] = false;
+		m_msgFilter[(int)MsgType::KeyRelease] = false;
+		m_msgFilter[(int)MsgType::TextInput] = false;
 	}
 	
 	//____ LogKeyboardMsgs _______________________________________________________________
 	
 	void MsgLogger::logKeyboardMsgs()
 	{
-		m_msgFilter[WG_MSG_KEY_PRESS] = true;
-		m_msgFilter[WG_MSG_KEY_REPEAT] = true;
-		m_msgFilter[WG_MSG_KEY_RELEASE] = true;
-		m_msgFilter[WG_MSG_TEXT_INPUT] = true;
+		m_msgFilter[(int)MsgType::KeyPress] = true;
+		m_msgFilter[(int)MsgType::KeyRepeat] = true;
+		m_msgFilter[(int)MsgType::KeyRelease] = true;
+		m_msgFilter[(int)MsgType::TextInput] = true;
 	}
 	
 	//____ logMouseMsgs() _______________________________________________________
@@ -157,7 +157,7 @@ namespace wg
 	{
 		logPointerMsgs();
 		logMouseButtonMsgs();
-		logMsg( WG_MSG_WHEEL_ROLL );
+		logMsg( MsgType::WheelRoll );
 	}
 	
 	//____ ignoreMouseMsgs() ____________________________________________________
@@ -166,7 +166,7 @@ namespace wg
 	{
 		ignorePointerMsgs();
 		ignoreMouseButtonMsgs();
-		ignoreMsg( WG_MSG_WHEEL_ROLL );
+		ignoreMsg( MsgType::WheelRoll );
 	}
 	
 	
@@ -193,14 +193,14 @@ namespace wg
 	
 	void MsgLogger::ignoreAllMsgs()
 	{
-		for( int i = 0 ; i < WG_MSG_MAX ; i++ )
+		for( int i = 0 ; i < (int) MsgType::Max ; i++ )
 			m_msgFilter[i] = false;
 	}
 	
 	//____ LogAllMsgs ___________________________________________________________
 	void MsgLogger::logAllMsgs()
 	{
-		for( int i = 0 ; i < WG_MSG_MAX ; i++ )
+		for( int i = 0 ; i < (int) MsgType::Max ; i++ )
 			m_msgFilter[i] = true;
 	}
 	
@@ -210,7 +210,7 @@ namespace wg
 	
 	void MsgLogger::onMsg( const Msg_p& _pMsg )
 	{
-		if( m_msgFilter[_pMsg->type()] == false )
+		if( m_msgFilter[(int)_pMsg->type()] == false )
 			return;
 	
 		string	source;
@@ -221,27 +221,27 @@ namespace wg
 		
 		switch( _pMsg->type() )
 		{
-			case WG_MSG_DUMMY:
+			case MsgType::Dummy:
 				break;
-			case WG_MSG_TICK:
+			case MsgType::Tick:
 				sprintf( params, " millisec=%d", TickMsg::cast(_pMsg)->timediff() );
 				break;
-			case WG_MSG_POINTER_CHANGE:
+			case MsgType::PointerChange:
 				sprintf( params, " style=%s", _formatPointerStyle( PointerChangeMsg::cast(_pMsg)).c_str() );
 				break;
-			case WG_MSG_MOUSE_ENTER:
+			case MsgType::MouseEnter:
 				break;
-			case WG_MSG_MOUSE_MOVE:
+			case MsgType::MouseMove:
 				break;
-			case WG_MSG_MOUSE_LEAVE:
+			case MsgType::MouseLeave:
 				break;
-			case WG_MSG_MOUSE_PRESS:
+			case MsgType::MousePress:
 				sprintf( params, " button=%s", _formatMouseButton(MousePressMsg::cast(_pMsg)->button()).c_str() );
 				break;
-			case WG_MSG_MOUSE_REPEAT:
+			case MsgType::MouseRepeat:
 				sprintf( params, " button=%s", _formatMouseButton(MouseRepeatMsg::cast(_pMsg)->button()).c_str() );
 				break;
-			case WG_MSG_MOUSE_DRAG:
+			case MsgType::MouseDrag:
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 	
@@ -256,7 +256,7 @@ namespace wg
 						_formatMouseButton(pMsg->button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 				break;
 			}
-			case WG_MSG_MOUSE_RELEASE:
+			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 	
@@ -271,101 +271,101 @@ namespace wg
 				sprintf( params, " button=%s release=%s", _formatMouseButton(pMsg->button()).c_str(), pRelease );
 				break;
 			}
-			case WG_MSG_MOUSE_CLICK:
+			case MsgType::MouseClick:
 				sprintf( params, " button=%s", _formatMouseButton(MouseClickMsg::cast(_pMsg)->button()).c_str() );
 				break;
-			case WG_MSG_MOUSE_DOUBLE_CLICK:
+			case MsgType::MouseDoubleClick:
 				sprintf( params, " button=%s", _formatMouseButton(MouseDoubleClickMsg::cast(_pMsg)->button()).c_str() );
 				break;
 	
-			case WG_MSG_KEY_PRESS:
+			case MsgType::KeyPress:
 			{
 				KeyPressMsg_p pMsg = KeyPressMsg::cast(_pMsg);
 				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
-			case WG_MSG_KEY_REPEAT:
+			case MsgType::KeyRepeat:
 			{
 				KeyRepeatMsg_p pMsg = KeyRepeatMsg::cast(_pMsg);
 				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
-			case WG_MSG_KEY_RELEASE:
+			case MsgType::KeyRelease:
 			{
 				KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
 				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
-			case WG_MSG_TEXT_INPUT:
+			case MsgType::TextInput:
 				sprintf( params, " chars=%s", TextInputMsg::cast(_pMsg)->text().chars() );
 				break;
-			case WG_MSG_WHEEL_ROLL:
+			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
 				sprintf( params, "wheel=%d distance=(%d,%d)", pMsg->wheel(), pMsg->distance().x, pMsg->distance().y );
 				break;
 			}
 	
-			case WG_MSG_SELECT:
+			case MsgType::Select:
 				break;
 	
-			case WG_MSG_TOGGLE:
+			case MsgType::Toggle:
 				sprintf( params, "set=%d", (int) (ToggleMsg::cast(_pMsg)->isSet()) );
 				break;
 	
-			case WG_MSG_VALUE_UPDATE:
+			case MsgType::ValueUpdate:
 			{
 				ValueUpdateMsg_p pMsg = ValueUpdateMsg::cast(_pMsg);
 				sprintf( params, "value=%ld fraction=%f", pMsg->value(), pMsg->fraction() );
 				break;
 			}
 	
-			case WG_MSG_RANGE_UPDATE:
+			case MsgType::RangeUpdate:
 			{
 				RangeUpdateMsg_p pMsg = RangeUpdateMsg::cast(_pMsg);
 				sprintf( params, "pos=%f length=%f", pMsg->offset(), pMsg->length() );
 				break;
 			}
 	
-			case WG_MSG_TEXT_EDIT:
+			case MsgType::TextEdit:
 			{
 				TextEditMsg_p pMsg = TextEditMsg::cast(_pMsg);
 				break;
 			}
 	
-			case WG_MSG_ITEM_TOGGLE:
+			case MsgType::ItemToggle:
 			{
 				ItemToggleMsg_p pMsg = ItemToggleMsg::cast(_pMsg);
 				sprintf( params, "set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
 				break;
 			}
-			case WG_MSG_ITEM_MOUSE_PRESS:
+			case MsgType::ItemMousePress:
 			{
 				ItemMousePressMsg_p pMsg = ItemMousePressMsg::cast(_pMsg);
 				sprintf( params, "id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
 					
-			case WG_MSG_ITEMS_SELECT:
+			case MsgType::ItemsSelect:
 			{
 				ItemsSelectMsg_p pMsg = ItemsSelectMsg::cast(_pMsg);
 				sprintf( params, "nbItems=%d", pMsg->nbItems() );
 				break;
 			}
 	
-			case WG_MSG_ITEMS_UNSELECT:
+			case MsgType::ItemsUnselect:
 			{
 				ItemsUnselectMsg_p pMsg = ItemsUnselectMsg::cast(_pMsg);
 				sprintf( params, "nbItems=%d", pMsg->nbItems() );
 				break;
 			}
 	
-			case WG_MSG_MODAL_MOVE_OUTSIDE:
+			case MsgType::ModalMoveOutside:
 				break;
-			case WG_MSG_MODAL_BLOCKED_PRESS:
+			case MsgType::ModalBlockedPress:
 				sprintf( params, " button=%s", _formatMouseButton(ModalBlockedPressMsg::cast(_pMsg)->button()).c_str() );
 				break;
-			case WG_MSG_MODAL_BLOCKED_RELEASE:
+			case MsgType::ModalBlockedRelease:
 				sprintf( params, " button=%s", _formatMouseButton(ModalBlockedReleaseMsg::cast(_pMsg)->button()).c_str() );
 				break;
 	
@@ -490,32 +490,32 @@ namespace wg
 	{
 		switch( _pMsg->style() )
 		{
-			case WG_POINTER_ARROW:
-				return "WG_POINTER_ARROW";
-			case WG_POINTER_HOURGLASS:
-				return "WG_POINTER_HOURGLASS";
-			case WG_POINTER_HAND:
-				return "WG_POINTER_HAND";
-			case WG_POINTER_CROSSHAIR:
-				return "WG_POINTER_CROSSHAIR";
-			case WG_POINTER_HELP:
-				return "WG_POINTER_HELP";
-			case WG_POINTER_IBEAM:
-				return "WG_POINTER_IBEAM";
-			case WG_POINTER_STOP:
-				return "WG_POINTER_STOP";
-			case WG_POINTER_UP_ARROW:
-				return "WG_POINTER_UP_ARROW";
-			case WG_POINTER_SIZE_ALL:
-				return "WG_POINTER_SIZE_ALL";
-			case WG_POINTER_SIZE_NE_SW:
-				return "WG_POINTER_SIZE_NE_SW";
-			case WG_POINTER_SIZE_NW_SE:
-				return "WG_POINTER_SIZE_NW_SE";
-			case WG_POINTER_SIZE_N_S:
-				return "WG_POINTER_SIZE_N_S";
-			case WG_POINTER_SIZE_W_E:
-				return "WG_POINTER_SIZE_W_E";
+			case PointerStyle::Arrow:
+				return "PointerStyle::Arrow";
+			case PointerStyle::Hourglass:
+				return "PointerStyle::Hourglass";
+			case PointerStyle::Hand:
+				return "PointerStyle::Hand";
+			case PointerStyle::Crosshair:
+				return "PointerStyle::Crosshair";
+			case PointerStyle::Help:
+				return "PointerStyle::Help";
+			case PointerStyle::Ibeam:
+				return "PointerStyle::Ibeam";
+			case PointerStyle::Stop:
+				return "PointerStyle::Stop";
+			case PointerStyle::UpArrow:
+				return "PointerStyle::UpArrow";
+			case PointerStyle::ResizeAll:
+				return "PointerStyle::ResizeAll";
+			case PointerStyle::ResizeNeSw:
+				return "PointerStyle::ResizeNeSw";
+			case PointerStyle::ResizeNwSe:
+				return "PointerStyle::ResizeNwSe";
+			case PointerStyle::ResizeNS:
+				return "PointerStyle::ResizeNS";
+			case PointerStyle::ResizeWE:
+				return "PointerStyle::ResizeWE";
 			default:
 			{
 				char	temp[64];
@@ -531,15 +531,15 @@ namespace wg
 	{
 		switch( button )
 		{
-			case WG_BUTTON_LEFT:
+			case MouseButton::Left:
 				return "LEFT";
-			case WG_BUTTON_MIDDLE:
+			case MouseButton::Middle:
 				return "MIDDLE";
-			case WG_BUTTON_RIGHT:
+			case MouseButton::Right:
 				return "RIGHT";
-			case WG_BUTTON_X1:
+			case MouseButton::X1:
 				return "X1";
-			case WG_BUTTON_X2:
+			case MouseButton::X2:
 				return "X2";
 			default:
 			{
