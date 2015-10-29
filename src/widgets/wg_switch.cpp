@@ -120,7 +120,7 @@ namespace wg
 			int x = canvas.x + (sz - itemSize) / 2;
 			for( int i = 0 ; i < 3 ; i++ )
 			{
-				pDevice->clipDrawElipse( _clip, Rect(x,y,itemSize,itemSize), Color::white );
+				pDevice->clipDrawElipse( _clip, Rect(x,y,itemSize,itemSize), Color::White );
 				y += itemSize + stepping;
 			}
 		}	

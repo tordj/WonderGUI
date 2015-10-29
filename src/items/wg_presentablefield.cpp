@@ -155,7 +155,7 @@ namespace wg
 	
 	Rect  PresentableField::rectForRange( int ofs, int length ) const
 	{
-		_presenter()->rectForRange(this, ofs, length);
+		return _presenter()->rectForRange(this, ofs, length);
 	}
 	
 	//____ tooltip() _______________________________________________________________

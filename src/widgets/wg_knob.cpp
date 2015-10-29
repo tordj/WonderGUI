@@ -102,7 +102,7 @@ namespace wg
 	
 		if( sz > 1 )
 		{
-			pDevice->clipDrawElipse( _clip, Rect(_canvas.pos(),sz,sz), Color::pink );
+			pDevice->clipDrawElipse( _clip, Rect(_canvas.pos(),sz,sz), Color::Pink );
 		}
 	}
 	

@@ -12,12 +12,12 @@ namespace wg
 	
 	VolumeMeter::VolumeMeter()
 	{
-		m_LEDColors[0][0] = Color::black;
-		m_LEDColors[1][0] = Color::black;
-		m_LEDColors[2][0] = Color::black;
-		m_LEDColors[0][1] = Color::green;
-		m_LEDColors[1][1] = Color::yellow;
-		m_LEDColors[2][1] = Color::red;
+		m_LEDColors[0][0] = Color::Black;
+		m_LEDColors[1][0] = Color::Black;
+		m_LEDColors[2][0] = Color::Black;
+		m_LEDColors[0][1] = Color::Green;
+		m_LEDColors[1][1] = Color::Yellow;
+		m_LEDColors[2][1] = Color::Red;
 		
 		m_nSectionLEDs[0] = 8;
 		m_nSectionLEDs[1] = 2;

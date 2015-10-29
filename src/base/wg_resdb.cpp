@@ -518,7 +518,7 @@ namespace wg
 	Color ResDB::getColor( const std::string& id ) const
 	{
 		ColorRes* colorRes = getResColor(id);
-		return colorRes ? colorRes->res : Color::black;
+		return colorRes ? colorRes->res : Color::Black;
 	}
 	
 	//____ () _________________________________________________________

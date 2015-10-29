@@ -40,8 +40,9 @@ namespace wg
 	
 	ToggleGroup::~ToggleGroup()
 	{
-		for( int i = 0 ; i < m_entries.size() ; i++ )
-			m_entries[i]->_setToggleGroup(0);}
+		for( unsigned int i = 0 ; i < m_entries.size() ; i++ )
+			m_entries[i]->_setToggleGroup(0);
+}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
@@ -171,7 +172,7 @@ namespace wg
 	
 	void ToggleGroup::clear()
 	{
-		for( int i = 0 ; i < m_entries.size() ; i++ )
+		for( unsigned int i = 0 ; i < m_entries.size() ; i++ )
 			m_entries[i]->_setToggleGroup(0);
 	
 		m_pSelected = 0;
@@ -190,7 +191,7 @@ namespace wg
 	
 	ToggleButton_p ToggleGroup::get( int index )
 	{
-		if( index >= 0 && index < m_entries.size() )
+		if( index >= 0 && index < (int) m_entries.size() )
 			return ToggleButton_p(m_entries[index]);
 	
 		return ToggleButton_p();

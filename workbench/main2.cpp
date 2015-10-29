@@ -2,8 +2,14 @@
 #include <cstdlib>
 #include <stdio.h>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#ifdef WIN32
+#	include <SDL.h>
+#	include <SDL_image.h>
+#else
+#	include <SDL2/SDL.h>
+#	include <SDL2/SDL_image.h>
+#endif
+
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
@@ -80,12 +86,13 @@ int main ( int argc, char** argv )
 
 
 	// Init font
-	
+
+	char * pFontSpec = (char*)loadFile("../../../resources/anuvverbubbla_8x8.fnt");
+
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
 	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
 	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::RGBA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
-	char * pFontSpec = (char*) loadFile( "../../../resources/anuvverbubbla_8x8.fnt" );
 
 	BitmapGlyphs_p pGlyphs = BitmapGlyphs::create( pFontImg, pFontSpec );
 	Font_p pFont = Font::create( pGlyphs, 8 );
@@ -128,7 +135,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	FlexPanel_p pFlexPanel = FlexPanel::create();
-	pFlexPanel->setSkin( ColorSkin::create(Color::burlywood));
+	pFlexPanel->setSkin( ColorSkin::create(Color::Burlywood));
 	pRoot->setWidget(pFlexPanel);
 
 

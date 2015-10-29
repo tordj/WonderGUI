@@ -41,11 +41,11 @@ namespace wg
 	typedef	WgWeakPtr<Caret2,Object_wp>		Caret2_wp;
 	
 	
-	enum CaretMode
+	enum class CaretMode
 	{
-		WG_CARET_INSERT,
-		WG_CARET_OVERWRITE,
-		WG_CARET_EOL
+		Insert,
+		Overwrite,
+		Eol
 	};
 	
 	

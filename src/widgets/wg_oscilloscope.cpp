@@ -33,8 +33,8 @@ namespace wg
 	
 	Oscilloscope::Oscilloscope()
 	{
-		m_gridColor = Color::black;
-		m_lineColor = Color::white;
+		m_gridColor = Color::Black;
+		m_lineColor = Color::White;
 		m_lineThickness = 2.f;
 	
 		m_nVGridLines = 0;

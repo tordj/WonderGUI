@@ -452,13 +452,18 @@ namespace wg
 	
 	//____ _focusChanged() _____________________________________________________
 	
-	bool InputHandler::_focusChanged( Widget * pOldFocused, Widget * pNewFocused )
+	bool InputHandler::_focusChanged( RootPanel * pRoot, Widget * pOldFocused, Widget * pNewFocused )
 	{
-		if( pOldFocused && pOldFocused->hook()->root() == m_pFocusedRoot )
+		if (pRoot != m_pFocusedRoot.rawPtr() )
+			return false;					// Root does not have focus, thus can't assign focus to its child.
+
+		if( pOldFocused )
 			_setUnfocused( pOldFocused );
 			
-		if( pNewFocused && pNewFocused->hook()->root() == m_pFocusedRoot )
-			_setFocused( pNewFocused );
+		if (pNewFocused )
+			_setFocused(pNewFocused);
+
+		return true;
 	}
 	
 	//____ _focusedWidget() ____________________________________________________

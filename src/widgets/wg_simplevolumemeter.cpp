@@ -12,9 +12,9 @@ namespace wg
 	
 	SimpleVolumeMeter::SimpleVolumeMeter()
 	{
-		m_sectionColors[0] = Color::green;
-		m_sectionColors[1] = Color::yellow;
-		m_sectionColors[2] = Color::red;
+		m_sectionColors[0] = Color::Green;
+		m_sectionColors[1] = Color::Yellow;
+		m_sectionColors[2] = Color::Red;
 		
 		m_sectionHeight[0] = 0.75f;
 		m_sectionHeight[1] = 0.18f;
