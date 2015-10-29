@@ -70,30 +70,34 @@ namespace wg
 		int ofs = m_charBuffer.length();
 		int len = m_charBuffer.pushBack(seq);
 		_presenter()->onTextModified(this, ofs, 0, len );
+		return len;
 	}
 	
 	//____ insert() ________________________________________________________________
 	
 	int TextField::insert( int ofs, const CharSeq& seq )
 	{
-		m_charBuffer.insert(ofs,seq);
+		int len = m_charBuffer.insert(ofs,seq);
 		_presenter()->onTextModified(this, ofs, 0, seq.length() );
+		return len;
 	}
 	
 	//____ replace() _______________________________________________________________
 	
 	int TextField::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
-		m_charBuffer.replace(ofs,nDelete,seq);
+		int len = m_charBuffer.replace(ofs,nDelete,seq);
 		_presenter()->onTextModified(this, ofs, nDelete, seq.length() );
+		return len;
 	}
 	
 	//____ delete() ________________________________________________________________
 	
 	int TextField::remove( int ofs, int len )
 	{
-		m_charBuffer.remove(ofs,len);
-		_presenter()->onTextModified(this, ofs, len, 0 );	
+		int removed = m_charBuffer.remove(ofs,len);
+		_presenter()->onTextModified(this, ofs, len, 0 );
+		return removed;
 	}
 	
 	//____ getMarkedLink() _________________________________________________________
@@ -101,6 +105,8 @@ namespace wg
 	TextLink_p TextField::getMarkedLink() const
 	{
 		//TODO: Implement!
+
+		return TextLink_p();
 	}
 	
 

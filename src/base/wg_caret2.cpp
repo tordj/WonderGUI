@@ -37,7 +37,7 @@ namespace wg
 		m_glyphAdvance = 0;
 		m_glyphAscend = 0;
 		m_glyphDescend = 0;
-		m_mode = WG_CARET_EOL;
+		m_mode = CaretMode::Eol;
 		m_ticks = 0;
 		m_cycleLength = 1000;
 		m_bNeedToRender = false;
@@ -123,12 +123,12 @@ namespace wg
 	{
 		switch( m_mode )
 		{
-			case WG_CARET_INSERT:
-				return Rect( pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
-			case WG_CARET_OVERWRITE:
+			case CaretMode::Overwrite:
 				return Rect( pos.x, pos.y - m_glyphAscend, m_glyphAdvance, m_glyphAscend + m_glyphDescend );
-			case WG_CARET_EOL:
+			case CaretMode::Eol:
 				return Rect( pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+			default: // CaretMode::Insert:
+				return Rect(pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize / 8), m_glyphAscend + m_glyphDescend);
 		}
 	}
 	
@@ -141,7 +141,7 @@ namespace wg
 			Rect r = dirtyRect(pos);
 			BlendMode oldMode = pDevice->getBlendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
-			pDevice->fill( Rect(r,clip), Color::black );
+			pDevice->fill( Rect(r,clip), Color::Black );
 			pDevice->setBlendMode(oldMode);
 		}
 	}

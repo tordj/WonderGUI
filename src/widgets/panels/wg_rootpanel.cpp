@@ -294,7 +294,7 @@ namespace wg
 
 		Widget * pOldFocus = m_pFocusedChild.rawPtr();
 		m_pFocusedChild = pWidgetRequesting;
-		return Base::inputHandler()->_focusChanged( pOldFocus, pWidgetRequesting );
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, pWidgetRequesting );
 	}
 	
 	//____ _focusReleased() ________________________________________________________
@@ -309,7 +309,7 @@ namespace wg
 			
 		Widget * pOldFocus = m_pFocusedChild.rawPtr();
 		m_pFocusedChild = m_hook._widget();
-		return Base::inputHandler()->_focusChanged( pOldFocus, m_hook._widget());
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_hook._widget());
 	}
 
 	//____ _focusedChild() ______________________________________________________
@@ -388,12 +388,12 @@ namespace wg
 	
 	bool RootPanel::MyHook::_requestFocus( Widget * pWidget )
 	{
-		m_pRoot->_focusRequested( pWidget );
+		return m_pRoot->_focusRequested( pWidget );
 	}
 	
 	bool RootPanel::MyHook::_releaseFocus( Widget * pWidget )
 	{
-		m_pRoot->_focusReleased( pWidget );
+		return m_pRoot->_focusReleased( pWidget );
 	}
 	
 	

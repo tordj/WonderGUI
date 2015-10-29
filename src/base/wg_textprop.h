@@ -235,11 +235,11 @@ namespace wg
 	class TextAttr
 	{
 	public:
-		TextAttr() : pFont(0), size(0), style(FontAlt::Normal), color(Color::white), bgColor(Color::transparent),
+		TextAttr() : pFont(0), size(0), style(FontAlt::Normal), color(Color::White), bgColor(Color::Transparent),
 					   bUnderlined(false), breakLevel(3), visibilityFlags(0) {}
 	
-		inline void	clear() {	pFont = 0; size = 0; style = FontAlt::Normal; color = Color::white;
-								bgColor = Color::transparent; bUnderlined = false; breakLevel = 3;
+		inline void	clear() {	pFont = 0; size = 0; style = FontAlt::Normal; color = Color::White;
+								bgColor = Color::Transparent; bUnderlined = false; breakLevel = 3;
 								visibilityFlags = 0; pLink = 0; }
 	
 		Font_p		pFont;

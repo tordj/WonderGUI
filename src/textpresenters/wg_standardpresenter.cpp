@@ -109,14 +109,20 @@ namespace wg
 	
 	int StandardPresenter::coordToChar( const PresentableField * pField, Coord pos )
 	{
+		//TODO: Implement!
+		return 0;
 	}
 	
 	Rect StandardPresenter::charToRect( const PresentableField * pField, int charOfs )
 	{
+		//TODO: Implement!
+		return Rect();
 	}
 	
 	int StandardPresenter::coordToCaretPos( PresentableField * pField, Coord pos )
 	{
+		//TODO: Implement!
+		return 0;
 	}
 	
 	void StandardPresenter::renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
@@ -144,7 +150,7 @@ namespace wg
 				const Char * pChars = pCharArray + pLineInfo->offset;
 	
 				Glyph_p	pGlyph;
-				Glyph_p	pPrevGlyph;
+				Glyph_p	pPrevGlyph =  0;
 				
 				Coord pos = lineStart;
 				pos.y += pLineInfo->base;
@@ -215,10 +221,14 @@ namespace wg
 	
 	int StandardPresenter::moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
 	{
+		//TODO: Implement!
+		return 0;
 	}
 	
 	Rect StandardPresenter::rectForRange( const PresentableField * pField, int ofs, int length ) const
 	{
+		//TODO: Implement!
+		return Rect();
 	}
 	
 	//____ tooltip() _______________________________________________________________

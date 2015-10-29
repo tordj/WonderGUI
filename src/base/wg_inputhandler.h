@@ -135,7 +135,7 @@ namespace wg
 		void		_handleKeyRepeats( int64_t timestamp );
 		
 
-		bool		_focusChanged( Widget * pOldFocused, Widget * pNewFocused );
+		bool		_focusChanged( RootPanel * pRoot, Widget * pOldFocused, Widget * pNewFocused );
 	
 		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
 	

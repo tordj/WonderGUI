@@ -22,6 +22,7 @@
 
 #include <assert.h>
 #include <memory.h>
+#include <string.h>
 #include <wchar.h>
 #include <wctype.h>
 #include <wg_codepages.h>

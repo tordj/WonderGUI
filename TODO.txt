@@ -1,3 +1,18 @@
+MULTIREP FIXES
+==============
+
+* Be able to skip empty lines.
+* Error on malformed lines.
+* Add support for directory recursing
+* Add support for filename filtering
+* Replace longest strings first!
+
+
+
+* Add support for multithreading
+
+
+
 
 IMPORTANT
 =========

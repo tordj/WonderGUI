@@ -118,7 +118,7 @@ int main ( int argc, char** argv )
 	// of the FlexPanel.
 
 	Filler_p pBackground = Filler::create();
-	pBackground->setSkin( ColorSkin::create(Color::aqua) );
+	pBackground->setSkin( ColorSkin::create(Color::Aqua) );
 	pFlexPanel->addWidget(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 	// Now we create the button, using a clickable skin built from

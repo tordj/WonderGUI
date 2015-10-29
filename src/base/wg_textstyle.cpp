@@ -170,7 +170,7 @@ namespace wg
 	
 	void TextStyle::setColor( Color color )
 	{
-		if( color == Color::none )
+		if( color == Color::None )
 			clearColor();
 		else
 		{
@@ -183,7 +183,7 @@ namespace wg
 	
 	void TextStyle::setColor( Color color, State state )
 	{
-		if( color == Color::none )
+		if( color == Color::None )
 			clearColor(state);
 		else
 		{
@@ -197,7 +197,7 @@ namespace wg
 	
 	void TextStyle::setBgColor( Color color )
 	{
-		if( color == Color::none )
+		if( color == Color::None )
 			clearBgColor();
 		else
 		{
@@ -211,7 +211,7 @@ namespace wg
 	
 	void TextStyle::setBgColor( Color color, State state )
 	{
-		if( color == Color::none )
+		if( color == Color::None )
 			clearBgColor(state);
 		else
 		{
@@ -309,15 +309,15 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.color[i] = Color::none;
+				m_specAttr.color[i] = Color::None;
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
 			}
 		}
 		else
 		{		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.color[i] = Color::none;
-				m_combAttr.color[i] = Color::none;
+				m_specAttr.color[i] = Color::None;
+				m_combAttr.color[i] = Color::None;
 			}
 		}
 	}
@@ -326,8 +326,8 @@ namespace wg
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
-		m_specAttr.color[idx] = Color::none;
-		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : Color::none;
+		m_specAttr.color[idx] = Color::None;
+		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : Color::None;
 	}
 	
 	
@@ -339,7 +339,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.bgColor[i] = Color::none;
+				m_specAttr.bgColor[i] = Color::None;
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
 			}
 		}
@@ -347,8 +347,8 @@ namespace wg
 		{
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
-				m_specAttr.bgColor[i] = Color::none;
-				m_combAttr.bgColor[i] = Color::none;
+				m_specAttr.bgColor[i] = Color::None;
+				m_combAttr.bgColor[i] = Color::None;
 			}
 		}
 	}
@@ -357,8 +357,8 @@ namespace wg
 	{
 		int idx = WgUtil::_stateToIndex(state);
 	
-		m_specAttr.bgColor[idx] = Color::none;
-		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : Color::none;
+		m_specAttr.bgColor[idx] = Color::None;
+		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : Color::None;
 	}
 	
 	//____ clearSize() ____________________________________________________________
@@ -450,9 +450,9 @@ namespace wg
 			pDest->pLink = m_combAttr.pLink;
 		if( m_combAttr.size[idx] != FONTSIZE_INHERIT )
 			pDest->size	= m_combAttr.size[idx];
-		if( m_combAttr.color[idx] != Color::none )
+		if( m_combAttr.color[idx] != Color::None )
 			pDest->color = m_combAttr.color[idx];
-		if( m_combAttr.bgColor[idx] != Color::none )
+		if( m_combAttr.bgColor[idx] != Color::None )
 			pDest->bgColor = m_combAttr.bgColor[idx];
 		if( m_combAttr.decoration[idx] != TextDecoration::Inherit )
 			pDest->decoration = m_combAttr.decoration[idx];
@@ -474,8 +474,8 @@ namespace wg
 			for( int i = 0 ; i < WG_NB_STATES ; i++ )
 			{
 				newComb.size[i] = m_specAttr.size[i] != FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-				newComb.color[i] = m_specAttr.color[i] != Color::none ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
-				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::none ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
+				newComb.color[i] = m_specAttr.color[i] != Color::None ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
+				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::None ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
 				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Inherit ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
 			}
 	
@@ -504,8 +504,8 @@ namespace wg
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
 			pSet->size[i] 		= FONTSIZE_INHERIT;
-			pSet->color[i] 		= Color::none;
-			pSet->bgColor[i] 	= Color::none;
+			pSet->color[i] 		= Color::None;
+			pSet->bgColor[i] 	= Color::None;
 			pSet->decoration[i] = TextDecoration::Inherit;
 		}
 	}

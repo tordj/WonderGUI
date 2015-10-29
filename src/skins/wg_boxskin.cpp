@@ -50,8 +50,8 @@ namespace wg
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
-			m_color[i] = Color::black;
-			m_frameColor[i] = Color::black;
+			m_color[i] = Color::Black;
+			m_frameColor[i] = Color::Black;
 		}
 	
 		m_bOpaque = true;

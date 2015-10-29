@@ -87,6 +87,8 @@ namespace wg
 	{
 		reset(seq.length());
 		pushBack(seq);
+
+		return *this;
 	}
 	
 	
