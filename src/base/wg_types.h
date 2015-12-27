@@ -632,9 +632,9 @@ namespace wg
 	enum class PixelType
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
-		Custom,			///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		RGB_8,				///< One byte of red, green and blue respectively in memory in exactly that order.
-		RGBA_8				///< One byte of red, green, blue and alpha respectively in memory in exactly that order.
+		Custom,				///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
+		BGR_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
+		BGRA_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
 	};
 	
 	

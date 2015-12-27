@@ -16,6 +16,7 @@ MouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
+void			convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
@@ -33,7 +34,7 @@ InputHandler * pDebug;
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
-{
+{ 
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------
@@ -58,9 +59,9 @@ int main ( int argc, char** argv )
 	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		type = PixelType::RGBA_8;
+		type = PixelType::BGRA_8;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
-		type = PixelType::RGB_8;
+		type = PixelType::BGR_8;
 		
 	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
@@ -83,7 +84,7 @@ int main ( int argc, char** argv )
 	
 	SDL_Surface * pFontSurf = IMG_Load( "../../../resources/anuvverbubbla_8x8.png" );
 	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::RGBA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
+	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 	char * pFontSpec = (char*) loadFile( "../../../resources/anuvverbubbla_8x8.fnt" );
 
@@ -104,23 +105,40 @@ int main ( int argc, char** argv )
 
 	// Init skins
 
+	PixelFormat	format;
+
 	SDL_Surface * pSDLSurf = IMG_Load( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/state_button.bmp" );
-	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
 	pStateButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../../../resources/grey_pressable_plate.bmp" );
-	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SDL_FreeSurface( pSDLSurf );
 	Skin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	
 	pSDLSurf = IMG_Load( "../../../resources/list_entry.png" );
-	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SDL_FreeSurface( pSDLSurf );
 	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
+
+	pSDLSurf = IMG_Load( "../../../resources/frog.jpg" );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pImgSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SDL_FreeSurface( pSDLSurf );
+	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
+
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -128,7 +146,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	FlexPanel_p pFlexPanel = FlexPanel::create();
-	pFlexPanel->setSkin( ColorSkin::create(Color::burlywood));
+	pFlexPanel->setSkin( pImgSkin /*ColorSkin::create(Color::burlywood)*/ );
 	pRoot->setWidget(pFlexPanel);
 
 
@@ -463,4 +481,28 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 //	pMsgRouter->addRoute( MsgFilter::mousePress(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbInitDrag, pChild) );
 //	pMsgRouter->addRoute( MsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbDragWidget, pChild) );
+}
+
+//____ convertSDLFormat() ______________________________________________________
+
+void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat )
+{
+	pWGFormat->type = PixelType::Custom;
+	pWGFormat->bits = pSDLFormat->BitsPerPixel;
+
+	pWGFormat->R_mask = pSDLFormat->Rmask;
+	pWGFormat->G_mask = pSDLFormat->Gmask;
+	pWGFormat->B_mask = pSDLFormat->Bmask;
+	pWGFormat->A_mask = pSDLFormat->Amask;
+
+	pWGFormat->R_shift = pSDLFormat->Rshift;
+	pWGFormat->G_shift = pSDLFormat->Gshift;
+	pWGFormat->B_shift = pSDLFormat->Bshift;
+	pWGFormat->A_shift = pSDLFormat->Ashift;
+
+	pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
+	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
+	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
+	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
+
 }

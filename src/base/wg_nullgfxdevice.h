@@ -66,10 +66,12 @@ namespace wg
 		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness );
 	
+		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
 		void	drawArcNE( const Rect& rect, Color color );
 		void	drawElipse( const Rect& rect, Color color );
 		void	drawFilledElipse( const Rect& rect, Color color );
 	
+		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
 		void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color );
 		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
 		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );

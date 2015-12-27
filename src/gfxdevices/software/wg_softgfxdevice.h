@@ -67,6 +67,9 @@ namespace wg
 		void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color );
 		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
 		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );
+
+		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
+		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
 	
 		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
@@ -95,6 +98,10 @@ namespace wg
 	
 		void	_initTables();
 		void	_genCurveTab();
+	
+		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
+		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
+	
 	
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
@@ -137,10 +144,11 @@ namespace wg
 											int dx, int dy, int dw, int dh );
 	
 		bool			m_bBilinearFiltering;
-		SoftSurface_p m_pCanvas;
+		SoftSurface_p 	m_pCanvas;
 		uint8_t			m_limitTable[512];
+		int				m_lineThicknessTable[17];
 		int *			m_pCurveTab;
-		uint8_t *			m_pDivTab;
+		uint8_t *		m_pDivTab;
 	};
 	
 

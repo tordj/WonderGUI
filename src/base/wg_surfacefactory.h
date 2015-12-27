@@ -54,7 +54,7 @@ namespace wg
 		static const char			CLASSNAME[];
 		static SurfaceFactory_p	cast( const Object_p& pObject );
 	
-		virtual Surface_p createSurface( const Size& size, PixelType type = PixelType::RGBA_8 ) const = 0;
+		virtual Surface_p createSurface( const Size& size, PixelType type = PixelType::BGRA_8 ) const = 0;
 	protected:
 		virtual ~SurfaceFactory() {}
 	};
