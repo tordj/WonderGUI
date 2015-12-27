@@ -75,10 +75,14 @@ namespace wg
 	
 	String StandardFormatter::format( int64_t value, int scale ) const
 	{	
+		//TODO: Implement!
+		return String();
 	}
 	
 	String StandardFormatter::format( double value ) const
 	{
+		//TODO: Implement!
+		return String();
 	}
 
 } // namespace wg

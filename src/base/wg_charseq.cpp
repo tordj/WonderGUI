@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <memory.h>
+#include <string.h>
 
 #include <wg_charseq.h>
 //#include <wg_texttool.h>

@@ -23,7 +23,6 @@
 #ifndef	WG_TYPES_DOT_H
 #define WG_TYPES_DOT_H
 
-
 #include <stdint.h>			// Use the C99 official header
 
 namespace wg 
@@ -37,6 +36,13 @@ namespace wg
 	#define INT64_MAX ((9223372036854775807 ## L))__
 	#endif
 
+
+#if defined(_WIN32) 	
+#	if defined(_M_X64) || defined(_M_IX86)
+#		define IS_BIG_ENDIAN 0
+#		define IS_LITTLE_ENDIAN 1
+#	endif
+#else
 	#if defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && defined(__ORDER_LITTLE_ENDIAN__)
 	#	 if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 	#		define IS_BIG_ENDIAN 1
@@ -60,6 +66,7 @@ namespace wg
 	#		endif
 	#	endif
 	#endif
+#endif
 
 
 	#ifndef IS_BIG_ENDIAN
@@ -73,7 +80,7 @@ namespace wg
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
 	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
 	template<typename T> inline T abs(T x)					{ return x >= 0 ? x : -x; }
-	template<typename T> inline void swap(T &a, T &b) { T c = a; a = b; b = c; }
+//	template<typename T> inline void swap(T &a, T &b) { T c = a; a = b; b = c; }
 	
 	#define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
 	

@@ -153,7 +153,7 @@ namespace wg
 				}
 				pSrc++;
 	
-				num = seconds / unit;
+				num = (int) (seconds / unit);
 				seconds %= unit;					// Seconds left for smaller units.
 	
 				int		bar = 1;

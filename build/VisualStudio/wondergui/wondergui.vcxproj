@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,13 +19,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -34,16 +34,18 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\..\src;..\..\..\src\base;..\..\..\src\interfaces;..\..\..\src\items;..\..\..\src\sizebrokers;..\..\..\src\skins;..\..\..\src\widgets;..\..\..\src\widgets\capsules;..\..\..\src\widgets\layers;..\..\..\src\widgets\lists;..\..\..\src\widgets\panels;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\freetype\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\..\..\src;..\..\..\src\base;..\..\..\src\interfaces;..\..\..\src\items;..\..\..\src\sizebrokers;..\..\..\src\skins;..\..\..\src\widgets;..\..\..\src\widgets\capsules;..\..\..\src\widgets\layers;..\..\..\src\widgets\lists;..\..\..\src\widgets\panels;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\freetype\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,10 +94,6 @@
     <ClInclude Include="..\..\..\src\base\wg_charseq.h" />
     <ClInclude Include="..\..\..\src\base\wg_codepages.h" />
     <ClInclude Include="..\..\..\src\base\wg_color.h" />
-    <ClInclude Include="..\..\..\src\base\wg_event.h" />
-    <ClInclude Include="..\..\..\src\base\wg_eventfilter.h" />
-    <ClInclude Include="..\..\..\src\base\wg_eventhandler.h" />
-    <ClInclude Include="..\..\..\src\base\wg_eventlogger.h" />
     <ClInclude Include="..\..\..\src\base\wg_finalizer.h" />
     <ClInclude Include="..\..\..\src\base\wg_font.h" />
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
@@ -105,16 +103,22 @@
     <ClInclude Include="..\..\..\src\base\wg_hook.h" />
     <ClInclude Include="..\..\..\src\base\wg_hookarray.h" />
     <ClInclude Include="..\..\..\src\base\wg_hookptr.h" />
+    <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_interface_valueholder.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
     <ClInclude Include="..\..\..\src\base\wg_mempool.h" />
     <ClInclude Include="..\..\..\src\base\wg_memstack.h" />
     <ClInclude Include="..\..\..\src\base\wg_menuitem.h" />
+    <ClInclude Include="..\..\..\src\base\wg_msg.h" />
+    <ClInclude Include="..\..\..\src\base\wg_msgfunc.h" />
+    <ClInclude Include="..\..\..\src\base\wg_msglogger.h" />
+    <ClInclude Include="..\..\..\src\base\wg_msgrouter.h" />
     <ClInclude Include="..\..\..\src\base\wg_nullgfxdevice.h" />
     <ClInclude Include="..\..\..\src\base\wg_object.h" />
     <ClInclude Include="..\..\..\src\base\wg_patches.h" />
     <ClInclude Include="..\..\..\src\base\wg_pen.h" />
     <ClInclude Include="..\..\..\src\base\wg_pointers.h" />
+    <ClInclude Include="..\..\..\src\base\wg_receiver.h" />
     <ClInclude Include="..\..\..\src\base\wg_resdb.h" />
     <ClInclude Include="..\..\..\src\base\wg_resloader.h" />
     <ClInclude Include="..\..\..\src\base\wg_scrollbartarget.h" />
@@ -123,7 +127,6 @@
     <ClInclude Include="..\..\..\src\base\wg_surface.h" />
     <ClInclude Include="..\..\..\src\base\wg_surfacefactory.h" />
     <ClInclude Include="..\..\..\src\base\wg_textlink.h" />
-    <ClInclude Include="..\..\..\src\base\wg_textpresenter.h" />
     <ClInclude Include="..\..\..\src\base\wg_textprop.h" />
     <ClInclude Include="..\..\..\src\base\wg_textpropmanager.h" />
     <ClInclude Include="..\..\..\src\base\wg_textstyle.h" />
@@ -139,6 +142,8 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_icon.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_iwidgets.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_legacymodtext.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_legacytext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modtext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h" />
@@ -147,12 +152,14 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_text.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_value.h" />
     <ClInclude Include="..\..\..\src\items\wg_columnheaderfield.h" />
+    <ClInclude Include="..\..\..\src\items\wg_edittextfield.h" />
     <ClInclude Include="..\..\..\src\items\wg_editvaluefield.h" />
     <ClInclude Include="..\..\..\src\items\wg_field.h" />
     <ClInclude Include="..\..\..\src\items\wg_iconfield.h" />
     <ClInclude Include="..\..\..\src\items\wg_item.h" />
     <ClInclude Include="..\..\..\src\items\wg_legacytextfield.h" />
     <ClInclude Include="..\..\..\src\items\wg_modvaluefield.h" />
+    <ClInclude Include="..\..\..\src\items\wg_presentablefield.h" />
     <ClInclude Include="..\..\..\src\items\wg_spanitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_textfield.h" />
     <ClInclude Include="..\..\..\src\items\wg_valuefield.h" />
@@ -164,6 +171,11 @@
     <ClInclude Include="..\..\..\src\skins\wg_colorskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
+    <ClInclude Include="..\..\..\src\textpresenters\wg_standardpresenter.h" />
+    <ClInclude Include="..\..\..\src\textpresenters\wg_textpresenter.h" />
+    <ClInclude Include="..\..\..\src\valueformatters\wg_standardformatter.h" />
+    <ClInclude Include="..\..\..\src\valueformatters\wg_timeformatter.h" />
+    <ClInclude Include="..\..\..\src\valueformatters\wg_valueformatter.h" />
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h" />
@@ -198,6 +210,7 @@
     <ClInclude Include="..\..\..\src\widgets\wg_simplevolumemeter.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_switch.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_texteditor.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_togglebutton.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_valuedisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_valueeditor.h" />
@@ -219,10 +232,6 @@
     <ClCompile Include="..\..\..\src\base\wg_charseq.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_codepages.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_color.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_event.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_eventfilter.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_eventhandler.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_eventlogger.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_finalizer.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_font.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
@@ -231,15 +240,21 @@
     <ClCompile Include="..\..\..\src\base\wg_glyphset.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_hook.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_hookptr.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_inputhandler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_interface_valueholder.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mempool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_memstack.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_menuitem.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_msg.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_msgfunc.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_msglogger.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_msgrouter.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_nullgfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_object.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_patches.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_pen.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_pointers.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_sizescaler.cpp" />
@@ -260,6 +275,8 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_icon.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_iwidgets.cpp" />
+    <ClCompile Include="..\..\..\src\interfaces\wg_legacymodtext.cpp" />
+    <ClCompile Include="..\..\..\src\interfaces\wg_legacytext.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modspan.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modtext.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp" />
@@ -268,10 +285,12 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_text.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_value.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_columnheaderfield.cpp" />
+    <ClCompile Include="..\..\..\src\items\wg_edittextfield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_editvaluefield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_iconfield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_legacytextfield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_modvaluefield.cpp" />
+    <ClCompile Include="..\..\..\src\items\wg_presentablefield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_spanitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_textfield.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_valuefield.cpp" />
@@ -283,6 +302,11 @@
     <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp" />
+    <ClCompile Include="..\..\..\src\textpresenters\wg_standardpresenter.cpp" />
+    <ClCompile Include="..\..\..\src\textpresenters\wg_textpresenter.cpp" />
+    <ClCompile Include="..\..\..\src\valueformatters\wg_standardformatter.cpp" />
+    <ClCompile Include="..\..\..\src\valueformatters\wg_timeformatter.cpp" />
+    <ClCompile Include="..\..\..\src\valueformatters\wg_valueformatter.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp" />
@@ -316,11 +340,15 @@
     <ClCompile Include="..\..\..\src\widgets\wg_simplevolumemeter.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_switch.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_texteditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_togglebutton.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_valuedisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_valueeditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_volumemeter.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_widget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
