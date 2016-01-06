@@ -104,6 +104,9 @@ namespace wg
 	{
 	}
 	
+	void NullGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
+	{
+	}
 	
 	void NullGfxDevice::drawArcNE( const Rect& rect, Color color )
 	{
@@ -114,6 +117,10 @@ namespace wg
 	}
 	
 	void NullGfxDevice::drawFilledElipse( const Rect& rect, Color color )
+	{
+	}
+	
+	void NullGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
 	}
 	

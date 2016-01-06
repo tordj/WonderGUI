@@ -219,6 +219,7 @@ namespace wg
 		virtual ~Surface();
 	
 		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
+		bool 				_copyFrom( const PixelFormat * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect );
 	
 		PixelFormat		m_pixelFormat;
 		int					m_pitch;

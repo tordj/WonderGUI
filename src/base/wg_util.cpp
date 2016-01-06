@@ -44,26 +44,26 @@ namespace wg
 	{
 		switch( type )
 		{
-			case PixelType::RGB_8:
+			case PixelType::BGR_8:
 				wFormat.type = type;
 				wFormat.bits = 24;
-	
-				wFormat.B_bits = 8;
-				wFormat.G_bits = 8;
+
 				wFormat.R_bits = 8;
+				wFormat.G_bits = 8;
+				wFormat.B_bits = 8;
 				wFormat.A_bits = 0;
 
-#if IS_BIG_ENDIAN
+	#if IS_LITTLE_ENDIAN
 				wFormat.R_mask = 0xFF0000;
 				wFormat.G_mask = 0xFF00;
 				wFormat.B_mask = 0xFF;
 				wFormat.A_mask = 0x0;
-	 
+
 				wFormat.R_shift = 16;
 				wFormat.G_shift = 8;
 				wFormat.B_shift = 0;
 				wFormat.A_shift = 0;
-#else
+	#else
 				wFormat.R_mask = 0xFF;
 				wFormat.G_mask = 0xFF00;
 				wFormat.B_mask = 0xFF0000;
@@ -73,62 +73,65 @@ namespace wg
 				wFormat.G_shift = 8;
 				wFormat.B_shift = 16;
 				wFormat.A_shift = 0;
-#endif	
+	#endif
+
 				return true;
-	
-			case PixelType::RGBA_8:
+
+			case PixelType::BGRA_8:
 				wFormat.type = type;
 				wFormat.bits = 32;
-	
-				wFormat.B_bits = 8;
-				wFormat.G_bits = 8;
+
 				wFormat.R_bits = 8;
+				wFormat.G_bits = 8;
+				wFormat.B_bits = 8;
 				wFormat.A_bits = 8;
 
-#if IS_BIG_ENDIAN
-				wFormat.R_mask = 0xFF000000;
-				wFormat.G_mask = 0xFF0000;
-				wFormat.B_mask = 0xFF00;
-				wFormat.A_mask = 0xFF;
-				
-				wFormat.R_shift = 24;
-				wFormat.G_shift = 16;
-				wFormat.B_shift = 8;
-				wFormat.A_shift = 0;
-#else
-				wFormat.R_mask = 0xFF;
-				wFormat.G_mask = 0xFF00;
-				wFormat.B_mask = 0xFF0000;
+	#if IS_LITTLE_ENDIAN
 				wFormat.A_mask = 0xFF000000;
+				wFormat.R_mask = 0xFF0000;
+				wFormat.G_mask = 0xFF00;
+				wFormat.B_mask = 0xFF;
 
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 8;
-				wFormat.B_shift = 16;
 				wFormat.A_shift = 24;
-#endif
+				wFormat.R_shift = 16;
+				wFormat.G_shift = 8;
+				wFormat.B_shift = 0;
+	#else
+				wFormat.A_mask = 0xFF;
+				wFormat.R_mask = 0xFF00;
+				wFormat.G_mask = 0xFF0000;
+				wFormat.B_mask = 0xFF000000;
+
+				wFormat.A_shift = 0;
+				wFormat.R_shift = 8;
+				wFormat.G_shift = 16;
+				wFormat.B_shift = 24;
+	#endif
 
 				return true;
-	
+
 			default:
 				wFormat.type = PixelType::Unknown;
 				wFormat.bits = 0;
-	
+
 				wFormat.R_mask = 0;
 				wFormat.G_mask = 0;
 				wFormat.B_mask = 0;
 				wFormat.A_mask = 0;
-	
+
 				wFormat.R_shift = 0;
 				wFormat.G_shift = 0;
 				wFormat.B_shift = 0;
 				wFormat.A_shift = 0;
-	
+
 				wFormat.R_bits = 0;
 				wFormat.G_bits = 0;
 				wFormat.B_bits = 0;
 				wFormat.A_bits = 0;
 				return false;
 		}
+			
+		
 	}
 	
 	//____ sizeFromPolicy() __________________________________________________________

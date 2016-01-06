@@ -37,7 +37,7 @@ namespace wg
 	
 	SoftSurface::SoftSurface( Size size, PixelType type )
 	{
-		assert( type == PixelType::RGB_8 || type == PixelType::RGBA_8 );
+		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
@@ -49,7 +49,7 @@ namespace wg
 	
 	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
 	{
-		assert( type == PixelType::RGB_8 || type == PixelType::RGBA_8 );
+		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
 		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
 		m_pFinalizer = pFinalizer;
 		m_pitch = pitch;
@@ -58,6 +58,24 @@ namespace wg
 		m_bOwnsData = false;
 		m_fScaleAlpha = 1.f;
 	}
+	
+	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat )
+	{
+		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
+
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+		m_size = size;
+		m_pData = new uint8_t[ m_pitch*size.h ];
+		m_bOwnsData = true;
+		m_fScaleAlpha = 1.f;
+		
+		m_pPixels = m_pData;	// Simulate a lock
+		_copyFrom( &pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
+		m_pPixels = 0;
+	}
+	
+	
 	
 	SoftSurface::SoftSurface( const SoftSurface * pOther )
 	{
@@ -120,7 +138,7 @@ namespace wg
 	
 	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
-		if( m_pixelFormat.type == PixelType::RGBA_8 )
+		if( m_pixelFormat.type == PixelType::BGRA_8 )
 	    {
 			uint32_t k = * ((uint32_t*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
 			return k;
@@ -128,8 +146,12 @@ namespace wg
 		else
 	    {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
-	
-			uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 8);
+
+#if WG_IS_BIG_ENDIAN
+			uint32_t k = pPixel[2] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[0]) << 16);
+#else
+			uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
+#endif
 			return k;
 	    }
 	
@@ -139,7 +161,7 @@ namespace wg
 	
 	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
-		if( m_pixelFormat.type == PixelType::RGBA_8 )
+		if( m_pixelFormat.type == PixelType::BGRA_8 )
 		  {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
 		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
@@ -212,9 +234,9 @@ namespace wg
 	
 		switch(m_pixelFormat.type)
 		{
-			case PixelType::RGB_8:
+			case PixelType::BGR_8:
 				break;
-			case PixelType::RGBA_8:
+			case PixelType::BGRA_8:
 				for(int n=0; n<length; n++)
 				{
 				  ind = y[n]*m_pitch + x[n]*4;
