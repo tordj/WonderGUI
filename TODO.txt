@@ -5,8 +5,8 @@ MULTIREP FIXES
 * Error on malformed lines.
 * Add support for directory recursing
 * Add support for filename filtering
-* Replace longest strings first!
-
+* Prevent recursive modifications with some clever algorithm!
+* Don't touch if nothing changed.
 
 
 * Add support for multithreading
