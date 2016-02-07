@@ -27,7 +27,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	PresentableField::PresentableField( WgPresentableHolder * pHolder ) : Field( pHolder )
+	PresentableField::PresentableField( PresentableHolder * pHolder ) : Field( pHolder )
 	{
 		_presenter()->addField(this);
 	}

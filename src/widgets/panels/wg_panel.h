@@ -41,8 +41,8 @@ namespace wg
 	class Patches;
 	
 	class Panel;
-	typedef	WgStrongPtr<Panel,Container_p>		Panel_p;
-	typedef	WgWeakPtr<Panel,Container_wp>	Panel_wp;
+	typedef	StrongPtr<Panel,Container_p>		Panel_p;
+	typedef	WeakPtr<Panel,Container_wp>	Panel_wp;
 	
 	class PanelHook;
 	typedef	HookTypePtr<PanelHook,Hook_p>	PanelHook_p;

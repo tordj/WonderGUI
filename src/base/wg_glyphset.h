@@ -80,11 +80,11 @@ namespace wg
 	typedef Glyph*	Glyph_p;
 	
 	
-	//____ WgUnderline ____________________________________________________________
+	//____ Underline ____________________________________________________________
 	
-	struct WgUnderline
+	struct Underline
 	{
-		WgUnderline() { pSurf = 0; rect = Rect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
+		Underline() { pSurf = 0; rect = Rect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
 	
 		Surface_p pSurf;
 		Rect		rect;
@@ -95,8 +95,8 @@ namespace wg
 	};
 	
 	class Glyphset;
-	typedef	WgStrongPtr<Glyphset,Object_p>		Glyphset_p;
-	typedef	WgWeakPtr<Glyphset,Object_wp>	Glyphset_wp;
+	typedef	StrongPtr<Glyphset,Object_p>		Glyphset_p;
+	typedef	WeakPtr<Glyphset,Object_wp>	Glyphset_wp;
 	
 	//____ Glyphset _____________________________________________________________
 	

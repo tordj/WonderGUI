@@ -1163,7 +1163,7 @@ namespace wg
 			pen.advancePos();
 		}
 	
-		const WgUnderline * pUnderline = pen.getFont()->getUnderline( pen.getSize() );
+		const Underline * pUnderline = pen.getFont()->getUnderline( pen.getSize() );
 	
 		clipBlitHorrBar( clip, pUnderline->pSurf, pUnderline->rect, Border( pUnderline->leftBorder, pUnderline->rightBorder, 0, 0 ), false,
 						_x + pUnderline->bearingX, _y + pUnderline->bearingY, pen.getPosX() );

@@ -103,7 +103,7 @@ namespace wg
 			case DEFAULT:
 			{
 				Size	size = m_pWidget->preferredSize();
-				Rect geo = WgUtil::origoToRect( m_origo, base, size );
+				Rect geo = Util::origoToRect( m_origo, base, size );
 	
 				if( geo.w > base.w )
 				{
@@ -141,7 +141,7 @@ namespace wg
 					size.w = (int) (orgSize.w / fracY);
 				}
 	
-				return WgUtil::origoToRect( m_origo, base, size );
+				return Util::origoToRect( m_origo, base, size );
 			}
 		}
 	}

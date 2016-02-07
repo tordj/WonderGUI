@@ -60,12 +60,12 @@ namespace wg
 {
 	
 	class RootPanel;
-	typedef	WgStrongPtr<RootPanel,Object_p>		RootPanel_p;
-	typedef	WgWeakPtr<RootPanel,Object_wp>		RootPanel_wp;
+	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	WeakPtr<RootPanel,Object_wp>		RootPanel_wp;
 	
 	class InputHandler;
-	typedef	WgStrongPtr<InputHandler,Receiver_p>		InputHandler_p;
-	typedef	WgWeakPtr<InputHandler,Receiver_wp>		InputHandler_wp;
+	typedef	StrongPtr<InputHandler,Receiver_p>		InputHandler_p;
+	typedef	WeakPtr<InputHandler,Receiver_wp>		InputHandler_wp;
 	
 	class InputHandler : public Receiver
 	{
@@ -101,10 +101,10 @@ namespace wg
 		void 		onMsg( const Msg_p& pMsg );
 
 
-		void		mapKey( WgKey translated_keycode, int native_keycode );
-		void		unmapKey( WgKey translated_keycode );
+		void		mapKey( Key translated_keycode, int native_keycode );
+		void		unmapKey( Key translated_keycode );
 		void		clearKeyMap();
-		WgKey		translateKey( int native_keycode );
+		Key		translateKey( int native_keycode );
 
 		bool		setButtonRepeat( int delay, int rate );
 		bool		setKeyRepeat( int delay, int rate );
@@ -159,7 +159,7 @@ namespace wg
 		
 	
 		PointerStyle	m_pointerStyle;
-		WgModifierKeys	m_modKeys;
+		ModifierKeys	m_modKeys;
 	
 	
 		// Current button states
@@ -177,7 +177,7 @@ namespace wg
 		struct KeyDownInfo
 		{
 			int			nativeKeyCode;
-			WgKey		translatedKeyCode;
+			Key		translatedKeyCode;
 			int64_t		pressTimestamp;	
 			Widget_wp	pWidget;
 		};
@@ -196,7 +196,7 @@ namespace wg
 		int				m_keyRepeatDelay;
 		int				m_keyRepeatRate;
 
-		std::map<int,WgKey>	m_keycodeMap;		// Maps native keycodes to WgKey.
+		std::map<int,Key>	m_keycodeMap;		// Maps native keycodes to Key.
 	
 
 	};

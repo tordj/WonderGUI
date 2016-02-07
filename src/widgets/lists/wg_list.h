@@ -41,8 +41,8 @@ namespace wg
 	class IconField;
 	class TextField;
 	class List;
-	typedef	WgStrongPtr<List,Container_p>		List_p;
-	typedef	WgWeakPtr<List,Container_wp>	List_wp;
+	typedef	StrongPtr<List,Container_p>		List_p;
+	typedef	WeakPtr<List,Container_wp>	List_wp;
 	
 	class ListHook;
 	typedef	HookTypePtr<ListHook,Hook_p>	ListHook_p;

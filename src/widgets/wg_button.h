@@ -42,8 +42,8 @@ namespace wg
 {
 	
 	class Button;
-	typedef	WgStrongPtr<Button,Widget_p>		Button_p;
-	typedef	WgWeakPtr<Button,Widget_wp>	Button_wp;
+	typedef	StrongPtr<Button,Widget_p>		Button_p;
+	typedef	WeakPtr<Button,Widget_wp>	Button_wp;
 	
 	//____ Button ____________________________________________________________
 	/**

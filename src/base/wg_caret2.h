@@ -37,8 +37,8 @@ namespace wg
 	class GfxDevice;
 	
 	class Caret2;
-	typedef	WgStrongPtr<Caret2,Object_p>		Caret2_p;
-	typedef	WgWeakPtr<Caret2,Object_wp>		Caret2_wp;
+	typedef	StrongPtr<Caret2,Object_p>		Caret2_p;
+	typedef	WeakPtr<Caret2,Object_wp>		Caret2_wp;
 	
 	
 	enum class CaretMode

@@ -214,22 +214,22 @@ namespace wg
 		{
 			case SizePolicy::Default:
 			{
-				sz.h = WgUtil::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+				sz.h = Util::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
 				sz.w = _paddedMatchingWidth(sz.h);
 				break;
 			case SizePolicy::Bound:
 				sz.w = specifiedSize.w;
-				sz.h = WgUtil::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
+				sz.h = Util::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 				break;
 			case SizePolicy::Confined:
 				if( defaultSize.w > specifiedSize.w )
 				{
 					sz.w = specifiedSize.w;
-					sz.h = WgUtil::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
+					sz.h = Util::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 				}
 				else
 				{
-					sz.h = WgUtil::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+					sz.h = Util::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
 					sz.w = _paddedMatchingWidth(sz.h);
 					if( sz.w > specifiedSize.w )
 						sz.w = specifiedSize.w;
@@ -239,11 +239,11 @@ namespace wg
 				if( defaultSize.w < specifiedSize.w )
 				{
 					sz.w = specifiedSize.w;
-					sz.h = WgUtil::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
+					sz.h = Util::sizeFromPolicy( _paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy );
 				}
 				else
 				{
-					sz.h = WgUtil::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
+					sz.h = Util::sizeFromPolicy( defaultSize.h, specifiedSize.h, heightPolicy );
 					sz.w = _paddedMatchingWidth(sz.h);
 					if( sz.w < specifiedSize.w )
 						sz.w = specifiedSize.w;

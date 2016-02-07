@@ -32,8 +32,8 @@ namespace wg
 	
 	
 	class PopupLayer;
-	typedef	WgStrongPtr<PopupLayer,Layer_p>		PopupLayer_p;
-	typedef	WgWeakPtr<PopupLayer,Layer_wp>	PopupLayer_wp;
+	typedef	StrongPtr<PopupLayer,Layer_p>		PopupLayer_p;
+	typedef	WeakPtr<PopupLayer,Layer_wp>	PopupLayer_wp;
 	
 	class PopupHook;
 	typedef	HookTypePtr<PopupHook,LayerHook_p>	PopupHook_p;

@@ -28,7 +28,7 @@
 #	include <wg_userdefines.h>
 #endif
 
-#ifdef WG_USE_FREETYPE
+#ifdef USE_FREETYPE
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
@@ -54,8 +54,8 @@ typedef struct  FT_Bitmap_ FT_Bitmap;
 namespace wg 
 {
 	class VectorGlyphs;
-	typedef	WgStrongPtr<VectorGlyphs,Glyphset_p>		VectorGlyphs_p;
-	typedef	WgWeakPtr<VectorGlyphs,Glyphset_wp>	VectorGlyphs_wp;
+	typedef	StrongPtr<VectorGlyphs,Glyphset_p>		VectorGlyphs_p;
+	typedef	WeakPtr<VectorGlyphs,Glyphset_wp>	VectorGlyphs_wp;
 
 	class VectorGlyphs : public Glyphset
 	{
@@ -225,5 +225,5 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_USE_FREETYPE
+#endif //USE_FREETYPE
 #endif //WG_VECTORGLYPHS_DOT_H

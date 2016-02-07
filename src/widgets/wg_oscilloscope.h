@@ -35,8 +35,8 @@ namespace wg
 {
 	
 	class Oscilloscope;
-	typedef	WgStrongPtr<Oscilloscope,Widget_p>		Oscilloscope_p;
-	typedef	WgWeakPtr<Oscilloscope,Widget_wp>	Oscilloscope_wp;
+	typedef	StrongPtr<Oscilloscope,Widget_p>		Oscilloscope_p;
+	typedef	WeakPtr<Oscilloscope,Widget_wp>	Oscilloscope_wp;
 	
 	//____ Oscilloscope ____________________________________________________________
 	

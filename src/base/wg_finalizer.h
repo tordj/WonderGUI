@@ -32,8 +32,8 @@ namespace wg
 {
 	
 	class Finalizer;
-	typedef	WgStrongPtr<Finalizer,Object_p>		Finalizer_p;
-	typedef	WgWeakPtr<Finalizer,Object_wp>	Finalizer_wp;
+	typedef	StrongPtr<Finalizer,Object_p>		Finalizer_p;
+	typedef	WeakPtr<Finalizer,Object_wp>	Finalizer_wp;
 	
 	class Finalizer : public Object
 	{

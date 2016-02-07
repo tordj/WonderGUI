@@ -187,8 +187,8 @@ namespace wg
 	
 	bool KeyMsg::isCursorKey() const
 	{
-		if( m_translatedKeyCode == WG_KEY_UP || m_translatedKeyCode == WG_KEY_DOWN ||
-			m_translatedKeyCode == WG_KEY_LEFT || m_translatedKeyCode == WG_KEY_RIGHT )
+		if( m_translatedKeyCode == Key::Up || m_translatedKeyCode == Key::Down ||
+			m_translatedKeyCode == Key::Left || m_translatedKeyCode == Key::Right )
 			return true;
 		else
 			return false;
@@ -196,8 +196,8 @@ namespace wg
 		
 	bool KeyMsg::isMovementKey() const
 	{
-		if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
-			m_translatedKeyCode == WG_KEY_HOME || m_translatedKeyCode == WG_KEY_END ||
+		if( m_translatedKeyCode == Key::PageUp || m_translatedKeyCode == Key::PageDown ||
+			m_translatedKeyCode == Key::Home || m_translatedKeyCode == Key::End ||
 			isCursorKey() )
 			return true;
 		else
@@ -300,7 +300,7 @@ namespace wg
 	
 	const char MouseEnterMsg::CLASSNAME[] = {"MouseEnterMsg"};
 		
-	MouseEnterMsg::MouseEnterMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
+	MouseEnterMsg::MouseEnterMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseEnter;
 		m_pSource	= pWidget;
@@ -333,7 +333,7 @@ namespace wg
 	
 	const char MouseLeaveMsg::CLASSNAME[] = {"MouseLeaveMsg"};
 		
-	MouseLeaveMsg::MouseLeaveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
+	MouseLeaveMsg::MouseLeaveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseLeave;
 		m_pSource		= pWidget;
@@ -365,7 +365,7 @@ namespace wg
 	
 	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
 		
-	MouseMoveMsg::MouseMoveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
+	MouseMoveMsg::MouseMoveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseMove;
 		m_pSource		= pWidget;
@@ -398,7 +398,7 @@ namespace wg
 	
 	const char MousePressMsg::CLASSNAME[] = {"MousePressMsg"};
 		
-	MousePressMsg::MousePressMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MousePressMsg::MousePressMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MousePress;
 		m_pSource		= pWidget;
@@ -430,7 +430,7 @@ namespace wg
 	
 	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
 		
-	MouseRepeatMsg::MouseRepeatMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MouseRepeatMsg::MouseRepeatMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRepeat;
 		m_pSource		= pWidget;
@@ -464,7 +464,7 @@ namespace wg
 	const char MouseReleaseMsg::CLASSNAME[] = {"MouseReleaseMsg"};
 	
 	
-	MouseReleaseMsg::MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MouseReleaseMsg::MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRelease;
 		m_pSource		= pWidget;
@@ -505,7 +505,7 @@ namespace wg
 	
 	const char MouseClickMsg::CLASSNAME[] = {"MouseClickMsg"};
 		
-	MouseClickMsg::MouseClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MouseClickMsg::MouseClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseClick;
 		m_pSource		= pWidget;
@@ -537,7 +537,7 @@ namespace wg
 	
 	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
 	
-	MouseDoubleClickMsg::MouseDoubleClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MouseDoubleClickMsg::MouseDoubleClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseDoubleClick;
 		m_pSource		= pWidget;
@@ -569,7 +569,7 @@ namespace wg
 	
 	const char KeyPressMsg::CLASSNAME[] = {"KeyPressMsg"};
 		
-	KeyPressMsg::KeyPressMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
+	KeyPressMsg::KeyPressMsg( int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyPress;
 		m_pSource		= pWidget;
@@ -601,7 +601,7 @@ namespace wg
 	
 	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
 		
-	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
+	KeyRepeatMsg::KeyRepeatMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyRepeat;
 		m_pSource		= pWidget;
@@ -633,7 +633,7 @@ namespace wg
 	
 	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
 		
-	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
+	KeyReleaseMsg::KeyReleaseMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyRelease;
 		m_pSource		= pWidget;
@@ -705,7 +705,7 @@ namespace wg
 	
 	const char WheelRollMsg::CLASSNAME[] = {"WheelRollMsg"};
 		
-	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( modKeys, pointerPos, timestamp )
+	WheelRollMsg::WheelRollMsg( int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( modKeys, pointerPos, timestamp )
 	{
 		m_type			= MsgType::WheelRoll;
 		m_wheel			= wheel;
@@ -1290,7 +1290,7 @@ namespace wg
 	
 	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
 	
-	ModalMoveOutsideMsg::ModalMoveOutsideMsg( Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys, pointerPos, timestamp)
+	ModalMoveOutsideMsg::ModalMoveOutsideMsg( Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(modKeys, pointerPos, timestamp)
 	{
 		m_type = MsgType::ModalMoveOutside;
 		m_pSource		= pSource;
@@ -1322,7 +1322,7 @@ namespace wg
 	
 	const char ModalBlockedPressMsg::CLASSNAME[] = {"ModalBlockedPressMsg"};
 	
-	ModalBlockedPressMsg::ModalBlockedPressMsg( MouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button, modKeys, pointerPos, timestamp )
+	ModalBlockedPressMsg::ModalBlockedPressMsg( MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button, modKeys, pointerPos, timestamp )
 	{
 		m_type			= MsgType::ModalBlockedPress;
 		m_pSource 		= pSource;
@@ -1353,7 +1353,7 @@ namespace wg
 	
 	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
 	
-	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( MouseButton button, Widget * pSource, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::ModalBlockedRelease;
 		m_pSource 		= pSource;
@@ -1694,7 +1694,7 @@ namespace wg
 	const char MouseDragMsg::CLASSNAME[] = {"MouseDragMsg"};
 	
 	
-	MouseDragMsg::MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
+	MouseDragMsg::MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(button,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::MouseDrag;
 		m_pSource		= pWidget;

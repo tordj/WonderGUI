@@ -41,8 +41,8 @@ namespace wg
 	
 	
 	class Scrollbar;
-	typedef	WgStrongPtr<Scrollbar,Widget_p>		Scrollbar_p;
-	typedef	WgWeakPtr<Scrollbar,Widget_wp>		Scrollbar_wp;
+	typedef	StrongPtr<Scrollbar,Widget_p>		Scrollbar_p;
+	typedef	WeakPtr<Scrollbar,Widget_wp>		Scrollbar_wp;
 	
 	//____ Class: Scrollbar _____________________________________________________
 	/**

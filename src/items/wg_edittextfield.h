@@ -78,7 +78,7 @@ namespace wg
 		void			_cursorToEnd();
 	
 		TextEditMode	m_editMode;
-		WgEditState		m_editState;
+		EditState		m_editState;
 		Caret2_p		m_pCaret;
 	};
 	

@@ -912,24 +912,24 @@ namespace wg
 				if( m_markedItem != 0 )
 					pItem = m_items.get( m_markedItem-1 );
 	
-				int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+				Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 				switch( key )
 				{
-					case WG_KEY_ESCAPE:
+					case Key::Escape:
 						if( m_pOpenSubMenu )
 						{
 							_closeSubMenu( m_pOpenSubMenu );
 						}
 						break;
 						
-					case WG_KEY_LEFT:
+					case Key::Left:
 						if( m_pOpenSubMenu )
 						{
 							_closeSubMenu( m_pOpenSubMenu );
 						}
 						break;
 					
-					case WG_KEY_RIGHT:
+					case Key::Right:
 						if( pItem )
 						{
 							if( pItem->getType() == SUBMENU )
@@ -939,7 +939,7 @@ namespace wg
 						}
 						break;
 	
-					case WG_KEY_RETURN:
+					case Key::Return:
 						if( pItem )
 						{
 							if( pItem->getType() == SUBMENU )
@@ -952,7 +952,7 @@ namespace wg
 						}
 						break;
 	
-					case WG_KEY_UP:
+					case Key::Up:
 						if( pItem )
 						{
 							pItem = pItem->prev();
@@ -961,7 +961,7 @@ namespace wg
 						}
 						break;
 	
-					case WG_KEY_DOWN:
+					case Key::Down:
 						if( pItem )
 							pItem = pItem->next();
 						else
@@ -971,19 +971,19 @@ namespace wg
 								pItem = pItem->next();
 						break;
 	
-					case WG_KEY_HOME:
+					case Key::Home:
 						pItem = m_items.first();
 						while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ) )
 							pItem = pItem->next();
 						break;
 	
-					case WG_KEY_END:
+					case Key::End:
 						pItem = m_items.last();
 						while( pItem != 0 && (pItem->getType() == SEPARATOR || !pItem->isVisible() ))
 							pItem = pItem->prev();
 						break;
 	
-					case WG_KEY_PAGE_UP:
+					case Key::PageUp:
 					{
 						int viewHeight = _getViewSize();
 	
@@ -1009,7 +1009,7 @@ namespace wg
 						}
 						break;
 					}
-					case WG_KEY_PAGE_DOWN:
+					case Key::PageDown:
 					{
 						int viewHeight = _getViewSize();
 	
@@ -1063,10 +1063,10 @@ namespace wg
 			pMsg->swallow();
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
-			if( key == WG_KEY_RIGHT || key == WG_KEY_RETURN || key == WG_KEY_UP || key == WG_KEY_DOWN &&
-				key == WG_KEY_HOME || key == WG_KEY_END || key == WG_KEY_PAGE_UP || key == WG_KEY_PAGE_DOWN &&
-				key == WG_KEY_ESCAPE || key == WG_KEY_LEFT )
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			if( key == Key::Right || key == Key::Return || key == Key::Up || key == Key::Down &&
+				key == Key::Home || key == Key::End || key == Key::PageUp || key == Key::PageDown &&
+				key == Key::Escape || key == Key::Left )
 				pMsg->swallow();
 		}
 		else if( pMsg->type() == MsgType::TextInput || pMsg->type() == MsgType::WheelRoll )

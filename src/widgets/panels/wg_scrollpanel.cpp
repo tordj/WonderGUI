@@ -1072,13 +1072,13 @@ namespace wg
 	
 		if( window.w > contentSize.w )
 		{
-			Rect r = WgUtil::origoToRect( origo, Size(window.w,1), Size(contentSize.w,1) );
+			Rect r = Util::origoToRect( origo, Size(window.w,1), Size(contentSize.w,1) );
 			out.x = window.x + r.x;
 		}
 	
 		if( window.h > contentSize.h )
 		{
-			Rect r = WgUtil::origoToRect( origo, Size(1,window.h), Size(1,contentSize.h) );
+			Rect r = Util::origoToRect( origo, Size(1,window.h), Size(1,contentSize.h) );
 			out.y = window.y + r.y;
 		}
 	

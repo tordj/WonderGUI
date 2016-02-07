@@ -38,8 +38,8 @@ namespace wg
 	class Font;
 	
 	class FpsDisplay;
-	typedef	WgStrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
-	typedef	WgWeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
+	typedef	StrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
+	typedef	WeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
 	
 	class FpsDisplay:public Widget, protected LegacyTextHolder
 	{

@@ -142,13 +142,13 @@ namespace wg
 		void			clearAll();
 	
 	
-		inline bool				isUnderlined( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bUnderlined; }
-		inline bool				isColored( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bColored; }
-		inline const Color&	color( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_color; }
-		inline bool				isBgColored( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bBgColor; }
-		inline const Color&	bgColor( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_bgColor; }
-		inline FontAlt		style( State state = StateEnum::Normal ) const { return (FontAlt) m_stateProp[WgUtil::_stateToIndex(state)].m_style; }
-		inline int				size( State state = StateEnum::Normal ) const { return m_stateProp[WgUtil::_stateToIndex(state)].m_size; }
+		inline bool				isUnderlined( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_bUnderlined; }
+		inline bool				isColored( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_bColored; }
+		inline const Color&	color( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_color; }
+		inline bool				isBgColored( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_bBgColor; }
+		inline const Color&	bgColor( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_bgColor; }
+		inline FontAlt		style( State state = StateEnum::Normal ) const { return (FontAlt) m_stateProp[Util::_stateToIndex(state)].m_style; }
+		inline int				size( State state = StateEnum::Normal ) const { return m_stateProp[Util::_stateToIndex(state)].m_size; }
 		bool					charVisibility( uint16_t specialCharacter ) const;
 		inline int				charVisibilityFlags() const { return m_visibilityFlags; }
 	

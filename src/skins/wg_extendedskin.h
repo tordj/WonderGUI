@@ -30,7 +30,7 @@ namespace wg
 {
 	
 	class ExtendedSkin;
-	typedef	WgStrongPtr<ExtendedSkin,Skin_p>	ExtendedSkin_p;
+	typedef	StrongPtr<ExtendedSkin,Skin_p>	ExtendedSkin_p;
 	
 	class ExtendedSkin : public Skin
 	{

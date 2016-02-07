@@ -31,8 +31,8 @@ namespace wg
 {
 	
 	class StackPanel;
-	typedef	WgStrongPtr<StackPanel,VectorPanel_p>		StackPanel_p;
-	typedef	WgWeakPtr<StackPanel,VectorPanel_wp>	StackPanel_wp;
+	typedef	StrongPtr<StackPanel,VectorPanel_p>		StackPanel_p;
+	typedef	WeakPtr<StackPanel,VectorPanel_wp>	StackPanel_wp;
 	
 	class StackHook;
 	typedef	HookTypePtr<StackHook,VectorHook_p>		StackHook_p;

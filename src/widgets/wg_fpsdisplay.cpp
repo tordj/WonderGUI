@@ -205,7 +205,7 @@ namespace wg
 				//____
 		
 				char	temp[100];
-				sprintf_s( temp, 100, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
+				snprintf( temp, 100, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
 				m_valuesText.set(temp);
 	
 				_requestRender();

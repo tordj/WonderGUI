@@ -54,8 +54,8 @@ namespace wg
 	{
 		friend class Object_p;
 		friend class Object_wp;
-		template<class T, class P> friend class WgStrongPtr;
-		template<class T, class P> friend class WgWeakPtr;
+		template<class T, class P> friend class StrongPtr;
+		template<class T, class P> friend class WeakPtr;
 	
 		friend class Interface_p;
 		friend class Interface_wp;

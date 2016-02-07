@@ -31,11 +31,11 @@ namespace wg
 {
 	
 	class Msg;
-	typedef	WgStrongPtr<Msg,Object_p>			Msg_p;
+	typedef	StrongPtr<Msg,Object_p>			Msg_p;
 	
 	class Receiver;
-	typedef	WgStrongPtr<Receiver,Object_p>		Receiver_p;
-	typedef	WgWeakPtr<Receiver,Object_wp>		Receiver_wp;
+	typedef	StrongPtr<Receiver,Object_p>		Receiver_p;
+	typedef	WeakPtr<Receiver,Object_wp>		Receiver_wp;
 	
 	class Receiver : public Object
 	{

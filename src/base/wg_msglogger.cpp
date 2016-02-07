@@ -456,11 +456,11 @@ namespace wg
 	
 	string MsgLogger::_formatModkeys( const InputMsg_p& _pMsg ) const
 	{
-		WgModifierKeys keys = _pMsg->modKeys();
+		ModifierKeys keys = _pMsg->modKeys();
 	
 		string	out;
 	
-		if( keys != WG_MODKEY_NONE )
+		if( keys != MODKEY_NONE )
 		{
 			char	temp[64];
 			sprintf( temp, " modkeys=%X", keys );

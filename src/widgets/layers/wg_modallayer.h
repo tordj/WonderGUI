@@ -32,8 +32,8 @@ namespace wg
 	
 	
 	class ModalLayer;
-	typedef	WgStrongPtr<ModalLayer,Layer_p>	ModalLayer_p;
-	typedef	WgWeakPtr<ModalLayer,Layer_wp>	ModalLayer_wp;
+	typedef	StrongPtr<ModalLayer,Layer_p>	ModalLayer_p;
+	typedef	WeakPtr<ModalLayer,Layer_wp>	ModalLayer_wp;
 	
 	class ModalHook;
 	typedef	HookTypePtr<ModalHook,LayerHook_p>	ModalHook_p;

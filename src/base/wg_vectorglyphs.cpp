@@ -26,7 +26,7 @@
 
 #include <wg_userdefines.h>
 
-#ifdef	WG_USE_FREETYPE
+#ifdef	USE_FREETYPE
 #include <wg_base.h>
 #include <wg_vectorglyphs.h>
 #include <wg_surface.h>
@@ -802,5 +802,5 @@ namespace wg
 	}
 	
 } // namespace wg
-#endif //WG_USE_FREETYPE
+#endif //USE_FREETYPE
 

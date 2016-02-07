@@ -583,7 +583,7 @@ namespace wg
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
-				if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE )
+				if( pMsg->translatedKeyCode() == Key::Escape )
 				{
 					if( !m_popupHooks.isEmpty() )
 					{

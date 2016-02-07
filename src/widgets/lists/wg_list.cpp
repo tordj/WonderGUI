@@ -265,7 +265,7 @@ namespace wg
 								m_pFocusedEntry = pEntry;
 								break;
 							case SelectMode::MultiEntries:
-								if( pMsg->modKeys() & WG_MODKEY_SHIFT && m_pFocusedEntry )
+								if( pMsg->modKeys() & MODKEY_SHIFT && m_pFocusedEntry )
 								{
 									// Select range from focused to clicked entry.
 	
@@ -276,7 +276,7 @@ namespace wg
 	
 									// Unselect the rest if not CTRL-click.
 	
-									if( !(pMsg->modKeys() & WG_MODKEY_CTRL) )
+									if( !(pMsg->modKeys() & MODKEY_CTRL) )
 									{
 										ListHook * pFirst = static_cast<ListHook*>(_firstHook());
 										ListHook * pLast = static_cast<ListHook*>(_lastHook());
@@ -288,7 +288,7 @@ namespace wg
 								}
 								else
 								{
-									if( pMsg->modKeys() & WG_MODKEY_CTRL )
+									if( pMsg->modKeys() & MODKEY_CTRL )
 									{
 										// CTRL-click: We just flip the entry.
 										_selectEntry( pEntry, !pEntry->isSelected(), true );

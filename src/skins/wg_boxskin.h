@@ -34,7 +34,7 @@ namespace wg
 {
 	
 	class BoxSkin;
-	typedef	WgStrongPtr<BoxSkin,ExtendedSkin_p>	BoxSkin_p;
+	typedef	StrongPtr<BoxSkin,ExtendedSkin_p>	BoxSkin_p;
 	
 	class BoxSkin : public ExtendedSkin
 	{

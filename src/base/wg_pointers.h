@@ -102,18 +102,18 @@ namespace wg
 	};
 	
 	
-	//____ WgStrongPtr ________________________________________________________
+	//____ StrongPtr ________________________________________________________
 	
-	template<class T,class P> class WgStrongPtr : public P
+	template<class T,class P> class StrongPtr : public P
 	{
 	public:
-		WgStrongPtr(T* p=0) : P( p ) {};
-		WgStrongPtr(const WgStrongPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
-	//	WgStrongPtr(const WgWeakPtr<T,P>& r) : P( (T*) r.rawPtr() ) {};
-		~WgStrongPtr() {};
+		StrongPtr(T* p=0) : P( p ) {};
+		StrongPtr(const StrongPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
+	//	StrongPtr(const WeakPtr<T,P>& r) : P( (T*) r.rawPtr() ) {};
+		~StrongPtr() {};
 	
 	/*
-	    inline WgStrongPtr<T,P> & operator=( WgStrongPtr<T,P> const & r)
+	    inline StrongPtr<T,P> & operator=( StrongPtr<T,P> const & r)
 		{
 			copy( r );
 			return *this;
@@ -122,8 +122,8 @@ namespace wg
 		inline T & operator*() const { return * (T*) this->m_pObj; }
 		inline T * operator->() const{ return (T*) this->m_pObj; }
 	
-		inline bool operator==(const WgStrongPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
-		inline bool operator!=(const WgStrongPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
+		inline bool operator==(const StrongPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
+		inline bool operator!=(const StrongPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
 	
 	//	inline operator bool() const { return (this->m_pObj != 0); }
 	
@@ -182,22 +182,22 @@ namespace wg
 	
 	};
 	
-	//____ WgWeakPtr _________________________________________________________
+	//____ WeakPtr _________________________________________________________
 	
-	template<class T,class P> class WgWeakPtr : public P
+	template<class T,class P> class WeakPtr : public P
 	{
 	public:
-		WgWeakPtr() {}
-		WgWeakPtr(T* p) : P( p ) {};
-		WgWeakPtr(const WgWeakPtr<T,P>& r) : P( r.rawPtr() ) {};
-	//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.rawPtr() ) {};
-		~WgWeakPtr() {};
+		WeakPtr() {}
+		WeakPtr(T* p) : P( p ) {};
+		WeakPtr(const WeakPtr<T,P>& r) : P( r.rawPtr() ) {};
+	//	WeakPtr(const StrongPtr<T,P>& r) : P( r.rawPtr() ) {};
+		~WeakPtr() {};
 	
 		inline T & operator*() const { return * rawPtr(); }
 		inline T * operator->() const{ return rawPtr(); }
 	
-		inline bool operator==(const WgWeakPtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
-		inline bool operator!=(const WgWeakPtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
+		inline bool operator==(const WeakPtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
+		inline bool operator!=(const WeakPtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
 	
 	//	inline operator bool() const { return (this->m_pObj != 0); }
 	
@@ -285,21 +285,21 @@ namespace wg
 		Interface *	m_pInterface;
 	};
 	
-	//____ WgIStrongPtr ________________________________________________________
+	//____ StrongInterfacePtr ________________________________________________________
 	
-	template<class T,class P> class WgIStrongPtr : public P
+	template<class T,class P> class StrongInterfacePtr : public P
 	{
 	public:
-		WgIStrongPtr( int dummy = 0 ) : P( 0, 0 ) {};
-		WgIStrongPtr(Object* pObj, T* pInterface) : P( pObj, pInterface ) {};
-		WgIStrongPtr(const WgIStrongPtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
-		~WgIStrongPtr() {};
+		StrongInterfacePtr( int dummy = 0 ) : P( 0, 0 ) {};
+		StrongInterfacePtr(Object* pObj, T* pInterface) : P( pObj, pInterface ) {};
+		StrongInterfacePtr(const StrongInterfacePtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
+		~StrongInterfacePtr() {};
 	
 		inline T & operator*() const { return * (T*) this->m_pInterface; }
 		inline T * operator->() const{ return (T*) this->m_pInterface; }
 	
-		inline bool operator==(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
-		inline bool operator!=(const WgIStrongPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
+		inline bool operator==(const StrongInterfacePtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
+		inline bool operator!=(const StrongInterfacePtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
 	
 		inline T * rawPtr() const { return (T*) this->m_pInterface; }
 	};
@@ -357,20 +357,20 @@ namespace wg
 	
 	};
 	
-	//____ WgIWeakPtr _________________________________________________________
+	//____ WeakInterfacePtr _________________________________________________________
 	
-	template<class T,class P> class WgIWeakPtr : public P
+	template<class T,class P> class WeakInterfacePtr : public P
 	{
 	public:
-		WgIWeakPtr(Object* pObj, T* pInterface=0) : P( pObj, pInterface ) {};
-		WgIWeakPtr(const WgIWeakPtr<T,P>& r) : P( r.rawPtr(), r.m_pInterface ) {};
-		~WgIWeakPtr() {};
+		WeakInterfacePtr(Object* pObj, T* pInterface=0) : P( pObj, pInterface ) {};
+		WeakInterfacePtr(const WeakInterfacePtr<T,P>& r) : P( r.rawPtr(), r.m_pInterface ) {};
+		~WeakInterfacePtr() {};
 	
 		inline T & operator*() const { return * rawPtr(); }
 		inline T * operator->() const{ return rawPtr(); }
 	
-		inline bool operator==(const WgIWeakPtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
-		inline bool operator!=(const WgIWeakPtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
+		inline bool operator==(const WeakInterfacePtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
+		inline bool operator!=(const WeakInterfacePtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
 	
 		inline T * rawPtr() const
 		{

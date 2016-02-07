@@ -35,7 +35,7 @@ namespace wg
 	
 	class ColorSkin;
 	
-	typedef	WgStrongPtr<ColorSkin,Skin_p>	ColorSkin_p;
+	typedef	StrongPtr<ColorSkin,Skin_p>	ColorSkin_p;
 	
 	
 	class ColorSkin : public Skin

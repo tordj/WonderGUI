@@ -68,7 +68,7 @@
 #	include <wg_inputhandler.h>
 #endif
 
-#ifdef WG_USE_FREETYPE
+#ifdef USE_FREETYPE
 
 typedef struct FT_LibraryRec_  *FT_Library;
 
@@ -102,7 +102,7 @@ namespace wg
 		static int exit();
 	
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		static bool					initFreeType();
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
@@ -169,7 +169,7 @@ namespace wg
 			MemPool *			pPtrPool;
 			MemStack *		pMemStack;
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 			bool				bFreeTypeInitialized;
 			FT_Library			freeTypeLibrary;
 	#endif

@@ -39,8 +39,8 @@ namespace wg
 	class Color;
 	
 	class NullGfxDevice;
-	typedef	WgStrongPtr<NullGfxDevice,GfxDevice_p>	NullGfxDevice_p;
-	typedef	WgWeakPtr<NullGfxDevice,GfxDevice_wp>	NullGfxDevice_wp;
+	typedef	StrongPtr<NullGfxDevice,GfxDevice_p>	NullGfxDevice_p;
+	typedef	WeakPtr<NullGfxDevice,GfxDevice_wp>	NullGfxDevice_wp;
 	
 	class NullGfxDevice : public GfxDevice
 	{

@@ -33,16 +33,12 @@
 
 //____ font & print related defines ___________________________________________
 
-#define	WG_USE_UTF8				// Set if you want to print UTF-8 (unicode) encoded
-								// textstrings. Disable if you just want to use
-								// simple, fast 8-bit (ascii + optionally 128
-								// extra characters) textstrings.
 
-//#define	WG_SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
+//#define	SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
 								// that better handles broken unicode strings.
-								// Ignored if WG_USE_UTF8 isn't defined.
+								// Ignored if USE_UTF8 isn't defined.
 
-#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+#define USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
 								// dependency on freetype.
 
 
@@ -52,34 +48,6 @@
 
 #define DEFAULT_CODEPAGE CodePage::_1252
 
-
-//____ enum WgModifierKeys ____________________________________________________
-
-enum WgModifierKeys
-{
-	// Don't touch, needs to be first!
-	WG_MODKEY_NONE = 0,			// = 0
-
-	WG_MODKEY_SHIFT = 1,
-	WG_MODKEY_ALT = 2,
-	WG_MODKEY_ALT_SHIFT = WG_MODKEY_ALT | WG_MODKEY_SHIFT,
-	WG_MODKEY_CTRL = 4,
-	WG_MODKEY_CTRL_SHIFT = WG_MODKEY_CTRL | WG_MODKEY_SHIFT,
-	WG_MODKEY_CTRL_ALT = WG_MODKEY_CTRL | WG_MODKEY_ALT,
-	WG_MODKEY_CTRL_ALT_SHIFT = WG_MODKEY_CTRL | WG_MODKEY_ALT | WG_MODKEY_SHIFT,
-	WG_MODKEY_SUPER = 8,
-
-	WG_MODKEY_SUPER_SHIFT = 9,
-	WG_MODKEY_SUPER_ALT = 10,
-	WG_MODKEY_SUPER_ALT_SHIFT = 11,
-	WG_MODKEY_SUPER_CTRL = 12,
-	WG_MODKEY_SUPER_CTRL_SHIFT = 13,
-	WG_MODKEY_SUPER_CTRL_ALT = 14,
-	WG_MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
-
-	// Needs to be last!
-	WG_MAX_MODKEYS = 16
-};
 
 //=============================================================================
 #endif	// WG_USERDEFINES_DOT_H

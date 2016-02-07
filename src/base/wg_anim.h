@@ -59,8 +59,8 @@ namespace wg
 	};
 	
 	class Anim;
-	typedef	WgStrongPtr<Anim,Object_p>		Anim_p;
-	typedef	WgWeakPtr<Anim,Object_wp>	Anim_wp;
+	typedef	StrongPtr<Anim,Object_p>		Anim_p;
+	typedef	WeakPtr<Anim,Object_wp>	Anim_wp;
 	
 	//____ Class Anim ______________________________________________________
 	

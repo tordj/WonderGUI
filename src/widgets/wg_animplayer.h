@@ -36,8 +36,8 @@ namespace wg
 {
 	
 	class AnimPlayer;
-	typedef	WgStrongPtr<AnimPlayer,Widget_p>		AnimPlayer_p;
-	typedef	WgWeakPtr<AnimPlayer,Widget_wp>	AnimPlayer_wp;
+	typedef	StrongPtr<AnimPlayer,Widget_p>		AnimPlayer_p;
+	typedef	WeakPtr<AnimPlayer,Widget_wp>	AnimPlayer_wp;
 	
 	
 	class AnimPlayer:public Widget

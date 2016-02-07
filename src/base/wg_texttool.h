@@ -434,9 +434,7 @@ namespace wg
 	inline uint16_t TextTool::readChar( const char *& pStr )
 	{
 	
-	#ifdef WG_USE_UTF8
-	
-	#ifdef WG_SAFE_UTF8	// SAFE UTF8 VERSION
+	#ifdef SAFE_UTF8	// SAFE UTF8 VERSION
 	
 		uint16_t g = * ((const unsigned char *&)pStr)++;
 	
@@ -505,11 +503,7 @@ namespace wg
 			g += ((*pStr++) & 0x3F);
 		}
 	#endif
-		return g;
-	
-	#else // 8 BIT CHARACTER VERSION
-		return (uint32_t) * ((const unsigned char *&)pStr)++;
-	#endif
+		return g;	
 	}
 	
 	//____ cmpUTF8() ______________________________________________________________

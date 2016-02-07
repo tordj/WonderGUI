@@ -56,8 +56,8 @@ namespace wg
 	class CharBuffer;
 	
 	class ModText;
-	typedef	WgIStrongPtr<ModText,Text_p>	ModText_p;
-	typedef	WgIWeakPtr<ModText,Text_wp>	ModText_wp;
+	typedef	StrongInterfacePtr<ModText,Text_p>	ModText_p;
+	typedef	WeakInterfacePtr<ModText,Text_wp>	ModText_wp;
 	
 	/**
 	 * @brief Interface to a text field with text that is modifiable through the api

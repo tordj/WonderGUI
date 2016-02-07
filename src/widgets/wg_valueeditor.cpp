@@ -354,7 +354,7 @@ namespace wg
 	
 		bool	bTextChanged = false;
 		MouseButton	mousebutton = MouseButton::None;
-		WgModifierKeys	modKeys = WG_MODKEY_NONE;
+		ModifierKeys	modKeys = MODKEY_NONE;
 		Coord	pointerPos;
 		
 		if( pMsg->isInstanceOf( InputMsg::CLASSNAME ))
@@ -380,7 +380,7 @@ namespace wg
 			else
 				m_bSelectAllOnRelease = false;
 	
-			if( modKeys & WG_MODKEY_SHIFT )
+			if( modKeys & MODKEY_SHIFT )
 			{
 				m_text.setSelectionMode(true);
 				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
@@ -430,10 +430,10 @@ namespace wg
 	
 		if( type == MsgType::KeyPress || type == MsgType::KeyRepeat )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
-				case WG_KEY_RETURN:
+				case Key::Return:
 				{
 					// We already have correct value in m_value, but we want
 					// to set the bModified flag if value is entered in a weird way.
@@ -470,38 +470,38 @@ namespace wg
 				}
 				break;
 	
-				case WG_KEY_LEFT:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Left:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 					else
 						m_text.setSelectionMode(false);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.gotoPrevWord();
 					else
 						m_text.goLeft();
 					_limitCursor();
 					break;
-				case WG_KEY_RIGHT:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Right:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 					else
 						m_text.setSelectionMode(false);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.gotoNextWord();
 					else
 						m_text.goRight();
 					_limitCursor();
 					break;
 	
-				case WG_KEY_BACKSPACE:
+				case Key::Backspace:
 					if(m_text.hasSelection())
 					{
 						m_text.delSelection();
 						bTextChanged = true;
 					}
-					else if( modKeys & WG_MODKEY_CTRL )
+					else if( modKeys & MODKEY_CTRL )
 					{
 						int ofs1 = m_text.column();
 						m_text.gotoPrevWord();
@@ -526,13 +526,13 @@ namespace wg
 	
 					break;
 	
-				case WG_KEY_DELETE:
+				case Key::Delete:
 					if(m_text.hasSelection())
 					{
 						m_text.delSelection();
 						bTextChanged = true;
 					}
-					else if( modKeys & WG_MODKEY_CTRL )
+					else if( modKeys & MODKEY_CTRL )
 					{
 						int ofs1 = m_text.column();
 						m_text.gotoNextWord();
@@ -558,7 +558,7 @@ namespace wg
 	
 					break;
 	
-				case WG_KEY_HOME:
+				case Key::Home:
 	
 					/*
 					 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -567,11 +567,11 @@ namespace wg
 					switch( modKeys )
 					{
 	
-					case WG_MODKEY_CTRL:
+					case MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if( modKeys & WG_MODKEY_SHIFT )
+						if( modKeys & MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goBol();
@@ -581,7 +581,7 @@ namespace wg
 	
 					break;
 	
-				case WG_KEY_END:
+				case Key::End:
 	
 					/*
 				 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -590,11 +590,11 @@ namespace wg
 					switch( modKeys )
 					{
 	
-					case WG_MODKEY_CTRL:
+					case MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if( modKeys & WG_MODKEY_SHIFT )
+						if( modKeys & MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goEol();
@@ -713,9 +713,9 @@ namespace wg
 		}
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			if( KeyMsg::cast(pMsg)->isMovementKey() == true ||
-				key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
+				key == Key::Delete || key == Key::Backspace )
 				pMsg->swallow();
 			
 			//TODO: Would be good if we didn't forward any character-creating keys either...

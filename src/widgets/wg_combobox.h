@@ -41,8 +41,8 @@ namespace wg
 	class MenuItem;
 	
 	class Combobox;
-	typedef	WgStrongPtr<Combobox,Widget_p>		Combobox_p;
-	typedef	WgWeakPtr<Combobox,Widget_wp>	Combobox_wp;
+	typedef	StrongPtr<Combobox,Widget_p>		Combobox_p;
+	typedef	WeakPtr<Combobox,Widget_wp>	Combobox_wp;
 	
 	class Combobox : public Widget, protected LegacyTextHolder
 	{

@@ -32,7 +32,7 @@
 namespace wg 
 {
 	
-	using namespace WgUtil;
+	using namespace Util;
 	
 	const char Scrollbar::CLASSNAME[] = {"Scrollbar"};
 	

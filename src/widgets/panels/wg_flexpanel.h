@@ -33,8 +33,8 @@ namespace wg
 {
 	
 	class FlexPanel;
-	typedef	WgStrongPtr<FlexPanel,Panel_p>		FlexPanel_p;
-	typedef	WgWeakPtr<FlexPanel,Panel_wp>	FlexPanel_wp;
+	typedef	StrongPtr<FlexPanel,Panel_p>		FlexPanel_p;
+	typedef	WeakPtr<FlexPanel,Panel_wp>	FlexPanel_wp;
 	
 	class FlexHook;
 	typedef	HookTypePtr<FlexHook,PanelHook_p>	FlexHook_p;

@@ -42,12 +42,12 @@ namespace wg
 	{
 		m_bEnabled		= true;
 		m_navKey		= 0;
-		m_accelModif	= WG_MODKEY_NONE;
+		m_accelModif	= MODKEY_NONE;
 		m_accelKey		= 0;
 	}
 	
 	MenuEntry::MenuEntry(	int id, const String& text, const String& helpText, const Skin_p& pIcon, uint16_t navKey,
-								WgModifierKeys accelModif, uint16_t accelKey, const String& accelText ):MenuItem(ENTRY,id)
+								ModifierKeys accelModif, uint16_t accelKey, const String& accelText ):MenuItem(ENTRY,id)
 	{
 	
 		m_text			= text;
@@ -86,7 +86,7 @@ namespace wg
 		modified();
 	}
 	
-	void MenuEntry::setAccelModifier(WgModifierKeys accelModif)
+	void MenuEntry::setAccelModifier(ModifierKeys accelModif)
 	{
 		m_accelModif	= accelModif;
 		modified();
@@ -120,7 +120,7 @@ namespace wg
 	}
 	
 	MenuCheckBox::MenuCheckBox(	int id, const String& text, const String& helpText, uint16_t navKey, bool bChecked,
-									WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
+									ModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = CHECKBOX;
@@ -137,7 +137,7 @@ namespace wg
 	
 	MenuRadioButton::MenuRadioButton(	int id, const String& text, const String& helpText,
 											uint16_t navKey, bool bSelected,
-											WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
+											ModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, 0, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = RADIOBUTTON;
@@ -184,7 +184,7 @@ namespace wg
 	
 	MenuSubMenu::MenuSubMenu(	int id, const String& text, const String& helpText,
 									const Skin_p& pIcon, uint16_t navKey, const Menu_p& pSubMenu,
-									WgModifierKeys accelModif, uint16_t accelKey, const String& accelText )
+									ModifierKeys accelModif, uint16_t accelKey, const String& accelText )
 							:MenuEntry( id, text, helpText, pIcon, navKey, accelModif, accelKey, accelText )
 	{
 		m_type = SUBMENU;

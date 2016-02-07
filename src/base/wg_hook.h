@@ -43,25 +43,25 @@ namespace wg
 	class RootPanel;
 	
 	class Receiver;
-	typedef WgStrongPtr<Receiver,Object_p>	Receiver_p;
-	typedef WgWeakPtr<Receiver,Object_wp>	Receiver_wp;
+	typedef StrongPtr<Receiver,Object_p>	Receiver_p;
+	typedef WeakPtr<Receiver,Object_wp>	Receiver_wp;
 	
 	
 	class Widget;
-	typedef WgStrongPtr<Widget,Receiver_p>	Widget_p;
-	typedef WgWeakPtr<Widget,Receiver_wp>	Widget_wp;
+	typedef StrongPtr<Widget,Receiver_p>	Widget_p;
+	typedef WeakPtr<Widget,Receiver_wp>	Widget_wp;
 	
 	class Container;
-	typedef	WgStrongPtr<Container,Widget_p>		Container_p;
-	typedef	WgWeakPtr<Container,Widget_wp>		Container_wp;
+	typedef	StrongPtr<Container,Widget_p>		Container_p;
+	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
 	
 	class RootPanel;
-	typedef	WgStrongPtr<RootPanel,Object_p>		RootPanel_p;
-	typedef	WgWeakPtr<RootPanel,Object_wp>		RootPanel_wp;
+	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	WeakPtr<RootPanel,Object_wp>		RootPanel_wp;
 		
 	class IWidgets;
-	typedef	WgIStrongPtr<IWidgets,Interface_p>		IWidgets_p;
-	typedef	WgIWeakPtr<IWidgets,Interface_wp>	IWidgets_wp;
+	typedef	StrongInterfacePtr<IWidgets,Interface_p>		IWidgets_p;
+	typedef	WeakInterfacePtr<IWidgets,Interface_wp>	IWidgets_wp;
 	
 	
 	class Hook

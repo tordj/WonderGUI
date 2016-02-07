@@ -61,8 +61,8 @@ namespace wg
 	class 	Pen;
 	
 	class GfxDevice;
-	typedef	WgStrongPtr<GfxDevice,Object_p>	GfxDevice_p;
-	typedef	WgWeakPtr<GfxDevice,Object_wp>	GfxDevice_wp;
+	typedef	StrongPtr<GfxDevice,Object_p>	GfxDevice_p;
+	typedef	WeakPtr<GfxDevice,Object_wp>	GfxDevice_wp;
 	
 	class GfxDevice : public Object
 	{

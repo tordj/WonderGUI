@@ -193,7 +193,7 @@ namespace wg
 		switch( _pMsg->type() )
 		{
 			case MsgType::KeyPress:
-				if( KeyPressMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyPressMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = true;
 					_pMsg->swallow();
@@ -201,12 +201,12 @@ namespace wg
 				break;
 	
 			case MsgType::KeyRepeat:
-				if( KeyRepeatMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyRepeatMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 					_pMsg->swallow();
 				break;
 	
 			case MsgType::KeyRelease:
-				if( KeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
 					pHandler->post( new SelectMsg(this) );

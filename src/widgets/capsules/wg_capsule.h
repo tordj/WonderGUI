@@ -31,8 +31,8 @@ namespace wg
 {
 	
 	class Capsule;
-	typedef	WgStrongPtr<Capsule,Container_p>	Capsule_p;
-	typedef	WgWeakPtr<Capsule,Container_p>	Capsule_wp;
+	typedef	StrongPtr<Capsule,Container_p>	Capsule_p;
+	typedef	WeakPtr<Capsule,Container_p>	Capsule_wp;
 	
 	class CapsuleHook;
 	typedef	HookTypePtr<CapsuleHook,Hook_p>	CapsuleHook_p;

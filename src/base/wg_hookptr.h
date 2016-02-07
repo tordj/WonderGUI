@@ -92,7 +92,7 @@ namespace wg
 	public:
 		HookTypePtr(T* p=0) : P( p ) {};
 		HookTypePtr(const HookTypePtr<T,P>& r) : P( r.rawPtr() ) {};
-	//	WgWeakPtr(const WgStrongPtr<T,P>& r) : P( r.rawPtr() ) {};
+	//	WeakPtr(const StrongPtr<T,P>& r) : P( r.rawPtr() ) {};
 		~HookTypePtr() {};
 	
 		inline T & operator*() const { return * rawPtr(); }

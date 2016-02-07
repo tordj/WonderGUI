@@ -61,10 +61,10 @@ namespace wg
 	 * The pointer itself can be used for object type comparison since it is always the same for 
 	 * objects of the same type. There is no need to do a string compare on the string content.
 	 * 
-	 * To see if an object is an instance of class WgFoo you can compare the pointer to WgFoo::CLASSNAME.
-	 * To see if an object is an instance of a subclass of WgFoo, you will need to call object->isInstanceOf( WgFoo::CLASSNAME ).
+	 * To see if an object is an instance of class Foo you can compare the pointer to Foo::CLASSNAME.
+	 * To see if an object is an instance of a subclass of Foo, you will need to call object->isInstanceOf( Foo::CLASSNAME ).
 	 * 
-	 * @return Pointer to a char string containing the class name without the Wg prefix.
+	 * @return Pointer to a char string containing the class name.
 	 */
 	
 	const char * Object::className( void ) const

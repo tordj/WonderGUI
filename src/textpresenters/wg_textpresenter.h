@@ -39,6 +39,10 @@
 #	include <wg_string.h>
 #endif
 
+#ifndef WG_KEY_DOT_H
+#	include <wg_key.h>
+#endif
+
 namespace wg 
 {
 	
@@ -49,8 +53,8 @@ namespace wg
 	class TextStyle;
 	
 	class TextPresenter;
-	typedef	WgStrongPtr<TextPresenter,Object_p>	TextPresenter_p;
-	typedef	WgWeakPtr<TextPresenter,Object_wp>	TextPresenter_wp;
+	typedef	StrongPtr<TextPresenter,Object_p>	TextPresenter_p;
+	typedef	WeakPtr<TextPresenter,Object_wp>	TextPresenter_wp;
 	
 	class TextPresenter : public Object
 	{
@@ -83,7 +87,7 @@ namespace wg
 		virtual String tooltip( const PresentableField * pText ) const;
 	
 		virtual int		coordToCaretPos( PresentableField * pField, Coord pos ) = 0;
-		virtual int		moveCaret( PresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif ) = 0;
+		virtual int		moveCaret( PresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif ) = 0;
 		virtual Rect	charToRect( const PresentableField * pField, int charOfs ) = 0;
 	
 	

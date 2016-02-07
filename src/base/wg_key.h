@@ -20,53 +20,82 @@
 
 =========================================================================*/
 #ifndef WG_KEY_DOT_H
+#define WG_KEY_DOT_H
 
 namespace wg 
 {
-	#define WG_KEY_DOT_H
 	
 	
-	enum WgKey
+	//____ enum ModifierKeys ____________________________________________________
+
+	enum ModifierKeys
 	{
-		WG_KEY_LEFT = 1,
-		WG_KEY_RIGHT,
-		WG_KEY_UP,
-		WG_KEY_DOWN,
-	
-		WG_KEY_HOME,
-		WG_KEY_END,
-		WG_KEY_PAGE_UP,
-		WG_KEY_PAGE_DOWN,
-	
-		WG_KEY_RETURN,
-		WG_KEY_BACKSPACE,
-		WG_KEY_DELETE,
-		WG_KEY_TAB,
-		WG_KEY_ESCAPE,
-		WG_KEY_SPACE,
-	
-		WG_KEY_F1,
-		WG_KEY_F2,
-		WG_KEY_F3,
-		WG_KEY_F4,
-		WG_KEY_F5,
-		WG_KEY_F6,
-		WG_KEY_F7,
-		WG_KEY_F8,
-		WG_KEY_F9,
-		WG_KEY_F10,
-		WG_KEY_F11,
-		WG_KEY_F12,
-	
-		WG_KEY_SHIFT,
-		WG_KEY_CONTROL,
-		WG_KEY_ALT,
-		WG_KEY_SUPER,
-	
-		WG_KEY_UNMAPPED		// This one must always be last!
+		// Don't touch, needs to be first!
+		MODKEY_NONE = 0,			// = 0
+
+		MODKEY_SHIFT = 1,
+		MODKEY_ALT = 2,
+		MODKEY_ALT_SHIFT = MODKEY_ALT | MODKEY_SHIFT,
+		MODKEY_CTRL = 4,
+		MODKEY_CTRL_SHIFT = MODKEY_CTRL | MODKEY_SHIFT,
+		MODKEY_CTRL_ALT = MODKEY_CTRL | MODKEY_ALT,
+		MODKEY_CTRL_ALT_SHIFT = MODKEY_CTRL | MODKEY_ALT | MODKEY_SHIFT,
+		MODKEY_SUPER = 8,
+
+		MODKEY_SUPER_SHIFT = 9,
+		MODKEY_SUPER_ALT = 10,
+		MODKEY_SUPER_ALT_SHIFT = 11,
+		MODKEY_SUPER_CTRL = 12,
+		MODKEY_SUPER_CTRL_SHIFT = 13,
+		MODKEY_SUPER_CTRL_ALT = 14,
+		MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
+
+		// Needs to be last!
+		WG_MAX_MODKEYS = 16
 	};
 	
-	#define	WG_KEY_ARRAYSIZE		WG_KEY_UNMAPPED
+	
+	enum class Key
+	{
+		Left = 1,
+		Right,
+		Up,
+		Down,
+	
+		Home,
+		End,
+		PageUp,
+		PageDown,
+	
+		Return,
+		Backspace,
+		Delete,
+		Tab,
+		Escape,
+		Space,
+	
+		F1,
+		F2,
+		F3,
+		F4,
+		F5,
+		F6,
+		F7,
+		F8,
+		F9,
+		F10,
+		F11,
+		F12,
+	
+		Shift,
+		Control,
+		Alt,
+		Super,
+	
+		Unmapped		// This one must always be last!
+	};
+	
+	#define	WG_KEY_ARRAYSIZE		Key::Unmapped
 	
 	
 

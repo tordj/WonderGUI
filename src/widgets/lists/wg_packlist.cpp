@@ -826,12 +826,12 @@ namespace wg
 				if( m_selectMode == SelectMode::Unselectable )
 					break;
 	
-				int				keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
-				WgModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
-				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
-					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
-					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
-					(m_selectMode == SelectMode::FlipOnSelect && keyCode == WG_KEY_SPACE ) )
+				Key keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
+				ModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
+				if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
+					(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
+					keyCode == Key::Home || keyCode == Key::End ||
+					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
 				List::_onMsg( _pMsg );
 				break;
@@ -843,12 +843,12 @@ namespace wg
 				if( m_selectMode == SelectMode::Unselectable )
 					break;
 	
-				int				keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
-				WgModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
-				if( (m_bHorizontal && (keyCode == WG_KEY_LEFT || keyCode == WG_KEY_RIGHT)) || 
-					(!m_bHorizontal && (keyCode == WG_KEY_UP || keyCode == WG_KEY_DOWN || keyCode == WG_KEY_PAGE_UP || keyCode == WG_KEY_PAGE_DOWN)) ||
-					keyCode == WG_KEY_HOME || keyCode == WG_KEY_END ||
-					(m_selectMode == SelectMode::FlipOnSelect && keyCode == WG_KEY_SPACE ) )
+				Key keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
+				ModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
+				if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
+					(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
+					keyCode == Key::Home || keyCode == Key::End ||
+					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
 				List::_onMsg( _pMsg );
 				break;

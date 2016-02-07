@@ -35,7 +35,7 @@ namespace wg
 	
 	
 	class BlockSkin;
-	typedef	WgStrongPtr<BlockSkin,ExtendedSkin_p>	BlockSkin_p;
+	typedef	StrongPtr<BlockSkin,ExtendedSkin_p>	BlockSkin_p;
 	
 	
 	class BlockSkin : public ExtendedSkin

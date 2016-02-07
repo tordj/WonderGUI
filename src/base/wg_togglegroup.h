@@ -38,8 +38,8 @@ namespace wg
 	
 	
 	class ToggleGroup;
-	typedef	WgStrongPtr<ToggleGroup,Object_p>		ToggleGroup_p;
-	typedef	WgWeakPtr<ToggleGroup,Object_wp>		ToggleGroup_wp;
+	typedef	StrongPtr<ToggleGroup,Object_p>		ToggleGroup_p;
+	typedef	WeakPtr<ToggleGroup,Object_wp>		ToggleGroup_wp;
 	
 	
 	/**

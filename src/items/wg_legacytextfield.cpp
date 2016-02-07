@@ -1813,7 +1813,7 @@ namespace wg
 	
 		if( m_alignment != Origo::NorthWest && m_alignment != Origo::North && m_alignment != Origo::NorthEast )
 		{
-			ofs = WgUtil::origoToRect( m_alignment, container.size(), Size(0,height() )).y;
+			ofs = Util::origoToRect( m_alignment, container.size(), Size(0,height() )).y;
 			if( ofs < 0 )
 				ofs = 0;
 		}
@@ -1834,7 +1834,7 @@ namespace wg
 	
 		if( m_alignment != Origo::NorthWest && m_alignment != Origo::West && m_alignment != Origo::SouthWest )
 		{
-			ofs = WgUtil::origoToRect( m_alignment, container.size(), Size(getSoftLineWidth(line),0 )).x;
+			ofs = Util::origoToRect( m_alignment, container.size(), Size(getSoftLineWidth(line),0 )).x;
 			if( ofs < 0 )
 				ofs = 0;
 		}

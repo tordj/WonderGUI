@@ -35,8 +35,8 @@ namespace wg
 {
 	
 	class EditText;
-	typedef	WgIStrongPtr<EditText,LegacyModText_p>		EditText_p;
-	typedef	WgIWeakPtr<EditText,LegacyModText_wp>		EditText_wp;
+	typedef	StrongInterfacePtr<EditText,LegacyModText_p>		EditText_p;
+	typedef	WeakInterfacePtr<EditText,LegacyModText_wp>		EditText_wp;
 	
 	/**
 	 * @brief Interface to a text field with editable text.

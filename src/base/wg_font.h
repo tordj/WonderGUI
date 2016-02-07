@@ -39,7 +39,7 @@
 
 #include <assert.h>
 
-#ifdef	WG_USE_FREETYPE
+#ifdef	USE_FREETYPE
 #	ifndef WG_VECTORGLYPHS_DOT_H
 #		include <wg_vectorglyphs.h>
 #	endif
@@ -54,8 +54,8 @@ namespace wg
 	
 	
 	class Font;
-	typedef	WgStrongPtr<Font,Object_p>		Font_p;
-	typedef	WgWeakPtr<Font,Object_wp>	Font_wp;
+	typedef	StrongPtr<Font,Object_p>		Font_p;
+	typedef	WeakPtr<Font,Object_wp>	Font_wp;
 	
 	//____ Font ______________________________________________________________
 	
@@ -63,7 +63,7 @@ namespace wg
 	{
 	public:
 		static Font_p	create() { return Font_p(new Font()); }
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		static Font_p	create( const VectorGlyphs_p& pNormal ) { return Font_p(new Font(pNormal)); }
 	#endif
 		static Font_p	create( const BitmapGlyphs_p& pNormal, int size ) { return Font_p(new Font(pNormal,size)); }
@@ -88,7 +88,7 @@ namespace wg
 		Glyph_p			getGlyph( uint32_t chr, FontAlt style, int size ) const;
 		GlyphProvided		isGlyphProvided( uint32_t chr, FontAlt style, int size ) const;
 	
-	#ifdef	WG_USE_FREETYPE
+	#ifdef	USE_FREETYPE
 		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style  );
 		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style, int size );
 		bool				setDefaultVectorGlyphs( const VectorGlyphs_p& pGlyphs );
@@ -108,12 +108,12 @@ namespace wg
 		BitmapGlyphs_p			getBitmapGlyphs( FontAlt style, int size );
 		inline BitmapGlyphs_p	getDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
 	
-		const WgUnderline *	getUnderline( int size );
+		const Underline *	getUnderline( int size );
 	
 	
 	protected:
 		Font();
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		Font( const VectorGlyphs_p& pNormal );
 	#endif
 		Font( const BitmapGlyphs_p& pNormal, int size );
@@ -121,7 +121,7 @@ namespace wg
 	
 		void	_init();
 	
-	#ifdef	WG_USE_FREETYPE
+	#ifdef	USE_FREETYPE
 		VectorGlyphs_p	m_pDefaultVectorGlyphs;
 		VectorGlyphs_p*	m_aVectorGlyphs[WG_NB_FONTSTYLES];			// Pointer at an array of WG_MAX_FONTSIZE+1 WgVectorGlyhphs.
 	#endif
@@ -129,7 +129,7 @@ namespace wg
 		BitmapGlyphs_p *	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES BitmapGlyphs.
 		BitmapGlyphs_p	m_aDefaultBitmapGlyphs[WG_MAX_FONTSIZE+1];
 	
-		WgUnderline			m_tempUnderline;							// Holds the last requested underline.
+		Underline			m_tempUnderline;							// Holds the last requested underline.
 	
 	};
 	

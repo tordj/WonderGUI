@@ -35,7 +35,7 @@ namespace wg
 		m_tickRoute 	= Base::msgRouter()->addRoute( MsgType::Tick, this );	
 		m_timeStamp 	= 0;
 		m_pointerStyle 	= PointerStyle::Default;
-		m_modKeys 		= WG_MODKEY_NONE;
+		m_modKeys 		= MODKEY_NONE;
 
 		m_doubleClickTimeTreshold 		= 250;
 		m_doubleClickDistanceTreshold 	= 2;
@@ -127,7 +127,7 @@ namespace wg
 	
 	//____ mapKey() _______________________________________________________________
 	
-	void InputHandler::mapKey( WgKey translated_keycode, int native_keycode )
+	void InputHandler::mapKey( Key translated_keycode, int native_keycode )
 	{
 		m_keycodeMap[native_keycode] = translated_keycode;
 	}
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ unmapKey() _____________________________________________________________
 	
-	void InputHandler::unmapKey( WgKey translated_keycode )
+	void InputHandler::unmapKey( Key translated_keycode )
 	{
 		auto it = m_keycodeMap.begin();
 	
@@ -160,13 +160,13 @@ namespace wg
 	
 	//____ translateKey() __________________________________________________________
 	
-	WgKey InputHandler::translateKey( int native_keycode )
+	Key InputHandler::translateKey( int native_keycode )
 	{
 		auto it = m_keycodeMap.find(native_keycode);
 		if( it != m_keycodeMap.end() )
 			return  it->second;
 		else
-			return WG_KEY_UNMAPPED;
+			return Key::Unmapped;
 	}
 	
 	//____ putText() ___________________________________________________________
@@ -520,7 +520,7 @@ namespace wg
 
 		//
 		
-		WgKey translatedKeyCode = translateKey(nativeKeyCode);
+		Key translatedKeyCode = translateKey(nativeKeyCode);
 		
 		// Create and fill in the info-structure.
 	
@@ -541,17 +541,17 @@ namespace wg
 	
 		switch( translatedKeyCode )
 		{
-			case WG_KEY_SHIFT:
-				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SHIFT);
+			case Key::Shift:
+				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_SHIFT);
 				break;
-			case WG_KEY_CONTROL:
-				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_CTRL);
+			case Key::Control:
+				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_CTRL);
 				break;
-			case WG_KEY_ALT:
-				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_ALT);
+			case Key::Alt:
+				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_ALT);
 				break;
-			case WG_KEY_SUPER:
-				m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
+			case Key::Super:
+				m_modKeys = (ModifierKeys) (m_modKeys | MODKEY_SUPER);
 				break;
 			default:
 				break;
@@ -578,7 +578,7 @@ namespace wg
 	
 		// Post KEY_RELEASE message
 	
-		WgKey translatedKeyCode = translateKey(nativeKeyCode);
+		Key translatedKeyCode = translateKey(nativeKeyCode);
 
 		Widget * pWidget = _focusedWidget();
 		Base::msgRouter()->post( new KeyReleaseMsg( nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, timestamp ) );
@@ -587,17 +587,17 @@ namespace wg
 	
 		switch( translatedKeyCode )
 		{
-			case WG_KEY_SHIFT:
-				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SHIFT);
+			case Key::Shift:
+				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_SHIFT);
 				break;
-			case WG_KEY_CONTROL:
-				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_CTRL);
+			case Key::Control:
+				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_CTRL);
 				break;
-			case WG_KEY_ALT:
-				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_ALT);
+			case Key::Alt:
+				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_ALT);
 				break;
-			case WG_KEY_SUPER:
-				m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
+			case Key::Super:
+				m_modKeys = (ModifierKeys) (m_modKeys & ~MODKEY_SUPER);
 				break;
 			default:
 				break;

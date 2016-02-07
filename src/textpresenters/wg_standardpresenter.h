@@ -35,8 +35,8 @@ namespace wg
 {
 	
 	class StandardPresenter;
-	typedef	WgStrongPtr<StandardPresenter,TextPresenter_p>		StandardPresenter_p;
-	typedef	WgWeakPtr<StandardPresenter,TextPresenter_wp>	StandardPresenter_wp;
+	typedef	StrongPtr<StandardPresenter,TextPresenter_p>		StandardPresenter_p;
+	typedef	WeakPtr<StandardPresenter,TextPresenter_wp>	StandardPresenter_wp;
 	
 	class StandardPresenter : public TextPresenter
 	{
@@ -76,7 +76,7 @@ namespace wg
 		virtual String tooltip( const PresentableField * pField ) const;
 	
 		virtual int		coordToCaretPos( PresentableField * pField, Coord pos );
-		virtual int		moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif );
+		virtual int		moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif );
 	
 	
 	protected:

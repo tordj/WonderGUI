@@ -56,16 +56,16 @@ namespace wg
 	class Patches;
 	
 	class Widget;
-	typedef	WgStrongPtr<Widget,Receiver_p>	Widget_p;
-	typedef	WgWeakPtr<Widget,Receiver_wp>	Widget_wp;
+	typedef	StrongPtr<Widget,Receiver_p>	Widget_p;
+	typedef	WeakPtr<Widget,Receiver_wp>	Widget_wp;
 	
 	class Container;
-	typedef	WgStrongPtr<Container,Widget_p>		Container_p;
-	typedef	WgWeakPtr<Container,Widget_wp>		Container_wp;
+	typedef	StrongPtr<Container,Widget_p>		Container_p;
+	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
 	
 	class Msg;
-	typedef	WgStrongPtr<Msg,Object_p>			Msg_p;
-	typedef	WgWeakPtr<Msg,Object_wp>			Msg_wp;
+	typedef	StrongPtr<Msg,Object_p>			Msg_p;
+	typedef	WeakPtr<Msg,Object_wp>			Msg_wp;
 	
 	
 	/**
@@ -100,9 +100,7 @@ namespace wg
 	friend class PackPanel;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
-	
-	friend class WgTableRow;
-	
+		
 	public:
 		Widget();
 		virtual ~Widget();

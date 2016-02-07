@@ -29,8 +29,8 @@ namespace wg
 	
 	
 	class StandardFormatter;
-	typedef	WgStrongPtr<StandardFormatter,ValueFormatter_p>		StandardFormatter_p;
-	typedef	WgWeakPtr<StandardFormatter,ValueFormatter_wp>	StandardFormatter_wp;
+	typedef	StrongPtr<StandardFormatter,ValueFormatter_p>		StandardFormatter_p;
+	typedef	WeakPtr<StandardFormatter,ValueFormatter_wp>	StandardFormatter_wp;
 	
 	//____ StandardFormatter __________________________________________________________
 	

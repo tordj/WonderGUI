@@ -42,8 +42,8 @@ namespace wg
 	class Glyphset;
 	
 	class Caret;
-	typedef	WgStrongPtr<Caret,Object_p>		Caret_p;
-	typedef	WgWeakPtr<Caret,Object_wp>		Caret_wp;
+	typedef	StrongPtr<Caret,Object_p>		Caret_p;
+	typedef	WeakPtr<Caret,Object_wp>		Caret_wp;
 	
 	//____ Caret _______________________________________________________________
 	

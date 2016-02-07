@@ -267,7 +267,7 @@ namespace wg
 	
 			if( m_state.isFocused() )
 			{
-				if( _isSelectable() && (pButtonMsg->modKeys() & WG_MODKEY_SHIFT) )
+				if( _isSelectable() && (pButtonMsg->modKeys() & MODKEY_SHIFT) )
 				{
 					m_text.setSelectionMode(true);
 				}
@@ -303,7 +303,7 @@ namespace wg
 					m_text.cursorGotoCoord( Coord(x, 0), Rect(0,0,1000000,1000000) );
 				}
 	
-				if(_isSelectable() && event == MsgType::MousePress && !(pButtonMsg->modKeys() & WG_MODKEY_SHIFT))
+				if(_isSelectable() && event == MsgType::MousePress && !(pButtonMsg->modKeys() & MODKEY_SHIFT))
 				{
 					m_text.clearSelection();
 					m_text.setSelectionMode(true);
@@ -353,10 +353,10 @@ namespace wg
 	
 		if( event == MsgType::KeyRelease && m_state.isFocused() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			switch( key )
 			{
-				case WG_KEY_SHIFT:
+				case Key::Shift:
 					if(!Base::inputHandler()->isButtonPressed(MouseButton::Left))
 						m_text.setSelectionMode(false);
 				break;
@@ -366,14 +366,14 @@ namespace wg
 		if( (event == MsgType::KeyPress || event == MsgType::KeyRepeat) && _isEditable() && m_state.isFocused() )
 		{
 			KeyMsg_p pKeyMsg = KeyMsg::cast(pMsg);
-			int key = pKeyMsg->translatedKeyCode();
+			Key key = pKeyMsg->translatedKeyCode();
 			switch( key )
 			{
-				case WG_KEY_LEFT:
-					if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
+				case Key::Left:
+					if( pKeyMsg->modKeys() & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( pKeyMsg->modKeys() & WG_MODKEY_CTRL )
+					if( pKeyMsg->modKeys() & MODKEY_CTRL )
 					{
 						if( m_bPasswordMode )
 							m_text.goBol();
@@ -385,11 +385,11 @@ namespace wg
 						m_text.goLeft();
 					}
 					break;
-				case WG_KEY_RIGHT:
-					if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
+				case Key::Right:
+					if( pKeyMsg->modKeys() & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( pKeyMsg->modKeys() & WG_MODKEY_CTRL )
+					if( pKeyMsg->modKeys() & MODKEY_CTRL )
 					{
 						if( m_bPasswordMode )
 							m_text.goEol();
@@ -402,11 +402,11 @@ namespace wg
 					}
 					break;
 	
-				case WG_KEY_BACKSPACE:
+				case Key::Backspace:
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( (pKeyMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					else if( (pKeyMsg->modKeys() & MODKEY_CTRL) && !m_bPasswordMode)
 						m_text.delPrevWord();
 					else
 						m_text.delPrevChar();
@@ -416,11 +416,11 @@ namespace wg
 					break;
 				}
 	
-				case WG_KEY_DELETE:
+				case Key::Delete:
 				{
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( (pKeyMsg->modKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+					else if( (pKeyMsg->modKeys() & MODKEY_CTRL) && !m_bPasswordMode)
 						m_text.delNextWord();
 					else
 						m_text.delNextChar();
@@ -430,7 +430,7 @@ namespace wg
 					break;
 				}
 	
-				case WG_KEY_HOME:
+				case Key::Home:
 	
 					/*
 					 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -439,11 +439,11 @@ namespace wg
 					switch( pKeyMsg->modKeys() )
 					{
 	
-					case WG_MODKEY_CTRL:
+					case MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if(pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
+						if(pKeyMsg->modKeys() & MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goBol();
@@ -452,7 +452,7 @@ namespace wg
 	
 					break;
 	
-				case WG_KEY_END:
+				case Key::End:
 	
 					/*
 				 	 *	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -461,11 +461,11 @@ namespace wg
 					switch( pKeyMsg->modKeys() )
 					{
 	
-					case WG_MODKEY_CTRL:
+					case MODKEY_CTRL:
 						break;
 	
 					default: // no modifier key was pressed
-						if( pKeyMsg->modKeys() & WG_MODKEY_SHIFT )
+						if( pKeyMsg->modKeys() & MODKEY_SHIFT )
 							m_text.setSelectionMode(true);
 	
 						m_text.goEol();
@@ -489,9 +489,9 @@ namespace wg
 		}
 		else if( pMsg->isKeyMsg() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			if( KeyMsg::cast(pMsg)->isMovementKey() == true ||
-				key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE )
+				key == Key::Delete || key == Key::Backspace )
 					pMsg->swallow();
 			
 			//TODO: Would be good if we didn't forward any character-creating keys either...

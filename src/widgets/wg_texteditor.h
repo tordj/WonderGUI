@@ -40,8 +40,8 @@ namespace wg
 {
 	
 	class TextEditor;
-	typedef	WgStrongPtr<TextEditor,Widget_p>		TextEditor_p;
-	typedef	WgWeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
+	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
+	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
 	
 	class TextEditor:public Widget, protected LegacyTextHolder
 	{

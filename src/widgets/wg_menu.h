@@ -60,8 +60,8 @@ namespace wg
 	class	GfxAnim;
 	
 	class Menu;
-	typedef	WgStrongPtr<Menu,Widget_p>		Menu_p;
-	typedef	WgWeakPtr<Menu,Widget_wp>	Menu_wp;
+	typedef	StrongPtr<Menu,Widget_p>		Menu_p;
+	typedef	WeakPtr<Menu,Widget_wp>	Menu_wp;
 	
 	class Menu:public Panel, private ScrollbarTarget
 	{

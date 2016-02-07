@@ -28,7 +28,7 @@
 namespace wg 
 {
 	
-	using namespace WgUtil;
+	using namespace Util;
 	
 	const char BlockSkin::CLASSNAME[] = {"BlockSkin"};
 	

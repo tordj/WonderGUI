@@ -29,8 +29,8 @@ namespace wg
 	
 	
 	class TimeFormatter;
-	typedef	WgStrongPtr<TimeFormatter,ValueFormatter_p>		TimeFormatter_p;
-	typedef	WgWeakPtr<TimeFormatter,ValueFormatter_wp>	TimeFormatter_wp;
+	typedef	StrongPtr<TimeFormatter,ValueFormatter_p>		TimeFormatter_p;
+	typedef	WeakPtr<TimeFormatter,ValueFormatter_wp>	TimeFormatter_wp;
 	
 	//____ TimeFormatter __________________________________________________________
 	

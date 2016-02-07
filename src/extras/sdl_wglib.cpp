@@ -11,28 +11,28 @@ namespace sdl_wglib
 
 	void MapKeys()
 	{
-		Base::mapKey( WG_KEY_SHIFT, SDLK_LSHIFT );
-		Base::mapKey( WG_KEY_SHIFT, SDLK_RSHIFT );
-		Base::mapKey( WG_KEY_CONTROL, SDLK_LCTRL );
-		Base::mapKey( WG_KEY_CONTROL, SDLK_RCTRL );
-		Base::mapKey( WG_KEY_ALT, SDLK_LALT );
-		Base::mapKey( WG_KEY_ALT, SDLK_RALT );
+		Base::mapKey( Key::Shift, SDLK_LSHIFT );
+		Base::mapKey( Key::Shift, SDLK_RSHIFT );
+		Base::mapKey( Key::Control, SDLK_LCTRL );
+		Base::mapKey( Key::Control, SDLK_RCTRL );
+		Base::mapKey( Key::Alt, SDLK_LALT );
+		Base::mapKey( Key::Alt, SDLK_RALT );
 
-		Base::mapKey( WG_KEY_LEFT, SDLK_LEFT );
-		Base::mapKey( WG_KEY_RIGHT, SDLK_RIGHT );
-		Base::mapKey( WG_KEY_UP, SDLK_UP );
-		Base::mapKey( WG_KEY_DOWN, SDLK_DOWN );
+		Base::mapKey( Key::Left, SDLK_LEFT );
+		Base::mapKey( Key::Right, SDLK_RIGHT );
+		Base::mapKey( Key::Up, SDLK_UP );
+		Base::mapKey( Key::Down, SDLK_DOWN );
 
-		Base::mapKey( WG_KEY_HOME, SDLK_HOME );
-		Base::mapKey( WG_KEY_END, SDLK_END );
-		Base::mapKey( WG_KEY_PAGE_UP, SDLK_PAGEUP );
-		Base::mapKey( WG_KEY_PAGE_DOWN, SDLK_PAGEDOWN );
+		Base::mapKey( Key::Home, SDLK_HOME );
+		Base::mapKey( Key::End, SDLK_END );
+		Base::mapKey( Key::PageUp, SDLK_PAGEUP );
+		Base::mapKey( Key::PageDown, SDLK_PAGEDOWN );
 
-		Base::mapKey( WG_KEY_RETURN, SDLK_RETURN );
-		Base::mapKey( WG_KEY_BACKSPACE, SDLK_BACKSPACE );
-		Base::mapKey( WG_KEY_DELETE, SDLK_DELETE );
-		Base::mapKey( WG_KEY_TAB, SDLK_TAB );
-		Base::mapKey( WG_KEY_ESCAPE, SDLK_ESCAPE );
+		Base::mapKey( Key::Return, SDLK_RETURN );
+		Base::mapKey( Key::Backspace, SDLK_BACKSPACE );
+		Base::mapKey( Key::Delete, SDLK_DELETE );
+		Base::mapKey( Key::Tab, SDLK_TAB );
+		Base::mapKey( Key::Escape, SDLK_ESCAPE );
 	}
 
 	//____ BeginEvents() _______________________________________________________

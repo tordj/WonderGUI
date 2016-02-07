@@ -37,7 +37,7 @@ namespace wg
 		_init();
 	}
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 	Font::Font( const VectorGlyphs_p& pNormal )
 	{
 		_init();
@@ -55,7 +55,7 @@ namespace wg
 	
 	void Font::_init()
 	{
-	#ifdef	WG_USE_FREETYPE
+	#ifdef	USE_FREETYPE
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 			m_aVectorGlyphs[i] = 0;
 	#endif
@@ -70,7 +70,7 @@ namespace wg
 	
 	Font::~Font()
 	{
-	#ifdef	WG_USE_FREETYPE
+	#ifdef	USE_FREETYPE
 		for( int i = 0 ; i < WG_NB_FONTSTYLES ; i++ )
 		{
 			if( m_aVectorGlyphs[i] != 0 )
@@ -131,7 +131,7 @@ namespace wg
 			return m_aBitmapGlyphs[size][style];
 		else if( m_aDefaultBitmapGlyphs[size] )
 			return m_aDefaultBitmapGlyphs[size];
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		else if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
 			return m_aVectorGlyphs[style][size];
 		else if( m_pDefaultVectorGlyphs )
@@ -152,7 +152,7 @@ namespace wg
 	
 	//____ getUnderline() _________________________________________________________
 	
-	const WgUnderline * Font::getUnderline( int size )
+	const Underline * Font::getUnderline( int size )
 	{
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
@@ -191,7 +191,7 @@ namespace wg
 	
 		// Special case: For whitespace we give vector glyphs top priority
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 	
 		if( chr == 32 || chr == 0xA0 )
 		{
@@ -236,7 +236,7 @@ namespace wg
 				return p;
 		}
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		// 3. VectorGlyphs of the right style.
 	
 		if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
@@ -307,7 +307,7 @@ namespace wg
 				return DEFAULT_PROVIDED;
 		}
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		// 3. VectorGlyphs of the right style.
 	
 		if( m_aVectorGlyphs[style] != 0 && m_aVectorGlyphs[style][size] )
@@ -348,7 +348,7 @@ namespace wg
 		return NOT_PROVIDED;
 	}
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 	//____ setVectorGlyphs() ______________________________________________________
 	
 	bool Font::setVectorGlyphs( const VectorGlyphs_p& pGlyph, FontAlt _style )

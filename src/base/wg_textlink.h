@@ -36,8 +36,8 @@ namespace wg
 	class Coord;
 	
 	class Textlink;
-	typedef	WgStrongPtr<class Textlink,Object_p> TextLink_p;
-	typedef	WgWeakPtr<class Textlink,Object_wp> TextLink_wp;
+	typedef	StrongPtr<class Textlink,Object_p> TextLink_p;
+	typedef	WeakPtr<class Textlink,Object_wp> TextLink_wp;
 	
 	
 	//____ TextLink _____________________________________________________________

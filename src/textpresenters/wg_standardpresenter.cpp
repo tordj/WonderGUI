@@ -219,7 +219,7 @@ namespace wg
 		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 	}
 	
-	int StandardPresenter::moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, WgModifierKeys modif )
+	int StandardPresenter::moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif )
 	{
 		//TODO: Implement!
 		return 0;

@@ -33,8 +33,8 @@ namespace wg
 	
 	
 	class SurfaceFactory;
-	typedef	WgStrongPtr<SurfaceFactory,Object_p>	SurfaceFactory_p;
-	typedef	WgWeakPtr<SurfaceFactory,Object_wp>	SurfaceFactory_wp;
+	typedef	StrongPtr<SurfaceFactory,Object_p>	SurfaceFactory_p;
+	typedef	WeakPtr<SurfaceFactory,Object_wp>	SurfaceFactory_wp;
 	
 	
 	//____ SurfaceFactory _______________________________________________________
@@ -43,7 +43,7 @@ namespace wg
 	 *
 	 * SurfaceFactory is the base class for all surface factories. The surface factories
 	 * are used by WonderGUI components that needs to dynamically create surfaces as
-	 * part of their operation, like WgVectorFont.
+	 * part of their operation, like VectorFont.
 	 *
 	 **/
 	class SurfaceFactory : public Object

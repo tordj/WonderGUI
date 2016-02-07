@@ -39,8 +39,8 @@ namespace wg
 	
 	
 	class SoftGfxDevice;
-	typedef	WgStrongPtr<SoftGfxDevice,GfxDevice_p>	SoftGfxDevice_p;
-	typedef	WgWeakPtr<SoftGfxDevice,GfxDevice_wp>	SoftGfxDevice_wp;
+	typedef	StrongPtr<SoftGfxDevice,GfxDevice_p>	SoftGfxDevice_p;
+	typedef	WeakPtr<SoftGfxDevice,GfxDevice_wp>	SoftGfxDevice_wp;
 	
 	class SoftGfxDevice : public GfxDevice
 	{

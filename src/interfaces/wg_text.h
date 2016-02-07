@@ -60,8 +60,8 @@ namespace wg
 	class CharBuffer;
 	
 	class Text;
-	typedef	WgIStrongPtr<Text,Interface_p>		Text_p;
-	typedef	WgIWeakPtr<Text,Interface_wp>	Text_wp;
+	typedef	StrongInterfacePtr<Text,Interface_p>		Text_p;
+	typedef	WeakInterfacePtr<Text,Interface_wp>	Text_wp;
 	
 	/**
 	 * @brief Interface to a basic text field.

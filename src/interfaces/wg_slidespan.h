@@ -31,8 +31,8 @@ namespace wg
 	
 	
 	class SlideSpan;
-	typedef	WgIStrongPtr<SlideSpan,Span_p>		SlideSpan_p;
-	typedef	WgIWeakPtr<SlideSpan,Span_wp>	SlideSpan_wp;
+	typedef	StrongInterfacePtr<SlideSpan,Span_p>		SlideSpan_p;
+	typedef	WeakInterfacePtr<SlideSpan,Span_wp>	SlideSpan_wp;
 	
 	
 	class SlideSpan : public Span

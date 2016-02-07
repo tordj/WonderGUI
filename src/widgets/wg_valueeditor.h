@@ -48,8 +48,8 @@ namespace wg
 	class	TextManager;
 	
 	class ValueEditor;
-	typedef	WgStrongPtr<ValueEditor,Widget_p>		ValueEditor_p;
-	typedef	WgWeakPtr<ValueEditor,Widget_wp>	ValueEditor_wp;
+	typedef	StrongPtr<ValueEditor,Widget_p>		ValueEditor_p;
+	typedef	WeakPtr<ValueEditor,Widget_wp>	ValueEditor_wp;
 	
 	class ValueEditor : public Widget, public _Interface_ValueHolder, protected LegacyTextHolder
 	{

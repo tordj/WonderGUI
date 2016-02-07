@@ -48,7 +48,7 @@ namespace wg
 	
 		uint16_t			m_id;				///< Handle of this Textprop.
 		uint8_t			m_indexOfs;			///< Offset in index table, need to know for quick removal.
-		uint32_t			m_refCnt;			///< Reference count. Nb of WgStrongPtr and Char referencing this prop.
+		uint32_t			m_refCnt;			///< Reference count. Nb of StrongPtr and Char referencing this prop.
 		int16_t			m_next;				///< Handle of next Textprop with same checksum or -1.
 		int16_t			m_prev;				///< Handle of next Textprop with same checksum or -1.
 	

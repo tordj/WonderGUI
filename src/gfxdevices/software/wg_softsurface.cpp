@@ -38,7 +38,7 @@ namespace wg
 	SoftSurface::SoftSurface( Size size, PixelType type )
 	{
 		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
-		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
+		Util::pixelTypeToFormat(type, m_pixelFormat);
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
@@ -50,7 +50,7 @@ namespace wg
 	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
 	{
 		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
-		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
+		Util::pixelTypeToFormat(type, m_pixelFormat);
 		m_pFinalizer = pFinalizer;
 		m_pitch = pitch;
 		m_size = size;
@@ -62,7 +62,7 @@ namespace wg
 	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat )
 	{
 		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
-		WgUtil::pixelTypeToFormat(type, m_pixelFormat);
+		Util::pixelTypeToFormat(type, m_pixelFormat);
 
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;

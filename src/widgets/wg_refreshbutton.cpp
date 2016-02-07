@@ -235,7 +235,7 @@ namespace wg
 			{
 				KeyReleaseMsg_p pKeyRelease = KeyReleaseMsg::cast(pMsg);
 	
-				if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == WG_KEY_RETURN )
+				if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == Key::Return )
 					startRefresh();
 	
 				break;

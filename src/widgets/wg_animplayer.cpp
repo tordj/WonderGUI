@@ -317,7 +317,7 @@ namespace wg
 	
 	bool AnimPlayer::_onAlphaTest( const Coord& ofs, const Size& sz )
 	{
-		if( m_pAnim && m_state.isEnabled() && WgUtil::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,sz), m_markOpacity ) )
+		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,sz), m_markOpacity ) )
 			return true;
 	
 		return Widget::_onAlphaTest(ofs,sz);

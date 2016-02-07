@@ -38,8 +38,8 @@ namespace wg
 {
 	
 	class PackList;
-	typedef	WgStrongPtr<PackList,List_p>		PackList_p;
-	typedef	WgWeakPtr<PackList,List_wp>	PackList_wp;
+	typedef	StrongPtr<PackList,List_p>		PackList_p;
+	typedef	WeakPtr<PackList,List_wp>	PackList_wp;
 	
 	class PackListHook;
 	typedef	HookTypePtr<PackListHook,ListHook_p>	PackListHook_p;

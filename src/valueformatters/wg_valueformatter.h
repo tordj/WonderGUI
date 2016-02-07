@@ -38,8 +38,8 @@ namespace wg
 {
 	
 	class ValueFormatter;
-	typedef	WgStrongPtr<ValueFormatter,Object_p>		ValueFormatter_p;
-	typedef	WgWeakPtr<ValueFormatter,Object_wp>	ValueFormatter_wp;
+	typedef	StrongPtr<ValueFormatter,Object_p>		ValueFormatter_p;
+	typedef	WeakPtr<ValueFormatter,Object_wp>	ValueFormatter_wp;
 	
 	//____ ValueFormatter __________________________________________________________
 	

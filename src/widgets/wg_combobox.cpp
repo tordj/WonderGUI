@@ -29,6 +29,7 @@
 #include <wg_msgrouter.h>
 #include <wg_popuplayer.h>
 #include <wg_base.h>
+#include <wg_key.h>
 
 namespace wg 
 {
@@ -298,7 +299,7 @@ namespace wg
 	
 						if( m_state.isFocused() )
 						{
-							if( _isSelectable() && (pMsg->modKeys() & WG_MODKEY_SHIFT))
+							if( _isSelectable() && (pMsg->modKeys() & MODKEY_SHIFT))
 							{
 								m_text.setSelectionMode(true);
 							}
@@ -310,7 +311,7 @@ namespace wg
 	
 							m_text.cursorGotoCoord( Coord(x, 0), Rect(inputRect.x,0,1000000,1000000) );
 					
-							if(_isSelectable() && !(pMsg->modKeys() & WG_MODKEY_SHIFT))
+							if(_isSelectable() && !(pMsg->modKeys() & MODKEY_SHIFT))
 							{
 								m_text.clearSelection();
 								m_text.setSelectionMode(true);
@@ -347,7 +348,7 @@ namespace wg
 				{
 					if( m_state.isFocused() && m_bPressInInputRect )
 					{
-						if( _isSelectable() && (pMsg->modKeys() & WG_MODKEY_SHIFT) )
+						if( _isSelectable() && (pMsg->modKeys() & MODKEY_SHIFT) )
 						{
 							m_text.setSelectionMode(true);
 						}
@@ -450,7 +451,7 @@ namespace wg
 					KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
 					switch( pMsg->translatedKeyCode() )
 					{
-						case WG_KEY_SHIFT:
+						case Key::Shift:
 							if(!Base::inputHandler()->isButtonPressed(MouseButton::Left))
 								m_text.setSelectionMode(false);
 							_pMsg->swallow();
@@ -464,7 +465,7 @@ namespace wg
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
-				if( pMsg->translatedKeyCode() == WG_KEY_ESCAPE && m_state.isPressed() )
+				if( pMsg->translatedKeyCode() == Key::Escape && m_state.isPressed() )
 				{
 					_closeMenu();
 				}
@@ -472,31 +473,31 @@ namespace wg
 				{
 					switch( pMsg->translatedKeyCode() )
 					{
-						case WG_KEY_LEFT:
-							if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+						case Key::Left:
+							if( pMsg->modKeys() & MODKEY_SHIFT )
 								m_text.setSelectionMode(true);
 	
-							if( pMsg->modKeys() & WG_MODKEY_CTRL )
+							if( pMsg->modKeys() & MODKEY_CTRL )
 								m_text.gotoPrevWord();
 							else
 								m_text.goLeft();
 							_pMsg->swallow();
 							break;
-						case WG_KEY_RIGHT:
-							if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+						case Key::Right:
+							if( pMsg->modKeys() & MODKEY_SHIFT )
 								m_text.setSelectionMode(true);
 	
-							if( pMsg->modKeys() & WG_MODKEY_CTRL )
+							if( pMsg->modKeys() & MODKEY_CTRL )
 									m_text.gotoNextWord();
 							else
 								m_text.goRight();
 							_pMsg->swallow();
 							break;
 	
-						case WG_KEY_BACKSPACE:
+						case Key::Backspace:
 							if(m_text.hasSelection())
 								m_text.delSelection();
-							else if( pMsg->modKeys() & WG_MODKEY_CTRL )
+							else if( pMsg->modKeys() & MODKEY_CTRL )
 								m_text.delPrevWord();
 							else
 								m_text.delPrevChar();
@@ -505,10 +506,10 @@ namespace wg
 							_pMsg->swallow();
 							break;
 	
-						case WG_KEY_DELETE:
+						case Key::Delete:
 							if(m_text.hasSelection())
 								m_text.delSelection();
-							else if( pMsg->modKeys() & WG_MODKEY_CTRL )
+							else if( pMsg->modKeys() & MODKEY_CTRL )
 								m_text.delNextWord();
 							else
 								m_text.delNextChar();
@@ -516,7 +517,7 @@ namespace wg
 							_pMsg->swallow();
 							break;
 	
-						case WG_KEY_HOME:
+						case Key::Home:
 	
 							//
 							//	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -525,11 +526,11 @@ namespace wg
 							switch( pMsg->modKeys() )
 							{
 	
-							case WG_MODKEY_CTRL:
+							case MODKEY_CTRL:
 								break;
 	
 							default: // no modifier key was pressed
-								if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+								if( pMsg->modKeys() & MODKEY_SHIFT )
 									m_text.setSelectionMode(true);
 	
 								m_text.goBol();
@@ -538,7 +539,7 @@ namespace wg
 							_pMsg->swallow();
 							break;
 	
-						case WG_KEY_END:
+						case Key::End:
 	
 							//
 				 			//	I am not sure if this is the proper way to this, but in my opinion, the default
@@ -547,11 +548,11 @@ namespace wg
 							switch( pMsg->modKeys() )
 							{
 	
-							case WG_MODKEY_CTRL:
+							case MODKEY_CTRL:
 								break;
 	
 							default: // no modifier key was pressed
-								if( pMsg->modKeys() & WG_MODKEY_SHIFT )
+								if( pMsg->modKeys() & MODKEY_SHIFT )
 									m_text.setSelectionMode(true);
 	
 								m_text.goEol();

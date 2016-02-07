@@ -50,8 +50,8 @@ namespace wg
 {
 	
 	class TextStyle;
-	typedef	WgStrongPtr<TextStyle,Object_p>		TextStyle_p;
-	typedef	WgWeakPtr<TextStyle,Object_wp>		TextStyle_wp;
+	typedef	StrongPtr<TextStyle,Object_p>		TextStyle_p;
+	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
 	
 	struct TextAttr2
 	{
@@ -173,25 +173,25 @@ namespace wg
 	//______________________________________________________________________________
 	inline Color TextStyle::color( State state ) const
 	{
-		return m_specAttr.color[WgUtil::_stateToIndex(state)];
+		return m_specAttr.color[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline 	Color TextStyle::bgColor( State state ) const
 	{
-		return m_specAttr.bgColor[WgUtil::_stateToIndex(state)];
+		return m_specAttr.bgColor[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline int TextStyle::size( State state ) const
 	{
-		return m_specAttr.size[WgUtil::_stateToIndex(state)];
+		return m_specAttr.size[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::decoration( State state ) const
 	{
-		return m_specAttr.decoration[WgUtil::_stateToIndex(state)];
+		return m_specAttr.decoration[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
@@ -210,25 +210,25 @@ namespace wg
 	//______________________________________________________________________________
 	inline Color TextStyle::combColor( State state ) const
 	{
-		return m_combAttr.color[WgUtil::_stateToIndex(state)];
+		return m_combAttr.color[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline Color TextStyle::combBgColor( State state ) const
 	{
-		return m_combAttr.bgColor[WgUtil::_stateToIndex(state)];
+		return m_combAttr.bgColor[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline int TextStyle::combSize( State state ) const
 	{
-		return m_combAttr.size[WgUtil::_stateToIndex(state)];
+		return m_combAttr.size[Util::_stateToIndex(state)];
 	}
 	
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::combDecoration( State state ) const
 	{
-		return m_combAttr.decoration[WgUtil::_stateToIndex(state)];
+		return m_combAttr.decoration[Util::_stateToIndex(state)];
 	}
 	
 	

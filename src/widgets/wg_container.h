@@ -35,8 +35,8 @@ namespace wg
 	class PopupLayer;
 	
 	class Container;
-	typedef	WgStrongPtr<Container,Widget_p>			Container_p;
-	typedef	WgWeakPtr<Container,Widget_wp>		Container_wp;
+	typedef	StrongPtr<Container,Widget_p>			Container_p;
+	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
 	
 	/**
 	 * @brief Base class for all widgets that can hold child widgets.
@@ -60,11 +60,9 @@ namespace wg
 		friend class FlexPanel;
 		friend class PopupLayer;
 		friend class ModalLayer;
-		friend class WgTablePanel;
 		friend class ScrollPanel;
 		friend class StackPanel;
 		friend class VectorPanel;
-		friend class ListPanel;
 		friend class Capsule;
 		friend class PackList;
 	

@@ -218,17 +218,17 @@ namespace wg
 		{
 			MouseButtonMsg_p p = MouseButtonMsg::cast(pMsg);
 			
-			WgModifierKeys modKeys 	= p->modKeys();
+			ModifierKeys modKeys 	= p->modKeys();
 			Coord pointerPos = p->pointerPos();
 	
-			if( isSelectable() && (modKeys & WG_MODKEY_SHIFT) )
+			if( isSelectable() && (modKeys & MODKEY_SHIFT) )
 			{
 				m_text.setSelectionMode(true);
 			}
 	
 			m_text.cursorGotoCoord( pointerPos, globalGeo() );
 	
-			if(isSelectable() && type == MsgType::MousePress && !(modKeys & WG_MODKEY_SHIFT))
+			if(isSelectable() && type == MsgType::MousePress && !(modKeys & MODKEY_SHIFT))
 			{
 				m_text.clearSelection();
 				m_text.setSelectionMode(true);
@@ -275,7 +275,7 @@ namespace wg
 		{
 			switch( KeyMsg::cast(pMsg)->translatedKeyCode() )
 			{
-				case WG_KEY_SHIFT:
+				case Key::Shift:
 					if(!Base::inputHandler()->isButtonPressed(MouseButton::Left))
 						m_text.setSelectionMode(false);
 				break;
@@ -285,76 +285,76 @@ namespace wg
 		if( (type == MsgType::KeyPress || type == MsgType::KeyRepeat) && isEditable() )
 		{
 			KeyMsg_p p = KeyMsg::cast(pMsg);
-			WgModifierKeys modKeys = p->modKeys();
+			ModifierKeys modKeys = p->modKeys();
 			
 			switch( p->translatedKeyCode() )
 			{
-				case WG_KEY_LEFT:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Left:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.gotoPrevWord();
 					else
 						m_text.goLeft();
 					break;
-				case WG_KEY_RIGHT:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Right:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.gotoNextWord();
 					else
 						m_text.goRight();
 					break;
 	
-				case WG_KEY_UP:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Up:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
 					m_text.cursorGoUp( 1, globalGeo() );
 					break;
 	
-				case WG_KEY_DOWN:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Down:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
 					m_text.cursorGoDown( 1, globalGeo() );
 					break;
 	
-				case WG_KEY_BACKSPACE:
+				case Key::Backspace:
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( modKeys & WG_MODKEY_CTRL )
+					else if( modKeys & MODKEY_CTRL )
 						m_text.delPrevWord();
 					else
 						m_text.delPrevChar();
 					break;
 	
-				case WG_KEY_DELETE:
+				case Key::Delete:
 					if(m_text.hasSelection())
 						m_text.delSelection();
-					else if( modKeys & WG_MODKEY_CTRL )
+					else if( modKeys & MODKEY_CTRL )
 						m_text.delNextWord();
 					else
 						m_text.delNextChar();
 					break;
 	
-				case WG_KEY_HOME:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::Home:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.goBot();
 					else
 						m_text.goBol();
 					break;
 	
-				case WG_KEY_END:
-					if( modKeys & WG_MODKEY_SHIFT )
+				case Key::End:
+					if( modKeys & MODKEY_SHIFT )
 						m_text.setSelectionMode(true);
 	
-					if( modKeys & WG_MODKEY_CTRL )
+					if( modKeys & MODKEY_CTRL )
 						m_text.goEot();
 					else
 						m_text.goEol();
@@ -381,9 +381,9 @@ namespace wg
 		}
 		else if( pMsg->isKeyMsg() && isEditable() )
 		{
-			int key = KeyMsg::cast(pMsg)->translatedKeyCode();
+			Key key = KeyMsg::cast(pMsg)->translatedKeyCode();
 			if( KeyMsg::cast(pMsg)->isMovementKey() == true ||
-				key == WG_KEY_DELETE || key == WG_KEY_BACKSPACE || key == WG_KEY_RETURN || (key == WG_KEY_TAB && m_bTabLock) )
+				key == Key::Delete || key == Key::Backspace || key == Key::Return || (key == Key::Tab && m_bTabLock) )
 					pMsg->swallow();
 			
 			//TODO: Would be good if we didn't forward any character-creating keys either...

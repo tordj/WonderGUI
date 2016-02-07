@@ -31,8 +31,8 @@ namespace wg
 	
 	
 	class ModSpan;
-	typedef	WgIStrongPtr<ModSpan,SlideSpan_p>		ModSpan_p;
-	typedef	WgIWeakPtr<ModSpan,SlideSpan_wp>	ModSpan_wp;
+	typedef	StrongInterfacePtr<ModSpan,SlideSpan_p>		ModSpan_p;
+	typedef	WeakInterfacePtr<ModSpan,SlideSpan_wp>	ModSpan_wp;
 	
 	
 	class ModSpan : public SlideSpan

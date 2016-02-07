@@ -31,7 +31,7 @@
 namespace wg 
 {
 	
-	using namespace WgUtil;
+	using namespace Util;
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -382,7 +382,7 @@ namespace wg
 	
 	uint8_t Textprop::_calculateChecksum() const
 	{
-		WgUtil::Checksum8	chk;
+		Util::Checksum8	chk;
 	
 		chk.add8( m_visibilityFlags );
 		chk.add8( m_breakLevel );

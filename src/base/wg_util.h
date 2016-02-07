@@ -20,9 +20,9 @@ namespace wg
 	class Rect;
 	
 	
-	//____ WgUtil _________________________________________________________________
+	//____ Util _________________________________________________________________
 	
-	namespace WgUtil
+	namespace Util
 	{
 		bool		markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold );
 	

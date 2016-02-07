@@ -45,6 +45,11 @@
 #	include <wg_widget.h>
 #endif
 
+#ifndef WG_KEY_DOT_H
+#	include <wg_key.h>
+#endif
+
+
 /*
 #ifndef WG_EDITTEXT_DOT_H
 #	include <wg_edittext.h>
@@ -75,208 +80,208 @@ namespace wg
 	class LegacyModText;
 	class EditText;
 
-	typedef	WgIStrongPtr<LegacyText,Interface_p>	LegacyText_p;
-	typedef	WgIWeakPtr<LegacyText,Interface_wp> LegacyText_wp;
+	typedef	StrongInterfacePtr<LegacyText,Interface_p>	LegacyText_p;
+	typedef	WeakInterfacePtr<LegacyText,Interface_wp> LegacyText_wp;
 
-	typedef	WgIStrongPtr<LegacyModText,LegacyText_p>	LegacyModText_p;
-	typedef	WgIWeakPtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
+	typedef	StrongInterfacePtr<LegacyModText,LegacyText_p>	LegacyModText_p;
+	typedef	WeakInterfacePtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
 
-	typedef	WgIStrongPtr<EditText,LegacyModText_p>	EditText_p;
-	typedef	WgIWeakPtr<EditText,LegacyModText_wp>	EditText_wp;
+	typedef	StrongInterfacePtr<EditText,LegacyModText_p>	EditText_p;
+	typedef	WeakInterfacePtr<EditText,LegacyModText_wp>	EditText_wp;
 
 
-	typedef WgWeakPtr<Widget,Receiver_wp> Widget_wp;
+	typedef WeakPtr<Widget,Receiver_wp> Widget_wp;
 
 	class Msg;
-	typedef	WgStrongPtr<Msg,Object_p>		Msg_p;
-	typedef	WgWeakPtr<Msg,Object_wp>	Msg_wp;
+	typedef	StrongPtr<Msg,Object_p>		Msg_p;
+	typedef	WeakPtr<Msg,Object_wp>	Msg_wp;
 
 	class InputMsg;
-	typedef	WgStrongPtr<InputMsg,Msg_p>		InputMsg_p;
-	typedef	WgWeakPtr<InputMsg,Msg_wp>	InputMsg_wp;
+	typedef	StrongPtr<InputMsg,Msg_p>		InputMsg_p;
+	typedef	WeakPtr<InputMsg,Msg_wp>	InputMsg_wp;
 
 
 	class FocusGainedMsg;
-	typedef	WgStrongPtr<FocusGainedMsg,Msg_p>		FocusGainedMsg_p;
-	typedef	WgWeakPtr<FocusGainedMsg,Msg_wp>	FocusGainedMsg_wp;
+	typedef	StrongPtr<FocusGainedMsg,Msg_p>		FocusGainedMsg_p;
+	typedef	WeakPtr<FocusGainedMsg,Msg_wp>	FocusGainedMsg_wp;
 
 	class FocusLostMsg;
-	typedef	WgStrongPtr<FocusLostMsg,Msg_p>		FocusLostMsg_p;
-	typedef	WgWeakPtr<FocusLostMsg,Msg_wp>	FocusLostMsg_wp;
+	typedef	StrongPtr<FocusLostMsg,Msg_p>		FocusLostMsg_p;
+	typedef	WeakPtr<FocusLostMsg,Msg_wp>	FocusLostMsg_wp;
 
 	class MouseEnterMsg;
-	typedef	WgStrongPtr<MouseEnterMsg,InputMsg_p>		MouseEnterMsg_p;
-	typedef	WgWeakPtr<MouseEnterMsg,InputMsg_wp>	MouseEnterMsg_wp;
+	typedef	StrongPtr<MouseEnterMsg,InputMsg_p>		MouseEnterMsg_p;
+	typedef	WeakPtr<MouseEnterMsg,InputMsg_wp>	MouseEnterMsg_wp;
 
 	class MouseLeaveMsg;
-	typedef	WgStrongPtr<MouseLeaveMsg,InputMsg_p>		MouseLeaveMsg_p;
-	typedef	WgWeakPtr<MouseLeaveMsg,InputMsg_wp>	MouseLeaveMsg_wp;
+	typedef	StrongPtr<MouseLeaveMsg,InputMsg_p>		MouseLeaveMsg_p;
+	typedef	WeakPtr<MouseLeaveMsg,InputMsg_wp>	MouseLeaveMsg_wp;
 
 	class MouseMoveMsg;
-	typedef	WgStrongPtr<MouseMoveMsg,InputMsg_p>		MouseMoveMsg_p;
-	typedef	WgWeakPtr<MouseMoveMsg,InputMsg_wp>		MouseMoveMsg_wp;
+	typedef	StrongPtr<MouseMoveMsg,InputMsg_p>		MouseMoveMsg_p;
+	typedef	WeakPtr<MouseMoveMsg,InputMsg_wp>		MouseMoveMsg_wp;
 
 	class MouseButtonMsg;
-	typedef	WgStrongPtr<MouseButtonMsg,InputMsg_p>		MouseButtonMsg_p;
-	typedef	WgWeakPtr<MouseButtonMsg,InputMsg_wp>	MouseButtonMsg_wp;
+	typedef	StrongPtr<MouseButtonMsg,InputMsg_p>		MouseButtonMsg_p;
+	typedef	WeakPtr<MouseButtonMsg,InputMsg_wp>	MouseButtonMsg_wp;
 
 	class MousePressMsg;
-	typedef	WgStrongPtr<MousePressMsg,MouseButtonMsg_p>		MousePressMsg_p;
-	typedef	WgWeakPtr<MousePressMsg,MouseButtonMsg_wp>	MousePressMsg_wp;
+	typedef	StrongPtr<MousePressMsg,MouseButtonMsg_p>		MousePressMsg_p;
+	typedef	WeakPtr<MousePressMsg,MouseButtonMsg_wp>	MousePressMsg_wp;
 
 	class MouseReleaseMsg;
-	typedef	WgStrongPtr<MouseReleaseMsg,MouseButtonMsg_p>		MouseReleaseMsg_p;
-	typedef	WgWeakPtr<MouseReleaseMsg,MouseButtonMsg_wp>	MouseReleaseMsg_wp;
+	typedef	StrongPtr<MouseReleaseMsg,MouseButtonMsg_p>		MouseReleaseMsg_p;
+	typedef	WeakPtr<MouseReleaseMsg,MouseButtonMsg_wp>	MouseReleaseMsg_wp;
 
 	class MouseRepeatMsg;
-	typedef	WgStrongPtr<MouseRepeatMsg,MouseButtonMsg_p>		MouseRepeatMsg_p;
-	typedef	WgWeakPtr<MouseRepeatMsg,MouseButtonMsg_wp>	MouseRepeatMsg_wp;
+	typedef	StrongPtr<MouseRepeatMsg,MouseButtonMsg_p>		MouseRepeatMsg_p;
+	typedef	WeakPtr<MouseRepeatMsg,MouseButtonMsg_wp>	MouseRepeatMsg_wp;
 
 	class MouseClickMsg;
-	typedef	WgStrongPtr<MouseClickMsg,MouseButtonMsg_p>		MouseClickMsg_p;
-	typedef	WgWeakPtr<MouseClickMsg,MouseButtonMsg_wp>	MouseClickMsg_wp;
+	typedef	StrongPtr<MouseClickMsg,MouseButtonMsg_p>		MouseClickMsg_p;
+	typedef	WeakPtr<MouseClickMsg,MouseButtonMsg_wp>	MouseClickMsg_wp;
 
 	class MouseDoubleClickMsg;
-	typedef	WgStrongPtr<MouseDoubleClickMsg,MouseButtonMsg_p>		MouseDoubleClickMsg_p;
-	typedef	WgWeakPtr<MouseDoubleClickMsg,MouseButtonMsg_wp>	MouseDoubleClickMsg_wp;
+	typedef	StrongPtr<MouseDoubleClickMsg,MouseButtonMsg_p>		MouseDoubleClickMsg_p;
+	typedef	WeakPtr<MouseDoubleClickMsg,MouseButtonMsg_wp>	MouseDoubleClickMsg_wp;
 
 	class MouseDragMsg;
-	typedef	WgStrongPtr<MouseDragMsg,MouseButtonMsg_p>		MouseDragMsg_p;
-	typedef	WgWeakPtr<MouseDragMsg,MouseButtonMsg_wp>	MouseDragMsg_wp;
+	typedef	StrongPtr<MouseDragMsg,MouseButtonMsg_p>		MouseDragMsg_p;
+	typedef	WeakPtr<MouseDragMsg,MouseButtonMsg_wp>	MouseDragMsg_wp;
 
 	class KeyMsg;
-	typedef	WgStrongPtr<KeyMsg,InputMsg_p>		KeyMsg_p;
-	typedef	WgWeakPtr<KeyMsg,InputMsg_wp>	KeyMsg_wp;
+	typedef	StrongPtr<KeyMsg,InputMsg_p>		KeyMsg_p;
+	typedef	WeakPtr<KeyMsg,InputMsg_wp>	KeyMsg_wp;
 
 	class KeyPressMsg;
-	typedef	WgStrongPtr<KeyPressMsg,KeyMsg_p>		KeyPressMsg_p;
-	typedef	WgWeakPtr<KeyPressMsg,KeyMsg_wp>	KeyPressMsg_wp;
+	typedef	StrongPtr<KeyPressMsg,KeyMsg_p>		KeyPressMsg_p;
+	typedef	WeakPtr<KeyPressMsg,KeyMsg_wp>	KeyPressMsg_wp;
 
 	class KeyReleaseMsg;
-	typedef	WgStrongPtr<KeyReleaseMsg,KeyMsg_p>		KeyReleaseMsg_p;
-	typedef	WgWeakPtr<KeyReleaseMsg,KeyMsg_wp>	KeyReleaseMsg_wp;
+	typedef	StrongPtr<KeyReleaseMsg,KeyMsg_p>		KeyReleaseMsg_p;
+	typedef	WeakPtr<KeyReleaseMsg,KeyMsg_wp>	KeyReleaseMsg_wp;
 
 	class KeyRepeatMsg;
-	typedef	WgStrongPtr<KeyRepeatMsg,KeyMsg_p>		KeyRepeatMsg_p;
-	typedef	WgWeakPtr<KeyRepeatMsg,KeyMsg_wp>	KeyRepeatMsg_wp;
+	typedef	StrongPtr<KeyRepeatMsg,KeyMsg_p>		KeyRepeatMsg_p;
+	typedef	WeakPtr<KeyRepeatMsg,KeyMsg_wp>	KeyRepeatMsg_wp;
 
 	class TextInputMsg;
-	typedef	WgStrongPtr<TextInputMsg,Msg_p>		TextInputMsg_p;
-	typedef	WgWeakPtr<TextInputMsg,Msg_wp>	TextInputMsg_wp;
+	typedef	StrongPtr<TextInputMsg,Msg_p>		TextInputMsg_p;
+	typedef	WeakPtr<TextInputMsg,Msg_wp>	TextInputMsg_wp;
 
 	class WheelRollMsg;
-	typedef	WgStrongPtr<WheelRollMsg,InputMsg_p>		WheelRollMsg_p;
-	typedef	WgWeakPtr<WheelRollMsg,InputMsg_wp>	WheelRollMsg_wp;
+	typedef	StrongPtr<WheelRollMsg,InputMsg_p>		WheelRollMsg_p;
+	typedef	WeakPtr<WheelRollMsg,InputMsg_wp>	WheelRollMsg_wp;
 
 	class TickMsg;
-	typedef	WgStrongPtr<TickMsg,Msg_p>		TickMsg_p;
-	typedef	WgWeakPtr<TickMsg,Msg_wp>	TickMsg_wp;
+	typedef	StrongPtr<TickMsg,Msg_p>		TickMsg_p;
+	typedef	WeakPtr<TickMsg,Msg_wp>	TickMsg_wp;
 
 	class PointerChangeMsg;
-	typedef	WgStrongPtr<PointerChangeMsg,Msg_p>		PointerChangeMsg_p;
-	typedef	WgWeakPtr<PointerChangeMsg,Msg_wp>	PointerChangeMsg_wp;
+	typedef	StrongPtr<PointerChangeMsg,Msg_p>		PointerChangeMsg_p;
+	typedef	WeakPtr<PointerChangeMsg,Msg_wp>	PointerChangeMsg_wp;
 
 	class SelectMsg;
-	typedef	WgStrongPtr<SelectMsg,Msg_p>		SelectMsg_p;
-	typedef	WgWeakPtr<SelectMsg,Msg_wp>	SelectMsg_wp;
+	typedef	StrongPtr<SelectMsg,Msg_p>		SelectMsg_p;
+	typedef	WeakPtr<SelectMsg,Msg_wp>	SelectMsg_wp;
 
 	class ToggleMsg;
-	typedef	WgStrongPtr<ToggleMsg,Msg_p>		ToggleMsg_p;
-	typedef	WgWeakPtr<ToggleMsg,Msg_wp>	ToggleMsg_wp;
+	typedef	StrongPtr<ToggleMsg,Msg_p>		ToggleMsg_p;
+	typedef	WeakPtr<ToggleMsg,Msg_wp>	ToggleMsg_wp;
 
 	class ValueUpdateMsg;
-	typedef	WgStrongPtr<ValueUpdateMsg,Msg_p>		ValueUpdateMsg_p;
-	typedef	WgWeakPtr<ValueUpdateMsg,Msg_wp>	ValueUpdateMsg_wp;
+	typedef	StrongPtr<ValueUpdateMsg,Msg_p>		ValueUpdateMsg_p;
+	typedef	WeakPtr<ValueUpdateMsg,Msg_wp>	ValueUpdateMsg_wp;
 
 	class RangeUpdateMsg;
-	typedef	WgStrongPtr<RangeUpdateMsg,Msg_p>		RangeUpdateMsg_p;
-	typedef	WgWeakPtr<RangeUpdateMsg,Msg_wp>	RangeUpdateMsg_wp;
+	typedef	StrongPtr<RangeUpdateMsg,Msg_p>		RangeUpdateMsg_p;
+	typedef	WeakPtr<RangeUpdateMsg,Msg_wp>	RangeUpdateMsg_wp;
 
 	class TextEditMsg;
-	typedef	WgStrongPtr<TextEditMsg,Msg_p>		TextEditMsg_p;
-	typedef	WgWeakPtr<TextEditMsg,Msg_wp>	TextEditMsg_wp;
+	typedef	StrongPtr<TextEditMsg,Msg_p>		TextEditMsg_p;
+	typedef	WeakPtr<TextEditMsg,Msg_wp>	TextEditMsg_wp;
 
 	class ItemMsg;
-	typedef	WgStrongPtr<ItemMsg,Msg_p>		ItemMsg_p;
-	typedef	WgWeakPtr<ItemMsg,Msg_wp>	ItemMsg_wp;
+	typedef	StrongPtr<ItemMsg,Msg_p>		ItemMsg_p;
+	typedef	WeakPtr<ItemMsg,Msg_wp>	ItemMsg_wp;
 
 	class ItemListMsg;
-	typedef	WgStrongPtr<ItemListMsg,Msg_p>		ItemListMsg_p;
-	typedef	WgWeakPtr<ItemListMsg,Msg_wp>	ItemListMsg_wp;
+	typedef	StrongPtr<ItemListMsg,Msg_p>		ItemListMsg_p;
+	typedef	WeakPtr<ItemListMsg,Msg_wp>	ItemListMsg_wp;
 
 	class ItemsSelectMsg;
-	typedef	WgStrongPtr<ItemsSelectMsg,ItemListMsg_p>		ItemsSelectMsg_p;
-	typedef	WgWeakPtr<ItemsSelectMsg,ItemListMsg_wp>	ItemsSelectMsg_wp;
+	typedef	StrongPtr<ItemsSelectMsg,ItemListMsg_p>		ItemsSelectMsg_p;
+	typedef	WeakPtr<ItemsSelectMsg,ItemListMsg_wp>	ItemsSelectMsg_wp;
 
 	class ItemsUnselectMsg;
-	typedef	WgStrongPtr<ItemsUnselectMsg,ItemListMsg_p>		ItemsUnselectMsg_p;
-	typedef	WgWeakPtr<ItemsUnselectMsg,ItemListMsg_wp>	ItemsUnselectMsg_wp;
+	typedef	StrongPtr<ItemsUnselectMsg,ItemListMsg_p>		ItemsUnselectMsg_p;
+	typedef	WeakPtr<ItemsUnselectMsg,ItemListMsg_wp>	ItemsUnselectMsg_wp;
 
 	class ItemToggleMsg;
-	typedef	WgStrongPtr<ItemToggleMsg,ItemMsg_p>		ItemToggleMsg_p;
-	typedef	WgWeakPtr<ItemToggleMsg,ItemMsg_wp>	ItemToggleMsg_wp;
+	typedef	StrongPtr<ItemToggleMsg,ItemMsg_p>		ItemToggleMsg_p;
+	typedef	WeakPtr<ItemToggleMsg,ItemMsg_wp>	ItemToggleMsg_wp;
 
 	class ItemMousePressMsg;
-	typedef	WgStrongPtr<ItemMousePressMsg,ItemMsg_p>		ItemMousePressMsg_p;
-	typedef	WgWeakPtr<ItemMousePressMsg,ItemMsg_wp>	ItemMousePressMsg_wp;
+	typedef	StrongPtr<ItemMousePressMsg,ItemMsg_p>		ItemMousePressMsg_p;
+	typedef	WeakPtr<ItemMousePressMsg,ItemMsg_wp>	ItemMousePressMsg_wp;
 
 	class PopupClosedMsg;
-	typedef	WgStrongPtr<PopupClosedMsg,Msg_p>		PopupClosedMsg_p;
-	typedef	WgWeakPtr<PopupClosedMsg,Msg_wp>	PopupClosedMsg_wp;
+	typedef	StrongPtr<PopupClosedMsg,Msg_p>		PopupClosedMsg_p;
+	typedef	WeakPtr<PopupClosedMsg,Msg_wp>	PopupClosedMsg_wp;
 
 	class ModalMoveOutsideMsg;
-	typedef	WgStrongPtr<ModalMoveOutsideMsg,Msg_p>		ModalMoveOutsideMsg_p;
-	typedef	WgWeakPtr<ModalMoveOutsideMsg,Msg_wp>	ModalMoveOutsideMsg_wp;
+	typedef	StrongPtr<ModalMoveOutsideMsg,Msg_p>		ModalMoveOutsideMsg_p;
+	typedef	WeakPtr<ModalMoveOutsideMsg,Msg_wp>	ModalMoveOutsideMsg_wp;
 
 	class ModalBlockedPressMsg;
-	typedef	WgStrongPtr<ModalBlockedPressMsg,Msg_p>		ModalBlockedPressMsg_p;
-	typedef	WgWeakPtr<ModalBlockedPressMsg,Msg_wp>	ModalBlockedPressMsg_wp;
+	typedef	StrongPtr<ModalBlockedPressMsg,Msg_p>		ModalBlockedPressMsg_p;
+	typedef	WeakPtr<ModalBlockedPressMsg,Msg_wp>	ModalBlockedPressMsg_wp;
 
 	class ModalBlockedReleaseMsg;
-	typedef	WgStrongPtr<ModalBlockedReleaseMsg,Msg_p>		ModalBlockedReleaseMsg_p;
-	typedef	WgWeakPtr<ModalBlockedReleaseMsg,Msg_wp>	ModalBlockedReleaseMsg_wp;
+	typedef	StrongPtr<ModalBlockedReleaseMsg,Msg_p>		ModalBlockedReleaseMsg_p;
+	typedef	WeakPtr<ModalBlockedReleaseMsg,Msg_wp>	ModalBlockedReleaseMsg_wp;
 
 	//
 
 	class LinkMsg;
-	typedef	WgStrongPtr<LinkMsg,Msg_p>		LinkMsg_p;
-	typedef	WgWeakPtr<LinkMsg,Msg_wp>	LinkMsg_wp;
+	typedef	StrongPtr<LinkMsg,Msg_p>		LinkMsg_p;
+	typedef	WeakPtr<LinkMsg,Msg_wp>	LinkMsg_wp;
 
 	class LinkSelectMsg;
-	typedef	WgStrongPtr<LinkSelectMsg,LinkMsg_p>		LinkSelectMsg_p;
-	typedef	WgWeakPtr<LinkSelectMsg,LinkMsg_wp>		LinkSelectMsg_wp;
+	typedef	StrongPtr<LinkSelectMsg,LinkMsg_p>		LinkSelectMsg_p;
+	typedef	WeakPtr<LinkSelectMsg,LinkMsg_wp>		LinkSelectMsg_wp;
 
 	class LinkMouseEnterMsg;
-	typedef	WgStrongPtr<LinkMouseEnterMsg,LinkMsg_p>		LinkMouseEnterMsg_p;
-	typedef	WgWeakPtr<LinkMouseEnterMsg,LinkMsg_wp>		LinkMouseEnterMsg_wp;
+	typedef	StrongPtr<LinkMouseEnterMsg,LinkMsg_p>		LinkMouseEnterMsg_p;
+	typedef	WeakPtr<LinkMouseEnterMsg,LinkMsg_wp>		LinkMouseEnterMsg_wp;
 
 	class LinkMouseLeaveMsg;
-	typedef	WgStrongPtr<LinkMouseLeaveMsg,LinkMsg_p>		LinkMouseLeaveMsg_p;
-	typedef	WgWeakPtr<LinkMouseLeaveMsg,LinkMsg_wp>		LinkMouseLeaveMsg_wp;
+	typedef	StrongPtr<LinkMouseLeaveMsg,LinkMsg_p>		LinkMouseLeaveMsg_p;
+	typedef	WeakPtr<LinkMouseLeaveMsg,LinkMsg_wp>		LinkMouseLeaveMsg_wp;
 
 	class LinkMouseButtonMsg;
-	typedef	WgStrongPtr<LinkMouseButtonMsg,LinkMsg_p>		LinkMouseButtonMsg_p;
-	typedef	WgWeakPtr<LinkMouseButtonMsg,LinkMsg_wp>		LinkMouseButtonMsg_wp;
+	typedef	StrongPtr<LinkMouseButtonMsg,LinkMsg_p>		LinkMouseButtonMsg_p;
+	typedef	WeakPtr<LinkMouseButtonMsg,LinkMsg_wp>		LinkMouseButtonMsg_wp;
 
 	class LinkMousePressMsg;
-	typedef	WgStrongPtr<LinkMousePressMsg,LinkMouseButtonMsg_p>		LinkMousePressMsg_p;
-	typedef	WgWeakPtr<LinkMousePressMsg,LinkMouseButtonMsg_wp>		LinkMousePressMsg_wp;
+	typedef	StrongPtr<LinkMousePressMsg,LinkMouseButtonMsg_p>		LinkMousePressMsg_p;
+	typedef	WeakPtr<LinkMousePressMsg,LinkMouseButtonMsg_wp>		LinkMousePressMsg_wp;
 
 	class LinkMouseRepeatMsg;
-	typedef	WgStrongPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_p>		LinkMouseRepeatMsg_p;
-	typedef	WgWeakPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_wp>		LinkMouseRepeatMsg_wp;
+	typedef	StrongPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_p>		LinkMouseRepeatMsg_p;
+	typedef	WeakPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_wp>		LinkMouseRepeatMsg_wp;
 
 	class LinkMouseReleaseMsg;
-	typedef	WgStrongPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_p>		LinkMouseReleaseMsg_p;
-	typedef	WgWeakPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_wp>		LinkMouseReleaseMsg_wp;
+	typedef	StrongPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_p>		LinkMouseReleaseMsg_p;
+	typedef	WeakPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_wp>		LinkMouseReleaseMsg_wp;
 
 	class LinkMouseClickMsg;
-	typedef	WgStrongPtr<LinkMouseClickMsg,LinkMouseButtonMsg_p>		LinkMouseClickMsg_p;
-	typedef	WgWeakPtr<LinkMouseClickMsg,LinkMouseButtonMsg_wp>		LinkMouseClickMsg_wp;
+	typedef	StrongPtr<LinkMouseClickMsg,LinkMouseButtonMsg_p>		LinkMouseClickMsg_p;
+	typedef	WeakPtr<LinkMouseClickMsg,LinkMouseButtonMsg_wp>		LinkMouseClickMsg_wp;
 
 	class LinkMouseDoubleClickMsg;
-	typedef	WgStrongPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_p>		LinkMouseDoubleClickMsg_p;
-	typedef	WgWeakPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_wp>		LinkMouseDoubleClickMsg_wp;
+	typedef	StrongPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_p>		LinkMouseDoubleClickMsg_p;
+	typedef	WeakPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_wp>		LinkMouseDoubleClickMsg_wp;
 
 	//____ Msg _________________________________________________________________
 	/**
@@ -342,13 +347,13 @@ namespace wg
 		static InputMsg_p	cast( const Object_p& pObject );
 
 		int64_t				timestamp() const { return m_timestamp; }
-		WgModifierKeys		modKeys() const { return m_modKeys; }
+		ModifierKeys		modKeys() const { return m_modKeys; }
 		Coord				pointerPos() const { return m_pointerPos; }
 
 	protected:
-		InputMsg(WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
+		InputMsg(ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
 
-		WgModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
+		ModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
 		Coord				m_pointerPos;		// Screen position of pointer.
 		int64_t				m_timestamp;		// Timestamp of input event.
 	};
@@ -370,7 +375,7 @@ namespace wg
 
 		MouseButton		button() const { return m_button; }
 	protected:
-		MouseButtonMsg(MouseButton button, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
+		MouseButtonMsg(MouseButton button, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
 
 		MouseButton		m_button;
 	};
@@ -392,14 +397,14 @@ namespace wg
 		static KeyMsg_p		cast( const Object_p& pObject );
 
 		int		nativeKeyCode() const { return m_nativeKeyCode; }
-		int		translatedKeyCode() const { return m_translatedKeyCode; }
+		Key		translatedKeyCode() const { return m_translatedKeyCode; }
 		bool	isCursorKey() const;
 		bool	isMovementKey() const;
 	protected:
-		KeyMsg( int nativeKeyCode, int translatedKeyCode, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
+		KeyMsg( int nativeKeyCode, Key translatedKeyCode, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
 
 		int		m_nativeKeyCode;
-		int		m_translatedKeyCode;
+		Key		m_translatedKeyCode;
 	};
 
 	//____ FocusGainedMsg ______________________________________________________
@@ -445,7 +450,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseEnterMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseEnterMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseEnterMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseLeaveMsg _______________________________________________________
@@ -459,7 +464,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseLeaveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseLeaveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseLeaveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseMoveMsg ________________________________________________________
@@ -473,7 +478,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseMoveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseMoveMsg( Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseMoveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MousePressMsg _______________________________________________________
@@ -487,7 +492,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MousePressMsg_p	cast( const Object_p& pObject );
 	protected:
-		MousePressMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MousePressMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseReleaseMsg _____________________________________________________
@@ -504,7 +509,7 @@ namespace wg
 		bool			releaseInside() const;
 
 	protected:
-		MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		bool			m_bReleaseInside;
 	};
@@ -520,7 +525,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static KeyPressMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyPressMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyPressMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ KeyReleaseMsg _______________________________________________________
@@ -534,7 +539,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static KeyReleaseMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyReleaseMsg( int nativeKeyCode, int translatedKeyCode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyReleaseMsg( int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ TextInputMsg ________________________________________________________
@@ -569,7 +574,7 @@ namespace wg
 		int			wheel() const;
 		Coord		distance() const;
 	protected:
-		WheelRollMsg( int wheel, Coord distance, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		WheelRollMsg( int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		int			m_wheel;
 		Coord		m_distance;
@@ -857,7 +862,7 @@ namespace wg
 		static ModalMoveOutsideMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalMoveOutsideMsg( Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalMoveOutsideMsg( Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedPressMsg : public MouseButtonMsg
@@ -870,7 +875,7 @@ namespace wg
 		static ModalBlockedPressMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedPressMsg( MouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedPressMsg( MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedReleaseMsg : public MouseButtonMsg
@@ -883,7 +888,7 @@ namespace wg
 		static ModalBlockedReleaseMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedReleaseMsg( MouseButton button, Widget * pModalWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedReleaseMsg( MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ Link messages _________________________________________________________
@@ -1016,7 +1021,7 @@ namespace wg
 		Coord			prevPos() const;
 		Coord			currPos() const;
 	protected:
-		MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		Coord			m_startPos;
 		Coord			m_prevPos;
@@ -1032,7 +1037,7 @@ namespace wg
 		static MouseRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseRepeatMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseRepeatMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseClickMsg : public MouseButtonMsg
@@ -1045,7 +1050,7 @@ namespace wg
 		static MouseClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
@@ -1058,7 +1063,7 @@ namespace wg
 		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseDoubleClickMsg( MouseButton button, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDoubleClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class KeyRepeatMsg : public KeyMsg
@@ -1071,7 +1076,7 @@ namespace wg
 		static KeyRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		KeyRepeatMsg( int native_keycode, int translated_keycode, Widget * pWidget, WgModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyRepeatMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 } // namespace wg

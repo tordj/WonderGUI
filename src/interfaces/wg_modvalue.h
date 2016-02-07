@@ -39,8 +39,8 @@ namespace wg
 	class CharBuffer;
 	
 	class ModValue;
-	typedef	WgIStrongPtr<ModValue,Value_p>	ModValue_p;
-	typedef	WgIWeakPtr<ModValue,Value_wp>	ModValue_wp;
+	typedef	StrongInterfacePtr<ModValue,Value_p>	ModValue_p;
+	typedef	WeakInterfacePtr<ModValue,Value_wp>	ModValue_wp;
 	
 	/**
 	 * @brief Interface to a value field where the value is modifiable through the api

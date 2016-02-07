@@ -30,8 +30,8 @@ namespace wg
 {
 	
 	class Layer;
-	typedef	WgStrongPtr<Layer,Container_p>	Layer_p;
-	typedef	WgWeakPtr<Layer,Container_p>	Layer_wp;
+	typedef	StrongPtr<Layer,Container_p>	Layer_p;
+	typedef	WeakPtr<Layer,Container_p>	Layer_wp;
 	
 	class LayerHook;
 	typedef	HookTypePtr<LayerHook,Hook_p>	LayerHook_p;

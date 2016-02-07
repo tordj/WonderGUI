@@ -10,7 +10,7 @@ namespace wg
 	
 	//____ markTestStretchRect() __________________________________________________
 	
-	bool WgUtil::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )
+	bool Util::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
@@ -40,7 +40,7 @@ namespace wg
 	
 	//____ pixelTypeToFormat() _____________________________________________________
 	
-	bool WgUtil::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
+	bool Util::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
 	{
 		switch( type )
 		{
@@ -136,7 +136,7 @@ namespace wg
 	
 	//____ sizeFromPolicy() __________________________________________________________
 	
-	int WgUtil::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
+	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
 		{
@@ -156,7 +156,7 @@ namespace wg
 	
 	//____ Checksum8::add() ________________________________________________________
 	
-	void WgUtil::Checksum8::add( const void * pData, uint32_t nBytes )
+	void Util::Checksum8::add( const void * pData, uint32_t nBytes )
 	{
 		uint32_t x = remainder;
 	
@@ -170,7 +170,7 @@ namespace wg
 	
 	//____ decodeBase64() _________________________________________________________
 	
-	uint32_t WgUtil::decodeBase64( const char * pSrc, uint32_t nIn, char * pDest )
+	uint32_t Util::decodeBase64( const char * pSrc, uint32_t nIn, char * pDest )
 	{
 		const static unsigned char conv[256] =
 						{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -251,7 +251,7 @@ namespace wg
 	
 	//____ origoToOfs() ________________________________________________________
 	
-	Coord WgUtil::origoToOfs( Origo origo, Size base )
+	Coord Util::origoToOfs( Origo origo, Size base )
 	{
 		switch( origo )
 		{
@@ -287,7 +287,7 @@ namespace wg
 	
 	//____ origoToRect() ________________________________________________________
 	
-	Rect WgUtil::origoToRect( Origo origo, Size base, Size rect )
+	Rect Util::origoToRect( Origo origo, Size base, Size rect )
 	{
 		switch( origo )
 		{

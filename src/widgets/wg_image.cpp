@@ -173,7 +173,7 @@ namespace wg
 			else
 				dest = size();
 	
-			if( WgUtil::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
+			if( Util::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
 				return true;
 		}
 	

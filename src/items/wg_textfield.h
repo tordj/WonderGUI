@@ -45,7 +45,7 @@ namespace wg
 	
 	//____ TextHolder ___________________________________________________________
 	
-	struct TextHolder : public WgPresentableHolder
+	struct TextHolder : public PresentableHolder
 	{
 	};
 	

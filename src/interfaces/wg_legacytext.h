@@ -60,8 +60,8 @@ namespace wg
 	class CharBuffer;
 	
 	class LegacyText;
-	typedef	WgIStrongPtr<LegacyText,Interface_p>		LegacyText_p;
-	typedef	WgIWeakPtr<LegacyText,Interface_wp>	LegacyText_wp;
+	typedef	StrongInterfacePtr<LegacyText,Interface_p>		LegacyText_p;
+	typedef	WeakInterfacePtr<LegacyText,Interface_wp>	LegacyText_wp;
 	
 	/**
 	 * @brief Interface to a basic text field.

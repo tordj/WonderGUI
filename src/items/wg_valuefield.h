@@ -36,7 +36,7 @@ namespace wg
 	
 	//____ ValueHolder ___________________________________________________________
 	
-	class ValueHolder : public WgPresentableHolder
+	class ValueHolder : public PresentableHolder
 	{
 	public:
 	};

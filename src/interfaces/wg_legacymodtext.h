@@ -56,8 +56,8 @@ namespace wg
 	class CharBuffer;
 	
 	class LegacyModText;
-	typedef	WgIStrongPtr<LegacyModText,LegacyText_p>	LegacyModText_p;
-	typedef	WgIWeakPtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
+	typedef	StrongInterfacePtr<LegacyModText,LegacyText_p>	LegacyModText_p;
+	typedef	WeakInterfacePtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
 	
 	/**
 	 * @brief Interface to a text field with text that is modifiable through the api

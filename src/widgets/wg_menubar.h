@@ -103,8 +103,8 @@ namespace wg
 	};
 	
 	class Menubar;
-	typedef	WgStrongPtr<Menubar,Widget_p>		Menubar_p;
-	typedef	WgWeakPtr<Menubar,Widget_wp>	Menubar_wp;
+	typedef	StrongPtr<Menubar,Widget_p>		Menubar_p;
+	typedef	WeakPtr<Menubar,Widget_wp>	Menubar_wp;
 	
 	//____ Menubar ____________________________________________________________
 	

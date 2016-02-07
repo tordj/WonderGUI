@@ -31,7 +31,7 @@
 #include <wg_hook.h>
 #include <wg_standardpresenter.h>
 
-#ifdef WG_USE_FREETYPE
+#ifdef USE_FREETYPE
 #	include <ft2build.h>
 #	include <wg_vectorglyphs.h>
 #	include FT_FREETYPE_H
@@ -61,7 +61,7 @@ namespace wg
 		s_pData->pMsgRouter = MsgRouter::create();
 		s_pData->pInputHandler = InputHandler::create();
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 		s_pData->bFreeTypeInitialized = false;
 	#endif
 	
@@ -82,7 +82,7 @@ namespace wg
 		if( !s_pData->pMemStack->isEmpty() )
 			return -3;					// There is data left in memstack.
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 	
 		VectorGlyphs::setSurfaceFactory(0);
 		VectorGlyphs::clearCache();
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ initFreeType() _________________________________________________________
 	
-	#ifdef WG_USE_FREETYPE
+	#ifdef USE_FREETYPE
 	bool Base::initFreeType()
 	{
 		assert( s_pData != 0 );

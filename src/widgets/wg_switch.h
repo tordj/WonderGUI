@@ -31,8 +31,8 @@ namespace wg
 {
 	
 	class Switch;
-	typedef	WgStrongPtr<Switch,Widget_p>		Switch_p;
-	typedef	WgWeakPtr<Switch,Widget_wp>	Switch_wp;
+	typedef	StrongPtr<Switch,Widget_p>		Switch_p;
+	typedef	WeakPtr<Switch,Widget_wp>	Switch_wp;
 	
 	//____ Switch ____________________________________________________________
 	

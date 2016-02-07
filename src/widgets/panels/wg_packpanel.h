@@ -34,8 +34,8 @@ namespace wg
 {
 	
 	class PackPanel;
-	typedef	WgStrongPtr<PackPanel,VectorPanel_p>		PackPanel_p;
-	typedef	WgWeakPtr<PackPanel,VectorPanel_wp>	PackPanel_wp;
+	typedef	StrongPtr<PackPanel,VectorPanel_p>		PackPanel_p;
+	typedef	WeakPtr<PackPanel,VectorPanel_wp>	PackPanel_wp;
 	
 	class PackHook;
 	typedef	HookTypePtr<PackHook,VectorHook_p>	PackHook_p;

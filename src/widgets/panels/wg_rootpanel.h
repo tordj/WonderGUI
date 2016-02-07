@@ -49,8 +49,8 @@ namespace wg
 	
 	
 	class RootPanel;
-	typedef	WgStrongPtr<RootPanel,Object_p>		RootPanel_p;
-	typedef	WgWeakPtr<RootPanel,Object_wp>	RootPanel_wp;
+	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	WeakPtr<RootPanel,Object_wp>	RootPanel_wp;
 	
 	
 	//____ RootPanel ____________________________________________________________

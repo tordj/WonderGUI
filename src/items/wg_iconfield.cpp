@@ -169,7 +169,7 @@ namespace wg
 			w += m_padding.width();
 			h += m_padding.height();
 	
-			rect = WgUtil::origoToRect( m_origo, contentRect.size(), Size(w,h) );
+			rect = Util::origoToRect( m_origo, contentRect.size(), Size(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}

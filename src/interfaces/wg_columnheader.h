@@ -55,8 +55,8 @@ namespace wg
 {
 	
 	class ColumnHeader;
-	typedef	WgIStrongPtr<ColumnHeader,Interface_p>		ColumnHeader_p;
-	typedef	WgIWeakPtr<ColumnHeader,Interface_wp>	ColumnHeader_wp;
+	typedef	StrongInterfacePtr<ColumnHeader,Interface_p>		ColumnHeader_p;
+	typedef	WeakInterfacePtr<ColumnHeader,Interface_wp>	ColumnHeader_wp;
 	
 	class ColumnHeader : public Interface
 	{

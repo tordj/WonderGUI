@@ -36,8 +36,8 @@ namespace wg
 {
 	
 	class TextDisplay;
-	typedef	WgStrongPtr<TextDisplay,Widget_p>		TextDisplay_p;
-	typedef	WgWeakPtr<TextDisplay,Widget_wp>	TextDisplay_wp;
+	typedef	StrongPtr<TextDisplay,Widget_p>		TextDisplay_p;
+	typedef	WeakPtr<TextDisplay,Widget_wp>	TextDisplay_wp;
 	
 	class TextDisplay:public Widget, protected TextHolder
 	{

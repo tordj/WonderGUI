@@ -26,7 +26,7 @@
 namespace wg 
 {
 	
-	using namespace WgUtil;
+	using namespace Util;
 	
 	const char ExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
 	

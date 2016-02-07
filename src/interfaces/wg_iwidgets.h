@@ -41,8 +41,8 @@ namespace wg
 	class Hook;
 	
 	class IWidgets;
-	typedef	WgIStrongPtr<IWidgets,Interface_p>		IWidgets_p;
-	typedef	WgIWeakPtr<IWidgets,Interface_wp>	IWidgets_wp;
+	typedef	StrongInterfacePtr<IWidgets,Interface_p>		IWidgets_p;
+	typedef	WeakInterfacePtr<IWidgets,Interface_wp>	IWidgets_wp;
 	
 	class IWidgets : public Interface
 	{

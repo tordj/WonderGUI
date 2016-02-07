@@ -187,7 +187,7 @@ namespace wg
 			clearColor(state);
 		else
 		{
-			int idx = WgUtil::_stateToIndex(state);
+			int idx = Util::_stateToIndex(state);
 			m_specAttr.color[idx] = color;
 			m_combAttr.color[idx] = color;
 		}
@@ -215,7 +215,7 @@ namespace wg
 			clearBgColor(state);
 		else
 		{
-			int idx = WgUtil::_stateToIndex(state);
+			int idx = Util::_stateToIndex(state);
 			m_specAttr.bgColor[idx] = color;
 			m_combAttr.bgColor[idx] = color;
 		}
@@ -243,7 +243,7 @@ namespace wg
 			clearSize(state);
 		else
 		{
-			int idx = WgUtil::_stateToIndex(state);
+			int idx = Util::_stateToIndex(state);
 			m_specAttr.size[idx] = size;
 			m_combAttr.size[idx] = size;
 		}
@@ -272,7 +272,7 @@ namespace wg
 			clearDecoration(state);
 		else
 		{
-			int idx = WgUtil::_stateToIndex(state);
+			int idx = Util::_stateToIndex(state);
 			m_specAttr.decoration[idx] = decoration;
 			m_combAttr.decoration[idx] = decoration;
 		}
@@ -324,7 +324,7 @@ namespace wg
 	
 	void TextStyle::clearColor( State state )
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		m_specAttr.color[idx] = Color::None;
 		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : Color::None;
@@ -355,7 +355,7 @@ namespace wg
 	
 	void TextStyle::clearBgColor( State state )
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		m_specAttr.bgColor[idx] = Color::None;
 		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : Color::None;
@@ -385,7 +385,7 @@ namespace wg
 	
 	void TextStyle::clearSize( State state )
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		m_specAttr.size[idx] = FONTSIZE_INHERIT;
 		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : FONTSIZE_INHERIT;
@@ -415,7 +415,7 @@ namespace wg
 	
 	void TextStyle::clearDecoration( State state )
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		m_specAttr.decoration[idx] = TextDecoration::Inherit;
 		m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : TextDecoration::Inherit;
@@ -425,7 +425,7 @@ namespace wg
 	
 	void TextStyle::exportAttr( State state, TextAttr2 * pDest ) const
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		pDest->pFont 		= m_combAttr.pFont;
 		pDest->pLink 		= m_combAttr.pLink;
@@ -442,7 +442,7 @@ namespace wg
 	
 	void TextStyle::addToAttr( State state, TextAttr2 * pDest ) const 
 	{
-		int idx = WgUtil::_stateToIndex(state);
+		int idx = Util::_stateToIndex(state);
 	
 		if( m_combAttr.pFont )
 			pDest->pFont = m_combAttr.pFont;

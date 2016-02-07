@@ -42,8 +42,8 @@ namespace wg
 	class ScrollPanel;
 	
 	class ScrollPanel;
-	typedef	WgStrongPtr<ScrollPanel,Panel_p>		ScrollPanel_p;
-	typedef	WgWeakPtr<ScrollPanel,Panel_wp>	ScrollPanel_wp;
+	typedef	StrongPtr<ScrollPanel,Panel_p>		ScrollPanel_p;
+	typedef	WeakPtr<ScrollPanel,Panel_wp>	ScrollPanel_wp;
 	
 	class ScrollHook;
 	typedef	HookTypePtr<ScrollHook,PanelHook_p>	ScrollHook_p;

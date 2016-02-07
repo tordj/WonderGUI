@@ -40,8 +40,8 @@ namespace wg
 {
 	
 	class EditValue;
-	typedef	WgIStrongPtr<EditValue,ModValue_p>		EditValue_p;
-	typedef	WgIWeakPtr<EditValue,ModValue_wp>	EditValue_wp;
+	typedef	StrongInterfacePtr<EditValue,ModValue_p>		EditValue_p;
+	typedef	WeakInterfacePtr<EditValue,ModValue_wp>	EditValue_wp;
 	
 	/**
 	 * @brief Interface to a value display field with editable text.

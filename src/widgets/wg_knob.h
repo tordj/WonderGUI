@@ -31,8 +31,8 @@ namespace wg
 {
 	
 	class Knob;
-	typedef	WgStrongPtr<Knob,Widget_p>		Knob_p;
-	typedef	WgWeakPtr<Knob,Widget_wp>	Knob_wp;
+	typedef	StrongPtr<Knob,Widget_p>		Knob_p;
+	typedef	WeakPtr<Knob,Widget_wp>	Knob_wp;
 	
 	//____ Knob ____________________________________________________________
 	

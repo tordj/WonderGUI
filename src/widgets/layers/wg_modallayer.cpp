@@ -196,7 +196,7 @@ namespace wg
 		if( sz.h <= 0 )
 			sz.h = 1;
 	
-		Coord ofs = WgUtil::origoToOfs( m_origo, m_pParent->size() ) - WgUtil::origoToOfs( m_origo, sz );
+		Coord ofs = Util::origoToOfs( m_origo, m_pParent->size() ) - Util::origoToOfs( m_origo, sz );
 		ofs += m_placementGeo.pos();
 	
 		Rect newGeo( ofs, sz );

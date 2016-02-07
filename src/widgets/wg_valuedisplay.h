@@ -36,8 +36,8 @@ namespace wg
 	
 	
 	class ValueDisplay;
-	typedef	WgStrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
-	typedef	WgWeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
+	typedef	StrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
+	typedef	WeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
 	
 	class ValueDisplay : public Widget, protected ModValueHolder
 	{

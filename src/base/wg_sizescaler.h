@@ -40,7 +40,7 @@ namespace wg
 	
 	class SizeScaler;
 	
-	typedef	WgStrongPtr<SizeScaler,Object_p>	SizeScaler_p;
+	typedef	StrongPtr<SizeScaler,Object_p>	SizeScaler_p;
 	
 	
 	class Scalable

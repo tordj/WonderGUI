@@ -43,9 +43,9 @@ namespace wg
 {
 	
 	
-	//____ WgPresentableHolder ___________________________________________________________
+	//____ PresentableHolder ___________________________________________________________
 	
-	struct WgPresentableHolder : public FieldHolder
+	struct PresentableHolder : public FieldHolder
 	{
 	};
 	
@@ -55,7 +55,7 @@ namespace wg
 	{
 		friend class TextPresenter;
 	public:
-		PresentableField( WgPresentableHolder * pHolder );
+		PresentableField( PresentableHolder * pHolder );
 		virtual ~PresentableField();
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
@@ -111,7 +111,7 @@ namespace wg
 	
 	};
 	
-	struct WgEditState
+	struct EditState
 	{
 		bool 			bCaret;			// Set if cursor should be displayed.
 		int 			selectOfs;		// Selection is between selectOfs and caretOfs.

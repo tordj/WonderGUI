@@ -39,8 +39,8 @@ namespace wg
 {
 	
 	class LineEditor;
-	typedef	WgStrongPtr<LineEditor,Widget_p>		LineEditor_p;
-	typedef	WgWeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
+	typedef	StrongPtr<LineEditor,Widget_p>		LineEditor_p;
+	typedef	WeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
 	
 	//____ LineEditor ____________________________________________________________
 	

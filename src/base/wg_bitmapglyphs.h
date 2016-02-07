@@ -39,8 +39,8 @@ namespace wg
 {
 	
 	class BitmapGlyphs;
-	typedef	WgStrongPtr<BitmapGlyphs,Glyphset_p>		BitmapGlyphs_p;
-	typedef	WgWeakPtr<BitmapGlyphs,Glyphset_wp>		BitmapGlyphs_wp;
+	typedef	StrongPtr<BitmapGlyphs,Glyphset_p>		BitmapGlyphs_p;
+	typedef	WeakPtr<BitmapGlyphs,Glyphset_wp>		BitmapGlyphs_wp;
 	
 	//____ BitmapGlyphs _____________________________________________________________
 	

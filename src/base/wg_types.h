@@ -113,9 +113,6 @@ namespace wg
 		State() { m_state = (uint8_t) StateEnum::Normal; }
 		State( StateEnum state ) { m_state = (uint8_t) state; }
 	
-	//	void		set( WgModeEnum state ) { m_state = state; }
-	//	WgModeEnum	getEnum() const { return (WgModeEnum) m_state; }
-	
 		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
 		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
 		bool	setFocused(bool bFocused) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }

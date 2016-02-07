@@ -151,7 +151,7 @@ namespace wg
 		switch( _pMsg->type() )
 		{
 			case MsgType::KeyPress:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = true;
 					_pMsg->swallow();
@@ -159,12 +159,12 @@ namespace wg
 				break;
 	
 			case MsgType::KeyRepeat:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 					_pMsg->swallow();
 				break;
 	
 			case MsgType::KeyRelease:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == WG_KEY_RETURN )
+				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
 					_pMsg->swallow();
