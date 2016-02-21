@@ -99,6 +99,7 @@ namespace wg
 	
 		Object * _object() { return this; }
 		void	_onFieldDirty( Field * pField );
+		void	_onFieldDirty( Field * pField, const Rect& rect );
 		void	_onFieldResize( Field * pField );
 	
 		bool	_parseValueFromInput( int64_t * wpResult );

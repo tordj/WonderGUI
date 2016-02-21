@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_texteditor.h>
+#include <wg_legacytexteditor.h>
 #include <wg_key.h>
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
@@ -30,21 +30,27 @@
 namespace wg 
 {
 	
-	const char TextEditor::CLASSNAME[] = {"TextEditor"};
+	const char LegacyTextEditor::CLASSNAME[] = {"LegacyTextEditor"};
 	
 	
 	
-	//____ TextEditor() _________________________________________________________________
+	//____ LegacyTextEditor() _________________________________________________________________
 	
-	TextEditor::TextEditor() : m_text(this), text(&m_text)
+	LegacyTextEditor::LegacyTextEditor() : m_text(this), text(&m_text)
 	{
+		m_maxLines		= 0;
+	
+		m_text.setLineWidth( size().w );
+		m_text.setAutoEllipsis(isAutoEllipsisDefault());
+		m_text.setEditMode( TextEditMode::Static );
+		m_bResetCursorOnFocus = true;
 		m_tickRouteId = 0;
 	}
 	
 	
 	//____ Destructor _____________________________________________________________
 	
-	TextEditor::~TextEditor()
+	LegacyTextEditor::~LegacyTextEditor()
 	{
 		if( m_tickRouteId )
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
@@ -53,7 +59,7 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool TextEditor::isInstanceOf( const char * pClassName ) const
+	bool LegacyTextEditor::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -63,26 +69,32 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * TextEditor::className( void ) const
+	const char * LegacyTextEditor::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	TextEditor_p TextEditor::cast( const Object_p& pObject )
+	LegacyTextEditor_p LegacyTextEditor::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextEditor_p( static_cast<TextEditor*>(pObject.rawPtr()) );
+			return LegacyTextEditor_p( static_cast<LegacyTextEditor*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
-		
+	
+	//_______________________________________________________________
+	void LegacyTextEditor::setEditMode(TextEditMode mode)
+	{
+		m_text.setEditMode(mode);
+	}
+	
 	//____ matchingHeight() _______________________________________________________
 	
-	int TextEditor::matchingHeight( int width ) const
+	int LegacyTextEditor::matchingHeight( int width ) const
 	{
-		int textHeight = m_text.matchingHeight( width );
+		int textHeight = m_text.heightForWidth( width );
 	
 		if( m_pSkin )
 			textHeight += m_pSkin->contentPadding().h;
@@ -92,9 +104,9 @@ namespace wg
 	
 	//____ preferredSize() _____________________________________________________________
 	
-	Size TextEditor::preferredSize() const
+	Size LegacyTextEditor::preferredSize() const
 	{
-		Size contentSize = m_text.preferredSize();
+		Size contentSize = m_text.unwrappedSize();
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -102,9 +114,35 @@ namespace wg
 			return contentSize;
 	}
 	
+	//____ pointerStyle() ________________________________________
+	
+	PointerStyle LegacyTextEditor::pointerStyle() const
+	{
+		if( m_text.getMarkedLink() )
+			return PointerStyle::Hand;
+	
+		return m_pointerStyle;
+	}
+	
+	//____ tooltipString() _____________________________________________________
+	
+	String LegacyTextEditor::tooltipString() const
+	{
+		if( !m_tooltip.isEmpty() )
+			return m_tooltip;
+		else
+		{
+			Size sz = size();
+			if( sz.w < m_text.width() || sz.h < m_text.height() )
+				return m_text.getBuffer();
+		}
+	
+		return 0;
+	}
+	
 	//____ _onRender() ________________________________________________________
 	
-	void TextEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void LegacyTextEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		Widget::_onRender(pDevice,_canvas,_window,_clip);
 	
@@ -113,13 +151,13 @@ namespace wg
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
-
-		m_text.onRender( pDevice, canvas, _clip );	
+	
+		pDevice->printText( _clip, &m_text, canvas );
 	}
 	
 	//____ _onRefresh() _______________________________________________________
 	
-	void TextEditor::_onRefresh( void )
+	void LegacyTextEditor::_onRefresh( void )
 	{
 		//TODO: Implement more I believe...
 	
@@ -128,13 +166,13 @@ namespace wg
 	
 	//____ _onStateChanged() ______________________________________________________
 	
-	void TextEditor::_onStateChanged( State oldState )
+	void LegacyTextEditor::_onStateChanged( State oldState )
 	{
 		Widget::_onStateChanged(oldState);
 	
 		m_text.setState(m_state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
-/*	
+	
 		if( isEditable() )
 		{
 			if( m_state.isFocused() && !oldState.isFocused() )
@@ -153,18 +191,17 @@ namespace wg
 				_requestRender();
 			}
 		}
-*/
 	}
 	
 	
 	//____ _onMsg() ______________________________________________________________
 	
-	void TextEditor::_onMsg( const Msg_p& pMsg )
+	void LegacyTextEditor::_onMsg( const Msg_p& pMsg )
 	{
 		Widget::_onMsg(pMsg);
 	
 		MsgType type 				= pMsg->type();
-/*	
+	
 		if( type == MsgType::Tick )
 		{
 			if( isSelectable() && m_state.isFocused() )
@@ -329,11 +366,11 @@ namespace wg
 		}
 	
 		// Let text object handle its actions.
-
-//		bool bChanged = m_text.onAction( action, button_key, globalGeo(), Coord(info.x, info.y) );
-//		if( bChanged )
-//			RequestRender();
-
+	/*
+		bool bChanged = m_text.onAction( action, button_key, globalGeo(), Coord(info.x, info.y) );
+		if( bChanged )
+			RequestRender();
+	*/
 	
 		// Swallow message depending on rules.
 	
@@ -353,54 +390,115 @@ namespace wg
 		}
 		else if( type == MsgType::TextInput )
 			pMsg->swallow();
-*/			
 	}
 	
 	
 	//____ _onCloneContent() _______________________________________________________
 	
-	void TextEditor::_onCloneContent( const Widget * _pOrg )
+	void LegacyTextEditor::_onCloneContent( const Widget * _pOrg )
 	{
-		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
+		const LegacyTextEditor * pOrg = static_cast<const LegacyTextEditor*>(_pOrg);
 	
 		m_text = pOrg->m_text;
+		m_maxLines = pOrg->m_maxLines;
 	}
 	
 	//____ _onSkinChanged() _______________________________________________________
 	
-	void TextEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void LegacyTextEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
 	{
 		Widget::_onSkinChanged(pOldSkin,pNewSkin);
+		m_text.setColorSkin(pNewSkin);
 	}
 	
 	//____ _onNewSize() ________________________________________________
 	
-	void TextEditor::_onNewSize( const Size& size )
+	void LegacyTextEditor::_onNewSize( const Size& size )
 	{
 		int width = size.w;
 	
 		if( m_pSkin )
-			m_text.onNewSize(size - m_pSkin->contentPadding());
-		else
-			m_text.onNewSize(size);
+			width -= m_pSkin->contentPadding().w;
+	
+		m_text.setLineWidth( width );
+	}
+	
+	
+	
+	//____ insertTextAtCursor() ___________________________________________________
+	
+	int LegacyTextEditor::insertTextAtCursor( const CharSeq& str )
+	{
+		if( !isEditable() )
+			return 0;
+	
+		if( !m_state.isFocused() )
+			if( !grabFocus() )
+				return 0;				// Couldn't get input focus...
+	
+		int nChars = m_text.putText( str );
+	
+		if( m_maxLines != 0 && m_maxLines < m_text.nbSoftLines() )
+		{
+			m_text.unputText( nChars );
+			nChars = 0;
+		}
+	
+		return nChars;
+	}
+	
+	//____ insertCharAtCursor() ___________________________________________________
+	
+	bool LegacyTextEditor::insertCharAtCursor( uint16_t c )
+	{
+		if( !isEditable() )
+			return 0;
+	
+		if( !m_state.isFocused() )
+			if( !grabFocus() )
+				return false;				// Couldn't get input focus...
+	
+		return _insertCharAtCursor(c);
+	}
+	
+	//____ _insertCharAtCursor() ___________________________________________
+	
+	bool LegacyTextEditor::_insertCharAtCursor( uint16_t c )
+	{
+		if(m_text.hasSelection())
+			m_text.delSelection();
+		m_text.setSelectionMode(false);
+	
+		if( m_text.putChar( c ) == false )
+			return false;
+	
+		if( m_maxLines != 0 && m_maxLines < (int) m_text.nbSoftLines() )
+		{
+			m_text.delPrevChar();
+			return false;
+		}
+	
+		return true;
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________
 	
-	void TextEditor::_onFieldDirty( Field * pField )
+	void LegacyTextEditor::_onFieldDirty( Field * pField )
 	{
 		_requestRender();
 	}
 
-	void TextEditor::_onFieldDirty( Field * pField, const Rect& rect )
+	void LegacyTextEditor::_onFieldDirty( Field * pField, const Rect& rect )
 	{
 		_requestRender();
 	}
+
 	
 	//____ _onFieldResize() ________________________________________________________
 	
-	void TextEditor::_onFieldResize( Field * pField )
+	void LegacyTextEditor::_onFieldResize( Field * pField )
 	{
+		m_bResetCursorOnFocus = true;
 		_requestResize();
 		_requestRender();
 	}

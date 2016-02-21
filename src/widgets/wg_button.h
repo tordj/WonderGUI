@@ -97,6 +97,7 @@ namespace wg
 	
 		Object * 		_object() { return this; };
 		void			_onFieldDirty( Field * pField );
+		void			_onFieldDirty( Field * pField, const Rect& rect );
 		void 			_onFieldResize( Field * pField );
 	
 		TextField		m_text;

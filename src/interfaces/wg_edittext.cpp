@@ -20,47 +20,40 @@
 
 =========================================================================*/
 
-#include <wg_columnheaderfield.h>
+#include <wg_edittext.h>
 
 namespace wg 
 {
 	
-	ColumnHeaderField::ColumnHeaderField(ColumnHeaderHolder * pHolder) : Field(pHolder), icon(this), arrow(this), label(this)
-	{
-		m_height = 0;
-		m_width = 0;
-		m_bPressed = false;
+	const char EditText::CLASSNAME[] = {"EditText"};
+	
+	
+	//____ isInstanceOf() _________________________________________________________
+	
+	bool EditText::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return ModText::isInstanceOf(pClassName);
 	}
 	
-	//____ setSkin() ______________________________________________________
+	//____ className() ____________________________________________________________
 	
-	void ColumnHeaderField::setSkin( const Skin_p& pSkin )
-	{
-		if( pSkin != m_pSkin )
-		{
-			m_pSkin = pSkin;
-			_onResize();
-		}
+	const char * EditText::className( void ) const
+	{ 
+		return CLASSNAME; 
 	}
 	
-	//____ _onFieldDirty() _________________________________________________________
+	//____ cast() _________________________________________________________________
 	
-	void ColumnHeaderField::_onFieldDirty( Field * pField )
+	EditText_p EditText::cast( const Interface_p& pInterface )
 	{
-		_onDirty();
+		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
+			return EditText_p( pInterface.getRealObjectPtr(), static_cast<EditText*>(pInterface.rawPtr()) );
+	
+		return 0;
 	}
 	
-	void ColumnHeaderField::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_onDirty();			//TODO: Optimize, only mark rect as dirty.
-	}
-
-
-	//____ _onFieldResize() ________________________________________________________
-	
-	void ColumnHeaderField::_onFieldResize( Field * pField )
-	{
-		_onResize();
-	}
 
 } // namespace wg

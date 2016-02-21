@@ -28,12 +28,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_LEGACYEDITTEXT_DOT_H
-#	include <wg_legacyedittext.h>
-#endif
-
-#ifndef WG_CARETINSTANCE_DOT_H
-#	include <wg_caretinstance.h>
+#ifndef	WG_EDITTEXT_DOT_H
+#	include <wg_edittext.h>
 #endif
 
 namespace wg 
@@ -43,66 +39,50 @@ namespace wg
 	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
 	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
 	
-	class TextEditor:public Widget, protected LegacyTextHolder
+	class TextEditor:public Widget, protected EditTextHolder
 	{
 	public:
 		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		LegacyEditText		text;
+		EditText		text;
 	
 		//____ Methods __________________________________________
 	
-		inline void		setMaxLines( int nLines ) { m_maxLines = nLines; }
-		inline int		maxLines() { return m_maxLines; }
+//		PointerStyle	pointerStyle() const;
+//		String			tooltipString() const;
 	
-		int		insertTextAtCursor( const CharSeq& str );
-		bool	insertCharAtCursor( uint16_t c );
-	
-		virtual void			setEditMode(TextEditMode mode);
-		virtual TextEditMode	editMode() const { return m_text.editMode(); }
-	
-		PointerStyle		pointerStyle() const;
-		String			tooltipString() const;
-	
-		int		matchingHeight( int width ) const;
-		Size	preferredSize() const;
-		bool	isAutoEllipsisDefault() const { return true; };
-	
-		bool	isEditable() const { return m_text.isEditable(); }
-		bool	isSelectable() const { return m_text.isSelectable(); }
-	
+		int				matchingHeight( int width ) const;
+		Size			preferredSize() const;
+//		bool			isAutoEllipsisDefault() const { return true; };
+		
 	protected:
 		TextEditor();
 		virtual ~TextEditor();
 		virtual Widget* _newOfMyType() const { return new TextEditor(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onNewSize( const Size& size );
-		void	_onRefresh();
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onNewSize( const Size& size );
+		void			_onRefresh();
+		void			_onMsg( const Msg_p& pMsg );
+		void			_onStateChanged( State oldState );
+		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		Object * _object() { return this; }
-		void	_onFieldDirty( Field * pField );
-		void	_onFieldResize( Field * pField );
+		Object * 		_object() { return this; }
+		void			_onFieldDirty( Field * pField );
+		void			_onFieldDirty( Field * pField, const Rect& rect );
+		void			_onFieldResize( Field * pField );
 	private:
-	
-		bool	_insertCharAtCursor( uint16_t c );
-	
-	
-		LegacyTextField			m_text;
-		bool				m_bHasFocus;
-		int					m_maxLines;
-		bool				m_bResetCursorOnFocus;
+		
+		EditTextField	m_text;
+		bool			m_bHasFocus;
 		RouteId			m_tickRouteId;
 	};
 	

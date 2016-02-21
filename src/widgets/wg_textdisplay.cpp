@@ -215,6 +215,11 @@ namespace wg
 		_requestRender();
 	}
 	
+	void TextDisplay::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
+
 	//____ _onFieldResize() ________________________________________________________
 	
 	void TextDisplay::_onFieldResize( Field * pField )

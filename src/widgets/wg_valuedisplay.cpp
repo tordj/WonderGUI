@@ -128,6 +128,11 @@ namespace wg
 	{
 		_requestRender();
 	}
+
+	void ValueDisplay::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	

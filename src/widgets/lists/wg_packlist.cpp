@@ -1689,6 +1689,12 @@ namespace wg
 		_refreshHeader();	//TODO: Just request render on header.
 	}
 	
+	void PackList::_onFieldDirty(Field * pField, const Rect& rect)
+	{
+		_refreshHeader();	//TODO: Just request render on rectangle.
+	}
+
+
 	//____ _onFieldResize() ________________________________________________________
 	
 	void PackList::_onFieldResize(Field * pField)

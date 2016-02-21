@@ -55,6 +55,7 @@ namespace wg
 		virtual void	removeField( PresentableField * pField );
 	
 		virtual int		coordToChar( const PresentableField * pField, Coord pos );
+		virtual Coord	charToCoord( const PresentableField * pField, int charOfs );	// Note: characters position on the baseline, not upper left corner of rectangle!
 		virtual Rect	charToRect( const PresentableField * pField, int charOfs );
 	
 	
@@ -73,7 +74,7 @@ namespace wg
 	
 		virtual Rect	rectForRange( const PresentableField * pField, int ofs, int length ) const;
 	
-		virtual String tooltip( const PresentableField * pField ) const;
+		virtual String 	tooltip( const PresentableField * pField ) const;
 	
 		virtual int		coordToCaretPos( PresentableField * pField, Coord pos );
 		virtual int		moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif );
@@ -106,9 +107,9 @@ namespace wg
 												State state );
 		bool   			_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines );
 		
-		inline BlockHeader *	_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }
+		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }
 		inline const BlockHeader *	_header( const void * pBlock ) const { return static_cast<const BlockHeader*>(pBlock); }
-		inline LineInfo *		_lineInfo( void * pBlock ) { return reinterpret_cast<LineInfo*>(&(((BlockHeader *) pBlock)[1])); }
+		inline LineInfo *			_lineInfo( void * pBlock ) { return reinterpret_cast<LineInfo*>(&(((BlockHeader *) pBlock)[1])); }
 		inline const LineInfo *		_lineInfo( const void * pBlock ) const { return reinterpret_cast<const LineInfo*>(&(((const BlockHeader *) pBlock)[1])); }
 	
 		int				_lineOfsX( LineInfo * pLine, int fieldWidth ) const;

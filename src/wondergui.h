@@ -307,6 +307,10 @@
 #	include <wg_textdisplay.h>
 #endif
 
+#ifndef WG_TEXTEDITOR_DOT_H
+#	include <wg_texteditor.h>
+#endif
+
 #ifndef WG_TOGGLEBUTTON_DOT_H
 #	include <wg_togglebutton.h>
 #endif

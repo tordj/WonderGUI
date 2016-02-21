@@ -31,7 +31,6 @@
 namespace wg 
 {
 	
-	
 	//____ EditTextHolder ___________________________________________________________
 	
 	struct EditTextHolder : public TextHolder
@@ -62,10 +61,10 @@ namespace wg
 		void			onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
 		//
-	
+/*	
 		void			setEditMode( TextEditMode mode );
 		TextEditMode	editMode() const;
-		
+*/		
 		void			setCaret( const Caret2_p& pCaret );
 		Caret2_p 		caret() { return m_pCaret; }
 		
@@ -82,6 +81,5 @@ namespace wg
 		Caret2_p		m_pCaret;
 	};
 	
-
 } // namespace wg
 #endif //WG_EDITTEXTFIELD_DOT_H

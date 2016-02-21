@@ -852,6 +852,11 @@ namespace wg
 		_requestRender();
 	}
 	
+	void ValueEditor::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
+
 	//____ _onFieldResize() ________________________________________________________
 	
 	void ValueEditor::_onFieldResize( Field * pField )

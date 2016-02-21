@@ -147,7 +147,45 @@ namespace wg
 	void EditTextField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
 		_presenter()->renderField(this, pDevice, _canvas, _clip);
+		
+		if( m_editState.bCaret && m_pCaret )
+		{
+			m_pCaret->render( pDevice, _presenter()->charToCoord(this, m_editState.caretOfs), _clip );
+		}
 	}
+	
+	//____ setCaret()___________________________________________________________
+	
+	void EditTextField::setCaret( const Caret2_p& pCaret )
+	{
+		if( pCaret && pCaret != m_pCaret )
+		{
+			m_pCaret = pCaret;
+//			pCaret->setGlyph( )		//TODO: Need to set the glyph!!!!
+
+			
+			if( m_editState.bCaret )
+			{
+				Rect dirtyRect = m_pCaret->dirtyRect( _presenter()->charToCoord(this, m_editState.caretOfs) );
+				_onDirty( dirtyRect );
+			}			
+		}
+	}
+
+	//____ selectionBegin() ____________________________________________________
+
+	int EditTextField::selectionBegin() const
+	{
+		return m_editState.caretOfs < m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;
+	}
+	
+	//____ selectionEnd() ______________________________________________________
+
+	int EditTextField::selectionEnd() const
+	{
+		return m_editState.caretOfs > m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;		
+	}
+	
 	
 	//____ _caretToEnd() __________________________________________________________
 	

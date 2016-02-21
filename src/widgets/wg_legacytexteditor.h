@@ -19,8 +19,9 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_LINEEDITOR_DOT_H
-#define WG_LINEEDITOR_DOT_H
+
+#ifndef	WG_LEGACYTEXTEDITOR_DOT_H
+#define	WG_LEGACYTEXTEDITOR_DOT_H
 
 
 #ifndef WG_WIDGET_DOT_H
@@ -38,21 +39,19 @@
 namespace wg 
 {
 	
-	class LineEditor;
-	typedef	StrongPtr<LineEditor,Widget_p>		LineEditor_p;
-	typedef	WeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
+	class LegacyTextEditor;
+	typedef	StrongPtr<LegacyTextEditor,Widget_p>		LegacyTextEditor_p;
+	typedef	WeakPtr<LegacyTextEditor,Widget_wp>	LegacyTextEditor_wp;
 	
-	//____ LineEditor ____________________________________________________________
-	
-	class LineEditor : public Widget, protected LegacyTextHolder
+	class LegacyTextEditor:public Widget, protected LegacyTextHolder
 	{
 	public:
-		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
+		static LegacyTextEditor_p	create() { return LegacyTextEditor_p(new LegacyTextEditor()); }
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static LineEditor_p	cast( const Object_p& pObject );
+		static LegacyTextEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
@@ -60,55 +59,58 @@ namespace wg
 	
 		//____ Methods __________________________________________
 	
-		inline void	setPasswordMode( bool on_off ) { m_bPasswordMode = on_off; };
-		inline bool passwordMode() {return m_bPasswordMode;};
-		inline uint16_t passwordGlyph() const				 { return m_pwGlyph; };
-		void		setPasswordGlyph( uint16_t glyph );
+		inline void		setMaxLines( int nLines ) { m_maxLines = nLines; }
+		inline int		maxLines() { return m_maxLines; }
 	
-		int			insertTextAtCursor( const CharSeq& str );
-		bool		insertCharAtCursor( uint16_t c );
+		int		insertTextAtCursor( const CharSeq& str );
+		bool	insertCharAtCursor( uint16_t c );
 	
 		virtual void			setEditMode(TextEditMode mode);
 		virtual TextEditMode	editMode() const { return m_text.editMode(); }
 	
-		Size		preferredSize() const;
-		bool		isAutoEllipsisDefault() const { return false; };
+		PointerStyle		pointerStyle() const;
+		String			tooltipString() const;
 	
+		int		matchingHeight( int width ) const;
+		Size	preferredSize() const;
+		bool	isAutoEllipsisDefault() const { return true; };
+	
+		bool	isEditable() const { return m_text.isEditable(); }
+		bool	isSelectable() const { return m_text.isSelectable(); }
 	
 	protected:
-		LineEditor();
-		virtual ~LineEditor();
-		virtual Widget* _newOfMyType() const { return new LineEditor(); };
+		LegacyTextEditor();
+		virtual ~LegacyTextEditor();
+		virtual Widget* _newOfMyType() const { return new LegacyTextEditor(); };
 	
-		bool	_isEditable() const { return m_text.isEditable(); }
-		bool	_isSelectable() const { return m_text.isSelectable(); }
-	
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onStateChanged( State oldState );
 		void	_onCloneContent( const Widget * _pOrg );
 		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void	_onNewSize( const Size& size );
+		void	_onRefresh();
+		void	_onMsg( const Msg_p& pMsg );
+		void	_onStateChanged( State oldState );
 		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
-	
+		Object * _object() { return this; }
+		void	_onFieldDirty( Field * pField );
+		void	_onFieldDirty( Field * pField, const Rect& rect );
+		void	_onFieldResize( Field * pField );
 	private:
 	
-		void	_adjustViewOfs();
+		bool	_insertCharAtCursor( uint16_t c );
+	
 	
 		LegacyTextField			m_text;
-		RouteId			m_tickRouteId;
-	
+		bool				m_bHasFocus;
+		int					m_maxLines;
 		bool				m_bResetCursorOnFocus;
-		bool				m_bPasswordMode;
-		uint16_t				m_pwGlyph;
-		int					m_viewOfs;
+		RouteId			m_tickRouteId;
 	};
+	
+	
+	
 	
 	
 
 } // namespace wg
-#endif //WG_LINEEDITOR_DOT_H
+#endif // WG_LEGACYTEXTEDITOR_DOT_H

@@ -29,7 +29,7 @@
 
 namespace wg 
 {
-	
+	class Rect;
 	class Field;
 	class Object;
 	
@@ -39,6 +39,7 @@ namespace wg
 	{
 	public:
 		virtual void		_onFieldDirty( Field * pField ) = 0;
+		virtual void		_onFieldDirty( Field * pField, const Rect& rect ) = 0;
 		virtual void		_onFieldResize( Field * pField ) = 0;
 	};
 	
@@ -52,6 +53,7 @@ namespace wg
 	protected:
 	
 		inline void		_onDirty() { return static_cast<FieldHolder*>(m_pHolder)->_onFieldDirty(this); }
+		inline void		_onDirty( const Rect& rect ) { return static_cast<FieldHolder*>(m_pHolder)->_onFieldDirty(this, rect); }
 		inline void		_onResize() { return static_cast<FieldHolder*>(m_pHolder)->_onFieldResize(this); }
 	};
 	

@@ -44,43 +44,44 @@ namespace wg
 	public:
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static TextDisplay_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		ModText		text;
+		ModText			text;
 	
 		//____ Methods __________________________________________
 	
-		PointerStyle		pointerStyle() const;
+		PointerStyle	pointerStyle() const;
 		String			tooltipString() const;
 	
-		int		matchingWidth( int height ) const;
-		int		matchingHeight( int width ) const;
-		Size	preferredSize() const;
+		int				matchingWidth( int height ) const;
+		int				matchingHeight( int width ) const;
+		Size			preferredSize() const;
 	
 	protected:
 		TextDisplay();
 		virtual ~TextDisplay();
 		virtual Widget* _newOfMyType() const { return new TextDisplay(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onNewSize( const Size& size );
-		void	_onRefresh();
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void			_onCloneContent( const Widget * _pOrg );
+		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_onNewSize( const Size& size );
+		void			_onRefresh();
+		void			_onMsg( const Msg_p& pMsg );
+		void			_onStateChanged( State oldState );
+		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
-		Object * _object() { return this; }
-		void	_onFieldDirty( Field * pField );
-		void	_onFieldResize( Field * pField );
+		Object * 		_object() { return this; }
+		void			_onFieldDirty( Field * pField );
+		void			_onFieldDirty( Field * pField, const Rect& rect );
+		void			_onFieldResize( Field * pField );
 	private:
 	
-		TextField			m_text;
+		TextField		m_text;
 	};
 	
 	

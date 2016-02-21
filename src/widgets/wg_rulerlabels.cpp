@@ -252,6 +252,11 @@ namespace wg
 	{
 		_requestRender();
 	}
+
+	void RulerLabels::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	

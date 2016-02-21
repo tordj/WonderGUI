@@ -71,6 +71,7 @@ namespace wg
 	private:
 		Object * _object() { return this; }
 		void	_onFieldDirty( Field * pField );
+		void	_onFieldDirty( Field * pField, const Rect& rect );
 		void	_onFieldResize( Field * pField );
 		void	_onValueModified( ModValueField * pField );
 	

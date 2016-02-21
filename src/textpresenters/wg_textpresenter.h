@@ -59,15 +59,17 @@ namespace wg
 	class TextPresenter : public Object
 	{
 	public:
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static TextPresenter_p	cast( const Object_p& pObject );
 	
 		virtual void	addField( PresentableField * pField ) = 0;
 		virtual void	removeField( PresentableField * pField ) = 0;
 	
 		virtual int		coordToChar( const PresentableField * pField, Coord pos ) = 0;
+		virtual Coord	charToCoord( const PresentableField * pField, int charOfs ) = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charToRect( const PresentableField * pField, int charOfs ) = 0;
 	
 		virtual void 	renderField( PresentableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	
@@ -84,11 +86,10 @@ namespace wg
 	
 		virtual Rect	rectForRange( const PresentableField * pText, int ofs, int length ) const = 0;
 	
-		virtual String tooltip( const PresentableField * pText ) const;
+		virtual String	tooltip( const PresentableField * pText ) const;
 	
 		virtual int		coordToCaretPos( PresentableField * pField, Coord pos ) = 0;
 		virtual int		moveCaret( PresentableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif ) = 0;
-		virtual Rect	charToRect( const PresentableField * pField, int charOfs ) = 0;
 	
 	
 	protected:

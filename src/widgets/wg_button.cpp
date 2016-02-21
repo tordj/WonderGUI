@@ -337,7 +337,12 @@ namespace wg
 	
 	void Button::_onFieldDirty( Field * pField )
 	{
-		_requestRender();
+		_requestRender();		//TODO: Only requestRender on field
+	}
+
+	void Button::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();		//TODO: Only requestRender on rect of field.
 	}
 	
 	//____ _onFieldResize() ________________________________________________________

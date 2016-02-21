@@ -424,6 +424,11 @@ namespace wg
 	{
 		_requestRender();
 	}
+
+	void ToggleButton::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	

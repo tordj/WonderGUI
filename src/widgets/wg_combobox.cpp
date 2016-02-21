@@ -800,7 +800,12 @@ namespace wg
 	
 	void Combobox::_onFieldDirty( Field * pField )
 	{
-		_requestRender();
+		_requestRender();	//TODO: Optimize
+	}
+
+	void Combobox::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();	//TODO: Optimize
 	}
 	
 	//____ _onFieldResize() ________________________________________________________

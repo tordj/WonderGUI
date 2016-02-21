@@ -58,6 +58,7 @@ namespace wg
 		Object * 			_object() { return m_pHolder->_object(); };
 	//private:
 		void				_onFieldDirty( Field * pField );
+		void				_onFieldDirty( Field * pField, const Rect& rect );
 		void 				_onFieldResize( Field * pField );
 	
 	

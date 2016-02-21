@@ -96,8 +96,6 @@
       <File Name="../../src/widgets/panels/wg_stackpanel.h"/>
       <File Name="../../src/widgets/panels/wg_vectorpanel.cpp"/>
       <File Name="../../src/widgets/panels/wg_vectorpanel.h"/>
-      <File Name="../../src/widgets/wg_texteditor.cpp"/>
-      <File Name="../../src/widgets/wg_texteditor.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="lists">
       <File Name="../../src/widgets/lists/wg_list.cpp"/>
@@ -116,6 +114,10 @@
       <File Name="../../src/widgets/layers/wg_popuplayer.h"/>
     </VirtualDirectory>
     <File Name="../../src/widgets/wg_button.cpp"/>
+    <File Name="../../src/widgets/wg_texteditor.cpp"/>
+    <File Name="../../src/widgets/wg_texteditor.h"/>
+    <File Name="../../src/widgets/wg_legacytexteditor.cpp"/>
+    <File Name="../../src/widgets/wg_legacytexteditor.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_columnheaderfield.cpp"/>
@@ -172,6 +174,8 @@
     <File Name="../../src/interfaces/wg_modtext.h"/>
     <File Name="../../src/interfaces/wg_legacyedittext.h"/>
     <File Name="../../src/interfaces/wg_legacyedittext.cpp"/>
+    <File Name="../../src/interfaces/wg_edittext.cpp"/>
+    <File Name="../../src/interfaces/wg_edittext.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
@@ -300,6 +304,7 @@
     <File Name="../../src/base/wg_msg.h"/>
     <File Name="../../src/base/wg_inputhandler.h"/>
     <File Name="../../src/base/wg_inputhandler.cpp"/>
+    <File Name="../../src/base/wg_textstyle.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
@@ -309,7 +314,6 @@
     <File Name="../../src/textpresenters/wg_standardpresenter.cpp"/>
     <File Name="../../src/textpresenters/wg_textpresenter.h"/>
     <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
-    <File Name="../../src/base/wg_textstyle.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>

@@ -60,11 +60,11 @@ namespace wg
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
-		TextStyle_p		style() const { return m_pStyle; }
+		TextStyle_p			style() const { return m_pStyle; }
 	
 		virtual void		setPresenter( const TextPresenter_p& pPresenter );
 		virtual void		clearPresenter();
-		TextPresenter_p	presenter() const { return m_pPresenter; }
+		TextPresenter_p		presenter() const { return m_pPresenter; }
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
@@ -72,31 +72,31 @@ namespace wg
 		virtual Size		preferredSize() const;	
 		virtual int			matchingWidth( int height ) const;
 		virtual int			matchingHeight( int width ) const;
-		inline Size		size() const { return m_size; }
+		inline Size			size() const { return m_size; }
 	
 		virtual int			coordToChar( Coord pos ) const;
 		virtual Rect		charToRect( int charOfs ) const;
 	
 		virtual void		onRefresh();
 	
-		virtual String	tooltip() const;
+		virtual String		tooltip() const;
 	
 		virtual void		onNewSize( const Size& size );	
 		virtual void		onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
 		virtual Rect		rectForRange( int ofs, int length ) const;
 		
-		virtual String	getString() const;
+		virtual String		getString() const;
 		
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
 		
 	protected:
 	
-		TextPresenter *	_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
-		TextStyle *		_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+		TextPresenter *		_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
+		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 	
-		Size					m_size;
+		Size				m_size;
 	
 		union 
 		{
@@ -104,7 +104,7 @@ namespace wg
 			int				m_presenterData;
 		};
 	
-		State					m_state;
+		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
 		TextPresenter_p		m_pPresenter;

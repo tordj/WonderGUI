@@ -113,6 +113,13 @@ namespace wg
 		return 0;
 	}
 	
+	Coord StandardPresenter::charToCoord( const PresentableField * pField, int charOfs )
+	{
+		//TODO: Implement!
+		return Coord();
+	}
+	
+	
 	Rect StandardPresenter::charToRect( const PresentableField * pField, int charOfs )
 	{
 		//TODO: Implement!

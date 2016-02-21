@@ -265,6 +265,11 @@ namespace wg
 	{
 		_requestRender();
 	}
+
+	void FpsDisplay::_onFieldDirty( Field * pField, const Rect& rect )
+	{
+		_requestRender();
+	}
 	
 	//____ _onFieldResize() ________________________________________________________
 	

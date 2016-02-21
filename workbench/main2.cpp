@@ -176,8 +176,8 @@ int main ( int argc, char** argv )
 		FlexPanel_p pExtraFlex = FlexPanel::create();
 		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
 
-		TextDisplay_p pText = TextDisplay::create();
-		pText->text.set( "THIS IS SOME TEST TEXT" );
+		TextEditor_p pText = TextEditor::create();
+		pText->text.set( "THIS IS TEXT" );
 		
 		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
 
