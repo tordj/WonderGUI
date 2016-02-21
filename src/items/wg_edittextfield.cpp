@@ -54,19 +54,19 @@ namespace wg
 	void EditTextField::set( const CharSeq& seq )
 	{
 		TextField::set( seq );
-		_cursorToEnd();
+		_caretToEnd();
 	}
 	
 	void EditTextField::set( const CharBuffer * pBuffer )
 	{
 		TextField::set( pBuffer );
-		_cursorToEnd();
+		_caretToEnd();
 	}
 	
 	void EditTextField::set( const String& str )
 	{
 		TextField::set( str );
-		_cursorToEnd();
+		_caretToEnd();
 	}
 	
 	//____ append() ________________________________________________________________
@@ -110,9 +110,9 @@ namespace wg
 		return TextField::replace(ofs,nDelete,seq);
 	}
 	
-	//____ delete() ________________________________________________________________
+	//____ erase() ________________________________________________________________
 	
-	int EditTextField::remove( int ofs, int len )
+	int EditTextField::erase( int ofs, int len )
 	{
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs > ofs )
@@ -149,9 +149,9 @@ namespace wg
 		_presenter()->renderField(this, pDevice, _canvas, _clip);
 	}
 	
-	//____ _cursorToEnd() __________________________________________________________
+	//____ _caretToEnd() __________________________________________________________
 	
-	void EditTextField::_cursorToEnd()
+	void EditTextField::_caretToEnd()
 	{
 		int end = m_charBuffer.length();
 		m_editState.caretOfs = end;

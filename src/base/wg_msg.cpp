@@ -996,12 +996,12 @@ namespace wg
 	
 	const char TextEditMsg::CLASSNAME[] = {"TextEditMsg"};
 	
-	EditText_p TextEditMsg::text() const
+	LegacyEditText_p TextEditMsg::text() const
 	{
 		return m_pText;
 	}
 	
-	TextEditMsg::TextEditMsg( const EditText_p& pText, bool bFinal )
+	TextEditMsg::TextEditMsg( const LegacyEditText_p& pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->holder();

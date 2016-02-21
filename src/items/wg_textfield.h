@@ -70,7 +70,7 @@ namespace wg
 	
 		inline int			length() const { return m_charBuffer.length(); }
 		inline bool			isEmpty() const { return length()==0?true:false; }
-		TextLink_p		getMarkedLink() const;
+		TextLink_p			getMarkedLink() const;
 	
 	protected:
 	

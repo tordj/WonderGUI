@@ -27,8 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_EDITTEXT_DOT_H
-#	include <wg_edittext.h>
+#ifndef	WG_LEGACYEDITTEXT_DOT_H
+#	include <wg_legacyedittext.h>
 #endif
 
 #ifndef WG_CARETINSTANCE_DOT_H
@@ -56,7 +56,7 @@ namespace wg
 	
 		//____ Interfaces ______________________________________
 	
-		EditText		text;
+		LegacyEditText		text;
 	
 		//____ Methods __________________________________________
 	

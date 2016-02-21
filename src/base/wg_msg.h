@@ -51,8 +51,8 @@
 
 
 /*
-#ifndef WG_EDITTEXT_DOT_H
-#	include <wg_edittext.h>
+#ifndef WG_LEGACYEDITTEXT_DOT_H
+#	include <wg_legacyedittext.h>
 #endif
 */
 
@@ -78,7 +78,7 @@ namespace wg
 
 	class LegacyText;
 	class LegacyModText;
-	class EditText;
+	class LegacyEditText;
 
 	typedef	StrongInterfacePtr<LegacyText,Interface_p>	LegacyText_p;
 	typedef	WeakInterfacePtr<LegacyText,Interface_wp> LegacyText_wp;
@@ -86,8 +86,8 @@ namespace wg
 	typedef	StrongInterfacePtr<LegacyModText,LegacyText_p>	LegacyModText_p;
 	typedef	WeakInterfacePtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
 
-	typedef	StrongInterfacePtr<EditText,LegacyModText_p>	EditText_p;
-	typedef	WeakInterfacePtr<EditText,LegacyModText_wp>	EditText_wp;
+	typedef	StrongInterfacePtr<LegacyEditText,LegacyModText_p>	LegacyEditText_p;
+	typedef	WeakInterfacePtr<LegacyEditText,LegacyModText_wp>	LegacyEditText_wp;
 
 
 	typedef WeakPtr<Widget,Receiver_wp> Widget_wp;
@@ -704,18 +704,18 @@ namespace wg
 	class TextEditMsg : public Msg
 	{
 	public:
-		TextEditMsg( const EditText_p& pText, bool bFinal );
+		TextEditMsg( const LegacyEditText_p& pText, bool bFinal );
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextEditMsg_p	cast( const Object_p& pObject );
 
-		EditText_p		text() const;
+		LegacyEditText_p		text() const;
 		bool				isFinal() const;
 
 	protected:
-		EditText_p		m_pText;
+		LegacyEditText_p		m_pText;
 		bool				m_bFinal;
 	};
 

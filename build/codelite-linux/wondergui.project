@@ -144,8 +144,6 @@
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
     <File Name="../../src/interfaces/wg_columnheader.h"/>
-    <File Name="../../src/interfaces/wg_edittext.cpp"/>
-    <File Name="../../src/interfaces/wg_edittext.h"/>
     <File Name="../../src/interfaces/wg_editvalue.cpp"/>
     <File Name="../../src/interfaces/wg_editvalue.h"/>
     <File Name="../../src/interfaces/wg_icon.cpp"/>
@@ -172,6 +170,8 @@
     <File Name="../../src/interfaces/wg_legacymodtext.h"/>
     <File Name="../../src/interfaces/wg_modtext.cpp"/>
     <File Name="../../src/interfaces/wg_modtext.h"/>
+    <File Name="../../src/interfaces/wg_legacyedittext.h"/>
+    <File Name="../../src/interfaces/wg_legacyedittext.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>

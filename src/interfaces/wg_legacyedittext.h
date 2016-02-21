@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_EDITTEXT_DOT_H
-#define WG_EDITTEXT_DOT_H
+#ifndef WG_LEGACYEDITTEXT_DOT_H
+#define WG_LEGACYEDITTEXT_DOT_H
 
 #ifndef WG_LEGACYMODTEXT_DOT_H
 #	include <wg_legacymodtext.h>
@@ -34,9 +34,9 @@
 namespace wg 
 {
 	
-	class EditText;
-	typedef	StrongInterfacePtr<EditText,LegacyModText_p>		EditText_p;
-	typedef	WeakInterfacePtr<EditText,LegacyModText_wp>		EditText_wp;
+	class LegacyEditText;
+	typedef	StrongInterfacePtr<LegacyEditText,LegacyModText_p>		LegacyEditText_p;
+	typedef	WeakInterfacePtr<LegacyEditText,LegacyModText_wp>		LegacyEditText_wp;
 	
 	/**
 	 * @brief Interface to a text field with editable text.
@@ -47,16 +47,16 @@ namespace wg
 	 * 
 	 */
 	 
-	class EditText : public LegacyModText
+	class LegacyEditText : public LegacyModText
 	{
 	public:
-		EditText( LegacyTextField * pField ) : LegacyModText(pField) {};
+		LegacyEditText( LegacyTextField * pField ) : LegacyModText(pField) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static EditText_p	cast( const Interface_p& pInterface );				// Provided just for completeness sake.
-		inline EditText_p	ptr() { return EditText_p(_object(),this); }
+		static LegacyEditText_p	cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline LegacyEditText_p	ptr() { return LegacyEditText_p(_object(),this); }
 	
 		inline void			setEditMode(TextEditMode mode) { m_pField->setEditMode(mode); }
 		inline TextEditMode	editMode() const { return m_pField->editMode(); }
@@ -86,4 +86,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_EDITTEXT_DOT_H
+#endif //WG_LEGACYEDITTEXT_DOT_H

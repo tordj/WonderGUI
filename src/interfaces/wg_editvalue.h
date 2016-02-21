@@ -27,7 +27,7 @@
 #	include <wg_modvalue.h>
 #endif
 
-#ifndef WG_EDITALUEFIELD_DOT_H
+#ifndef WG_EDITVALUEFIELD_DOT_H
 #	include <wg_editvaluefield.h>
 #endif
 
@@ -61,8 +61,8 @@ namespace wg
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static EditValue_p	cast( const Interface_p& pInterface );				// Provided just for completeness sake.
-		inline EditValue_p	ptr() { return EditValue_p(_object(),this); }
+		static EditValue_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
+		inline EditValue_p		ptr() { return EditValue_p(_object(),this); }
 	
 		virtual void			setEditMode(TextEditMode mode) = 0;
 		virtual TextEditMode	editMode() const = 0;
@@ -70,23 +70,23 @@ namespace wg
 		virtual bool			isEditable() const = 0;
 		virtual bool			isSelectable() const = 0;
 	
-		virtual void			setCursorSkin( const Caret_p& pCursor ) = 0;
-		virtual Caret_p		cursorSkin() const = 0;
+		virtual void			setCaret( const Caret_p& pCaret ) = 0;
+		virtual Caret_p			caret() const = 0;
 	
 		// Calling these methods gets field into edit mode, displaying cursor.
 	
-		virtual int				insertAtCursor( const CharSeq& str ) = 0;
-		virtual bool			insertAtCursor( uint16_t c ) = 0;
+		virtual int				insertAtCaret( const CharSeq& str ) = 0;
+		virtual bool			insertAtCaret( uint16_t c ) = 0;
 	
 		virtual int				append( const CharSeq& seq ) = 0;
 		virtual int				insert( int ofs, const CharSeq& seq ) = 0;
 		virtual int				replace( int ofs, int nDelete, const CharSeq& seq ) = 0;
-		virtual int				remove( int ofs, int len ) = 0;
-		virtual void			deleteSelected() = 0;
+		virtual int				erase( int ofs, int len ) = 0;
+		virtual void			eraseSelected() = 0;
 	
 		virtual void			select( int ofs, int len ) = 0;
 		virtual void			selectAll() = 0;
-		virtual int				selectionStart() const = 0;
+		virtual int				selectionBegin() const = 0;
 		virtual int				selectionLength() const = 0;
 		virtual void			clearSelection() = 0;
 	

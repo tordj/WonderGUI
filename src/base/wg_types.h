@@ -572,7 +572,7 @@ namespace wg
 	{
 		Static,
 		Selectable,
-		Editable,
+		Editable
 	};
 	
 	

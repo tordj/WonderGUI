@@ -47,35 +47,35 @@ namespace wg
 	
 		// Overloaded so we can update cursor and selection
 	
-		void				clear();
+		void			clear();
 	
-		void				set( const CharSeq& seq );
-		void				set( const CharBuffer * buffer );
-		void				set( const String& str );
+		void			set( const CharSeq& seq );
+		void			set( const CharBuffer * buffer );
+		void			set( const String& str );
 	
-		int					append( const CharSeq& seq );
-		int					insert( int ofs, const CharSeq& seq );
-		int					replace( int ofs, int nDelete, const CharSeq& seq );
-		int					remove( int ofs, int len );
+		int				append( const CharSeq& seq );
+		int				insert( int ofs, const CharSeq& seq );
+		int				replace( int ofs, int nDelete, const CharSeq& seq );
+		int				erase( int ofs, int len );
 	
-		void				setState( State state );
-		void				onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
+		void			setState( State state );
+		void			onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
 		//
 	
-		void				setEditMode( TextEditMode mode );
-		TextEditMode		editMode() const;
+		void			setEditMode( TextEditMode mode );
+		TextEditMode	editMode() const;
 		
-		void				setCaret( const Caret2_p& pCaret );
+		void			setCaret( const Caret2_p& pCaret );
 		Caret2_p 		caret() { return m_pCaret; }
 		
-		int					selectionBegin() const;
-		int					selectionEnd() const;
+		int				selectionBegin() const;
+		int				selectionEnd() const;
 	
 	
 	protected:
 	
-		void			_cursorToEnd();
+		void			_caretToEnd();
 	
 		TextEditMode	m_editMode;
 		EditState		m_editState;

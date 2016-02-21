@@ -62,10 +62,10 @@ namespace wg
 	protected:
 		void				_regenText();
 	
-		int64_t					m_value;
-		int						m_scale;
+		int64_t				m_value;
+		int					m_scale;
 		
-		ValueFormatter_p		m_pFormatter;
+		ValueFormatter_p	m_pFormatter;
 	};
 	
 	

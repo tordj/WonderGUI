@@ -20,17 +20,17 @@
 
 =========================================================================*/
 
-#include <wg_edittext.h>
+#include <wg_legacyedittext.h>
 
 namespace wg 
 {
 	
-	const char EditText::CLASSNAME[] = {"EditText"};
+	const char LegacyEditText::CLASSNAME[] = {"LegacyEditText"};
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool EditText::isInstanceOf( const char * pClassName ) const
+	bool LegacyEditText::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -40,17 +40,17 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * EditText::className( void ) const
+	const char * LegacyEditText::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	EditText_p EditText::cast( const Interface_p& pInterface )
+	LegacyEditText_p LegacyEditText::cast( const Interface_p& pInterface )
 	{
 		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return EditText_p( pInterface.getRealObjectPtr(), static_cast<EditText*>(pInterface.rawPtr()) );
+			return LegacyEditText_p( pInterface.getRealObjectPtr(), static_cast<LegacyEditText*>(pInterface.rawPtr()) );
 	
 		return 0;
 	}

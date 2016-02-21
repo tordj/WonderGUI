@@ -56,21 +56,21 @@ namespace wg
 		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
 		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
-		void				setCursorSkin( const Caret_p& pCursor );
-		inline Caret_p	cursorSkin() const { return m_pCursorSkin; }
+		void				setCaret( const Caret_p& pCaret );
+		inline Caret_p		caret() const { return m_pCaret; }
 	
-		int					insertAtCursor( const CharSeq& str );
-		bool				insertAtCursor( uint16_t c );
+		int					insertAtCaret( const CharSeq& str );
+		bool				insertAtCaret( uint16_t c );
 	
 		int					append( const CharSeq& seq );
 		int					insert( int ofs, const CharSeq& seq );
 		int					replace( int ofs, int nDelete, const CharSeq& seq );
-		int					remove( int ofs, int len );
-		void				deleteSelected();
+		int					erase( int ofs, int len );
+		void				eraseSelected();
 	
 		void				select( int ofs, int len );
 		void				selectAll();
-		inline int			selectionStart() const { return m_selBeg; }
+		inline int			selectionBegin() const { return m_selBeg; }
 		inline int			selectionLength() const { return m_selEnd - m_selBeg; }
 		void				clearSelection();
 	
@@ -83,8 +83,8 @@ namespace wg
 		void				_onValueEdited() { static_cast<EditValueHolder*>(m_pHolder)->_onValueEdited(this); }
 	
 		TextEditMode		m_editMode;
-		Caret_p			m_pCursorSkin;
-		int					m_cursorOfs;		// -1 = No cursor.
+		Caret_p				m_pCaret;
+		int					m_caretOfs;		// -1 = No caret.
 		int					m_selBeg;
 		int					m_selEnd;
 	};
