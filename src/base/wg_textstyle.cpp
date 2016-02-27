@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_textstyle.h>
+#include <wg_textstylemanager.h>
 
 namespace wg 
 {
@@ -33,6 +34,8 @@ namespace wg
 	
 	TextStyle::TextStyle()
 	{
+		m_handle = TextStyleManager::_reserveHandle();
+		
 		m_pFirstChild = 0;
 		m_pNextSibling = 0;
 		m_pPrevSibling = 0;
@@ -51,6 +54,8 @@ namespace wg
 	
 		if( m_pPrevSibling )
 			m_pPrevSibling->m_pNextSibling = m_pNextSibling;
+			
+		TextStyleManager::_releaseHandle(m_handle);
 	}
 	
 	//____ isInstanceOf() _________________________________________________________

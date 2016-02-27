@@ -56,9 +56,9 @@ namespace wg
 	struct TextAttr2
 	{
 			Font_p			pFont;
-			int					size;
-			Color				color;
-			Color				bgColor;
+			int				size;
+			Color			color;
+			Color			bgColor;
 			TextDecoration	decoration;
 			TextLink_p		pLink;
 			
@@ -78,6 +78,8 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextStyle_p	cast( const Object_p& pObject );
+	
+		inline int		handle() { return m_handle; }
 	
 		bool			setParent( const TextStyle_p& pParent );
 		void			cascade();
@@ -108,19 +110,19 @@ namespace wg
 		void			clearSize( State state );
 		void			clearDecoration( State state );
 	
-		inline Font_p		font() const;
-		inline TextLink_p	link() const;
+		inline Font_p			font() const;
+		inline TextLink_p		link() const;
 		inline Color			color( State state ) const;
 		inline 	Color			bgColor( State state ) const;
 		inline int				size( State state ) const;
-		inline TextDecoration decoration( State state ) const;
+		inline TextDecoration 	decoration( State state ) const;
 	
-		inline Font_p		combFont() const;
-		inline TextLink_p	combLink() const;
+		inline Font_p			combFont() const;
+		inline TextLink_p		combLink() const;
 		inline Color			combColor( State state ) const;
 		inline Color			combBgColor( State state ) const;
 		inline int				combSize( State state ) const;
-		inline TextDecoration combDecoration( State state ) const;
+		inline TextDecoration 	combDecoration( State state ) const;
 	
 		void			exportAttr( State state, TextAttr2 * pDest ) const;
 		void			addToAttr( State state, TextAttr2 * pDest ) const;
@@ -134,9 +136,9 @@ namespace wg
 		struct AttrSet
 		{
 			Font_p			pFont;
-			int					size[WG_NB_STATES];
-			Color				color[WG_NB_STATES];
-			Color				bgColor[WG_NB_STATES];
+			int				size[WG_NB_STATES];
+			Color			color[WG_NB_STATES];
+			Color			bgColor[WG_NB_STATES];
 			TextDecoration	decoration[WG_NB_STATES];
 			TextLink_p		pLink;
 		};
@@ -154,7 +156,7 @@ namespace wg
 		AttrSet		m_specAttr;
 		AttrSet		m_combAttr;
 	
-	
+		uint16_t	m_handle;
 	};
 	
 	

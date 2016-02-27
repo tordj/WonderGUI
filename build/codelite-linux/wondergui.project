@@ -44,8 +44,6 @@
     <File Name="../../src/widgets/wg_image.h"/>
     <File Name="../../src/widgets/wg_knob.cpp"/>
     <File Name="../../src/widgets/wg_knob.h"/>
-    <File Name="../../src/widgets/wg_lineeditor.cpp"/>
-    <File Name="../../src/widgets/wg_lineeditor.h"/>
     <File Name="../../src/widgets/wg_menu.cpp"/>
     <File Name="../../src/widgets/wg_menu.h"/>
     <File Name="../../src/widgets/wg_menubar.cpp"/>
@@ -116,8 +114,6 @@
     <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.h"/>
-    <File Name="../../src/widgets/wg_legacytexteditor.cpp"/>
-    <File Name="../../src/widgets/wg_legacytexteditor.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_columnheaderfield.cpp"/>
@@ -305,6 +301,8 @@
     <File Name="../../src/base/wg_inputhandler.h"/>
     <File Name="../../src/base/wg_inputhandler.cpp"/>
     <File Name="../../src/base/wg_textstyle.h"/>
+    <File Name="../../src/base/wg_textstylemanager.h"/>
+    <File Name="../../src/base/wg_textstylemanager.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

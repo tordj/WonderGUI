@@ -26,10 +26,12 @@
 #include <wg_msgrouter.h>
 
 #include <wg_textpropmanager.h>
+#include <wg_textstylemanager.h>
 #include <wg_texttool.h>
 #include <wg_memstack.h>
 #include <wg_hook.h>
 #include <wg_standardpresenter.h>
+
 
 #ifdef USE_FREETYPE
 #	include <ft2build.h>
@@ -49,6 +51,9 @@ namespace wg
 	{
 		assert( s_pData == 0 );
 		assert( sizeof( WeakPtrHub ) == sizeof( Hook_pHub ) );			// Need to be same as we are sharing object stack!
+
+		TextStyleManager::init();
+
 		s_pData = new Data;
 		
 		s_pData->pDefaultCursor = 0;
@@ -97,6 +102,8 @@ namespace wg
 		delete s_pData->pMemStack;
 		delete s_pData;
 		s_pData = 0;
+		
+		TextStyleManager::exit();
 		return 0;
 	}
 	
