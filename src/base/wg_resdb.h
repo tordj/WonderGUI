@@ -40,10 +40,6 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
 #ifndef WG_SKIN_DOT_H
 #	include <wg_skin.h>
 #endif
@@ -52,8 +48,12 @@
 #	include <wg_gfxanim.h>
 #endif
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
+#endif
+
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
 #endif
 
 #ifndef WG_GLYPHSET_DOT_H
@@ -134,17 +134,17 @@ namespace wg
 		};
 	
 	
-		typedef ResWrapper2<ResDB_p>		ResDBRes;
+		typedef ResWrapper2<ResDB_p>	ResDBRes;
 		typedef ResWrapper2<Surface_p>	SurfaceRes;
 		typedef ResWrapper2<Glyphset_p>	GlyphsetRes;
 		typedef ResWrapper<Font_p>		FontRes;
 		typedef ResWrapper<GfxAnim_p>	GfxAnimRes;
-		typedef ResWrapper<Caret_p>		CursorRes;
-		typedef ResWrapper<Textprop_p>	TextpropRes;
-		typedef ResWrapper<Color>			ColorRes;
+		typedef ResWrapper<Caret2_p>	CaretRes;
+		typedef ResWrapper<TextStyle_p>	TextStyleRes;
+		typedef ResWrapper<Color>		ColorRes;
 		typedef ResWrapper<Skin_p>		SkinRes;
-		typedef ResWrapper<Widget_p>		WidgetRes;
-		typedef ResWrapper<void*>			DataSetRes;
+		typedef ResWrapper<Widget_p>	WidgetRes;
+		typedef ResWrapper<void*>		DataSetRes;
 	
 	
 		//----
@@ -153,9 +153,9 @@ namespace wg
 		static std::string	generateName( const Glyphset_p& data );
 		static std::string	generateName( const Font_p& data );
 		static std::string	generateName( const GfxAnim_p& data );
-		static std::string	generateName( const Caret_p& data );
+		static std::string	generateName( const Caret2_p& data );
 		static std::string	generateName( const Color data );
-		static std::string	generateName( const Textprop_p& data );
+		static std::string	generateName( const TextStyle_p& data );
 		static std::string	generateName( const Skin_p& data );
 		static std::string	generateName( const Widget_p& data );
 	
@@ -178,8 +178,8 @@ namespace wg
 	
 		bool				addFont( const std::string& id, const Font_p& pFont, MetaData * pMetaData = 0 );
 		bool				addGfxAnim( const std::string& id, const GfxAnim_p& pAnim, MetaData * pMetaData = 0 );
-		bool				addCursor( const std::string& id, const Caret_p& pCursor, MetaData * pMetaData = 0 );
-		bool				addTextprop( const std::string& id, const Textprop_p& pProp, MetaData * pMetaData = 0 );
+		bool				addCaret( const std::string& id, const Caret2_p& pCaret, MetaData * pMetaData = 0 );
+		bool				addTextStyle( const std::string& id, const TextStyle_p& pProp, MetaData * pMetaData = 0 );
 		bool				addColor( const std::string& id, Color col, MetaData * pMetaData = 0 );
 		bool				addLegoSource( const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData * pMetaData = 0 );
 		bool				addSkin( const std::string& id, const Skin_p& pSkin, MetaData * pMetaData = 0 );
@@ -191,8 +191,8 @@ namespace wg
 		bool				removeGlyphset( const std::string& id );
 		bool				removeFont( const std::string& id );
 		bool				removeGfxAnim( const std::string& id );
-		bool				removeCursor( const std::string& id );
-		bool				removeTextprop( const std::string& id );
+		bool				removeCaret( const std::string& id );
+		bool				removeTextStyle( const std::string& id );
 		bool				removeColor( const std::string& id );
 		bool				removeLegoSource( const std::string& id );
 		bool				removeSkin( const std::string& id );
@@ -207,8 +207,8 @@ namespace wg
 		bool				removeGlyphset( GlyphsetRes * pRes );
 		bool				removeFont( FontRes * pRes );
 		bool				removeGfxAnim( GfxAnimRes * pRes );
-		bool				removeCursor( CursorRes * pRes );
-		bool				removeTextprop( TextpropRes * pRes );
+		bool				removeCaret( CaretRes * pRes );
+		bool				removeTextStyle( TextStyleRes * pRes );
 		bool				removeColor( ColorRes * pRes );
 		bool				removeLegoSource( LegoSource * pRes );
 		bool				removeSkin( SkinRes * pRes );
@@ -223,8 +223,8 @@ namespace wg
 		Glyphset_p		getGlyphset( const std::string& id ) const;
 		Font_p			getFont( const std::string& id ) const;
 		GfxAnim_p		getGfxAnim( const std::string& id ) const;
-		Caret_p			getCursor( const std::string& id ) const;
-		Textprop_p		getTextprop( const std::string& id ) const;
+		Caret2_p			getCaret( const std::string& id ) const;
+		TextStyle_p		getTextStyle( const std::string& id ) const;
 		Color				getColor( const std::string& id ) const;
 		Skin_p			getSkin( const std::string& id ) const;
 		Widget_p			getWidget( const std::string& id ) const;
@@ -237,8 +237,8 @@ namespace wg
 		GlyphsetRes *		getResGlyphset( const std::string& id ) const;
 		FontRes *			getResFont( const std::string& id ) const;
 		GfxAnimRes *		getResGfxAnim( const std::string& id ) const;
-		CursorRes *			getResCursor( const std::string& id ) const;
-		TextpropRes *		getResTextprop( const std::string& id ) const;
+		CaretRes *			getResCaret( const std::string& id ) const;
+		TextStyleRes *		getResTextStyle( const std::string& id ) const;
 		ColorRes *			getResColor( const std::string& id ) const;
 		LegoSource *		getLegoSource( const std::string& id ) const;
 		SkinRes *			getResSkin( const std::string& id ) const;
@@ -251,8 +251,8 @@ namespace wg
 		GlyphsetRes *		findResGlyphset( const Glyphset_p& data ) const;
 		FontRes *			findResFont( const Font_p& data ) const;
 		GfxAnimRes *		findResGfxAnim( const GfxAnim_p& data ) const;
-		CursorRes *			findResCursor( const Caret_p& data ) const;
-		TextpropRes *		findResTextprop( const Textprop_p& data ) const;
+		CaretRes *			findResCaret( const Caret2_p& data ) const;
+		TextStyleRes *		findResTextStyle( const TextStyle_p& data ) const;
 		ColorRes *			findResColor( const Color col ) const;
 		SkinRes *			findResSkin( const Skin_p& data ) const;
 		WidgetRes *			findResWidget( const Widget_p& data ) const;
@@ -261,8 +261,8 @@ namespace wg
 		std::string			findGlyphsetId( const Glyphset_p& data ) const		{ GlyphsetRes * r =	findResGlyphset(data); return r ? r->id : ""; }
 		std::string			findFontId( const Font_p& data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
 		std::string			findGfxAnimId( const GfxAnim_p& data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
-		std::string			findCursorId( const Caret_p& data ) const			{ CursorRes *	r =	findResCursor(data); return r ? r->id : ""; }
-		std::string			findTextpropId( const Textprop_p& data ) const	{ TextpropRes *r =  findResTextprop(data); return r ? r->id : ""; }
+		std::string			findCaretId( const Caret2_p& data ) const			{ CaretRes *	r =	findResCaret(data); return r ? r->id : ""; }
+		std::string			findTextStyleId( const TextStyle_p& data ) const	{ TextStyleRes *r =  findResTextStyle(data); return r ? r->id : ""; }
 		std::string			findColorId( const Color data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
 		std::string			findSkinId( const Skin_p& data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
 		std::string			findWidgetId( const Widget_p& data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
@@ -272,8 +272,8 @@ namespace wg
 		inline GlyphsetRes *	getFirstResGlyphset() const { return m_glyphsets.first(); }
 		inline FontRes *		getFirstResFont() const { return m_fonts.first(); }
 		inline GfxAnimRes *		getFirstResGfxAnim() const { return m_gfxAnims.first(); }
-		inline CursorRes *		getFirstResCursor() const { return m_cursors.first(); }
-		inline TextpropRes *	getFirstResTextprop() const { return m_textProps.first(); }
+		inline CaretRes *		getFirstResCaret() const { return m_cursors.first(); }
+		inline TextStyleRes *	getFirstResTextStyle() const { return m_textProps.first(); }
 		inline ColorRes *		getFirstResColor() const { return m_colors.first(); }
 		inline SkinRes *		getFirstResSkin() const { return m_skins.first(); }
 		inline ConnectRes *		getFirstResConnect() const { return m_connects.first(); }
@@ -290,8 +290,8 @@ namespace wg
 		typedef std::map<std::string, GlyphsetRes*>		GlyphMap;
 		typedef std::map<std::string, FontRes*>			FontMap;
 		typedef std::map<std::string, GfxAnimRes*>		GfxAnimMap;
-		typedef std::map<std::string, CursorRes*>		CursorMap;
-		typedef std::map<std::string, TextpropRes*>		PropMap;
+		typedef std::map<std::string, CaretRes*>		CaretMap;
+		typedef std::map<std::string, TextStyleRes*>		PropMap;
 		typedef std::map<std::string, ColorRes*>		ColMap;
 		typedef std::map<std::string, LegoSource*>		LegoMap;
 		typedef std::map<std::string, SkinRes*>			SkinMap;
@@ -304,8 +304,8 @@ namespace wg
 		Chain<GlyphsetRes>	m_glyphsets;
 		Chain<FontRes>		m_fonts;
 		Chain<GfxAnimRes>		m_gfxAnims;
-		Chain<CursorRes>		m_cursors;
-		Chain<TextpropRes>	m_textProps;
+		Chain<CaretRes>		m_cursors;
+		Chain<TextStyleRes>	m_textProps;
 		Chain<ColorRes>		m_colors;
 		Chain<LegoSource>		m_legos;
 		Chain<SkinRes>		m_skins;
@@ -319,8 +319,8 @@ namespace wg
 		GlyphMap		m_mapGlyphsets;
 		FontMap			m_mapFonts;
 		GfxAnimMap		m_mapGfxAnims;
-		CursorMap		m_mapCursors;
-		PropMap			m_mapTextprops;
+		CaretMap		m_mapCarets;
+		PropMap			m_mapTextStyles;
 		LegoMap			m_mapLegoSources;
 		SkinMap			m_mapSkins;
 		ConnectMap		m_mapConnects;

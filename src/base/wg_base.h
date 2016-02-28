@@ -40,14 +40,6 @@
 #	include <wg_key.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
 #ifndef WG_CARET2_DOT_H
 #	include <wg_caret2.h>
 #endif
@@ -78,7 +70,6 @@ typedef struct FT_LibraryRec_  *FT_Library;
 namespace wg 
 {
 	class Font;
-	class TextpropManager;
 	class MemPool;
 	class WeakPtrHub;
 	class Hook_pHub;
@@ -107,35 +98,18 @@ namespace wg
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
 	
+		static void			setDefaultCaret( const Caret2_p& pCaret );
+		static Caret2_p 	defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
 	
-	
-	//	static void setDefaultTextManager( const TextMgrPtr& pManager );
-	//	static const TextMgrPtr& getDefaultTextManager();
-	
-		static void 	setDefaultTextprop( const Textprop_p& pProp );
-		static Textprop_p getDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
-	
-		static void 	setDefaultSelectionProp( const Textprop_p& pProp );
-		static Textprop_p getDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
-	
-		static void 	setDefaultLinkProp( const Textprop_p& pProp );
-		static Textprop_p getDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
-	
-		static void 	setDefaultCursor( const Caret_p& pCursor );
-		static Caret_p getDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
-	
-		static void		setDefaultCaret( const Caret2_p& pCaret );
-		static Caret2_p defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
-	
-		static void		setDefaultPresenter( const TextPresenter_p& pPresenter );
+		static void			setDefaultPresenter( const TextPresenter_p& pPresenter );
 		static TextPresenter_p defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
 	
-		static void		setDefaultStyle( const TextStyle_p& pStyle );
-		static TextStyle_p defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
+		static void			setDefaultStyle( const TextStyle_p& pStyle );
+		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 	
 		
-		static char *	memStackAlloc( int bytes );
-		static void		memStackRelease( int bytes );
+		static char *		memStackAlloc( int bytes );
+		static void			memStackRelease( int bytes );
 	
 		static MsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
 		static InputHandler_p	inputHandler() { return s_pData->pInputHandler; }
@@ -155,23 +129,19 @@ namespace wg
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
 			
-			Textprop_p		pDefaultTextprop;
-			Textprop_p		pDefaultSelectionProp;
-			Textprop_p		pDefaultLinkProp;
-			Caret_p			pDefaultCursor;
 	
-			Caret2_p			pDefaultCaret;
+			Caret2_p		pDefaultCaret;
 			TextPresenter_p	pDefaultPresenter;
 			TextStyle_p		pDefaultStyle;
 	
 			//
 	
-			MemPool *			pPtrPool;
+			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
 	
 	#ifdef USE_FREETYPE
-			bool				bFreeTypeInitialized;
-			FT_Library			freeTypeLibrary;
+			bool			bFreeTypeInitialized;
+			FT_Library		freeTypeLibrary;
 	#endif
 	
 		};

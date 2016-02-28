@@ -77,9 +77,12 @@ int main ( int argc, char** argv )
 	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		type = PixelType::RGBA_8;
+		type = PixelType::BGRA_8;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
-		type = PixelType::RGB_8;
+		type = PixelType::BGR_8;
+
+	// TODO: USED TO BE RGB ORDER!!! Colors are probably wrong now, needs conversion!!!!
+
 		
 	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
@@ -102,8 +105,10 @@ int main ( int argc, char** argv )
 	// First we load the 24-bit bmp containing the button graphics.
 	// No error handling or such to keep this example short and simple.
 
+	// TODO: USED TO BE RGB ORDER!!! Colors are probably wrong now, needs conversion!!!!
+
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::RGB_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel

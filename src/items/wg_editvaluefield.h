@@ -56,8 +56,8 @@ namespace wg
 		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
 		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
-		void				setCaret( const Caret_p& pCaret );
-		inline Caret_p		caret() const { return m_pCaret; }
+		void				setCaret( const Caret2_p& pCaret );
+		inline Caret2_p		caret() const { return m_pCaret; }
 	
 		int					insertAtCaret( const CharSeq& str );
 		bool				insertAtCaret( uint16_t c );
@@ -83,7 +83,7 @@ namespace wg
 		void				_onValueEdited() { static_cast<EditValueHolder*>(m_pHolder)->_onValueEdited(this); }
 	
 		TextEditMode		m_editMode;
-		Caret_p				m_pCaret;
+		Caret2_p				m_pCaret;
 		int					m_caretOfs;		// -1 = No caret.
 		int					m_selBeg;
 		int					m_selEnd;

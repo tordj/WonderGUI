@@ -28,8 +28,8 @@
 #	include "wg_types.h"
 #endif
 
-#ifndef WG_TEXTPROPMANAGER_DOT_H
-#	include "wg_textpropmanager.h"
+#ifndef WG_TEXTSTYLEMANAGER_DOT_H
+#	include "wg_textstylemanager.h"
 #endif
 
 #include <wg_texttool.h>
@@ -65,42 +65,41 @@ namespace wg
 	
 	class Char
 	{
-	friend class LegacyTextField;
-	friend class Textprop;
+	friend class TextStyle;
 	friend class TextTool;
 	friend class CharBuffer;
 	
 	public:
 		/// Initializes an empty character containing null (End of Text) and no properties.
 	
-		Char() { all = 0; };
+		Char() : all(0) {};
 	
 		/// Initializes a character to contain the glyph and properties of the specified character.
 	
-		Char( const Char& r ) { all = r.all; if( properties) TextpropManager::incRef(properties,1); }
+		Char( const Char& r ) { all = r.all; if( style ) TextStyleManager::_getPointer(style)->_incRefCount(); }
 	
 		/// Initializes a character to contain the specified glyph and no properties.
 	
-		Char( uint16_t _glyph ) { all = 0; glyph = _glyph; }
+		Char( uint16_t _glyph ) { style = 0; glyph = _glyph; }
 	
 		/// Initializes a character to contain the glyph and properties as specified.
 	
-		Char( uint16_t _glyph, const Textprop_p& _pProperties ) { all = 0; glyph = _glyph; properties = _pProperties.m_hProp; TextpropManager::incRef(properties,1); }
-		~Char() { if( properties ) TextpropManager::decRef(properties,1); };
+		Char( uint16_t _glyph, const TextStyle_p& _pStyle ) { glyph = _glyph; style = _pStyle->handle(); _pStyle->_incRefCount(); }
+		~Char() { if( style ) TextStyleManager::_getPointer(style)->_decRefCount(); }
 	
 		inline Char & operator=(const Char &ref)
 		{
-			if(properties == ref.properties)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
-			{										// also speeds things up...
+			if(style == ref.style)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
+			{							// also speeds things up...
 				all = ref.all;
 			}
 			else
 			{
-				if(properties)
-					TextpropManager::decRef(properties,1);
+				if(style)
+					TextStyleManager::_getPointer(style)->_decRefCount();
 				all = ref.all;
-				if(properties)
-					TextpropManager::incRef(properties,1);
+				if(style)
+					TextStyleManager::_getPointer(style)->_incRefCount();
 			}
 			return *this;
 		}
@@ -119,7 +118,7 @@ namespace wg
 	
 								/// Sets the properties of the character.
 	
-		inline void				setProperties( const Textprop_p& pProperties ) { if(properties) TextpropManager::decRef(properties,1); properties = pProperties.m_hProp; TextpropManager::incRef(properties,1); }
+		inline void				setStyle( const TextStyle_p& pStyle ) { if(style) TextStyleManager::_getPointer(style)->_decRefCount(); style = pStyle->handle(); pStyle->_incRefCount(); }
 	
 								/// Gets the characters properties as a handle.
 								///
@@ -129,7 +128,7 @@ namespace wg
 								///
 								/// @return The properties of the character as a handle.
 	
-		inline uint16_t			propHandle() const { return (uint16_t) properties; }
+		inline TextStyle_h		styleHandle() const { return style; }
 	
 								/// Gets read-access to the properties of the character.
 								///
@@ -138,7 +137,7 @@ namespace wg
 								/// @return Read-only pointer to a Textprop specifying the properties of the character. A valid pointer
 								/// is always returned, if the character has no properties set a pointer to an empty default Textprop is returned.
 	
-		inline Textprop_p	getProperties() const { return Textprop_p(properties); }
+		inline TextStyle_p		stylePtr() const { return TextStyleManager::_getPointer(style); }
 	
 								/// Checks if the character is set to be underlined in the given state.
 	
@@ -146,89 +145,6 @@ namespace wg
 	
 								/// @return True if the character is set to underlined for the given state.
 	
-		inline bool				isUnderlined( State state ) const { return getPropRef().isUnderlined(state); }
-	
-								/// Checks if the character has a color specified for the given state.
-	
-								/// @param state			The state of the Widget or Item containing the text.
-	
-								/// @return True if the character has a color specified for the specified state.
-	
-		inline bool				isColored( State state ) const { return getPropRef().isColored(state); }
-	
-								/// Returns the characters specified color (if any) for the given state.
-	
-								/// @param state			The state of the Widget or Item containing the text.
-	
-								/// The method isColored() needs to be called to determine wether the
-								/// character actually has a color for the given state or not.
-								///
-								/// @return If the character has a color specified for the given state that will be returned,
-								///			otherwise an unspecified value will be returned.
-	
-		inline const Color	color( State state ) const { return getPropRef().color(state); }
-	
-								/// Checks if the character has a background color specified for the given state.
-	
-								/// @param state		The state of the Widget or Item containing the text.
-	
-								/// @return True if the character has a background color specified for the specified state.
-	
-		inline bool				isBgColored( State state ) const { return getPropRef().isBgColored(state); }
-	
-								/// Returns the characters specified background color (if any) for the given state.
-	
-								/// @param state		The state of the Widget or Item containing the text.
-	
-								/// The method isBgColored() needs to be called to determine wether the
-								/// character actually has a background color for the given state or not.
-								///
-								/// @return If the character has a background color specified for the given state that will be returned,
-								///			otherwise an unspecified value will be returned.
-	
-		inline const Color	bgColor( State state ) const { return getPropRef().bgColor(state); }
-	
-								/// Returns the text-link (weblink) this character links to, if any.
-								///
-								/// @return Pointer to the TextLink this character is part of or NULL if none.
-	
-		inline TextLink_p	link() const { return getPropRef().link(); }
-	
-								/// Returns the characters specified font (if any).
-								///
-								/// @return Pointer to the font specified for this character or NULL if none.
-	
-		inline Font_p		font() const { return getPropRef().font(); }
-	
-	
-	//	inline Glyphset *		glyphset( const Textprop_p& pDefProp, State state = StateEnum::Normal ) const { return TextTool::GetCombGlyphset(pDefProp.getHandle(), properties, state); }
-	
-								/// Returns the characters font size for the given state.
-								///
-								/// @param state			The state of the Widget or Item containing the text.
-								///						Specifying WG_MODE_ALL is not allowed and results in unspecified behavior.
-								///
-								///	Default value for all states is StateEnum::Normal which is considered "no state specified"
-								/// by most text managers who therefore will decide the characters style themselves.
-								///
-								/// @return Characters font size for the given state.
-	
-		inline int				size( State state = StateEnum::Normal ) const { return getPropRef().size(state); }
-	
-								/// Returns the characters font style specification for the given state.
-								///
-								/// @param state			The state of the Widget or Item containing the text.
-								///
-								///	Default value for all states is StateEnum::Normal which is considered "no state specified"
-								/// by most text managers who therefore will decide the characters style themselves.
-								///
-								/// @return Font style specified for the given state.
-	
-	
-		inline FontAlt		style( State state = StateEnum::Normal ) const { return getPropRef().style(state); }
-	
-								/// Checks if the character terminates the current line.
-								/// @return True if the glyph portion of the character contains End-Of-Line (\\n) or End-of-Text (null).
 	
 		inline bool 			isEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
 	
@@ -244,7 +160,6 @@ namespace wg
 	
 	protected:
 	
-		inline const Textprop&	getPropRef() const { return TextpropManager::getProp(properties); }		// Use with caution! Not safe if adding/removing
 	
 	private:
 	
@@ -253,9 +168,9 @@ namespace wg
 			struct
 			{
 				uint16_t	glyph;
-				uint16_t	properties;				// 0 = Default properties of Text.
+				TextStyle_h	style;				// 0 = Default properties of Text.
 			};
-			uint32_t	all;						// For quickly copying all...
+			uint32_t	all;					// For quickly copying all...
 		};
 	};
 	

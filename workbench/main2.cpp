@@ -98,12 +98,6 @@ int main ( int argc, char** argv )
 	BitmapGlyphs_p pGlyphs = BitmapGlyphs::create( pFontImg, pFontSpec );
 	Font_p pFont = Font::create( pGlyphs, 8 );
 
-	Textprop prop;
-	prop.setFont(pFont);
-	prop.setSize(8);
-	Textprop_p pProp = prop.reg();
-
-	Base::setDefaultTextprop( pProp );
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);

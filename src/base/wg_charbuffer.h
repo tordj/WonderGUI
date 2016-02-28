@@ -187,51 +187,15 @@ namespace wg
 		inline void			setGlyphs( uint16_t glyph );
 		void			    setGlyphs( uint16_t glyph, int ofs, int len );
 	
-		inline void			setProperties( const Textprop_p& pProp );
-		void				setProperties( const Textprop_p& pProp, int ofs, int len);
+		inline void			setStyle( const TextStyle_p& pProp );
+		void				setStyle( const TextStyle_p& pProp, int ofs, int len);
 	
-		inline void			setFont( const Font_p& pFont );
-		void				setFont( const Font_p& pFont, int ofs, int len );
-	
-		inline void			setColor( const Color color );
-		void				setColor( const Color color, int ofs, int len );
-		inline void			setColor( const Color color, State state );
-		void				setColor( const Color color, int ofs, int len, State state );
-	
-		inline void			setStyle( FontAlt style );
-		void				setStyle( FontAlt style, int ofs, int len );
-		inline void			setStyle( FontAlt style, State state );
-		void				setStyle( FontAlt style, int ofs, int len, State state );
-	
-		inline void			setUnderlined();
-		void				setUnderlined( int ofs, int len );
-		inline void			setUnderlined( State state );
-		void				setUnderlined( int ofs, int len, State state );
-	
-	
+		
 		inline void			clear();
-	
-		inline void 		clearProperties();
-		void				clearProperties( int ofs, int len );
-	
-		inline void			clearFont();
-		void				clearFont( int ofs, int len );
-	
-		inline void			clearColor();
-		void				clearColor( int ofs, int len );
-		inline void			clearColor( State state );
-		void				clearColor( int ofs, int len, State state );
 	
 		inline void 		clearStyle();
 		void				clearStyle( int ofs, int len );
-		inline void 		clearStyle( State state );
-		void				clearStyle( int ofs, int len, State state );
-	
-		inline void			clearUnderlined();
-		void				clearUnderlined( int ofs, int len );
-		inline void			clearUnderlined( State state );
-		void				clearUnderlined( int ofs, int len, State state );
-	
+		
 	
 		int					findFirst( const CharSeq& seq, int ofs = 0 );
 		int					findFirst( uint16_t character, int ofs = 0 );
@@ -260,7 +224,7 @@ namespace wg
 		};
 	
 	
-		void        	_clearCharsNoDeref( int ofs, int n );  ///< Clears specified characters in buffer without dereferencing properties.
+		void        	_clearCharsNoDeref( int ofs, int n );  ///< Clears specified characters in buffer without dereferencing style.
 		inline void *	_ptr( int ofs ) const { return ((char*) &m_pHead[1]) + sizeof(Char)*(m_pHead->m_beg+ofs); }
 	
 		void			_pushFront( int nChars );
@@ -274,7 +238,7 @@ namespace wg
 			m_pHead->m_refCnt--;
 			if( m_pHead->m_refCnt == 0 )
 			{
-				_derefProps(0, m_pHead->m_len);
+				_derefStyle(0, m_pHead->m_len);
 				_destroyBuffer(m_pHead);
 			}
 		}
@@ -288,15 +252,13 @@ namespace wg
 	
 		void			_setChars( int ofs, int nChars, uint32_t value );
 	
-		inline void		_derefProps( int ofs, int n ) { TextTool::derefProps( (Char*) _ptr(ofs), n ); }
-		inline void		_refProps( int ofs, int n ) { TextTool::refProps( (Char*) _ptr(ofs), n ); }
+		inline void		_derefStyle( int ofs, int n ) { TextTool::derefStyle( (Char*) _ptr(ofs), n ); }
+		inline void		_refStyle( int ofs, int n ) { TextTool::refStyle( (Char*) _ptr(ofs), n ); }
 	
 		static bool		_compareBuffers( const BufferHead * p1, const BufferHead * p2 );
+		
 	
-		void			_modifyProperties( int ofs, int len, const TextTool::PropModifier& modif );
-	
-	
-		const static uint32_t		c_emptyChar = 0x00000020;	// Value to fill out empty Chars with.
+		const static uint32_t	c_emptyChar = 0x00000020;	// Value to fill out empty Chars with.
 	    static int				g_nBuffers;					// Number of real buffers, <= number of CharBuffer.
 		static	BufferHead *	g_pEmptyBuffer;				// We keep one common empty buffer as an optimization
 	
@@ -491,91 +453,10 @@ namespace wg
 	/// By setting the properties you erase all previous settings of individual
 	/// properties for the characters, like font, color, style and underlined.
 	
-	void CharBuffer::setProperties( const Textprop_p& pProp )
+	void CharBuffer::setStyle( const TextStyle_p& pStyle )
 	{
-		setProperties( pProp, 0, INT_MAX );
+		setStyle( pStyle, 0, INT_MAX );
 	}
-	
-	//____ setFont() ______________________________________________________________
-	//
-	/// @brief	Sets the font for all characters currently in the buffer.
-	///
-	/// @param pFont	The font to be used by all characters.
-	///
-	/// This method modifies the properties of all characters in the buffer so that they
-	/// all specifies the same font.
-	///
-	/// Setting pFont to null is identical to calling clearFont().
-	
-	void CharBuffer::setFont( const Font_p& pFont )
-	{
-		setFont( pFont, 0, INT_MAX );
-	}
-	
-	//____ setColor() _____________________________________________________________
-	//
-	/// @brief	Sets the color for all characters currently in the buffer.
-	///
-	/// @param color	The color to be used by all characters.
-	///
-	/// @param mode		The color can be changed for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which changes the color for all modes.
-	///
-	/// This method specifies the color with which the characters glyphs will be tinted when displayed in the specified mode
-	/// or all modes.
-	
-	void CharBuffer::setColor( const Color color, State state )
-	{
-		setColor( color, 0, INT_MAX, state );
-	}
-	
-	void CharBuffer::setColor( const Color color )
-	{
-		setColor( color, 0, INT_MAX );
-	}
-	
-	
-	//____ setStyle() _____________________________________________________________
-	
-	/// @brief	Sets the style for all characters currently in the buffer.
-	///
-	/// @param style	The style to render the characters in.
-	/// @param mode		The style can be changed for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
-	///
-	/// This method specifies the style in which the character is rendered when displayed in the specified mode
-	/// or all modes.
-	
-	void CharBuffer::setStyle( FontAlt style, State state )
-	{
-		setStyle( style, 0, INT_MAX, state );
-	}
-	
-	void CharBuffer::setStyle( FontAlt style )
-	{
-		setStyle( style, 0, INT_MAX );
-	}
-	
-	
-	//____ setUnderline() _________________________________________________________
-	
-	/// @brief Sets all characters currently in the buffer to underlined.
-	///
-	/// @param mode		The characters can be made underlined for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which makes the characters underlined in all modes.
-	///
-	/// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
-	
-	void CharBuffer::setUnderlined( State state )
-	{
-		setUnderlined( 0, INT_MAX, state );
-	}
-	
-	void CharBuffer::setUnderlined()
-	{
-		setUnderlined( 0, INT_MAX );
-	}
-	
 	
 	//____ clear() ________________________________________________________________
 	
@@ -588,81 +469,16 @@ namespace wg
 		remove( 0, INT_MAX );
 	}
 	
-	//____ clearProperties() ______________________________________________________
+	//____ clearStyle() ________________________________________________________
 	//
 	/// @brief	Clears the properties for all characters currently in the buffer.
 	///
 	/// By clearing the properties you erase all previous settings of individual
 	/// properties for the characters, like font, color, style and underlined.
 	
-	void CharBuffer::clearProperties()
-	{
-		clearProperties( 0, INT_MAX );
-	}
-	
-	
-	//____ clearFont() ____________________________________________________________
-	
-	/// @brief	Clears the font for all characters currently in the buffer.
-	
-	void CharBuffer::clearFont()
-	{
-		clearFont( 0, INT_MAX );
-	}
-	
-	//____ clearColor() ___________________________________________________________
-	//
-	/// @brief	Clears the color setting for all characters currently in the buffer.
-	///
-	/// @param mode		The color can be cleared for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which clears the color for all modes.
-	///
-	/// This method clears the color-property of all characters in the buffer.
-	
-	void CharBuffer::clearColor( State state )
-	{
-		clearColor( 0, INT_MAX, state );
-	}
-	
-	void CharBuffer::clearColor()
-	{
-		clearColor( 0, INT_MAX );
-	}
-	
-	//____ clearStyle() ___________________________________________________________
-	//
-	/// @brief	Clears the style setting for all characters currently in the buffer.
-	///
-	/// @param mode		The style can be cleared for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_SPECIAL, which clears the style for all modes.
-	///
-	/// This method clears the style-property of all characters in the buffer.
-	
-	void CharBuffer::clearStyle( State state )
-	{
-		clearStyle( 0, INT_MAX, state );
-	}
-	
 	void CharBuffer::clearStyle()
 	{
 		clearStyle( 0, INT_MAX );
-	}
-	
-	//____ clearUnderlined() ______________________________________________________
-	//
-	/// @brief Removes underline from all characters currently in the buffer.
-	///
-	/// @param mode		The characters can have their underline removed from an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which removes underline from the characters in all modes.
-	
-	void CharBuffer::clearUnderlined( State state )
-	{
-		clearUnderlined( 0, INT_MAX, state );
-	}
-	
-	void CharBuffer::clearUnderlined()
-	{
-		clearUnderlined( 0, INT_MAX );
 	}
 	
 	

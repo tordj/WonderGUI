@@ -28,13 +28,13 @@ namespace wg
 	TextStyle ** TextStyleManager::s_pLookupTable = 0;		// Pointer at handle->pointer lookup table.		
 	int			TextStyleManager::s_capacity = 0;			// Size in entries for lookup table.
 	int			TextStyleManager::s_size = 0;
-	int 		TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
+	int			TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
 
 	//____ getPointer()_________________________________________________________
 
-	TextStyle_p TextStyleManager::getPointer( int handle )
+	TextStyle_p TextStyleManager::getPointer( TextStyle_h handle )
 	{
-		return s_pLookupTable[handle];
+		return s_pLookupTable[handle-1];
 	}
 
 	
@@ -91,18 +91,20 @@ namespace wg
 			s_capacity = newCapacity;
 		}
 		
-		int h = s_nextAvailable;
-		s_nextAvailable = * (int *)(&s_pLookupTable[h]);
+		int idx = s_nextAvailable;
+		s_nextAvailable = * (int *)(&s_pLookupTable[idx]);
 		s_size++;
-		return h;
+		return static_cast<TextStyle_h>(idx+1);
 	}
 
 	//____ _releaseHandle()_____________________________________________________
 	
-	void TextStyleManager::_releaseHandle( uint16_t handle )
+	void TextStyleManager::_releaseHandle( TextStyle_h handle )
 	{
-		* (int*)(&s_pLookupTable[handle]) = s_nextAvailable;
-		s_nextAvailable = handle;
+		int idx = handle - 1;
+		
+		* (int*)(&s_pLookupTable[idx]) = s_nextAvailable;
+		s_nextAvailable = idx;
 		s_size--;
 	}
 

@@ -37,19 +37,15 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
 
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
-/*
+
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
 #endif
-*/
+
 
 namespace wg 
 {
@@ -178,15 +174,7 @@ namespace wg
 		virtual void	blitVertBar(		const Surface_p& _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											int _dx, int _dy, int _len );
-	
-		// High-level print methods
-	
-		virtual bool		printText( const Rect& clip, const LegacyTextField * pText, const Rect& dest );
-	
-		// Low-level print methods
-	
-		virtual void		printLine( Pen& pen, const TextAttr& baseAttr, const Char * _pLine, int maxChars = INT_MAX, State state = StateEnum::Normal );
-	
+		
 		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
 		virtual void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
 									   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
@@ -195,25 +183,10 @@ namespace wg
 	protected:
 		GfxDevice( Size canvasSize );
 		virtual ~GfxDevice() {};
-	
-		void	_printTextSpan( Pen& pen, const LegacyTextField * pText, int ofs, int len, bool bLineEnding );
-		void	_printEllipsisTextSpan( Pen& pen, const LegacyTextField * pText, int ofs, int len, int endX );
-	
-		void	_drawTextBg( const Rect& clip, const LegacyTextField * pText, const Rect& dest );
-		void	_drawTextSectionBg( const Rect& clip, const LegacyTextField * pText, const Rect& dstRect,
-								  int iStartOfs, int iEndOfs, Color color );
-	
-	
-	//
-	//	virtual void	blitSubPixel( const Surface * pSrc, const Rect& srcrect,
-	//								  float dx, float dy ) = 0;
-	
-		virtual void	_drawUnderline( const Rect& clip, const LegacyTextField * pText, int _x, int _y, int ofs, int maxChars );
-	
-	
+		
 		Color		m_tintColor;		// Current Tint color.
 		BlendMode	m_blendMode;		// Current BlendMode.
-		uint32_t		m_renderFlags;		// Current flags.
+		uint32_t	m_renderFlags;		// Current flags.
 	
 		Size		m_canvasSize;
 		bool		m_bSaveDirtyRects;

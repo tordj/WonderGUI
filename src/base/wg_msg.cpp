@@ -23,20 +23,10 @@
 #include <wg_msg.h>
 #include <wg_key.h>
 #include <wg_widget.h>
-#include <wg_button.h>
-#include <wg_animplayer.h>
-#include <wg_valuedisplay.h>
-#include <wg_valueeditor.h>
-#include <wg_scrollbar.h>
-#include <wg_textdisplay.h>
-#include <wg_lineeditor.h>
-#include <wg_menu.h>
-#include <wg_legacytextfield.h>
+#include <wg_edittext.h>
 
 namespace wg 
 {
-	//#include <wg_tablepanel.h>
-	
 	
 	//____ Msg ______________________________________________________________
 	
@@ -996,12 +986,12 @@ namespace wg
 	
 	const char TextEditMsg::CLASSNAME[] = {"TextEditMsg"};
 	
-	LegacyEditText_p TextEditMsg::text() const
+	EditText_p TextEditMsg::text() const
 	{
 		return m_pText;
 	}
 	
-	TextEditMsg::TextEditMsg( const LegacyEditText_p& pText, bool bFinal )
+	TextEditMsg::TextEditMsg( const EditText_p& pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->holder();

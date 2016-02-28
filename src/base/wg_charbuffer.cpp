@@ -140,7 +140,7 @@ namespace wg
 	
 		if( m_pHead->m_size == size && m_pHead->m_refCnt == 1 )
 		{
-			_derefProps( 0, m_pHead->m_len );
+			_derefStyle( 0, m_pHead->m_len );
 			m_pHead->m_beg = 0;
 			m_pHead->m_len = 0;
 	
@@ -184,10 +184,10 @@ namespace wg
 			// We only need to dereference the props we haven't copied to the new buffer
 	
 			if( copyOfs > 0 )
-				_derefProps( 0, copyOfs );
+				_derefStyle( 0, copyOfs );
 	
 			if( copyOfs + copyLen < m_pHead->m_len )
-				_derefProps( copyOfs + copyLen, m_pHead->m_len - copyOfs - copyLen );
+				_derefStyle( copyOfs + copyLen, m_pHead->m_len - copyOfs - copyLen );
 			//
 	
 			_destroyBuffer(m_pHead);
@@ -197,7 +197,7 @@ namespace wg
 			// Since the previous buffer wasn't destroyed, we need to reference the new
 			// one since we have one extra copy of all the Char.
 	
-			_refProps( copyOfs, copyLen );		// Easier to scan through the old buffer, content is identical anyway...
+			_refStyle( copyOfs, copyLen );		// Easier to scan through the old buffer, content is identical anyway...
 		}
 	
 		//
@@ -266,7 +266,7 @@ namespace wg
 		}
 		else
 		{
-			_derefProps( 0, nChars );
+			_derefStyle( 0, nChars );
 	
 			m_pHead->m_beg += nChars;
 			m_pHead->m_len -= nChars;
@@ -300,7 +300,7 @@ namespace wg
 		}
 		else
 		{
-			_derefProps( m_pHead->m_len - nChars, nChars );
+			_derefStyle( m_pHead->m_len - nChars, nChars );
 			m_pHead->m_len -= nChars;
 			* ((uint32_t *) _ptr(m_pHead->m_len)) = 0;		// null terminate.
 		}
@@ -366,8 +366,8 @@ namespace wg
 		_pushFront(1);
 		*((uint32_t*)_ptr(0)) = character.all;
 	
-		if( character.properties )
-			TextpropManager::incRef(character.properties, 1 );
+		if( character.style )
+			TextStyleManager::_getPointer(character.style)->_incRefCount();
 	
 		return 1;
 	}
@@ -403,7 +403,7 @@ namespace wg
 		_pushFront(len);
 	
 		memcpy( _ptr(0), pChars, sizeof(Char)*len );
-		_refProps(0,len);
+		_refStyle(0,len);
 		return len;
 	}
 	
@@ -425,7 +425,7 @@ namespace wg
 		_pushFront(nChars);
 	
 		memcpy( _ptr(0), pChars, sizeof(Char)*nChars );
-		_refProps(0,nChars);
+		_refStyle(0,nChars);
 		return nChars;
 	}
 	
@@ -458,8 +458,8 @@ namespace wg
 		_pushBack(1);
 		*((uint32_t*)_ptr( m_pHead->m_len - 1)) = character.all;
 	
-		if( character.properties )
-			TextpropManager::incRef(character.properties, 1 );
+		if( character.style )
+			TextStyleManager::_getPointer(character.style)->_incRefCount();
 	
 		return 1;
 	}
@@ -494,7 +494,7 @@ namespace wg
 		_pushBack(len);
 	
 		memcpy( ((Char*) _ptr(0)) + m_pHead->m_len-len, pChars, sizeof(Char)*len );
-		_refProps(m_pHead->m_len-len,len);
+		_refStyle(m_pHead->m_len-len,len);
 		return len;
 	}
 	
@@ -517,7 +517,7 @@ namespace wg
 		_pushBack(nChars);
 	
 		memcpy( ((Char*) _ptr(0)) + m_pHead->m_len-nChars, pChars, sizeof(Char)*nChars );
-		_refProps(m_pHead->m_len-nChars,nChars);
+		_refStyle(m_pHead->m_len-nChars,nChars);
 		return nChars;
 	}
 	
@@ -916,7 +916,7 @@ namespace wg
 		// Dereference the props of the characters to be deleted
 	
 		if( delChar != 0 )
-			_derefProps( ofs, delChar );
+			_derefStyle( ofs, delChar );
 	
 		// Check if we can just modify this buffer to fit things in
 	
@@ -980,7 +980,7 @@ namespace wg
 			{
 				m_pHead = pBuffer;
 				_setChars( ofs, addSpace, c_emptyChar );
-				_refProps( 0, m_pHead->m_len );
+				_refStyle( 0, m_pHead->m_len );
 			}
 	
 			m_pHead->m_refCnt++;
@@ -993,7 +993,7 @@ namespace wg
 			if( pChars != 0 )
 			{
 				_copyChars( m_pHead, m_pHead->m_beg + ofs, pChars, addSpace );
-				_refProps( ofs, addSpace );
+				_refStyle( ofs, addSpace );
 			}
 			else
 				_setChars( ofs, addSpace, c_emptyChar );
@@ -1134,7 +1134,7 @@ namespace wg
 	
 	
 	
-	//___ setProperties() __________________________________________________________
+	//___ setStyle() __________________________________________________________
 	//
 	/// @brief	Sets the properties for a range of characters.
 	///
@@ -1146,7 +1146,7 @@ namespace wg
 	/// properties for the characters, like font, color, style, and underlined.
 	/// If the range spans outside the buffer content it will be adjusted properly.
 	
-	void CharBuffer::setProperties( const Textprop_p& pProp, int ofs, int len  )
+	void CharBuffer::setStyle( const TextStyle_p& pStyle, int ofs, int len  )
 	{
 		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 			return;
@@ -1157,100 +1157,10 @@ namespace wg
 		if( m_pHead->m_refCnt > 1 )
 			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	
-		TextTool::setProperties( pProp, (Char*)_ptr(ofs), len );
+		TextTool::setStyle( pStyle, (Char*)_ptr(ofs), len );
 	}
 	
-	//___ setColor() _______________________________________________________________
-	//
-	/// @brief	Sets the color for a range of characters.
-	///
-	/// @param color	The color to be used by the characters.
-	/// @param ofs		Offset of first character to have its color changed.
-	/// @param len		Number of characters to have their color changed.
-	/// @param mode		The style can be changed for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
-	///
-	/// This method specifies the color, with which the characters glyphs will
-	/// be tinted when displayed in the specified mode, for all characters in
-	/// the specified range. If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::setColor( const Color color, int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateColorModifier(color,state) );
-	}
-	
-	void CharBuffer::setColor( const Color color, int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropColorModifier(color) );
-	}
-	
-	
-	//___ setStyle() _______________________________________________________________
-	//
-	/// @brief	Sets the style for a range of characters.
-	///
-	/// @param style	The style to render the characters in.
-	/// @param ofs		Offset of first character to have its style changed.
-	/// @param len		Number of characters to have their style changed.
-	/// @param mode		The style can be changed for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
-	///
-	/// This method specifies the style in which the character is rendered when
-	/// displayed in the specified mode or all modes.
-	/// If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::setStyle( FontAlt style, int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateStyleModifier(style,state) );
-	}
-	
-	void CharBuffer::setStyle( FontAlt style, int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStyleModifier(style) );
-	}
-	
-	
-	//___ setFont() ________________________________________________________________
-	//
-	/// @brief	Sets the font for a range of characters.
-	///
-	/// @param pFont	The font to be used by all characters.
-	/// @param ofs		Offset of first character to have its font changed.
-	/// @param len		Number of characters to have their font changed.
-	///
-	/// This method sets the font for all characters in the specified range. If the
-	/// range spans outside the buffer content it will be adjusted properly.
-	///
-	/// Setting pFont to null is identical to calling clearFont().
-	
-	void CharBuffer::setFont( const Font_p& pFont, int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropFontModifier(pFont) );
-	}
-	
-	//___ setUnderlined() __________________________________________________________
-	//
-	/// @brief	Sets a range of characters to underlined.
-	///
-	/// @param ofs		Offset of first character to become underlined.
-	/// @param len		Number of characters to become underlined.
-	/// @param mode		The characters can be made underlined for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which makes the characters underlined in all modes.
-	///
-	/// Specifying a single mode as underlined doesn't affect whether other modes are underlined or not.
-	/// If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::setUnderlined( int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateUnderlinedModifier(true,state) );
-	}
-	
-	void CharBuffer::setUnderlined( int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropUnderlinedModifier(true) );
-	}
-	
-	//___ clearProperties() ________________________________________________________
+	//___ clearStyle() ________________________________________________________
 	//
 	/// @brief	Clears the properties for a range of characters.
 	///
@@ -1261,7 +1171,7 @@ namespace wg
 	/// By clearing the properties you erase all previous settings of individual
 	/// properties for the characters, like font, color, style and underlined.
 	
-	void CharBuffer::clearProperties( int ofs, int len  )
+	void CharBuffer::clearStyle( int ofs, int len  )
 	{
 		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 			return;
@@ -1272,107 +1182,9 @@ namespace wg
 		if( m_pHead->m_refCnt > 1 )
 			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	
-		TextTool::clearProperties( (Char*)_ptr(ofs), len );
+		TextTool::clearStyle( (Char*)_ptr(ofs), len );
 	}
-	
-	//___ clearColor() _____________________________________________________________
-	//
-	/// @brief	Clears the color setting for a range of characters.
-	///
-	/// @param ofs		Offset of first character to have its color setting cleared.
-	/// @param len		Number of characters to have their color settings cleared.
-	/// @param mode		The color can be cleared for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which clears the color for all modes.
-	///
-	/// This method clears the color-property of all characters in the specified range.
-	/// If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::clearColor( int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateColorClearer(state) );
-	}
-	
-	void CharBuffer::clearColor( int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropColorClearer() );
-	}
-	
-	
-	//___ clearStyle() _____________________________________________________________
-	//
-	/// @brief	Clears the style setting for a range of characters.
-	///
-	/// @param ofs		Offset of first character to have its style setting cleared.
-	/// @param len		Number of characters to have their style settings cleared.
-	/// @param mode		The style can be cleared for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which changes the style for all modes.
-	///
-	/// This method clears the style-property of all characters in the specified range.
-	/// If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::clearStyle( int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateStyleModifier(FontAlt::Normal,state) );
-	}
-	
-	void CharBuffer::clearStyle( int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStyleModifier(FontAlt::Normal) );
-	}
-	
-	//___ clearFont() ______________________________________________________________
-	//
-	/// @brief	Clears the font for a range of characters.
-	///
-	/// @param ofs		Offset of first character to have its font property cleared.
-	/// @param len		Number of characters to have their font properties cleared.
-	///
-	/// This method clears the font for all characters in the specified range. If the
-	/// range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::clearFont( int ofs, int len  )
-	{
-		_modifyProperties( ofs, len, TextTool::PropFontModifier(0) );
-	}
-	
-	//___ clearUnderlined() ________________________________________________________
-	//
-	/// @brief	Removes underline from a range of characters.
-	///
-	/// @param ofs		Offset of first character to not be underlined anymore.
-	/// @param len		Number of characters to not be underlined anymore.
-	/// @param mode		The characters can have their underline removed for an individual mode by specifying it here.
-	///					This parameter defaults to WG_MODE_ALL, which removes underline from all modes.
-	///
-	/// If the range spans outside the buffer content it will be adjusted properly.
-	
-	void CharBuffer::clearUnderlined( int ofs, int len, State state )
-	{
-		_modifyProperties( ofs, len, TextTool::PropStateUnderlinedModifier(false,state) );
-	}
-	
-	void CharBuffer::clearUnderlined( int ofs, int len )
-	{
-		_modifyProperties( ofs, len, TextTool::PropUnderlinedModifier(false) );
-	}
-	
-	
-	//____ _modifyProperties() ____________________________________________________
-	
-	void CharBuffer::_modifyProperties( int ofs, int len, const TextTool::PropModifier& modif )
-	{
-		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
-			return;
-	
-		if( ofs + len > m_pHead->m_len )
-			len = m_pHead->m_len - ofs;
-	
-		if( m_pHead->m_refCnt > 1 )
-			_reshapeBuffer(0,0,m_pHead->m_len,0);
-	
-		TextTool::modifyProperties( modif, (Char*)_ptr(ofs), len );
-	}
-	
+		
 	//____ findFirst() ____________________________________________________________
 	//
 	/// @brief	Finds the first occurence of the specified character sequence in buffer starting from offset.

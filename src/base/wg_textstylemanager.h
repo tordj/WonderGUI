@@ -30,14 +30,16 @@
 
 namespace wg
 {
-	
 	class TextStyleManager
 	{
 	friend class Base;
 	friend class TextStyle;
+	friend class Char;
+	friend class CharBuffer;
+	friend class TextTool;
 	public:
 	
-		static TextStyle_p 	getPointer( int handle );
+		static TextStyle_p 	getPointer( TextStyle_h handle );
 		static inline int	getNbStyles() { return s_size; }
 		
 	protected:
@@ -47,14 +49,14 @@ namespace wg
 		static void init();
 		static void exit();
 
-		static uint16_t		_reserveHandle();
-		static void			_releaseHandle( uint16_t handle );
-		static inline TextStyle * 	_getPointer( uint16_t handle ) { return s_pLookupTable[handle]; }
+		static TextStyle_h			_reserveHandle();
+		static void					_releaseHandle( TextStyle_h handle );
+		static inline TextStyle * 	_getPointer( TextStyle_h handle ) { return s_pLookupTable[handle-1]; }
 
 		static TextStyle **	s_pLookupTable;			// Pointer at handle->pointer lookup table.		
 		static int			s_capacity;				// Size in entries for lookup table.
 		static int			s_size;					// Size in entries for lookup table.
-		static int 			s_nextAvailable;		// Offset in table for next available entry.
+		static int			s_nextAvailable;		// Offset in table for next available entry.
 	};
 }
 

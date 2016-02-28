@@ -32,8 +32,8 @@
 #endif
 
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
 #endif
 
 namespace wg 
@@ -70,8 +70,8 @@ namespace wg
 		virtual bool			isEditable() const = 0;
 		virtual bool			isSelectable() const = 0;
 	
-		virtual void			setCaret( const Caret_p& pCaret ) = 0;
-		virtual Caret_p			caret() const = 0;
+		virtual void			setCaret( const Caret2_p& pCaret ) = 0;
+		virtual Caret2_p		caret() const = 0;
 	
 		// Calling these methods gets field into edit mode, displaying cursor.
 	

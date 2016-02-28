@@ -30,6 +30,10 @@
 #	include <wg_modtext.h>
 #endif
 
+#ifndef WG_GFXANIM_DOT_H
+#	include <wg_gfxanim.h>
+#endif
+
 namespace wg 
 {
 	

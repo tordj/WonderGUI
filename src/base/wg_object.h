@@ -72,6 +72,9 @@ namespace wg
 	
 		inline void _incRefCount() { m_refCount++; }
 		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
+
+		inline void _incRefCount(int amount) { m_refCount += amount; }
+		inline void _decRefCount(int amount) { m_refCount -= amount; if( m_refCount == 0 ) _destroy(); }
 	
 		WeakPtrHub *	m_pWeakPtrHub;
 	

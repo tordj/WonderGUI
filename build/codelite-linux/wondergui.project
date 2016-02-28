@@ -32,22 +32,22 @@
     <File Name="../../src/widgets/wg_animplayer.cpp"/>
     <File Name="../../src/widgets/wg_animplayer.h"/>
     <File Name="../../src/widgets/wg_button.h"/>
-    <File Name="../../src/widgets/wg_combobox.cpp"/>
-    <File Name="../../src/widgets/wg_combobox.h"/>
+    <File Name="../../src/widgets/wg_combobox.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_combobox.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_container.cpp"/>
     <File Name="../../src/widgets/wg_container.h"/>
     <File Name="../../src/widgets/wg_filler.cpp"/>
     <File Name="../../src/widgets/wg_filler.h"/>
-    <File Name="../../src/widgets/wg_fpsdisplay.cpp"/>
-    <File Name="../../src/widgets/wg_fpsdisplay.h"/>
+    <File Name="../../src/widgets/wg_fpsdisplay.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_fpsdisplay.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_image.cpp"/>
     <File Name="../../src/widgets/wg_image.h"/>
     <File Name="../../src/widgets/wg_knob.cpp"/>
     <File Name="../../src/widgets/wg_knob.h"/>
-    <File Name="../../src/widgets/wg_menu.cpp"/>
-    <File Name="../../src/widgets/wg_menu.h"/>
-    <File Name="../../src/widgets/wg_menubar.cpp"/>
-    <File Name="../../src/widgets/wg_menubar.h"/>
+    <File Name="../../src/widgets/wg_menu.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_menu.h" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_menubar.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_menubar.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_oscilloscope.cpp"/>
     <File Name="../../src/widgets/wg_oscilloscope.h"/>
     <File Name="../../src/widgets/wg_refreshbutton.cpp"/>
@@ -66,8 +66,8 @@
     <File Name="../../src/widgets/wg_togglebutton.h"/>
     <File Name="../../src/widgets/wg_valuedisplay.cpp"/>
     <File Name="../../src/widgets/wg_valuedisplay.h"/>
-    <File Name="../../src/widgets/wg_valueeditor.cpp"/>
-    <File Name="../../src/widgets/wg_valueeditor.h"/>
+    <File Name="../../src/widgets/wg_valueeditor.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_valueeditor.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_volumemeter.cpp"/>
     <File Name="../../src/widgets/wg_volumemeter.h"/>
     <File Name="../../src/widgets/wg_widget.cpp"/>
@@ -114,6 +114,8 @@
     <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.h"/>
+    <File Name="../../src/widgets/wg_lineeditor.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_lineeditor.h" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_columnheaderfield.cpp"/>
@@ -124,8 +126,6 @@
     <File Name="../../src/items/wg_iconfield.cpp"/>
     <File Name="../../src/items/wg_iconfield.h"/>
     <File Name="../../src/items/wg_item.h"/>
-    <File Name="../../src/items/wg_legacytextfield.cpp"/>
-    <File Name="../../src/items/wg_legacytextfield.h"/>
     <File Name="../../src/items/wg_modvaluefield.cpp"/>
     <File Name="../../src/items/wg_modvaluefield.h"/>
     <File Name="../../src/items/wg_spanitem.cpp"/>
@@ -160,16 +160,10 @@
     <File Name="../../src/interfaces/wg_span.h"/>
     <File Name="../../src/interfaces/wg_value.cpp"/>
     <File Name="../../src/interfaces/wg_value.h"/>
-    <File Name="../../src/interfaces/wg_legacytext.cpp"/>
-    <File Name="../../src/interfaces/wg_legacytext.h"/>
     <File Name="../../src/interfaces/wg_text.cpp"/>
     <File Name="../../src/interfaces/wg_text.h"/>
-    <File Name="../../src/interfaces/wg_legacymodtext.cpp"/>
-    <File Name="../../src/interfaces/wg_legacymodtext.h"/>
     <File Name="../../src/interfaces/wg_modtext.cpp"/>
     <File Name="../../src/interfaces/wg_modtext.h"/>
-    <File Name="../../src/interfaces/wg_legacyedittext.h"/>
-    <File Name="../../src/interfaces/wg_legacyedittext.cpp"/>
     <File Name="../../src/interfaces/wg_edittext.cpp"/>
     <File Name="../../src/interfaces/wg_edittext.h"/>
   </VirtualDirectory>
@@ -203,12 +197,8 @@
     <File Name="../../src/base/wg_bitmapglyphs.h"/>
     <File Name="../../src/base/wg_blob.cpp"/>
     <File Name="../../src/base/wg_blob.h"/>
-    <File Name="../../src/base/wg_caret.cpp"/>
-    <File Name="../../src/base/wg_caret.h"/>
     <File Name="../../src/base/wg_caret2.cpp"/>
     <File Name="../../src/base/wg_caret2.h"/>
-    <File Name="../../src/base/wg_caretinstance.cpp"/>
-    <File Name="../../src/base/wg_caretinstance.h"/>
     <File Name="../../src/base/wg_chain.cpp"/>
     <File Name="../../src/base/wg_chain.h"/>
     <File Name="../../src/base/wg_char.cpp"/>
@@ -245,16 +235,14 @@
     <File Name="../../src/base/wg_mempool.h"/>
     <File Name="../../src/base/wg_memstack.cpp"/>
     <File Name="../../src/base/wg_memstack.h"/>
-    <File Name="../../src/base/wg_menuitem.cpp"/>
-    <File Name="../../src/base/wg_menuitem.h"/>
+    <File Name="../../src/base/wg_menuitem.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/base/wg_menuitem.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_nullgfxdevice.cpp"/>
     <File Name="../../src/base/wg_nullgfxdevice.h"/>
     <File Name="../../src/base/wg_object.cpp"/>
     <File Name="../../src/base/wg_object.h"/>
     <File Name="../../src/base/wg_patches.cpp"/>
     <File Name="../../src/base/wg_patches.h"/>
-    <File Name="../../src/base/wg_pen.cpp"/>
-    <File Name="../../src/base/wg_pen.h"/>
     <File Name="../../src/base/wg_pointers.cpp"/>
     <File Name="../../src/base/wg_pointers.h"/>
     <File Name="../../src/base/wg_resdb.cpp"/>
@@ -269,10 +257,6 @@
     <File Name="../../src/base/wg_surfacefactory.cpp"/>
     <File Name="../../src/base/wg_surfacefactory.h"/>
     <File Name="../../src/base/wg_textlink.h"/>
-    <File Name="../../src/base/wg_textprop.cpp"/>
-    <File Name="../../src/base/wg_textprop.h"/>
-    <File Name="../../src/base/wg_textpropmanager.cpp"/>
-    <File Name="../../src/base/wg_textpropmanager.h"/>
     <File Name="../../src/base/wg_textstyle.cpp"/>
     <File Name="../../src/base/wg_texttool.cpp"/>
     <File Name="../../src/base/wg_texttool.h"/>
@@ -281,8 +265,8 @@
     <File Name="../../src/base/wg_types.h"/>
     <File Name="../../src/base/wg_util.cpp"/>
     <File Name="../../src/base/wg_util.h"/>
-    <File Name="../../src/base/wg_valueformat.cpp"/>
-    <File Name="../../src/base/wg_valueformat.h"/>
+    <File Name="../../src/base/wg_valueformat.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/base/wg_valueformat.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_vectorglyphs.cpp"/>
     <File Name="../../src/base/wg_vectorglyphs.h"/>
     <File Name="../../src/base/wg_sizescaler.cpp"/>
@@ -318,8 +302,8 @@
     <File Name="../../src/valueformatters/wg_valueformatter.h"/>
     <File Name="../../src/valueformatters/wg_standardformatter.h"/>
     <File Name="../../src/valueformatters/wg_standardformatter.cpp"/>
-    <File Name="../../src/valueformatters/wg_timeformatter.cpp"/>
-    <File Name="../../src/valueformatters/wg_timeformatter.h"/>
+    <File Name="../../src/valueformatters/wg_timeformatter.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/valueformatters/wg_timeformatter.h" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

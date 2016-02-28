@@ -31,20 +31,12 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
 #ifndef WG_TEXTLINK_DOT_H
 #	include <wg_textlink.h>
 #endif
 
 #ifndef WG_FONT_DOT_H
 #	include <wg_font.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
 #endif
 
 namespace wg 

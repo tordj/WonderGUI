@@ -87,9 +87,9 @@ namespace wg
 		m_mapGlyphsets.clear();
 		m_mapFonts.clear();
 		m_mapGfxAnims.clear();
-		m_mapCursors.clear();
+		m_mapCarets.clear();
 		m_mapColors.clear();
-		m_mapTextprops.clear();
+		m_mapTextStyles.clear();
 		m_mapLegoSources.clear();
 		m_mapSkins.clear();
 		m_mapWidgets.clear();
@@ -159,7 +159,7 @@ namespace wg
 		return std::string("_anim__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Caret_p& data )
+	std::string	ResDB::generateName( const Caret2_p& data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -173,7 +173,7 @@ namespace wg
 		return std::string("_color__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Textprop_p& data )
+	std::string	ResDB::generateName( const TextStyle_p& data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -339,15 +339,15 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addCursor( const std::string& id, const Caret_p& pCursor, MetaData * pMetaData )
+	bool ResDB::addCaret( const std::string& id, const Caret2_p& pCaret, MetaData * pMetaData )
 	{
-		assert(m_mapCursors.find(id) == m_mapCursors.end());
-		if(m_mapCursors.find(id) == m_mapCursors.end())
+		assert(m_mapCarets.find(id) == m_mapCarets.end());
+		if(m_mapCarets.find(id) == m_mapCarets.end())
 		{
-			CursorRes* p = new CursorRes(id, pCursor, pMetaData);
+			CaretRes* p = new CaretRes(id, pCaret, pMetaData);
 			m_cursors.pushBack(p);
 			if(id.size())
-				m_mapCursors[id] = p;
+				m_mapCarets[id] = p;
 			return true;
 		}
 		return false;
@@ -355,15 +355,15 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addTextprop( const std::string& id, const Textprop_p& pProp, MetaData * pMetaData )
+	bool ResDB::addTextStyle( const std::string& id, const TextStyle_p& pProp, MetaData * pMetaData )
 	{
-		//assert(m_mapTextprops.find(id) == m_mapTextprops.end());
-		if(m_mapTextprops.find(id) == m_mapTextprops.end())
+		//assert(m_mapTextStyles.find(id) == m_mapTextStyles.end());
+		if(m_mapTextStyles.find(id) == m_mapTextStyles.end())
 		{
-			TextpropRes* p = new TextpropRes(id, pProp, pMetaData);
+			TextStyleRes* p = new TextStyleRes(id, pProp, pMetaData);
 			m_textProps.pushBack(p);
 			if(id.size())
-				m_mapTextprops[id] = p;
+				m_mapTextStyles[id] = p;
 			return true;
 		}
 		return false;
@@ -499,18 +499,18 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	Caret_p ResDB::getCursor( const std::string& id ) const
+	Caret2_p ResDB::getCaret( const std::string& id ) const
 	{
-		CursorRes* cursorRes = getResCursor(id);
-		return cursorRes ? cursorRes->res : Caret_p();
+		CaretRes* cursorRes = getResCaret(id);
+		return cursorRes ? cursorRes->res : Caret2_p();
 	}
 	
 	//____ () _________________________________________________________
 	
-	Textprop_p ResDB::getTextprop( const std::string& id ) const
+	TextStyle_p ResDB::getTextStyle( const std::string& id ) const
 	{
-		TextpropRes* propRes = getResTextprop(id);
-		return propRes ? propRes->res : Textprop_p();
+		TextStyleRes* propRes = getResTextStyle(id);
+		return propRes ? propRes->res : TextStyle_p();
 	}
 	
 	//____ () _________________________________________________________
@@ -649,36 +649,36 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::CursorRes * ResDB::getResCursor( const std::string& id ) const
+	ResDB::CaretRes * ResDB::getResCaret( const std::string& id ) const
 	{
-		CursorRes* res = 0;
+		CaretRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
 		{
 			if(db->res)
 			{
-				if((res = db->res->getResCursor(id)))
+				if((res = db->res->getResCaret(id)))
 					return res;
 			}
 		}
-		CursorMap::const_iterator it = m_mapCursors.find(id);
-		return it == m_mapCursors.end() ? 0 : it->second;
+		CaretMap::const_iterator it = m_mapCarets.find(id);
+		return it == m_mapCarets.end() ? 0 : it->second;
 	}
 	
 	//____ () _________________________________________________________
 	
-	ResDB::TextpropRes * ResDB::getResTextprop( const std::string& id ) const
+	ResDB::TextStyleRes * ResDB::getResTextStyle( const std::string& id ) const
 	{
-		TextpropRes* res = 0;
+		TextStyleRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
 		{
 			if(db->res)
 			{
-				if((res = db->res->getResTextprop(id)))
+				if((res = db->res->getResTextStyle(id)))
 					return res;
 			}
 		}
-		PropMap::const_iterator it = m_mapTextprops.find(id);
-		return it == m_mapTextprops.end() ? 0 : it->second;
+		PropMap::const_iterator it = m_mapTextStyles.find(id);
+		return it == m_mapTextStyles.end() ? 0 : it->second;
 	}
 	
 	//____ () _________________________________________________________
@@ -878,18 +878,18 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::CursorRes* ResDB::findResCursor( const Caret_p& meta ) const
+	ResDB::CaretRes* ResDB::findResCaret( const Caret2_p& meta ) const
 	{
-		CursorRes* res = 0;
+		CaretRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
 		{
 			if(db->res)
 			{
-				if((res = db->res->findResCursor(meta)))
+				if((res = db->res->findResCaret(meta)))
 					return res;
 			}
 		}
-		for(res = getFirstResCursor(); res; res = res->next())
+		for(res = getFirstResCaret(); res; res = res->next())
 			if(res->res == meta)
 				return res;
 		return 0;
@@ -897,18 +897,18 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::TextpropRes* ResDB::findResTextprop( const Textprop_p& meta ) const
+	ResDB::TextStyleRes* ResDB::findResTextStyle( const TextStyle_p& meta ) const
 	{
-		TextpropRes* res = 0;
+		TextStyleRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
 		{
 			if(db->res)
 			{
-				if((res = db->res->findResTextprop(meta)))
+				if((res = db->res->findResTextStyle(meta)))
 					return res;
 			}
 		}
-		for(res = getFirstResTextprop(); res; res = res->next())
+		for(res = getFirstResTextStyle(); res; res = res->next())
 			if(res->res == meta)
 				return res;
 		return 0;
@@ -1100,64 +1100,64 @@ namespace wg
 	}
 	
 	
-	//____ removeCursor() ___________________________________________________________
+	//____ removeCaret() ___________________________________________________________
 	
-	bool ResDB::removeCursor( const std::string& id )
+	bool ResDB::removeCaret( const std::string& id )
 	{
-		CursorMap::iterator it = m_mapCursors.find( id );
+		CaretMap::iterator it = m_mapCarets.find( id );
 	
-		if( it == m_mapCursors.end() )
+		if( it == m_mapCarets.end() )
 			return false;
 	
-		CursorRes * pRes = it->second;
-		m_mapCursors.erase(it);
+		CaretRes * pRes = it->second;
+		m_mapCarets.erase(it);
 		delete pRes;
 	
 		return true;
 	}
 	
-	bool ResDB::removeCursor( ResDB::CursorRes * pRes )
+	bool ResDB::removeCaret( ResDB::CaretRes * pRes )
 	{
 		if( !pRes )
 			return false;
 	
 		if( pRes->id.length() > 0 )
 		{
-			CursorMap::iterator it = m_mapCursors.find( pRes->id );
-			assert( it != m_mapCursors.end() );
-			m_mapCursors.erase(it);
+			CaretMap::iterator it = m_mapCarets.find( pRes->id );
+			assert( it != m_mapCarets.end() );
+			m_mapCarets.erase(it);
 		}
 		delete pRes;
 		return true;
 	}
 	
 	
-	//____ removeTextprop() _______________________________________________________
+	//____ removeTextStyle() _______________________________________________________
 	
-	bool ResDB::removeTextprop( const std::string& id )
+	bool ResDB::removeTextStyle( const std::string& id )
 	{
-		PropMap::iterator it = m_mapTextprops.find( id );
+		PropMap::iterator it = m_mapTextStyles.find( id );
 	
-		if( it == m_mapTextprops.end() )
+		if( it == m_mapTextStyles.end() )
 			return false;
 	
-		TextpropRes * pRes = it->second;
-		m_mapTextprops.erase(it);
+		TextStyleRes * pRes = it->second;
+		m_mapTextStyles.erase(it);
 		delete pRes;
 	
 		return true;
 	}
 	
-	bool ResDB::removeTextprop( ResDB::TextpropRes * pRes )
+	bool ResDB::removeTextStyle( ResDB::TextStyleRes * pRes )
 	{
 		if( !pRes )
 			return false;
 	
 		if( pRes->id.length() > 0 )
 		{
-			PropMap::iterator it = m_mapTextprops.find( pRes->id );
-			assert( it != m_mapTextprops.end() );
-			m_mapTextprops.erase(it);
+			PropMap::iterator it = m_mapTextStyles.find( pRes->id );
+			assert( it != m_mapTextStyles.end() );
+			m_mapTextStyles.erase(it);
 		}
 		delete pRes;
 		return true;

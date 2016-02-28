@@ -25,7 +25,6 @@
 #include <wg_base.h>
 #include <wg_msgrouter.h>
 
-#include <wg_textpropmanager.h>
 #include <wg_textstylemanager.h>
 #include <wg_texttool.h>
 #include <wg_memstack.h>
@@ -56,7 +55,6 @@ namespace wg
 
 		s_pData = new Data;
 		
-		s_pData->pDefaultCursor = 0;
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 	
@@ -159,24 +157,6 @@ namespace wg
 	}
 	#endif
 	
-	
-	
-	//____ setDefaultTextManager() _________________________________________________
-	
-	/*void Base::setDefaultTextManager( const TextMgrPtr& pManager )
-	{
-		m_pDefTextMgr = pManager;
-	}
-	
-	
-	//____ getDefaultTextManager() _________________________________________________
-	
-	const TextMgrPtr& Base::getDefaultTextManager()
-	{
-		return m_pDefTextMgr;
-	}
-	*/
-	
 	//____ setDefaultCaret() _______________________________________________________
 	
 	void Base::setDefaultCaret( const Caret2_p& pCaret )
@@ -200,42 +180,7 @@ namespace wg
 		assert( s_pData != 0 );
 		s_pData->pDefaultStyle = pStyle;	
 	}
-	
-	
-	
-	//____ setDefaultTextprop() ___________________________________________________
-	
-	void Base::setDefaultTextprop( const Textprop_p& pProp )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultTextprop = pProp;
-	}
-	
-	//____ setDefaultSelectionProp() ___________________________________________________
-	
-	void Base::setDefaultSelectionProp( const Textprop_p& pProp )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultSelectionProp = pProp;
-	}
-	
-	//____ setDefaultLinkProp() ___________________________________________________
-	
-	void Base::setDefaultLinkProp( const Textprop_p& pProp )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultLinkProp = pProp;
-	}
-	
-	
-	//____ setDefaultCursor() ___________________________________________________
-	
-	void Base::setDefaultCursor( const Caret_p& pCursor )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultCursor = pCursor;
-	}
-	
+		
 	
 	//____ memStackAlloc() ________________________________________________________
 	

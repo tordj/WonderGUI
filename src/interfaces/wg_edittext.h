@@ -32,8 +32,8 @@
 #endif
 
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
 #endif
 
 namespace wg 

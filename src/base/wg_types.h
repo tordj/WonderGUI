@@ -140,6 +140,7 @@ namespace wg
 	
 	typedef unsigned int	RouteId;
 	
+	typedef uint16_t		TextStyle_h;
 	
 	//____ TxtAttr ______________________________________________________________
 	

@@ -35,10 +35,6 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
 #ifndef WG_TEXTLINK_DOT_H
 #	include <wg_textlink.h>
 #endif

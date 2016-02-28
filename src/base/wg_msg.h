@@ -50,11 +50,6 @@
 #endif
 
 
-/*
-#ifndef WG_LEGACYEDITTEXT_DOT_H
-#	include <wg_legacyedittext.h>
-#endif
-*/
 
 
 
@@ -63,31 +58,22 @@ namespace wg
 
 	class MsgRouter;
 	class Widget;
-	class Button;
-	class CheckBox;
-	class RadioButton;
-	class AnimPlayer;
-	class Tablist;
-	class ValueDisplay;
-	class ValueEditor;
-	class Scrollbar;
-	class Menu;
 	class PopupLayer;
 	class ModalLayer;
 
 
-	class LegacyText;
-	class LegacyModText;
-	class LegacyEditText;
+	class Text;
+	class ModText;
+	class EditText;
 
-	typedef	StrongInterfacePtr<LegacyText,Interface_p>	LegacyText_p;
-	typedef	WeakInterfacePtr<LegacyText,Interface_wp> LegacyText_wp;
+	typedef	StrongInterfacePtr<Text,Interface_p>	Text_p;
+	typedef	WeakInterfacePtr<Text,Interface_wp> 	Text_wp;
 
-	typedef	StrongInterfacePtr<LegacyModText,LegacyText_p>	LegacyModText_p;
-	typedef	WeakInterfacePtr<LegacyModText,LegacyText_wp>	LegacyModText_wp;
+	typedef	StrongInterfacePtr<ModText,Text_p>		ModText_p;
+	typedef	WeakInterfacePtr<ModText,Text_wp>		ModText_wp;
 
-	typedef	StrongInterfacePtr<LegacyEditText,LegacyModText_p>	LegacyEditText_p;
-	typedef	WeakInterfacePtr<LegacyEditText,LegacyModText_wp>	LegacyEditText_wp;
+	typedef	StrongInterfacePtr<EditText,ModText_p>	EditText_p;
+	typedef	WeakInterfacePtr<EditText,ModText_wp>	EditText_wp;
 
 
 	typedef WeakPtr<Widget,Receiver_wp> Widget_wp;
@@ -704,18 +690,18 @@ namespace wg
 	class TextEditMsg : public Msg
 	{
 	public:
-		TextEditMsg( const LegacyEditText_p& pText, bool bFinal );
+		TextEditMsg( const EditText_p& pText, bool bFinal );
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextEditMsg_p	cast( const Object_p& pObject );
 
-		LegacyEditText_p		text() const;
+		EditText_p			text() const;
 		bool				isFinal() const;
 
 	protected:
-		LegacyEditText_p		m_pText;
+		EditText_p			m_pText;
 		bool				m_bFinal;
 	};
 

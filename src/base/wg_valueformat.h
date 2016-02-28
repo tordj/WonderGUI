@@ -28,8 +28,8 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
 #endif
 
 #ifndef WG_CHARSEQ_DOT_H
@@ -83,9 +83,9 @@ namespace wg
 			void setSuffix( const CharSeq& seq );
 			inline const String& getSuffix() const { return suffix; }
 	
-			inline void setTextProperties( Textprop_p& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
-			inline void clearTextProperties() { bSetTextprop = false; }
-			inline Textprop_p getTextProperties() const { return pTextProperties; }
+			inline void setTextStyle( TextStyle_p& _pStyle ) { pTextStyle = _pStyle; bSetTextStyle = true; }
+			inline void clearTextStyle() { bSetTextStyle = false; }
+			inline TextStyle_p getTextStyle() const { return pTextStyle; }
 	
 			inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 			inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -131,15 +131,15 @@ namespace wg
 			uint8_t		integers;			/// Lowest number of integers to display, padded with zeroes.
 			uint8_t		decimals;			/// Number of decimals to display.
 			uint8_t		grouping;			/// Number of integers to group together. 0 = no grouping
-			uint16_t		separator;			/// Character to separate integer groups with.
-			uint16_t		period;				/// Character used for separating integer and decimal part
-			String	prefix;				/// Characters preceding the value, like $, £ or similar.
-			String	suffix;				/// Characters following the value.
+			uint16_t	separator;			/// Character to separate integer groups with.
+			uint16_t	period;				/// Character used for separating integer and decimal part
+			String		prefix;				/// Characters preceding the value, like $, £ or similar.
+			String		suffix;				/// Characters following the value.
 			bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 			bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 			bool		bForcePeriod;		/// Display period even if there are no decimals?
-		Textprop_p 	pTextProperties;	/// Text properties for generated text.
-			bool		bSetTextprop;		/// Set if properties should be set for text.
+			TextStyle_p pTextStyle;			/// Text style for generated text.
+			bool		bSetTextStyle;		/// Set if style should be set for text.
 			bool		bForceDecimals;		/// Display decimals even if they are 0
 			int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
 			int			scale;				/// Value is scaled by this value before being formatted.

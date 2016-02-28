@@ -67,12 +67,8 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
-#ifndef WG_CARETINSTANCE_DOT_H
-#	include <wg_caretinstance.h>
+#ifndef WG_CARET2_DOT_H
+#	include <wg_caret2.h>
 #endif
 
 #ifndef WG_RESDB_DOT_H
@@ -127,10 +123,6 @@
 #	include <wg_object.h>
 #endif
 
-#ifndef WG_PEN_DOT_H
-#	include <wg_pen.h>
-#endif
-
 #ifndef WG_ROOTPANEL_DOT_H
 #	include <wg_rootpanel.h>
 #endif
@@ -151,16 +143,8 @@
 #	include <wg_surfacefactory.h>
 #endif
 
-#ifndef WG_LEGACYTEXTFIELD_DOT_H
-#	include <wg_legacytextfield.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
-#ifndef WG_TEXTPROPMANAGER_DOT_H
-#	include <wg_textpropmanager.h>
+#ifndef WG_TEXTSTYLE_DOT_H
+#	include <wg_textstyle.h>
 #endif
 
 #ifndef WG_TEXTTOOL_DOT_H
@@ -223,17 +207,6 @@
 #	include <wg_colorskin.h>
 #endif
 
-#ifndef WG_COMBOBOX_DOT_H
-#	include <wg_combobox.h>
-#endif
-
-#ifndef WG_LINEEDITOR_DOT_H
-#	include <wg_lineeditor.h>
-#endif
-
-#ifndef WG_VALUEEDITOR_DOT_H
-#	include <wg_valueeditor.h>
-#endif
 
 #ifndef WG_FILLER_DOT_H
 #	include <wg_filler.h>
@@ -243,20 +216,9 @@
 #	include <wg_flexpanel.h>
 #endif
 
-#ifndef WG_FPSDISPLAY_DOT_H
-#	include <wg_fpsdisplay.h>
-#endif
 
 #ifndef WG_IMAGE_DOT_H
 #	include <wg_image.h>
-#endif
-
-#ifndef WG_MENU_DOT_H
-#	include <wg_menu.h>
-#endif
-
-#ifndef WG_MENUBAR_DOT_H
-#	include <wg_menubar.h>
 #endif
 
 #ifndef WG_POPUPLAYER_DOT_H

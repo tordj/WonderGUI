@@ -71,6 +71,11 @@ namespace wg
 	
 	class TextStyle : public Object
 	{
+		friend class Char;
+		friend class CharBuffer;
+		friend class TextTool;
+
+		
 	public:
 		static TextStyle_p	create() { return TextStyle_p(new TextStyle()); }
 	
@@ -79,7 +84,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static TextStyle_p	cast( const Object_p& pObject );
 	
-		inline int		handle() { return m_handle; }
+		inline TextStyle_h	handle() { return m_handle; }
 	
 		bool			setParent( const TextStyle_p& pParent );
 		void			cascade();
@@ -156,7 +161,7 @@ namespace wg
 		AttrSet		m_specAttr;
 		AttrSet		m_combAttr;
 	
-		uint16_t	m_handle;
+		TextStyle_h	m_handle;
 	};
 	
 	
