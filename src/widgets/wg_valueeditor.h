@@ -35,9 +35,6 @@
 #	include <wg_valueformat.h>
 #endif
 
-#ifndef WG_INTERFACE_VALUEHOLDER_DOT_H
-#	include <wg_interface_valueholder.h>
-#endif
 
 namespace wg 
 {

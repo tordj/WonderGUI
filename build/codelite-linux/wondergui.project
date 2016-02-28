@@ -228,8 +228,6 @@
     <File Name="../../src/base/wg_hookarray.h"/>
     <File Name="../../src/base/wg_hookptr.cpp"/>
     <File Name="../../src/base/wg_hookptr.h"/>
-    <File Name="../../src/base/wg_interface_valueholder.cpp"/>
-    <File Name="../../src/base/wg_interface_valueholder.h"/>
     <File Name="../../src/base/wg_key.h"/>
     <File Name="../../src/base/wg_mempool.cpp"/>
     <File Name="../../src/base/wg_mempool.h"/>

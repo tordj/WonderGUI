@@ -64,7 +64,7 @@ namespace wg
 	
 		//____ Interfaces ______________________________________
 	
-		ModText		label;
+		ModText			label;
 		Icon			icon;
 	
 		//____ Methods __________________________________________
