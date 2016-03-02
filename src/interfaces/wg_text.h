@@ -35,14 +35,6 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_TEXTLINK_DOT_H
-#	include <wg_textlink.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
-
 #ifndef WG_TEXTSTYLE_DOT_H
 #	include <wg_textstyle.h>
 #endif

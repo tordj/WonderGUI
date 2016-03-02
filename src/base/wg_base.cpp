@@ -34,7 +34,7 @@
 
 #ifdef USE_FREETYPE
 #	include <ft2build.h>
-#	include <wg_vectorglyphs.h>
+#	include <wg_vectorfont.h>
 #	include FT_FREETYPE_H
 #endif
 
@@ -87,8 +87,8 @@ namespace wg
 	
 	#ifdef USE_FREETYPE
 	
-		VectorGlyphs::setSurfaceFactory(0);
-		VectorGlyphs::clearCache();
+		VectorFont::setSurfaceFactory(0);
+		VectorFont::clearCache();
 	
 		if( s_pData->bFreeTypeInitialized )
 			FT_Done_FreeType( s_pData->freeTypeLibrary );

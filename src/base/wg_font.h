@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-
+	
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -23,114 +23,117 @@
 #ifndef	WG_FONT_DOT_H
 #define	WG_FONT_DOT_H
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
 #endif
 
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
+#ifndef WG_POINTERS_DOT_H
+#	include <wg_pointers.h>
 #endif
 
-#ifndef WG_GLYPHSET_DOT_H
-#	include <wg_glyphset.h>
-#endif
-
-
-
-#include <assert.h>
-
-#ifdef	USE_FREETYPE
-#	ifndef WG_VECTORGLYPHS_DOT_H
-#		include <wg_vectorglyphs.h>
-#	endif
-#endif
-
-#ifndef WG_BITMAPGLYPHS_DOT_H
-#	include <wg_bitmapglyphs.h>
+#ifndef WG_SURFACE_DOT_H
+#	include <wg_surface.h>
 #endif
 
 namespace wg 
 {
 	
+	class	Font;
+	
+	
+	
+	
+	//____ GlyphBitmap _____________________________________________________________
+	
+	struct GlyphBitmap
+	{
+		Surface_p pSurface;
+		Rect		rect;
+		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+		int8_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+	};
+	
+	
+	//____ Glyph ________________________________________________________________
+	
+	class Glyph
+	{
+	friend class Font;
+	
+	public:
+		virtual const GlyphBitmap * getBitmap() = 0;
+	
+		inline int		advance() { return m_advance; }
+		inline int		kerningIndex() { return m_kerningIndex; }
+		inline Font *	glyphset() { return m_pFont; }
+	
+	protected:
+		Glyph();
+		Glyph( int advance, int _kerningIndex, Font * pFont );
+		virtual ~Glyph() {}
+	
+		Font *	m_pFont;	// glyphset that this glyph belongs to
+		int				m_advance;		// spacing to next glyph
+		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (VectorFont)
+	};
+	
+	typedef Glyph*	Glyph_p;
+	
+	
+	//____ Underline ____________________________________________________________
+	
+	struct Underline
+	{
+		Underline() { pSurf = 0; rect = Rect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
+	
+		Surface_p pSurf;
+		Rect		rect;
+		int8_t		bearingX;
+		int8_t		bearingY;
+		uint8_t		leftBorder;
+		uint8_t		rightBorder;
+	};
 	
 	class Font;
 	typedef	StrongPtr<Font,Object_p>		Font_p;
 	typedef	WeakPtr<Font,Object_wp>	Font_wp;
 	
-	//____ Font ______________________________________________________________
+	//____ Font _____________________________________________________________
 	
 	class Font : public Object
 	{
 	public:
-		static Font_p	create() { return Font_p(new Font()); }
-	#ifdef USE_FREETYPE
-		static Font_p	create( const VectorGlyphs_p& pNormal ) { return Font_p(new Font(pNormal)); }
-	#endif
-		static Font_p	create( const BitmapGlyphs_p& pNormal, int size ) { return Font_p(new Font(pNormal,size)); }
-	
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static Font_p	cast( const Object_p& pObject );
 	
-		enum GlyphProvided
+		enum Type
 		{
-			NOT_PROVIDED			= 0,
-			EXACT_MATCH_PROVIDED	= 1,
-			DEFAULT_PROVIDED		= 2,
-			SMALLER_MATCH_PROVIDED	= 3,
-			SMALLER_DEFAULT_PROVIDED= 4
+			VECTOR = 0,
+			BITMAP,
 		};
 	
 	
+		virtual	Type			getType() const = 0;
 	
-		Glyphset_p		getGlyphset( FontAlt style, int size ) const;
-		Glyph_p			getGlyph( uint32_t chr, FontAlt style, int size ) const;
-		GlyphProvided		isGlyphProvided( uint32_t chr, FontAlt style, int size ) const;
+		virtual int				getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size ) = 0;
+		virtual Glyph_p			getGlyph( uint16_t chr, int size ) = 0;
+		virtual bool			hasGlyph( uint16_t chr ) = 0;
 	
-	#ifdef	USE_FREETYPE
-		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style  );
-		bool				setVectorGlyphs( const VectorGlyphs_p& pGlyphs, FontAlt style, int size );
-		bool				setDefaultVectorGlyphs( const VectorGlyphs_p& pGlyphs );
-	
-		inline VectorGlyphs_p	getVectorGlyphs( FontAlt style, int size  ) const { if( size <= WG_MAX_FONTSIZE && m_aVectorGlyphs[(int)style] != 0 ) return m_aVectorGlyphs[(int)style][size]; else return 0; }
-		inline VectorGlyphs_p	getDefaultVectorGlyphs( ) const { return m_pDefaultVectorGlyphs; }
-	
-		int					replaceVectorGlyphs( const VectorGlyphs_p& pOld, const VectorGlyphs_p& pNew );
-	#endif
-	
-		int					replaceBitmapGlyphs( const BitmapGlyphs_p& pOld, const BitmapGlyphs_p& pNew );
-	
-	
-		bool				setBitmapGlyphs( const BitmapGlyphs_p& pGlyph, FontAlt style, int size );
-		bool				setDefaultBitmapGlyphs( const BitmapGlyphs_p& pGlyphs, int size = 0 );
-	
-		BitmapGlyphs_p			getBitmapGlyphs( FontAlt style, int size );
-		inline BitmapGlyphs_p	getDefaultBitmapGlyphs( int size = 0 ) const { if( size <= WG_MAX_FONTSIZE ) return m_aDefaultBitmapGlyphs[size]; else return 0; }
-	
-		const Underline *	getUnderline( int size );
+		virtual int				getHeight( int size ) = 0;
+		virtual int				getLineSpacing( int size ) = 0;
+		virtual int				getBaseline( int size ) = 0;	// Offset in pixels to baseline.
+		virtual int				getNbGlyphs() = 0;
+		virtual bool			hasGlyphs() = 0;
+		virtual bool			isMonospace() = 0;
+		virtual int				getWhitespaceAdvance( int size ) = 0;
+		virtual int				getMaxGlyphAdvance( int size ) = 0;
 	
 	
 	protected:
-		Font();
-	#ifdef USE_FREETYPE
-		Font( const VectorGlyphs_p& pNormal );
-	#endif
-		Font( const BitmapGlyphs_p& pNormal, int size );
-		~Font();
-	
-		void	_init();
-	
-	#ifdef	USE_FREETYPE
-		VectorGlyphs_p	m_pDefaultVectorGlyphs;
-		VectorGlyphs_p*	m_aVectorGlyphs[WG_NB_FONTSTYLES];			// Pointer at an array of WG_MAX_FONTSIZE+1 WgVectorGlyhphs.
-	#endif
-	
-		BitmapGlyphs_p *	m_aBitmapGlyphs[WG_MAX_FONTSIZE+1];			// Pointer at an array of WG_NB_FONTSTYLES BitmapGlyphs.
-		BitmapGlyphs_p	m_aDefaultBitmapGlyphs[WG_MAX_FONTSIZE+1];
-	
-		Underline			m_tempUnderline;							// Holds the last requested underline.
-	
+		Font() {}
+		virtual ~Font() {}
 	};
 	
 	
@@ -138,4 +141,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif	// WG_FONT_DOT_H
+#endif // WG_FONT_DOT_H

@@ -47,7 +47,7 @@ namespace wg
 {
 	
 	class Font;
-	class Glyphset;
+	class Font;
 	class Char;
 	class ResDB;
 	class TextNode;

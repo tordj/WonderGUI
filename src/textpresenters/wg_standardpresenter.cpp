@@ -146,8 +146,7 @@ namespace wg
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
 	
 		TextAttr2		attr = baseAttr;
-		Font_p pFont = attr.pFont;
-		Glyphset_p pGlyphSet = pFont->getGlyphset( FontAlt::Normal, attr.size);
+		Font_p 			pFont = attr.pFont;
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
@@ -167,7 +166,7 @@ namespace wg
 					// TODO: Include handling of special characters
 					// TODO: Support char-style changes.
 				
-					pGlyph = pGlyphSet->getGlyph(pChars->getGlyph(),attr.size);
+					pGlyph = pFont->getGlyph(pChars->getGlyph(),attr.size);
 	
 					if( pGlyph )
 					{
@@ -176,10 +175,10 @@ namespace wg
 	
 						pos.x += pGlyph->advance();
 						if( pPrevGlyph )
-							pos.x += pGlyphSet->getKerning(pPrevGlyph, pGlyph, attr.size);
+							pos.x += pFont->getKerning(pPrevGlyph, pGlyph, attr.size);
 					}
 					else if( pChars->getGlyph() == 32 )
-						pos.x += pGlyphSet->getWhitespaceAdvance( attr.size );
+						pos.x += pFont->getWhitespaceAdvance( attr.size );
 						
 					pPrevGlyph = pGlyph;
 					pChars++;
@@ -315,8 +314,7 @@ namespace wg
 	
 	
 		TextAttr2		attr = baseAttr;
-		Font_p pFont = attr.pFont;
-		Glyphset_p pGlyphSet = pFont->getGlyphset(FontAlt::Normal, attr.size);
+		Font_p 			pFont = attr.pFont;
 	
 		
 		
@@ -325,9 +323,9 @@ namespace wg
 			pLines->offset = pChars - pBuffer->chars();
 	
 			int	width = 0;
-			int height = pGlyphSet->getHeight(attr.size);
-			int spacing = pGlyphSet->getLineSpacing(attr.size);
-			int base = pGlyphSet->getBaseline(attr.size);
+			int height = pFont->getHeight(attr.size);
+			int spacing = pFont->getLineSpacing(attr.size);
+			int base = pFont->getBaseline(attr.size);
 	
 			Glyph_p	pGlyph;
 			Glyph_p	pPrevGlyph;
@@ -338,16 +336,16 @@ namespace wg
 				// TODO: Change loop, needs to include EOL character in line.
 				// TODO: Support char-style changes.
 				
-				pGlyph = pGlyphSet->getGlyph(pChars->getGlyph(),attr.size);
+				pGlyph = pFont->getGlyph(pChars->getGlyph(),attr.size);
 	
 				if( pGlyph )
 				{
 					width += pGlyph->advance();
 					if( pPrevGlyph )
-						width += pGlyphSet->getKerning(pPrevGlyph, pGlyph, attr.size);
+						width += pFont->getKerning(pPrevGlyph, pGlyph, attr.size);
 				}
 				else if( pChars->getGlyph() == 32 )
-					width += pGlyphSet->getWhitespaceAdvance(attr.size);
+					width += pFont->getWhitespaceAdvance(attr.size);
 	
 				pPrevGlyph = pGlyph;
 				pChars++;

@@ -31,8 +31,8 @@
 #	include <wg_base.h>
 #endif
 
-#ifndef WG_BITMAPGLYPHS_DOT_H
-#	include <wg_bitmapglyphs.h>
+#ifndef WG_BITMAPFONT_DOT_H
+#	include <wg_bitmapfont.h>
 #endif
 
 #ifndef WG_BLOB_DOT_H
@@ -69,10 +69,6 @@
 
 #ifndef WG_CARET2_DOT_H
 #	include <wg_caret2.h>
-#endif
-
-#ifndef WG_RESDB_DOT_H
-#	include <wg_resdb.h>
 #endif
 
 #ifndef WG_MSGFUNC_DOT_H
@@ -167,8 +163,8 @@
 #	include <wg_valueformat.h>
 #endif
 
-#ifndef WG_VECTORGLYPHS_DOT_H
-#	include <wg_vectorglyphs.h>
+#ifndef WG_VECTORFONT_DOT_H
+#	include <wg_vectorfont.h>
 #endif
 
 #ifndef WG_PANEL_DOT_H

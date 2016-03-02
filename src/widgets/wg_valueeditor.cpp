@@ -150,7 +150,7 @@ namespace wg
 		TextAttr	attr;
 		m_text.getBaseAttr( attr );
 		if( attr.pFont )
-			sz.w = attr.pFont->getGlyphset(attr.style,attr.size)->getMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
+			sz.w = attr.pFont->getFont(attr.style,attr.size)->getMaxGlyphAdvance(attr.size)*5;	// By default fit at least 5 characters
 	
 		if( sz.h == 0 )
 			return Widget::preferredSize();

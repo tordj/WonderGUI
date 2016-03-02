@@ -193,8 +193,6 @@
     <File Name="../../src/base/wg_anim.h"/>
     <File Name="../../src/base/wg_base.cpp"/>
     <File Name="../../src/base/wg_base.h"/>
-    <File Name="../../src/base/wg_bitmapglyphs.cpp"/>
-    <File Name="../../src/base/wg_bitmapglyphs.h"/>
     <File Name="../../src/base/wg_blob.cpp"/>
     <File Name="../../src/base/wg_blob.h"/>
     <File Name="../../src/base/wg_caret2.cpp"/>
@@ -213,16 +211,12 @@
     <File Name="../../src/base/wg_color.h"/>
     <File Name="../../src/base/wg_finalizer.cpp"/>
     <File Name="../../src/base/wg_finalizer.h"/>
-    <File Name="../../src/base/wg_font.cpp"/>
-    <File Name="../../src/base/wg_font.h"/>
     <File Name="../../src/base/wg_geo.cpp"/>
     <File Name="../../src/base/wg_geo.h"/>
     <File Name="../../src/base/wg_gfxanim.cpp"/>
     <File Name="../../src/base/wg_gfxanim.h"/>
     <File Name="../../src/base/wg_gfxdevice.cpp"/>
     <File Name="../../src/base/wg_gfxdevice.h"/>
-    <File Name="../../src/base/wg_glyphset.cpp"/>
-    <File Name="../../src/base/wg_glyphset.h"/>
     <File Name="../../src/base/wg_hook.cpp"/>
     <File Name="../../src/base/wg_hook.h"/>
     <File Name="../../src/base/wg_hookarray.h"/>
@@ -243,8 +237,8 @@
     <File Name="../../src/base/wg_patches.h"/>
     <File Name="../../src/base/wg_pointers.cpp"/>
     <File Name="../../src/base/wg_pointers.h"/>
-    <File Name="../../src/base/wg_resdb.cpp"/>
-    <File Name="../../src/base/wg_resdb.h"/>
+    <File Name="../../src/base/wg_resdb.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/base/wg_resdb.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_resloader.h"/>
     <File Name="../../src/base/wg_scrollbartarget.cpp"/>
     <File Name="../../src/base/wg_scrollbartarget.h"/>
@@ -265,8 +259,6 @@
     <File Name="../../src/base/wg_util.h"/>
     <File Name="../../src/base/wg_valueformat.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_valueformat.h" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/base/wg_vectorglyphs.cpp"/>
-    <File Name="../../src/base/wg_vectorglyphs.h"/>
     <File Name="../../src/base/wg_sizescaler.cpp"/>
     <File Name="../../src/base/wg_sizescaler.h"/>
     <File Name="../../src/widgets/capsules/wg_sizecapsule.h"/>
@@ -285,6 +277,12 @@
     <File Name="../../src/base/wg_textstyle.h"/>
     <File Name="../../src/base/wg_textstylemanager.h"/>
     <File Name="../../src/base/wg_textstylemanager.cpp"/>
+    <File Name="../../src/base/wg_font.h"/>
+    <File Name="../../src/base/wg_font.cpp"/>
+    <File Name="../../src/base/wg_vectorfont.h"/>
+    <File Name="../../src/base/wg_vectorfont.cpp"/>
+    <File Name="../../src/base/wg_bitmapfont.h"/>
+    <File Name="../../src/base/wg_bitmapfont.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

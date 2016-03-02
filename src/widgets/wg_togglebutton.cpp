@@ -23,7 +23,6 @@
 #include <wg_togglebutton.h>
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
-#include <wg_font.h>
 #include <wg_util.h>
 #include <wg_rootpanel.h>
 #include <wg_msgrouter.h>

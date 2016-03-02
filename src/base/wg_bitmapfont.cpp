@@ -24,19 +24,19 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#include <wg_bitmapglyphs.h>
+#include <wg_bitmapfont.h>
 #include <wg_texttool.h>
 
 namespace wg 
 {
 	
 	
-	const char BitmapGlyphs::CLASSNAME[] = {"BitmapGlyphs"};
+	const char BitmapFont::CLASSNAME[] = {"BitmapFont"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	BitmapGlyphs::BitmapGlyphs( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile )
+	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -82,7 +82,7 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	BitmapGlyphs::~BitmapGlyphs()
+	BitmapFont::~BitmapFont()
 	{
 		for( int i = 0 ; i < 256 ; i++ )
 		{
@@ -96,34 +96,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool BitmapGlyphs::isInstanceOf( const char * pClassName ) const
+	bool BitmapFont::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Glyphset::isInstanceOf(pClassName);
+		return Font::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * BitmapGlyphs::className( void ) const
+	const char * BitmapFont::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	BitmapGlyphs_p BitmapGlyphs::cast( const Object_p& pObject )
+	BitmapFont_p BitmapFont::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BitmapGlyphs_p( static_cast<BitmapGlyphs*>(pObject.rawPtr()) );
+			return BitmapFont_p( static_cast<BitmapFont*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ copyGlyphs() ___________________________________________________________
 	
-	void BitmapGlyphs::copyGlyphs( BitmapGlyphs* pOtherFont )
+	void BitmapFont::copyGlyphs( BitmapFont* pOtherFont )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgSpacing *= m_nGlyphs;
@@ -169,7 +169,7 @@ namespace wg
 	
 	//____ hasGlyph() _________________________________________________
 	
-	inline bool BitmapGlyphs::hasGlyph( uint16_t chr )
+	inline bool BitmapFont::hasGlyph( uint16_t chr )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
@@ -186,7 +186,7 @@ namespace wg
 	
 	//____ getGlyph() _________________________________________________________
 	
-	inline Glyph_p BitmapGlyphs::getGlyph( uint16_t chr, int size )
+	inline Glyph_p BitmapFont::getGlyph( uint16_t chr, int size )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
@@ -204,7 +204,7 @@ namespace wg
 	//____ getKerning() _________________________________________________________
 	
 	
-	inline int BitmapGlyphs::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
+	inline int BitmapFont::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
 	{
 		if( !m_pKerningTable )
 			return 0;
@@ -224,7 +224,7 @@ namespace wg
 	
 	//____ insertGlyphs() _________________________________________________________
 	
-	void BitmapGlyphs::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile )
+	void BitmapFont::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgSpacing *= m_nGlyphs;
@@ -588,15 +588,15 @@ namespace wg
 		m_avgSpacing /= m_nGlyphs;
 	}
 	
-	//____ BitmapGlyphs::MyGlyph constructor ______________________________________
+	//____ BitmapFont::MyGlyph constructor ______________________________________
 	
-	BitmapGlyphs::MyGlyph::MyGlyph()
+	BitmapFont::MyGlyph::MyGlyph()
 	{
 		m_src.pSurface = 0;
 	}
 	
-	BitmapGlyphs::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Glyphset * pGlyphset, const Surface_p& pSurf, const Rect& rect )
-	: Glyph( advance, kerningIndex, pGlyphset )
+	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, const Surface_p& pSurf, const Rect& rect )
+	: Glyph( advance, kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;
 			m_src.rect		= rect;
