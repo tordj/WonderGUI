@@ -54,9 +54,7 @@ namespace wg
 		m_btnLayout			= DEFAULT;
 		m_headerLen			= 0;
 		m_footerLen			= 0;
-	
-		m_lastCursorDownPos = Coord(-4096, -4096);
-	
+		
 		for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS; i++ )
 			m_states[i] = StateEnum::Normal;
 	}

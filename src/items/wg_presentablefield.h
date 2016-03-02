@@ -113,7 +113,7 @@ namespace wg
 	
 	struct EditState
 	{
-		bool 			bCaret;			// Set if cursor should be displayed.
+		bool 			bCaret;			// Set if caret should be displayed.
 		int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 		int				caretOfs;		// End of selection and caret offset (if displaying)
 		int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.		

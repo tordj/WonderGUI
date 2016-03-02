@@ -180,7 +180,6 @@ namespace wg
 			bool			m_bHorizontal;
 			bool			m_bPressOnHandle;
 			int				m_handlePressOfs;
-			Coord			m_lastCursorDownPos;
 	
 			BtnLayout		m_btnLayout;
 			uint8_t			m_headerLen;

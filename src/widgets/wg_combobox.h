@@ -77,8 +77,8 @@ namespace wg
 		void			setEditMode(TextEditMode mode);
 		TextEditMode	editMode() const { return m_text.editMode(); }
 	
-		int				insertTextAtCursor( const CharSeq& str );
-		bool			insertCharAtCursor( uint16_t c );
+		int				insertTextAtCaret( const CharSeq& str );
+		bool			insertCharAtCaret( uint16_t c );
 	
 		// Press in textfield:
 		//		Editable - Grab input focus.
@@ -120,12 +120,12 @@ namespace wg
 		static void cbEntrySelected( const Msg_p& pMsg, const Object_p& pWdg) { Combobox::cast(pWdg)->_entrySelected(ItemsSelectMsg::cast(pMsg)->items()->id); }
 	
 		String		m_textFormat;
-		String		m_placeholderText;		// Text displayed when field is empty and has no cursor.
+		String		m_placeholderText;		// Text displayed when field is empty and has no caret.
 	
 		Menu_p		m_pMenu;
 		MenuItem*		m_pSelectedItem;
 		LegacyTextField		m_text;
-		bool			m_bResetCursorOnFocus;
+		bool			m_bResetCaretOnFocus;
 		bool			m_bPressInInputRect;
 		bool			m_bFocusPress;
 		int				m_maxCharacters;

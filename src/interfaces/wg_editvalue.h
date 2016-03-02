@@ -73,7 +73,7 @@ namespace wg
 		virtual void			setCaret( const Caret2_p& pCaret ) = 0;
 		virtual Caret2_p		caret() const = 0;
 	
-		// Calling these methods gets field into edit mode, displaying cursor.
+		// Calling these methods gets field into edit mode, displaying caret.
 	
 		virtual int				insertAtCaret( const CharSeq& str ) = 0;
 		virtual bool			insertAtCaret( uint16_t c ) = 0;

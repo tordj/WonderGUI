@@ -49,7 +49,7 @@ namespace wg
 	
 		m_state = StateEnum::Normal;
 	
-		m_bResetCursorOnFocus = true;
+		m_bResetCaretOnFocus = true;
 		m_bPressInInputRect = false;
 		m_pMenu		= 0;
 		m_pSelectedItem = 0;
@@ -151,13 +151,13 @@ namespace wg
 	void Combobox::setPlaceholderText( const CharSeq& str )
 	{
 		m_placeholderText = str;
-		if( m_text.isEmpty() && !m_text.isCursorShowing() )
+		if( m_text.isEmpty() && !m_text.isCaretShowing() )
 			_requestRender();
 	}
 	
-	//____ insertTextAtCursor() ___________________________________________________
+	//____ insertTextAtCaret() ___________________________________________________
 	
-	int Combobox::insertTextAtCursor( const CharSeq& str )
+	int Combobox::insertTextAtCaret( const CharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -186,9 +186,9 @@ namespace wg
 		return retVal;
 	}
 	
-	//____ insertCharAtCursor() ___________________________________________________
+	//____ insertCharAtCaret() ___________________________________________________
 	
-	bool Combobox::insertCharAtCursor( uint16_t c )
+	bool Combobox::insertCharAtCaret( uint16_t c )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -234,7 +234,7 @@ namespace wg
 				if( _isEditable() && m_state.isFocused() )
 				{
 					m_text.incTime( TickMsg::cast(_pMsg)->timediff() );
-					_requestRender();					//TODO: Should only render the cursor and selection!
+					_requestRender();					//TODO: Should only render the caret and selection!
 				}
 			break;
 	
@@ -309,7 +309,7 @@ namespace wg
 							int y = pos.y;
 							x += m_viewOfs;
 	
-							m_text.cursorGotoCoord( Coord(x, 0), Rect(inputRect.x,0,1000000,1000000) );
+							m_text.caretGotoCoord( Coord(x, 0), Rect(inputRect.x,0,1000000,1000000) );
 					
 							if(_isSelectable() && !(pMsg->modKeys() & MODKEY_SHIFT))
 							{
@@ -356,7 +356,7 @@ namespace wg
 						int x = pMsg->pointerPos().x - globalPos().x + m_viewOfs;
 						int leftBorder = m_pSkin ? m_pSkin->contentRect( size(), m_state ).x : 0;
 	
-						m_text.cursorGotoCoord( Coord(x, 0), Rect(leftBorder,0,1000000,1000000) );
+						m_text.caretGotoCoord( Coord(x, 0), Rect(leftBorder,0,1000000,1000000) );
 						_adjustViewOfs();
 					}
 					_pMsg->swallow();
@@ -587,8 +587,8 @@ namespace wg
 			if( _isEditable() )
 			{
 				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
-				m_text.showCursor();
-				if( m_bResetCursorOnFocus )
+				m_text.showCaret();
+				if( m_bResetCaretOnFocus )
 				{
 					m_text.goEol();
 					m_text.selectAll();
@@ -603,9 +603,9 @@ namespace wg
 			if( _isEditable() )
 			{
 				Base::msgRouter()->deleteRoute( m_tickRouteId );
-				m_text.hideCursor();
+				m_text.hideCaret();
 				m_text.clearSelection();
-				m_bResetCursorOnFocus = true;
+				m_bResetCaretOnFocus = true;
 				Base::msgRouter()->post( new TextEditMsg( text.ptr(),true ) );	//TODO: Should only do if text was really changed!
 			}
 		}
@@ -636,7 +636,7 @@ namespace wg
 		Rect	textClip( r, _clip );
 	
 		bool bPlaceholder = false;
-		if( !m_placeholderText.isEmpty() && m_text.isEmpty() && !m_text.isCursorShowing() )
+		if( !m_placeholderText.isEmpty() && m_text.isEmpty() && !m_text.isCaretShowing() )
 		{
 			bPlaceholder = true;
 			m_text.set( m_placeholderText );
@@ -678,14 +678,14 @@ namespace wg
 	void Combobox::_adjustViewOfs()
 	{
 		// Possibly move viewOfs so that:
-		//	1 Cursor remains inside view.
-		//  2 At least one character is displayed before the cursor
-		//  3 At least one character is displayed after the cursor (if there is one).
+		//	1 Caret remains inside view.
+		//  2 At least one character is displayed before the caret
+		//  3 At least one character is displayed after the caret (if there is one).
 	
 		if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 		{
-			Caret_p pCursor = TextTool::getCursor( &m_text );
-			if( !pCursor )
+			Caret_p pCaret = TextTool::getCaret( &m_text );
+			if( !pCaret )
 				return;
 	
 			int cursCol	= m_text.column();
@@ -693,11 +693,11 @@ namespace wg
 			TextAttr	attr;
 			m_text.getBaseAttr( attr );
 	
-			int cursAdvance	= pCursor->advance(m_text.cursorMode() );
-			int cursBearing	= pCursor->bearingX(m_text.cursorMode() );
-			int cursWidth	= pCursor->width(m_text.cursorMode() );
+			int cursAdvance	= pCaret->advance(m_text.caretMode() );
+			int cursBearing	= pCaret->bearingX(m_text.caretMode() );
+			int cursWidth	= pCaret->width(m_text.caretMode() );
 	
-			int cursOfs;		// Cursor offset from beginning of line in pixels.
+			int cursOfs;		// Caret offset from beginning of line in pixels.
 			int maxOfs;			// Max allowed view offset in pixels.
 			int minOfs;			// Min allowed view offset in pixels.
 	
@@ -727,7 +727,7 @@ namespace wg
 			// Calculate minOfs
 	
 			if( cursCol < m_text.getLine(0)->nChars )
-				minOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, cursor might affect linewidth different from its own width.
+				minOfs = m_text.getSoftLineWidthPart( 0, 0, cursCol+1 ) + cursAdvance - geoWidth;	// Not 100% right, caret might affect linewidth different from its own width.
 			else
 				minOfs = cursOfs + cursBearing + cursWidth - geoWidth;
 	
@@ -742,7 +742,7 @@ namespace wg
 	
 		}
 		else
-			m_viewOfs = 0;				// Show beginning of line when cursor disappears.
+			m_viewOfs = 0;				// Show beginning of line when caret disappears.
 	}
 	
 	//____ _onAlphaTest() ______________________________________________________
@@ -812,7 +812,7 @@ namespace wg
 	
 	void Combobox::_onFieldResize( Field * pField )
 	{
-		m_bResetCursorOnFocus = true;
+		m_bResetCaretOnFocus = true;
 		_requestResize();
 		_requestRender();
 	}

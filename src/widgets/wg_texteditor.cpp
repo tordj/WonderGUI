@@ -139,15 +139,15 @@ namespace wg
 		{
 			if( m_state.isFocused() && !oldState.isFocused() )
 			{
-				m_text.showCursor();
+				m_text.showCaret();
 				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
-				if(	m_bResetCursorOnFocus )
+				if(	m_bResetCaretOnFocus )
 					m_text.goEot();
 				_requestRender();
 			}
 			if( !m_state.isFocused() && oldState.isFocused() )
 			{
-				m_text.hideCursor();
+				m_text.hideCaret();
 				Base::msgRouter()->deleteRoute( m_tickRouteId );
 				m_tickRouteId = 0;
 				_requestRender();
@@ -220,15 +220,15 @@ namespace wg
 	
 					if( chr >= 32 && chr != 127)
 					{
-						_insertCharAtCursor(chr);
+						_insertCharAtCaret(chr);
 					}
 					else if( chr == 13 )
 					{
-						_insertCharAtCursor('\n');
+						_insertCharAtCaret('\n');
 					}
 					else if( chr == '\t' && m_bTabLock )
 					{
-						_insertCharAtCursor( '\t' );
+						_insertCharAtCaret( '\t' );
 					}
 				}
 			}

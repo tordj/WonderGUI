@@ -304,7 +304,7 @@ namespace wg
 		Chain<GlyphsetRes>	m_glyphsets;
 		Chain<FontRes>		m_fonts;
 		Chain<GfxAnimRes>		m_gfxAnims;
-		Chain<CaretRes>		m_cursors;
+		Chain<CaretRes>		m_carets;
 		Chain<TextStyleRes>	m_textProps;
 		Chain<ColorRes>		m_colors;
 		Chain<LegoSource>		m_legos;

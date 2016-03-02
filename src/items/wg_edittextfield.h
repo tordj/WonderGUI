@@ -44,7 +44,7 @@ namespace wg
 	public:
 		EditTextField( EditTextHolder * pHolder );
 	
-		// Overloaded so we can update cursor and selection
+		// Overloaded so we can update caret and selection
 	
 		void			clear();
 	

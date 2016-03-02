@@ -65,8 +65,8 @@ namespace wg
 		inline uint16_t passwordGlyph() const				 { return m_pwGlyph; };
 		void		setPasswordGlyph( uint16_t glyph );
 	
-		int			insertTextAtCursor( const CharSeq& str );
-		bool		insertCharAtCursor( uint16_t c );
+		int			insertTextAtCaret( const CharSeq& str );
+		bool		insertCharAtCaret( uint16_t c );
 	
 		virtual void			setEditMode(TextEditMode mode);
 		virtual TextEditMode	editMode() const { return m_text.editMode(); }
@@ -102,7 +102,7 @@ namespace wg
 		LegacyTextField			m_text;
 		RouteId			m_tickRouteId;
 	
-		bool				m_bResetCursorOnFocus;
+		bool				m_bResetCaretOnFocus;
 		bool				m_bPasswordMode;
 		uint16_t				m_pwGlyph;
 		int					m_viewOfs;

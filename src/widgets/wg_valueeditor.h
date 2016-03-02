@@ -88,7 +88,7 @@ namespace wg
 		Widget*	_getWidget() { return this; }
 	
 	private:
-		void	_limitCursor();					///< Make sure cursor or selection is not in prefix or suffix part of text.
+		void	_limitCaret();					///< Make sure cursor or selection is not in prefix or suffix part of text.
 		void	_selectAll();					///< Our own select all that doesn't include prefix or suffix.
 	
 		void	_valueModified();				///< Called when value has been modified.

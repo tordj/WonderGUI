@@ -106,7 +106,7 @@ namespace wg
 		m_glyphsets.clear();
 		m_fonts.clear();
 		m_gfxAnims.clear();
-		m_cursors.clear();
+		m_carets.clear();
 		m_textProps.clear();
 		m_colors.clear();
 		m_legos.clear();
@@ -163,7 +163,7 @@ namespace wg
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
-		return std::string("_cursor__") + TextTool::itoa(++nGenerated, pBuf, 10);
+		return std::string("_caret__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
 	std::string	ResDB::generateName( const Color data )
@@ -345,7 +345,7 @@ namespace wg
 		if(m_mapCarets.find(id) == m_mapCarets.end())
 		{
 			CaretRes* p = new CaretRes(id, pCaret, pMetaData);
-			m_cursors.pushBack(p);
+			m_carets.pushBack(p);
 			if(id.size())
 				m_mapCarets[id] = p;
 			return true;
@@ -501,8 +501,8 @@ namespace wg
 	
 	Caret2_p ResDB::getCaret( const std::string& id ) const
 	{
-		CaretRes* cursorRes = getResCaret(id);
-		return cursorRes ? cursorRes->res : Caret2_p();
+		CaretRes* caretRes = getResCaret(id);
+		return caretRes ? caretRes->res : Caret2_p();
 	}
 	
 	//____ () _________________________________________________________

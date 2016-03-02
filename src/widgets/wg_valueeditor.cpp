@@ -212,14 +212,14 @@ namespace wg
 	
 		Rect textClip( canvas, _clip );
 	
-		if( m_text.isCursorShowing() )
+		if( m_text.isCaretShowing() )
 		{
 			int textW = m_text.width();
 			if( textW > canvas.w )
 				canvas.w = textW;
 	
-			CaretInstance * pCursor = m_text.getCursor();
-			m_viewOfs = m_text.focusWindowOnRange( canvas.size(), Rect(m_viewOfs,_canvas.size()), Range( pCursor->column(),0 ) );
+			CaretInstance * pCaret = m_text.getCaret();
+			m_viewOfs = m_text.focusWindowOnRange( canvas.size(), Rect(m_viewOfs,_canvas.size()), Range( pCaret->column(),0 ) );
 		}
 		else
 			m_viewOfs = Coord(0,0);
@@ -343,9 +343,9 @@ namespace wg
 	
 		if( type == MsgType::Tick )
 		{
-			if( m_text.getCursor() )
+			if( m_text.getCaret() )
 			{
-				m_text.getCursor()->incTime( TickMsg::cast(pMsg)->timediff() );
+				m_text.getCaret()->incTime( TickMsg::cast(pMsg)->timediff() );
 				_requestRender();					//TODO: Should only render the cursor (and only when updated)!
 			}
 			return;
@@ -384,14 +384,14 @@ namespace wg
 			{
 				m_text.setSelectionMode(true);
 				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
-				_limitCursor();
+				_limitCaret();
 			}
 			else
 			{
 				m_text.setSelectionMode(false);
 				m_text.clearSelection();
 				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
-				_limitCursor();
+				_limitCaret();
 				m_text.setSelectionMode(true);
 			}
 	
@@ -403,7 +403,7 @@ namespace wg
 			if( m_state.isFocused() && ofs.x != m_buttonDownOfs )
 			{
 				m_text.cursorGotoCoord( ofs, Rect(0,0,size()) );
-				_limitCursor();
+				_limitCaret();
 				m_buttonDownOfs = ofs.x;
 				m_bSelectAllOnRelease = false;
 			}
@@ -460,7 +460,7 @@ namespace wg
 	
 						m_text.setScaledValue( m_value, m_pFormat->_getScale(), m_pUseFormat.rawPtr() );
 						m_text.goEol();
-						_limitCursor();
+						_limitCaret();
 					}
 					else
 					{
@@ -480,7 +480,7 @@ namespace wg
 						m_text.gotoPrevWord();
 					else
 						m_text.goLeft();
-					_limitCursor();
+					_limitCaret();
 					break;
 				case Key::Right:
 					if( modKeys & MODKEY_SHIFT )
@@ -492,7 +492,7 @@ namespace wg
 						m_text.gotoNextWord();
 					else
 						m_text.goRight();
-					_limitCursor();
+					_limitCaret();
 					break;
 	
 				case Key::Backspace:
@@ -505,7 +505,7 @@ namespace wg
 					{
 						int ofs1 = m_text.column();
 						m_text.gotoPrevWord();
-						_limitCursor();
+						_limitCaret();
 						int ofs2 = m_text.column();
 	
 						if( ofs2 < ofs1 )
@@ -536,7 +536,7 @@ namespace wg
 					{
 						int ofs1 = m_text.column();
 						m_text.gotoNextWord();
-						_limitCursor();
+						_limitCaret();
 						int ofs2 = m_text.column();
 	
 						if( ofs2 > ofs1 )
@@ -575,7 +575,7 @@ namespace wg
 							m_text.setSelectionMode(true);
 	
 						m_text.goBol();
-						_limitCursor();
+						_limitCaret();
 						break;
 					}
 	
@@ -598,7 +598,7 @@ namespace wg
 							m_text.setSelectionMode(true);
 	
 						m_text.goEol();
-						_limitCursor();
+						_limitCaret();
 						break;
 					}
 	
@@ -619,8 +619,8 @@ namespace wg
 			// It's not allowed before a minus sign.
 			// A zero is inserted (always INSERTED even if mode is replace) if there is no number before it.
 	
-			CaretInstance * pCursor = m_text.getCursor();
-			if( pCursor )
+			CaretInstance * pCaret = m_text.getCaret();
+			if( pCaret )
 			{
 				for( int i = 0 ; i < str.length() ; i++ )
 				{
@@ -628,7 +628,7 @@ namespace wg
 					if( character == m_pFormat->getPeriod() )
 					{
 						if( m_pFormat->getDecimals() > 0 && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
-							(pCursor->column() != 0 || (*m_text.getBuffer())[0].getGlyph() != '-' ) )
+							(pCaret->column() != 0 || (*m_text.getBuffer())[0].getGlyph() != '-' ) )
 						{
 							if(m_text.hasSelection())
 								m_text.delSelection();
@@ -636,13 +636,13 @@ namespace wg
 		
 							if( m_text.length() < m_maxInputChars )
 							{
-								if( pCursor->column() == 0 || (pCursor->column() == 1 && (*m_text.getBuffer())[0].getGlyph() == '-' ) )
+								if( pCaret->column() == 0 || (pCaret->column() == 1 && (*m_text.getBuffer())[0].getGlyph() == '-' ) )
 								{
 									m_text.insertChar( 0, Char('0') );
-									pCursor->goRight();
+									pCaret->goRight();
 								}
 		
-								pCursor->putChar( m_pFormat->getPeriod() );
+								pCaret->putChar( m_pFormat->getPeriod() );
 							}
 							bTextChanged = true;
 						}
@@ -653,7 +653,7 @@ namespace wg
 		
 					if( character == '-' )
 					{
-						if( pCursor->column() == m_pFormat->getPrefix().length() && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
+						if( pCaret->column() == m_pFormat->getPrefix().length() && m_text.getBuffer()->findFirst( m_pFormat->getPeriod() ) == -1 &&
 							m_rangeMin < 0 )
 						{
 							if(m_text.hasSelection())
@@ -661,7 +661,7 @@ namespace wg
 							m_text.setSelectionMode(false);
 		
 							if( m_text.length() < m_maxInputChars )
-								pCursor->putChar( '-' );
+								pCaret->putChar( '-' );
 							bTextChanged = true;
 						}
 					}
@@ -670,7 +670,7 @@ namespace wg
 		
 					if( character >= '0' && character <= '9' )
 					{
-						if( pCursor->column() == 0 && (*m_text.getBuffer())[0].getGlyph() == '-' )
+						if( pCaret->column() == 0 && (*m_text.getBuffer())[0].getGlyph() == '-' )
 						{
 						}
 						else
@@ -680,7 +680,7 @@ namespace wg
 							m_text.setSelectionMode(false);
 		
 							if( m_text.length() < m_maxInputChars )
-								pCursor->putChar( character );
+								pCaret->putChar( character );
 							bTextChanged = true;
 						}
 					}
@@ -732,26 +732,26 @@ namespace wg
 		m_text.select( min, max-min );
 	}
 	
-	//____ _limitCursor() _________________________________________________________
+	//____ _limitCaret() _________________________________________________________
 	
-	void ValueEditor::_limitCursor()
+	void ValueEditor::_limitCaret()
 	{
 		int min = m_pFormat->getPrefix().length();
 		int max = m_text.length() - m_pFormat->getSuffix().length();
 	
-		CaretInstance * pCursor = m_text.getCursor();
+		CaretInstance * pCaret = m_text.getCaret();
 	
 		// Save selection (might get destroyed by moving cursor)
 	
-	//	bool bSelectionMode = pCursor->getSelectionMode();
-	//	Range sel = pCursor->getSelection();
+	//	bool bSelectionMode = pCaret->getSelectionMode();
+	//	Range sel = pCaret->getSelection();
 	
 		// Move cursor to within prefix/suffix
 	
-		if( pCursor->column() < min )
-			pCursor->gotoColumn( min );
-		if( pCursor->column() > max )
-			pCursor->gotoColumn( max );
+		if( pCaret->column() < min )
+			pCaret->gotoColumn( min );
+		if( pCaret->column() > max )
+			pCaret->gotoColumn( max );
 	
 		// Tweak selection if cursor was not in selection mode
 	/*
@@ -804,7 +804,7 @@ namespace wg
 		if( m_state.isFocused() && !oldState.isFocused() )
 		{
 			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
-			m_text.showCursor();
+			m_text.showCaret();
 			m_text.goEol();
 			m_pUseFormat = m_pFormat;
 	
@@ -828,7 +828,7 @@ namespace wg
 	
 			Base::msgRouter()->post( new ValueUpdateMsg(this,m_value,fractionalValue(), true) );
 	
-			m_text.hideCursor();
+			m_text.hideCaret();
 			m_pUseFormat->setFormat(m_pFormat);
 			_regenText();
 	

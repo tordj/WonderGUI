@@ -47,7 +47,7 @@ namespace wg
 		m_pwGlyph		= '*';
 		m_viewOfs		= 0;
 		m_pointerStyle	= PointerStyle::Ibeam;
-		m_bResetCursorOnFocus = true;
+		m_bResetCaretOnFocus = true;
 		m_tickRouteId = 0;
 	}
 	
@@ -113,9 +113,9 @@ namespace wg
 		}
 	}
 	
-	//____ insertTextAtCursor() ___________________________________________________
+	//____ insertTextAtCaret() ___________________________________________________
 	
-	int LineEditor::insertTextAtCursor( const CharSeq& str )
+	int LineEditor::insertTextAtCaret( const CharSeq& str )
 	{
 		if( !_isEditable() )
 			return 0;
@@ -133,9 +133,9 @@ namespace wg
 		return retVal;
 	}
 	
-	//____ insertCharAtCursor() ___________________________________________________
+	//____ insertCharAtCaret() ___________________________________________________
 	
-	bool LineEditor::insertCharAtCursor( uint16_t c )
+	bool LineEditor::insertCharAtCaret( uint16_t c )
 	{
 		if( !_isEditable() )
 			return false;
@@ -207,7 +207,7 @@ namespace wg
 			pText->setState(m_text.state());
 	
 			pText->setEditMode(m_text.editMode());
-			pText->showCursor();
+			pText->showCaret();
 			pText->gotoSoftPos( m_text.line(), m_text.column() );
 			pText->incTime( m_text.time() );
 	
@@ -229,9 +229,9 @@ namespace wg
 		canvas.w += m_viewOfs;
 	
 		if( m_state.isFocused() && _isEditable() )
-			pText->showCursor();
+			pText->showCaret();
 		else
-			pText->hideCursor();
+			pText->hideCaret();
 	
 		pDevice->printText( textClip, pText, canvas );
 	
@@ -504,14 +504,14 @@ namespace wg
 	void LineEditor::_adjustViewOfs()
 	{
 		// Possibly move viewOfs so that:
-		//	1 Cursor remains inside view.
+		//	1 Caret remains inside view.
 		//  2 At least one character is displayed before the cursor
 		//  3 At least one character is displayed after the cursor (if there is one).
 	
 		if( m_state.isFocused() && m_text.properties() && m_text.properties()->font() )
 		{
-			Caret_p pCursor = TextTool::getCursor( &m_text );
-			if( !pCursor )
+			Caret_p pCaret = TextTool::getCaret( &m_text );
+			if( !pCaret )
 				return;
 	
 			int cursCol	= m_text.column();
@@ -525,11 +525,11 @@ namespace wg
 			pen.advancePos();
 	
 			int pwAdvance	= pen.getPosX();
-			int cursAdvance	= pCursor->advance(m_text.cursorMode() );
-			int cursBearing	= pCursor->bearingX(m_text.cursorMode() );
-			int cursWidth	= pCursor->width(m_text.cursorMode() );
+			int cursAdvance	= pCaret->advance(m_text.cursorMode() );
+			int cursBearing	= pCaret->bearingX(m_text.cursorMode() );
+			int cursWidth	= pCaret->width(m_text.cursorMode() );
 	
-			int cursOfs;		// Cursor offset from beginning of line in pixels.
+			int cursOfs;		// Caret offset from beginning of line in pixels.
 			int maxOfs;			// Max allowed view offset in pixels.
 			int minOfs;			// Min allowed view offset in pixels.
 	
@@ -601,7 +601,7 @@ namespace wg
 			if( _isEditable() )
 			{
 				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
-				if( m_bResetCursorOnFocus )
+				if( m_bResetCaretOnFocus )
 					m_text.goEol();
 				_requestRender(); // render with cursor on
 			}
@@ -613,7 +613,7 @@ namespace wg
 			{
 				m_text.clearSelection();
 				m_text.setSelectionMode(false);
-				m_bResetCursorOnFocus = false;
+				m_bResetCaretOnFocus = false;
 			}
 	
 			if( _isEditable() || m_viewOfs != 0 )
@@ -661,7 +661,7 @@ namespace wg
 	
 	void LineEditor::_onFieldResize( Field * pField )
 	{
-		m_bResetCursorOnFocus = true;
+		m_bResetCaretOnFocus = true;
 		_requestResize();
 		_requestRender();
 		_adjustViewOfs();
