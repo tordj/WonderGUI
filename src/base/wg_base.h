@@ -40,8 +40,8 @@
 #	include <wg_key.h>
 #endif
 
-#ifndef WG_CARET2_DOT_H
-#	include <wg_caret2.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_TEXTSTYLE_DOT_H
@@ -98,8 +98,8 @@ namespace wg
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
 	
-		static void			setDefaultCaret( const Caret2_p& pCaret );
-		static Caret2_p 	defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
+		static void			setDefaultCaret( const Caret_p& pCaret );
+		static Caret_p 	defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
 	
 		static void			setDefaultPresenter( const TextPresenter_p& pPresenter );
 		static TextPresenter_p defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
@@ -130,7 +130,7 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			
 	
-			Caret2_p		pDefaultCaret;
+			Caret_p		pDefaultCaret;
 			TextPresenter_p	pDefaultPresenter;
 			TextStyle_p		pDefaultStyle;
 	

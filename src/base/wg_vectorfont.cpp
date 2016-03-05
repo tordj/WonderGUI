@@ -42,7 +42,7 @@ namespace wg
 	
 	const char VectorFont::CLASSNAME[] = {"VectorFont"};
 	
-	Chain<VectorFont::CacheSlot>	VectorFont::s_cacheSlots[GLYPH_SLOT_SIZES];
+	Chain<VectorFont::CacheSlot>	VectorFont::s_cacheSlots[c_glyphSlotSizes];
 	Chain<VectorFont::CacheSurf>	VectorFont::s_cacheSurfaces;
 	SurfaceFactory_p					VectorFont::s_pSurfaceFactory = 0;
 	
@@ -56,7 +56,7 @@ namespace wg
 		m_accessCounter = 0;
 		m_sizeOffset	= 0;
 	
-		for( int i = 0 ; i <= WG_MAX_FONTSIZE ; i++ )
+		for( int i = 0 ; i <= MaxFontSize ; i++ )
 		{
 			m_cachedGlyphsIndex[i] = 0;
 			m_whitespaceAdvance[i] = 0;
@@ -75,14 +75,14 @@ namespace wg
 		}
 	
 	
-		setRenderMode( CRISP_EDGES );
+		setRenderMode( RenderMode::CrispEdges );
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
 	VectorFont::~VectorFont()
 	{
-		for( int size = 0 ; size <= WG_MAX_FONTSIZE ; size++ )
+		for( int size = 0 ; size <= MaxFontSize ; size++ )
 		{
 			if( m_cachedGlyphsIndex[size] != 0 )
 			{
@@ -141,13 +141,13 @@ namespace wg
 	
 			switch( m_renderMode[size] )
 			{
-				case MONOCHROME:
+				case RenderMode::Monochrome:
 					m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
 					break;
-				case CRISP_EDGES:
+				case RenderMode::CrispEdges:
 					m_renderFlags = FT_LOAD_TARGET_NORMAL;
 					break;
-				case BEST_SHAPES:
+				case RenderMode::BestShapes:
 					m_renderFlags = FT_LOAD_TARGET_LIGHT;
 					break;
 	
@@ -165,11 +165,11 @@ namespace wg
 	
 	bool VectorFont::setRenderMode( RenderMode mode, int startSize, int endSize )
 	{
-		if( startSize < 0 || startSize > endSize || startSize > WG_MAX_FONTSIZE )
+		if( startSize < 0 || startSize > endSize || startSize > MaxFontSize )
 			return false;
 	
-		if( endSize > WG_MAX_FONTSIZE )
-			endSize = WG_MAX_FONTSIZE;
+		if( endSize > MaxFontSize )
+			endSize = MaxFontSize;
 	
 		for( int i = startSize ; i <= endSize ; i++ )
 			m_renderMode[i] =mode;
@@ -325,7 +325,7 @@ namespace wg
 	
 		// Sanity check
 	
-		if( size > WG_MAX_FONTSIZE || size < 0 )
+		if( size > MaxFontSize || size < 0 )
 			return 0;
 	
 		// Get cached glyph if we have one
@@ -372,7 +372,7 @@ namespace wg
 	
 		// Sanity check
 	
-		if( size > WG_MAX_FONTSIZE || size < 0 )
+		if( size > MaxFontSize || size < 0 )
 			return 0;
 	
 		// Get cached glyph if we have one
@@ -635,7 +635,7 @@ namespace wg
 	
 	void VectorFont::clearCache()
 	{
-		for( int i = 0 ; i < GLYPH_SLOT_SIZES ; i++ )
+		for( int i = 0 ; i < c_glyphSlotSizes ; i++ )
 		{
 			CacheSlot * p = s_cacheSlots[i].first();
 			while( p )
@@ -658,14 +658,14 @@ namespace wg
 	{
 		// Calculate size and index
 	
-		int size = ((width>height ? width:height)+GLYPH_PIXEL_SIZE_QUANTIZATION-1);
+		int size = ((width>height ? width:height)+c_glyphPixelSizeQuantization-1);
 	
-		if( size < MIN_GLYPH_PIXEL_SIZE )
-			size = MIN_GLYPH_PIXEL_SIZE;
+		if( size < c_minGlyphPixelSize )
+			size = c_minGlyphPixelSize;
 	
-		assert( size <= MAX_GLYPH_PIXEL_SIZE );
+		assert( size <= c_maxGlyphPixelSize );
 	
-		int index = (size-MIN_GLYPH_PIXEL_SIZE) / GLYPH_PIXEL_SIZE_QUANTIZATION;
+		int index = (size-c_minGlyphPixelSize) / c_glyphPixelSizeQuantization;
 	
 		// Make sure we have
 	

@@ -153,19 +153,19 @@ namespace wg
 	protected:
 		CharSeq() {};
 	
-		enum SeqType
+		enum class Type
 		{
-			EMPTY,
-			WGCHAR,
-			MAP8,
-			UTF8,
-			UTF16,
-			ESCAPED_UTF8,
-			ESCAPED_UTF16
+			Empty,
+			StyledChars,
+			Codepage8,
+			Utf8,
+			Utf16,
+ 			EscapedUtf8,
+			EscapedUtf16
 	
 		};
 	
-		SeqType			m_type;
+		Type			m_type;
 		const void * 	m_pChar;
 		int				m_nbChars;		// Length of sequence in number of characters.
 	};
@@ -191,10 +191,10 @@ namespace wg
 	{
 		friend class CharSeq;
 	public:
-		CharSeq8( const char * pChar, CodePage codePage = DEFAULT_CODEPAGE );
-		CharSeq8( const char * pChar, int len, CodePage codePage = DEFAULT_CODEPAGE );
-		CharSeq8( const std::string& str, CodePage codePage = DEFAULT_CODEPAGE );
-		CharSeq8( const std::string& str, int ofs, int len, CodePage codePage = DEFAULT_CODEPAGE );
+		CharSeq8( const char * pChar, CodePage codePage = DefaultCodePage );
+		CharSeq8( const char * pChar, int len, CodePage codePage = DefaultCodePage );
+		CharSeq8( const std::string& str, CodePage codePage = DefaultCodePage );
+		CharSeq8( const std::string& str, int ofs, int len, CodePage codePage = DefaultCodePage );
 	
 	protected:
 		CodePage	m_codepage;

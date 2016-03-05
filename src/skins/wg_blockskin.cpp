@@ -219,7 +219,7 @@ namespace wg
 		m_tiledSections = 0;
 		m_bIsOpaque = false;
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_state[i].invisibleSections = 0;
 			m_state[i].opaqueSections = 0;
@@ -288,7 +288,7 @@ namespace wg
 	
 	void BlockSkin::setAllBlocks( const Coord& ofs )
 	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_state[i].ofs = ofs;
 	
 	}
@@ -388,7 +388,7 @@ namespace wg
 	
 		if( m_pSurface->isOpaque() )
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_state[i].invisibleSections = 0;
 				m_state[i].opaqueSections = ALL_SECTIONS;
@@ -398,7 +398,7 @@ namespace wg
 	
 		// Clear all flags
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_state[i].invisibleSections = 0;
 			m_state[i].opaqueSections = 0;
@@ -413,7 +413,7 @@ namespace wg
 	
 		m_pSurface->lock(AccessMode::ReadOnly);
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			Rect r = Rect(m_state[i].ofs,m_dimensions);
 	

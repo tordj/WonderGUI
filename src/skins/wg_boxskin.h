@@ -76,8 +76,8 @@ namespace wg
 		void	_updateOpaqueFlag();
 	
 		bool		m_bOpaque;
-		Color		m_color[WG_NB_STATES];
-		Color		m_frameColor[WG_NB_STATES];
+		Color		m_color[StateEnum_Nb];
+		Color		m_frameColor[StateEnum_Nb];
 	    Border   m_frame;
 	};
 	

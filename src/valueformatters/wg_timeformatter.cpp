@@ -100,7 +100,7 @@ namespace wg
 		while( !pSrc->isEndOfText() )
 		{
 			uint16_t glyph = pSrc->getGlyph();
-			uint16_t decoration = pSrc->propHandle();
+			uint16_t style = pSrc->styleHandle();
 			
 			if( glyph == '%' )
 			{

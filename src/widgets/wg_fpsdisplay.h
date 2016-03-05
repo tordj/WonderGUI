@@ -80,6 +80,9 @@ namespace wg
 	
 	private:
 	
+	const static int c_tickBuffer = 64;
+	
+	
 		LegacyTextField	m_labelsText;
 		LegacyTextField	m_valuesText;
 		int *		m_pTickBuffer;

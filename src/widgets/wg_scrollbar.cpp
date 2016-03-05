@@ -161,8 +161,8 @@ namespace wg
 	
 	void Scrollbar::setHandle( float _pos, float _size )
 	{
-		LIMIT( _size, 0.0001f, 1.f );
-		LIMIT( _pos, 0.f, 1.f );
+		limit( _size, 0.0001f, 1.f );
+		limit( _pos, 0.f, 1.f );
 	
 		if( m_handlePos == _pos && m_handleSize == _size )
 			return;
@@ -187,7 +187,7 @@ namespace wg
 	
 	void Scrollbar::setHandlePos( float pos )
 	{
-		LIMIT( pos, 0.f, 1.f );
+		limit( pos, 0.f, 1.f );
 	
 		if( pos > m_handlePos-0.000001 && pos < m_handlePos+0.000001 )
 			return;
@@ -256,7 +256,7 @@ namespace wg
 	
 	void Scrollbar::setHandleSize( float _size )
 	{
-		LIMIT( _size, 0.0001f, 1.f );
+		limit( _size, 0.0001f, 1.f );
 	
 		if( _size == m_handleSize )
 			return;
@@ -993,7 +993,7 @@ namespace wg
 					if( m_handleSize < 1.f)
 						scrollhandlePos = ((float)(pointerOfs - m_handlePressOfs)) / (length - handleLen);
 	
-					LIMIT( scrollhandlePos, 0.f, 1.f );
+					limit( scrollhandlePos, 0.f, 1.f );
 	
 					if( scrollhandlePos != m_handlePos )
 					{
@@ -1074,8 +1074,8 @@ namespace wg
 	
 	bool Scrollbar::_setHandle( float _pos, float _size )
 	{
-		LIMIT( _size, 0.0001f, 1.f );
-		LIMIT( _pos, 0.f, 1.f );
+		limit( _size, 0.0001f, 1.f );
+		limit( _pos, 0.f, 1.f );
 	
 		if( m_handlePos == _pos && m_handleSize == _size )
 			return true;

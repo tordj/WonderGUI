@@ -179,7 +179,7 @@ namespace wg
 			clearColor();
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.color[i] = color;
 				m_combAttr.color[i] = color;
@@ -206,7 +206,7 @@ namespace wg
 			clearBgColor();
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.bgColor[i] = color;
 				m_combAttr.bgColor[i] = color;
@@ -230,11 +230,11 @@ namespace wg
 	
 	void TextStyle::setSize( int size )
 	{
-		if( size == FONTSIZE_INHERIT )
+		if( size == 0 )
 			clearSize();
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.size[i] = size;
 				m_combAttr.size[i] = size;
@@ -244,7 +244,7 @@ namespace wg
 	
 	void TextStyle::setSize( int size, State state )
 	{
-		if( size == FONTSIZE_INHERIT )
+		if( size == 0 )
 			clearSize(state);
 		else
 		{
@@ -263,7 +263,7 @@ namespace wg
 			clearDecoration();
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.decoration[i] = decoration;
 				m_combAttr.decoration[i] = decoration;
@@ -312,14 +312,14 @@ namespace wg
 	{
 		if( m_pParent )
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.color[i] = Color::None;
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
 			}
 		}
 		else
-		{		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		{		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.color[i] = Color::None;
 				m_combAttr.color[i] = Color::None;
@@ -342,7 +342,7 @@ namespace wg
 	{
 		if( m_pParent )
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.bgColor[i] = Color::None;
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
@@ -350,7 +350,7 @@ namespace wg
 		}
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.bgColor[i] = Color::None;
 				m_combAttr.bgColor[i] = Color::None;
@@ -372,18 +372,18 @@ namespace wg
 	{
 		if( m_pParent )
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.size[i] = FONTSIZE_INHERIT;
+				m_specAttr.size[i] = 0;
 				m_combAttr.size[i] = m_pParent->m_combAttr.size[i];
 			}
 		}
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.size[i] = FONTSIZE_INHERIT;
-				m_combAttr.size[i] = FONTSIZE_INHERIT;
+				m_specAttr.size[i] = 0;
+				m_combAttr.size[i] = 0;
 			}
 		}
 	}
@@ -392,8 +392,8 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.size[idx] = FONTSIZE_INHERIT;
-		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : FONTSIZE_INHERIT;
+		m_specAttr.size[idx] = 0;
+		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : 0;
 	}
 	
 	//____ clearDecoration() ____________________________________________________________
@@ -402,7 +402,7 @@ namespace wg
 	{
 		if( m_pParent )
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.decoration[i] = TextDecoration::Inherit;
 				m_combAttr.decoration[i] = m_pParent->m_combAttr.decoration[i];
@@ -410,7 +410,7 @@ namespace wg
 		}
 		else
 		{
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.decoration[i] = TextDecoration::Inherit;
 				m_combAttr.decoration[i] = TextDecoration::Inherit;
@@ -439,7 +439,7 @@ namespace wg
 		pDest->bgColor		= m_combAttr.bgColor[idx];
 		pDest->decoration	= m_combAttr.decoration[idx];
 				
-		if( pDest->size == FONTSIZE_INHERIT )
+		if( pDest->size == 0 )
 			pDest->size = 12;								// Default to size 12.
 	}
 	
@@ -453,7 +453,7 @@ namespace wg
 			pDest->pFont = m_combAttr.pFont;
 		if( m_combAttr.pLink )
 			pDest->pLink = m_combAttr.pLink;
-		if( m_combAttr.size[idx] != FONTSIZE_INHERIT )
+		if( m_combAttr.size[idx] != 0 )
 			pDest->size	= m_combAttr.size[idx];
 		if( m_combAttr.color[idx] != Color::None )
 			pDest->color = m_combAttr.color[idx];
@@ -476,9 +476,9 @@ namespace wg
 			newComb.pLink = m_specAttr.pLink ? m_specAttr.pLink : m_pParent->m_combAttr.pLink;
 	
 	
-			for( int i = 0 ; i < WG_NB_STATES ; i++ )
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				newComb.size[i] = m_specAttr.size[i] != FONTSIZE_INHERIT ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
+				newComb.size[i] = m_specAttr.size[i] != 0 ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
 				newComb.color[i] = m_specAttr.color[i] != Color::None ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
 				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::None ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
 				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Inherit ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
@@ -506,9 +506,9 @@ namespace wg
 		pSet->pFont = 0;
 		pSet->pLink = 0;
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			pSet->size[i] 		= FONTSIZE_INHERIT;
+			pSet->size[i] 		= 0;
 			pSet->color[i] 		= Color::None;
 			pSet->bgColor[i] 	= Color::None;
 			pSet->decoration[i] = TextDecoration::Inherit;
@@ -522,7 +522,7 @@ namespace wg
 		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink )
 			return false;
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			if( p1->size[i] 		!= p2->size[i] ||
 				p1->color[i] 		!= p2->color[i] ||

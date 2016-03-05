@@ -167,7 +167,7 @@ namespace wg
 	
 	void Oscilloscope::setLineThickness( float thickness )
 	{
-		LIMIT( thickness, 1.f, 2.f );
+		limit( thickness, 1.f, 2.f );
 		if( thickness != m_lineThickness )
 		{
 			m_lineThickness = thickness;

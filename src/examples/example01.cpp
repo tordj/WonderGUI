@@ -1,7 +1,7 @@
 /*
  * This example uses SDL2 to setup a minimal framework for WonderGUI and
  * create a clickable button that closes the window. It has no
- * dependencies except SDL2, WonderGUI and WgSoft.
+ * dependencies except SDL2 and WonderGUI.
  * 
  * The intention is to show how WonderGUI easily can be integrated  with
  * any development framework with some simple bindings and pure software

@@ -57,7 +57,7 @@ namespace wg
 		m_maxValue = max;
 		
 		int64_t val = m_value;
-		LIMIT( val, min, max );
+		limit( val, min, max );
 		m_value = val;
 		if( val != m_value )
 			ValueField::set(val, m_scale);

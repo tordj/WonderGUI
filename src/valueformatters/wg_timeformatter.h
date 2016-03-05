@@ -29,7 +29,7 @@ namespace wg
 	
 	
 	class TimeFormatter;
-	typedef	StrongPtr<TimeFormatter,ValueFormatter_p>		TimeFormatter_p;
+	typedef	StrongPtr<TimeFormatter,ValueFormatter_p>	TimeFormatter_p;
 	typedef	WeakPtr<TimeFormatter,ValueFormatter_wp>	TimeFormatter_wp;
 	
 	//____ TimeFormatter __________________________________________________________
@@ -38,13 +38,15 @@ namespace wg
 	//  %4F
 	//  %4S.%4F
 	
+	//TODO: Most likely doesn't support style in formatting string.
+	
 	class TimeFormatter : public ValueFormatter
 	{
 	public:
 		
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static TimeFormatter_p	cast( const Object_p& pObject );
 	
 		static TimeFormatter_p	create() { return TimeFormatter_p(new TimeFormatter()); }

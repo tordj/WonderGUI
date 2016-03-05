@@ -314,7 +314,7 @@ namespace wg
 	
 		inline int _stateToIndex(StateEnum state)
 		{ 
-			static int	s_stateToIndexTable[WG_MAX_STATE_VALUE+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
+			static int	s_stateToIndexTable[StateEnum_MaxValue+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
 			return s_stateToIndexTable[(uint8_t)state]; 
 		}
 	

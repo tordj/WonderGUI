@@ -31,8 +31,6 @@ using namespace std;
 namespace wg 
 {
 	
-	#define NB_CURVETAB_ENTRIES	1024
-	
 	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 	
 	//____ create() _______________________________________________________________
@@ -1110,13 +1108,13 @@ namespace wg
 	
 	void SoftGfxDevice::_genCurveTab()
 	{
-		m_pCurveTab = new int[NB_CURVETAB_ENTRIES];
+		m_pCurveTab = new int[c_nCurveTabEntries];
 	
-		double factor = 3.14159265 / (2.0 * NB_CURVETAB_ENTRIES);
+		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
 	
-		for( int i = 0 ; i < NB_CURVETAB_ENTRIES ; i++ )
+		for( int i = 0 ; i < c_nCurveTabEntries ; i++ )
 		{
-			double y = 1.f - i/(double)NB_CURVETAB_ENTRIES;
+			double y = 1.f - i/(double)c_nCurveTabEntries;
 			m_pCurveTab[i] = (int) (sqrt(1.f - y*y)*65536.f);
 		}
 	}
@@ -1137,7 +1135,7 @@ namespace wg
 	
 		int center = (rect.x + rect.w/2) << 8;
 	
-		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / sectionHeight;
+		int sinOfsInc = (c_nCurveTabEntries << 16) / sectionHeight;
 		int sinOfs = 0;
 	
 		int begOfs = 0;
@@ -1321,7 +1319,7 @@ namespace wg
 	
 		int center = (rect.x + rect.w/2) << 8;
 	
-		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / sectionHeight;
+		int sinOfsInc = (c_nCurveTabEntries << 16) / sectionHeight;
 		int sinOfs = 0;
 	
 		int begOfs = 0;
@@ -1359,7 +1357,7 @@ namespace wg
 	
 		uint8_t * pLineCenter = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + (rect.x+rect.w/2) * pixelBytes;
 	
-		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
+		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
 	
 		for( int j = 0 ; j < 2 ; j++ )
@@ -1381,7 +1379,7 @@ namespace wg
 				pLineCenter += m_pCanvas->m_pitch;
 			}
 			sinOfsInc = -sinOfsInc;
-			sinOfs = (NB_CURVETAB_ENTRIES << 16) + (sinOfsInc >> 1);
+			sinOfs = (c_nCurveTabEntries << 16) + (sinOfsInc >> 1);
 		}
 	}
 	
@@ -1399,7 +1397,7 @@ namespace wg
 	
 		uint8_t * pLine = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
 	
-		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / (rect.h/2);
+		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
 	
 		for( int j = 0 ; j < 2 ; j++ )
@@ -1438,7 +1436,7 @@ namespace wg
 			}
 	
 			sinOfsInc = -sinOfsInc;
-			sinOfs = (NB_CURVETAB_ENTRIES << 16) + (sinOfsInc >> 1);
+			sinOfs = (c_nCurveTabEntries << 16) + (sinOfsInc >> 1);
 		}
 	}
 	
@@ -1451,7 +1449,7 @@ namespace wg
 	
 		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
 	
-		int sinOfsInc = (NB_CURVETAB_ENTRIES << 16) / rect.h;
+		int sinOfsInc = (c_nCurveTabEntries << 16) / rect.h;
 		int sinOfs = sinOfsInc >> 1;
 	
 		for( int i = 0 ; i < rect.h ; i++ )

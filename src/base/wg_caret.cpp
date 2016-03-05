@@ -19,18 +19,18 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#include <wg_caret2.h>
+#include <wg_caret.h>
 #include <wg_gfxdevice.h>
 
 namespace wg 
 {
 	
-	const char Caret2::CLASSNAME[] = {"Caret"};
+	const char Caret::CLASSNAME[] = {"Caret"};
 	
 	
 	//____ Constructor _____________________________________________________________
 	
-	Caret2::Caret2()
+	Caret::Caret()
 	{
 		m_glyph = 0;
 		m_glyphSize = 0;
@@ -45,7 +45,7 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool Caret2::isInstanceOf( const char * pClassName ) const
+	bool Caret::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
@@ -55,24 +55,24 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * Caret2::className( void ) const
+	const char * Caret::className( void ) const
 	{
 		return CLASSNAME;
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	Caret2_p Caret2::cast( const Object_p& pObject )
+	Caret_p Caret::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Caret2_p( static_cast<Caret2*>(pObject.rawPtr()) );
+			return Caret_p( static_cast<Caret*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ setGlyph() ______________________________________________________________
 	
-	void Caret2::setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend )
+	void Caret::setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend )
 	{
 		m_glyph = glyph;
 		m_glyphSize = size;
@@ -86,7 +86,7 @@ namespace wg
 	
 	//____ setMode() _______________________________________________________________
 	
-	void Caret2::setMode( CaretMode mode )
+	void Caret::setMode( CaretMode mode )
 	{
 		if( mode != m_mode )
 		{
@@ -98,14 +98,14 @@ namespace wg
 	
 	//____ eolWidth() ______________________________________________________________
 	
-	int Caret2::eolWidth( int size, int advance, int ascend, int descend ) const
+	int Caret::eolWidth( int size, int advance, int ascend, int descend ) const
 	{
 		return wg::max( 1, size / 8);
 	}
 	
 	//____ tick() __________________________________________________________________
 	
-	void Caret2::tick( int ms )
+	void Caret::tick( int ms )
 	{
 		int halfCycle = m_cycleLength / 2;
 		int oldBlink = m_ticks / halfCycle;
@@ -119,7 +119,7 @@ namespace wg
 	
 	//____ dirtyRect() _____________________________________________________________
 	
-	Rect Caret2::dirtyRect( Coord pos ) const
+	Rect Caret::dirtyRect( Coord pos ) const
 	{
 		switch( m_mode )
 		{
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ render() ________________________________________________________________
 	
-	void Caret2::render( GfxDevice * pDevice, Coord pos, const Rect& clip )
+	void Caret::render( GfxDevice * pDevice, Coord pos, const Rect& clip )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{

@@ -68,7 +68,7 @@ namespace wg
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static GfxDevice_p	cast( const Object_p& pObject );
-	
+/*	
 		enum WgRenderFlags
 		{
 			WG_ORIENT_NORMAL				= 0x0,
@@ -81,7 +81,7 @@ namespace wg
 			WG_ORIENT_MIRROR_X_ROTATE_CCW90	= 0x7,
 			WG_ORIENT_MASK					= 0x7,
 		};
-	
+*/	
 	
 		virtual void	setTintColor( Color color );
 		virtual bool	setBlendMode( BlendMode blendMode );

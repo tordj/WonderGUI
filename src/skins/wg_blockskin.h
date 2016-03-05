@@ -121,7 +121,7 @@ namespace wg
 		int				m_tiledSections;
 		bool			m_bIsOpaque;
 	
-		StateData		m_state[WG_NB_STATES];
+		StateData		m_state[StateEnum_Nb];
 	};
 	
 

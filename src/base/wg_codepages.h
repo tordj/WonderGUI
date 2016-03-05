@@ -47,7 +47,7 @@ namespace wg
 		static inline uint16_t* getCodePage( CodePage codePage ) { return LookupTable[(int)codePage]; }
 			
 	private:		
-		static uint16_t* LookupTable[WG_NB_CODEPAGES];
+		static uint16_t* LookupTable[CodePage_Max];
 	};
 	
 

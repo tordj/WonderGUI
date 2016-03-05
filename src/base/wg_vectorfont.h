@@ -67,11 +67,11 @@ namespace wg
 		static const char	CLASSNAME[];
 		static VectorFont_p	cast( const Object_p& pObject );
 
-		enum RenderMode
+		enum class RenderMode
 		{
-			MONOCHROME,
-			CRISP_EDGES,
-			BEST_SHAPES
+			Monochrome,
+			CrispEdges,
+			BestShapes
 		};
 
 
@@ -96,7 +96,7 @@ namespace wg
 		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
 		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
 		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
-		inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
+		inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= MaxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
 
 		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
 		static void	clearCache();
@@ -105,10 +105,10 @@ namespace wg
 		VectorFont( char* pTTF_File, int bytes, int faceIndex );
 		~VectorFont();
 
-		const static int	MIN_GLYPH_PIXEL_SIZE = 12;		
-		const static int	MAX_GLYPH_PIXEL_SIZE = WG_MAX_FONTSIZE*2;
-		const static int	GLYPH_PIXEL_SIZE_QUANTIZATION = 4;
-		const static int	GLYPH_SLOT_SIZES = ((MAX_GLYPH_PIXEL_SIZE-MIN_GLYPH_PIXEL_SIZE)/GLYPH_PIXEL_SIZE_QUANTIZATION)+1;
+		const static int	c_minGlyphPixelSize = 12;		
+		const static int	c_maxGlyphPixelSize = MaxFontSize*2;
+		const static int	c_glyphPixelSizeQuantization = 4;
+		const static int	c_glyphSlotSizes = ((c_maxGlyphPixelSize-c_minGlyphPixelSize)/c_glyphPixelSizeQuantization)+1;
 
 		class CacheSlot;
 
@@ -176,12 +176,12 @@ namespace wg
 		FT_Face				m_ftFace;
 		char*				m_pData;
 		int					m_ftCharSize;
-		MyGlyph **			m_cachedGlyphsIndex[WG_MAX_FONTSIZE+1];
+		MyGlyph **			m_cachedGlyphsIndex[MaxFontSize+1];
 		uint32_t			m_accessCounter;
 		int					m_renderFlags;
-		RenderMode			m_renderMode[WG_MAX_FONTSIZE+1];
+		RenderMode			m_renderMode[MaxFontSize+1];
 		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
-		int					m_whitespaceAdvance[WG_MAX_FONTSIZE+1];
+		int					m_whitespaceAdvance[MaxFontSize+1];
 
 		//____ Static stuff __________________________________________________________
 
@@ -192,7 +192,7 @@ namespace wg
 		static Size			calcTextureSize( const Size& slotSize, int nSlots );
 
 
-		static Chain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
+		static Chain<CacheSlot>	s_cacheSlots[c_glyphSlotSizes];
 		static Chain<CacheSurf>	s_cacheSurfaces;
 		static SurfaceFactory_p	s_pSurfaceFactory;
 

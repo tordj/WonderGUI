@@ -164,12 +164,12 @@ namespace wg
 	
 		// Current button states
 	
-		bool			m_bButtonPressed[WG_MAX_BUTTONS+1];
+		bool			m_bButtonPressed[MouseButton_Max+1];
 	
-		Widget_wp		m_latestPressWidgets[WG_MAX_BUTTONS+1];		// Widget that received the latest press, for each button.
-		int64_t			m_latestPressTimestamps[WG_MAX_BUTTONS+1];	// Timestamp of the latest press, for each button.
-		Coord			m_latestPressPosition[WG_MAX_BUTTONS+1];	// Coord of the latest press, for each button.
-		bool			m_latestPressDoubleClick[WG_MAX_BUTTONS+1];	// Set if latest press resulted in a double-click.	
+		Widget_wp		m_latestPressWidgets[MouseButton_Max+1];		// Widget that received the latest press, for each button.
+		int64_t			m_latestPressTimestamps[MouseButton_Max+1];	// Timestamp of the latest press, for each button.
+		Coord			m_latestPressPosition[MouseButton_Max+1];	// Coord of the latest press, for each button.
+		bool			m_latestPressDoubleClick[MouseButton_Max+1];	// Set if latest press resulted in a double-click.	
 
 		// Current key states
 

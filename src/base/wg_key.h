@@ -49,9 +49,6 @@ namespace wg
 		MODKEY_SUPER_CTRL_SHIFT = 13,
 		MODKEY_SUPER_CTRL_ALT = 14,
 		MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
-
-		// Needs to be last!
-		WG_MAX_MODKEYS = 16
 	};
 	
 	
@@ -94,8 +91,6 @@ namespace wg
 	
 		Unmapped		// This one must always be last!
 	};
-	
-	#define	WG_KEY_ARRAYSIZE		Key::Unmapped
 	
 	
 

@@ -109,7 +109,7 @@ namespace wg
 	
 	void SimpleVolumeMeter::setHoldHeight( float fraction )
 	{
-		LIMIT( fraction, 0.f, 0.25f );
+		limit( fraction, 0.f, 0.25f );
 		
 		if( m_holdHeight != fraction )
 		{
@@ -122,8 +122,8 @@ namespace wg
 	
 	void SimpleVolumeMeter::setValue( float peak, float hold )
 	{
-		LIMIT( peak, 0.f, 1.f );
-		LIMIT( hold, 0.f, 1.f );
+		limit( peak, 0.f, 1.f );
+		limit( hold, 0.f, 1.f );
 	
 		if( m_bStereo || m_peak[0] != peak || m_hold[0] != hold )
 		{
@@ -136,10 +136,10 @@ namespace wg
 	
 	void SimpleVolumeMeter::setValue( float leftPeak, float leftHold, float rightPeak, float rightHold )
 	{
-		LIMIT( leftPeak, 0.f, 1.f );
-		LIMIT( leftHold, 0.f, 1.f );
-		LIMIT( rightPeak, 0.f, 1.f );
-		LIMIT( rightHold, 0.f, 1.f );
+		limit( leftPeak, 0.f, 1.f );
+		limit( leftHold, 0.f, 1.f );
+		limit( rightPeak, 0.f, 1.f );
+		limit( rightHold, 0.f, 1.f );
 		
 		if( !m_bStereo || m_peak[0] != leftPeak || m_hold[0] != leftHold || m_peak[1] != rightPeak || m_hold[1] != rightHold )
 		{

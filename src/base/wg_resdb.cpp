@@ -159,7 +159,7 @@ namespace wg
 		return std::string("_anim__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Caret2_p& data )
+	std::string	ResDB::generateName( const Caret_p& data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -339,7 +339,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addCaret( const std::string& id, const Caret2_p& pCaret, MetaData * pMetaData )
+	bool ResDB::addCaret( const std::string& id, const Caret_p& pCaret, MetaData * pMetaData )
 	{
 		assert(m_mapCarets.find(id) == m_mapCarets.end());
 		if(m_mapCarets.find(id) == m_mapCarets.end())
@@ -499,10 +499,10 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	Caret2_p ResDB::getCaret( const std::string& id ) const
+	Caret_p ResDB::getCaret( const std::string& id ) const
 	{
 		CaretRes* caretRes = getResCaret(id);
-		return caretRes ? caretRes->res : Caret2_p();
+		return caretRes ? caretRes->res : Caret_p();
 	}
 	
 	//____ () _________________________________________________________
@@ -878,7 +878,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::CaretRes* ResDB::findResCaret( const Caret2_p& meta ) const
+	ResDB::CaretRes* ResDB::findResCaret( const Caret_p& meta ) const
 	{
 		CaretRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())

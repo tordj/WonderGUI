@@ -159,7 +159,7 @@ namespace wg
 	
 	//____ setDefaultCaret() _______________________________________________________
 	
-	void Base::setDefaultCaret( const Caret2_p& pCaret )
+	void Base::setDefaultCaret( const Caret_p& pCaret )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultCaret = pCaret;	

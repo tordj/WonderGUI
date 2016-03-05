@@ -95,6 +95,9 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice( const SoftSurface_p& pCanvas );
 		~SoftGfxDevice();
+
+		const static int c_nCurveTabEntries = 1024;
+
 	
 		void	_initTables();
 		void	_genCurveTab();

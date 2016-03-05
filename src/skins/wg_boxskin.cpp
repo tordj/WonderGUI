@@ -48,7 +48,7 @@ namespace wg
 	
 	BoxSkin::BoxSkin()
 	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_color[i] = Color::Black;
 			m_frameColor[i] = Color::Black;
@@ -61,7 +61,7 @@ namespace wg
 	{
 	    m_frame = frame;
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_color[i] = color;
 			m_frameColor[i] = frameColor;
@@ -106,7 +106,7 @@ namespace wg
 	
 	void BoxSkin::setColor( Color color )
 	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_color[i] = color;
 	
 		if( m_frame.width() + m_frame.height() == 0 )
@@ -119,7 +119,7 @@ namespace wg
 	
 	void BoxSkin::setFrameColor( Color color )
 	{
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_frameColor[i] = color;
 	
 		bool hasFrame = (m_frame.width() + m_frame.height() > 0 );
@@ -145,7 +145,7 @@ namespace wg
 	void BoxSkin::setFrame( Border frame, Color color )
 	{
 		m_frame = frame;
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_frameColor[i] = color;
 	
 		if( (color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque) )
@@ -312,7 +312,7 @@ namespace wg
 		int alpha = 0;
 		int frameAlpha = 0;
 	
-		for( int i = 0 ; i < WG_NB_STATES ; i++ )
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			alpha += (int) m_color[i].a;
 			frameAlpha += (int) m_frameColor[i].a;
@@ -320,7 +320,7 @@ namespace wg
 	
 		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
 		
-		if( alpha == 255*WG_NB_STATES && (!hasFrame || frameAlpha == 255*WG_NB_STATES) )
+		if( alpha == 255*StateEnum_Nb && (!hasFrame || frameAlpha == 255*StateEnum_Nb) )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;

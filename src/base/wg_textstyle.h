@@ -42,8 +42,8 @@
 #	include <wg_textlink.h>
 #endif
 
-#ifndef WG_CARET2_DOT_H
-#	include <wg_caret2.h>
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
 #endif
 
 namespace wg 
@@ -141,10 +141,10 @@ namespace wg
 		struct AttrSet
 		{
 			Font_p			pFont;
-			int				size[WG_NB_STATES];
-			Color			color[WG_NB_STATES];
-			Color			bgColor[WG_NB_STATES];
-			TextDecoration	decoration[WG_NB_STATES];
+			int				size[StateEnum_Nb];
+			Color			color[StateEnum_Nb];
+			Color			bgColor[StateEnum_Nb];
+			TextDecoration	decoration[StateEnum_Nb];
 			TextLink_p		pLink;
 		};
 	

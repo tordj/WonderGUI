@@ -1401,7 +1401,7 @@ namespace wg
 	int PackList::_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth )
 	{
 		int height = pChild->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
-		LIMIT( height, m_minEntrySize.h, m_maxEntrySize.h );
+		limit( height, m_minEntrySize.h, m_maxEntrySize.h );
 		return height;
 	}
 	
@@ -1410,7 +1410,7 @@ namespace wg
 	int PackList::_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight )
 	{
 		int width = pChild->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
-		LIMIT( width, m_minEntrySize.w, m_maxEntrySize.w );
+		limit( width, m_minEntrySize.w, m_maxEntrySize.w );
 		return width;
 	}
 	
@@ -1431,12 +1431,12 @@ namespace wg
 		if( sz.w > m_maxEntrySize.w )
 		{
 			int h = pChild->matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
-			LIMIT(h, m_minEntrySize.h, m_maxEntrySize.h );
+			limit(h, m_minEntrySize.h, m_maxEntrySize.h );
 		}
 		else if( sz.h > m_maxEntrySize.h )
 		{
 			int w = pChild->matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
-			LIMIT(w, m_minEntrySize.w, m_maxEntrySize.w );
+			limit(w, m_minEntrySize.w, m_maxEntrySize.w );
 		}
 	
 		return sz;

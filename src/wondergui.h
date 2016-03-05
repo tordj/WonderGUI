@@ -67,7 +67,7 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_CARET2_DOT_H
+#ifndef WG_CARET_DOT_H
 #	include <wg_caret2.h>
 #endif
 

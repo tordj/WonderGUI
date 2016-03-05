@@ -195,8 +195,6 @@
     <File Name="../../src/base/wg_base.h"/>
     <File Name="../../src/base/wg_blob.cpp"/>
     <File Name="../../src/base/wg_blob.h"/>
-    <File Name="../../src/base/wg_caret2.cpp"/>
-    <File Name="../../src/base/wg_caret2.h"/>
     <File Name="../../src/base/wg_chain.cpp"/>
     <File Name="../../src/base/wg_chain.h"/>
     <File Name="../../src/base/wg_char.cpp"/>
@@ -283,6 +281,8 @@
     <File Name="../../src/base/wg_vectorfont.cpp"/>
     <File Name="../../src/base/wg_bitmapfont.h"/>
     <File Name="../../src/base/wg_bitmapfont.cpp"/>
+    <File Name="../../src/base/wg_caret.h"/>
+    <File Name="../../src/base/wg_caret.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
@@ -298,8 +298,8 @@
     <File Name="../../src/valueformatters/wg_valueformatter.h"/>
     <File Name="../../src/valueformatters/wg_standardformatter.h"/>
     <File Name="../../src/valueformatters/wg_standardformatter.cpp"/>
-    <File Name="../../src/valueformatters/wg_timeformatter.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/valueformatters/wg_timeformatter.h" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/valueformatters/wg_timeformatter.cpp" ExcludeProjConfig=""/>
+    <File Name="../../src/valueformatters/wg_timeformatter.h" ExcludeProjConfig=""/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

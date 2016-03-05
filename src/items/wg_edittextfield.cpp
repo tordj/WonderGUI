@@ -156,7 +156,7 @@ namespace wg
 	
 	//____ setCaret()___________________________________________________________
 	
-	void EditTextField::setCaret( const Caret2_p& pCaret )
+	void EditTextField::setCaret( const Caret_p& pCaret )
 	{
 		if( pCaret && pCaret != m_pCaret )
 		{

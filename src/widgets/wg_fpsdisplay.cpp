@@ -34,16 +34,13 @@ namespace wg
 	const char FpsDisplay::CLASSNAME[] = {"FpsDisplay"};
 	
 	
-	#define		TICK_BUFFER			64
-	
-	
 	
 	//____ FpsDisplay() _________________________________________________________________
 	
 	FpsDisplay::FpsDisplay( void ) : m_labelsText(this), m_valuesText(this), labels(&m_labelsText), values(&m_valuesText)
 	{
-		m_pTickBuffer		= new int[TICK_BUFFER];
-		for( int i = 0 ; i < TICK_BUFFER ; i++ )
+		m_pTickBuffer		= new int[c_tickBuffer];
+		for( int i = 0 ; i < c_tickBuffer ; i++ )
 			m_pTickBuffer[i] = 1;
 	
 		m_tickBufferOfs		= 0;
@@ -156,7 +153,7 @@ namespace wg
 			{
 				// Update tick buffer
 	
-				m_tickBufferOfs = (++m_tickBufferOfs) % TICK_BUFFER;
+				m_tickBufferOfs = (++m_tickBufferOfs) % c_tickBuffer;
 	
 				int msDiff = TickMsg::cast(pMsg)->timediff();
 				if( msDiff > 0 )
@@ -169,27 +166,27 @@ namespace wg
 				const int	cCurrentFrames = 10;
 				int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
 				if( currOfs < 0 )
-					currOfs += TICK_BUFFER;
+					currOfs += c_tickBuffer;
 	
 				int	currTotal = 0;
 				for( int i = 0 ; i < cCurrentFrames ; i++ )
 				{
 					currTotal += m_pTickBuffer[currOfs++];
-					currOfs %= TICK_BUFFER;
+					currOfs %= c_tickBuffer;
 				}
 				float	fpsCurrent = 1000.f / (currTotal / (float) cCurrentFrames);
 	
 				//____
 	
 				int	avg = 0;
-				for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				for( int i = 0 ; i < c_tickBuffer ; i++ )
 					avg += m_pTickBuffer[i];
-				float fpsAvg = 1000.f / (((float)avg)/TICK_BUFFER);
+				float fpsAvg = 1000.f / (((float)avg)/c_tickBuffer);
 	
 				//____
 	
 				int	min = 1000000000;
-				for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				for( int i = 0 ; i < c_tickBuffer ; i++ )
 					if( min > m_pTickBuffer[i] )
 						min = m_pTickBuffer[i];
 				float fpsMax = 1000.f / min;
@@ -197,7 +194,7 @@ namespace wg
 				//____
 	
 				int	max = 0;
-				for( int i = 0 ; i < TICK_BUFFER ; i++ )
+				for( int i = 0 ; i < c_tickBuffer ; i++ )
 					if( max < m_pTickBuffer[i] )
 						max = m_pTickBuffer[i];
 				float fpsMin = 1000.f / max;
@@ -255,7 +252,7 @@ namespace wg
 	
 		m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 	
-		for( int i = 0 ; i < TICK_BUFFER ; i++ )
+		for( int i = 0 ; i < c_tickBuffer ; i++ )
 			m_pTickBuffer[i] = pOrg->m_pTickBuffer[i];
 	}
 	

@@ -82,10 +82,8 @@ namespace wg
 	template<typename T> inline T abs(T x)					{ return x >= 0 ? x : -x; }
 //	template<typename T> inline void swap(T &a, T &b) { T c = a; a = b; b = c; }
 	
-	#define		LIMIT(x, min, max)	if( x < min) x = min; if( x > max) x = max;
-	
-	#define	FONTSIZE_INHERIT 0x80000000
-	
+	template<typename T> inline void limit(T& x, T min, T max) { if( x < min) x = min; if( x > max) x = max; }
+		
 	enum class StateEnum : uint8_t
 	{
 		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
@@ -104,8 +102,8 @@ namespace wg
 		DisabledSelected		= 16+1,
 	};
 	
-	#define	WG_NB_STATES		14			// Number of states
-	#define	WG_MAX_STATE_VALUE	17			// Highest value for StateEnum
+	static const int	StateEnum_Nb	= 14;			// Number of states
+	static const int	StateEnum_MaxValue	= 17;			// Highest value for StateEnum
 	
 	class State 
 	{
@@ -141,17 +139,7 @@ namespace wg
 	typedef unsigned int	RouteId;
 	
 	typedef uint16_t		TextStyle_h;
-	
-	//____ TxtAttr ______________________________________________________________
-	
-	// Bitmask for various text attributes.
-	
-	enum class TxtAttr
-	{
-		Underlined	= 0x1,
-		Selected		= 0x2
-	};
-	
+		
 	
 	//____ ExtChar __________________________________________________________
 	
@@ -242,14 +230,11 @@ namespace wg
 	
 	enum class ExtChar
 	{
-		// Code inside WonderGUI assumes these are all
-		// in the range 0x80-0xA0, but that might change in the future.
-	
 		BreakPermitted			= 0x82,
 		HyphenBreakPermitted	= 0x83,
 		NoBreakSpace			= 0xA0,
 	
-		Ellipsis					= 0x2026
+		Ellipsis				= 0x2026
 	};
 	
 	//____ CodePage ______________________________________________________________
@@ -269,11 +254,11 @@ namespace wg
 		_874,		///< Windows Thai
 	};
 	
-	#define WG_NB_CODEPAGES 11
+	static const int CodePage_Max = 11;
 	
 	//____ BreakRules ____________________________________________________________
 	
-	enum class BreakRules
+	enum class BreakRules : uint8_t
 	{
 		NoBreak		= 0,
 		BreakBefore	= 16,
@@ -294,40 +279,10 @@ namespace wg
 		Invert				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 	};
 	
-	//____ FontAlt ____________________________________________________________
-	
-	enum class FontAlt
-	{
-		// Needs to stay in sync with ExtChar::WG_BEGIN_NORMAL and following enums!
-	
-		Normal		= 0,
-		Bold		= 1,
-		BoldItalic  = 2,
-		Italic		= 3,
-		Superscript	= 4,
-		Subscript	= 5,
-		Monospace	= 6,
-		Heading_1	= 7,
-		Heading_2	= 8,
-		Heading_3	= 9,
-		Heading_4	= 10,
-		Heading_5	= 11,
-	
-		User_1		= 12,
-		User_2		= 13,
-		User_3		= 14,
-		User_4		= 15,
-		User_5		= 16,
-	
-		Inherit	= 99,
-	};
-	
-	#define WG_NB_FONTSTYLES	17
-	
 	
 	//____ PointerStyle __________________________________________________________
 	
-	enum class PointerStyle
+	enum class PointerStyle : uint8_t
 	{
 		Arrow,						// default arrow
 		Default = Arrow,	// default arrow
@@ -347,7 +302,7 @@ namespace wg
 	
 	//____ MouseButton _________________________________________________________
 	
-	enum class MouseButton
+	enum class MouseButton : uint8_t
 	{
 		None = 0,
 		Left,
@@ -357,12 +312,12 @@ namespace wg
 		X2,
 	};
 	
-	#define	WG_MAX_BUTTONS		((int)MouseButton::X2)+1	
+	static const int MouseButton_Max = ((int)MouseButton::X2)+1;	
 	
 	
 	//____ AnimMode _____________________________________________________________
 	
-	enum class AnimMode
+	enum class AnimMode : uint8_t
 	{
 		Forward,
 		Backward,
@@ -377,39 +332,13 @@ namespace wg
 	
 	// TintMode controls how TintColors are blended hierarchically.
 	
-	enum class TintMode
+	enum class TintMode : uint8_t
 	{
 		Opaque,
 		Multiply
 	};
 	
-	
-	/*
-	enum	ExtChar
-	{
-			BREAK_PERMITTED_HERE	= 0x82,
-	//		BEGIN_SELECTED_AREA		= 0x86,
-	//		END_SELECTED_AREA		= 0x87,
-			HYPHEN_BREAK_PERMITTED_HERE	= 0x91,
-	//		BEGIN_UNDERLINE			= 0x91,
-	//		END_UNDERLINE			= 0x92,
-	
-	//		BEGIN_BOLD				= 0x93,
-	//		END_BOLD				= 0x94,
-	//		BEGIN_ITALIC			= 0x95,
-	//		END_ITALIC				= 0x96,
-	//		BEGIN_USEREFFECT1		= 0x97,
-	//		END_USEREFFECT1			= 0x98,
-	//		BEGIN_USEREFFECT2		= 0x99,
-	//		END_USEREFFECT2			= 0x9A,
-	
-	
-	//		END_COLOR				= 0x9C,
-	//		START_OF_OS_COMMAND		= 0x9D,
-	//		END_OF_OS_COMMAND		= 0x9E
-	};
-	*/
-	
+		
 	
 	//____ SearchMode _____________________________________________________________
 	
@@ -422,7 +351,7 @@ namespace wg
 	
 	//____ Origo _____________________________________________________________
 	
-	enum class Origo
+	enum class Origo : uint8_t
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
 	
@@ -439,17 +368,17 @@ namespace wg
 	
 	//____ Direction ____________________________________________________________
 	
-	enum class Direction
+	enum class Direction : uint8_t
 	{
 		Up,
+		Right,
 		Down,
-		Left,
-		Right
+		Left
 	};
 	
 	//____ Orientation __________________________________________________________
 	
-	enum class Orientation
+	enum class Orientation : uint8_t
 	{
 		Horizontal,
 		Vertical
@@ -465,7 +394,7 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified in the childs hook.
 	*/
-	enum class SizePolicy
+	enum class SizePolicy : uint8_t
 	{
 		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
 		Bound,				///< Child is bound to the exact size specified by parent.
@@ -559,17 +488,17 @@ namespace wg
 	
 	//____ SelectMode ___________________________________________________________
 	
-	enum class SelectMode
+	enum class SelectMode : uint8_t
 	{
-		Unselectable,			///< Entries can not be selected.
+		Unselectable,		///< Entries can not be selected.
 		SingleEntry,		///< Only a single entry can be selected at a time.
 		MultiEntries,		///< Multiple entries can be selected at the same time.
-		FlipOnSelect			///< Multiple entries can be selected at the same time and are switched individually.
+		FlipOnSelect		///< Multiple entries can be selected at the same time and are switched individually.
 	};
 	
 	//____ TextEditMode _________________________________________________________
 	
-	enum class TextEditMode
+	enum class TextEditMode : uint8_t
 	{
 		Static,
 		Selectable,

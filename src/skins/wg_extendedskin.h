@@ -60,7 +60,7 @@ namespace wg
 	
 	protected:
 		Border	m_contentPadding;
-		Coord		m_contentShift[WG_NB_STATES];	
+		Coord		m_contentShift[StateEnum_Nb];	
 	};
 	
 	

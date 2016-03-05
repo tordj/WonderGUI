@@ -226,14 +226,14 @@ namespace wg
 			{
 				int max = m_hook._widget()->maxSize().h;
 				int min = m_hook._widget()->minSize().h;
-				LIMIT( h, min, max );
+				limit( h, min, max );
 			}
 			return h;
 		}
 		else if( m_hook._widget() )
 		{
 			int h = m_hook._widget()->matchingHeight(width);
-			LIMIT( h, m_min.h, m_max.h );
+			limit( h, m_min.h, m_max.h );
 			return h;
 		}
 		else
@@ -255,14 +255,14 @@ namespace wg
 			{
 				int max = m_hook._widget()->maxSize().w;
 				int min = m_hook._widget()->minSize().w;
-				LIMIT( w, min, max );
+				limit( w, min, max );
 			}
 			return w;
 		}
 		else if( m_hook._widget() )
 		{
 			int w = m_hook._widget()->matchingWidth(height);
-			LIMIT( w, m_min.w, m_max.w );
+			limit( w, m_min.w, m_max.w );
 			return w;
 		}
 		else

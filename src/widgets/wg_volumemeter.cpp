@@ -136,8 +136,8 @@ namespace wg
 	
 	void VolumeMeter::setValue( float peak, float hold )
 	{
-		LIMIT( peak, 0.f, 1.f );
-		LIMIT( hold, 0.f, 1.f );
+		limit( peak, 0.f, 1.f );
+		limit( hold, 0.f, 1.f );
 		
 		if( m_peak != peak || m_hold != hold )
 		{

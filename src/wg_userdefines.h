@@ -30,24 +30,27 @@
 
 //=============================================================================
 
+	#define USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+									// dependency on freetype.
 
-//____ font & print related defines ___________________________________________
-
-
-//#define	SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
-								// that better handles broken unicode strings.
-								// Ignored if USE_UTF8 isn't defined.
-
-#define USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
-								// dependency on freetype.
+	//#define	SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
+									// that better handles broken unicode strings.
+									// Ignored if USE_UTF8 isn't defined.
 
 
-#define	WG_MAX_FONTSIZE		256	// Max size (pixels) for font.
+namespace wg
+{
+	//____ font & print related defines ___________________________________________
 
-#define WG_ESCAPE_CODE		0xA4
 
-#define DEFAULT_CODEPAGE CodePage::_1252
 
+
+	static const int MaxFontSize = 256;	// Max size (pixels) for font.
+
+	static const int EscapeCode = 0xA4;
+
+	static const CodePage DefaultCodePage = CodePage::_1252;
+}
 
 //=============================================================================
 #endif	// WG_USERDEFINES_DOT_H

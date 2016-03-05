@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CARET2_DOT_H
-#define WG_CARET2_DOT_H
+#ifndef	WG_CARET_DOT_H
+#define WG_CARET_DOT_H
 
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
@@ -36,9 +36,9 @@ namespace wg
 	
 	class GfxDevice;
 	
-	class Caret2;
-	typedef	StrongPtr<Caret2,Object_p>		Caret2_p;
-	typedef	WeakPtr<Caret2,Object_wp>		Caret2_wp;
+	class Caret;
+	typedef	StrongPtr<Caret,Object_p>		Caret_p;
+	typedef	WeakPtr<Caret,Object_wp>		Caret_wp;
 	
 	
 	enum class CaretMode
@@ -49,15 +49,15 @@ namespace wg
 	};
 	
 	
-	class Caret2 : public Object
+	class Caret : public Object
 	{
 	public:
-		static Caret2_p	create() { return Caret2_p(new Caret2()); }
+		static Caret_p	create() { return Caret_p(new Caret()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Caret2_p	cast( const Object_p& pObject );
+		static Caret_p	cast( const Object_p& pObject );
 	
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
@@ -72,7 +72,7 @@ namespace wg
 		virtual void		render( GfxDevice * pDevice, Coord pos, const Rect& clip );
 	
 	protected:
-		Caret2();
+		Caret();
 	
 	
 		uint16_t		m_glyph;
