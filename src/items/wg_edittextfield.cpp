@@ -148,14 +148,16 @@ namespace wg
 	{
 		_presenter()->renderField(this, pDevice, _canvas, _clip);
 		
-		if( m_editState.bCaret && m_pCaret )
+		Caret_p pCaret = _style()->combCaret();
+		
+		if( m_editState.bCaret && pCaret )
 		{
-			m_pCaret->render( pDevice, _presenter()->charToCoord(this, m_editState.caretOfs), _clip );
+			pCaret->render( pDevice, _presenter()->charToCoord(this, m_editState.caretOfs), _clip );
 		}
 	}
 	
 	//____ setCaret()___________________________________________________________
-	
+/*	
 	void EditTextField::setCaret( const Caret_p& pCaret )
 	{
 		if( pCaret && pCaret != m_pCaret )
@@ -171,6 +173,7 @@ namespace wg
 			}			
 		}
 	}
+*/
 
 	//____ selectionBegin() ____________________________________________________
 

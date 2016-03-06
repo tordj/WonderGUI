@@ -65,8 +65,6 @@ namespace wg
 		void			setEditMode( TextEditMode mode );
 		TextEditMode	editMode() const;
 */		
-		void			setCaret( const Caret_p& pCaret );
-		Caret_p 		caret() { return m_pCaret; }
 		
 		int				selectionBegin() const;
 		int				selectionEnd() const;
@@ -78,7 +76,6 @@ namespace wg
 	
 		TextEditMode	m_editMode;
 		EditState		m_editState;
-		Caret_p		m_pCaret;
 	};
 	
 } // namespace wg

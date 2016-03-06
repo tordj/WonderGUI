@@ -32,10 +32,6 @@
 #endif
 
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret2.h>
-#endif
-
 namespace wg 
 {
 	
@@ -69,10 +65,7 @@ namespace wg
 	
 		bool			isEditable() const;
 		bool			isSelectable() const;
-	
-		void			setCaret( const Caret_p& pCaret );
-		Caret_p			caret() const;
-	
+		
 		// Calling these methods gets field into edit mode, displaying caret.
 	
 		int				insertAtCaret( const CharSeq& str );

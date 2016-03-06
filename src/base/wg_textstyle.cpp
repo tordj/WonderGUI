@@ -170,6 +170,21 @@ namespace wg
 				m_combAttr.pLink = pLink;
 		}
 	}
+
+	//____ setCaret() _______________________________________________________________
+	
+	void TextStyle::setCaret( const Caret_p& pCaret )
+	{
+		if( pCaret != m_specAttr.pCaret )
+		{
+			m_specAttr.pCaret = pCaret;
+			if( !pCaret && m_pParent )
+				m_combAttr.pCaret = m_pParent->m_combAttr.pCaret;
+			else
+				m_combAttr.pCaret = pCaret;
+		}
+	}
+
 	
 	//____ setColor() ______________________________________________________________
 	
@@ -305,6 +320,18 @@ namespace wg
 		else
 			m_combAttr.pLink = 0;
 	}
+
+	//____ clearCaret() _____________________________________________________________
+	
+	void TextStyle::clearCaret()
+	{
+		m_specAttr.pCaret = 0;
+		if( m_pParent )
+			m_combAttr.pCaret = m_pParent->m_combAttr.pCaret;
+		else
+			m_combAttr.pCaret = 0;
+	}
+
 	
 	//____ clearColor() ____________________________________________________________
 	
@@ -434,6 +461,7 @@ namespace wg
 	
 		pDest->pFont 		= m_combAttr.pFont;
 		pDest->pLink 		= m_combAttr.pLink;
+		pDest->pCaret		= m_combAttr.pCaret;
 		pDest->size 		= m_combAttr.size[idx];
 		pDest->color		= m_combAttr.color[idx];
 		pDest->bgColor		= m_combAttr.bgColor[idx];
@@ -453,6 +481,8 @@ namespace wg
 			pDest->pFont = m_combAttr.pFont;
 		if( m_combAttr.pLink )
 			pDest->pLink = m_combAttr.pLink;
+		if( m_combAttr.pCaret )
+			pDest->pCaret = m_combAttr.pCaret;
 		if( m_combAttr.size[idx] != 0 )
 			pDest->size	= m_combAttr.size[idx];
 		if( m_combAttr.color[idx] != Color::None )
@@ -474,6 +504,7 @@ namespace wg
 	
 			newComb.pFont = m_specAttr.pFont ? m_specAttr.pFont : m_pParent->m_combAttr.pFont;
 			newComb.pLink = m_specAttr.pLink ? m_specAttr.pLink : m_pParent->m_combAttr.pLink;
+			newComb.pCaret = m_specAttr.pCaret ? m_specAttr.pCaret : m_pParent->m_combAttr.pCaret;
 	
 	
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
@@ -505,6 +536,7 @@ namespace wg
 	{
 		pSet->pFont = 0;
 		pSet->pLink = 0;
+		pSet->pCaret = 0;
 	
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
@@ -519,7 +551,7 @@ namespace wg
 	
 	bool TextStyle::_compareSets( TextStyle::AttrSet * p1, TextStyle::AttrSet * p2 )
 	{
-		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink )
+		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink || p1->pCaret != p2->pCaret )
 			return false;
 	
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
