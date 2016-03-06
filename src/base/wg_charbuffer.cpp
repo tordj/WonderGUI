@@ -312,7 +312,7 @@ namespace wg
 	
 	/**
 		Copies Chars in buffers from source to destination. Areas may overlap.
-		Property references are not affected and will need to be de/referenced
+		Style references are not affected and will need to be de/referenced
 		separately where needed.
 	
 		Please note that both offsets in this method start right after header
@@ -328,7 +328,7 @@ namespace wg
 	
 	/**
 		Copies Char-array content to buffer. Areas may not overlap.
-		Property references are not affected and will need to be de/referenced
+		Style references are not affected and will need to be de/referenced
 		separately where needed.
 	
 		Please note that the offset in this method starts right after header
@@ -751,7 +751,7 @@ namespace wg
 	//
 	/// @brief Replace a character.
 	///
-	/// @param ofs		Offset of character to be replaced, counting from beginning of buffer content.
+	/// @param ofs			Offset of character to be replaced, counting from beginning of buffer content.
 	///
 	///	@param character	Character to replace buffer content at ofs with.
 	///
@@ -913,7 +913,7 @@ namespace wg
 	
 		int sizeChange = addSpace - delChar;
 	
-		// Dereference the props of the characters to be deleted
+		// Dereference the styles of the characters to be deleted
 	
 		if( delChar != 0 )
 			_derefStyle( ofs, delChar );
@@ -986,7 +986,7 @@ namespace wg
 			m_pHead->m_refCnt++;
 		}
 	
-		// Add the chars and reference the props that were added
+		// Add the chars and reference the styles that were added
 	
 		if( addSpace != 0 )
 		{
@@ -1136,14 +1136,12 @@ namespace wg
 	
 	//___ setStyle() __________________________________________________________
 	//
-	/// @brief	Sets the properties for a range of characters.
+	/// @brief	Sets the style for a range of characters.
 	///
-	/// @param	pProp	Pointer to the new properties for the characters.
-	/// @param	ofs		Offset of first character to have its properties set, counting from beginning of buffer content.
-	/// @param	len		Number of characters to have their properties set.
+	/// @param	pStyle	Pointer to the new style for the characters.
+	/// @param	ofs		Offset of first character to have its style set, counting from beginning of buffer content.
+	/// @param	len		Number of characters to have their style set.
 	///
-	/// By setting the properties you erase all previous settings of individual
-	/// properties for the characters, like font, color, style, and underlined.
 	/// If the range spans outside the buffer content it will be adjusted properly.
 	
 	void CharBuffer::setStyle( const TextStyle_p& pStyle, int ofs, int len  )
@@ -1162,14 +1160,12 @@ namespace wg
 	
 	//___ clearStyle() ________________________________________________________
 	//
-	/// @brief	Clears the properties for a range of characters.
+	/// @brief	Clears the style for a range of characters.
 	///
-	/// @param ofs		Offset of first character to have its properties cleared.
+	/// @param ofs		Offset of first character to have its style cleared.
 	///
-	/// @param len		Number of characters to have their properties cleared.
+	/// @param len		Number of characters to have their styles cleared.
 	///
-	/// By clearing the properties you erase all previous settings of individual
-	/// properties for the characters, like font, color, style and underlined.
 	
 	void CharBuffer::clearStyle( int ofs, int len  )
 	{
@@ -1192,7 +1188,7 @@ namespace wg
 	/// @param seq		Sequence of characters to search for.
 	/// @param ofs		Offset in buffer to start searching from.
 	///
-	/// Any character properties such as color, style etc is ignored by the comparison. Only the characters
+	/// Character styles are ignored by the comparison. Only the characters
 	/// themselves are compared.
 	///
 	/// @return Offset in buffer for first match found or -1 if none found.
@@ -1230,7 +1226,7 @@ namespace wg
 	/// @param character	Characters to search for.
 	/// @param ofs			Offset in buffer to start searching from.
 	///
-	/// Any character properties such as color, style etc is ignored by the comparison. Only the characters
+	/// Any characters style is ignored by the comparison. Only the characters
 	/// themselves are compared.
 	///
 	/// @return Offset in buffer for first match found or -1 if none found.

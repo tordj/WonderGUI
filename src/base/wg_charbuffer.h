@@ -74,7 +74,7 @@ namespace wg
 		The above is fast and efficient, the buffer and all strings points to the same
 		memory buffer. No memory allocation or copying of data is done.
 		However, if you would remove the trim() call then you would end up with 100 identical
-		memory buffers, all individually allocated and with data copied from the buffer.
+		memory buffers, all individually allocated and with data copied from the CharBuffer.
 	
 		On the other hand, you shouldn't truncate your buffer unnecessarily since it means
 		allocation and dealocation of memory (unless it was already trimmed).
@@ -444,14 +444,11 @@ namespace wg
 		setGlyphs( glyph, 0, INT_MAX );
 	}
 	
-	//____ setProperties() ________________________________________________________
+	//____ setStyle() __________________________________________________________
 	
-	/// @brief	Sets the properties for all characters currently in the buffer.
+	/// @brief	Sets the style for all characters currently in the buffer.
 	///
-	/// @param	pProp	Pointer to the new properties for the characters.
-	///
-	/// By setting the properties you erase all previous settings of individual
-	/// properties for the characters, like font, color, style and underlined.
+	/// @param	pStyle	Pointer to the new style for all the characters.
 	
 	void CharBuffer::setStyle( const TextStyle_p& pStyle )
 	{
@@ -471,10 +468,7 @@ namespace wg
 	
 	//____ clearStyle() ________________________________________________________
 	//
-	/// @brief	Clears the properties for all characters currently in the buffer.
-	///
-	/// By clearing the properties you erase all previous settings of individual
-	/// properties for the characters, like font, color, style and underlined.
+	/// @brief	Clears the style for all characters currently in the buffer.
 	
 	void CharBuffer::clearStyle()
 	{
