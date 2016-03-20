@@ -38,8 +38,8 @@
     <File Name="../../src/widgets/wg_container.h"/>
     <File Name="../../src/widgets/wg_filler.cpp"/>
     <File Name="../../src/widgets/wg_filler.h"/>
-    <File Name="../../src/widgets/wg_fpsdisplay.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_fpsdisplay.h" ExcludeProjConfig="Debug"/>
+    <File Name="../../src/widgets/wg_fpsdisplay.cpp" ExcludeProjConfig=""/>
+    <File Name="../../src/widgets/wg_fpsdisplay.h" ExcludeProjConfig=""/>
     <File Name="../../src/widgets/wg_image.cpp"/>
     <File Name="../../src/widgets/wg_image.h"/>
     <File Name="../../src/widgets/wg_knob.cpp"/>

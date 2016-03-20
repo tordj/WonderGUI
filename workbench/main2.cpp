@@ -124,7 +124,8 @@ int main ( int argc, char** argv )
 	convertSDLFormat( &format, pSDLSurf->format );
 	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
 	SDL_FreeSurface( pSDLSurf );
-	Skin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
+	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
+	pPressablePlateSkin->setContentPadding( Border(3) );
 	
 	pSDLSurf = IMG_Load( "../../../resources/list_entry.png" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -169,7 +170,7 @@ int main ( int argc, char** argv )
 		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
 
 		TextEditor_p pText = TextEditor::create();
-		pText->text.set( "THIS IS TEXT" );
+		pText->text.set( "THIS IS\nTEXT" );
 		
 		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
 
@@ -229,6 +230,12 @@ int main ( int argc, char** argv )
 	pValue->value.setPresenter( pPresenter );
 	pFlexPanel->addWidget( pValue, WG_WEST, WG_SOUTHEAST );
 */
+
+
+	FpsDisplay_p pFps = FpsDisplay::create();
+	pFps->setSkin( pPressablePlateSkin );
+	pFlexPanel->addWidget( pFps );
+	
 
 	//------------------------------------------------------
 	// Program Main Loop

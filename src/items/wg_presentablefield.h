@@ -90,11 +90,12 @@ namespace wg
 		
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
+
+		TextPresenter *		_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
+		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		
 	protected:
 	
-		TextPresenter *		_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
-		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 	
 		Size				m_size;
 	

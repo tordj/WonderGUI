@@ -25,8 +25,8 @@
 #include	<wg_gfxdevice.h>
 #include	<wg_color.h>
 #include	<wg_char.h>
-#include	<wg_pen.h>
 #include	<wg_base.h>
+#include	<wg_standardpresenter.h>
 
 namespace wg 
 {
@@ -45,8 +45,18 @@ namespace wg
 	
 		m_tickBufferOfs		= 0;
 	
-		m_labelsText.set( "Now:/nMin:/nAvg:/nMax:/n" );
-		m_valuesText.setAlignment( Origo::NorthEast );
+		m_labelsText.set( "Now:\nMin:\nAvg:\nMax:" );
+
+		
+		// We set our own default text presenters since we rely on alignment
+		// to present the information in a readable way.
+
+		m_labelsText.setPresenter( StandardPresenter::create() );
+
+		StandardPresenter_p pValuePresenter = StandardPresenter::create();
+		pValuePresenter->setAlignment( Origo::NorthEast );
+		m_valuesText.setPresenter(pValuePresenter);
+
 	
 		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 	}
@@ -92,28 +102,18 @@ namespace wg
 		return 0;
 	}
 	
-	
-	//____ setTextProperties() ____________________________________________________
-	
-	void FpsDisplay::setTextProperties( const Textprop_p& pProp )
-	{
-		m_labelsText.setProperties(pProp);
-		m_valuesText.setProperties(pProp);
-		_requestResize();
-		_requestRender();
-	}
-	
+		
 	//____ preferredSize() __________________________________________________________
 	
 	Size FpsDisplay::preferredSize() const
 	{
-		Size contentSize = m_labelsText.unwrappedSize();
+		Size contentSize = m_labelsText.preferredSize();
 	
 		TextAttr attr;
-		m_valuesText.getBaseAttr( attr );
-		contentSize.w += TextTool::lineWidth( attr, " 1000.00" );
+		m_valuesText._style()->exportAttr( State(StateEnum::Normal), &attr );
+		contentSize.w += attr.pFont->getMaxGlyphAdvance(attr.size) * 7;			// Reserve space for: ' 999.99' after longest label.
 	
-		int valueHeight = m_valuesText.unwrappedSize().h;
+		int valueHeight = m_valuesText.preferredSize().h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 	
@@ -135,9 +135,9 @@ namespace wg
 			content = m_pSkin->contentRect( _canvas, m_state );
 		else
 			content = _canvas;
-	
-		pDevice->printText( _clip, &m_labelsText, _canvas );
-		pDevice->printText( _clip, &m_valuesText, _canvas );
+
+		m_labelsText.onRender( pDevice, content, _clip );
+		m_valuesText.onRender( pDevice, content, _clip );	
 	}
 	
 	
@@ -202,7 +202,7 @@ namespace wg
 				//____
 		
 				char	temp[100];
-				snprintf( temp, 100, "%.2f/n%.2f/n%.2f/n%.2f/n", fpsCurrent, fpsMin, fpsAvg, fpsMax );
+				snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
 				m_valuesText.set(temp);
 	
 				_requestRender();
@@ -231,24 +231,15 @@ namespace wg
 			m_tickRouteId = 0;
 		}
 	}
-	
-	//____ _onSkinChanged() _______________________________________________________
-	
-	void FpsDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
-	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-		m_labelsText.setColorSkin(pNewSkin);
-		m_valuesText.setColorSkin(pNewSkin);
-	}
-	
+		
 	//____ _onCloneContent() _______________________________________________________
 	
 	void FpsDisplay::_onCloneContent( const Widget * _pOrg )
 	{
 		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 	
-		m_labelsText.clone( &pOrg->m_labelsText );
-		m_valuesText.clone( &pOrg->m_valuesText );
+//		m_labelsText.clone( &pOrg->m_labelsText );
+//		m_valuesText.clone( &pOrg->m_valuesText );
 	
 		m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 	

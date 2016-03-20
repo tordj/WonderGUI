@@ -455,7 +455,7 @@ namespace wg
 	
 	//____ exportAttr() ____________________________________________________________
 	
-	void TextStyle::exportAttr( State state, TextAttr2 * pDest ) const
+	void TextStyle::exportAttr( State state, TextAttr * pDest ) const
 	{
 		int idx = Util::_stateToIndex(state);
 	
@@ -473,7 +473,7 @@ namespace wg
 	
 	//____ addToAttr() _____________________________________________________________
 	
-	void TextStyle::addToAttr( State state, TextAttr2 * pDest ) const 
+	void TextStyle::addToAttr( State state, TextAttr * pDest ) const 
 	{
 		int idx = Util::_stateToIndex(state);
 	

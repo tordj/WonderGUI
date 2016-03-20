@@ -28,7 +28,7 @@
 #endif
 
 #ifndef WG_LEGACYMODTEXT_DOT_H
-#	include	<wg_legacymodtext.h>
+#	include	<wg_modtext.h>
 #endif
 
 namespace wg 
@@ -41,24 +41,23 @@ namespace wg
 	typedef	StrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
 	typedef	WeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
 	
-	class FpsDisplay:public Widget, protected LegacyTextHolder
+	class FpsDisplay:public Widget, protected TextHolder
 	{
 	public:
 		static FpsDisplay_p	create() { return FpsDisplay_p(new FpsDisplay()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FpsDisplay_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
-		LegacyModText		labels;
-		LegacyText	values;
+		ModText		labels;
+		Text		values;
 	
 		//____ Methods __________________________________________
 	
-		void	setTextProperties( const Textprop_p& pProp );
 		Size	preferredSize() const;
 	
 	protected:
@@ -70,7 +69,6 @@ namespace wg
 		void		_onStateChanged( State oldState );
 		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void		_onCloneContent( const Widget * _pOrg );
-		void		_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
 	
 		Object * 	_object() { return this; };
 		void		_onFieldDirty( Field * pField );
@@ -83,11 +81,11 @@ namespace wg
 	const static int c_tickBuffer = 64;
 	
 	
-		LegacyTextField	m_labelsText;
-		LegacyTextField	m_valuesText;
+		TextField	m_labelsText;
+		TextField	m_valuesText;
 		int *		m_pTickBuffer;
 		int			m_tickBufferOfs;
-		RouteId	m_tickRouteId;
+		RouteId		m_tickRouteId;
 	};
 	
 	

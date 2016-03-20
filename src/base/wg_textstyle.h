@@ -53,7 +53,7 @@ namespace wg
 	typedef	StrongPtr<TextStyle,Object_p>		TextStyle_p;
 	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
 	
-	struct TextAttr2
+	struct TextAttr
 	{
 			Font_p			pFont;
 			int				size;
@@ -135,8 +135,8 @@ namespace wg
 		inline int				combSize( State state ) const;
 		inline TextDecoration 	combDecoration( State state ) const;
 	
-		void			exportAttr( State state, TextAttr2 * pDest ) const;
-		void			addToAttr( State state, TextAttr2 * pDest ) const;
+		void			exportAttr( State state, TextAttr * pDest ) const;
+		void			addToAttr( State state, TextAttr * pDest ) const;
 	
 	
 	

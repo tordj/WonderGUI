@@ -142,10 +142,10 @@ namespace wg
 		Coord lineStart = canvas.pos();
 		lineStart.y += _textOfsY( pHeader, canvas.h );
 	
-		TextAttr2		baseAttr;
+		TextAttr		baseAttr;
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
 	
-		TextAttr2		attr = baseAttr;
+		TextAttr		attr = baseAttr;
 		Font_p 			pFont = attr.pFont;
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
@@ -309,11 +309,11 @@ namespace wg
 	{
 		const Char * pChars = pBuffer->chars();
 	
-		TextAttr2		baseAttr;
+		TextAttr		baseAttr;
 		pBaseStyle->exportAttr( state, &baseAttr );
 	
 	
-		TextAttr2		attr = baseAttr;
+		TextAttr		attr = baseAttr;
 		Font_p 			pFont = attr.pFont;
 	
 		

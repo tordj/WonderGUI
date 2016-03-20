@@ -297,4 +297,8 @@
 #	include <wg_timeformatter.h>
 #endif
 
+#ifndef WG_FPSDISPLAY_DOT_H
+#	include <wg_fpsdisplay.h>
+#endif
+
 #endif //WONDERGUI_DOT_H
