@@ -47,7 +47,7 @@ namespace wg
 	class BitmapFont : public Font
 	{
 	public:
-		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile=false ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,binaryFile)); }
+		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile=false ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,size,binaryFile)); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -55,27 +55,32 @@ namespace wg
 		static BitmapFont_p	cast( const Object_p& pObject );
 	
 	
-		inline Type			getType() const { return BITMAP; }
+		inline Type			type() const { return BITMAP; }
 	
 		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile=false );
 		void				copyGlyphs( BitmapFont* pOtherFont );
-	
-	
-		Glyph_p				getGlyph( uint16_t chr, int size = 0 );						// Size is just a dummy for BitmapFont...
-		bool				hasGlyph( uint16_t chr );
-		int					getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
-	
-		inline int			getHeight( int size ) { return m_height; }
-		inline int			getLineSpacing( int size ) { return m_height; }
-		inline int			getBaseline( int size ) { return m_baseline; }
-		inline int			getNbGlyphs() { return m_nGlyphs; }
+
+
+		inline int			nbGlyphs() { return m_nGlyphs; }
 		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
 		inline bool			isMonospace() { return m_bMonospace; }
-		inline int			getWhitespaceAdvance( int size ) { return m_spaceSpacing; }
-		inline int			getMaxGlyphAdvance( int size ) { return m_maxSpacing; }
+		bool				hasGlyph( uint16_t chr );
+	
+		inline bool			setSize( int size ) { return (size == m_size);};						// Size is just a dummy for BitmapFont...
+		inline int			size() { return m_size; }
+	
+	
+		Glyph_p				getGlyph( uint16_t chr );
+		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
+	
+		inline int			height() { return m_height; }
+		inline int			lineSpacing() { return m_height; }
+		inline int			baseline() { return m_baseline; }
+		inline int			whitespaceAdvance() { return m_spaceSpacing; }
+		inline int			maxAdvance() { return m_maxSpacing; }
 	
 	protected:
-		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile=false );
+		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile=false );
 		~BitmapFont();
 	
 		class MyGlyph : public Glyph
@@ -104,6 +109,7 @@ namespace wg
 		uint32_t	m_nGlyphs;
 		uint32_t	m_height;
 		int			m_baseline;
+		int			m_size;
 	};
 	
 	

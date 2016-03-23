@@ -111,7 +111,11 @@ namespace wg
 	
 		TextAttr attr;
 		m_valuesText._style()->exportAttr( State(StateEnum::Normal), &attr );
-		contentSize.w += attr.pFont->getMaxGlyphAdvance(attr.size) * 7;			// Reserve space for: ' 999.99' after longest label.
+
+		int prevSize = attr.pFont->size();
+		attr.pFont->setSize(attr.size);
+		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
+		attr.pFont->setSize(prevSize);
 	
 		int valueHeight = m_valuesText.preferredSize().h;
 		if( valueHeight > contentSize.h )

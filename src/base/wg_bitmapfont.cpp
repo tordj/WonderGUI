@@ -36,7 +36,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, bool binaryFile )
+	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -48,6 +48,7 @@ namespace wg
 		m_nGlyphs		= 0;
 		m_height		= 0;
 		m_baseline		= 0;
+		m_size			= size;
 	
 	
 		for( int i = 0 ; i < 256 ; i++ )
@@ -186,7 +187,7 @@ namespace wg
 	
 	//____ getGlyph() _________________________________________________________
 	
-	inline Glyph_p BitmapFont::getGlyph( uint16_t chr, int size )
+	inline Glyph_p BitmapFont::getGlyph( uint16_t chr )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
 	
@@ -201,10 +202,10 @@ namespace wg
 	}
 	
 	
-	//____ getKerning() _________________________________________________________
+	//____ kerning() _________________________________________________________
 	
 	
-	inline int BitmapFont::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
+	inline int BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !m_pKerningTable )
 			return 0;

@@ -148,6 +148,8 @@ namespace wg
 		TextAttr		attr = baseAttr;
 		Font_p 			pFont = attr.pFont;
 		
+		pFont->setSize(attr.size);
+		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
@@ -166,7 +168,7 @@ namespace wg
 					// TODO: Include handling of special characters
 					// TODO: Support char-style changes.
 				
-					pGlyph = pFont->getGlyph(pChars->getGlyph(),attr.size);
+					pGlyph = pFont->getGlyph(pChars->getGlyph());
 	
 					if( pGlyph )
 					{
@@ -175,10 +177,10 @@ namespace wg
 	
 						pos.x += pGlyph->advance();
 						if( pPrevGlyph )
-							pos.x += pFont->getKerning(pPrevGlyph, pGlyph, attr.size);
+							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
 					}
 					else if( pChars->getGlyph() == 32 )
-						pos.x += pFont->getWhitespaceAdvance( attr.size );
+						pos.x += pFont->whitespaceAdvance();
 						
 					pPrevGlyph = pGlyph;
 					pChars++;
@@ -322,10 +324,13 @@ namespace wg
 		{
 			pLines->offset = pChars - pBuffer->chars();
 	
+			pFont->setSize(attr.size);
+	
 			int	width = 0;
-			int height = pFont->getHeight(attr.size);
-			int spacing = pFont->getLineSpacing(attr.size);
-			int base = pFont->getBaseline(attr.size);
+			int height = pFont->height();
+			int spacing = pFont->lineSpacing();
+			int base = pFont->baseline();
+			int space = pFont->whitespaceAdvance();
 	
 			Glyph_p	pGlyph;
 			Glyph_p	pPrevGlyph;
@@ -336,16 +341,16 @@ namespace wg
 				// TODO: Change loop, needs to include EOL character in line.
 				// TODO: Support char-style changes.
 				
-				pGlyph = pFont->getGlyph(pChars->getGlyph(),attr.size);
+				pGlyph = pFont->getGlyph(pChars->getGlyph());
 	
 				if( pGlyph )
 				{
 					width += pGlyph->advance();
 					if( pPrevGlyph )
-						width += pFont->getKerning(pPrevGlyph, pGlyph, attr.size);
+						width += pFont->kerning(pPrevGlyph, pGlyph);
 				}
 				else if( pChars->getGlyph() == 32 )
-					width += pFont->getWhitespaceAdvance(attr.size);
+					width += space;
 	
 				pPrevGlyph = pGlyph;
 				pChars++;

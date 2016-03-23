@@ -78,6 +78,7 @@
       <File Name="../../src/widgets/capsules/wg_shadercapsule.cpp"/>
       <File Name="../../src/widgets/capsules/wg_shadercapsule.h"/>
       <File Name="../../src/widgets/capsules/wg_sizecapsule.cpp"/>
+      <File Name="../../src/widgets/capsules/wg_sizecapsule.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="panels">
       <File Name="../../src/widgets/panels/wg_flexpanel.cpp"/>
@@ -259,7 +260,6 @@
     <File Name="../../src/base/wg_valueformat.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_sizescaler.cpp"/>
     <File Name="../../src/base/wg_sizescaler.h"/>
-    <File Name="../../src/widgets/capsules/wg_sizecapsule.h"/>
     <File Name="../../src/base/wg_msgfunc.cpp"/>
     <File Name="../../src/base/wg_msgfunc.h"/>
     <File Name="../../src/base/wg_msgrouter.cpp"/>

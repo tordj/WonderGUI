@@ -55,6 +55,7 @@ namespace wg
 		m_ftCharSize	= 0;
 		m_accessCounter = 0;
 		m_sizeOffset	= 0;
+		m_size 			= 0;
 	
 		for( int i = 0 ; i <= MaxFontSize ; i++ )
 		{
@@ -76,6 +77,7 @@ namespace wg
 	
 	
 		setRenderMode( RenderMode::CrispEdges );
+		setSize( 10 );
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -127,38 +129,59 @@ namespace wg
 		return 0;
 	}
 	
-	//____ _setCharSize() __________________________________________________________
+	//____ setSize() __________________________________________________________
 	
-	bool VectorFont::_setCharSize( int size )
+	bool VectorFont::setSize( int size )
 	{
-			FT_Error err = FT_Set_Char_Size( m_ftFace, size*64, 0, 0,0 );
+			if( size == m_ftCharSize )
+				return true;
+
+			int ftSize = size + m_sizeOffset;
+		
+			// Sanity check
+		
+			if( ftSize > MaxFontSize || ftSize < 0 )
+				return 0;
+
+		
+		
+			FT_Error err = FT_Set_Char_Size( m_ftFace, ftSize*64, 0, 0,0 );
 	//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
 			if( err )
 			{
+				m_size = 0;
 				m_ftCharSize = 0;
 				return false;
 			}
 	
-			switch( m_renderMode[size] )
-			{
-				case RenderMode::Monochrome:
-					m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
-					break;
-				case RenderMode::CrispEdges:
-					m_renderFlags = FT_LOAD_TARGET_NORMAL;
-					break;
-				case RenderMode::BestShapes:
-					m_renderFlags = FT_LOAD_TARGET_LIGHT;
-					break;
 	
-				default:
-					break;
-			}
-	
-			m_ftCharSize = size;
+			m_size = size;
+			m_ftCharSize = ftSize;
+			_refreshRenderFlags();
 			return true;
 	}
 	
+
+	//____ _refreshRenderFlags() _______________________________________________
+	
+	void VectorFont::_refreshRenderFlags()
+	{
+		switch( m_renderMode[m_ftCharSize] )
+		{
+			case RenderMode::Monochrome:
+				m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
+				break;
+			case RenderMode::CrispEdges:
+				m_renderFlags = FT_LOAD_TARGET_NORMAL;
+				break;
+			case RenderMode::BestShapes:
+				m_renderFlags = FT_LOAD_TARGET_LIGHT;
+				break;
+
+			default:
+				break;
+		}
+	}
 	
 	
 	//____ setRenderMode() ________________________________________________________
@@ -174,29 +197,20 @@ namespace wg
 		for( int i = startSize ; i <= endSize ; i++ )
 			m_renderMode[i] =mode;
 	
-		// Force update of m_renderFlags if current size is affected
+		// Force update of m_renderFlags since current size might be affected
 	
-		if( m_ftCharSize >= startSize && m_ftCharSize <= endSize )
-			_setCharSize( m_ftCharSize );
+		_refreshRenderFlags();
 	
 		return true;
 	}
 	
-	//____ getKerning() ___________________________________________________________
+	//____ kerning() ___________________________________________________________
 	
-	int VectorFont::getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size )
+	int VectorFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
-		size += m_sizeOffset;
-	
 		if( !pLeftGlyph || !pRightGlyph )
 			return 0;
-	
-		// Set size for FreeType
-	
-		if( m_ftCharSize != size )
-			if( !_setCharSize( size ) )
-				return 0;
-	
+		
 		// Get kerning info
 	
 		FT_Vector	delta;
@@ -205,22 +219,14 @@ namespace wg
 		return delta.x >> 6;
 	}
 	
-	//____ getWhitespaceAdvance() _________________________________________________
+	//____ whitespaceAdvance() _________________________________________________
 	
-	int VectorFont::getWhitespaceAdvance( int size )
+	int VectorFont::whitespaceAdvance()
 	{
-		size += m_sizeOffset;
-	
-		if( !m_whitespaceAdvance[size] )
+		if( !m_whitespaceAdvance[m_ftCharSize] )
 		{
 			FT_Error err;
-	
-			// Set size for FreeType
-	
-			if( m_ftCharSize != size )
-				if( !_setCharSize( size ) )
-					return 0;
-	
+		
 			// Load whitespace glyph
 	
 			err = FT_Load_Char( m_ftFace, ' ', FT_LOAD_RENDER );
@@ -228,56 +234,38 @@ namespace wg
 				return 0;
 	
 			// Get and return advance
-			m_whitespaceAdvance[size] = m_ftFace->glyph->advance.x >> 6;
+			m_whitespaceAdvance[m_ftCharSize] = m_ftFace->glyph->advance.x >> 6;
 		}
 	
-		return m_whitespaceAdvance[size];
+		return m_whitespaceAdvance[m_ftCharSize];
 	}
 	
-	//____ getHeight() ____________________________________________________________
+	//____ height() ____________________________________________________________
 	
-	int VectorFont::getHeight( int size )
-	{
-		size += m_sizeOffset;
-	
-		if( m_ftCharSize != size )
-			if( !_setCharSize( size ) )
-				return 0;
-	
+	int VectorFont::height()
+	{	
 		return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender) >> 6;
 	}
 	
-	//____ getLineSpacing() ____________________________________________________________
+	//____ lineSpacing() ____________________________________________________________
 	
-	int VectorFont::getLineSpacing( int size )
+	int VectorFont::lineSpacing()
 	{
-		size += m_sizeOffset;
-	
-		if( m_ftCharSize != size )
-			if( !_setCharSize( size ) )
-				return 0;
-	
 		return (m_ftFace->size->metrics.height) >> 6;
 	}
 	
 	
-	//____ getBaseline() ____________________________________________________________
+	//____ baseline() ____________________________________________________________
 	
-	int VectorFont::getBaseline( int size )
-	{
-		size += m_sizeOffset;
-	
-		if( m_ftCharSize != size )
-			if( !_setCharSize( size ) )
-				return 0;
-	
+	int VectorFont::baseline()
+	{	
 		return (m_ftFace->size->metrics.ascender) >> 6;
 	}
 	
 	
-	//____ getNbGlyphs() __________________________________________________________
+	//____ nbGlyphs() __________________________________________________________
 	
-	int VectorFont::getNbGlyphs()
+	int VectorFont::nbGlyphs()
 	{
 		return m_ftFace->num_glyphs;
 	}
@@ -296,12 +284,10 @@ namespace wg
 		return FT_IS_FIXED_WIDTH( m_ftFace )>0?true:false;
 	}
 	
-	//____ getMaxGlyphAdvance() ___________________________________________________
+	//____ maxAdvance() ___________________________________________________
 	
-	int VectorFont::getMaxGlyphAdvance( int size )
+	int VectorFont::maxAdvance()
 	{
-		size += m_sizeOffset;
-	
 		return m_ftFace->size->metrics.max_advance >> 6;
 	}
 	
@@ -319,27 +305,14 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	Glyph_p VectorFont::getGlyph( uint16_t ch, int size )
-	{
-		size += m_sizeOffset;
-	
-		// Sanity check
-	
-		if( size > MaxFontSize || size < 0 )
-			return 0;
-	
+	Glyph_p VectorFont::getGlyph( uint16_t ch )
+	{	
 		// Get cached glyph if we have one
 	
-		MyGlyph * pGlyph = _findGlyph( ch, size );
+		MyGlyph * pGlyph = _findGlyph( ch, m_ftCharSize );
 		if( pGlyph == 0 )
 		{
 			FT_Error err;
-	
-			// Set size for FreeType
-	
-			if( m_ftCharSize != size )
-				if( !_setCharSize( size ) )
-					return 0;
 	
 			// Load MyGlyph
 	
@@ -357,7 +330,7 @@ namespace wg
 	
 			// Get a MyGlyph object and fill in details
 	
-			pGlyph = _addGlyph( ch, size, advance, char_index );
+			pGlyph = _addGlyph( ch, m_ftCharSize, advance, char_index );
 		}
 	
 		return pGlyph;
@@ -446,13 +419,7 @@ namespace wg
 	VectorFont::CacheSlot * VectorFont::_generateBitmap( MyGlyph * pGlyph )
 	{
 		FT_Error err;
-	
-		// Set size for FreeType
-	
-		if( m_ftCharSize != pGlyph->m_size )
-			if( !_setCharSize( pGlyph->m_size ) )
-				return 0;
-	
+		
 		// Load MyGlyph
 	
 		err = FT_Load_Glyph( m_ftFace, pGlyph->kerningIndex(), FT_LOAD_RENDER | m_renderFlags );

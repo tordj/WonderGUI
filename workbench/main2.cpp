@@ -95,7 +95,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
 
-	BitmapFont_p pFont = BitmapFont::create( pFontImg, pFontSpec );
+	BitmapFont_p pFont = BitmapFont::create( pFontImg, pFontSpec, 8 );
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);

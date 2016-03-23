@@ -47,7 +47,7 @@ namespace wg
 	
 	struct GlyphBitmap
 	{
-		Surface_p pSurface;
+		Surface_p 	pSurface;
 		Rect		rect;
 		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
 		int8_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
@@ -72,7 +72,7 @@ namespace wg
 		Glyph( int advance, int _kerningIndex, Font * pFont );
 		virtual ~Glyph() {}
 	
-		Font *	m_pFont;	// glyphset that this glyph belongs to
+		Font *			m_pFont;		// glyphset that this glyph belongs to
 		int				m_advance;		// spacing to next glyph
 		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (VectorFont)
 	};
@@ -115,20 +115,28 @@ namespace wg
 		};
 	
 	
-		virtual	Type			getType() const = 0;
-	
-		virtual int				getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size ) = 0;
-		virtual Glyph_p			getGlyph( uint16_t chr, int size ) = 0;
-		virtual bool			hasGlyph( uint16_t chr ) = 0;
-	
-		virtual int				getHeight( int size ) = 0;
-		virtual int				getLineSpacing( int size ) = 0;
-		virtual int				getBaseline( int size ) = 0;	// Offset in pixels to baseline.
-		virtual int				getNbGlyphs() = 0;
+		virtual	Type			type() const = 0;
+
+		virtual int				nbGlyphs() = 0;
 		virtual bool			hasGlyphs() = 0;
 		virtual bool			isMonospace() = 0;
-		virtual int				getWhitespaceAdvance( int size ) = 0;
-		virtual int				getMaxGlyphAdvance( int size ) = 0;
+		virtual bool			hasGlyph( uint16_t chr ) = 0;
+
+
+		virtual bool			setSize( int size ) = 0;
+		virtual int				size() = 0;
+
+
+		// Methods dealing with the font in the specified size.
+	
+		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
+		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
+	
+		virtual int				height() = 0;
+		virtual int				lineSpacing() = 0;
+		virtual int				baseline() = 0;							// Offset in pixels to baseline.
+		virtual int				whitespaceAdvance() = 0;
+		virtual int				maxAdvance() = 0;
 	
 	
 	protected:

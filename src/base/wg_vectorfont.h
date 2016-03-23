@@ -62,8 +62,8 @@ namespace wg
 	public:
 		static VectorFont_p	create( char* pTTF_File, int bytes, int faceIndex ) { return VectorFont_p(new VectorFont(pTTF_File,bytes,faceIndex)); }
 
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static VectorFont_p	cast( const Object_p& pObject );
 
@@ -76,27 +76,36 @@ namespace wg
 
 
 
-		inline Type	getType() const { return VECTOR; }
+		inline Type	type() const { return VECTOR; }
 
-		int			getKerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph, int size );
-		Glyph_p	getGlyph( uint16_t chr, int size );
-		bool		hasGlyph( uint16_t chr );
+		bool		setSize( int size );
+		inline int	size() { return m_size; }
 
-		int			getHeight( int size );
-		int			getLineSpacing( int size );
-		int			getBaseline( int size );
-		int			getNbGlyphs();
+		//---
+
+		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
+		Glyph_p		getGlyph( uint16_t chr );
+
+		int			height();
+		int			lineSpacing();
+		int			baseline();
+		int			whitespaceAdvance();
+		int			maxAdvance();
+
+		//----
+
+		int			nbGlyphs();
 		bool		hasGlyphs();
+		bool		hasGlyph( uint16_t chr );
 		bool		isMonospace();
-		int			getWhitespaceAdvance( int size );
-		int			getMaxGlyphAdvance( int size );
 
 		inline void	setSizeOffset( int offset ) { m_sizeOffset = offset; }
-		inline int	getSizeOffset() const { return m_sizeOffset; }
+		inline int	sizeOffset() const { return m_sizeOffset; }
+
 		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
 		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
 		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
-		inline RenderMode	getRenderMode( int size ) const { if( size >= 0 && size <= MaxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
+		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= MaxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
 
 		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
 		static void	clearCache();
@@ -171,6 +180,7 @@ namespace wg
 		inline MyGlyph *	_findGlyph( uint16_t glyph, int size ) const;
 
 		inline void			_touchSlot( CacheSlot * pSlot );
+		void				_refreshRenderFlags();
 
 
 		FT_Face				m_ftFace;
@@ -182,6 +192,7 @@ namespace wg
 		RenderMode			m_renderMode[MaxFontSize+1];
 		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
 		int					m_whitespaceAdvance[MaxFontSize+1];
+		int					m_size;
 
 		//____ Static stuff __________________________________________________________
 
