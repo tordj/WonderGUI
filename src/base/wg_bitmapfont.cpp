@@ -36,26 +36,27 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile )
+	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
 	
-		m_bMonospace	= true;
-		m_avgSpacing	= 0;
-		m_maxSpacing	= 0;
-		m_spaceSpacing	= 0;
 		m_nGlyphs		= 0;
-		m_height		= 0;
-		m_baseline		= 0;
-		m_size			= size;
+		m_bMonospace	= true;
+		m_avgAdvance	= 0;
+		m_maxAdvance	= 0;
+		m_spaceAdvance	= 0;
+		m_lineGap		= 0;
+		m_maxAscend		= 0;
+		m_maxDescend	= 0;
+		m_size			= 0;
 	
 	
 		for( int i = 0 ; i < 256 ; i++ )
 			m_glyphTab[i] = 0;
 	
 		// Insert the glyphs
-		insertGlyphs(pSurf, pGlyphSpec, binaryFile);
+		insertGlyphs(pSurf, pGlyphSpec);
 	/*
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
@@ -122,52 +123,6 @@ namespace wg
 		return 0;
 	}
 	
-	//____ copyGlyphs() ___________________________________________________________
-	
-	void BitmapFont::copyGlyphs( BitmapFont* pOtherFont )
-	{
-		// Multiply average spacing by glyph count so that we can continue to add widths..
-		m_avgSpacing *= m_nGlyphs;
-	
-		for(int tabIndex=0; tabIndex < 256; tabIndex++)
-		{
-			// See if the other font has glyphs defined on this tab
-			if(pOtherFont->m_glyphTab[tabIndex] != NULL)
-			{
-				if(m_glyphTab[tabIndex] == NULL)
-				{
-					// Allocate memory for this tab, and reset it
-					m_glyphTab[tabIndex] = new MyGlyph[256];
-					for( int i = 0 ; i < 256 ; i++ )
-					{
-						m_glyphTab[tabIndex][i] = MyGlyph();
-					}
-				}
-	
-				// Copy all the glyphs of this tab
-				for( int i = 0 ; i < 256 ; i++ )
-				{
-					if(!m_glyphTab[tabIndex][i].m_src.pSurface)
-					{
-						m_glyphTab[tabIndex][i] = pOtherFont->m_glyphTab[tabIndex][i];
-	
-						m_avgSpacing += m_glyphTab[tabIndex][i].advance();
-	
-						// See if we have a new max height
-						if(m_glyphTab[tabIndex][i].m_src.rect.h > (int)m_height)
-							m_height = m_glyphTab[tabIndex][i].m_src.rect.h;
-	
-						m_nGlyphs++;
-					}
-				}
-			}
-		}
-	
-		// Divide back into average
-		m_avgSpacing /= m_nGlyphs;
-	}
-	
-	
 	//____ hasGlyph() _________________________________________________
 	
 	inline bool BitmapFont::hasGlyph( uint16_t chr )
@@ -225,368 +180,164 @@ namespace wg
 	
 	//____ insertGlyphs() _________________________________________________________
 	
-	void BitmapFont::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile )
+	void BitmapFont::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
-		m_avgSpacing *= m_nGlyphs;
+		m_avgAdvance *= m_nGlyphs;
 	
 		bool firstInsert = (0 == m_nGlyphs);
 	
-		if(binaryFile)
+		// Old-style ascii fnt spec
+
+		// Fill in m_glyphTab
+		char chr[16];
+		int		x, y, w, h, advance, bearingX, bearingY;
+		int		firstAdvance;
+		int		nRead = 0;
+
+		// Only interpret header stuff for the first font
+		if(firstInsert)
 		{
-			// New style bfnt font spec
-	
-			//////////////////////////////////////////////////////////////////////////
-			// Structs for the binary data
-			#pragma pack(1)
-			struct headerBlock
-			{
-				uint32_t blockSize;
-				uint32_t sectionCount;
-				uint16_t spaceSpacing;
-				uint16_t height;
-				uint16_t ascend;
-	
-				static headerBlock create(char* pData)
-				{
-					headerBlock b;
-					memcpy(&b, pData, sizeof(headerBlock));
-					return b;
-				}
-			};
-			#pragma pack(1)
-			struct charsBlock
-			{
-				uint32_t blockSize;
-				struct charInfo
-				{
-					uint16_t character;
-					uint16_t x;
-					uint16_t y;
-					uint16_t width;
-					uint16_t height;
-					int16_t advance;
-					int16_t xoffset;
-					int16_t yoffset;
-	
-					static charInfo create(char* pData)
-					{
-						charInfo info;
-						memcpy(&info, pData, sizeof(info));
-						return info;
-					}
-				};
-	
-				static charsBlock create(char* pData)
-				{
-					charsBlock b;
-					memcpy(&b, pData, sizeof(b));
-					return b;
-				}
-			};
-			#pragma pack(1)
-			struct kerningPairsBlock
-			{
-				uint32_t blockSize;
-				struct kerningPair
-				{
-					uint16_t  first;
-					uint16_t  second;
-					int16_t amount;
-	
-					static kerningPair create(char* pData)
-					{
-						kerningPair info;
-						memcpy(&info, pData, sizeof(info));
-						return info;
-					}
-				};
-	
-				static kerningPairsBlock create(char* pData)
-				{
-					kerningPairsBlock b;
-					memcpy(&b, pData, sizeof(b));
-					return b;
-				}
-			};
-			//////////////////////////////////////////////////////////////////////////
-	
-			enum eBlockTypes
-			{
-				HEADER = 1,
-				CHARACTERS = 2,
-				KERNINGPAIRS = 3
-			};
-	
-			if(firstInsert)
-			{
-				m_glyphTab[0] = new MyGlyph[256];
-				for( int i = 0 ; i < 256 ; i++ )
-				{
-					m_glyphTab[0][i] = MyGlyph();
-				}
-			}
-	
-			// Make sure that the binary fontspec starts with the appropriate signature
-			if(strncmp("WGFN", pGlyphSpec, 4) != 0)
-				return;
-	
-			int currentIndex= (int) strlen("WGFN");
-			int currentSection=0;
-			int maxSections=INT_MAX;
-			while(currentSection++ < maxSections)
-			{
-				// This stuff is a bit ugly.. but it works
-				switch(pGlyphSpec[currentIndex++])
-				{
-				case HEADER:
-					{
-						headerBlock pBlock = headerBlock::create(&pGlyphSpec[currentIndex]);
-						currentIndex += pBlock.blockSize;
-						maxSections = pBlock.sectionCount;
-	
-						if(firstInsert)
-						{
-							// Use the header info from this fontspec
-							m_spaceSpacing = pBlock.spaceSpacing;
-							m_height = pBlock.height;
-						}
-					}
-					break;
-				case CHARACTERS:
-					{
-						charsBlock pBlock = charsBlock::create(&pGlyphSpec[currentIndex]);
-						int innerIndex = currentIndex + sizeof(pBlock);
-						currentIndex += pBlock.blockSize;
-	
-						while(innerIndex + (int)sizeof(charsBlock::charInfo) <= currentIndex)
-						{
-							charsBlock::charInfo info = charsBlock::charInfo::create(&pGlyphSpec[innerIndex]);
-							innerIndex += sizeof(charsBlock::charInfo);
-	
-							uint16_t c = info.character;
-	
-							int tab = c >> 8;
-							if( m_glyphTab[tab] == 0 )
-							{
-								m_glyphTab[tab] = new MyGlyph[256];
-								for( int i = 0 ; i < 256 ; i++ )
-								{
-									m_glyphTab[tab][i] = MyGlyph();
-								}
-							}
-	
-							c &= 0xff;
-							m_glyphTab[tab][c] = MyGlyph( (uint8_t)info.advance, (int8_t)info.xoffset, (int8_t)info.yoffset, m_nGlyphs, this, pSurf, Rect( info.x, info.y, info.width, info.height) );
-	
-							if(firstInsert)
-							{
-								// This is done every iteration, but it doesn't matter really
-								m_glyphTab[0][32].setAdvance( m_spaceSpacing );
-								m_glyphTab[0][0xA0].setAdvance( m_spaceSpacing );	// NO_BREAK_SPACE
-							}
-	
-							if( info.height > (int) m_height )
-								m_height = info.height;
-	
-							if( info.advance > m_maxSpacing )
-								m_maxSpacing = info.advance;
-	
-							m_avgSpacing += info.advance;
-							m_nGlyphs++;
-						}
-					}
-					break;
-				case KERNINGPAIRS:
-					{
-						kerningPairsBlock pBlock = kerningPairsBlock::create(&pGlyphSpec[currentIndex]);
-						int innerIndex = currentIndex + sizeof(pBlock);
-						currentIndex += pBlock.blockSize;
-	
-						int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
-						int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
-						int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
-						if( m_pKerningTable )
-						{
-							memcpy( pNewKerningTable, m_pKerningTable, oldSize );
-							delete [] m_pKerningTable;
-							m_pKerningTable = 0;
-						}
-						memset( &pNewKerningTable[ oldSize ], 0, newSize - oldSize );
-	
-						m_pKerningTable = pNewKerningTable;
-						m_nKerningGlyphs = m_nGlyphs;
-	
-						while(innerIndex + (int)sizeof(kerningPairsBlock::kerningPair) <= currentIndex)
-						{
-							kerningPairsBlock::kerningPair info = kerningPairsBlock::kerningPair::create(&pGlyphSpec[innerIndex]);
-							innerIndex += sizeof(kerningPairsBlock::kerningPair);
-	
-							uint16_t cLeft = info.first;
-							uint16_t cRight = info.second;
-	
-							int indexLeft = getGlyph( cLeft )->kerningIndex();
-							int indexRight = getGlyph( cRight )->kerningIndex();
-	
-							m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = (int8_t)info.amount;
-						}
-					}
-					break;
-				}
-			}
+			nRead = sscanf( pGlyphSpec, "%d %d %d", &m_size, &m_lineGap, &m_spaceAdvance );
 		}
 		else
 		{
-			// Old-style ascii fnt spec
-	
-			// Fill in m_glyphTab
-			char chr[16];
-			int		x, y, w, h, advance, bearingX, bearingY;
-			int		firstSpacing;
-			int		ascend;			// Ascend, i.e. distance from the baseline to the topmost point of any glyph.
-			int		nRead = 0;
-	
-			// Only interpret header stuff for the first font
-			if(firstInsert)
+			int size, lineGap, spaceAdvance;
+			
+			nRead = sscanf( pGlyphSpec, "%d %d %d",  &size, &lineGap, &spaceAdvance );
+			
+			if( lineGap > m_lineGap ) m_lineGap = lineGap;
+			if( spaceAdvance > m_spaceAdvance ) m_spaceAdvance = spaceAdvance;
+		}
+
+		if( nRead < 3 )
+			return;						// Incorrect header
+
+
+
+		bearingX = 0; // Clear bearingX since it is optional in the font.
+		bearingY = 0; // Clear bearingY since it is optional in the font.
+
+		pGlyphSpec = TextTool::nextLine( pGlyphSpec );
+		nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
+		pGlyphSpec = TextTool::nextLine( pGlyphSpec );
+		firstAdvance = advance;
+
+		// We always have the page where whitespace is...
+		// Only do this the first glyph insertion
+
+		if(firstInsert)
+		{
+			if( (int) m_spaceAdvance != firstAdvance )
+				m_bMonospace = false;
+
+			m_glyphTab[0] = new MyGlyph[256];
+			for( int i = 0 ; i < 256 ; i++ )
 			{
-				nRead = sscanf( pGlyphSpec, "%d %d %d", &m_spaceSpacing, &m_height, &ascend );
+				m_glyphTab[0][i] = MyGlyph();
 			}
-			else
+			m_glyphTab[0][32].setAdvance( m_spaceAdvance );
+			m_glyphTab[0][0xA0].setAdvance( m_spaceAdvance );	// NO_BREAK_SPACE
+		}
+
+
+		while( nRead >= 6 && nRead <= 8 ) // bearingX & bearingY are optional.
+		{
+			// Fix bearing that (incorrectly) starts from top in fontfiles.
+
+
+			const char * pChr = chr;
+			uint16_t c = TextTool::parseChar( pChr );
+
+			int tab = c >> 8;
+			if( m_glyphTab[tab] == 0 )
 			{
-				int bogus;
-				nRead = sscanf( pGlyphSpec, "%d %d %d", &bogus, &bogus, &ascend );
-			}
-	
-			if( nRead >= 3 && ascend > m_baseline )
-				m_baseline = ascend;
-	
-	
-			bearingX = 0; // Clear bearingX since it is optional in the font.
-			bearingY = 0; // Clear bearingY since it is optional in the font.
-	
-			pGlyphSpec = TextTool::nextLine( pGlyphSpec );
-			nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
-			pGlyphSpec = TextTool::nextLine( pGlyphSpec );
-			firstSpacing = advance;
-	
-	
-			// We always have the page where whitespace is...
-			// Only do this the first glyph insertion
-	
-			if(firstInsert)
-			{
-				if( (int) m_spaceSpacing != firstSpacing )
-					m_bMonospace = false;
-	
-				m_glyphTab[0] = new MyGlyph[256];
+				m_glyphTab[tab] = new MyGlyph[256];
 				for( int i = 0 ; i < 256 ; i++ )
 				{
-					m_glyphTab[0][i] = MyGlyph();
+					m_glyphTab[tab][i] = MyGlyph();
 				}
-				m_glyphTab[0][32].setAdvance( m_spaceSpacing );
-				m_glyphTab[0][0xA0].setAdvance( m_spaceSpacing );	// NO_BREAK_SPACE
 			}
-	
-	
-			while( nRead >= 6 && nRead <= 8 ) // bearingX & bearingY are optional.
+
+			c &= 0xff;
+
+			if(!m_glyphTab[tab][c].m_src.pSurface)
 			{
-				// Fix bearing that (incorrectly) starts from top in fontfiles.
-	
-	//			if( nRead < 8 )
-					bearingY -= ascend;
-	
-				//
-	
-				const char * pChr = chr;
-				uint16_t c = TextTool::parseChar( pChr );
-	
-				int tab = c >> 8;
-				if( m_glyphTab[tab] == 0 )
-				{
-					m_glyphTab[tab] = new MyGlyph[256];
-					for( int i = 0 ; i < 256 ; i++ )
-					{
-						m_glyphTab[tab][i] = MyGlyph();
-					}
-				}
-	
-				c &= 0xff;
-	
-				if(!m_glyphTab[tab][c].m_src.pSurface)
-				{
-					m_glyphTab[tab][c] = MyGlyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, Rect( x, y, w, h ) );
-	
-					if( advance != firstSpacing )
-						m_bMonospace = false;
-	
-					if( h > (int) m_height )
-						m_height = h;
-	
-					if( advance > m_maxSpacing )
-						m_maxSpacing = advance;
-	
-					m_avgSpacing += advance;
-					m_nGlyphs++;
-				}
-	
-	
-				bearingX = 0; // Clear berings since they are optional in the font.
-				bearingY = 0;
-				nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
-				pGlyphSpec = TextTool::nextLine( pGlyphSpec );
+				m_glyphTab[tab][c] = MyGlyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, Rect( x, y, w, h ) );
+
+				if( advance != firstAdvance )
+					m_bMonospace = false;
+
+				if( m_maxAscend - bearingY < 0 )
+					m_maxAscend = -bearingY;
+
+				if( m_maxDescend < h + bearingY )
+					m_maxDescend = h + bearingY;
+
+				if( advance > m_maxAdvance )
+					m_maxAdvance = advance;
+
+				m_avgAdvance += advance;
+				m_nGlyphs++;
 			}
-	
-			// I guess monospace means no kerning.
-			if( !m_bMonospace )
+
+
+			bearingX = 0; // Clear berings since they are optional in the font.
+			bearingY = 0;
+			nRead = sscanf( pGlyphSpec, "%s %d %d %d %d %d %d %d", chr, &x, &y, &w, &h, &advance, &bearingX, &bearingY );
+			pGlyphSpec = TextTool::nextLine( pGlyphSpec );
+		}
+
+		// I guess monospace means no kerning.
+		if( !m_bMonospace )
+		{
+			// Read kerning information if there is any.
+			char* pKerningStart = strstr( pGlyphSpec, "[kerning]" );
+			if( pKerningStart )
 			{
-				// Read kerning information if there is any.
-				char* pKerningStart = strstr( pGlyphSpec, "[kerning]" );
-				if( pKerningStart )
+				char* pKerningSpec = TextTool::nextLine( pKerningStart );
+
+				int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
+				int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
+				int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
+				if( m_pKerningTable )
 				{
-					char* pKerningSpec = TextTool::nextLine( pKerningStart );
-	
-					int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
-					int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
-					int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
-					if( m_pKerningTable )
-					{
-						memcpy( pNewKerningTable, m_pKerningTable, oldSize );
-						delete [] m_pKerningTable;
-						m_pKerningTable = 0;
-					}
-					memset( &pNewKerningTable[ oldSize ], 0, newSize - oldSize );
-	
-					m_pKerningTable = pNewKerningTable;
-	
-					m_nKerningGlyphs = m_nGlyphs;
-	
-					char chrLeft[8];
-					char chrRight[8];
-					int kern = 0;
-	
+					memcpy( pNewKerningTable, m_pKerningTable, oldSize );
+					delete [] m_pKerningTable;
+					m_pKerningTable = 0;
+				}
+				memset( &pNewKerningTable[ oldSize ], 0, newSize - oldSize );
+
+				m_pKerningTable = pNewKerningTable;
+
+				m_nKerningGlyphs = m_nGlyphs;
+
+				char chrLeft[8];
+				char chrRight[8];
+				int kern = 0;
+
+				nRead = sscanf( pKerningSpec, "%s %s %d", chrLeft, chrRight, &kern );
+				pKerningSpec = TextTool::nextLine( pKerningSpec );
+				while( nRead == 3 )
+				{
+					const char* pChrLeft = chrLeft;
+					const char* pChrRight = chrRight;
+					uint16_t cLeft = TextTool::parseChar( pChrLeft );
+					uint16_t cRight = TextTool::parseChar( pChrRight );
+
+					int indexLeft = getGlyph( cLeft )->kerningIndex();
+					int indexRight = getGlyph( cRight )->kerningIndex();
+
+					m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = kern;
+
 					nRead = sscanf( pKerningSpec, "%s %s %d", chrLeft, chrRight, &kern );
 					pKerningSpec = TextTool::nextLine( pKerningSpec );
-					while( nRead == 3 )
-					{
-						const char* pChrLeft = chrLeft;
-						const char* pChrRight = chrRight;
-						uint16_t cLeft = TextTool::parseChar( pChrLeft );
-						uint16_t cRight = TextTool::parseChar( pChrRight );
-	
-						int indexLeft = getGlyph( cLeft )->kerningIndex();
-						int indexRight = getGlyph( cRight )->kerningIndex();
-	
-						m_pKerningTable[ (indexLeft * m_nGlyphs) + indexRight ] = kern;
-	
-						nRead = sscanf( pKerningSpec, "%s %s %d", chrLeft, chrRight, &kern );
-						pKerningSpec = TextTool::nextLine( pKerningSpec );
-					}
 				}
 			}
 		}
 	
 		// Divide back into average
-		m_avgSpacing /= m_nGlyphs;
+		m_avgAdvance /= m_nGlyphs;
 	}
 	
 	//____ BitmapFont::MyGlyph constructor ______________________________________

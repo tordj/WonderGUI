@@ -25,8 +25,7 @@
 namespace wg 
 {
 	
-	const Color Color::Transparent		( 0x00FFFFFF );
-	const Color Color::None				( 0x00000000 );
+	const Color Color::Transparent		( 0x00000000 );
 	
 	const Color Color::AliceBlue		( 0xFFF0F8FF );
 	const Color Color::AntiqueWhite		( 0xFFFAEBD7 );

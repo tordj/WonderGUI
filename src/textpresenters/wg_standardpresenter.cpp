@@ -132,8 +132,10 @@ namespace wg
 		return 0;
 	}
 	
+	//____ _renderField()___________________________________________________________
+	
 	void StandardPresenter::renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
-	{
+	{		
 		void * pBlock = _fieldDataBlock(pField);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
@@ -145,10 +147,12 @@ namespace wg
 		TextAttr		baseAttr;
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
 	
-		TextAttr		attr = baseAttr;
-		Font_p 			pFont = attr.pFont;
-		
-		pFont->setSize(attr.size);
+		TextAttr		attr;
+		Font_p 			pFont;
+		TextStyle_h		hStyle = 0xFFFF;
+
+		Color	baseTint = pDevice->getTintColor();
+		Color	localTint = Color::White;
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
@@ -166,7 +170,33 @@ namespace wg
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
 				{
 					// TODO: Include handling of special characters
-					// TODO: Support char-style changes.
+					// TODO: Support char textcolor and background color and effects.
+				
+					if( pChars->styleHandle() != hStyle )
+					{
+						int oldFontSize = attr.size;
+						attr = baseAttr;
+
+						if( pChars->styleHandle() != 0 )
+							pChars->stylePtr()->addToAttr( _state(pField), &attr );
+						
+						if( pFont != attr.pFont )
+						{
+							pFont = attr.pFont;
+							pFont->setSize(attr.size);
+							pPrevGlyph = 0;								// No kerning against across different fonts.
+						}
+						else if( attr.size != oldFontSize )
+						{
+							pFont->setSize(attr.size);
+							pPrevGlyph = 0;								// No kerning between characters of different size.
+													}
+						if( attr.color != localTint )
+						{
+							localTint = attr.color;
+							pDevice->setTintColor( baseTint * localTint );
+						}
+					}
 				
 					pGlyph = pFont->getGlyph(pChars->getGlyph());
 	
@@ -191,6 +221,8 @@ namespace wg
 			pLineInfo++;
 		}
 		
+		if( localTint != Color::White )
+			pDevice->setTintColor( baseTint );
 	}
 	
 	
@@ -315,58 +347,99 @@ namespace wg
 		pBaseStyle->exportAttr( state, &baseAttr );
 	
 	
-		TextAttr		attr = baseAttr;
-		Font_p 			pFont = attr.pFont;
+		TextAttr		attr;
+		Font_p 			pFont;
 	
+		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
+				
+
+		int maxAscend = 0;
+		int maxDescend = 0;
+		int maxDescendGap = 0;							// Including the line gap.
+		int spaceAdv = 0;
+		int width = 0;
 		
-		
+		pLines->offset = pChars - pBuffer->chars();
+
 		while( true )
 		{
-			pLines->offset = pChars - pBuffer->chars();
-	
-			pFont->setSize(attr.size);
-	
-			int	width = 0;
-			int height = pFont->height();
-			int spacing = pFont->lineSpacing();
-			int base = pFont->baseline();
-			int space = pFont->whitespaceAdvance();
-	
+
+			if( pChars->styleHandle() != hCharStyle )
+			{
+				attr = baseAttr;
+				if( pChars->styleHandle() != 0 )
+					pChars->stylePtr()->addToAttr( state, &attr );
+				
+				pFont = attr.pFont;
+				pFont->setSize(attr.size);
+				
+				int ascend = pFont->maxAscend();
+				if( ascend > maxAscend )
+					maxAscend = ascend;
+					
+				int descend = pFont->maxDescend();
+				if( descend > maxDescend )
+					maxDescend = descend;
+
+				int descendGap = descend + pFont->lineGap();
+				if( descendGap > maxDescendGap )
+					maxDescendGap = descendGap;
+					
+				spaceAdv = pFont->whitespaceAdvance();
+			}
+
+
+			// TODO: Include handling of special characters
+			// TODO: Support sub/superscript.
+
 			Glyph_p	pGlyph;
 			Glyph_p	pPrevGlyph;
-	
-			while( !pChars->isEndOfLine() )
+												
+			pGlyph = pFont->getGlyph(pChars->getGlyph());
+
+			if( pGlyph )
 			{
-				// TODO: Include handling of special characters
-				// TODO: Change loop, needs to include EOL character in line.
-				// TODO: Support char-style changes.
-				
-				pGlyph = pFont->getGlyph(pChars->getGlyph());
-	
-				if( pGlyph )
-				{
-					width += pGlyph->advance();
-					if( pPrevGlyph )
-						width += pFont->kerning(pPrevGlyph, pGlyph);
-				}
-				else if( pChars->getGlyph() == 32 )
-					width += space;
-	
-				pPrevGlyph = pGlyph;
-				pChars++;
+				width += pGlyph->advance();
+				if( pPrevGlyph )
+					width += pFont->kerning(pPrevGlyph, pGlyph);
 			}
-			pLines->length = pChars - (pBuffer->chars() + pLines->offset) +1; 		// +1 to include line terminator.
-				
-			pLines->width = width;
-			pLines->height = height;
-			pLines->base = base;
-			pLines->spacing = spacing;
-			pLines++;			
-				
-			if( pChars->isEndOfText() )
-				break;
+			else if( pChars->getGlyph() == 32 )
+				width += spaceAdv;
+
+			pPrevGlyph = pGlyph;
 	
-			pChars++;		
+			//
+	
+			if( pChars->isEndOfLine() )
+			{
+				// Finish this line
+				
+				pLines->length = pChars - (pBuffer->chars() + pLines->offset) +1; 		// +1 to include line terminator.
+					
+				pLines->width = width;
+				pLines->height = maxAscend + maxDescend;
+				pLines->base = maxAscend;
+				pLines->spacing = maxAscend + maxDescendGap;
+				pLines++;			
+					
+				if( pChars->isEndOfText() )
+					break;
+
+				// Prepare for next line
+
+				pLines->offset = pChars - pBuffer->chars();
+				width = 0;
+				
+				if( pChars[1].styleHandle() != hCharStyle )
+				{
+					maxAscend = 0;
+					maxDescend = 0;
+					maxDescendGap = 0;
+				}
+				
+			}
+
+			pChars++;	
 		}
 	}
 		

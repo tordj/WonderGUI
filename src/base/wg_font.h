@@ -132,12 +132,11 @@ namespace wg
 		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
 		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
 	
-		virtual int				height() = 0;
-		virtual int				lineSpacing() = 0;
-		virtual int				baseline() = 0;							// Offset in pixels to baseline.
+		virtual int				lineGap() = 0;
 		virtual int				whitespaceAdvance() = 0;
 		virtual int				maxAdvance() = 0;
-	
+		virtual int				maxAscend() = 0;
+		virtual int				maxDescend() = 0;
 	
 	protected:
 		Font() {}

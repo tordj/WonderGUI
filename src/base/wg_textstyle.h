@@ -58,7 +58,7 @@ namespace wg
 			Font_p			pFont;
 			int				size;
 			Color			color;
-			Color			bgColor;
+			Color			bgColor;			
 			TextDecoration	decoration;
 			TextLink_p		pLink;
 			Caret_p			pCaret;
@@ -122,7 +122,9 @@ namespace wg
 		inline Font_p			font() const;
 		inline TextLink_p		link() const;
 		inline Caret_p			caret() const;
+		inline bool				hasColor( State state ) const;
 		inline Color			color( State state ) const;
+		inline bool				hasBgColor( State state ) const;
 		inline 	Color			bgColor( State state ) const;
 		inline int				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
@@ -148,6 +150,8 @@ namespace wg
 		{
 			Font_p			pFont;
 			int				size[StateEnum_Nb];
+			bool			hasColor[StateEnum_Nb];
+			bool			hasBgColor[StateEnum_Nb];
 			Color			color[StateEnum_Nb];
 			Color			bgColor[StateEnum_Nb];
 			TextDecoration	decoration[StateEnum_Nb];
@@ -190,14 +194,25 @@ namespace wg
 	{
 		return m_specAttr.pCaret;
 	}
-
 	
+	//______________________________________________________________________________
+	inline bool TextStyle::hasColor( State state ) const
+	{
+		return m_specAttr.hasColor[Util::_stateToIndex(state)];
+	}
+
 	//______________________________________________________________________________
 	inline Color TextStyle::color( State state ) const
 	{
 		return m_specAttr.color[Util::_stateToIndex(state)];
 	}
 	
+	//______________________________________________________________________________
+	inline bool TextStyle::hasBgColor( State state ) const
+	{
+		return m_specAttr.hasBgColor[Util::_stateToIndex(state)];
+	}
+
 	//______________________________________________________________________________
 	inline 	Color TextStyle::bgColor( State state ) const
 	{

@@ -34,7 +34,7 @@ namespace wg
 	
 	TextStyle::TextStyle()
 	{
-		m_handle = TextStyleManager::_reserveHandle();
+		m_handle = TextStyleManager::_reserveHandle(this);
 		
 		m_pFirstChild = 0;
 		m_pNextSibling = 0;
@@ -190,55 +190,50 @@ namespace wg
 	
 	void TextStyle::setColor( Color color )
 	{
-		if( color == Color::None )
-			clearColor();
-		else
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.color[i] = color;
-				m_combAttr.color[i] = color;
-			}
-		}}
+			m_specAttr.color[i] = color;
+			m_specAttr.hasColor[i] = true;
+
+			m_combAttr.color[i] = color;
+			m_combAttr.hasColor[i] = true;			
+		}
+}
 	
 	void TextStyle::setColor( Color color, State state )
 	{
-		if( color == Color::None )
-			clearColor(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.color[idx] = color;
-			m_combAttr.color[idx] = color;
-		}
+		int idx = Util::_stateToIndex(state);
+
+		m_specAttr.color[idx] = color;
+		m_specAttr.hasColor[idx] = true;
+
+		m_combAttr.color[idx] = color;
+		m_combAttr.hasColor[idx] = true;
 	}
 	
 	//____ setBgColor() ______________________________________________________________
 	
 	void TextStyle::setBgColor( Color color )
 	{
-		if( color == Color::None )
-			clearBgColor();
-		else
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgColor[i] = color;
-				m_combAttr.bgColor[i] = color;
-			}
+			m_specAttr.bgColor[i] = color;
+			m_specAttr.hasBgColor[i] = true;
+
+			m_combAttr.bgColor[i] = color;
+			m_combAttr.hasBgColor[i] = true;
 		}
 	}
 	
 	void TextStyle::setBgColor( Color color, State state )
 	{
-		if( color == Color::None )
-			clearBgColor(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.bgColor[idx] = color;
-			m_combAttr.bgColor[idx] = color;
-		}
+		int idx = Util::_stateToIndex(state);
+
+		m_specAttr.bgColor[idx] = color;
+		m_specAttr.hasBgColor[idx] = true;
+
+		m_combAttr.bgColor[idx] = color;
+		m_combAttr.hasBgColor[idx] = true;		
 	}
 	
 	//____ setSize() _______________________________________________________________
@@ -341,15 +336,17 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.color[i] = Color::None;
+				m_specAttr.hasColor[i] = false;
+				
+				m_combAttr.hasColor[i] = m_pParent->m_combAttr.hasColor[i];
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
 			}
 		}
 		else
-		{		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		{			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.color[i] = Color::None;
-				m_combAttr.color[i] = Color::None;
+				m_specAttr.hasColor[i] = false;
+				m_combAttr.hasColor[i] = false;
 			}
 		}
 	}
@@ -358,8 +355,15 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.color[idx] = Color::None;
-		m_combAttr.color[idx] = m_pParent ? m_pParent->m_combAttr.color[idx] : Color::None;
+		m_specAttr.hasColor[idx] = false;
+
+		if( m_pParent )
+		{
+			m_combAttr.hasColor[idx] = m_pParent->m_combAttr.hasColor[idx];
+			m_combAttr.color[idx] = m_pParent->m_combAttr.color[idx];
+		}
+		else
+			m_combAttr.hasColor[idx] = false;
 	}
 	
 	
@@ -371,7 +375,9 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.bgColor[i] = Color::None;
+				m_specAttr.hasBgColor[i] = false;
+				
+				m_combAttr.hasBgColor[i] = m_pParent->m_combAttr.hasBgColor[i];
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
 			}
 		}
@@ -379,8 +385,8 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.bgColor[i] = Color::None;
-				m_combAttr.bgColor[i] = Color::None;
+				m_specAttr.hasBgColor[i] = false;
+				m_combAttr.hasBgColor[i] = false;
 			}
 		}
 	}
@@ -389,8 +395,15 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.bgColor[idx] = Color::None;
-		m_combAttr.bgColor[idx] = m_pParent ? m_pParent->m_combAttr.bgColor[idx] : Color::None;
+		m_specAttr.hasBgColor[idx] = false;
+
+		if( m_pParent )
+		{
+			m_combAttr.hasBgColor[idx] = m_pParent->m_combAttr.hasBgColor[idx];
+			m_combAttr.bgColor[idx] = m_pParent->m_combAttr.bgColor[idx];
+		}
+		else
+			m_combAttr.hasBgColor[idx] = false;
 	}
 	
 	//____ clearSize() ____________________________________________________________
@@ -463,8 +476,8 @@ namespace wg
 		pDest->pLink 		= m_combAttr.pLink;
 		pDest->pCaret		= m_combAttr.pCaret;
 		pDest->size 		= m_combAttr.size[idx];
-		pDest->color		= m_combAttr.color[idx];
-		pDest->bgColor		= m_combAttr.bgColor[idx];
+		pDest->color		= m_combAttr.hasColor[idx] ? m_combAttr.color[idx] : Color::White;
+		pDest->bgColor		= m_combAttr.hasBgColor[idx] ? m_combAttr.bgColor[idx] : Color::White;
 		pDest->decoration	= m_combAttr.decoration[idx];
 				
 		if( pDest->size == 0 )
@@ -485,9 +498,9 @@ namespace wg
 			pDest->pCaret = m_combAttr.pCaret;
 		if( m_combAttr.size[idx] != 0 )
 			pDest->size	= m_combAttr.size[idx];
-		if( m_combAttr.color[idx] != Color::None )
+		if( m_combAttr.hasColor[idx] )
 			pDest->color = m_combAttr.color[idx];
-		if( m_combAttr.bgColor[idx] != Color::None )
+		if( m_combAttr.hasBgColor[idx] )
 			pDest->bgColor = m_combAttr.bgColor[idx];
 		if( m_combAttr.decoration[idx] != TextDecoration::Inherit )
 			pDest->decoration = m_combAttr.decoration[idx];
@@ -510,8 +523,10 @@ namespace wg
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				newComb.size[i] = m_specAttr.size[i] != 0 ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-				newComb.color[i] = m_specAttr.color[i] != Color::None ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
-				newComb.bgColor[i] = m_specAttr.bgColor[i] != Color::None ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
+				newComb.color[i] = m_specAttr.hasColor[i] ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
+				newComb.bgColor[i] = m_specAttr.hasBgColor[i] ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
+				newComb.hasColor[i] = m_specAttr.hasColor[i] || m_pParent->m_combAttr.hasColor[i];
+				newComb.hasBgColor[i] = m_specAttr.hasBgColor[i] || m_pParent->m_combAttr.hasBgColor[i];				
 				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Inherit ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
 			}
 	
@@ -541,8 +556,10 @@ namespace wg
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			pSet->size[i] 		= 0;
-			pSet->color[i] 		= Color::None;
-			pSet->bgColor[i] 	= Color::None;
+			pSet->hasColor[i]	= false;
+			pSet->color[i] 		= Color::White;
+			pSet->hasBgColor[i]	= false;
+			pSet->bgColor[i] 	= Color::White;
 			pSet->decoration[i] = TextDecoration::Inherit;
 		}
 	}
@@ -557,10 +574,12 @@ namespace wg
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			if( p1->size[i] 		!= p2->size[i] ||
-				p1->color[i] 		!= p2->color[i] ||
-				p1->bgColor[i] 		!= p2->bgColor[i] ||
-				p1->decoration[i] 	!= p2->decoration[i] )
-				return false;
+				p1->hasColor[i] 	!= p2->hasColor[i] ||
+				p1->hasBgColor[i] 	!= p2->hasBgColor[i] ||
+				p1->decoration[i] 	!= p2->decoration[i] ||
+				(p1->hasColor[i] && p1->color[i] != p2->color[i]) ||
+				(p1->hasBgColor[i] && p1->bgColor[i] != p2->bgColor[i]) )
+				return false;				
 		}
 	
 		return true;

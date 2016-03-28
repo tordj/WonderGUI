@@ -49,7 +49,7 @@ namespace wg
 		static void init();
 		static void exit();
 
-		static TextStyle_h			_reserveHandle();
+		static TextStyle_h			_reserveHandle( TextStyle * p );
 		static void					_releaseHandle( TextStyle_h handle );
 		static inline TextStyle * 	_getPointer( TextStyle_h handle ) { return s_pLookupTable[handle-1]; }
 

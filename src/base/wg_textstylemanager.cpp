@@ -68,7 +68,7 @@ namespace wg
 
 	//____ _reserveHandle()_____________________________________________________
 
-	uint16_t TextStyleManager::_reserveHandle()
+	uint16_t TextStyleManager::_reserveHandle(TextStyle * p)
 	{
 		if( s_size == s_capacity )
 		{
@@ -93,7 +93,10 @@ namespace wg
 		
 		int idx = s_nextAvailable;
 		s_nextAvailable = * (int *)(&s_pLookupTable[idx]);
+		s_pLookupTable[idx] = p;
 		s_size++;
+		
+		
 		return static_cast<TextStyle_h>(idx+1);
 	}
 

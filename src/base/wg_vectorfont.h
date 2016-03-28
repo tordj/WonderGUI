@@ -47,6 +47,10 @@
 #	include <wg_surfacefactory.h>
 #endif
 
+#ifndef WG_BLOB_DOT_H
+#	include <wg_blob.h>
+#endif
+
 struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
@@ -60,7 +64,7 @@ namespace wg
 	class VectorFont : public Font
 	{
 	public:
-		static VectorFont_p	create( char* pTTF_File, int bytes, int faceIndex ) { return VectorFont_p(new VectorFont(pTTF_File,bytes,faceIndex)); }
+		static VectorFont_p	create( Blob_p pFontFile, int faceIndex ) { return VectorFont_p(new VectorFont(pFontFile,faceIndex)); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -86,11 +90,11 @@ namespace wg
 		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
 		Glyph_p		getGlyph( uint16_t chr );
 
-		int			height();
-		int			lineSpacing();
-		int			baseline();
+		int			lineGap();
 		int			whitespaceAdvance();
 		int			maxAdvance();
+		int			maxAscend();
+		int			maxDescend();
 
 		//----
 
@@ -111,7 +115,7 @@ namespace wg
 		static void	clearCache();
 
 	private:
-		VectorFont( char* pTTF_File, int bytes, int faceIndex );
+		VectorFont( Blob_p pFontFile, int faceIndex );
 		~VectorFont();
 
 		const static int	c_minGlyphPixelSize = 12;		
@@ -184,6 +188,7 @@ namespace wg
 
 
 		FT_Face				m_ftFace;
+		Blob_p				m_pFontFile;
 		char*				m_pData;
 		int					m_ftCharSize;
 		MyGlyph **			m_cachedGlyphsIndex[MaxFontSize+1];

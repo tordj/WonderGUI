@@ -47,7 +47,7 @@ namespace wg
 	class BitmapFont : public Font
 	{
 	public:
-		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile=false ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec,size,binaryFile)); }
+		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
@@ -57,8 +57,7 @@ namespace wg
 	
 		inline Type			type() const { return BITMAP; }
 	
-		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec, bool binaryFile=false );
-		void				copyGlyphs( BitmapFont* pOtherFont );
+		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec );
 
 
 		inline int			nbGlyphs() { return m_nGlyphs; }
@@ -73,14 +72,14 @@ namespace wg
 		Glyph_p				getGlyph( uint16_t chr );
 		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
 	
-		inline int			height() { return m_height; }
-		inline int			lineSpacing() { return m_height; }
-		inline int			baseline() { return m_baseline; }
-		inline int			whitespaceAdvance() { return m_spaceSpacing; }
-		inline int			maxAdvance() { return m_maxSpacing; }
+		inline int			lineGap() { return m_lineGap; }
+		inline int			whitespaceAdvance() { return m_spaceAdvance; }
+		inline int			maxAdvance() { return m_maxAdvance; }
+		inline int 			maxAscend() { return m_maxAscend; }
+		inline int 			maxDescend() { return m_maxDescend; }
 	
 	protected:
-		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec, int size, bool binaryFile=false );
+		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec );
 		~BitmapFont();
 	
 		class MyGlyph : public Glyph
@@ -102,14 +101,15 @@ namespace wg
 		int			m_nKerningGlyphs;
 		int8_t*		m_pKerningTable;
 	
+		int			m_nGlyphs;
 		bool		m_bMonospace;
-		float		m_avgSpacing;
-		int			m_maxSpacing;
-		uint32_t	m_spaceSpacing;
-		uint32_t	m_nGlyphs;
-		uint32_t	m_height;
-		int			m_baseline;
-		int			m_size;
+		int			m_lineGap;
+		float		m_avgAdvance;
+		int			m_spaceAdvance;
+		int			m_maxAdvance;
+		int			m_maxAscend;
+		int			m_maxDescend;
+		int			m_size;						// Fontsize for this font.
 	};
 	
 	

@@ -49,9 +49,10 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	VectorFont::VectorFont( char* pTTF_File, int bytes, int faceIndex )
+	VectorFont::VectorFont( Blob_p pFontFile, int faceIndex )
 	{
-		m_pData = pTTF_File;
+		m_pFontFile = pFontFile;
+		m_pData = (char*) pFontFile->content();
 		m_ftCharSize	= 0;
 		m_accessCounter = 0;
 		m_sizeOffset	= 0;
@@ -62,10 +63,14 @@ namespace wg
 			m_cachedGlyphsIndex[i] = 0;
 			m_whitespaceAdvance[i] = 0;
 		}
+
+		int sz = pFontFile->size();
+		void * p = pFontFile->content();
+		
 	
 		FT_Error err = FT_New_Memory_Face(	Base::getFreeTypeLibrary(),
-											(const FT_Byte *)pTTF_File,
-											bytes,
+											(const FT_Byte *)pFontFile->content(),
+											pFontFile->size(),
 											0,
 											&m_ftFace );
 	
@@ -76,7 +81,7 @@ namespace wg
 		}
 	
 	
-		setRenderMode( RenderMode::CrispEdges );
+		setRenderMode( RenderMode::BestShapes );
 		setSize( 10 );
 	}
 	
@@ -240,28 +245,28 @@ namespace wg
 		return m_whitespaceAdvance[m_ftCharSize];
 	}
 	
-	//____ height() ____________________________________________________________
+	//____ lineGap() ____________________________________________________________
 	
-	int VectorFont::height()
-	{	
-		return (m_ftFace->size->metrics.ascender - m_ftFace->size->metrics.descender) >> 6;
-	}
-	
-	//____ lineSpacing() ____________________________________________________________
-	
-	int VectorFont::lineSpacing()
+	int VectorFont::lineGap()
 	{
-		return (m_ftFace->size->metrics.height) >> 6;
+		return (m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6;
 	}
 	
 	
-	//____ baseline() ____________________________________________________________
+	//____ maxAscend() ____________________________________________________________
 	
-	int VectorFont::baseline()
+	int VectorFont::maxAscend()
 	{	
 		return (m_ftFace->size->metrics.ascender) >> 6;
 	}
 	
+	//____ maxDescend() ____________________________________________________________
+	
+	int VectorFont::maxDescend()
+	{	
+		return -(m_ftFace->size->metrics.descender) >> 6;
+	}
+
 	
 	//____ nbGlyphs() __________________________________________________________
 	

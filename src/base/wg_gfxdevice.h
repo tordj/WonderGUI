@@ -83,10 +83,10 @@ namespace wg
 		};
 */	
 	
-		virtual void	setTintColor( Color color );
-		virtual bool	setBlendMode( BlendMode blendMode );
+		virtual void		setTintColor( Color color );
+		virtual bool		setBlendMode( BlendMode blendMode );
 		virtual uint32_t	setRenderFlags( uint32_t flags );
-		virtual bool	setSaveDirtyRects( bool bSave );
+		virtual bool		setSaveDirtyRects( bool bSave );
 	
 		inline const Color&	getTintColor() const { return m_tintColor; }
 		inline BlendMode 	getBlendMode() const { return m_blendMode; }

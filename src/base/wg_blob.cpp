@@ -79,7 +79,7 @@ namespace wg
 	Blob::Blob( int size )
 	{
 		m_size = size;
-		m_pContent = ((char*)this) + sizeof(this);
+		m_pContent = ((char*)this) + sizeof(Blob);
 		m_pDestructor = 0;
 	}
 	

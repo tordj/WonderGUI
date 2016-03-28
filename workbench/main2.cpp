@@ -13,6 +13,7 @@
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
+#include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
 
 using namespace wg;
@@ -22,6 +23,7 @@ MouseButton 	translateMouseButton( Uint8 button );
 void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
+Blob_p 			loadBlob( const char * pPath );
 void			convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
@@ -59,6 +61,8 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
+	Base::initFreeType();
+	VectorFont::setSurfaceFactory( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -94,12 +98,17 @@ int main ( int argc, char** argv )
 	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
 	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
 		
+	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
 
-	BitmapFont_p pFont = BitmapFont::create( pFontImg, pFontSpec, 8 );
+
+	Blob_p pFontFile = loadBlob("../../../resources/DroidSans.ttf");
+	
+	VectorFont_p pFont = VectorFont::create( pFontFile, 1 );
+
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
-	pStyle->setSize(8);
+	pStyle->setSize(10);
 	Base::setDefaultStyle(pStyle);
 
 	// Init skins
@@ -170,7 +179,28 @@ int main ( int argc, char** argv )
 		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
 
 		TextEditor_p pText = TextEditor::create();
-		pText->text.set( "THIS IS\nTEXT" );
+		
+		TextStyle_p pBig = TextStyle::create();
+		pBig->setSize( 16 );
+		
+		TextStyle_p pRed = TextStyle::create();
+		pRed->setColor( Color::Red );
+		pRed->setSize( 25 );
+
+		TextStyle_p pAnuv = TextStyle::create();
+		pAnuv->setFont( pBmpFont );
+
+		
+		CharBuffer	cb;
+		cb.pushBack( "This is a\npiece of TEXT" );
+		cb.setStyle( pBig, 5, 2);
+		cb.setStyle( pRed, 10, 3);
+		cb.setStyle( pAnuv, 19, 20);
+		
+		
+		pText->text.set( &cb );
+		
+
 		
 		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
 
@@ -234,7 +264,7 @@ int main ( int argc, char** argv )
 
 	FpsDisplay_p pFps = FpsDisplay::create();
 	pFps->setSkin( pPressablePlateSkin );
-	pFlexPanel->addWidget( pFps );
+	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
 	
 
 	//------------------------------------------------------
@@ -396,6 +426,31 @@ void myButtonClickCallback( const Msg_p& pMsg )
 }
 
 
+//____ loadBlob() _____________________________________________________________
+
+Blob_p loadBlob( const char * pPath )
+{
+	FILE * fp = fopen( pPath, "rb" );
+	if( !fp )
+		return 0;
+
+	fseek( fp, 0, SEEK_END );
+	int size = ftell(fp);
+	fseek( fp, 0, SEEK_SET );
+
+	Blob_p pBlob = Blob::create( size );
+		
+	int nRead = fread( pBlob->content(), 1, size, fp );
+	fclose( fp );
+
+	if( nRead < size )
+		return 0;
+
+	return pBlob;
+
+}
+
+
 //____ loadFile() _____________________________________________________________
 
 void * loadFile( const char * pPath )
@@ -422,6 +477,7 @@ void * loadFile( const char * pPath )
 	return pMem;
 
 }
+
 
 Coord dragStartPos;
 
