@@ -62,9 +62,9 @@ namespace wg
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
 	
-		virtual void		setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend );
+		virtual void		setCellMetrics( const Rect& cell );			// Rectangle of character cell with the carret relative to characters postion.
 		virtual void		setMode( CaretMode mode );
-		virtual int			eolWidth( int size, int advance, int ascend, int descend ) const;
+		virtual int			eolWidth( const Rect& eolCellMetrics ) const;
 		inline CaretMode	mode() const { return m_mode; }
 		virtual void		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
@@ -73,13 +73,8 @@ namespace wg
 	
 	protected:
 		Caret();
-	
-	
-		uint16_t		m_glyph;
-		int			m_glyphSize;
-		int			m_glyphAdvance;
-		int			m_glyphAscend;
-		int			m_glyphDescend;
+		
+		Rect		m_cellMetrics;
 	
 		CaretMode	m_mode;
 		int			m_ticks;
@@ -87,8 +82,6 @@ namespace wg
 		bool		m_bNeedToRender;
 	
 	};
-	
-	
 	
 
 } // namespace wg

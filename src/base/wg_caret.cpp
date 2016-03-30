@@ -32,11 +32,6 @@ namespace wg
 	
 	Caret::Caret()
 	{
-		m_glyph = 0;
-		m_glyphSize = 0;
-		m_glyphAdvance = 0;
-		m_glyphAscend = 0;
-		m_glyphDescend = 0;
 		m_mode = CaretMode::Eol;
 		m_ticks = 0;
 		m_cycleLength = 1000;
@@ -70,16 +65,11 @@ namespace wg
 		return 0;
 	}
 	
-	//____ setGlyph() ______________________________________________________________
+	//____ setCellMetrics() ______________________________________________________________
 	
-	void Caret::setGlyph( uint16_t glyph, int size, int advance, int ascend, int descend )
+	void Caret::setCellMetrics( const Rect& cell )
 	{
-		m_glyph = glyph;
-		m_glyphSize = size;
-		m_glyphAdvance = advance;
-		m_glyphAscend = ascend;
-		m_glyphDescend = descend;
-	
+		m_cellMetrics = cell;
 		m_ticks = 0;
 		m_bNeedToRender = true;
 	}
@@ -98,9 +88,9 @@ namespace wg
 	
 	//____ eolWidth() ______________________________________________________________
 	
-	int Caret::eolWidth( int size, int advance, int ascend, int descend ) const
+	int Caret::eolWidth( const Rect& eolCellMetrics ) const
 	{
-		return wg::max( 1, size / 8);
+		return wg::max( 1, eolCellMetrics.h / 8);
 	}
 	
 	//____ tick() __________________________________________________________________
@@ -124,11 +114,11 @@ namespace wg
 		switch( m_mode )
 		{
 			case CaretMode::Overwrite:
-				return Rect( pos.x, pos.y - m_glyphAscend, m_glyphAdvance, m_glyphAscend + m_glyphDescend );
+				return m_cellMetrics + pos;
 			case CaretMode::Eol:
-				return Rect( pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize/8), m_glyphAscend + m_glyphDescend );
+				return Rect( m_cellMetrics.x + pos.x, m_cellMetrics.y + pos.y, wg::max(1, m_cellMetrics.h / 8), m_cellMetrics.h );
 			default: // CaretMode::Insert:
-				return Rect(pos.x, pos.y - m_glyphAscend, wg::max(1, m_glyphSize / 8), m_glyphAscend + m_glyphDescend);
+				return Rect( m_cellMetrics.x + pos.x, m_cellMetrics.y + pos.y, wg::max(1, m_cellMetrics.h / 8), m_cellMetrics.h );
 		}
 	}
 	

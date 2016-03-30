@@ -228,7 +228,7 @@ namespace wg
 	*/
 	
 	
-	enum class ExtChar
+	enum class ExtChar : uint16_t
 	{
 		BreakPermitted			= 0x82,
 		HyphenBreakPermitted	= 0x83,
