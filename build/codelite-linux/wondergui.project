@@ -288,10 +288,10 @@
     <File Name="../../src/wondergui.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="printers">
-    <File Name="../../src/textpresenters/wg_standardprinter.h"/>
-    <File Name="../../src/textpresenters/wg_standardprinter.cpp"/>
-    <File Name="../../src/textpresenters/wg_printer.h"/>
-    <File Name="../../src/textpresenters/wg_printer.cpp"/>
+    <File Name="../../src/printers/wg_printer.cpp"/>
+    <File Name="../../src/printers/wg_printer.h"/>
+    <File Name="../../src/printers/wg_standardprinter.cpp"/>
+    <File Name="../../src/printers/wg_standardprinter.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>
@@ -301,6 +301,8 @@
     <File Name="../../src/valueformatters/wg_timeformatter.cpp" ExcludeProjConfig=""/>
     <File Name="../../src/valueformatters/wg_timeformatter.h" ExcludeProjConfig=""/>
   </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
   <Settings Type="Static Library">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -320,7 +322,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/printers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
@@ -371,7 +373,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/printers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
@@ -414,6 +416,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>

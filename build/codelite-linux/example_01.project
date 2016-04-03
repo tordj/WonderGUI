@@ -31,6 +31,14 @@
   <VirtualDirectory Name="code">
     <File Name="../../src/examples/example01.cpp"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="wondergui"/>
+    <Project Name="gfxdevice_software"/>
+  </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="wondergui"/>
+    <Project Name="gfxdevice_software"/>
+  </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -49,7 +57,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/printers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
@@ -107,7 +115,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/textpresenters/"/>
+        <IncludePath Value="../../src/printers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
@@ -159,12 +167,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="wondergui"/>
-    <Project Name="gfxdevice_software"/>
-  </Dependencies>
-  <Dependencies Name="Release">
-    <Project Name="wondergui"/>
-    <Project Name="gfxdevice_software"/>
-  </Dependencies>
 </CodeLite_Project>
