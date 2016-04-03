@@ -146,13 +146,13 @@ namespace wg
 	
 	void EditTextField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_presenter()->renderField(this, pDevice, _canvas, _clip);
+		_printer()->renderField(this, pDevice, _canvas, _clip);
 		
 		Caret_p pCaret = _style()->combCaret();
 		
 		if( m_editState.bCaret && pCaret )
 		{
-			pCaret->render( pDevice, _presenter()->charToCoord(this, m_editState.caretOfs), _clip );
+			pCaret->render( pDevice, _printer()->charToCoord(this, m_editState.caretOfs), _clip );
 		}
 	}
 	
@@ -168,7 +168,7 @@ namespace wg
 			
 			if( m_editState.bCaret )
 			{
-				Rect dirtyRect = m_pCaret->dirtyRect( _presenter()->charToCoord(this, m_editState.caretOfs) );
+				Rect dirtyRect = m_pCaret->dirtyRect( _printer()->charToCoord(this, m_editState.caretOfs) );
 				_onDirty( dirtyRect );
 			}			
 		}

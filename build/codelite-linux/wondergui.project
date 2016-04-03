@@ -135,10 +135,10 @@
     <File Name="../../src/items/wg_textfield.h"/>
     <File Name="../../src/items/wg_valuefield.cpp"/>
     <File Name="../../src/items/wg_valuefield.h"/>
-    <File Name="../../src/items/wg_presentablefield.h"/>
-    <File Name="../../src/items/wg_presentablefield.cpp"/>
     <File Name="../../src/items/wg_edittextfield.cpp"/>
     <File Name="../../src/items/wg_edittextfield.h"/>
+    <File Name="../../src/items/wg_printablefield.h"/>
+    <File Name="../../src/items/wg_printablefield.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
@@ -179,7 +179,6 @@
     <File Name="../../src/skins/wg_extendedskin.h"/>
     <File Name="../../src/skins/wg_skin.cpp"/>
     <File Name="../../src/skins/wg_skin.h"/>
-    <File Name="../../src/textpresenters/wg_textpresenter.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="sizebrokers">
     <File Name="../../src/sizebrokers/wg_scalepreferred_sizebroker.cpp"/>
@@ -288,10 +287,11 @@
     <File Name="../../src/wg_userdefines.h"/>
     <File Name="../../src/wondergui.h"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="textpresenters">
-    <File Name="../../src/textpresenters/wg_standardpresenter.cpp"/>
-    <File Name="../../src/textpresenters/wg_textpresenter.h"/>
-    <File Name="../../src/textpresenters/wg_standardpresenter.h"/>
+  <VirtualDirectory Name="printers">
+    <File Name="../../src/textpresenters/wg_standardprinter.h"/>
+    <File Name="../../src/textpresenters/wg_standardprinter.cpp"/>
+    <File Name="../../src/textpresenters/wg_printer.h"/>
+    <File Name="../../src/textpresenters/wg_printer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>

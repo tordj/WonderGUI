@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#include <wg_textpresenter.h>
-#include <wg_presentablefield.h>
+#include <wg_printer.h>
+#include <wg_printablefield.h>
 
 namespace wg 
 {
 	
-	const char TextPresenter::CLASSNAME[] = {"TextPresenter"};
+	const char Printer::CLASSNAME[] = {"Printer"};
 	
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool TextPresenter::isInstanceOf( const char * pClassName ) const
+	bool Printer::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -42,63 +42,63 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * TextPresenter::className( void ) const
+	const char * Printer::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	TextPresenter_p TextPresenter::cast( const Object_p& pObject )
+	Printer_p Printer::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextPresenter_p( static_cast<TextPresenter*>(pObject.rawPtr()) );
+			return Printer_p( static_cast<Printer*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String TextPresenter::tooltip( const PresentableField * pField ) const
+	String Printer::tooltip( const PrintableField * pField ) const
 	{
 		return String();
 	}
 	
 	//____ _charBuffer() ___________________________________________________________
 	
-	CharBuffer * TextPresenter::_charBuffer( PresentableField * pField ) const
+	CharBuffer * Printer::_charBuffer( PrintableField * pField ) const
 	{
 		return &(pField->m_charBuffer);
 	}
 	
-	const CharBuffer * TextPresenter::_charBuffer( const PresentableField * pField ) const
+	const CharBuffer * Printer::_charBuffer( const PrintableField * pField ) const
 	{
 		return &(pField->m_charBuffer);
 	}
 	
 	//____ _fieldDataBlock() _______________________________________________________
 	
-	void * TextPresenter::_fieldDataBlock( PresentableField * pField) const
+	void * Printer::_fieldDataBlock( PrintableField * pField) const
 	{
-		return pField->m_pPresenterData;
+		return pField->m_pPrinterData;
 	}
 	
-	const void * TextPresenter::_fieldDataBlock( const PresentableField * pField) const
+	const void * Printer::_fieldDataBlock( const PrintableField * pField) const
 	{
-		return pField->m_pPresenterData;
+		return pField->m_pPrinterData;
 	}
 	
 	
 	//____ _fieldDataInt() _________________________________________________________
 	
-	int TextPresenter::_fieldDataInt( PresentableField * pField ) const
+	int Printer::_fieldDataInt( PrintableField * pField ) const
 	{
-		return pField->m_presenterData;
+		return pField->m_printerData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	TextStyle * TextPresenter::_baseStyle( PresentableField * pField ) const
+	TextStyle * Printer::_baseStyle( PrintableField * pField ) const
 	{
 		TextStyle * pStyle = pField->m_pStyle.rawPtr();
 		if( pStyle == 0 )
@@ -109,23 +109,43 @@ namespace wg
 	
 	//____ _state() _________________________________________________________
 	
-	State TextPresenter::_state( PresentableField * pField ) const
+	State Printer::_state( PrintableField * pField ) const
 	{
 		return pField->m_state;
 	}
 	
 	//____ _setFieldDataBlock() ____________________________________________________
 	
-	void  TextPresenter::_setFieldDataBlock( PresentableField * pField, void * pBlock )
+	void  Printer::_setFieldDataBlock( PrintableField * pField, void * pBlock )
 	{
-		pField->m_pPresenterData = pBlock;
+		pField->m_pPrinterData = pBlock;
 	}
 	
 	//____ _setFieldDataInt() ______________________________________________________
 	
-	void  TextPresenter::_setFieldDataInt( PresentableField * pField, int data )
+	void  Printer::_setFieldDataInt( PrintableField * pField, int data )
 	{
-		pField->m_presenterData = data;
+		pField->m_printerData = data;
 	}
+
+	//____ _setFieldDirty() ____________________________________________________
+
+	void  Printer::_setFieldDirty( PrintableField * pField )
+	{
+		pField->_onDirty();
+	}
+	
+	void  Printer::_setFieldDirty( PrintableField * pField, const Rect& rect )
+	{
+		pField->_onDirty( rect );
+	}
+
+	//____ _requestFieldResize() _______________________________________________
+
+	void Printer::_requestFieldResize( PrintableField * pField )
+	{
+		pField->_onResize();
+	}
+	
 
 } // namespace wg

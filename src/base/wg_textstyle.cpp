@@ -506,6 +506,20 @@ namespace wg
 			pDest->decoration = m_combAttr.decoration[idx];
 	}
 	
+	//____ isIdentical() _____________________________________________________
+
+	bool TextStyle::isIdentical( TextStyle * pOther )
+	{
+		return _compareSets( &m_combAttr, &(pOther->m_combAttr) );
+	}
+	
+	//____ isIdenticalForState() _____________________________________________
+	
+	bool TextStyle::isIdenticalForState( TextStyle * pOther, State state )
+	{
+		return _compareSetsForState( &m_combAttr, &(pOther->m_combAttr), state );		
+	}
+
 	
 	//____ refreshComb() ___________________________________________________________
 	
@@ -584,5 +598,26 @@ namespace wg
 	
 		return true;
 	}
+
+	//____ _compareSetsForState() __________________________________________________________
+	
+	bool TextStyle::_compareSetsForState( TextStyle::AttrSet * p1, TextStyle::AttrSet * p2, State state )
+	{
+		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink || p1->pCaret != p2->pCaret )
+			return false;
+	
+		int i = Util::_stateToIndex(state);
+	
+		if( p1->size[i] 		!= p2->size[i] ||
+			p1->hasColor[i] 	!= p2->hasColor[i] ||
+			p1->hasBgColor[i] 	!= p2->hasBgColor[i] ||
+			p1->decoration[i] 	!= p2->decoration[i] ||
+			(p1->hasColor[i] && p1->color[i] != p2->color[i]) ||
+			(p1->hasBgColor[i] && p1->bgColor[i] != p2->bgColor[i]) )
+			return false;				
+	
+		return true;
+	}
+
 
 } // namespace wg

@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_STANDARDPRESENTER_DOT_H
-#define	WG_STANDARDPRESENTER_DOT_H
+#ifndef	WG_STANDARDPRINTER_DOT_H
+#define	WG_STANDARDPRINTER_DOT_H
 
-#ifndef WG_TEXTPRESENTER_DOT_H
-#	include <wg_textpresenter.h>
+#ifndef WG_PRINTER_DOT_H
+#	include <wg_printer.h>
 #endif 
 
 #ifndef WG_TEXTSTYLE_DOT_H
@@ -34,55 +34,56 @@
 namespace wg 
 {
 	
-	class StandardPresenter;
-	typedef	StrongPtr<StandardPresenter,TextPresenter_p>		StandardPresenter_p;
-	typedef	WeakPtr<StandardPresenter,TextPresenter_wp>	StandardPresenter_wp;
+	class StandardPrinter;
+	typedef	StrongPtr<StandardPrinter,Printer_p>		StandardPrinter_p;
+	typedef	WeakPtr<StandardPrinter,Printer_wp>	StandardPrinter_wp;
 	
-	class StandardPresenter : public TextPresenter
+	class StandardPrinter : public Printer
 	{
 	public:
-		static StandardPresenter_p create() { return StandardPresenter_p(new StandardPresenter()); }
+		static StandardPrinter_p create() { return StandardPrinter_p(new StandardPrinter()); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static StandardPresenter_p	cast( const Object_p& pObject );
+		static StandardPrinter_p	cast( const Object_p& pObject );
 	
 		void			setAlignment( Origo alignment );
 		Origo			alignment() const { return m_alignment; }
 	
-		virtual void	addField( PresentableField * pField );
-		virtual void	removeField( PresentableField * pField );
+		virtual void	addField( PrintableField * pField );
+		virtual void	removeField( PrintableField * pField );
 	
-		virtual int		coordToChar( const PresentableField * pField, Coord pos );
-		virtual Coord	charToCoord( const PresentableField * pField, int charOfs );	// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charToRect( const PresentableField * pField, int charOfs );
-	
-	
-		virtual void 	renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
-	
-		virtual void	onTextModified( PresentableField * pField, int ofs, int charsRemoved, int charsAdded );
-		virtual void	onFieldResize( PresentableField * pField, Size newSize );
-		virtual void	onStateChange( PresentableField * pField, State newState, State oldState );
-		virtual void	onStyleChange( PresentableField * pField );
-		virtual void	onRefresh( PresentableField * pField );
+		virtual int		coordToChar( const PrintableField * pField, Coord pos );
+		virtual Coord	charToCoord( const PrintableField * pField, int charOfs );	// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charToRect( const PrintableField * pField, int charOfs );
 	
 	
-		virtual Size	preferredSize( const PresentableField * pField ) const;
-		virtual int		matchingWidth( const PresentableField * pField, int height ) const;
-		virtual int		matchingHeight( const PresentableField * pField, int width ) const;
+		virtual void 	renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 	
-		virtual Rect	rectForRange( const PresentableField * pField, int ofs, int length ) const;
+		virtual void	onTextModified( PrintableField * pField, int ofs, int charsRemoved, int charsAdded );
+		virtual void	onFieldResized( PrintableField * pField, Size newSize, Size oldSize );
+		virtual void	onStateChanged( PrintableField * pField, State newState, State oldState );
+		virtual void	onStyleChanged( PrintableField * pField, TextStyle * pNewStyle, TextStyle * pOldStyle );
+		virtual void	onCharStyleChanged( PrintableField * pText, int ofs, int len );
+		virtual void	onRefresh( PrintableField * pField );
 	
-		virtual String 	tooltip( const PresentableField * pField ) const;
 	
-		virtual int		coordToCaretPos( PresentableField * pField, Coord pos );
-		virtual int		moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif );
+		virtual Size	preferredSize( const PrintableField * pField ) const;
+		virtual int		matchingWidth( const PrintableField * pField, int height ) const;
+		virtual int		matchingHeight( const PrintableField * pField, int width ) const;
+	
+		virtual Rect	rectForRange( const PrintableField * pField, int ofs, int length ) const;
+	
+		virtual String 	tooltip( const PrintableField * pField ) const;
+	
+		virtual int		coordToCaretPos( PrintableField * pField, Coord pos );
+		virtual int		moveCaret( PrintableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif );
 	
 	
 	protected:
-		StandardPresenter();
-		virtual ~StandardPresenter();
+		StandardPrinter();
+		virtual ~StandardPrinter();
 	
 	
 		struct BlockHeader
@@ -102,7 +103,7 @@ namespace wg
 		};
 	
 		int				_countLines( const CharBuffer * pBuffer );
-		void *			_reallocBlock( PresentableField * pField, int lines );
+		void *			_reallocBlock( PrintableField * pField, int lines );
 		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state );
 		bool   			_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines );
@@ -122,4 +123,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_STANDARDPRESENTER_DOT_H
+#endif //WG_STANDARDPRINTER_DOT_H

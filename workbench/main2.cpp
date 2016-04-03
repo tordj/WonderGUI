@@ -190,7 +190,11 @@ int main ( int argc, char** argv )
 		TextStyle_p pAnuv = TextStyle::create();
 		pAnuv->setFont( pBmpFont );
 
-		
+		pText->text.set( "This is a\npiece of TEXT" );
+		pText->text.setCharStyle( pBig, 5, 2 );
+		pText->text.setCharStyle( pRed, 10, 3 );
+		pText->text.setCharStyle( pAnuv, 19, 20 );
+/*		
 		CharBuffer	cb;
 		cb.pushBack( "This is a\npiece of TEXT" );
 		cb.setStyle( pBig, 5, 2);
@@ -199,7 +203,7 @@ int main ( int argc, char** argv )
 		
 		
 		pText->text.set( &cb );
-		
+*/		
 
 		
 		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
@@ -249,15 +253,15 @@ int main ( int argc, char** argv )
 	pFlexPanel->addWidget( pText, WG_NORTHWEST, WG_EAST );
 	
 
-	StandardPresenter_p pPresenter = StandardPresenter::create();
-	pPresenter->setAlignment( WG_CENTER );
-	pText->text.setPresenter( pPresenter );
+	StandardPrinter_p pPrinter = StandardPrinter::create();
+	pPrinter->setAlignment( WG_CENTER );
+	pText->text.setPrinter( pPrinter );
 
 
 	ValueDisplay_p pValue = ValueDisplay::create();
 	pValue->value.setFormatter( TimeFormatter::create("%2H:%2M:%2S"));
 	pValue->value.set(3600+60+12);
-	pValue->value.setPresenter( pPresenter );
+	pValue->value.setPrinter( pPrinter );
 	pFlexPanel->addWidget( pValue, WG_WEST, WG_SOUTHEAST );
 */
 

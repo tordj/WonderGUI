@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_PRESENTABLEFIELD_DOT_H
-#define WG_PRESENTABLEFIELD_DOT_H
+#ifndef	WG_PRINTABLEFIELD_DOT_H
+#define WG_PRINTABLEFIELD_DOT_H
 
 #ifndef WG_FIELD_DOT_H
 #	include <wg_field.h>
@@ -31,8 +31,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_TEXTPRESENTER_DOT_H
-#	include <wg_textpresenter.h>
+#ifndef WG_PRINTER_DOT_H
+#	include <wg_printer.h>
 #endif
 
 #ifndef WG_BASE_DOT_H
@@ -43,28 +43,28 @@ namespace wg
 {
 	
 	
-	//____ PresentableHolder ___________________________________________________________
+	//____ PrintableHolder ___________________________________________________________
 	
-	struct PresentableHolder : public FieldHolder
+	struct PrintableHolder : public FieldHolder
 	{
 	};
 	
-	//____ PresentableField __________________________________________________________________
+	//____ PrintableField __________________________________________________________________
 	
-	class PresentableField : public Field
+	class PrintableField : public Field
 	{
-		friend class TextPresenter;
+		friend class Printer;
 	public:
-		PresentableField( PresentableHolder * pHolder );
-		virtual ~PresentableField();
+		PrintableField( PrintableHolder * pHolder );
+		virtual ~PrintableField();
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
 		TextStyle_p			style() const { return m_pStyle; }
 	
-		virtual void		setPresenter( const TextPresenter_p& pPresenter );
-		virtual void		clearPresenter();
-		TextPresenter_p		presenter() const { return m_pPresenter; }
+		virtual void		setPrinter( const Printer_p& pPrinter );
+		virtual void		clearPrinter();
+		Printer_p			printer() const { return m_pPrinter; }
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
@@ -91,24 +91,23 @@ namespace wg
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
 
-		TextPresenter *		_presenter() const { return m_pPresenter ? m_pPresenter.rawPtr() : Base::defaultPresenter().rawPtr(); }
+		Printer *			_printer() const { return m_pPrinter ? m_pPrinter.rawPtr() : Base::defaultPrinter().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		
 	protected:
-	
 	
 		Size				m_size;
 	
 		union 
 		{
-			void *			m_pPresenterData;
-			int				m_presenterData;
+			void *			m_pPrinterData;
+			int				m_printerData;
 		};
 	
 		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
-		TextPresenter_p		m_pPresenter;
+		Printer_p			m_pPrinter;
 	
 	};
 	
@@ -123,4 +122,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_PRESENTABLEFIELD_DOT_H
+#endif //WG_PRINTABLEFIELD_DOT_H

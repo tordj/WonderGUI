@@ -80,7 +80,12 @@ namespace wg
 		inline int				insert( int ofs, const CharSeq& seq ) { return m_pField->insert(ofs,seq); }
 		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
 		inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
-	
+
+		inline void				setCharStyle( const TextStyle_p& pStyle ) { m_pField->setCharStyle(pStyle); }
+		inline void				setCharStyle( const TextStyle_p& pStyle, int ofs, int len) { m_pField->setCharStyle(pStyle, ofs, len); }
+
+		inline void				clearCharStyle() { m_pField->clearCharStyle(); }
+		inline void				clearCharStyle( int ofs, int len ) { m_pField->clearCharStyle(ofs,len); }
 	};
 	
 	

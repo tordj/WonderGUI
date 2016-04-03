@@ -27,8 +27,8 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_PRESENTABLEFIELD_DOT_H
-#	include <wg_presentablefield.h>
+#ifndef WG_PRINTABLEFIELD_DOT_H
+#	include <wg_printablefield.h>
 #endif
 
 
@@ -45,13 +45,13 @@ namespace wg
 	
 	//____ TextHolder ___________________________________________________________
 	
-	struct TextHolder : public PresentableHolder
+	struct TextHolder : public PrintableHolder
 	{
 	};
 	
 	//____ TextField __________________________________________________________________
 	
-	class TextField : public PresentableField
+	class TextField : public PrintableField
 	{
 	public:
 		TextField( TextHolder * pHolder );
@@ -71,6 +71,13 @@ namespace wg
 		inline int			length() const { return m_charBuffer.length(); }
 		inline bool			isEmpty() const { return length()==0?true:false; }
 		TextLink_p			getMarkedLink() const;
+	
+		
+		virtual void		setCharStyle( const TextStyle_p& pStyle );
+		virtual void		setCharStyle( const TextStyle_p& pStyle, int ofs, int len);
+
+		virtual void		clearCharStyle();
+		virtual void		clearCharStyle( int ofs, int len );
 	
 	protected:
 	

@@ -31,8 +31,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_TEXTPRESENTER_DOT_H
-#	include <wg_textpresenter.h>
+#ifndef WG_PRINTER_DOT_H
+#	include <wg_printer.h>
 #endif
 
 
@@ -80,9 +80,9 @@ namespace wg
 		inline void				clearStyle() { m_pField->clearStyle(); }
 		inline TextStyle_p	style() const { return m_pField->style(); }
 	
-		inline void				setPresenter( const TextPresenter_p& pPresenter ) { m_pField->setPresenter(pPresenter); }
-		inline void				clearPresenter() { m_pField->clearPresenter(); }
-		inline TextPresenter_p	presenter() const { return m_pField->presenter(); }
+		inline void				setPrinter( const Printer_p& pPrinter ) { m_pField->setPrinter(pPrinter); }
+		inline void				clearPrinter() { m_pField->clearPrinter(); }
+		inline Printer_p	printer() const { return m_pField->printer(); }
 	
 		inline State			state() const { return m_pField->state(); }
 	protected:

@@ -20,168 +20,171 @@
 
 =========================================================================*/
 
-#include <wg_presentablefield.h>
+#include <wg_printablefield.h>
 
 namespace wg 
 {
 	
 	//____ Constructor _____________________________________________________________
 	
-	PresentableField::PresentableField( PresentableHolder * pHolder ) : Field( pHolder )
+	PrintableField::PrintableField( PrintableHolder * pHolder ) : Field( pHolder )
 	{
-		_presenter()->addField(this);
+		_printer()->addField(this);
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	PresentableField::~PresentableField()
+	PrintableField::~PrintableField()
 	{
-		_presenter()->removeField(this);
+		_printer()->removeField(this);
 	}
 	
 	//____ setStyle() ______________________________________________________________
 	
-	void PresentableField::setStyle( const TextStyle_p& pStyle )
+	void PrintableField::setStyle( const TextStyle_p& pStyle )
 	{
+		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
-		_presenter()->onStyleChange(this);
+		_printer()->onStyleChanged(this, pStyle.rawPtr(), pOld.rawPtr());
 	}
 	
 	//____ clearStyle() ____________________________________________________________
 	
-	void PresentableField::clearStyle()
+	void PrintableField::clearStyle()
 	{
+		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
-		_presenter()->onStyleChange(this);
+		_printer()->onStyleChanged(this, nullptr, pOld.rawPtr());
 	}
 	
-	//____ setPresenter() __________________________________________________________
+	//____ setPrinter() __________________________________________________________
 	
-	void PresentableField::setPresenter( const TextPresenter_p& pPresenter )
+	void PrintableField::setPrinter( const Printer_p& pPrinter )
 	{
-		if( pPresenter == m_pPresenter )
+		if( pPrinter == m_pPrinter )
 			return;
 			
-		_presenter()->removeField(this);
-		m_pPresenter = pPresenter;
-		_presenter()->addField(this);
+		_printer()->removeField(this);
+		m_pPrinter = pPrinter;
+		_printer()->addField(this);
 	}
 	
-	//____ clearPresenter() ________________________________________________________
+	//____ clearPrinter() ________________________________________________________
 	
-	void PresentableField::clearPresenter()
+	void PrintableField::clearPrinter()
 	{
-		if( !m_pPresenter )
+		if( !m_pPrinter )
 			return;
 			
-		_presenter()->removeField(this);
-		m_pPresenter = 0;
-		_presenter()->addField(this);
+		_printer()->removeField(this);
+		m_pPrinter = 0;
+		_printer()->addField(this);
 	}
 	
 	//____ setState() ______________________________________________________________
 	
-	void PresentableField::setState( State state )
+	void PrintableField::setState( State state )
 	{
 		if( state == m_state )
 			return;
 	
 		State old = m_state;
 		m_state = state;
-		_presenter()->onStateChange( this, state, old );
+		_printer()->onStateChanged( this, state, old );
 	}
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size PresentableField::preferredSize() const
+	Size PrintableField::preferredSize() const
 	{
-		return _presenter()->preferredSize(this);
+		return _printer()->preferredSize(this);
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int PresentableField::matchingWidth( int height ) const
+	int PrintableField::matchingWidth( int height ) const
 	{
-		return _presenter()->matchingWidth(this, height);
+		return _printer()->matchingWidth(this, height);
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int PresentableField::matchingHeight( int width ) const
+	int PrintableField::matchingHeight( int width ) const
 	{
-		return _presenter()->matchingHeight(this, width);
+		return _printer()->matchingHeight(this, width);
 	}
 	
 	//____ coordToChar() ___________________________________________________________
 	
-	int PresentableField::coordToChar( Coord pos ) const
+	int PrintableField::coordToChar( Coord pos ) const
 	{
-		return _presenter()->coordToChar(this,pos);
+		return _printer()->coordToChar(this,pos);
 	}
 	
 	//____ charToRect() ____________________________________________________________
 	
-	Rect PresentableField::charToRect( int charOfs ) const
+	Rect PrintableField::charToRect( int charOfs ) const
 	{
-		return _presenter()->charToRect(this, charOfs);
+		return _printer()->charToRect(this, charOfs);
 	}
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void PresentableField::onRefresh()
+	void PrintableField::onRefresh()
 	{
-		_presenter()->onRefresh(this);
+		_printer()->onRefresh(this);
 	}
 	
 	//____ onNewSize() _____________________________________________________________
 	
-	void PresentableField::onNewSize( const Size& size )
+	void PrintableField::onNewSize( const Size& size )
 	{
 		if( size == m_size )
 			return;
 	
+		Size oldSize = m_size;
 		m_size = size;
-		_presenter()->onFieldResize(this,size);
+		_printer()->onFieldResized(this,size, oldSize);
 	}
 	
 	//_____ onRender() _____________________________________________________________
 	
-	void  PresentableField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void  PrintableField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_presenter()->renderField(this, pDevice, _canvas, _clip);
+		_printer()->renderField(this, pDevice, _canvas, _clip);
 	}
 	
 	//____ rectForRange() __________________________________________________________
 	
-	Rect  PresentableField::rectForRange( int ofs, int length ) const
+	Rect  PrintableField::rectForRange( int ofs, int length ) const
 	{
-		return _presenter()->rectForRange(this, ofs, length);
+		return _printer()->rectForRange(this, ofs, length);
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String PresentableField::tooltip() const
+	String PrintableField::tooltip() const
 	{
-		return _presenter()->tooltip(this);
+		return _printer()->tooltip(this);
 	}
 	
 	//____ getString() ___________________________________________________________________
 	
-	String PresentableField::getString() const
+	String PrintableField::getString() const
 	{
 		return String(&m_charBuffer);
 	}
 	
 	//____ selectionBegin() ________________________________________________________
 	
-	int PresentableField::selectionBegin() const
+	int PrintableField::selectionBegin() const
 	{
 		return 0;
 	}
 	
 	//____ selectionEnd() __________________________________________________________
 	
-	int PresentableField::selectionEnd() const
+	int PrintableField::selectionEnd() const
 	{
 		return 0;
 	}

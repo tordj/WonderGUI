@@ -285,12 +285,12 @@
 #	include <wg_packlist.h>
 #endif
 
-#ifndef WG_TEXTPRESENTER_DOT_N
-#	include <wg_textpresenter.h>
+#ifndef WG_PRINTER_DOT_N
+#	include <wg_printer.h>
 #endif
 
-#ifndef WG_STANDARDPRESENTER_DOT_H
-#	include <wg_standardpresenter.h>
+#ifndef WG_STANDARDPRINTER_DOT_H
+#	include <wg_standardprinter.h>
 #endif
 
 #ifndef WG_TIMEFORMATTER_DOT_H

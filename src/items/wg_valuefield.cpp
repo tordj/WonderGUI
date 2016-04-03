@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	ValueField::ValueField(ValueHolder * pHolder) : PresentableField(pHolder)
+	ValueField::ValueField(ValueHolder * pHolder) : PrintableField(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
@@ -113,7 +113,7 @@ namespace wg
 	void ValueField::onRefresh()
 	{	
 		_regenText();
-		PresentableField::onRefresh();
+		PrintableField::onRefresh();
 	}
 	
 	//____ _regenText() ____________________________________________________________

@@ -48,8 +48,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_TEXTPRESENTER_DOT_H
-#	include <wg_textpresenter.h>
+#ifndef WG_PRINTER_DOT_H
+#	include <wg_printer.h>
 #endif
 
 #ifndef WG_MSGROUTER_DOT_H
@@ -101,8 +101,8 @@ namespace wg
 		static void			setDefaultCaret( const Caret_p& pCaret );
 		static Caret_p 	defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
 	
-		static void			setDefaultPresenter( const TextPresenter_p& pPresenter );
-		static TextPresenter_p defaultPresenter() { assert(s_pData!=0); return s_pData->pDefaultPresenter; }
+		static void			setDefaultPrinter( const Printer_p& pPrinter );
+		static Printer_p defaultPrinter() { assert(s_pData!=0); return s_pData->pDefaultPrinter; }
 	
 		static void			setDefaultStyle( const TextStyle_p& pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
@@ -131,7 +131,7 @@ namespace wg
 			
 	
 			Caret_p		pDefaultCaret;
-			TextPresenter_p	pDefaultPresenter;
+			Printer_p	pDefaultPrinter;
 			TextStyle_p		pDefaultStyle;
 	
 			//

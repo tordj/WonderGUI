@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#include <wg_standardpresenter.h>
-#include <wg_presentablefield.h>
+#include <wg_standardprinter.h>
+#include <wg_printablefield.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
@@ -30,51 +30,51 @@
 namespace wg 
 {
 	
-	const char StandardPresenter::CLASSNAME[] = {"StandardPresenter"};
+	const char StandardPrinter::CLASSNAME[] = {"StandardPrinter"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	StandardPresenter::StandardPresenter() : m_alignment(Origo::NorthWest)
+	StandardPrinter::StandardPrinter() : m_alignment(Origo::NorthWest)
 	{
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	StandardPresenter::~StandardPresenter()
+	StandardPrinter::~StandardPrinter()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool StandardPresenter::isInstanceOf( const char * pClassName ) const
+	bool StandardPrinter::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return TextPresenter::isInstanceOf(pClassName);
+		return Printer::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * StandardPresenter::className( void ) const
+	const char * StandardPrinter::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	StandardPresenter_p StandardPresenter::cast( const Object_p& pObject )
+	StandardPrinter_p StandardPrinter::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StandardPresenter_p( static_cast<StandardPresenter*>(pObject.rawPtr()) );
+			return StandardPrinter_p( static_cast<StandardPrinter*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ addField() _________________________________________________________
 	
-	void StandardPresenter::addField( PresentableField * pField )
+	void StandardPrinter::addField( PrintableField * pField )
 	{
 		CharBuffer * pBuffer = _charBuffer(pField);
 		int nLines = _countLines( pBuffer );
@@ -88,7 +88,7 @@ namespace wg
 	
 	//____ removeField() _________________________________________________________
 	
-	void StandardPresenter::removeField( PresentableField * pField )
+	void StandardPrinter::removeField( PrintableField * pField )
 	{
 		free( _fieldDataBlock(pField) );
 		_setFieldDataBlock(pField, 0);
@@ -96,7 +96,7 @@ namespace wg
 	
 	//____ setAlignment() __________________________________________________________
 	
-	void StandardPresenter::setAlignment( Origo alignment )
+	void StandardPrinter::setAlignment( Origo alignment )
 	{
 		if( alignment != m_alignment )
 		{
@@ -107,26 +107,26 @@ namespace wg
 	}
 	
 	
-	int StandardPresenter::coordToChar( const PresentableField * pField, Coord pos )
+	int StandardPrinter::coordToChar( const PrintableField * pField, Coord pos )
 	{
 		//TODO: Implement!
 		return 0;
 	}
 	
-	Coord StandardPresenter::charToCoord( const PresentableField * pField, int charOfs )
+	Coord StandardPrinter::charToCoord( const PrintableField * pField, int charOfs )
 	{
 		//TODO: Implement!
 		return Coord();
 	}
 	
 	
-	Rect StandardPresenter::charToRect( const PresentableField * pField, int charOfs )
+	Rect StandardPrinter::charToRect( const PrintableField * pField, int charOfs )
 	{
 		//TODO: Implement!
 		return Rect();
 	}
 	
-	int StandardPresenter::coordToCaretPos( PresentableField * pField, Coord pos )
+	int StandardPrinter::coordToCaretPos( PrintableField * pField, Coord pos )
 	{
 		//TODO: Implement!
 		return 0;
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ _renderField()___________________________________________________________
 	
-	void StandardPresenter::renderField( PresentableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
+	void StandardPrinter::renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
 	{		
 		void * pBlock = _fieldDataBlock(pField);
 		BlockHeader * pHeader = _header(pBlock);
@@ -226,27 +226,45 @@ namespace wg
 	}
 	
 	
-	void StandardPresenter::onTextModified( PresentableField * pField, int ofs, int charsRemoved, int charsAdded )
+	void StandardPrinter::onTextModified( PrintableField * pField, int ofs, int charsRemoved, int charsAdded )
 	{
 		onRefresh(pField);
 	}
 	
-	void StandardPresenter::onFieldResize( PresentableField * pField, Size newSize )
+	void StandardPrinter::onFieldResized( PrintableField * pField, Size newSize, Size oldSize )
 	{
 		// Do nothing?
 	}
 	
-	void StandardPresenter::onStateChange( PresentableField * pField, State newState, State oldState )
+	void StandardPrinter::onStateChanged( PrintableField * pField, State newState, State oldState )
 	{
 	}
 	
-	void StandardPresenter::onStyleChange( PresentableField * pField )
+	void StandardPrinter::onStyleChanged( PrintableField * pField, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
+		State state = _state(pField);
+		void * pBlock = _fieldDataBlock(pField);
+		
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
+		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+
+		_setFieldDirty(pField);
 	}
 	
+
+	void StandardPrinter::onCharStyleChanged( PrintableField * pField, int ofs, int len )
+	{
+		State state = _state(pField);
+		void * pBlock = _fieldDataBlock(pField);
+		
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
+		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+
+		_setFieldDirty(pField);
+	}
+
 	
-	
-	void StandardPresenter::onRefresh( PresentableField * pField )
+	void StandardPrinter::onRefresh( PrintableField * pField )
 	{
 		CharBuffer * pBuffer = _charBuffer(pField);
 		int nLines = _countLines( pBuffer );
@@ -259,13 +277,13 @@ namespace wg
 		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 	}
 	
-	int StandardPresenter::moveCaret( PresentableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif )
+	int StandardPrinter::moveCaret( PrintableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif )
 	{
 		//TODO: Implement!
 		return 0;
 	}
 	
-	Rect StandardPresenter::rectForRange( const PresentableField * pField, int ofs, int length ) const
+	Rect StandardPrinter::rectForRange( const PrintableField * pField, int ofs, int length ) const
 	{
 		//TODO: Implement!
 		return Rect();
@@ -273,7 +291,7 @@ namespace wg
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String StandardPresenter::tooltip( const PresentableField * pField ) const
+	String StandardPrinter::tooltip( const PrintableField * pField ) const
 	{
 		//TODO: Return the text if it overflows the field.
 		
@@ -283,28 +301,28 @@ namespace wg
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size StandardPresenter::preferredSize( const PresentableField * pField ) const
+	Size StandardPrinter::preferredSize( const PrintableField * pField ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize;
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int StandardPresenter::matchingWidth( const PresentableField * pField, int height ) const
+	int StandardPrinter::matchingWidth( const PrintableField * pField, int height ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int StandardPresenter::matchingHeight( const PresentableField * pField, int width ) const
+	int StandardPrinter::matchingHeight( const PrintableField * pField, int width ) const
 	{
 		return _header(_fieldDataBlock(pField))->preferredSize.h;
 	}
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int StandardPresenter::_countLines( const CharBuffer * pBuffer )
+	int StandardPrinter::_countLines( const CharBuffer * pBuffer )
 	{
 		const Char * pChars = pBuffer->chars();
 		int lines = 0;
@@ -322,7 +340,7 @@ namespace wg
 	
 	//____ _reallocBlock() _________________________________________________________
 	
-	void * StandardPresenter::_reallocBlock( PresentableField* pField, int nLines )
+	void * StandardPrinter::_reallocBlock( PrintableField* pField, int nLines )
 	{
 		void * pBlock = _fieldDataBlock(pField);
 		if( pBlock )
@@ -338,7 +356,7 @@ namespace wg
 	
 	//____ _updateLineInfo() _______________________________________________________
 	
-	void StandardPresenter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+	void StandardPrinter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state )
 	{
 		const Char * pChars = pBuffer->chars();
@@ -445,8 +463,10 @@ namespace wg
 		
 	//____ _updatePreferredSize() __________________________________________________	
 		
-	bool StandardPresenter::_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines )
-	{	
+	bool StandardPrinter::_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines )
+	{
+		//TODO: Call onResize(), not just return value.
+	
 		Size size;
 		
 		int i;
@@ -472,7 +492,7 @@ namespace wg
 	
 	//____ _lineOfsX() _______________________________________________________________
 	
-	int StandardPresenter::_lineOfsX( LineInfo * pLine, int fieldWidth ) const
+	int StandardPrinter::_lineOfsX( LineInfo * pLine, int fieldWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -494,7 +514,7 @@ namespace wg
 	
 	//____ _textOfsY() _____________________________________________________________
 	
-	int	StandardPresenter::_textOfsY( BlockHeader * pHeader, int fieldHeight ) const
+	int	StandardPrinter::_textOfsY( BlockHeader * pHeader, int fieldHeight ) const
 	{
 		switch( m_alignment )
 		{

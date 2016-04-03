@@ -140,7 +140,12 @@ namespace wg
 		void			exportAttr( State state, TextAttr * pDest ) const;
 		void			addToAttr( State state, TextAttr * pDest ) const;
 	
+
+		inline bool		isIdentical( const TextStyle_p& pOther ) { return isIdentical( pOther.rawPtr() ); }
+		inline bool		isIdenticalForState( const TextStyle_p& pOther, State state ) { return isIdenticalForState( pOther.rawPtr(), state ); }
 	
+		bool			isIdentical( TextStyle * pOther );
+		bool			isIdenticalForState( TextStyle * pOther, State state );
 	
 	protected:
 		TextStyle();
@@ -161,6 +166,7 @@ namespace wg
 		};
 	
 		bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
+		bool		_compareSetsForState( AttrSet * pSet1, AttrSet * pSet2, State state );
 		bool		_refreshComb();
 		void		_clearSet( AttrSet * pSet );
 	

@@ -29,7 +29,7 @@
 #include <wg_texttool.h>
 #include <wg_memstack.h>
 #include <wg_hook.h>
-#include <wg_standardpresenter.h>
+#include <wg_standardprinter.h>
 
 
 #ifdef USE_FREETYPE
@@ -58,7 +58,7 @@ namespace wg
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 	
-		s_pData->pDefaultPresenter = StandardPresenter::create();
+		s_pData->pDefaultPrinter = StandardPrinter::create();
 		s_pData->pDefaultStyle = TextStyle::create();
 		
 		s_pData->pMsgRouter = MsgRouter::create();
@@ -93,7 +93,7 @@ namespace wg
 		if( s_pData->bFreeTypeInitialized )
 			FT_Done_FreeType( s_pData->freeTypeLibrary );
 	#endif
-		s_pData->pDefaultPresenter = 0;
+		s_pData->pDefaultPrinter = 0;
 		s_pData->pDefaultStyle = 0;
 	
 		delete s_pData->pPtrPool;
@@ -165,12 +165,12 @@ namespace wg
 		s_pData->pDefaultCaret = pCaret;	
 	}
 	
-	//____ setDefaultPresenter() ___________________________________________________
+	//____ setDefaultPrinter() ___________________________________________________
 	
-	void Base::setDefaultPresenter( const TextPresenter_p& pPresenter )
+	void Base::setDefaultPrinter( const Printer_p& pPrinter )
 	{
 		assert( s_pData != 0 );
-		s_pData->pDefaultPresenter = pPresenter;	
+		s_pData->pDefaultPrinter = pPrinter;	
 	}
 	
 	//____ setDefaultStyle() _______________________________________________________

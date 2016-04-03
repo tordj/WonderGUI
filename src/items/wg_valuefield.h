@@ -22,8 +22,8 @@
 #ifndef	WG_VALUEFIELD_DOT_H
 #define WG_VALUEFIELD_DOT_H
 
-#ifndef WG_PRESENTABLEFIELD_DOT_H
-#	include <wg_presentablefield.h>
+#ifndef WG_PRINTABLEFIELD_DOT_H
+#	include <wg_printablefield.h>
 #endif
 
 #ifndef WG_VALUEFORMATTER_DOT_H
@@ -36,14 +36,14 @@ namespace wg
 	
 	//____ ValueHolder ___________________________________________________________
 	
-	class ValueHolder : public PresentableHolder
+	class ValueHolder : public PrintableHolder
 	{
 	public:
 	};
 	
 	//____ ValueField ____________________________________________________________
 	
-	class ValueField : public PresentableField
+	class ValueField : public PrintableField
 	{
 	public:
 		ValueField(ValueHolder * pHolder);
