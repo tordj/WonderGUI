@@ -39,12 +39,12 @@ namespace wg
 	class Switch : public Widget
 	{
 	public:
-		static Switch_p	create() { return Switch_p(new Switch()); }
+		static Switch_p		create() { return Switch_p(new Switch()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Switch_p	cast( const Object_p& pObject );
+		static Switch_p		cast( const Object_p& pObject );
 	
 	    void    setValue( int value );
 	    

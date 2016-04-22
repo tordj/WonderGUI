@@ -65,6 +65,7 @@ namespace wg
 		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness );
+        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors);
 	
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
 		void	drawArcNE( const Rect& rect, Color color );

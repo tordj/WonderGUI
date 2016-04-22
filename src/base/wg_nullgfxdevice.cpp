@@ -103,6 +103,10 @@ namespace wg
 	void NullGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
 	}
+
+    void NullGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
+	{
+	}
 	
 	void NullGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
 	{

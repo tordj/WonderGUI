@@ -74,6 +74,7 @@ namespace wg
 		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness );
+        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors);
 	
 		void	stretchBlit( const Surface_p& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
 		void	stretchBlit( const Surface_p& pSrc, const Rect& dest, bool bTriLinear = false, float mipmapBias = 0.f );

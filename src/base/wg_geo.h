@@ -201,7 +201,6 @@ namespace wg
 		inline void limit( const Size& min, const Size& max );
 		inline void clear()		{ w = 0; h = 0; }
 	
-	
 		inline Size operator=(const Size& k)	{ w = k.w; h = k.h; return *this; }
 		inline Size operator=(const Rect& k);
 	

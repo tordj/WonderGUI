@@ -198,7 +198,7 @@ namespace wg
 		Widget *		_nextSibling() const { if( m_pHook ) {Hook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
 		Widget *		_prevSibling() const { if( m_pHook ) {Hook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
 		inline Hook *	_hook() const { return m_pHook; }
-		Container *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+		Container *		_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	
 		Rect			_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return Rect(); }
 	
@@ -223,12 +223,12 @@ namespace wg
 		//
 	
 		int				m_id;
-		Hook *		m_pHook;
+		Hook *			m_pHook;
 	
-		Skin_p		m_pSkin;
+		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;
 	
-		String		m_tooltip;
+		String			m_tooltip;
 		int				m_markOpacity;
 	
 		bool			m_bOpaque;

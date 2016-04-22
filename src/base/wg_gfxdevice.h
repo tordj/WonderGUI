@@ -110,6 +110,7 @@ namespace wg
 		virtual void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
 		virtual void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
 		virtual void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness ) = 0;
+        virtual void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
 
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;

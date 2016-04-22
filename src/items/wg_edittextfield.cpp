@@ -156,25 +156,6 @@ namespace wg
 		}
 	}
 	
-	//____ setCaret()___________________________________________________________
-/*	
-	void EditTextField::setCaret( const Caret_p& pCaret )
-	{
-		if( pCaret && pCaret != m_pCaret )
-		{
-			m_pCaret = pCaret;
-//			pCaret->setGlyph( )		//TODO: Need to set the glyph!!!!
-
-			
-			if( m_editState.bCaret )
-			{
-				Rect dirtyRect = m_pCaret->dirtyRect( _printer()->charToCoord(this, m_editState.caretOfs) );
-				_onDirty( dirtyRect );
-			}			
-		}
-	}
-*/
-
 	//____ selectionBegin() ____________________________________________________
 
 	int EditTextField::selectionBegin() const

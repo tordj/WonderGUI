@@ -680,6 +680,33 @@ namespace wg
 		_drawHorrVertLine( start.x, y, length, col, Orientation::Vertical );
 	}
 	
+	//____ clipPlotPixels() ____________________________________________________
+	
+	void SoftGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * colors)
+	{
+		const int pitch = m_pCanvas->m_pitch;
+		const int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+
+		for( int i = 0 ; i < nCoords ; i++ )
+		{
+			const int x = pCoords[i].x;
+			const int y = pCoords[i].y;
+
+			uint8_t * pDst = m_pCanvas->m_pData + y * pitch + x * pixelBytes;
+
+			if( y >= clip.y && y <= clip.y + clip.h -1 && x >= clip.x && x <= clip.x + clip.w -1 )
+			{
+			  const int alpha = colors[i].a;
+			  const int invAlpha = 255-alpha;
+
+			  pDst[0] = (uint8_t) ((pDst[0]*invAlpha + (int)colors[i].b*alpha) >> 8);
+			  pDst[1] = (uint8_t) ((pDst[1]*invAlpha + (int)colors[i].g*alpha) >> 8);
+			  pDst[2] = (uint8_t) ((pDst[2]*invAlpha + (int)colors[i].r*alpha) >> 8);
+			}
+		}
+	}
+
+	
 	//____ clipPlotSoftPixels() _______________________________________________________
 	
 	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
