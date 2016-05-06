@@ -83,12 +83,12 @@ namespace wg
 		bool	_isEditable() const { return m_text.isEditable(); }
 		bool	_isSelectable() const { return m_text.isSelectable(); }
 	
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onStateChanged( State oldState );
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onNewSize( const Size& size );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void	_receive( const Msg_p& pMsg );
+		void	_setState( State state );
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_setSize( const Size& size );
+		void	_setSkin( const Skin_p& pSkin );
 	
 		Object * 		_object() { return this; };
 		void			_onFieldDirty( Field * pField );

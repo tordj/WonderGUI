@@ -127,11 +127,11 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() _____________________________________________________________________
+	//____ _render() _____________________________________________________________________
 	
-	void RulerLabels::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -210,42 +210,35 @@ namespace wg
 		
 	}
 	
-	//____ _onCloneContent() _________________________________________________________________ 
+	//____ _cloneContent() _________________________________________________________________ 
 	
-	void RulerLabels::_onCloneContent( const Widget * _pOrg )
+	void RulerLabels::_cloneContent( const Widget * _pOrg )
 	{
 		const RulerLabels * pOrg = static_cast<const RulerLabels*>(_pOrg);
 	}
 	
-	//____ _onAlphaTest() ____________________________________________________________________
+	//____ _alphaTest() ____________________________________________________________________
 	
-	bool RulerLabels::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool RulerLabels::_alphaTest( const Coord& ofs )
 	{
-		return Widget::_onAlphaTest(ofs,sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void RulerLabels::_onStateChanged( State oldState )
+	void RulerLabels::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
+		Widget::_setState(state);
 	
 		Label * p = m_labels.first();
 		while( p )
 		{
-			p->textField.setState(m_state);
+			p->textField.setState(state);
 			p = p->next();
 		}
 	}
-	
-	//____ _onSkinChanged() _______________________________________________________
-	
-	void RulerLabels::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
-	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-	}
-	
+		
 	//____ _onFieldDirty() _________________________________________________________
 	
 	void RulerLabels::_onFieldDirty( Field * pField )

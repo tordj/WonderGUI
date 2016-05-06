@@ -86,9 +86,9 @@ namespace wg
 		return 0;
 	}
 	
-	//____ onMsg() _______________________________________________________________
+	//____ receive() _______________________________________________________________
 	
-	void MsgFunc::onMsg( const Msg_p& pMsg )
+	void MsgFunc::receive( const Msg_p& pMsg )
 	{
 		switch( m_callbackType )
 		{

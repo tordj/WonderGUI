@@ -83,43 +83,42 @@ namespace wg
 	}
 	
 	
-	//____ _onRefresh() ____________________________________________________________
+	//____ _refresh() ____________________________________________________________
 	
-	void ValueDisplay::_onRefresh( void )
+	void ValueDisplay::_refresh( void )
 	{
 		m_field.onRefresh();
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void ValueDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 		m_field.onRender(pDevice, _canvas, _clip);
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void ValueDisplay::_onCloneContent( const Widget * _pOrg )
+	void ValueDisplay::_cloneContent( const Widget * _pOrg )
 	{
 		ValueDisplay * pOrg = (ValueDisplay *) _pOrg;
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void ValueDisplay::_onStateChanged( State oldState )
+	void ValueDisplay::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
-		m_field.setState(m_state);
+		Widget::_setState(state);
+		m_field.setState(state);
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void ValueDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void ValueDisplay::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-	//	m_text.setColorSkin(pNewSkin);
+		Widget::_setSkin(pSkin);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________

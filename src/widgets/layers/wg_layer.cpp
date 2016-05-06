@@ -148,7 +148,7 @@ namespace wg
 		while( pCover )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_nextLayerHook();
 		}

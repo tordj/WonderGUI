@@ -46,7 +46,7 @@ namespace wg
 		static const char			CLASSNAME[];
 		static Receiver_p	cast( const Object_p& pObject );
 	
-		virtual void onMsg( const Msg_p& pMsg ) = 0;
+		virtual void receive( const Msg_p& pMsg ) = 0;
 	
 	protected:
 		Receiver() {};

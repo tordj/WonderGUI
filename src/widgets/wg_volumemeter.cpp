@@ -219,10 +219,12 @@ namespace wg
 			return Size(5*m_nLEDs,10);
 	}
 
-	//____ _onNewSize() ____________________________________________________________________
+	//____ _setSize() ____________________________________________________________________
 
-	void VolumeMeter::_onNewSize( const Size& size )
+	void VolumeMeter::_setSize( const Size& size )
 	{
+		Widget::_setSize( size );
+		
 		switch (m_direction)
 		{
 			case Direction::Left:
@@ -237,14 +239,12 @@ namespace wg
 		}
 		
 		if(m_iSidePadding <= 0)
-			m_iSidePadding = 0;
-		
-		_requestRender();
+			m_iSidePadding = 0;		
 	}
 
 	//____ _onEvent() ______________________________________________________________
 
-	void VolumeMeter::_onMsg( const Msg_p& pMsg )
+	void VolumeMeter::_receive( const Msg_p& pMsg )
 	{
 		switch( pMsg->type() )
 		{
@@ -366,9 +366,9 @@ namespace wg
 	}
 
 
-	//____ _onRender() _____________________________________________________________________
+	//____ _render() _____________________________________________________________________
 
-	void VolumeMeter::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		int p = m_iSidePadding;
 		
@@ -432,9 +432,9 @@ namespace wg
 		
 	}
 
-	//____ _onCloneContent() _________________________________________________________________
+	//____ _cloneContent() _________________________________________________________________
 
-	void VolumeMeter::_onCloneContent( const Widget * _pOrg )
+	void VolumeMeter::_cloneContent( const Widget * _pOrg )
 	{
 		const VolumeMeter * pOrg = static_cast<const VolumeMeter*>(_pOrg);
 		
@@ -452,9 +452,9 @@ namespace wg
 		m_iHold = pOrg->m_iHold;
 	}
 
-	//____ _onAlphaTest() ____________________________________________________________________
+	//____ _alphaTest() ____________________________________________________________________
 
-	bool VolumeMeter::_onAlphaTest( const Coord& ofs, const Size& size )
+	bool VolumeMeter::_alphaTest( const Coord& ofs )
 	{
 		return false;
 	}

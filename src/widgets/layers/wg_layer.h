@@ -172,8 +172,6 @@ namespace wg
 	
 		virtual void	 _onBaseChanged();
 	
-		Size			m_size;
-	
 	};
 	
 	

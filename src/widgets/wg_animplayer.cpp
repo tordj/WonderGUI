@@ -259,11 +259,11 @@ namespace wg
 	}
 	
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void AnimPlayer::_onMsg( const Msg_p& pMsg )
+	void AnimPlayer::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg( pMsg );
+		Widget::_receive( pMsg );
 	
 		switch( pMsg->type() )
 		{
@@ -281,26 +281,26 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void AnimPlayer::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void AnimPlayer::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender( pDevice, _canvas, _window, _clip );
+		Widget::_render( pDevice, _canvas, _window, _clip );
 	
 		if( m_pAnim && m_state.isEnabled() )
 			pDevice->clipStretchBlit( _clip, m_pAnimFrame->pSurf, m_pAnimFrame->rect, _canvas );
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void AnimPlayer::_onRefresh( void )
+	void AnimPlayer::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void AnimPlayer::_onCloneContent( const Widget * _pOrg )
+	void AnimPlayer::_cloneContent( const Widget * _pOrg )
 	{
 		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
 	
@@ -313,25 +313,23 @@ namespace wg
 		m_speed				= pOrg->m_speed;
 	}
 	
-	//____ _onAlphaTest() ______________________________________________________
+	//____ _alphaTest() ______________________________________________________
 	
-	bool AnimPlayer::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool AnimPlayer::_alphaTest( const Coord& ofs )
 	{
-		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,sz), m_markOpacity ) )
+		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,m_size), m_markOpacity ) )
 			return true;
 	
-		return Widget::_onAlphaTest(ofs,sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void AnimPlayer::_onStateChanged( State oldState )
-	{
-		Widget::_onStateChanged(oldState);
-	
-		if( oldState.isEnabled() != m_state.isEnabled() && m_bPlaying )
+	void AnimPlayer::_setState( State state )
+	{	
+		if( state.isEnabled() != m_state.isEnabled() && m_bPlaying )
 		{
-			if( m_state.isEnabled() )
+			if( state.isEnabled() )
 				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			else
 			{	
@@ -340,6 +338,8 @@ namespace wg
 			}
 			_requestRender();
 		}
+		
+		Widget::_setState(state);		
 	}
 	
 

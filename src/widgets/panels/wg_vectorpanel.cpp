@@ -185,12 +185,12 @@ namespace wg
 	{
 		VectorPanel * p = static_cast<VectorPanel*>(_parent());
 	
-		p->_onRenderRequested(this);
+		p->_renderRequested(this);
 	}
 	
 	void VectorHook::_requestRender( const Rect& rect )
 	{
-		parent()->_onRenderRequested(this, rect);
+		parent()->_renderRequested(this, rect);
 	}
 	
 	void VectorHook::_requestResize()
@@ -315,9 +315,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ _onCloneContent() ______________________________________________________
+	//____ _cloneContent() ______________________________________________________
 	
-	void VectorPanel::_onCloneContent( const Widget * _pOrg )
+	void VectorPanel::_cloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement
 	}

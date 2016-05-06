@@ -59,7 +59,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new ShaderCapsule(); };
 	
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		void		_onCloneContent( const Widget * _pOrg );
+		void		_cloneContent( const Widget * _pOrg );
 		BlendMode _getBlendMode() const;
 	
 	private:

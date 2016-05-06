@@ -146,9 +146,9 @@ namespace wg
 		}
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void ShaderCapsule::_onCloneContent( const Widget * _pOrg )
+	void ShaderCapsule::_cloneContent( const Widget * _pOrg )
 	{
 		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
 	

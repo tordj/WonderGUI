@@ -44,7 +44,7 @@ namespace wg
 		static const char			CLASSNAME[];
 		static MsgLogger_p		cast( const Object_p& pObject );
 	
-		void onMsg( const Msg_p& _pMsg );
+		void receive( const Msg_p& _pMsg );
 	
 		void ignoreMsg( MsgType msg );
 		void logMsg( MsgType msg );

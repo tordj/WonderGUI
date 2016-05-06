@@ -67,13 +67,13 @@ namespace wg
 		virtual ~TextDisplay();
 		virtual Widget* _newOfMyType() const { return new TextDisplay(); };
 	
-		void			_onCloneContent( const Widget * _pOrg );
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onNewSize( const Size& size );
-		void			_onRefresh();
-		void			_onMsg( const Msg_p& pMsg );
-		void			_onStateChanged( State oldState );
-		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void			_cloneContent( const Widget * _pOrg );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_setSize( const Size& size );
+		void			_refresh();
+		void			_receive( const Msg_p& pMsg );
+		void			_setState( State state );
+		void			_setSkin( const Skin_p& pSkin );
 	
 		Object * 		_object() { return this; }
 		void			_onFieldDirty( Field * pField );

@@ -75,12 +75,12 @@ namespace wg
 		virtual ~VolumeMeter();
 		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
 		
-		void			_onMsg( const Msg_p& pMsg );
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onCloneContent( const Widget * _pOrg );
-		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
-		void			_onNewSize( const Size& size );
-		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void			_receive( const Msg_p& pMsg );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_cloneContent( const Widget * _pOrg );
+		bool			_alphaTest( const Coord& ofs );
+		void			_setSize( const Size& size );
+		void			_setSkin( const Skin_p& pSkin );
 
 		
 		RouteId			m_tickRouteId;

@@ -136,17 +136,16 @@ namespace wg
 		virtual ~PackList();
 		Widget*		_newOfMyType() const { return new PackList(); };
 	
-		void			_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void			_onCloneContent( const Widget * _pOrg );
+		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void			_cloneContent( const Widget * _pOrg );
 		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onNewSize( const Size& size );
-		void			_onRefresh();
-		void			_onRefreshList();
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_setSize( const Size& size );
+		void			_refresh();
+		void			_refreshList();
 	
-		void			_onMsg( const Msg_p& pMsg );
-		void			_onStateChanged( State oldState );
+		void			_receive( const Msg_p& pMsg );
 	
 		void			_onRequestRender( PackListHook * pHook );
 		void			_onRequestRender( PackListHook * pHook, const Rect& rect );
@@ -204,7 +203,6 @@ namespace wg
 	
 		int					m_contentBreadth;
 		int					m_contentLength;
-		Size				m_size;
 	
 		Size				m_entryPadding;
 		Size				m_minEntrySize;

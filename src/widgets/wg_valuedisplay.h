@@ -62,11 +62,11 @@ namespace wg
 		virtual ~ValueDisplay();
 		virtual Widget* _newOfMyType() const { return new ValueDisplay(); };
 	
-		void	_onRefresh();
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void	_refresh();
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_setState( State state );
+		void	_setSkin( const Skin_p& pSkin );
 	
 	private:
 		Object * _object() { return this; }

@@ -77,9 +77,9 @@ namespace wg
 		virtual ~Oscilloscope();
 		virtual Widget* _newOfMyType() const { return new Oscilloscope(); };
 
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onNewSize( const Size& size );
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_setSize( const Size& size );
 
 		static const int PixelBufferSize = 16000;
 

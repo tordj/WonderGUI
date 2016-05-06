@@ -90,18 +90,18 @@ namespace wg
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Switch::_onCloneContent( const Widget * _pOrg )
+	void Switch::_cloneContent( const Widget * _pOrg )
 	{
 		const Switch * pOrg = static_cast<const Switch*>(_pOrg);
 	}
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void Switch::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Switch::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -126,9 +126,9 @@ namespace wg
 		}	
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________________
+	//____ _alphaTest() ___________________________________________________________
 	
-	bool Switch::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Switch::_alphaTest( const Coord& ofs )
 	{
 		return true;
 	}

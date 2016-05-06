@@ -628,9 +628,9 @@ namespace wg
 		return false;	
 	}
 	
-	//____ onMsg() _________________________________________________________________
+	//____ receive() _________________________________________________________________
 	
-	void InputHandler::onMsg( const Msg_p& pMsg )
+	void InputHandler::receive( const Msg_p& pMsg )
 	{
 		
 		if( pMsg->type() == MsgType::Tick ) {

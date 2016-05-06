@@ -178,15 +178,17 @@ namespace wg
 			return 0;
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void Container::_onStateChanged( State oldState )
+	void Container::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
+		State oldState = m_state;
+		
+		Widget::_setState(state);						// Doing this call first is an optimization, possibly less dirty rects generated.
 	
-		if( oldState.isEnabled() != m_state.isEnabled() )
+		if( oldState.isEnabled() != state.isEnabled() )
 		{
-			bool bEnabled = m_state.isEnabled();
+			bool bEnabled = state.isEnabled();
 			Widget * p = _firstWidget();
 			while( p )
 			{
@@ -195,15 +197,15 @@ namespace wg
 			}
 		}
 	
-		if( oldState.isSelected() != m_state.isSelected() )
+		if( oldState.isSelected() != state.isSelected() )
 		{
-			bool bSelected = m_state.isSelected();
+			bool bSelected = state.isSelected();
 			Widget * p = _firstWidget();
 			while( p )
 			{
-				State old = p->m_state;
-				p->m_state.setSelected(bSelected);
-				p->_onStateChanged( old );
+				State s = p->m_state;
+				s.setSelected(bSelected);
+				p->_setState( s );
 				p = p->_nextSibling();
 			}
 		}
@@ -240,7 +242,7 @@ namespace wg
 		// Render container itself
 		
 		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-			_onRender(pDevice, _canvas, _window, *pRect );
+			_render(pDevice, _canvas, _window, *pRect );
 			
 		
 		// Render children
@@ -274,7 +276,7 @@ namespace wg
 	
 				p->patches.push( &patches );
 	
-				p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->getBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->getBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 	
 				if( patches.isEmpty() )
 					break;
@@ -305,16 +307,16 @@ namespace wg
 		}
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Container::_onCloneContent( const Container * _pOrg )
+	void Container::_cloneContent( const Container * _pOrg )
 	{
 		m_bSiblingsOverlap 	= _pOrg->m_bSiblingsOverlap;
 	}
 	
-	//____ _onCollectPatches() _______________________________________________________
+	//____ _collectPatches() _______________________________________________________
 	
-	void Container::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Container::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		if( m_pSkin )
 			container.add( Rect( geo, clip ) );
@@ -326,15 +328,15 @@ namespace wg
 			while(p)
 			{
 				if( p->_isVisible() )
-					p->_widget()->_onCollectPatches( container, childGeo + geo.pos(), clip );
+					p->_widget()->_collectPatches( container, childGeo + geo.pos(), clip );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 		}
 	}
 	
-	//____ _onMaskPatches() __________________________________________________________
+	//____ _maskPatches() __________________________________________________________
 	
-	void Container::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Container::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque)
@@ -347,7 +349,7 @@ namespace wg
 			while(p)
 			{
 				if( p->_isVisible() )
-					p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
 				p = _nextHookWithGeo( childGeo, p );
 			}
 		}

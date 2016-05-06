@@ -128,11 +128,11 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void FpsDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect content;
 		if( m_pSkin )
@@ -145,11 +145,11 @@ namespace wg
 	}
 	
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void FpsDisplay::_onMsg( const Msg_p& pMsg )
+	void FpsDisplay::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 	
 		switch( pMsg->type() )
 		{
@@ -216,29 +216,30 @@ namespace wg
 		}
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void FpsDisplay::_onStateChanged( State oldState )
+	void FpsDisplay::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
 	
-		m_labelsText.setState(m_state);
-		m_valuesText.setState(m_state);
+		m_labelsText.setState(state);
+		m_valuesText.setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 	
-		if( m_state.isEnabled() && !oldState.isEnabled() )
+		if( state.isEnabled() && !m_state.isEnabled() )
 			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 	
-		if( !m_state.isEnabled() && oldState.isEnabled() )
+		if( !state.isEnabled() && m_state.isEnabled() )
 		{
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 		}
+
+		Widget::_setState(state);
 	}
 		
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void FpsDisplay::_onCloneContent( const Widget * _pOrg )
+	void FpsDisplay::_cloneContent( const Widget * _pOrg )
 	{
 		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 	

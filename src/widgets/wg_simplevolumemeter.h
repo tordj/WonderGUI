@@ -74,11 +74,11 @@ namespace wg
 		virtual ~SimpleVolumeMeter();
 		virtual Widget* _newOfMyType() const { return new SimpleVolumeMeter(); };
 
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onCloneContent( const Widget * _pOrg );
-		bool			_onAlphaTest( const Coord& ofs, const Size& size );
-		void			_onNewSize( const Size& size );
-		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_cloneContent( const Widget * _pOrg );
+		bool			_alphaTest( const Coord& ofs );
+		void			_setSize( const Size& size );
+		void			_setSkin( const Skin_p& pSkin );
 		
 		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip );
 		void 			_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );

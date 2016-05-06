@@ -112,14 +112,14 @@ namespace wg
 		virtual ~ToggleButton();
 		virtual Widget* _newOfMyType() const { return new ToggleButton(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onRefresh();
-		void	_onNewSize( const Size& size );
-		bool	_onAlphaTest( const Coord& ofs );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_receive( const Msg_p& pMsg );
+		void	_refresh();
+		void	_setSize( const Size& size );
+		bool	_alphaTest( const Coord& ofs );
+		void	_setState( State state );
+		void	_setSkin( const Skin_p& pSkin );
 		
 		Object * 		_object() { return this; };
 		void			_onFieldDirty( Field * pField );

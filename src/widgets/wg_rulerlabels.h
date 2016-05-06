@@ -45,11 +45,10 @@ namespace wg
 		virtual ~RulerLabels();
 		virtual Widget* _newOfMyType() const { return new RulerLabels(); };
 		
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onCloneContent( const Widget * _pOrg );
-		void			_onStateChanged( State oldState );
-		void			_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
-		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_cloneContent( const Widget * _pOrg );
+		void			_setState( State state );
+		bool			_alphaTest( const Coord& ofs );
 	
 		Object * 		_object() { return this; };
 		void			_onFieldDirty( Field * pField );

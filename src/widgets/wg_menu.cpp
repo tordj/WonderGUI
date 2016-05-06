@@ -599,11 +599,11 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void Menu::_onRender( GfxDevice * pDevice, const Rect& canvas, const Rect& window, const Rect& clip )
+	void Menu::_render( GfxDevice * pDevice, const Rect& canvas, const Rect& window, const Rect& clip )
 	{
-		Widget::_onRender(pDevice,canvas,window,clip);
+		Widget::_render(pDevice,canvas,window,clip);
 	
 		// Render the menu-items
 	
@@ -777,11 +777,11 @@ namespace wg
 		}
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void Menu::_onMsg( const Msg_p& pMsg )
+	void Menu::_receive( const Msg_p& pMsg )
 	{
-		Panel::_onMsg(pMsg);
+		Panel::_receive(pMsg);
 		
 		// TODO: Not handle or swallow key-messages if some modifier keys are pressed.
 		
@@ -1059,7 +1059,7 @@ namespace wg
 	
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
+		if( pMsg->isMouseButtreceive() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 			pMsg->swallow();
 		else if( pMsg->isKeyMsg() )
 		{
@@ -1073,15 +1073,14 @@ namespace wg
 			pMsg->swallow();
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void Menu::_onStateChanged( State oldState )
+	void Menu::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
-	
-		if( m_state.isEnabled() != oldState.isEnabled() && m_scrollbarHook._widget() )
-			m_scrollbarHook._widget()->setEnabled(m_state.isEnabled());
-	
+		if( state.isEnabled() != m_state.isEnabled() && m_scrollbarHook._widget() )
+			m_scrollbarHook._widget()->setEnabled(state.isEnabled());
+
+		Widget::_setState(state);	
 	}
 	
 	//____ selectItem() _________________________________________________
@@ -1238,7 +1237,7 @@ namespace wg
 	
 			Rect clip( _canvas, *pRect );
 			if( clip.w > 0 || clip.h > 0 )
-				_onRender( pDevice, _canvas, _window, clip );
+				_render( pDevice, _canvas, _window, clip );
 	
 			// Render scrollbar if present.
 	
@@ -1246,21 +1245,21 @@ namespace wg
 			{
 				Rect clip( scrollbarGeo, *pRect );
 				if( clip.w > 0 || clip.h > 0 )
-					((Scrollbar*)m_scrollbarHook._widget())->_onRender( pDevice, scrollbarGeo, scrollbarGeo, clip );
+					((Scrollbar*)m_scrollbarHook._widget())->_render( pDevice, scrollbarGeo, scrollbarGeo, clip );
 			}
 		}
 	}
 	
-	//____ _onCollectPatches() _____________________________________________________
+	//____ _collectPatches() _____________________________________________________
 	
-	void Menu::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Menu::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		container.add( Rect( geo, clip ) );
 	}
 	
-	//____ _onMaskPatches() ________________________________________________________
+	//____ _maskPatches() ________________________________________________________
 	
-	void Menu::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Menu::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
 		{
@@ -1275,9 +1274,9 @@ namespace wg
 		}
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Menu::_onCloneContent( const Widget * _pOrg )
+	void Menu::_cloneContent( const Widget * _pOrg )
 	{
 		const Menu * pOrg = static_cast<const Menu*>(_pOrg);
 	
@@ -1303,27 +1302,28 @@ namespace wg
 		//TODO: Implement cloning of menu items!
 	}
 	
-	//____ _onRefresh() ____________________________________________________________
-	void Menu::_onRefresh()
+	//____ _refresh() ____________________________________________________________
+	void Menu::_refresh()
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	
 		//TODO: Implement!
 	}
 	
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void Menu::_onNewSize( const Size& size )
+	void Menu::_setSize( const Size& size )
 	{
-			_adjustSize();
+		Widget::_setSize(_size);
+		_adjustSize();
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________
+	//____ _alphaTest() ___________________________________________________
 	
-	bool Menu::_onAlphaTest( const Coord& ofs , const Size& sz)
+	bool Menu::_alphaTest( const Coord& ofs)
 	{
-		return Widget::_onAlphaTest(ofs, sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
 	//____ _firstHook() ____________________________________________________________

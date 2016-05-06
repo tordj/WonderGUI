@@ -143,12 +143,12 @@ namespace wg
 			Scrollbar();
 			virtual	~Scrollbar();
 	
-			void	_onCloneContent( const Widget * _pOrg );
-			void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-			void	_onMsg( const Msg_p& pMsg );
-			void	_onRefresh();
-			bool	_onAlphaTest( const Coord& ofs, const Size& sz );
-			void	_onStateChanged( State oldState );
+			void	_cloneContent( const Widget * _pOrg );
+			void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+			void	_receive( const Msg_p& pMsg );
+			void	_refresh();
+			bool	_alphaTest( const Coord& ofs );
+			void	_setState( State state );
 	
 			bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
 	

@@ -116,7 +116,7 @@ namespace wg
 			return 0;
 	
 		m_hook._setWidget(pWidget.rawPtr());
-		pWidget->_onNewSize(size());
+		pWidget->_setSize(size());
 	
 		_requestRender();
 		_requestResize();
@@ -179,34 +179,36 @@ namespace wg
 			return Size(1,1);
 	}
 	
-	//____ _onCollectPatches() _____________________________________________________
+	//____ _collectPatches() _____________________________________________________
 	
-	void Capsule::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		if( m_hook._widget() )
-			m_hook._widget()->_onCollectPatches( container, geo, clip );
+			m_hook._widget()->_collectPatches( container, geo, clip );
 	}
 	
-	//____ _onMaskPatches() ________________________________________________________
+	//____ _maskPatches() ________________________________________________________
 	
-	void Capsule::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Capsule::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( m_hook._widget() )
-			m_hook._widget()->_onMaskPatches( patches, geo, clip, blendMode );
+			m_hook._widget()->_maskPatches( patches, geo, clip, blendMode );
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Capsule::_onCloneContent( const Widget * _pOrg )
+	void Capsule::_cloneContent( const Widget * _pOrg )
 	{
 	}
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void Capsule::_onNewSize( const Size& size )
+	void Capsule::_setSize( const Size& size )
 	{
+		Container::_setSize( size );
+
 		if( m_hook._widget() )
-			m_hook._widget()->_onNewSize(size);
+			m_hook._widget()->_setSize(size);			
 	}
 	
 	//____ _firstHook() ____________________________________________________________

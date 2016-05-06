@@ -188,13 +188,13 @@ namespace wg
 		m_pLassoSkin = pSkin;
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void List::_onMsg( const Msg_p& _pMsg )
+	void List::_receive( const Msg_p& _pMsg )
 	{
-		Container::_onMsg(_pMsg);
+		Container::_receive(_pMsg);
 	
-		State oldState = m_state;
+		State state = m_state;
 	
 		switch( _pMsg->type() )
 		{
@@ -356,21 +356,21 @@ namespace wg
 			}
 		}
 	
-		if( m_state != oldState )
-			_onStateChanged(oldState);
+		if( state != m_state )
+			_setState(state);
 	}
 	
 	//____ _selectEntry() _________________________________________________________
 	
 	bool List::_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg )
 	{
-		State	oldState = pHook->m_pWidget->state();
+		State	state = pHook->m_pWidget->state();
 	
-		if( bSelected != oldState.isSelected() )
+		if( bSelected != state.isSelected() )
 		{
 	
-			pHook->m_pWidget->m_state.setSelected(bSelected);
-			pHook->m_pWidget->_onStateChanged( oldState );
+			state.setSelected(bSelected);
+			pHook->m_pWidget->_setState( state );
 	
 			if( bPostMsg )
 			{
@@ -432,11 +432,11 @@ namespace wg
 	
 		for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
 		{
-			State	oldState = pHook->m_pWidget->state();
-			if( bSelected != oldState.isSelected() )
+			State	state = pHook->m_pWidget->state();
+			if( bSelected != state.isSelected() )
 			{
-				pHook->m_pWidget->m_state.setSelected(bSelected);
-				pHook->m_pWidget->_onStateChanged( oldState );
+				state.setSelected(bSelected);
+				pHook->m_pWidget->_setState( state );
 	
 				if( bPostMsg )
 				{
@@ -506,15 +506,15 @@ namespace wg
 	
 		for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
 		{
-			State	oldState = pHook->m_pWidget->state();
+			State	state = pHook->m_pWidget->state();
 	
-			pHook->m_pWidget->m_state.setSelected(!oldState.isSelected());
-			pHook->m_pWidget->_onStateChanged( oldState );
+			state.setSelected(!state.isSelected());
+			pHook->m_pWidget->_setState( state );
 	
 			if( bPostMsg )
 			{
 				ItemInfo * p;
-				if( oldState.isSelected() )
+				if( !state.isSelected() )
 					p = &pDeselectedItemsInfo[nSelected++];
 				else
 					p = &pSelectedItemsInfo[nDeselected++];

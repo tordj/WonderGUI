@@ -187,22 +187,22 @@ namespace wg
 			Base::msgRouter()->post( new ValueUpdateMsg(this,m_value,fractionalValue(), false) );
 	}
 	
-	//____ _onRefresh() ____________________________________________________________
+	//____ _refresh() ____________________________________________________________
 	
-	void ValueEditor::_onRefresh( void )
+	void ValueEditor::_refresh( void )
 	{
 		if( m_text.properties() && m_text.properties()->font() )
 			_regenText();
 	
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void ValueEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void ValueEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		// Adjust text canvas
 	
@@ -333,11 +333,11 @@ namespace wg
 		return bModified;
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void ValueEditor::_onMsg( const Msg_p& pMsg )
+	void ValueEditor::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 		MsgRouter_p	pHandler = Base::msgRouter();
 		MsgType type = pMsg->type();
 	
@@ -363,7 +363,7 @@ namespace wg
 			modKeys = p->modKeys();
 			pointerPos = p->pointerPos();
 
-			if( pMsg->isMouseButtonMsg() )
+			if( pMsg->isMouseButtreceive() )
 				mousebutton = MouseButtonMsg::cast(pMsg)->button();
 		}
 	
@@ -706,7 +706,7 @@ namespace wg
 		
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() )
+		if( pMsg->isMouseButtreceive() )
 		{
 			if( MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
@@ -774,13 +774,13 @@ namespace wg
 	*/
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void ValueEditor::_onCloneContent( const Widget * _pOrg )
+	void ValueEditor::_cloneContent( const Widget * _pOrg )
 	{
 		ValueEditor * pOrg = (ValueEditor *) _pOrg;
 	
-		_Interface_ValueHolder::_onCloneContent( pOrg );
+		_Interface_ValueHolder::_cloneContent( pOrg );
 	
 		m_maxInputChars = pOrg->m_maxInputChars;
 		m_pFormat		= pOrg->m_pFormat;
@@ -788,20 +788,21 @@ namespace wg
 		m_text.clone(&pOrg->m_text);
 	}
 	
-	//____ onStateChanged() _______________________________________________________
+	//____ setState() _______________________________________________________
 	
-	void ValueEditor::_onStateChanged( State oldState )
+	void ValueEditor::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
+		State oldState = m_state;
+		Widget::_setState(state);
 	
 		// Update text
 	
-		m_text.setState(m_state);
+		m_text.setState(state);
 		_requestRender();				//TODO: Only render if text has been affected
 	
 		// Check if we got input focus
 	
-		if( m_state.isFocused() && !oldState.isFocused() )
+		if( state.isFocused() && !oldState.isFocused() )
 		{
 			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			m_text.showCaret();
@@ -821,7 +822,7 @@ namespace wg
 	
 		// Check if we lost input focus
 	
-		if( !m_state.isFocused() && oldState.isFocused() )
+		if( !state.isFocused() && oldState.isFocused() )
 		{
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
@@ -837,12 +838,11 @@ namespace wg
 	}
 	
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void ValueEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void ValueEditor::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-		m_text.setColorSkin(pNewSkin);
+		Widget::_setSkin(pSkin);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________

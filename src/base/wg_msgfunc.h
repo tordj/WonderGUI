@@ -47,7 +47,7 @@ namespace wg
 		static const char			CLASSNAME[];
 		static MsgFunc_p	cast( const Object_p& pObject );
 	
-		void onMsg( const Msg_p& pMsg );
+		void receive( const Msg_p& pMsg );
 	
 	protected:
 		MsgFunc( void(*fp)( const Msg_p& pMsg) );

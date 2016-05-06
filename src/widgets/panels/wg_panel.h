@@ -118,8 +118,8 @@ namespace wg
 		virtual ~Panel() {};
 	
 		bool			_isPanel() const;
-		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		virtual void	_onCloneContent( const Widget * _pOrg );
+		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		virtual void	_cloneContent( const Widget * _pOrg );
 	
 	
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.

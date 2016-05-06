@@ -283,36 +283,37 @@ namespace wg
 		return Size(9,20);
 	}
 
-	//____ _onNewSize() ____________________________________________________________________
+	//____ _setSize() ____________________________________________________________________
 
-	void SimpleVolumeMeter::_onNewSize( const Size& size )
+	void SimpleVolumeMeter::_setSize( const Size& size )
 	{
+		Widget::_setSize( size );
+
 		Size canvasSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
 		
 		_updateIValues( canvasSize );
-		_requestRender();
 	}
 
-	//____ _onSkinChanged() ________________________________________________________________
+	//____ _setSkin() ________________________________________________________________
 
-	void SimpleVolumeMeter::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void SimpleVolumeMeter::_setSkin( const Skin_p& pSkin )
 	{
 		Size sz = Size();
 		
-		Rect oldCanvas = pOldSkin ? pOldSkin->contentRect(sz,m_state) : Rect(sz);
-		Rect newCanvas = pNewSkin ? pNewSkin->contentRect(sz,m_state) : Rect(sz);
+		Rect oldCanvas = m_pSkin ? m_pSkin->contentRect(sz,m_state) : Rect(sz);
+		Rect newCanvas = pSkin ? pSkin->contentRect(sz,m_state) : Rect(sz);
+				
+		Widget::_setSkin( pSkin );
 		
 		if( oldCanvas != newCanvas )
-			_updateIValues( newCanvas );
-		
-		Widget::_onSkinChanged( pOldSkin, pNewSkin );
+			_updateIValues( newCanvas );		
 	}
 
-	//____ _onRender() _____________________________________________________________________
+	//____ _render() _____________________________________________________________________
 
-	void SimpleVolumeMeter::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void SimpleVolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice, _canvas, _window, _clip);
+		Widget::_render(pDevice, _canvas, _window, _clip);
 		
 		if( !m_state.isEnabled() )
 			return;
@@ -421,9 +422,9 @@ namespace wg
 		m_iHold[1] = _calcIHold( m_fHold[1], sz.h );
 	}
 
-	//____ _onCloneContent() _________________________________________________________________ 
+	//____ _cloneContent() _________________________________________________________________ 
 
-	void SimpleVolumeMeter::_onCloneContent( const Widget * _pOrg )
+	void SimpleVolumeMeter::_cloneContent( const Widget * _pOrg )
 	{
 		const SimpleVolumeMeter * pOrg = static_cast<const SimpleVolumeMeter*>(_pOrg);
 
@@ -446,12 +447,12 @@ namespace wg
 		_updateIValues( canvasSize );
 	}
 
-	//____ _onAlphaTest() ____________________________________________________________________
+	//____ _alphaTest() ____________________________________________________________________
 
-	bool SimpleVolumeMeter::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool SimpleVolumeMeter::_alphaTest( const Coord& ofs )
 	{
 		//TODO: Should we detect on the bars?
 		
-		return Widget::_onAlphaTest(ofs, sz);
+		return Widget::_alphaTest(ofs);
 	}
 } // namespace wg

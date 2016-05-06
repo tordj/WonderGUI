@@ -89,9 +89,9 @@ namespace wg
 	{
 		if( m_state.isSelected() != bSelected )
 		{
-			State oldState = m_state;
-			m_state.setSelected(bSelected);
-			_onStateChanged(oldState);
+			State state = m_state;
+			state.setSelected(bSelected);
+			_setState(state);
 		}
 		return true;
 	}
@@ -141,11 +141,11 @@ namespace wg
 	}
 	
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void ToggleButton::_onMsg( const Msg_p& _pMsg )
+	void ToggleButton::_receive( const Msg_p& _pMsg )
 	{
-		State oldState = m_state;
+		State state = m_state;
 	
 		switch( _pMsg->type() )
 		{
@@ -171,10 +171,10 @@ namespace wg
 				break;
 		
 			case MsgType::MouseEnter:
-				m_state.setHovered(true);
+				state.setHovered(true);
 				break;
 			case MsgType::MouseLeave:
-				m_state.setHovered(false);
+				state.setHovered(false);
 				break;
 			case MsgType::MousePress:
 				if( MousePressMsg::cast(_pMsg)->button() == MouseButton::Left )
@@ -199,10 +199,10 @@ namespace wg
 				break;
 	
 			case MsgType::FocusGained:
-				m_state.setFocused(true);
+				state.setFocused(true);
 				break;
 			case MsgType::FocusLost:
-				m_state.setFocused(false);
+				state.setFocused(false);
 				m_bReturnPressed = false;
 				m_bPressed = false;
 				break;
@@ -210,65 +210,66 @@ namespace wg
 	
 		// Set pressed if return or mouse button 1 is pressed
 	
-		if( m_bReturnPressed || (m_bPressed && m_state.isHovered()) )
-			m_state.setPressed(true);
+		if( m_bReturnPressed || (m_bPressed && state.isHovered()) )
+			state.setPressed(true);
 		else
-			m_state.setPressed(false);
+			state.setPressed(false);
 	
 		// Possibly flip selected
 	
-		if( m_state.isPressed() != oldState.isPressed() )
+		if( state.isPressed() != m_state.isPressed() )
 		{
-			if( m_state.isPressed() != m_bFlipOnRelease )
-				m_state.setSelected( !m_state.isSelected() );
+			if( state.isPressed() != m_bFlipOnRelease )
+				state.setSelected( !state.isSelected() );
 		}
 	
 		//
 	
-		if( m_state != oldState )
-			_onStateChanged(oldState);
+		if( state != m_state )
+			_setState(state);
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void ToggleButton::_onStateChanged( State oldState )
+	void ToggleButton::_setState( State state )
 	{
 		// If state has changed from selected to unselected we need to check with Togglegroup
 		
-		if( !m_state.isSelected() && oldState.isSelected() && m_pToggleGroup && !m_pToggleGroup->_unselect(this) )
-			m_state.setSelected(true);
+		if( !state.isSelected() && m_state.isSelected() && m_pToggleGroup && !m_pToggleGroup->_unselect(this) )
+			state.setSelected(true);
 		
 		//
 		
-		Widget::_onStateChanged(oldState);
+		State oldState = state;
+		Widget::_setState(state);
 	
-		m_label.setState( m_state );
+		m_label.setState( state );
 	
-		if( !m_icon.isEmpty() && !m_icon.skin()->isStateIdentical(m_state, oldState) )
+		if( !m_icon.isEmpty() && !m_icon.skin()->isStateIdentical(state, m_state) )
 			_requestRender();		//TODO: Just request render on icon?
 	
-		if( m_state.isSelected() != oldState.isSelected() )
+		if( state.isSelected() != oldState.isSelected() )
 		{
-			Base::msgRouter()->post( new ToggleMsg(this, m_state.isSelected() ) );
+			Base::msgRouter()->post( new ToggleMsg(this, state.isSelected() ) );
 	
-			if( m_pToggleGroup && m_state.isSelected() )
+			if( m_pToggleGroup && state.isSelected() )
 				m_pToggleGroup->_select(this);
 		}
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void ToggleButton::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void ToggleButton::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
+		Widget::_setSkin(pSkin);
 	}
 	
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void ToggleButton::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		// Get the content rect and icon rect
 	
@@ -292,19 +293,21 @@ namespace wg
 		}
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void ToggleButton::_onRefresh( void )
+	void ToggleButton::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	
 		//TODO: Handling of icon and text?
 	}
 	
-	//____ _onNewSize() _______________________________________________________
+	//____ _setSize() _______________________________________________________
 	
-	void ToggleButton::_onNewSize( const Size& size )
+	void ToggleButton::_setSize( const Size& size )
 	{
+		Widget::_setSize( size );
+
 		Rect contentRect	= Rect(0,0,size);
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
@@ -313,9 +316,9 @@ namespace wg
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void ToggleButton::_onCloneContent( const Widget * _pOrg )
+	void ToggleButton::_cloneContent( const Widget * _pOrg )
 	{
 		ToggleButton * pOrg = (ToggleButton *) _pOrg;
 	
@@ -341,9 +344,9 @@ namespace wg
 		return false;
 	}
 	
-	//____ _onAlphaTest() ______________________________________________________
+	//____ _alphaTest() ______________________________________________________
 	
-	bool ToggleButton::_onAlphaTest( const Coord& ofs )
+	bool ToggleButton::_alphaTest( const Coord& ofs )
 	{
 		Size	bgSize		= size();
 	
@@ -381,14 +384,14 @@ namespace wg
 	
 				//
 	
-				if( Widget::_onAlphaTest( ofs, bgSize ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.contains( ofs ) )
+				if( Widget::_alphaTest( ofs ) || _markTestTextArea( ofs.x, ofs.y ) || iconRect.contains( ofs ) )
 					return true;
 	
 				return false;
 			}
 			case ALPHA:			// Alpha test on background and icon.
 			{
-				if( Widget::_onAlphaTest( ofs, bgSize ) ||
+				if( Widget::_alphaTest( ofs ) ||
 					( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity )) )
 					return true;
 	

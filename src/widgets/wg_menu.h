@@ -197,16 +197,16 @@ namespace wg
 		Widget * 	_findWidget( const Coord& ofs, SearchMode mode );
 	
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		void		_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void		_onCloneContent( const Widget * _pOrg );
-		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void		_onNewSize( const Size& size );
-		void		_onRefresh();
+		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void		_cloneContent( const Widget * _pOrg );
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void		_setSize( const Size& size );
+		void		_refresh();
 	
-		void		_onMsg( const Msg_p& pMsg );
-		void		_onStateChanged( State oldState );
-		bool		_onAlphaTest( const Coord& ofs, const Size& sz );
+		void		_receive( const Msg_p& pMsg );
+		void		_setState( State state );
+		bool		_alphaTest( const Coord& ofs );
 	
 		//
 	

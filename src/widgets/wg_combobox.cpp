@@ -222,16 +222,16 @@ namespace wg
 		}
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void Combobox::_onMsg( const Msg_p& _pMsg )
+	void Combobox::_receive( const Msg_p& _pMsg )
 	{
-		State oldState = m_state;
+		State state = m_state;
 	
 		switch( _pMsg->type() )
 		{
 			case MsgType::Tick:
-				if( _isEditable() && m_state.isFocused() )
+				if( _isEditable() && state.isFocused() )
 				{
 					m_text.incTime( TickMsg::cast(_pMsg)->timediff() );
 					_requestRender();					//TODO: Should only render the caret and selection!
@@ -239,25 +239,25 @@ namespace wg
 			break;
 	
 			case MsgType::PopupClosed:
-				m_state.setPressed(false);
+				state.setPressed(false);
 			break;
 	
 			case MsgType::ItemsSelect:
 			break;
 	
 			case MsgType::MouseEnter:
-				m_state.setHovered(true);
+				state.setHovered(true);
 				break;
 	
 			case MsgType::MouseLeave:
-				if( !m_state.isPressed() )
-					m_state.setHovered(false);
+				if( !state.isPressed() )
+					state.setHovered(false);
 				break;
 	
 			case MsgType::MouseMove:
 			{
 				Coord pos = MouseMoveMsg::cast(_pMsg)->pointerPos() - globalPos();
-				Rect inputRect = m_pSkin ? m_pSkin->contentRect(size(),m_state): Rect( 0,0, size() );
+				Rect inputRect = m_pSkin ? m_pSkin->contentRect(size(),state): Rect( 0,0, size() );
 	
 				if( _isSelectable() && inputRect.contains( pos ) )
 				{
@@ -279,25 +279,25 @@ namespace wg
 	
 				if( pMsg->button() == MouseButton::Left )
 				{
-					Rect inputRect = m_pSkin ? m_pSkin->contentRect( size(), m_state ): Rect( 0,0, size() );
+					Rect inputRect = m_pSkin ? m_pSkin->contentRect( size(), state ): Rect( 0,0, size() );
 	
-					if( m_state.isPressed() && m_pMenu )
+					if( state.isPressed() && m_pMenu )
 					{
 						m_bPressInInputRect = false;
 						_closeMenu();
 					}
 					else if( _isEditable() && inputRect.contains(pos) )
 					{
-						if( !m_state.isFocused() )
+						if( !state.isFocused() )
 						{
 							grabFocus();
-							if( m_state.isFocused() )
+							if( state.isFocused() )
 								m_bFocusPress = true;		// Current button press brought focus.
 						}
 	
 						m_bPressInInputRect = true;
 	
-						if( m_state.isFocused() )
+						if( state.isFocused() )
 						{
 							if( _isSelectable() && (pMsg->modKeys() & MODKEY_SHIFT))
 							{
@@ -334,7 +334,7 @@ namespace wg
 							}
 						}
 	
-						m_state.setPressed(true);
+						state.setPressed(true);
 					}
 					_pMsg->swallow();
 				}
@@ -346,7 +346,7 @@ namespace wg
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
-					if( m_state.isFocused() && m_bPressInInputRect )
+					if( state.isFocused() && m_bPressInInputRect )
 					{
 						if( _isSelectable() && (pMsg->modKeys() & MODKEY_SHIFT) )
 						{
@@ -354,7 +354,7 @@ namespace wg
 						}
 	
 						int x = pMsg->pointerPos().x - globalPos().x + m_viewOfs;
-						int leftBorder = m_pSkin ? m_pSkin->contentRect( size(), m_state ).x : 0;
+						int leftBorder = m_pSkin ? m_pSkin->contentRect( size(), state ).x : 0;
 	
 						m_text.caretGotoCoord( Coord(x, 0), Rect(leftBorder,0,1000000,1000000) );
 						_adjustViewOfs();
@@ -369,7 +369,7 @@ namespace wg
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
-					if( m_state.isFocused() )
+					if( state.isFocused() )
 					{
 						m_text.setSelectionMode(false);
 						if( m_bFocusPress )
@@ -387,7 +387,7 @@ namespace wg
 			case MsgType::WheelRoll:
 			{		
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
-				if( !m_state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
+				if( !state.isFocused() && m_pMenu && m_pMenu->getItemCount() != 0 )
 				{
 					MenuItem * pItem = m_pSelectedItem;
 					int distance = pMsg->distance().y;
@@ -428,7 +428,7 @@ namespace wg
 			case MsgType::TextInput:
 			{
 				TextInputMsg_p pMsg = TextInputMsg::cast(_pMsg);
-				if( _isEditable() && m_state.isFocused() )
+				if( _isEditable() && state.isFocused() )
 				{
 	
 					if(m_text.hasSelection())
@@ -446,7 +446,7 @@ namespace wg
 			}
 	
 			case MsgType::KeyRelease:
-				if( m_state.isFocused() )
+				if( state.isFocused() )
 				{
 					KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
 					switch( pMsg->translatedKeyCode() )
@@ -465,11 +465,11 @@ namespace wg
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
 	
-				if( pMsg->translatedKeyCode() == Key::Escape && m_state.isPressed() )
+				if( pMsg->translatedKeyCode() == Key::Escape && state.isPressed() )
 				{
 					_closeMenu();
 				}
-				else if( _isEditable() && m_state.isFocused() )
+				else if( _isEditable() && state.isFocused() )
 				{
 					switch( pMsg->translatedKeyCode() )
 					{
@@ -568,21 +568,19 @@ namespace wg
 			break;
 		}
 	
-		if( m_state != oldState )
-			_onStateChanged( oldState );
+		if( state != m_state )
+			_setState( state );
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void Combobox::_onStateChanged( State oldState )
-	{
-		Widget::_onStateChanged( oldState );
-	
-		m_text.setState( m_state );
+	void Combobox::_setState( State state )
+	{	
+		m_text.setState( state );
 	
 		// Check if we got focus
 	
-		if( m_state.isFocused() && !oldState.isFocused() )
+		if( state.isFocused() && !m_state.isFocused() )
 		{
 			if( _isEditable() )
 			{
@@ -598,7 +596,7 @@ namespace wg
 	
 		// Check if we lost focus
 	
-		if( !m_state.isFocused() && oldState.isFocused() )
+		if( !state.isFocused() && m_state.isFocused() )
 		{
 			if( _isEditable() )
 			{
@@ -609,23 +607,24 @@ namespace wg
 				Base::msgRouter()->post( new TextEditMsg( text.ptr(),true ) );	//TODO: Should only do if text was really changed!
 			}
 		}
+		
+		Widget::_setState( state );	
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void Combobox::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void Combobox::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-		m_text.setColorSkin(pNewSkin);
+		Widget::_setSkin(pSkin);
 	}
 	
 	
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void Combobox::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Combobox::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender( pDevice, _canvas, _window, _clip );
+		Widget::_render( pDevice, _canvas, _window, _clip );
 	
 		// Print the text
 	
@@ -650,16 +649,16 @@ namespace wg
 			m_text.clear();
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void Combobox::_onRefresh( void )
+	void Combobox::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Combobox::_onCloneContent( const Widget * _pOrg )
+	void Combobox::_cloneContent( const Widget * _pOrg )
 	{
 	
 		const Combobox * pOrg = static_cast<const Combobox*>(_pOrg);
@@ -745,13 +744,13 @@ namespace wg
 			m_viewOfs = 0;				// Show beginning of line when caret disappears.
 	}
 	
-	//____ _onAlphaTest() ______________________________________________________
+	//____ _alphaTest() ______________________________________________________
 	
-	bool Combobox::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Combobox::_alphaTest( const Coord& ofs )
 	{
 		//TODO: Should we treat text-box as opaque for mouse?
 	
-		return Widget::_onAlphaTest(ofs, sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
 	//____ _entrySelected() ________________________________________________________

@@ -146,11 +146,11 @@ namespace wg
 	
 		//TODO: Should handle disable/enable (close open menu?) and cloning.
 	
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
-		void	_onRefresh();
-		void	_onCloneContent( const Widget * _pOrg );
+		void	_receive( const Msg_p& pMsg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		bool	_alphaTest( const Coord& ofs );
+		void	_refresh();
+		void	_cloneContent( const Widget * _pOrg );
 	
 	
 	private:

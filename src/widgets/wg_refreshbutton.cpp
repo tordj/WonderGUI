@@ -178,24 +178,24 @@ namespace wg
 	}
 	
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void RefreshButton::_onNewSize( const Size& size )
+	void RefreshButton::_setSize( const Size& size )
 	{
 		uint32_t w = size.w;
 	
 		Size contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
 		m_refreshText.onNewSize(contentSize);
 	
-		Button::_onNewSize( size );
+		Button::_setSize( size );
 	}
 	
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void RefreshButton::_onMsg( const Msg_p& pMsg )
+	void RefreshButton::_receive( const Msg_p& pMsg )
 	{
-		Button::_onMsg( pMsg );
+		Button::_receive( pMsg );
 	
 		switch( pMsg->type() )
 		{
@@ -257,9 +257,9 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void RefreshButton::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void RefreshButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		// Render background or animation
 	
@@ -348,13 +348,13 @@ namespace wg
 	
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void RefreshButton::_onCloneContent( const Widget * _pOrg )
+	void RefreshButton::_cloneContent( const Widget * _pOrg )
 	{
 		RefreshButton * pOrg = (RefreshButton *) _pOrg;
 	
-		Button::_onCloneContent( _pOrg );
+		Button::_cloneContent( _pOrg );
 	
 		m_pRefreshAnim		= pOrg->m_pRefreshAnim;
 		m_animTarget		= pOrg->m_animTarget;

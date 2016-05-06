@@ -102,7 +102,7 @@ namespace wg
 	
 	
 			virtual Widget * 		_findWidget( const Coord& ofs, SearchMode mode );
-			virtual void			_onStateChanged( State oldState );
+			virtual void			_setState( State state );
 	
 			virtual void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 			virtual Hook*			_firstHookWithGeo( Rect& geo ) const = 0;
@@ -117,9 +117,9 @@ namespace wg
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*	_getPopupLayer() const;
 	
-			virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-			virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-			virtual void	_onCloneContent( const Container * _pOrg );
+			virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+			virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+			virtual void	_cloneContent( const Container * _pOrg );
 	
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 	

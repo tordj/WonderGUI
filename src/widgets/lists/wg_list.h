@@ -108,7 +108,7 @@ namespace wg
 		List();
 		virtual ~List();
 	
-		virtual void	_onMsg( const Msg_p& pMsg );
+		virtual void	_receive( const Msg_p& pMsg );
 	
 		virtual bool	_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg );
 		virtual int		_selectRange( ListHook * pFirst, ListHook * pLast, bool bSelected, bool bPostMsg );

@@ -85,14 +85,13 @@ namespace wg
 		virtual ~Button();
 		virtual Widget* _newOfMyType() const { return new Button(); };
 	
-		virtual void	_onMsg( const Msg_p& pMsg );
-		virtual void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onRefresh();
-		virtual void	_onCloneContent( const Widget * _pOrg );
-		bool			_onAlphaTest( const Coord& ofs, const Size& sz );
-		virtual void	_onNewSize( const Size& size );
-		void			_onStateChanged( State oldState );
-		virtual void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		virtual void	_receive( const Msg_p& pMsg );
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_refresh();
+		virtual void	_cloneContent( const Widget * _pOrg );
+		bool			_alphaTest( const Coord& ofs );
+		virtual void	_setSize( const Size& size );
+		void			_setState( State state );
 	
 	
 		Object * 		_object() { return this; };

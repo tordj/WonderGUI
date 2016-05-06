@@ -36,9 +36,9 @@ namespace wg
 	{
 		if( policy != m_sizePolicy )
 		{
-			m_pParent->_onRenderRequested(this);
+			m_pParent->_renderRequested(this);
 			m_sizePolicy = policy;
-			m_pParent->_onRenderRequested(this);
+			m_pParent->_renderRequested(this);
 		};
 	}
 	
@@ -46,9 +46,9 @@ namespace wg
 	{
 		if( origo != m_origo )
 		{
-			m_pParent->_onRenderRequested(this);
+			m_pParent->_renderRequested(this);
 			m_origo = origo;
-			m_pParent->_onRenderRequested(this);
+			m_pParent->_renderRequested(this);
 		}
 	}
 	
@@ -231,11 +231,11 @@ namespace wg
 		return m_preferredSize;
 	}
 	
-	//____ _onNewSize() ___________________________________________________________
+	//____ _setSize() ___________________________________________________________
 	
-	void StackPanel::_onNewSize( const Size& size )
+	void StackPanel::_setSize( const Size& size )
 	{
-		m_size = size;
+		Panel::_setSize(size);
 		_adaptChildrenToSize();
 	}
 	
@@ -254,16 +254,16 @@ namespace wg
 		_refreshPreferredSize();
 	}
 	
-	//____ _onRenderRequested() ____________________________________________________
+	//____ _renderRequested() ____________________________________________________
 	
-	void StackPanel::_onRenderRequested( VectorHook * _pHook )
+	void StackPanel::_renderRequested( VectorHook * _pHook )
 	{
 		StackHook * pHook = static_cast<StackHook*>(_pHook);
 	
-		_onRenderRequested(pHook, pHook->_getGeo(Rect(0,0,m_size)));
+		_renderRequested(pHook, pHook->_getGeo(Rect(0,0,m_size)));
 	}
 	
-	void StackPanel::_onRenderRequested( VectorHook * _pHook, const Rect& _rect )
+	void StackPanel::_renderRequested( VectorHook * _pHook, const Rect& _rect )
 	{
 		StackHook * pHook = static_cast<StackHook*>(_pHook);
 	
@@ -285,7 +285,7 @@ namespace wg
 		{
 			Rect geo = pCover->_getGeo(m_size);
 			if( pCover->isVisible() && geo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, geo, Rect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_next();
 		}
@@ -330,11 +330,11 @@ namespace wg
 	
 		// Adapt inserted Widget to our size
 	
-		pInserted->_widget()->_onNewSize(m_size);
+		pInserted->_widget()->_setSize(m_size);
 	
 		// Force a render.
 	
-		_onRenderRequested( pInserted );
+		_renderRequested( pInserted );
 	}
 	
 	//____ _onWidgetDisappeared() __________________________________________________
@@ -346,7 +346,7 @@ namespace wg
 	
 		// Get dirty rectangles for all visible sections of pToBeRemoved.
 	
-		_onRenderRequested( pToBeRemoved );
+		_renderRequested( pToBeRemoved );
 	
 		// Update m_preferredSize, skiping pToBeRemoved
 	
@@ -436,7 +436,7 @@ namespace wg
 		StackHook * pHook = _firstHook();
 		while( pHook )
 		{
-			pHook->_widget()->_onNewSize( pHook->_getGeo(m_size) );
+			pHook->_widget()->_setSize( pHook->_getGeo(m_size) );
 			pHook = pHook->_next();
 		}
 	}

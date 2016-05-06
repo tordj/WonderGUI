@@ -65,10 +65,10 @@ namespace wg
 		virtual ~FpsDisplay();
 		virtual Widget* _newOfMyType() const { return new FpsDisplay(); };
 	
-		void		_onMsg( const Msg_p& pMsg );
-		void		_onStateChanged( State oldState );
-		void		_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void		_onCloneContent( const Widget * _pOrg );
+		void		_receive( const Msg_p& pMsg );
+		void		_setState( State state );
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void		_cloneContent( const Widget * _pOrg );
 	
 		Object * 	_object() { return this; };
 		void		_onFieldDirty( Field * pField );

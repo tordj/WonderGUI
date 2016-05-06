@@ -398,26 +398,28 @@ namespace wg
 		}
 	}
 
-	//____ _onNewSize()_____________________________________________________________
+	//____ _setSize()_____________________________________________________________
 
-	void Oscilloscope::_onNewSize( const Size& size )
+	void Oscilloscope::_setSize( const Size& size )
 	{
+		Widget::_setSize( size );
+	
 		_resampleLinePoints( size );
 	}
 
 
-	//____ _onCloneContent() ______________________________________________________
+	//____ _cloneContent() ______________________________________________________
 
-	void Oscilloscope::_onCloneContent( const Widget * _pOrg )
+	void Oscilloscope::_cloneContent( const Widget * _pOrg )
 	{
 
 	}
 
-	//____ _onRender() ____________________________________________________________
+	//____ _render() ____________________________________________________________
 
-	void Oscilloscope::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Oscilloscope::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 				
 		float centerX = _canvas.x + _canvas.w/2.f;
 		float centerY = _canvas.y + _canvas.h/2.f;

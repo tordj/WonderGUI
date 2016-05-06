@@ -101,11 +101,11 @@ namespace wg
 			return contentSize;
 	}
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void TextEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void TextEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -116,22 +116,22 @@ namespace wg
 		m_text.onRender( pDevice, canvas, _clip );	
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void TextEditor::_onRefresh( void )
+	void TextEditor::_refresh( void )
 	{
 		//TODO: Implement more I believe...
 	
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void TextEditor::_onStateChanged( State oldState )
+	void TextEditor::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
+		Widget::_setState(state);
 	
-		m_text.setState(m_state);
+		m_text.setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 /*	
 		if( isEditable() )
@@ -156,11 +156,11 @@ namespace wg
 	}
 	
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void TextEditor::_onMsg( const Msg_p& pMsg )
+	void TextEditor::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 	
 		MsgType type 				= pMsg->type();
 /*	
@@ -336,7 +336,7 @@ namespace wg
 	
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() && isSelectable() )
+		if( pMsg->isMouseButtreceive() && isSelectable() )
 		{
 			if( MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
@@ -356,26 +356,30 @@ namespace wg
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void TextEditor::_onCloneContent( const Widget * _pOrg )
+	void TextEditor::_cloneContent( const Widget * _pOrg )
 	{
 		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
 	
 		m_text = pOrg->m_text;
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void TextEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void TextEditor::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
+		//TODO: Possibly notify text about new canvas size.
+		
+		Widget::_setSkin(pSkin);
 	}
 	
-	//____ _onNewSize() ________________________________________________
+	//____ _setSize() ________________________________________________
 	
-	void TextEditor::_onNewSize( const Size& size )
+	void TextEditor::_setSize( const Size& size )
 	{
+		Widget::_setSize( size );
+		
 		int width = size.w;
 	
 		if( m_pSkin )

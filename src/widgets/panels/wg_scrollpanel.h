@@ -262,7 +262,7 @@ namespace wg
 	
 		static const int	MAX_ELEMENTS = 3;
 	
-		virtual void _onNewSize( const Size& size );
+		virtual void _setSize( const Size& size );
 	
 		// Overloaded from Panel
 	
@@ -270,14 +270,14 @@ namespace wg
 	
 		//
 	
-		void		_onMsg( const Msg_p& pMsg );
+		void		_receive( const Msg_p& pMsg );
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		void		_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void		_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_onRequestResize( ScrollHook * pHook );
 	
-		bool		_onAlphaTest( const Coord& ofs, const Size& sz );
-		void		_onCloneContent( const Widget * _pOrg );
+		bool		_alphaTest( const Coord& ofs );
+		void		_cloneContent( const Widget * _pOrg );
 	
 		Hook *	_firstHookWithGeo( Rect& geo ) const;
 		Hook *	_nextHookWithGeo( Rect& geo, Hook * pHook ) const;

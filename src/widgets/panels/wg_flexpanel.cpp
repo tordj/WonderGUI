@@ -597,7 +597,7 @@ namespace wg
 		{
 			_requestRender();
 			m_realGeo = newGeo;
-			m_pWidget->_onNewSize(newGeo);
+			m_pWidget->_setSize(newGeo);
 			_requestRender();
 		}
 	}
@@ -967,7 +967,7 @@ namespace wg
 		while( pCover )
 		{
 			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_next();
 		}
@@ -978,17 +978,18 @@ namespace wg
 			_requestRender( * pRect );
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void FlexPanel::_onCloneContent( const Widget * _pOrg )
+	void FlexPanel::_cloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement
 	}
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void FlexPanel::_onNewSize( const Size& size )
+	void FlexPanel::_setSize( const Size& size )
 	{
+		Panel::_setSize(size);
 		FlexHook * pHook = m_hooks.last();
 	
 		while( pHook )

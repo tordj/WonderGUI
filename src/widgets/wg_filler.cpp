@@ -93,9 +93,9 @@ namespace wg
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Filler::_onCloneContent( const Widget * _pOrg )
+	void Filler::_cloneContent( const Widget * _pOrg )
 	{
 		Filler * pOrg = (Filler*) _pOrg;
 	

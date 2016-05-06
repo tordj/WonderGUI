@@ -134,9 +134,9 @@ namespace wg
 	
 		//
 	
-		void			_onCloneContent( const Widget * _pOrg );
-		void			_onNewSize( const Size& size );
-		void			_onMsg( const Msg_p& pMsg );
+		void			_cloneContent( const Widget * _pOrg );
+		void			_setSize( const Size& size );
+		void			_receive( const Msg_p& pMsg );
 	
 		void			_onRequestRender( const Rect& rect, const PopupHook * pHook );	// rect is in our coordinate system.
 	

@@ -263,7 +263,7 @@ namespace wg
 	bool PackList::clear()
 	{
 		m_hooks.clear();
-		_onRefreshList();
+		_refreshList();
 		return true;
 	}
 	
@@ -276,7 +276,7 @@ namespace wg
 		if( bHorizontal != m_bHorizontal )
 		{
 			m_bHorizontal = bHorizontal;
-			_onRefreshList();
+			_refreshList();
 		}
 	}
 	
@@ -416,7 +416,7 @@ namespace wg
 			return false;
 	
 		m_minEntrySize = min;
-		_onRefreshList();
+		_refreshList();
 		return true;
 	}
 	
@@ -431,14 +431,14 @@ namespace wg
 			return false;
 	
 		m_maxEntrySize = max;
-		_onRefreshList();
+		_refreshList();
 		return true;
 	}
 	
 	
-	//____ _onCollectPatches() ____________________________________________________
+	//____ _collectPatches() ____________________________________________________
 	
-	void PackList::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void PackList::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		if( m_pSkin )
 			container.add( Rect( geo, clip ) );
@@ -451,9 +451,9 @@ namespace wg
 		}
 	}
 	
-	//____ _onMaskPatches() _______________________________________________________
+	//____ _maskPatches() _______________________________________________________
 	
-	void PackList::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void PackList::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque)
 			patches.sub( Rect(geo,clip) );
@@ -472,16 +472,16 @@ namespace wg
 			while(p)
 			{
 				if( p->_isVisible() )
-					p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
 				p = static_cast<PackListHook*>(_nextHookWithGeo( childGeo, p ));
 			}
 		}
 	
 	}
 	
-	//____ _onCloneContent() ______________________________________________________
+	//____ _cloneContent() ______________________________________________________
 	
-	void PackList::_onCloneContent( const Widget * _pOrg )
+	void PackList::_cloneContent( const Widget * _pOrg )
 	{
 		//TODO: Implement!!!
 	}
@@ -503,7 +503,7 @@ namespace wg
 		// Render container itself
 		
 		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-			_onRender(pDevice, _canvas, _window, *pRect );
+			_render(pDevice, _canvas, _window, *pRect );
 			
 		
 		// Render children
@@ -548,9 +548,9 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() ____________________________________________________________
+	//____ _render() ____________________________________________________________
 	
-	void PackList::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void PackList::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		Rect contentRect = _listCanvas() + _canvas.pos();
 	
@@ -603,16 +603,17 @@ namespace wg
 	
 			// Render child
 	
-	//		pChild->_onRender( pDevice, childGeo, childGeo, _clip );
+	//		pChild->_render( pDevice, childGeo, childGeo, _clip );
 	
 		}
 	}
 	
-	//____ _onNewSize() ___________________________________________________________
+	//____ _setSize() ___________________________________________________________
 	
-	void PackList::_onNewSize( const Size& size )
+	void PackList::_setSize( const Size& size )
 	{
-		m_size = size;
+		List::_setSize(size);
+		
 		int newContentBreadth;
 	
 		if( m_bHorizontal )
@@ -637,7 +638,7 @@ namespace wg
 					pHook->m_length = newEntryLength;
 					ofs += newEntryLength;
 	
-					pWidget->_onNewSize( Size(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+					pWidget->_setSize( Size(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -646,7 +647,7 @@ namespace wg
 					pHook->m_length = newEntryLength;
 					ofs += newEntryLength;
 	
-					pWidget->_onNewSize( Size(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _onNewSize() that prevents child from doing a _requestRender().
+					pWidget->_setSize( Size(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -655,18 +656,18 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ _onRefresh() ___________________________________________________________
+	//____ _refresh() ___________________________________________________________
 	
-	void PackList::_onRefresh()
+	void PackList::_refresh()
 	{
 		_refreshHeader();
-		_onRefreshList();	
-		Widget::_onRefresh();
+		_refreshList();	
+		Widget::_refresh();
 	}
 	
-	//____ _onRefreshList() _______________________________________________________
+	//____ _refreshList() _______________________________________________________
 	
-	void PackList::_onRefreshList()
+	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
 			m_entryPadding = m_pEntrySkin[0]->contentPadding();
@@ -721,11 +722,11 @@ namespace wg
 		_requestResize();						// This should preferably be done first once we have changed the method.
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void PackList::_onMsg( const Msg_p& _pMsg )
+	void PackList::_receive( const Msg_p& _pMsg )
 	{
-		State oldState = m_state;
+		State state = m_state;
 	
 		switch( _pMsg->type() )
 		{
@@ -741,7 +742,7 @@ namespace wg
 					m_header.m_state.setHovered(bHeaderHovered);
 					_requestRender( headerGeo );
 				}
-				List::_onMsg( _pMsg );
+				List::_receive( _pMsg );
 				break;
 			}
 	
@@ -754,7 +755,7 @@ namespace wg
 					m_header.m_state.setHovered(false);
 					_requestRender( _headerGeo() );
 				}
-				List::_onMsg( _pMsg );
+				List::_receive( _pMsg );
 				break;
 			}
 	
@@ -771,7 +772,7 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					List::_onMsg( _pMsg );
+					List::_receive( _pMsg );
 				break;
 			}
 	
@@ -792,7 +793,7 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					List::_onMsg( _pMsg );
+					List::_receive( _pMsg );
 				break;
 			}
 	
@@ -818,7 +819,7 @@ namespace wg
 					pMsg->swallow();
 				}
 				else
-					List::_onMsg( _pMsg );
+					List::_receive( _pMsg );
 				break;
 			}
 			case MsgType::KeyPress:
@@ -833,7 +834,7 @@ namespace wg
 					keyCode == Key::Home || keyCode == Key::End ||
 					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
-				List::_onMsg( _pMsg );
+				List::_receive( _pMsg );
 				break;
 			}
 	
@@ -850,17 +851,17 @@ namespace wg
 					keyCode == Key::Home || keyCode == Key::End ||
 					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
-				List::_onMsg( _pMsg );
+				List::_receive( _pMsg );
 				break;
 			}
 		
 			default:
-				List::_onMsg(_pMsg);
+				List::_receive(_pMsg);
 				return;
 		}
 	
-		if( m_state != oldState )
-			_onStateChanged(oldState);
+		if( state != m_state )
+			_setState(state);
 	}
 	
 	//____ _onLassoUpdated() ______________________________________________________
@@ -949,13 +950,6 @@ namespace wg
 	}
 	
 	
-	//____ _onStateChanged() ______________________________________________________
-	
-	void PackList::_onStateChanged( State oldState )
-	{
-		List::_onStateChanged(oldState);
-	}
-	
 	
 	//____ _onRequestRender() _____________________________________________________
 	
@@ -1024,7 +1018,7 @@ namespace wg
 	
 			Rect childGeo;
 			_getChildGeo(childGeo,pHook);
-			pHook->_widget()->_onNewSize(childGeo);
+			pHook->_widget()->_setSize(childGeo);
 		}
 	
 	
@@ -1072,7 +1066,7 @@ namespace wg
 	
 		Rect childGeo;
 		_getChildGeo(childGeo,pHook);
-		static_cast<PackListHook*>(pInserted)->_widget()->_onNewSize( childGeo );
+		static_cast<PackListHook*>(pInserted)->_widget()->_setSize( childGeo );
 	
 	
 		// Finish up

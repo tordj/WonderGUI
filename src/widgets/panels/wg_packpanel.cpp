@@ -396,15 +396,15 @@ namespace wg
 		return static_cast<const PackHook*>(pHook)->m_geo;
 	}
 	
-	//____ _onRenderRequested() ____________________________________________________
+	//____ _renderRequested() ____________________________________________________
 	
-	void PackPanel::_onRenderRequested( VectorHook * pHook )
+	void PackPanel::_renderRequested( VectorHook * pHook )
 	{
 		PackHook * p = static_cast<PackHook*>(pHook);
 		_requestRender( p->m_geo );
 	}
 	
-	void PackPanel::_onRenderRequested( VectorHook * pHook, const Rect& rect )
+	void PackPanel::_renderRequested( VectorHook * pHook, const Rect& rect )
 	{
 		PackHook * p = static_cast<PackHook*>(pHook);
 		_requestRender( rect + p->m_geo.pos() );
@@ -468,10 +468,11 @@ namespace wg
 		return new PackHook(this);
 	}
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void PackPanel::_onNewSize( const Size& size )
+	void PackPanel::_setSize( const Size& size )
 	{
+		Panel::_setSize(size);
 	    _refreshChildGeo();
 	}
 	
@@ -606,7 +607,7 @@ namespace wg
 						int oldH = p->m_geo.h;
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							p->m_pWidget->_onNewSize( geo.size() );
+							p->m_pWidget->_setSize( geo.size() );
 	                
 					}
 				}
@@ -641,7 +642,7 @@ namespace wg
 	
 			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);		
 			
-			// Retrieve length and set geo for all children, call _requestRender() and _onNewSize() where needed.
+			// Retrieve length and set geo for all children, call _requestRender() and _setSize() where needed.
 			
 			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
 			
@@ -679,7 +680,7 @@ namespace wg
 						int oldH = pH->m_geo.h;
 						pH->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							pH->m_pWidget->_onNewSize( geo.size() );
+							pH->m_pWidget->_setSize( geo.size() );
 					}
 					pI++;
 				}

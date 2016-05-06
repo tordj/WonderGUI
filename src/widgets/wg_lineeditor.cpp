@@ -168,9 +168,9 @@ namespace wg
 			return contentSize;
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void LineEditor::_onCloneContent( const Widget * _pOrg )
+	void LineEditor::_cloneContent( const Widget * _pOrg )
 	{
 		LineEditor * pOrg = (LineEditor*) _pOrg;
 	
@@ -179,11 +179,11 @@ namespace wg
 		m_pwGlyph		= pOrg->m_pwGlyph;
 	}
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void LineEditor::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void LineEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		LegacyTextField * pText = &m_text;
 	
@@ -239,11 +239,11 @@ namespace wg
 			delete pText;
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void LineEditor::_onMsg( const Msg_p& pMsg )
+	void LineEditor::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 	
 		MsgRouter_p	pHandler = Base::msgRouter();
 		MsgType event = pMsg->type();
@@ -482,7 +482,7 @@ namespace wg
 	
 		// Swallow message depending on rules.
 	
-		if( pMsg->isMouseButtonMsg() )
+		if( pMsg->isMouseButtreceive() )
 		{
 			if( MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
@@ -587,16 +587,18 @@ namespace wg
 			m_viewOfs = 0;				// Show beginning of line when cursor disappears.
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void LineEditor::_onStateChanged( State oldState )
+	void LineEditor::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
+		State oldState = m_state;
 		
-		m_text.setState(m_state);
+		Widget::_setState(state);
+		
+		m_text.setState(state);
 		_requestRender();				//TODO: Only request render if text appearance has changed.
 	
-		if( m_state.isFocused() && !oldState.isFocused() )
+		if( state.isFocused() && !oldState.isFocused() )
 		{
 			if( _isEditable() )
 			{
@@ -607,7 +609,7 @@ namespace wg
 			}
 		}
 	
-		if( !m_state.isFocused() && oldState.isFocused() )
+		if( !state.isFocused() && oldState.isFocused() )
 		{
 			if( _isSelectable() )
 			{
@@ -628,19 +630,20 @@ namespace wg
 		}
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void LineEditor::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void LineEditor::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-		m_text.setColorSkin(pNewSkin);
+		Widget::_setSkin(pSkin);
 	}
 	
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void LineEditor::_onNewSize( const Size& size )
+	void LineEditor::_setSize( const Size& size )
 	{
+		Widget::_setSize(_size);
+
 		_adjustViewOfs();
 		_requestRender();
 	}

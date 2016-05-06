@@ -121,30 +121,23 @@ namespace wg
 		return preferred;
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void Button::_onStateChanged( State oldState )
-	{
-		Widget::_onStateChanged(oldState);
-	
-		if(m_icon.skin() && !m_icon.skin()->isStateIdentical(m_state,oldState))
+	void Button::_setState( State state )
+	{	
+		if(m_icon.skin() && !m_icon.skin()->isStateIdentical(state,m_state))
 				_requestRender();
 	
-		m_text.setState(m_state);
+		m_text.setState(state);
+		Widget::_setState(state);
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void Button::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void Button::_setSize( const Size& _size )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
-	}
-	
-	
-	//____ _onNewSize() ____________________________________________________________
-	
-	void Button::_onNewSize( const Size& _size )
-	{
+		Widget::_setSize(_size);
+		
 		Rect	contentRect(0,0,_size);
 	
 		if( m_pSkin )
@@ -156,11 +149,11 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void Button::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Button::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect	contentRect = _canvas;
 	
@@ -183,11 +176,11 @@ namespace wg
 			m_text.onRender( pDevice, textRect, _clip );
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void Button::_onMsg( const Msg_p& _pMsg )
+	void Button::_receive( const Msg_p& _pMsg )
 	{
-		State oldState = m_state;
+		State state = m_state;
 		MsgRouter_p	pHandler = Base::msgRouter();
 	
 		switch( _pMsg->type() )
@@ -215,10 +208,10 @@ namespace wg
 				break;
 		
 			case MsgType::MouseEnter:
-				m_state.setHovered(true);
+				state.setHovered(true);
 				break;
 			case MsgType::MouseLeave:
-				m_state.setHovered(false);
+				state.setHovered(false);
 				break;
 			case MsgType::MousePress:
 				if( MousePressMsg::cast(_pMsg)->button() == MouseButton::Left )
@@ -249,31 +242,31 @@ namespace wg
 				break;
 	
 			case MsgType::FocusGained:
-				m_state.setFocused(true);
+				state.setFocused(true);
 				break;
 			case MsgType::FocusLost:
-				m_state.setFocused(false);
+				state.setFocused(false);
 				m_bReturnPressed = false;
 				m_bPressed = false;
 				break;
 		}
 	
 	
-		if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || m_state.isHovered() )) )
-			m_state.setPressed(true);
+		if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || state.isHovered() )) )
+			state.setPressed(true);
 		else
-			m_state.setPressed(false);
+			state.setPressed(false);
 	
-		if( m_state != oldState )
-			_onStateChanged(oldState);
+		if( state != m_state )
+			_setState(state);
 	}
 	
 	
-	//____ _onRefresh() ____________________________________________________________
+	//____ _refresh() ____________________________________________________________
 	
-	void Button::_onRefresh( void )
+	void Button::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 		m_text.onRefresh();
 	
 		//TODO: Handling of icon and text.
@@ -307,9 +300,9 @@ namespace wg
 			m_bDownOutside		= bDown;
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Button::_onCloneContent( const Widget * _pOrg )
+	void Button::_cloneContent( const Widget * _pOrg )
 	{
 		Button * pOrg = (Button *) _pOrg;
 	
@@ -321,16 +314,16 @@ namespace wg
 		m_bDownOutside	= pOrg->m_bDownOutside;
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________________
+	//____ _alphaTest() ___________________________________________________________
 	
-	bool Button::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Button::_alphaTest( const Coord& ofs )
 	{
 		if( m_icon.skin() )
 		{
 			//TODO: Test against icon.
 		}
 	
-		return Widget::_onAlphaTest(ofs,sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
 	//____ _onFieldDirty() _________________________________________________________

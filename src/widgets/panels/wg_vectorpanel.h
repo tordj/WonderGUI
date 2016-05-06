@@ -117,7 +117,7 @@ namespace wg
 		VectorHook *	_insertWidget( Widget * pWidget, Widget * pSibling );
 	
 	
-		void			_onCloneContent( const Widget * _pOrg );
+		void			_cloneContent( const Widget * _pOrg );
 	
 		Hook*			_firstHook() const { return m_hooks.first(); }
 		Hook*			_lastHook() const { return m_hooks.last(); }
@@ -126,8 +126,8 @@ namespace wg
 	
 		virtual Rect	_hookGeo( const VectorHook * pHook ) = 0;
 		virtual void	_onResizeRequested( VectorHook * pHook ) = 0;
-		virtual void	_onRenderRequested( VectorHook * pHook ) = 0;
-		virtual void	_onRenderRequested( VectorHook * pHook, const Rect& rect ) = 0;
+		virtual void	_renderRequested( VectorHook * pHook ) = 0;
+		virtual void	_renderRequested( VectorHook * pHook, const Rect& rect ) = 0;
 		virtual void	_onWidgetAppeared( VectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
 		virtual void	_onWidgetDisappeared( VectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 		virtual void	_onWidgetsReordered() = 0;

@@ -401,7 +401,7 @@ namespace wg
 			do
 			{
 				if( pMsg->hasCopyTo()  )
-					pMsg->getCopyTo()->onMsg( pMsg );
+					pMsg->getCopyTo()->receive( pMsg );
 				
 				if( pMsg->hasSource() )
 					_dispatchToSourceRoutes( pMsg );
@@ -485,7 +485,7 @@ namespace wg
 	
 	void MsgRouter::Route::dispatch( const Msg_p& pMsg )
 	{
-		m_pReceiver->onMsg( pMsg );
+		m_pReceiver->receive( pMsg );
 	}
 	
 	bool MsgRouter::Route::isAlive() const

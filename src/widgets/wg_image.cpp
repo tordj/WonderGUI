@@ -133,9 +133,9 @@ namespace wg
 		return Widget::preferredSize();
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Image::_onCloneContent( const Widget * _pOrg )
+	void Image::_cloneContent( const Widget * _pOrg )
 	{
 		Image * pOrg = (Image*) _pOrg;
 	
@@ -143,11 +143,11 @@ namespace wg
 		m_rect		= pOrg->m_rect;
 	}
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void Image::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
@@ -161,23 +161,23 @@ namespace wg
 		}
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________________
+	//____ _alphaTest() ___________________________________________________________
 	
-	bool Image::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Image::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
 			Rect dest;
 			if( m_pSkin )
-				dest = m_pSkin->contentRect( sz, state() );
+				dest = m_pSkin->contentRect( m_size, state() );
 			else
-				dest = size();
+				dest = m_size;
 	
 			if( Util::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
 				return true;
 		}
 	
-		return Widget::_onAlphaTest(ofs,sz);
+		return Widget::_alphaTest(ofs);
 	}
 
 } // namespace wg

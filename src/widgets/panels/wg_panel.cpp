@@ -88,22 +88,22 @@ namespace wg
 		}
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Panel::_onCloneContent( const Widget * _pOrg )
+	void Panel::_cloneContent( const Widget * _pOrg )
 	{
 		const Panel * pOrg = static_cast<const Panel*>(_pOrg);
 	
 		m_bTooltipGroup 	= pOrg->m_bTooltipGroup;
 		m_maskOp 			= pOrg->m_maskOp;
 	
-		Container::_onCloneContent( pOrg );
+		Container::_cloneContent( pOrg );
 	}
 	
 	
-	//____ _onMaskPatches() __________________________________________________________
+	//____ _maskPatches() __________________________________________________________
 	
-	void Panel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Panel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
@@ -122,7 +122,7 @@ namespace wg
 				while(p)
 				{
 					if( p->isVisible() )
-						p->_widget()->_onMaskPatches( patches, childGeo + geo.pos(), clip, blendMode );
+						p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
 					p = static_cast<PanelHook*>(_nextHookWithGeo( childGeo, p ));
 				}
 				break;

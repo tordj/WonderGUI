@@ -55,9 +55,9 @@ namespace wg
 		virtual ~Knob();
 		virtual Widget* _newOfMyType() const { return new Knob(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		bool	_alphaTest( const Coord& ofs );
 	
 	private:
 	

@@ -98,7 +98,7 @@ namespace wg
 		bool		isKeyPressed( short nativeKeyCode ) const;
 	
 		
-		void 		onMsg( const Msg_p& pMsg );
+		void 		receive( const Msg_p& pMsg );
 
 
 		void		mapKey( Key translated_keycode, int native_keycode );

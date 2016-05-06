@@ -97,7 +97,7 @@ namespace wg
 		m_pGfxDevice = pDevice;
 	
 		if( m_pGfxDevice && !m_bHasGeo && m_hook._widget() )
-			m_hook._widget()->_onNewSize( m_pGfxDevice->canvasSize() );
+			m_hook._widget()->_setSize( m_pGfxDevice->canvasSize() );
 	
 		return true;
 	}
@@ -141,9 +141,9 @@ namespace wg
 			return 0;
 	
 		m_hook._setWidget(pWidget.rawPtr());
-		m_hook._widget()->_onNewSize(m_geo.size());
+		m_hook._widget()->_setSize(m_geo.size());
 	
-		m_hook._widget()->_onCollectPatches( m_dirtyPatches, geo(), geo() );
+		m_hook._widget()->_collectPatches( m_dirtyPatches, geo(), geo() );
 	
 		return &m_hook;
 	}

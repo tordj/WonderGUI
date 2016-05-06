@@ -220,11 +220,11 @@ namespace wg
 	}
 	
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void Menubar::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Menubar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		// Take backgrounds content borders into account
 	
@@ -308,11 +308,11 @@ namespace wg
 		}
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void Menubar::_onMsg( const Msg_p& pMsg )
+	void Menubar::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 	
 		switch( pMsg->type() )
 		{
@@ -363,23 +363,23 @@ namespace wg
 		}
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void Menubar::_onRefresh( void )
+	void Menubar::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________
+	//____ _alphaTest() ___________________________________________________
 	
-	bool Menubar::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Menubar::_alphaTest( const Coord& ofs )
 	{
 		return true;
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Menubar::_onCloneContent( const Widget * _pOrg )
+	void Menubar::_cloneContent( const Widget * _pOrg )
 	{
 		const Menubar * pOrg = (const Menubar *) _pOrg;
 	

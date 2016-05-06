@@ -404,9 +404,9 @@ namespace wg
 	
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Scrollbar::_onCloneContent( const Widget * _pOrg )
+	void Scrollbar::_cloneContent( const Widget * _pOrg )
 	{
 		Scrollbar * pOrg = (Scrollbar *) _pOrg;
 	
@@ -492,24 +492,24 @@ namespace wg
 	}
 	
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void Scrollbar::_onStateChanged( State oldState )
+	void Scrollbar::_setState( State state )
 	{
-		if( m_state.isEnabled() != oldState.isEnabled() )
+		if( state.isEnabled() != m_state.isEnabled() )
 		{
 			for( int i = 0 ; i < C_NUMBER_OF_COMPONENTS ; i++ )
-				m_states[i].setEnabled(m_state.isEnabled());
+				m_states[i].setEnabled(state.isEnabled());
 		}
 		_requestRender();
 	}
 	
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void Scrollbar::_onRefresh( void )
+	void Scrollbar::_refresh( void )
 	{
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
 	//____ preferredSize() _____________________________________________________________
@@ -621,11 +621,11 @@ namespace wg
 				_dest.y += _dest.h;
 	}
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void Scrollbar::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Scrollbar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect	dest = _canvas;
 		if( m_pSkin )
@@ -680,14 +680,14 @@ namespace wg
 			_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD] );
 	}
 	
-	//____ _onAlphaTest() ______________________________________________________
+	//____ _alphaTest() ______________________________________________________
 	
-	bool Scrollbar::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Scrollbar::_alphaTest( const Coord& ofs )
 	{
 		if( _findMarkedComponent( ofs ) != C_NONE )
 			return true;
 	
-		return Widget::_onAlphaTest(ofs,sz);
+		return Widget::_alphaTest(ofs);
 	}
 	
 	//____ _markTestButton() _______________________________________________________
@@ -791,9 +791,9 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void Scrollbar::_onMsg( const Msg_p& pMsg )
+	void Scrollbar::_receive( const Msg_p& pMsg )
 	{
 		int		handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );

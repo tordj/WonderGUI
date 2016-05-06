@@ -116,7 +116,7 @@ namespace wg
 		virtual String	tooltip() const { return m_tooltip; }
 		inline void			setTooltip( const String& str ) { m_tooltip = str; }
 	
-		inline void			refresh() { _onRefresh(); }
+		inline void			refresh() { _refresh(); }
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const { return m_state.isEnabled(); }
 	
@@ -135,44 +135,44 @@ namespace wg
 		bool				markTest( const Coord& ofs );
 	
 		virtual void		setSkin( const Skin_p& pSkin );
-		Skin_p			skin( ) const	{ return m_pSkin; }
+		Skin_p				skin( ) const	{ return m_pSkin; }
 	
 	
-		Hook_p			hook() const { return m_pHook; }
+		Hook_p				hook() const { return m_pHook; }
 	
-		Widget_p		newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 	
-		void 				onMsg( const Msg_p& pMsg );
+		void 				receive( const Msg_p& pMsg );
 	
 	
 		// Convenient calls to hook
 	
 		inline Coord		pos() const;
-		inline Size		size() const;
-		inline Rect		geo() const;
+		inline Size			size() const;
+		inline Rect			geo() const;
 		inline Coord		globalPos() const;
-		inline Rect		globalGeo() const;
+		inline Rect			globalGeo() const;
 		inline bool			grabFocus();
 		inline bool			releaseFocus();
 		inline bool			isFocused();
-		Container_p		parent() const;
+		Container_p			parent() const;
 	
-		inline Widget_p	nextSibling() const;
-		inline Widget_p	prevSibling() const;
+		inline Widget_p		nextSibling() const;
+		inline Widget_p		prevSibling() const;
 	
 		Coord				toGlobal( const Coord& coord ) const;
 		Coord				toLocal( const Coord& coord ) const; 
 		
 		// To be overloaded by Widget
 	
-		virtual int		matchingHeight( int width ) const;
-		virtual int		matchingWidth( int height ) const;
+		virtual int			matchingHeight( int width ) const;
+		virtual int			matchingWidth( int height ) const;
 	
-		virtual Size	preferredSize() const;	
-		virtual Size	minSize() const;
-		virtual Size	maxSize() const;
+		virtual Size		preferredSize() const;	
+		virtual Size		minSize() const;
+		virtual Size		maxSize() const;
 	
-		virtual bool	isContainer() const { return false; }		///< @brief Check if this widget is a container.
+		virtual bool		isContainer() const { return false; }	///< @brief Check if this widget is a container.
 																	///<
 																	///< Check if widget is a container.
 																	///< This method is a quicker way to check if the widget
@@ -180,13 +180,13 @@ namespace wg
 																	///< @return True if the widget is a subclass of Container.
 	
 	protected:
-		void			_onNewHook( Hook * pHook );
+		void				_onNewHook( Hook * pHook );
 	
-		void			_onNewRoot( RootPanel * pRoot );
+		void				_onNewRoot( RootPanel * pRoot );
 		virtual BlendMode	_getBlendMode() const;
 	
 	
-		virtual Widget* _newOfMyType() const = 0;
+		virtual Widget* 	_newOfMyType() const = 0;
 	
 	
 		// Convenient calls to hook
@@ -205,18 +205,18 @@ namespace wg
 		// To be overloaded by Widget
 	
 		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		virtual void	_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		virtual void	_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		virtual void	_onCloneContent( const Widget * _pOrg ) = 0;
-		virtual void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		virtual void	_cloneContent( const Widget * _pOrg ) = 0;
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 	
-		virtual void	_onRefresh();
-		virtual void	_onNewSize( const Size& size );
-		virtual void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
-		virtual void	_onStateChanged( State oldState );
+		virtual void	_refresh();
+		virtual void	_setSize( const Size& size );
+		virtual void	_setSkin( const Skin_p& pSkin );
+		virtual void	_setState( State state );
 	
-		virtual void	_onMsg( const Msg_p& pMsg );
-		virtual	bool	_onAlphaTest( const Coord& ofs, const Size& sz );
+		virtual void	_receive( const Msg_p& pMsg );
+		virtual	bool	_alphaTest( const Coord& ofs );
 	
 		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 	
@@ -235,6 +235,8 @@ namespace wg
 		bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
 	
 		State			m_state;
+		Size			m_size;
+
 	private:
 		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
 	
@@ -270,9 +272,7 @@ namespace wg
 	 */
 	Size Widget::size() const 
 	{ 
-		if( m_pHook ) 
-			return m_pHook->size(); 
-		return Size(256,256); 
+		return m_size; 
 	}
 	
 	/**
@@ -287,8 +287,8 @@ namespace wg
 	Rect Widget::geo() const 
 	{ 
 		if( m_pHook ) 
-			return m_pHook->geo(); 
-		return Rect(0,0,256,256); 
+			return Rect(m_pHook->pos(),m_size); 
+		return Rect(0,0,m_size); 
 	}
 	
 	/**
@@ -317,8 +317,8 @@ namespace wg
 	Rect Widget::globalGeo() const 
 	{ 
 		if( m_pHook ) 
-			return m_pHook->globalGeo(); 
-		return Rect(0,0,256,256); 
+			return Rect(m_pHook->globalPos(), m_size); 
+		return Rect(0,0,m_size); 
 	}
 	
 	

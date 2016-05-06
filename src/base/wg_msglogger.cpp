@@ -206,9 +206,9 @@ namespace wg
 	
 	
 	
-	//____ onMsg() ______________________________________________________________
+	//____ receive() ______________________________________________________________
 	
-	void MsgLogger::onMsg( const Msg_p& _pMsg )
+	void MsgLogger::receive( const Msg_p& _pMsg )
 	{
 		if( m_msgFilter[(int)_pMsg->type()] == false )
 			return;

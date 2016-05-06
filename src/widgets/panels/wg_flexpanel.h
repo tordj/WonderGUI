@@ -263,8 +263,8 @@ namespace wg
 	
 	private:
 	
-		void			_onCloneContent( const Widget * _pOrg );
-		void			_onNewSize( const Size& size );
+		void			_cloneContent( const Widget * _pOrg );
+		void			_setSize( const Size& size );
 	
 	
 		void			_onRequestRender( const Rect& rect, const FlexHook * pHook );	// rect is in our coordinate system.

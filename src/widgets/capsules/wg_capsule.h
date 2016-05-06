@@ -126,10 +126,10 @@ namespace wg
 	
 		//
 	
-		void			_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void			_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void			_onCloneContent( const Widget * _pOrg );
-		void			_onNewSize( const Size& size );
+		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void			_cloneContent( const Widget * _pOrg );
+		void			_setSize( const Size& size );
 	
 	
 		Hook*			_firstHook() const;

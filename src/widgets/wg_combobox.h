@@ -96,13 +96,13 @@ namespace wg
 		virtual ~Combobox();
 		virtual Widget* _newOfMyType() const { return new Combobox(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onRefresh();
-		void	_onMsg( const Msg_p& pMsg );
-		bool	_onAlphaTest( const Coord& ofs, const Size& sz );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_refresh();
+		void	_receive( const Msg_p& pMsg );
+		bool	_alphaTest( const Coord& ofs );
+		void	_setState( State oldState );
+		void	_setSkin( const Skin_p& pSkin );
 	
 	private:
 		bool	_isEditable() const { return m_text.isEditable(); }

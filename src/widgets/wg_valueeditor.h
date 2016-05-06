@@ -27,10 +27,6 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_LEGACYTEXT_DOT_H
-#	include <wg_legacytext.h>
-#endif
-
 #ifndef WG_VALUEFORMAT_DOT_H
 #	include <wg_valueformat.h>
 #endif
@@ -78,12 +74,12 @@ namespace wg
 		virtual ~ValueEditor();
 		virtual Widget* _newOfMyType() const { return new ValueEditor(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
-		void	_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_onMsg( const Msg_p& pMsg );
-		void	_onStateChanged( State oldState );
-		void	_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin );
-		void	_onRefresh();
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_receive( const Msg_p& pMsg );
+		void	_setState( State state );
+		void	_setSkin( const Skin_p& pSkin );
+		void	_refresh();
 	
 		Widget*	_getWidget() { return this; }
 	

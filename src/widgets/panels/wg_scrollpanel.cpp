@@ -1029,9 +1029,9 @@ namespace wg
 			// Notify scrollbars of their new size.
 	
 			if( bShowDragX )
-				m_elements[XDRAG]._widget()->_onNewSize(newDragX.size());
+				m_elements[XDRAG]._widget()->_setSize(newDragX.size());
 			if( bShowDragY )
-				m_elements[YDRAG]._widget()->_onNewSize(newDragY.size());
+				m_elements[YDRAG]._widget()->_setSize(newDragY.size());
 		}
 	
 		// If contentSize has changed we save changes and set flags
@@ -1052,7 +1052,7 @@ namespace wg
 			// Notify content of its new size.
 	
 			if( m_elements[WINDOW]._widget() )
-				m_elements[WINDOW]._widget()->_onNewSize(newContentSize);
+				m_elements[WINDOW]._widget()->_setSize(newContentSize);
 		}
 	
 		// Notify scrollbars of any change to content size, view size or view offset.
@@ -1096,18 +1096,20 @@ namespace wg
 	}
 	
 	
-	//____ _onNewSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 	
-	void ScrollPanel::_onNewSize( const Size& size )
+	void ScrollPanel::_setSize( const Size& size )
 	{
+		Panel::_setSize(size);
+
 		_updateElementGeo( size );
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void ScrollPanel::_onMsg( const Msg_p& _pMsg )
+	void ScrollPanel::_receive( const Msg_p& _pMsg )
 	{
-		Panel::_onMsg(_pMsg);
+		Panel::_receive(_pMsg);
 	
 		switch( _pMsg->type() )
 		{
@@ -1207,16 +1209,16 @@ namespace wg
 	}
 	
 	
-	//____ _onCollectPatches() _______________________________________________________
+	//____ _collectPatches() _______________________________________________________
 	
-	void ScrollPanel::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void ScrollPanel::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		container.add( Rect(geo,clip) );
 	}
 	
-	//____ _onMaskPatches() __________________________________________________________
+	//____ _maskPatches() __________________________________________________________
 	
-	void ScrollPanel::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void ScrollPanel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque ||
@@ -1237,17 +1239,17 @@ namespace wg
 				if( m_pSkin && m_pSkin->isOpaque() )
 					patches.sub( Rect( p->m_windowGeo + geo.pos(), clip) );
 				else if( p->_widget() )
-					p->_widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.pos(), Rect(p->m_windowGeo + geo.pos(), clip), blendMode );
+					p->_widget()->_maskPatches( patches, p->m_canvasGeo + geo.pos(), Rect(p->m_windowGeo + geo.pos(), clip), blendMode );
 	
 				// Mask against dragbars
 	
 				p = &m_elements[XDRAG];
 				if( p->isVisible() )
-					p->_widget()->_onMaskPatches( patches, p->m_windowGeo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, p->m_windowGeo + geo.pos(), clip, blendMode );
 	
 				p = &m_elements[YDRAG];
 				if( p->isVisible() )
-					p->_widget()->_onMaskPatches( patches, p->m_windowGeo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, p->m_windowGeo + geo.pos(), clip, blendMode );
 	
 				// Maska against corner piece
 	
@@ -1264,9 +1266,9 @@ namespace wg
 		}
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________________
+	//____ _alphaTest() ___________________________________________________________
 	
-	bool ScrollPanel::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool ScrollPanel::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSkin && m_elements[WINDOW].m_windowGeo.contains( ofs ) )
 		{
@@ -1281,13 +1283,13 @@ namespace wg
 		return false;
 	}
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void ScrollPanel::_onCloneContent( const Widget * _pOrg )
+	void ScrollPanel::_cloneContent( const Widget * _pOrg )
 	{
 		ScrollPanel* pOrg = (ScrollPanel*)_pOrg;
 	
-		Panel::_onCloneContent(pOrg);
+		Panel::_cloneContent(pOrg);
 		
 	
 		m_contentSize = pOrg->m_contentSize;

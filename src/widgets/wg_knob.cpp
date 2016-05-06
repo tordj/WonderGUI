@@ -85,18 +85,18 @@ namespace wg
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void Knob::_onCloneContent( const Widget * _pOrg )
+	void Knob::_cloneContent( const Widget * _pOrg )
 	{
 		const Knob * pOrg = static_cast<const Knob*>(_pOrg);
 	}
 	
-	//____ _onRender() _____________________________________________________________
+	//____ _render() _____________________________________________________________
 	
-	void Knob::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Knob::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice, _canvas, _window, _clip);
+		Widget::_render(pDevice, _canvas, _window, _clip);
 	
 		int sz = wg::min( _canvas.w,_canvas.h );
 	
@@ -106,9 +106,9 @@ namespace wg
 		}
 	}
 	
-	//____ _onAlphaTest() ___________________________________________________________
+	//____ _alphaTest() ___________________________________________________________
 	
-	bool Knob::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Knob::_alphaTest( const Coord& ofs )
 	{
 		return true;
 	}

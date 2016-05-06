@@ -113,7 +113,7 @@ namespace wg
 	
 	    // Overloaded from Widget
 	    
-		void			_onNewSize( const Size& size );
+		void			_setSize( const Size& size );
 	 
 	    
 		// Overloaded from Container
@@ -129,8 +129,8 @@ namespace wg
 		
 		Rect			_hookGeo( const VectorHook * pHook );
 		void			_onResizeRequested( VectorHook * pHook );
-		void			_onRenderRequested( VectorHook * pHook );
-		void			_onRenderRequested( VectorHook * pHook, const Rect& rect );
+		void			_renderRequested( VectorHook * pHook );
+		void			_renderRequested( VectorHook * pHook, const Rect& rect );
 		void			_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.
 		void			_onWidgetDisappeared( VectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 		void			_onWidgetsReordered();

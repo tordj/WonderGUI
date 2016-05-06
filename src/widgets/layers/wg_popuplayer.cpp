@@ -483,7 +483,7 @@ namespace wg
 		while( pCover )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_onMaskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 	
 			pCover = pCover->_next();
 		}
@@ -494,29 +494,29 @@ namespace wg
 			_requestRender( * pRect );
 	}
 	
-	//____ _onNewSize() ___________________________________________________________
+	//____ _setSize() ___________________________________________________________
 	
-	void PopupLayer::_onNewSize( const Size& sz )
+	void PopupLayer::_setSize( const Size& sz )
 	{
-		m_size = sz;
-	
+		Layer::_setSize(sz);
+		
 		// Update size of base widget
 	
 		if( m_baseHook._widget() )
-			m_baseHook._widget()->_onNewSize(sz);
+			m_baseHook._widget()->_setSize(sz);
 	}
 	
-	//____ _onCloneContent() ______________________________________________________
+	//____ _cloneContent() ______________________________________________________
 	
-	void PopupLayer::_onCloneContent( const Widget * _pOrg )
+	void PopupLayer::_cloneContent( const Widget * _pOrg )
 	{
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void PopupLayer::_onMsg( const Msg_p& _pMsg )
+	void PopupLayer::_receive( const Msg_p& _pMsg )
 	{
-		Layer::_onMsg(_pMsg);
+		Layer::_receive(_pMsg);
 	
 		Widget * pOpener = 0;
 	

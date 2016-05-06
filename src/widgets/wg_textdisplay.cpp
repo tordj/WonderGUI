@@ -130,11 +130,11 @@ namespace wg
 			return m_text.tooltip();
 	}
 	
-	//____ _onRender() ________________________________________________________
+	//____ _render() ________________________________________________________
 	
-	void TextDisplay::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void TextDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
-		Widget::_onRender(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -145,61 +145,63 @@ namespace wg
 		m_text.onRender(pDevice, canvas, _clip);
 	}
 	
-	//____ _onRefresh() _______________________________________________________
+	//____ _refresh() _______________________________________________________
 	
-	void TextDisplay::_onRefresh( void )
+	void TextDisplay::_refresh( void )
 	{
 		//TODO: Implement more I believe...
 	
-		Widget::_onRefresh();
+		Widget::_refresh();
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() ______________________________________________________
 	
-	void TextDisplay::_onStateChanged( State oldState )
+	void TextDisplay::_setState( State state )
 	{
-		Widget::_onStateChanged(oldState);
-		m_text.setState(m_state);
-		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
+		Widget::_setState(state);
+		m_text.setState(state);		
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
 	}
 	
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void TextDisplay::_onMsg( const Msg_p& pMsg )
+	void TextDisplay::_receive( const Msg_p& pMsg )
 	{
-		Widget::_onMsg(pMsg);
+		Widget::_receive(pMsg);
 	/*
 		Rect canvas = geo();
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(canvas, m_state);
 	
-		m_text.onMsg( pMsg, pHandler, canvas );
+		m_text.receive( pMsg, pHandler, canvas );
 	*/
 	}
 	
 	
-	//____ _onCloneContent() _______________________________________________________
+	//____ _cloneContent() _______________________________________________________
 	
-	void TextDisplay::_onCloneContent( const Widget * _pOrg )
+	void TextDisplay::_cloneContent( const Widget * _pOrg )
 	{
 		const TextDisplay * pOrg = static_cast<const TextDisplay*>(_pOrg);
 	
 		m_text = pOrg->m_text;
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void TextDisplay::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void TextDisplay::_setSkin( const Skin_p& pSkin )
 	{
-		Widget::_onSkinChanged(pOldSkin,pNewSkin);
+		//TODO: Possibly notify text about new canvas size.
+		
+		Widget::_setSkin(pSkin);
 	}
 	
-	//____ _onNewSize() ________________________________________________
+	//____ _setSize() ________________________________________________
 	
-	void TextDisplay::_onNewSize( const Size& size )
+	void TextDisplay::_setSize( const Size& size )
 	{
-		Widget::_onNewSize(size);
+		Widget::_setSize(size);
 	
 		Size textSize = size;
 		if( m_pSkin )

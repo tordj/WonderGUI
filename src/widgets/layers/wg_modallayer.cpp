@@ -514,16 +514,16 @@ namespace wg
 		_hook()->parent()->_focusRequested(_hook(), pSavedFocus);
 	}
 	
-	//____ _onNewSize() ___________________________________________________________
+	//____ _setSize() ___________________________________________________________
 	
-	void ModalLayer::_onNewSize( const Size& sz )
+	void ModalLayer::_setSize( const Size& sz )
 	{
-		m_size = sz;
-	
+		Layer::_setSize(sz);
+			
 		// Update size of base widget
 	
 		if( m_baseHook._widget() )
-			m_baseHook._widget()->_onNewSize(sz);
+			m_baseHook._widget()->_setSize(sz);
 	
 		// Refresh modal widgets geometry, their positions might have changed.
 	
@@ -536,17 +536,17 @@ namespace wg
 		}
 	}
 	
-	//____ _onCloneContent() ______________________________________________________
+	//____ _cloneContent() ______________________________________________________
 	
-	void ModalLayer::_onCloneContent( const Widget * _pOrg )
+	void ModalLayer::_cloneContent( const Widget * _pOrg )
 	{
 	}
 	
-	//____ _onMsg() ______________________________________________________________
+	//____ _receive() ______________________________________________________________
 	
-	void ModalLayer::_onMsg( const Msg_p& _pMsg )
+	void ModalLayer::_receive( const Msg_p& _pMsg )
 	{
-		Layer::_onMsg(_pMsg);
+		Layer::_receive(_pMsg);
 	
 		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
 		{

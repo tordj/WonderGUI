@@ -99,10 +99,10 @@ namespace wg
 		virtual ~RefreshButton();
 		virtual Widget* _newOfMyType() const { return new RefreshButton(); };
 	
-		void			_onMsg( const Msg_p& pMsg );
-		void			_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void			_onCloneContent( const Widget * _pOrg );
-		virtual void 	_onNewSize( const Size& size );
+		void			_receive( const Msg_p& pMsg );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_cloneContent( const Widget * _pOrg );
+		virtual void 	_setSize( const Size& size );
 	
 		State			_getRenderState();
 	

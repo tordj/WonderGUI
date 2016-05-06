@@ -69,7 +69,7 @@ namespace wg
 		virtual ~Filler();
 		virtual Widget* _newOfMyType() const { return new Filler(); };
 	
-		void	_onCloneContent( const Widget * _pOrg );
+		void	_cloneContent( const Widget * _pOrg );
 	
 	private:
 		Size			m_preferredSize;

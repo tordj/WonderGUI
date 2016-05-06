@@ -37,7 +37,7 @@ namespace wg
 	
 	Widget::Widget():m_id(0), m_pHook(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false),
-						m_bTabLock(false), m_bPressed(false)
+						m_bTabLock(false), m_bPressed(false), m_size(256,256)
 	{
 	}
 	
@@ -96,9 +96,9 @@ namespace wg
 	{
 		if( m_state.isEnabled() != bEnabled || isContainer() )
 		{
-			State old = m_state;
-			m_state.setEnabled(bEnabled);
-			_onStateChanged(old);
+			State s = m_state;
+			s.setEnabled(bEnabled);
+			_setState(s);
 		}
 	}
 	
@@ -137,16 +137,14 @@ namespace wg
 		if( m_markOpacity >= 256 )
 			return true;
 			
-		return _onAlphaTest(ofs,sz);
+		return _alphaTest(ofs);
 	}
 	
 	//____ setSkin() ______________________________________________________________
 	
 	void Widget::setSkin( const Skin_p& pSkin )
 	{
-		Skin_p pOldSkin = m_pSkin;
-		m_pSkin = pSkin;
-		_onSkinChanged( pOldSkin, m_pSkin );
+		_setSkin( pSkin );
 	}
 	
 	
@@ -173,7 +171,7 @@ namespace wg
 	
 		// We do not clone state...
 	
-		_onCloneContent( pOrg );
+		_cloneContent( pOrg );
 		return true;
 	}
 	
@@ -324,11 +322,11 @@ namespace wg
 			return Size(0,0);
 	}
 	
-	//____ onMsg() _______________________________________________________________
+	//____ receive() _______________________________________________________________
 	
-	void Widget::onMsg( const Msg_p& pMsg )
+	void Widget::receive( const Msg_p& pMsg )
 	{
-		// SetRepost before _onMsg() so that subclasses can swallow the respost.
+		// SetRepost before _receive() so that subclasses can swallow the respost.
 		
 		switch( pMsg->type() )
 		{
@@ -352,7 +350,7 @@ namespace wg
 			default:
 				break;
 		}
-		_onMsg( pMsg );
+		_receive( pMsg );
 	}
 	
 	//____ maxSize() ______________________________________________________________
@@ -395,20 +393,20 @@ namespace wg
 		{
 			Rect clip( _window, *pRect );
 			if( clip.w > 0 && clip.h > 0 )
-				_onRender( pDevice, _canvas, _window, clip );
+				_render( pDevice, _canvas, _window, clip );
 		}
 	}
 	
 	//____ onCollectPatches()  ____________________________________________________
 	
-	void Widget::_onCollectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Widget::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 			container.add( Rect( geo, clip ) );
 	}
 	
-	//____ _onMaskPatches() _______________________________________________________
+	//____ _maskPatches() _______________________________________________________
 	
-	void Widget::_onMaskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Widget::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Opaque )
 		{
@@ -416,24 +414,25 @@ namespace wg
 		}
 	}
 	
-	//____ _onRender() ____________________________________________________________
+	//____ _render() ____________________________________________________________
 	
-	void Widget::_onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		if( m_pSkin )
 			m_pSkin->render( pDevice, _canvas, m_state, _clip );
 	}
 	
-	//____ _onNewSize() ___________________________________________________________
+	//____ _setSize() ___________________________________________________________
 	
-	void Widget::_onNewSize( const Size& size )
+	void Widget::_setSize( const Size& size )
 	{
+		m_size = size;
 		_requestRender();
 	}
 	
-	//____ _onRefresh() ___________________________________________________________
+	//____ _refresh() ___________________________________________________________
 	
-	void Widget::_onRefresh()
+	void Widget::_refresh()
 	{
 		if( m_pSkin && m_pSkin->isOpaque(m_state) )
 			m_bOpaque = true;
@@ -444,60 +443,64 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ _onSkinChanged() _______________________________________________________
+	//____ _setSkin() _______________________________________________________
 	
-	void Widget::_onSkinChanged( const Skin_p& pOldSkin, const Skin_p& pNewSkin )
+	void Widget::_setSkin( const Skin_p& pSkin )
 	{
-		if( !pOldSkin || !pNewSkin || pOldSkin->contentPadding() != pNewSkin->contentPadding() ||
-			pOldSkin->preferredSize() != pNewSkin->preferredSize() ||
-			pOldSkin->minSize() != pNewSkin->minSize() )
+		if( !m_pSkin || !pSkin || m_pSkin->contentPadding() != pSkin->contentPadding() ||
+			m_pSkin->preferredSize() != pSkin->preferredSize() ||
+			m_pSkin->minSize() != pSkin->minSize() )
 		{
 			_requestResize();
 		}
 	
-		if( pNewSkin && pNewSkin->isOpaque(m_state) )
+
+		if( pSkin && pSkin->isOpaque(m_state) )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
-	
+		
+		m_pSkin = pSkin;
 		_requestRender();
 	}
 	
-	//____ _onStateChanged() ______________________________________________________
+	//____ _setState() _________________________________________________________
 	
-	void Widget::_onStateChanged( State oldState )
+	void Widget::_setState( State state )
 	{
-		if( m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState) )
+		if( m_pSkin && !m_pSkin->isStateIdentical(state, m_state) )
 		{
-			m_bOpaque = m_pSkin->isOpaque(m_state);
+			m_bOpaque = m_pSkin->isOpaque(state);
 			_requestRender();
 		}
+	
+		m_state = state;		
 	}
 	
-	//____ _onMsg() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 	
-	void Widget::_onMsg( const Msg_p& _pMsg )
+	void Widget::_receive( const Msg_p& _pMsg )
 	{
-		State oldState = m_state;
+		State state = m_state;
 	
 		switch( _pMsg->type() )
 		{
 			case MsgType::MouseEnter:
 				if( m_bPressed )
-					m_state.setPressed(true);
+					state.setPressed(true);
 				else
-					m_state.setHovered(true);
+					state.setHovered(true);
 				break;
 			case MsgType::MouseLeave:
-				m_state.setHovered(false);			// Also clears any pressed flag.
+				state.setHovered(false);			// Also clears any pressed flag.
 				break;
 			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
-					if( m_state.isHovered() )
-						m_state.setPressed(true);
+					if( state.isHovered() )
+						state.setPressed(true);
 	
 					m_bPressed = true;
 				}
@@ -508,31 +511,31 @@ namespace wg
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
-					if( m_state.isHovered() )
-						m_state.setPressed(false);
+					if( state.isHovered() )
+						state.setPressed(false);
 	
 					m_bPressed = false;
 				}
 				break;
 			}
 			case MsgType::FocusGained:
-				m_state.setFocused(true);
+				state.setFocused(true);
 				break;
 			case MsgType::FocusLost:
-				m_state.setFocused(false);
+				state.setFocused(false);
 				break;
 		}
 	
-		if( m_state != oldState )
-			_onStateChanged( oldState );
+		if( state != m_state )
+			_setState( state );
 	}
 	
-	//____ _onAlphaTest() _________________________________________________________
+	//____ _alphaTest() _________________________________________________________
 	
-	bool Widget::_onAlphaTest( const Coord& ofs, const Size& sz )
+	bool Widget::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSkin )
-			return m_pSkin->markTest( ofs, Rect(0,0,sz), m_state, m_markOpacity );
+			return m_pSkin->markTest( ofs, Rect(0,0,m_size), m_state, m_markOpacity );
 	
 		return false;
 	}
