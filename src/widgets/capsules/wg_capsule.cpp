@@ -199,6 +199,7 @@ namespace wg
 	
 	void Capsule::_cloneContent( const Widget * _pOrg )
 	{
+		Container::_cloneContent( _pOrg );
 	}
 	
 	//____ _setSize() ____________________________________________________________

@@ -122,7 +122,7 @@ namespace wg
 	
 		inline State		state() const { return m_state; }
 	
-		bool				cloneContent( const Widget_p& _pOrg );
+		inline Widget_p		clone() const { return Widget_p(_clone()); }
 	
 		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
 		virtual PointerStyle	pointerStyle() const;
@@ -207,7 +207,9 @@ namespace wg
 		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		virtual void	_cloneContent( const Widget * _pOrg ) = 0;
+
+		Widget *		_clone() const;
+		virtual void	_cloneContent( const Widget * _pOrg );
 		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 	
 		virtual void	_refresh();

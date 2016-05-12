@@ -408,6 +408,8 @@ namespace wg
 	
 	void Scrollbar::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		Scrollbar * pOrg = (Scrollbar *) _pOrg;
 	
 		m_pBgSkin			= pOrg->m_pBgSkin;

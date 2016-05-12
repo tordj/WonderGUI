@@ -304,6 +304,8 @@ namespace wg
 	
 	void Button::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+				
 		Button * pOrg = (Button *) _pOrg;
 	
 		m_icon.onCloneContent( &pOrg->m_icon );

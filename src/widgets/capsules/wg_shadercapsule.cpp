@@ -150,6 +150,8 @@ namespace wg
 	
 	void ShaderCapsule::_cloneContent( const Widget * _pOrg )
 	{
+		Capsule::_cloneContent( _pOrg );
+		
 		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
 	
 		m_tintColor		= pOrg->m_tintColor;

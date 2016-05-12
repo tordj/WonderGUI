@@ -778,9 +778,9 @@ namespace wg
 	
 	void ValueEditor::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		ValueEditor * pOrg = (ValueEditor *) _pOrg;
-	
-		_Interface_ValueHolder::_cloneContent( pOrg );
 	
 		m_maxInputChars = pOrg->m_maxInputChars;
 		m_pFormat		= pOrg->m_pFormat;

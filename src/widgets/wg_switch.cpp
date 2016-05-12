@@ -94,6 +94,8 @@ namespace wg
 	
 	void Switch::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const Switch * pOrg = static_cast<const Switch*>(_pOrg);
 	}
 	

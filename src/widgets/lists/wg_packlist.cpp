@@ -483,6 +483,8 @@ namespace wg
 	
 	void PackList::_cloneContent( const Widget * _pOrg )
 	{
+		List::_cloneContent( _pOrg );
+
 		//TODO: Implement!!!
 	}
 	

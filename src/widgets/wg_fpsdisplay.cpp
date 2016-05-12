@@ -241,6 +241,8 @@ namespace wg
 	
 	void FpsDisplay::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 	
 //		m_labelsText.clone( &pOrg->m_labelsText );

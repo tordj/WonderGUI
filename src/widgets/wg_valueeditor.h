@@ -44,7 +44,7 @@ namespace wg
 	typedef	StrongPtr<ValueEditor,Widget_p>		ValueEditor_p;
 	typedef	WeakPtr<ValueEditor,Widget_wp>	ValueEditor_wp;
 	
-	class ValueEditor : public Widget, public _Interface_ValueHolder, protected LegacyTextHolder
+	class ValueEditor : public Widget, protected LegacyTextHolder
 	{
 	public:
 		static ValueEditor_p	create() { return ValueEditor_p(new ValueEditor()); }

@@ -426,6 +426,8 @@ namespace wg
 
 	void SimpleVolumeMeter::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+		
 		const SimpleVolumeMeter * pOrg = static_cast<const SimpleVolumeMeter*>(_pOrg);
 
 		for( int i = 0 ; i < 3 ; i++ )

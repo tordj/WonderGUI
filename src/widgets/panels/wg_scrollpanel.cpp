@@ -1331,8 +1331,7 @@ namespace wg
 		m_elements[XDRAG].m_bVisible = pOrg->m_elements[XDRAG].m_bVisible;
 		if( pOrg->m_elements[XDRAG]._widget() )
 		{
-			Scrollbar * pScrollbar = (Scrollbar*) pOrg->m_elements[XDRAG]._widget()->_newOfMyType();
-			pScrollbar->cloneContent( pOrg->m_elements[XDRAG]._widget() );
+			Scrollbar * pScrollbar = (Scrollbar*) pOrg->m_elements[XDRAG]._widget()->_clone();
 			pScrollbar->setScrollbarTarget(&m_scrollbarTargets[1]);
 			m_elements[XDRAG]._setWidget(pScrollbar);		
 		}
@@ -1344,8 +1343,7 @@ namespace wg
 		m_elements[YDRAG].m_bVisible = pOrg->m_elements[YDRAG].m_bVisible;
 		if( pOrg->m_elements[YDRAG]._widget() )
 		{
-			Scrollbar * pScrollbar = (Scrollbar*) pOrg->m_elements[YDRAG]._widget()->_newOfMyType();
-			pScrollbar->cloneContent( pOrg->m_elements[YDRAG]._widget() );
+			Scrollbar * pScrollbar = (Scrollbar*) pOrg->m_elements[YDRAG]._widget()->_clone();
 			pScrollbar->setScrollbarTarget(&m_scrollbarTargets[0]);
 			m_elements[YDRAG]._setWidget(pScrollbar);
 		}

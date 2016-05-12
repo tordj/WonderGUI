@@ -554,11 +554,8 @@ namespace wg
 		if( !widgetRes )
 			return 0;
 	
-		Widget_p pWidget = widgetRes->res;
-	
-		Widget_p pClone = pWidget->newOfMyType();
-		pClone->cloneContent(pWidget.rawPtr());
-		return pClone;
+		Widget_p pWidget = widgetRes->res;	
+		return pWidget->clone();
 	}
 	
 	//____ () _________________________________________________________

@@ -89,7 +89,11 @@ namespace wg
 	
 	void Knob::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const Knob * pOrg = static_cast<const Knob*>(_pOrg);
+		
+		//TODO: Implement!!!
 	}
 	
 	//____ _render() _____________________________________________________________

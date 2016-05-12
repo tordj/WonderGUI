@@ -412,7 +412,9 @@ namespace wg
 
 	void Oscilloscope::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
 
+		//TODO: Implement
 	}
 
 	//____ _render() ____________________________________________________________

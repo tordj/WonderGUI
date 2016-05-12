@@ -982,6 +982,8 @@ namespace wg
 	
 	void FlexPanel::_cloneContent( const Widget * _pOrg )
 	{
+		Panel::_cloneContent( _pOrg );
+
 		//TODO: Implement
 	}
 	

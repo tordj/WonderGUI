@@ -319,7 +319,9 @@ namespace wg
 	
 	void VectorPanel::_cloneContent( const Widget * _pOrg )
 	{
-		//TODO: Implement
+		Panel::_cloneContent( _pOrg );
+
+		//TODO: Implement		
 	}
 
 } // namespace wg

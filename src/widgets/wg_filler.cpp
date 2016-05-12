@@ -97,6 +97,8 @@ namespace wg
 	
 	void Filler::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		Filler * pOrg = (Filler*) _pOrg;
 	
 		m_preferredSize = pOrg->m_preferredSize;

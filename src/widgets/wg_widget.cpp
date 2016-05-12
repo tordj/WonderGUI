@@ -149,15 +149,19 @@ namespace wg
 	
 	
 	
-	//____ cloneContent() _________________________________________________________
+	//____ clone() _________________________________________________________
 	
-	bool Widget::cloneContent( const Widget_p& _pOrg )
+	Widget * Widget::_clone() const
 	{
-		if( _pOrg->className() != className() )
-			return false;
+		Widget * p = _newOfMyType();
+		p->_cloneContent( this );
+		return p;
+	}
 	
-		Widget * pOrg = _pOrg.rawPtr();
-	
+	//____ _cloneContent() _____________________________________________________
+
+	void Widget::_cloneContent( const Widget * pOrg )
+	{
 		m_id			= pOrg->m_id;
 	
 		m_pointerStyle 	= pOrg->m_pointerStyle;
@@ -168,13 +172,13 @@ namespace wg
 	
 		m_bOpaque		= pOrg->m_bOpaque;
 		m_bTabLock		= pOrg->m_bTabLock;
-	
-		// We do not clone state...
-	
-		_cloneContent( pOrg );
-		return true;
+		
+		m_size			= pOrg->m_size;
+		
+		//TODO: We should clone stateflags selectively, like disabled.
+		
 	}
-	
+		
 	//____ _onNewHook() ___________________________________________________________
 	
 	void Widget::_onNewHook( Hook * pHook )

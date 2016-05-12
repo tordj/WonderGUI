@@ -67,8 +67,8 @@ namespace wg
 		Hook *		_prevHook() const;							// Iterates through all hooks, including the base hook
 		Hook *		_nextHook() const;							// Iterates through all hooks, including the base hook
 		
-		void			_requestRender();
-		void			_requestRender( const Rect& rect );
+		void		_requestRender();
+		void		_requestRender( const Rect& rect );
 	
 		Rect		m_geo;
 	};
@@ -156,6 +156,8 @@ namespace wg
 	
 		_BaseHook		m_baseHook;
 	
+		void			_cloneContent( const Widget * _pOrg );
+		
 		virtual	void	_onRequestRender( const Rect& rect, const LayerHook * pHook );	// rect is in our coordinate system.
 		virtual LayerHook * _firstLayerHook() const = 0;
 		virtual LayerHook * _lastLayerHook() const = 0;

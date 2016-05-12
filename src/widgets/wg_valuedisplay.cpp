@@ -103,6 +103,8 @@ namespace wg
 	
 	void ValueDisplay::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		ValueDisplay * pOrg = (ValueDisplay *) _pOrg;
 	}
 	

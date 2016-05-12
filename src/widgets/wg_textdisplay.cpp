@@ -183,6 +183,8 @@ namespace wg
 	
 	void TextDisplay::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const TextDisplay * pOrg = static_cast<const TextDisplay*>(_pOrg);
 	
 		m_text = pOrg->m_text;

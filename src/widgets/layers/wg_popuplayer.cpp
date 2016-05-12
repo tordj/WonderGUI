@@ -510,6 +510,7 @@ namespace wg
 	
 	void PopupLayer::_cloneContent( const Widget * _pOrg )
 	{
+		Layer::_cloneContent( _pOrg );
 	}
 	
 	//____ _receive() ______________________________________________________________

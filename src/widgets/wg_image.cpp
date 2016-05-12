@@ -137,6 +137,8 @@ namespace wg
 	
 	void Image::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		Image * pOrg = (Image*) _pOrg;
 	
 		m_pSurface	= pOrg->m_pSurface;

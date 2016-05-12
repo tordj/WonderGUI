@@ -320,6 +320,8 @@ namespace wg
 	
 	void ToggleButton::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		ToggleButton * pOrg = (ToggleButton *) _pOrg;
 	
 		m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;

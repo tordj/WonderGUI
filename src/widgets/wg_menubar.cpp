@@ -381,6 +381,8 @@ namespace wg
 	
 	void Menubar::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const Menubar * pOrg = (const Menubar *) _pOrg;
 	
 		m_pEntrySkin	= pOrg->m_pEntrySkin;

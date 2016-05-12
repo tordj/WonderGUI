@@ -360,6 +360,8 @@ namespace wg
 	
 	void TextEditor::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
 	
 		m_text = pOrg->m_text;

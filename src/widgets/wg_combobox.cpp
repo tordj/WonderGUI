@@ -660,6 +660,7 @@ namespace wg
 	
 	void Combobox::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
 	
 		const Combobox * pOrg = static_cast<const Combobox*>(_pOrg);
 	

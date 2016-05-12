@@ -1278,6 +1278,8 @@ namespace wg
 	
 	void Menu::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		const Menu * pOrg = static_cast<const Menu*>(_pOrg);
 	
 		m_iconFieldWidth 		= pOrg->m_iconFieldWidth;

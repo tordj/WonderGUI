@@ -302,6 +302,8 @@ namespace wg
 	
 	void AnimPlayer::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+
 		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
 	
 		m_pAnim				= pOrg->m_pAnim;

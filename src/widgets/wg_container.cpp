@@ -309,9 +309,12 @@ namespace wg
 	
 	//____ _cloneContent() _______________________________________________________
 	
-	void Container::_cloneContent( const Container * _pOrg )
+	void Container::_cloneContent( const Widget * _pOrg )
 	{
-		m_bSiblingsOverlap 	= _pOrg->m_bSiblingsOverlap;
+		Widget::_cloneContent( _pOrg );
+		
+		const Container * pOrg = static_cast<const Container*>(_pOrg);
+		m_bSiblingsOverlap 	= pOrg->m_bSiblingsOverlap;
 	}
 	
 	//____ _collectPatches() _______________________________________________________

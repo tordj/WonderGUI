@@ -116,7 +116,7 @@ namespace wg
 	
 		// Overloaded from Widget
 	
-	//	void	_cloneContent( const Widget * _pOrg );
+		void	_cloneContent( const Widget * _pOrg );
 		void	_setSize( const Size& size );
 	
 		// Overloaded from Panel

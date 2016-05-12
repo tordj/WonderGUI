@@ -109,6 +109,8 @@ namespace wg
 		virtual ~List();
 	
 		virtual void	_receive( const Msg_p& pMsg );
+
+		void			_cloneContent( const Widget * _pOrg );
 	
 		virtual bool	_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg );
 		virtual int		_selectRange( ListHook * pFirst, ListHook * pLast, bool bSelected, bool bPostMsg );

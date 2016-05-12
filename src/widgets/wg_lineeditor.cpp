@@ -172,6 +172,8 @@ namespace wg
 	
 	void LineEditor::_cloneContent( const Widget * _pOrg )
 	{
+		Widget::_cloneContent( _pOrg );
+		
 		LineEditor * pOrg = (LineEditor*) _pOrg;
 	
 		m_text			= pOrg->m_text;

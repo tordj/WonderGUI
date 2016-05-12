@@ -484,6 +484,15 @@ namespace wg
 	
 		return p;
 	}
+
+	//____ _cloneContent() ______________________________________________________
+	
+	void StackPanel::_cloneContent( const Widget * _pOrg )
+	{
+		Panel::_cloneContent( _pOrg );
+
+		//TODO: Implement		
+	}
 	
 
 } // namespace wg
