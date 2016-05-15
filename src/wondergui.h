@@ -301,4 +301,8 @@
 #	include <wg_fpsdisplay.h>
 #endif
 
+#ifndef WG_VOLUMEMETER_DOT_H
+#	include <wg_volumemeter.h>
+#endif
+
 #endif //WONDERGUI_DOT_H

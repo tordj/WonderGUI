@@ -69,6 +69,7 @@ namespace wg
 		void            setZeroInMiddle(bool mb) { m_bZeroInMiddle = mb; }
 		void            enableFades(bool b) { m_bUseFades = b; }
 		Size			preferredSize() const;
+
 		
 	protected:
 		VolumeMeter();
@@ -80,8 +81,6 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg );
 		bool			_alphaTest( const Coord& ofs );
 		void			_setSize( const Size& size );
-		void			_setSkin( const Skin_p& pSkin );
-
 		
 		RouteId			m_tickRouteId;
 				

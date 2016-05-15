@@ -59,8 +59,8 @@ namespace wg
 		m_iHold = 0; 
 		m_fPeak = 0.0f;
 		
-		m_fSidePadding = 0.05f;
-		m_iSidePadding = 1;
+		m_fSidePadding = 0.0f;
+		m_iSidePadding = 0;
 		
 		m_bZeroInMiddle = false;
 		d = 1.0f/(float)(m_nLEDs-1);
@@ -213,10 +213,12 @@ namespace wg
 
 	Size VolumeMeter::preferredSize() const
 	{
-		if( m_direction == Direction::Up || m_direction == Direction::Down )
-			return Size(10,5*m_nLEDs);
+		Size	sz = m_direction == Direction::Up || m_direction == Direction::Down ? Size(10,5*m_nLEDs) : Size( 5*m_nLEDs,10);
+		
+		if( m_pSkin )
+			return m_pSkin->sizeForContent( sz );
 		else
-			return Size(5*m_nLEDs,10);
+			return sz;
 	}
 
 	//____ _setSize() ____________________________________________________________________
@@ -370,9 +372,17 @@ namespace wg
 
 	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
+		Widget::_render(pDevice, _canvas, _window, _clip);
+		
+		Rect canvas;
+		if( m_pSkin )
+			canvas = m_pSkin->contentRect(_canvas, m_state);
+		else
+			canvas = _canvas;
+
 		int p = m_iSidePadding;
 		
-		float ledSize = ((m_direction == Direction::Up || m_direction == Direction::Down)?_canvas.h:_canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
+		float ledSize = ((m_direction == Direction::Up || m_direction == Direction::Down)?canvas.h:canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
 		float stepSize = ledSize * (1.f+m_LEDSpacing);
 
 		RectF ledRect;
@@ -382,22 +392,22 @@ namespace wg
 		switch( m_direction )
 		{
 			case Direction::Up:
-				ledRect = RectF( _canvas.x + p, _canvas.y + _canvas.h - ledSize, _canvas.w - 2*p, ledSize );
+				ledRect = RectF( canvas.x + p, canvas.y + canvas.h - ledSize, canvas.w - 2*p, ledSize );
 				stepX = 0.f;
 				stepY = -stepSize;
 				break;
 			case Direction::Down:
-				ledRect = RectF( _canvas.x+p, _canvas.y, _canvas.w - 2*p, ledSize );
+				ledRect = RectF( canvas.x+p, canvas.y, canvas.w - 2*p, ledSize );
 				stepX = 0.f;
 				stepY = stepSize;
 				break;
 			case Direction::Left:
-				ledRect = RectF( _canvas.x + _canvas.w - ledSize, _canvas.y + p, ledSize, _canvas.h - 2*p);
+				ledRect = RectF( canvas.x + canvas.w - ledSize, canvas.y + p, ledSize, canvas.h - 2*p);
 				stepX = -stepSize;
 				stepY = 0.f;
 				break;
 			case Direction::Right:
-				ledRect = RectF( _canvas.x, _canvas.y + p, ledSize, _canvas.h - 2*p);
+				ledRect = RectF( canvas.x, canvas.y + p, ledSize, canvas.h - 2*p);
 				stepX = stepSize;
 				stepY = 0.f;
 				break;
@@ -458,6 +468,6 @@ namespace wg
 
 	bool VolumeMeter::_alphaTest( const Coord& ofs )
 	{
-		return false;
+		return Widget::_alphaTest(ofs);
 	}
 } // namespace wg
