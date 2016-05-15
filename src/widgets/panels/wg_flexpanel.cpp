@@ -579,6 +579,7 @@ namespace wg
 					pos.y = parentSize.h - sz.h;
 			}
 	
+			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );		// Respect widgets limits.
 			newGeo = Rect( pos, sz );
 		}
 		else
@@ -587,9 +588,22 @@ namespace wg
 			Coord bottomRight = m_bottomRightOrigo.position( parentSize ) + m_bottomRightOfs;
 	
 			newGeo = Rect(topLeft,bottomRight);
+			
+			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
+			
+			Size sz = newGeo.size();
+			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );
+			if( sz != newGeo.size() )
+			{
+				newGeo.x += newGeo.w - sz.w / 2;
+				newGeo.y += newGeo.h - sz.h / 2;
+				newGeo.w = sz.w;
+				newGeo.h = sz.h;
+			}
 		}
 	    newGeo.shrink( m_padding );
-	
+
+
 	
 		// Request render and update positions.
 	

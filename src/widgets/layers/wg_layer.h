@@ -165,11 +165,11 @@ namespace wg
 		Hook *			_firstHook() const;		// Fist MyHook returned is for the base, then follows the LayerHooks.
 		Hook *			_lastHook() const;		//
 	
-		Hook *		_firstHookWithGeo( Rect& geo ) const;
-		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
+		Hook *			_firstHookWithGeo( Rect& geo ) const;
+		Hook *			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		Hook *		_lastHookWithGeo( Rect& geo ) const;
-		Hook *		_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
+		Hook *			_lastHookWithGeo( Rect& geo ) const;
+		Hook *			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
 	
 		virtual void	 _onBaseChanged();

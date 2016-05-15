@@ -79,7 +79,7 @@ namespace wg
 	
 	bool  MsgRouter::broadcastTo( const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
 		m_broadcasts.pushBack( p );
 		return true;
 	}
@@ -108,20 +108,25 @@ namespace wg
 	
 	RouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
 		return _addRoute( pSource, p );
 	}
 	
+	RouteId MsgRouter::addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver )
+	{
+		Route * p = new Route( pReceiver.rawPtr(), filter );
+		return _addRoute( pSource, p );
+	}
 	
 	RouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr() );
+		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
 		return _addRoute( msgType, p );	
 	}
 	
 	RouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
 	{
-		Route * p = new Route( pReceiver );
+		Route * p = new Route( pReceiver, MsgType::Dummy );
 		return _addRoute( msgType, p );	
 	}
 
@@ -463,7 +468,8 @@ namespace wg
 				Route * pRoute = it->second.first();
 				while( pRoute )
 				{
-					pRoute->dispatch( pMsg );
+					if( pRoute->m_filter == MsgType::Dummy || pRoute->m_filter == pMsg->type() )
+						pRoute->dispatch( pMsg );
 					pRoute = pRoute->next();
 				}
 			}
@@ -471,9 +477,10 @@ namespace wg
 	}
 		
 	
-	MsgRouter::Route::Route( Receiver * pReceiver )
+	MsgRouter::Route::Route( Receiver * pReceiver, MsgType filter )
 	{
 		m_pReceiver = pReceiver;
+		m_filter 	= filter;
 		pReceiver->_onRouteAdded();
 	}
 	

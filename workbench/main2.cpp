@@ -212,6 +212,17 @@ int main ( int argc, char** argv )
 	}
 
 
+	{
+		VolumeMeter_p p = VolumeMeter::create();
+		
+		p->setSkin( pPressablePlateSkin );
+	
+//		pFlexPanel->addWidget( p );
+	
+		addResizablePanel( pFlexPanel, p, Base::msgRouter() );
+	}
+
+
 
 /*
 	SizeCapsule_p pCapsule = SizeCapsule::create();
@@ -522,31 +533,54 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 	pHook->setOfs(dragStartPos+dragDistance);
 }
 
+//____ cbMoveResize() _________________________________________________________
 
-//____ cbResizeWidget() _________________________________________________________
-/*
-void cbResize( const Msg_p _pMsg, Object_p _pFlexHook )
+void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 {
-	FlexHook * pHook = static_cast<FlexHook*>(_pFlexHook);
-	const Msg::MouseButtonDrag* pMsg = static_cast<const Msg::MouseButtonDrag*>(_pMsg);
+	static Coord posAtPress[MouseButton_Max];
+	
+	auto	pWidget = Widget::cast(_pWidget);
+	FlexHook_p 	pHook = FlexHook::cast(pWidget->hook());
 
-	Coord dragged = pMsg->draggedNow();
-
-	pHook->setSize( pHook->size() + Size(dragged.x,dragged.y) );
+	switch( _pMsg->type() )
+	{
+		case MsgType::MousePress:
+		{
+			auto pMsg = MousePressMsg::cast(_pMsg);
+			posAtPress[(int)pMsg->button()] = pWidget->pos();
+			
+		}
+		break;
+		case MsgType::MouseDrag:
+		{
+			auto pMsg = MouseDragMsg::cast(_pMsg);
+			if( pMsg->button() == MouseButton::Right )
+			{
+				pHook->setSize( pHook->size() + pMsg->draggedNow().toSize() );
+			}
+			else if( pMsg->button() == MouseButton::Middle )
+			{
+				pHook->setOfs( posAtPress[(int)MouseButton::Middle] + pMsg->draggedTotal() );
+			}
+		}
+		break;
+		case MsgType::MouseRelease:
+		break;
+		
+		default:
+		break;
+	}
 }
-*/
-
 
 
 //____ addResizablePanel() _________________________________________________
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	Hook * pHook = pParent->addWidget( pChild );
-//	pMsgRouter->AddCallback( MsgFilter::MouseButtonDrag(pChild, 3), cbResize, pHook );
+	FlexHook * pHook = pParent->addWidget( pChild );
+	pHook->setSizePolicy(SizePolicy::Bound, SizePolicy::Bound);
 
-//	pMsgRouter->addRoute( MsgFilter::mousePress(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbInitDrag, pChild) );
-//	pMsgRouter->addRoute( MsgFilter::mouseDrag(WG_BUTTON_LEFT), pChild, MsgFunc::create(cbDragWidget, pChild) );
+	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
 }
 
 //____ convertSDLFormat() ______________________________________________________

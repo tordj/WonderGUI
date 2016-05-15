@@ -30,7 +30,7 @@
 
 namespace wg 
 {
-	
+	class Size;
 	class Rect;
 	
 	//____ Class: Coord8 _________________________________________________________
@@ -99,6 +99,8 @@ namespace wg
 		Coord( const Rect& rect );
 		Coord( Coord8 coord8 ) : x(coord8.x), y(coord8.y) {}
 		Coord( Coord16 coord16 ) : x(coord16.x), y(coord16.y) {}
+
+		inline Size toSize();
 	
 		inline Coord operator=(const Coord& k)	{ x = k.x; y = k.y; return *this; }
 		inline Coord operator=(const Rect& r);
@@ -200,6 +202,8 @@ namespace wg
 		Size( const Coord& c1, const Coord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 		inline void limit( const Size& min, const Size& max );
 		inline void clear()		{ w = 0; h = 0; }
+
+		inline Coord toCoord() { return Coord(w,h); }
 	
 		inline Size operator=(const Size& k)	{ w = k.w; h = k.h; return *this; }
 		inline Size operator=(const Rect& k);
@@ -399,6 +403,13 @@ namespace wg
 		y = r.y;
 		return *this;
 	}
+	
+	//_____________________________________________________________________________
+	inline Size Coord::toSize()
+	{ 
+		return Size(x,y); 
+	}
+	
 	
 	//_____________________________________________________________________________
 	inline Size Border::size() const

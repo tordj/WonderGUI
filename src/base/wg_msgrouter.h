@@ -70,11 +70,11 @@ namespace wg
 		bool		broadcastTo( const Receiver_p& pReceiver );
 		bool		endBroadcast( const Receiver_p& pReceiver );
 		
-		RouteId	addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
-		RouteId	addRoute( MsgType type, const Receiver_p& pReceiver );
+		RouteId		addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
+		RouteId		addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver );
+		RouteId		addRoute( MsgType type, const Receiver_p& pReceiver );
 	
-		RouteId	addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
-	
+		RouteId		addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
 		bool		deleteRoute( RouteId handle );
 		int			deleteRoutesTo( const Receiver_p& pReceiver );
@@ -108,7 +108,7 @@ namespace wg
 		{
 		friend class MsgRouter;
 		public:
-			Route( Receiver * pReceiver );
+			Route( Receiver * pReceiver, MsgType filter );
 			virtual ~Route();
 	
 			LINK_METHODS(Route);
@@ -118,8 +118,9 @@ namespace wg
 			Receiver *	receiver() const;
 	
 		protected:
-			RouteId			m_handle;
+			RouteId				m_handle;
 			Receiver_wp			m_pReceiver;
+			MsgType				m_filter;					// Filter for dispatching. Message needs to be the same if filter != Dummy
 		};
 	
 		std::deque<Msg_p>			m_msgQueue;
