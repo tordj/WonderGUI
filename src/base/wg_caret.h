@@ -62,20 +62,17 @@ namespace wg
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
 	
-		virtual void		setCellMetrics( const Rect& cell );			// Rectangle of character cell with the carret relative to characters postion.
 		virtual void		setMode( CaretMode mode );
-		virtual int			eolWidth( const Rect& eolCellMetrics ) const;
+		virtual int			eolWidth( const Size& eolCell ) const;
 		inline CaretMode	mode() const { return m_mode; }
 		virtual void		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
-		virtual Rect		dirtyRect( Coord pos ) const;
-		virtual void		render( GfxDevice * pDevice, Coord pos, const Rect& clip );
+		virtual Rect		dirtyRect( Rect cell ) const;
+		virtual void		render( GfxDevice * pDevice, Rect cell, const Rect& clip );
 	
 	protected:
 		Caret();
 		
-		Rect		m_cellMetrics;
-	
 		CaretMode	m_mode;
 		int			m_ticks;
 		int			m_cycleLength;

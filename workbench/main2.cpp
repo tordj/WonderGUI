@@ -49,7 +49,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 320, height = 240;
+	int posX = 100, posY = 100, width = 320, height = 400;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -109,6 +109,7 @@ int main ( int argc, char** argv )
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(10);
+	pStyle->setCaret( Caret::create() );
 	Base::setDefaultStyle(pStyle);
 
 	// Init skins
@@ -194,34 +195,28 @@ int main ( int argc, char** argv )
 		pText->text.setCharStyle( pBig, 5, 2 );
 		pText->text.setCharStyle( pRed, 10, 3 );
 		pText->text.setCharStyle( pAnuv, 19, 20 );
-/*		
-		CharBuffer	cb;
-		cb.pushBack( "This is a\npiece of TEXT" );
-		cb.setStyle( pBig, 5, 2);
-		cb.setStyle( pRed, 10, 3);
-		cb.setStyle( pAnuv, 19, 20);
-		
-		
-		pText->text.set( &cb );
-*/		
-
 		
 		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
 
 		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
+
+		pText->grabFocus();
+
+		translateEvents( pInput, pRoot );
+
+		pText->text.caretTextBegin();
+		pText->text.caretLineEnd();
 	}
 
-
+/*
 	{
 		VolumeMeter_p p = VolumeMeter::create();
 		
 		p->setSkin( pPressablePlateSkin );
-	
-//		pFlexPanel->addWidget( p );
-	
+		
 		addResizablePanel( pFlexPanel, p, Base::msgRouter() );
 	}
-
+*/
 
 
 /*
@@ -276,11 +271,11 @@ int main ( int argc, char** argv )
 	pFlexPanel->addWidget( pValue, WG_WEST, WG_SOUTHEAST );
 */
 
-
+/*
 	FpsDisplay_p pFps = FpsDisplay::create();
 	pFps->setSkin( pPressablePlateSkin );
 	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
-	
+*/	
 
 	//------------------------------------------------------
 	// Program Main Loop

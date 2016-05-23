@@ -128,6 +128,14 @@ namespace wg
 		return _printer()->charToRect(this, charOfs);
 	}
 	
+	//____ lineOfChar() ____________________________________________________________
+	
+	int PrintableField::lineOfChar( int charOfs ) const
+	{
+		return _printer()->lineOfChar(this, charOfs);
+	}
+	
+	
 	//____ onRefresh() _____________________________________________________________
 	
 	void PrintableField::onRefresh()

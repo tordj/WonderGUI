@@ -91,14 +91,14 @@ namespace wg
 	
 	//____ _fieldDataInt() _________________________________________________________
 	
-	int Printer::_fieldDataInt( PrintableField * pField ) const
+	int Printer::_fieldDataInt( const PrintableField * pField ) const
 	{
 		return pField->m_printerData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	TextStyle * Printer::_baseStyle( PrintableField * pField ) const
+	const TextStyle * Printer::_baseStyle( const PrintableField * pField ) const
 	{
 		TextStyle * pStyle = pField->m_pStyle.rawPtr();
 		if( pStyle == 0 )
@@ -109,7 +109,7 @@ namespace wg
 	
 	//____ _state() _________________________________________________________
 	
-	State Printer::_state( PrintableField * pField ) const
+	State Printer::_state( const PrintableField * pField ) const
 	{
 		return pField->m_state;
 	}

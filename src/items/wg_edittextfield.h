@@ -60,18 +60,41 @@ namespace wg
 		void			setState( State state );
 		void			onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
-		//
-/*	
+	
 		void			setEditMode( TextEditMode mode );
-		TextEditMode	editMode() const;
-*/		
+		TextEditMode	editMode() const { return m_editMode; };
+		
+
+		// These methods will fail if editMode is Static
+
+		bool			select( int begin, int end );		// Cursor (if enabled) gets end position. End can be smaller than begin.
+		bool			selectAll();
+		bool			unselect();
+		int				eraseSelected();
 		
 		int				selectionBegin() const;
 		int				selectionEnd() const;
 	
+
+		// These methods will fail unless caret is present
+
+		bool			setCaretPos( int pos );			// Move cursor to position. Any selection will be unselected.
+		int				caretPos() const;
+
+		int				caretPut( const CharSeq& seq );	// Will insert or overwrite depending on caret mode
+		bool			caretPut( uint16_t c );			// " -
+
+		bool			caretLineBegin();
+		bool			caretLineEnd();
+		bool			caretTextBegin();
+		bool			caretTextEnd();
+	
+	
+	
 	
 	protected:
 	
+		void			_caretToBegin();
 		void			_caretToEnd();
 	
 		TextEditMode	m_editMode;

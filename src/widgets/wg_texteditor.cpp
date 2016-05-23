@@ -163,6 +163,9 @@ namespace wg
 		Widget::_receive(pMsg);
 	
 		MsgType type 				= pMsg->type();
+
+
+
 /*	
 		if( type == MsgType::Tick )
 		{

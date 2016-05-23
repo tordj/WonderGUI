@@ -70,6 +70,10 @@ namespace wg
 		virtual int		coordToChar( const PrintableField * pField, Coord pos ) = 0;
 		virtual Coord	charToCoord( const PrintableField * pField, int charOfs ) = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
 		virtual Rect	charToRect( const PrintableField * pField, int charOfs ) = 0;
+		virtual int		lineOfChar( const PrintableField * pField, int charOfs ) = 0;
+		virtual int		lineBegin( const PrintableField * pField, int lineNb ) = 0;
+		virtual int		lineEnd( const PrintableField * pField, int lineNb ) = 0;
+
 	
 		virtual void 	renderField( PrintableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	
@@ -102,9 +106,9 @@ namespace wg
 		const CharBuffer *  _charBuffer( const PrintableField * pField ) const;
 		const void *	_fieldDataBlock( const PrintableField * pField) const;
 		void *			_fieldDataBlock( PrintableField * pField) const;
-		int				_fieldDataInt( PrintableField * pField ) const;
-		TextStyle *		_baseStyle( PrintableField * pField ) const;
-		State			_state( PrintableField * pField ) const;
+		int					_fieldDataInt( const PrintableField * pField ) const;
+		const TextStyle *	_baseStyle( const PrintableField * pField ) const;
+		State			_state( const PrintableField * pField ) const;
 		
 		void			_setFieldDataBlock( PrintableField * pField, void * pBlock );
 		void			_setFieldDataInt( PrintableField * pField, int data );

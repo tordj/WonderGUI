@@ -119,18 +119,174 @@ namespace wg
 		return Coord();
 	}
 	
+	//____ charToRect() ________________________________________________________
 	
 	Rect StandardPrinter::charToRect( const PrintableField * pField, int charOfs )
 	{
-		//TODO: Implement!
-		return Rect();
+		const void * pBlock = _fieldDataBlock(pField);
+		const BlockHeader * pHeader = _header(pBlock);
+		const LineInfo * pLineInfo = _lineInfo(pBlock);
+		
+		
+		
+		// Find correct line and determine yOfs
+		
+		int yOfs = _textOfsY( pHeader, pField->size().h );		
+		while( pLineInfo->length <= charOfs )
+		{
+			yOfs += pLineInfo->spacing;
+			charOfs-= pLineInfo->length;
+			pLineInfo++;
+		}
+		
+		// Determine xOfs by parsing line until character
+		
+		int xOfs = _lineOfsX( pLineInfo, pField->size().w );
+		
+		TextAttr		baseAttr;
+		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
+
+		const Char * pFirst = _charBuffer(pField)->chars() + pLineInfo->offset;
+		const Char * pLast = pFirst + charOfs;
+		
+		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pField) );
+
+		// Get cell width
+
+		int width = 0;
+		
+		TextAttr	attr = baseAttr;
+
+		if( pLast->styleHandle() != 0 )
+			pLast->stylePtr()->addToAttr( _state(pField), &attr );
+		
+		Font * pFont = attr.pFont.rawPtr();
+		pFont->setSize(attr.size);
+
+		Glyph_p pGlyph = pFont->getGlyph(pLast->getGlyph());
+		if( pGlyph )
+			width = pGlyph->advance();				// Do not advance for last, just apply kerning.
+		else if( pLast->getGlyph() == 32 )
+			width = pFont->whitespaceAdvance();
+
+		return Rect(xOfs,yOfs,width,pLineInfo->height);
 	}
+
+	//____ lineOfChar() ________________________________________________________
+
+	int StandardPrinter::lineOfChar( const PrintableField * pField, int charOfs )
+	{
+		if( charOfs < 0 )
+			return -1;
+		
+		const void * pBlock = _fieldDataBlock(pField);
+		const BlockHeader * pHeader = _header(pBlock);
+		const LineInfo * pLineInfo = _lineInfo(pBlock);
+
+		for( int i = 0 ; i < pHeader->nbLines ; i++ )
+		{
+			if( charOfs < pLineInfo[i].offset + pLineInfo[i].length )
+				return i;
+		}
+		
+		return -1;
+	}
+	
+	//____ lineBegin() ________________________________________________________
+
+	int StandardPrinter::lineBegin( const PrintableField * pField, int lineNb )
+	{
+		const void * pBlock = _fieldDataBlock(pField);
+		const BlockHeader * pHeader = _header(pBlock);
+		const LineInfo * pLineInfo = _lineInfo(pBlock);
+
+		if( lineNb < 0 || lineNb >= pHeader->nbLines )
+			return -1;
+			
+		return pLineInfo[lineNb].offset;
+	}
+	
+	//____ lineEnd() ___________________________________________________________
+	
+	int StandardPrinter::lineEnd( const PrintableField * pField, int lineNb )
+	{
+		const void * pBlock = _fieldDataBlock(pField);
+		const BlockHeader * pHeader = _header(pBlock);
+		const LineInfo * pLineInfo = _lineInfo(pBlock);
+
+		if( lineNb < 0 || lineNb >= pHeader->nbLines )
+			return -1;
+			
+		return pLineInfo[lineNb].offset + pLineInfo[lineNb].length;		
+	}
+
+
+	//____ _coordToCaretPos() _____________________________________________________
 	
 	int StandardPrinter::coordToCaretPos( PrintableField * pField, Coord pos )
 	{
 		//TODO: Implement!
 		return 0;
 	}
+
+	//____ _charDistance() _____________________________________________________
+
+	// Returns distance in pixels between beginning of first and beginning of last char.
+	// Chars should be on the same line (or pLast could be first char on next line)
+
+	int StandardPrinter::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state )
+	{
+		TextAttr		attr;
+		Font_p 			pFont;
+		TextStyle_h		hStyle = 0xFFFF;
+
+		Glyph_p	pGlyph;
+		Glyph_p	pPrevGlyph =  0;
+		const Char * pChar = pFirst;
+
+		int distance = 0;
+
+		while( pChar <= pLast )
+		{
+			// TODO: Include handling of special characters
+			// TODO: Support char textcolor and background color and effects.
+		
+			if( pChar->styleHandle() != hStyle )
+			{
+				int oldFontSize = attr.size;
+				attr = baseAttr;
+
+				if( pChar->styleHandle() != 0 )
+					pChar->stylePtr()->addToAttr( state, &attr );
+				
+				if( pFont != attr.pFont || attr.size != oldFontSize )
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
+				}
+			}
+		
+			pGlyph = pFont->getGlyph(pChar->getGlyph());
+
+			if( pGlyph )
+			{
+				if( pPrevGlyph )
+					distance += pFont->kerning(pPrevGlyph, pGlyph);
+
+				if( pChar != pLast )
+					distance += pGlyph->advance();				// Do not advance for last, just apply kerning.
+			}
+			else if( pChar->getGlyph() == 32 && pChar != pLast )
+				distance += pFont->whitespaceAdvance();
+				
+			pPrevGlyph = pGlyph;
+			pChar++;
+		}
+
+		return distance;
+	}
+
 	
 	//____ _renderField()___________________________________________________________
 	
@@ -180,17 +336,13 @@ namespace wg
 						if( pChars->styleHandle() != 0 )
 							pChars->stylePtr()->addToAttr( _state(pField), &attr );
 						
-						if( pFont != attr.pFont )
+						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
-							pPrevGlyph = 0;								// No kerning against across different fonts.
+							pPrevGlyph = 0;								// No kerning against across different fonts or character of different size.
 						}
-						else if( attr.size != oldFontSize )
-						{
-							pFont->setSize(attr.size);
-							pPrevGlyph = 0;								// No kerning between characters of different size.
-													}
+
 						if( attr.color != localTint )
 						{
 							localTint = attr.color;
@@ -202,12 +354,13 @@ namespace wg
 	
 					if( pGlyph )
 					{
+						if( pPrevGlyph )
+							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
+
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
 						pDevice->clipBlit( clip, pBitmap->pSurface, pBitmap->rect, pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY  );
 	
 						pos.x += pGlyph->advance();
-						if( pPrevGlyph )
-							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
 					}
 					else if( pChars->getGlyph() == 32 )
 						pos.x += pFont->whitespaceAdvance();
@@ -370,6 +523,8 @@ namespace wg
 	
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 				
+		Glyph_p	pGlyph;
+		Glyph_p	pPrevGlyph;
 
 		int maxAscend = 0;
 		int maxDescend = 0;
@@ -384,12 +539,19 @@ namespace wg
 
 			if( pChars->styleHandle() != hCharStyle )
 			{
+
+				int oldFontSize = attr.size;
+
 				attr = baseAttr;
 				if( pChars->styleHandle() != 0 )
 					pChars->stylePtr()->addToAttr( state, &attr );
 				
-				pFont = attr.pFont;
-				pFont->setSize(attr.size);
+				if( pFont != attr.pFont || attr.size != oldFontSize )
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+				}
 				
 				int ascend = pFont->maxAscend();
 				if( ascend > maxAscend )
@@ -409,17 +571,15 @@ namespace wg
 
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
-
-			Glyph_p	pGlyph;
-			Glyph_p	pPrevGlyph;
 												
 			pGlyph = pFont->getGlyph(pChars->getGlyph());
 
 			if( pGlyph )
 			{
-				width += pGlyph->advance();
 				if( pPrevGlyph )
 					width += pFont->kerning(pPrevGlyph, pGlyph);
+
+				width += pGlyph->advance();
 			}
 			else if( pChars->getGlyph() == 32 )
 				width += spaceAdv;
@@ -445,19 +605,20 @@ namespace wg
 
 				// Prepare for next line
 
+				pChars++;			// Line terminator belongs to previous line.
+
 				pLines->offset = pChars - pBuffer->chars();
 				width = 0;
 				
-				if( pChars[1].styleHandle() != hCharStyle )
+				if( pChars->styleHandle() != hCharStyle )
 				{
 					maxAscend = 0;
 					maxDescend = 0;
 					maxDescendGap = 0;
 				}
-				
 			}
-
-			pChars++;	
+			else
+				pChars++;	
 		}
 	}
 		
@@ -492,7 +653,7 @@ namespace wg
 	
 	//____ _lineOfsX() _______________________________________________________________
 	
-	int StandardPrinter::_lineOfsX( LineInfo * pLine, int fieldWidth ) const
+	int StandardPrinter::_lineOfsX( const LineInfo * pLine, int fieldWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -514,7 +675,7 @@ namespace wg
 	
 	//____ _textOfsY() _____________________________________________________________
 	
-	int	StandardPrinter::_textOfsY( BlockHeader * pHeader, int fieldHeight ) const
+	int	StandardPrinter::_textOfsY( const BlockHeader * pHeader, int fieldHeight ) const
 	{
 		switch( m_alignment )
 		{

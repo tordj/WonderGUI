@@ -64,16 +64,7 @@ namespace wg
 	
 		return 0;
 	}
-	
-	//____ setCellMetrics() ______________________________________________________________
-	
-	void Caret::setCellMetrics( const Rect& cell )
-	{
-		m_cellMetrics = cell;
-		m_ticks = 0;
-		m_bNeedToRender = true;
-	}
-	
+		
 	//____ setMode() _______________________________________________________________
 	
 	void Caret::setMode( CaretMode mode )
@@ -85,12 +76,24 @@ namespace wg
 			m_bNeedToRender = true;
 		}
 	}
+
+	//____ setCycleLength() ____________________________________________________
+
+	bool Caret::setCycleLength( int millisec )
+	{
+		if( millisec < 2 )
+			return false;
+			
+		m_cycleLength = millisec;
+		return true;		
+	}
+
 	
 	//____ eolWidth() ______________________________________________________________
 	
-	int Caret::eolWidth( const Rect& eolCellMetrics ) const
+	int Caret::eolWidth( const Size& eolCell ) const
 	{
-		return wg::max( 1, eolCellMetrics.h / 8);
+		return wg::max( 1, eolCell.h / 16);
 	}
 	
 	//____ tick() __________________________________________________________________
@@ -109,29 +112,29 @@ namespace wg
 	
 	//____ dirtyRect() _____________________________________________________________
 	
-	Rect Caret::dirtyRect( Coord pos ) const
+	Rect Caret::dirtyRect( Rect cell ) const
 	{
 		switch( m_mode )
 		{
 			case CaretMode::Overwrite:
-				return m_cellMetrics + pos;
+				return cell;
 			case CaretMode::Eol:
-				return Rect( m_cellMetrics.x + pos.x, m_cellMetrics.y + pos.y, wg::max(1, m_cellMetrics.h / 8), m_cellMetrics.h );
+				return Rect( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
 			default: // CaretMode::Insert:
-				return Rect( m_cellMetrics.x + pos.x, m_cellMetrics.y + pos.y, wg::max(1, m_cellMetrics.h / 8), m_cellMetrics.h );
+				return Rect( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
 		}
 	}
 	
 	//____ render() ________________________________________________________________
 	
-	void Caret::render( GfxDevice * pDevice, Coord pos, const Rect& clip )
+	void Caret::render( GfxDevice * pDevice, Rect cell, const Rect& clip )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{
-			Rect r = dirtyRect(pos);
+			Rect r = dirtyRect(cell);
 			BlendMode oldMode = pDevice->getBlendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
-			pDevice->fill( Rect(r,clip), Color::Black );
+			pDevice->fill( Rect(r,clip), Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
 	}

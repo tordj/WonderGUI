@@ -603,8 +603,6 @@ namespace wg
 		}
 	    newGeo.shrink( m_padding );
 
-
-	
 		// Request render and update positions.
 	
 		if( newGeo != m_realGeo )

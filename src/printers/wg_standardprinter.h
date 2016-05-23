@@ -57,6 +57,9 @@ namespace wg
 		virtual int		coordToChar( const PrintableField * pField, Coord pos );
 		virtual Coord	charToCoord( const PrintableField * pField, int charOfs );	// Note: characters position on the baseline, not upper left corner of rectangle!
 		virtual Rect	charToRect( const PrintableField * pField, int charOfs );
+		virtual int		lineOfChar( const PrintableField * pField, int charOfs );
+		virtual int		lineBegin( const PrintableField * pField, int lineNb );
+		virtual int		lineEnd( const PrintableField * pField, int lineNb );
 	
 	
 		virtual void 	renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
@@ -107,14 +110,15 @@ namespace wg
 		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state );
 		bool   			_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines );
+		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state );
 		
 		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }
 		inline const BlockHeader *	_header( const void * pBlock ) const { return static_cast<const BlockHeader*>(pBlock); }
 		inline LineInfo *			_lineInfo( void * pBlock ) { return reinterpret_cast<LineInfo*>(&(((BlockHeader *) pBlock)[1])); }
 		inline const LineInfo *		_lineInfo( const void * pBlock ) const { return reinterpret_cast<const LineInfo*>(&(((const BlockHeader *) pBlock)[1])); }
 	
-		int				_lineOfsX( LineInfo * pLine, int fieldWidth ) const;
-		int				_textOfsY( BlockHeader * pHeader, int fieldHeight ) const;
+		int				_lineOfsX( const LineInfo * pLine, int fieldWidth ) const;
+		int				_textOfsY( const BlockHeader * pHeader, int fieldHeight ) const;
 		
 		
 		Origo		m_alignment;

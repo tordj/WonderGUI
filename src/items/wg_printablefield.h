@@ -76,6 +76,7 @@ namespace wg
 	
 		virtual int			coordToChar( Coord pos ) const;
 		virtual Rect		charToRect( int charOfs ) const;
+		virtual int			lineOfChar( int charOfs ) const;
 	
 		virtual void		onRefresh();
 	
