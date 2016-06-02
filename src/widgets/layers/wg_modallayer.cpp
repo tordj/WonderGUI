@@ -560,20 +560,20 @@ namespace wg
 					case MsgType::MousePress:
 					{
 						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 		
 					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 		
 					case MsgType::MouseMove:
 					{
-						Base::msgRouter()->post( new ModalMoveOutsideMsg(this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
+						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 				}

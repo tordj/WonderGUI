@@ -340,7 +340,7 @@ namespace wg
 	
 		contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 	
-		if( m_label.coordToChar( Coord(_x,_y) - contentRect.pos() ) != -1 )
+		if( m_label.charAtPos( Coord(_x,_y) - contentRect.pos() ) != -1 )
 			return true;
 	
 		return false;

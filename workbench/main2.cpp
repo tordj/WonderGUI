@@ -66,6 +66,40 @@ int main ( int argc, char** argv )
 
 	InputHandler_p pInput = Base::inputHandler();
 	
+	pInput->mapKey( Key::Left, SDLK_LEFT );
+	pInput->mapKey( Key::Right, SDLK_RIGHT );
+	pInput->mapKey( Key::Up, SDLK_UP );
+	pInput->mapKey( Key::Down, SDLK_DOWN );
+	pInput->mapKey( Key::Alt, SDLK_LALT );
+	pInput->mapKey( Key::Alt, SDLK_RALT );
+	pInput->mapKey( Key::Backspace, SDLK_BACKSPACE );
+	pInput->mapKey( Key::Delete, SDLK_DELETE );
+	pInput->mapKey( Key::End, SDLK_END );
+	pInput->mapKey( Key::Escape, SDLK_ESCAPE );
+	pInput->mapKey( Key::Home, SDLK_HOME );
+	pInput->mapKey( Key::PageDown, SDLK_PAGEDOWN );
+	pInput->mapKey( Key::PageUp, SDLK_PAGEUP );
+	pInput->mapKey( Key::Return, SDLK_RETURN );
+	pInput->mapKey( Key::Space, SDLK_SPACE );
+	pInput->mapKey( Key::Tab, SDLK_TAB );
+	pInput->mapKey( Key::F1, SDLK_F1 );
+	pInput->mapKey( Key::F2, SDLK_F2 );
+	pInput->mapKey( Key::F3, SDLK_F3 );
+	pInput->mapKey( Key::F4, SDLK_F4 );
+	pInput->mapKey( Key::F5, SDLK_F5 );
+	pInput->mapKey( Key::F6, SDLK_F6 );
+	pInput->mapKey( Key::F7, SDLK_F7 );
+	pInput->mapKey( Key::F8, SDLK_F8 );
+	pInput->mapKey( Key::F9, SDLK_F9 );
+	pInput->mapKey( Key::F10, SDLK_F10 );
+	pInput->mapKey( Key::F11, SDLK_F11 );
+	pInput->mapKey( Key::F12, SDLK_F12 );
+	
+//	pInput->mapKey( Key::Control, SDLK );
+//	pInput->mapKey( Key::Shift, SDLK_ );
+//	pInput->mapKey( Key::Super, SDLK );
+	
+	
 	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
@@ -362,13 +396,13 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 			
 			case SDL_KEYDOWN:
 			{
-				pInput->setKey( (short) e.key.keysym.sym, true );
+				pInput->setKey( e.key.keysym.sym, true );
 				break;
 			}
 			
 			case SDL_KEYUP:
 			{
-				pInput->setKey( (short) e.key.keysym.sym, false );
+				pInput->setKey( e.key.keysym.sym, false );
 				break;
 			}
 			

@@ -332,13 +332,15 @@ namespace wg
 		static const char	CLASSNAME[];
 		static InputMsg_p	cast( const Object_p& pObject );
 
+		char				inputId() const { return m_inputId; }
 		int64_t				timestamp() const { return m_timestamp; }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 		Coord				pointerPos() const { return m_pointerPos; }
 
 	protected:
-		InputMsg(ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
+		InputMsg(char inputId, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_inputId(inputId), m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
 
+		char				m_inputId;			// Id of InputHandler posting this message, so we can separate multiple input sources from each other.
 		ModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
 		Coord				m_pointerPos;		// Screen position of pointer.
 		int64_t				m_timestamp;		// Timestamp of input event.
@@ -361,7 +363,7 @@ namespace wg
 
 		MouseButton		button() const { return m_button; }
 	protected:
-		MouseButtonMsg(MouseButton button, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_button(button) {}
+		MouseButtonMsg(char inputId, MouseButton button, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp), m_button(button) {}
 
 		MouseButton		m_button;
 	};
@@ -387,7 +389,7 @@ namespace wg
 		bool	isCursorKey() const;
 		bool	isMovementKey() const;
 	protected:
-		KeyMsg( int nativeKeyCode, Key translatedKeyCode, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
+		KeyMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
 
 		int		m_nativeKeyCode;
 		Key		m_translatedKeyCode;
@@ -395,34 +397,35 @@ namespace wg
 
 	//____ FocusGainedMsg ______________________________________________________
 
-	class FocusGainedMsg : public Msg
+	class FocusGainedMsg : public InputMsg
 	{
 		friend class InputHandler;
 	public:
-		static FocusGainedMsg_p	create( Widget * pWidget ) { return new FocusGainedMsg( pWidget ); }
+//		static FocusGainedMsg_p	create( Widget * pWidget ) { return new FocusGainedMsg( pWidget ); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusGainedMsg_p	cast( const Object_p& pObject );
 	protected:
-		FocusGainedMsg( Widget * pWidget );
+
+		FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
 	};
 
 	//____ FocusLostMsg ________________________________________________________
 
-	class FocusLostMsg : public Msg
+	class FocusLostMsg : public InputMsg
 	{
 		friend class InputHandler;
 	public:
-		static FocusLostMsg_p	create( Widget * pWidget ) { return new FocusLostMsg( pWidget ); }
+//		static FocusLostMsg_p	create( Widget * pWidget ) { return new FocusLostMsg( pWidget ); }
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusLostMsg_p	cast( const Object_p& pObject );
 	protected:
-		FocusLostMsg( Widget * pWidget );
+		FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
 	};
 
 	//____ MouseEnterMsg _______________________________________________________
@@ -436,7 +439,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseEnterMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseEnterMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseEnterMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseLeaveMsg _______________________________________________________
@@ -450,7 +453,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseLeaveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseLeaveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseLeaveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseMoveMsg ________________________________________________________
@@ -464,7 +467,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MouseMoveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseMoveMsg( Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseMoveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MousePressMsg _______________________________________________________
@@ -478,7 +481,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static MousePressMsg_p	cast( const Object_p& pObject );
 	protected:
-		MousePressMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MousePressMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseReleaseMsg _____________________________________________________
@@ -495,7 +498,7 @@ namespace wg
 		bool			releaseInside() const;
 
 	protected:
-		MouseReleaseMsg( MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseReleaseMsg( char inputId, MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		bool			m_bReleaseInside;
 	};
@@ -511,7 +514,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static KeyPressMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyPressMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyPressMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ KeyReleaseMsg _______________________________________________________
@@ -525,7 +528,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static KeyReleaseMsg_p	cast( const Object_p& pObject );
 	protected:
-		KeyReleaseMsg( int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyReleaseMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ TextInputMsg ________________________________________________________
@@ -540,9 +543,11 @@ namespace wg
 		static TextInputMsg_p	cast( const Object_p& pObject );
 
 		String	text() const;
+		char	inputId() const { return m_inputId; }
 	protected:
-		TextInputMsg( String text, Widget * pWidget );
+		TextInputMsg( char inputId, String text, Widget * pWidget );
 	protected:
+		char	m_inputId;
 		String	m_text;
 	};
 
@@ -560,7 +565,7 @@ namespace wg
 		int			wheel() const;
 		Coord		distance() const;
 	protected:
-		WheelRollMsg( int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		WheelRollMsg( char inputId, int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		int			m_wheel;
 		Coord		m_distance;
@@ -599,10 +604,12 @@ namespace wg
 		static PointerChangeMsg_p	cast( const Object_p& pObject );
 
 		PointerStyle	style() const;
+		inline char		inputId() const { return m_inputId; }
 			
 	protected:
-		PointerChangeMsg( PointerStyle style );
+		PointerChangeMsg( char inputId, PointerStyle style );
 			
+		char			m_inputId;	
 		PointerStyle	m_style;
 	};
 
@@ -848,7 +855,7 @@ namespace wg
 		static ModalMoveOutsideMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalMoveOutsideMsg( Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalMoveOutsideMsg( char inputId, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedPressMsg : public MouseButtonMsg
@@ -861,7 +868,7 @@ namespace wg
 		static ModalBlockedPressMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedPressMsg( MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class ModalBlockedReleaseMsg : public MouseButtonMsg
@@ -874,7 +881,7 @@ namespace wg
 		static ModalBlockedReleaseMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		ModalBlockedReleaseMsg( MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ Link messages _________________________________________________________
@@ -1007,7 +1014,7 @@ namespace wg
 		Coord			prevPos() const;
 		Coord			currPos() const;
 	protected:
-		MouseDragMsg( MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDragMsg( char inputId, MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		Coord			m_startPos;
 		Coord			m_prevPos;
@@ -1023,7 +1030,7 @@ namespace wg
 		static MouseRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseRepeatMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseRepeatMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseClickMsg : public MouseButtonMsg
@@ -1036,7 +1043,7 @@ namespace wg
 		static MouseClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
@@ -1049,7 +1056,7 @@ namespace wg
 		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseDoubleClickMsg( MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDoubleClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class KeyRepeatMsg : public KeyMsg
@@ -1062,7 +1069,7 @@ namespace wg
 		static KeyRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		KeyRepeatMsg( int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 } // namespace wg

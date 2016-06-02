@@ -132,13 +132,13 @@
     <File Name="../../src/items/wg_spanitem.cpp"/>
     <File Name="../../src/items/wg_spanitem.h"/>
     <File Name="../../src/items/wg_textfield.cpp"/>
-    <File Name="../../src/items/wg_textfield.h"/>
     <File Name="../../src/items/wg_valuefield.cpp"/>
     <File Name="../../src/items/wg_valuefield.h"/>
     <File Name="../../src/items/wg_edittextfield.cpp"/>
     <File Name="../../src/items/wg_edittextfield.h"/>
     <File Name="../../src/items/wg_printablefield.h"/>
     <File Name="../../src/items/wg_printablefield.cpp"/>
+    <File Name="../../src/items/wg_textfield.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>

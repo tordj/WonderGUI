@@ -57,10 +57,11 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Caret_p	cast( const Object_p& pObject );
+		static Caret_p		cast( const Object_p& pObject );
 	
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
+		inline void			restartCycle() { m_ticks = 0; }
 	
 		virtual void		setMode( CaretMode mode );
 		virtual int			eolWidth( const Size& eolCell ) const;

@@ -43,6 +43,8 @@ namespace wg
 	{
 	public:
 		EditTextField( EditTextHolder * pHolder );
+
+		void			receive( const Msg_p& pMsg );
 	
 		// Overloaded so we can update caret and selection
 	
@@ -74,7 +76,8 @@ namespace wg
 		
 		int				selectionBegin() const;
 		int				selectionEnd() const;
-	
+
+		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
 		// These methods will fail unless caret is present
 
@@ -83,6 +86,19 @@ namespace wg
 
 		int				caretPut( const CharSeq& seq );	// Will insert or overwrite depending on caret mode
 		bool			caretPut( uint16_t c );			// " -
+
+		bool			caretUp();
+		bool			caretDown();
+		bool			caretLeft();
+		bool			caretRight();
+		
+		bool			caretNextWord();
+		bool			caretPrevWord();
+		
+		bool			caretEraseNextChar();
+		bool			caretErasePrevChar();
+		bool			caretEraseNextWord();
+		bool			caretErasePrevWord();
 
 		bool			caretLineBegin();
 		bool			caretLineEnd();

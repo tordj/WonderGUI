@@ -85,7 +85,7 @@ namespace wg
 
 		void 		setFocusedWindow( const RootPanel_p& pRoot );
 
-		void 		setKey( short nativeKeyCode, bool bPressed, int64_t timestamp = 0 );
+		void 		setKey( int nativeKeyCode, bool bPressed, int64_t timestamp = 0 );
 		
 		bool		putText( const CharSeq& text );
 		
@@ -95,7 +95,7 @@ namespace wg
 		bool		isButtonPressed( MouseButton button ) const;
 		bool		isAnyButtonPressed() const;
 		
-		bool		isKeyPressed( short nativeKeyCode ) const;
+		bool		isKeyPressed( int nativeKeyCode ) const;
 	
 		
 		void 		receive( const Msg_p& pMsg );
@@ -104,7 +104,7 @@ namespace wg
 		void		mapKey( Key translated_keycode, int native_keycode );
 		void		unmapKey( Key translated_keycode );
 		void		clearKeyMap();
-		Key		translateKey( int native_keycode );
+		Key			translateKey( int native_keycode );
 
 		bool		setButtonRepeat( int delay, int rate );
 		bool		setKeyRepeat( int delay, int rate );
@@ -130,8 +130,8 @@ namespace wg
 		void		_processButtonRelease( MouseButton button, int64_t timestamp );
 		void		_handleButtonRepeats( int64_t timestamp );
 
-		void 		_processKeyPress( short nativeKeyCode, int64_t timestamp );
-		void 		_processKeyRelease( short nativeKeyCode, int64_t timestamp );
+		void 		_processKeyPress( int nativeKeyCode, int64_t timestamp );
+		void 		_processKeyRelease( int nativeKeyCode, int64_t timestamp );
 		void		_handleKeyRepeats( int64_t timestamp );
 		
 
@@ -145,7 +145,8 @@ namespace wg
 		Widget *	_focusedWidget() const;
 	
 	
-		RouteId		m_tickRoute;
+		char			m_inputId;
+		RouteId			m_tickRoute;
 		int64_t			m_timeStamp;
 		
 		Coord			m_pointerPos;

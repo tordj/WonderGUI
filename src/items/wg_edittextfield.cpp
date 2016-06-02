@@ -36,6 +36,114 @@ namespace wg
 		m_editState.wantedOfs = -1;
 		m_editMode = TextEditMode::Editable;
 	}
+
+	//____ receive() ___________________________________________________________
+
+	void EditTextField::receive( const Msg_p& pMsg )
+	{
+		MsgType type = pMsg->type();
+		
+		switch( type )
+		{
+			case MsgType::FocusGained:
+			{
+				FocusGainedMsg_p p = FocusGainedMsg::cast(pMsg);
+				if( p->modKeys() & MODKEY_SHIFT )
+					m_editState.bShiftDown = true;
+				else
+					m_editState.bShiftDown = false;
+			}
+			break;
+			
+			case MsgType::FocusLost:
+			break;
+			
+			case MsgType::KeyPress:
+			case MsgType::KeyRepeat:
+			{
+				if( m_editState.bCaret )
+				{
+					KeyMsg_p p = KeyMsg::cast(pMsg);
+					ModifierKeys modKeys = p->modKeys();
+				
+					switch( p->translatedKeyCode() )
+					{
+					case Key::Shift:
+						m_editState.bShiftDown = true;
+						break;
+					case Key::Left:	
+						if( modKeys & MODKEY_CTRL )
+							caretPrevWord();
+						else
+							caretLeft();
+						break;
+					case Key::Right:
+						if( modKeys & MODKEY_CTRL )
+							caretNextWord();
+						else
+							caretRight();
+						break;
+		
+					case Key::Up:
+							caretUp();
+						break;
+		
+					case Key::Down:
+							caretDown();
+						break;
+		
+					case Key::Backspace:
+						if( hasSelection() )
+							eraseSelected();
+						else if( modKeys & MODKEY_CTRL )
+							caretErasePrevWord();
+						else
+							caretErasePrevChar();
+						break;
+		
+					case Key::Delete:
+						if( hasSelection() )
+							eraseSelected();
+						else if( modKeys & MODKEY_CTRL )
+							caretEraseNextWord();
+						else
+							caretEraseNextChar();
+						break;
+		
+					case Key::Home:
+						if( modKeys & MODKEY_CTRL )
+							caretTextBegin();
+						else
+							caretLineBegin();
+						break;
+		
+					case Key::End:
+							if( modKeys & MODKEY_CTRL )
+							caretTextEnd();
+						else
+							caretLineEnd();
+						break;
+		
+					default:
+						break;
+
+					}
+
+				}
+			}
+			break;
+			
+			case MsgType::KeyRelease:
+				if( KeyMsg::cast(pMsg)->translatedKeyCode() == Key::Shift )
+					m_editState.bShiftDown = false;
+			break;
+			
+			default:
+				break;
+				
+		}
+	}
+
 	
 	
 	//____ clear() _________________________________________________________________
@@ -157,7 +265,7 @@ namespace wg
 		
 		if( m_editState.bCaret && pCaret )
 		{
-			pCaret->render( pDevice, _printer()->charToRect(this, m_editState.caretOfs) + _canvas.pos(), _clip );
+			pCaret->render( pDevice, _printer()->charRect(this, m_editState.caretOfs) + _canvas.pos(), _clip );
 		}
 	}
 	
@@ -325,6 +433,119 @@ namespace wg
 		return false;
 	}
 
+	//____ caretUp() ___________________________________________________________
+
+	bool EditTextField::caretUp()
+	{
+		return false; //TODO: Implement!
+	}
+	
+	//____ caretDown() _________________________________________________________
+
+	bool EditTextField::caretDown()
+	{
+		return false; //TODO: Implement!		
+	}
+	
+	//____ caretLeft() _________________________________________________________
+
+	bool EditTextField::caretLeft()
+	{
+		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
+		
+		if( !m_editState.bCaret )
+			return false;
+
+		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
+		
+		int caretOfs = _printer()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
+		if( caretOfs != m_editState.caretOfs )
+		{
+			if( !m_editState.bShiftDown )
+			{
+				m_editState.selectOfs = caretOfs;
+			}
+			
+			m_editState.caretOfs = caretOfs;
+			_onDirty();
+			return true;
+		}
+
+		return false;
+	}
+
+	//____ caretRight() ________________________________________________________
+	
+	bool EditTextField::caretRight()
+	{
+		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
+		
+		if( !m_editState.bCaret )
+			return false;
+
+		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
+		
+		int caretOfs = _printer()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
+		if( caretOfs != m_editState.caretOfs )
+		{
+			if( !m_editState.bShiftDown )
+			{
+				m_editState.selectOfs = caretOfs;
+			}
+			
+			m_editState.caretOfs = caretOfs;
+			_onDirty();
+			return true;
+		}
+
+		return false;
+	}
+	
+	//____ caretNextWord() _____________________________________________________
+	
+	bool EditTextField::caretNextWord()
+	{
+		return false; //TODO: Implement!		
+	}
+
+	//____ caretPrevWord() _____________________________________________________
+	
+	bool EditTextField::caretPrevWord()
+	{
+		return false; //TODO: Implement!		
+	}
+
+	//____ caretEraseNextChar() ________________________________________________
+		
+	bool EditTextField::caretEraseNextChar()
+	{
+		return false; //TODO: Implement!		
+	}
+
+	//____ caretErasePrevChar() ________________________________________________
+
+	bool EditTextField::caretErasePrevChar()
+	{
+		return false; //TODO: Implement!		
+	}
+
+	//____ caretEraseNextWord() ________________________________________________
+
+	bool EditTextField::caretEraseNextWord()
+	{
+		return false; //TODO: Implement!		
+	}
+
+	//____ caretErasePrevWord() ________________________________________________
+
+	bool EditTextField::caretErasePrevWord()
+	{
+		return false; //TODO: Implement!		
+	}
+
+
+
+
 	//_____ caretLineBegin() ___________________________________________________
 
 	bool EditTextField::caretLineBegin()
@@ -332,7 +553,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int ofs = _printer()->lineBegin( this, _printer()->lineOfChar( this, m_editState.caretOfs ));
+		int ofs = _printer()->lineBegin( this, _printer()->charLine( this, m_editState.caretOfs ));
 
 		if( ofs != m_editState.caretOfs || ofs != m_editState.selectOfs )
 		{
@@ -352,7 +573,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int ofs = _printer()->lineEnd( this, _printer()->lineOfChar( this, m_editState.caretOfs )) -1;
+		int ofs = _printer()->lineEnd( this, _printer()->charLine( this, m_editState.caretOfs )) -1;
 
 		if( ofs != m_editState.caretOfs || ofs != m_editState.selectOfs )
 		{

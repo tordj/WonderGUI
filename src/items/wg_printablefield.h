@@ -74,9 +74,9 @@ namespace wg
 		virtual int			matchingHeight( int width ) const;
 		inline Size			size() const { return m_size; }
 	
-		virtual int			coordToChar( Coord pos ) const;
-		virtual Rect		charToRect( int charOfs ) const;
-		virtual int			lineOfChar( int charOfs ) const;
+		virtual int			charAtPos( Coord pos ) const;
+		virtual Rect		charRect( int charOfs ) const;
+		virtual int			charLine( int charOfs ) const;
 	
 		virtual void		onRefresh();
 	
@@ -115,6 +115,8 @@ namespace wg
 	struct EditState
 	{
 		bool 			bCaret;			// Set if caret should be displayed.
+		bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
+		bool			bButtonDown;	// Set when mouse button was pressed inside field and still is down.
 		int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 		int				caretOfs;		// End of selection and caret offset (if displaying)
 		int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.		

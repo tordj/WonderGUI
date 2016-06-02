@@ -107,31 +107,38 @@ namespace wg
 	}
 	
 	
-	int StandardPrinter::coordToChar( const PrintableField * pField, Coord pos )
+	int StandardPrinter::charAtPos( const PrintableField * pField, Coord pos ) const
 	{
 		//TODO: Implement!
 		return 0;
 	}
 	
-	Coord StandardPrinter::charToCoord( const PrintableField * pField, int charOfs )
+	//_____ charPos() ______________________________________________________
+	
+	Coord StandardPrinter::charPos( const PrintableField * pField, int charOfs ) const
 	{
-		//TODO: Implement!
-		return Coord();
+		int line = charLine(pField, charOfs);
+		
+		int ofsX = _charPosX(pField, charOfs);
+		int ofsY = _linePosY(_fieldDataBlock(pField), line, pField->size().h );
+		
+		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;		
+		ofsY += pLine->base;
+		
+		return Coord(ofsX,ofsY);
 	}
 	
-	//____ charToRect() ________________________________________________________
+	//____ charRect() ________________________________________________________
 	
-	Rect StandardPrinter::charToRect( const PrintableField * pField, int charOfs )
+	Rect StandardPrinter::charRect( const PrintableField * pField, int charOfs ) const
 	{
 		const void * pBlock = _fieldDataBlock(pField);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 		
-		
-		
 		// Find correct line and determine yOfs
 		
-		int yOfs = _textOfsY( pHeader, pField->size().h );		
+		int yOfs = _textPosY( pHeader, pField->size().h );		
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -141,7 +148,7 @@ namespace wg
 		
 		// Determine xOfs by parsing line until character
 		
-		int xOfs = _lineOfsX( pLineInfo, pField->size().w );
+		int xOfs = _linePosX( pLineInfo, pField->size().w );
 		
 		TextAttr		baseAttr;
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
@@ -172,9 +179,9 @@ namespace wg
 		return Rect(xOfs,yOfs,width,pLineInfo->height);
 	}
 
-	//____ lineOfChar() ________________________________________________________
+	//____ charLine() ________________________________________________________
 
-	int StandardPrinter::lineOfChar( const PrintableField * pField, int charOfs )
+	int StandardPrinter::charLine( const PrintableField * pField, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
@@ -194,7 +201,7 @@ namespace wg
 	
 	//____ lineBegin() ________________________________________________________
 
-	int StandardPrinter::lineBegin( const PrintableField * pField, int lineNb )
+	int StandardPrinter::lineBegin( const PrintableField * pField, int lineNb ) const
 	{
 		const void * pBlock = _fieldDataBlock(pField);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -208,7 +215,7 @@ namespace wg
 	
 	//____ lineEnd() ___________________________________________________________
 	
-	int StandardPrinter::lineEnd( const PrintableField * pField, int lineNb )
+	int StandardPrinter::lineEnd( const PrintableField * pField, int lineNb ) const
 	{
 		const void * pBlock = _fieldDataBlock(pField);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -220,21 +227,12 @@ namespace wg
 		return pLineInfo[lineNb].offset + pLineInfo[lineNb].length;		
 	}
 
-
-	//____ _coordToCaretPos() _____________________________________________________
-	
-	int StandardPrinter::coordToCaretPos( PrintableField * pField, Coord pos )
-	{
-		//TODO: Implement!
-		return 0;
-	}
-
 	//____ _charDistance() _____________________________________________________
 
 	// Returns distance in pixels between beginning of first and beginning of last char.
 	// Chars should be on the same line (or pLast could be first char on next line)
 
-	int StandardPrinter::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state )
+	int StandardPrinter::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
 	{
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -298,7 +296,7 @@ namespace wg
 		const Char * pCharArray = _charBuffer(pField)->chars();
 		
 		Coord lineStart = canvas.pos();
-		lineStart.y += _textOfsY( pHeader, canvas.h );
+		lineStart.y += _textPosY( pHeader, canvas.h );
 	
 		TextAttr		baseAttr;
 		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
@@ -314,7 +312,7 @@ namespace wg
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
 			{		
-				lineStart.x = canvas.x + _lineOfsX( pLineInfo, canvas.w );
+				lineStart.x = canvas.x + _linePosX( pLineInfo, canvas.w );
 				const Char * pChars = pCharArray + pLineInfo->offset;
 	
 				Glyph_p	pGlyph;
@@ -386,11 +384,12 @@ namespace wg
 	
 	void StandardPrinter::onFieldResized( PrintableField * pField, Size newSize, Size oldSize )
 	{
-		// Do nothing?
+		///TODO: Implement!
 	}
 	
 	void StandardPrinter::onStateChanged( PrintableField * pField, State newState, State oldState )
 	{
+		//TODO: Implement!
 	}
 	
 	void StandardPrinter::onStyleChanged( PrintableField * pField, TextStyle * pNewStyle, TextStyle * pOldStyle )
@@ -430,18 +429,105 @@ namespace wg
 		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
 	}
 	
-	int StandardPrinter::moveCaret( PrintableField * pField, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif )
-	{
-		//TODO: Implement!
-		return 0;
-	}
-	
 	Rect StandardPrinter::rectForRange( const PrintableField * pField, int ofs, int length ) const
 	{
 		//TODO: Implement!
 		return Rect();
 	}
 	
+	//____ textDirection() ____________________________________________________
+
+	Direction StandardPrinter::textDirection( PrintableField * pField, int charOfs ) const
+	{
+		return Direction::Right;
+	}
+
+	//____ caretToPos() _____________________________________________________
+	
+	int StandardPrinter::caretToPos( PrintableField * pField, Coord pos, int& wantedLineOfs ) const
+	{
+		wantedLineOfs = -1;
+
+		int line = _lineAtPosY(pField, pos.y, SelectMode::Closest );
+		return  _charAtPosX(pField, line, pos.x, SelectMode::ClosestBegin );		
+	}
+
+	//____ caretUp() ___________________________________________________________
+	
+	int StandardPrinter::caretUp( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		int line = charLine(pField, charOfs );
+
+		if( line > 0 )
+			charOfs = _charAtPosX(pField, line-1, wantedLineOfs, SelectMode::ClosestBegin );
+
+		return charOfs;
+	}
+
+	//____ caretDown() _________________________________________________________
+	
+	int StandardPrinter::caretDown( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		int line = charLine(pField, charOfs );
+
+		if( line >= 0 && line < _header(_fieldDataBlock(pField))->nbLines-1 )
+			charOfs = _charAtPosX(pField, line+1, wantedLineOfs, SelectMode::ClosestBegin );
+
+		return charOfs;
+	}
+
+	//____ caretLeft() _________________________________________________________
+	
+	int StandardPrinter::caretLeft( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		if( charOfs > 0 )
+			charOfs--;
+			
+		wantedLineOfs = -1;
+		return charOfs;
+	}
+	
+	//____ caretRight() ________________________________________________________
+	
+	int StandardPrinter::caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		if( charOfs < _charBuffer(pField)->length() )
+			charOfs++;
+			
+		wantedLineOfs = -1;
+		return charOfs;
+	}
+	
+	//____ caretHome() ________________________________________________________
+
+	int StandardPrinter::caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		int line = charLine( pField, charOfs );
+
+		if( line >= 0 )
+		{
+			const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;
+			charOfs = pLine->offset;
+		}
+		wantedLineOfs = -1;
+		return charOfs;		
+	}
+
+	//____ caretEnd() ________________________________________________________
+	
+	int StandardPrinter::caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	{
+		int line = charLine( pField, charOfs );
+
+		if( line >= 0 )
+		{
+			const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;
+			charOfs = pLine->offset+ pLine->length-1;
+		}
+		wantedLineOfs = -1;
+		return charOfs;		
+	}
+
 	//____ tooltip() _______________________________________________________________
 	
 	String StandardPrinter::tooltip( const PrintableField * pField ) const
@@ -470,12 +556,14 @@ namespace wg
 	
 	int StandardPrinter::matchingHeight( const PrintableField * pField, int width ) const
 	{
+		//TODO: Implement correct calculation!
+		
 		return _header(_fieldDataBlock(pField))->preferredSize.h;
 	}
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int StandardPrinter::_countLines( const CharBuffer * pBuffer )
+	int StandardPrinter::_countLines( const CharBuffer * pBuffer ) const
 	{
 		const Char * pChars = pBuffer->chars();
 		int lines = 0;
@@ -651,9 +739,9 @@ namespace wg
 		return false;
 	}
 	
-	//____ _lineOfsX() _______________________________________________________________
+	//____ _linePosX() _______________________________________________________________
 	
-	int StandardPrinter::_lineOfsX( const LineInfo * pLine, int fieldWidth ) const
+	int StandardPrinter::_linePosX( const LineInfo * pLine, int fieldWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -672,10 +760,23 @@ namespace wg
 				return fieldWidth - pLine->width;
 		}	
 	}
+
+	//____ _linePosY() _______________________________________________________________
 	
-	//____ _textOfsY() _____________________________________________________________
+	int StandardPrinter::_linePosY( const void * pBlock, int line, int fieldHeight ) const
+	{
+		int ofsY = _textPosY( _header(pBlock), fieldHeight );
 	
-	int	StandardPrinter::_textOfsY( const BlockHeader * pHeader, int fieldHeight ) const
+		const LineInfo * pL = _lineInfo(pBlock);
+		for( int i = 0 ; i < line ; i++ )
+			ofsY += pL[i].spacing;
+			
+		return ofsY;
+	}
+	
+	//____ _textPosY() _____________________________________________________________
+	
+	int	StandardPrinter::_textPosY( const BlockHeader * pHeader, int fieldHeight ) const
 	{
 		switch( m_alignment )
 		{
@@ -694,5 +795,217 @@ namespace wg
 				return fieldHeight - pHeader->preferredSize.h;
 		}	
 	}
+
+	//____ _charPosX() _________________________________________________________
+
+	int StandardPrinter::_charPosX( const PrintableField * pField, int charOfs ) const
+	{
+		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + charLine(pField, charOfs);		
+		const Char * pBufferStart = _charBuffer(pField)->chars();
+		
+		TextAttr attr;
+		_baseStyle(pField)->exportAttr( _state(pField), &attr );
+		
+		return _linePosX( pLine, pField->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pField) );
+	}
+
+	//____ _lineAtPosY() _______________________________________________________
+
+	int StandardPrinter::_lineAtPosY( PrintableField * pField, int posY, SelectMode mode ) const
+	{
+		void * pBlock = _fieldDataBlock(pField);
+		const BlockHeader * pHead = _header(pBlock);
+		int linePosY = _textPosY( pHead, pField->size().h );
+		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) );		
+		
+		if( posY < linePosY )
+		{
+			if( mode == SelectMode::Marked )
+				return -1;
+			
+			return 0;
+		}
+
+		switch( mode )
+		{
+			case SelectMode::ClosestBegin:
+			{
+				int prevBeg = linePosY;
+				linePosY += pLine[0].spacing;
+				
+				for( int i = 1 ; i < pHead->nbLines ; i++ )
+				{
+					int beg = linePosY;
+					
+					if( posY <= beg )
+					{
+						if( posY - prevBeg < beg - posY )
+							return i-1;
+						else
+							return i;
+					}
+					prevBeg = beg;
+					linePosY += pLine[i].spacing;
+				}
+				return pHead->nbLines-1;
+			}
+			case SelectMode::ClosestEnd:
+			{
+				int prevEnd = linePosY + pLine[0].height;
+				linePosY += pLine[0].spacing;
+				
+				for( int i = 1 ; i < pHead->nbLines ; i++ )
+				{
+					int end = linePosY + pLine[i].height;
+					
+					if( posY <= end )
+					{
+						if( posY - prevEnd < end - posY )
+							return i-1;
+						else
+							return i;
+					}
+					prevEnd = end;
+					linePosY += pLine[i].spacing;
+				}
+				return pHead->nbLines-1;
+			}
+			case SelectMode::Closest:
+			case SelectMode::Marked:
+			{
+				for( int i = 0 ; i < pHead->nbLines ; i++ )
+				{
+					if( posY >= linePosY && posY < linePosY + pLine[i].height )
+						return i;
+					
+					linePosY += pLine[i].spacing;
+				}
+
+				if( mode == SelectMode::Closest )
+					return pHead->nbLines-1;
+					
+				return -1;				
+			}
+		}
+	}
+
+	//____ _charAtPosX() _______________________________________________________
+
+	int StandardPrinter::_charAtPosX( PrintableField * pField, int line, int posX, SelectMode mode ) const
+	{
+		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;		
+
+
+		int distance = _linePosX( pLine, pField->size().w );
+
+		// Handle special case when we are left of line.
+		
+		if( posX < distance )
+		{
+			if( mode == SelectMode::Marked )
+				return -1;
+			else
+				return pLine->offset;
+		}
+
+		// Handle special case when we are right of line.
+
+		if( posX >= distance + pLine->width )
+		{
+			if( mode == SelectMode::Marked )
+				return -1;
+			else
+				return pLine->offset + pLine->length-1;			
+		}
+
+		// We are somewhere inside the line, lets loop through characters
+
+		const Char * pLineBegin = _charBuffer(pField)->chars() + pLine->offset;
+		State state = _state(pField);
+		
+		TextAttr baseAttr;
+		_baseStyle(pField)->exportAttr( state, &baseAttr );
+		
+
+		TextAttr		attr;
+		Font_p 			pFont;
+		TextStyle_h		hStyle = 0xFFFF;
+
+		Glyph_p	pGlyph;
+		Glyph_p	pPrevGlyph =  0;
+		
+		const Char * pChar = pLineBegin;
+
+		while( true )
+		{
+			// TODO: Include handling of special characters
+		
+			if( pChar->styleHandle() != hStyle )
+			{
+				int oldFontSize = attr.size;
+				attr = baseAttr;
+
+				if( pChar->styleHandle() != 0 )
+					pChar->stylePtr()->addToAttr( state, &attr );
+				
+				if( pFont != attr.pFont || attr.size != oldFontSize )
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
+				}
+			}
+
+			// Forward distance with the glyph
+		
+			pGlyph = pFont->getGlyph(pChar->getGlyph());
+			int pCharBeg = distance;
+
+			if( pGlyph )
+			{
+				if( pPrevGlyph )
+					distance += pFont->kerning(pPrevGlyph, pGlyph);
+
+				distance += pGlyph->advance();
+			}
+			else if( pChar->getGlyph() == 32 )
+				distance += pFont->whitespaceAdvance();
+				
+			// Check if we have passed our mark.
+			
+			if( distance >= posX )
+			{
+				switch( mode )
+				{
+					case SelectMode::ClosestBegin:
+					{
+						if( posX - pCharBeg < distance - posX )
+							return pChar - pLineBegin;
+						else
+							return pChar+1 - pLineBegin;
+					}
+					case SelectMode::ClosestEnd:
+					{
+						if( posX - pCharBeg < distance - posX )
+							return pChar == pLineBegin ? 0 : pChar-1 - pLineBegin;
+						else
+							return pChar - pLineBegin;
+					}
+					break;
+					case SelectMode::Closest:
+					case SelectMode::Marked:
+					{
+						return pChar - pLineBegin;
+					}
+				}
+			}
+
+			pPrevGlyph = pGlyph;
+			pChar++;
+		}
+
+		return -1;			// We should never get here...
+	}
+
 
 } // namespace wg

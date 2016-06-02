@@ -114,25 +114,25 @@ namespace wg
 		return _printer()->matchingHeight(this, width);
 	}
 	
-	//____ coordToChar() ___________________________________________________________
+	//____ charAtPos() ___________________________________________________________
 	
-	int PrintableField::coordToChar( Coord pos ) const
+	int PrintableField::charAtPos( Coord pos ) const
 	{
-		return _printer()->coordToChar(this,pos);
+		return _printer()->charAtPos(this,pos);
 	}
 	
-	//____ charToRect() ____________________________________________________________
+	//____ charRect() ____________________________________________________________
 	
-	Rect PrintableField::charToRect( int charOfs ) const
+	Rect PrintableField::charRect( int charOfs ) const
 	{
-		return _printer()->charToRect(this, charOfs);
+		return _printer()->charRect(this, charOfs);
 	}
 	
-	//____ lineOfChar() ____________________________________________________________
+	//____ charLine() ____________________________________________________________
 	
-	int PrintableField::lineOfChar( int charOfs ) const
+	int PrintableField::charLine( int charOfs ) const
 	{
-		return _printer()->lineOfChar(this, charOfs);
+		return _printer()->charLine(this, charOfs);
 	}
 	
 	

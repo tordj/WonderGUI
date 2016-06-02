@@ -67,12 +67,12 @@ namespace wg
 		virtual void	addField( PrintableField * pField ) = 0;
 		virtual void	removeField( PrintableField * pField ) = 0;
 	
-		virtual int		coordToChar( const PrintableField * pField, Coord pos ) = 0;
-		virtual Coord	charToCoord( const PrintableField * pField, int charOfs ) = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charToRect( const PrintableField * pField, int charOfs ) = 0;
-		virtual int		lineOfChar( const PrintableField * pField, int charOfs ) = 0;
-		virtual int		lineBegin( const PrintableField * pField, int lineNb ) = 0;
-		virtual int		lineEnd( const PrintableField * pField, int lineNb ) = 0;
+		virtual int		charAtPos( const PrintableField * pField, Coord pos ) const = 0;
+		virtual Coord	charPos( const PrintableField * pField, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charRect( const PrintableField * pField, int charOfs ) const = 0;
+		virtual int		charLine( const PrintableField * pField, int charOfs ) const = 0;
+		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const = 0;
+		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const = 0;
 
 	
 		virtual void 	renderField( PrintableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
@@ -93,9 +93,17 @@ namespace wg
 	
 		virtual String	tooltip( const PrintableField * pText ) const;
 	
-		virtual int		coordToCaretPos( PrintableField * pField, Coord pos ) = 0;
-		virtual int		moveCaret( PrintableField * pText, int caretOfs, int wantedPixelOfs, int verticalSteps, int horizontalSteps, ModifierKeys modif ) = 0;
+		// Methods for supporting a caret
 	
+		virtual Direction 	textDirection( PrintableField * pField, int charOfs ) const = 0;
+		virtual int			caretToPos( PrintableField * pField, Coord pos, int& wantedLineOfs ) const = 0;
+		virtual int			caretUp( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretDown( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretLeft( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		
 	
 	protected:
 		Printer() {}

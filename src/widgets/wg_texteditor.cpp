@@ -160,7 +160,8 @@ namespace wg
 	
 	void TextEditor::_receive( const Msg_p& pMsg )
 	{
-		Widget::_receive(pMsg);
+		Widget::_receive( pMsg );
+		m_text.receive( pMsg );
 	
 		MsgType type 				= pMsg->type();
 
