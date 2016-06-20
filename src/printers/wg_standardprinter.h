@@ -97,6 +97,9 @@ namespace wg
 		virtual int		caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
 		virtual int		caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
 		virtual int		caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
+
+		virtual int		caretPrevWord( PrintableField * pField, int charOfs ) const;
+		virtual int		caretNextWord( PrintableField * pField, int charOfs ) const;
 	
 	
 	protected:

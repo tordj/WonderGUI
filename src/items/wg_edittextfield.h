@@ -110,6 +110,16 @@ namespace wg
 	
 	protected:
 	
+		enum class MoveMethod
+		{
+			Keyboard,
+			Mouse,
+			ApiCall
+		};
+	
+	
+		bool			_moveCaret( int caretOfs, MoveMethod method );
+
 		void			_caretToBegin();
 		void			_caretToEnd();
 	

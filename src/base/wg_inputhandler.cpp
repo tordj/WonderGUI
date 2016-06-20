@@ -129,7 +129,7 @@ namespace wg
 	
 	//____ mapKey() _______________________________________________________________
 	
-	void InputHandler::mapKey( Key translated_keycode, int native_keycode )
+	void InputHandler::mapKey( int native_keycode, Key translated_keycode )
 	{
 		m_keycodeMap[native_keycode] = translated_keycode;
 	}
@@ -137,20 +137,12 @@ namespace wg
 	
 	//____ unmapKey() _____________________________________________________________
 	
-	void InputHandler::unmapKey( Key translated_keycode )
+	void InputHandler::unmapKey( int native_keycode )
 	{
-		auto it = m_keycodeMap.begin();
-	
-		while( it != m_keycodeMap.end() )
-		{
-			if( it->second == translated_keycode )
-			{
-				auto it2 = it++;
-				m_keycodeMap.erase(it2);
-			}
-			else
-				++it;
-		}
+		auto it = m_keycodeMap.find( native_keycode );	
+
+		if( it != m_keycodeMap.end() )
+			m_keycodeMap.erase(it);
 	}
 	
 	//____ clearKeyMap() __________________________________________________________
@@ -177,7 +169,7 @@ namespace wg
 	{
 		if( text.length() > 0 )
 		{
-			Base::msgRouter()->post( new TextInputMsg( m_inputId, text, m_pMarkedWidget.rawPtr() ));
+			Base::msgRouter()->post( new TextInputMsg( m_inputId, text, _focusedWidget() ));
 		}
 		return true;
 	}

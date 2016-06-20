@@ -66,38 +66,44 @@ int main ( int argc, char** argv )
 
 	InputHandler_p pInput = Base::inputHandler();
 	
-	pInput->mapKey( Key::Left, SDLK_LEFT );
-	pInput->mapKey( Key::Right, SDLK_RIGHT );
-	pInput->mapKey( Key::Up, SDLK_UP );
-	pInput->mapKey( Key::Down, SDLK_DOWN );
-	pInput->mapKey( Key::Alt, SDLK_LALT );
-	pInput->mapKey( Key::Alt, SDLK_RALT );
-	pInput->mapKey( Key::Backspace, SDLK_BACKSPACE );
-	pInput->mapKey( Key::Delete, SDLK_DELETE );
-	pInput->mapKey( Key::End, SDLK_END );
-	pInput->mapKey( Key::Escape, SDLK_ESCAPE );
-	pInput->mapKey( Key::Home, SDLK_HOME );
-	pInput->mapKey( Key::PageDown, SDLK_PAGEDOWN );
-	pInput->mapKey( Key::PageUp, SDLK_PAGEUP );
-	pInput->mapKey( Key::Return, SDLK_RETURN );
-	pInput->mapKey( Key::Space, SDLK_SPACE );
-	pInput->mapKey( Key::Tab, SDLK_TAB );
-	pInput->mapKey( Key::F1, SDLK_F1 );
-	pInput->mapKey( Key::F2, SDLK_F2 );
-	pInput->mapKey( Key::F3, SDLK_F3 );
-	pInput->mapKey( Key::F4, SDLK_F4 );
-	pInput->mapKey( Key::F5, SDLK_F5 );
-	pInput->mapKey( Key::F6, SDLK_F6 );
-	pInput->mapKey( Key::F7, SDLK_F7 );
-	pInput->mapKey( Key::F8, SDLK_F8 );
-	pInput->mapKey( Key::F9, SDLK_F9 );
-	pInput->mapKey( Key::F10, SDLK_F10 );
-	pInput->mapKey( Key::F11, SDLK_F11 );
-	pInput->mapKey( Key::F12, SDLK_F12 );
+	pInput->mapKey( SDLK_LEFT, Key::Left );
+	pInput->mapKey( SDLK_RIGHT, Key::Right );
+	pInput->mapKey( SDLK_UP, Key::Up );
+	pInput->mapKey( SDLK_DOWN, Key::Down );
+	pInput->mapKey( SDLK_BACKSPACE, Key::Backspace );
+	pInput->mapKey( SDLK_DELETE, Key::Delete );
+	pInput->mapKey( SDLK_END, Key::End );
+	pInput->mapKey( SDLK_ESCAPE, Key::Escape );
+	pInput->mapKey( SDLK_HOME, Key::Home );
+	pInput->mapKey( SDLK_PAGEDOWN, Key::PageDown );
+	pInput->mapKey( SDLK_PAGEUP, Key::PageUp );
+	pInput->mapKey( SDLK_RETURN, Key::Return );
+	pInput->mapKey( SDLK_SPACE, Key::Space );
+	pInput->mapKey( SDLK_TAB, Key::Tab );
+	pInput->mapKey( SDLK_F1, Key::F1 );
+	pInput->mapKey( SDLK_F2, Key::F2 );
+	pInput->mapKey( SDLK_F3, Key::F3 );
+	pInput->mapKey( SDLK_F4, Key::F4 );
+	pInput->mapKey( SDLK_F5, Key::F5 );
+	pInput->mapKey( SDLK_F6, Key::F6 );
+	pInput->mapKey( SDLK_F7, Key::F7 );
+	pInput->mapKey( SDLK_F8, Key::F8 );
+	pInput->mapKey( SDLK_F9, Key::F9 );
+	pInput->mapKey( SDLK_F10, Key::F10 );
+	pInput->mapKey( SDLK_F11, Key::F11 );
+	pInput->mapKey( SDLK_F12, Key::F12 );
 	
-//	pInput->mapKey( Key::Control, SDLK );
-//	pInput->mapKey( Key::Shift, SDLK_ );
-//	pInput->mapKey( Key::Super, SDLK );
+	
+	pInput->mapKey( SDLK_LCTRL, Key::Control );
+	pInput->mapKey( SDLK_RCTRL, Key::Control );
+
+	pInput->mapKey( SDLK_LSHIFT, Key::Shift );
+	pInput->mapKey( SDLK_RSHIFT, Key::Shift );
+
+	pInput->mapKey( SDLK_LALT, Key::Alt );
+	pInput->mapKey( SDLK_RALT, Key::Alt );
+	
+	pInput->mapKey( SDLK_KP_ENTER, Key::Return );
 	
 	
 	PixelType type = PixelType::Unknown;
@@ -405,6 +411,11 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				pInput->setKey( e.key.keysym.sym, false );
 				break;
 			}
+
+			case SDL_TEXTINPUT:
+				pInput->putText( e.text.text );
+				break;
+
 			
 			default:
 				break;

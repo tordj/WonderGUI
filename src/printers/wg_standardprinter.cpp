@@ -427,6 +427,7 @@ namespace wg
 		
 		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pField), _state(pField) );
 		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+		_setFieldDirty(pField);
 	}
 	
 	Rect StandardPrinter::rectForRange( const PrintableField * pField, int ofs, int length ) const
@@ -459,8 +460,12 @@ namespace wg
 		int line = charLine(pField, charOfs );
 
 		if( line > 0 )
-			charOfs = _charAtPosX(pField, line-1, wantedLineOfs, SelectMode::ClosestBegin );
+		{
+			if( wantedLineOfs == -1 )
+				wantedLineOfs = _charPosX( pField, charOfs );
 
+			charOfs = _charAtPosX(pField, line-1, wantedLineOfs, SelectMode::ClosestBegin );
+		}
 		return charOfs;
 	}
 
@@ -471,8 +476,12 @@ namespace wg
 		int line = charLine(pField, charOfs );
 
 		if( line >= 0 && line < _header(_fieldDataBlock(pField))->nbLines-1 )
-			charOfs = _charAtPosX(pField, line+1, wantedLineOfs, SelectMode::ClosestBegin );
+		{
+			if( wantedLineOfs == -1 )
+				wantedLineOfs = _charPosX( pField, charOfs );
 
+			charOfs = _charAtPosX(pField, line+1, wantedLineOfs, SelectMode::ClosestBegin );
+		}
 		return charOfs;
 	}
 
@@ -527,6 +536,23 @@ namespace wg
 		wantedLineOfs = -1;
 		return charOfs;		
 	}
+
+	//____ caretPrevWord() _____________________________________________________
+
+	int StandardPrinter::caretPrevWord( PrintableField * pField, int charOfs ) const
+	{
+		//TODO: Implement!
+		return charOfs;
+	}
+
+	//____ caretNextWord() _____________________________________________________
+	
+	int StandardPrinter::caretNextWord( PrintableField * pField, int charOfs ) const
+	{
+		//TODO: Implement!
+		return charOfs;		
+	}
+
 
 	//____ tooltip() _______________________________________________________________
 	
@@ -920,7 +946,7 @@ namespace wg
 
 		// We are somewhere inside the line, lets loop through characters
 
-		const Char * pLineBegin = _charBuffer(pField)->chars() + pLine->offset;
+		const Char * pTextBegin = _charBuffer(pField)->chars();
 		State state = _state(pField);
 		
 		TextAttr baseAttr;
@@ -934,7 +960,7 @@ namespace wg
 		Glyph_p	pGlyph;
 		Glyph_p	pPrevGlyph =  0;
 		
-		const Char * pChar = pLineBegin;
+		const Char * pChar = pTextBegin + pLine->offset;
 
 		while( true )
 		{
@@ -980,22 +1006,22 @@ namespace wg
 					case SelectMode::ClosestBegin:
 					{
 						if( posX - pCharBeg < distance - posX )
-							return pChar - pLineBegin;
+							return pChar - pTextBegin;
 						else
-							return pChar+1 - pLineBegin;
+							return pChar+1 - pTextBegin;
 					}
 					case SelectMode::ClosestEnd:
 					{
 						if( posX - pCharBeg < distance - posX )
-							return pChar == pLineBegin ? 0 : pChar-1 - pLineBegin;
+							return pChar == pTextBegin ? 0 : pChar-1 - pTextBegin;
 						else
-							return pChar - pLineBegin;
+							return pChar - pTextBegin;
 					}
 					break;
 					case SelectMode::Closest:
 					case SelectMode::Marked:
 					{
-						return pChar - pLineBegin;
+						return pChar - pTextBegin;
 					}
 				}
 			}

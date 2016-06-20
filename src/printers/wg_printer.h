@@ -72,8 +72,7 @@ namespace wg
 		virtual Rect	charRect( const PrintableField * pField, int charOfs ) const = 0;
 		virtual int		charLine( const PrintableField * pField, int charOfs ) const = 0;
 		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const = 0;
-		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const = 0;
-
+		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const = 0;		
 	
 		virtual void 	renderField( PrintableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	
@@ -103,6 +102,9 @@ namespace wg
 		virtual int			caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
 		virtual int			caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
 		virtual int			caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+
+		virtual int			caretPrevWord( PrintableField * pField, int charOfs ) const = 0;
+		virtual int			caretNextWord( PrintableField * pField, int charOfs ) const = 0;
 		
 	
 	protected:

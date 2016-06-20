@@ -101,8 +101,8 @@ namespace wg
 		void 		receive( const Msg_p& pMsg );
 
 
-		void		mapKey( Key translated_keycode, int native_keycode );
-		void		unmapKey( Key translated_keycode );
+		void		mapKey( int native_keycode, Key translated_keycode );
+		void		unmapKey( int native_keycode );
 		void		clearKeyMap();
 		Key			translateKey( int native_keycode );
 

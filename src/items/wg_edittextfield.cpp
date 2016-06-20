@@ -23,6 +23,20 @@
 #include <wg_edittextfield.h>
 #include <wg_charseq.h>
 
+// TODO: Go to next/previous word.
+// TODO: Correctly render selected text.
+// TODO: Move cursor by mouse, with selection.
+// TODO: Cursor correctly blinking.
+// TODO: Optimize rendering.
+// TODO: Optimize text changes.
+// TODO: Double/tripple click to select word/line
+// TODO: Support for cut/copy/paste
+// TODO: Support for undo/redo
+// TODO: Cursor put with correct style.
+// TODO: Cursor have correct size.
+// TODO: Check that we request resize properly.
+
+
 namespace wg 
 {
 	
@@ -118,10 +132,14 @@ namespace wg
 						break;
 		
 					case Key::End:
-							if( modKeys & MODKEY_CTRL )
+						if( modKeys & MODKEY_CTRL )
 							caretTextEnd();
 						else
 							caretLineEnd();
+						break;
+
+					case Key::Return:
+						caretPut( "\n" );
 						break;
 		
 					default:
@@ -136,7 +154,12 @@ namespace wg
 			case MsgType::KeyRelease:
 				if( KeyMsg::cast(pMsg)->translatedKeyCode() == Key::Shift )
 					m_editState.bShiftDown = false;
-			break;
+				break;
+
+			case MsgType::TextInput:
+				caretPut( TextInputMsg::cast(pMsg)->text() );				
+				break;
+			
 			
 			default:
 				break;
@@ -366,7 +389,7 @@ namespace wg
 		if( beg == end )
 			return 0;
 
-		if( beg < end )
+		if( beg > end )
 			std::swap( beg, end );
 
 		erase( beg, end - beg );		
@@ -418,7 +441,7 @@ namespace wg
 			int beg = m_editState.selectOfs;
 			int end = m_editState.caretOfs;
 
-			if( beg < end )
+			if( beg > end )
 				std::swap( beg, end );
 
 			return replace( beg, end-beg, seq );					
@@ -437,96 +460,109 @@ namespace wg
 
 	bool EditTextField::caretUp()
 	{
-		return false; //TODO: Implement!
+		if( !m_editState.bCaret )
+			return false;
+		
+		int caretOfs = _printer()->caretUp(this, m_editState.caretOfs, m_editState.wantedOfs );
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
 	//____ caretDown() _________________________________________________________
 
 	bool EditTextField::caretDown()
 	{
-		return false; //TODO: Implement!		
+		if( !m_editState.bCaret )
+			return false;
+		
+		int caretOfs = _printer()->caretDown(this, m_editState.caretOfs, m_editState.wantedOfs );
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
 	//____ caretLeft() _________________________________________________________
 
 	bool EditTextField::caretLeft()
 	{
-		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
-		
 		if( !m_editState.bCaret )
 			return false;
 
-		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
-		
 		int caretOfs = _printer()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
-		if( caretOfs != m_editState.caretOfs )
-		{
-			if( !m_editState.bShiftDown )
-			{
-				m_editState.selectOfs = caretOfs;
-			}
-			
-			m_editState.caretOfs = caretOfs;
-			_onDirty();
-			return true;
-		}
-
-		return false;
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
 	//____ caretRight() ________________________________________________________
 	
 	bool EditTextField::caretRight()
 	{
-		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
-		
 		if( !m_editState.bCaret )
 			return false;
-
-		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
 		
 		int caretOfs = _printer()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
-		if( caretOfs != m_editState.caretOfs )
-		{
-			if( !m_editState.bShiftDown )
-			{
-				m_editState.selectOfs = caretOfs;
-			}
-			
-			m_editState.caretOfs = caretOfs;
-			_onDirty();
-			return true;
-		}
-
-		return false;
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
 	//____ caretNextWord() _____________________________________________________
 	
 	bool EditTextField::caretNextWord()
 	{
-		return false; //TODO: Implement!		
+		if( !m_editState.bCaret )
+			return false;
+
+		int caretOfs = _printer()->caretNextWord(this, m_editState.caretOfs);
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
 	//____ caretPrevWord() _____________________________________________________
 	
 	bool EditTextField::caretPrevWord()
 	{
-		return false; //TODO: Implement!		
+		if( !m_editState.bCaret )
+			return false;
+
+		int caretOfs = _printer()->caretPrevWord(this, m_editState.caretOfs);
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
 	//____ caretEraseNextChar() ________________________________________________
 		
 	bool EditTextField::caretEraseNextChar()
 	{
-		return false; //TODO: Implement!		
+		if( !m_editState.bCaret )
+			return false;
+
+		if( m_editState.caretOfs != m_editState.selectOfs )		// Selection should be replaced with put content.
+		{
+			eraseSelected();
+			return true;
+		}
+		else if( m_editState.caretOfs < m_charBuffer.length() )
+		{
+			erase( m_editState.caretOfs, 1 );
+			return true;
+		}
+
+		return false;
 	}
 
 	//____ caretErasePrevChar() ________________________________________________
 
 	bool EditTextField::caretErasePrevChar()
 	{
-		return false; //TODO: Implement!		
+		if( !m_editState.bCaret )
+			return false;
+
+		if( m_editState.caretOfs != m_editState.selectOfs )		// Selection should be replaced with put content.
+		{
+			eraseSelected();
+			return true;
+		}
+		else if( m_editState.caretOfs > 0 )							
+		{
+			m_editState.caretOfs--;
+			erase( m_editState.caretOfs, 1 );
+			return true;
+		}
+
+		return false;
 	}
 
 	//____ caretEraseNextWord() ________________________________________________
@@ -552,18 +588,9 @@ namespace wg
 	{
 		if( !m_editState.bCaret )
 			return false;
-
-		int ofs = _printer()->lineBegin( this, _printer()->charLine( this, m_editState.caretOfs ));
-
-		if( ofs != m_editState.caretOfs || ofs != m_editState.selectOfs )
-		{
-			m_editState.caretOfs = ofs;
-			m_editState.selectOfs = ofs;
-			m_editState.wantedOfs = -1;
-			_onDirty();
-		}		
 		
-		return true;
+		int caretOfs = _printer()->caretHome(this, m_editState.caretOfs, m_editState.wantedOfs );
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
 	//____ caretLineEnd() ______________________________________________________
@@ -572,18 +599,9 @@ namespace wg
 	{
 		if( !m_editState.bCaret )
 			return false;
-
-		int ofs = _printer()->lineEnd( this, _printer()->charLine( this, m_editState.caretOfs )) -1;
-
-		if( ofs != m_editState.caretOfs || ofs != m_editState.selectOfs )
-		{
-			m_editState.caretOfs = ofs;
-			m_editState.selectOfs = ofs;
-			m_editState.wantedOfs = -1;
-			_onDirty();
-		}
 		
-		return true;
+		int caretOfs = _printer()->caretEnd(this, m_editState.caretOfs, m_editState.wantedOfs );
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
 	//____ caretTextBegin() ____________________________________________________
@@ -593,8 +611,10 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		_caretToBegin();
-		return true;		
+		int caretOfs = 0;
+		m_editState.wantedOfs = -1;
+
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
 	//____ caretTextEnd() ______________________________________________________
@@ -604,8 +624,10 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		_caretToEnd();
-		return true;
+		int caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
+		m_editState.wantedOfs = -1;
+
+		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
 	
@@ -627,5 +649,30 @@ namespace wg
 		m_editState.selectOfs = lastChar;
 		m_editState.wantedOfs = -1;	
 	}
+
+	//____ _moveCaret() ______________________________________________
+
+	bool EditTextField::_moveCaret( int caretOfs, MoveMethod method )
+	{
+		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
+
+		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
+
+		if( caretOfs != m_editState.caretOfs )
+		{
+			if( method == MoveMethod::ApiCall || (method == MoveMethod::Keyboard && !m_editState.bShiftDown) ||
+				(method == MoveMethod::Mouse && !(m_editState.bShiftDown || m_editState.bButtonDown)) )
+			{
+				m_editState.selectOfs = caretOfs;
+			}
+			
+			m_editState.caretOfs = caretOfs;
+			_onDirty();
+			return true;
+		}
+
+		return false;
+	}
+
 
 } // namespace wg

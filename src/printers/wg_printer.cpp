@@ -63,7 +63,7 @@ namespace wg
 	{
 		return String();
 	}
-	
+		
 	//____ _charBuffer() ___________________________________________________________
 	
 	CharBuffer * Printer::_charBuffer( PrintableField * pField ) const
