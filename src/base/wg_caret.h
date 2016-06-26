@@ -63,10 +63,10 @@ namespace wg
 		inline int			cycleLength() const { return m_cycleLength; }
 		inline void			restartCycle() { m_ticks = 0; }
 	
-		virtual void		setMode( CaretMode mode );
+		virtual bool		setMode( CaretMode mode );
 		virtual int			eolWidth( const Size& eolCell ) const;
 		inline CaretMode	mode() const { return m_mode; }
-		virtual void		tick( int millisec );
+		virtual bool		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
 		virtual Rect		dirtyRect( Rect cell ) const;
 		virtual void		render( GfxDevice * pDevice, Rect cell, const Rect& clip );

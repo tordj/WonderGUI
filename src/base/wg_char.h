@@ -120,24 +120,20 @@ namespace wg
 	
 		inline void				setStyle( const TextStyle_p& pStyle ) { if(style) TextStyleManager::_getPointer(style)->_decRefCount(); style = pStyle->handle(); pStyle->_incRefCount(); }
 	
-								/// Gets the characters properties as a handle.
+								/// Gets a handle to the TextStyle of the character.
 								///
-								/// Getting the properties as a handle is faster than getting a pointer to the properties.
-								/// Characters with identical properties always returns the same handle. A character with
-								/// no properties set has a handle of 0.
+								/// Getting a handle is faster than getting a pointer. Use this method if you just want to check
+								/// what style (if any) is used and don't need access to the TextStyle object.
 								///
-								/// @return The properties of the character as a handle.
+								/// @return A handle to the TextStyle of the character 0 if none.
 	
 		inline TextStyle_h		styleHandle() const { return style; }
 	
-								/// Gets read-access to the properties of the character.
+								/// Gets a pointer to the TextStyle of the character.
 								///
-								/// Characters with identical properties always returns identical pointers.
-								///
-								/// @return Read-only pointer to a Textprop specifying the properties of the character. A valid pointer
-								/// is always returned, if the character has no properties set a pointer to an empty default Textprop is returned.
+								/// @return Pointer to the TextStyle of the character if one is specified, or null.
 	
-		inline TextStyle_p		stylePtr() const { return TextStyleManager::_getPointer(style); }
+		inline TextStyle_p		stylePtr() const { return style == 0 ? 0 : TextStyleManager::_getPointer(style); }
 	
 								/// Checks if the character is set to be underlined in the given state.
 	

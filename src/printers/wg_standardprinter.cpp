@@ -83,7 +83,7 @@ namespace wg
 		void * pBlock = _reallocBlock(pField,nLines);
 		
 		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );	
+		_updatePreferredSize( pField );	
 	}
 	
 	//____ removeField() _________________________________________________________
@@ -226,6 +226,23 @@ namespace wg
 			
 		return pLineInfo[lineNb].offset + pLineInfo[lineNb].length;		
 	}
+
+	//____ wordBegin() _________________________________________________________
+
+	int StandardPrinter::wordBegin( const PrintableField * pField, int charOfs ) const
+	{
+		//TODO: Implement!
+		return charOfs;
+	}
+
+	//____ wordEnd() ___________________________________________________________
+	
+	int StandardPrinter::wordEnd( const PrintableField * pField, int charOfs ) const
+	{
+		//TODO: Implement!
+		return charOfs+1;
+	}
+
 
 	//____ _charDistance() _____________________________________________________
 
@@ -398,7 +415,7 @@ namespace wg
 		void * pBlock = _fieldDataBlock(pField);
 		
 		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+		_updatePreferredSize( pField );
 
 		_setFieldDirty(pField);
 	}
@@ -410,7 +427,7 @@ namespace wg
 		void * pBlock = _fieldDataBlock(pField);
 		
 		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+		_updatePreferredSize( pField );
 
 		_setFieldDirty(pField);
 	}
@@ -426,7 +443,7 @@ namespace wg
 			pBlock = _reallocBlock(pField,nLines);
 		
 		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( _header(pBlock), _lineInfo(pBlock) );
+		_updatePreferredSize( pField );
 		_setFieldDirty(pField);
 	}
 	
@@ -738,11 +755,13 @@ namespace wg
 		
 	//____ _updatePreferredSize() __________________________________________________	
 		
-	bool StandardPrinter::_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines )
+	bool StandardPrinter::_updatePreferredSize( PrintableField * pField )
 	{
-		//TODO: Call onResize(), not just return value.
-	
 		Size size;
+		
+		void * pBlock = _fieldDataBlock(pField);
+		BlockHeader * pHeader = _header(pBlock);
+		LineInfo * pLines = _lineInfo(pBlock);	
 		
 		int i;
 		for( i = 0 ; i < pHeader->nbLines-1 ; i++ )
@@ -759,6 +778,8 @@ namespace wg
 		if( size != pHeader->preferredSize )
 		{
 			pHeader->preferredSize = size;
+			_requestFieldResize( pField );
+			
 			return true;
 		}
 	

@@ -26,13 +26,11 @@
 // TODO: Go to next/previous word.
 // TODO: Correctly render selected text.
 // TODO: Move cursor by mouse, with selection.
-// TODO: Cursor correctly blinking.
 // TODO: Optimize rendering.
 // TODO: Optimize text changes.
 // TODO: Double/tripple click to select word/line
 // TODO: Support for cut/copy/paste
 // TODO: Support for undo/redo
-// TODO: Cursor put with correct style.
 // TODO: Cursor have correct size.
 // TODO: Check that we request resize properly.
 
@@ -59,18 +57,54 @@ namespace wg
 		
 		switch( type )
 		{
+			case MsgType::Tick:
+			{
+				TickMsg_p p = TickMsg::cast(pMsg);
+
+				if( m_editState.bCaret )
+				{
+					bool bDirty = _style()->combCaret()->tick( p->timediff() );					
+					if( bDirty )
+						_onDirty();										//TODO: Only render what is needed.
+				}
+				break;
+			}
+
 			case MsgType::FocusGained:
 			{
 				FocusGainedMsg_p p = FocusGainedMsg::cast(pMsg);
-				if( p->modKeys() & MODKEY_SHIFT )
-					m_editState.bShiftDown = true;
-				else
-					m_editState.bShiftDown = false;
+				
+				if( m_editMode == TextEditMode::Editable )
+				{
+					// Enable and place caret
+					
+					m_editState.bCaret = true;
+					m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
+					m_editState.selectOfs = m_editState.caretOfs;
+					m_editState.wantedOfs = -1;
+
+					// Update carets charstyle
+
+					int ofs = m_editState.caretOfs > 0 ? m_editState.caretOfs-1 : 0;
+					m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
+
+					// Check modifier keys, update status
+
+					if( p->modKeys() & MODKEY_SHIFT )
+						m_editState.bShiftDown = true;
+					else
+						m_editState.bShiftDown = false;
+
+					// Restart caret animation
+
+					_style()->combCaret()->restartCycle();					
+				}
+				break;
 			}
-			break;
 			
 			case MsgType::FocusLost:
-			break;
+				m_editState.bCaret = false;
+				break;
 			
 			case MsgType::KeyPress:
 			case MsgType::KeyRepeat:
@@ -148,8 +182,8 @@ namespace wg
 					}
 
 				}
+				break;
 			}
-			break;
 			
 			case MsgType::KeyRelease:
 				if( KeyMsg::cast(pMsg)->translatedKeyCode() == Key::Shift )
@@ -265,16 +299,6 @@ namespace wg
 	void EditTextField::setState( State state )
 	{
 		TextField::setState(state);
-	
-		if( state.isFocused() && m_editMode == TextEditMode::Editable )
-		{
-			m_editState.bCaret = true;
-			m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
-			m_editState.selectOfs = m_editState.caretOfs;
-			m_editState.wantedOfs = -1;
-		}
-		else
-			m_editState.bCaret = false;
 	}
 	
 	
@@ -436,6 +460,20 @@ namespace wg
 		if( !m_editState.bCaret )
 			return 0;
 
+		// Apply carets styling to all unstyled characters (this is a slow way of doing it)
+
+		CharBuffer 	buffer;
+		buffer.pushBack(seq);
+
+		if( m_editState.pCharStyle )
+		{
+			for( int i = 0 ; i < buffer.length() ; i++ )
+				if( buffer[i].styleHandle() == 0 )
+					buffer[i].setStyle( m_editState.pCharStyle );			
+		}
+
+		//
+
 		if( m_editState.caretOfs != m_editState.selectOfs )		// Selection should be replaced with put content.
 		{
 			int beg = m_editState.selectOfs;
@@ -444,10 +482,10 @@ namespace wg
 			if( beg > end )
 				std::swap( beg, end );
 
-			return replace( beg, end-beg, seq );					
+			return replace( beg, end-beg, &buffer );					
 		}
 		else													// Just insert the put content
-			return insert( m_editState.caretOfs, seq );			
+			return insert( m_editState.caretOfs, &buffer );
 	}
 	
 	bool EditTextField::caretPut( uint16_t c )
@@ -667,6 +705,17 @@ namespace wg
 			}
 			
 			m_editState.caretOfs = caretOfs;
+			
+			// Set charStyle to first in selection or character left of caret if there is no selection.
+			
+			int ofs; 
+			if( m_editState.selectOfs != m_editState.caretOfs )
+				ofs = min( m_editState.selectOfs, m_editState.caretOfs );
+			else
+				ofs = caretOfs > 0 ? caretOfs-1 : 0;
+			
+			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
+			
 			_onDirty();
 			return true;
 		}

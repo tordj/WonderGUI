@@ -69,6 +69,9 @@ namespace wg
 
 		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const;
 		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const;
+
+		virtual int		wordBegin( const PrintableField * pField, int charOfs ) const;
+		virtual int		wordEnd( const PrintableField * pField, int charOfs ) const;		
 	
 	
 		virtual void 	renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
@@ -127,7 +130,7 @@ namespace wg
 		void *			_reallocBlock( PrintableField * pField, int lines );
 		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state );
-		bool   			_updatePreferredSize( BlockHeader * pHeader, LineInfo * pLines );
+		bool   			_updatePreferredSize( PrintableField * pField );
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
 		
 		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }

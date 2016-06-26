@@ -120,6 +120,7 @@ namespace wg
 		int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 		int				caretOfs;		// End of selection and caret offset (if displaying)
 		int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.		
+		TextStyle_p		pCharStyle;		// Style of characters to be inserted by caret.
 	};
 	
 	

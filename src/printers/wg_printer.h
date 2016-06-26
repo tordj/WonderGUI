@@ -73,6 +73,10 @@ namespace wg
 		virtual int		charLine( const PrintableField * pField, int charOfs ) const = 0;
 		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const = 0;
 		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const = 0;		
+
+		virtual int		wordBegin( const PrintableField * pField, int charOfs ) const = 0;
+		virtual int		wordEnd( const PrintableField * pField, int charOfs ) const = 0;		
+
 	
 		virtual void 	renderField( PrintableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	

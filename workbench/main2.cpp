@@ -214,7 +214,54 @@ int main ( int argc, char** argv )
 
 
 	// Test transparency issue
+
+
+
+	{
+		PackPanel_p pVert = PackPanel::create();
+		PackPanel_p pHorr = PackPanel::create();
+		
+		Filler_p pFillerEast = Filler::create();
+		Filler_p pFillerSouth = Filler::create();
+		
+		pFillerEast->setSkin( pPressablePlateSkin );
+		pFillerSouth->setSkin( pPressablePlateSkin );
+		
+		pVert->setOrientation( Orientation::Vertical );
+		
+		pVert->addWidget( pHorr );
+		pVert->addWidget( pFillerSouth );
+
+		TextEditor_p pText = TextEditor::create();
+		pText->setSkin( ColorSkin::create( Color::Black ) );
+		
+		
+		TextStyle_p pBig = TextStyle::create();
+		pBig->setSize( 16 );
+		
+		TextStyle_p pRed = TextStyle::create();
+		pRed->setColor( Color::Red );
+		pRed->setSize( 25 );
+
+		TextStyle_p pAnuv = TextStyle::create();
+		pAnuv->setFont( pBmpFont );
+
+		pText->text.set( "This is a\npiece of TEXT" );
+		pText->text.setCharStyle( pBig, 5, 2 );
+		pText->text.setCharStyle( pRed, 10, 3 );
+		pText->text.setCharStyle( pAnuv, 19, 20 );
+
+		pHorr->addWidget( pText );
+		pHorr->addWidget( pFillerEast );
+
+		
+		pFlexPanel->addWidget( pVert, Origo::NorthWest, Origo::SouthEast );
 	
+		pText->grabFocus();
+	}
+
+
+/*	
 	{
 		FlexPanel_p pExtraFlex = FlexPanel::create();
 		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
@@ -247,7 +294,7 @@ int main ( int argc, char** argv )
 		pText->text.caretTextBegin();
 		pText->text.caretLineEnd();
 	}
-
+*/
 /*
 	{
 		VolumeMeter_p p = VolumeMeter::create();

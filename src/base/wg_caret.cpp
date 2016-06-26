@@ -67,7 +67,7 @@ namespace wg
 		
 	//____ setMode() _______________________________________________________________
 	
-	void Caret::setMode( CaretMode mode )
+	bool Caret::setMode( CaretMode mode )
 	{
 		if( mode != m_mode )
 		{
@@ -75,6 +75,7 @@ namespace wg
 			m_ticks = 0;
 			m_bNeedToRender = true;
 		}
+		return m_bNeedToRender;
 	}
 
 	//____ setCycleLength() ____________________________________________________
@@ -98,7 +99,7 @@ namespace wg
 	
 	//____ tick() __________________________________________________________________
 	
-	void Caret::tick( int ms )
+	bool Caret::tick( int ms )
 	{
 		int halfCycle = m_cycleLength / 2;
 		int oldBlink = m_ticks / halfCycle;
@@ -108,6 +109,8 @@ namespace wg
 		int newBlink = m_ticks / halfCycle;
 		if( newBlink != oldBlink )
 			m_bNeedToRender = true;
+			
+		return m_bNeedToRender;
 	}
 	
 	//____ dirtyRect() _____________________________________________________________

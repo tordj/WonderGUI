@@ -133,26 +133,6 @@ namespace wg
 	
 		m_text.setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
-/*	
-		if( isEditable() )
-		{
-			if( m_state.isFocused() && !oldState.isFocused() )
-			{
-				m_text.showCaret();
-				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
-				if(	m_bResetCaretOnFocus )
-					m_text.goEot();
-				_requestRender();
-			}
-			if( !m_state.isFocused() && oldState.isFocused() )
-			{
-				m_text.hideCaret();
-				Base::msgRouter()->deleteRoute( m_tickRouteId );
-				m_tickRouteId = 0;
-				_requestRender();
-			}
-		}
-*/
 	}
 	
 	
@@ -165,7 +145,21 @@ namespace wg
 		Widget::_receive( pMsg );
 		m_text.receive( pMsg );
 	
-
+		switch( type )
+		{
+			case MsgType::FocusGained:
+				if( m_text.editMode() == TextEditMode::Editable )
+					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+				break;
+			
+			case MsgType::FocusLost:
+				if( m_tickRouteId )
+				{
+					Base::msgRouter()->deleteRoute( m_tickRouteId );
+					m_tickRouteId = 0;
+				}
+				break;
+		}
 
 
 /*	
