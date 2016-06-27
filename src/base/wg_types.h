@@ -428,6 +428,7 @@ namespace wg
 		KeyRepeat,
 		KeyRelease,
 		TextInput,
+		EditCommand,
 		WheelRoll,
 	
 		Select,						// Non-value widget triggered, like a button being pressed.
@@ -505,6 +506,20 @@ namespace wg
 		Editable
 	};
 	
+	//____ EditCmd _____________________________________________________________
+
+	enum class EditCmd
+	{
+		None,
+		Cut,
+		Copy,
+		Paste,
+		Undo,
+		Redo,
+		SelectAll,
+		Escape,
+		Break
+	};
 	
 	//____ TextPos ______________________________________________________________
 	

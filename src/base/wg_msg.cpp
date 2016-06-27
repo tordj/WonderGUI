@@ -691,6 +691,41 @@ namespace wg
 		return 0;
 	}
 	
+	//____ EditCommandMsg __________________________________________________________
+	
+	const char EditCommandMsg::CLASSNAME[] = {"EditCommandMsg"};
+	
+	
+	EditCommandMsg::EditCommandMsg( char inputId, EditCmd command, Widget * pWidget )
+	{
+		m_type			= MsgType::EditCommand;
+		m_command		= command;
+		m_pSource		= pWidget;
+		m_pCopyTo		= pWidget;
+		m_inputId		= inputId;
+	}
+		
+	bool EditCommandMsg::isInstanceOf( const char * pClassName ) const
+	{ 
+		if( pClassName==CLASSNAME )
+			return true;
+	
+		return Msg::isInstanceOf(pClassName);
+	}
+	
+	const char * EditCommandMsg::className( void ) const
+	{ 
+		return CLASSNAME; 
+	}
+	
+	EditCommandMsg_p EditCommandMsg::cast( const Object_p& pObject )
+	{
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return EditCommandMsg_p( static_cast<EditCommandMsg*>(pObject.rawPtr()) );
+	
+		return 0;
+	}
+
 	
 	//____ WheelRollMsg __________________________________________________________
 	

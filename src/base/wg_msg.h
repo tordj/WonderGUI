@@ -155,6 +155,10 @@ namespace wg
 	typedef	StrongPtr<TextInputMsg,Msg_p>		TextInputMsg_p;
 	typedef	WeakPtr<TextInputMsg,Msg_wp>	TextInputMsg_wp;
 
+	class EditCommandMsg;
+	typedef	StrongPtr<EditCommandMsg,Msg_p>		EditCommandMsg_p;
+	typedef	WeakPtr<EditCommandMsg,Msg_wp>	EditCommandMsg_wp;
+
 	class WheelRollMsg;
 	typedef	StrongPtr<WheelRollMsg,InputMsg_p>		WheelRollMsg_p;
 	typedef	WeakPtr<WheelRollMsg,InputMsg_wp>	WheelRollMsg_wp;
@@ -550,6 +554,27 @@ namespace wg
 		char	m_inputId;
 		String	m_text;
 	};
+
+	//____ EditCommandMsg ________________________________________________________
+
+	class EditCommandMsg : public Msg
+	{
+		friend class InputHandler;
+	public:
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static EditCommandMsg_p	cast( const Object_p& pObject );
+
+		EditCmd	command() const { return m_command; }
+		char	inputId() const { return m_inputId; }
+	protected:
+		EditCommandMsg( char inputId, EditCmd command, Widget * pWidget );
+	protected:
+		char	m_inputId;
+		EditCmd	m_command;
+	};
+
 
 	//____ WheelRollMsg ________________________________________________________
 

@@ -106,6 +106,18 @@ int main ( int argc, char** argv )
 	pInput->mapKey( SDLK_KP_ENTER, Key::Return );
 	
 	
+	pInput->mapCommand( SDLK_ESCAPE, MODKEY_NONE, EditCmd::Escape );
+
+	pInput->mapCommand( SDLK_x, MODKEY_CTRL, EditCmd::Cut );
+	pInput->mapCommand( SDLK_c, MODKEY_CTRL, EditCmd::Copy );
+	pInput->mapCommand( SDLK_v, MODKEY_CTRL, EditCmd::Paste );
+
+	pInput->mapCommand( SDLK_a, MODKEY_CTRL, EditCmd::SelectAll );
+	
+	pInput->mapCommand( SDLK_z, MODKEY_CTRL, EditCmd::Undo );
+	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
+
+	
 	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )

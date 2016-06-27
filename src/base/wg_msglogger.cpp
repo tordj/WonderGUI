@@ -281,24 +281,29 @@ namespace wg
 			case MsgType::KeyPress:
 			{
 				KeyPressMsg_p pMsg = KeyPressMsg::cast(_pMsg);
-				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				sprintf( params, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRepeat:
 			{
 				KeyRepeatMsg_p pMsg = KeyRepeatMsg::cast(_pMsg);
-				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				sprintf( params, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRelease:
 			{
 				KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
-				sprintf( params, "wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				sprintf( params, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::TextInput:
 				sprintf( params, " chars=%s", TextInputMsg::cast(_pMsg)->text().chars() );
 				break;
+				
+			case MsgType::EditCommand:
+				sprintf( params, " cmd=%s", _formatEditCommand(EditCommandMsg::cast(_pMsg)->command()).c_str() );
+				break;
+				
 			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
@@ -310,20 +315,20 @@ namespace wg
 				break;
 	
 			case MsgType::Toggle:
-				sprintf( params, "set=%d", (int) (ToggleMsg::cast(_pMsg)->isSet()) );
+				sprintf( params, " set=%d", (int) (ToggleMsg::cast(_pMsg)->isSet()) );
 				break;
 	
 			case MsgType::ValueUpdate:
 			{
 				ValueUpdateMsg_p pMsg = ValueUpdateMsg::cast(_pMsg);
-				sprintf( params, "value=%ld fraction=%f", pMsg->value(), pMsg->fraction() );
+				sprintf( params, " value=%ld fraction=%f", pMsg->value(), pMsg->fraction() );
 				break;
 			}
 	
 			case MsgType::RangeUpdate:
 			{
 				RangeUpdateMsg_p pMsg = RangeUpdateMsg::cast(_pMsg);
-				sprintf( params, "pos=%f length=%f", pMsg->offset(), pMsg->length() );
+				sprintf( params, " pos=%f length=%f", pMsg->offset(), pMsg->length() );
 				break;
 			}
 	
@@ -336,27 +341,27 @@ namespace wg
 			case MsgType::ItemToggle:
 			{
 				ItemToggleMsg_p pMsg = ItemToggleMsg::cast(_pMsg);
-				sprintf( params, "set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
+				sprintf( params, " set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
 				break;
 			}
 			case MsgType::ItemMousePress:
 			{
 				ItemMousePressMsg_p pMsg = ItemMousePressMsg::cast(_pMsg);
-				sprintf( params, "id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
+				sprintf( params, " id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
 					
 			case MsgType::ItemsSelect:
 			{
 				ItemsSelectMsg_p pMsg = ItemsSelectMsg::cast(_pMsg);
-				sprintf( params, "nbItems=%d", pMsg->nbItems() );
+				sprintf( params, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
 	
 			case MsgType::ItemsUnselect:
 			{
 				ItemsUnselectMsg_p pMsg = ItemsUnselectMsg::cast(_pMsg);
-				sprintf( params, "nbItems=%d", pMsg->nbItems() );
+				sprintf( params, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
 	
@@ -549,6 +554,40 @@ namespace wg
 			}
 		}
 	}
+
+	//____ _formatEditCommand() ____________________________________________________
+	
+	std::string MsgLogger::_formatEditCommand( EditCmd command ) const
+	{
+		switch( command )
+		{
+			case EditCmd::None:
+				return "None";
+			case EditCmd::Break:
+				return "Break";
+			case EditCmd::Escape:
+				return "Escape";
+			case EditCmd::Undo:
+				return "Undo";
+			case EditCmd::Redo:
+				return "Redo";
+			case EditCmd::Cut:
+				return "Cut";
+			case EditCmd::Copy:
+				return "Copy";
+			case EditCmd::Paste:
+				return "Paste";
+			case EditCmd::SelectAll:
+				return "SelectAll";
+			default:
+			{
+				char	temp[64];
+				sprintf( temp, "%d (unkown enum)", command );
+				return string(temp);
+			}
+		}
+	}
+
 	
 	//____ _onRouteAdded() _________________________________________________________
 	

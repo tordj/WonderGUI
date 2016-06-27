@@ -193,8 +193,38 @@ namespace wg
 			case MsgType::TextInput:
 				caretPut( TextInputMsg::cast(pMsg)->text() );				
 				break;
+	
+			case MsgType::EditCommand:
+			{
+				EditCmd cmd = EditCommandMsg::cast(pMsg)->command();
 			
+				switch( cmd )
+				{
+					case EditCmd::Cut:
+					break;
+					
+					case EditCmd::Copy:
+					break;
+					
+					case EditCmd::Paste:
+					break;
+					
+					case EditCmd::Undo:
+					break;
+					
+					case EditCmd::Redo:
+					break;
+					
+					case EditCmd::SelectAll:
+						selectAll();
+					break;
+					
+					default:
+					break;
+				}
 			
+				break;
+			}
 			default:
 				break;
 				

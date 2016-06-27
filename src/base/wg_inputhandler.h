@@ -106,6 +106,12 @@ namespace wg
 		void		clearKeyMap();
 		Key			translateKey( int native_keycode );
 
+		void		mapCommand( int native_keycode, ModifierKeys modKeys, EditCmd command );
+		void		unmapCommand( int native_keycode, ModifierKeys modKeys );
+		void		clearCommandMap();
+		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
+
+
 		bool		setButtonRepeat( int delay, int rate );
 		bool		setKeyRepeat( int delay, int rate );
 
@@ -199,6 +205,13 @@ namespace wg
 
 		std::map<int,Key>	m_keycodeMap;		// Maps native keycodes to Key.
 	
+		struct CommandEntry
+		{
+			ModifierKeys	modKeys;
+			EditCmd			command;
+		};
+
+		std::map<int,std::vector<CommandEntry>> m_commandMap;
 
 	};
 	

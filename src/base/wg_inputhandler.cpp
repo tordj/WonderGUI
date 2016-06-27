@@ -162,6 +162,74 @@ namespace wg
 		else
 			return Key::Unmapped;
 	}
+
+	//____ mapCommand() ________________________________________________________
+
+	void InputHandler::mapCommand( int native_keycode, ModifierKeys modKeys, EditCmd command )
+	{
+		auto& vCommands = m_commandMap[native_keycode];
+
+		for( auto it = vCommands.begin() ; it != vCommands.end() ; it++ )
+		{
+			if( it->modKeys == modKeys )
+			{
+				it->command = command;
+				return;
+			}
+		}
+		
+		CommandEntry e;
+		e.modKeys = modKeys;
+		e.command = command;
+		
+		vCommands.push_back( e );
+	}
+
+	//____ unmapCommand() ______________________________________________________
+	
+	void InputHandler::unmapCommand( int native_keycode, ModifierKeys modKeys )
+	{
+		auto it = m_commandMap.find(native_keycode);
+		if( it != m_commandMap.end() )
+		{
+			std::vector<CommandEntry>& v = it->second;
+			for( auto i = v.begin() ; i != v.end() ; i++ )
+			{
+				if( i->modKeys == modKeys )
+				{
+					v.erase(i);
+					break;
+				}
+			}
+			
+			if( v.empty() )
+				m_commandMap.erase(it);
+		}
+	}
+
+	//____ clearCommandMap() ___________________________________________________
+	
+	void InputHandler::clearCommandMap()
+	{
+		m_commandMap.clear();
+	}
+
+	//____ translateCommand() __________________________________________________
+	
+	EditCmd InputHandler::translateCommand( int native_keycode, ModifierKeys modKeys )
+	{
+		auto it = m_commandMap.find(native_keycode);
+		if( it != m_commandMap.end() )
+		{
+			std::vector<CommandEntry>& v = it->second;
+			for( int i = 0 ; i < v.size() ; i++ )
+				if( v[i].modKeys == modKeys )
+					return v[i].command;
+		}
+		return EditCmd::None;
+	}
+
+
 	
 	//____ putText() ___________________________________________________________
 	
@@ -530,6 +598,13 @@ namespace wg
 	
 		Widget * pWidget = _focusedWidget();
 		Base::msgRouter()->post( new KeyPressMsg( m_inputId, nativeKeyCode, translatedKeyCode, pWidget, m_modKeys, m_pointerPos, timestamp ) );
+
+		// Post an EditCommand if that is associated with the key-combo.
+
+		EditCmd cmd = translateCommand( nativeKeyCode, m_modKeys );
+		if( cmd != EditCmd::None )
+			Base::msgRouter()->post( new EditCommandMsg( m_inputId, cmd, pWidget ));
+
 		
 		// Update modkeys
 	
@@ -681,6 +756,11 @@ namespace wg
 			while( repeatPos <= timestamp )
 			{
 				Base::msgRouter()->post( new KeyRepeatMsg( m_inputId, key.nativeKeyCode, key.translatedKeyCode, key.pWidget.rawPtr(), m_modKeys, m_pointerPos, repeatPos ));
+
+				EditCmd cmd = translateCommand( key.nativeKeyCode, m_modKeys );
+				if( cmd != EditCmd::None )
+					Base::msgRouter()->post( new EditCommandMsg( m_inputId, cmd, key.pWidget.rawPtr() ));
+
 				repeatPos += m_keyRepeatRate;
 			}
 		}	
