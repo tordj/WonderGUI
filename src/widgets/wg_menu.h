@@ -78,9 +78,9 @@ namespace wg
 	
 		//____ Methods ___________________________________________
 	
-		bool			setSkin( const Skin_p& pSkin, int iconFieldWidth, int arrowFieldWidth );
-		int				iconFieldWidth() const			{ return m_iconFieldWidth; }
-		int				arrowFieldWidth() const			{ return m_arrowFieldWidth; }
+		bool			setSkin( const Skin_p& pSkin, int iconItemWidth, int arrowItemWidth );
+		int				iconItemWidth() const			{ return m_iconItemWidth; }
+		int				arrowItemWidth() const			{ return m_arrowItemWidth; }
 	
 		void			setEntrySkin( const Skin_p& pSkin );
 		Skin_p		entrySkin() const { return m_pEntrySkin; }
@@ -288,8 +288,8 @@ namespace wg
 	
 		// Members defining content layout
 	
-		int						m_iconFieldWidth;
-		int						m_arrowFieldWidth;
+		int						m_iconItemWidth;
+		int						m_arrowItemWidth;
 	
 		// Members defining separators
 	

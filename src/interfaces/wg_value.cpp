@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_value.h>
-#include <wg_valuefield.h>
+#include <wg_valueitem.h>
 
 namespace wg 
 {
@@ -60,7 +60,7 @@ namespace wg
 	
 	Object * Value::_object() const
 	{
-		return m_pField->_object();
+		return m_pItem->_object();
 	}
 
 } // namespace wg

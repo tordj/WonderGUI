@@ -359,6 +359,7 @@ namespace wg
 	
 	bool MsgRouter::post( const Msg_p& pMsg )
 	{
+	
 		if( m_bIsProcessing )
 		{
 			// Msgs that are posted as a direct result of another event being processed
@@ -400,7 +401,7 @@ namespace wg
 	{
 		while( !m_msgQueue.empty() )
 		{
-			Msg_p& pMsg = m_msgQueue.front();
+			Msg_p pMsg = m_msgQueue.front();
 			m_insertPos = m_msgQueue.begin()+1;	// Insert position set to right after current event.
 		
 			do

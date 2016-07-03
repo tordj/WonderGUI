@@ -55,7 +55,7 @@ namespace wg
 	
 	class ValueFormat : public Object
 	{
-		friend class LegacyTextField;
+		friend class LegacyTextItem;
 		public:
 			static ValueFormat_p	create() { return ValueFormat_p(new ValueFormat()); }
 			static ValueFormat_p	create( const CharSeq& format )  { return ValueFormat_p(new ValueFormat(format)); }

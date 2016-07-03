@@ -556,6 +556,15 @@ namespace wg
 		int ofs;
 		int len;
 	};
+
+	//____ ItemNotif ___________________________________________________________
+
+	enum class ItemNotif {
+		ValueModified,
+		ValueEdited,
+		SpanModified,
+		Other
+	};
 	
 	
 	//____ SortContext __________________________________________________________

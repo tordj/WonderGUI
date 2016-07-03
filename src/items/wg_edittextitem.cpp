@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_edittextfield.h>
+#include <wg_edittextitem.h>
 #include <wg_charseq.h>
 
 // TODO: Go to next/previous word.
@@ -41,7 +41,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	EditTextField::EditTextField( EditTextHolder * pHolder ) : TextField(pHolder)
+	EditTextItem::EditTextItem( Widget * pWidget ) : TextItem(pWidget)
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
@@ -51,8 +51,10 @@ namespace wg
 
 	//____ receive() ___________________________________________________________
 
-	void EditTextField::receive( const Msg_p& pMsg )
+	void EditTextItem::receive( const Msg_p& pMsg )
 	{
+		TextItem::receive( pMsg );
+
 		MsgType type = pMsg->type();
 		
 		switch( type )
@@ -65,7 +67,7 @@ namespace wg
 				{
 					bool bDirty = _style()->combCaret()->tick( p->timediff() );					
 					if( bDirty )
-						_onDirty();										//TODO: Only render what is needed.
+						_requestRender();										//TODO: Only render what is needed.
 				}
 				break;
 			}
@@ -225,6 +227,19 @@ namespace wg
 			
 				break;
 			}
+
+			case MsgType::MousePress:
+				break;
+
+			case MsgType::MouseRepeat:
+				break;
+
+			case MsgType::MouseRelease:
+				break;
+
+			case MsgType::MouseClick:
+				break;
+
 			default:
 				break;
 				
@@ -235,60 +250,60 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void EditTextField::clear()
+	void EditTextItem::clear()
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
 	
-		TextField::clear();
+		TextItem::clear();
 	}
 	
 	//____ set() ___________________________________________________________________
 	
-	void EditTextField::set( const CharSeq& seq )
+	void EditTextItem::set( const CharSeq& seq )
 	{
-		TextField::set( seq );
+		TextItem::set( seq );
 		_caretToEnd();
 	}
 	
-	void EditTextField::set( const CharBuffer * pBuffer )
+	void EditTextItem::set( const CharBuffer * pBuffer )
 	{
-		TextField::set( pBuffer );
+		TextItem::set( pBuffer );
 		_caretToEnd();
 	}
 	
-	void EditTextField::set( const String& str )
+	void EditTextItem::set( const String& str )
 	{
-		TextField::set( str );
+		TextItem::set( str );
 		_caretToEnd();
 	}
 	
 	//____ append() ________________________________________________________________
 	
-	int EditTextField::append( const CharSeq& seq )
+	int EditTextItem::append( const CharSeq& seq )
 	{
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 				
-		return TextField::append( seq );
+		return TextItem::append( seq );
 	}
 	
 	//____ insert() ________________________________________________________________
 	
-	int EditTextField::insert( int ofs, const CharSeq& seq )
+	int EditTextItem::insert( int ofs, const CharSeq& seq )
 	{
 		if( ofs <= m_editState.caretOfs )
 			m_editState.caretOfs += seq.length();
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 	
-		return TextField::insert(ofs,seq);
+		return TextItem::insert(ofs,seq);
 	}
 	
 	//____ replace() _______________________________________________________________
 	
-	int EditTextField::replace( int ofs, int nDelete, const CharSeq& seq )
+	int EditTextItem::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs >= ofs )
@@ -302,12 +317,12 @@ namespace wg
 		m_editState.selectOfs = caretOfs;
 		m_editState.wantedOfs = -1;
 	
-		return TextField::replace(ofs,nDelete,seq);
+		return TextItem::replace(ofs,nDelete,seq);
 	}
 	
 	//____ erase() ________________________________________________________________
 	
-	int EditTextField::erase( int ofs, int len )
+	int EditTextItem::erase( int ofs, int len )
 	{
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs > ofs )
@@ -321,22 +336,22 @@ namespace wg
 		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
 		
-		return TextField::remove( ofs, len );
+		return TextItem::remove( ofs, len );
 	}
 	
 	//____ setState() ______________________________________________________________
 	
-	void EditTextField::setState( State state )
+	void EditTextItem::setState( State state )
 	{
-		TextField::setState(state);
+		TextItem::setState(state);
 	}
 	
 	
 	//____ onRender() ______________________________________________________________
 	
-	void EditTextField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void EditTextItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_printer()->renderField(this, pDevice, _canvas, _clip);
+		_printer()->renderItem(this, pDevice, _canvas, _clip);
 		
 		Caret_p pCaret = _style()->combCaret();
 		
@@ -348,7 +363,7 @@ namespace wg
 	
 	//____ setEditMode() _______________________________________________________
 	
-	void EditTextField::setEditMode( TextEditMode mode )
+	void EditTextItem::setEditMode( TextEditMode mode )
 	{
 		switch( mode )
 		{
@@ -369,7 +384,7 @@ namespace wg
 
 	//____ select() ____________________________________________________________
 	
-	bool EditTextField::select( int begin, int end )
+	bool EditTextItem::select( int begin, int end )
 	{
 		if( m_editMode == TextEditMode::Static )
 			return false;
@@ -383,7 +398,7 @@ namespace wg
 		{
 			m_editState.selectOfs = begin;
 			m_editState.caretOfs = end;
-			_onDirty();						//TODO: Optimize. Only render parts that have been selected or unselected.
+			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
 
 			//TODO: Signal that selection (and possibly cursor position) has changed.
 		}
@@ -393,14 +408,14 @@ namespace wg
 
 	//____ selectAll() _________________________________________________________
 	
-	bool EditTextField::selectAll()
+	bool EditTextItem::selectAll()
 	{
 		return select( 0, m_charBuffer.length() );
 	}
 	
 	//____ unselect() __________________________________________________________
 
-	bool EditTextField::unselect()
+	bool EditTextItem::unselect()
 	{
 		if( m_editMode == TextEditMode::Static )
 			return false;
@@ -408,7 +423,7 @@ namespace wg
 		if( m_editState.selectOfs != m_editState.caretOfs )
 		{
 			m_editState.selectOfs = m_editState.caretOfs;
-			_onDirty();						//TODO: Optimize. Only render parts that have been selected or unselected.
+			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
 
 			//TODO: Signal that selection (and possibly cursor position) has changed.
 		}
@@ -418,21 +433,21 @@ namespace wg
 	
 	//____ selectionBegin() ____________________________________________________
 
-	int EditTextField::selectionBegin() const
+	int EditTextItem::selectionBegin() const
 	{
 		return m_editState.caretOfs < m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;
 	}
 	
 	//____ selectionEnd() ______________________________________________________
 
-	int EditTextField::selectionEnd() const
+	int EditTextItem::selectionEnd() const
 	{
 		return m_editState.caretOfs > m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;		
 	}
 	
 	//____ eraseSelected() _____________________________________________________
 
-	int EditTextField::eraseSelected()
+	int EditTextItem::eraseSelected()
 	{
 		if( m_editMode == TextEditMode::Static )
 			return -1;
@@ -452,7 +467,7 @@ namespace wg
 
 	//____ setCaretPos() _______________________________________________________
 	
-	bool EditTextField::setCaretPos( int pos )
+	bool EditTextItem::setCaretPos( int pos )
 	{
 		if( m_editMode != TextEditMode::Editable )
 			return false;
@@ -466,7 +481,7 @@ namespace wg
 			m_editState.selectOfs = pos;
 			m_editState.caretOfs = pos;
 			m_editState.wantedOfs = -1;
-			_onDirty();						//TODO: Optimize. Only render parts that have been selected or unselected.
+			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
 
 			//TODO: Signal that selection (and possibly caret position) has changed.
 		}
@@ -476,7 +491,7 @@ namespace wg
 
 	//____ caretPos() ___________________________________________________________
 
-	int EditTextField::caretPos() const
+	int EditTextItem::caretPos() const
 	{
 		if( !m_editState.bCaret )
 			return -1;
@@ -485,7 +500,7 @@ namespace wg
 	}
 	//____ caretPut() __________________________________________________________
 
-	int EditTextField::caretPut( const CharSeq& seq )
+	int EditTextItem::caretPut( const CharSeq& seq )
 	{
 		if( !m_editState.bCaret )
 			return 0;
@@ -518,7 +533,7 @@ namespace wg
 			return insert( m_editState.caretOfs, &buffer );
 	}
 	
-	bool EditTextField::caretPut( uint16_t c )
+	bool EditTextItem::caretPut( uint16_t c )
 	{
 		//TODO: Implement
 		return false;
@@ -526,7 +541,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	bool EditTextField::caretUp()
+	bool EditTextItem::caretUp()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -537,7 +552,7 @@ namespace wg
 	
 	//____ caretDown() _________________________________________________________
 
-	bool EditTextField::caretDown()
+	bool EditTextItem::caretDown()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -548,7 +563,7 @@ namespace wg
 	
 	//____ caretLeft() _________________________________________________________
 
-	bool EditTextField::caretLeft()
+	bool EditTextItem::caretLeft()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -559,7 +574,7 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 	
-	bool EditTextField::caretRight()
+	bool EditTextItem::caretRight()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -570,7 +585,7 @@ namespace wg
 	
 	//____ caretNextWord() _____________________________________________________
 	
-	bool EditTextField::caretNextWord()
+	bool EditTextItem::caretNextWord()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -581,7 +596,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 	
-	bool EditTextField::caretPrevWord()
+	bool EditTextItem::caretPrevWord()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -592,7 +607,7 @@ namespace wg
 
 	//____ caretEraseNextChar() ________________________________________________
 		
-	bool EditTextField::caretEraseNextChar()
+	bool EditTextItem::caretEraseNextChar()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -613,7 +628,7 @@ namespace wg
 
 	//____ caretErasePrevChar() ________________________________________________
 
-	bool EditTextField::caretErasePrevChar()
+	bool EditTextItem::caretErasePrevChar()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -635,14 +650,14 @@ namespace wg
 
 	//____ caretEraseNextWord() ________________________________________________
 
-	bool EditTextField::caretEraseNextWord()
+	bool EditTextItem::caretEraseNextWord()
 	{
 		return false; //TODO: Implement!		
 	}
 
 	//____ caretErasePrevWord() ________________________________________________
 
-	bool EditTextField::caretErasePrevWord()
+	bool EditTextItem::caretErasePrevWord()
 	{
 		return false; //TODO: Implement!		
 	}
@@ -652,7 +667,7 @@ namespace wg
 
 	//_____ caretLineBegin() ___________________________________________________
 
-	bool EditTextField::caretLineBegin()
+	bool EditTextItem::caretLineBegin()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -663,7 +678,7 @@ namespace wg
 	
 	//____ caretLineEnd() ______________________________________________________
 	
-	bool EditTextField::caretLineEnd()
+	bool EditTextItem::caretLineEnd()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -674,7 +689,7 @@ namespace wg
 
 	//____ caretTextBegin() ____________________________________________________
 	
-	bool EditTextField::caretTextBegin()
+	bool EditTextItem::caretTextBegin()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -687,7 +702,7 @@ namespace wg
 	
 	//____ caretTextEnd() ______________________________________________________
 	
-	bool EditTextField::caretTextEnd()
+	bool EditTextItem::caretTextEnd()
 	{
 		if( !m_editState.bCaret )
 			return false;
@@ -701,7 +716,7 @@ namespace wg
 	
 	//____ _caretToBegin() __________________________________________________________
 	
-	void EditTextField::_caretToBegin()
+	void EditTextItem::_caretToBegin()
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
@@ -710,7 +725,7 @@ namespace wg
 
 	//____ _caretToEnd() __________________________________________________________
 	
-	void EditTextField::_caretToEnd()
+	void EditTextItem::_caretToEnd()
 	{
 		int lastChar = m_charBuffer.length();		// The text terminator is considered part of the text when placing the cursor.
 		m_editState.caretOfs = lastChar;
@@ -720,7 +735,7 @@ namespace wg
 
 	//____ _moveCaret() ______________________________________________
 
-	bool EditTextField::_moveCaret( int caretOfs, MoveMethod method )
+	bool EditTextItem::_moveCaret( int caretOfs, MoveMethod method )
 	{
 		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
 
@@ -746,7 +761,7 @@ namespace wg
 			
 			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
 			
-			_onDirty();
+			_requestRender();
 			return true;
 		}
 

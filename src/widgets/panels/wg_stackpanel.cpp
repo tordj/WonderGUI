@@ -247,9 +247,9 @@ namespace wg
 		return ((StackHook*)pHook)->_getGeo(m_size);
 	}
 	
-	//____ _onResizeRequested() ____________________________________________________
+	//____ _requestResizeRequested() ____________________________________________________
 	
-	void StackPanel::_onResizeRequested( VectorHook * _pHook )
+	void StackPanel::_requestResizeRequested( VectorHook * _pHook )
 	{
 		_refreshPreferredSize();
 	}

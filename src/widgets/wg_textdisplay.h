@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<TextDisplay,Widget_p>		TextDisplay_p;
 	typedef	WeakPtr<TextDisplay,Widget_wp>	TextDisplay_wp;
 	
-	class TextDisplay:public Widget, protected TextHolder
+	class TextDisplay:public Widget
 	{
 	public:
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
@@ -75,13 +75,9 @@ namespace wg
 		void			_setState( State state );
 		void			_setSkin( const Skin_p& pSkin );
 	
-		Object * 		_object() { return this; }
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void			_onFieldResize( Field * pField );
 	private:
 	
-		TextField		m_text;
+		TextItem		m_text;
 	};
 	
 	

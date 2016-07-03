@@ -41,7 +41,7 @@ namespace wg
 	typedef	StrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
 	typedef	WeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
 	
-	class FpsDisplay:public Widget, protected TextHolder
+	class FpsDisplay : public Widget
 	{
 	public:
 		static FpsDisplay_p	create() { return FpsDisplay_p(new FpsDisplay()); }
@@ -69,20 +69,14 @@ namespace wg
 		void		_setState( State state );
 		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void		_cloneContent( const Widget * _pOrg );
-	
-		Object * 	_object() { return this; };
-		void		_onFieldDirty( Field * pField );
-		void		_onFieldDirty( Field * pField, const Rect& rect );
-		void 		_onFieldResize( Field * pField );
-	
-	
+				
 	private:
 	
 	const static int c_tickBuffer = 64;
 	
 	
-		TextField	m_labelsText;
-		TextField	m_valuesText;
+		TextItem	m_labelsText;
+		TextItem	m_valuesText;
 		int *		m_pTickBuffer;
 		int			m_tickBufferOfs;
 		RouteId		m_tickRouteId;

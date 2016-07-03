@@ -410,9 +410,9 @@ namespace wg
 		_requestRender( rect + p->m_geo.pos() );
 	}
 	
-	//____ _onResizeRequested() _____________________________________________________
+	//____ _requestResizeRequested() _____________________________________________________
 	
-	void PackPanel::_onResizeRequested( VectorHook * pHook )
+	void PackPanel::_requestResizeRequested( VectorHook * pHook )
 	{
 		// Update cached preferred size of child
 		

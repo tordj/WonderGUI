@@ -253,26 +253,6 @@ namespace wg
 		for( int i = 0 ; i < c_tickBuffer ; i++ )
 			m_pTickBuffer[i] = pOrg->m_pTickBuffer[i];
 	}
-	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void FpsDisplay::_onFieldDirty( Field * pField )
-	{
-		_requestRender();
-	}
 
-	void FpsDisplay::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_requestRender();
-	}
-	
-	//____ _onFieldResize() ________________________________________________________
-	
-	void FpsDisplay::_onFieldResize( Field * pField )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	
 
 } // namespace wg

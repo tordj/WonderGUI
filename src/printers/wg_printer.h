@@ -46,7 +46,7 @@
 namespace wg 
 {
 	
-	class PrintableField;
+	class PrintableItem;
 	
 	class GfxDevice;
 	class CharBuffer;
@@ -64,51 +64,51 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Printer_p	cast( const Object_p& pObject );
 	
-		virtual void	addField( PrintableField * pField ) = 0;
-		virtual void	removeField( PrintableField * pField ) = 0;
+		virtual void	addItem( PrintableItem * pItem ) = 0;
+		virtual void	removeItem( PrintableItem * pItem ) = 0;
 	
-		virtual int		charAtPos( const PrintableField * pField, Coord pos ) const = 0;
-		virtual Coord	charPos( const PrintableField * pField, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charRect( const PrintableField * pField, int charOfs ) const = 0;
-		virtual int		charLine( const PrintableField * pField, int charOfs ) const = 0;
-		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const = 0;
-		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const = 0;		
+		virtual int		charAtPos( const PrintableItem * pItem, Coord pos ) const = 0;
+		virtual Coord	charPos( const PrintableItem * pItem, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charRect( const PrintableItem * pItem, int charOfs ) const = 0;
+		virtual int		charLine( const PrintableItem * pItem, int charOfs ) const = 0;
+		virtual int		lineBegin( const PrintableItem * pItem, int lineNb ) const = 0;
+		virtual int		lineEnd( const PrintableItem * pItem, int lineNb ) const = 0;		
 
-		virtual int		wordBegin( const PrintableField * pField, int charOfs ) const = 0;
-		virtual int		wordEnd( const PrintableField * pField, int charOfs ) const = 0;		
+		virtual int		wordBegin( const PrintableItem * pItem, int charOfs ) const = 0;
+		virtual int		wordEnd( const PrintableItem * pItem, int charOfs ) const = 0;		
 
 	
-		virtual void 	renderField( PrintableField * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
+		virtual void 	renderItem( PrintableItem * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 	
-		virtual void	onTextModified( PrintableField * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onFieldResized( PrintableField * pText, Size newSize, Size oldSize ) = 0;
-		virtual void	onStateChanged( PrintableField * pText, State newState, State oldState ) = 0;
-		virtual void	onStyleChanged( PrintableField * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
-		virtual void	onCharStyleChanged( PrintableField * pText, int ofs = 0, int len = INT_MAX ) = 0;
-		virtual void	onRefresh( PrintableField * pText ) = 0;
+		virtual void	onTextModified( PrintableItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
+		virtual void	requestResized( PrintableItem * pText, Size newSize, Size oldSize ) = 0;
+		virtual void	onStateChanged( PrintableItem * pText, State newState, State oldState ) = 0;
+		virtual void	onStyleChanged( PrintableItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
+		virtual void	onCharStyleChanged( PrintableItem * pText, int ofs = 0, int len = INT_MAX ) = 0;
+		virtual void	onRefresh( PrintableItem * pText ) = 0;
 	
 	
-		virtual Size	preferredSize( const PrintableField * pText ) const = 0;
-		virtual int		matchingWidth( const PrintableField * pText, int height ) const = 0;
-		virtual int		matchingHeight( const PrintableField * pText, int width ) const = 0;
+		virtual Size	preferredSize( const PrintableItem * pText ) const = 0;
+		virtual int		matchingWidth( const PrintableItem * pText, int height ) const = 0;
+		virtual int		matchingHeight( const PrintableItem * pText, int width ) const = 0;
 	
-		virtual Rect	rectForRange( const PrintableField * pText, int ofs, int length ) const = 0;
+		virtual Rect	rectForRange( const PrintableItem * pText, int ofs, int length ) const = 0;
 	
-		virtual String	tooltip( const PrintableField * pText ) const;
+		virtual String	tooltip( const PrintableItem * pText ) const;
 	
 		// Methods for supporting a caret
 	
-		virtual Direction 	textDirection( PrintableField * pField, int charOfs ) const = 0;
-		virtual int			caretToPos( PrintableField * pField, Coord pos, int& wantedLineOfs ) const = 0;
-		virtual int			caretUp( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretDown( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretLeft( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual Direction 	textDirection( PrintableItem * pItem, int charOfs ) const = 0;
+		virtual int			caretToPos( PrintableItem * pItem, Coord pos, int& wantedLineOfs ) const = 0;
+		virtual int			caretUp( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretDown( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretLeft( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretRight( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretHome( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretEnd( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
 
-		virtual int			caretPrevWord( PrintableField * pField, int charOfs ) const = 0;
-		virtual int			caretNextWord( PrintableField * pField, int charOfs ) const = 0;
+		virtual int			caretPrevWord( PrintableItem * pItem, int charOfs ) const = 0;
+		virtual int			caretNextWord( PrintableItem * pItem, int charOfs ) const = 0;
 		
 	
 	protected:
@@ -116,20 +116,20 @@ namespace wg
 		virtual ~Printer() {};
 	
 	
-		CharBuffer *  	_charBuffer( PrintableField * pField ) const;
-		const CharBuffer *  _charBuffer( const PrintableField * pField ) const;
-		const void *	_fieldDataBlock( const PrintableField * pField) const;
-		void *			_fieldDataBlock( PrintableField * pField) const;
-		int					_fieldDataInt( const PrintableField * pField ) const;
-		const TextStyle *	_baseStyle( const PrintableField * pField ) const;
-		State			_state( const PrintableField * pField ) const;
+		CharBuffer *  	_charBuffer( PrintableItem * pItem ) const;
+		const CharBuffer *  _charBuffer( const PrintableItem * pItem ) const;
+		const void *	_itemDataBlock( const PrintableItem * pItem) const;
+		void *			_itemDataBlock( PrintableItem * pItem) const;
+		int					_itemDataInt( const PrintableItem * pItem ) const;
+		const TextStyle *	_baseStyle( const PrintableItem * pItem ) const;
+		State			_state( const PrintableItem * pItem ) const;
 		
-		void			_setFieldDataBlock( PrintableField * pField, void * pBlock );
-		void			_setFieldDataInt( PrintableField * pField, int data );
+		void			_setItemDataBlock( PrintableItem * pItem, void * pBlock );
+		void			_setItemDataInt( PrintableItem * pItem, int data );
 		
-		void			_setFieldDirty( PrintableField * pField );
-		void			_setFieldDirty( PrintableField * pField, const Rect& rect );
-		void			_requestFieldResize( PrintableField * pField );
+		void			_setItemDirty( PrintableItem * pItem );
+		void			_setItemDirty( PrintableItem * pItem, const Rect& rect );
+		void			_requestItemResize( PrintableItem * pItem );
 		
 	};
 	

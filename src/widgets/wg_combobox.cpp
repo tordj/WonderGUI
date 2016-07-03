@@ -101,7 +101,7 @@ namespace wg
 	{
 		TextAttr attr;
 		m_text.getBaseAttr( attr );
-		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textfield
+		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default combobox should fit 10 letter M in textitem
 		Size contentSize( m_text.height(), width );
 		
 		if( m_pSkin )
@@ -796,21 +796,21 @@ namespace wg
 	}
 	
 	
-	//____ _onFieldDirty() _________________________________________________________
+	//____ _requestRender() _________________________________________________________
 	
-	void Combobox::_onFieldDirty( Field * pField )
+	void Combobox::_requestRender( Item * pItem )
 	{
 		_requestRender();	//TODO: Optimize
 	}
 
-	void Combobox::_onFieldDirty( Field * pField, const Rect& rect )
+	void Combobox::_requestRender( Item * pItem, const Rect& rect )
 	{
 		_requestRender();	//TODO: Optimize
 	}
 	
-	//____ _onFieldResize() ________________________________________________________
+	//____ _requestResize() ________________________________________________________
 	
-	void Combobox::_onFieldResize( Field * pField )
+	void Combobox::_requestResize( Item * pItem )
 	{
 		m_bResetCaretOnFocus = true;
 		_requestResize();

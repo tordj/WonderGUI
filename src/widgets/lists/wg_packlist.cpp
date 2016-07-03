@@ -1677,27 +1677,27 @@ namespace wg
 		_requestRenderChildrenFrom( m_hooks.begin() );	// Request render on dirty area
 		return true;
 	}
+/*	
+	//____ _requestRender() _________________________________________________________
 	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void PackList::_onFieldDirty(Field * pField)
+	void PackList::_requestRender(Item * pItem)
 	{
 		_refreshHeader();	//TODO: Just request render on header.
 	}
 	
-	void PackList::_onFieldDirty(Field * pField, const Rect& rect)
+	void PackList::_requestRender(Item * pItem, const Rect& rect)
 	{
 		_refreshHeader();	//TODO: Just request render on rectangle.
 	}
 
 
-	//____ _onFieldResize() ________________________________________________________
+	//____ _requestResize() ________________________________________________________
 	
-	void PackList::_onFieldResize(Field * pField)
+	void PackList::_requestResize(Item * pItem)
 	{
 		_refreshHeader();
 	}
-	
+*/	
 	
 
 } // namespace wg

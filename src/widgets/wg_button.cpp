@@ -237,7 +237,7 @@ namespace wg
 			case MsgType::MouseDoubleClick:
 			case MsgType::MouseRepeat:
 			case MsgType::MouseDrag:
-				if( MouseButtonMsg::cast(_pMsg)->button() ==MouseButton::Left )
+				if( MouseButtonMsg::cast(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
 	
@@ -328,24 +328,84 @@ namespace wg
 		return Widget::_alphaTest(ofs);
 	}
 	
-	//____ _onFieldDirty() _________________________________________________________
+	//____ _renderRequested() _________________________________________________________
 	
-	void Button::_onFieldDirty( Field * pField )
+	void Button::_renderRequested( Item * pItem )
 	{
-		_requestRender();		//TODO: Only requestRender on field
+		_requestRender();		//TODO: Only requestRender on item
 	}
 
-	void Button::_onFieldDirty( Field * pField, const Rect& rect )
+	void Button::_renderRequested( Item * pItem, const Rect& rect )
 	{
-		_requestRender();		//TODO: Only requestRender on rect of field.
+		_requestRender();		//TODO: Only requestRender on rect of item.
 	}
 	
-	//____ _onFieldResize() ________________________________________________________
+	//____ _resizeRequested() ________________________________________________________
 	
-	void Button::_onFieldResize( Field * pField )
+	void Button::_resizeRequested( Item * pItem )
 	{
 		_requestResize();
 		_requestRender();
 	}
+
+	//____ _itemPos() ______________________________________________________________
+
+	Coord Button::_itemPos( const Item * pItem ) const
+	{
+		Rect	contentRect = m_size;
+	
+		if( m_pSkin )
+			contentRect = m_pSkin->contentRect(contentRect, m_state);
+	
+		// Get icon and text rect from content rect
+	
+		Rect iconRect = m_icon.getIconRect( contentRect );
+		
+		if( pItem == &m_icon )
+			return iconRect.pos();
+		
+		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		return textRect.pos();
+	}
+	
+	//____ _itemSize() ______________________________________________________________
+	
+	Size Button::_itemSize( const Item * pItem ) const
+	{
+		Size	sz = m_size;
+
+		if( m_pSkin )
+			sz -= m_pSkin->contentPadding();
+
+		Rect iconRect = m_icon.getIconRect( sz );
+
+		if( pItem == &m_icon )
+			return iconRect.size();
+		
+		Rect textRect = m_icon.getTextRect( sz, iconRect );
+		return textRect.size();
+
+	}
+	
+	//____ _itemGeo() ______________________________________________________________
+	
+	Rect Button::_itemGeo( const Item * pItem ) const
+	{
+		Rect	contentRect = m_size;
+	
+		if( m_pSkin )
+			contentRect = m_pSkin->contentRect(contentRect, m_state);
+	
+		// Get icon and text rect from content rect
+	
+		Rect iconRect = m_icon.getIconRect( contentRect );
+		
+		if( pItem == &m_icon )
+			return iconRect;
+		
+		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		return textRect;
+	}
+
 
 } // namespace wg

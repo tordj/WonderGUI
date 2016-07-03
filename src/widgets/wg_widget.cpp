@@ -551,4 +551,77 @@ namespace wg
 		return Size(0,0);
 	}
 
+	//____ _renderRequested() _________________________________________________________
+	
+	void Widget::_renderRequested( const Item * pItem )
+	{
+		_requestRender( _itemGeo( pItem ) );
+	}
+
+	void Widget::_renderRequested( const Item * pItem, const Rect& rect )
+	{
+		_requestRender( rect + _itemPos( pItem ) );
+	}
+	
+	//____ _resizeRequested() ________________________________________________________
+	
+	void Widget::_resizeRequested( const Item * pItem )
+	{
+		_requestResize();
+		_requestRender();
+	}
+
+	//____ _itemPos() ______________________________________________________________
+
+	Coord Widget::_itemPos( const Item * pItem ) const
+	{
+		if( m_pSkin )
+			return m_pSkin->contentOfs( m_state );
+		else
+			return Coord();
+	}
+	
+	//____ _itemSize() ______________________________________________________________
+	
+	Size Widget::_itemSize( const Item * pItem ) const
+	{
+		if( m_pSkin )
+			return m_size - m_pSkin->contentPadding();
+		else
+			return m_size;
+	}
+	
+	//____ _itemGeo() ______________________________________________________________
+	
+	Rect Widget::_itemGeo( const Item * pItem ) const
+	{
+		if( m_pSkin )
+			return m_pSkin->contentRect( m_size, m_state );
+		else
+			return Rect( 0,0,m_size );			
+	}
+	
+	//____ _itemGlobalPos() ________________________________________________________
+
+	Coord Widget::_itemGlobalPos( const Item * pItem ) const
+	{
+		return _itemPos( pItem ) + globalPos();
+	}
+	
+	//____ _itemGlobalGeo() ______________________________________________________________
+	
+	Rect Widget::_itemGlobalGeo( const Item * pItem ) const
+	{
+		return _itemGeo( pItem ) + globalPos();
+	}
+
+	//____ _onItemNotify() __________________________________________________
+
+	void Widget::_onItemNotify( Item * pItem, ItemNotif notification, void * pData )
+	{
+		// By default we do nothing
+	}
+
+
+
 } // namespace wg

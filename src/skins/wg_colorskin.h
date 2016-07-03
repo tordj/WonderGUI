@@ -59,6 +59,7 @@ namespace wg
 	
 		Size	contentPadding() const;
 		Size	sizeForContent( const Size contentSize ) const;
+		Coord	contentOfs( State state ) const;
 		Rect	contentRect( const Rect& canvas, State state ) const;
 	
 		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;

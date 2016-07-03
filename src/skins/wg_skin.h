@@ -61,6 +61,7 @@ namespace wg
 	
 		virtual Size	contentPadding() const = 0;
 		virtual Size	sizeForContent( const Size contentSize ) const = 0;
+		virtual Coord	contentOfs( State state ) const = 0;
 		virtual Rect	contentRect( const Rect& canvas, State state ) const = 0;
 	
 		virtual bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const = 0;

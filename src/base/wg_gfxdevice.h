@@ -52,7 +52,7 @@ namespace wg
 	class	Rect;
 	class	Border;
 	class	Surface;
-	class	LegacyTextField;
+	class	LegacyTextItem;
 	class	CaretInstance;
 	class 	Pen;
 	

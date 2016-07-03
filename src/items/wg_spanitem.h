@@ -28,26 +28,13 @@
 
 namespace wg 
 {
-	
-	class SpanItem;
-	
-	//____ SpanHolder ___________________________________________________________
-	
-	class SpanHolder : public ItemHolder
-	{
-	public:
-		virtual void	_onSpanModified( SpanItem * pItem ) = 0;
-		virtual int		_spanStepSize( SpanItem * pItem ) = 0;
-		virtual int		_spanSkipSize( SpanItem * pItem ) = 0;
-	};
-	
+		
 	//____ SpanItem _____________________________________________________________
 	
 	class SpanItem : public Item
 	{
-		friend class SpanHolder;
 	public:
-		SpanItem( SpanHolder * pHolder );
+		SpanItem( Widget * pWidget );
 		virtual ~SpanItem() {};
 	
 		bool	setMin( int min );
@@ -86,9 +73,9 @@ namespace wg
 	
 	
 	protected:
-		void	_onModified() { static_cast<SpanHolder*>(m_pHolder)->_onSpanModified(this); }
-		int		_stepSize() { return static_cast<SpanHolder*>(m_pHolder)->_spanStepSize(this); }
-		int		_skipSize() { return static_cast<SpanHolder*>(m_pHolder)->_spanSkipSize(this); }
+		void	_onModified() { _notify( ItemNotif::SpanModified, nullptr ); }
+		int		_stepSize() { return 0; }	//TODO: Implement!!!
+		int		_skipSize() { return 0; }	//TODO: Implement!!!
 	};
 	
 	

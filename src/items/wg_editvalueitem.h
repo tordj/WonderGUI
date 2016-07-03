@@ -19,36 +19,23 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_EDITVALUEFIELD_DOT_H
-#define WG_EDITVALUEFIELD_DOT_H
+#ifndef	WG_EDITVALUEITEM_DOT_H
+#define WG_EDITVALUEITEM_DOT_H
 
-#ifndef WG_MODVALUEFIELD_DOT_H
-#	include <wg_modvaluefield.h>
+#ifndef WG_MODVALUEITEM_DOT_H
+#	include <wg_modvalueitem.h>
 #endif
 
 namespace wg 
 {
 	
+	//____ EditValueItem ____________________________________________________________
 	
-	class EditValueField;
-	
-	//____ EditValueHolder ___________________________________________________________
-	
-	class EditValueHolder : public ModValueHolder
+	class EditValueItem : public ModValueItem
 	{
 	public:
-		virtual void		_onValueEdited( EditValueField * pField ) = 0;
-		virtual Object*	_object() = 0;
-	};
-	
-	
-	//____ EditValueField ____________________________________________________________
-	
-	class EditValueField : public ModValueField
-	{
-	public:
-		EditValueField( EditValueHolder * pHolder );
-		~EditValueField();
+		EditValueItem( Widget * pWidget );
+		~EditValueItem();
 	
 		void				setEditMode(TextEditMode mode);
 		inline TextEditMode editMode() const { return m_editMode; }
@@ -80,7 +67,7 @@ namespace wg
 		void				goEof();
 	
 	protected:
-		void				_onValueEdited() { static_cast<EditValueHolder*>(m_pHolder)->_onValueEdited(this); }
+		void				_onValueEdited() { _notify( ItemNotif::ValueEdited, nullptr ); }
 	
 		TextEditMode		m_editMode;
 		Caret_p				m_pCaret;
@@ -92,4 +79,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_EDITVALUEFIELD_DOT_H
+#endif //WG_EDITVALUEITEM_DOT_H

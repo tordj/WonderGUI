@@ -27,8 +27,8 @@
 #	include <wg_modvalue.h>
 #endif
 
-#ifndef WG_EDITVALUEFIELD_DOT_H
-#	include <wg_editvaluefield.h>
+#ifndef WG_EDITVALUEITEM_DOT_H
+#	include <wg_editvalueitem.h>
 #endif
 
 
@@ -40,11 +40,11 @@ namespace wg
 	typedef	WeakInterfacePtr<EditValue,ModValue_wp>	EditValue_wp;
 	
 	/**
-	 * @brief Interface to a value display field with editable text.
+	 * @brief Interface to a value display item with editable text.
 	 *
-	 * Interface to a value display field with editable text.
+	 * Interface to a value display item with editable text.
 	 *
-	 * The value in an editable value field can be set through the API, and is
+	 * The value in an editable value item can be set through the API, and is
 	 * editable through the UI.
 	 * 
 	 */
@@ -52,7 +52,7 @@ namespace wg
 	class EditValue : public ModValue
 	{
 	public:
-		EditValue(EditValueField * pField) : ModValue(pField) {}
+		EditValue(EditValueItem * pItem) : ModValue(pItem) {}
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
@@ -66,7 +66,7 @@ namespace wg
 		virtual bool			isEditable() const = 0;
 		virtual bool			isSelectable() const = 0;
 		
-		// Calling these methods gets field into edit mode, displaying caret.
+		// Calling these methods gets item into edit mode, displaying caret.
 	
 		virtual int				insertAtCaret( const CharSeq& str ) = 0;
 		virtual bool			insertAtCaret( uint16_t c ) = 0;
@@ -89,7 +89,7 @@ namespace wg
 		virtual void			goEof() = 0;
 	
 	private:
-		inline	EditValueField * 	_field() { return static_cast<EditValueField*>(m_pField); }
+		inline	EditValueItem * 	_item() { return static_cast<EditValueItem*>(m_pItem); }
 	};
 	
 	

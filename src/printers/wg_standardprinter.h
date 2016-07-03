@@ -51,58 +51,58 @@ namespace wg
 		void			setAlignment( Origo alignment );
 		Origo			alignment() const { return m_alignment; }
 	
-		virtual void	addField( PrintableField * pField );
-		virtual void	removeField( PrintableField * pField );
+		virtual void	addItem( PrintableItem * pItem );
+		virtual void	removeItem( PrintableItem * pItem );
 	
-		virtual int		charAtPos( const PrintableField * pField, Coord pos ) const;
-		virtual Coord	charPos( const PrintableField * pField, int charOfs ) const;	// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charRect( const PrintableField * pField, int charOfs ) const;
-		virtual int		charLine( const PrintableField * pField, int charOfs ) const;
+		virtual int		charAtPos( const PrintableItem * pItem, Coord pos ) const;
+		virtual Coord	charPos( const PrintableItem * pItem, int charOfs ) const;	// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charRect( const PrintableItem * pItem, int charOfs ) const;
+		virtual int		charLine( const PrintableItem * pItem, int charOfs ) const;
 
-//		virtual int		charLineOfs( const PrintableField * pField, int charOfs ) const;
-//		virtual Coord	lineTopLeftPos( const PrintableField * pField, int line ) const;	
-//		virtual Coord	lineBaselinePos( const PrintableField * pField, int line ) const;	
-//		virtual int		lineWidth( const PrintableField * pField, int line ) const;
-//		virtual int		lineHeight( const PrintableField * pField, int line ) const;
-//		virtual Rect	lineGeo( const PrintableField * pField, int line ) const;
-//		virtual int		lines( const PrintableField * pField ) const;
+//		virtual int		charLineOfs( const PrintableItem * pItem, int charOfs ) const;
+//		virtual Coord	lineTopLeftPos( const PrintableItem * pItem, int line ) const;	
+//		virtual Coord	lineBaselinePos( const PrintableItem * pItem, int line ) const;	
+//		virtual int		lineWidth( const PrintableItem * pItem, int line ) const;
+//		virtual int		lineHeight( const PrintableItem * pItem, int line ) const;
+//		virtual Rect	lineGeo( const PrintableItem * pItem, int line ) const;
+//		virtual int		lines( const PrintableItem * pItem ) const;
 
-		virtual int		lineBegin( const PrintableField * pField, int lineNb ) const;
-		virtual int		lineEnd( const PrintableField * pField, int lineNb ) const;
+		virtual int		lineBegin( const PrintableItem * pItem, int lineNb ) const;
+		virtual int		lineEnd( const PrintableItem * pItem, int lineNb ) const;
 
-		virtual int		wordBegin( const PrintableField * pField, int charOfs ) const;
-		virtual int		wordEnd( const PrintableField * pField, int charOfs ) const;		
+		virtual int		wordBegin( const PrintableItem * pItem, int charOfs ) const;
+		virtual int		wordEnd( const PrintableItem * pItem, int charOfs ) const;		
 	
 	
-		virtual void 	renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
+		virtual void 	renderItem( PrintableItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 	
-		virtual void	onTextModified( PrintableField * pField, int ofs, int charsRemoved, int charsAdded );
-		virtual void	onFieldResized( PrintableField * pField, Size newSize, Size oldSize );
-		virtual void	onStateChanged( PrintableField * pField, State newState, State oldState );
-		virtual void	onStyleChanged( PrintableField * pField, TextStyle * pNewStyle, TextStyle * pOldStyle );
-		virtual void	onCharStyleChanged( PrintableField * pText, int ofs, int len );
-		virtual void	onRefresh( PrintableField * pField );
+		virtual void	onTextModified( PrintableItem * pItem, int ofs, int charsRemoved, int charsAdded );
+		virtual void	requestResized( PrintableItem * pItem, Size newSize, Size oldSize );
+		virtual void	onStateChanged( PrintableItem * pItem, State newState, State oldState );
+		virtual void	onStyleChanged( PrintableItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle );
+		virtual void	onCharStyleChanged( PrintableItem * pText, int ofs, int len );
+		virtual void	onRefresh( PrintableItem * pItem );
 	
 	
-		virtual Size	preferredSize( const PrintableField * pField ) const;
-		virtual int		matchingWidth( const PrintableField * pField, int height ) const;
-		virtual int		matchingHeight( const PrintableField * pField, int width ) const;
+		virtual Size	preferredSize( const PrintableItem * pItem ) const;
+		virtual int		matchingWidth( const PrintableItem * pItem, int height ) const;
+		virtual int		matchingHeight( const PrintableItem * pItem, int width ) const;
 	
-		virtual Rect	rectForRange( const PrintableField * pField, int ofs, int length ) const;
+		virtual Rect	rectForRange( const PrintableItem * pItem, int ofs, int length ) const;
 	
-		virtual String 	tooltip( const PrintableField * pField ) const;
+		virtual String 	tooltip( const PrintableItem * pItem ) const;
 	
-		virtual Direction 	textDirection( PrintableField * pField, int charOfs ) const;
-		virtual int		caretToPos( PrintableField * pField, Coord pos, int& wantedLineOfs ) const;
-		virtual int		caretUp( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
-		virtual int		caretDown( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
-		virtual int		caretLeft( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
-		virtual int		caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
-		virtual int		caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
-		virtual int		caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const;
+		virtual Direction 	textDirection( PrintableItem * pItem, int charOfs ) const;
+		virtual int		caretToPos( PrintableItem * pItem, Coord pos, int& wantedLineOfs ) const;
+		virtual int		caretUp( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
+		virtual int		caretDown( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
+		virtual int		caretLeft( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
+		virtual int		caretRight( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
+		virtual int		caretHome( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
+		virtual int		caretEnd( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const;
 
-		virtual int		caretPrevWord( PrintableField * pField, int charOfs ) const;
-		virtual int		caretNextWord( PrintableField * pField, int charOfs ) const;
+		virtual int		caretPrevWord( PrintableItem * pItem, int charOfs ) const;
+		virtual int		caretNextWord( PrintableItem * pItem, int charOfs ) const;
 	
 	
 	protected:
@@ -127,10 +127,10 @@ namespace wg
 		};
 	
 		int				_countLines( const CharBuffer * pBuffer ) const;
-		void *			_reallocBlock( PrintableField * pField, int lines );
+		void *			_reallocBlock( PrintableItem * pItem, int lines );
 		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state );
-		bool   			_updatePreferredSize( PrintableField * pField );
+		bool   			_updatePreferredSize( PrintableItem * pItem );
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
 		
 		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }
@@ -138,10 +138,10 @@ namespace wg
 		inline LineInfo *			_lineInfo( void * pBlock ) { return reinterpret_cast<LineInfo*>(&(((BlockHeader *) pBlock)[1])); }
 		inline const LineInfo *		_lineInfo( const void * pBlock ) const { return reinterpret_cast<const LineInfo*>(&(((const BlockHeader *) pBlock)[1])); }
 	
-		int				_linePosX( const LineInfo * pLine, int fieldWidth ) const;
-		int				_linePosY( const void * pBlock, int line, int fieldHeight ) const;
-		int				_textPosY( const BlockHeader * pHeader, int fieldHeight ) const;
-		int				_charPosX( const PrintableField * pField, int charOfs ) const;
+		int				_linePosX( const LineInfo * pLine, int itemWidth ) const;
+		int				_linePosY( const void * pBlock, int line, int itemHeight ) const;
+		int				_textPosY( const BlockHeader * pHeader, int itemHeight ) const;
+		int				_charPosX( const PrintableItem * pItem, int charOfs ) const;
 		
 		
 		enum struct SelectMode
@@ -152,8 +152,8 @@ namespace wg
 			ClosestEnd				// Select character/line whose end is closest to offset.
 		};
 		
-		int				_lineAtPosY( PrintableField * pField, int posY, SelectMode mode ) const;
-		int				_charAtPosX( PrintableField * pField, int line, int posX, SelectMode mode ) const;
+		int				_lineAtPosY( const PrintableItem * pItem, int posY, SelectMode mode ) const;
+		int				_charAtPosX( const PrintableItem * pItem, int line, int posX, SelectMode mode ) const;
 		
 		Origo		m_alignment;
 		

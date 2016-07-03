@@ -39,8 +39,8 @@
 #	include <wg_skin.h>
 #endif
 
-#ifndef WG_COLUMNHEADERFIELD_DOT_H
-#	include <wg_columnheaderfield.h>
+#ifndef WG_COLUMNHEADERITEM_DOT_H
+#	include <wg_columnheaderitem.h>
 #endif
 
 #ifndef WG_ICON_DOT_H
@@ -61,7 +61,7 @@ namespace wg
 	class ColumnHeader : public Interface
 	{
 	public:
-		ColumnHeader(ColumnHeaderField* pField);
+		ColumnHeader(ColumnHeaderItem* pItem);
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
@@ -77,14 +77,14 @@ namespace wg
 	
 		//____ Methods _________________________________________
 	
-		inline void			setSkin( const Skin_p& pSkin ) { m_pField->setSkin(pSkin); }
-		inline Skin_p	skin() const { return m_pField->skin(); }
+		inline void			setSkin( const Skin_p& pSkin ) { m_pItem->setSkin(pSkin); }
+		inline Skin_p	skin() const { return m_pItem->skin(); }
 	
 	
 	protected:
 		Object * 			_object() const;
 	
-		ColumnHeaderField *		m_pField;
+		ColumnHeaderItem *		m_pItem;
 	};
 	
 

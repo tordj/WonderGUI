@@ -195,7 +195,7 @@ namespace wg
 	
 	void VectorHook::_requestResize()
 	{
-		parent()->_onResizeRequested(this);
+		parent()->_requestResizeRequested(this);
 	}
 	
 	

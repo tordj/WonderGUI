@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_standardprinter.h>
-#include <wg_printablefield.h>
+#include <wg_printableitem.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
@@ -72,26 +72,26 @@ namespace wg
 		return 0;
 	}
 	
-	//____ addField() _________________________________________________________
+	//____ addItem() _________________________________________________________
 	
-	void StandardPrinter::addField( PrintableField * pField )
+	void StandardPrinter::addItem( PrintableItem * pItem )
 	{
-		CharBuffer * pBuffer = _charBuffer(pField);
+		CharBuffer * pBuffer = _charBuffer(pItem);
 		int nLines = _countLines( pBuffer );
 	
-		_setFieldDataBlock(pField,0);					// Make sure pointer is null for the realloc call.
-		void * pBlock = _reallocBlock(pField,nLines);
+		_setItemDataBlock(pItem,0);					// Make sure pointer is null for the realloc call.
+		void * pBlock = _reallocBlock(pItem,nLines);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( pField );	
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem) );
+		_updatePreferredSize( pItem );	
 	}
 	
-	//____ removeField() _________________________________________________________
+	//____ removeItem() _________________________________________________________
 	
-	void StandardPrinter::removeField( PrintableField * pField )
+	void StandardPrinter::removeItem( PrintableItem * pItem )
 	{
-		free( _fieldDataBlock(pField) );
-		_setFieldDataBlock(pField, 0);
+		free( _itemDataBlock(pItem) );
+		_setItemDataBlock(pItem, 0);
 	}
 	
 	//____ setAlignment() __________________________________________________________
@@ -102,27 +102,32 @@ namespace wg
 		{
 			m_alignment = alignment;
 			
-			//TODO: Make all fields dirty
+			//TODO: Make all items dirty
 		}
 	}
 	
 	
-	int StandardPrinter::charAtPos( const PrintableField * pField, Coord pos ) const
+	//____ charAtPos() _________________________________________________________
+	
+	int StandardPrinter::charAtPos( const PrintableItem * pItem, Coord pos ) const
 	{
-		//TODO: Implement!
-		return 0;
+		int line = _lineAtPosY(pItem, pos.y, SelectMode::Marked );
+		if( line == -1 )
+			return -1;
+			
+		return  _charAtPosX(pItem, line, pos.x, SelectMode::Marked );
 	}
 	
 	//_____ charPos() ______________________________________________________
 	
-	Coord StandardPrinter::charPos( const PrintableField * pField, int charOfs ) const
+	Coord StandardPrinter::charPos( const PrintableItem * pItem, int charOfs ) const
 	{
-		int line = charLine(pField, charOfs);
+		int line = charLine(pItem, charOfs);
 		
-		int ofsX = _charPosX(pField, charOfs);
-		int ofsY = _linePosY(_fieldDataBlock(pField), line, pField->size().h );
+		int ofsX = _charPosX(pItem, charOfs);
+		int ofsY = _linePosY(_itemDataBlock(pItem), line, pItem->size().h );
 		
-		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;		
+		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;		
 		ofsY += pLine->base;
 		
 		return Coord(ofsX,ofsY);
@@ -130,15 +135,15 @@ namespace wg
 	
 	//____ charRect() ________________________________________________________
 	
-	Rect StandardPrinter::charRect( const PrintableField * pField, int charOfs ) const
+	Rect StandardPrinter::charRect( const PrintableItem * pItem, int charOfs ) const
 	{
-		const void * pBlock = _fieldDataBlock(pField);
+		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 		
 		// Find correct line and determine yOfs
 		
-		int yOfs = _textPosY( pHeader, pField->size().h );		
+		int yOfs = _textPosY( pHeader, pItem->size().h );		
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -148,15 +153,15 @@ namespace wg
 		
 		// Determine xOfs by parsing line until character
 		
-		int xOfs = _linePosX( pLineInfo, pField->size().w );
+		int xOfs = _linePosX( pLineInfo, pItem->size().w );
 		
 		TextAttr		baseAttr;
-		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
+		_baseStyle(pItem)->exportAttr( _state(pItem), &baseAttr );
 
-		const Char * pFirst = _charBuffer(pField)->chars() + pLineInfo->offset;
+		const Char * pFirst = _charBuffer(pItem)->chars() + pLineInfo->offset;
 		const Char * pLast = pFirst + charOfs;
 		
-		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pField) );
+		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pItem) );
 
 		// Get cell width
 
@@ -165,7 +170,7 @@ namespace wg
 		TextAttr	attr = baseAttr;
 
 		if( pLast->styleHandle() != 0 )
-			pLast->stylePtr()->addToAttr( _state(pField), &attr );
+			pLast->stylePtr()->addToAttr( _state(pItem), &attr );
 		
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
@@ -181,12 +186,12 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int StandardPrinter::charLine( const PrintableField * pField, int charOfs ) const
+	int StandardPrinter::charLine( const PrintableItem * pItem, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
 		
-		const void * pBlock = _fieldDataBlock(pField);
+		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -201,9 +206,9 @@ namespace wg
 	
 	//____ lineBegin() ________________________________________________________
 
-	int StandardPrinter::lineBegin( const PrintableField * pField, int lineNb ) const
+	int StandardPrinter::lineBegin( const PrintableItem * pItem, int lineNb ) const
 	{
-		const void * pBlock = _fieldDataBlock(pField);
+		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -215,9 +220,9 @@ namespace wg
 	
 	//____ lineEnd() ___________________________________________________________
 	
-	int StandardPrinter::lineEnd( const PrintableField * pField, int lineNb ) const
+	int StandardPrinter::lineEnd( const PrintableItem * pItem, int lineNb ) const
 	{
-		const void * pBlock = _fieldDataBlock(pField);
+		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -229,7 +234,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int StandardPrinter::wordBegin( const PrintableField * pField, int charOfs ) const
+	int StandardPrinter::wordBegin( const PrintableItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -237,7 +242,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 	
-	int StandardPrinter::wordEnd( const PrintableField * pField, int charOfs ) const
+	int StandardPrinter::wordEnd( const PrintableItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -303,20 +308,20 @@ namespace wg
 	}
 
 	
-	//____ _renderField()___________________________________________________________
+	//____ _renderItem()___________________________________________________________
 	
-	void StandardPrinter::renderField( PrintableField * pField, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
+	void StandardPrinter::renderItem( PrintableItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
 	{		
-		void * pBlock = _fieldDataBlock(pField);
+		void * pBlock = _itemDataBlock(pItem);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
-		const Char * pCharArray = _charBuffer(pField)->chars();
+		const Char * pCharArray = _charBuffer(pItem)->chars();
 		
 		Coord lineStart = canvas.pos();
 		lineStart.y += _textPosY( pHeader, canvas.h );
 	
 		TextAttr		baseAttr;
-		_baseStyle(pField)->exportAttr( _state(pField), &baseAttr );
+		_baseStyle(pItem)->exportAttr( _state(pItem), &baseAttr );
 	
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -349,7 +354,7 @@ namespace wg
 						attr = baseAttr;
 
 						if( pChars->styleHandle() != 0 )
-							pChars->stylePtr()->addToAttr( _state(pField), &attr );
+							pChars->stylePtr()->addToAttr( _state(pItem), &attr );
 						
 						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
@@ -394,60 +399,60 @@ namespace wg
 	}
 	
 	
-	void StandardPrinter::onTextModified( PrintableField * pField, int ofs, int charsRemoved, int charsAdded )
+	void StandardPrinter::onTextModified( PrintableItem * pItem, int ofs, int charsRemoved, int charsAdded )
 	{
-		onRefresh(pField);
+		onRefresh(pItem);
 	}
 	
-	void StandardPrinter::onFieldResized( PrintableField * pField, Size newSize, Size oldSize )
+	void StandardPrinter::requestResized( PrintableItem * pItem, Size newSize, Size oldSize )
 	{
 		///TODO: Implement!
 	}
 	
-	void StandardPrinter::onStateChanged( PrintableField * pField, State newState, State oldState )
+	void StandardPrinter::onStateChanged( PrintableItem * pItem, State newState, State oldState )
 	{
 		//TODO: Implement!
 	}
 	
-	void StandardPrinter::onStyleChanged( PrintableField * pField, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void StandardPrinter::onStyleChanged( PrintableItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		State state = _state(pField);
-		void * pBlock = _fieldDataBlock(pField);
+		State state = _state(pItem);
+		void * pBlock = _itemDataBlock(pItem);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( pField );
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pItem), _baseStyle(pItem), _state(pItem) );
+		_updatePreferredSize( pItem );
 
-		_setFieldDirty(pField);
+		_setItemDirty(pItem);
 	}
 	
 
-	void StandardPrinter::onCharStyleChanged( PrintableField * pField, int ofs, int len )
+	void StandardPrinter::onCharStyleChanged( PrintableItem * pItem, int ofs, int len )
 	{
-		State state = _state(pField);
-		void * pBlock = _fieldDataBlock(pField);
+		State state = _state(pItem);
+		void * pBlock = _itemDataBlock(pItem);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pField), _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( pField );
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pItem), _baseStyle(pItem), _state(pItem) );
+		_updatePreferredSize( pItem );
 
-		_setFieldDirty(pField);
+		_setItemDirty(pItem);
 	}
 
 	
-	void StandardPrinter::onRefresh( PrintableField * pField )
+	void StandardPrinter::onRefresh( PrintableItem * pItem )
 	{
-		CharBuffer * pBuffer = _charBuffer(pField);
+		CharBuffer * pBuffer = _charBuffer(pItem);
 		int nLines = _countLines( pBuffer );
 	
-		void * pBlock = _fieldDataBlock(pField);
+		void * pBlock = _itemDataBlock(pItem);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
-			pBlock = _reallocBlock(pField,nLines);
+			pBlock = _reallocBlock(pItem,nLines);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pField), _state(pField) );
-		_updatePreferredSize( pField );
-		_setFieldDirty(pField);
+		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem) );
+		_updatePreferredSize( pItem );
+		_setItemDirty(pItem);
 	}
 	
-	Rect StandardPrinter::rectForRange( const PrintableField * pField, int ofs, int length ) const
+	Rect StandardPrinter::rectForRange( const PrintableItem * pItem, int ofs, int length ) const
 	{
 		//TODO: Implement!
 		return Rect();
@@ -455,56 +460,56 @@ namespace wg
 	
 	//____ textDirection() ____________________________________________________
 
-	Direction StandardPrinter::textDirection( PrintableField * pField, int charOfs ) const
+	Direction StandardPrinter::textDirection( PrintableItem * pItem, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 	
-	int StandardPrinter::caretToPos( PrintableField * pField, Coord pos, int& wantedLineOfs ) const
+	int StandardPrinter::caretToPos( PrintableItem * pItem, Coord pos, int& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
-		int line = _lineAtPosY(pField, pos.y, SelectMode::Closest );
-		return  _charAtPosX(pField, line, pos.x, SelectMode::ClosestBegin );		
+		int line = _lineAtPosY(pItem, pos.y, SelectMode::Closest );
+		return  _charAtPosX(pItem, line, pos.x, SelectMode::ClosestBegin );		
 	}
 
 	//____ caretUp() ___________________________________________________________
 	
-	int StandardPrinter::caretUp( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretUp( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine(pField, charOfs );
+		int line = charLine(pItem, charOfs );
 
 		if( line > 0 )
 		{
 			if( wantedLineOfs == -1 )
-				wantedLineOfs = _charPosX( pField, charOfs );
+				wantedLineOfs = _charPosX( pItem, charOfs );
 
-			charOfs = _charAtPosX(pField, line-1, wantedLineOfs, SelectMode::ClosestBegin );
+			charOfs = _charAtPosX(pItem, line-1, wantedLineOfs, SelectMode::ClosestBegin );
 		}
 		return charOfs;
 	}
 
 	//____ caretDown() _________________________________________________________
 	
-	int StandardPrinter::caretDown( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretDown( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine(pField, charOfs );
+		int line = charLine(pItem, charOfs );
 
-		if( line >= 0 && line < _header(_fieldDataBlock(pField))->nbLines-1 )
+		if( line >= 0 && line < _header(_itemDataBlock(pItem))->nbLines-1 )
 		{
 			if( wantedLineOfs == -1 )
-				wantedLineOfs = _charPosX( pField, charOfs );
+				wantedLineOfs = _charPosX( pItem, charOfs );
 
-			charOfs = _charAtPosX(pField, line+1, wantedLineOfs, SelectMode::ClosestBegin );
+			charOfs = _charAtPosX(pItem, line+1, wantedLineOfs, SelectMode::ClosestBegin );
 		}
 		return charOfs;
 	}
 
 	//____ caretLeft() _________________________________________________________
 	
-	int StandardPrinter::caretLeft( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretLeft( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -515,9 +520,9 @@ namespace wg
 	
 	//____ caretRight() ________________________________________________________
 	
-	int StandardPrinter::caretRight( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretRight( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
-		if( charOfs < _charBuffer(pField)->length() )
+		if( charOfs < _charBuffer(pItem)->length() )
 			charOfs++;
 			
 		wantedLineOfs = -1;
@@ -526,13 +531,13 @@ namespace wg
 	
 	//____ caretHome() ________________________________________________________
 
-	int StandardPrinter::caretHome( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretHome( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine( pField, charOfs );
+		int line = charLine( pItem, charOfs );
 
 		if( line >= 0 )
 		{
-			const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;
+			const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;
 			charOfs = pLine->offset;
 		}
 		wantedLineOfs = -1;
@@ -541,13 +546,13 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 	
-	int StandardPrinter::caretEnd( PrintableField * pField, int charOfs, int& wantedLineOfs ) const
+	int StandardPrinter::caretEnd( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine( pField, charOfs );
+		int line = charLine( pItem, charOfs );
 
 		if( line >= 0 )
 		{
-			const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;
+			const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;
 			charOfs = pLine->offset+ pLine->length-1;
 		}
 		wantedLineOfs = -1;
@@ -556,7 +561,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int StandardPrinter::caretPrevWord( PrintableField * pField, int charOfs ) const
+	int StandardPrinter::caretPrevWord( PrintableItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -564,7 +569,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 	
-	int StandardPrinter::caretNextWord( PrintableField * pField, int charOfs ) const
+	int StandardPrinter::caretNextWord( PrintableItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;		
@@ -573,9 +578,9 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 	
-	String StandardPrinter::tooltip( const PrintableField * pField ) const
+	String StandardPrinter::tooltip( const PrintableItem * pItem ) const
 	{
-		//TODO: Return the text if it overflows the field.
+		//TODO: Return the text if it overflows the item.
 		
 		return String();
 	}
@@ -583,25 +588,25 @@ namespace wg
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size StandardPrinter::preferredSize( const PrintableField * pField ) const
+	Size StandardPrinter::preferredSize( const PrintableItem * pItem ) const
 	{
-		return _header(_fieldDataBlock(pField))->preferredSize;
+		return _header(_itemDataBlock(pItem))->preferredSize;
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int StandardPrinter::matchingWidth( const PrintableField * pField, int height ) const
+	int StandardPrinter::matchingWidth( const PrintableItem * pItem, int height ) const
 	{
-		return _header(_fieldDataBlock(pField))->preferredSize.w;
+		return _header(_itemDataBlock(pItem))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int StandardPrinter::matchingHeight( const PrintableField * pField, int width ) const
+	int StandardPrinter::matchingHeight( const PrintableItem * pItem, int width ) const
 	{
 		//TODO: Implement correct calculation!
 		
-		return _header(_fieldDataBlock(pField))->preferredSize.h;
+		return _header(_itemDataBlock(pItem))->preferredSize.h;
 	}
 	
 	//____ _countLines() ___________________________________________________________
@@ -624,14 +629,14 @@ namespace wg
 	
 	//____ _reallocBlock() _________________________________________________________
 	
-	void * StandardPrinter::_reallocBlock( PrintableField* pField, int nLines )
+	void * StandardPrinter::_reallocBlock( PrintableItem* pItem, int nLines )
 	{
-		void * pBlock = _fieldDataBlock(pField);
+		void * pBlock = _itemDataBlock(pItem);
 		if( pBlock )
 			free( pBlock );
 			
 		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
-		_setFieldDataBlock(pField, pBlock);
+		_setItemDataBlock(pItem, pBlock);
 		((BlockHeader *)pBlock)->nbLines = nLines;
 		
 		return pBlock;
@@ -755,11 +760,11 @@ namespace wg
 		
 	//____ _updatePreferredSize() __________________________________________________	
 		
-	bool StandardPrinter::_updatePreferredSize( PrintableField * pField )
+	bool StandardPrinter::_updatePreferredSize( PrintableItem * pItem )
 	{
 		Size size;
 		
-		void * pBlock = _fieldDataBlock(pField);
+		void * pBlock = _itemDataBlock(pItem);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLines = _lineInfo(pBlock);	
 		
@@ -778,7 +783,7 @@ namespace wg
 		if( size != pHeader->preferredSize )
 		{
 			pHeader->preferredSize = size;
-			_requestFieldResize( pField );
+			_requestItemResize( pItem );
 			
 			return true;
 		}
@@ -788,7 +793,7 @@ namespace wg
 	
 	//____ _linePosX() _______________________________________________________________
 	
-	int StandardPrinter::_linePosX( const LineInfo * pLine, int fieldWidth ) const
+	int StandardPrinter::_linePosX( const LineInfo * pLine, int itemWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -800,19 +805,19 @@ namespace wg
 			case Origo::North:
 			case Origo::Center:
 			case Origo::South:
-				return (fieldWidth - pLine->width) / 2;
+				return (itemWidth - pLine->width) / 2;
 			case Origo::NorthEast:
 			case Origo::East:
 			case Origo::SouthEast:
-				return fieldWidth - pLine->width;
+				return itemWidth - pLine->width;
 		}	
 	}
 
 	//____ _linePosY() _______________________________________________________________
 	
-	int StandardPrinter::_linePosY( const void * pBlock, int line, int fieldHeight ) const
+	int StandardPrinter::_linePosY( const void * pBlock, int line, int itemHeight ) const
 	{
-		int ofsY = _textPosY( _header(pBlock), fieldHeight );
+		int ofsY = _textPosY( _header(pBlock), itemHeight );
 	
 		const LineInfo * pL = _lineInfo(pBlock);
 		for( int i = 0 ; i < line ; i++ )
@@ -823,7 +828,7 @@ namespace wg
 	
 	//____ _textPosY() _____________________________________________________________
 	
-	int	StandardPrinter::_textPosY( const BlockHeader * pHeader, int fieldHeight ) const
+	int	StandardPrinter::_textPosY( const BlockHeader * pHeader, int itemHeight ) const
 	{
 		switch( m_alignment )
 		{
@@ -835,35 +840,35 @@ namespace wg
 			case Origo::West:
 			case Origo::Center:
 			case Origo::East:
-				return (fieldHeight - pHeader->preferredSize.h) / 2;
+				return (itemHeight - pHeader->preferredSize.h) / 2;
 			case Origo::SouthWest:
 			case Origo::South:
 			case Origo::SouthEast:
-				return fieldHeight - pHeader->preferredSize.h;
+				return itemHeight - pHeader->preferredSize.h;
 		}	
 	}
 
 	//____ _charPosX() _________________________________________________________
 
-	int StandardPrinter::_charPosX( const PrintableField * pField, int charOfs ) const
+	int StandardPrinter::_charPosX( const PrintableItem * pItem, int charOfs ) const
 	{
-		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + charLine(pField, charOfs);		
-		const Char * pBufferStart = _charBuffer(pField)->chars();
+		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + charLine(pItem, charOfs);		
+		const Char * pBufferStart = _charBuffer(pItem)->chars();
 		
 		TextAttr attr;
-		_baseStyle(pField)->exportAttr( _state(pField), &attr );
+		_baseStyle(pItem)->exportAttr( _state(pItem), &attr );
 		
-		return _linePosX( pLine, pField->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pField) );
+		return _linePosX( pLine, pItem->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pItem) );
 	}
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StandardPrinter::_lineAtPosY( PrintableField * pField, int posY, SelectMode mode ) const
+	int StandardPrinter::_lineAtPosY( const PrintableItem * pItem, int posY, SelectMode mode ) const
 	{
-		void * pBlock = _fieldDataBlock(pField);
+		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHead = _header(pBlock);
-		int linePosY = _textPosY( pHead, pField->size().h );
-		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) );		
+		int linePosY = _textPosY( pHead, pItem->size().h );
+		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) );		
 		
 		if( posY < linePosY )
 		{
@@ -938,12 +943,12 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StandardPrinter::_charAtPosX( PrintableField * pField, int line, int posX, SelectMode mode ) const
+	int StandardPrinter::_charAtPosX( const PrintableItem * pItem, int line, int posX, SelectMode mode ) const
 	{
-		const LineInfo * pLine = _lineInfo( _fieldDataBlock(pField) ) + line;		
+		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;		
 
 
-		int distance = _linePosX( pLine, pField->size().w );
+		int distance = _linePosX( pLine, pItem->size().w );
 
 		// Handle special case when we are left of line.
 		
@@ -967,11 +972,11 @@ namespace wg
 
 		// We are somewhere inside the line, lets loop through characters
 
-		const Char * pTextBegin = _charBuffer(pField)->chars();
-		State state = _state(pField);
+		const Char * pTextBegin = _charBuffer(pItem)->chars();
+		State state = _state(pItem);
 		
 		TextAttr baseAttr;
-		_baseStyle(pField)->exportAttr( state, &baseAttr );
+		_baseStyle(pItem)->exportAttr( state, &baseAttr );
 		
 
 		TextAttr		attr;

@@ -125,7 +125,7 @@ namespace wg
 		// To be overloaded by subclasses
 	
 		virtual Rect	_hookGeo( const VectorHook * pHook ) = 0;
-		virtual void	_onResizeRequested( VectorHook * pHook ) = 0;
+		virtual void	_requestResizeRequested( VectorHook * pHook ) = 0;
 		virtual void	_renderRequested( VectorHook * pHook ) = 0;
 		virtual void	_renderRequested( VectorHook * pHook, const Rect& rect ) = 0;
 		virtual void	_onWidgetAppeared( VectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.

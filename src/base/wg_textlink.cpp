@@ -13,55 +13,71 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#include <wg_icon.h>
+#include <wg_textlink.h>
+#include <wg_textstyle.h>
 
 namespace wg 
 {
 	
-	const char Icon::CLASSNAME[] = {"Icon"};
-	
-	
+	const char TextLink::CLASSNAME[] = {"TextLink"};
+
+	//____ constructor _________________________________________________________
+
+	TextLink::TextLink( const std::string& link ) : m_link(link) 
+	{
+	}
+
+	TextLink::TextLink( const std::string& link, const TextStyle_p& style ) : m_link(link), m_pStyle(style) 
+	{
+	}
+
+	//____ destructor __________________________________________________________
+
+	TextLink::~TextLink()
+	{
+	}
+
+
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool Icon::isInstanceOf( const char * pClassName ) const
+	bool TextLink::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Interface::isInstanceOf(pClassName);
+		return Object::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * Icon::className( void ) const
+	const char * TextLink::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	Icon_p Icon::cast( const Interface_p& pInterface )
+	TextLink_p TextLink::cast( const Object_p& pObject )
 	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return Icon_p( pInterface.getRealObjectPtr(), static_cast<Icon*>( pInterface.rawPtr()) );
+		if( pObject && pObject->isInstanceOf(CLASSNAME) )
+			return TextLink_p( static_cast<TextLink*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
-	
-	//____ _object() _______________________________________________________________
-	
-	Object * Icon::_object() const
-	{
-		return m_pItem->_object();
+
+	//____ style() _____________________________________________________________
+
+	TextStyle_p TextLink::style() const
+	{ 
+		return m_pStyle; 
 	}
-	
-	
+
 
 } // namespace wg

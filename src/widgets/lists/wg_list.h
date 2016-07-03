@@ -38,8 +38,8 @@
 namespace wg 
 {
 	
-	class IconField;
-	class TextField;
+	class IconItem;
+	class TextItem;
 	class List;
 	typedef	StrongPtr<List,Container_p>		List_p;
 	typedef	WeakPtr<List,Container_wp>	List_wp;
@@ -128,8 +128,8 @@ namespace wg
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 		void			_renderHeader( GfxDevice * pDevice, const Rect& _window, const Rect& _clip, 
-										const Skin_p& pSkin, TextField * pText, IconField * pLabelIcon, 
-										IconField * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort );
+										const Skin_p& pSkin, TextItem * pText, IconItem * pLabelIcon, 
+										IconItem * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort );
 	
 		SelectMode	m_selectMode;
 		Skin_p		m_pEntrySkin[2];

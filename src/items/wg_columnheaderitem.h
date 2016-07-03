@@ -19,59 +19,53 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_COLUMNHEADERFIELD_DOT_H
-#define WG_COLUMNHEADERFIELD_DOT_H
+#ifndef WG_COLUMNHEADERITEM_DOT_H
+#define WG_COLUMNHEADERITEM_DOT_H
 
-#ifndef WG_ICONFIELD_DOT_H
-#	include <wg_iconfield.h>
+#ifndef WG_ICONITEM_DOT_H
+#	include <wg_iconitem.h>
 #endif
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_TEXTITEM_DOT_H
+#	include <wg_textitem.h>
 #endif
 
 namespace wg 
 {
 	
-	
-	class ColumnHeaderHolder : public FieldHolder
-	{
-	};
-	
-	
-	class ColumnHeaderField : public Field, protected IconHolder, protected TextHolder
+	class ColumnHeaderItem : public Item
 	{
 	public:
-		ColumnHeaderField(ColumnHeaderHolder * pHolder);
+		ColumnHeaderItem(Widget * pWidget);
 	
-		//____ Subfields __________________________________
+		//____ Subitems __________________________________
 	
-		IconField		icon;
-		IconField		arrow;
-		TextField		label;
+		IconItem		icon;
+		IconItem		arrow;
+		TextItem		label;
 	
 		//____ Methods _____________________________________
 	
-		void				setSkin( const Skin_p& pSkin );
+		void			setSkin( const Skin_p& pSkin );
 		inline Skin_p	skin() const { return m_pSkin; }
 	
-		Object * 			_object() { return m_pHolder->_object(); };
 	//private:
-		void				_onFieldDirty( Field * pField );
-		void				_onFieldDirty( Field * pField, const Rect& rect );
-		void 				_onFieldResize( Field * pField );
+		
+		//TODO: Implement proper solution!!!
+		// Subitems are currently bypassing ColumnHeaderItem and making direct calls to widget
+		// How do we solve this?
 	
 	
-		ColumnHeaderHolder *	m_pHolder;
+		Widget *		m_pWidget;
 		Skin_p			m_pSkin;
-		int					m_height;
-		int					m_width;
-		State				m_state;
-		bool				m_bPressed;
+		int				m_height;
+		int				m_width;
+		State			m_state;
+		bool			m_bPressed;
 	
 	};
 	
 	
 
 } // namespace wg
-#endif //WG_COLUMNHEADERFIELD_DOT_H
+#endif //WG_COLUMNHEADERITEM_DOT_H

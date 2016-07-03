@@ -22,7 +22,7 @@ namespace wg
 	
 	//____ RulerLabels ____________________________________________________________
 	
-	class RulerLabels : public Widget, protected TextHolder
+	class RulerLabels : public Widget
 	{
 	public:
 		static RulerLabels_p	create() { return RulerLabels_p(new RulerLabels()); }
@@ -50,18 +50,20 @@ namespace wg
 		void			_setState( State state );
 		bool			_alphaTest( const Coord& ofs );
 	
-		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
+		Coord			_itemPos( const Item * pItem ) const;
+		Size			_itemSize( const Item * pItem ) const;
+		Rect			_itemGeo( const Item * pItem ) const;
+
+		void			_resizeRequested( const Item * pItem );
+
 	
 		class Label : public Link
 		{
 		public:
-			Label(TextHolder*pHolder) : textField(pHolder), textInterface(&textField) {}
+			Label(Widget * pWidget) : textItem(pWidget), textInterface(&textItem) {}
 			LINK_METHODS(Label);
 			ModText	textInterface;
-			TextField	textField;
+			TextItem	textItem;
 			float		offset;
 		};
 		

@@ -35,28 +35,40 @@ namespace wg
 	
 	class Coord;
 	
-	class Textlink;
-	typedef	StrongPtr<class Textlink,Object_p> TextLink_p;
-	typedef	WeakPtr<class Textlink,Object_wp> TextLink_wp;
+	class TextStyle;
+	typedef	StrongPtr<TextStyle,Object_p>		TextStyle_p;
+	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
+		
+	class TextLink;
+	typedef	StrongPtr<class TextLink,Object_p> TextLink_p;
+	typedef	WeakPtr<class TextLink,Object_wp> TextLink_wp;
 	
 	
 	//____ TextLink _____________________________________________________________
 	
 	
-	class Textlink : public Object
+	class TextLink : public Object
 	{
 	public:
-		static TextLink_p create( const std::string& link ) { return new Textlink(link); }
+		static TextLink_p create( const std::string& link ) { return TextLink_p(new TextLink(link)); }
+		static TextLink_p create( const std::string& link, const TextStyle_p& pStyle ) { return TextLink_p(new TextLink(link, pStyle)); }
 	
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static TextLink_p		cast( const Object_p& pObject );
+		
 		const std::string&		link() const { return m_link; }
-		bool					hasBeenAccessed() const { return m_bAccessed; }
+		TextStyle_p				style() const;
 	
 	private:
-		bool					m_bAccessed;
+		TextLink( const std::string& link );
+		TextLink( const std::string& link, const TextStyle_p& style );
+		~TextLink();
+
 		std::string				m_link;
+		TextStyle_p				m_pStyle;
 	
-		Textlink( const std::string& link ) : m_bAccessed(false), m_link(link) {}
-		~Textlink() {}
 	};
 	
 

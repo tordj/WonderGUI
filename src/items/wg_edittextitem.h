@@ -20,29 +20,23 @@
 
 =========================================================================*/
 
-#ifndef	WG_EDITTEXTFIELD_DOT_H
-#define WG_EDITTEXTFIELD_DOT_H
+#ifndef	WG_EDITTEXTITEM_DOT_H
+#define WG_EDITTEXTITEM_DOT_H
 
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_TEXTITEM_DOT_H
+#	include <wg_textitem.h>
 #endif
 
 namespace wg 
 {
+		
+	//____ EditTextItem __________________________________________________________________
 	
-	//____ EditTextHolder ___________________________________________________________
-	
-	struct EditTextHolder : public TextHolder
-	{
-	};
-	
-	//____ EditTextField __________________________________________________________________
-	
-	class EditTextField : public TextField
+	class EditTextItem : public TextItem
 	{
 	public:
-		EditTextField( EditTextHolder * pHolder );
+		EditTextItem( Widget * pWidget );
 
 		void			receive( const Msg_p& pMsg );
 	
@@ -128,4 +122,4 @@ namespace wg
 	};
 	
 } // namespace wg
-#endif //WG_EDITTEXTFIELD_DOT_H
+#endif //WG_EDITTEXTITEM_DOT_H

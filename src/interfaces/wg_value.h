@@ -40,8 +40,8 @@
 #	include <wg_valueformat.h>
 #endif
 
-#ifndef WG_VALUEFIELD_DOT_H
-#	include <wg_valuefield.h>
+#ifndef WG_VALUEITEM_DOT_H
+#	include <wg_valueitem.h>
 #endif
 
 namespace wg 
@@ -53,9 +53,9 @@ namespace wg
 	typedef	WeakInterfacePtr<Value,Interface_wp>	Value_wp;
 	
 	/**
-	 * @brief Interface to a basic value display field
+	 * @brief Interface to a basic value display item
 	 * 
-	 * The value in a basic value field is set by the widget itself and can
+	 * The value in a basic value item is set by the widget itself and can
 	 * not be modified directly either through the API or UI. Only the formatting
 	 * and appearance of the value can be modified through this API.
 	 * 
@@ -64,7 +64,7 @@ namespace wg
 	class Value : public Interface
 	{
 	public:
-		Value(ValueField* pField) : m_pField(pField) {}
+		Value(ValueItem* pItem) : m_pItem(pItem) {}
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
@@ -72,24 +72,24 @@ namespace wg
 		static Value_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline Value_p			ptr() { return Value_p(_object(),this); }
 	
-		inline void				setFormatter( const ValueFormatter_p& pFormatter ) { m_pField->setFormatter(pFormatter); }
-		inline void				clearFormatter() { m_pField->clearFormatter(); }
-		inline ValueFormatter_p	formatter() const { return m_pField->formatter(); }
+		inline void				setFormatter( const ValueFormatter_p& pFormatter ) { m_pItem->setFormatter(pFormatter); }
+		inline void				clearFormatter() { m_pItem->clearFormatter(); }
+		inline ValueFormatter_p	formatter() const { return m_pItem->formatter(); }
 	
-		inline void				setStyle( const TextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
-		inline void				clearStyle() { m_pField->clearStyle(); }
-		inline TextStyle_p	style() const { return m_pField->style(); }
+		inline void				setStyle( const TextStyle_p& pStyle ) { m_pItem->setStyle(pStyle); }
+		inline void				clearStyle() { m_pItem->clearStyle(); }
+		inline TextStyle_p	style() const { return m_pItem->style(); }
 	
-		inline void				setPrinter( const Printer_p& pPrinter ) { m_pField->setPrinter(pPrinter); }
-		inline void				clearPrinter() { m_pField->clearPrinter(); }
-		inline Printer_p	printer() const { return m_pField->printer(); }
+		inline void				setPrinter( const Printer_p& pPrinter ) { m_pItem->setPrinter(pPrinter); }
+		inline void				clearPrinter() { m_pItem->clearPrinter(); }
+		inline Printer_p	printer() const { return m_pItem->printer(); }
 	
-		inline State			state() const { return m_pField->state(); }
+		inline State			state() const { return m_pItem->state(); }
 	protected:
 		Object * 			_object() const;
 	
 	
-		ValueField *		m_pField;
+		ValueItem *		m_pItem;
 	};
 	
 	

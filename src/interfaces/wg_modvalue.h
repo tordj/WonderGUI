@@ -27,8 +27,8 @@
 #	include <wg_value.h>
 #endif
 
-#ifndef WG_MODVALUEFIELD_DOT_H
-#	include <wg_modvaluefield.h>
+#ifndef WG_MODVALUEITEM_DOT_H
+#	include <wg_modvalueitem.h>
 #endif
 
 namespace wg 
@@ -43,9 +43,9 @@ namespace wg
 	typedef	WeakInterfacePtr<ModValue,Value_wp>	ModValue_wp;
 	
 	/**
-	 * @brief Interface to a value field where the value is modifiable through the api
+	 * @brief Interface to a value item where the value is modifiable through the api
 	 * 
-	 * The value in a modifiable value field can be set through the API, but isn't
+	 * The value in a modifiable value item can be set through the API, but isn't
 	 * editable through the UI.
 	 * 
 	*/
@@ -53,7 +53,7 @@ namespace wg
 	class ModValue : public Value
 	{
 	public:
-		ModValue(ModValueField * pField) : Value(pField) {}
+		ModValue(ModValueItem * pItem) : Value(pItem) {}
 	
 		virtual bool				isInstanceOf( const char * pClassName ) const;
 		virtual const char *		className( void ) const;
@@ -71,16 +71,16 @@ namespace wg
 		inline void					set( double value );
 	*/
 	
-		inline int64_t				value() const { return _field()->value(); }
-		inline int					scale() const { return _field()->scale(); }
+		inline int64_t				value() const { return _item()->value(); }
+		inline int					scale() const { return _item()->scale(); }
 	
 		bool						setRange( int64_t min, int64_t max );
-		inline int64_t				min() const { return _field()->min(); }
-		inline int64_t				max() const { return _field()->max(); }
+		inline int64_t				min() const { return _item()->min(); }
+		inline int64_t				max() const { return _item()->max(); }
 	
 	private:
-		inline	ModValueField * 		_field() { return static_cast<ModValueField*>(m_pField); }
-		inline	const ModValueField * _field() const { return static_cast<ModValueField*>(m_pField); }
+		inline	ModValueItem * 		_item() { return static_cast<ModValueItem*>(m_pItem); }
+		inline	const ModValueItem * _item() const { return static_cast<ModValueItem*>(m_pItem); }
 	};
 	
 	

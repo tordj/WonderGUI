@@ -147,6 +147,10 @@
 #	include <wg_texttool.h>
 #endif
 
+#ifndef WG_TEXTLINK_DOT_H
+#	include <wg_textlink.h>
+#endif
+
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif

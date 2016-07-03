@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_printer.h>
-#include <wg_printablefield.h>
+#include <wg_printableitem.h>
 
 namespace wg 
 {
@@ -59,48 +59,48 @@ namespace wg
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String Printer::tooltip( const PrintableField * pField ) const
+	String Printer::tooltip( const PrintableItem * pItem ) const
 	{
 		return String();
 	}
 		
 	//____ _charBuffer() ___________________________________________________________
 	
-	CharBuffer * Printer::_charBuffer( PrintableField * pField ) const
+	CharBuffer * Printer::_charBuffer( PrintableItem * pItem ) const
 	{
-		return &(pField->m_charBuffer);
+		return &(pItem->m_charBuffer);
 	}
 	
-	const CharBuffer * Printer::_charBuffer( const PrintableField * pField ) const
+	const CharBuffer * Printer::_charBuffer( const PrintableItem * pItem ) const
 	{
-		return &(pField->m_charBuffer);
+		return &(pItem->m_charBuffer);
 	}
 	
-	//____ _fieldDataBlock() _______________________________________________________
+	//____ _itemDataBlock() _______________________________________________________
 	
-	void * Printer::_fieldDataBlock( PrintableField * pField) const
+	void * Printer::_itemDataBlock( PrintableItem * pItem) const
 	{
-		return pField->m_pPrinterData;
+		return pItem->m_pPrinterData;
 	}
 	
-	const void * Printer::_fieldDataBlock( const PrintableField * pField) const
+	const void * Printer::_itemDataBlock( const PrintableItem * pItem) const
 	{
-		return pField->m_pPrinterData;
+		return pItem->m_pPrinterData;
 	}
 	
 	
-	//____ _fieldDataInt() _________________________________________________________
+	//____ _itemDataInt() _________________________________________________________
 	
-	int Printer::_fieldDataInt( const PrintableField * pField ) const
+	int Printer::_itemDataInt( const PrintableItem * pItem ) const
 	{
-		return pField->m_printerData;
+		return pItem->m_printerData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	const TextStyle * Printer::_baseStyle( const PrintableField * pField ) const
+	const TextStyle * Printer::_baseStyle( const PrintableItem * pItem ) const
 	{
-		TextStyle * pStyle = pField->m_pStyle.rawPtr();
+		TextStyle * pStyle = pItem->m_pStyle.rawPtr();
 		if( pStyle == 0 )
 			pStyle = Base::defaultStyle().rawPtr();
 		
@@ -109,42 +109,42 @@ namespace wg
 	
 	//____ _state() _________________________________________________________
 	
-	State Printer::_state( const PrintableField * pField ) const
+	State Printer::_state( const PrintableItem * pItem ) const
 	{
-		return pField->m_state;
+		return pItem->m_state;
 	}
 	
-	//____ _setFieldDataBlock() ____________________________________________________
+	//____ _setItemDataBlock() ____________________________________________________
 	
-	void  Printer::_setFieldDataBlock( PrintableField * pField, void * pBlock )
+	void  Printer::_setItemDataBlock( PrintableItem * pItem, void * pBlock )
 	{
-		pField->m_pPrinterData = pBlock;
+		pItem->m_pPrinterData = pBlock;
 	}
 	
-	//____ _setFieldDataInt() ______________________________________________________
+	//____ _setItemDataInt() ______________________________________________________
 	
-	void  Printer::_setFieldDataInt( PrintableField * pField, int data )
+	void  Printer::_setItemDataInt( PrintableItem * pItem, int data )
 	{
-		pField->m_printerData = data;
-	}
-
-	//____ _setFieldDirty() ____________________________________________________
-
-	void  Printer::_setFieldDirty( PrintableField * pField )
-	{
-		pField->_onDirty();
-	}
-	
-	void  Printer::_setFieldDirty( PrintableField * pField, const Rect& rect )
-	{
-		pField->_onDirty( rect );
+		pItem->m_printerData = data;
 	}
 
-	//____ _requestFieldResize() _______________________________________________
+	//____ _setItemDirty() ____________________________________________________
 
-	void Printer::_requestFieldResize( PrintableField * pField )
+	void  Printer::_setItemDirty( PrintableItem * pItem )
 	{
-		pField->_onResize();
+		pItem->_requestRender();
+	}
+	
+	void  Printer::_setItemDirty( PrintableItem * pItem, const Rect& rect )
+	{
+		pItem->_requestRender( rect );
+	}
+
+	//____ _requestItemResize() _______________________________________________
+
+	void Printer::_requestItemResize( PrintableItem * pItem )
+	{
+		pItem->_requestResize();
 	}
 	
 

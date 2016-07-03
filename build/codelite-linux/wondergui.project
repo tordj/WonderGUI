@@ -119,26 +119,25 @@
     <File Name="../../src/widgets/wg_lineeditor.h" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
-    <File Name="../../src/items/wg_columnheaderfield.cpp"/>
-    <File Name="../../src/items/wg_columnheaderfield.h"/>
-    <File Name="../../src/items/wg_editvaluefield.cpp"/>
-    <File Name="../../src/items/wg_editvaluefield.h"/>
-    <File Name="../../src/items/wg_field.h"/>
-    <File Name="../../src/items/wg_iconfield.cpp"/>
-    <File Name="../../src/items/wg_iconfield.h"/>
     <File Name="../../src/items/wg_item.h"/>
-    <File Name="../../src/items/wg_modvaluefield.cpp"/>
-    <File Name="../../src/items/wg_modvaluefield.h"/>
     <File Name="../../src/items/wg_spanitem.cpp"/>
     <File Name="../../src/items/wg_spanitem.h"/>
-    <File Name="../../src/items/wg_textfield.cpp"/>
-    <File Name="../../src/items/wg_valuefield.cpp"/>
-    <File Name="../../src/items/wg_valuefield.h"/>
-    <File Name="../../src/items/wg_edittextfield.cpp"/>
-    <File Name="../../src/items/wg_edittextfield.h"/>
-    <File Name="../../src/items/wg_printablefield.h"/>
-    <File Name="../../src/items/wg_printablefield.cpp"/>
-    <File Name="../../src/items/wg_textfield.h"/>
+    <File Name="../../src/items/wg_columnheaderitem.cpp"/>
+    <File Name="../../src/items/wg_columnheaderitem.h"/>
+    <File Name="../../src/items/wg_edittextitem.cpp"/>
+    <File Name="../../src/items/wg_edittextitem.h"/>
+    <File Name="../../src/items/wg_editvalueitem.cpp"/>
+    <File Name="../../src/items/wg_editvalueitem.h"/>
+    <File Name="../../src/items/wg_iconitem.cpp"/>
+    <File Name="../../src/items/wg_iconitem.h"/>
+    <File Name="../../src/items/wg_modvalueitem.cpp"/>
+    <File Name="../../src/items/wg_modvalueitem.h"/>
+    <File Name="../../src/items/wg_printableitem.cpp"/>
+    <File Name="../../src/items/wg_printableitem.h"/>
+    <File Name="../../src/items/wg_textitem.cpp"/>
+    <File Name="../../src/items/wg_textitem.h"/>
+    <File Name="../../src/items/wg_valueitem.cpp"/>
+    <File Name="../../src/items/wg_valueitem.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
@@ -282,6 +281,7 @@
     <File Name="../../src/base/wg_bitmapfont.cpp"/>
     <File Name="../../src/base/wg_caret.h"/>
     <File Name="../../src/base/wg_caret.cpp"/>
+    <File Name="../../src/base/wg_textlink.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

@@ -91,15 +91,15 @@ namespace wg
 		void	_setSkin( const Skin_p& pSkin );
 	
 		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
+		void			_requestRender( Item * pItem );
+		void			_requestRender( Item * pItem, const Rect& rect );
+		void 			_requestResize( Item * pItem );
 	
 	private:
 	
 		void	_adjustViewOfs();
 	
-		LegacyTextField			m_text;
+		LegacyTextItem			m_text;
 		RouteId			m_tickRouteId;
 	
 		bool				m_bResetCaretOnFocus;

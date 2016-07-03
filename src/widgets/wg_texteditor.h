@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
 	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
 	
-	class TextEditor:public Widget, protected EditTextHolder
+	class TextEditor:public Widget
 	{
 	public:
 		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
@@ -75,13 +75,9 @@ namespace wg
 		void			_setState( State state );
 		void			_setSkin( const Skin_p& pSkin );
 	
-		Object * 		_object() { return this; }
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void			_onFieldResize( Field * pField );
 	private:
 		
-		EditTextField	m_text;
+		EditTextItem	m_text;
 		bool			m_bHasFocus;
 		RouteId			m_tickRouteId;
 	};

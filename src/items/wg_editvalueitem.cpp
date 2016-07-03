@@ -13,54 +13,20 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#include <wg_icon.h>
+#include <wg_widget.h>
+#include <wg_editvalueitem.h>
 
 namespace wg 
 {
 	
-	const char Icon::CLASSNAME[] = {"Icon"};
 	
-	
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool Icon::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Interface::isInstanceOf(pClassName);
-	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * Icon::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ cast() _________________________________________________________________
-	
-	Icon_p Icon::cast( const Interface_p& pInterface )
-	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return Icon_p( pInterface.getRealObjectPtr(), static_cast<Icon*>( pInterface.rawPtr()) );
-	
-		return 0;
-	}
-	
-	//____ _object() _______________________________________________________________
-	
-	Object * Icon::_object() const
-	{
-		return m_pItem->_object();
-	}
 	
 	
 

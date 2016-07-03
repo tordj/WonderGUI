@@ -130,7 +130,7 @@ namespace wg
 		// Overloaded from VectorPanel
 	
 		Rect	_hookGeo( const VectorHook * pHook );
-		void	_onResizeRequested( VectorHook * pHook );
+		void	_requestResizeRequested( VectorHook * pHook );
 		void	_renderRequested( VectorHook * pHook );
 		void	_renderRequested( VectorHook * pHook, const Rect& rect );
 		void	_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.

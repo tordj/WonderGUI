@@ -1411,6 +1411,13 @@ namespace wg
 	
 	const char LinkMsg::CLASSNAME[] = {"LinkMsg"};
 	
+	LinkMsg::LinkMsg( Object * pSource, const TextLink_p& pLink )
+	{
+		m_pSource		= pSource;
+		m_pLink			= pLink;
+		
+	}
+	
 	bool LinkMsg::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
@@ -1432,14 +1439,19 @@ namespace wg
 		return 0;
 	}
 	
+	TextLink_p LinkMsg::link() const
+	{
+		return m_pLink;
+	}
+	
+	
 	//____ LinkSelectMsg __________________________________________________
 	
 	const char LinkSelectMsg::CLASSNAME[] = {"LinkSelectMsg"};
 	
-	LinkSelectMsg::LinkSelectMsg( const TextLink_p& pLink )
+	LinkSelectMsg::LinkSelectMsg( Object * pSource, const TextLink_p& pLink ) : LinkMsg( pSource, pLink )
 	{
 		m_type			= MsgType::LinkSelect;
-		m_pSource		= pLink;
 	}
 	
 	bool LinkSelectMsg::isInstanceOf( const char * pClassName ) const
@@ -1467,10 +1479,9 @@ namespace wg
 	
 	const char LinkMouseEnterMsg::CLASSNAME[] = {"LinkMouseEnterMsg"};
 	
-	LinkMouseEnterMsg::LinkMouseEnterMsg( const TextLink_p& pLink )
+	LinkMouseEnterMsg::LinkMouseEnterMsg( Object * pSource, const TextLink_p& pLink ) : LinkMsg( pSource, pLink )
 	{
 		m_type			= MsgType::LinkMouseEnter;
-		m_pSource		= pLink;
 	}
 	
 	bool LinkMouseEnterMsg::isInstanceOf( const char * pClassName ) const
@@ -1498,10 +1509,9 @@ namespace wg
 	
 	const char LinkMouseLeaveMsg::CLASSNAME[] = {"LinkMouseLeaveMsg"};
 	
-	LinkMouseLeaveMsg::LinkMouseLeaveMsg( const TextLink_p& pLink )
+	LinkMouseLeaveMsg::LinkMouseLeaveMsg( Object * pSource, const TextLink_p& pLink ) : LinkMsg( pSource, pLink )
 	{
 		m_type			= MsgType::LinkMouseLeave;
-		m_pSource		= pLink;
 	}
 	
 	bool LinkMouseLeaveMsg::isInstanceOf( const char * pClassName ) const
@@ -1528,6 +1538,12 @@ namespace wg
 	//____ LinkMouseButtonMsg __________________________________________________
 	
 	const char LinkMouseButtonMsg::CLASSNAME[] = {"LinkMouseButtonMsg"};
+	
+	LinkMouseButtonMsg::LinkMouseButtonMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMsg( pSource, pLink )
+	{
+		m_button = button;
+	}
+
 	
 	MouseButton LinkMouseButtonMsg::button() const
 	{
@@ -1559,11 +1575,9 @@ namespace wg
 	
 	const char LinkMousePressMsg::CLASSNAME[] = {"LinkMousePressMsg"};
 	
-	LinkMousePressMsg::LinkMousePressMsg( const TextLink_p& pLink, MouseButton button )
+	LinkMousePressMsg::LinkMousePressMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMouseButtonMsg( pSource, pLink, button )
 	{
 		m_type			= MsgType::LinkMousePress;
-		m_pSource		= pLink;
-		m_button		= button;
 	}
 	
 	bool LinkMousePressMsg::isInstanceOf( const char * pClassName ) const
@@ -1591,11 +1605,9 @@ namespace wg
 	
 	const char LinkMouseRepeatMsg::CLASSNAME[] = {"LinkMouseRepeatMsg"};
 	
-	LinkMouseRepeatMsg::LinkMouseRepeatMsg( const TextLink_p& pLink, MouseButton button )
+	LinkMouseRepeatMsg::LinkMouseRepeatMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMouseButtonMsg( pSource, pLink, button )
 	{
 		m_type			= MsgType::LinkMouseRepeat;
-		m_pSource		= pLink;
-		m_button		= button;
 	}
 	
 	bool LinkMouseRepeatMsg::isInstanceOf( const char * pClassName ) const
@@ -1623,11 +1635,9 @@ namespace wg
 	
 	const char LinkMouseReleaseMsg::CLASSNAME[] = {"LinkMouseReleaseMsg"};
 	
-	LinkMouseReleaseMsg::LinkMouseReleaseMsg( const TextLink_p& pLink, MouseButton button )
+	LinkMouseReleaseMsg::LinkMouseReleaseMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMouseButtonMsg( pSource, pLink, button )
 	{
 		m_type			= MsgType::LinkMouseRelease;
-		m_pSource		= pLink;
-		m_button		= button;
 	}
 	
 	bool LinkMouseReleaseMsg::isInstanceOf( const char * pClassName ) const
@@ -1655,11 +1665,9 @@ namespace wg
 	
 	const char LinkMouseClickMsg::CLASSNAME[] = {"LinkMouseClickMsg"};
 	
-	LinkMouseClickMsg::LinkMouseClickMsg( const TextLink_p& pLink, MouseButton button )
+	LinkMouseClickMsg::LinkMouseClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMouseButtonMsg( pSource, pLink, button )
 	{
 		m_type			= MsgType::LinkMouseClick;
-		m_pSource		= pLink;
-		m_button		= button;
 	}
 	
 	bool LinkMouseClickMsg::isInstanceOf( const char * pClassName ) const
@@ -1687,11 +1695,9 @@ namespace wg
 	
 	const char LinkMouseDoubleClickMsg::CLASSNAME[] = {"LinkMouseDoubleClickMsg"};
 	
-	LinkMouseDoubleClickMsg::LinkMouseDoubleClickMsg( const TextLink_p& pLink, MouseButton button )
+	LinkMouseDoubleClickMsg::LinkMouseDoubleClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button ) : LinkMouseButtonMsg( pSource, pLink, button )
 	{
 		m_type			= MsgType::LinkMouseDoubleClick;
-		m_pSource		= pLink;
-		m_button		= button;
 	}
 	
 	bool LinkMouseDoubleClickMsg::isInstanceOf( const char * pClassName ) const

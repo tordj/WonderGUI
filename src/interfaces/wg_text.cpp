@@ -59,7 +59,7 @@ namespace wg
 	
 	Object * Text::_object() const
 	{
-		return m_pField->_object();
+		return m_pItem->_object();
 	}
 
 } // namespace wg

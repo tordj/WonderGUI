@@ -140,7 +140,7 @@ namespace wg
 	
 	void TextEditor::_receive( const Msg_p& pMsg )
 	{
-		MsgType type 				= pMsg->type();
+		MsgType type = pMsg->type();
 
 		Widget::_receive( pMsg );
 		m_text.receive( pMsg );
@@ -388,26 +388,5 @@ namespace wg
 		else
 			m_text.onNewSize(size);
 	}
-	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void TextEditor::_onFieldDirty( Field * pField )
-	{
-		_requestRender();
-	}
-
-	void TextEditor::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_requestRender();
-	}
-	
-	//____ _onFieldResize() ________________________________________________________
-	
-	void TextEditor::_onFieldResize( Field * pField )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	
 
 } // namespace wg

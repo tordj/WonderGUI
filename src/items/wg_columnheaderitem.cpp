@@ -20,48 +20,27 @@
 
 =========================================================================*/
 
-#include <wg_widget.h>
-#include <wg_modvaluefield.h>
+#include <wg_columnheaderitem.h>
 
 namespace wg 
 {
 	
-	//____ clear() _________________________________________________________________
-	
-	void ModValueField::clear()
+	ColumnHeaderItem::ColumnHeaderItem(Widget * pWidget) : Item(pWidget), icon(pWidget), arrow(pWidget), label(pWidget)
 	{
-		ValueField::clear();
-		m_minValue = INT64_MIN;
-		m_maxValue = INT64_MAX;
+		m_height = 0;
+		m_width = 0;
+		m_bPressed = false;
 	}
 	
-	//____ set() ___________________________________________________________________
+	//____ setSkin() ______________________________________________________
 	
-	bool ModValueField::set( int64_t value, int scale )
+	void ColumnHeaderItem::setSkin( const Skin_p& pSkin )
 	{
-		if( value > m_maxValue )
-			value = m_maxValue;
-		else if( value < m_minValue )
-			value = m_minValue;
-		return ValueField::set(value,scale);
+		if( pSkin != m_pSkin )
+		{
+			m_pSkin = pSkin;
+			_requestResize();
+		}
 	}
 	
-	//____ setRange() ______________________________________________________________
-	
-	bool ModValueField::setRange( int64_t min, int64_t max )
-	{
-		if( min > max )
-			return false;
-	
-		m_minValue = min;
-		m_maxValue = max;
-		
-		int64_t val = m_value;
-		limit( val, min, max );
-		m_value = val;
-		if( val != m_value )
-			ValueField::set(val, m_scale);
-		return true;
-	}	
-
 } // namespace wg

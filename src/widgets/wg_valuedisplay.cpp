@@ -32,7 +32,7 @@ namespace wg
 	
 	//____ ValueDisplay() _________________________________________________________________
 	
-	ValueDisplay::ValueDisplay() : m_field(this), value(&m_field)
+	ValueDisplay::ValueDisplay() : m_item(this), value(&m_item)
 	{
 	}
 	
@@ -74,7 +74,7 @@ namespace wg
 	
 	Size ValueDisplay::preferredSize() const
 	{
-		Size size = m_field.preferredSize();
+		Size size = m_item.preferredSize();
 	
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(size);
@@ -87,7 +87,7 @@ namespace wg
 	
 	void ValueDisplay::_refresh( void )
 	{
-		m_field.onRefresh();
+		m_item.onRefresh();
 		Widget::_refresh();
 	}
 	
@@ -96,7 +96,7 @@ namespace wg
 	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		Widget::_render(pDevice,_canvas,_window,_clip);
-		m_field.onRender(pDevice, _canvas, _clip);
+		m_item.onRender(pDevice, _canvas, _clip);
 	}
 	
 	//____ _cloneContent() _______________________________________________________
@@ -113,7 +113,7 @@ namespace wg
 	void ValueDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		m_field.setState(state);
+		m_item.setState(state);
 	}
 	
 	//____ _setSkin() _______________________________________________________
@@ -122,35 +122,5 @@ namespace wg
 	{
 		Widget::_setSkin(pSkin);
 	}
-	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void ValueDisplay::_onFieldDirty( Field * pField )
-	{
-		_requestRender();
-	}
-
-	void ValueDisplay::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_requestRender();
-	}
-	
-	//____ _onFieldResize() ________________________________________________________
-	
-	void ValueDisplay::_onFieldResize( Field * pField )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	
-	//____ _onValueModified() ______________________________________________________
-	
-	void ValueDisplay::_onValueModified( ModValueField * pField )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	
-	
 
 } // namespace wg

@@ -59,20 +59,20 @@ namespace wg
 	
 	void ModValue::clear() 
 	{ 
-		bool bModified = _field()->value() != 0;
-		_field()->clear();
+		bool bModified = _item()->value() != 0;
+		_item()->clear();
 	
 		if( bModified )
-			_field()->onValueModified(); 
+			_item()->onValueModified(); 
 	}
 	
 	//____ set() ___________________________________________________________________
 	
 	bool ModValue::set( int64_t value, int scale ) 
 	{ 
-		if( _field()->set(value,scale) )
+		if( _item()->set(value,scale) )
 		{
-			_field()->onValueModified();
+			_item()->onValueModified();
 			return true;
 		} 
 		else
@@ -84,11 +84,11 @@ namespace wg
 	
 	bool ModValue::setRange( int64_t min, int64_t max ) 
 	{ 
-		int64_t val = _field()->value();
+		int64_t val = _item()->value();
 		
-		bool retVal = _field()->setRange(min,max); 
-		if( val != _field()->value() )
-			_field()->onValueModified();
+		bool retVal = _item()->setRange(min,max); 
+		if( val != _item()->value() )
+			_item()->onValueModified();
 		
 		return retVal;
 	}

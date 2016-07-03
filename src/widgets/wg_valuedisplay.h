@@ -39,7 +39,7 @@ namespace wg
 	typedef	StrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
 	typedef	WeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
 	
-	class ValueDisplay : public Widget, protected ModValueHolder
+	class ValueDisplay : public Widget
 	{
 	public:
 		static ValueDisplay_p	create() { return ValueDisplay_p(new ValueDisplay()); }
@@ -69,13 +69,8 @@ namespace wg
 		void	_setSkin( const Skin_p& pSkin );
 	
 	private:
-		Object * _object() { return this; }
-		void	_onFieldDirty( Field * pField );
-		void	_onFieldDirty( Field * pField, const Rect& rect );
-		void	_onFieldResize( Field * pField );
-		void	_onValueModified( ModValueField * pField );
 	
-		ModValueField		m_field;
+		ModValueItem		m_item;
 	};
 	
 	

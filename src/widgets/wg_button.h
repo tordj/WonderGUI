@@ -26,8 +26,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef	WG_TEXTITEM_DOT_H
+#	include <wg_textitem.h>
 #endif
 
 #ifndef WG_MODTEXT_DOT_H
@@ -52,7 +52,7 @@ namespace wg
 	 * A simple push button widget with label and icon.
 	 **/
 	
-	class Button : public Widget, protected IconHolder, protected TextHolder
+	class Button : public Widget
 	{
 	public:
 		static Button_p	create() { return Button_p(new Button()); }
@@ -95,12 +95,18 @@ namespace wg
 	
 	
 		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
+		void			_renderRequested( Item * pItem );
+		void			_renderRequested( Item * pItem, const Rect& rect );
+		void 			_resizeRequested( Item * pItem );
 	
-		TextField		m_text;
-		IconField		m_icon;
+		Coord			_itemPos( const Item * pItem ) const;
+		Size			_itemSize( const Item * pItem ) const;
+		Rect			_itemGeo( const Item * pItem ) const;
+	
+	
+	
+		TextItem		m_text;
+		IconItem		m_icon;
 	
 		bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 	

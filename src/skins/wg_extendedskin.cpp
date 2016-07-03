@@ -157,6 +157,14 @@ namespace wg
 	{
 		return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
 	}
+
+	//____ contentofs() __________________________________________________________
+	
+	Coord ExtendedSkin::contentOfs( State state ) const
+	{
+		return Coord( m_contentPadding.left, m_contentPadding.right) + m_contentShift[_stateToIndex(state)];
+	}
+
 	
 	//____ isStateIdentical() ______________________________________________________
 	

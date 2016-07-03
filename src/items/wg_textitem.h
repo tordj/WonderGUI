@@ -20,15 +20,15 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXTFIELD_DOT_H
-#define WG_TEXTFIELD_DOT_H
+#ifndef	WG_TEXTITEM_DOT_H
+#define WG_TEXTITEM_DOT_H
 
 #ifndef	WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_PRINTABLEFIELD_DOT_H
-#	include <wg_printablefield.h>
+#ifndef WG_PRINTABLEITEM_DOT_H
+#	include <wg_printableitem.h>
 #endif
 
 
@@ -42,19 +42,13 @@ namespace wg
 	class String;
 	class CharSeq;
 	class CharBuffer;
+		
+	//____ TextItem __________________________________________________________________
 	
-	//____ TextHolder ___________________________________________________________
-	
-	struct TextHolder : public PrintableHolder
-	{
-	};
-	
-	//____ TextField __________________________________________________________________
-	
-	class TextField : public PrintableField
+	class TextItem : public PrintableItem
 	{
 	public:
-		TextField( TextHolder * pHolder );
+		TextItem( Widget * pWidget );
 	
 		virtual void		clear();
 	
@@ -70,7 +64,7 @@ namespace wg
 	
 		inline int			length() const { return m_charBuffer.length(); }
 		inline bool			isEmpty() const { return length()==0?true:false; }
-		TextLink_p			getMarkedLink() const;
+		TextLink_p			markedLink() const;
 	
 		
 		virtual void		setCharStyle( const TextStyle_p& pStyle );
@@ -78,11 +72,13 @@ namespace wg
 
 		virtual void		clearCharStyle();
 		virtual void		clearCharStyle( int ofs, int len );
+
+		virtual void		receive( const Msg_p& pMsg );
 	
 	protected:
-	
+		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link
 	};
 	
 
 } // namespace wg
-#endif //WG_TEXTFIELD_DOT_H
+#endif //WG_TEXTITEM_DOT_H

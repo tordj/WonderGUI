@@ -52,9 +52,9 @@ namespace wg
 	typedef	WeakInterfacePtr<ModText,Text_wp>	ModText_wp;
 	
 	/**
-	 * @brief Interface to a text field with text that is modifiable through the api
+	 * @brief Interface to a text item with text that is modifiable through the api
 	 * 
-	 * The text in a modifiable text field can be set through the API, but isn't
+	 * The text in a modifiable text item can be set through the API, but isn't
 	 * editable through the UI.
 	 * 
 	*/
@@ -62,7 +62,7 @@ namespace wg
 	class ModText : public Text
 	{
 	public:
-		ModText( TextField * pField ) : Text(pField) {};
+		ModText( TextItem * pItem ) : Text(pItem) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
@@ -70,22 +70,22 @@ namespace wg
 		static ModText_p		cast( const Interface_p& pInterface );
 		inline ModText_p		ptr() { return ModText_p(_object(),this); }
 	
-		inline void				clear() { m_pField->clear(); }
+		inline void				clear() { m_pItem->clear(); }
 	
-		inline void				set( const CharSeq& seq ) { m_pField->set(seq); }
-		inline void				set( const CharBuffer * pBuffer ) { m_pField->set(pBuffer); }
-		inline void				set( const String& str ) { m_pField->set(str); }
+		inline void				set( const CharSeq& seq ) { m_pItem->set(seq); }
+		inline void				set( const CharBuffer * pBuffer ) { m_pItem->set(pBuffer); }
+		inline void				set( const String& str ) { m_pItem->set(str); }
 	
-		inline int				append( const CharSeq& seq ) { return m_pField->append(seq); }
-		inline int				insert( int ofs, const CharSeq& seq ) { return m_pField->insert(ofs,seq); }
-		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pField->replace(ofs,len,seq); }
-		inline int				remove( int ofs, int len ) { return m_pField->remove(ofs,len); }
+		inline int				append( const CharSeq& seq ) { return m_pItem->append(seq); }
+		inline int				insert( int ofs, const CharSeq& seq ) { return m_pItem->insert(ofs,seq); }
+		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pItem->replace(ofs,len,seq); }
+		inline int				remove( int ofs, int len ) { return m_pItem->remove(ofs,len); }
 
-		inline void				setCharStyle( const TextStyle_p& pStyle ) { m_pField->setCharStyle(pStyle); }
-		inline void				setCharStyle( const TextStyle_p& pStyle, int ofs, int len) { m_pField->setCharStyle(pStyle, ofs, len); }
+		inline void				setCharStyle( const TextStyle_p& pStyle ) { m_pItem->setCharStyle(pStyle); }
+		inline void				setCharStyle( const TextStyle_p& pStyle, int ofs, int len) { m_pItem->setCharStyle(pStyle, ofs, len); }
 
-		inline void				clearCharStyle() { m_pField->clearCharStyle(); }
-		inline void				clearCharStyle( int ofs, int len ) { m_pField->clearCharStyle(ofs,len); }
+		inline void				clearCharStyle() { m_pItem->clearCharStyle(); }
+		inline void				clearCharStyle( int ofs, int len ) { m_pItem->clearCharStyle(ofs,len); }
 	};
 	
 	

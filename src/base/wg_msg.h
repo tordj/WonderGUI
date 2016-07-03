@@ -918,6 +918,13 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static LinkMsg_p	cast( const Object_p& pObject );
+
+		TextLink_p			link() const;
+	protected:
+		LinkMsg( Object * pSource, const TextLink_p& pLink );
+	
+		TextLink_p			m_pLink;
+
 	};
 
 	class LinkSelectMsg : public LinkMsg
@@ -928,7 +935,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkSelectMsg_p	cast( const Object_p& pObject );
 
-		LinkSelectMsg( const TextLink_p& pLink );
+		LinkSelectMsg( Object * pSource, const TextLink_p& pLink );
 	};
 
 
@@ -940,7 +947,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseEnterMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseEnterMsg( const TextLink_p& pLink );
+		LinkMouseEnterMsg( Object * pSource, const TextLink_p& pLink );
 	};
 
 	class LinkMouseLeaveMsg : public LinkMsg
@@ -951,7 +958,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseLeaveMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseLeaveMsg(  const TextLink_p& pLink );
+		LinkMouseLeaveMsg(  Object * pSource, const TextLink_p& pLink );
 	};
 
 	class LinkMouseButtonMsg : public LinkMsg
@@ -964,6 +971,8 @@ namespace wg
 
 		MouseButton		button() const;
 	protected:
+		LinkMouseButtonMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
+
 		MouseButton		m_button;
 	};
 
@@ -975,7 +984,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMousePressMsg_p	cast( const Object_p& pObject );
 
-		LinkMousePressMsg(  const TextLink_p& pLink, MouseButton button );
+		LinkMousePressMsg(  Object * pSource, const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseRepeatMsg : public LinkMouseButtonMsg
@@ -986,7 +995,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseRepeatMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseRepeatMsg( const TextLink_p& pLink, MouseButton button );
+		LinkMouseRepeatMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseReleaseMsg : public LinkMouseButtonMsg
@@ -997,7 +1006,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseReleaseMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseReleaseMsg( const TextLink_p& pLink, MouseButton button );
+		LinkMouseReleaseMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseClickMsg : public LinkMouseButtonMsg
@@ -1008,7 +1017,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseClickMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseClickMsg(  const TextLink_p& pLink, MouseButton button );
+		LinkMouseClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
 	};
 
 	class LinkMouseDoubleClickMsg : public LinkMouseButtonMsg
@@ -1019,7 +1028,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static LinkMouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
-		LinkMouseDoubleClickMsg(  const TextLink_p& pLink, MouseButton button );
+		LinkMouseDoubleClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
 	};
 
 	//____ Internally posted messages ____________________________________________

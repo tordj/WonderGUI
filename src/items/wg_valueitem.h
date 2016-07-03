@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_VALUEFIELD_DOT_H
-#define WG_VALUEFIELD_DOT_H
+#ifndef	WG_VALUEITEM_DOT_H
+#define WG_VALUEITEM_DOT_H
 
-#ifndef WG_PRINTABLEFIELD_DOT_H
-#	include <wg_printablefield.h>
+#ifndef WG_PRINTABLEITEM_DOT_H
+#	include <wg_printableitem.h>
 #endif
 
 #ifndef WG_VALUEFORMATTER_DOT_H
@@ -33,20 +33,12 @@
 namespace wg 
 {
 	
+		//____ ValueItem ____________________________________________________________
 	
-	//____ ValueHolder ___________________________________________________________
-	
-	class ValueHolder : public PrintableHolder
+	class ValueItem : public PrintableItem
 	{
 	public:
-	};
-	
-	//____ ValueField ____________________________________________________________
-	
-	class ValueField : public PrintableField
-	{
-	public:
-		ValueField(ValueHolder * pHolder);
+		ValueItem(Widget * pWidget);
 	
 		void				setFormatter( const ValueFormatter_p& pFormatter );
 		void				clearFormatter();
@@ -71,4 +63,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_VALUEFIELD_DOT_H
+#endif //WG_VALUEITEM_DOT_H

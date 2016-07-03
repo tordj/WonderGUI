@@ -65,7 +65,7 @@ namespace wg
 		int		maxInputChars() const { return m_maxInputChars; }
 		void	setFormat( const ValueFormat_p& pFormat );
 		ValueFormat_p format() const { return m_pFormat; }
-		void	clear();									// Sets value to 0 and clears input field.
+		void	clear();									// Sets value to 0 and clears input item.
 	
 		Size	preferredSize() const;
 	
@@ -91,9 +91,9 @@ namespace wg
 		void	_rangeModified();				///< Called when range (and thus fractional value) has been modified.
 	
 		Object * _object() { return this; }
-		void	_onFieldDirty( Field * pField );
-		void	_onFieldDirty( Field * pField, const Rect& rect );
-		void	_onFieldResize( Field * pField );
+		void	_requestRender( Item * pItem );
+		void	_requestRender( Item * pItem, const Rect& rect );
+		void	_requestResize( Item * pItem );
 	
 		bool	_parseValueFromInput( int64_t * wpResult );
 	
@@ -102,7 +102,7 @@ namespace wg
 		bool				m_bRegenText;
 		ValueFormat_p	m_pFormat;			///< Value format specified by user
 		ValueFormat_p	m_pUseFormat;		///< Value format currently used (affected by user typing in values).
-		LegacyTextField			m_text;
+		LegacyTextItem			m_text;
 		int					m_buttonDownOfs;
 		bool				m_bSelectAllOnRelease;
 		int					m_maxInputChars;

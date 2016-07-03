@@ -114,7 +114,7 @@ namespace wg
 	
 	PointerStyle TextDisplay::pointerStyle() const
 	{
-		if( m_text.getMarkedLink() )
+		if( m_text.markedLink() )
 			return PointerStyle::Hand;
 	
 		return m_pointerStyle;
@@ -210,26 +210,6 @@ namespace wg
 			textSize -= m_pSkin->contentPadding();
 	
 		m_text.onNewSize( textSize );
-	}
-	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void TextDisplay::_onFieldDirty( Field * pField )
-	{
-		_requestRender();
-	}
-	
-	void TextDisplay::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_requestRender();
-	}
-
-	//____ _onFieldResize() ________________________________________________________
-	
-	void TextDisplay::_onFieldResize( Field * pField )
-	{
-		_requestResize();
-		_requestRender();
 	}
 	
 

@@ -25,7 +25,7 @@
 namespace wg 
 {
 	
-	SpanItem::SpanItem( SpanHolder * pHolder ) : Item( pHolder )
+	SpanItem::SpanItem( Widget * pWidget ) : Item( pWidget )
 	{
 		min = MIN;
 		max = MAX;

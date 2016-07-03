@@ -22,7 +22,7 @@
 =========================================================================*/
 
 #include <wg_columnheader.h>
-#include <wg_columnheaderfield.h>
+#include <wg_columnheaderitem.h>
 
 namespace wg 
 {
@@ -33,7 +33,7 @@ namespace wg
 	//____ Constructor() ___________________________________________________________
 	
 	
-	ColumnHeader::ColumnHeader(ColumnHeaderField* pField) : m_pField(pField), icon(&pField->icon), arrow(&pField->arrow), label(&pField->label)
+	ColumnHeader::ColumnHeader(ColumnHeaderItem* pItem) : m_pItem(pItem), icon(&pItem->icon), arrow(&pItem->arrow), label(&pItem->label)
 	{
 	}
 	
@@ -63,14 +63,7 @@ namespace wg
 	
 		return 0;
 	}
-	
-	//____ _object() _______________________________________________________________
-	
-	Object * ColumnHeader::_object() const
-	{
-		return m_pField->_object();
-	}
-	
+		
 	
 
 } // namespace wg

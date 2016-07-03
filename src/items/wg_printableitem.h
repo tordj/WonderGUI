@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_PRINTABLEFIELD_DOT_H
-#define WG_PRINTABLEFIELD_DOT_H
+#ifndef	WG_PRINTABLEITEM_DOT_H
+#define WG_PRINTABLEITEM_DOT_H
 
-#ifndef WG_FIELD_DOT_H
-#	include <wg_field.h>
+#ifndef WG_ITEM_DOT_H
+#	include <wg_item.h>
 #endif
 
 #ifndef WG_TEXTSTYLE_DOT_H
@@ -42,21 +42,14 @@
 namespace wg 
 {
 	
+	//____ PrintableItem __________________________________________________________________
 	
-	//____ PrintableHolder ___________________________________________________________
-	
-	struct PrintableHolder : public FieldHolder
-	{
-	};
-	
-	//____ PrintableField __________________________________________________________________
-	
-	class PrintableField : public Field
+	class PrintableItem : public Item
 	{
 		friend class Printer;
 	public:
-		PrintableField( PrintableHolder * pHolder );
-		virtual ~PrintableField();
+		PrintableItem( Widget * pWidget );
+		virtual ~PrintableItem();
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
@@ -116,7 +109,7 @@ namespace wg
 	{
 		bool 			bCaret;			// Set if caret should be displayed.
 		bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
-		bool			bButtonDown;	// Set when mouse button was pressed inside field and still is down.
+		bool			bButtonDown;	// Set when mouse button was pressed inside item and still is down.
 		int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 		int				caretOfs;		// End of selection and caret offset (if displaying)
 		int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.		
@@ -126,4 +119,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_PRINTABLEFIELD_DOT_H
+#endif //WG_PRINTABLEITEM_DOT_H

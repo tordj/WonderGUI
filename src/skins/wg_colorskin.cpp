@@ -107,6 +107,12 @@ namespace wg
 	{
 		return Size(0,0);
 	}
+
+	Coord ColorSkin::contentOfs( State state ) const
+	{
+		return Coord(0,0);
+	}
+
 	
 	Size  ColorSkin::sizeForContent( const Size contentSize ) const
 	{

@@ -111,7 +111,7 @@ namespace wg
 		GfxAnim_p	m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-		TextField		m_refreshText;
+		TextItem		m_refreshText;
 		bool			m_bRestartable;
 	
 		bool			m_bRefreshing;

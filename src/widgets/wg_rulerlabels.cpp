@@ -54,8 +54,8 @@ namespace wg
 	void RulerLabels::addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
-		pLabel->textField.set(text);
-		pLabel->textField.setStyle(pStyle);
+		pLabel->textItem.set(text);
+		pLabel->textItem.setStyle(pStyle);
 		pLabel->offset = offset;
 	    
 		m_labels.pushBack(pLabel);
@@ -97,7 +97,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 	        {
-				Size sz = pLabel->textField.preferredSize();
+				Size sz = pLabel->textItem.preferredSize();
 	            if( sz.w > preferred.w )
 	                preferred.w = sz.w;
 	  
@@ -110,7 +110,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 	        {
-	            Size sz = pLabel->textField.preferredSize();
+	            Size sz = pLabel->textItem.preferredSize();
 	            preferred.w += sz.w;
 	            
 	            if( sz.h > preferred.h )
@@ -144,14 +144,14 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int height = pLabel->textField.size().h;
+				int height = pLabel->textItem.size().h;
 				int ofs = (int) (canvas.h * pLabel->offset);
 				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
 	/*
 	TODO: Reinstate!!!
 				
-				switch( pLabel->textField.alignment() )
+				switch( pLabel->textItem.alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::North:
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/			
-				pLabel->textField.onRender(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
+				pLabel->textItem.onRender(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
 				pLabel = pLabel->next();
 			}
 		}
@@ -178,14 +178,14 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int width = pLabel->textField.size().w;
+				int width = pLabel->textItem.size().w;
 				int ofs = (int) (canvas.w * pLabel->offset);
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
 	/*			
 	TODO: Reinstate!
 	
-				switch( pLabel->textField.alignment() )
+				switch( pLabel->textItem.alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::SouthWest:
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->textField.onRender( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
+				pLabel->textItem.onRender( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
 				pLabel = pLabel->next();
 			}
 		}
@@ -236,29 +236,45 @@ namespace wg
 		Label * p = m_labels.first();
 		while( p )
 		{
-			p->textField.setState(state);
+			p->textItem.setState(state);
 			p = p->next();
 		}
 	}
-		
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void RulerLabels::_onFieldDirty( Field * pField )
+
+
+	//____ _itemPos() __________________________________________________________
+
+	Coord RulerLabels::_itemPos( const Item * pItem ) const
 	{
-		_requestRender();
+		//TODO: Implement!!!
+		return Coord();
+	}
+	
+	//____ _itemSize() _________________________________________________________
+	
+	Size RulerLabels::_itemSize( const Item * pItem ) const
+	{
+		//TODO: Implement!!!
+		return Size();
 	}
 
-	void RulerLabels::_onFieldDirty( Field * pField, const Rect& rect )
+	//____ _itemGeo() __________________________________________________________
+	
+	Rect RulerLabels::_itemGeo( const Item * pItem ) const
 	{
-		_requestRender();
+		//TODO: Implement!!!
+		return Rect();
 	}
 	
-	//____ _onFieldResize() ________________________________________________________
-	
-	void RulerLabels::_onFieldResize( Field * pField )
+	//____ _resizeRequested() __________________________________________________
+
+	void RulerLabels::_resizeRequested( const Item * pItem )
 	{
+		//TODO: Implement!!!
 		_requestResize();
-		_requestRender();
 	}
+
+
+
 
 } // namespace wg

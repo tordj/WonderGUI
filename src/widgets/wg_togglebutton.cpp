@@ -422,24 +422,4 @@ namespace wg
 		};
 	}
 	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void ToggleButton::_onFieldDirty( Field * pField )
-	{
-		_requestRender();
-	}
-
-	void ToggleButton::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_requestRender();
-	}
-	
-	//____ _onFieldResize() ________________________________________________________
-	
-	void ToggleButton::_onFieldResize( Field * pField )
-	{
-		_requestResize();
-		_requestRender();
-	}
-
 } // namespace wg

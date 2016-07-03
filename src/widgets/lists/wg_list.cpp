@@ -22,8 +22,8 @@
 
 #include <wg_list.h>
 #include <wg_msgrouter.h>
-#include <wg_iconfield.h>
-#include <wg_textfield.h>
+#include <wg_iconitem.h>
+#include <wg_textitem.h>
 #include <wg_gfxdevice.h>
 
 namespace wg 
@@ -550,8 +550,8 @@ namespace wg
 	//____ _renderHeader() ________________________________________________________
 	
 	void List::_renderHeader( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip, 
-										const Skin_p& pSkin, TextField * pText, IconField * pLabelIcon, 
-										IconField * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort )
+										const Skin_p& pSkin, TextItem * pText, IconItem * pLabelIcon, 
+										IconItem * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort )
 	{
 		Rect canvas( _canvas );
 		Rect clip( _canvas, _clip );

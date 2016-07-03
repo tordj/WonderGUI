@@ -55,8 +55,8 @@ namespace wg
 		m_pCheckBoxSkin			= 0;
 		m_pRadioButtonSkin		= 0;
 	
-		m_iconFieldWidth		= 0;
-		m_arrowFieldWidth		= 0;
+		m_iconItemWidth		= 0;
+		m_arrowItemWidth		= 0;
 	
 		m_pArrowAnim			= 0;
 		m_arrowAnimCount		= 0;
@@ -114,12 +114,12 @@ namespace wg
 	
 	//____ setSkin() __________________________________________________________
 	
-	bool Menu::setSkin( const Skin_p& pSkin, int iconFieldWidth, int arrowFieldWidth )
+	bool Menu::setSkin( const Skin_p& pSkin, int iconItemWidth, int arrowItemWidth )
 	{
 		m_pSkin			= pSkin;
 	
-		m_iconFieldWidth	= iconFieldWidth;
-		m_arrowFieldWidth	= arrowFieldWidth;
+		m_iconItemWidth	= iconItemWidth;
+		m_arrowItemWidth	= arrowItemWidth;
 	
 		_adjustSize();
 		_requestRender();
@@ -614,9 +614,9 @@ namespace wg
 		MenuItem * pItem = m_items.first();
 	
 		int		yPos = contentRect.y - m_contentOfs;
-		int		xPosText = contentRect.x + m_iconFieldWidth;
+		int		xPosText = contentRect.x + m_iconItemWidth;
 		int		xPosIcon = contentRect.x;
-		int		textFieldLen = contentRect.w - m_iconFieldWidth - m_arrowFieldWidth;
+		int		textItemLen = contentRect.w - m_iconItemWidth - m_arrowItemWidth;
 	
 		Pen	entryPen( pDevice, Coord( xPosText, yPos ), contentClip );
 		Pen	accelPen( pDevice, Coord( xPosText, yPos ), contentClip );
@@ -692,7 +692,7 @@ namespace wg
 	
 						int y = yPos + (m_entryHeight - accelPen.getLineHeight())/2 + accelPen.getBaseline();
 						int width = TextTool::lineWidth( attr, state, pAccelText );
-						int x = xPosText + textFieldLen - width;
+						int x = xPosText + textItemLen - width;
 	
 						accelPen.setPos( Coord(x, y) );
 						pDevice->printLine( accelPen, attr, pAccelText );
@@ -709,13 +709,13 @@ namespace wg
 							{
 								Size sz = pIcon->preferredSize();
 	
-								if( sz.w > m_iconFieldWidth )
-									sz.w = m_iconFieldWidth;
+								if( sz.w > m_iconItemWidth )
+									sz.w = m_iconItemWidth;
 								if( sz.h > m_entryHeight )
 									sz.h = m_entryHeight;
 	
 								int y = yPos + (m_entryHeight - sz.h)/2;
-								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
+								int x = xPosIcon + (m_iconItemWidth - sz.w)/2;
 	
 								pIcon->render( pDevice, Rect(x,y,sz), state, contentClip );
 							}
@@ -734,7 +734,7 @@ namespace wg
 								Size sz = m_pCheckBoxSkin->preferredSize();
 	
 								int y = yPos + (m_entryHeight - sz.h)/2;
-								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
+								int x = xPosIcon + (m_iconItemWidth - sz.w)/2;
 	
 								m_pCheckBoxSkin->render( pDevice, Rect(x,y,sz), checkboxState, contentClip );
 							}
@@ -752,7 +752,7 @@ namespace wg
 								Size sz = m_pRadioButtonSkin->preferredSize();
 	
 								int y = yPos + (m_entryHeight - sz.h)/2;
-								int x = xPosIcon + (m_iconFieldWidth - sz.w)/2;
+								int x = xPosIcon + (m_iconItemWidth - sz.w)/2;
 	
 								m_pRadioButtonSkin->render( pDevice, Rect(x,y,sz), radiobuttonState, contentClip );
 							}
@@ -1282,8 +1282,8 @@ namespace wg
 
 		const Menu * pOrg = static_cast<const Menu*>(_pOrg);
 	
-		m_iconFieldWidth 		= pOrg->m_iconFieldWidth;
-		m_arrowFieldWidth 		= pOrg->m_arrowFieldWidth;
+		m_iconItemWidth 		= pOrg->m_iconItemWidth;
+		m_arrowItemWidth 		= pOrg->m_arrowItemWidth;
 		m_pSeparatorSkin		= pOrg->m_pSeparatorSkin;
 		m_sepBorder			= pOrg->m_sepBorder;
 		m_pArrowAnim			= pOrg->m_pArrowAnim;
@@ -1437,7 +1437,7 @@ namespace wg
 				{
 					h += m_entryHeight;
 	
-					int minW = ((MenuEntry*)pItem)->m_minWidth + contentBorder.width() + m_iconFieldWidth + m_arrowFieldWidth;
+					int minW = ((MenuEntry*)pItem)->m_minWidth + contentBorder.width() + m_iconItemWidth + m_arrowItemWidth;
 	
 					if( w < minW )
 						w = minW;

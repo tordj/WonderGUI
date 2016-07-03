@@ -64,7 +64,7 @@ namespace wg
 	 *
 	 **/
 	
-	class	ToggleButton : public Widget, protected IconHolder, protected TextHolder
+	class	ToggleButton : public Widget
 	{
 	friend class ToggleGroup;
 	public:
@@ -120,14 +120,15 @@ namespace wg
 		bool	_alphaTest( const Coord& ofs );
 		void	_setState( State state );
 		void	_setSkin( const Skin_p& pSkin );
-		
-		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
-	
+			
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
+
+		Coord	_itemPos( const Item * pItem ) const;
+		Size	_itemSize( const Item * pItem ) const;
+		Rect	_itemGeo( const Item * pItem ) const;
+	
+	
 	
 	private:
 	
@@ -138,8 +139,8 @@ namespace wg
 		bool			m_bReturnPressed;
 		bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 	
-		TextField		m_label;
-		IconField		m_icon;
+		TextItem		m_label;
+		IconItem		m_icon;
 		ToggleGroup_p	m_pToggleGroup;
 	
 		ClickArea		m_clickArea;

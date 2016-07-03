@@ -86,7 +86,7 @@ namespace wg
 	
 	//____ PackList ____________________________________________________________
 	
-	class PackList : public List, protected ColumnHeaderHolder
+	class PackList : public List
 	{
 		friend class PackListHook;
 	public:
@@ -174,10 +174,9 @@ namespace wg
 		void			_refreshHeader();
 		bool			_sortEntries();
 	
-		Object *		_object() { return this; }
-		void			_onFieldDirty(Field * pField);
-		void			_onFieldDirty(Field * pField, const Rect& rect );
-		void			_onFieldResize(Field * pField);
+//		void			_requestRender(Item * pItem);
+//		void			_requestRender(Item * pItem, const Rect& rect );
+//		void			_requestResize(Item * pItem);
 	
 		Size			_paddedLimitedPreferredSize( Widget * pChild );
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
@@ -192,7 +191,7 @@ namespace wg
 		Hook*			_lastHookWithGeo( Rect& geo ) const;
 		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		ColumnHeaderField	m_header;
+		ColumnHeaderItem	m_header;
 	
 		bool				m_bHorizontal;
 	

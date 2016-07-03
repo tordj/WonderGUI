@@ -53,6 +53,7 @@ namespace wg
 	
 		virtual Size	contentPadding() const;
 		virtual Size	sizeForContent( const Size contentSize ) const;
+		virtual Coord	contentOfs( State state ) const;
 		virtual Rect	contentRect( const Rect& canvas, State state ) const;
 	
 		virtual	bool	isStateIdentical( State state, State comparedTo ) const;

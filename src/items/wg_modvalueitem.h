@@ -19,48 +19,42 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef	WG_MODVALUEITEM_DOT_H
+#define WG_MODVALUEITEM_DOT_H
 
-#include <wg_columnheaderfield.h>
+#ifndef WG_VALUEITEM_DOT_H
+#	include <wg_valueitem.h>
+#endif
 
 namespace wg 
 {
+		
 	
-	ColumnHeaderField::ColumnHeaderField(ColumnHeaderHolder * pHolder) : Field(pHolder), icon(this), arrow(this), label(this)
+	//____ ModValueItem ____________________________________________________________
+	
+	class ModValueItem : public ValueItem
 	{
-		m_height = 0;
-		m_width = 0;
-		m_bPressed = false;
-	}
+	public:
+		ModValueItem( Widget * pWidget ) : ValueItem(pWidget), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
+		~ModValueItem() {}
 	
-	//____ setSkin() ______________________________________________________
+		// ModValue methods
 	
-	void ColumnHeaderField::setSkin( const Skin_p& pSkin )
-	{
-		if( pSkin != m_pSkin )
-		{
-			m_pSkin = pSkin;
-			_onResize();
-		}
-	}
-	
-	//____ _onFieldDirty() _________________________________________________________
-	
-	void ColumnHeaderField::_onFieldDirty( Field * pField )
-	{
-		_onDirty();
-	}
-	
-	void ColumnHeaderField::_onFieldDirty( Field * pField, const Rect& rect )
-	{
-		_onDirty();			//TODO: Optimize, only mark rect as dirty.
-	}
+		void				clear();
+		bool				set( int64_t value, int scale );
+		
+		bool				setRange( int64_t min, int64_t max );
+		inline int64_t		min() const { return m_minValue; }
+		inline int64_t		max() const { return m_maxValue; }	
 
-
-	//____ _onFieldResize() ________________________________________________________
+		inline void			onValueModified() { _notify( ItemNotif::ValueModified, nullptr ); }
 	
-	void ColumnHeaderField::_onFieldResize( Field * pField )
-	{
-		_onResize();
-	}
+	protected:
+		int64_t				m_minValue;
+		int64_t				m_maxValue;
+	};
+	
+	
 
 } // namespace wg
+#endif //WG_MODVALUEITEM_DOT_H

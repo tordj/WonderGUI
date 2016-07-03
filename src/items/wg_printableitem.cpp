@@ -20,28 +20,28 @@
 
 =========================================================================*/
 
-#include <wg_printablefield.h>
+#include <wg_printableitem.h>
 
 namespace wg 
 {
 	
 	//____ Constructor _____________________________________________________________
 	
-	PrintableField::PrintableField( PrintableHolder * pHolder ) : Field( pHolder )
+	PrintableItem::PrintableItem( Widget * pWidget ) : Item( pWidget )
 	{
-		_printer()->addField(this);
+		_printer()->addItem(this);
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	PrintableField::~PrintableField()
+	PrintableItem::~PrintableItem()
 	{
-		_printer()->removeField(this);
+		_printer()->removeItem(this);
 	}
 	
 	//____ setStyle() ______________________________________________________________
 	
-	void PrintableField::setStyle( const TextStyle_p& pStyle )
+	void PrintableItem::setStyle( const TextStyle_p& pStyle )
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
@@ -50,7 +50,7 @@ namespace wg
 	
 	//____ clearStyle() ____________________________________________________________
 	
-	void PrintableField::clearStyle()
+	void PrintableItem::clearStyle()
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
@@ -59,31 +59,31 @@ namespace wg
 	
 	//____ setPrinter() __________________________________________________________
 	
-	void PrintableField::setPrinter( const Printer_p& pPrinter )
+	void PrintableItem::setPrinter( const Printer_p& pPrinter )
 	{
 		if( pPrinter == m_pPrinter )
 			return;
 			
-		_printer()->removeField(this);
+		_printer()->removeItem(this);
 		m_pPrinter = pPrinter;
-		_printer()->addField(this);
+		_printer()->addItem(this);
 	}
 	
 	//____ clearPrinter() ________________________________________________________
 	
-	void PrintableField::clearPrinter()
+	void PrintableItem::clearPrinter()
 	{
 		if( !m_pPrinter )
 			return;
 			
-		_printer()->removeField(this);
+		_printer()->removeItem(this);
 		m_pPrinter = 0;
-		_printer()->addField(this);
+		_printer()->addItem(this);
 	}
 	
 	//____ setState() ______________________________________________________________
 	
-	void PrintableField::setState( State state )
+	void PrintableItem::setState( State state )
 	{
 		if( state == m_state )
 			return;
@@ -95,42 +95,42 @@ namespace wg
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size PrintableField::preferredSize() const
+	Size PrintableItem::preferredSize() const
 	{
 		return _printer()->preferredSize(this);
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int PrintableField::matchingWidth( int height ) const
+	int PrintableItem::matchingWidth( int height ) const
 	{
 		return _printer()->matchingWidth(this, height);
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int PrintableField::matchingHeight( int width ) const
+	int PrintableItem::matchingHeight( int width ) const
 	{
 		return _printer()->matchingHeight(this, width);
 	}
 	
 	//____ charAtPos() ___________________________________________________________
 	
-	int PrintableField::charAtPos( Coord pos ) const
+	int PrintableItem::charAtPos( Coord pos ) const
 	{
 		return _printer()->charAtPos(this,pos);
 	}
 	
 	//____ charRect() ____________________________________________________________
 	
-	Rect PrintableField::charRect( int charOfs ) const
+	Rect PrintableItem::charRect( int charOfs ) const
 	{
 		return _printer()->charRect(this, charOfs);
 	}
 	
 	//____ charLine() ____________________________________________________________
 	
-	int PrintableField::charLine( int charOfs ) const
+	int PrintableItem::charLine( int charOfs ) const
 	{
 		return _printer()->charLine(this, charOfs);
 	}
@@ -138,61 +138,61 @@ namespace wg
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void PrintableField::onRefresh()
+	void PrintableItem::onRefresh()
 	{
 		_printer()->onRefresh(this);
 	}
 	
 	//____ onNewSize() _____________________________________________________________
 	
-	void PrintableField::onNewSize( const Size& size )
+	void PrintableItem::onNewSize( const Size& size )
 	{
 		if( size == m_size )
 			return;
 	
 		Size oldSize = m_size;
 		m_size = size;
-		_printer()->onFieldResized(this,size, oldSize);
+		_printer()->requestResized(this,size, oldSize);
 	}
 	
 	//_____ onRender() _____________________________________________________________
 	
-	void  PrintableField::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void  PrintableItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_printer()->renderField(this, pDevice, _canvas, _clip);
+		_printer()->renderItem(this, pDevice, _canvas, _clip);
 	}
 	
 	//____ rectForRange() __________________________________________________________
 	
-	Rect  PrintableField::rectForRange( int ofs, int length ) const
+	Rect  PrintableItem::rectForRange( int ofs, int length ) const
 	{
 		return _printer()->rectForRange(this, ofs, length);
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String PrintableField::tooltip() const
+	String PrintableItem::tooltip() const
 	{
 		return _printer()->tooltip(this);
 	}
 	
 	//____ getString() ___________________________________________________________________
 	
-	String PrintableField::getString() const
+	String PrintableItem::getString() const
 	{
 		return String(&m_charBuffer);
 	}
 	
 	//____ selectionBegin() ________________________________________________________
 	
-	int PrintableField::selectionBegin() const
+	int PrintableItem::selectionBegin() const
 	{
 		return 0;
 	}
 	
 	//____ selectionEnd() __________________________________________________________
 	
-	int PrintableField::selectionEnd() const
+	int PrintableItem::selectionEnd() const
 	{
 		return 0;
 	}

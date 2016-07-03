@@ -20,15 +20,15 @@
 
 =========================================================================*/
 
-#ifndef	WG_ICONFIELD_DOT_H
-#define	WG_ICONFIELD_DOT_H
+#ifndef	WG_ICONITEM_DOT_H
+#define	WG_ICONITEM_DOT_H
 
 #ifndef WG_TYPES_DOT_H
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_FIELD_DOT_H
-#	include <wg_field.h>
+#ifndef WG_ITEM_DOT_H
+#	include <wg_item.h>
 #endif
 
 #ifndef WG_GEO_DOT_H
@@ -41,23 +41,15 @@
 
 namespace wg 
 {
+		
 	
-	class IconField;
+	//____ IconItem _____________________________________________________________
 	
-	//____ IconHolder ___________________________________________________________
-	
-	class IconHolder : public FieldHolder
+	class IconItem : public Item
 	{
-	};
-	
-	//____ IconField _____________________________________________________________
-	
-	class IconField : public Field
-	{
-		friend class IconHolder;
 	public:
-		IconField( IconHolder * pHolder );
-		virtual ~IconField() {};
+		IconItem( Widget * pWidget );
+		virtual ~IconItem() {};
 	
 	
 		bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0), 
@@ -82,7 +74,7 @@ namespace wg
 		Rect			getIconRect( const Rect& contentRect ) const;
 		Rect			getIconRect( const Rect& contentRect, const Size& iconSize ) const;
 		Rect			getTextRect( const Rect& contentRect, const Rect& iconRect ) const;
-		void			onCloneContent( const IconField * _pOrg );
+		void			onCloneContent( const IconItem * _pOrg );
 		Size			preferredSize() const;
 	
 	protected:
@@ -97,4 +89,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif	// WG_ICONFIELD_DOT_H
+#endif	// WG_ICONITEM_DOT_H

@@ -80,7 +80,7 @@ namespace wg
 		int				insertTextAtCaret( const CharSeq& str );
 		bool			insertCharAtCaret( uint16_t c );
 	
-		// Press in textfield:
+		// Press in textitem:
 		//		Editable - Grab input focus.
 		//		Non-editable - open menu.
 	
@@ -109,9 +109,9 @@ namespace wg
 		bool	_isSelectable() const { return m_text.isSelectable(); }
 	
 		Object * 		_object() { return this; };
-		void			_onFieldDirty( Field * pField );
-		void			_onFieldDirty( Field * pField, const Rect& rect );
-		void 			_onFieldResize( Field * pField );
+		void			_requestRender( Item * pItem );
+		void			_requestRender( Item * pItem, const Rect& rect );
+		void 			_requestResize( Item * pItem );
 	
 		void	_adjustViewOfs();
 		void	_closeMenu();
@@ -120,11 +120,11 @@ namespace wg
 		static void cbEntrySelected( const Msg_p& pMsg, const Object_p& pWdg) { Combobox::cast(pWdg)->_entrySelected(ItemsSelectMsg::cast(pMsg)->items()->id); }
 	
 		String		m_textFormat;
-		String		m_placeholderText;		// Text displayed when field is empty and has no caret.
+		String		m_placeholderText;		// Text displayed when item is empty and has no caret.
 	
 		Menu_p		m_pMenu;
 		MenuItem*		m_pSelectedItem;
-		LegacyTextField		m_text;
+		LegacyTextItem		m_text;
 		bool			m_bResetCaretOnFocus;
 		bool			m_bPressInInputRect;
 		bool			m_bFocusPress;

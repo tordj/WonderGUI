@@ -27,8 +27,8 @@
 #	include <wg_modtext.h>
 #endif
 
-#ifndef WG_EDITTEXTFIELD_DOT_H
-#	include <wg_edittextfield.h>
+#ifndef WG_EDITTEXTITEM_DOT_H
+#	include <wg_edittextitem.h>
 #endif
 
 
@@ -40,11 +40,11 @@ namespace wg
 	typedef	WeakInterfacePtr<EditText,ModText_wp>	EditText_wp;
 	
 	/**
-	 * @brief Interface to a value display field with editable text.
+	 * @brief Interface to a value display item with editable text.
 	 *
-	 * Interface to a value display field with editable text.
+	 * Interface to a value display item with editable text.
 	 *
-	 * The value in an editable value field can be set through the API, and is
+	 * The value in an editable value item can be set through the API, and is
 	 * editable through the UI.
 	 * 
 	 */
@@ -52,7 +52,7 @@ namespace wg
 	class EditText : public ModText
 	{
 	public:
-		EditText(EditTextField * pField) : ModText(pField) {}
+		EditText(EditTextItem * pItem) : ModText(pItem) {}
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
@@ -100,129 +100,129 @@ namespace wg
 
 	
 	private:
-		inline	EditTextField * 	_field() { return static_cast<EditTextField*>(m_pField); }
-		inline	const EditTextField * 	_field() const { return static_cast<EditTextField*>(m_pField); }
+		inline	EditTextItem * 	_item() { return static_cast<EditTextItem*>(m_pItem); }
+		inline	const EditTextItem * 	_item() const { return static_cast<EditTextItem*>(m_pItem); }
 	};
 	
 	
 	//_____________________________________________________________________________
 	inline bool EditText::isSelectable() const 
 	{ 
-		return !(_field()->editMode() == TextEditMode::Static); 
+		return !(_item()->editMode() == TextEditMode::Static); 
 	}
 	
 	//_____________________________________________________________________________
 	inline bool EditText::isEditable() const 
 	{ 
-		return (_field()->editMode() == TextEditMode::Editable); 
+		return (_item()->editMode() == TextEditMode::Editable); 
 	}
 	
 	//_____________________________________________________________________________
 	inline int EditText::append( const CharSeq& seq ) 
 	{ 
-		return _field()->append( seq );
+		return _item()->append( seq );
 	}
 
 	//_____________________________________________________________________________
 	inline int EditText::insert( int ofs, const CharSeq& seq )
 	{
-		return _field()->insert(ofs, seq);
+		return _item()->insert(ofs, seq);
 	}
 	
 	//_____________________________________________________________________________
 	inline int EditText::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
-		return _field()->replace(ofs, nDelete, seq);
+		return _item()->replace(ofs, nDelete, seq);
 	}
 	
 	//_____________________________________________________________________________
 	inline int EditText::erase( int ofs, int len )
 	{
-		return _field()->erase(ofs,len);
+		return _item()->erase(ofs,len);
 	}
 
 	//_____________________________________________________________________________
 	inline bool EditText::select( int begin, int end )
 	{
-		return _field()->select(begin,end);
+		return _item()->select(begin,end);
 	}
 	
 	//_____________________________________________________________________________
 	inline bool EditText::selectAll()
 	{
-		return _field()->selectAll();
+		return _item()->selectAll();
 	}
 
 	//_____________________________________________________________________________
 	inline bool EditText::unselect()
 	{
-		return _field()->unselect();
+		return _item()->unselect();
 	}
 
 	//_____________________________________________________________________________
 	inline int EditText::eraseSelected()
 	{
-		return _field()->eraseSelected();
+		return _item()->eraseSelected();
 	}
 
 	//_____________________________________________________________________________
 	inline int EditText::selectionBegin() const
 	{
-		return _field()->selectionBegin();
+		return _item()->selectionBegin();
 	}
 
 	//_____________________________________________________________________________
 	inline int EditText::selectionEnd() const
 	{
-		return _field()->selectionEnd();
+		return _item()->selectionEnd();
 	}
 	
 	//_____________________________________________________________________________
 	inline bool EditText::setCaretPos( int pos )
 	{
-		return _field()->setCaretPos(pos);
+		return _item()->setCaretPos(pos);
 	}
 
 	//_____________________________________________________________________________
 	inline int EditText::caretPos() const
 	{
-		return _field()->caretPos();
+		return _item()->caretPos();
 	}
 	
 	//_____________________________________________________________________________
 	inline int EditText::caretPut( const CharSeq& seq )
 	{
-		return _field()->caretPut(seq);
+		return _item()->caretPut(seq);
 	}
 	
 	//_____________________________________________________________________________
 	inline bool EditText::caretPut( uint16_t c )
 	{
-		return _field()->caretPut(c);
+		return _item()->caretPut(c);
 	}
 	
 	//_____________________________________________________________________________
 	inline bool EditText::caretLineBegin()
 	{
-		return _field()->caretLineBegin();
+		return _item()->caretLineBegin();
 	}
 
 	//_____________________________________________________________________________
 	inline bool EditText::caretLineEnd()
 	{
-		return _field()->caretLineEnd();
+		return _item()->caretLineEnd();
 	}
 
 	//_____________________________________________________________________________
 	inline bool EditText::caretTextBegin()
 	{
-		return _field()->caretTextBegin();
+		return _item()->caretTextBegin();
 	}
 
 	//_____________________________________________________________________________
 	inline bool EditText::caretTextEnd()
 	{
-		return _field()->caretTextEnd();
+		return _item()->caretTextEnd();
 	}
 
 

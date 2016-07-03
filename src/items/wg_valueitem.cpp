@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_valuefield.h>
+#include <wg_valueitem.h>
 
 namespace wg 
 {
@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	ValueField::ValueField(ValueHolder * pHolder) : PrintableField(pHolder)
+	ValueItem::ValueItem(Widget * pWidget) : PrintableItem(pWidget)
 	{
 		m_value = 0;
 		m_scale = 1;
@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ setFormatter() __________________________________________________________
 	
-	void ValueField::setFormatter( const ValueFormatter_p& pFormatter )
+	void ValueItem::setFormatter( const ValueFormatter_p& pFormatter )
 	{
 		if( m_pFormatter != pFormatter )
 		{
@@ -48,7 +48,7 @@ namespace wg
 	
 	//____ clearFormatter() ________________________________________________________
 	
-	void ValueField::clearFormatter()
+	void ValueItem::clearFormatter()
 	{
 		if( m_pFormatter )
 		{
@@ -59,7 +59,7 @@ namespace wg
 	
 	//____ clear() _________________________________________________________________
 	
-	void ValueField::clear()
+	void ValueItem::clear()
 	{
 		if( m_value != 0 )
 		{
@@ -71,7 +71,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool ValueField::set( int64_t value, int scale )
+	bool ValueItem::set( int64_t value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
@@ -85,7 +85,7 @@ namespace wg
 		return true;
 	}
 	/*
-	void ValueField::set( float value )
+	void ValueItem::set( float value )
 	{
 		value *= m_scale;
 		int64_t intVal = (int64_t) value;
@@ -96,7 +96,7 @@ namespace wg
 		}
 	}
 	
-	void ValueField::set( double value )
+	void ValueItem::set( double value )
 	{
 		value *= m_scale;
 		int64_t intVal = (int64_t) value;
@@ -110,22 +110,22 @@ namespace wg
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void ValueField::onRefresh()
+	void ValueItem::onRefresh()
 	{	
 		_regenText();
-		PrintableField::onRefresh();
+		PrintableItem::onRefresh();
 	}
 	
 	//____ _regenText() ____________________________________________________________
 	
-	void ValueField::_regenText()
+	void ValueItem::_regenText()
 	{
 		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //Base::DefaultValueFormatter();
 		if( m_pFormatter )
 			m_charBuffer = pFormatter->format(m_value, m_scale);
-		_onDirty();
+		_requestRender();
 		
-		//TODO: Conditional call to _onResize();
+		//TODO: Conditional call to _requestResize();
 	}
 
 } // namespace wg

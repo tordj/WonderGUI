@@ -159,7 +159,7 @@ namespace wg
 	{
 		TextAttr attr;
 		m_text.getBaseAttr( attr );
-		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textfield
+		int width = TextTool::lineWidth( attr, "MMMMMMMMMM" );		// Default line editor should fit 10 letter M in textitem
 		Size contentSize( m_text.height(), width );
 		
 		if( m_pSkin )
@@ -187,7 +187,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window,_clip);
 	
-		LegacyTextField * pText = &m_text;
+		LegacyTextItem * pText = &m_text;
 	
 	//TODO: Get password mode working again!
 	/*
@@ -198,7 +198,7 @@ namespace wg
 			for( int i = 0 ; i < nChars ; i++ )
 				pContent[i] = m_pwGlyph;
 			pContent[nChars] = 0;
-			pText = new LegacyTextField( pContent );
+			pText = new LegacyTextItem( pContent );
 			delete [] pContent;
 	
 			pText->setWrap(false);
@@ -650,21 +650,21 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ _onFieldDirty() _________________________________________________________
+	//____ _requestRender() _________________________________________________________
 	
-	void LineEditor::_onFieldDirty( Field * pField )
+	void LineEditor::_requestRender( Item * pItem )
 	{
 		_requestRender();
 	}
 
-	void LineEditor::_onFieldDirty( Field * pField, const Rect& rect )
+	void LineEditor::_requestRender( Item * pItem, const Rect& rect )
 	{
 		_requestRender();
 	}
 	
-	//____ _onFieldResize() ________________________________________________________
+	//____ _requestResize() ________________________________________________________
 	
-	void LineEditor::_onFieldResize( Field * pField )
+	void LineEditor::_requestResize( Item * pItem )
 	{
 		m_bResetCaretOnFocus = true;
 		_requestResize();

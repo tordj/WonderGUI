@@ -120,7 +120,7 @@ namespace wg
 		m_value = 0;
 		_valueModified();
 	
-		// Make the inputfield empty
+		// Make the inputitem empty
 	
 		m_pUseFormat->setIntegers(0);
 		m_pUseFormat->setForcePeriod(false);
@@ -845,21 +845,21 @@ namespace wg
 		Widget::_setSkin(pSkin);
 	}
 	
-	//____ _onFieldDirty() _________________________________________________________
+	//____ _requestRender() _________________________________________________________
 	
-	void ValueEditor::_onFieldDirty( Field * pField )
+	void ValueEditor::_requestRender( Item * pItem )
 	{
 		_requestRender();
 	}
 	
-	void ValueEditor::_onFieldDirty( Field * pField, const Rect& rect )
+	void ValueEditor::_requestRender( Item * pItem, const Rect& rect )
 	{
 		_requestRender();
 	}
 
-	//____ _onFieldResize() ________________________________________________________
+	//____ _requestResize() ________________________________________________________
 	
-	void ValueEditor::_onFieldResize( Field * pField )
+	void ValueEditor::_requestResize( Item * pItem )
 	{
 		_requestResize();
 	}

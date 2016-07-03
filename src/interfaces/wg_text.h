@@ -23,8 +23,8 @@
 #ifndef WG_TEXT_DOT_H
 #define WG_TEXT_DOT_H
 
-#ifndef WG_TEXTFIELD_DOT_H
-#	include <wg_textfield.h>
+#ifndef WG_TEXTITEM_DOT_H
+#	include <wg_textitem.h>
 #endif
 
 #ifndef WG_INTERFACE_DOT_H
@@ -52,11 +52,11 @@ namespace wg
 	typedef	WeakInterfacePtr<Text,Interface_wp>		Text_wp;
 	
 	/**
-	 * @brief Interface to a basic text field.
+	 * @brief Interface to a basic text item.
 	 *
-	 * Interface to a basic text field.
+	 * Interface to a basic text item.
 	 *
-	 * The text in a basic text field is set by the widget itself and can
+	 * The text in a basic text item is set by the widget itself and can
 	 * not be modified directly either through the API or UI. Only the appearance
 	 * of the text can be modified through this interface.
 	 * 
@@ -65,7 +65,7 @@ namespace wg
 	class Text : public Interface
 	{
 	public:
-		Text( TextField * pField ) : m_pField(pField) {};
+		Text( TextItem * pItem ) : m_pItem(pItem) {};
 	
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
@@ -73,24 +73,24 @@ namespace wg
 		static Text_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline Text_p			ptr() { return Text_p(_object(),this); }
 	
-		inline void				setStyle( const TextStyle_p& pStyle ) { m_pField->setStyle(pStyle); }
-		inline void				clearStyle() { m_pField->clearStyle(); }
-		inline TextStyle_p		style() const { return m_pField->style(); }
+		inline void				setStyle( const TextStyle_p& pStyle ) { m_pItem->setStyle(pStyle); }
+		inline void				clearStyle() { m_pItem->clearStyle(); }
+		inline TextStyle_p		style() const { return m_pItem->style(); }
 	
-		inline void				setPrinter( const Printer_p& pPrinter ) { m_pField->setPrinter(pPrinter); }
-		inline void				clearPrinter() { m_pField->clearPrinter(); }
-		inline Printer_p		printer() const { return m_pField->printer(); }
+		inline void				setPrinter( const Printer_p& pPrinter ) { m_pItem->setPrinter(pPrinter); }
+		inline void				clearPrinter() { m_pItem->clearPrinter(); }
+		inline Printer_p		printer() const { return m_pItem->printer(); }
 	
-		inline 	String			get() const { return m_pField->getString(); }
+		inline 	String			get() const { return m_pItem->getString(); }
 	
-		inline State			state() const { return m_pField->state(); }
-		inline int				length() const { return m_pField->length(); }
-		inline bool				isEmpty() const { return m_pField->isEmpty(); }
+		inline State			state() const { return m_pItem->state(); }
+		inline int				length() const { return m_pItem->length(); }
+		inline bool				isEmpty() const { return m_pItem->isEmpty(); }
 	
 	protected:
 		Object *				_object() const;
 	
-		TextField * 			m_pField;
+		TextItem * 			m_pItem;
 	};
 	
 	

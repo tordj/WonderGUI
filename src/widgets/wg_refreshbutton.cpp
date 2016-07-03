@@ -330,7 +330,7 @@ namespace wg
 	
 		// Print text
 	
-		TextField * pText;
+		TextItem * pText;
 	
 		if( m_bRefreshing )
 			pText = &m_refreshText;

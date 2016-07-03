@@ -364,7 +364,26 @@ namespace wg
 				sprintf( params, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
-	
+
+			case MsgType::LinkMouseEnter:
+			case MsgType::LinkMouseLeave:
+			case MsgType::LinkSelect:
+			{
+				LinkMsg_p pMsg = LinkMsg::cast(_pMsg);
+				sprintf( params, " link=%d string=\"%s\"", pMsg->link().rawPtr(), pMsg->link()->link().c_str() );
+				break;
+			}
+
+			case MsgType::LinkMousePress:
+			case MsgType::LinkMouseRepeat:
+			case MsgType::LinkMouseRelease:
+			case MsgType::LinkMouseClick:
+			case MsgType::LinkMouseDoubleClick:
+			{
+				LinkMouseButtonMsg_p pMsg = LinkMouseButtonMsg::cast(_pMsg);
+				sprintf( params, " link=%d button=%s", pMsg->link().rawPtr(), _formatMouseButton(pMsg->button()).c_str() );
+				break;
+			}
 			case MsgType::ModalMoveOutside:
 				break;
 			case MsgType::ModalBlockedPress:

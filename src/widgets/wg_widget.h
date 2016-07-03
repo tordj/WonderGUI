@@ -45,7 +45,7 @@
 
 namespace wg 
 {
-	
+	class Item;
 	class GfxDevice;
 	class Container;
 	class Panel;
@@ -101,6 +101,8 @@ namespace wg
 	friend class ShaderCapsule;
 	friend class PopupLayer;
 		
+	friend class Item;
+	
 	public:
 		Widget();
 		virtual ~Widget();
@@ -221,6 +223,20 @@ namespace wg
 		virtual	bool	_alphaTest( const Coord& ofs );
 	
 		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+
+		// Methods for items to access
+		
+		virtual Coord	_itemPos( const Item * pItem ) const;
+		virtual Size	_itemSize( const Item * pItem ) const;
+		virtual Rect	_itemGeo( const Item * pItem ) const;
+		virtual Coord	_itemGlobalPos( const Item * pItem ) const;
+		virtual Rect	_itemGlobalGeo( const Item * pItem ) const;
+
+		virtual void	_renderRequested( const Item * pItem );
+		virtual void	_renderRequested( const Item * pItem, const Rect& rect );
+		virtual void	_resizeRequested( const Item * pItem );
+		
+		virtual void	_onItemNotify( Item * pItem, ItemNotif notification, void * pData );
 	
 		//
 	
