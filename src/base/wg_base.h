@@ -97,10 +97,7 @@ namespace wg
 		static bool					initFreeType();
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
-	
-		static void			setDefaultCaret( const Caret_p& pCaret );
-		static Caret_p 	defaultCaret() { assert(s_pData!=0); return s_pData->pDefaultCaret; }
-	
+		
 		static void			setDefaultPrinter( const Printer_p& pPrinter );
 		static Printer_p defaultPrinter() { assert(s_pData!=0); return s_pData->pDefaultPrinter; }
 	
@@ -130,8 +127,7 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			
 	
-			Caret_p		pDefaultCaret;
-			Printer_p	pDefaultPrinter;
+			Printer_p		pDefaultPrinter;
 			TextStyle_p		pDefaultStyle;
 	
 			//

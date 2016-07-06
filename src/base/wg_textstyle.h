@@ -42,10 +42,6 @@
 #	include <wg_textlink.h>
 #endif
 
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
 namespace wg 
 {
 	
@@ -61,7 +57,6 @@ namespace wg
 			Color			bgColor;			
 			TextDecoration	decoration;
 			TextLink_p		pLink;
-			Caret_p			pCaret;
 
 			
 			// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
@@ -93,7 +88,6 @@ namespace wg
 	
 		void			setFont( const Font_p& pFont );
 		void			setLink( const TextLink_p& pLink );
-		void			setCaret( const Caret_p& pCaret );
 	
 		void			setColor( Color color );
 		void			setBgColor( Color color );
@@ -107,7 +101,6 @@ namespace wg
 	
 		void			clearFont();
 		void			clearLink();
-		void			clearCaret();
 	
 		void			clearColor();
 		void			clearBgColor();
@@ -121,7 +114,6 @@ namespace wg
 	
 		inline Font_p			font() const;
 		inline TextLink_p		link() const;
-		inline Caret_p			caret() const;
 		inline bool				hasColor( State state ) const;
 		inline Color			color( State state ) const;
 		inline bool				hasBgColor( State state ) const;
@@ -131,7 +123,6 @@ namespace wg
 	
 		inline Font_p			combFont() const;
 		inline TextLink_p		combLink() const;
-		inline Caret_p			combCaret() const;
 		inline Color			combColor( State state ) const;
 		inline Color			combBgColor( State state ) const;
 		inline int				combSize( State state ) const;
@@ -161,8 +152,21 @@ namespace wg
 			Color			bgColor[StateEnum_Nb];
 			TextDecoration	decoration[StateEnum_Nb];
 			TextLink_p		pLink;
-			Caret_p			pCaret;
 
+			// Only on whole text level?
+/*
+			bool			hasSelectionColor;
+			bool			hasSelectionBgColor;
+			Color			selectionColor;
+			Color			selectionBgColor;
+			TextDecoration	selectionDecoration;
+
+			bool			hasLinkColor[3];		// Normal, Hover, Pressed
+			bool			hasLinkBgColor[3];
+			Color			linkColor[3];
+			Color			linkBgColor[3];
+			TextDecoration	linkDecoration[3];
+*/ 
 		};
 	
 		bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
@@ -193,12 +197,6 @@ namespace wg
 	inline TextLink_p TextStyle::link() const
 	{
 		return m_specAttr.pLink;
-	}
-
-	//______________________________________________________________________________
-	inline Caret_p TextStyle::caret() const
-	{
-		return m_specAttr.pCaret;
 	}
 	
 	//______________________________________________________________________________
@@ -248,12 +246,6 @@ namespace wg
 	inline TextLink_p TextStyle::combLink() const
 	{
 		return m_combAttr.pLink;
-	}
-
-	//______________________________________________________________________________
-	inline Caret_p TextStyle::combCaret() const
-	{
-		return m_combAttr.pCaret;
 	}
 	
 	//______________________________________________________________________________

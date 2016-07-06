@@ -41,6 +41,7 @@
 
 namespace wg 
 {
+	struct EditState;
 	
 	//____ PrintableItem __________________________________________________________________
 	
@@ -53,11 +54,11 @@ namespace wg
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
-		TextStyle_p			style() const { return m_pStyle; }
+		TextStyle *			style() const { return m_pStyle.rawPtr(); }
 	
 		virtual void		setPrinter( const Printer_p& pPrinter );
 		virtual void		clearPrinter();
-		Printer_p			printer() const { return m_pPrinter; }
+		Printer *			printer() const { return m_pPrinter.rawPtr(); }
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
@@ -85,8 +86,11 @@ namespace wg
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
 
+		// Alternative calls, guaranteed to return valid values.
+
 		Printer *			_printer() const { return m_pPrinter ? m_pPrinter.rawPtr() : Base::defaultPrinter().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+		virtual const EditState * _editState() const;
 		
 	protected:
 	

@@ -31,6 +31,10 @@
 #	include <wg_textstyle.h>
 #endif
 
+#ifndef WG_CARET_DOT_H
+#	include <wg_caret.h>
+#endif
+
 namespace wg 
 {
 	
@@ -50,6 +54,10 @@ namespace wg
 	
 		void			setAlignment( Origo alignment );
 		Origo			alignment() const { return m_alignment; }
+
+		void			setCaret( const Caret_p& pCaret );
+		Caret_p			caret() const { return m_pCaret; }
+
 	
 		virtual void	addItem( PrintableItem * pItem );
 		virtual void	removeItem( PrintableItem * pItem );
@@ -74,7 +82,9 @@ namespace wg
 		virtual int		wordEnd( const PrintableItem * pItem, int charOfs ) const;		
 	
 	
+		virtual void 	receive( const Msg_p& pMsg );
 		virtual void 	renderItem( PrintableItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
+		virtual void	pokeCaret( PrintableItem * pText );
 	
 		virtual void	onTextModified( PrintableItem * pItem, int ofs, int charsRemoved, int charsAdded );
 		virtual void	requestResized( PrintableItem * pItem, Size newSize, Size oldSize );
@@ -82,6 +92,7 @@ namespace wg
 		virtual void	onStyleChanged( PrintableItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle );
 		virtual void	onCharStyleChanged( PrintableItem * pText, int ofs, int len );
 		virtual void	onRefresh( PrintableItem * pItem );
+
 	
 	
 		virtual Size	preferredSize( const PrintableItem * pItem ) const;
@@ -155,10 +166,11 @@ namespace wg
 		int				_lineAtPosY( const PrintableItem * pItem, int posY, SelectMode mode ) const;
 		int				_charAtPosX( const PrintableItem * pItem, int line, int posX, SelectMode mode ) const;
 		
-		Origo		m_alignment;
-		
+		Origo			m_alignment;
+		Caret_p			m_pCaret;
+		PrintableItem * m_pFocusedItem;
+		RouteId			m_tickRouteId;
 	};
-	
 
 } // namespace wg
 #endif //WG_STANDARDPRINTER_DOT_H

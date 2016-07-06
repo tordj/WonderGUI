@@ -197,4 +197,13 @@ namespace wg
 		return 0;
 	}
 
+	//____ _editState() ________________________________________________________
+
+	const EditState * PrintableItem::_editState() const
+	{
+		return nullptr;
+	}
+
+
+
 } // namespace wg

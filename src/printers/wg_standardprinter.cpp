@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	StandardPrinter::StandardPrinter() : m_alignment(Origo::NorthWest)
+	StandardPrinter::StandardPrinter() : m_alignment(Origo::NorthWest), m_pFocusedItem(nullptr), m_tickRouteId(0)
 	{
 	}
 	
@@ -42,6 +42,11 @@ namespace wg
 	
 	StandardPrinter::~StandardPrinter()
 	{
+		if( m_tickRouteId )
+		{
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
+			m_tickRouteId = 0;
+		}
 	}
 	
 	
@@ -92,6 +97,13 @@ namespace wg
 	{
 		free( _itemDataBlock(pItem) );
 		_setItemDataBlock(pItem, 0);
+		
+		if( pItem == m_pFocusedItem )
+		{
+			m_pFocusedItem = 0;
+			Base::msgRouter()->deleteRoute( m_tickRouteId );
+			m_tickRouteId = 0;			
+		}	
 	}
 	
 	//____ setAlignment() __________________________________________________________
@@ -105,6 +117,19 @@ namespace wg
 			//TODO: Make all items dirty
 		}
 	}
+
+	//____ setCaret() __________________________________________________________
+
+	void StandardPrinter::setCaret( const Caret_p& pCaret )
+	{
+		if( m_pCaret != pCaret )
+		{
+			m_pCaret = pCaret;
+			
+			//TODO: Force update of field sizes etc if needed.
+		}
+	}
+
 	
 	
 	//____ charAtPos() _________________________________________________________
@@ -307,6 +332,22 @@ namespace wg
 		return distance;
 	}
 
+	//____ receive() ___________________________________________________________
+
+	void StandardPrinter::receive( const Msg_p& pMsg )
+	{
+		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
+		{
+			if( m_pFocusedItem->_editState()->bCaret )
+			{
+				int ms = static_cast<TickMsg*>(pMsg.rawPtr())->timediff();
+				
+				bool bDirty = m_pCaret->tick( ms );					
+				if( bDirty )
+					_setItemDirty( m_pFocusedItem );				//TODO: Only render what is needed.
+			}		
+		}
+	}
 	
 	//____ _renderItem()___________________________________________________________
 	
@@ -396,8 +437,31 @@ namespace wg
 		
 		if( localTint != Color::White )
 			pDevice->setTintColor( baseTint );
+
+		// Render cursor (if there is any)
+		
+		const EditState * pEditState = _editState( pItem );
+		
+		if( pEditState && pEditState->bCaret && m_pCaret )
+		{
+			m_pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos(), clip );
+		}
 	}
 	
+	
+	//____ pokeCaret() _________________________________________________________
+
+	void StandardPrinter::pokeCaret( PrintableItem * pText )
+	{
+		if( pText->_editState()->bCaret )
+		{
+			bool bDirty = m_pCaret->restartCycle();
+			if( bDirty )
+				_setItemDirty( pText );										//TODO: Only render what is needed.
+		}		
+	}
+
+	//____ onTextModified() ____________________________________________________
 	
 	void StandardPrinter::onTextModified( PrintableItem * pItem, int ofs, int charsRemoved, int charsAdded )
 	{
@@ -411,7 +475,26 @@ namespace wg
 	
 	void StandardPrinter::onStateChanged( PrintableItem * pItem, State newState, State oldState )
 	{
-		//TODO: Implement!
+		// TODO: Support for more than one input device, focusing different (or same) items.
+		
+		if( newState.isFocused() != oldState.isFocused() )
+		{
+			if( newState.isFocused() )
+			{
+				m_pFocusedItem = pItem;
+				if( !m_tickRouteId )
+					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );					
+			}
+			else
+			{
+				m_pFocusedItem = 0;
+				if( m_tickRouteId )
+				{
+					Base::msgRouter()->deleteRoute( m_tickRouteId );
+					m_tickRouteId = 0;
+				}
+			}
+		}
 	}
 	
 	void StandardPrinter::onStyleChanged( PrintableItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )

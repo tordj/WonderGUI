@@ -89,6 +89,16 @@ namespace wg
 		return true;		
 	}
 
+	//____ restartCycle() ______________________________________________________
+
+ 	bool Caret::restartCycle()
+	{ 
+		int oldTicks = m_ticks;
+		m_ticks = 0; 
+
+		return _updateNeedToRender( oldTicks, m_ticks );
+	}	
+	
 	
 	//____ eolWidth() ______________________________________________________________
 	
@@ -101,16 +111,10 @@ namespace wg
 	
 	bool Caret::tick( int ms )
 	{
-		int halfCycle = m_cycleLength / 2;
-		int oldBlink = m_ticks / halfCycle;
-	
+		int oldTicks = m_ticks;
 		m_ticks = (m_ticks + ms) % m_cycleLength;
 	
-		int newBlink = m_ticks / halfCycle;
-		if( newBlink != oldBlink )
-			m_bNeedToRender = true;
-			
-		return m_bNeedToRender;
+		return _updateNeedToRender( oldTicks, m_ticks );
 	}
 	
 	//____ dirtyRect() _____________________________________________________________
@@ -140,6 +144,20 @@ namespace wg
 			pDevice->fill( Rect(r,clip), Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
+	}
+
+	//____ _updateNeedToRender() _______________________________________________
+
+	bool Caret::_updateNeedToRender( int oldTicks, int newTicks )
+	{
+		int halfCycle = m_cycleLength / 2;
+		int oldBlink = oldTicks / halfCycle;
+		
+		int newBlink = newTicks / halfCycle;
+		if( newBlink != oldBlink )
+			m_bNeedToRender = true;
+			
+		return m_bNeedToRender;
 	}
 	
 

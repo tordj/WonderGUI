@@ -61,7 +61,7 @@ namespace wg
 	
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
-		inline void			restartCycle() { m_ticks = 0; }
+		virtual bool		restartCycle();
 	
 		virtual bool		setMode( CaretMode mode );
 		virtual int			eolWidth( const Size& eolCell ) const;
@@ -73,6 +73,9 @@ namespace wg
 	
 	protected:
 		Caret();
+
+		bool		_updateNeedToRender( int oldTicks, int newTicks );
+
 		
 		CaretMode	m_mode;
 		int			m_ticks;

@@ -58,7 +58,10 @@ namespace wg
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 	
-		s_pData->pDefaultPrinter = StandardPrinter::create();
+		StandardPrinter_p pPrinter = StandardPrinter::create();
+		pPrinter->setCaret( Caret::create() );
+		s_pData->pDefaultPrinter = pPrinter;
+
 		s_pData->pDefaultStyle = TextStyle::create();
 		
 		s_pData->pMsgRouter = MsgRouter::create();
@@ -156,15 +159,7 @@ namespace wg
 		return false;
 	}
 	#endif
-	
-	//____ setDefaultCaret() _______________________________________________________
-	
-	void Base::setDefaultCaret( const Caret_p& pCaret )
-	{
-		assert( s_pData != 0 );
-		s_pData->pDefaultCaret = pCaret;	
-	}
-	
+		
 	//____ setDefaultPrinter() ___________________________________________________
 	
 	void Base::setDefaultPrinter( const Printer_p& pPrinter )

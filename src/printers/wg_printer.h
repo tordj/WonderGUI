@@ -43,9 +43,13 @@
 #	include <wg_key.h>
 #endif
 
+#ifndef WG_RECEIVER_DOT_H
+#	include <wg_receiver.h>
+#endif
+
 namespace wg 
 {
-	
+	struct EditState;
 	class PrintableItem;
 	
 	class GfxDevice;
@@ -56,7 +60,7 @@ namespace wg
 	typedef	StrongPtr<Printer,Object_p>	Printer_p;
 	typedef	WeakPtr<Printer,Object_wp>	Printer_wp;
 	
-	class Printer : public Object
+	class Printer : public Receiver
 	{
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -79,6 +83,7 @@ namespace wg
 
 	
 		virtual void 	renderItem( PrintableItem * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
+		virtual void	pokeCaret( PrintableItem * pText ) = 0;
 	
 		virtual void	onTextModified( PrintableItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
 		virtual void	requestResized( PrintableItem * pText, Size newSize, Size oldSize ) = 0;
@@ -95,6 +100,7 @@ namespace wg
 		virtual Rect	rectForRange( const PrintableItem * pText, int ofs, int length ) const = 0;
 	
 		virtual String	tooltip( const PrintableItem * pText ) const;
+	
 	
 		// Methods for supporting a caret
 	
@@ -116,13 +122,15 @@ namespace wg
 		virtual ~Printer() {};
 	
 	
-		CharBuffer *  	_charBuffer( PrintableItem * pItem ) const;
+		CharBuffer *  		_charBuffer( PrintableItem * pItem ) const;
 		const CharBuffer *  _charBuffer( const PrintableItem * pItem ) const;
-		const void *	_itemDataBlock( const PrintableItem * pItem) const;
-		void *			_itemDataBlock( PrintableItem * pItem) const;
+		const void *		_itemDataBlock( const PrintableItem * pItem) const;
+		void *				_itemDataBlock( PrintableItem * pItem) const;
 		int					_itemDataInt( const PrintableItem * pItem ) const;
+
 		const TextStyle *	_baseStyle( const PrintableItem * pItem ) const;
-		State			_state( const PrintableItem * pItem ) const;
+		State				_state( const PrintableItem * pItem ) const;
+		const EditState	* 	_editState( const PrintableItem * pItem ) const;
 		
 		void			_setItemDataBlock( PrintableItem * pItem, void * pBlock );
 		void			_setItemDataInt( PrintableItem * pItem, int data );

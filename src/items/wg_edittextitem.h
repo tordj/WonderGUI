@@ -112,7 +112,9 @@ namespace wg
 		};
 	
 	
-		bool			_moveCaret( int caretOfs, MoveMethod method );
+		bool				_moveCaret( int caretOfs, MoveMethod method );
+		const EditState * 	_editState() const;
+
 
 		void			_caretToBegin();
 		void			_caretToEnd();

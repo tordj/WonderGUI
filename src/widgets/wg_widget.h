@@ -57,11 +57,11 @@ namespace wg
 	
 	class Widget;
 	typedef	StrongPtr<Widget,Receiver_p>	Widget_p;
-	typedef	WeakPtr<Widget,Receiver_wp>	Widget_wp;
+	typedef	WeakPtr<Widget,Receiver_wp>		Widget_wp;
 	
 	class Container;
-	typedef	StrongPtr<Container,Widget_p>		Container_p;
-	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
+	typedef	StrongPtr<Container,Widget_p>	Container_p;
+	typedef	WeakPtr<Container,Widget_wp>	Container_wp;
 	
 	class Msg;
 	typedef	StrongPtr<Msg,Object_p>			Msg_p;
@@ -232,9 +232,11 @@ namespace wg
 		virtual Coord	_itemGlobalPos( const Item * pItem ) const;
 		virtual Rect	_itemGlobalGeo( const Item * pItem ) const;
 
-		virtual void	_renderRequested( const Item * pItem );
-		virtual void	_renderRequested( const Item * pItem, const Rect& rect );
-		virtual void	_resizeRequested( const Item * pItem );
+		virtual void	_itemRenderRequested( const Item * pItem );
+		virtual void	_itemRenderRequested( const Item * pItem, const Rect& rect );
+		virtual void	_itemResizeRequested( const Item * pItem );
+
+ 		virtual void	_itemFocusRequested( const Item * pItem );
 		
 		virtual void	_onItemNotify( Item * pItem, ItemNotif notification, void * pData );
 	

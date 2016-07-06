@@ -34,19 +34,19 @@ namespace wg
 	typedef	StrongPtr<Msg,Object_p>			Msg_p;
 	
 	class Receiver;
-	typedef	StrongPtr<Receiver,Object_p>		Receiver_p;
+	typedef	StrongPtr<Receiver,Object_p>	Receiver_p;
 	typedef	WeakPtr<Receiver,Object_wp>		Receiver_wp;
 	
 	class Receiver : public Object
 	{
 		friend class MsgRouter;
 	public:
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
 		static Receiver_p	cast( const Object_p& pObject );
 	
-		virtual void receive( const Msg_p& pMsg ) = 0;
+		virtual void 		receive( const Msg_p& pMsg ) = 0;
 	
 	protected:
 		Receiver() {};

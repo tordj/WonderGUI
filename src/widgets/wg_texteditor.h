@@ -78,8 +78,6 @@ namespace wg
 	private:
 		
 		EditTextItem	m_text;
-		bool			m_bHasFocus;
-		RouteId			m_tickRouteId;
 	};
 	
 	

@@ -162,7 +162,6 @@ int main ( int argc, char** argv )
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(10);
-	pStyle->setCaret( Caret::create() );
 	Base::setDefaultStyle(pStyle);
 
 	// Init skins

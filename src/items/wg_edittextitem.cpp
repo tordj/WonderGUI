@@ -58,56 +58,7 @@ namespace wg
 		MsgType type = pMsg->type();
 		
 		switch( type )
-		{
-			case MsgType::Tick:
-			{
-				TickMsg_p p = TickMsg::cast(pMsg);
-
-				if( m_editState.bCaret )
-				{
-					bool bDirty = _style()->combCaret()->tick( p->timediff() );					
-					if( bDirty )
-						_requestRender();										//TODO: Only render what is needed.
-				}
-				break;
-			}
-
-			case MsgType::FocusGained:
-			{
-				FocusGainedMsg_p p = FocusGainedMsg::cast(pMsg);
-				
-				if( m_editMode == TextEditMode::Editable )
-				{
-					// Enable and place caret
-					
-					m_editState.bCaret = true;
-					m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
-					m_editState.selectOfs = m_editState.caretOfs;
-					m_editState.wantedOfs = -1;
-
-					// Update carets charstyle
-
-					int ofs = m_editState.caretOfs > 0 ? m_editState.caretOfs-1 : 0;
-					m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
-
-					// Check modifier keys, update status
-
-					if( p->modKeys() & MODKEY_SHIFT )
-						m_editState.bShiftDown = true;
-					else
-						m_editState.bShiftDown = false;
-
-					// Restart caret animation
-
-					_style()->combCaret()->restartCycle();					
-				}
-				break;
-			}
-			
-			case MsgType::FocusLost:
-				m_editState.bCaret = false;
-				break;
-			
+		{			
 			case MsgType::KeyPress:
 			case MsgType::KeyRepeat:
 			{
@@ -343,6 +294,45 @@ namespace wg
 	
 	void EditTextItem::setState( State state )
 	{
+		if( state.isFocused() != m_state.isFocused() && m_editMode == TextEditMode::Editable )
+		{
+			if( state.isFocused() )
+			{
+				// Enable and place caret
+				
+				m_editState.bCaret = true;
+				m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
+				m_editState.selectOfs = m_editState.caretOfs;
+				m_editState.wantedOfs = -1;
+
+				// Update carets charstyle
+
+				int ofs = m_editState.caretOfs > 0 ? m_editState.caretOfs-1 : 0;
+				m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
+
+				// Check modifier keys, update status
+
+				ModifierKeys modKeys = Base::inputHandler()->modifierKeys();
+
+				if( modKeys & MODKEY_SHIFT )
+					m_editState.bShiftDown = true;
+				else
+					m_editState.bShiftDown = false;
+
+				// Restart caret animation
+
+				_printer()->pokeCaret(this);		// TODO: Should not be needed here anymore.
+			}
+			else
+			{
+				m_editState.bCaret = false;				
+			}
+			
+		}
+			
+		
+		// Set this last, so that bCaret is set when we call
+		
 		TextItem::setState(state);
 	}
 	
@@ -351,14 +341,7 @@ namespace wg
 	
 	void EditTextItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_printer()->renderItem(this, pDevice, _canvas, _clip);
-		
-		Caret_p pCaret = _style()->combCaret();
-		
-		if( m_editState.bCaret && pCaret )
-		{
-			pCaret->render( pDevice, _printer()->charRect(this, m_editState.caretOfs) + _canvas.pos(), _clip );
-		}
+		_printer()->renderItem(this, pDevice, _canvas, _clip);		
 	}
 	
 	//____ setEditMode() _______________________________________________________
@@ -739,7 +722,7 @@ namespace wg
 	{
 		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
 
-		_style()->combCaret()->restartCycle();			// Animation sequence should restart on every caret move.
+		_printer()->pokeCaret(this);			// Animation sequence should restart on every caret move.
 
 		if( caretOfs != m_editState.caretOfs )
 		{
@@ -767,6 +750,14 @@ namespace wg
 
 		return false;
 	}
+
+	//____ _editState() ________________________________________________________
+
+	const EditState * EditTextItem::_editState() const
+	{
+		return &m_editState;
+	}
+
 
 
 } // namespace wg

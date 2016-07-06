@@ -551,26 +551,33 @@ namespace wg
 		return Size(0,0);
 	}
 
-	//____ _renderRequested() _________________________________________________________
+	//____ _itemRenderRequested() _________________________________________________________
 	
-	void Widget::_renderRequested( const Item * pItem )
+	void Widget::_itemRenderRequested( const Item * pItem )
 	{
 		_requestRender( _itemGeo( pItem ) );
 	}
 
-	void Widget::_renderRequested( const Item * pItem, const Rect& rect )
+	void Widget::_itemRenderRequested( const Item * pItem, const Rect& rect )
 	{
 		_requestRender( rect + _itemPos( pItem ) );
 	}
 	
-	//____ _resizeRequested() ________________________________________________________
+	//____ _itemResizeRequested() ________________________________________________________
 	
-	void Widget::_resizeRequested( const Item * pItem )
+	void Widget::_itemResizeRequested( const Item * pItem )
 	{
 		_requestResize();
 		_requestRender();
 	}
 
+	//____ _itemFocusRequested() ___________________________________________________
+
+	void Widget::_itemFocusRequested( const Item * pItem )
+	{
+		grabFocus();
+	}
+	
 	//____ _itemPos() ______________________________________________________________
 
 	Coord Widget::_itemPos( const Item * pItem ) const

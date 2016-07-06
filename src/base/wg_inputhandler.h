@@ -96,7 +96,7 @@ namespace wg
 		bool		isAnyButtonPressed() const;
 		
 		bool		isKeyPressed( int nativeKeyCode ) const;
-	
+		ModifierKeys modifierKeys() const { return m_modKeys; }
 		
 		void 		receive( const Msg_p& pMsg );
 

@@ -113,6 +113,14 @@ namespace wg
 	{
 		return pItem->m_state;
 	}
+
+	//____ _editState() _________________________________________________________
+	
+	const EditState * Printer::_editState( const PrintableItem * pItem ) const
+	{
+		return pItem->_editState();
+	}
+
 	
 	//____ _setItemDataBlock() ____________________________________________________
 	

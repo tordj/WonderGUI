@@ -50,9 +50,9 @@ namespace wg
 		inline Rect		_globalGeo() const { return m_pWidget->_itemGlobalGeo(this); }
 
 	
-		inline void		_requestRender() const { m_pWidget->_renderRequested(this); }
-		inline void		_requestRender( const Rect& rect ) const { m_pWidget->_renderRequested(this, rect); }
-		inline void		_requestResize() const { m_pWidget->_resizeRequested(this); }
+		inline void		_requestRender() const { m_pWidget->_itemRenderRequested(this); }
+		inline void		_requestRender( const Rect& rect ) const { m_pWidget->_itemRenderRequested(this, rect); }
+		inline void		_requestResize() const { m_pWidget->_itemResizeRequested(this); }
 		
 		inline void		_notify( ItemNotif notification, void * pData ) { m_pWidget->_onItemNotify( this, notification, pData ); }
 

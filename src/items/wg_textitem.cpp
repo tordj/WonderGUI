@@ -143,7 +143,7 @@ namespace wg
 	void TextItem::receive( const Msg_p& pMsg )
 	{
 		switch( pMsg->type() )
-		{
+		{			
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{

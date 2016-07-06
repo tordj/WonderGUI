@@ -37,7 +37,6 @@ namespace wg
 	
 	TextEditor::TextEditor() : m_text(this), text(&m_text)
 	{
-		m_tickRouteId = 0;
 	}
 	
 	
@@ -45,8 +44,6 @@ namespace wg
 	
 	TextEditor::~TextEditor()
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 	
 	
@@ -145,7 +142,7 @@ namespace wg
 		Widget::_receive( pMsg );
 		m_text.receive( pMsg );
 	
-		switch( type )
+/*		switch( type )
 		{
 			case MsgType::FocusGained:
 				if( m_text.editMode() == TextEditMode::Editable )
@@ -160,7 +157,7 @@ namespace wg
 				}
 				break;
 		}
-
+*/
 
 /*	
 		if( type == MsgType::Tick )
