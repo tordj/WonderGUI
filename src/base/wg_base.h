@@ -48,8 +48,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_PRINTER_DOT_H
-#	include <wg_printer.h>
+#ifndef WG_TEXTMAPPER_DOT_H
+#	include <wg_textmapper.h>
 #endif
 
 #ifndef WG_MSGROUTER_DOT_H
@@ -98,8 +98,8 @@ namespace wg
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
 		
-		static void			setDefaultPrinter( const Printer_p& pPrinter );
-		static Printer_p defaultPrinter() { assert(s_pData!=0); return s_pData->pDefaultPrinter; }
+		static void			setDefaultTextMapper( const TextMapper_p& pTextMapper );
+		static TextMapper_p defaultTextMapper() { assert(s_pData!=0); return s_pData->pDefaultTextMapper; }
 	
 		static void			setDefaultStyle( const TextStyle_p& pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
@@ -127,7 +127,7 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			
 	
-			Printer_p		pDefaultPrinter;
+			TextMapper_p		pDefaultTextMapper;
 			TextStyle_p		pDefaultStyle;
 	
 			//

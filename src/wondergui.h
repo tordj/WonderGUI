@@ -289,12 +289,12 @@
 #	include <wg_packlist.h>
 #endif
 
-#ifndef WG_PRINTER_DOT_N
-#	include <wg_printer.h>
+#ifndef WG_TEXTMAPPER_DOT_N
+#	include <wg_textmapper.h>
 #endif
 
-#ifndef WG_STANDARDPRINTER_DOT_H
-#	include <wg_standardprinter.h>
+#ifndef WG_STANDARDTEXTMAPPER_DOT_H
+#	include <wg_stdtextmapper.h>
 #endif
 
 #ifndef WG_TIMEFORMATTER_DOT_H

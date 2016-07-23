@@ -22,8 +22,8 @@
 #ifndef	WG_VALUEITEM_DOT_H
 #define WG_VALUEITEM_DOT_H
 
-#ifndef WG_PRINTABLEITEM_DOT_H
-#	include <wg_printableitem.h>
+#ifndef WG_TEXTBASEITEM_DOT_H
+#	include <wg_textbaseitem.h>
 #endif
 
 #ifndef WG_VALUEFORMATTER_DOT_H
@@ -35,7 +35,7 @@ namespace wg
 	
 		//____ ValueItem ____________________________________________________________
 	
-	class ValueItem : public PrintableItem
+	class ValueItem : public TextBaseItem
 	{
 	public:
 		ValueItem(Widget * pWidget);

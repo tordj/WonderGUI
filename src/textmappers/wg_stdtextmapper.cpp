@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#include <wg_standardprinter.h>
-#include <wg_printableitem.h>
+#include <wg_stdtextmapper.h>
+#include <wg_textbaseitem.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
@@ -30,17 +30,17 @@
 namespace wg 
 {
 	
-	const char StandardPrinter::CLASSNAME[] = {"StandardPrinter"};
+	const char StdTextMapper::CLASSNAME[] = {"StdTextMapper"};
 	
 	//____ Constructor _____________________________________________________________
 	
-	StandardPrinter::StandardPrinter() : m_alignment(Origo::NorthWest), m_pFocusedItem(nullptr), m_tickRouteId(0)
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_pFocusedItem(nullptr), m_tickRouteId(0)
 	{
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	StandardPrinter::~StandardPrinter()
+	StdTextMapper::~StdTextMapper()
 	{
 		if( m_tickRouteId )
 		{
@@ -52,34 +52,34 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool StandardPrinter::isInstanceOf( const char * pClassName ) const
+	bool StdTextMapper::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return Printer::isInstanceOf(pClassName);
+		return TextMapper::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
 	
-	const char * StandardPrinter::className( void ) const
+	const char * StdTextMapper::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	StandardPrinter_p StandardPrinter::cast( const Object_p& pObject )
+	StdTextMapper_p StdTextMapper::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StandardPrinter_p( static_cast<StandardPrinter*>(pObject.rawPtr()) );
+			return StdTextMapper_p( static_cast<StdTextMapper*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ addItem() _________________________________________________________
 	
-	void StandardPrinter::addItem( PrintableItem * pItem )
+	void StdTextMapper::addItem( TextBaseItem * pItem )
 	{
 		CharBuffer * pBuffer = _charBuffer(pItem);
 		int nLines = _countLines( pBuffer );
@@ -93,7 +93,7 @@ namespace wg
 	
 	//____ removeItem() _________________________________________________________
 	
-	void StandardPrinter::removeItem( PrintableItem * pItem )
+	void StdTextMapper::removeItem( TextBaseItem * pItem )
 	{
 		free( _itemDataBlock(pItem) );
 		_setItemDataBlock(pItem, 0);
@@ -108,7 +108,7 @@ namespace wg
 	
 	//____ setAlignment() __________________________________________________________
 	
-	void StandardPrinter::setAlignment( Origo alignment )
+	void StdTextMapper::setAlignment( Origo alignment )
 	{
 		if( alignment != m_alignment )
 		{
@@ -120,7 +120,7 @@ namespace wg
 
 	//____ setCaret() __________________________________________________________
 
-	void StandardPrinter::setCaret( const Caret_p& pCaret )
+	void StdTextMapper::setCaret( const Caret_p& pCaret )
 	{
 		if( m_pCaret != pCaret )
 		{
@@ -134,7 +134,7 @@ namespace wg
 	
 	//____ charAtPos() _________________________________________________________
 	
-	int StandardPrinter::charAtPos( const PrintableItem * pItem, Coord pos ) const
+	int StdTextMapper::charAtPos( const TextBaseItem * pItem, Coord pos ) const
 	{
 		int line = _lineAtPosY(pItem, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -145,7 +145,7 @@ namespace wg
 	
 	//_____ charPos() ______________________________________________________
 	
-	Coord StandardPrinter::charPos( const PrintableItem * pItem, int charOfs ) const
+	Coord StdTextMapper::charPos( const TextBaseItem * pItem, int charOfs ) const
 	{
 		int line = charLine(pItem, charOfs);
 		
@@ -160,7 +160,7 @@ namespace wg
 	
 	//____ charRect() ________________________________________________________
 	
-	Rect StandardPrinter::charRect( const PrintableItem * pItem, int charOfs ) const
+	Rect StdTextMapper::charRect( const TextBaseItem * pItem, int charOfs ) const
 	{
 		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -211,7 +211,7 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int StandardPrinter::charLine( const PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::charLine( const TextBaseItem * pItem, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
@@ -231,7 +231,7 @@ namespace wg
 	
 	//____ lineBegin() ________________________________________________________
 
-	int StandardPrinter::lineBegin( const PrintableItem * pItem, int lineNb ) const
+	int StdTextMapper::lineBegin( const TextBaseItem * pItem, int lineNb ) const
 	{
 		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -245,7 +245,7 @@ namespace wg
 	
 	//____ lineEnd() ___________________________________________________________
 	
-	int StandardPrinter::lineEnd( const PrintableItem * pItem, int lineNb ) const
+	int StdTextMapper::lineEnd( const TextBaseItem * pItem, int lineNb ) const
 	{
 		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -259,7 +259,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int StandardPrinter::wordBegin( const PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::wordBegin( const TextBaseItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -267,7 +267,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 	
-	int StandardPrinter::wordEnd( const PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::wordEnd( const TextBaseItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -279,7 +279,7 @@ namespace wg
 	// Returns distance in pixels between beginning of first and beginning of last char.
 	// Chars should be on the same line (or pLast could be first char on next line)
 
-	int StandardPrinter::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
+	int StdTextMapper::_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const
 	{
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -334,7 +334,7 @@ namespace wg
 
 	//____ receive() ___________________________________________________________
 
-	void StandardPrinter::receive( const Msg_p& pMsg )
+	void StdTextMapper::receive( const Msg_p& pMsg )
 	{
 		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
 		{
@@ -351,7 +351,7 @@ namespace wg
 	
 	//____ _renderItem()___________________________________________________________
 	
-	void StandardPrinter::renderItem( PrintableItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
+	void StdTextMapper::renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
 	{		
 		void * pBlock = _itemDataBlock(pItem);
 		BlockHeader * pHeader = _header(pBlock);
@@ -451,7 +451,7 @@ namespace wg
 	
 	//____ pokeCaret() _________________________________________________________
 
-	void StandardPrinter::pokeCaret( PrintableItem * pText )
+	void StdTextMapper::pokeCaret( TextBaseItem * pText )
 	{
 		if( pText->_editState()->bCaret )
 		{
@@ -463,17 +463,17 @@ namespace wg
 
 	//____ onTextModified() ____________________________________________________
 	
-	void StandardPrinter::onTextModified( PrintableItem * pItem, int ofs, int charsRemoved, int charsAdded )
+	void StdTextMapper::onTextModified( TextBaseItem * pItem, int ofs, int charsRemoved, int charsAdded )
 	{
 		onRefresh(pItem);
 	}
 	
-	void StandardPrinter::requestResized( PrintableItem * pItem, Size newSize, Size oldSize )
+	void StdTextMapper::requestResized( TextBaseItem * pItem, Size newSize, Size oldSize )
 	{
 		///TODO: Implement!
 	}
 	
-	void StandardPrinter::onStateChanged( PrintableItem * pItem, State newState, State oldState )
+	void StdTextMapper::onStateChanged( TextBaseItem * pItem, State newState, State oldState )
 	{
 		// TODO: Support for more than one input device, focusing different (or same) items.
 		
@@ -497,7 +497,7 @@ namespace wg
 		}
 	}
 	
-	void StandardPrinter::onStyleChanged( PrintableItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void StdTextMapper::onStyleChanged( TextBaseItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
 		State state = _state(pItem);
 		void * pBlock = _itemDataBlock(pItem);
@@ -509,7 +509,7 @@ namespace wg
 	}
 	
 
-	void StandardPrinter::onCharStyleChanged( PrintableItem * pItem, int ofs, int len )
+	void StdTextMapper::onCharStyleChanged( TextBaseItem * pItem, int ofs, int len )
 	{
 		State state = _state(pItem);
 		void * pBlock = _itemDataBlock(pItem);
@@ -521,7 +521,7 @@ namespace wg
 	}
 
 	
-	void StandardPrinter::onRefresh( PrintableItem * pItem )
+	void StdTextMapper::onRefresh( TextBaseItem * pItem )
 	{
 		CharBuffer * pBuffer = _charBuffer(pItem);
 		int nLines = _countLines( pBuffer );
@@ -535,7 +535,7 @@ namespace wg
 		_setItemDirty(pItem);
 	}
 	
-	Rect StandardPrinter::rectForRange( const PrintableItem * pItem, int ofs, int length ) const
+	Rect StdTextMapper::rectForRange( const TextBaseItem * pItem, int ofs, int length ) const
 	{
 		//TODO: Implement!
 		return Rect();
@@ -543,14 +543,14 @@ namespace wg
 	
 	//____ textDirection() ____________________________________________________
 
-	Direction StandardPrinter::textDirection( PrintableItem * pItem, int charOfs ) const
+	Direction StdTextMapper::textDirection( TextBaseItem * pItem, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 	
-	int StandardPrinter::caretToPos( PrintableItem * pItem, Coord pos, int& wantedLineOfs ) const
+	int StdTextMapper::caretToPos( TextBaseItem * pItem, Coord pos, int& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -560,7 +560,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 	
-	int StandardPrinter::caretUp( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretUp( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine(pItem, charOfs );
 
@@ -576,7 +576,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 	
-	int StandardPrinter::caretDown( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretDown( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine(pItem, charOfs );
 
@@ -592,7 +592,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 	
-	int StandardPrinter::caretLeft( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretLeft( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -603,7 +603,7 @@ namespace wg
 	
 	//____ caretRight() ________________________________________________________
 	
-	int StandardPrinter::caretRight( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretRight( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		if( charOfs < _charBuffer(pItem)->length() )
 			charOfs++;
@@ -614,7 +614,7 @@ namespace wg
 	
 	//____ caretHome() ________________________________________________________
 
-	int StandardPrinter::caretHome( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretHome( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine( pItem, charOfs );
 
@@ -629,7 +629,7 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 	
-	int StandardPrinter::caretEnd( PrintableItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretEnd( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine( pItem, charOfs );
 
@@ -644,7 +644,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int StandardPrinter::caretPrevWord( PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::caretPrevWord( TextBaseItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -652,7 +652,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 	
-	int StandardPrinter::caretNextWord( PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::caretNextWord( TextBaseItem * pItem, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;		
@@ -661,7 +661,7 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 	
-	String StandardPrinter::tooltip( const PrintableItem * pItem ) const
+	String StdTextMapper::tooltip( const TextBaseItem * pItem ) const
 	{
 		//TODO: Return the text if it overflows the item.
 		
@@ -671,21 +671,21 @@ namespace wg
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size StandardPrinter::preferredSize( const PrintableItem * pItem ) const
+	Size StdTextMapper::preferredSize( const TextBaseItem * pItem ) const
 	{
 		return _header(_itemDataBlock(pItem))->preferredSize;
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int StandardPrinter::matchingWidth( const PrintableItem * pItem, int height ) const
+	int StdTextMapper::matchingWidth( const TextBaseItem * pItem, int height ) const
 	{
 		return _header(_itemDataBlock(pItem))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int StandardPrinter::matchingHeight( const PrintableItem * pItem, int width ) const
+	int StdTextMapper::matchingHeight( const TextBaseItem * pItem, int width ) const
 	{
 		//TODO: Implement correct calculation!
 		
@@ -694,7 +694,7 @@ namespace wg
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int StandardPrinter::_countLines( const CharBuffer * pBuffer ) const
+	int StdTextMapper::_countLines( const CharBuffer * pBuffer ) const
 	{
 		const Char * pChars = pBuffer->chars();
 		int lines = 0;
@@ -712,7 +712,7 @@ namespace wg
 	
 	//____ _reallocBlock() _________________________________________________________
 	
-	void * StandardPrinter::_reallocBlock( PrintableItem* pItem, int nLines )
+	void * StdTextMapper::_reallocBlock( TextBaseItem* pItem, int nLines )
 	{
 		void * pBlock = _itemDataBlock(pItem);
 		if( pBlock )
@@ -728,7 +728,7 @@ namespace wg
 	
 	//____ _updateLineInfo() _______________________________________________________
 	
-	void StandardPrinter::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+	void StdTextMapper::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state )
 	{
 		const Char * pChars = pBuffer->chars();
@@ -853,7 +853,7 @@ namespace wg
 		
 	//____ _updatePreferredSize() __________________________________________________	
 		
-	bool StandardPrinter::_updatePreferredSize( PrintableItem * pItem )
+	bool StdTextMapper::_updatePreferredSize( TextBaseItem * pItem )
 	{
 		Size size;
 		
@@ -886,7 +886,7 @@ namespace wg
 	
 	//____ _linePosX() _______________________________________________________________
 	
-	int StandardPrinter::_linePosX( const LineInfo * pLine, int itemWidth ) const
+	int StdTextMapper::_linePosX( const LineInfo * pLine, int itemWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -908,7 +908,7 @@ namespace wg
 
 	//____ _linePosY() _______________________________________________________________
 	
-	int StandardPrinter::_linePosY( const void * pBlock, int line, int itemHeight ) const
+	int StdTextMapper::_linePosY( const void * pBlock, int line, int itemHeight ) const
 	{
 		int ofsY = _textPosY( _header(pBlock), itemHeight );
 	
@@ -921,7 +921,7 @@ namespace wg
 	
 	//____ _textPosY() _____________________________________________________________
 	
-	int	StandardPrinter::_textPosY( const BlockHeader * pHeader, int itemHeight ) const
+	int	StdTextMapper::_textPosY( const BlockHeader * pHeader, int itemHeight ) const
 	{
 		switch( m_alignment )
 		{
@@ -943,7 +943,7 @@ namespace wg
 
 	//____ _charPosX() _________________________________________________________
 
-	int StandardPrinter::_charPosX( const PrintableItem * pItem, int charOfs ) const
+	int StdTextMapper::_charPosX( const TextBaseItem * pItem, int charOfs ) const
 	{
 		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + charLine(pItem, charOfs);		
 		const Char * pBufferStart = _charBuffer(pItem)->chars();
@@ -956,7 +956,7 @@ namespace wg
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StandardPrinter::_lineAtPosY( const PrintableItem * pItem, int posY, SelectMode mode ) const
+	int StdTextMapper::_lineAtPosY( const TextBaseItem * pItem, int posY, SelectMode mode ) const
 	{
 		const void * pBlock = _itemDataBlock(pItem);
 		const BlockHeader * pHead = _header(pBlock);
@@ -1036,7 +1036,7 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StandardPrinter::_charAtPosX( const PrintableItem * pItem, int line, int posX, SelectMode mode ) const
+	int StdTextMapper::_charAtPosX( const TextBaseItem * pItem, int line, int posX, SelectMode mode ) const
 	{
 		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;		
 

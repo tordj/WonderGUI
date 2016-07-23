@@ -132,12 +132,12 @@
     <File Name="../../src/items/wg_iconitem.h"/>
     <File Name="../../src/items/wg_modvalueitem.cpp"/>
     <File Name="../../src/items/wg_modvalueitem.h"/>
-    <File Name="../../src/items/wg_printableitem.cpp"/>
-    <File Name="../../src/items/wg_printableitem.h"/>
     <File Name="../../src/items/wg_textitem.cpp"/>
     <File Name="../../src/items/wg_textitem.h"/>
     <File Name="../../src/items/wg_valueitem.cpp"/>
     <File Name="../../src/items/wg_valueitem.h"/>
+    <File Name="../../src/items/wg_textbaseitem.h"/>
+    <File Name="../../src/items/wg_textbaseitem.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
@@ -287,11 +287,11 @@
     <File Name="../../src/wg_userdefines.h"/>
     <File Name="../../src/wondergui.h"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="printers">
-    <File Name="../../src/printers/wg_printer.cpp"/>
-    <File Name="../../src/printers/wg_printer.h"/>
-    <File Name="../../src/printers/wg_standardprinter.cpp"/>
-    <File Name="../../src/printers/wg_standardprinter.h"/>
+  <VirtualDirectory Name="textmappers">
+    <File Name="../../src/textmappers/wg_stdtextmapper.cpp"/>
+    <File Name="../../src/textmappers/wg_stdtextmapper.h"/>
+    <File Name="../../src/textmappers/wg_textmapper.cpp"/>
+    <File Name="../../src/textmappers/wg_textmapper.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>
@@ -322,7 +322,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/printers/"/>
+        <IncludePath Value="../../src/textmappers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>
@@ -364,7 +364,7 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Release" CompilerType="" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="/usr/include/freetype2/"/>
         <IncludePath Value="../../src/"/>
@@ -373,7 +373,7 @@
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
-        <IncludePath Value="../../src/printers/"/>
+        <IncludePath Value="../../src/textmappers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
         <IncludePath Value="../../src/widgets/capsules/"/>

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_PRINTABLEITEM_DOT_H
-#define WG_PRINTABLEITEM_DOT_H
+#ifndef	WG_TEXTBASEITEM_DOT_H
+#define WG_TEXTBASEITEM_DOT_H
 
 #ifndef WG_ITEM_DOT_H
 #	include <wg_item.h>
@@ -31,8 +31,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_PRINTER_DOT_H
-#	include <wg_printer.h>
+#ifndef WG_TEXTMAPPER_DOT_H
+#	include <wg_textmapper.h>
 #endif
 
 #ifndef WG_BASE_DOT_H
@@ -43,22 +43,22 @@ namespace wg
 {
 	struct EditState;
 	
-	//____ PrintableItem __________________________________________________________________
+	//____ TextBaseItem __________________________________________________________________
 	
-	class PrintableItem : public Item
+	class TextBaseItem : public Item
 	{
-		friend class Printer;
+		friend class TextMapper;
 	public:
-		PrintableItem( Widget * pWidget );
-		virtual ~PrintableItem();
+		TextBaseItem( Widget * pWidget );
+		virtual ~TextBaseItem();
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
 		virtual void		clearStyle();
 		TextStyle *			style() const { return m_pStyle.rawPtr(); }
 	
-		virtual void		setPrinter( const Printer_p& pPrinter );
-		virtual void		clearPrinter();
-		Printer *			printer() const { return m_pPrinter.rawPtr(); }
+		virtual void		setTextMapper( const TextMapper_p& pTextMapper );
+		virtual void		clearTextMapper();
+		TextMapper *			textMapper() const { return m_pTextMapper.rawPtr(); }
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
@@ -88,7 +88,7 @@ namespace wg
 
 		// Alternative calls, guaranteed to return valid values.
 
-		Printer *			_printer() const { return m_pPrinter ? m_pPrinter.rawPtr() : Base::defaultPrinter().rawPtr(); }
+		TextMapper *			_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		virtual const EditState * _editState() const;
 		
@@ -98,14 +98,14 @@ namespace wg
 	
 		union 
 		{
-			void *			m_pPrinterData;
-			int				m_printerData;
+			void *			m_pTextMapperData;
+			int				m_textMapperData;
 		};
 	
 		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
-		Printer_p			m_pPrinter;
+		TextMapper_p			m_pTextMapper;
 	
 	};
 	
@@ -123,4 +123,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_PRINTABLEITEM_DOT_H
+#endif //WG_TEXTBASEITEM_DOT_H

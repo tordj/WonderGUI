@@ -20,186 +20,186 @@
 
 =========================================================================*/
 
-#include <wg_printableitem.h>
+#include <wg_textbaseitem.h>
 
 namespace wg 
 {
 	
 	//____ Constructor _____________________________________________________________
 	
-	PrintableItem::PrintableItem( Widget * pWidget ) : Item( pWidget )
+	TextBaseItem::TextBaseItem( Widget * pWidget ) : Item( pWidget )
 	{
-		_printer()->addItem(this);
+		_textMapper()->addItem(this);
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
-	PrintableItem::~PrintableItem()
+	TextBaseItem::~TextBaseItem()
 	{
-		_printer()->removeItem(this);
+		_textMapper()->removeItem(this);
 	}
 	
 	//____ setStyle() ______________________________________________________________
 	
-	void PrintableItem::setStyle( const TextStyle_p& pStyle )
+	void TextBaseItem::setStyle( const TextStyle_p& pStyle )
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
-		_printer()->onStyleChanged(this, pStyle.rawPtr(), pOld.rawPtr());
+		_textMapper()->onStyleChanged(this, pStyle.rawPtr(), pOld.rawPtr());
 	}
 	
 	//____ clearStyle() ____________________________________________________________
 	
-	void PrintableItem::clearStyle()
+	void TextBaseItem::clearStyle()
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
-		_printer()->onStyleChanged(this, nullptr, pOld.rawPtr());
+		_textMapper()->onStyleChanged(this, nullptr, pOld.rawPtr());
 	}
 	
-	//____ setPrinter() __________________________________________________________
+	//____ setTextMapper() __________________________________________________________
 	
-	void PrintableItem::setPrinter( const Printer_p& pPrinter )
+	void TextBaseItem::setTextMapper( const TextMapper_p& pTextMapper )
 	{
-		if( pPrinter == m_pPrinter )
+		if( pTextMapper == m_pTextMapper )
 			return;
 			
-		_printer()->removeItem(this);
-		m_pPrinter = pPrinter;
-		_printer()->addItem(this);
+		_textMapper()->removeItem(this);
+		m_pTextMapper = pTextMapper;
+		_textMapper()->addItem(this);
 	}
 	
-	//____ clearPrinter() ________________________________________________________
+	//____ clearTextMapper() ________________________________________________________
 	
-	void PrintableItem::clearPrinter()
+	void TextBaseItem::clearTextMapper()
 	{
-		if( !m_pPrinter )
+		if( !m_pTextMapper )
 			return;
 			
-		_printer()->removeItem(this);
-		m_pPrinter = 0;
-		_printer()->addItem(this);
+		_textMapper()->removeItem(this);
+		m_pTextMapper = 0;
+		_textMapper()->addItem(this);
 	}
 	
 	//____ setState() ______________________________________________________________
 	
-	void PrintableItem::setState( State state )
+	void TextBaseItem::setState( State state )
 	{
 		if( state == m_state )
 			return;
 	
 		State old = m_state;
 		m_state = state;
-		_printer()->onStateChanged( this, state, old );
+		_textMapper()->onStateChanged( this, state, old );
 	}
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size PrintableItem::preferredSize() const
+	Size TextBaseItem::preferredSize() const
 	{
-		return _printer()->preferredSize(this);
+		return _textMapper()->preferredSize(this);
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int PrintableItem::matchingWidth( int height ) const
+	int TextBaseItem::matchingWidth( int height ) const
 	{
-		return _printer()->matchingWidth(this, height);
+		return _textMapper()->matchingWidth(this, height);
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int PrintableItem::matchingHeight( int width ) const
+	int TextBaseItem::matchingHeight( int width ) const
 	{
-		return _printer()->matchingHeight(this, width);
+		return _textMapper()->matchingHeight(this, width);
 	}
 	
 	//____ charAtPos() ___________________________________________________________
 	
-	int PrintableItem::charAtPos( Coord pos ) const
+	int TextBaseItem::charAtPos( Coord pos ) const
 	{
-		return _printer()->charAtPos(this,pos);
+		return _textMapper()->charAtPos(this,pos);
 	}
 	
 	//____ charRect() ____________________________________________________________
 	
-	Rect PrintableItem::charRect( int charOfs ) const
+	Rect TextBaseItem::charRect( int charOfs ) const
 	{
-		return _printer()->charRect(this, charOfs);
+		return _textMapper()->charRect(this, charOfs);
 	}
 	
 	//____ charLine() ____________________________________________________________
 	
-	int PrintableItem::charLine( int charOfs ) const
+	int TextBaseItem::charLine( int charOfs ) const
 	{
-		return _printer()->charLine(this, charOfs);
+		return _textMapper()->charLine(this, charOfs);
 	}
 	
 	
 	//____ onRefresh() _____________________________________________________________
 	
-	void PrintableItem::onRefresh()
+	void TextBaseItem::onRefresh()
 	{
-		_printer()->onRefresh(this);
+		_textMapper()->onRefresh(this);
 	}
 	
 	//____ onNewSize() _____________________________________________________________
 	
-	void PrintableItem::onNewSize( const Size& size )
+	void TextBaseItem::onNewSize( const Size& size )
 	{
 		if( size == m_size )
 			return;
 	
 		Size oldSize = m_size;
 		m_size = size;
-		_printer()->requestResized(this,size, oldSize);
+		_textMapper()->requestResized(this,size, oldSize);
 	}
 	
 	//_____ onRender() _____________________________________________________________
 	
-	void  PrintableItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void  TextBaseItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_printer()->renderItem(this, pDevice, _canvas, _clip);
+		_textMapper()->renderItem(this, pDevice, _canvas, _clip);
 	}
 	
 	//____ rectForRange() __________________________________________________________
 	
-	Rect  PrintableItem::rectForRange( int ofs, int length ) const
+	Rect  TextBaseItem::rectForRange( int ofs, int length ) const
 	{
-		return _printer()->rectForRange(this, ofs, length);
+		return _textMapper()->rectForRange(this, ofs, length);
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String PrintableItem::tooltip() const
+	String TextBaseItem::tooltip() const
 	{
-		return _printer()->tooltip(this);
+		return _textMapper()->tooltip(this);
 	}
 	
 	//____ getString() ___________________________________________________________________
 	
-	String PrintableItem::getString() const
+	String TextBaseItem::getString() const
 	{
 		return String(&m_charBuffer);
 	}
 	
 	//____ selectionBegin() ________________________________________________________
 	
-	int PrintableItem::selectionBegin() const
+	int TextBaseItem::selectionBegin() const
 	{
 		return 0;
 	}
 	
 	//____ selectionEnd() __________________________________________________________
 	
-	int PrintableItem::selectionEnd() const
+	int TextBaseItem::selectionEnd() const
 	{
 		return 0;
 	}
 
 	//____ _editState() ________________________________________________________
 
-	const EditState * PrintableItem::_editState() const
+	const EditState * TextBaseItem::_editState() const
 	{
 		return nullptr;
 	}

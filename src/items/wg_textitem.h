@@ -27,8 +27,8 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_PRINTABLEITEM_DOT_H
-#	include <wg_printableitem.h>
+#ifndef WG_TEXTBASEITEM_DOT_H
+#	include <wg_textbaseitem.h>
 #endif
 
 
@@ -45,7 +45,7 @@ namespace wg
 		
 	//____ TextItem __________________________________________________________________
 	
-	class TextItem : public PrintableItem
+	class TextItem : public TextBaseItem
 	{
 	public:
 		TextItem( Widget * pWidget );

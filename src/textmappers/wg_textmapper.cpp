@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#include <wg_printer.h>
-#include <wg_printableitem.h>
+#include <wg_textmapper.h>
+#include <wg_textbaseitem.h>
 
 namespace wg 
 {
 	
-	const char Printer::CLASSNAME[] = {"Printer"};
+	const char TextMapper::CLASSNAME[] = {"TextMapper"};
 	
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool Printer::isInstanceOf( const char * pClassName ) const
+	bool TextMapper::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -42,63 +42,63 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * Printer::className( void ) const
+	const char * TextMapper::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	Printer_p Printer::cast( const Object_p& pObject )
+	TextMapper_p TextMapper::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Printer_p( static_cast<Printer*>(pObject.rawPtr()) );
+			return TextMapper_p( static_cast<TextMapper*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String Printer::tooltip( const PrintableItem * pItem ) const
+	String TextMapper::tooltip( const TextBaseItem * pItem ) const
 	{
 		return String();
 	}
 		
 	//____ _charBuffer() ___________________________________________________________
 	
-	CharBuffer * Printer::_charBuffer( PrintableItem * pItem ) const
+	CharBuffer * TextMapper::_charBuffer( TextBaseItem * pItem ) const
 	{
 		return &(pItem->m_charBuffer);
 	}
 	
-	const CharBuffer * Printer::_charBuffer( const PrintableItem * pItem ) const
+	const CharBuffer * TextMapper::_charBuffer( const TextBaseItem * pItem ) const
 	{
 		return &(pItem->m_charBuffer);
 	}
 	
 	//____ _itemDataBlock() _______________________________________________________
 	
-	void * Printer::_itemDataBlock( PrintableItem * pItem) const
+	void * TextMapper::_itemDataBlock( TextBaseItem * pItem) const
 	{
-		return pItem->m_pPrinterData;
+		return pItem->m_pTextMapperData;
 	}
 	
-	const void * Printer::_itemDataBlock( const PrintableItem * pItem) const
+	const void * TextMapper::_itemDataBlock( const TextBaseItem * pItem) const
 	{
-		return pItem->m_pPrinterData;
+		return pItem->m_pTextMapperData;
 	}
 	
 	
 	//____ _itemDataInt() _________________________________________________________
 	
-	int Printer::_itemDataInt( const PrintableItem * pItem ) const
+	int TextMapper::_itemDataInt( const TextBaseItem * pItem ) const
 	{
-		return pItem->m_printerData;
+		return pItem->m_textMapperData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	const TextStyle * Printer::_baseStyle( const PrintableItem * pItem ) const
+	const TextStyle * TextMapper::_baseStyle( const TextBaseItem * pItem ) const
 	{
 		TextStyle * pStyle = pItem->m_pStyle.rawPtr();
 		if( pStyle == 0 )
@@ -109,14 +109,14 @@ namespace wg
 	
 	//____ _state() _________________________________________________________
 	
-	State Printer::_state( const PrintableItem * pItem ) const
+	State TextMapper::_state( const TextBaseItem * pItem ) const
 	{
 		return pItem->m_state;
 	}
 
 	//____ _editState() _________________________________________________________
 	
-	const EditState * Printer::_editState( const PrintableItem * pItem ) const
+	const EditState * TextMapper::_editState( const TextBaseItem * pItem ) const
 	{
 		return pItem->_editState();
 	}
@@ -124,33 +124,33 @@ namespace wg
 	
 	//____ _setItemDataBlock() ____________________________________________________
 	
-	void  Printer::_setItemDataBlock( PrintableItem * pItem, void * pBlock )
+	void  TextMapper::_setItemDataBlock( TextBaseItem * pItem, void * pBlock )
 	{
-		pItem->m_pPrinterData = pBlock;
+		pItem->m_pTextMapperData = pBlock;
 	}
 	
 	//____ _setItemDataInt() ______________________________________________________
 	
-	void  Printer::_setItemDataInt( PrintableItem * pItem, int data )
+	void  TextMapper::_setItemDataInt( TextBaseItem * pItem, int data )
 	{
-		pItem->m_printerData = data;
+		pItem->m_textMapperData = data;
 	}
 
 	//____ _setItemDirty() ____________________________________________________
 
-	void  Printer::_setItemDirty( PrintableItem * pItem )
+	void  TextMapper::_setItemDirty( TextBaseItem * pItem )
 	{
 		pItem->_requestRender();
 	}
 	
-	void  Printer::_setItemDirty( PrintableItem * pItem, const Rect& rect )
+	void  TextMapper::_setItemDirty( TextBaseItem * pItem, const Rect& rect )
 	{
 		pItem->_requestRender( rect );
 	}
 
 	//____ _requestItemResize() _______________________________________________
 
-	void Printer::_requestItemResize( PrintableItem * pItem )
+	void TextMapper::_requestItemResize( TextBaseItem * pItem )
 	{
 		pItem->_requestResize();
 	}

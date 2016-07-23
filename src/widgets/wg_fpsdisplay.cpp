@@ -26,7 +26,7 @@
 #include	<wg_color.h>
 #include	<wg_char.h>
 #include	<wg_base.h>
-#include	<wg_standardprinter.h>
+#include	<wg_stdtextmapper.h>
 
 namespace wg 
 {
@@ -48,14 +48,14 @@ namespace wg
 		m_labelsText.set( "Now:\nMin:\nAvg:\nMax:" );
 
 		
-		// We set our own default text printers since we rely on alignment
+		// We set our own default text textMappers since we rely on alignment
 		// to present the information in a readable way.
 
-		m_labelsText.setPrinter( StandardPrinter::create() );
+		m_labelsText.setTextMapper( StdTextMapper::create() );
 
-		StandardPrinter_p pValuePrinter = StandardPrinter::create();
-		pValuePrinter->setAlignment( Origo::NorthEast );
-		m_valuesText.setPrinter(pValuePrinter);
+		StdTextMapper_p pValueTextMapper = StdTextMapper::create();
+		pValueTextMapper->setAlignment( Origo::NorthEast );
+		m_valuesText.setTextMapper(pValueTextMapper);
 
 	
 		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );

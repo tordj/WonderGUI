@@ -29,7 +29,7 @@
 #include <wg_texttool.h>
 #include <wg_memstack.h>
 #include <wg_hook.h>
-#include <wg_standardprinter.h>
+#include <wg_stdtextmapper.h>
 
 
 #ifdef USE_FREETYPE
@@ -58,9 +58,9 @@ namespace wg
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 	
-		StandardPrinter_p pPrinter = StandardPrinter::create();
-		pPrinter->setCaret( Caret::create() );
-		s_pData->pDefaultPrinter = pPrinter;
+		StdTextMapper_p pTextMapper = StdTextMapper::create();
+		pTextMapper->setCaret( Caret::create() );
+		s_pData->pDefaultTextMapper = pTextMapper;
 
 		s_pData->pDefaultStyle = TextStyle::create();
 		
@@ -96,7 +96,7 @@ namespace wg
 		if( s_pData->bFreeTypeInitialized )
 			FT_Done_FreeType( s_pData->freeTypeLibrary );
 	#endif
-		s_pData->pDefaultPrinter = 0;
+		s_pData->pDefaultTextMapper = 0;
 		s_pData->pDefaultStyle = 0;
 	
 		delete s_pData->pPtrPool;
@@ -160,12 +160,12 @@ namespace wg
 	}
 	#endif
 		
-	//____ setDefaultPrinter() ___________________________________________________
+	//____ setDefaultTextMapper() ___________________________________________________
 	
-	void Base::setDefaultPrinter( const Printer_p& pPrinter )
+	void Base::setDefaultTextMapper( const TextMapper_p& pTextMapper )
 	{
 		assert( s_pData != 0 );
-		s_pData->pDefaultPrinter = pPrinter;	
+		s_pData->pDefaultTextMapper = pTextMapper;	
 	}
 	
 	//____ setDefaultStyle() _______________________________________________________

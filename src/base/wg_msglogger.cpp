@@ -328,7 +328,7 @@ namespace wg
 			case MsgType::RangeUpdate:
 			{
 				RangeUpdateMsg_p pMsg = RangeUpdateMsg::cast(_pMsg);
-				sprintf( params, " pos=%f length=%f", pMsg->offset(), pMsg->length() );
+				sprintf( params, " offset=%d length=%d fracOfs=%f fracLen=%f final=%s", pMsg->offset(), pMsg->length(), pMsg->fracOffset(), pMsg->fracLength(), pMsg->isFinal()?"true":"false" );
 				break;
 			}
 	
@@ -341,13 +341,13 @@ namespace wg
 			case MsgType::ItemToggle:
 			{
 				ItemToggleMsg_p pMsg = ItemToggleMsg::cast(_pMsg);
-				sprintf( params, " set=%s id=%d object=%d", pMsg->isSet()?"true":"false", pMsg->itemId() );
+				sprintf( params, " set=%s id=%d object=%p", pMsg->isSet()?"true":"false", pMsg->itemId(), pMsg->itemObject().rawPtr() );
 				break;
 			}
 			case MsgType::ItemMousePress:
 			{
 				ItemMousePressMsg_p pMsg = ItemMousePressMsg::cast(_pMsg);
-				sprintf( params, " id=% mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
+				sprintf( params, " id=%d mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
 					
@@ -370,7 +370,7 @@ namespace wg
 			case MsgType::LinkSelect:
 			{
 				LinkMsg_p pMsg = LinkMsg::cast(_pMsg);
-				sprintf( params, " link=%d string=\"%s\"", pMsg->link().rawPtr(), pMsg->link()->link().c_str() );
+				sprintf( params, " link=%p string=\"%s\"", pMsg->link().rawPtr(), pMsg->link()->link().c_str() );
 				break;
 			}
 
@@ -381,7 +381,7 @@ namespace wg
 			case MsgType::LinkMouseDoubleClick:
 			{
 				LinkMouseButtonMsg_p pMsg = LinkMouseButtonMsg::cast(_pMsg);
-				sprintf( params, " link=%d button=%s", pMsg->link().rawPtr(), _formatMouseButton(pMsg->button()).c_str() );
+				sprintf( params, " link=%p button=%s", pMsg->link().rawPtr(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
 			case MsgType::ModalMoveOutside:
@@ -543,7 +543,7 @@ namespace wg
 			default:
 			{
 				char	temp[64];
-				sprintf( temp, "%d (unkown enum)", _pMsg->style() );
+				sprintf( temp, "%d (unkown enum)", (int) _pMsg->style() );
 				return string(temp);
 			}
 		}
@@ -568,7 +568,7 @@ namespace wg
 			default:
 			{
 				char	temp[64];
-				sprintf( temp, "%d (unkown enum)", button );
+				sprintf( temp, "%d (unkown enum)", (int) button );
 				return string(temp);
 			}
 		}
@@ -601,7 +601,7 @@ namespace wg
 			default:
 			{
 				char	temp[64];
-				sprintf( temp, "%d (unkown enum)", command );
+				sprintf( temp, "%d (unkown enum)", (int) command );
 				return string(temp);
 			}
 		}

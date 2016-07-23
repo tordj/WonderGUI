@@ -321,7 +321,7 @@ namespace wg
 
 				// Restart caret animation
 
-				_printer()->pokeCaret(this);		// TODO: Should not be needed here anymore.
+				_textMapper()->pokeCaret(this);		// TODO: Should not be needed here anymore.
 			}
 			else
 			{
@@ -341,7 +341,7 @@ namespace wg
 	
 	void EditTextItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
-		_printer()->renderItem(this, pDevice, _canvas, _clip);		
+		_textMapper()->renderItem(this, pDevice, _canvas, _clip);		
 	}
 	
 	//____ setEditMode() _______________________________________________________
@@ -529,7 +529,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		int caretOfs = _printer()->caretUp(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretUp(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
@@ -540,7 +540,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		int caretOfs = _printer()->caretDown(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretDown(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
@@ -551,7 +551,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _printer()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretLeft(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -562,7 +562,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		int caretOfs = _printer()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretRight(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
@@ -573,7 +573,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _printer()->caretNextWord(this, m_editState.caretOfs);
+		int caretOfs = _textMapper()->caretNextWord(this, m_editState.caretOfs);
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -584,7 +584,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 
-		int caretOfs = _printer()->caretPrevWord(this, m_editState.caretOfs);
+		int caretOfs = _textMapper()->caretPrevWord(this, m_editState.caretOfs);
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -655,7 +655,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		int caretOfs = _printer()->caretHome(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretHome(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 	
@@ -666,7 +666,7 @@ namespace wg
 		if( !m_editState.bCaret )
 			return false;
 		
-		int caretOfs = _printer()->caretEnd(this, m_editState.caretOfs, m_editState.wantedOfs );
+		int caretOfs = _textMapper()->caretEnd(this, m_editState.caretOfs, m_editState.wantedOfs );
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
@@ -722,7 +722,7 @@ namespace wg
 	{
 		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
 
-		_printer()->pokeCaret(this);			// Animation sequence should restart on every caret move.
+		_textMapper()->pokeCaret(this);			// Animation sequence should restart on every caret move.
 
 		if( caretOfs != m_editState.caretOfs )
 		{

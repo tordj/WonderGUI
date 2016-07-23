@@ -31,8 +31,8 @@
 #	include <wg_textstyle.h>
 #endif
 
-#ifndef WG_PRINTER_DOT_H
-#	include <wg_printer.h>
+#ifndef WG_TEXTMAPPER_DOT_H
+#	include <wg_textmapper.h>
 #endif
 
 
@@ -80,9 +80,9 @@ namespace wg
 		inline void				clearStyle() { m_pItem->clearStyle(); }
 		inline TextStyle_p	style() const { return m_pItem->style(); }
 	
-		inline void				setPrinter( const Printer_p& pPrinter ) { m_pItem->setPrinter(pPrinter); }
-		inline void				clearPrinter() { m_pItem->clearPrinter(); }
-		inline Printer_p	printer() const { return m_pItem->printer(); }
+		inline void				setTextMapper( const TextMapper_p& pTextMapper ) { m_pItem->setTextMapper(pTextMapper); }
+		inline void				clearTextMapper() { m_pItem->clearTextMapper(); }
+		inline TextMapper_p	textMapper() const { return m_pItem->textMapper(); }
 	
 		inline State			state() const { return m_pItem->state(); }
 	protected:
