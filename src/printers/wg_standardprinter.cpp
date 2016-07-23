@@ -805,10 +805,20 @@ namespace wg
 
 			pPrevGlyph = pGlyph;
 	
-			//
+			// Handle end of line
 	
 			if( pChars->isEndOfLine() )
 			{
+				// Make sure we have space for eol caret
+
+				if( m_pCaret )
+				{
+					Size eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
+					int w = m_pCaret->eolWidth( eolCellSize );
+					if( w > eolCellSize.w )
+						width += w - eolCellSize.w;
+				}
+
 				// Finish this line
 				
 				pLines->length = pChars - (pBuffer->chars() + pLines->offset) +1; 		// +1 to include line terminator.
