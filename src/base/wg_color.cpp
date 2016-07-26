@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_color.h>
+#include <wg_util.h>
 
 namespace wg 
 {
@@ -175,6 +176,51 @@ namespace wg
 	const Color Color::Yellow  			( 0xFFffff00 );
 	const Color Color::YellowGreen 		( 0xFF9acd32 );
 	
+	
+	//-------------------------------------------------------------------
+	Color Color::operator+( const Color& k ) const
+	{
+		Color kNewColor;
+		kNewColor.r = Util::limitUint8(((int)r) + k.r);
+		kNewColor.g = Util::limitUint8(((int)g) + k.g);
+		kNewColor.b = Util::limitUint8(((int)b) + k.b);
+		kNewColor.a = Util::limitUint8(((int)a) + k.a);
+		return kNewColor;
+	}
+	
+	//-------------------------------------------------------------------
+	Color Color::operator-( const Color& k ) const
+	{
+		Color kNewColor;
+		kNewColor.r = Util::limitUint8(((int)r) - k.r);
+		kNewColor.g = Util::limitUint8(((int)g) - k.g);
+		kNewColor.b = Util::limitUint8(((int)b) - k.b);
+		kNewColor.a = Util::limitUint8(((int)a) - k.a);
+		return kNewColor;
+	}
+	
+	//-------------------------------------------------------------------
+	Color Color::operator*( float f ) const
+	{
+		Color kNewColor;
+		kNewColor.r = (uint8_t)( (float)r * f );
+		kNewColor.g = (uint8_t)( (float)g * f );
+		kNewColor.b = (uint8_t)( (float)b * f );
+		kNewColor.a = (uint8_t)( (float)a * f );
+		return kNewColor;
+	}
+	
+	//-------------------------------------------------------------------
+	Color Color::operator*( const Color& k ) const
+	{
+		Color kNewColor;
+		kNewColor.r = (uint8_t)(((int)r * (int)k.r )/255);
+		kNewColor.g = (uint8_t)(((int)g * (int)k.g )/255);
+		kNewColor.b = (uint8_t)(((int)b * (int)k.b )/255);
+		kNewColor.a = (uint8_t)(((int)a * (int)k.a )/255);
+		return kNewColor;
+	}
+	
 	//____ setCMYK ___________________________________________________________________
 	
 	void Color::setCMYK( float c, float m, float y, float k, uint8_t alpha )
@@ -201,21 +247,54 @@ namespace wg
 		* _k = k;
 	}
 	
-	
-	
 	//____ blend() ________________________________________________________________
 	
-	Color Color::blend( const Color& start, const Color& dest, float grade )
+	Color Color::mix( Color color1, Color color2, uint8_t balance )
 	{
 		Color col;
 	
-		col.r = start.r + (uint8_t) (((int)dest.r) - ((int)start.r)*grade);
-		col.g = start.g + (uint8_t) (((int)dest.g) - ((int)start.g)*grade);
-		col.b = start.b + (uint8_t) (((int)dest.b) - ((int)start.b)*grade);
-		col.a = start.a + (uint8_t) (((int)dest.a) - ((int)start.a)*grade);
+		col.r = color1.r + (uint8_t) (((int)color2.r) - ((int)color1.r)*balance)/255;
+		col.g = color1.g + (uint8_t) (((int)color2.g) - ((int)color1.g)*balance)/255;
+		col.b = color1.b + (uint8_t) (((int)color2.b) - ((int)color1.b)*balance)/255;
+		col.a = color1.a + (uint8_t) (((int)color2.a) - ((int)color1.a)*balance)/255;
 	
 		return col;
 	}
+	
+	//____ invert()_________________________________________________________________
+	
+	Color Color::invert( Color color, uint8_t grade )
+	{		
+		color.r = ((255-color.r)*grade + color.r*(255-grade))/255;
+		color.g = ((255-color.g)*grade + color.g*(255-grade))/255;
+		color.b = ((255-color.b)*grade + color.b*(255-grade))/255;
+		return color;
+	}
+	
+	//____ blend()___________________________________________________________________
+	
+	Color Color::blend( Color baseColor, Color blendColor, BlendOp operation )
+	{
+		switch( operation )
+		{
+			case BlendOp::Add:
+				return baseColor + blendColor;
+			case BlendOp::Blend:
+				return mix(baseColor, Color(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
+			case BlendOp::Undefined:
+			case BlendOp::Ignore:
+				return baseColor;
+			case BlendOp::Invert:
+				return invert( baseColor, blendColor.a );
+			case BlendOp::Multiply:
+				return baseColor * blendColor;
+			case BlendOp::Replace:
+				return blendColor;
+			case BlendOp::Subtract:
+				return baseColor - blendColor;
+		}		
+	}
+	
 	
 	
 

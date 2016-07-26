@@ -30,7 +30,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(TintMode::Opaque), m_blendMode(BlendMode::Blend)
+	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(BlendOp::Replace), m_blendMode(BlendMode::Blend)
 	{
 	}
 	
@@ -79,9 +79,9 @@ namespace wg
 		}
 	}
 	
-	//____ setTintMode() ___________________________________________________________
+	//____ setBlendOp() ___________________________________________________________
 	
-	void ShaderCapsule::setTintMode( TintMode mode )
+	void ShaderCapsule::setBlendOp( BlendOp mode )
 	{
 		if( mode != m_tintMode )
 		{
@@ -117,20 +117,13 @@ namespace wg
 	
 		BlendMode		oldBM;
 		Color			oldTC;
+		Color			newTC;
 	
-	
-	//	if( (_layer & m_layer) != 0 )
-		{
-			oldBM = pDevice->getBlendMode();
-			oldTC = pDevice->getTintColor();
-	
-			pDevice->setBlendMode(m_blendMode);
-	
-			if( m_tintMode == TintMode::Opaque )
-				pDevice->setTintColor(m_tintColor);
-			else	// MULTIPLY
-				pDevice->setTintColor(m_tintColor*oldTC);
-		}
+		oldBM = pDevice->getBlendMode();
+		oldTC = pDevice->getTintColor();
+
+		pDevice->setBlendMode(m_blendMode);
+		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );
 	
 		// Render children recursively
 	
@@ -139,11 +132,8 @@ namespace wg
 	
 		// Reset old blend mode and tint color
 	
-	//	if( (_layer & m_layer) != 0 )
-		{
-			pDevice->setBlendMode(oldBM);
-			pDevice->setTintColor(oldTC);
-		}
+		pDevice->setBlendMode(oldBM);
+		pDevice->setTintColor(oldTC);
 	}
 	
 	//____ _cloneContent() _______________________________________________________

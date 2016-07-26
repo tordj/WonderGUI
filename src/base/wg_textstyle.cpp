@@ -39,7 +39,7 @@ namespace wg
 		m_pFirstChild = 0;
 		m_pNextSibling = 0;
 		m_pPrevSibling = 0;
-	
+					
 		_clearSet( &m_specAttr );
 		_clearSet( &m_combAttr );
 	}
@@ -174,53 +174,127 @@ namespace wg
 	
 	//____ setColor() ______________________________________________________________
 	
-	void TextStyle::setColor( Color color )
+	void TextStyle::setColor( Color color, BlendOp operation )
 	{
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		if( m_pParent )
 		{
-			m_specAttr.color[i] = color;
-			m_specAttr.hasColor[i] = true;
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.colorBlendMode[i] = operation;
+				m_specAttr.color[i] = color;
 
-			m_combAttr.color[i] = color;
-			m_combAttr.hasColor[i] = true;			
+				m_combAttr.color[i] = Color::blend( m_pParent->m_combAttr.color[i], color, operation );
+
+				// This doesn't always blends colors as logically expected when adding together attribute structures,
+				// but covers most common and important cases.
+				//
+				// It always gets right if attr-structures that gets added either:
+				//
+				// 1. Only has one level where color is set in its TextStyle hierarchy.
+				// 2. Has a BlendOp::Replace somewhere in its TextStyle hierarchy.
+
+				BlendOp parentOp = m_pParent->m_combAttr.colorBlendMode[i];
+				if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || operation == BlendOp::Replace )
+					m_combAttr.colorBlendMode[i] = operation;
+			}			
 		}
-}
+		else
+		{
+		
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.colorBlendMode[i] = operation;
+				m_specAttr.color[i] = color;
+
+				m_combAttr.color[i] = Color::blend( Color::White, color, operation );
+				m_combAttr.colorBlendMode[i] = operation;
+			}			
+		}
+	}
 	
-	void TextStyle::setColor( Color color, State state )
+	void TextStyle::setColor( Color color, State state, BlendOp operation )
 	{
-		int idx = Util::_stateToIndex(state);
+		int i = Util::_stateToIndex(state);
 
-		m_specAttr.color[idx] = color;
-		m_specAttr.hasColor[idx] = true;
+		m_specAttr.colorBlendMode[i] = operation;
+		m_specAttr.color[i] = color;
 
-		m_combAttr.color[idx] = color;
-		m_combAttr.hasColor[idx] = true;
+		if( m_pParent )
+		{
+			m_combAttr.color[i] = Color::blend( m_pParent->m_combAttr.color[i], color, operation );
+
+			BlendOp parentOp = m_pParent->m_combAttr.colorBlendMode[i];
+			if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || operation == BlendOp::Replace )
+				m_combAttr.colorBlendMode[i] = operation;
+		}
+		else
+		{		
+			m_combAttr.color[i] = Color::blend( Color::White, color, operation );
+			m_combAttr.colorBlendMode[i] = operation;
+		}
 	}
 	
 	//____ setBgColor() ______________________________________________________________
 	
-	void TextStyle::setBgColor( Color color )
+	void TextStyle::setBgColor( Color color, BlendOp operation )
 	{
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		if( m_pParent )
 		{
-			m_specAttr.bgColor[i] = color;
-			m_specAttr.hasBgColor[i] = true;
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.bgColorBlendMode[i] = operation;
+				m_specAttr.bgColor[i] = color;
 
-			m_combAttr.bgColor[i] = color;
-			m_combAttr.hasBgColor[i] = true;
+				m_combAttr.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], color, operation );
+
+				// This doesn't always blends colors as logically expected when adding together attribute structures,
+				// but covers most common and important cases.
+				//
+				// It always gets right if attr-structures that gets added either:
+				//
+				// 1. Only has one level where color is set in its TextStyle hierarchy.
+				// 2. Has a BlendOp::Replace somewhere in its TextStyle hierarchy.
+
+				BlendOp parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
+				if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || operation == BlendOp::Replace )
+					m_combAttr.bgColorBlendMode[i] = operation;
+			}			
+		}
+		else
+		{		
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.bgColorBlendMode[i] = operation;
+				m_specAttr.bgColor[i] = color;
+
+				m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
+				m_combAttr.bgColorBlendMode[i] = operation;
+			}			
 		}
 	}
 	
-	void TextStyle::setBgColor( Color color, State state )
+	void TextStyle::setBgColor( Color color, State state, BlendOp operation )
 	{
-		int idx = Util::_stateToIndex(state);
+		int i = Util::_stateToIndex(state);
 
-		m_specAttr.bgColor[idx] = color;
-		m_specAttr.hasBgColor[idx] = true;
+		m_specAttr.bgColorBlendMode[i] = operation;
+		m_specAttr.bgColor[i] = color;
 
-		m_combAttr.bgColor[idx] = color;
-		m_combAttr.hasBgColor[idx] = true;		
+		if( m_pParent )
+		{
+			m_combAttr.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], color, operation );
+
+			BlendOp parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
+			if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || operation == BlendOp::Replace )
+				m_combAttr.bgColorBlendMode[i] = operation;
+		}
+		else
+		{		
+			m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
+			m_combAttr.bgColorBlendMode[i] = operation;
+		}
 	}
+
 	
 	//____ setSize() _______________________________________________________________
 	
@@ -255,7 +329,7 @@ namespace wg
 	
 	void TextStyle::setDecoration( TextDecoration decoration )
 	{
-		if( decoration == TextDecoration::Inherit )
+		if( decoration == TextDecoration::Undefined )
 			clearDecoration();
 		else
 		{
@@ -269,7 +343,7 @@ namespace wg
 	
 	void TextStyle::setDecoration( TextDecoration decoration, State state )
 	{
-		if( decoration == TextDecoration::Inherit )
+		if( decoration == TextDecoration::Undefined )
 			clearDecoration(state);
 		else
 		{
@@ -279,6 +353,36 @@ namespace wg
 		}
 	}
 	
+	//____ setRenderMode() _________________________________________________________
+	
+	void TextStyle::setRenderMode( BlendOp mode )
+	{
+		if( mode == BlendOp::Undefined )
+			clearRenderMode();
+		else
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.renderMode[i] = mode;
+				m_combAttr.renderMode[i] = mode;
+			}
+		}
+	}
+	
+	void TextStyle::setRenderMode( BlendOp mode, State state )
+	{
+		if( mode == BlendOp::Undefined )
+			clearRenderMode(state);
+		else
+		{
+			int idx = Util::_stateToIndex(state);
+			m_specAttr.renderMode[idx] = mode;
+			m_combAttr.renderMode[idx] = mode;
+		}
+	}
+
+
+
 	
 	//____ clearFont() _____________________________________________________________
 	
@@ -310,17 +414,19 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.hasColor[i] = false;
-				
-				m_combAttr.hasColor[i] = m_pParent->m_combAttr.hasColor[i];
+				m_specAttr.colorBlendMode[i] = BlendOp::Undefined;
+				m_specAttr.color[i] = Color::White;
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
+				m_combAttr.colorBlendMode[i] = m_pParent->m_combAttr.colorBlendMode[i];
 			}
 		}
 		else
 		{			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.hasColor[i] = false;
-				m_combAttr.hasColor[i] = false;
+				m_specAttr.colorBlendMode[i] = BlendOp::Undefined;
+				m_specAttr.color[i] = Color::White;
+				m_combAttr.color[i] = Color::White;
+				m_combAttr.colorBlendMode[i] = BlendOp::Undefined;
 			}
 		}
 	}
@@ -329,15 +435,19 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.hasColor[idx] = false;
+		m_specAttr.colorBlendMode[idx] = BlendOp::Undefined;
+		m_specAttr.color[idx] = Color::White;
 
 		if( m_pParent )
 		{
-			m_combAttr.hasColor[idx] = m_pParent->m_combAttr.hasColor[idx];
 			m_combAttr.color[idx] = m_pParent->m_combAttr.color[idx];
+			m_combAttr.colorBlendMode[idx] = m_pParent->m_combAttr.colorBlendMode[idx];			
 		}
 		else
-			m_combAttr.hasColor[idx] = false;
+		{
+			m_combAttr.color[idx] = Color::White;
+			m_combAttr.colorBlendMode[idx] = BlendOp::Undefined;
+		}
 	}
 	
 	
@@ -349,18 +459,20 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.hasBgColor[i] = false;
-				
-				m_combAttr.hasBgColor[i] = m_pParent->m_combAttr.hasBgColor[i];
+				m_specAttr.bgColorBlendMode[i] = BlendOp::Undefined;
+				m_specAttr.bgColor[i] = Color::White;
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
+				m_combAttr.bgColorBlendMode[i] = m_pParent->m_combAttr.bgColorBlendMode[i];
 			}
 		}
 		else
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.hasBgColor[i] = false;
-				m_combAttr.hasBgColor[i] = false;
+				m_specAttr.bgColorBlendMode[i] = BlendOp::Undefined;
+				m_specAttr.bgColor[i] = Color::White;
+				m_combAttr.bgColor[i] = Color::White;
+				m_combAttr.bgColorBlendMode[i] = BlendOp::Undefined;
 			}
 		}
 	}
@@ -369,15 +481,19 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.hasBgColor[idx] = false;
+		m_specAttr.bgColorBlendMode[idx] = BlendOp::Ignore;
+		m_specAttr.bgColor[idx] = Color::White;
 
 		if( m_pParent )
 		{
-			m_combAttr.hasBgColor[idx] = m_pParent->m_combAttr.hasBgColor[idx];
 			m_combAttr.bgColor[idx] = m_pParent->m_combAttr.bgColor[idx];
+			m_combAttr.bgColorBlendMode[idx] = m_pParent->m_combAttr.bgColorBlendMode[idx];			
 		}
 		else
-			m_combAttr.hasBgColor[idx] = false;
+		{
+			m_combAttr.bgColor[idx] = Color::White;			
+			m_combAttr.bgColorBlendMode[idx] = BlendOp::Undefined;
+		}
 	}
 	
 	//____ clearSize() ____________________________________________________________
@@ -418,7 +534,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.decoration[i] = TextDecoration::Inherit;
+				m_specAttr.decoration[i] = TextDecoration::Undefined;
 				m_combAttr.decoration[i] = m_pParent->m_combAttr.decoration[i];
 			}
 		}
@@ -426,8 +542,8 @@ namespace wg
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
-				m_specAttr.decoration[i] = TextDecoration::Inherit;
-				m_combAttr.decoration[i] = TextDecoration::Inherit;
+				m_specAttr.decoration[i] = TextDecoration::Undefined;
+				m_combAttr.decoration[i] = TextDecoration::Undefined;
 			}
 		}
 	}
@@ -436,9 +552,41 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 	
-		m_specAttr.decoration[idx] = TextDecoration::Inherit;
-		m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : TextDecoration::Inherit;
+		m_specAttr.decoration[idx] = TextDecoration::Undefined;
+		m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : TextDecoration::Undefined;
 	}
+
+	//____ clearRenderMode() ____________________________________________________________
+	
+	void TextStyle::clearRenderMode()
+	{
+		if( m_pParent )
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.renderMode[i] = BlendOp::Undefined;
+				m_combAttr.renderMode[i] = m_pParent->m_combAttr.renderMode[i];
+			}
+		}
+		else
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.renderMode[i] = BlendOp::Undefined;
+				m_combAttr.renderMode[i] = BlendOp::Undefined;
+			}
+		}
+	}
+	
+	void TextStyle::clearRenderMode( State state )
+	{
+		int idx = Util::_stateToIndex(state);
+	
+		m_specAttr.renderMode[idx] = BlendOp::Undefined;
+		m_combAttr.renderMode[idx] = m_pParent ? m_pParent->m_combAttr.renderMode[idx] : BlendOp::Undefined;
+	}
+
+
 	
 	//____ exportAttr() ____________________________________________________________
 	
@@ -449,12 +597,16 @@ namespace wg
 		pDest->pFont 		= m_combAttr.pFont;
 		pDest->pLink 		= m_combAttr.pLink;
 		pDest->size 		= m_combAttr.size[idx];
-		pDest->color		= m_combAttr.hasColor[idx] ? m_combAttr.color[idx] : Color::White;
-		pDest->bgColor		= m_combAttr.hasBgColor[idx] ? m_combAttr.bgColor[idx] : Color::White;
+		pDest->color		= m_combAttr.color[idx];
+		pDest->bgColor		= m_combAttr.bgColor[idx];
 		pDest->decoration	= m_combAttr.decoration[idx];
+		pDest->renderMode		= m_combAttr.renderMode[idx];
 				
 		if( pDest->size == 0 )
 			pDest->size = 12;								// Default to size 12.
+			
+		if( pDest->decoration == TextDecoration::Undefined )
+			pDest->decoration = TextDecoration::None;
 	}
 	
 	//____ addToAttr() _____________________________________________________________
@@ -469,12 +621,13 @@ namespace wg
 			pDest->pLink = m_combAttr.pLink;
 		if( m_combAttr.size[idx] != 0 )
 			pDest->size	= m_combAttr.size[idx];
-		if( m_combAttr.hasColor[idx] )
-			pDest->color = m_combAttr.color[idx];
-		if( m_combAttr.hasBgColor[idx] )
-			pDest->bgColor = m_combAttr.bgColor[idx];
-		if( m_combAttr.decoration[idx] != TextDecoration::Inherit )
+		if( m_combAttr.decoration[idx] != TextDecoration::Undefined )
 			pDest->decoration = m_combAttr.decoration[idx];
+		if( m_combAttr.renderMode[idx] != BlendOp::Undefined )
+			pDest->renderMode = m_combAttr.renderMode[idx];
+
+		pDest->color = Color::blend( pDest->color, m_combAttr.color[idx], m_combAttr.colorBlendMode[idx] );
+		pDest->bgColor = Color::blend( pDest->bgColor, m_combAttr.bgColor[idx], m_combAttr.bgColorBlendMode[idx] );
 	}
 	
 	//____ isIdentical() _____________________________________________________
@@ -507,11 +660,18 @@ namespace wg
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				newComb.size[i] = m_specAttr.size[i] != 0 ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-				newComb.color[i] = m_specAttr.hasColor[i] ? m_specAttr.color[i] : m_pParent->m_combAttr.color[i];
-				newComb.bgColor[i] = m_specAttr.hasBgColor[i] ? m_specAttr.bgColor[i] : m_pParent->m_combAttr.bgColor[i];
-				newComb.hasColor[i] = m_specAttr.hasColor[i] || m_pParent->m_combAttr.hasColor[i];
-				newComb.hasBgColor[i] = m_specAttr.hasBgColor[i] || m_pParent->m_combAttr.hasBgColor[i];				
-				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Inherit ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
+				newComb.color[i] = Color::blend( m_pParent->m_combAttr.color[i], m_specAttr.color[i], m_specAttr.colorBlendMode[i] );
+				newComb.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], m_specAttr.bgColor[i], m_specAttr.bgColorBlendMode[i] );
+				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Undefined ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
+				newComb.renderMode[i] = m_specAttr.renderMode[i] == BlendOp::Undefined ? m_pParent->m_combAttr.renderMode[i] : m_specAttr.renderMode[i];
+
+				BlendOp parentOp = m_pParent->m_combAttr.colorBlendMode[i];
+				if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || m_specAttr.colorBlendMode[i] == BlendOp::Replace )
+					m_combAttr.colorBlendMode[i] = m_specAttr.colorBlendMode[i];
+
+				parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
+				if( parentOp == BlendOp::Undefined || parentOp == BlendOp::Ignore || m_specAttr.bgColorBlendMode[i] == BlendOp::Replace )
+					m_combAttr.bgColorBlendMode[i] = m_specAttr.bgColorBlendMode[i];
 			}
 	
 			if( _compareSets( &newComb, &m_combAttr ) == false )
@@ -538,12 +698,13 @@ namespace wg
 	
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			pSet->size[i] 		= 0;
-			pSet->hasColor[i]	= false;
-			pSet->color[i] 		= Color::White;
-			pSet->hasBgColor[i]	= false;
-			pSet->bgColor[i] 	= Color::White;
-			pSet->decoration[i] = TextDecoration::Inherit;
+			pSet->size[i] 			= 0;
+			pSet->color[i] 			= Color::White;
+			pSet->bgColor[i] 		= Color::White;
+			pSet->colorBlendMode[i]	= BlendOp::Undefined;
+			pSet->bgColorBlendMode[i]	= BlendOp::Undefined;
+			pSet->decoration[i] 	= TextDecoration::Undefined;
+			pSet->renderMode[i] 		= BlendOp::Undefined;
 		}
 	}
 	
@@ -556,12 +717,13 @@ namespace wg
 	
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			if( p1->size[i] 		!= p2->size[i] ||
-				p1->hasColor[i] 	!= p2->hasColor[i] ||
-				p1->hasBgColor[i] 	!= p2->hasBgColor[i] ||
-				p1->decoration[i] 	!= p2->decoration[i] ||
-				(p1->hasColor[i] && p1->color[i] != p2->color[i]) ||
-				(p1->hasBgColor[i] && p1->bgColor[i] != p2->bgColor[i]) )
+			if( p1->size[i] 			!= p2->size[i] ||
+				p1->colorBlendMode[i] 	!= p2->colorBlendMode[i] ||
+				p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
+				p1->decoration[i] 		!= p2->decoration[i] ||
+				p1->renderMode[i]			!= p2->renderMode[i] ||
+				p1->color[i] 			!= p2->color[i] ||
+				p1->bgColor[i] 			!= p2->bgColor[i] )
 				return false;				
 		}
 	
@@ -577,12 +739,13 @@ namespace wg
 	
 		int i = Util::_stateToIndex(state);
 	
-		if( p1->size[i] 		!= p2->size[i] ||
-			p1->hasColor[i] 	!= p2->hasColor[i] ||
-			p1->hasBgColor[i] 	!= p2->hasBgColor[i] ||
-			p1->decoration[i] 	!= p2->decoration[i] ||
-			(p1->hasColor[i] && p1->color[i] != p2->color[i]) ||
-			(p1->hasBgColor[i] && p1->bgColor[i] != p2->bgColor[i]) )
+		if( p1->size[i] 			!= p2->size[i] ||
+			p1->colorBlendMode[i] 	!= p2->colorBlendMode[i] ||
+			p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
+			p1->decoration[i] 		!= p2->decoration[i] ||
+			p1->renderMode[i]			!= p2->renderMode[i] ||
+			p1->color[i] 			!= p2->color[i] ||
+			p1->bgColor[i] 			!= p2->bgColor[i] )
 			return false;				
 	
 		return true;

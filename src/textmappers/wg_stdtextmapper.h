@@ -116,6 +116,7 @@ namespace wg
 		virtual int		caretNextWord( TextBaseItem * pItem, int charOfs ) const;
 	
 	
+	
 	protected:
 		StdTextMapper();
 		virtual ~StdTextMapper();

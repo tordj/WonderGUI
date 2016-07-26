@@ -268,17 +268,42 @@ namespace wg
 	
 	//____ BlendMode ____________________________________________________________
 	
-	// BlendModes control how blits and fills are blended against the background.
+	// BlendModes control how blits and fills are blended against their backgrounds.
 	
 	enum class BlendMode //: uint8_t
 	{
-		Opaque,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
+		Replace,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
 		Blend,				///< Normal mode, alpha of source and tint-color is taken into account.
 		Add,				///< RGBA Additive, alpha of source and tint-color is taken into account.
 		Multiply,			///< RGBA Multiply, alpha of source and tint-color is taken into account.
 		Invert				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 	};
 	
+	//____ BlendOp _____________________________________________________________
+	
+	// BlendOp controls how TintColors are blended hierarchically.
+		
+	enum class BlendOp : uint8_t
+	{
+		Undefined,			///< Blitting: Defaults to Blend
+							///< Color Blending: Defaults to ignore
+							///< This value is used internally to distinguish undefined values from an explicitly set ignore,
+		Ignore,				///< Blitting: No blitting performed.
+							///< Color Blending: DstRGBA = DstRGBA
+		Blend,				///< Blitting: Normal mode, alpha of source and tint-color is taken into account.
+							///< Color Blending: DstA = SrcA, DstRGB = SrcRGB + ((TintRGB-SrcRGB)*TintA/255)
+		Invert,				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
+							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
+		Replace,			///< Blitting: Completely opaque blitting, ignoring alpha of source and tint-color.
+							///< Color Blending: DstRGBA = SrcRGBA
+		Add,				///< Blitting: RGBA Additive, alpha of source and tint-color is taken into account.
+							///< Color Blending: DstRGBA = SrcRGBA + TintRGBA
+		Subtract,			///< Blitting: RGBA Subtractive, alpha of source and tint-color is taken into account.
+							///< Color Blending: DstRGBA = SrcRGBA - TintRGBA
+		Multiply			///< Blitting: RGBA Multiply, alpha of source and tint-color is taken into account.
+							///< Color Blending: DstRGBA = SrcRGBA * TintRGBA/255
+	};
+
 	
 	//____ PointerStyle __________________________________________________________
 	
@@ -326,18 +351,6 @@ namespace wg
 		PingPong,
 		BackwardPingPong
 	};
-	
-	
-	//____ TintMode _____________________________________________________________
-	
-	// TintMode controls how TintColors are blended hierarchically.
-	
-	enum class TintMode : uint8_t
-	{
-		Opaque,
-		Multiply
-	};
-	
 		
 	
 	//____ SearchMode _____________________________________________________________
@@ -537,7 +550,7 @@ namespace wg
 	
 	enum class TextDecoration
 	{
-		Inherit,
+		Undefined,
 		None,
 		Underline
 	};

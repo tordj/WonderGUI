@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_softgfxdevice.h>
+#include <wg_util.h>
 #include <math.h>
 #include <algorithm>
 
@@ -30,6 +31,7 @@ using namespace std;
 
 namespace wg 
 {
+	using namespace Util;
 	
 	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 	
@@ -129,7 +131,7 @@ namespace wg
 	
 		BlendMode blendMode = m_blendMode;
 		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		//
 	
@@ -141,7 +143,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				for( int y = 0 ; y < rect.h ; y++ )
 				{
@@ -187,9 +189,9 @@ namespace wg
 				{
 					for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
 					{
-						pDst[x] = m_limitTable[pDst[x] + storedBlue];
-						pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
-						pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
+						pDst[x] = limitUint8(pDst[x] + storedBlue);
+						pDst[x+1] = limitUint8(pDst[x+1] + storedGreen);
+						pDst[x+2] = limitUint8(pDst[x+2] + storedRed);
 					}
 					pDst += m_pCanvas->m_pitch;
 				}
@@ -268,7 +270,7 @@ namespace wg
 	
 		BlendMode blendMode = m_blendMode;
 		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		// Draw the sides
 	
@@ -832,7 +834,7 @@ namespace wg
 	
 		BlendMode blendMode = m_blendMode;
 		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		//
 	
@@ -851,7 +853,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				for( int x = 0 ; x < _length*inc ; x+=inc )
 				{
@@ -888,9 +890,9 @@ namespace wg
 	
 				for( int x = 0 ; x < _length*inc ; x+= inc )
 				{
-					pDst[x] = m_limitTable[pDst[x] + storedBlue];
-					pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
-					pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
+					pDst[x] = limitUint8(pDst[x] + storedBlue);
+					pDst[x+1] = limitUint8(pDst[x+1] + storedGreen);
+					pDst[x+2] = limitUint8(pDst[x+2] + storedRed);
 				}
 				break;
 			}
@@ -948,7 +950,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				int storedRed = ((int)_col.r) * _aa;
 				int storedGreen = ((int)_col.g) * _aa;
@@ -993,9 +995,9 @@ namespace wg
 	
 				for( int x = 0 ; x < _length*inc ; x+= inc )
 				{
-					pDst[x] = m_limitTable[pDst[x] + storedBlue];
-					pDst[x+1] = m_limitTable[pDst[x+1] + storedGreen];
-					pDst[x+2] = m_limitTable[pDst[x+2] + storedRed];
+					pDst[x] = limitUint8(pDst[x] + storedBlue);
+					pDst[x+1] = limitUint8(pDst[x+1] + storedGreen);
+					pDst[x+2] = limitUint8(pDst[x+2] + storedRed);
 				}
 				break;
 			}
@@ -1053,7 +1055,7 @@ namespace wg
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				int storedRed = ((int)_col.r) * _aa;
 				int storedGreen = ((int)_col.g) * _aa;
@@ -1090,9 +1092,9 @@ namespace wg
 				if( storedRed + storedGreen + storedBlue == 0 )
 					return;
 	
-				pDst[0] = m_limitTable[pDst[0] + storedBlue];
-				pDst[1] = m_limitTable[pDst[1] + storedGreen];
-				pDst[2] = m_limitTable[pDst[2] + storedRed];
+				pDst[0] = limitUint8(pDst[0] + storedBlue);
+				pDst[1] = limitUint8(pDst[1] + storedGreen);
+				pDst[2] = limitUint8(pDst[2] + storedRed);
 				break;
 			}
 			case BlendMode::Multiply:
@@ -1539,11 +1541,11 @@ namespace wg
 	
 		BlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				if( srcPixelBytes == 4 && dstPixelBytes == 4 )
 				{
@@ -1616,9 +1618,9 @@ namespace wg
 						{
 							int alpha = pSrc[3];
 	
-							pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[pSrc[0]*alpha] ];
-							pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[pSrc[1]*alpha] ];
-							pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[pSrc[2]*alpha] ];
+							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[pSrc[0]*alpha]);
+							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[pSrc[1]*alpha]);
+							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[pSrc[2]*alpha]);
 							pSrc += srcPixelBytes;
 							pDst += dstPixelBytes;
 						}
@@ -1632,9 +1634,9 @@ namespace wg
 					{
 						for( int x = 0 ; x < srcrect.w ; x++ )
 						{
-							pDst[0] = m_limitTable[pDst[0] + pSrc[0]];
-							pDst[1] = m_limitTable[pDst[1] + pSrc[1]];
-							pDst[2] = m_limitTable[pDst[2] + pSrc[2]];
+							pDst[0] = limitUint8(pDst[0] + pSrc[0]);
+							pDst[1] = limitUint8(pDst[1] + pSrc[1]);
+							pDst[2] = limitUint8(pDst[2] + pSrc[2]);
 							pSrc += srcPixelBytes;
 							pDst += dstPixelBytes;
 						}
@@ -1708,11 +1710,11 @@ namespace wg
 	
 		BlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		switch( blendMode )
 		{
-			case BlendMode::Opaque:
+			case BlendMode::Replace:
 			{
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
@@ -1807,9 +1809,9 @@ namespace wg
 							int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
 							int srcRed		= m_pDivTab[pSrc[2] * tintRed];
 	
-							pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*alpha] ];
-							pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*alpha] ];
-							pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[ srcRed*alpha] ];
+							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[srcBlue*alpha]);
+							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[srcGreen*alpha]);
+							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[ srcRed*alpha]);
 							pSrc += srcPixelBytes;
 							pDst += dstPixelBytes;
 						}
@@ -1828,9 +1830,9 @@ namespace wg
 					{
 						for( int x = 0 ; x < srcrect.w ; x++ )
 						{
-							pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[pSrc[0]*tintBlue] ];
-							pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[pSrc[1]*tintGreen] ];
-							pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[pSrc[2]*tintRed] ];
+							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[pSrc[0]*tintBlue]);
+							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[pSrc[1]*tintGreen]);
+							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[pSrc[2]*tintRed]);
 							pSrc += srcPixelBytes;
 							pDst += dstPixelBytes;
 						}
@@ -2008,13 +2010,13 @@ namespace wg
 	
 		BlendMode		blendMode = m_blendMode;
 		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
-			blendMode = BlendMode::Opaque;
+			blendMode = BlendMode::Replace;
 	
 		if( m_tintColor == 0xFFFFFFFF )
 		{
 			switch( blendMode )
 			{
-				case BlendMode::Opaque:
+				case BlendMode::Replace:
 					_stretchBlitOpaque( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Blend:
@@ -2041,7 +2043,7 @@ namespace wg
 		{
 			switch( blendMode )
 			{
-				case BlendMode::Opaque:
+				case BlendMode::Replace:
 					_stretchBlitTintedOpaque( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Blend:
@@ -2253,9 +2255,9 @@ namespace wg
 		srcGreen = m_pDivTab[srcGreen * tintGreen];
 		srcRed = m_pDivTab[srcRed * tintRed];
 	
-		pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*alpha] ];
-		pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*alpha] ];
-		pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*alpha] ];
+		pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[srcBlue*alpha]);
+		pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[srcGreen*alpha]);
+		pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[srcRed*alpha]);
 	
 		)
 	}
@@ -2275,9 +2277,9 @@ namespace wg
 	
 		,
 	
-		pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*tintBlue]];
-		pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*tintGreen]];
-		pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*tintRed]];
+		pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[srcBlue*tintBlue]);
+		pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[srcGreen*tintGreen]);
+		pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[srcRed*tintRed]);
 	
 		)
 	}
@@ -2375,9 +2377,9 @@ namespace wg
 	
 		,
 	
-		pDst[0] = m_limitTable[pDst[0] + (int) m_pDivTab[srcBlue*srcAlpha] ];
-		pDst[1] = m_limitTable[pDst[1] + (int) m_pDivTab[srcGreen*srcAlpha] ];
-		pDst[2] = m_limitTable[pDst[2] + (int) m_pDivTab[srcRed*srcAlpha] ];
+		pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[srcBlue*srcAlpha]);
+		pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[srcGreen*srcAlpha]);
+		pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[srcRed*srcAlpha]);
 	
 		)
 	}
@@ -2392,9 +2394,9 @@ namespace wg
 	
 		,
 	
-		pDst[0] = m_limitTable[pDst[0] + srcBlue];
-		pDst[1] = m_limitTable[pDst[1] + srcGreen];
-		pDst[2] = m_limitTable[pDst[2] + srcRed];
+		pDst[0] = limitUint8(pDst[0] + srcBlue);
+		pDst[1] = limitUint8(pDst[1] + srcGreen);
+		pDst[2] = limitUint8(pDst[2] + srcRed);
 	
 		)
 	}
@@ -2433,19 +2435,10 @@ namespace wg
 	}
 	
 	
-	
 	//____ _initTables() ___________________________________________________________
 	
 	void SoftGfxDevice::_initTables()
-	{
-		// Init limitTable
-	
-		for( int i = 0 ; i < 256 ; i++ )
-			m_limitTable[i] = i;
-	
-		for( int i = 256 ; i < 512 ; i++ )
-			m_limitTable[i] = 255;
-	
+	{	
 		// Init divTable
 	
 		m_pDivTab = new uint8_t[65536];
@@ -2460,7 +2453,6 @@ namespace wg
 			double b = i/16.0;
 			m_lineThicknessTable[i] = (int) (sqrt( 1.0 + b*b ) * 65536);
 		}
-	
 	}
 
 } // namespace wg

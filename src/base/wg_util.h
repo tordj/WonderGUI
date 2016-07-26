@@ -317,7 +317,14 @@ namespace wg
 			static int	s_stateToIndexTable[StateEnum_MaxValue+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
 			return s_stateToIndexTable[(uint8_t)state]; 
 		}
+
+
+		extern uint8_t _limitUint8Table[768];
 	
+		inline uint8_t limitUint8( int value )
+		{
+			return _limitUint8Table[value+256];
+		}
 	}
 	
 	

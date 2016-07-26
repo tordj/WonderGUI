@@ -58,13 +58,15 @@ namespace wg
 		inline bool operator==( const Color& k ) const;
 		inline bool operator!=( const Color& k ) const;
 	
-		inline Color operator+( const Color& k ) const;
-		inline Color operator-( const Color& k ) const;
+		Color	operator+( const Color& k ) const;
+		Color	operator-( const Color& k ) const;
 	
-		inline Color operator*( float f ) const;
-		inline Color operator*( const Color& k ) const;
-	
-		static Color blend( const Color& start, const Color& dest, float grade );
+		Color	operator*( float f ) const;
+		Color	operator*( const Color& k ) const;
+
+		static Color	mix( Color color1, Color color2, uint8_t balance );
+		static Color	invert( Color color, uint8_t grade );
+		static Color	blend( Color baseColor, Color blendColor, BlendOp operation );
 	
 		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
 		void	getCMYK( float* c, float* m, float* y, float* k );
@@ -252,50 +254,6 @@ namespace wg
 			return true;
 	
 		return false;
-	}
-	
-	//-------------------------------------------------------------------
-	inline Color Color::operator+( const Color& k ) const
-	{
-		Color kNewColor;
-		kNewColor.r = r + k.r;
-		kNewColor.g = g + k.g;
-		kNewColor.b = b + k.b;
-		kNewColor.a = a + k.a;
-		return kNewColor;
-	}
-	
-	//-------------------------------------------------------------------
-	inline Color Color::operator-( const Color& k ) const
-	{
-		Color kNewColor;
-		kNewColor.r = r - k.r;
-		kNewColor.g = g - k.g;
-		kNewColor.b = b - k.b;
-		kNewColor.a = a - k.a;
-		return kNewColor;
-	}
-	
-	//-------------------------------------------------------------------
-	inline Color Color::operator*( float f ) const
-	{
-		Color kNewColor;
-		kNewColor.r = (uint8_t)( (float)r * f );
-		kNewColor.g = (uint8_t)( (float)g * f );
-		kNewColor.b = (uint8_t)( (float)b * f );
-		kNewColor.a = (uint8_t)( (float)a * f );
-		return kNewColor;
-	}
-	
-	//-------------------------------------------------------------------
-	inline Color Color::operator*( const Color& k ) const
-	{
-		Color kNewColor;
-		kNewColor.r = (uint8_t)(((int)r * (int)k.r )/255);
-		kNewColor.g = (uint8_t)(((int)g * (int)k.g )/255);
-		kNewColor.b = (uint8_t)(((int)b * (int)k.b )/255);
-		kNewColor.a = (uint8_t)(((int)a * (int)k.a )/255);
-		return kNewColor;
 	}
 	
 	

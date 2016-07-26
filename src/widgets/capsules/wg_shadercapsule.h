@@ -45,12 +45,12 @@ namespace wg
 		static ShaderCapsule_p	cast( const Object_p& pObject );
 	
 		void		setColor( const Color& color);
-		void		setTintMode( TintMode mode );
+		void		setBlendOp( BlendOp mode );
 		void		setBlendMode( BlendMode mode );
 	
 		inline Color		color() { return m_tintColor; }
 		inline BlendMode	blendMode() { return m_blendMode; }
-		inline TintMode	tintMode() { return m_tintMode; }
+		inline BlendOp	tintMode() { return m_tintMode; }
 	
 	
 	protected:
@@ -65,7 +65,7 @@ namespace wg
 	private:
 		Color			m_tintColor;
 		BlendMode		m_blendMode;
-		TintMode		m_tintMode;
+		BlendOp		m_tintMode;
 	
 	};
 	

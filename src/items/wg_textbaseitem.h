@@ -88,7 +88,7 @@ namespace wg
 
 		// Alternative calls, guaranteed to return valid values.
 
-		TextMapper *			_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
+		TextMapper *		_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		virtual const EditState * _editState() const;
 		
@@ -105,7 +105,7 @@ namespace wg
 		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
-		TextMapper_p			m_pTextMapper;
+		TextMapper_p		m_pTextMapper;
 	
 	};
 	

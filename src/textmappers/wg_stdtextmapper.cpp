@@ -26,6 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
 #include <malloc.h>
+#include <algorithm>
 
 namespace wg 
 {
@@ -370,13 +371,30 @@ namespace wg
 
 		Color	baseTint = pDevice->getTintColor();
 		Color	localTint = Color::White;
+
+		const EditState * pEditState = _editState( pItem );
+
+		// Get selection start and end
+
+		const Char * pSelBeg = nullptr;
+		const Char * pSelEnd = nullptr;
+
+		if( pEditState && pEditState->selectOfs != pEditState->caretOfs )
+		{
+			pSelBeg = pCharArray + pEditState->selectOfs;
+			pSelEnd = pCharArray + pEditState->caretOfs;
+			if( pSelBeg > pSelEnd )
+				std::swap( pSelBeg, pSelEnd );
+		}
+
+		//
 		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
 			{		
 				lineStart.x = canvas.x + _linePosX( pLineInfo, canvas.w );
-				const Char * pChars = pCharArray + pLineInfo->offset;
+				const Char * pChar = pCharArray + pLineInfo->offset;
 	
 				Glyph_p	pGlyph;
 				Glyph_p	pPrevGlyph =  0;
@@ -389,13 +407,13 @@ namespace wg
 					// TODO: Include handling of special characters
 					// TODO: Support char textcolor and background color and effects.
 				
-					if( pChars->styleHandle() != hStyle )
+					if( pChar->styleHandle() != hStyle )
 					{
 						int oldFontSize = attr.size;
 						attr = baseAttr;
 
-						if( pChars->styleHandle() != 0 )
-							pChars->stylePtr()->addToAttr( _state(pItem), &attr );
+						if( pChar->styleHandle() != 0 )
+							pChar->stylePtr()->addToAttr( _state(pItem), &attr );
 						
 						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
@@ -410,8 +428,21 @@ namespace wg
 							pDevice->setTintColor( baseTint * localTint );
 						}
 					}
+
+					// 
 				
-					pGlyph = pFont->getGlyph(pChars->getGlyph());
+					if( pChar == pSelBeg )
+					{
+						
+					}
+					else if( pChar == pSelEnd )
+					{
+						
+					}
+					
+					//
+				
+					pGlyph = pFont->getGlyph(pChar->getGlyph());
 	
 					if( pGlyph )
 					{
@@ -423,11 +454,11 @@ namespace wg
 	
 						pos.x += pGlyph->advance();
 					}
-					else if( pChars->getGlyph() == 32 )
+					else if( pChar->getGlyph() == 32 )
 						pos.x += pFont->whitespaceAdvance();
 						
 					pPrevGlyph = pGlyph;
-					pChars++;
+					pChar++;
 				}			
 			}
 			
@@ -439,9 +470,7 @@ namespace wg
 			pDevice->setTintColor( baseTint );
 
 		// Render cursor (if there is any)
-		
-		const EditState * pEditState = _editState( pItem );
-		
+				
 		if( pEditState && pEditState->bCaret && m_pCaret )
 		{
 			m_pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos(), clip );

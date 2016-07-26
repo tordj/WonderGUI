@@ -149,7 +149,6 @@ namespace wg
 	
 		bool			m_bBilinearFiltering;
 		SoftSurface_p 	m_pCanvas;
-		uint8_t			m_limitTable[512];
 		int				m_lineThicknessTable[17];
 		int *			m_pCurveTab;
 		uint8_t *		m_pDivTab;
