@@ -1221,8 +1221,7 @@ namespace wg
 	void ScrollPanel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace ||
-			(m_pSkin && m_pSkin->isOpaque(m_state)) )
+		if( ((m_bOpaque || (m_pSkin && m_pSkin->isOpaque(m_state))) && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
 			patches.sub( Rect(geo,clip) );
 			return;

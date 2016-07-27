@@ -57,7 +57,7 @@ namespace wg
 			Color			bgColor;			
 			TextDecoration	decoration;
 			TextLink_p		pLink;
-			BlendOp			renderMode;
+			BlendMode			renderMode;
 
 			
 			// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
@@ -90,17 +90,17 @@ namespace wg
 		void			setFont( const Font_p& pFont );
 		void			setLink( const TextLink_p& pLink );
 	
-		void			setColor( Color color, BlendOp operation = BlendOp::Replace );
-		void			setBgColor( Color color, BlendOp operation = BlendOp::Replace );
+		void			setColor( Color color, BlendMode operation = BlendMode::Replace );
+		void			setBgColor( Color color, BlendMode operation = BlendMode::Replace );
 		void			setSize( int size );
 		void			setDecoration( TextDecoration decoration );
-		void			setRenderMode( BlendOp mode );
+		void			setRenderMode( BlendMode mode );
 	
-		void			setColor( Color color, State state, BlendOp operation = BlendOp::Replace );
-		void			setBgColor( Color color, State state, BlendOp operation = BlendOp::Replace );
+		void			setColor( Color color, State state, BlendMode operation = BlendMode::Replace );
+		void			setBgColor( Color color, State state, BlendMode operation = BlendMode::Replace );
 		void			setSize( int size, State state );
 		void			setDecoration( TextDecoration decoration, State state );
-		void			setRenderMode( BlendOp mode, State state );
+		void			setRenderMode( BlendMode mode, State state );
 	
 		void			clearFont();
 		void			clearLink();
@@ -123,9 +123,9 @@ namespace wg
 		inline Color			bgColor( State state ) const;
 		inline int				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
-		inline BlendOp			colorBlendMode( State state ) const;
-		inline BlendOp			bgColorBlendMode( State state ) const;
-		inline BlendOp			renderMode( State state ) const;
+		inline BlendMode			colorBlendMode( State state ) const;
+		inline BlendMode			bgColorBlendMode( State state ) const;
+		inline BlendMode			renderMode( State state ) const;
 	
 		inline Font_p			combFont() const;
 		inline TextLink_p		combLink() const;
@@ -133,9 +133,9 @@ namespace wg
 		inline Color			combBgColor( State state ) const;
 		inline int				combSize( State state ) const;
 		inline TextDecoration 	combDecoration( State state ) const;
-		inline BlendOp			combcolorBlendMode( State state ) const;
-		inline BlendOp			combBgColorBlendMode( State state ) const;
-		inline BlendOp			combRenderMode( State state ) const;
+		inline BlendMode			combcolorBlendMode( State state ) const;
+		inline BlendMode			combBgColorBlendMode( State state ) const;
+		inline BlendMode			combRenderMode( State state ) const;
 
 	
 		void			exportAttr( State state, TextAttr * pDest ) const;
@@ -159,11 +159,11 @@ namespace wg
 			Color			color[StateEnum_Nb];
 			Color			bgColor[StateEnum_Nb];
 			TextDecoration	decoration[StateEnum_Nb];
-			BlendOp			renderMode[StateEnum_Nb];
+			BlendMode			renderMode[StateEnum_Nb];
 			TextLink_p		pLink;
 
-			BlendOp			colorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend color with color from upstream (parent or already in attr)
-			BlendOp			bgColorBlendMode[StateEnum_Nb];	// Internal use only, operation used to blend bgColor with bgColor from upstream (parent or already in attr)
+			BlendMode			colorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend color with color from upstream (parent or already in attr)
+			BlendMode			bgColorBlendMode[StateEnum_Nb];	// Internal use only, operation used to blend bgColor with bgColor from upstream (parent or already in attr)
 
 
 		};
@@ -200,7 +200,7 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	inline BlendOp TextStyle::colorBlendMode( State state ) const
+	inline BlendMode TextStyle::colorBlendMode( State state ) const
 	{
 		return m_specAttr.colorBlendMode[Util::_stateToIndex(state)];
 	}
@@ -212,7 +212,7 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	inline BlendOp TextStyle::bgColorBlendMode( State state ) const
+	inline BlendMode TextStyle::bgColorBlendMode( State state ) const
 	{
 		return m_specAttr.bgColorBlendMode[Util::_stateToIndex(state)];
 	}
@@ -236,7 +236,7 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	inline BlendOp TextStyle::renderMode( State state ) const
+	inline BlendMode TextStyle::renderMode( State state ) const
 	{
 		return m_specAttr.renderMode[Util::_stateToIndex(state)];
 	}
@@ -279,7 +279,7 @@ namespace wg
 	}
 	
 	//______________________________________________________________________________
-	inline BlendOp TextStyle::combRenderMode( State state ) const
+	inline BlendMode TextStyle::combRenderMode( State state ) const
 	{
 		return m_combAttr.renderMode[Util::_stateToIndex(state)];
 	}

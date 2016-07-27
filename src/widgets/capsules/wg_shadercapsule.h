@@ -44,13 +44,12 @@ namespace wg
 		static const char	CLASSNAME[];
 		static ShaderCapsule_p	cast( const Object_p& pObject );
 	
-		void		setColor( const Color& color);
-		void		setBlendOp( BlendOp mode );
-		void		setBlendMode( BlendMode mode );
+		void		setTintColor( Color color, BlendMode operation = BlendMode::Replace );
+		void		setRenderMode( BlendMode mode );
 	
-		inline Color		color() { return m_tintColor; }
-		inline BlendMode	blendMode() { return m_blendMode; }
-		inline BlendOp	tintMode() { return m_tintMode; }
+		inline Color		tintColor() { return m_tintColor; }
+		inline BlendMode	renderMode() { return m_renderMode; }
+		inline BlendMode	tintMode() { return m_tintMode; }
 	
 	
 	protected:
@@ -60,12 +59,12 @@ namespace wg
 	
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void		_cloneContent( const Widget * _pOrg );
-		BlendMode _getBlendMode() const;
+		BlendMode _getRenderMode() const;
 	
 	private:
 		Color			m_tintColor;
-		BlendMode		m_blendMode;
-		BlendOp		m_tintMode;
+		BlendMode		m_tintMode;
+		BlendMode		m_renderMode;
 	
 	};
 	

@@ -268,22 +268,9 @@ namespace wg
 	
 	//____ BlendMode ____________________________________________________________
 	
-	// BlendModes control how blits and fills are blended against their backgrounds.
-	
-	enum class BlendMode //: uint8_t
-	{
-		Replace,			///< Completely opaque blitting, ignoring alpha of source and tint-color.
-		Blend,				///< Normal mode, alpha of source and tint-color is taken into account.
-		Add,				///< RGBA Additive, alpha of source and tint-color is taken into account.
-		Multiply,			///< RGBA Multiply, alpha of source and tint-color is taken into account.
-		Invert				///< Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
-	};
-	
-	//____ BlendOp _____________________________________________________________
-	
-	// BlendOp controls how TintColors are blended hierarchically.
-		
-	enum class BlendOp : uint8_t
+	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.
+			
+	enum class BlendMode : uint8_t
 	{
 		Undefined,			///< Blitting: Defaults to Blend
 							///< Color Blending: Defaults to ignore
@@ -296,11 +283,11 @@ namespace wg
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
 		Replace,			///< Blitting: Completely opaque blitting, ignoring alpha of source and tint-color.
 							///< Color Blending: DstRGBA = SrcRGBA
-		Add,				///< Blitting: RGBA Additive, alpha of source and tint-color is taken into account.
+		Add,				///< Blitting: RGB Additive, alpha of source and tint-color is taken into account.
 							///< Color Blending: DstRGBA = SrcRGBA + TintRGBA
-		Subtract,			///< Blitting: RGBA Subtractive, alpha of source and tint-color is taken into account.
+		Subtract,			///< Blitting: RGB Subtractive, alpha of source and tint-color is taken into account.
 							///< Color Blending: DstRGBA = SrcRGBA - TintRGBA
-		Multiply			///< Blitting: RGBA Multiply, alpha of source and tint-color is taken into account.
+		Multiply			///< Blitting: RGB Multiply, alpha of source and tint-color is taken into account.
 							///< Color Blending: DstRGBA = SrcRGBA * TintRGBA/255
 	};
 

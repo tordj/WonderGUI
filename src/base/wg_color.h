@@ -66,7 +66,7 @@ namespace wg
 
 		static Color	mix( Color color1, Color color2, uint8_t balance );
 		static Color	invert( Color color, uint8_t grade );
-		static Color	blend( Color baseColor, Color blendColor, BlendOp operation );
+		static Color	blend( Color baseColor, Color blendColor, BlendMode operation );
 	
 		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
 		void	getCMYK( float* c, float* m, float* y, float* k );

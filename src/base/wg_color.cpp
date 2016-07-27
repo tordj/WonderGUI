@@ -273,24 +273,24 @@ namespace wg
 	
 	//____ blend()___________________________________________________________________
 	
-	Color Color::blend( Color baseColor, Color blendColor, BlendOp operation )
+	Color Color::blend( Color baseColor, Color blendColor, BlendMode operation )
 	{
 		switch( operation )
 		{
-			case BlendOp::Add:
+			case BlendMode::Add:
 				return baseColor + blendColor;
-			case BlendOp::Blend:
+			case BlendMode::Blend:
 				return mix(baseColor, Color(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
-			case BlendOp::Undefined:
-			case BlendOp::Ignore:
+			case BlendMode::Undefined:
+			case BlendMode::Ignore:
 				return baseColor;
-			case BlendOp::Invert:
+			case BlendMode::Invert:
 				return invert( baseColor, blendColor.a );
-			case BlendOp::Multiply:
+			case BlendMode::Multiply:
 				return baseColor * blendColor;
-			case BlendOp::Replace:
+			case BlendMode::Replace:
 				return blendColor;
-			case BlendOp::Subtract:
+			case BlendMode::Subtract:
 				return baseColor - blendColor;
 		}		
 	}

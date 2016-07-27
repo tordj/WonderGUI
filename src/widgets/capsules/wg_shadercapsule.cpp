@@ -30,7 +30,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(BlendOp::Replace), m_blendMode(BlendMode::Blend)
+	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(BlendMode::Replace), m_renderMode(BlendMode::Blend)
 	{
 	}
 	
@@ -68,45 +68,35 @@ namespace wg
 	}
 	
 	
-	//____ setColor() ______________________________________________________________
-	
-	void ShaderCapsule::setColor( const Color& color)
+	//____ setTintColor() ______________________________________________________	
+
+	void ShaderCapsule::setTintColor( Color color, BlendMode mode )
 	{
-		if( color != m_tintColor )
+		if( color != m_tintColor || mode != m_tintMode )
 		{
+			m_tintMode = mode;
 			m_tintColor = color;
 			_requestRender();
 		}
 	}
+		
+	//____ setRenderMode() __________________________________________________________
 	
-	//____ setBlendOp() ___________________________________________________________
-	
-	void ShaderCapsule::setBlendOp( BlendOp mode )
+	void ShaderCapsule::setRenderMode( BlendMode mode )
 	{
-		if( mode != m_tintMode )
+		if( mode != m_renderMode )
 		{
-			m_tintMode = mode;
-			_requestRender();
-		}
-	}
-	
-	//____ setBlendMode() __________________________________________________________
-	
-	void ShaderCapsule::setBlendMode( BlendMode mode )
-	{
-		if( mode != m_blendMode )
-		{
-			m_blendMode = mode;
+			m_renderMode = mode;
 			_requestRender();
 		}
 	}
 	
 	
-	//____ _getBlendMode() _________________________________________________________
+	//____ _getRenderMode() _________________________________________________________
 	
-	BlendMode ShaderCapsule::_getBlendMode() const
+	BlendMode ShaderCapsule::_getRenderMode() const
 	{
-		return m_blendMode;
+		return m_renderMode;
 	}
 	
 	//____ _renderPatches() ________________________________________________________
@@ -122,7 +112,7 @@ namespace wg
 		oldBM = pDevice->getBlendMode();
 		oldTC = pDevice->getTintColor();
 
-		pDevice->setBlendMode(m_blendMode);
+		pDevice->setBlendMode(m_renderMode);
 		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );
 	
 		// Render children recursively
@@ -145,7 +135,7 @@ namespace wg
 		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
 	
 		m_tintColor		= pOrg->m_tintColor;
-		m_blendMode		= pOrg->m_blendMode;
+		m_renderMode		= pOrg->m_renderMode;
 		m_tintMode		= pOrg->m_tintMode;
 	}
 

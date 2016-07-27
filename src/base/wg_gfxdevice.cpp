@@ -88,7 +88,11 @@ namespace wg
 	
 	bool GfxDevice::setBlendMode( BlendMode blendMode )
 	{
-		m_blendMode = blendMode;
+		if( blendMode == BlendMode::Undefined )
+			m_blendMode = BlendMode::Blend;
+		else
+			m_blendMode = blendMode;
+			
 		return false;				// Not implemented.
 	}
 	

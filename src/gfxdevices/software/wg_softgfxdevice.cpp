@@ -124,7 +124,7 @@ namespace wg
 	
 		// Skip calls that won't affect destination
 	
-		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add) )
+		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract) )
 			return;
 	
 		// Optimize calls
@@ -197,6 +197,27 @@ namespace wg
 				}
 				break;
 			}
+			case BlendMode::Subtract:
+			{
+				int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
+				int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
+				int storedBlue = (int) m_pDivTab[fillColor.b * fillColor.a];
+	
+				if( storedRed + storedGreen + storedBlue == 0 )
+					return;
+	
+				for( int y = 0 ; y < rect.h ; y++ )
+				{
+					for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
+					{
+						pDst[x] = limitUint8(pDst[x] - storedBlue);
+						pDst[x+1] = limitUint8(pDst[x+1] - storedGreen);
+						pDst[x+2] = limitUint8(pDst[x+2] - storedRed);
+					}
+					pDst += m_pCanvas->m_pitch;
+				}
+				break;
+			}
 			case BlendMode::Multiply:
 			{
 				int storedRed = (int)fillColor.r;
@@ -254,7 +275,7 @@ namespace wg
 	
 		// Skip calls that won't affect destination
 	
-		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add) )
+		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract) )
 			return;
 	
 		// Fill all but anti-aliased edges
@@ -896,6 +917,23 @@ namespace wg
 				}
 				break;
 			}
+			case BlendMode::Subtract:
+			{
+				int storedRed = m_pDivTab[fillColor.r * (int) fillColor.a];
+				int storedGreen = m_pDivTab[fillColor.g * (int) fillColor.a];
+				int storedBlue = m_pDivTab[fillColor.b * (int) fillColor.a];
+	
+				if( storedRed + storedGreen + storedBlue == 0 )
+					return;
+	
+				for( int x = 0 ; x < _length*inc ; x+= inc )
+				{
+					pDst[x] = limitUint8(pDst[x] - storedBlue);
+					pDst[x+1] = limitUint8(pDst[x+1] - storedGreen);
+					pDst[x+2] = limitUint8(pDst[x+2] - storedRed);
+				}
+				break;
+			}
 			case BlendMode::Multiply:
 			{
 				int storedRed = (int)fillColor.r;
@@ -1001,6 +1039,25 @@ namespace wg
 				}
 				break;
 			}
+			case BlendMode::Subtract:
+			{
+				int aa = m_pDivTab[_col.a * _aa];
+				
+				int storedRed = m_pDivTab[_col.r * aa];
+				int storedGreen = m_pDivTab[_col.g * aa];
+				int storedBlue = m_pDivTab[_col.b * aa];
+				
+				if( storedRed + storedGreen + storedBlue == 0 )
+					return;
+	
+				for( int x = 0 ; x < _length*inc ; x+= inc )
+				{
+					pDst[x] = limitUint8(pDst[x] - storedBlue);
+					pDst[x+1] = limitUint8(pDst[x+1] - storedGreen);
+					pDst[x+2] = limitUint8(pDst[x+2] - storedRed);
+				}
+				break;
+			}
 			case BlendMode::Multiply:
 			{
 				int storedRed = (int) m_pDivTab[_col.r*_aa];
@@ -1095,6 +1152,22 @@ namespace wg
 				pDst[0] = limitUint8(pDst[0] + storedBlue);
 				pDst[1] = limitUint8(pDst[1] + storedGreen);
 				pDst[2] = limitUint8(pDst[2] + storedRed);
+				break;
+			}
+			case BlendMode::Subtract:
+			{
+				int aa = _col.a * _aa;
+	
+				int storedRed = (((int)_col.r) * aa) >> 16;
+				int storedGreen = (((int)_col.g) * aa) >> 16;
+				int storedBlue = (((int)_col.b) * aa) >> 16;
+	
+				if( storedRed + storedGreen + storedBlue == 0 )
+					return;
+	
+				pDst[0] = limitUint8(pDst[0] - storedBlue);
+				pDst[1] = limitUint8(pDst[1] - storedGreen);
+				pDst[2] = limitUint8(pDst[2] - storedRed);
 				break;
 			}
 			case BlendMode::Multiply:
@@ -1646,6 +1719,45 @@ namespace wg
 				}
 				break;
 			}
+			case BlendMode::Subtract:
+			{
+				if( srcPixelBytes == 4 )
+				{
+					for( int y = 0 ; y < srcrect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcrect.w ; x++ )
+						{
+							int alpha = pSrc[3];
+	
+							pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[pSrc[0]*alpha]);
+							pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[pSrc[1]*alpha]);
+							pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[pSrc[2]*alpha]);
+							pSrc += srcPixelBytes;
+							pDst += dstPixelBytes;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+				}
+				else
+				{
+					for( int y = 0 ; y < srcrect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcrect.w ; x++ )
+						{
+							pDst[0] = limitUint8(pDst[0] - pSrc[0]);
+							pDst[1] = limitUint8(pDst[1] - pSrc[1]);
+							pDst[2] = limitUint8(pDst[2] - pSrc[2]);
+							pSrc += srcPixelBytes;
+							pDst += dstPixelBytes;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+				}
+				break;
+			}
+
 			case BlendMode::Multiply:
 			{
 				for( int y = 0 ; y < srcrect.h ; y++ )
@@ -1833,6 +1945,58 @@ namespace wg
 							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[pSrc[0]*tintBlue]);
 							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[pSrc[1]*tintGreen]);
 							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[pSrc[2]*tintRed]);
+							pSrc += srcPixelBytes;
+							pDst += dstPixelBytes;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+				}
+				break;
+			}
+			case BlendMode::Subtract:
+			{
+				if( srcPixelBytes == 4 )
+				{
+					int tintAlpha = (int) m_tintColor.a;
+					int tintRed = (int) m_tintColor.r;
+					int tintGreen = (int) m_tintColor.g;
+					int tintBlue = (int) m_tintColor.b;
+	
+					for( int y = 0 ; y < srcrect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcrect.w ; x++ )
+						{
+							int alpha = m_pDivTab[ pSrc[3]*tintAlpha ];
+	
+							int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
+							int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
+							int srcRed		= m_pDivTab[pSrc[2] * tintRed];
+	
+							pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[srcBlue*alpha]);
+							pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[srcGreen*alpha]);
+							pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[ srcRed*alpha]);
+							pSrc += srcPixelBytes;
+							pDst += dstPixelBytes;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+				}
+				else
+				{
+					int tintAlpha = (int) m_tintColor.a;
+					int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
+					int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
+					int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
+	
+					for( int y = 0 ; y < srcrect.h ; y++ )
+					{
+						for( int x = 0 ; x < srcrect.w ; x++ )
+						{
+							pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[pSrc[0]*tintBlue]);
+							pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[pSrc[1]*tintGreen]);
+							pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[pSrc[2]*tintRed]);
 							pSrc += srcPixelBytes;
 							pDst += dstPixelBytes;
 						}
@@ -2031,6 +2195,12 @@ namespace wg
 					else
 						_stretchBlitAdd32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
+				case BlendMode::Subtract:
+					if( pSrcSurf->m_pixelFormat.bits == 24 )
+						_stretchBlitSub24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
+					else
+						_stretchBlitSub32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
+					break;
 				case BlendMode::Multiply:
 					_stretchBlitMultiply( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
@@ -2057,6 +2227,12 @@ namespace wg
 						_stretchBlitTintedAdd24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedAdd32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
+					break;
+				case BlendMode::Subtract:
+					if( pSrcSurf->m_pixelFormat.bits == 24 )
+						_stretchBlitTintedSub24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
+					else
+						_stretchBlitTintedSub32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Multiply:
 					_stretchBlitTintedMultiply( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
@@ -2283,6 +2459,55 @@ namespace wg
 	
 		)
 	}
+
+	//____ _stretchBlitTintedSub32() ____________________________________________
+	
+	void SoftGfxDevice::_stretchBlitTintedSub32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+															int dx, int dy, int dw, int dh )
+	{
+		STRETCHBLIT( true,
+	
+		int tintAlpha = (int) m_tintColor.a;
+		int tintRed = (int) m_tintColor.r;
+		int tintGreen = (int) m_tintColor.g;
+		int tintBlue = (int) m_tintColor.b;
+	
+		,
+	
+		int alpha = m_pDivTab[srcAlpha*tintAlpha];
+	
+		srcBlue = m_pDivTab[srcBlue * tintBlue];
+		srcGreen = m_pDivTab[srcGreen * tintGreen];
+		srcRed = m_pDivTab[srcRed * tintRed];
+	
+		pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[srcBlue*alpha]);
+		pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[srcGreen*alpha]);
+		pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[srcRed*alpha]);
+	
+		)
+	}
+	
+	
+	//____ _stretchBlitTintedSub24() ____________________________________________
+	
+	void SoftGfxDevice::_stretchBlitTintedSub24( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+															int dx, int dy, int dw, int dh )
+	{
+		STRETCHBLIT( false,
+	
+		int tintAlpha = (int) m_tintColor.a;
+		int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
+		int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
+		int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
+	
+		,
+	
+		pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[srcBlue*tintBlue]);
+		pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[srcGreen*tintGreen]);
+		pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[srcRed*tintRed]);
+	
+		)
+	}
 	
 	
 	//____ _stretchBlitTintedMultiply() ____________________________________________
@@ -2401,6 +2626,40 @@ namespace wg
 		)
 	}
 	
+	//____ _stretchBlitSub32() ____________________________________________
+	
+	void SoftGfxDevice::_stretchBlitSub32( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+													 int dx, int dy, int dw, int dh )
+	{
+		STRETCHBLIT( true,
+	
+		,
+	
+		pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[srcBlue*srcAlpha]);
+		pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[srcGreen*srcAlpha]);
+		pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[srcRed*srcAlpha]);
+	
+		)
+	}
+	
+	
+	//____ _stretchBlitSub24() ____________________________________________
+	
+	void SoftGfxDevice::_stretchBlitSub24( const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
+													 int dx, int dy, int dw, int dh )
+	{
+		STRETCHBLIT( false,
+	
+		,
+	
+		pDst[0] = limitUint8(pDst[0] - srcBlue);
+		pDst[1] = limitUint8(pDst[1] - srcGreen);
+		pDst[2] = limitUint8(pDst[2] - srcRed);
+	
+		)
+	}
+
+
 	
 	//____ _stretchBlitMultiply() ____________________________________________
 	
