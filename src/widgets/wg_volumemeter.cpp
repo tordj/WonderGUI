@@ -52,7 +52,7 @@ namespace wg
 		m_nSectionLEDs[2] = 1;
 		
 		m_nLEDs = m_nSectionLEDs[0] + m_nSectionLEDs[1] + m_nSectionLEDs[2];
-		m_LEDSpacing = 0.33;
+		m_LEDSpacing = 0.33f;
 		m_direction = Direction::Up;
 		
 		m_iPeak = 0;
@@ -392,22 +392,22 @@ namespace wg
 		switch( m_direction )
 		{
 			case Direction::Up:
-				ledRect = RectF( canvas.x + p, canvas.y + canvas.h - ledSize, canvas.w - 2*p, ledSize );
+				ledRect = RectF( (float) canvas.x + p, (float) canvas.y + canvas.h - ledSize, (float) canvas.w - 2*p, ledSize );
 				stepX = 0.f;
 				stepY = -stepSize;
 				break;
 			case Direction::Down:
-				ledRect = RectF( canvas.x+p, canvas.y, canvas.w - 2*p, ledSize );
+				ledRect = RectF( (float) canvas.x+p, (float) canvas.y, (float) canvas.w - 2*p, ledSize );
 				stepX = 0.f;
 				stepY = stepSize;
 				break;
 			case Direction::Left:
-				ledRect = RectF( canvas.x + canvas.w - ledSize, canvas.y + p, ledSize, canvas.h - 2*p);
+				ledRect = RectF((float) canvas.x + canvas.w - ledSize, (float) canvas.y + p, ledSize, (float) canvas.h - 2*p);
 				stepX = -stepSize;
 				stepY = 0.f;
 				break;
 			case Direction::Right:
-				ledRect = RectF( canvas.x, canvas.y + p, ledSize, canvas.h - 2*p);
+				ledRect = RectF((float) canvas.x, (float) canvas.y + p, ledSize, (float) canvas.h - 2*p);
 				stepX = stepSize;
 				stepY = 0.f;
 				break;

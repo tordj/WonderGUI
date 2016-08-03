@@ -84,7 +84,6 @@ namespace wg
 	
 		m_mapColors.clear();
 		m_mapSurfaces.clear();
-		m_mapGlyphsets.clear();
 		m_mapFonts.clear();
 		m_mapGfxAnims.clear();
 		m_mapCarets.clear();
@@ -103,7 +102,6 @@ namespace wg
 		// with smartpointers.
 	
 		m_surfaces.clear();
-		m_glyphsets.clear();
 		m_fonts.clear();
 		m_gfxAnims.clear();
 		m_carets.clear();
@@ -137,14 +135,7 @@ namespace wg
 		char pBuf[100];
 		return std::string("_surf__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
-	
-	std::string	ResDB::generateName( const Glyphset_p& data )
-	{
-		static int nGenerated = 0;
-		char pBuf[100];
-		return std::string("_glyphset__") + TextTool::itoa(++nGenerated, pBuf, 10);
-	}
-	
+		
 	std::string	ResDB::generateName( const Font_p& data )
 	{
 		static int nGenerated = 0;
@@ -270,40 +261,6 @@ namespace wg
 	}
 	
 	
-	//____ () _________________________________________________________
-	
-	bool ResDB::addGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData )
-	{
-		assert(m_mapGlyphsets.find(id) == m_mapGlyphsets.end());
-	
-		if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end() && m_pResLoader)
-		{
-			Glyphset_p pGlyphset = m_pResLoader->loadGlyphset( file );
-			if( !pGlyphset )
-				return false;
-	
-			GlyphsetRes* p = new GlyphsetRes(id, pGlyphset, file, pMetaData);
-			m_glyphsets.pushBack(p);
-			if(id.size())
-				m_mapGlyphsets[id] = p;
-			return true;
-		}
-		return false;
-	}
-	
-	bool ResDB::addGlyphset( const std::string& id, const Glyphset_p& pGlyphset, const std::string& file, MetaData * pMetaData )
-	{
-		assert(m_mapGlyphsets.find(id) == m_mapGlyphsets.end());
-		if(m_mapGlyphsets.find(id) == m_mapGlyphsets.end())
-		{
-			GlyphsetRes* p = new GlyphsetRes(id, pGlyphset, file, pMetaData);
-			m_glyphsets.pushBack(p);
-			if(id.size())
-				m_mapGlyphsets[id] = p;
-			return true;
-		}
-		return false;
-	}
 	
 	//____ () _________________________________________________________
 	
@@ -473,13 +430,6 @@ namespace wg
 		return surfRes ? surfRes->res : Surface_p();
 	}
 	
-	//____ () _________________________________________________________
-	
-	Glyphset_p ResDB::getGlyphset( const std::string& id ) const
-	{
-		GlyphsetRes* glyphRes = getResGlyphset(id);
-		return glyphRes ? glyphRes->res : Glyphset_p();
-	}
 	
 	//____ () _________________________________________________________
 	
@@ -593,22 +543,6 @@ namespace wg
 		return it == m_mapSurfaces.end() ? 0 : it->second;
 	}
 	
-	//____ () _________________________________________________________
-	
-	ResDB::GlyphsetRes * ResDB::getResGlyphset( const std::string& id ) const
-	{
-		GlyphsetRes* res = 0;
-		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
-		{
-			if(db->res)
-			{
-				if((res = db->res->getResGlyphset(id)))
-					return res;
-			}
-		}
-		GlyphMap::const_iterator it = m_mapGlyphsets.find(id);
-		return it == m_mapGlyphsets.end() ? 0 : it->second;
-	}
 	
 	//____ () _________________________________________________________
 	
@@ -814,26 +748,7 @@ namespace wg
 			if(res->res == surf)
 				return res;
 		return 0;
-	}
-	
-	//____ () _________________________________________________________
-	
-	ResDB::GlyphsetRes* ResDB::findResGlyphset( const Glyphset_p& meta ) const
-	{
-		GlyphsetRes* res = 0;
-		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
-		{
-			if(db->res)
-			{
-				if((res = db->res->findResGlyphset(meta)))
-					return res;
-			}
-		}
-		for(res = getFirstResGlyphset(); res; res = res->next())
-			if(res->res == meta)
-				return res;
-		return 0;
-	}
+	}	
 	
 	//____ () _________________________________________________________
 	
@@ -995,38 +910,6 @@ namespace wg
 			SurfMap::iterator it = m_mapSurfaces.find( pRes->id );
 			assert( it != m_mapSurfaces.end() );
 			m_mapSurfaces.erase(it);
-		}
-		delete pRes;
-		return true;
-	}
-	
-	
-	//____ removeGlyphset() _______________________________________________________
-	
-	bool ResDB::removeGlyphset( const std::string& id )
-	{
-		GlyphMap::iterator it = m_mapGlyphsets.find( id );
-	
-		if( it == m_mapGlyphsets.end() )
-			return false;
-	
-		GlyphsetRes * pRes = it->second;
-		m_mapGlyphsets.erase(it);
-		delete pRes;
-	
-		return true;
-	}
-	
-	bool ResDB::removeGlyphset( ResDB::GlyphsetRes * pRes )
-	{
-		if( !pRes )
-			return false;
-	
-		if( pRes->id.length() > 0 )
-		{
-			GlyphMap::iterator it = m_mapGlyphsets.find( pRes->id );
-			assert( it != m_mapGlyphsets.end() );
-			m_mapGlyphsets.erase(it);
 		}
 		delete pRes;
 		return true;

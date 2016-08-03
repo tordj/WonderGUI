@@ -49,15 +49,11 @@
 #endif
 
 #ifndef WG_CARET_DOT_H
-#	include <wg_caret2.h>
+#	include <wg_caret.h>
 #endif
 
 #ifndef WG_TEXTSTYLE_DOT_H
 #	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_GLYPHSET_DOT_H
-#	include	<wg_glyphset.h>
 #endif
 
 namespace wg 
@@ -136,10 +132,9 @@ namespace wg
 	
 		typedef ResWrapper2<ResDB_p>	ResDBRes;
 		typedef ResWrapper2<Surface_p>	SurfaceRes;
-		typedef ResWrapper2<Glyphset_p>	GlyphsetRes;
 		typedef ResWrapper<Font_p>		FontRes;
 		typedef ResWrapper<GfxAnim_p>	GfxAnimRes;
-		typedef ResWrapper<Caret_p>	CaretRes;
+		typedef ResWrapper<Caret_p>		CaretRes;
 		typedef ResWrapper<TextStyle_p>	TextStyleRes;
 		typedef ResWrapper<Color>		ColorRes;
 		typedef ResWrapper<Skin_p>		SkinRes;
@@ -150,7 +145,6 @@ namespace wg
 		//----
 	
 		static std::string	generateName( const Surface_p& data );
-		static std::string	generateName( const Glyphset_p& data );
 		static std::string	generateName( const Font_p& data );
 		static std::string	generateName( const GfxAnim_p& data );
 		static std::string	generateName( const Caret_p& data );
@@ -172,10 +166,7 @@ namespace wg
 	
 		bool				addSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
 		bool				addSurface( const std::string& id, const Surface_p& pSurf, const std::string& filename, MetaData * pMetaData = 0 );
-	
-		bool				addGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );
-		bool				addGlyphset( const std::string& id, const Glyphset_p& pGlyphset, const std::string& file, MetaData * pMetaData = 0 );
-	
+		
 		bool				addFont( const std::string& id, const Font_p& pFont, MetaData * pMetaData = 0 );
 		bool				addGfxAnim( const std::string& id, const GfxAnim_p& pAnim, MetaData * pMetaData = 0 );
 		bool				addCaret( const std::string& id, const Caret_p& pCaret, MetaData * pMetaData = 0 );
@@ -204,7 +195,6 @@ namespace wg
 		bool				removeDataSet( const std::string& id );
 	
 		bool				removeSurface( SurfaceRes * pRes );
-		bool				removeGlyphset( GlyphsetRes * pRes );
 		bool				removeFont( FontRes * pRes );
 		bool				removeGfxAnim( GfxAnimRes * pRes );
 		bool				removeCaret( CaretRes * pRes );
@@ -220,7 +210,6 @@ namespace wg
 	
 	
 		Surface_p		getSurface( const std::string& id ) const;
-		Glyphset_p		getGlyphset( const std::string& id ) const;
 		Font_p			getFont( const std::string& id ) const;
 		GfxAnim_p		getGfxAnim( const std::string& id ) const;
 		Caret_p			getCaret( const std::string& id ) const;
@@ -234,7 +223,6 @@ namespace wg
 	
 		ResDBRes *			getResDbRes( const std::string& id ) const;
 		SurfaceRes *		getResSurface( const std::string& id ) const;
-		GlyphsetRes *		getResGlyphset( const std::string& id ) const;
 		FontRes *			getResFont( const std::string& id ) const;
 		GfxAnimRes *		getResGfxAnim( const std::string& id ) const;
 		CaretRes *			getResCaret( const std::string& id ) const;
@@ -248,7 +236,6 @@ namespace wg
 	
 		ResDBRes *			findResDbRes( const ResDB_p& data ) const;
 		SurfaceRes *		findResSurface( const Surface_p& data ) const;
-		GlyphsetRes *		findResGlyphset( const Glyphset_p& data ) const;
 		FontRes *			findResFont( const Font_p& data ) const;
 		GfxAnimRes *		findResGfxAnim( const GfxAnim_p& data ) const;
 		CaretRes *			findResCaret( const Caret_p& data ) const;
@@ -258,7 +245,6 @@ namespace wg
 		WidgetRes *			findResWidget( const Widget_p& data ) const;
 	
 		std::string			findSurfaceId( const Surface_p& data ) const		{ SurfaceRes * r =	findResSurface(data); return r ? r->id : ""; }
-		std::string			findGlyphsetId( const Glyphset_p& data ) const		{ GlyphsetRes * r =	findResGlyphset(data); return r ? r->id : ""; }
 		std::string			findFontId( const Font_p& data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
 		std::string			findGfxAnimId( const GfxAnim_p& data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
 		std::string			findCaretId( const Caret_p& data ) const			{ CaretRes *	r =	findResCaret(data); return r ? r->id : ""; }
@@ -269,10 +255,9 @@ namespace wg
 	
 		inline ResDBRes *		getFirstResDbRes() const { return m_resDbs.first(); }
 		inline SurfaceRes *		getFirstResSurface() const { return m_surfaces.first(); }
-		inline GlyphsetRes *	getFirstResGlyphset() const { return m_glyphsets.first(); }
 		inline FontRes *		getFirstResFont() const { return m_fonts.first(); }
 		inline GfxAnimRes *		getFirstResGfxAnim() const { return m_gfxAnims.first(); }
-		inline CaretRes *		getFirstResCaret() const { return m_cursors.first(); }
+		inline CaretRes *		getFirstResCaret() const { return m_carets.first(); }
 		inline TextStyleRes *	getFirstResTextStyle() const { return m_textProps.first(); }
 		inline ColorRes *		getFirstResColor() const { return m_colors.first(); }
 		inline SkinRes *		getFirstResSkin() const { return m_skins.first(); }
@@ -287,7 +272,6 @@ namespace wg
 	
 		typedef std::map<std::string, ResDBRes*>		ResDBMap;
 		typedef std::map<std::string, SurfaceRes*>		SurfMap;
-		typedef std::map<std::string, GlyphsetRes*>		GlyphMap;
 		typedef std::map<std::string, FontRes*>			FontMap;
 		typedef std::map<std::string, GfxAnimRes*>		GfxAnimMap;
 		typedef std::map<std::string, CaretRes*>		CaretMap;
@@ -300,23 +284,21 @@ namespace wg
 		typedef std::map<std::string, DataSetRes*>		DataSetMap;
 	
 		Chain<ResDBRes>		m_resDbs;
-		Chain<SurfaceRes>		m_surfaces;
-		Chain<GlyphsetRes>	m_glyphsets;
+		Chain<SurfaceRes>	m_surfaces;
 		Chain<FontRes>		m_fonts;
-		Chain<GfxAnimRes>		m_gfxAnims;
+		Chain<GfxAnimRes>	m_gfxAnims;
 		Chain<CaretRes>		m_carets;
 		Chain<TextStyleRes>	m_textProps;
 		Chain<ColorRes>		m_colors;
-		Chain<LegoSource>		m_legos;
+		Chain<LegoSource>	m_legos;
 		Chain<SkinRes>		m_skins;
-		Chain<ConnectRes>		m_connects;
-		Chain<WidgetRes>		m_widgets;
-		Chain<DataSetRes>		m_dataSets;
+		Chain<ConnectRes>	m_connects;
+		Chain<WidgetRes>	m_widgets;
+		Chain<DataSetRes>	m_dataSets;
 	
 		ResDBMap		m_mapResDBs;
 		ColMap			m_mapColors;
 		SurfMap			m_mapSurfaces;
-		GlyphMap		m_mapGlyphsets;
 		FontMap			m_mapFonts;
 		GfxAnimMap		m_mapGfxAnims;
 		CaretMap		m_mapCarets;

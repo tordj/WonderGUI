@@ -17,6 +17,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example01", "example01\exam
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "workbench", "workbench\workbench.vcxproj", "{7A342015-B8C4-4372-ADDA-16FE766D0ADF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61381138-0C8C-4E62-A557-6ACC3D4D35BF} = {61381138-0C8C-4E62-A557-6ACC3D4D35BF}
+		{C12CBB46-1B0C-4D8F-B85F-10E56096AF2E} = {C12CBB46-1B0C-4D8F-B85F-10E56096AF2E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
