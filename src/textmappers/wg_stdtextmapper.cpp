@@ -25,7 +25,7 @@
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <algorithm>
 
 namespace wg 

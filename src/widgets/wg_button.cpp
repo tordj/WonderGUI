@@ -249,6 +249,9 @@ namespace wg
 				m_bReturnPressed = false;
 				m_bPressed = false;
 				break;
+            
+            default:
+                break;
 		}
 	
 	

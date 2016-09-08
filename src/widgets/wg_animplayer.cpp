@@ -91,10 +91,7 @@ namespace wg
 	{
 		m_pAnim			= pAnim;
 		m_playPos		= 0.0;
-	
-		Size	currSize = size();
-		Size	wantedSize;
-	
+		
 		_requestResize();
 		_requestRender();
 		return true;
@@ -277,6 +274,9 @@ namespace wg
 	
 			}
 			break;
+                
+            default:
+                break;
 		}
 	}
 	

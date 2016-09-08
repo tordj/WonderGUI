@@ -444,7 +444,7 @@ namespace wg
 		if( beg > end )
 			std::swap( beg, end );
 
-		erase( beg, end - beg );		
+		return erase( beg, end - beg );
 	}
 
 

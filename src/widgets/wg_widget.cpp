@@ -21,10 +21,9 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_types.h>
-
-#	include <wg_rootpanel.h>
-#	include <wg_msgrouter.h>
+#include <wg_container.h>
+#include <wg_rootpanel.h>
+#include <wg_msgrouter.h>
 #include <wg_base.h>
 
 namespace wg 
@@ -528,6 +527,8 @@ namespace wg
 			case MsgType::FocusLost:
 				state.setFocused(false);
 				break;
+            default:
+                break;
 		}
 	
 		if( state != m_state )

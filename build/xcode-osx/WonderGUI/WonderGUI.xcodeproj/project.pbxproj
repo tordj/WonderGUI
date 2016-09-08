@@ -1,0 +1,1258 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0C62389B1D815E7600DE671D /* wg_anim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62383D1D815E7600DE671D /* wg_anim.cpp */; };
+		0C62389C1D815E7600DE671D /* wg_anim.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62383E1D815E7600DE671D /* wg_anim.h */; };
+		0C62389D1D815E7600DE671D /* wg_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62383F1D815E7600DE671D /* wg_base.cpp */; };
+		0C62389E1D815E7600DE671D /* wg_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238401D815E7600DE671D /* wg_base.h */; };
+		0C62389F1D815E7600DE671D /* wg_bitmapfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238411D815E7600DE671D /* wg_bitmapfont.cpp */; };
+		0C6238A01D815E7600DE671D /* wg_bitmapfont.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238421D815E7600DE671D /* wg_bitmapfont.h */; };
+		0C6238A11D815E7600DE671D /* wg_blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238431D815E7600DE671D /* wg_blob.cpp */; };
+		0C6238A21D815E7600DE671D /* wg_blob.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238441D815E7600DE671D /* wg_blob.h */; };
+		0C6238A31D815E7600DE671D /* wg_caret.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238451D815E7600DE671D /* wg_caret.cpp */; };
+		0C6238A41D815E7600DE671D /* wg_caret.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238461D815E7600DE671D /* wg_caret.h */; };
+		0C6238A51D815E7600DE671D /* wg_chain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238471D815E7600DE671D /* wg_chain.cpp */; };
+		0C6238A61D815E7600DE671D /* wg_chain.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238481D815E7600DE671D /* wg_chain.h */; };
+		0C6238A71D815E7600DE671D /* wg_char.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238491D815E7600DE671D /* wg_char.cpp */; };
+		0C6238A81D815E7600DE671D /* wg_char.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62384A1D815E7600DE671D /* wg_char.h */; };
+		0C6238A91D815E7600DE671D /* wg_charbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62384B1D815E7600DE671D /* wg_charbuffer.cpp */; };
+		0C6238AA1D815E7600DE671D /* wg_charbuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62384C1D815E7600DE671D /* wg_charbuffer.h */; };
+		0C6238AB1D815E7600DE671D /* wg_charseq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62384D1D815E7600DE671D /* wg_charseq.cpp */; };
+		0C6238AC1D815E7600DE671D /* wg_charseq.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62384E1D815E7600DE671D /* wg_charseq.h */; };
+		0C6238AD1D815E7600DE671D /* wg_codepages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62384F1D815E7600DE671D /* wg_codepages.cpp */; };
+		0C6238AE1D815E7600DE671D /* wg_codepages.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238501D815E7600DE671D /* wg_codepages.h */; };
+		0C6238AF1D815E7600DE671D /* wg_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238511D815E7600DE671D /* wg_color.cpp */; };
+		0C6238B01D815E7600DE671D /* wg_color.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238521D815E7600DE671D /* wg_color.h */; };
+		0C6238B11D815E7600DE671D /* wg_finalizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238531D815E7600DE671D /* wg_finalizer.cpp */; };
+		0C6238B21D815E7600DE671D /* wg_finalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238541D815E7600DE671D /* wg_finalizer.h */; };
+		0C6238B31D815E7600DE671D /* wg_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238551D815E7600DE671D /* wg_font.cpp */; };
+		0C6238B41D815E7600DE671D /* wg_font.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238561D815E7600DE671D /* wg_font.h */; };
+		0C6238B51D815E7600DE671D /* wg_geo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238571D815E7600DE671D /* wg_geo.cpp */; };
+		0C6238B61D815E7600DE671D /* wg_geo.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238581D815E7600DE671D /* wg_geo.h */; };
+		0C6238B71D815E7600DE671D /* wg_gfxanim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238591D815E7600DE671D /* wg_gfxanim.cpp */; };
+		0C6238B81D815E7600DE671D /* wg_gfxanim.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62385A1D815E7600DE671D /* wg_gfxanim.h */; };
+		0C6238B91D815E7600DE671D /* wg_gfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62385B1D815E7600DE671D /* wg_gfxdevice.cpp */; };
+		0C6238BA1D815E7600DE671D /* wg_gfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62385C1D815E7600DE671D /* wg_gfxdevice.h */; };
+		0C6238BB1D815E7600DE671D /* wg_hook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62385D1D815E7600DE671D /* wg_hook.cpp */; };
+		0C6238BC1D815E7600DE671D /* wg_hook.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62385E1D815E7600DE671D /* wg_hook.h */; };
+		0C6238BD1D815E7600DE671D /* wg_hookarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62385F1D815E7600DE671D /* wg_hookarray.h */; };
+		0C6238BE1D815E7600DE671D /* wg_hookptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238601D815E7600DE671D /* wg_hookptr.cpp */; };
+		0C6238BF1D815E7600DE671D /* wg_hookptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238611D815E7600DE671D /* wg_hookptr.h */; };
+		0C6238C01D815E7600DE671D /* wg_inputhandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238621D815E7600DE671D /* wg_inputhandler.cpp */; };
+		0C6238C11D815E7600DE671D /* wg_inputhandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238631D815E7600DE671D /* wg_inputhandler.h */; };
+		0C6238C21D815E7600DE671D /* wg_key.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238641D815E7600DE671D /* wg_key.h */; };
+		0C6238C31D815E7600DE671D /* wg_mempool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238651D815E7600DE671D /* wg_mempool.cpp */; };
+		0C6238C41D815E7600DE671D /* wg_mempool.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238661D815E7600DE671D /* wg_mempool.h */; };
+		0C6238C51D815E7600DE671D /* wg_memstack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238671D815E7600DE671D /* wg_memstack.cpp */; };
+		0C6238C61D815E7600DE671D /* wg_memstack.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238681D815E7600DE671D /* wg_memstack.h */; };
+		0C6238C91D815E7600DE671D /* wg_msg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62386B1D815E7600DE671D /* wg_msg.cpp */; };
+		0C6238CA1D815E7600DE671D /* wg_msg.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62386C1D815E7600DE671D /* wg_msg.h */; };
+		0C6238CB1D815E7600DE671D /* wg_msgfunc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62386D1D815E7600DE671D /* wg_msgfunc.cpp */; };
+		0C6238CC1D815E7600DE671D /* wg_msgfunc.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62386E1D815E7600DE671D /* wg_msgfunc.h */; };
+		0C6238CD1D815E7600DE671D /* wg_msglogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62386F1D815E7600DE671D /* wg_msglogger.cpp */; };
+		0C6238CE1D815E7600DE671D /* wg_msglogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238701D815E7600DE671D /* wg_msglogger.h */; };
+		0C6238CF1D815E7600DE671D /* wg_msgrouter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238711D815E7600DE671D /* wg_msgrouter.cpp */; };
+		0C6238D01D815E7600DE671D /* wg_msgrouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238721D815E7600DE671D /* wg_msgrouter.h */; };
+		0C6238D11D815E7600DE671D /* wg_nullgfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238731D815E7600DE671D /* wg_nullgfxdevice.cpp */; };
+		0C6238D21D815E7600DE671D /* wg_nullgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238741D815E7600DE671D /* wg_nullgfxdevice.h */; };
+		0C6238D31D815E7600DE671D /* wg_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238751D815E7600DE671D /* wg_object.cpp */; };
+		0C6238D41D815E7600DE671D /* wg_object.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238761D815E7600DE671D /* wg_object.h */; };
+		0C6238D51D815E7600DE671D /* wg_patches.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238771D815E7600DE671D /* wg_patches.cpp */; };
+		0C6238D61D815E7600DE671D /* wg_patches.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238781D815E7600DE671D /* wg_patches.h */; };
+		0C6238D71D815E7600DE671D /* wg_pointers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238791D815E7600DE671D /* wg_pointers.cpp */; };
+		0C6238D81D815E7600DE671D /* wg_pointers.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62387A1D815E7600DE671D /* wg_pointers.h */; };
+		0C6238D91D815E7600DE671D /* wg_receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62387B1D815E7600DE671D /* wg_receiver.cpp */; };
+		0C6238DA1D815E7600DE671D /* wg_receiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62387C1D815E7600DE671D /* wg_receiver.h */; };
+		0C6238DB1D815E7600DE671D /* wg_resdb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62387D1D815E7600DE671D /* wg_resdb.cpp */; };
+		0C6238DC1D815E7600DE671D /* wg_resdb.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62387E1D815E7600DE671D /* wg_resdb.h */; };
+		0C6238DD1D815E7600DE671D /* wg_resloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62387F1D815E7600DE671D /* wg_resloader.h */; };
+		0C6238DE1D815E7600DE671D /* wg_scrollbartarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238801D815E7600DE671D /* wg_scrollbartarget.cpp */; };
+		0C6238DF1D815E7600DE671D /* wg_scrollbartarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238811D815E7600DE671D /* wg_scrollbartarget.h */; };
+		0C6238E01D815E7600DE671D /* wg_sizescaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238821D815E7600DE671D /* wg_sizescaler.cpp */; };
+		0C6238E11D815E7600DE671D /* wg_sizescaler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238831D815E7600DE671D /* wg_sizescaler.h */; };
+		0C6238E21D815E7600DE671D /* wg_string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238841D815E7600DE671D /* wg_string.cpp */; };
+		0C6238E31D815E7600DE671D /* wg_string.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238851D815E7600DE671D /* wg_string.h */; };
+		0C6238E41D815E7600DE671D /* wg_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238861D815E7600DE671D /* wg_surface.cpp */; };
+		0C6238E51D815E7600DE671D /* wg_surface.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238871D815E7600DE671D /* wg_surface.h */; };
+		0C6238E61D815E7600DE671D /* wg_surfacefactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238881D815E7600DE671D /* wg_surfacefactory.cpp */; };
+		0C6238E71D815E7600DE671D /* wg_surfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238891D815E7600DE671D /* wg_surfacefactory.h */; };
+		0C6238E81D815E7600DE671D /* wg_textlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62388A1D815E7600DE671D /* wg_textlink.cpp */; };
+		0C6238E91D815E7600DE671D /* wg_textlink.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62388B1D815E7600DE671D /* wg_textlink.h */; };
+		0C6238EA1D815E7600DE671D /* wg_textstyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62388C1D815E7600DE671D /* wg_textstyle.cpp */; };
+		0C6238EB1D815E7600DE671D /* wg_textstyle.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62388D1D815E7600DE671D /* wg_textstyle.h */; };
+		0C6238EC1D815E7600DE671D /* wg_textstylemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62388E1D815E7600DE671D /* wg_textstylemanager.cpp */; };
+		0C6238ED1D815E7600DE671D /* wg_textstylemanager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62388F1D815E7600DE671D /* wg_textstylemanager.h */; };
+		0C6238EE1D815E7600DE671D /* wg_texttool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238901D815E7600DE671D /* wg_texttool.cpp */; };
+		0C6238EF1D815E7600DE671D /* wg_texttool.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238911D815E7600DE671D /* wg_texttool.h */; };
+		0C6238F01D815E7600DE671D /* wg_togglegroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238921D815E7600DE671D /* wg_togglegroup.cpp */; };
+		0C6238F11D815E7600DE671D /* wg_togglegroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238931D815E7600DE671D /* wg_togglegroup.h */; };
+		0C6238F21D815E7600DE671D /* wg_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238941D815E7600DE671D /* wg_types.h */; };
+		0C6238F31D815E7600DE671D /* wg_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238951D815E7600DE671D /* wg_util.cpp */; };
+		0C6238F41D815E7600DE671D /* wg_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238961D815E7600DE671D /* wg_util.h */; };
+		0C6238F71D815E7600DE671D /* wg_vectorfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238991D815E7600DE671D /* wg_vectorfont.cpp */; };
+		0C6238F81D815E7600DE671D /* wg_vectorfont.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62389A1D815E7600DE671D /* wg_vectorfont.h */; };
+		0C6239171D815F2300DE671D /* wg_columnheader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238FD1D815F2300DE671D /* wg_columnheader.cpp */; };
+		0C6239181D815F2300DE671D /* wg_columnheader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6238FE1D815F2300DE671D /* wg_columnheader.h */; };
+		0C6239191D815F2300DE671D /* wg_edittext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6238FF1D815F2300DE671D /* wg_edittext.cpp */; };
+		0C62391A1D815F2300DE671D /* wg_edittext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239001D815F2300DE671D /* wg_edittext.h */; };
+		0C62391B1D815F2300DE671D /* wg_editvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239011D815F2300DE671D /* wg_editvalue.cpp */; };
+		0C62391C1D815F2300DE671D /* wg_editvalue.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239021D815F2300DE671D /* wg_editvalue.h */; };
+		0C62391D1D815F2300DE671D /* wg_icon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239031D815F2300DE671D /* wg_icon.cpp */; };
+		0C62391E1D815F2300DE671D /* wg_icon.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239041D815F2300DE671D /* wg_icon.h */; };
+		0C62391F1D815F2300DE671D /* wg_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239051D815F2300DE671D /* wg_interface.cpp */; };
+		0C6239201D815F2300DE671D /* wg_interface.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239061D815F2300DE671D /* wg_interface.h */; };
+		0C6239211D815F2300DE671D /* wg_iwidgets.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239071D815F2300DE671D /* wg_iwidgets.cpp */; };
+		0C6239221D815F2300DE671D /* wg_iwidgets.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239081D815F2300DE671D /* wg_iwidgets.h */; };
+		0C6239231D815F2300DE671D /* wg_modspan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239091D815F2300DE671D /* wg_modspan.cpp */; };
+		0C6239241D815F2300DE671D /* wg_modspan.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62390A1D815F2300DE671D /* wg_modspan.h */; };
+		0C6239251D815F2300DE671D /* wg_modtext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62390B1D815F2300DE671D /* wg_modtext.cpp */; };
+		0C6239261D815F2300DE671D /* wg_modtext.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62390C1D815F2300DE671D /* wg_modtext.h */; };
+		0C6239271D815F2300DE671D /* wg_modvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62390D1D815F2300DE671D /* wg_modvalue.cpp */; };
+		0C6239281D815F2300DE671D /* wg_modvalue.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62390E1D815F2300DE671D /* wg_modvalue.h */; };
+		0C6239291D815F2300DE671D /* wg_slidespan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62390F1D815F2300DE671D /* wg_slidespan.cpp */; };
+		0C62392A1D815F2300DE671D /* wg_slidespan.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239101D815F2300DE671D /* wg_slidespan.h */; };
+		0C62392B1D815F2300DE671D /* wg_span.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239111D815F2300DE671D /* wg_span.cpp */; };
+		0C62392C1D815F2300DE671D /* wg_span.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239121D815F2300DE671D /* wg_span.h */; };
+		0C62392D1D815F2300DE671D /* wg_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239131D815F2300DE671D /* wg_text.cpp */; };
+		0C62392E1D815F2300DE671D /* wg_text.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239141D815F2300DE671D /* wg_text.h */; };
+		0C62392F1D815F2300DE671D /* wg_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239151D815F2300DE671D /* wg_value.cpp */; };
+		0C6239301D815F2300DE671D /* wg_value.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239161D815F2300DE671D /* wg_value.h */; };
+		0C6239451D815F9300DE671D /* wg_columnheaderitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239321D815F9300DE671D /* wg_columnheaderitem.cpp */; };
+		0C6239461D815F9300DE671D /* wg_columnheaderitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239331D815F9300DE671D /* wg_columnheaderitem.h */; };
+		0C6239471D815F9300DE671D /* wg_edittextitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239341D815F9300DE671D /* wg_edittextitem.cpp */; };
+		0C6239481D815F9300DE671D /* wg_edittextitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239351D815F9300DE671D /* wg_edittextitem.h */; };
+		0C6239491D815F9300DE671D /* wg_editvalueitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239361D815F9300DE671D /* wg_editvalueitem.cpp */; };
+		0C62394A1D815F9300DE671D /* wg_editvalueitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239371D815F9300DE671D /* wg_editvalueitem.h */; };
+		0C62394B1D815F9300DE671D /* wg_iconitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239381D815F9300DE671D /* wg_iconitem.cpp */; };
+		0C62394C1D815F9300DE671D /* wg_iconitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239391D815F9300DE671D /* wg_iconitem.h */; };
+		0C62394D1D815F9300DE671D /* wg_item.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62393A1D815F9300DE671D /* wg_item.h */; };
+		0C62394E1D815F9300DE671D /* wg_modvalueitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62393B1D815F9300DE671D /* wg_modvalueitem.cpp */; };
+		0C62394F1D815F9300DE671D /* wg_modvalueitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62393C1D815F9300DE671D /* wg_modvalueitem.h */; };
+		0C6239501D815F9300DE671D /* wg_spanitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62393D1D815F9300DE671D /* wg_spanitem.cpp */; };
+		0C6239511D815F9300DE671D /* wg_spanitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62393E1D815F9300DE671D /* wg_spanitem.h */; };
+		0C6239521D815F9300DE671D /* wg_textbaseitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62393F1D815F9300DE671D /* wg_textbaseitem.cpp */; };
+		0C6239531D815F9300DE671D /* wg_textbaseitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239401D815F9300DE671D /* wg_textbaseitem.h */; };
+		0C6239541D815F9300DE671D /* wg_textitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239411D815F9300DE671D /* wg_textitem.cpp */; };
+		0C6239551D815F9300DE671D /* wg_textitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239421D815F9300DE671D /* wg_textitem.h */; };
+		0C6239561D815F9300DE671D /* wg_valueitem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239431D815F9300DE671D /* wg_valueitem.cpp */; };
+		0C6239571D815F9300DE671D /* wg_valueitem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239441D815F9300DE671D /* wg_valueitem.h */; };
+		0C6239631D815FE900DE671D /* wg_scalepreferred_sizebroker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62395D1D815FE900DE671D /* wg_scalepreferred_sizebroker.cpp */; };
+		0C6239641D815FE900DE671D /* wg_scalepreferred_sizebroker.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62395E1D815FE900DE671D /* wg_scalepreferred_sizebroker.h */; };
+		0C6239651D815FE900DE671D /* wg_sizebroker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62395F1D815FE900DE671D /* wg_sizebroker.cpp */; };
+		0C6239661D815FE900DE671D /* wg_sizebroker.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239601D815FE900DE671D /* wg_sizebroker.h */; };
+		0C6239671D815FE900DE671D /* wg_uniform_sizebroker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239611D815FE900DE671D /* wg_uniform_sizebroker.cpp */; };
+		0C6239681D815FE900DE671D /* wg_uniform_sizebroker.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239621D815FE900DE671D /* wg_uniform_sizebroker.h */; };
+		0C6239731D815FF800DE671D /* wg_blockskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239691D815FF800DE671D /* wg_blockskin.cpp */; };
+		0C6239741D815FF800DE671D /* wg_blockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62396A1D815FF800DE671D /* wg_blockskin.h */; };
+		0C6239751D815FF800DE671D /* wg_boxskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62396B1D815FF800DE671D /* wg_boxskin.cpp */; };
+		0C6239761D815FF800DE671D /* wg_boxskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62396C1D815FF800DE671D /* wg_boxskin.h */; };
+		0C6239771D815FF800DE671D /* wg_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62396D1D815FF800DE671D /* wg_colorskin.cpp */; };
+		0C6239781D815FF800DE671D /* wg_colorskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62396E1D815FF800DE671D /* wg_colorskin.h */; };
+		0C6239791D815FF800DE671D /* wg_extendedskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62396F1D815FF800DE671D /* wg_extendedskin.cpp */; };
+		0C62397A1D815FF800DE671D /* wg_extendedskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239701D815FF800DE671D /* wg_extendedskin.h */; };
+		0C62397B1D815FF800DE671D /* wg_skin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239711D815FF800DE671D /* wg_skin.cpp */; };
+		0C62397C1D815FF800DE671D /* wg_skin.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239721D815FF800DE671D /* wg_skin.h */; };
+		0C6239811D81600E00DE671D /* wg_stdtextmapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62397D1D81600E00DE671D /* wg_stdtextmapper.cpp */; };
+		0C6239821D81600E00DE671D /* wg_stdtextmapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62397E1D81600E00DE671D /* wg_stdtextmapper.h */; };
+		0C6239831D81600E00DE671D /* wg_textmapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62397F1D81600E00DE671D /* wg_textmapper.cpp */; };
+		0C6239841D81600E00DE671D /* wg_textmapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239801D81600E00DE671D /* wg_textmapper.h */; };
+		0C62398B1D81602000DE671D /* wg_standardformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239851D81602000DE671D /* wg_standardformatter.cpp */; };
+		0C62398C1D81602000DE671D /* wg_standardformatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239861D81602000DE671D /* wg_standardformatter.h */; };
+		0C62398D1D81602000DE671D /* wg_timeformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239871D81602000DE671D /* wg_timeformatter.cpp */; };
+		0C62398E1D81602000DE671D /* wg_timeformatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239881D81602000DE671D /* wg_timeformatter.h */; };
+		0C6239961D81615000DE671D /* wg_userdefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239951D81615000DE671D /* wg_userdefines.h */; };
+		0C6239981D81616400DE671D /* wondergui.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239971D81616400DE671D /* wondergui.h */; };
+		0C6239CB1D8161CA00DE671D /* wg_animplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239991D8161CA00DE671D /* wg_animplayer.cpp */; };
+		0C6239CC1D8161CA00DE671D /* wg_animplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62399A1D8161CA00DE671D /* wg_animplayer.h */; };
+		0C6239CD1D8161CA00DE671D /* wg_button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62399B1D8161CA00DE671D /* wg_button.cpp */; };
+		0C6239CE1D8161CA00DE671D /* wg_button.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C62399C1D8161CA00DE671D /* wg_button.h */; };
+		0C6239D11D8161CA00DE671D /* wg_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C62399F1D8161CA00DE671D /* wg_container.cpp */; };
+		0C6239D21D8161CA00DE671D /* wg_container.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A01D8161CA00DE671D /* wg_container.h */; };
+		0C6239D31D8161CA00DE671D /* wg_filler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A11D8161CA00DE671D /* wg_filler.cpp */; };
+		0C6239D41D8161CA00DE671D /* wg_filler.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A21D8161CA00DE671D /* wg_filler.h */; };
+		0C6239D51D8161CA00DE671D /* wg_fpsdisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A31D8161CA00DE671D /* wg_fpsdisplay.cpp */; };
+		0C6239D61D8161CA00DE671D /* wg_fpsdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */; };
+		0C6239D71D8161CA00DE671D /* wg_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A51D8161CA00DE671D /* wg_image.cpp */; };
+		0C6239D81D8161CA00DE671D /* wg_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A61D8161CA00DE671D /* wg_image.h */; };
+		0C6239D91D8161CA00DE671D /* wg_knob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A71D8161CA00DE671D /* wg_knob.cpp */; };
+		0C6239DA1D8161CA00DE671D /* wg_knob.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A81D8161CA00DE671D /* wg_knob.h */; };
+		0C6239E31D8161CA00DE671D /* wg_oscilloscope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */; };
+		0C6239E41D8161CA00DE671D /* wg_oscilloscope.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */; };
+		0C6239E51D8161CA00DE671D /* wg_refreshbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */; };
+		0C6239E61D8161CA00DE671D /* wg_refreshbutton.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B41D8161CA00DE671D /* wg_refreshbutton.h */; };
+		0C6239E71D8161CA00DE671D /* wg_rulerlabels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B51D8161CA00DE671D /* wg_rulerlabels.cpp */; };
+		0C6239E81D8161CA00DE671D /* wg_rulerlabels.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B61D8161CA00DE671D /* wg_rulerlabels.h */; };
+		0C6239E91D8161CA00DE671D /* wg_scrollbar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B71D8161CA00DE671D /* wg_scrollbar.cpp */; };
+		0C6239EA1D8161CA00DE671D /* wg_scrollbar.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B81D8161CA00DE671D /* wg_scrollbar.h */; };
+		0C6239EB1D8161CA00DE671D /* wg_simplevolumemeter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */; };
+		0C6239EC1D8161CA00DE671D /* wg_simplevolumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */; };
+		0C6239ED1D8161CA00DE671D /* wg_switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BB1D8161CA00DE671D /* wg_switch.cpp */; };
+		0C6239EE1D8161CA00DE671D /* wg_switch.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BC1D8161CA00DE671D /* wg_switch.h */; };
+		0C6239EF1D8161CA00DE671D /* wg_textdisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */; };
+		0C6239F01D8161CA00DE671D /* wg_textdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */; };
+		0C6239F11D8161CA00DE671D /* wg_texteditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */; };
+		0C6239F21D8161CA00DE671D /* wg_texteditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239C01D8161CA00DE671D /* wg_texteditor.h */; };
+		0C6239F31D8161CA00DE671D /* wg_togglebutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239C11D8161CA00DE671D /* wg_togglebutton.cpp */; };
+		0C6239F41D8161CA00DE671D /* wg_togglebutton.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239C21D8161CA00DE671D /* wg_togglebutton.h */; };
+		0C6239F51D8161CA00DE671D /* wg_valuedisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239C31D8161CA00DE671D /* wg_valuedisplay.cpp */; };
+		0C6239F61D8161CA00DE671D /* wg_valuedisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239C41D8161CA00DE671D /* wg_valuedisplay.h */; };
+		0C6239F91D8161CA00DE671D /* wg_volumemeter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239C71D8161CA00DE671D /* wg_volumemeter.cpp */; };
+		0C6239FA1D8161CA00DE671D /* wg_volumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239C81D8161CA00DE671D /* wg_volumemeter.h */; };
+		0C6239FB1D8161CA00DE671D /* wg_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239C91D8161CA00DE671D /* wg_widget.cpp */; };
+		0C6239FC1D8161CA00DE671D /* wg_widget.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239CA1D8161CA00DE671D /* wg_widget.h */; };
+		0C623A031D8164EA00DE671D /* wg_capsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239FD1D8164EA00DE671D /* wg_capsule.cpp */; };
+		0C623A041D8164EA00DE671D /* wg_capsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239FE1D8164EA00DE671D /* wg_capsule.h */; };
+		0C623A051D8164EA00DE671D /* wg_shadercapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239FF1D8164EA00DE671D /* wg_shadercapsule.cpp */; };
+		0C623A061D8164EA00DE671D /* wg_shadercapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A001D8164EA00DE671D /* wg_shadercapsule.h */; };
+		0C623A071D8164EA00DE671D /* wg_sizecapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A011D8164EA00DE671D /* wg_sizecapsule.cpp */; };
+		0C623A081D8164EA00DE671D /* wg_sizecapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A021D8164EA00DE671D /* wg_sizecapsule.h */; };
+		0C623A0F1D81650200DE671D /* wg_layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A091D81650200DE671D /* wg_layer.cpp */; };
+		0C623A101D81650200DE671D /* wg_layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A0A1D81650200DE671D /* wg_layer.h */; };
+		0C623A111D81650200DE671D /* wg_modallayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A0B1D81650200DE671D /* wg_modallayer.cpp */; };
+		0C623A121D81650200DE671D /* wg_modallayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A0C1D81650200DE671D /* wg_modallayer.h */; };
+		0C623A131D81650200DE671D /* wg_popuplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A0D1D81650200DE671D /* wg_popuplayer.cpp */; };
+		0C623A141D81650200DE671D /* wg_popuplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A0E1D81650200DE671D /* wg_popuplayer.h */; };
+		0C623A191D81651400DE671D /* wg_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A151D81651400DE671D /* wg_list.cpp */; };
+		0C623A1A1D81651400DE671D /* wg_list.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A161D81651400DE671D /* wg_list.h */; };
+		0C623A1B1D81651400DE671D /* wg_packlist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A171D81651400DE671D /* wg_packlist.cpp */; };
+		0C623A1C1D81651400DE671D /* wg_packlist.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A181D81651400DE671D /* wg_packlist.h */; };
+		0C623A2B1D81654100DE671D /* wg_flexpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A1D1D81654100DE671D /* wg_flexpanel.cpp */; };
+		0C623A2C1D81654100DE671D /* wg_flexpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A1E1D81654100DE671D /* wg_flexpanel.h */; };
+		0C623A2D1D81654100DE671D /* wg_packpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A1F1D81654100DE671D /* wg_packpanel.cpp */; };
+		0C623A2E1D81654100DE671D /* wg_packpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A201D81654100DE671D /* wg_packpanel.h */; };
+		0C623A2F1D81654100DE671D /* wg_panel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A211D81654100DE671D /* wg_panel.cpp */; };
+		0C623A301D81654100DE671D /* wg_panel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A221D81654100DE671D /* wg_panel.h */; };
+		0C623A311D81654100DE671D /* wg_rootpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A231D81654100DE671D /* wg_rootpanel.cpp */; };
+		0C623A321D81654100DE671D /* wg_rootpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A241D81654100DE671D /* wg_rootpanel.h */; };
+		0C623A331D81654100DE671D /* wg_scrollpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A251D81654100DE671D /* wg_scrollpanel.cpp */; };
+		0C623A341D81654100DE671D /* wg_scrollpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A261D81654100DE671D /* wg_scrollpanel.h */; };
+		0C623A351D81654100DE671D /* wg_stackpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A271D81654100DE671D /* wg_stackpanel.cpp */; };
+		0C623A361D81654100DE671D /* wg_stackpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A281D81654100DE671D /* wg_stackpanel.h */; };
+		0C623A371D81654100DE671D /* wg_vectorpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A291D81654100DE671D /* wg_vectorpanel.cpp */; };
+		0C623A381D81654100DE671D /* wg_vectorpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A2A1D81654100DE671D /* wg_vectorpanel.h */; };
+		0C623A3B1D8169B800DE671D /* wg_valueformatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A391D8169B800DE671D /* wg_valueformatter.cpp */; };
+		0C623A3C1D8169B800DE671D /* wg_valueformatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C623A3A1D8169B800DE671D /* wg_valueformatter.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0C62382D1D815B1400DE671D /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C62383D1D815E7600DE671D /* wg_anim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_anim.cpp; path = ../../../src/base/wg_anim.cpp; sourceTree = "<group>"; };
+		0C62383E1D815E7600DE671D /* wg_anim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_anim.h; path = ../../../src/base/wg_anim.h; sourceTree = "<group>"; };
+		0C62383F1D815E7600DE671D /* wg_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_base.cpp; path = ../../../src/base/wg_base.cpp; sourceTree = "<group>"; };
+		0C6238401D815E7600DE671D /* wg_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_base.h; path = ../../../src/base/wg_base.h; sourceTree = "<group>"; };
+		0C6238411D815E7600DE671D /* wg_bitmapfont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_bitmapfont.cpp; path = ../../../src/base/wg_bitmapfont.cpp; sourceTree = "<group>"; };
+		0C6238421D815E7600DE671D /* wg_bitmapfont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_bitmapfont.h; path = ../../../src/base/wg_bitmapfont.h; sourceTree = "<group>"; };
+		0C6238431D815E7600DE671D /* wg_blob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_blob.cpp; path = ../../../src/base/wg_blob.cpp; sourceTree = "<group>"; };
+		0C6238441D815E7600DE671D /* wg_blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_blob.h; path = ../../../src/base/wg_blob.h; sourceTree = "<group>"; };
+		0C6238451D815E7600DE671D /* wg_caret.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_caret.cpp; path = ../../../src/base/wg_caret.cpp; sourceTree = "<group>"; };
+		0C6238461D815E7600DE671D /* wg_caret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_caret.h; path = ../../../src/base/wg_caret.h; sourceTree = "<group>"; };
+		0C6238471D815E7600DE671D /* wg_chain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_chain.cpp; path = ../../../src/base/wg_chain.cpp; sourceTree = "<group>"; };
+		0C6238481D815E7600DE671D /* wg_chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_chain.h; path = ../../../src/base/wg_chain.h; sourceTree = "<group>"; };
+		0C6238491D815E7600DE671D /* wg_char.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_char.cpp; path = ../../../src/base/wg_char.cpp; sourceTree = "<group>"; };
+		0C62384A1D815E7600DE671D /* wg_char.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_char.h; path = ../../../src/base/wg_char.h; sourceTree = "<group>"; };
+		0C62384B1D815E7600DE671D /* wg_charbuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_charbuffer.cpp; path = ../../../src/base/wg_charbuffer.cpp; sourceTree = "<group>"; };
+		0C62384C1D815E7600DE671D /* wg_charbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_charbuffer.h; path = ../../../src/base/wg_charbuffer.h; sourceTree = "<group>"; };
+		0C62384D1D815E7600DE671D /* wg_charseq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_charseq.cpp; path = ../../../src/base/wg_charseq.cpp; sourceTree = "<group>"; };
+		0C62384E1D815E7600DE671D /* wg_charseq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_charseq.h; path = ../../../src/base/wg_charseq.h; sourceTree = "<group>"; };
+		0C62384F1D815E7600DE671D /* wg_codepages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_codepages.cpp; path = ../../../src/base/wg_codepages.cpp; sourceTree = "<group>"; };
+		0C6238501D815E7600DE671D /* wg_codepages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_codepages.h; path = ../../../src/base/wg_codepages.h; sourceTree = "<group>"; };
+		0C6238511D815E7600DE671D /* wg_color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_color.cpp; path = ../../../src/base/wg_color.cpp; sourceTree = "<group>"; };
+		0C6238521D815E7600DE671D /* wg_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_color.h; path = ../../../src/base/wg_color.h; sourceTree = "<group>"; };
+		0C6238531D815E7600DE671D /* wg_finalizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_finalizer.cpp; path = ../../../src/base/wg_finalizer.cpp; sourceTree = "<group>"; };
+		0C6238541D815E7600DE671D /* wg_finalizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_finalizer.h; path = ../../../src/base/wg_finalizer.h; sourceTree = "<group>"; };
+		0C6238551D815E7600DE671D /* wg_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_font.cpp; path = ../../../src/base/wg_font.cpp; sourceTree = "<group>"; };
+		0C6238561D815E7600DE671D /* wg_font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_font.h; path = ../../../src/base/wg_font.h; sourceTree = "<group>"; };
+		0C6238571D815E7600DE671D /* wg_geo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_geo.cpp; path = ../../../src/base/wg_geo.cpp; sourceTree = "<group>"; };
+		0C6238581D815E7600DE671D /* wg_geo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_geo.h; path = ../../../src/base/wg_geo.h; sourceTree = "<group>"; };
+		0C6238591D815E7600DE671D /* wg_gfxanim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_gfxanim.cpp; path = ../../../src/base/wg_gfxanim.cpp; sourceTree = "<group>"; };
+		0C62385A1D815E7600DE671D /* wg_gfxanim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_gfxanim.h; path = ../../../src/base/wg_gfxanim.h; sourceTree = "<group>"; };
+		0C62385B1D815E7600DE671D /* wg_gfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_gfxdevice.cpp; path = ../../../src/base/wg_gfxdevice.cpp; sourceTree = "<group>"; };
+		0C62385C1D815E7600DE671D /* wg_gfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_gfxdevice.h; path = ../../../src/base/wg_gfxdevice.h; sourceTree = "<group>"; };
+		0C62385D1D815E7600DE671D /* wg_hook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_hook.cpp; path = ../../../src/base/wg_hook.cpp; sourceTree = "<group>"; };
+		0C62385E1D815E7600DE671D /* wg_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_hook.h; path = ../../../src/base/wg_hook.h; sourceTree = "<group>"; };
+		0C62385F1D815E7600DE671D /* wg_hookarray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_hookarray.h; path = ../../../src/base/wg_hookarray.h; sourceTree = "<group>"; };
+		0C6238601D815E7600DE671D /* wg_hookptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_hookptr.cpp; path = ../../../src/base/wg_hookptr.cpp; sourceTree = "<group>"; };
+		0C6238611D815E7600DE671D /* wg_hookptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_hookptr.h; path = ../../../src/base/wg_hookptr.h; sourceTree = "<group>"; };
+		0C6238621D815E7600DE671D /* wg_inputhandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_inputhandler.cpp; path = ../../../src/base/wg_inputhandler.cpp; sourceTree = "<group>"; };
+		0C6238631D815E7600DE671D /* wg_inputhandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_inputhandler.h; path = ../../../src/base/wg_inputhandler.h; sourceTree = "<group>"; };
+		0C6238641D815E7600DE671D /* wg_key.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_key.h; path = ../../../src/base/wg_key.h; sourceTree = "<group>"; };
+		0C6238651D815E7600DE671D /* wg_mempool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_mempool.cpp; path = ../../../src/base/wg_mempool.cpp; sourceTree = "<group>"; };
+		0C6238661D815E7600DE671D /* wg_mempool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_mempool.h; path = ../../../src/base/wg_mempool.h; sourceTree = "<group>"; };
+		0C6238671D815E7600DE671D /* wg_memstack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_memstack.cpp; path = ../../../src/base/wg_memstack.cpp; sourceTree = "<group>"; };
+		0C6238681D815E7600DE671D /* wg_memstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_memstack.h; path = ../../../src/base/wg_memstack.h; sourceTree = "<group>"; };
+		0C62386B1D815E7600DE671D /* wg_msg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_msg.cpp; path = ../../../src/base/wg_msg.cpp; sourceTree = "<group>"; };
+		0C62386C1D815E7600DE671D /* wg_msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_msg.h; path = ../../../src/base/wg_msg.h; sourceTree = "<group>"; };
+		0C62386D1D815E7600DE671D /* wg_msgfunc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_msgfunc.cpp; path = ../../../src/base/wg_msgfunc.cpp; sourceTree = "<group>"; };
+		0C62386E1D815E7600DE671D /* wg_msgfunc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_msgfunc.h; path = ../../../src/base/wg_msgfunc.h; sourceTree = "<group>"; };
+		0C62386F1D815E7600DE671D /* wg_msglogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_msglogger.cpp; path = ../../../src/base/wg_msglogger.cpp; sourceTree = "<group>"; };
+		0C6238701D815E7600DE671D /* wg_msglogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_msglogger.h; path = ../../../src/base/wg_msglogger.h; sourceTree = "<group>"; };
+		0C6238711D815E7600DE671D /* wg_msgrouter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_msgrouter.cpp; path = ../../../src/base/wg_msgrouter.cpp; sourceTree = "<group>"; };
+		0C6238721D815E7600DE671D /* wg_msgrouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_msgrouter.h; path = ../../../src/base/wg_msgrouter.h; sourceTree = "<group>"; };
+		0C6238731D815E7600DE671D /* wg_nullgfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_nullgfxdevice.cpp; path = ../../../src/base/wg_nullgfxdevice.cpp; sourceTree = "<group>"; };
+		0C6238741D815E7600DE671D /* wg_nullgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_nullgfxdevice.h; path = ../../../src/base/wg_nullgfxdevice.h; sourceTree = "<group>"; };
+		0C6238751D815E7600DE671D /* wg_object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_object.cpp; path = ../../../src/base/wg_object.cpp; sourceTree = "<group>"; };
+		0C6238761D815E7600DE671D /* wg_object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_object.h; path = ../../../src/base/wg_object.h; sourceTree = "<group>"; };
+		0C6238771D815E7600DE671D /* wg_patches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_patches.cpp; path = ../../../src/base/wg_patches.cpp; sourceTree = "<group>"; };
+		0C6238781D815E7600DE671D /* wg_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_patches.h; path = ../../../src/base/wg_patches.h; sourceTree = "<group>"; };
+		0C6238791D815E7600DE671D /* wg_pointers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_pointers.cpp; path = ../../../src/base/wg_pointers.cpp; sourceTree = "<group>"; };
+		0C62387A1D815E7600DE671D /* wg_pointers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_pointers.h; path = ../../../src/base/wg_pointers.h; sourceTree = "<group>"; };
+		0C62387B1D815E7600DE671D /* wg_receiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_receiver.cpp; path = ../../../src/base/wg_receiver.cpp; sourceTree = "<group>"; };
+		0C62387C1D815E7600DE671D /* wg_receiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_receiver.h; path = ../../../src/base/wg_receiver.h; sourceTree = "<group>"; };
+		0C62387D1D815E7600DE671D /* wg_resdb.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_resdb.cpp; path = ../../../src/base/wg_resdb.cpp; sourceTree = "<group>"; };
+		0C62387E1D815E7600DE671D /* wg_resdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_resdb.h; path = ../../../src/base/wg_resdb.h; sourceTree = "<group>"; };
+		0C62387F1D815E7600DE671D /* wg_resloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_resloader.h; path = ../../../src/base/wg_resloader.h; sourceTree = "<group>"; };
+		0C6238801D815E7600DE671D /* wg_scrollbartarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scrollbartarget.cpp; path = ../../../src/base/wg_scrollbartarget.cpp; sourceTree = "<group>"; };
+		0C6238811D815E7600DE671D /* wg_scrollbartarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollbartarget.h; path = ../../../src/base/wg_scrollbartarget.h; sourceTree = "<group>"; };
+		0C6238821D815E7600DE671D /* wg_sizescaler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_sizescaler.cpp; path = ../../../src/base/wg_sizescaler.cpp; sourceTree = "<group>"; };
+		0C6238831D815E7600DE671D /* wg_sizescaler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_sizescaler.h; path = ../../../src/base/wg_sizescaler.h; sourceTree = "<group>"; };
+		0C6238841D815E7600DE671D /* wg_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_string.cpp; path = ../../../src/base/wg_string.cpp; sourceTree = "<group>"; };
+		0C6238851D815E7600DE671D /* wg_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_string.h; path = ../../../src/base/wg_string.h; sourceTree = "<group>"; };
+		0C6238861D815E7600DE671D /* wg_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_surface.cpp; path = ../../../src/base/wg_surface.cpp; sourceTree = "<group>"; };
+		0C6238871D815E7600DE671D /* wg_surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surface.h; path = ../../../src/base/wg_surface.h; sourceTree = "<group>"; };
+		0C6238881D815E7600DE671D /* wg_surfacefactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_surfacefactory.cpp; path = ../../../src/base/wg_surfacefactory.cpp; sourceTree = "<group>"; };
+		0C6238891D815E7600DE671D /* wg_surfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surfacefactory.h; path = ../../../src/base/wg_surfacefactory.h; sourceTree = "<group>"; };
+		0C62388A1D815E7600DE671D /* wg_textlink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textlink.cpp; path = ../../../src/base/wg_textlink.cpp; sourceTree = "<group>"; };
+		0C62388B1D815E7600DE671D /* wg_textlink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textlink.h; path = ../../../src/base/wg_textlink.h; sourceTree = "<group>"; };
+		0C62388C1D815E7600DE671D /* wg_textstyle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textstyle.cpp; path = ../../../src/base/wg_textstyle.cpp; sourceTree = "<group>"; };
+		0C62388D1D815E7600DE671D /* wg_textstyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textstyle.h; path = ../../../src/base/wg_textstyle.h; sourceTree = "<group>"; };
+		0C62388E1D815E7600DE671D /* wg_textstylemanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textstylemanager.cpp; path = ../../../src/base/wg_textstylemanager.cpp; sourceTree = "<group>"; };
+		0C62388F1D815E7600DE671D /* wg_textstylemanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textstylemanager.h; path = ../../../src/base/wg_textstylemanager.h; sourceTree = "<group>"; };
+		0C6238901D815E7600DE671D /* wg_texttool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_texttool.cpp; path = ../../../src/base/wg_texttool.cpp; sourceTree = "<group>"; };
+		0C6238911D815E7600DE671D /* wg_texttool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_texttool.h; path = ../../../src/base/wg_texttool.h; sourceTree = "<group>"; };
+		0C6238921D815E7600DE671D /* wg_togglegroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_togglegroup.cpp; path = ../../../src/base/wg_togglegroup.cpp; sourceTree = "<group>"; };
+		0C6238931D815E7600DE671D /* wg_togglegroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_togglegroup.h; path = ../../../src/base/wg_togglegroup.h; sourceTree = "<group>"; };
+		0C6238941D815E7600DE671D /* wg_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_types.h; path = ../../../src/base/wg_types.h; sourceTree = "<group>"; };
+		0C6238951D815E7600DE671D /* wg_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_util.cpp; path = ../../../src/base/wg_util.cpp; sourceTree = "<group>"; };
+		0C6238961D815E7600DE671D /* wg_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_util.h; path = ../../../src/base/wg_util.h; sourceTree = "<group>"; };
+		0C6238991D815E7600DE671D /* wg_vectorfont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_vectorfont.cpp; path = ../../../src/base/wg_vectorfont.cpp; sourceTree = "<group>"; };
+		0C62389A1D815E7600DE671D /* wg_vectorfont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_vectorfont.h; path = ../../../src/base/wg_vectorfont.h; sourceTree = "<group>"; };
+		0C6238FD1D815F2300DE671D /* wg_columnheader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_columnheader.cpp; path = ../../../src/interfaces/wg_columnheader.cpp; sourceTree = "<group>"; };
+		0C6238FE1D815F2300DE671D /* wg_columnheader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_columnheader.h; path = ../../../src/interfaces/wg_columnheader.h; sourceTree = "<group>"; };
+		0C6238FF1D815F2300DE671D /* wg_edittext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_edittext.cpp; path = ../../../src/interfaces/wg_edittext.cpp; sourceTree = "<group>"; };
+		0C6239001D815F2300DE671D /* wg_edittext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_edittext.h; path = ../../../src/interfaces/wg_edittext.h; sourceTree = "<group>"; };
+		0C6239011D815F2300DE671D /* wg_editvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_editvalue.cpp; path = ../../../src/interfaces/wg_editvalue.cpp; sourceTree = "<group>"; };
+		0C6239021D815F2300DE671D /* wg_editvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_editvalue.h; path = ../../../src/interfaces/wg_editvalue.h; sourceTree = "<group>"; };
+		0C6239031D815F2300DE671D /* wg_icon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_icon.cpp; path = ../../../src/interfaces/wg_icon.cpp; sourceTree = "<group>"; };
+		0C6239041D815F2300DE671D /* wg_icon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_icon.h; path = ../../../src/interfaces/wg_icon.h; sourceTree = "<group>"; };
+		0C6239051D815F2300DE671D /* wg_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_interface.cpp; path = ../../../src/interfaces/wg_interface.cpp; sourceTree = "<group>"; };
+		0C6239061D815F2300DE671D /* wg_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_interface.h; path = ../../../src/interfaces/wg_interface.h; sourceTree = "<group>"; };
+		0C6239071D815F2300DE671D /* wg_iwidgets.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_iwidgets.cpp; path = ../../../src/interfaces/wg_iwidgets.cpp; sourceTree = "<group>"; };
+		0C6239081D815F2300DE671D /* wg_iwidgets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_iwidgets.h; path = ../../../src/interfaces/wg_iwidgets.h; sourceTree = "<group>"; };
+		0C6239091D815F2300DE671D /* wg_modspan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modspan.cpp; path = ../../../src/interfaces/wg_modspan.cpp; sourceTree = "<group>"; };
+		0C62390A1D815F2300DE671D /* wg_modspan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modspan.h; path = ../../../src/interfaces/wg_modspan.h; sourceTree = "<group>"; };
+		0C62390B1D815F2300DE671D /* wg_modtext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modtext.cpp; path = ../../../src/interfaces/wg_modtext.cpp; sourceTree = "<group>"; };
+		0C62390C1D815F2300DE671D /* wg_modtext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modtext.h; path = ../../../src/interfaces/wg_modtext.h; sourceTree = "<group>"; };
+		0C62390D1D815F2300DE671D /* wg_modvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modvalue.cpp; path = ../../../src/interfaces/wg_modvalue.cpp; sourceTree = "<group>"; };
+		0C62390E1D815F2300DE671D /* wg_modvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modvalue.h; path = ../../../src/interfaces/wg_modvalue.h; sourceTree = "<group>"; };
+		0C62390F1D815F2300DE671D /* wg_slidespan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_slidespan.cpp; path = ../../../src/interfaces/wg_slidespan.cpp; sourceTree = "<group>"; };
+		0C6239101D815F2300DE671D /* wg_slidespan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_slidespan.h; path = ../../../src/interfaces/wg_slidespan.h; sourceTree = "<group>"; };
+		0C6239111D815F2300DE671D /* wg_span.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_span.cpp; path = ../../../src/interfaces/wg_span.cpp; sourceTree = "<group>"; };
+		0C6239121D815F2300DE671D /* wg_span.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_span.h; path = ../../../src/interfaces/wg_span.h; sourceTree = "<group>"; };
+		0C6239131D815F2300DE671D /* wg_text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_text.cpp; path = ../../../src/interfaces/wg_text.cpp; sourceTree = "<group>"; };
+		0C6239141D815F2300DE671D /* wg_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_text.h; path = ../../../src/interfaces/wg_text.h; sourceTree = "<group>"; };
+		0C6239151D815F2300DE671D /* wg_value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_value.cpp; path = ../../../src/interfaces/wg_value.cpp; sourceTree = "<group>"; };
+		0C6239161D815F2300DE671D /* wg_value.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_value.h; path = ../../../src/interfaces/wg_value.h; sourceTree = "<group>"; };
+		0C6239321D815F9300DE671D /* wg_columnheaderitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_columnheaderitem.cpp; path = ../../../src/items/wg_columnheaderitem.cpp; sourceTree = "<group>"; };
+		0C6239331D815F9300DE671D /* wg_columnheaderitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_columnheaderitem.h; path = ../../../src/items/wg_columnheaderitem.h; sourceTree = "<group>"; };
+		0C6239341D815F9300DE671D /* wg_edittextitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_edittextitem.cpp; path = ../../../src/items/wg_edittextitem.cpp; sourceTree = "<group>"; };
+		0C6239351D815F9300DE671D /* wg_edittextitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_edittextitem.h; path = ../../../src/items/wg_edittextitem.h; sourceTree = "<group>"; };
+		0C6239361D815F9300DE671D /* wg_editvalueitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_editvalueitem.cpp; path = ../../../src/items/wg_editvalueitem.cpp; sourceTree = "<group>"; };
+		0C6239371D815F9300DE671D /* wg_editvalueitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_editvalueitem.h; path = ../../../src/items/wg_editvalueitem.h; sourceTree = "<group>"; };
+		0C6239381D815F9300DE671D /* wg_iconitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_iconitem.cpp; path = ../../../src/items/wg_iconitem.cpp; sourceTree = "<group>"; };
+		0C6239391D815F9300DE671D /* wg_iconitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_iconitem.h; path = ../../../src/items/wg_iconitem.h; sourceTree = "<group>"; };
+		0C62393A1D815F9300DE671D /* wg_item.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_item.h; path = ../../../src/items/wg_item.h; sourceTree = "<group>"; };
+		0C62393B1D815F9300DE671D /* wg_modvalueitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modvalueitem.cpp; path = ../../../src/items/wg_modvalueitem.cpp; sourceTree = "<group>"; };
+		0C62393C1D815F9300DE671D /* wg_modvalueitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modvalueitem.h; path = ../../../src/items/wg_modvalueitem.h; sourceTree = "<group>"; };
+		0C62393D1D815F9300DE671D /* wg_spanitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_spanitem.cpp; path = ../../../src/items/wg_spanitem.cpp; sourceTree = "<group>"; };
+		0C62393E1D815F9300DE671D /* wg_spanitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_spanitem.h; path = ../../../src/items/wg_spanitem.h; sourceTree = "<group>"; };
+		0C62393F1D815F9300DE671D /* wg_textbaseitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textbaseitem.cpp; path = ../../../src/items/wg_textbaseitem.cpp; sourceTree = "<group>"; };
+		0C6239401D815F9300DE671D /* wg_textbaseitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textbaseitem.h; path = ../../../src/items/wg_textbaseitem.h; sourceTree = "<group>"; };
+		0C6239411D815F9300DE671D /* wg_textitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textitem.cpp; path = ../../../src/items/wg_textitem.cpp; sourceTree = "<group>"; };
+		0C6239421D815F9300DE671D /* wg_textitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textitem.h; path = ../../../src/items/wg_textitem.h; sourceTree = "<group>"; };
+		0C6239431D815F9300DE671D /* wg_valueitem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_valueitem.cpp; path = ../../../src/items/wg_valueitem.cpp; sourceTree = "<group>"; };
+		0C6239441D815F9300DE671D /* wg_valueitem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_valueitem.h; path = ../../../src/items/wg_valueitem.h; sourceTree = "<group>"; };
+		0C62395D1D815FE900DE671D /* wg_scalepreferred_sizebroker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scalepreferred_sizebroker.cpp; path = ../../../src/sizebrokers/wg_scalepreferred_sizebroker.cpp; sourceTree = "<group>"; };
+		0C62395E1D815FE900DE671D /* wg_scalepreferred_sizebroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scalepreferred_sizebroker.h; path = ../../../src/sizebrokers/wg_scalepreferred_sizebroker.h; sourceTree = "<group>"; };
+		0C62395F1D815FE900DE671D /* wg_sizebroker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_sizebroker.cpp; path = ../../../src/sizebrokers/wg_sizebroker.cpp; sourceTree = "<group>"; };
+		0C6239601D815FE900DE671D /* wg_sizebroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_sizebroker.h; path = ../../../src/sizebrokers/wg_sizebroker.h; sourceTree = "<group>"; };
+		0C6239611D815FE900DE671D /* wg_uniform_sizebroker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_uniform_sizebroker.cpp; path = ../../../src/sizebrokers/wg_uniform_sizebroker.cpp; sourceTree = "<group>"; };
+		0C6239621D815FE900DE671D /* wg_uniform_sizebroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_uniform_sizebroker.h; path = ../../../src/sizebrokers/wg_uniform_sizebroker.h; sourceTree = "<group>"; };
+		0C6239691D815FF800DE671D /* wg_blockskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_blockskin.cpp; path = ../../../src/skins/wg_blockskin.cpp; sourceTree = "<group>"; };
+		0C62396A1D815FF800DE671D /* wg_blockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_blockskin.h; path = ../../../src/skins/wg_blockskin.h; sourceTree = "<group>"; };
+		0C62396B1D815FF800DE671D /* wg_boxskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_boxskin.cpp; path = ../../../src/skins/wg_boxskin.cpp; sourceTree = "<group>"; };
+		0C62396C1D815FF800DE671D /* wg_boxskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_boxskin.h; path = ../../../src/skins/wg_boxskin.h; sourceTree = "<group>"; };
+		0C62396D1D815FF800DE671D /* wg_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_colorskin.cpp; path = ../../../src/skins/wg_colorskin.cpp; sourceTree = "<group>"; };
+		0C62396E1D815FF800DE671D /* wg_colorskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_colorskin.h; path = ../../../src/skins/wg_colorskin.h; sourceTree = "<group>"; };
+		0C62396F1D815FF800DE671D /* wg_extendedskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_extendedskin.cpp; path = ../../../src/skins/wg_extendedskin.cpp; sourceTree = "<group>"; };
+		0C6239701D815FF800DE671D /* wg_extendedskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_extendedskin.h; path = ../../../src/skins/wg_extendedskin.h; sourceTree = "<group>"; };
+		0C6239711D815FF800DE671D /* wg_skin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_skin.cpp; path = ../../../src/skins/wg_skin.cpp; sourceTree = "<group>"; };
+		0C6239721D815FF800DE671D /* wg_skin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_skin.h; path = ../../../src/skins/wg_skin.h; sourceTree = "<group>"; };
+		0C62397D1D81600E00DE671D /* wg_stdtextmapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_stdtextmapper.cpp; path = ../../../src/textmappers/wg_stdtextmapper.cpp; sourceTree = "<group>"; };
+		0C62397E1D81600E00DE671D /* wg_stdtextmapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_stdtextmapper.h; path = ../../../src/textmappers/wg_stdtextmapper.h; sourceTree = "<group>"; };
+		0C62397F1D81600E00DE671D /* wg_textmapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textmapper.cpp; path = ../../../src/textmappers/wg_textmapper.cpp; sourceTree = "<group>"; };
+		0C6239801D81600E00DE671D /* wg_textmapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textmapper.h; path = ../../../src/textmappers/wg_textmapper.h; sourceTree = "<group>"; };
+		0C6239851D81602000DE671D /* wg_standardformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_standardformatter.cpp; path = ../../../src/valueformatters/wg_standardformatter.cpp; sourceTree = "<group>"; };
+		0C6239861D81602000DE671D /* wg_standardformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_standardformatter.h; path = ../../../src/valueformatters/wg_standardformatter.h; sourceTree = "<group>"; };
+		0C6239871D81602000DE671D /* wg_timeformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_timeformatter.cpp; path = ../../../src/valueformatters/wg_timeformatter.cpp; sourceTree = "<group>"; };
+		0C6239881D81602000DE671D /* wg_timeformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_timeformatter.h; path = ../../../src/valueformatters/wg_timeformatter.h; sourceTree = "<group>"; };
+		0C6239951D81615000DE671D /* wg_userdefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_userdefines.h; path = ../../../src/wg_userdefines.h; sourceTree = "<group>"; };
+		0C6239971D81616400DE671D /* wondergui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wondergui.h; path = ../../../src/wondergui.h; sourceTree = "<group>"; };
+		0C6239991D8161CA00DE671D /* wg_animplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_animplayer.cpp; path = ../../../src/widgets/wg_animplayer.cpp; sourceTree = "<group>"; };
+		0C62399A1D8161CA00DE671D /* wg_animplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_animplayer.h; path = ../../../src/widgets/wg_animplayer.h; sourceTree = "<group>"; };
+		0C62399B1D8161CA00DE671D /* wg_button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_button.cpp; path = ../../../src/widgets/wg_button.cpp; sourceTree = "<group>"; };
+		0C62399C1D8161CA00DE671D /* wg_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_button.h; path = ../../../src/widgets/wg_button.h; sourceTree = "<group>"; };
+		0C62399F1D8161CA00DE671D /* wg_container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_container.cpp; path = ../../../src/widgets/wg_container.cpp; sourceTree = "<group>"; };
+		0C6239A01D8161CA00DE671D /* wg_container.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_container.h; path = ../../../src/widgets/wg_container.h; sourceTree = "<group>"; };
+		0C6239A11D8161CA00DE671D /* wg_filler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_filler.cpp; path = ../../../src/widgets/wg_filler.cpp; sourceTree = "<group>"; };
+		0C6239A21D8161CA00DE671D /* wg_filler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_filler.h; path = ../../../src/widgets/wg_filler.h; sourceTree = "<group>"; };
+		0C6239A31D8161CA00DE671D /* wg_fpsdisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_fpsdisplay.cpp; path = ../../../src/widgets/wg_fpsdisplay.cpp; sourceTree = "<group>"; };
+		0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_fpsdisplay.h; path = ../../../src/widgets/wg_fpsdisplay.h; sourceTree = "<group>"; };
+		0C6239A51D8161CA00DE671D /* wg_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_image.cpp; path = ../../../src/widgets/wg_image.cpp; sourceTree = "<group>"; };
+		0C6239A61D8161CA00DE671D /* wg_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_image.h; path = ../../../src/widgets/wg_image.h; sourceTree = "<group>"; };
+		0C6239A71D8161CA00DE671D /* wg_knob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_knob.cpp; path = ../../../src/widgets/wg_knob.cpp; sourceTree = "<group>"; };
+		0C6239A81D8161CA00DE671D /* wg_knob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_knob.h; path = ../../../src/widgets/wg_knob.h; sourceTree = "<group>"; };
+		0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_oscilloscope.cpp; path = ../../../src/widgets/wg_oscilloscope.cpp; sourceTree = "<group>"; };
+		0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_oscilloscope.h; path = ../../../src/widgets/wg_oscilloscope.h; sourceTree = "<group>"; };
+		0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_refreshbutton.cpp; path = ../../../src/widgets/wg_refreshbutton.cpp; sourceTree = "<group>"; };
+		0C6239B41D8161CA00DE671D /* wg_refreshbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_refreshbutton.h; path = ../../../src/widgets/wg_refreshbutton.h; sourceTree = "<group>"; };
+		0C6239B51D8161CA00DE671D /* wg_rulerlabels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_rulerlabels.cpp; path = ../../../src/widgets/wg_rulerlabels.cpp; sourceTree = "<group>"; };
+		0C6239B61D8161CA00DE671D /* wg_rulerlabels.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_rulerlabels.h; path = ../../../src/widgets/wg_rulerlabels.h; sourceTree = "<group>"; };
+		0C6239B71D8161CA00DE671D /* wg_scrollbar.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scrollbar.cpp; path = ../../../src/widgets/wg_scrollbar.cpp; sourceTree = "<group>"; };
+		0C6239B81D8161CA00DE671D /* wg_scrollbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollbar.h; path = ../../../src/widgets/wg_scrollbar.h; sourceTree = "<group>"; };
+		0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_simplevolumemeter.cpp; path = ../../../src/widgets/wg_simplevolumemeter.cpp; sourceTree = "<group>"; };
+		0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_simplevolumemeter.h; path = ../../../src/widgets/wg_simplevolumemeter.h; sourceTree = "<group>"; };
+		0C6239BB1D8161CA00DE671D /* wg_switch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_switch.cpp; path = ../../../src/widgets/wg_switch.cpp; sourceTree = "<group>"; };
+		0C6239BC1D8161CA00DE671D /* wg_switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_switch.h; path = ../../../src/widgets/wg_switch.h; sourceTree = "<group>"; };
+		0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textdisplay.cpp; path = ../../../src/widgets/wg_textdisplay.cpp; sourceTree = "<group>"; };
+		0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textdisplay.h; path = ../../../src/widgets/wg_textdisplay.h; sourceTree = "<group>"; };
+		0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_texteditor.cpp; path = ../../../src/widgets/wg_texteditor.cpp; sourceTree = "<group>"; };
+		0C6239C01D8161CA00DE671D /* wg_texteditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_texteditor.h; path = ../../../src/widgets/wg_texteditor.h; sourceTree = "<group>"; };
+		0C6239C11D8161CA00DE671D /* wg_togglebutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_togglebutton.cpp; path = ../../../src/widgets/wg_togglebutton.cpp; sourceTree = "<group>"; };
+		0C6239C21D8161CA00DE671D /* wg_togglebutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_togglebutton.h; path = ../../../src/widgets/wg_togglebutton.h; sourceTree = "<group>"; };
+		0C6239C31D8161CA00DE671D /* wg_valuedisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_valuedisplay.cpp; path = ../../../src/widgets/wg_valuedisplay.cpp; sourceTree = "<group>"; };
+		0C6239C41D8161CA00DE671D /* wg_valuedisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_valuedisplay.h; path = ../../../src/widgets/wg_valuedisplay.h; sourceTree = "<group>"; };
+		0C6239C71D8161CA00DE671D /* wg_volumemeter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_volumemeter.cpp; path = ../../../src/widgets/wg_volumemeter.cpp; sourceTree = "<group>"; };
+		0C6239C81D8161CA00DE671D /* wg_volumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_volumemeter.h; path = ../../../src/widgets/wg_volumemeter.h; sourceTree = "<group>"; };
+		0C6239C91D8161CA00DE671D /* wg_widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_widget.cpp; path = ../../../src/widgets/wg_widget.cpp; sourceTree = "<group>"; };
+		0C6239CA1D8161CA00DE671D /* wg_widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_widget.h; path = ../../../src/widgets/wg_widget.h; sourceTree = "<group>"; };
+		0C6239FD1D8164EA00DE671D /* wg_capsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_capsule.cpp; path = ../../../src/widgets/capsules/wg_capsule.cpp; sourceTree = "<group>"; };
+		0C6239FE1D8164EA00DE671D /* wg_capsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_capsule.h; path = ../../../src/widgets/capsules/wg_capsule.h; sourceTree = "<group>"; };
+		0C6239FF1D8164EA00DE671D /* wg_shadercapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_shadercapsule.cpp; path = ../../../src/widgets/capsules/wg_shadercapsule.cpp; sourceTree = "<group>"; };
+		0C623A001D8164EA00DE671D /* wg_shadercapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_shadercapsule.h; path = ../../../src/widgets/capsules/wg_shadercapsule.h; sourceTree = "<group>"; };
+		0C623A011D8164EA00DE671D /* wg_sizecapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_sizecapsule.cpp; path = ../../../src/widgets/capsules/wg_sizecapsule.cpp; sourceTree = "<group>"; };
+		0C623A021D8164EA00DE671D /* wg_sizecapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_sizecapsule.h; path = ../../../src/widgets/capsules/wg_sizecapsule.h; sourceTree = "<group>"; };
+		0C623A091D81650200DE671D /* wg_layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_layer.cpp; path = ../../../src/widgets/layers/wg_layer.cpp; sourceTree = "<group>"; };
+		0C623A0A1D81650200DE671D /* wg_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_layer.h; path = ../../../src/widgets/layers/wg_layer.h; sourceTree = "<group>"; };
+		0C623A0B1D81650200DE671D /* wg_modallayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modallayer.cpp; path = ../../../src/widgets/layers/wg_modallayer.cpp; sourceTree = "<group>"; };
+		0C623A0C1D81650200DE671D /* wg_modallayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modallayer.h; path = ../../../src/widgets/layers/wg_modallayer.h; sourceTree = "<group>"; };
+		0C623A0D1D81650200DE671D /* wg_popuplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_popuplayer.cpp; path = ../../../src/widgets/layers/wg_popuplayer.cpp; sourceTree = "<group>"; };
+		0C623A0E1D81650200DE671D /* wg_popuplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_popuplayer.h; path = ../../../src/widgets/layers/wg_popuplayer.h; sourceTree = "<group>"; };
+		0C623A151D81651400DE671D /* wg_list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_list.cpp; path = ../../../src/widgets/lists/wg_list.cpp; sourceTree = "<group>"; };
+		0C623A161D81651400DE671D /* wg_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_list.h; path = ../../../src/widgets/lists/wg_list.h; sourceTree = "<group>"; };
+		0C623A171D81651400DE671D /* wg_packlist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_packlist.cpp; path = ../../../src/widgets/lists/wg_packlist.cpp; sourceTree = "<group>"; };
+		0C623A181D81651400DE671D /* wg_packlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_packlist.h; path = ../../../src/widgets/lists/wg_packlist.h; sourceTree = "<group>"; };
+		0C623A1D1D81654100DE671D /* wg_flexpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_flexpanel.cpp; path = ../../../src/widgets/panels/wg_flexpanel.cpp; sourceTree = "<group>"; };
+		0C623A1E1D81654100DE671D /* wg_flexpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_flexpanel.h; path = ../../../src/widgets/panels/wg_flexpanel.h; sourceTree = "<group>"; };
+		0C623A1F1D81654100DE671D /* wg_packpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_packpanel.cpp; path = ../../../src/widgets/panels/wg_packpanel.cpp; sourceTree = "<group>"; };
+		0C623A201D81654100DE671D /* wg_packpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_packpanel.h; path = ../../../src/widgets/panels/wg_packpanel.h; sourceTree = "<group>"; };
+		0C623A211D81654100DE671D /* wg_panel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_panel.cpp; path = ../../../src/widgets/panels/wg_panel.cpp; sourceTree = "<group>"; };
+		0C623A221D81654100DE671D /* wg_panel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_panel.h; path = ../../../src/widgets/panels/wg_panel.h; sourceTree = "<group>"; };
+		0C623A231D81654100DE671D /* wg_rootpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_rootpanel.cpp; path = ../../../src/widgets/panels/wg_rootpanel.cpp; sourceTree = "<group>"; };
+		0C623A241D81654100DE671D /* wg_rootpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_rootpanel.h; path = ../../../src/widgets/panels/wg_rootpanel.h; sourceTree = "<group>"; };
+		0C623A251D81654100DE671D /* wg_scrollpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scrollpanel.cpp; path = ../../../src/widgets/panels/wg_scrollpanel.cpp; sourceTree = "<group>"; };
+		0C623A261D81654100DE671D /* wg_scrollpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollpanel.h; path = ../../../src/widgets/panels/wg_scrollpanel.h; sourceTree = "<group>"; };
+		0C623A271D81654100DE671D /* wg_stackpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_stackpanel.cpp; path = ../../../src/widgets/panels/wg_stackpanel.cpp; sourceTree = "<group>"; };
+		0C623A281D81654100DE671D /* wg_stackpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_stackpanel.h; path = ../../../src/widgets/panels/wg_stackpanel.h; sourceTree = "<group>"; };
+		0C623A291D81654100DE671D /* wg_vectorpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_vectorpanel.cpp; path = ../../../src/widgets/panels/wg_vectorpanel.cpp; sourceTree = "<group>"; };
+		0C623A2A1D81654100DE671D /* wg_vectorpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_vectorpanel.h; path = ../../../src/widgets/panels/wg_vectorpanel.h; sourceTree = "<group>"; };
+		0C623A391D8169B800DE671D /* wg_valueformatter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_valueformatter.cpp; path = ../../../src/valueformatters/wg_valueformatter.cpp; sourceTree = "<group>"; };
+		0C623A3A1D8169B800DE671D /* wg_valueformatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_valueformatter.h; path = ../../../src/valueformatters/wg_valueformatter.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0C62382A1D815B1400DE671D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0C6238241D815B1400DE671D = {
+			isa = PBXGroup;
+			children = (
+				0C62383C1D815E2B00DE671D /* Base */,
+				0C6238FB1D815EEB00DE671D /* Interfaces */,
+				0C6239311D815F3E00DE671D /* Items */,
+				0C6239581D815F9A00DE671D /* Sizebrokers */,
+				0C6239591D815FA500DE671D /* Skins */,
+				0C62395A1D815FB100DE671D /* Textmappers */,
+				0C62395B1D815FBB00DE671D /* Valueformatters */,
+				0C62395C1D815FCA00DE671D /* Widgets */,
+				0C6239951D81615000DE671D /* wg_userdefines.h */,
+				0C6239971D81616400DE671D /* wondergui.h */,
+				0C62382E1D815B1400DE671D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0C62382E1D815B1400DE671D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0C62382D1D815B1400DE671D /* libWonderGUI.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0C62383C1D815E2B00DE671D /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				0C62383D1D815E7600DE671D /* wg_anim.cpp */,
+				0C62383E1D815E7600DE671D /* wg_anim.h */,
+				0C62383F1D815E7600DE671D /* wg_base.cpp */,
+				0C6238401D815E7600DE671D /* wg_base.h */,
+				0C6238411D815E7600DE671D /* wg_bitmapfont.cpp */,
+				0C6238421D815E7600DE671D /* wg_bitmapfont.h */,
+				0C6238431D815E7600DE671D /* wg_blob.cpp */,
+				0C6238441D815E7600DE671D /* wg_blob.h */,
+				0C6238451D815E7600DE671D /* wg_caret.cpp */,
+				0C6238461D815E7600DE671D /* wg_caret.h */,
+				0C6238471D815E7600DE671D /* wg_chain.cpp */,
+				0C6238481D815E7600DE671D /* wg_chain.h */,
+				0C6238491D815E7600DE671D /* wg_char.cpp */,
+				0C62384A1D815E7600DE671D /* wg_char.h */,
+				0C62384B1D815E7600DE671D /* wg_charbuffer.cpp */,
+				0C62384C1D815E7600DE671D /* wg_charbuffer.h */,
+				0C62384D1D815E7600DE671D /* wg_charseq.cpp */,
+				0C62384E1D815E7600DE671D /* wg_charseq.h */,
+				0C62384F1D815E7600DE671D /* wg_codepages.cpp */,
+				0C6238501D815E7600DE671D /* wg_codepages.h */,
+				0C6238511D815E7600DE671D /* wg_color.cpp */,
+				0C6238521D815E7600DE671D /* wg_color.h */,
+				0C6238531D815E7600DE671D /* wg_finalizer.cpp */,
+				0C6238541D815E7600DE671D /* wg_finalizer.h */,
+				0C6238551D815E7600DE671D /* wg_font.cpp */,
+				0C6238561D815E7600DE671D /* wg_font.h */,
+				0C6238571D815E7600DE671D /* wg_geo.cpp */,
+				0C6238581D815E7600DE671D /* wg_geo.h */,
+				0C6238591D815E7600DE671D /* wg_gfxanim.cpp */,
+				0C62385A1D815E7600DE671D /* wg_gfxanim.h */,
+				0C62385B1D815E7600DE671D /* wg_gfxdevice.cpp */,
+				0C62385C1D815E7600DE671D /* wg_gfxdevice.h */,
+				0C62385D1D815E7600DE671D /* wg_hook.cpp */,
+				0C62385E1D815E7600DE671D /* wg_hook.h */,
+				0C62385F1D815E7600DE671D /* wg_hookarray.h */,
+				0C6238601D815E7600DE671D /* wg_hookptr.cpp */,
+				0C6238611D815E7600DE671D /* wg_hookptr.h */,
+				0C6238621D815E7600DE671D /* wg_inputhandler.cpp */,
+				0C6238631D815E7600DE671D /* wg_inputhandler.h */,
+				0C6238641D815E7600DE671D /* wg_key.h */,
+				0C6238651D815E7600DE671D /* wg_mempool.cpp */,
+				0C6238661D815E7600DE671D /* wg_mempool.h */,
+				0C6238671D815E7600DE671D /* wg_memstack.cpp */,
+				0C6238681D815E7600DE671D /* wg_memstack.h */,
+				0C62386B1D815E7600DE671D /* wg_msg.cpp */,
+				0C62386C1D815E7600DE671D /* wg_msg.h */,
+				0C62386D1D815E7600DE671D /* wg_msgfunc.cpp */,
+				0C62386E1D815E7600DE671D /* wg_msgfunc.h */,
+				0C62386F1D815E7600DE671D /* wg_msglogger.cpp */,
+				0C6238701D815E7600DE671D /* wg_msglogger.h */,
+				0C6238711D815E7600DE671D /* wg_msgrouter.cpp */,
+				0C6238721D815E7600DE671D /* wg_msgrouter.h */,
+				0C6238731D815E7600DE671D /* wg_nullgfxdevice.cpp */,
+				0C6238741D815E7600DE671D /* wg_nullgfxdevice.h */,
+				0C6238751D815E7600DE671D /* wg_object.cpp */,
+				0C6238761D815E7600DE671D /* wg_object.h */,
+				0C6238771D815E7600DE671D /* wg_patches.cpp */,
+				0C6238781D815E7600DE671D /* wg_patches.h */,
+				0C6238791D815E7600DE671D /* wg_pointers.cpp */,
+				0C62387A1D815E7600DE671D /* wg_pointers.h */,
+				0C62387B1D815E7600DE671D /* wg_receiver.cpp */,
+				0C62387C1D815E7600DE671D /* wg_receiver.h */,
+				0C62387D1D815E7600DE671D /* wg_resdb.cpp */,
+				0C62387E1D815E7600DE671D /* wg_resdb.h */,
+				0C62387F1D815E7600DE671D /* wg_resloader.h */,
+				0C6238801D815E7600DE671D /* wg_scrollbartarget.cpp */,
+				0C6238811D815E7600DE671D /* wg_scrollbartarget.h */,
+				0C6238821D815E7600DE671D /* wg_sizescaler.cpp */,
+				0C6238831D815E7600DE671D /* wg_sizescaler.h */,
+				0C6238841D815E7600DE671D /* wg_string.cpp */,
+				0C6238851D815E7600DE671D /* wg_string.h */,
+				0C6238861D815E7600DE671D /* wg_surface.cpp */,
+				0C6238871D815E7600DE671D /* wg_surface.h */,
+				0C6238881D815E7600DE671D /* wg_surfacefactory.cpp */,
+				0C6238891D815E7600DE671D /* wg_surfacefactory.h */,
+				0C62388A1D815E7600DE671D /* wg_textlink.cpp */,
+				0C62388B1D815E7600DE671D /* wg_textlink.h */,
+				0C62388C1D815E7600DE671D /* wg_textstyle.cpp */,
+				0C62388D1D815E7600DE671D /* wg_textstyle.h */,
+				0C62388E1D815E7600DE671D /* wg_textstylemanager.cpp */,
+				0C62388F1D815E7600DE671D /* wg_textstylemanager.h */,
+				0C6238901D815E7600DE671D /* wg_texttool.cpp */,
+				0C6238911D815E7600DE671D /* wg_texttool.h */,
+				0C6238921D815E7600DE671D /* wg_togglegroup.cpp */,
+				0C6238931D815E7600DE671D /* wg_togglegroup.h */,
+				0C6238941D815E7600DE671D /* wg_types.h */,
+				0C6238951D815E7600DE671D /* wg_util.cpp */,
+				0C6238961D815E7600DE671D /* wg_util.h */,
+				0C6238991D815E7600DE671D /* wg_vectorfont.cpp */,
+				0C62389A1D815E7600DE671D /* wg_vectorfont.h */,
+			);
+			name = Base;
+			sourceTree = "<group>";
+		};
+		0C6238FB1D815EEB00DE671D /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				0C6238FD1D815F2300DE671D /* wg_columnheader.cpp */,
+				0C6238FE1D815F2300DE671D /* wg_columnheader.h */,
+				0C6238FF1D815F2300DE671D /* wg_edittext.cpp */,
+				0C6239001D815F2300DE671D /* wg_edittext.h */,
+				0C6239011D815F2300DE671D /* wg_editvalue.cpp */,
+				0C6239021D815F2300DE671D /* wg_editvalue.h */,
+				0C6239031D815F2300DE671D /* wg_icon.cpp */,
+				0C6239041D815F2300DE671D /* wg_icon.h */,
+				0C6239051D815F2300DE671D /* wg_interface.cpp */,
+				0C6239061D815F2300DE671D /* wg_interface.h */,
+				0C6239071D815F2300DE671D /* wg_iwidgets.cpp */,
+				0C6239081D815F2300DE671D /* wg_iwidgets.h */,
+				0C6239091D815F2300DE671D /* wg_modspan.cpp */,
+				0C62390A1D815F2300DE671D /* wg_modspan.h */,
+				0C62390B1D815F2300DE671D /* wg_modtext.cpp */,
+				0C62390C1D815F2300DE671D /* wg_modtext.h */,
+				0C62390D1D815F2300DE671D /* wg_modvalue.cpp */,
+				0C62390E1D815F2300DE671D /* wg_modvalue.h */,
+				0C62390F1D815F2300DE671D /* wg_slidespan.cpp */,
+				0C6239101D815F2300DE671D /* wg_slidespan.h */,
+				0C6239111D815F2300DE671D /* wg_span.cpp */,
+				0C6239121D815F2300DE671D /* wg_span.h */,
+				0C6239131D815F2300DE671D /* wg_text.cpp */,
+				0C6239141D815F2300DE671D /* wg_text.h */,
+				0C6239151D815F2300DE671D /* wg_value.cpp */,
+				0C6239161D815F2300DE671D /* wg_value.h */,
+			);
+			name = Interfaces;
+			sourceTree = "<group>";
+		};
+		0C6239311D815F3E00DE671D /* Items */ = {
+			isa = PBXGroup;
+			children = (
+				0C6239321D815F9300DE671D /* wg_columnheaderitem.cpp */,
+				0C6239331D815F9300DE671D /* wg_columnheaderitem.h */,
+				0C6239341D815F9300DE671D /* wg_edittextitem.cpp */,
+				0C6239351D815F9300DE671D /* wg_edittextitem.h */,
+				0C6239361D815F9300DE671D /* wg_editvalueitem.cpp */,
+				0C6239371D815F9300DE671D /* wg_editvalueitem.h */,
+				0C6239381D815F9300DE671D /* wg_iconitem.cpp */,
+				0C6239391D815F9300DE671D /* wg_iconitem.h */,
+				0C62393A1D815F9300DE671D /* wg_item.h */,
+				0C62393B1D815F9300DE671D /* wg_modvalueitem.cpp */,
+				0C62393C1D815F9300DE671D /* wg_modvalueitem.h */,
+				0C62393D1D815F9300DE671D /* wg_spanitem.cpp */,
+				0C62393E1D815F9300DE671D /* wg_spanitem.h */,
+				0C62393F1D815F9300DE671D /* wg_textbaseitem.cpp */,
+				0C6239401D815F9300DE671D /* wg_textbaseitem.h */,
+				0C6239411D815F9300DE671D /* wg_textitem.cpp */,
+				0C6239421D815F9300DE671D /* wg_textitem.h */,
+				0C6239431D815F9300DE671D /* wg_valueitem.cpp */,
+				0C6239441D815F9300DE671D /* wg_valueitem.h */,
+			);
+			name = Items;
+			sourceTree = "<group>";
+		};
+		0C6239581D815F9A00DE671D /* Sizebrokers */ = {
+			isa = PBXGroup;
+			children = (
+				0C62395D1D815FE900DE671D /* wg_scalepreferred_sizebroker.cpp */,
+				0C62395E1D815FE900DE671D /* wg_scalepreferred_sizebroker.h */,
+				0C62395F1D815FE900DE671D /* wg_sizebroker.cpp */,
+				0C6239601D815FE900DE671D /* wg_sizebroker.h */,
+				0C6239611D815FE900DE671D /* wg_uniform_sizebroker.cpp */,
+				0C6239621D815FE900DE671D /* wg_uniform_sizebroker.h */,
+			);
+			name = Sizebrokers;
+			sourceTree = "<group>";
+		};
+		0C6239591D815FA500DE671D /* Skins */ = {
+			isa = PBXGroup;
+			children = (
+				0C6239691D815FF800DE671D /* wg_blockskin.cpp */,
+				0C62396A1D815FF800DE671D /* wg_blockskin.h */,
+				0C62396B1D815FF800DE671D /* wg_boxskin.cpp */,
+				0C62396C1D815FF800DE671D /* wg_boxskin.h */,
+				0C62396D1D815FF800DE671D /* wg_colorskin.cpp */,
+				0C62396E1D815FF800DE671D /* wg_colorskin.h */,
+				0C62396F1D815FF800DE671D /* wg_extendedskin.cpp */,
+				0C6239701D815FF800DE671D /* wg_extendedskin.h */,
+				0C6239711D815FF800DE671D /* wg_skin.cpp */,
+				0C6239721D815FF800DE671D /* wg_skin.h */,
+			);
+			name = Skins;
+			sourceTree = "<group>";
+		};
+		0C62395A1D815FB100DE671D /* Textmappers */ = {
+			isa = PBXGroup;
+			children = (
+				0C62397D1D81600E00DE671D /* wg_stdtextmapper.cpp */,
+				0C62397E1D81600E00DE671D /* wg_stdtextmapper.h */,
+				0C62397F1D81600E00DE671D /* wg_textmapper.cpp */,
+				0C6239801D81600E00DE671D /* wg_textmapper.h */,
+			);
+			name = Textmappers;
+			sourceTree = "<group>";
+		};
+		0C62395B1D815FBB00DE671D /* Valueformatters */ = {
+			isa = PBXGroup;
+			children = (
+				0C623A391D8169B800DE671D /* wg_valueformatter.cpp */,
+				0C623A3A1D8169B800DE671D /* wg_valueformatter.h */,
+				0C6239851D81602000DE671D /* wg_standardformatter.cpp */,
+				0C6239861D81602000DE671D /* wg_standardformatter.h */,
+				0C6239871D81602000DE671D /* wg_timeformatter.cpp */,
+				0C6239881D81602000DE671D /* wg_timeformatter.h */,
+			);
+			name = Valueformatters;
+			sourceTree = "<group>";
+		};
+		0C62395C1D815FCA00DE671D /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				0C6239911D81602600DE671D /* Capsules */,
+				0C6239921D81604C00DE671D /* Layers */,
+				0C6239931D81605800DE671D /* Lists */,
+				0C6239941D81606000DE671D /* Panels */,
+				0C6239991D8161CA00DE671D /* wg_animplayer.cpp */,
+				0C62399A1D8161CA00DE671D /* wg_animplayer.h */,
+				0C62399B1D8161CA00DE671D /* wg_button.cpp */,
+				0C62399C1D8161CA00DE671D /* wg_button.h */,
+				0C62399F1D8161CA00DE671D /* wg_container.cpp */,
+				0C6239A01D8161CA00DE671D /* wg_container.h */,
+				0C6239A11D8161CA00DE671D /* wg_filler.cpp */,
+				0C6239A21D8161CA00DE671D /* wg_filler.h */,
+				0C6239A31D8161CA00DE671D /* wg_fpsdisplay.cpp */,
+				0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */,
+				0C6239A51D8161CA00DE671D /* wg_image.cpp */,
+				0C6239A61D8161CA00DE671D /* wg_image.h */,
+				0C6239A71D8161CA00DE671D /* wg_knob.cpp */,
+				0C6239A81D8161CA00DE671D /* wg_knob.h */,
+				0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */,
+				0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */,
+				0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */,
+				0C6239B41D8161CA00DE671D /* wg_refreshbutton.h */,
+				0C6239B51D8161CA00DE671D /* wg_rulerlabels.cpp */,
+				0C6239B61D8161CA00DE671D /* wg_rulerlabels.h */,
+				0C6239B71D8161CA00DE671D /* wg_scrollbar.cpp */,
+				0C6239B81D8161CA00DE671D /* wg_scrollbar.h */,
+				0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */,
+				0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */,
+				0C6239BB1D8161CA00DE671D /* wg_switch.cpp */,
+				0C6239BC1D8161CA00DE671D /* wg_switch.h */,
+				0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */,
+				0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */,
+				0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */,
+				0C6239C01D8161CA00DE671D /* wg_texteditor.h */,
+				0C6239C11D8161CA00DE671D /* wg_togglebutton.cpp */,
+				0C6239C21D8161CA00DE671D /* wg_togglebutton.h */,
+				0C6239C31D8161CA00DE671D /* wg_valuedisplay.cpp */,
+				0C6239C41D8161CA00DE671D /* wg_valuedisplay.h */,
+				0C6239C71D8161CA00DE671D /* wg_volumemeter.cpp */,
+				0C6239C81D8161CA00DE671D /* wg_volumemeter.h */,
+				0C6239C91D8161CA00DE671D /* wg_widget.cpp */,
+				0C6239CA1D8161CA00DE671D /* wg_widget.h */,
+			);
+			name = Widgets;
+			sourceTree = "<group>";
+		};
+		0C6239911D81602600DE671D /* Capsules */ = {
+			isa = PBXGroup;
+			children = (
+				0C6239FD1D8164EA00DE671D /* wg_capsule.cpp */,
+				0C6239FE1D8164EA00DE671D /* wg_capsule.h */,
+				0C6239FF1D8164EA00DE671D /* wg_shadercapsule.cpp */,
+				0C623A001D8164EA00DE671D /* wg_shadercapsule.h */,
+				0C623A011D8164EA00DE671D /* wg_sizecapsule.cpp */,
+				0C623A021D8164EA00DE671D /* wg_sizecapsule.h */,
+			);
+			name = Capsules;
+			sourceTree = "<group>";
+		};
+		0C6239921D81604C00DE671D /* Layers */ = {
+			isa = PBXGroup;
+			children = (
+				0C623A091D81650200DE671D /* wg_layer.cpp */,
+				0C623A0A1D81650200DE671D /* wg_layer.h */,
+				0C623A0B1D81650200DE671D /* wg_modallayer.cpp */,
+				0C623A0C1D81650200DE671D /* wg_modallayer.h */,
+				0C623A0D1D81650200DE671D /* wg_popuplayer.cpp */,
+				0C623A0E1D81650200DE671D /* wg_popuplayer.h */,
+			);
+			name = Layers;
+			sourceTree = "<group>";
+		};
+		0C6239931D81605800DE671D /* Lists */ = {
+			isa = PBXGroup;
+			children = (
+				0C623A151D81651400DE671D /* wg_list.cpp */,
+				0C623A161D81651400DE671D /* wg_list.h */,
+				0C623A171D81651400DE671D /* wg_packlist.cpp */,
+				0C623A181D81651400DE671D /* wg_packlist.h */,
+			);
+			name = Lists;
+			sourceTree = "<group>";
+		};
+		0C6239941D81606000DE671D /* Panels */ = {
+			isa = PBXGroup;
+			children = (
+				0C623A1D1D81654100DE671D /* wg_flexpanel.cpp */,
+				0C623A1E1D81654100DE671D /* wg_flexpanel.h */,
+				0C623A1F1D81654100DE671D /* wg_packpanel.cpp */,
+				0C623A201D81654100DE671D /* wg_packpanel.h */,
+				0C623A211D81654100DE671D /* wg_panel.cpp */,
+				0C623A221D81654100DE671D /* wg_panel.h */,
+				0C623A231D81654100DE671D /* wg_rootpanel.cpp */,
+				0C623A241D81654100DE671D /* wg_rootpanel.h */,
+				0C623A251D81654100DE671D /* wg_scrollpanel.cpp */,
+				0C623A261D81654100DE671D /* wg_scrollpanel.h */,
+				0C623A271D81654100DE671D /* wg_stackpanel.cpp */,
+				0C623A281D81654100DE671D /* wg_stackpanel.h */,
+				0C623A291D81654100DE671D /* wg_vectorpanel.cpp */,
+				0C623A2A1D81654100DE671D /* wg_vectorpanel.h */,
+			);
+			name = Panels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		0C62382B1D815B1400DE671D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C6239841D81600E00DE671D /* wg_textmapper.h in Headers */,
+				0C6238B81D815E7600DE671D /* wg_gfxanim.h in Headers */,
+				0C6238F11D815E7600DE671D /* wg_togglegroup.h in Headers */,
+				0C623A3C1D8169B800DE671D /* wg_valueformatter.h in Headers */,
+				0C62392C1D815F2300DE671D /* wg_span.h in Headers */,
+				0C6238B01D815E7600DE671D /* wg_color.h in Headers */,
+				0C6238C11D815E7600DE671D /* wg_inputhandler.h in Headers */,
+				0C62391C1D815F2300DE671D /* wg_editvalue.h in Headers */,
+				0C6239EC1D8161CA00DE671D /* wg_simplevolumemeter.h in Headers */,
+				0C6239301D815F2300DE671D /* wg_value.h in Headers */,
+				0C6238A61D815E7600DE671D /* wg_chain.h in Headers */,
+				0C62394C1D815F9300DE671D /* wg_iconitem.h in Headers */,
+				0C62389C1D815E7600DE671D /* wg_anim.h in Headers */,
+				0C6239E81D8161CA00DE671D /* wg_rulerlabels.h in Headers */,
+				0C6239D61D8161CA00DE671D /* wg_fpsdisplay.h in Headers */,
+				0C6238F21D815E7600DE671D /* wg_types.h in Headers */,
+				0C6239DA1D8161CA00DE671D /* wg_knob.h in Headers */,
+				0C6238F81D815E7600DE671D /* wg_vectorfont.h in Headers */,
+				0C62392E1D815F2300DE671D /* wg_text.h in Headers */,
+				0C623A1C1D81651400DE671D /* wg_packlist.h in Headers */,
+				0C6238E91D815E7600DE671D /* wg_textlink.h in Headers */,
+				0C623A2E1D81654100DE671D /* wg_packpanel.h in Headers */,
+				0C623A341D81654100DE671D /* wg_scrollpanel.h in Headers */,
+				0C6238F41D815E7600DE671D /* wg_util.h in Headers */,
+				0C6239551D815F9300DE671D /* wg_textitem.h in Headers */,
+				0C623A301D81654100DE671D /* wg_panel.h in Headers */,
+				0C62391E1D815F2300DE671D /* wg_icon.h in Headers */,
+				0C6239981D81616400DE671D /* wondergui.h in Headers */,
+				0C6239F41D8161CA00DE671D /* wg_togglebutton.h in Headers */,
+				0C623A081D8164EA00DE671D /* wg_sizecapsule.h in Headers */,
+				0C623A381D81654100DE671D /* wg_vectorpanel.h in Headers */,
+				0C623A061D8164EA00DE671D /* wg_shadercapsule.h in Headers */,
+				0C62394D1D815F9300DE671D /* wg_item.h in Headers */,
+				0C623A361D81654100DE671D /* wg_stackpanel.h in Headers */,
+				0C6239E41D8161CA00DE671D /* wg_oscilloscope.h in Headers */,
+				0C6238E31D815E7600DE671D /* wg_string.h in Headers */,
+				0C623A321D81654100DE671D /* wg_rootpanel.h in Headers */,
+				0C6238AC1D815E7600DE671D /* wg_charseq.h in Headers */,
+				0C6239741D815FF800DE671D /* wg_blockskin.h in Headers */,
+				0C62397A1D815FF800DE671D /* wg_extendedskin.h in Headers */,
+				0C6238DF1D815E7600DE671D /* wg_scrollbartarget.h in Headers */,
+				0C6238B61D815E7600DE671D /* wg_geo.h in Headers */,
+				0C6239761D815FF800DE671D /* wg_boxskin.h in Headers */,
+				0C6238C61D815E7600DE671D /* wg_memstack.h in Headers */,
+				0C6238D61D815E7600DE671D /* wg_patches.h in Headers */,
+				0C6239221D815F2300DE671D /* wg_iwidgets.h in Headers */,
+				0C6238BA1D815E7600DE671D /* wg_gfxdevice.h in Headers */,
+				0C6238E11D815E7600DE671D /* wg_sizescaler.h in Headers */,
+				0C62398C1D81602000DE671D /* wg_standardformatter.h in Headers */,
+				0C623A041D8164EA00DE671D /* wg_capsule.h in Headers */,
+				0C6238AA1D815E7600DE671D /* wg_charbuffer.h in Headers */,
+				0C6239D41D8161CA00DE671D /* wg_filler.h in Headers */,
+				0C6238B21D815E7600DE671D /* wg_finalizer.h in Headers */,
+				0C62392A1D815F2300DE671D /* wg_slidespan.h in Headers */,
+				0C6238CE1D815E7600DE671D /* wg_msglogger.h in Headers */,
+				0C6238C21D815E7600DE671D /* wg_key.h in Headers */,
+				0C6238D41D815E7600DE671D /* wg_object.h in Headers */,
+				0C6239E61D8161CA00DE671D /* wg_refreshbutton.h in Headers */,
+				0C6238DC1D815E7600DE671D /* wg_resdb.h in Headers */,
+				0C62391A1D815F2300DE671D /* wg_edittext.h in Headers */,
+				0C6238D01D815E7600DE671D /* wg_msgrouter.h in Headers */,
+				0C6239CE1D8161CA00DE671D /* wg_button.h in Headers */,
+				0C6238A41D815E7600DE671D /* wg_caret.h in Headers */,
+				0C62389E1D815E7600DE671D /* wg_base.h in Headers */,
+				0C6239261D815F2300DE671D /* wg_modtext.h in Headers */,
+				0C6239FA1D8161CA00DE671D /* wg_volumemeter.h in Headers */,
+				0C6239781D815FF800DE671D /* wg_colorskin.h in Headers */,
+				0C6239511D815F9300DE671D /* wg_spanitem.h in Headers */,
+				0C6239531D815F9300DE671D /* wg_textbaseitem.h in Headers */,
+				0C6239EE1D8161CA00DE671D /* wg_switch.h in Headers */,
+				0C6238BF1D815E7600DE671D /* wg_hookptr.h in Headers */,
+				0C623A121D81650200DE671D /* wg_modallayer.h in Headers */,
+				0C6238D81D815E7600DE671D /* wg_pointers.h in Headers */,
+				0C6239F01D8161CA00DE671D /* wg_textdisplay.h in Headers */,
+				0C6239F21D8161CA00DE671D /* wg_texteditor.h in Headers */,
+				0C6239CC1D8161CA00DE671D /* wg_animplayer.h in Headers */,
+				0C62397C1D815FF800DE671D /* wg_skin.h in Headers */,
+				0C6238BD1D815E7600DE671D /* wg_hookarray.h in Headers */,
+				0C6239681D815FE900DE671D /* wg_uniform_sizebroker.h in Headers */,
+				0C62394A1D815F9300DE671D /* wg_editvalueitem.h in Headers */,
+				0C6239461D815F9300DE671D /* wg_columnheaderitem.h in Headers */,
+				0C623A2C1D81654100DE671D /* wg_flexpanel.h in Headers */,
+				0C6238EF1D815E7600DE671D /* wg_texttool.h in Headers */,
+				0C6239D21D8161CA00DE671D /* wg_container.h in Headers */,
+				0C6238A01D815E7600DE671D /* wg_bitmapfont.h in Headers */,
+				0C6238CC1D815E7600DE671D /* wg_msgfunc.h in Headers */,
+				0C6238B41D815E7600DE671D /* wg_font.h in Headers */,
+				0C6239661D815FE900DE671D /* wg_sizebroker.h in Headers */,
+				0C6238A21D815E7600DE671D /* wg_blob.h in Headers */,
+				0C6239821D81600E00DE671D /* wg_stdtextmapper.h in Headers */,
+				0C6238D21D815E7600DE671D /* wg_nullgfxdevice.h in Headers */,
+				0C6238E71D815E7600DE671D /* wg_surfacefactory.h in Headers */,
+				0C623A101D81650200DE671D /* wg_layer.h in Headers */,
+				0C6238EB1D815E7600DE671D /* wg_textstyle.h in Headers */,
+				0C6238E51D815E7600DE671D /* wg_surface.h in Headers */,
+				0C6239201D815F2300DE671D /* wg_interface.h in Headers */,
+				0C62398E1D81602000DE671D /* wg_timeformatter.h in Headers */,
+				0C6239181D815F2300DE671D /* wg_columnheader.h in Headers */,
+				0C6239641D815FE900DE671D /* wg_scalepreferred_sizebroker.h in Headers */,
+				0C623A141D81650200DE671D /* wg_popuplayer.h in Headers */,
+				0C62394F1D815F9300DE671D /* wg_modvalueitem.h in Headers */,
+				0C6238C41D815E7600DE671D /* wg_mempool.h in Headers */,
+				0C6239961D81615000DE671D /* wg_userdefines.h in Headers */,
+				0C6239D81D8161CA00DE671D /* wg_image.h in Headers */,
+				0C623A1A1D81651400DE671D /* wg_list.h in Headers */,
+				0C6239FC1D8161CA00DE671D /* wg_widget.h in Headers */,
+				0C6239571D815F9300DE671D /* wg_valueitem.h in Headers */,
+				0C6238AE1D815E7600DE671D /* wg_codepages.h in Headers */,
+				0C6239F61D8161CA00DE671D /* wg_valuedisplay.h in Headers */,
+				0C6239241D815F2300DE671D /* wg_modspan.h in Headers */,
+				0C6238BC1D815E7600DE671D /* wg_hook.h in Headers */,
+				0C6238DD1D815E7600DE671D /* wg_resloader.h in Headers */,
+				0C6238ED1D815E7600DE671D /* wg_textstylemanager.h in Headers */,
+				0C6239EA1D8161CA00DE671D /* wg_scrollbar.h in Headers */,
+				0C6238DA1D815E7600DE671D /* wg_receiver.h in Headers */,
+				0C6239281D815F2300DE671D /* wg_modvalue.h in Headers */,
+				0C6238A81D815E7600DE671D /* wg_char.h in Headers */,
+				0C6239481D815F9300DE671D /* wg_edittextitem.h in Headers */,
+				0C6238CA1D815E7600DE671D /* wg_msg.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		0C62382C1D815B1400DE671D /* WonderGUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C6238381D815B1400DE671D /* Build configuration list for PBXNativeTarget "WonderGUI" */;
+			buildPhases = (
+				0C6238291D815B1400DE671D /* Sources */,
+				0C62382A1D815B1400DE671D /* Frameworks */,
+				0C62382B1D815B1400DE671D /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WonderGUI;
+			productName = WonderGUI;
+			productReference = 0C62382D1D815B1400DE671D /* libWonderGUI.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0C6238251D815B1400DE671D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = Lushcode;
+				TargetAttributes = {
+					0C62382C1D815B1400DE671D = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 0C6238281D815B1400DE671D /* Build configuration list for PBXProject "WonderGUI" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 0C6238241D815B1400DE671D;
+			productRefGroup = 0C62382E1D815B1400DE671D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0C62382C1D815B1400DE671D /* WonderGUI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0C6238291D815B1400DE671D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0C62392D1D815F2300DE671D /* wg_text.cpp in Sources */,
+				0C6238AB1D815E7600DE671D /* wg_charseq.cpp in Sources */,
+				0C623A0F1D81650200DE671D /* wg_layer.cpp in Sources */,
+				0C6239671D815FE900DE671D /* wg_uniform_sizebroker.cpp in Sources */,
+				0C623A191D81651400DE671D /* wg_list.cpp in Sources */,
+				0C623A071D8164EA00DE671D /* wg_sizecapsule.cpp in Sources */,
+				0C6238D11D815E7600DE671D /* wg_nullgfxdevice.cpp in Sources */,
+				0C6238A71D815E7600DE671D /* wg_char.cpp in Sources */,
+				0C6239631D815FE900DE671D /* wg_scalepreferred_sizebroker.cpp in Sources */,
+				0C6238EA1D815E7600DE671D /* wg_textstyle.cpp in Sources */,
+				0C6238CF1D815E7600DE671D /* wg_msgrouter.cpp in Sources */,
+				0C6238E81D815E7600DE671D /* wg_textlink.cpp in Sources */,
+				0C6238EC1D815E7600DE671D /* wg_textstylemanager.cpp in Sources */,
+				0C62391D1D815F2300DE671D /* wg_icon.cpp in Sources */,
+				0C62394B1D815F9300DE671D /* wg_iconitem.cpp in Sources */,
+				0C62394E1D815F9300DE671D /* wg_modvalueitem.cpp in Sources */,
+				0C6238A11D815E7600DE671D /* wg_blob.cpp in Sources */,
+				0C6238B91D815E7600DE671D /* wg_gfxdevice.cpp in Sources */,
+				0C6239831D81600E00DE671D /* wg_textmapper.cpp in Sources */,
+				0C6239451D815F9300DE671D /* wg_columnheaderitem.cpp in Sources */,
+				0C6239231D815F2300DE671D /* wg_modspan.cpp in Sources */,
+				0C6238D31D815E7600DE671D /* wg_object.cpp in Sources */,
+				0C6238CD1D815E7600DE671D /* wg_msglogger.cpp in Sources */,
+				0C6238A51D815E7600DE671D /* wg_chain.cpp in Sources */,
+				0C623A331D81654100DE671D /* wg_scrollpanel.cpp in Sources */,
+				0C6239771D815FF800DE671D /* wg_colorskin.cpp in Sources */,
+				0C623A311D81654100DE671D /* wg_rootpanel.cpp in Sources */,
+				0C6238C01D815E7600DE671D /* wg_inputhandler.cpp in Sources */,
+				0C6238DB1D815E7600DE671D /* wg_resdb.cpp in Sources */,
+				0C623A2F1D81654100DE671D /* wg_panel.cpp in Sources */,
+				0C6238B31D815E7600DE671D /* wg_font.cpp in Sources */,
+				0C6238D71D815E7600DE671D /* wg_pointers.cpp in Sources */,
+				0C62391B1D815F2300DE671D /* wg_editvalue.cpp in Sources */,
+				0C6238E61D815E7600DE671D /* wg_surfacefactory.cpp in Sources */,
+				0C6238CB1D815E7600DE671D /* wg_msgfunc.cpp in Sources */,
+				0C6238B51D815E7600DE671D /* wg_geo.cpp in Sources */,
+				0C6239251D815F2300DE671D /* wg_modtext.cpp in Sources */,
+				0C6239E91D8161CA00DE671D /* wg_scrollbar.cpp in Sources */,
+				0C6238F01D815E7600DE671D /* wg_togglegroup.cpp in Sources */,
+				0C623A131D81650200DE671D /* wg_popuplayer.cpp in Sources */,
+				0C6239E31D8161CA00DE671D /* wg_oscilloscope.cpp in Sources */,
+				0C6238E21D815E7600DE671D /* wg_string.cpp in Sources */,
+				0C6239E51D8161CA00DE671D /* wg_refreshbutton.cpp in Sources */,
+				0C6239F31D8161CA00DE671D /* wg_togglebutton.cpp in Sources */,
+				0C6239501D815F9300DE671D /* wg_spanitem.cpp in Sources */,
+				0C6239F51D8161CA00DE671D /* wg_valuedisplay.cpp in Sources */,
+				0C6238A31D815E7600DE671D /* wg_caret.cpp in Sources */,
+				0C6239EB1D8161CA00DE671D /* wg_simplevolumemeter.cpp in Sources */,
+				0C623A111D81650200DE671D /* wg_modallayer.cpp in Sources */,
+				0C6239F91D8161CA00DE671D /* wg_volumemeter.cpp in Sources */,
+				0C6239751D815FF800DE671D /* wg_boxskin.cpp in Sources */,
+				0C6238C31D815E7600DE671D /* wg_mempool.cpp in Sources */,
+				0C6239CD1D8161CA00DE671D /* wg_button.cpp in Sources */,
+				0C6238BB1D815E7600DE671D /* wg_hook.cpp in Sources */,
+				0C6238C51D815E7600DE671D /* wg_memstack.cpp in Sources */,
+				0C6238C91D815E7600DE671D /* wg_msg.cpp in Sources */,
+				0C6238DE1D815E7600DE671D /* wg_scrollbartarget.cpp in Sources */,
+				0C6239651D815FE900DE671D /* wg_sizebroker.cpp in Sources */,
+				0C6239171D815F2300DE671D /* wg_columnheader.cpp in Sources */,
+				0C6239521D815F9300DE671D /* wg_textbaseitem.cpp in Sources */,
+				0C6238D91D815E7600DE671D /* wg_receiver.cpp in Sources */,
+				0C623A2D1D81654100DE671D /* wg_packpanel.cpp in Sources */,
+				0C6238BE1D815E7600DE671D /* wg_hookptr.cpp in Sources */,
+				0C6239CB1D8161CA00DE671D /* wg_animplayer.cpp in Sources */,
+				0C6239FB1D8161CA00DE671D /* wg_widget.cpp in Sources */,
+				0C6239D71D8161CA00DE671D /* wg_image.cpp in Sources */,
+				0C62391F1D815F2300DE671D /* wg_interface.cpp in Sources */,
+				0C6239291D815F2300DE671D /* wg_slidespan.cpp in Sources */,
+				0C6239271D815F2300DE671D /* wg_modvalue.cpp in Sources */,
+				0C623A2B1D81654100DE671D /* wg_flexpanel.cpp in Sources */,
+				0C62389D1D815E7600DE671D /* wg_base.cpp in Sources */,
+				0C6239ED1D8161CA00DE671D /* wg_switch.cpp in Sources */,
+				0C6238E01D815E7600DE671D /* wg_sizescaler.cpp in Sources */,
+				0C623A1B1D81651400DE671D /* wg_packlist.cpp in Sources */,
+				0C623A051D8164EA00DE671D /* wg_shadercapsule.cpp in Sources */,
+				0C62397B1D815FF800DE671D /* wg_skin.cpp in Sources */,
+				0C6239791D815FF800DE671D /* wg_extendedskin.cpp in Sources */,
+				0C623A031D8164EA00DE671D /* wg_capsule.cpp in Sources */,
+				0C6238B11D815E7600DE671D /* wg_finalizer.cpp in Sources */,
+				0C6239D91D8161CA00DE671D /* wg_knob.cpp in Sources */,
+				0C6239211D815F2300DE671D /* wg_iwidgets.cpp in Sources */,
+				0C6239EF1D8161CA00DE671D /* wg_textdisplay.cpp in Sources */,
+				0C62398D1D81602000DE671D /* wg_timeformatter.cpp in Sources */,
+				0C6239561D815F9300DE671D /* wg_valueitem.cpp in Sources */,
+				0C6239D11D8161CA00DE671D /* wg_container.cpp in Sources */,
+				0C6238D51D815E7600DE671D /* wg_patches.cpp in Sources */,
+				0C6239541D815F9300DE671D /* wg_textitem.cpp in Sources */,
+				0C62389B1D815E7600DE671D /* wg_anim.cpp in Sources */,
+				0C6238F31D815E7600DE671D /* wg_util.cpp in Sources */,
+				0C6239D51D8161CA00DE671D /* wg_fpsdisplay.cpp in Sources */,
+				0C62398B1D81602000DE671D /* wg_standardformatter.cpp in Sources */,
+				0C6238E41D815E7600DE671D /* wg_surface.cpp in Sources */,
+				0C623A371D81654100DE671D /* wg_vectorpanel.cpp in Sources */,
+				0C6238EE1D815E7600DE671D /* wg_texttool.cpp in Sources */,
+				0C6238AD1D815E7600DE671D /* wg_codepages.cpp in Sources */,
+				0C62392F1D815F2300DE671D /* wg_value.cpp in Sources */,
+				0C6239D31D8161CA00DE671D /* wg_filler.cpp in Sources */,
+				0C6239731D815FF800DE671D /* wg_blockskin.cpp in Sources */,
+				0C62389F1D815E7600DE671D /* wg_bitmapfont.cpp in Sources */,
+				0C6239811D81600E00DE671D /* wg_stdtextmapper.cpp in Sources */,
+				0C6239491D815F9300DE671D /* wg_editvalueitem.cpp in Sources */,
+				0C623A351D81654100DE671D /* wg_stackpanel.cpp in Sources */,
+				0C6239F11D8161CA00DE671D /* wg_texteditor.cpp in Sources */,
+				0C6238AF1D815E7600DE671D /* wg_color.cpp in Sources */,
+				0C62392B1D815F2300DE671D /* wg_span.cpp in Sources */,
+				0C6238F71D815E7600DE671D /* wg_vectorfont.cpp in Sources */,
+				0C6238B71D815E7600DE671D /* wg_gfxanim.cpp in Sources */,
+				0C6239191D815F2300DE671D /* wg_edittext.cpp in Sources */,
+				0C6238A91D815E7600DE671D /* wg_charbuffer.cpp in Sources */,
+				0C6239E71D8161CA00DE671D /* wg_rulerlabels.cpp in Sources */,
+				0C623A3B1D8169B800DE671D /* wg_valueformatter.cpp in Sources */,
+				0C6239471D815F9300DE671D /* wg_edittextitem.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0C6238361D815B1400DE671D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		0C6238371D815B1400DE671D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		0C6238391D815B1400DE671D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0C62383A1D815B1400DE671D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C6238281D815B1400DE671D /* Build configuration list for PBXProject "WonderGUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C6238361D815B1400DE671D /* Debug */,
+				0C6238371D815B1400DE671D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0C6238381D815B1400DE671D /* Build configuration list for PBXNativeTarget "WonderGUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C6238391D815B1400DE671D /* Debug */,
+				0C62383A1D815B1400DE671D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0C6238251D815B1400DE671D /* Project object */;
+}

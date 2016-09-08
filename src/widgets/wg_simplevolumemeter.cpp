@@ -130,6 +130,7 @@ namespace wg
 		if( m_fHoldHeight != fraction )
 		{
 			m_fHoldHeight = fraction;
+            _updateIValues( m_size );
 			_requestRender();
 		}
 	}

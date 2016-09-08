@@ -542,7 +542,7 @@ namespace wg
 				char * p = new char[size+1];
 				TextTool::getTextUTF8( (Char*) m_pChar, p, size+1 );
 				std::string str( p, size );
-				delete p;
+				delete [] p;
 				return str;
 			}
 			case Type::Utf8:
@@ -558,7 +558,7 @@ namespace wg
 				char * p = new char[size+1];
 				TextTool::getTextUTF8( (uint16_t*) m_pChar, p, size+1 );
 				std::string str( p, size );
-				delete p;
+                delete [] p;
 				return str;
 			}
 			case Type::Codepage8:
@@ -567,7 +567,7 @@ namespace wg
 				char * p = new char[size+1];
 				TextTool::getTextUTF8( (char*) m_pChar, ((CharSeq8*)this)->m_codepage, p, size+1 );
 				std::string str( p, size );
-				delete p;
+                delete [] p;
 				return str;
 			}
 	

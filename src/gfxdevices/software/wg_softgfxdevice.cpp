@@ -145,19 +145,36 @@ namespace wg
 		{
 			case BlendMode::Replace:
 			{
-				for( int y = 0 ; y < rect.h ; y++ )
-				{
-					for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
-					{
-						pDst[x] = fillColor.b;
-						pDst[x+1] = fillColor.g;
-						pDst[x+2] = fillColor.r;
-					}
-					pDst += m_pCanvas->m_pitch;
-				}
-			}
-			break;
-			case BlendMode::Blend:
+                int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+                
+                if( dstPixelBytes == 4 )
+                {
+                    for( int y = 0 ; y < rect.h ; y++ )
+                    {
+                        uint32_t fillValue = ((int)fillColor.b) | (((int)fillColor.g) << 8) | (((int)fillColor.r) << 16);
+                        
+                        for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
+                        {
+                            * ((uint32_t*)(&pDst[x])) = fillValue;
+                        }
+                        pDst += m_pCanvas->m_pitch;
+                    }
+                }
+                else
+                {
+                    for( int y = 0 ; y < rect.h ; y++ )
+                    {
+                        for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
+                        {
+                            pDst[x] = fillColor.b;
+                            pDst[x+1] = fillColor.g;
+                            pDst[x+2] = fillColor.r;
+                        }
+                        pDst += m_pCanvas->m_pitch;
+                    }
+                }			}
+                break;
+            case BlendMode::Blend:
 			{
 				int storedRed = ((int)fillColor.r) * fillColor.a;
 				int storedGreen = ((int)fillColor.g) * fillColor.a;
@@ -1212,7 +1229,7 @@ namespace wg
 	{
 		m_pCurveTab = new int[c_nCurveTabEntries];
 	
-		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
+//		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
 	
 		for( int i = 0 ; i < c_nCurveTabEntries ; i++ )
 		{
@@ -1266,7 +1283,6 @@ namespace wg
 	{
 		//TODO: Translate to use m_pDivTab
 	
-		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
 		uint8_t * pClip1 = pLineStart + clipX1*pixelBytes;
@@ -1340,7 +1356,6 @@ namespace wg
 	{
 		//TODO: Translate to use m_pDivTab
 	
-		int pitch = m_pCanvas->m_pitch;
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
 	
@@ -1823,7 +1838,9 @@ namespace wg
 		BlendMode		blendMode = m_blendMode;
 		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
 			blendMode = BlendMode::Replace;
-	
+
+        
+        
 		switch( blendMode )
 		{
 			case BlendMode::Replace:
@@ -1849,7 +1866,10 @@ namespace wg
 			}
 			case BlendMode::Blend:
 			{
-				if( srcPixelBytes == 4 )
+                if( m_tintColor.a == 0 )
+                    break;
+                
+                if( srcPixelBytes == 4 )
 				{
 					int tintAlpha = (int) m_tintColor.a;
 					int tintRed = (int) m_tintColor.r;
@@ -1904,7 +1924,10 @@ namespace wg
 			}
 			case BlendMode::Add:
 			{
-				if( srcPixelBytes == 4 )
+                if( m_tintColor.a == 0 )
+                    break;
+                
+                if( srcPixelBytes == 4 )
 				{
 					int tintAlpha = (int) m_tintColor.a;
 					int tintRed = (int) m_tintColor.r;
@@ -1956,7 +1979,10 @@ namespace wg
 			}
 			case BlendMode::Subtract:
 			{
-				if( srcPixelBytes == 4 )
+                if( m_tintColor.a == 0 )
+                    break;
+                
+                if( srcPixelBytes == 4 )
 				{
 					int tintAlpha = (int) m_tintColor.a;
 					int tintRed = (int) m_tintColor.r;
@@ -2207,6 +2233,8 @@ namespace wg
 				case BlendMode::Invert:
 					_stretchBlitInvert( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
+                default:        // Ignore should do nothing and we never get Undefined inside here.
+                    break;
 			}
 		}
 		else
@@ -2217,19 +2245,28 @@ namespace wg
 					_stretchBlitTintedOpaque( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Blend:
+                    if( m_tintColor.a == 0 )
+                        break;
+                    
 					if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitTintedBlend24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedBlend32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Add:
-					if( pSrcSurf->m_pixelFormat.bits == 24 )
+                    if( m_tintColor.a == 0 )
+                        break;
+
+                    if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitTintedAdd24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedAdd32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
 				case BlendMode::Subtract:
-					if( pSrcSurf->m_pixelFormat.bits == 24 )
+                    if( m_tintColor.a == 0 )
+                        break;
+
+                    if( pSrcSurf->m_pixelFormat.bits == 24 )
 						_stretchBlitTintedSub24( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					else
 						_stretchBlitTintedSub32( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
@@ -2240,6 +2277,8 @@ namespace wg
 				case BlendMode::Invert:
 					_stretchBlitTintedInvert( pSrcSurf, sx, sy, sw, sh, dx, dy, dw, dh );
 					break;
+                default:        // Ignore should do nothing and we never get Undefined inside here.
+                    break;
 			}
 		}
 	}
@@ -2268,15 +2307,15 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
-				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
+				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * dstPitch + dx * dstPixelBytes;	\
+				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * srcPitch;					\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
 				{																			\
 					int fracX2 = ofsX & 0x7FFF;												\
 					int fracX1 = 32768 - fracX2;											\
 																							\
-					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
+					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;						\
 																							\
 					int mul11 = fracX1*fracY1 >> 15;										\
 					int mul12 = fracX2*fracY1 >> 15;										\
@@ -2313,12 +2352,12 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * m_pCanvas->m_pitch + dx * dstPixelBytes;	\
-				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * pSrcSurf->m_pitch;						\
+				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * dstPitch + dx * dstPixelBytes;	\
+				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * srcPitch;					\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
 				{																			\
-					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;							\
+					uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;						\
 																							\
 					int srcBlue = p[0]; 													\
 					int srcGreen = p[1];													\

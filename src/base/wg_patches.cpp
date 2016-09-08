@@ -395,9 +395,7 @@ namespace wg
 	//____ clip() __________________________________________________________________
 	
 	void Patches::clip( const Rect& clip )
-	{
-		Rect * pRect = m_pFirst;
-	
+	{	
 		for( Rect * pRect = m_pFirst ; pRect < m_pFirst + m_size ; pRect++ )
 		{
 	

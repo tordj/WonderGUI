@@ -36,9 +36,9 @@
 #endif
 
 
-#ifndef WG_VALUEFORMAT_DOT_H
-#	include <wg_valueformat.h>
-#endif
+//#ifndef WG_VALUEFORMAT_DOT_H
+//#	include <wg_valueformat.h>
+//#endif
 
 #ifndef WG_VALUEITEM_DOT_H
 #	include <wg_valueitem.h>

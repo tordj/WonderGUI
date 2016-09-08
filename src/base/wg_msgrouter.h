@@ -30,9 +30,7 @@
 #	include <wg_msg.h>
 #endif
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
-#endif
+
 
 #ifndef WG_KEY_DOT_H
 #	include <wg_key.h>

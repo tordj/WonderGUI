@@ -75,7 +75,7 @@ namespace wg
 		
 	void ColorSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const
 	{
-		pDevice->fill( _clip, m_color );
+		pDevice->fill( Rect(_clip, _canvas), m_color );
 	}
 		
 	bool ColorSkin::isOpaque() const

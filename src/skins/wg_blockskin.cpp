@@ -414,9 +414,7 @@ namespace wg
 		m_pSurface->lock(AccessMode::ReadOnly);
 	
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-		{
-			Rect r = Rect(m_state[i].ofs,m_dimensions);
-	
+		{	
 			int x1 = m_state[i].ofs.x;
 			int x2 = m_state[i].ofs.x + m_frame.left;
 			int x3 = m_state[i].ofs.x + m_dimensions.w - m_frame.right;

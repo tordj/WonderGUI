@@ -271,10 +271,7 @@ namespace wg
 	{
 		if( !pWidget || !pSibling || !pSibling->parent() || pSibling->parent() != this )
 			return 0;
-	
-		VectorPanel * pWdg = (VectorPanel*) pSibling;
-		Hook * p = pWdg->m_pHook;
-	
+		
 		VectorHook * pHook = _newHook();
 		pHook->_moveBefore(static_cast<VectorHook*>(pSibling->_hook()));
 	

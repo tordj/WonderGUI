@@ -91,7 +91,7 @@ namespace wg
 	
 			if( pOld )
 			{
-				memcpy( pNew, pOld, sizeof(H)*m_size );
+				memcpy( (void*)pNew, pOld, sizeof(H)*m_size );
 				_reallocBlock( 0, m_size );
 				free( pOld );
 			}
@@ -115,7 +115,7 @@ namespace wg
 			if( index + entries < m_size )
 			{
 				int blocksToMove = m_size - index - entries;
-				memmove( &m_pArray[index], &m_pArray[index+entries], sizeof(H) * blocksToMove );
+				memmove( (void*)&m_pArray[index], &m_pArray[index+entries], sizeof(H) * blocksToMove );
 				_reallocBlock( index, blocksToMove );
 			}
 			m_size -= entries;
@@ -125,7 +125,7 @@ namespace wg
 		{
 			if( entries <= m_capacity - m_size )
 			{
-				memmove( &m_pArray[index+entries], &m_pArray[index], sizeof(H) * (m_size - index) );
+				memmove( (void*)&m_pArray[index+entries], &m_pArray[index], sizeof(H) * (m_size - index) );
 			}
 			else
 			{
@@ -138,8 +138,8 @@ namespace wg
 				H* pNew = (H*) malloc( sizeof(H) * m_capacity );
 				H* pOld = m_pArray;
 	
-				memcpy( pNew, pOld, sizeof(H) * index );
-				memcpy( pNew + index + entries, pOld + index, sizeof(H) * (m_size - index) );
+				memcpy( (void*)pNew, pOld, sizeof(H) * index );
+                memcpy( (void*)&pNew[index + entries], pOld + index, sizeof(H) * (m_size - index) );
 				free( pOld );
 				m_pArray = pNew;
 				_reallocBlock( 0, index );

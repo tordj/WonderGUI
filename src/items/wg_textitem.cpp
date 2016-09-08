@@ -254,6 +254,9 @@ namespace wg
 						pMsg->swallow();
 				}
 				break;
+            
+            default:
+                break;
 		}
 	}
 

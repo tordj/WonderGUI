@@ -363,6 +363,10 @@ namespace wg
 				}
 				break;
 			}
+            
+            default:
+                break;
+                
 		}
 	
 		if( state != m_state )

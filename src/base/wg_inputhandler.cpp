@@ -22,6 +22,7 @@
 #include <wg_inputhandler.h>
 #include <wg_base.h>
 #include <wg_rootpanel.h>
+#include <wg_container.h>
 
 namespace wg 
 {

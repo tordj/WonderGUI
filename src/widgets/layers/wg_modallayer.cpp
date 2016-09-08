@@ -576,6 +576,9 @@ namespace wg
 						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
+                    
+                    default:
+                        break;
 				}
 			}
 		}

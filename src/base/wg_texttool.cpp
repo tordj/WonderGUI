@@ -295,7 +295,7 @@ namespace wg
 		uint32_t n = 0;
 		for( unsigned int i = 0 ; i < len && pStr[i] != 0 ; i++ )
 		{
-			if( pStr[i] == ' ' || pStr[i] == (uint16_t) ExtChar::NoBreakSpace )
+			if( pStr[i] == ' ' || pStr[i] == (char) ExtChar::NoBreakSpace )
 				n++;
 		}
 		return n;

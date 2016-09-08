@@ -22,6 +22,7 @@
 
 #include <wg_rootpanel.h>
 #include <wg_base.h>
+#include <wg_container.h>
 #include <new>
 
 
@@ -122,12 +123,7 @@ namespace wg
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
-		{
-			Rect r( Coord(0,0), m_pGfxDevice->canvasSize() );
-			if( r.w == 0 || r.h == 0 )
-				int x = 0;
-			return r;
-		}
+			return Rect( Coord(0,0), m_pGfxDevice->canvasSize() );
 		else
 			return Rect(0,0,0,0);
 	}
