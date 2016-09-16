@@ -107,7 +107,11 @@ namespace wg
     void NullGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
 	{
 	}
-	
+
+    void NullGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
+    {
+    }
+    
 	void NullGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
 	{
 	}

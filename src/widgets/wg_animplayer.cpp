@@ -204,6 +204,9 @@ namespace wg
 	
 	bool AnimPlayer::play()
 	{
+        if( m_bPlaying )
+            return true;
+        
 		if( !m_pAnim )
 			return false;
 	
@@ -216,7 +219,10 @@ namespace wg
 	
 	bool AnimPlayer::stop()
 	{
-		m_bPlaying = false;
+        if( !m_bPlaying )
+            return true;
+        
+        m_bPlaying = false;
 		Base::msgRouter()->deleteRoute( m_tickRouteId );
 		m_tickRouteId = 0;
 		return true;

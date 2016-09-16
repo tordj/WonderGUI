@@ -132,21 +132,20 @@ namespace wg
 		BlendMode blendMode = m_blendMode;
 		if( blendMode == BlendMode::Blend && fillColor.a == 255 )
 			blendMode = BlendMode::Replace;
-	
+        
 		//
 	
 		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
 		uint8_t * pDst = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
 	
-	
-	
-	
+
 		switch( blendMode )
 		{
 			case BlendMode::Replace:
 			{
+
                 int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-                
+
                 if( dstPixelBytes == 4 )
                 {
                     for( int y = 0 ; y < rect.h ; y++ )
@@ -172,8 +171,9 @@ namespace wg
                         }
                         pDst += m_pCanvas->m_pitch;
                     }
-                }			}
+                }
                 break;
+            }
             case BlendMode::Blend:
 			{
 				int storedRed = ((int)fillColor.r) * fillColor.a;
@@ -195,10 +195,10 @@ namespace wg
 			}
 			case BlendMode::Add:
 			{
-				int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
+                int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
 				int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
 				int storedBlue = (int) m_pDivTab[fillColor.b * fillColor.a];
-	
+                
 				if( storedRed + storedGreen + storedBlue == 0 )
 					return;
 	
@@ -240,7 +240,10 @@ namespace wg
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
 				int storedBlue = (int)fillColor.b;
-	
+
+                if( storedRed + storedGreen + storedBlue == 768 )
+                    return;
+                
 				for( int y = 0 ; y < rect.h ; y++ )
 				{
 					for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
@@ -259,6 +262,9 @@ namespace wg
 				int storedGreen = (int)fillColor.g;
 				int storedBlue = (int)fillColor.b;
 	
+                if( storedRed + storedGreen + storedBlue == 0 )
+                    return;
+                
 				int invertRed = 255 - (int)fillColor.r;
 				int invertGreen = 255 - (int)fillColor.g;
 				int invertBlue = 255 - (int)fillColor.b;
@@ -279,7 +285,7 @@ namespace wg
 			default:
 				break;
 		}
-	}
+    }
 	
 	//____ fillSubPixel() ____________________________________________________________________
 	
@@ -736,16 +742,38 @@ namespace wg
 
 			if( y >= clip.y && y <= clip.y + clip.h -1 && x >= clip.x && x <= clip.x + clip.w -1 )
 			{
-			  const int alpha = colors[i].a;
-			  const int invAlpha = 255-alpha;
+                const int alpha = colors[i].a;
+                const int invAlpha = 255-alpha;
 
-			  pDst[0] = (uint8_t) ((pDst[0]*invAlpha + (int)colors[i].b*alpha) >> 8);
-			  pDst[1] = (uint8_t) ((pDst[1]*invAlpha + (int)colors[i].g*alpha) >> 8);
-			  pDst[2] = (uint8_t) ((pDst[2]*invAlpha + (int)colors[i].r*alpha) >> 8);
+                pDst[0] = (uint8_t) ((pDst[0]*invAlpha + (int)colors[i].b*alpha) >> 8);
+                pDst[1] = (uint8_t) ((pDst[1]*invAlpha + (int)colors[i].g*alpha) >> 8);
+                pDst[2] = (uint8_t) ((pDst[2]*invAlpha + (int)colors[i].r*alpha) >> 8);
 			}
 		}
 	}
 
+    //____ plotPixels() ____________________________________________________
+    
+    void SoftGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * colors)
+    {
+        const int pitch = m_pCanvas->m_pitch;
+        const int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+        
+        for( int i = 0 ; i < nCoords ; i++ )
+        {
+            const int x = pCoords[i].x;
+            const int y = pCoords[i].y;
+            
+            uint8_t * pDst = m_pCanvas->m_pData + y * pitch + x * pixelBytes;
+            
+            const int alpha = colors[i].a;
+            const int invAlpha = 255-alpha;
+                
+            pDst[0] = (uint8_t) ((pDst[0]*invAlpha + (int)colors[i].b*alpha) >> 8);
+            pDst[1] = (uint8_t) ((pDst[1]*invAlpha + (int)colors[i].g*alpha) >> 8);
+            pDst[2] = (uint8_t) ((pDst[2]*invAlpha + (int)colors[i].r*alpha) >> 8);
+        }
+    }
 	
 	//____ clipPlotSoftPixels() _______________________________________________________
 	
