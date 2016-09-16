@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C623A771D818FBA00DE671D /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C623A761D818FBA00DE671D /* main2.cpp */; };
 		0C623A7B1D81906100DE671D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A7A1D81906100DE671D /* SDL2.framework */; };
-		0C623A7E1D81906D00DE671D /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A7C1D81906D00DE671D /* libgfxdevice_software.a */; };
 		0C623A7F1D81906D00DE671D /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A7D1D81906D00DE671D /* libWonderGUI.a */; };
 		0C623A811D81912500DE671D /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A801D81912500DE671D /* SDL2_image.framework */; };
+		0CC777DB1D8AC7B9006BD1BF /* testwidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */; };
+		0CDC6B211D86D6E80064A85B /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */; };
+		0CDC6B231D86D7000064A85B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDC6B221D86D7000064A85B /* OpenGL.framework */; };
+		0CEBB5531D82FC8B009F8C08 /* main_gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,12 +30,14 @@
 
 /* Begin PBXFileReference section */
 		0C623A6C1D818F5B00DE671D /* workbench */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = workbench; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C623A761D818FBA00DE671D /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main2.cpp; path = ../../../../workbench/main2.cpp; sourceTree = "<group>"; };
-		0C623A781D81900700DE671D /* xcode-osx */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "xcode-osx"; path = ..; sourceTree = "<group>"; };
 		0C623A7A1D81906100DE671D /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
-		0C623A7C1D81906D00DE671D /* libgfxdevice_software.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgfxdevice_software.a; path = "../../../../Library/Developer/Xcode/DerivedData/wondergui-fdnviihkiizttacsdyiljeesqbzi/Build/Products/Debug/libgfxdevice_software.a"; sourceTree = "<group>"; };
 		0C623A7D1D81906D00DE671D /* libWonderGUI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libWonderGUI.a; path = "../../../../Library/Developer/Xcode/DerivedData/wondergui-fdnviihkiizttacsdyiljeesqbzi/Build/Products/Debug/libWonderGUI.a"; sourceTree = "<group>"; };
 		0C623A801D81912500DE671D /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = testwidget.cpp; path = ../../../../workbench/testwidget.cpp; sourceTree = "<group>"; };
+		0CC777DA1D8AC7B9006BD1BF /* testwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testwidget.h; path = ../../../../workbench/testwidget.h; sourceTree = "<group>"; };
+		0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgfxdevice_opengl.a; path = "../../../../Library/Developer/Xcode/DerivedData/wondergui-fdnviihkiizttacsdyiljeesqbzi/Build/Products/Debug/libgfxdevice_opengl.a"; sourceTree = "<group>"; };
+		0CDC6B221D86D7000064A85B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_gl.cpp; path = ../../../../workbench/main_gl.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,10 +45,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CDC6B231D86D7000064A85B /* OpenGL.framework in Frameworks */,
+				0CDC6B211D86D6E80064A85B /* libgfxdevice_opengl.a in Frameworks */,
 				0C623A7B1D81906100DE671D /* SDL2.framework in Frameworks */,
 				0C623A811D81912500DE671D /* SDL2_image.framework in Frameworks */,
 				0C623A7F1D81906D00DE671D /* libWonderGUI.a in Frameworks */,
-				0C623A7E1D81906D00DE671D /* libgfxdevice_software.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,12 +59,12 @@
 		0C623A631D818F5B00DE671D = {
 			isa = PBXGroup;
 			children = (
+				0CDC6B221D86D7000064A85B /* OpenGL.framework */,
+				0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */,
 				0C623A6E1D818F5B00DE671D /* workbench */,
 				0C623A801D81912500DE671D /* SDL2_image.framework */,
-				0C623A7C1D81906D00DE671D /* libgfxdevice_software.a */,
 				0C623A7D1D81906D00DE671D /* libWonderGUI.a */,
 				0C623A7A1D81906100DE671D /* SDL2.framework */,
-				0C623A781D81900700DE671D /* xcode-osx */,
 				0C623A6D1D818F5B00DE671D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -75,7 +80,9 @@
 		0C623A6E1D818F5B00DE671D /* workbench */ = {
 			isa = PBXGroup;
 			children = (
-				0C623A761D818FBA00DE671D /* main2.cpp */,
+				0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */,
+				0CC777DA1D8AC7B9006BD1BF /* testwidget.h */,
+				0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */,
 			);
 			path = workbench;
 			sourceTree = "<group>";
@@ -136,7 +143,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C623A771D818FBA00DE671D /* main2.cpp in Sources */,
+				0CEBB5531D82FC8B009F8C08 /* main_gl.cpp in Sources */,
+				0CC777DB1D8AC7B9006BD1BF /* testwidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
