@@ -109,7 +109,6 @@ namespace wg
 	
 		virtual void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
 		virtual void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
-		virtual void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness ) = 0;
 
         virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
         virtual void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
@@ -117,15 +116,6 @@ namespace wg
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 
-	
-		virtual void	drawArcNE( const Rect& rect, Color color ) = 0;
-		virtual void	drawElipse( const Rect& rect, Color color ) = 0;
-		virtual void	drawFilledElipse( const Rect& rect, Color color ) = 0;
-	
-		virtual void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color ) = 0;
-		virtual void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color ) = 0;
-		virtual void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color ) = 0;
-	
 	
 		virtual void	blit( const Surface_p& pSrc );
 		virtual void	blit( const Surface_p& pSrc, int dx, int dy );

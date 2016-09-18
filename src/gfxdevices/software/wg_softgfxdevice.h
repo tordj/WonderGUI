@@ -104,6 +104,7 @@ namespace wg
 	
 		void	_initTables();
 		void	_genCurveTab();
+		int 	_scaleLineThickness( float thickness, int slope );
 	
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );

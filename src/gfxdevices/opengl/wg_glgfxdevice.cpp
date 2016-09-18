@@ -767,7 +767,7 @@ namespace wg
     }
     
     
-
+	//____ clipDrawHorrLine() __________________________________________________
 	
 	void GlGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& _start, int length, const Color& col )
 	{
@@ -818,6 +818,9 @@ namespace wg
         return;
 		
 	}
+
+
+	//____ clipDrawVertLine() __________________________________________________
 	
 	void GlGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& _start, int length, const Color& col )
 	{
@@ -868,10 +871,8 @@ namespace wg
         return;
 	}
 	
-	void GlGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
-	{
-		
-	}
+	
+	//____ clipPlotPixels() ________________________________________________________
 	
 	void GlGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
     {
@@ -880,6 +881,8 @@ namespace wg
         glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
     }
     
+
+	//____ plotPixels() ________________________________________________________
     
     void GlGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
     {
@@ -920,6 +923,9 @@ namespace wg
         glDisableVertexAttribArray(0);
 	}
 
+
+	//____ drawLine() __________________________________________________________
+
 	void GlGfxDevice::drawLine( Coord beg, Coord end, Color color, float thickness )
 	{
         int 	length;
@@ -936,7 +942,7 @@ namespace wg
             length = end.x - beg.x;
             slope = ((float)(end.y - beg.y)) / length;
             
-            width = (thickness*m_lineThicknessTable[abs((int)(slope*16))]);
+            width = _scaleThickness( thickness, slope );
  
             
             glUseProgram( m_mildSlopeProg );
@@ -975,7 +981,7 @@ namespace wg
                 return;											// TODO: Should stil draw the caps!
             
             slope = ((float)(end.x - beg.x)) / length;
-            width = (thickness*m_lineThicknessTable[abs((int)(slope*16))]);
+            width = _scaleThickness( thickness, slope );
  
             glUseProgram( m_steepSlopeProg );
             
@@ -1027,6 +1033,8 @@ namespace wg
 
 	}
 	
+	//____ clipDrawLine() ______________________________________________________
+	
 	void GlGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
         glScissor( clip.x, m_canvasSize.h - clip.y - clip.h, clip.w, clip.h );
@@ -1034,33 +1042,6 @@ namespace wg
         glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
 	}
 
-	
-	void GlGfxDevice::drawArcNE( const Rect& rect, Color color )
-	{
-	}
-
-	void GlGfxDevice::drawElipse( const Rect& rect, Color color )
-	{
-		
-	}
-	
-	void GlGfxDevice::drawFilledElipse( const Rect& rect, Color color )
-	{
-		
-	}
-	
-	void GlGfxDevice::clipDrawArcNE( const Rect& clip, const Rect& rect, Color color )
-	{
-	}
-	
-	void GlGfxDevice::clipDrawElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-	}
-	
-	void GlGfxDevice::clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-		
-	}
 	
     //____ _initTables() ___________________________________________________________
     
@@ -1074,6 +1055,25 @@ namespace wg
             m_lineThicknessTable[i] = (float) sqrt( 1.0 + b*b );
         }
     }
+	
+	
+	//____ _scaleThickness() ___________________________________________________
+	
+	float GlGfxDevice::_scaleThickness( float thickness, float slope )
+	{
+		slope = abs(slope);
+		
+		float scale = m_lineThicknessTable[(int)(slope*16)];
+		
+		if( slope < 1.f )
+		{
+			float scale2 = m_lineThicknessTable[(int)(slope*16)+1];
+			scale += (scale2-scale)*((slope*16) - ((int)(slope*16)));
+		}
+		
+		return thickness * scale;
+	}
+	
 	
 	
 } // namespace wg

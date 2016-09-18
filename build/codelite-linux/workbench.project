@@ -29,8 +29,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../workbench/main2.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../workbench/main_gl.cpp"/>
+    <File Name="../../workbench/main2.cpp" ExcludeProjConfig=""/>
+    <File Name="../../workbench/main_gl.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../workbench/testwidget.cpp"/>
     <File Name="../../workbench/testwidget.h"/>
   </VirtualDirectory>

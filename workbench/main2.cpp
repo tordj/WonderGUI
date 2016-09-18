@@ -15,7 +15,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
-
+#include <testwidget.h>
 
 using namespace wg;
 
@@ -131,6 +131,7 @@ int main ( int argc, char** argv )
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
+
 	
 	Base::inputHandler()->setFocusedWindow( pRoot );
 
@@ -278,7 +279,12 @@ int main ( int argc, char** argv )
 		pText->grabFocus();
 	}
 
-
+   {
+        TestWidget_p pTest = TestWidget::create();
+        pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
+        pTest->start();
+    }
+	
 /*	
 	{
 		FlexPanel_p pExtraFlex = FlexPanel::create();

@@ -374,7 +374,7 @@ namespace wg
 			length = end.x - beg.x;
 			slope = ((end.y - beg.y) << 16) / length;
 
-			width = (int) (thickness*m_lineThicknessTable[abs(slope>>12)]);
+			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.y << 16) - width/2;		
 					
 			rowInc = m_pCanvas->m_pixelFormat.bits/8;
@@ -394,7 +394,7 @@ namespace wg
 				return;											// TODO: Should stil draw the caps!
 
 			slope = ((end.x - beg.x) << 16) / length;
-			width = (int) (thickness*m_lineThicknessTable[abs(slope>>12)]);
+			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.x << 16) - width/2;		
 					
 			rowInc = m_pCanvas->m_pitch;
@@ -426,7 +426,7 @@ namespace wg
 			length = end.x - beg.x;
 			slope = ((end.y - beg.y) << 16) / length;
 
-			width = (int) (thickness*m_lineThicknessTable[abs(slope>>12)]);
+			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.y << 16) - width/2;		
 					
 			rowInc = m_pCanvas->m_pixelFormat.bits/8;
@@ -465,7 +465,7 @@ namespace wg
 				return;											// TODO: Should stil draw the caps!
 
 			slope = ((end.x - beg.x) << 16) / length;
-			width = (int) (thickness*m_lineThicknessTable[abs(slope>>12)]);
+			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.x << 16) - width/2;		
 					
 			rowInc = m_pCanvas->m_pitch;
@@ -2780,5 +2780,25 @@ namespace wg
 			m_lineThicknessTable[i] = (int) (sqrt( 1.0 + b*b ) * 65536);
 		}
 	}
+
+
+	//____ _scaleLineThickness() ___________________________________________________
+	
+	int SoftGfxDevice::_scaleLineThickness( float thickness, int slope )
+	{
+		slope = abs(slope);
+		
+		int scale = m_lineThicknessTable[slope>>12];
+		
+		if( slope < (1 << 16) )
+		{
+			int scale2 = m_lineThicknessTable[(slope>>12)+1];
+			scale += ((scale2-scale)*(slope & 0xFFF)) >> 12;
+		}
+		
+		return (int) (thickness * scale);
+	}
+	
+
 
 } // namespace wg

@@ -40,8 +40,6 @@
     <File Name="../../src/widgets/wg_fpsdisplay.h" ExcludeProjConfig=""/>
     <File Name="../../src/widgets/wg_image.cpp"/>
     <File Name="../../src/widgets/wg_image.h"/>
-    <File Name="../../src/widgets/wg_knob.cpp"/>
-    <File Name="../../src/widgets/wg_knob.h"/>
     <File Name="../../src/widgets/wg_oscilloscope.cpp"/>
     <File Name="../../src/widgets/wg_oscilloscope.h"/>
     <File Name="../../src/widgets/wg_refreshbutton.cpp"/>
@@ -52,8 +50,6 @@
     <File Name="../../src/widgets/wg_scrollbar.h"/>
     <File Name="../../src/widgets/wg_simplevolumemeter.cpp"/>
     <File Name="../../src/widgets/wg_simplevolumemeter.h"/>
-    <File Name="../../src/widgets/wg_switch.cpp"/>
-    <File Name="../../src/widgets/wg_switch.h"/>
     <File Name="../../src/widgets/wg_textdisplay.cpp"/>
     <File Name="../../src/widgets/wg_textdisplay.h"/>
     <File Name="../../src/widgets/wg_togglebutton.cpp"/>

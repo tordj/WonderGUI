@@ -49,7 +49,7 @@ namespace wg
 	
 	
 	class RootPanel;
-	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	StrongPtr<RootPanel,Object_p>	RootPanel_p;
 	typedef	WeakPtr<RootPanel,Object_wp>	RootPanel_wp;
 	
 	
@@ -73,44 +73,44 @@ namespace wg
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
 		static RootPanel_p	create( const GfxDevice_p& pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
 	
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
-		static const char		CLASSNAME[];
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
 		static RootPanel_p	cast( const Object_p& pObject );
 	
-		bool					setGfxDevice( const GfxDevice_p& pDevice );
+		bool				setGfxDevice( const GfxDevice_p& pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 	
-		bool					setGeo( const Rect& geo );
-		Rect					geo() const;
+		bool				setGeo( const Rect& geo );
+		Rect				geo() const;
 	
-		bool					setVisible( bool bVisible );
-		bool					isVisible() const { return m_bVisible; }
+		bool				setVisible( bool bVisible );
+		bool				isVisible() const { return m_bVisible; }
 	
-		Hook_p					setWidget( const Widget_p& pWidget );
-		inline Widget_p			widget() const { return m_hook._widget(); }
-		bool					removeWidget();
-		bool					clear();
+		Hook_p				setWidget( const Widget_p& pWidget );
+		inline Widget_p		widget() const { return m_hook._widget(); }
+		bool				removeWidget();
+		bool				clear();
 		
-		inline Widget_p			focusedChild() const { return _focusedChild(); }
+		inline Widget_p		focusedChild() const { return _focusedChild(); }
 		
 		
 	
-		Widget_p				findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
+		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
-		inline int				nbDirtyRects() const { return m_dirtyPatches.size(); }
+		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
 		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
 	
-		inline int				nbUpdatedRects() const { return m_updatedPatches.size(); }
+		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
 		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
 	
 	
-		bool	render();
-		bool	render( const Rect& clip );
+		bool		render();
+		bool		render( const Rect& clip );
 	
-		bool	beginRender();
-		bool	renderSection( const Rect& clip );
-		bool	endRender();
+		bool		beginRender();
+		bool		renderSection( const Rect& clip );
+		bool		endRender();
 	
 		inline void	addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
 	
