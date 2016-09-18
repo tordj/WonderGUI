@@ -29,8 +29,11 @@
 #	include <windows.h>
 #endif
 
-#include <OpenGL/gl.h>
-
+#ifdef __APPLE__
+#	include <OpenGL/gl.h>
+#else
+#	include <GL/gl.h>
+#endif
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>

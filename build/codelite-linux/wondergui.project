@@ -32,8 +32,6 @@
     <File Name="../../src/widgets/wg_animplayer.cpp"/>
     <File Name="../../src/widgets/wg_animplayer.h"/>
     <File Name="../../src/widgets/wg_button.h"/>
-    <File Name="../../src/widgets/wg_combobox.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_combobox.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_container.cpp"/>
     <File Name="../../src/widgets/wg_container.h"/>
     <File Name="../../src/widgets/wg_filler.cpp"/>
@@ -44,10 +42,6 @@
     <File Name="../../src/widgets/wg_image.h"/>
     <File Name="../../src/widgets/wg_knob.cpp"/>
     <File Name="../../src/widgets/wg_knob.h"/>
-    <File Name="../../src/widgets/wg_menu.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_menu.h" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_menubar.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_menubar.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_oscilloscope.cpp"/>
     <File Name="../../src/widgets/wg_oscilloscope.h"/>
     <File Name="../../src/widgets/wg_refreshbutton.cpp"/>
@@ -66,8 +60,6 @@
     <File Name="../../src/widgets/wg_togglebutton.h"/>
     <File Name="../../src/widgets/wg_valuedisplay.cpp"/>
     <File Name="../../src/widgets/wg_valuedisplay.h"/>
-    <File Name="../../src/widgets/wg_valueeditor.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_valueeditor.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/widgets/wg_volumemeter.cpp"/>
     <File Name="../../src/widgets/wg_volumemeter.h"/>
     <File Name="../../src/widgets/wg_widget.cpp"/>
@@ -101,8 +93,6 @@
       <File Name="../../src/widgets/lists/wg_list.h"/>
       <File Name="../../src/widgets/lists/wg_packlist.cpp"/>
       <File Name="../../src/widgets/lists/wg_packlist.h"/>
-      <File Name="../../src/widgets/lists/wg_tablelist.cpp" ExcludeProjConfig="Debug;Release"/>
-      <File Name="../../src/widgets/lists/wg_tablelist.h" ExcludeProjConfig="Debug;Release"/>
     </VirtualDirectory>
     <VirtualDirectory Name="layers">
       <File Name="../../src/widgets/layers/wg_layer.cpp"/>
@@ -115,8 +105,6 @@
     <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.h"/>
-    <File Name="../../src/widgets/wg_lineeditor.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/widgets/wg_lineeditor.h" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_item.h"/>
@@ -224,8 +212,6 @@
     <File Name="../../src/base/wg_mempool.h"/>
     <File Name="../../src/base/wg_memstack.cpp"/>
     <File Name="../../src/base/wg_memstack.h"/>
-    <File Name="../../src/base/wg_menuitem.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../src/base/wg_menuitem.h" ExcludeProjConfig="Debug"/>
     <File Name="../../src/base/wg_nullgfxdevice.cpp"/>
     <File Name="../../src/base/wg_nullgfxdevice.h"/>
     <File Name="../../src/base/wg_object.cpp"/>

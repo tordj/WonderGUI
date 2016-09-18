@@ -29,15 +29,19 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../workbench/main2.cpp"/>
+    <File Name="../../workbench/main2.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../workbench/main_gl.cpp"/>
+    <File Name="../../workbench/testwidget.cpp"/>
+    <File Name="../../workbench/testwidget.h"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="gfxdevice_software"/>
-    <Project Name="wondergui"/>
-  </Dependencies>
   <Dependencies Name="Release">
     <Project Name="gfxdevice_software"/>
     <Project Name="wondergui"/>
+  </Dependencies>
+  <Dependencies Name="Debug">
+    <Project Name="gfxdevice_software"/>
+    <Project Name="wondergui"/>
+    <Project Name="gfxdevice_opengl"/>
   </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -51,6 +55,7 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-O0;-std=c++11;-Wall" C_Options="-g;-O0;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="../../workbench/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -66,17 +71,20 @@
         <IncludePath Value="../../src/widgets/lists/"/>
         <IncludePath Value="../../bench/"/>
         <IncludePath Value="../../src/gfxdevices/software/"/>
+        <IncludePath Value="../../src/gfxdevices/opengl/"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Debug/"/>
         <Library Value="SDL2"/>
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
+        <Library Value="gfxdevice_opengl"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
+        <Library Value="GL"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -110,6 +118,7 @@
     </Configuration>
     <Configuration Name="Release" CompilerType="" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-O2;-std=c++11;-Wall" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="../../workbench/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -125,6 +134,7 @@
         <IncludePath Value="../../src/widgets/lists/"/>
         <IncludePath Value="../../bench/"/>
         <IncludePath Value="../../src/gfxdevices/software/"/>
+        <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="" Required="yes">
@@ -132,11 +142,13 @@
         <Library Value="SDL2"/>
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
+        <Library Value="gfxdevice_opengl"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
+        <Library Value="GL"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

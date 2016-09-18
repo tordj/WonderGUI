@@ -30,8 +30,11 @@
 #	include <windows.h>
 #endif
 
-#include <OpenGL/gl3.h>
-
+#ifdef __APPLE__
+#	include <OpenGL/gl3.h>
+#else
+#	include <GLES3/gl3.h>
+#endif
 
 #ifndef	WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
