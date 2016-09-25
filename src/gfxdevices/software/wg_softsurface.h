@@ -56,11 +56,11 @@ namespace wg
 		Size		size() const;
 		bool		isOpaque() const;
 	
-		uint32_t		pixel( Coord coord ) const;
+		uint32_t	pixel( Coord coord ) const;
 		uint8_t		alpha( Coord coord ) const;
 	
-		void *		lock( AccessMode mode );
-		void *		lockRegion( AccessMode mode, const Rect& region );
+		uint8_t *	lock( AccessMode mode );
+		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
 		void		unlock();
 	
 		inline float scaleAlpha() { return m_fScaleAlpha; }

@@ -222,7 +222,7 @@ namespace wg
 	
 	//____ lock() __________________________________________________________________
 	
-	void * SoftSurface::lock( AccessMode mode )
+	uint8_t * SoftSurface::lock( AccessMode mode )
 	{
 		m_accessMode = AccessMode::ReadWrite;
 		m_pPixels = m_pData;
@@ -232,7 +232,7 @@ namespace wg
 	
 	//____ lockRegion() ____________________________________________________________
 	
-	void * SoftSurface::lockRegion( AccessMode mode, const Rect& region )
+	uint8_t * SoftSurface::lockRegion( AccessMode mode, const Rect& region )
 	{
 		m_accessMode = mode;
 		m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;

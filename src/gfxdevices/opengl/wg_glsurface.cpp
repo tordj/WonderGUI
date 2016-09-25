@@ -254,7 +254,7 @@ namespace wg
 
 	//____ lock() __________________________________________________________________
 
-	void * GlSurface::lock( AccessMode mode )
+	uint8_t * GlSurface::lock( AccessMode mode )
 	{
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
@@ -283,7 +283,7 @@ namespace wg
 
 	//____ lockRegion() __________________________________________________________________
 
-	void * GlSurface::lockRegion( AccessMode mode, const Rect& region )
+	uint8_t * GlSurface::lockRegion( AccessMode mode, const Rect& region )
 	{
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;

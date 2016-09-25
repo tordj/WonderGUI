@@ -53,8 +53,11 @@ namespace wg
 		static const char			CLASSNAME[];
 		static SoftGfxDevice_p	cast( const Object_p& pObject );
 	
-		void	setCanvas( const SoftSurface_p& pCanvas );
+		bool	setCanvas( const Surface_p& pCanvas );
 	
+		bool	beginRender();
+		bool	endRender();
+		
 		//
 	
 		void	fill( const Rect& rect, const Color& col );
@@ -159,10 +162,14 @@ namespace wg
 											int dx, int dy, int dw, int dh );
 	
 		bool			m_bBilinearFiltering;
-		SoftSurface_p 	m_pCanvas;
+		Surface_p 		m_pCanvas;
 		int				m_lineThicknessTable[17];
 		int *			m_pCurveTab;
 		uint8_t *		m_pDivTab;
+		
+		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
+		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
+		int				m_canvasPitch;
 	};
 	
 

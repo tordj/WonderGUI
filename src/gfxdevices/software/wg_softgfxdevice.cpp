@@ -54,6 +54,9 @@ namespace wg
 	{
 		m_bBilinearFiltering = true;
 		m_pCanvas = 0;
+		m_pCanvasPixels = 0;
+		m_canvasPixelBits = 0;
+		m_canvasPitch = 0;
 		_initTables();
 		_genCurveTab();
 	}
@@ -62,6 +65,8 @@ namespace wg
 	{
 		m_bBilinearFiltering = true;
 		m_pCanvas = pCanvas;
+		m_canvasPixelBits = 0;
+		m_canvasPitch = 0;
 		_initTables();
 		_genCurveTab();
 	}
@@ -104,20 +109,58 @@ namespace wg
 	
 	//____ setCanvas() _______________________________________________________________
 	
-	void SoftGfxDevice::setCanvas( const SoftSurface_p& pCanvas )
+	bool SoftGfxDevice::setCanvas( const Surface_p& pCanvas )
 	{
+		if( (pCanvas->pixelFormat()->type != PixelType::BGRA_8) && (pCanvas->pixelFormat()->type != PixelType::BGR_8) )
+			return false;
+		
+		
 		m_pCanvas = pCanvas;
 		if( pCanvas )
 			m_canvasSize = pCanvas->size();
 		else
 			m_canvasSize = Size();
+		
+		return true;
 	}
+
+	//____ beginRender() _______________________________________________________
+
+	bool SoftGfxDevice::beginRender()
+	{
+		if( !m_pCanvas)
+			return false;
+			
+		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
+		m_canvasPixelBits = m_pCanvas->pixelFormat()->bits;
+		m_canvasPitch = m_pCanvas->pitch();
+		
+		if( !m_pCanvasPixels )
+			return false;
+			
+		return true;	
+	}
+
+	//____ endRender() _________________________________________________________
 	
+	bool SoftGfxDevice::endRender()
+	{
+		if( !m_pCanvasPixels )
+			return false;
+
+		m_pCanvas->unlock();
+		m_pCanvasPixels = 0;
+		m_canvasPixelBits = 0;
+		m_canvasPitch = 0;
+		return true;
+	}
+
+
 	//____ fill() ____________________________________________________________________
 	
 	void SoftGfxDevice::fill( const Rect& rect, const Color& col )
 	{
-		if( !m_pCanvas || !m_pCanvas->m_pData )
+		if( !m_pCanvas || !m_pCanvasPixels )
 			return;
 	
 		Color fillColor = col * m_tintColor;
@@ -135,8 +178,8 @@ namespace wg
         
 		//
 	
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		uint8_t * pDst = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
+		int pixelBytes = m_canvasPixelBits/8;
+		uint8_t * pDst = m_pCanvasPixels + rect.y *m_canvasPitch + rect.x * pixelBytes;
 	
 
 		switch( blendMode )
@@ -144,7 +187,7 @@ namespace wg
 			case BlendMode::Replace:
 			{
 
-                int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+                int dstPixelBytes = m_canvasPixelBits/8;
 
                 if( dstPixelBytes == 4 )
                 {
@@ -156,7 +199,7 @@ namespace wg
                         {
                             * ((uint32_t*)(&pDst[x])) = fillValue;
                         }
-                        pDst += m_pCanvas->m_pitch;
+                        pDst +=m_canvasPitch;
                     }
                 }
                 else
@@ -169,7 +212,7 @@ namespace wg
                             pDst[x+1] = fillColor.g;
                             pDst[x+2] = fillColor.r;
                         }
-                        pDst += m_pCanvas->m_pitch;
+                        pDst +=m_canvasPitch;
                     }
                 }
                 break;
@@ -189,7 +232,7 @@ namespace wg
 						pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
 						pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
 					}
-					pDst += m_pCanvas->m_pitch;
+					pDst +=m_canvasPitch;
 				}
 				break;
 			}
@@ -210,7 +253,7 @@ namespace wg
 						pDst[x+1] = limitUint8(pDst[x+1] + storedGreen);
 						pDst[x+2] = limitUint8(pDst[x+2] + storedRed);
 					}
-					pDst += m_pCanvas->m_pitch;
+					pDst +=m_canvasPitch;
 				}
 				break;
 			}
@@ -231,7 +274,7 @@ namespace wg
 						pDst[x+1] = limitUint8(pDst[x+1] - storedGreen);
 						pDst[x+2] = limitUint8(pDst[x+2] - storedRed);
 					}
-					pDst += m_pCanvas->m_pitch;
+					pDst +=m_canvasPitch;
 				}
 				break;
 			}
@@ -252,7 +295,7 @@ namespace wg
 						pDst[x+1] = m_pDivTab[pDst[x+1] * storedGreen];
 						pDst[x+2] = m_pDivTab[pDst[x+2] * storedRed];
 					}
-					pDst += m_pCanvas->m_pitch;
+					pDst +=m_canvasPitch;
 				}
 				break;
 			}
@@ -278,7 +321,7 @@ namespace wg
 						pDst[x+1] = m_pDivTab[(255-pDst[x+1]) * storedGreen + pDst[x+1] * invertGreen];
 						pDst[x+2] = m_pDivTab[(255-pDst[x+2]) * storedRed + pDst[x+2] * invertRed];
 					}
-					pDst += m_pCanvas->m_pitch;
+					pDst +=m_canvasPitch;
 				}
 				break;
 			}
@@ -291,7 +334,7 @@ namespace wg
 	
 	void SoftGfxDevice::fillSubPixel( const RectF& rect, const Color& col )
 	{
-		if( !m_pCanvas || !m_pCanvas->m_pData )
+		if( !m_pCanvas || !m_pCanvasPixels )
 			return;
 	
 		Color fillColor = col * m_tintColor;
@@ -377,10 +420,10 @@ namespace wg
 			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.y << 16) - width/2;		
 					
-			rowInc = m_pCanvas->m_pixelFormat.bits/8;
-			pixelInc = m_pCanvas->m_pitch;
+			rowInc = m_canvasPixelBits/8;
+			pixelInc =m_canvasPitch;
 
-			pRow = m_pCanvas->m_pData + beg.x * rowInc;
+			pRow = m_pCanvasPixels + beg.x * rowInc;
 		}
 		else
 		{
@@ -397,10 +440,10 @@ namespace wg
 			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.x << 16) - width/2;		
 					
-			rowInc = m_pCanvas->m_pitch;
-			pixelInc = m_pCanvas->m_pixelFormat.bits/8;
+			rowInc =m_canvasPitch;
+			pixelInc = m_canvasPixelBits/8;
 
-			pRow = m_pCanvas->m_pData + beg.y * rowInc;		
+			pRow = m_pCanvasPixels + beg.y * rowInc;		
 		}
 
 		_drawLineSegment( pRow, rowInc, pixelInc, length, width, pos, slope, color );
@@ -429,10 +472,10 @@ namespace wg
 			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.y << 16) - width/2;		
 					
-			rowInc = m_pCanvas->m_pixelFormat.bits/8;
-			pixelInc = m_pCanvas->m_pitch;
+			rowInc = m_canvasPixelBits/8;
+			pixelInc =m_canvasPitch;
 
-			pRow = m_pCanvas->m_pData + beg.x * rowInc;
+			pRow = m_pCanvasPixels + beg.x * rowInc;
 
 			// Do clipping for line segment
 			
@@ -468,10 +511,10 @@ namespace wg
 			width = _scaleLineThickness( thickness, slope );
 			pos = (beg.x << 16) - width/2;		
 					
-			rowInc = m_pCanvas->m_pitch;
-			pixelInc = m_pCanvas->m_pixelFormat.bits/8;
+			rowInc =m_canvasPitch;
+			pixelInc = m_canvasPixelBits/8;
 
-			pRow = m_pCanvas->m_pData + beg.y * rowInc;		
+			pRow = m_pCanvasPixels + beg.y * rowInc;		
 
 			// Do clipping for line segment
 			
@@ -730,15 +773,15 @@ namespace wg
 	
 	void SoftGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * colors)
 	{
-		const int pitch = m_pCanvas->m_pitch;
-		const int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		const int pitch =m_canvasPitch;
+		const int pixelBytes = m_canvasPixelBits/8;
 
 		for( int i = 0 ; i < nCoords ; i++ )
 		{
 			const int x = pCoords[i].x;
 			const int y = pCoords[i].y;
 
-			uint8_t * pDst = m_pCanvas->m_pData + y * pitch + x * pixelBytes;
+			uint8_t * pDst = m_pCanvasPixels + y * pitch + x * pixelBytes;
 
 			if( y >= clip.y && y <= clip.y + clip.h -1 && x >= clip.x && x <= clip.x + clip.w -1 )
 			{
@@ -756,15 +799,15 @@ namespace wg
     
     void SoftGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * colors)
     {
-        const int pitch = m_pCanvas->m_pitch;
-        const int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+        const int pitch =m_canvasPitch;
+        const int pixelBytes = m_canvasPixelBits/8;
         
         for( int i = 0 ; i < nCoords ; i++ )
         {
             const int x = pCoords[i].x;
             const int y = pCoords[i].y;
             
-            uint8_t * pDst = m_pCanvas->m_pData + y * pitch + x * pixelBytes;
+            uint8_t * pDst = m_pCanvasPixels + y * pitch + x * pixelBytes;
             
             const int alpha = colors[i].a;
             const int invAlpha = 255-alpha;
@@ -779,8 +822,8 @@ namespace wg
 	
 	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
-		int pitch = m_pCanvas->m_pitch;
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pitch =m_canvasPitch;
+		int pixelBytes = m_canvasPixelBits/8;
 	
 		int offset[4];
 	
@@ -821,7 +864,7 @@ namespace wg
 	
 			for( int y = begY ; y <= endY ; y++ )
 			{
-				uint8_t * pDst = m_pCanvas->m_pData + y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+				uint8_t * pDst = m_pCanvasPixels + y *m_canvasPitch + pCoords[i].x * pixelBytes;
 	
 				if( y > clip.y && y < clip.y + clip.h -1 && x > clip.x && x < clip.x + clip.w -1 )
 				{
@@ -845,8 +888,8 @@ namespace wg
 	/*
 	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
 	{
-		int pitch = m_pCanvas->m_pitch;
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pitch =m_canvasPitch;
+		int pixelBytes = m_canvasPixelBits/8;
 	
 		int offset[4];
 	
@@ -865,7 +908,7 @@ namespace wg
 	
 		for( int i = 0 ; i < nCoords ; i++ )
 		{
-			uint8_t * pDst = m_pCanvas->m_pData + pCoords[i].y * m_pCanvas->m_pitch + pCoords[i].x * pixelBytes;
+			uint8_t * pDst = m_pCanvasPixels + pCoords[i].y *m_canvasPitch + pCoords[i].x * pixelBytes;
 	
 			pDst[0] = col.b;
 			pDst[1] = col.g;
@@ -886,7 +929,7 @@ namespace wg
 	
 	void SoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, Orientation orientation  )
 	{
-		if( !m_pCanvas || !m_pCanvas->m_pData || _length <= 0  )
+		if( !m_pCanvas || !m_pCanvasPixels || _length <= 0  )
 			return;
 	
 		Color fillColor = _col * m_tintColor;
@@ -904,9 +947,9 @@ namespace wg
 	
 		//
 	
-		int pitch = m_pCanvas->m_pitch;
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		int pitch =m_canvasPitch;
+		int pixelBytes = m_canvasPixelBits/8;
+		uint8_t * pDst = m_pCanvasPixels + _y *m_canvasPitch + _x * pixelBytes;
 	
 		int inc;
 	
@@ -1021,9 +1064,9 @@ namespace wg
 	
 	void SoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation )
 	{
-		int pitch = m_pCanvas->m_pitch;
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		int pitch =m_canvasPitch;
+		int pixelBytes = m_canvasPixelBits/8;
+		uint8_t * pDst = m_pCanvasPixels + _y *m_canvasPitch + _x * pixelBytes;
 	
 		int inc;
 		if( orientation == Orientation::Horizontal )
@@ -1152,8 +1195,8 @@ namespace wg
 	{
 		//TODO: Translate to use m_pDivTab
 	
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
-		uint8_t * pDst = m_pCanvas->m_pData + _y * m_pCanvas->m_pitch + _x * pixelBytes;
+		int pixelBytes = m_canvasPixelBits/8;
+		uint8_t * pDst = m_pCanvasPixels + _y *m_canvasPitch + _x * pixelBytes;
 	
 		switch( blendMode )
 		{
@@ -1277,8 +1320,8 @@ namespace wg
 		int sectionHeight = rect.h/2;
 		int maxWidth = rect.w/2;
 	
-		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
-		int pitch = m_pCanvas->m_pitch;
+		uint8_t * pLineBeg = m_pCanvasPixels + rect.y *m_canvasPitch;
+		int pitch =m_canvasPitch;
 	
 		int center = (rect.x + rect.w/2) << 8;
 	
@@ -1311,7 +1354,7 @@ namespace wg
 	{
 		//TODO: Translate to use m_pDivTab
 	
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pixelBytes = m_canvasPixelBits/8;
 		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
 		uint8_t * pClip1 = pLineStart + clipX1*pixelBytes;
 		uint8_t * pClip2 = pLineStart + clipX2*pixelBytes;
@@ -1384,7 +1427,7 @@ namespace wg
 	{
 		//TODO: Translate to use m_pDivTab
 	
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pixelBytes = m_canvasPixelBits/8;
 		uint8_t * p = pLineStart + (begOfs>>8) * pixelBytes;
 	
 		int alphaInc, alpha, len;
@@ -1459,8 +1502,8 @@ namespace wg
 		int sectionHeight = rect.h/2;
 		int maxWidth = rect.w/2;
 	
-		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y*m_pCanvas->m_pitch;
-		int pitch = m_pCanvas->m_pitch;
+		uint8_t * pLineBeg = m_pCanvasPixels + rect.y*m_canvasPitch;
+		int pitch =m_canvasPitch;
 	
 		int center = (rect.x + rect.w/2) << 8;
 	
@@ -1498,9 +1541,9 @@ namespace wg
 	
 	void SoftGfxDevice::drawFilledElipse( const Rect& rect, Color color )
 	{
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pixelBytes = m_canvasPixelBits/8;
 	
-		uint8_t * pLineCenter = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + (rect.x+rect.w/2) * pixelBytes;
+		uint8_t * pLineCenter = m_pCanvasPixels + rect.y *m_canvasPitch + (rect.x+rect.w/2) * pixelBytes;
 	
 		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
@@ -1521,7 +1564,7 @@ namespace wg
 				}
 	
 				sinOfs += sinOfsInc;
-				pLineCenter += m_pCanvas->m_pitch;
+				pLineCenter +=m_canvasPitch;
 			}
 			sinOfsInc = -sinOfsInc;
 			sinOfs = (c_nCurveTabEntries << 16) + (sinOfsInc >> 1);
@@ -1538,9 +1581,9 @@ namespace wg
 		if( clip.contains(rect) )
 			return drawFilledElipse(rect,color);
 	
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pixelBytes = m_canvasPixelBits/8;
 	
-		uint8_t * pLine = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch;
+		uint8_t * pLine = m_pCanvasPixels + rect.y *m_canvasPitch;
 	
 		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
 		int sinOfs = sinOfsInc >> 1;
@@ -1577,7 +1620,7 @@ namespace wg
 				}
 	
 				sinOfs += sinOfsInc;
-				pLine += m_pCanvas->m_pitch;
+				pLine +=m_canvasPitch;
 			}
 	
 			sinOfsInc = -sinOfsInc;
@@ -1590,9 +1633,9 @@ namespace wg
 	
 	void SoftGfxDevice::drawArcNE( const Rect& rect, Color color )
 	{
-		int pixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int pixelBytes = m_canvasPixelBits/8;
 	
-		uint8_t * pLineBeg = m_pCanvas->m_pData + rect.y * m_pCanvas->m_pitch + rect.x * pixelBytes;
+		uint8_t * pLineBeg = m_pCanvasPixels + rect.y *m_canvasPitch + rect.x * pixelBytes;
 	
 		int sinOfsInc = (c_nCurveTabEntries << 16) / rect.h;
 		int sinOfs = sinOfsInc >> 1;
@@ -1609,7 +1652,7 @@ namespace wg
 			}
 	
 			sinOfs += sinOfsInc;
-			pLineBeg += m_pCanvas->m_pitch;
+			pLineBeg +=m_canvasPitch;
 		}
 	
 	}
@@ -1643,16 +1686,16 @@ namespace wg
 	
 		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
 	
-		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
+		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
 		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;
-		int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int dstPixelBytes = m_canvasPixelBits/8;
 	
 		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
-		int	dstPitchAdd = m_pCanvas->m_pitch - srcrect.w*dstPixelBytes;
+		int	dstPitchAdd =m_canvasPitch - srcrect.w*dstPixelBytes;
 	
-		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
+		uint8_t * pDst = m_pCanvasPixels + dy *m_canvasPitch + dx * dstPixelBytes;
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		BlendMode		blendMode = m_blendMode;
@@ -1851,16 +1894,16 @@ namespace wg
 	
 		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
 	
-		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
+		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
 		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;
-		int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;
+		int dstPixelBytes = m_canvasPixelBits/8;
 	
 		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
-		int	dstPitchAdd = m_pCanvas->m_pitch - srcrect.w*dstPixelBytes;
+		int	dstPitchAdd =m_canvasPitch - srcrect.w*dstPixelBytes;
 	
-		uint8_t * pDst = m_pCanvas->m_pData + dy * m_pCanvas->m_pitch + dx * dstPixelBytes;
+		uint8_t * pDst = m_pCanvasPixels + dy *m_canvasPitch + dx * dstPixelBytes;
 		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
 	
 		BlendMode		blendMode = m_blendMode;
@@ -2218,7 +2261,7 @@ namespace wg
 	
 		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf.rawPtr();
 	
-		if( !m_pCanvas->m_pData || !pSrcSurf->m_pData )
+		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
 		int dx = (int) _dx;
@@ -2315,10 +2358,10 @@ namespace wg
 	#define STRETCHBLIT( _bReadAlpha_, _init_, _loop_ )										\
 	{																						\
 		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;									\
-		int dstPixelBytes = m_pCanvas->m_pixelFormat.bits/8;								\
+		int dstPixelBytes = m_canvasPixelBits/8;								\
 																							\
 		int	srcPitch = pSrcSurf->m_pitch;													\
-		int	dstPitch = m_pCanvas->m_pitch;													\
+		int	dstPitch =m_canvasPitch;													\
 																							\
 		_init_																				\
 																							\
@@ -2335,7 +2378,7 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * dstPitch + dx * dstPixelBytes;	\
+				uint8_t * pDst = m_pCanvasPixels + (dy+y) * dstPitch + dx * dstPixelBytes;	\
 				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * srcPitch;					\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
@@ -2380,7 +2423,7 @@ namespace wg
 				int ofsX = (int) (sx*32768);												\
 				int incX = (int) (sw*32768/dw);												\
 																							\
-				uint8_t * pDst = m_pCanvas->m_pData + (dy+y) * dstPitch + dx * dstPixelBytes;	\
+				uint8_t * pDst = m_pCanvasPixels + (dy+y) * dstPitch + dx * dstPixelBytes;	\
 				uint8_t * pSrc = pSrcSurf->m_pData + (ofsY>>15) * srcPitch;					\
 																							\
 				for( int x = 0 ; x < dw ; x++ )												\
