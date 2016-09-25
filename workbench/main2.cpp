@@ -50,7 +50,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 320, height = 400;
+	int posX = 100, posY = 100, width = 640, height = 400;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -126,7 +126,8 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = PixelType::BGR_8;
 		
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
+	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
@@ -146,11 +147,14 @@ int main ( int argc, char** argv )
 
 	// Init font
 
+	PixelFormat	format;
+
 	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
 
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch, pFontSurfBlob );
+//	convertSDLFormat( &format, pFontSurf->format );
+	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
+	SDL_FreeSurface( pFontSurf );
 		
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
 
@@ -167,38 +171,37 @@ int main ( int argc, char** argv )
 
 	// Init skins
 
-	PixelFormat	format;
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
 	pStateButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	pPressablePlateSkin->setContentPadding( Border(3) );
 	
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
 
 	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pImgSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	SoftSurface_p pImgSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
 

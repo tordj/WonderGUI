@@ -40,6 +40,10 @@
 #	include <wg_pointers.h>
 #endif
 
+#ifndef WG_BLOB_DOT_H
+#	include <wg_blob.h>
+#endif
+
 namespace wg 
 {
 	

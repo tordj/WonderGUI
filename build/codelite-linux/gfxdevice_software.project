@@ -31,10 +31,10 @@
   <VirtualDirectory Name="code">
     <File Name="../../src/gfxdevices/software/wg_softgfxdevice.cpp"/>
     <File Name="../../src/gfxdevices/software/wg_softgfxdevice.h"/>
-    <File Name="../../src/gfxdevices/software/wg_softsurface.cpp"/>
     <File Name="../../src/gfxdevices/software/wg_softsurface.h"/>
     <File Name="../../src/gfxdevices/software/wg_softsurfacefactory.cpp"/>
     <File Name="../../src/gfxdevices/software/wg_softsurfacefactory.h"/>
+    <File Name="../../src/gfxdevices/software/wg_softsurface.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

@@ -212,7 +212,13 @@ namespace wg
 	
 	GlGfxDevice_p GlGfxDevice::create( Size canvasSize )
 	{
-		return GlGfxDevice_p(new GlGfxDevice( canvasSize ));
+		GlGfxDevice_p p(new GlGfxDevice( canvasSize ));
+		
+//		GLEnum err = glGetError();
+//		if( err != 0 )
+//			return GlGfxDevice_p(nullptr);
+		
+		return p;
 	}
 
 
@@ -264,9 +270,7 @@ namespace wg
         glBindVertexArray(0);
  
         setCanvas( canvas );
-        setTintColor( Color::White );
-        
-       assert( glGetError() == 0 );
+        setTintColor( Color::White );        
     }
 
 	//____ Destructor ______________________________________________________________

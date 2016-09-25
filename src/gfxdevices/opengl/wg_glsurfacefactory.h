@@ -46,7 +46,10 @@ namespace wg
 		static const char			CLASSNAME[];
 		static GlSurfaceFactory_p	cast( const Object_p& pObject );
 
-		Surface_p createSurface( const Size& size, PixelType type = PixelType::BGRA_8 ) const;
+		Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8 ) const;
+        Surface_p	createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch ) const;
+        Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 ) const ;
+        Surface_p	createSurface( const Surface_p& pOther ) const;
 	};
 }
 

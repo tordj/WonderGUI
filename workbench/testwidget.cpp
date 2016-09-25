@@ -119,11 +119,11 @@ namespace wg
 		if( m_bPointsInitialized )
 		{
 		
-			pDevice->clipDrawLine( _clip, Coord(_canvas.x, _canvas.y), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ), Color(255,000,000), 200.f );
+			pDevice->clipDrawLine( _clip, Coord(_canvas.x, _canvas.y), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ), Color(255,000,000), 10.f );
 
 			for( int i = 0 ; i < 2 ; i+=2 )
 			{
-				pDevice->clipDrawLine( _clip, _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], Color(000,255,000), 200.5f );
+				pDevice->clipDrawLine( _clip, _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], Color(000,255,000), 15.5f );
 			}
 		}
 

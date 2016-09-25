@@ -32,6 +32,42 @@ namespace wg
 	
 	const char SoftSurface::CLASSNAME[] = {"SoftSurface"};
 	
+
+	//____ Create ______________________________________________________________
+	
+	SoftSurface_p SoftSurface::create( Size size, PixelType type ) 
+	{ 
+		if(type != PixelType::BGRA_8 && type != PixelType::BGR_8) 
+			return SoftSurface_p(); 
+
+		return SoftSurface_p(new SoftSurface(size,type));
+	}
+	
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch ) 
+	{ 
+		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
+			return SoftSurface_p();
+		
+		return SoftSurface_p(new SoftSurface(size,type,pBlob,pitch));
+	}
+		
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat ) 
+	{ 
+		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
+			return SoftSurface_p();
+
+		return  SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pPixelFormat)); 
+	};
+
+	SoftSurface_p SoftSurface::create( const Surface_p& pOther ) 
+	{
+		if( !pOther )
+			return SoftSurface_p();
+			
+		return SoftSurface_p(new SoftSurface( pOther.rawPtr() )); 
+	}
+	
+	
 	
 	//____ Constructor ________________________________________________________________
 	
@@ -42,52 +78,68 @@ namespace wg
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
-		m_pData = new uint8_t[ m_pitch*size.h ];
-		m_bOwnsData = true;
+		m_pBlob = Blob::create( m_pitch*size.h );
+		m_pData = (uint8_t*) m_pBlob->content();
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer )
+	SoftSurface::SoftSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch )
 	{
-		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
 		Util::pixelTypeToFormat(type, m_pixelFormat);
-		m_pFinalizer = pFinalizer;
+
 		m_pitch = pitch;
 		m_size = size;
-		m_pData = pPixels;
-		m_bOwnsData = false;
+		m_pBlob = pBlob;
+		m_pData = (uint8_t*) m_pBlob->content();
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat )
+	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat )
 	{
-		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pPixels != 0 );
 		Util::pixelTypeToFormat(type, m_pixelFormat);
 
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
-		m_pData = new uint8_t[ m_pitch*size.h ];
-		m_bOwnsData = true;
+		m_pBlob = Blob::create(m_pitch*m_size.h);
+		m_pData = (uint8_t*) m_pBlob->content();
 		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
-		_copyFrom( &pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
+        _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
 		m_pPixels = 0;
 	}
 	
 	
 	
-	SoftSurface::SoftSurface( const SoftSurface * pOther )
+	SoftSurface::SoftSurface( const Surface_p& pOther )
 	{
-		_copy( pOther );
+		assert( pOther );
+
+		PixelType type = pOther->pixelFormat()->type;
+		uint8_t * pPixels = (uint8_t*) pOther->lock( AccessMode::ReadOnly );
+		int pitch = pOther->pitch();
+		Size size = pOther->size();
+		
+		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		Util::pixelTypeToFormat(type, m_pixelFormat);
+		
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+		m_size = size;
+		m_pBlob = Blob::create(m_pitch*m_size.h);
+		m_pData = (uint8_t*) m_pBlob->content();
+		m_fScaleAlpha = 1.f;
+		
+		m_pPixels = m_pData;	// Simulate a lock
+		_copyFrom( &m_pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
+		m_pPixels = 0;
 	}
 	
 	//____ Destructor ______________________________________________________________
 	
 	SoftSurface::~SoftSurface()
 	{
-		if(m_bOwnsData)
-			delete m_pData;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -115,23 +167,6 @@ namespace wg
 			return SoftSurface_p( static_cast<SoftSurface*>(pObject.rawPtr()) );
 	
 		return 0;
-	}
-	
-	//____ _copy() _________________________________________________________________
-	
-	void SoftSurface::_copy(const SoftSurface * pOther)
-	{
-		m_pixelFormat 	= pOther->m_pixelFormat;
-		m_pitch 		= ((pOther->m_size.w+3)&0xFFFFFFFC)*pOther->m_pixelFormat.bits/8;
-		m_size 			= pOther->m_size;
-		m_bOwnsData		= true;
-		m_fScaleAlpha 	= pOther->m_fScaleAlpha;
-	
-		m_pData = new uint8_t[ m_pitch*m_size.h ];
-	
-		int linebytes = m_size.w * m_pixelFormat.bits/8;
-		for( int y = 0 ; y < m_size.h ; y++ )
-			memcpy( m_pData+y*m_pitch, pOther->m_pData+y*pOther->m_pitch, linebytes );
 	}
 	
 	//____ pixel() _________________________________________________________________

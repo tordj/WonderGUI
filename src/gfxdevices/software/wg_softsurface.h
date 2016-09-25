@@ -26,15 +26,14 @@
 #	include <wg_surface.h>
 #endif
 
-
 #include <vector>
 
 namespace wg 
 {
 	
 	class SoftSurface;
-	typedef	StrongPtr<SoftSurface,Surface_p>		SoftSurface_p;
-	typedef	WeakPtr<SoftSurface,Surface_wp>	SoftSurface_wp;
+	typedef	StrongPtr<SoftSurface,Surface_p>	SoftSurface_p;
+	typedef	WeakPtr<SoftSurface,Surface_wp>		SoftSurface_wp;
 	
 	//____ Class SoftSurface _____________________________________________________________________
 	
@@ -44,10 +43,10 @@ namespace wg
 		friend class SoftSurfaceFactory;
 	
 	 public:
-		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8 ) { return (type == PixelType::BGRA_8 || type == PixelType::BGR_8) ? SoftSurface_p(new SoftSurface(size,type)):SoftSurface_p(); }
-		static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pBlob ) { return  (type == PixelType::BGRA_8 || type == PixelType::BGR_8) ? SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pBlob)):SoftSurface_p(); }
-		static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat ) { return  (type == PixelType::BGRA_8 || type == PixelType::BGR_8) ? SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pixelFormat)):SoftSurface_p(); };
-		static SoftSurface_p	create( const SoftSurface_p& pOther ) { return SoftSurface_p(new SoftSurface( pOther.rawPtr() )); }
+		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8 );
+        static SoftSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch );
+        static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 );
+		static SoftSurface_p	create( const Surface_p& pOther );
 	
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
@@ -71,19 +70,16 @@ namespace wg
 	
 	protected:
 		SoftSurface( Size size, PixelType type = PixelType::BGRA_8 );
-		SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const Object_p& pFinalizer );
-		SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat );
+		SoftSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch );
+		SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat );
+		SoftSurface( const Surface_p& pOther );
 
-		SoftSurface( const SoftSurface * pOther );
 		virtual ~SoftSurface();
-	
-		void _copy(const SoftSurface * pOther);
-	
-		Object_p	m_pFinalizer;
+		
+		Blob_p		m_pBlob;
 		Size		m_size;
 		float    	m_fScaleAlpha;
-		bool		m_bOwnsData;
-		uint8_t *		m_pData;
+		uint8_t*	m_pData;
 	};
 	
 	

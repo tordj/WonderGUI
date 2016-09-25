@@ -62,8 +62,26 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface( const Size& size, PixelType type ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type ) const
 	{
-        return 	GlSurface::create(size,type);
+        return GlSurface::create(size,type);
 	}
+
+
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch ) const
+	{
+		return GlSurface::create(size,type, pBlob,pitch);
+	}
+	
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat ) const
+	{
+		return GlSurface::create(size,type, pPixels, pitch, pPixelFormat);
+	}
+	
+	Surface_p GlSurfaceFactory::createSurface( const Surface_p& pOther ) const
+	{
+		return GlSurface::create( pOther );
+	}
+
+
 } // namespace wg
