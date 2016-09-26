@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:gfxdevice_opengl/gfxdevice_opengl.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:gfxdevice_software/gfxdevice_software.xcodeproj">
    </FileRef>
    <FileRef

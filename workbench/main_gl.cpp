@@ -51,7 +51,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 320, height = 400;
+	int posX = 100, posY = 100, width = 400, height = 400;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -275,13 +275,13 @@ int main ( int argc, char** argv )
 		pText->grabFocus();
     }
 
-    
+/*
     {
         TestWidget_p pTest = TestWidget::create();
         pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
         pTest->start();
     }
-    
+ */
 
 /*	
 	{
@@ -403,7 +403,7 @@ int main ( int argc, char** argv )
 //        glClearColor(0.1f, 0.3f, 0.3f, 1.0f );
 //        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
         
-//        pGfxDevice->beginRender();
+         pGfxDevice->beginRender();
 
 //        pGfxDevice->setTintColor(Color::Red );
         
@@ -414,19 +414,19 @@ int main ( int argc, char** argv )
 //        pGfxDevice->wg::GfxDevice::stretchBlit(pButtonSurface, Rect(50,50,160,40));
 
         
-/*
-        Color plotColors[256];
-        Coord plotCoords[256];
+
+        Color plotColors[400];
+        Coord plotCoords[400];
         
-        for( int i = 0 ; i < 256 ; i++ )
+        for( int i = 0 ; i < 400 ; i++ )
         {
             plotColors[i] = Color::White;
-            plotCoords[i] = Coord(i+(tick%200),i);
+            plotCoords[i] = Coord(i,i);
         }
         
         
-        pGfxDevice->clipPlotPixels( Rect(10,10,width-20,height-20), 256, plotCoords, plotColors);
-
+        pGfxDevice->clipPlotPixels( Rect(0,0,width,height), 2, plotCoords, plotColors);
+/*
         
         for(int x = 0 ; x < 200 ; x++ )
         {
@@ -444,7 +444,7 @@ int main ( int argc, char** argv )
 //        pGfxDevice->fill(Rect(21, 21, 100, 100 ), Color::AntiqueWhite );
 //        pGfxDevice->fillSubPixel(RectF(21.8f, 21.5f, 0.4f, 0.4f ), Color::AntiqueWhite );
         
-//        pGfxDevice->endRender();
+        pGfxDevice->endRender();
         
         
 		SDL_Delay(20);

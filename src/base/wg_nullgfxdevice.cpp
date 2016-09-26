@@ -70,6 +70,21 @@ namespace wg
 		return 0;
 	}
 	
+	//____ surfaceClassName() _______________________________________________________
+	
+	const char * NullGfxDevice::surfaceClassName( void ) const
+	{
+		return nullptr;
+	}
+	
+	//____ surfaceClassName() _______________________________________________________
+
+	SurfaceFactory_p NullGfxDevice::surfaceFactory()
+	{
+		return SurfaceFactory_p();
+	}
+	
+	
 	
 	void NullGfxDevice::fill( const Rect& rect, const Color& col )
 	{

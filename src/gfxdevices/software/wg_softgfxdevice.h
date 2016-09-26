@@ -34,6 +34,10 @@
 #	include <wg_softsurface.h>
 #endif
 
+#ifndef WG_SOFTSURFACEFACTORY_DOT_H
+#	include <wg_softsurfacefactory.h>
+#endif
+
 namespace wg 
 {
 	
@@ -48,10 +52,15 @@ namespace wg
 		static SoftGfxDevice_p	create();
 		static SoftGfxDevice_p	create( const SoftSurface_p& pCanvas );
 	
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static SoftGfxDevice_p	cast( const Object_p& pObject );
+	
+		const char *			surfaceClassName( void ) const;
+		SurfaceFactory_p		surfaceFactory();
+	
+	
 	
 		void	setCanvas( const SoftSurface_p& pCanvas );
 	
@@ -157,11 +166,12 @@ namespace wg
 		void	_stretchBlitInvert(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
 	
-		bool			m_bBilinearFiltering;
-		SoftSurface_p 	m_pCanvas;
-		int				m_lineThicknessTable[17];
-		int *			m_pCurveTab;
-		uint8_t *		m_pDivTab;
+		bool					m_bBilinearFiltering;
+		SoftSurface_p			m_pCanvas;
+		SoftSurfaceFactory_p	m_pSurfaceFactory;
+		int						m_lineThicknessTable[17];
+		int *					m_pCurveTab;
+		uint8_t *				m_pDivTab;
 	};
 	
 

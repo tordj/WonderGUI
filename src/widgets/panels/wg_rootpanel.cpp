@@ -52,7 +52,8 @@ namespace wg
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
-		m_geo = pGfxDevice->canvasSize();
+		if( pGfxDevice )
+			m_geo = pGfxDevice->canvasSize();
 		m_pGfxDevice = pGfxDevice;
 		m_hook.m_pRoot = this;
 	}

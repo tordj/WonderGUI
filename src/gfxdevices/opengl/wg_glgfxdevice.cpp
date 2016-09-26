@@ -22,6 +22,7 @@
 
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
+#include <wg_glsurfacefactory.h>
 #include <assert.h>
 #include <math.h>
 #include <algorithm>
@@ -186,8 +187,8 @@ namespace wg
     "out vec4 color;"
     "void main()                                                "
     "{                                                          "
-    "   gl_Position.x = pos.x*2.0/dimensions.x - 1.0;             "
-    "   gl_Position.y = 1.0 - pos.y*2.0/dimensions.y;             "
+    "   gl_Position.x = (pos.x+0.5)*2.0/dimensions.x - 1.0;             "
+    "   gl_Position.y = 1.0 -(pos.y+0.5)*2.0/dimensions.y;             "
     "   gl_Position.z = 0.0;                                    "
     "   gl_Position.w = 1.0;                                    "
     "   color = inColor;"
@@ -302,6 +303,23 @@ namespace wg
 		return 0;
 	}
 
+	//____ surfaceClassName() _______________________________________________________
+	
+	const char * GlGfxDevice::surfaceClassName( void ) const
+	{
+		return GlSurface::CLASSNAME;
+	}
+	
+	//____ surfaceClassName() _______________________________________________________
+
+	SurfaceFactory_p GlGfxDevice::surfaceFactory()
+	{
+		if( !m_pSurfaceFactory )
+			m_pSurfaceFactory = GlSurfaceFactory::create();
+	
+		return m_pSurfaceFactory;
+	}
+
 	//____ setCanvas() __________________________________________________________________
 
 	void GlGfxDevice::setCanvas( Size canvas )
@@ -351,7 +369,7 @@ namespace wg
 	bool GlGfxDevice::setBlendMode( BlendMode blendMode )
 	{
 		if( blendMode != BlendMode::Blend && blendMode != BlendMode::Replace && 
-			blendMode != BlendMode::Add && blendMode != BlendMode::Multiply &&
+			blendMode != BlendMode::Add && blendMode != BlendMode::Subtract && blendMode != BlendMode::Multiply &&
 			blendMode != BlendMode::Invert )
 				return false;
 	 

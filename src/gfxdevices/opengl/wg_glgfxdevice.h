@@ -55,6 +55,10 @@ namespace wg
 		static const char		CLASSNAME[];
 		static GlGfxDevice_p	cast( const Object_p& pObject );
 
+		const char *			surfaceClassName( void ) const;
+		SurfaceFactory_p		surfaceFactory();
+
+
 		void	setCanvas( Size canvas );
 
 		void	setTintColor( Color color );
@@ -109,7 +113,7 @@ namespace wg
 
         GLuint  _createGLProgram( const char * pVertexShader, const char * pFragmentShader );
        
-        
+        SurfaceFactory_p	m_pSurfaceFactory;
 		bool	m_bRendering;
 
         float	m_lineThicknessTable[17];

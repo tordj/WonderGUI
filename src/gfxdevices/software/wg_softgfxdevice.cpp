@@ -101,6 +101,22 @@ namespace wg
 		return 0;
 	}
 	
+	//____ surfaceClassName() _______________________________________________________
+	
+	const char * SoftGfxDevice::surfaceClassName( void ) const
+	{
+		return SoftSurface::CLASSNAME;
+	}
+	
+	//____ surfaceClassName() _______________________________________________________
+
+	SurfaceFactory_p SoftGfxDevice::surfaceFactory()
+	{
+		if( !m_pSurfaceFactory )
+			m_pSurfaceFactory = SoftSurfaceFactory::create();
+	
+		return m_pSurfaceFactory;
+	}
 	
 	//____ setCanvas() _______________________________________________________________
 	

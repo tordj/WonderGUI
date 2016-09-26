@@ -47,10 +47,13 @@ namespace wg
 	public:
 		static NullGfxDevice_p	create( Size size );
 	
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static NullGfxDevice_p	cast( const Object_p& pObject );
+
+		const char *			surfaceClassName( void ) const;
+		SurfaceFactory_p		surfaceFactory();
 	
 		//
 	

@@ -46,6 +46,9 @@
 #	include <wg_surface.h>
 #endif
 
+#ifndef WG_SURFACEFACTORY_DOT_H
+#	include <wg_surfacefactory.h>
+#endif
 
 namespace wg 
 {
@@ -67,22 +70,12 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static GfxDevice_p	cast( const Object_p& pObject );
-/*	
-		enum WgRenderFlags
-		{
-			WG_ORIENT_NORMAL				= 0x0,
-			WG_ORIENT_ROTATE_CW90			= 0x1,
-			WG_ORIENT_ROTATE_180			= 0x2,
-			WG_ORIENT_ROTATE_CCW90			= 0x3,
-			WG_ORIENT_MIRROR_X				= 0x4,
-			WG_ORIENT_MIRROR_X_ROTATE_CW90	= 0x5,
-			WG_ORIENT_MIRROR_X_ROTATE_180	= 0x6,
-			WG_ORIENT_MIRROR_X_ROTATE_CCW90	= 0x7,
-			WG_ORIENT_MASK					= 0x7,
-		};
-*/	
-	
+		static GfxDevice_p		cast( const Object_p& pObject );
+
+		virtual const char *	surfaceClassName( void ) const = 0;
+		virtual SurfaceFactory_p	surfaceFactory() = 0;
+		
+		
 		virtual void		setTintColor( Color color );
 		virtual bool		setBlendMode( BlendMode blendMode );
 		virtual uint32_t	setRenderFlags( uint32_t flags );
