@@ -29,15 +29,14 @@
 #	include <windows.h>
 #endif
 
-#include <OpenGL/gl.h>
-
+#ifdef __APPLE__
+#	include <OpenGL/gl.h>
+#else
+#	include <GL/gl.h>
+#endif
 
 #ifndef WG_SURFACE_DOT_H
 #	include <wg_surface.h>
-#endif
-
-#ifndef WG_BLOB_DOT_H
-#	include <wg_blob.h>
 #endif
 
 namespace wg
@@ -56,8 +55,8 @@ namespace wg
 	public:
         
         static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8 );
-        static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob );
-        static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat );
+        static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch );
+        static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 );
         static GlSurface_p	create( const Surface_p& pOther );
        
         
@@ -76,14 +75,14 @@ namespace wg
 		uint32_t	pixel( Coord coord ) const;
 		uint8_t		alpha( Coord coord ) const;
 
-		void *		lock( AccessMode mode );
-		void *		lockRegion( AccessMode mode, const Rect& region );
+		uint8_t *	lock( AccessMode mode );
+		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
 		void		unlock();
 
 	private:
         GlSurface( Size size, PixelType type = PixelType::BGRA_8 );
-        GlSurface( Size size, PixelType type, const Blob_p& pBlob );
-        GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat& pixelFormat );
+        GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch );
+        GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat );
         GlSurface( const Surface_p& pOther );
 		~GlSurface();
 

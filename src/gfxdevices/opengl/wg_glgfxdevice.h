@@ -30,8 +30,11 @@
 #	include <windows.h>
 #endif
 
-#include <OpenGL/gl3.h>
-
+#ifdef __APPLE__
+#	include <OpenGL/gl3.h>
+#else
+#	include <GLES3/gl3.h>
+#endif
 
 #ifndef	WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -73,24 +76,13 @@ namespace wg
 
 		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
 		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
-        void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness );
-
+ 
         
         void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors);
 
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
-
-	
-		void	drawArcNE( const Rect& rect, Color color );
-		void	drawElipse( const Rect& rect, Color color );
-		void	drawFilledElipse( const Rect& rect, Color color );
-	
-		void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );
-
 
 
 
@@ -114,7 +106,9 @@ namespace wg
         GLuint  _createGLProgram( const char * pVertexShader, const char * pFragmentShader );
        
         SurfaceFactory_p	m_pSurfaceFactory;
-		bool	m_bRendering;
+		    float	_scaleThickness( float thickeness, float slope );
+        
+		    bool	m_bRendering;
 
         float	m_lineThicknessTable[17];
         

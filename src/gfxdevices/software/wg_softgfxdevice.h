@@ -59,11 +59,12 @@ namespace wg
 	
 		const char *			surfaceClassName( void ) const;
 		SurfaceFactory_p		surfaceFactory();
+		
+		bool	setCanvas( const Surface_p& pCanvas );
 	
-	
-	
-		void	setCanvas( const SoftSurface_p& pCanvas );
-	
+		bool	beginRender();
+		bool	endRender();
+		
 		//
 	
 		void	fill( const Rect& rect, const Color& col );
@@ -113,6 +114,7 @@ namespace wg
 	
 		void	_initTables();
 		void	_genCurveTab();
+		int 	_scaleLineThickness( float thickness, int slope );
 	
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
@@ -166,12 +168,16 @@ namespace wg
 		void	_stretchBlitInvert(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
 	
-		bool					m_bBilinearFiltering;
-		SoftSurface_p			m_pCanvas;
+		bool			m_bBilinearFiltering;
+		Surface_p 		m_pCanvas;
 		SoftSurfaceFactory_p	m_pSurfaceFactory;
-		int						m_lineThicknessTable[17];
-		int *					m_pCurveTab;
-		uint8_t *				m_pDivTab;
+		int				m_lineThicknessTable[17];
+		int *			m_pCurveTab;
+		uint8_t *		m_pDivTab;
+		
+		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
+		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
+		int				m_canvasPitch;
 	};
 	
 

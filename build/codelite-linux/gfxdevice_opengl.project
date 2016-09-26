@@ -1,40 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="gfxdevice_software" InternalType="Library">
-  <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
-    </Plugin>
-    <Plugin Name="CMakePlugin">
-      <![CDATA[[{
-  "name": "Debug",
-  "enabled": false,
-  "buildDirectory": "build",
-  "sourceDirectory": "$(ProjectPath)",
-  "generator": "",
-  "buildType": "",
-  "arguments": [],
-  "parentProject": ""
- }, {
-  "name": "Release",
-  "enabled": false,
-  "buildDirectory": "build",
-  "sourceDirectory": "$(ProjectPath)",
-  "generator": "",
-  "buildType": "",
-  "arguments": [],
-  "parentProject": ""
- }]]]>
-    </Plugin>
-  </Plugins>
+<CodeLite_Project Name="gfxdevice_opengl" InternalType="Library">
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../src/gfxdevices/software/wg_softgfxdevice.cpp"/>
-    <File Name="../../src/gfxdevices/software/wg_softgfxdevice.h"/>
-    <File Name="../../src/gfxdevices/software/wg_softsurface.h"/>
-    <File Name="../../src/gfxdevices/software/wg_softsurfacefactory.cpp"/>
-    <File Name="../../src/gfxdevices/software/wg_softsurfacefactory.h"/>
-    <File Name="../../src/gfxdevices/software/wg_softsurface.cpp"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glgfxdevice.cpp"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glgfxdevice.h"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glsurface.cpp"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glsurface.h"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.cpp"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -48,7 +22,7 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="../../src/gfxdevices/software/"/>
+        <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -87,9 +61,9 @@
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="../../src/gfxdevices/software/"/>
+        <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -100,7 +74,7 @@
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
@@ -129,6 +103,4 @@
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
-  <Dependencies Name="Release"/>
 </CodeLite_Project>
