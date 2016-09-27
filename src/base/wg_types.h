@@ -584,6 +584,15 @@ namespace wg
 		WriteOnly,
 		ReadWrite
 	};
+
+	//____ SurfaceHint ____________________________________________________________
+	
+	enum class SurfaceHint
+	{
+		Static,
+		Dynamic,
+	};
+
 	
 	//____ PixelType _____________________________________________________________
 	

@@ -60,27 +60,34 @@ namespace wg
 		return 0;
 	}
 
+	//____ maxSize() ______________________________________________________________
+
+	Size GlSurfaceFactory::maxSize() const
+	{
+		return GlSurface::maxSize();
+	}
+
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, SurfaceHint hint ) const
 	{
-        return GlSurface::create(size,type);
+        return GlSurface::create(size,type,hint);
 	}
 
 
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint ) const
 	{
-		return GlSurface::create(size,type, pBlob,pitch);
+		return GlSurface::create(size,type, pBlob,pitch,hint);
 	}
 	
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint ) const
 	{
-		return GlSurface::create(size,type, pPixels, pitch, pPixelFormat);
+		return GlSurface::create(size,type, pPixels, pitch, pPixelFormat,hint);
 	}
 	
-	Surface_p GlSurfaceFactory::createSurface( const Surface_p& pOther ) const
+	Surface_p GlSurfaceFactory::createSurface( const Surface_p& pOther, SurfaceHint hint ) const
 	{
-		return GlSurface::create( pOther );
+		return GlSurface::create( pOther,hint );
 	}
 
 

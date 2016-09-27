@@ -987,9 +987,9 @@ namespace wg
             m_vertexBufferData[2] = x2;
             m_vertexBufferData[3] = y2 +1;
             m_vertexBufferData[4] = x2;
-            m_vertexBufferData[5] = y2 - width -1;
+            m_vertexBufferData[5] = y2 - width -2;
             m_vertexBufferData[6] = x1;
-            m_vertexBufferData[7] = y1 - width -1;
+            m_vertexBufferData[7] = y1 - width -2;
         }
         else
         {
@@ -1022,9 +1022,9 @@ namespace wg
 
             m_vertexBufferData[0] = x1 -1;
             m_vertexBufferData[1] = y1;
-            m_vertexBufferData[2] = x1 + width +1;
+            m_vertexBufferData[2] = x1 + width + 2;
             m_vertexBufferData[3] = y1;
-            m_vertexBufferData[4] = x2 + width +1;
+            m_vertexBufferData[4] = x2 + width + 2;
             m_vertexBufferData[5] = y2;
             m_vertexBufferData[6] = x2 -1;
             m_vertexBufferData[7] = y2;

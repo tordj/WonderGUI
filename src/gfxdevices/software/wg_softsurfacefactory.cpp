@@ -56,27 +56,35 @@ namespace wg
 	
 		return 0;
 	}
-	
-	//____ SoftSurfaceFactory::createSurface() ___________________________________
-	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type ) const
+
+	//____ maxSize() ________________________________________________________________
+
+	Size SoftSurfaceFactory::maxSize() const
 	{
-        return SoftSurface::create(size,type);
+		return SoftSurface::maxSize();
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch ) const
+	
+	//____ createSurface() __________________________________________________________
+	
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, SurfaceHint hint ) const
 	{
-		return SoftSurface::create(size,type, pBlob, pitch);
+        return SoftSurface::create(size,type,hint);
+	}
+
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint ) const
+	{
+		return SoftSurface::create(size,type, pBlob, pitch, hint);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint ) const
 	{
-		return SoftSurface::create(size,type, pPixels, pitch, pPixelFormat);
+		return SoftSurface::create(size,type, pPixels, pitch, pPixelFormat, hint);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( const Surface_p& pOther ) const
+	Surface_p SoftSurfaceFactory::createSurface( const Surface_p& pOther, SurfaceHint hint ) const
 	{
-		return SoftSurface::create( pOther );
+		return SoftSurface::create( pOther, hint );
 	}
 	
 } // namespace wg

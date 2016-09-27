@@ -217,6 +217,14 @@ namespace wg
 		virtual bool		fill( Color col, const Rect& region );	///< @brief Fill section of surface with specified color
 		virtual bool		copyFrom( const Surface_p& pSrcSurf, const Rect& srcRect, Coord dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( const Surface_p& pSrcSurf, Coord dst );	///< @brief Copy other surface as a block
+
+
+		// Merthods for handling meta data
+		
+		void *				metaData() const { return m_pMetaData; }
+		int					metaDataSize() const { return m_nMetaBytes; }
+		void				setMetaData( void * pData, int byts );
+		void				clearMetaData();
 	
 	protected:
 		Surface();
@@ -231,6 +239,10 @@ namespace wg
 		AccessMode			m_accessMode;
 		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.
 		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
+
+		void *				m_pMetaData;
+		int					m_nMetaBytes;
+
 	};
 	
 	//____ Surface::pitch() _______________________________________________

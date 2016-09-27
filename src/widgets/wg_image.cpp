@@ -100,7 +100,7 @@ namespace wg
 		if( pSurface != m_pSurface )
 		{
 			bool bResize = false;
-			if( pSurface->size() != m_pSurface->size() )
+			if( !pSurface || !m_pSurface || pSurface->size() != m_pSurface->size() )
 				bResize = true;
 	
 			m_pSurface = pSurface;

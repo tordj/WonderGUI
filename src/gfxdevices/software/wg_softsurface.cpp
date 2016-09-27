@@ -32,10 +32,16 @@ namespace wg
 	
 	const char SoftSurface::CLASSNAME[] = {"SoftSurface"};
 	
+	//____ maxSize() _______________________________________________________________
+
+	Size WgSurfaceSoft::maxSize()
+	{
+		return Size(65536,65536);
+	}
 
 	//____ Create ______________________________________________________________
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type ) 
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, SurfaceHint hint )
 	{ 
 		if(type != PixelType::BGRA_8 && type != PixelType::BGR_8) 
 			return SoftSurface_p(); 
@@ -43,7 +49,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,type));
 	}
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch ) 
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
 	{ 
 		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
@@ -51,7 +57,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,type,pBlob,pitch));
 	}
 		
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat ) 
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
 	{ 
 		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
 			return SoftSurface_p();
@@ -59,7 +65,7 @@ namespace wg
 		return  SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pPixelFormat)); 
 	};
 
-	SoftSurface_p SoftSurface::create( const Surface_p& pOther ) 
+	SoftSurface_p SoftSurface::create( const Surface_p& pOther, SurfaceHint hint )
 	{
 		if( !pOther )
 			return SoftSurface_p();

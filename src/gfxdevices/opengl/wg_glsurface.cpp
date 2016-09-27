@@ -33,35 +33,44 @@ namespace wg
 {
 	const char GlSurface::CLASSNAME[] = {"GlSurface"};
 
+	//____ maxSize() _______________________________________________________________
+
+	Size GlSurface::maxSize()
+	{
+		GLint max;
+		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max);
+		return Size(max,max);
+	}
+
 	//____ create ______________________________________________________________
 
-    GlSurface_p	GlSurface::create( Size size, PixelType type )
+    GlSurface_p	GlSurface::create( Size size, PixelType type, SurfaceHint hint )
     {
         if( type != PixelType::BGRA_8 && type != PixelType::BGR_8)
             return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,type));
+        return GlSurface_p(new GlSurface(size,type,hint));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch )
+    GlSurface_p	GlSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
     {
         if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
             return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,type,pBlob,pitch));
+        return GlSurface_p(new GlSurface(size,type,pBlob,pitch,hint));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat )
+    GlSurface_p	GlSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
     {
         if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
             return GlSurface_p();
         
-        return  GlSurface_p(new GlSurface(size,type,pPixels,pitch, pPixelFormat));
+        return  GlSurface_p(new GlSurface(size,type,pPixels,pitch, pPixelFormat,hint));
     };
     
-    GlSurface_p	GlSurface::create( const Surface_p& pOther )
+    GlSurface_p	GlSurface::create( const Surface_p& pOther, SurfaceHint hint )
     {
-        return GlSurface_p(new GlSurface( pOther.rawPtr() ));
+        return GlSurface_p(new GlSurface( pOther.rawPtr(),hint ));
     }
 
     
@@ -69,31 +78,31 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 
-    GlSurface::GlSurface( Size size, PixelType type )
+    GlSurface::GlSurface( Size size, PixelType type, SurfaceHint hint )
     {
 		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
 
         _setPixelDetails(type);
         m_size	= size;
-        m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;;
-        m_pBlob = Blob::create(m_pitch*m_size.h);
-        
+        m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
+		
         glGenBuffers( 1, &m_buffer );
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, m_pBlob->content(), GL_STREAM_DRAW );
+        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, 0, GL_STATIC_DRAW );
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
                      m_accessFormat, GL_UNSIGNED_BYTE, NULL );
     }
     
     
-	GlSurface::GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch )
+	GlSurface::GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
 	{
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
 
@@ -102,8 +111,7 @@ namespace wg
         _setPixelDetails(type);
         m_size	= size;
         m_pitch = pitch;
-        m_pBlob = pBlob;
-        
+		
         glGenBuffers( 1, &m_buffer );
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
         glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, pBlob->content(), GL_STREAM_DRAW );
@@ -112,6 +120,7 @@ namespace wg
         glBindTexture( GL_TEXTURE_2D, m_texture );
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
 			m_accessFormat, GL_UNSIGNED_BYTE, NULL );
@@ -119,28 +128,29 @@ namespace wg
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 	}
    
-    GlSurface::GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat )
+    GlSurface::GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
     {
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pPixels != 0 );
 		
        _setPixelDetails(type);
         m_size	= size;
-        m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
-        m_pBlob = Blob::create(m_pitch*m_size.h);
+        m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
+        Blob_p pBlob = Blob::create(m_pitch*m_size.h);
         
-        m_pPixels = (uint8_t *) m_pBlob->content();
+        m_pPixels = (uint8_t *) pBlob->content();
         _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
         m_pPixels = 0;
         
         glGenBuffers( 1, &m_buffer );
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, m_pBlob->content(), GL_STREAM_DRAW );
+        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, pBlob->content(), GL_STREAM_DRAW );
         
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
                      m_accessFormat, GL_UNSIGNED_BYTE, NULL );
         
@@ -148,28 +158,29 @@ namespace wg
     }
 
 
-    GlSurface::GlSurface( const Surface_p& pOther )
+    GlSurface::GlSurface( const Surface_p& pOther, SurfaceHint hint )
     {
 		assert( pOther );
 		
         _setPixelDetails(pOther->pixelFormat()->type);
         m_size	= pOther->size();
         m_pitch = m_size.w * m_pixelSize;
-        m_pBlob = Blob::create(m_pitch*m_size.h);
+        Blob_p pBlob = Blob::create(m_pitch*m_size.h);
         
-        m_pPixels = (uint8_t *) m_pBlob->content();
+        m_pPixels = (uint8_t *) pBlob->content();
         _copyFrom( pOther->pixelFormat(), (uint8_t*)pOther->pixels(), pOther-pitch(), m_size, m_size );
         m_pPixels = 0;
         
         glGenBuffers( 1, &m_buffer );
         glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*m_size.h, m_pBlob->content(), GL_STREAM_DRAW );
+        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*m_size.h, pBlob->content(), GL_STREAM_DRAW );
         
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+		
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
                      m_accessFormat, GL_UNSIGNED_BYTE, NULL );
         

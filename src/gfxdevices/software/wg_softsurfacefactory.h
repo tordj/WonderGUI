@@ -50,11 +50,13 @@ namespace wg
 		const char *					className( void ) const;
 		static const char				CLASSNAME[];
 		static SoftSurfaceFactory_p	cast( const Object_p& pObject );
+
+		Size				maxSize() const;
 	
-		virtual Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8 ) const;
-        virtual Surface_p	createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch ) const;
-        virtual Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 ) const;
-        virtual Surface_p	createSurface( const Surface_p& pOther ) const;
+		virtual Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static ) const;
+        virtual Surface_p	createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static ) const;
+        virtual Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static ) const;
+        virtual Surface_p	createSurface( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static ) const;
 		
 	protected:
 		virtual ~SoftSurfaceFactory() {}

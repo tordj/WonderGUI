@@ -54,10 +54,10 @@ namespace wg
 
 	public:
         
-        static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8 );
-        static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch );
-        static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 );
-        static GlSurface_p	create( const Surface_p& pOther );
+        static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
+        static GlSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
        
         
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -79,11 +79,13 @@ namespace wg
 		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
 		void		unlock();
 
+		static Size	maxSize();
+
 	private:
-        GlSurface( Size size, PixelType type = PixelType::BGRA_8 );
-        GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch );
-        GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat );
-        GlSurface( const Surface_p& pOther );
+        GlSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint = SurfaceHint::Static );
+        GlSurface( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
 		~GlSurface();
 
 
@@ -94,7 +96,8 @@ namespace wg
         GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
         GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
         Blob_p      m_pBlob;
-        
+		bool		m_bDynamic;			// Set if surface is dynamic, thus having a GL pixel buffer.
+		
 		GLuint		m_buffer;			// Pointer at GL pixel buffer, if any.
 		Size		m_size;				// Width and height in pixels.
 		uint32_t	m_pixelSize;		// Size in bytes of a pixel.

@@ -43,14 +43,14 @@ namespace wg
 		friend class SoftSurfaceFactory;
 	
 	 public:
-		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8 );
-        static SoftSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch );
-        static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0 );
-		static SoftSurface_p	create( const Surface_p& pOther );
+		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
+        static SoftSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
+		static SoftSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static SoftSurface_p	cast( const Object_p& pObject );
 	
 		Size		size() const;
@@ -64,9 +64,11 @@ namespace wg
 		void		unlock();
 	
 		inline float scaleAlpha() { return m_fScaleAlpha; }
-		void setScaleAlpha(float fScaleAlpha);
+		void		setScaleAlpha(float fScaleAlpha);
 	
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
+
+		static Size	maxSize();
 	
 	protected:
 		SoftSurface( Size size, PixelType type = PixelType::BGRA_8 );

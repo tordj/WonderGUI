@@ -180,8 +180,6 @@
 		0C6239D61D8161CA00DE671D /* wg_fpsdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */; };
 		0C6239D71D8161CA00DE671D /* wg_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A51D8161CA00DE671D /* wg_image.cpp */; };
 		0C6239D81D8161CA00DE671D /* wg_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A61D8161CA00DE671D /* wg_image.h */; };
-		0C6239D91D8161CA00DE671D /* wg_knob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239A71D8161CA00DE671D /* wg_knob.cpp */; };
-		0C6239DA1D8161CA00DE671D /* wg_knob.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239A81D8161CA00DE671D /* wg_knob.h */; };
 		0C6239E31D8161CA00DE671D /* wg_oscilloscope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */; };
 		0C6239E41D8161CA00DE671D /* wg_oscilloscope.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */; };
 		0C6239E51D8161CA00DE671D /* wg_refreshbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */; };
@@ -192,8 +190,6 @@
 		0C6239EA1D8161CA00DE671D /* wg_scrollbar.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239B81D8161CA00DE671D /* wg_scrollbar.h */; };
 		0C6239EB1D8161CA00DE671D /* wg_simplevolumemeter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */; };
 		0C6239EC1D8161CA00DE671D /* wg_simplevolumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */; };
-		0C6239ED1D8161CA00DE671D /* wg_switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BB1D8161CA00DE671D /* wg_switch.cpp */; };
-		0C6239EE1D8161CA00DE671D /* wg_switch.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BC1D8161CA00DE671D /* wg_switch.h */; };
 		0C6239EF1D8161CA00DE671D /* wg_textdisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */; };
 		0C6239F01D8161CA00DE671D /* wg_textdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */; };
 		0C6239F11D8161CA00DE671D /* wg_texteditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */; };
@@ -415,8 +411,6 @@
 		0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_fpsdisplay.h; path = ../../../src/widgets/wg_fpsdisplay.h; sourceTree = "<group>"; };
 		0C6239A51D8161CA00DE671D /* wg_image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_image.cpp; path = ../../../src/widgets/wg_image.cpp; sourceTree = "<group>"; };
 		0C6239A61D8161CA00DE671D /* wg_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_image.h; path = ../../../src/widgets/wg_image.h; sourceTree = "<group>"; };
-		0C6239A71D8161CA00DE671D /* wg_knob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_knob.cpp; path = ../../../src/widgets/wg_knob.cpp; sourceTree = "<group>"; };
-		0C6239A81D8161CA00DE671D /* wg_knob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_knob.h; path = ../../../src/widgets/wg_knob.h; sourceTree = "<group>"; };
 		0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_oscilloscope.cpp; path = ../../../src/widgets/wg_oscilloscope.cpp; sourceTree = "<group>"; };
 		0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_oscilloscope.h; path = ../../../src/widgets/wg_oscilloscope.h; sourceTree = "<group>"; };
 		0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_refreshbutton.cpp; path = ../../../src/widgets/wg_refreshbutton.cpp; sourceTree = "<group>"; };
@@ -427,8 +421,6 @@
 		0C6239B81D8161CA00DE671D /* wg_scrollbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollbar.h; path = ../../../src/widgets/wg_scrollbar.h; sourceTree = "<group>"; };
 		0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_simplevolumemeter.cpp; path = ../../../src/widgets/wg_simplevolumemeter.cpp; sourceTree = "<group>"; };
 		0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_simplevolumemeter.h; path = ../../../src/widgets/wg_simplevolumemeter.h; sourceTree = "<group>"; };
-		0C6239BB1D8161CA00DE671D /* wg_switch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_switch.cpp; path = ../../../src/widgets/wg_switch.cpp; sourceTree = "<group>"; };
-		0C6239BC1D8161CA00DE671D /* wg_switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_switch.h; path = ../../../src/widgets/wg_switch.h; sourceTree = "<group>"; };
 		0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textdisplay.cpp; path = ../../../src/widgets/wg_textdisplay.cpp; sourceTree = "<group>"; };
 		0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textdisplay.h; path = ../../../src/widgets/wg_textdisplay.h; sourceTree = "<group>"; };
 		0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_texteditor.cpp; path = ../../../src/widgets/wg_texteditor.cpp; sourceTree = "<group>"; };
@@ -740,8 +732,6 @@
 				0C6239A41D8161CA00DE671D /* wg_fpsdisplay.h */,
 				0C6239A51D8161CA00DE671D /* wg_image.cpp */,
 				0C6239A61D8161CA00DE671D /* wg_image.h */,
-				0C6239A71D8161CA00DE671D /* wg_knob.cpp */,
-				0C6239A81D8161CA00DE671D /* wg_knob.h */,
 				0C6239B11D8161CA00DE671D /* wg_oscilloscope.cpp */,
 				0C6239B21D8161CA00DE671D /* wg_oscilloscope.h */,
 				0C6239B31D8161CA00DE671D /* wg_refreshbutton.cpp */,
@@ -752,8 +742,6 @@
 				0C6239B81D8161CA00DE671D /* wg_scrollbar.h */,
 				0C6239B91D8161CA00DE671D /* wg_simplevolumemeter.cpp */,
 				0C6239BA1D8161CA00DE671D /* wg_simplevolumemeter.h */,
-				0C6239BB1D8161CA00DE671D /* wg_switch.cpp */,
-				0C6239BC1D8161CA00DE671D /* wg_switch.h */,
 				0C6239BD1D8161CA00DE671D /* wg_textdisplay.cpp */,
 				0C6239BE1D8161CA00DE671D /* wg_textdisplay.h */,
 				0C6239BF1D8161CA00DE671D /* wg_texteditor.cpp */,
@@ -851,7 +839,6 @@
 				0C6239E81D8161CA00DE671D /* wg_rulerlabels.h in Headers */,
 				0C6239D61D8161CA00DE671D /* wg_fpsdisplay.h in Headers */,
 				0C6238F21D815E7600DE671D /* wg_types.h in Headers */,
-				0C6239DA1D8161CA00DE671D /* wg_knob.h in Headers */,
 				0C6238F81D815E7600DE671D /* wg_vectorfont.h in Headers */,
 				0C62392E1D815F2300DE671D /* wg_text.h in Headers */,
 				0C623A1C1D81651400DE671D /* wg_packlist.h in Headers */,
@@ -904,7 +891,6 @@
 				0C6239781D815FF800DE671D /* wg_colorskin.h in Headers */,
 				0C6239511D815F9300DE671D /* wg_spanitem.h in Headers */,
 				0C6239531D815F9300DE671D /* wg_textbaseitem.h in Headers */,
-				0C6239EE1D8161CA00DE671D /* wg_switch.h in Headers */,
 				0C6238BF1D815E7600DE671D /* wg_hookptr.h in Headers */,
 				0C623A121D81650200DE671D /* wg_modallayer.h in Headers */,
 				0C6238D81D815E7600DE671D /* wg_pointers.h in Headers */,
@@ -1084,7 +1070,6 @@
 				0C6239271D815F2300DE671D /* wg_modvalue.cpp in Sources */,
 				0C623A2B1D81654100DE671D /* wg_flexpanel.cpp in Sources */,
 				0C62389D1D815E7600DE671D /* wg_base.cpp in Sources */,
-				0C6239ED1D8161CA00DE671D /* wg_switch.cpp in Sources */,
 				0C6238E01D815E7600DE671D /* wg_sizescaler.cpp in Sources */,
 				0C623A1B1D81651400DE671D /* wg_packlist.cpp in Sources */,
 				0C623A051D8164EA00DE671D /* wg_shadercapsule.cpp in Sources */,
@@ -1092,7 +1077,6 @@
 				0C6239791D815FF800DE671D /* wg_extendedskin.cpp in Sources */,
 				0C623A031D8164EA00DE671D /* wg_capsule.cpp in Sources */,
 				0C6238B11D815E7600DE671D /* wg_finalizer.cpp in Sources */,
-				0C6239D91D8161CA00DE671D /* wg_knob.cpp in Sources */,
 				0C6239211D815F2300DE671D /* wg_iwidgets.cpp in Sources */,
 				0C6239EF1D8161CA00DE671D /* wg_textdisplay.cpp in Sources */,
 				0C62398D1D81602000DE671D /* wg_timeformatter.cpp in Sources */,
@@ -1251,6 +1235,7 @@
 				0C62383A1D815B1400DE671D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

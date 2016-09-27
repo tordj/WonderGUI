@@ -6,8 +6,13 @@
 #	include <SDL.h>
 #	include <SDL_image.h>
 #else
-#	include <SDL2/SDL.h>
-#	include <SDL2/SDL_image.h>
+#	ifdef __APPLE__
+#		include <SDL2/SDL.h>
+#		include <SDL2_image/SDL_image.h>
+#	else
+#		include <SDL2/SDL.h>
+#		include <SDL2/SDL_image.h>
+#	endif
 #endif
 
 #include <wondergui.h>
@@ -29,6 +34,7 @@ Blob_p 			loadBlob( const char * pPath );
 void			convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
+Surface_p generateTestSurface();
 
 
 bool	bQuit = false;
@@ -150,9 +156,9 @@ int main ( int argc, char** argv )
 
     
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-	Blob_p pFontSurfBlob = Blob::create( pFontSurf, freeSDLSurfCallback );
-	GlSurface_p pFontImg = GlSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, pFontSurfBlob );
-    assert( glGetError() == 0 );		
+	GlSurface_p pFontImg = GlSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (uint8_t*) pFontSurf->pixels, pFontSurf->pitch );
+	SDL_FreeSurface( pFontSurf );
+    assert( glGetError() == 0 );
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
     assert( glGetError() == 0 );
 
@@ -172,34 +178,34 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	GlSurface_p pButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	GlSurface_p pButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	GlSurface_p pStateButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	GlSurface_p pStateButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
 	pStateButtonSkin->setContentPadding( Border(5) );
     
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	GlSurface_p pPressablePlateSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	GlSurface_p pPressablePlateSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	pPressablePlateSkin->setContentPadding( Border(3) );
     
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	GlSurface_p pListEntrySurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	GlSurface_p pListEntrySurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
     
 	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	GlSurface_p pImgSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, format );
+	GlSurface_p pImgSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
 
@@ -275,13 +281,21 @@ int main ( int argc, char** argv )
 		pText->grabFocus();
     }
 
+
+	{
+		Image_p pImage = Image::create();
+		pImage->setImage( generateTestSurface() );
+        pFlexPanel->addWidget( pImage, Origo::NorthWest, Origo::SouthEast, Border(20) );
+	}
+
+
 /*
     {
         TestWidget_p pTest = TestWidget::create();
         pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
         pTest->start();
     }
- */
+*/
 
 /*	
 	{
@@ -763,3 +777,17 @@ void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLForm
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
 
 }
+
+//____ generateTestSurface () _____________________________________________________
+
+Surface_p generateTestSurface()
+{
+	uint8_t tex[3*3*4] = {	255,0,0, 0,255,0, 0,0,255, 0,0,
+								255,128,128, 128,255,128, 128,128,255,0,0,
+								255,128,0, 128,255,0, 0,128,255,0,0 };
+
+	Surface_p p = GlSurface::create( Size(3,3), PixelType::BGR_8, tex, 11 );
+
+	return p;
+}
+
