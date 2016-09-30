@@ -273,16 +273,13 @@ namespace wg
 									_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
 									pAnimFrame->rect.size() );
 	
-					pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, 
-											  (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
-											  (float) dest.x, (float) dest.y, (float) dest.w, (float) dest.h, false );
+					pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, dest );
 				}
 				break;
 	
 				case BUTTON_STRETCHED:
 				{
-					pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, (float) pAnimFrame->rect.x, (float) pAnimFrame->rect.y, (float) pAnimFrame->rect.w, (float) pAnimFrame->rect.h,
-											  (float) _canvas.x, (float) _canvas.y, (float) _canvas.w, (float) _canvas.h, false );
+					pDevice->clipStretchBlit( _clip, pAnimFrame->pSurf, pAnimFrame->rect, _canvas );
 				}
 				break;
 	

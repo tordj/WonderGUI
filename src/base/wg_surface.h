@@ -74,6 +74,7 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Surface_p	cast( const Object_p& pObject );
+
 	
 		// Methods for reading dimensions and abilities.
 	
@@ -96,6 +97,10 @@ namespace wg
 																///<
 																///< @return True if surface is guaranteed to only contain completely opaque pixels. False if
 																///< if it does contain (semi)transparent pixels or we simply just don't know.
+
+		virtual void		setScaleMode( ScaleMode mode );
+		ScaleMode			scaleMode() const { return m_scaleMode; }
+
 	
 		// Slow, simple methods for reading and parsing individual pixels.
 	
@@ -235,6 +240,8 @@ namespace wg
 	
 		PixelFormat			m_pixelFormat;
 		int					m_pitch;
+
+		ScaleMode			m_scaleMode;
 	
 		AccessMode			m_accessMode;
 		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.

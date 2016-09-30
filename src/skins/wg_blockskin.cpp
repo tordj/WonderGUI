@@ -520,7 +520,7 @@ namespace wg
 	
 		if( src.w == _canvas.w && src.h == _canvas.h )
 		{
-			pDevice->clipBlit( _clip, m_pSurface, src, _canvas.x, _canvas.y );
+			pDevice->clipBlit( _clip, m_pSurface, src, _canvas.pos() );
 			return;
 		}
 	
@@ -536,14 +536,14 @@ namespace wg
 		if( src.w == _canvas.w )
 		{
 			pDevice->clipBlitVertBar( _clip, m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.h );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.pos(), _canvas.h );
 			return;
 		}
 	
 		if( src.h == _canvas.h )
 		{
 			pDevice->clipBlitHorrBar( _clip, m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.w );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.pos(), _canvas.w );
 			return;
 		}
 	
@@ -556,7 +556,7 @@ namespace wg
 			Rect rect( src.x, src.y, src.w, borders.top );
 	
 			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::North)) != 0,
-									_canvas.x, _canvas.y, _canvas.w );
+									_canvas.pos(), _canvas.w );
 		}
 	
 		// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
@@ -566,7 +566,7 @@ namespace wg
 			Rect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 	
 			pDevice->clipBlitHorrBar( _clip, m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::South)) != 0,
-									_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
+									Coord(_canvas.x, _canvas.y + _canvas.h - borders.bottom), _canvas.w );
 		}
 	
 		// Render left and right stretch areas
@@ -625,7 +625,7 @@ namespace wg
 	
 		if( src.w == _canvas.w && src.h == _canvas.h )
 		{
-			pDevice->blit( m_pSurface, src, _canvas.x, _canvas.y );
+			pDevice->blit( m_pSurface, src, _canvas.pos() );
 			return;
 		}
 	
@@ -641,14 +641,14 @@ namespace wg
 		if( src.w == _canvas.w )
 		{
 			pDevice->blitVertBar( m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.h );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.pos(), _canvas.h );
 			return;
 		}
 	
 		if( src.h == _canvas.h )
 		{
 			pDevice->blitHorrBar( m_pSurface, src, m_frame,
-							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.x, _canvas.y, _canvas.w );
+							 (m_tiledSections & (1<<(int)Origo::Center)) != 0, _canvas.pos(), _canvas.w );
 			return;
 		}
 	
@@ -661,7 +661,7 @@ namespace wg
 			Rect rect( src.x, src.y, src.w, borders.top );
 	
 			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::North)) != 0,
-									_canvas.x, _canvas.y, _canvas.w );
+									_canvas.pos(), _canvas.w );
 		}
 	
 		// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
@@ -671,7 +671,7 @@ namespace wg
 			Rect rect( src.x, src.y + src.h - borders.bottom, src.w, borders.bottom );
 	
 			pDevice->blitHorrBar( m_pSurface, rect, borders, (m_tiledSections & (1<<(int)Origo::South)) != 0,
-									_canvas.x, _canvas.y + _canvas.h - borders.bottom, _canvas.w );
+									Coord(_canvas.x, _canvas.y + _canvas.h - borders.bottom), _canvas.w );
 		}
 	
 		// Render left and right stretch areas

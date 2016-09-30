@@ -787,7 +787,7 @@ Surface_p generateTestSurface()
 								255,128,0, 128,255,0, 0,128,255,0,0 };
 
 	Surface_p p = GlSurface::create( Size(3,3), PixelType::BGR_8, tex, 11 );
-
+	p->setScaleMode(ScaleMode::Interpolate);
 	return p;
 }
 

@@ -492,7 +492,7 @@ namespace wg
 
 	//____ blit() __________________________________________________________________
 
-	void GlGfxDevice::blit( const Surface_p& _pSrc, const Rect& _src, int _dx, int _dy  )
+	void GlGfxDevice::blit( const Surface_p& _pSrc, const Rect& _src, Coord dest  )
 	{
         if( !_pSrc )
 			return;
@@ -505,9 +505,9 @@ namespace wg
 		float	sy1 = _src.y/sh;
 		float	sy2 = (_src.y+_src.h)/sh;
 
-		int		dx1 = _dx;
-		int		dx2 = _dx + _src.w;
-		int		dy1 = m_canvasSize.h - _dy;
+		int		dx1 = dest.x;
+		int		dx2 = dest.x + _src.w;
+		int		dy1 = m_canvasSize.h - dest.y;
 		int		dy2 = dy1 - _src.h;
 
         m_vertexBufferData[0] = dx1;
@@ -640,8 +640,18 @@ namespace wg
 
 	void GlGfxDevice::stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy,
 											 float sw, float sh,
-											 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
+											 float dx, float dy, float dw, float dh )
 	{
+		if( pSrc->scaleMode() == ScaleMode::Interpolate )
+		{
+			if( sw < dw )
+				sx += 0.5f;
+	
+			if( sh < dh )
+				sy += 0.5f;
+		}
+
+
 		if( !pSrc )
 			return;
 

@@ -585,6 +585,15 @@ namespace wg
 		ReadWrite
 	};
 
+	//____ ScaleMode ____________________________________________________________
+	
+	enum class ScaleMode
+	{
+		Nearest,
+		Interpolate,
+	};
+
+
 	//____ SurfaceHint ____________________________________________________________
 	
 	enum class SurfaceHint

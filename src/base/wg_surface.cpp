@@ -37,6 +37,7 @@ namespace wg
 		m_pPixels		= 0;
 		m_pMetaData		= 0;
 		m_nMetaBytes	= 0;
+		m_scaleMode		= ScaleMode::Nearest;
 		
 		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
 	}
@@ -105,6 +106,13 @@ namespace wg
 
 		m_pMetaData = 0;
 		m_nMetaBytes = 0;
+	}
+
+	//____ setScaleMode() __________________________________________________________
+
+	void Surface::setScaleMode( ScaleMode mode )
+	{
+		m_scaleMode = mode;
 	}
 
 	

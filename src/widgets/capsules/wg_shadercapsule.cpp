@@ -109,8 +109,8 @@ namespace wg
 		Color			oldTC;
 		Color			newTC;
 	
-		oldBM = pDevice->getBlendMode();
-		oldTC = pDevice->getTintColor();
+		oldBM = pDevice->blendMode();
+		oldTC = pDevice->tintColor();
 
 		pDevice->setBlendMode(m_renderMode);
 		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );

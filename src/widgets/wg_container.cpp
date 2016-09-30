@@ -276,7 +276,7 @@ namespace wg
 	
 				p->patches.push( &patches );
 	
-				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->getBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 	
 				if( patches.isEmpty() )
 					break;

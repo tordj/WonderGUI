@@ -139,7 +139,7 @@ namespace wg
 		if( m_ticks < m_cycleLength / 2 )
 		{
 			Rect r = dirtyRect(cell);
-			BlendMode oldMode = pDevice->getBlendMode();
+			BlendMode oldMode = pDevice->blendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
 			pDevice->fill( Rect(r,clip), Color::White );
 			pDevice->setBlendMode(oldMode);

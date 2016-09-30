@@ -57,30 +57,23 @@ namespace wg
 	
 		//
 	
-		void	fill( const Rect& rect, const Color& col );
-		void	blit( const Surface_p& src, const Rect& srcrect, int dx, int dy  );
-		void	tileBlit( const Surface_p& src, const Rect& srcrect, const Rect& dest );
+		void	fill( const Rect& rect, const Color& col ) override;
+		void	blit( const Surface_p& src, const Rect& srcrect, Coord dest  ) override;
+		void	tileBlit( const Surface_p& src, const Rect& srcrect, const Rect& dest ) override;
 	
-		void	fillSubPixel( const RectF& rect, const Color& col );
+		void	fillSubPixel( const RectF& rect, const Color& col )  override;
 		void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
-							   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
+							   		 float dx, float dy, float dw, float dh ) override;
 	
-		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
-		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
-		void	clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness );
+		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
+		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
 
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
-        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors);
+        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
+        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 	
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
-		void	drawArcNE( const Rect& rect, Color color );
-		void	drawElipse( const Rect& rect, Color color );
-		void	drawFilledElipse( const Rect& rect, Color color );
+		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 	
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
-		void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );
 	
 	protected:
 		NullGfxDevice( Size size );

@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ maxSize() _______________________________________________________________
 
-	Size WgSurfaceSoft::maxSize()
+	Size SoftSurface::maxSize()
 	{
 		return Size(65536,65536);
 	}

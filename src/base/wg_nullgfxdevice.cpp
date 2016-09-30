@@ -90,7 +90,7 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::blit( const Surface_p& src, const Rect& srcrect, int dx, int dy  )
+	void NullGfxDevice::blit( const Surface_p& src, const Rect& srcrect, Coord dest  )
 	{
 	}
 	
@@ -103,7 +103,7 @@ namespace wg
 	}
 	
 	void NullGfxDevice::stretchBlitSubPixel( 	const Surface_p& pSrc, float sx, float sy, float sw, float sh,
-							   		 			float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias )
+							   		 			float dx, float dy, float dw, float dh )
 	{
 	}
 	
@@ -115,10 +115,6 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
-	{
-	}
-
     void NullGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
 	{
 	}
@@ -131,32 +127,9 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::drawArcNE( const Rect& rect, Color color )
-	{
-	}
-	
-	void NullGfxDevice::drawElipse( const Rect& rect, Color color )
-	{
-	}
-	
-	void NullGfxDevice::drawFilledElipse( const Rect& rect, Color color )
-	{
-	}
-	
 	void NullGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
 	}
 	
-	void NullGfxDevice::clipDrawArcNE( const Rect& clip, const Rect& rect, Color color )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-	}
 
 } // namespace wg

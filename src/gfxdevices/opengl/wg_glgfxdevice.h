@@ -64,37 +64,37 @@ namespace wg
 
 		void	setCanvas( Size canvas );
 
-		void	setTintColor( Color color );
-		bool	setBlendMode( BlendMode blendMode );
+		void	setTintColor( Color color ) override;
+		bool	setBlendMode( BlendMode blendMode ) override;
 
 		//
 
-		bool	beginRender();
-		bool	endRender();
+		bool	beginRender() override;;
+		bool	endRender() override;;
 
-		void	fill( const Rect& rect, const Color& col );
+		void	fill( const Rect& rect, const Color& col ) override;
 
-		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col );
-		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col );
+		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
+		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
  
         
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
-        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors);
+        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
+        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
-		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
+		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 
 
 
-		void	blit( const Surface_p& src, const Rect& srcrect, int dx, int dy  );
+		void	blit( const Surface_p& src, const Rect& srcrect, Coord dest  ) override;
 
 		void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
-									 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias );
+									 float dx, float dy, float dw, float dh ) override;
 
 
 
 
-		void	fillSubPixel( const RectF& rect, const Color& col );
+		void	fillSubPixel( const RectF& rect, const Color& col ) override;
 
 	protected:
 		GlGfxDevice( Size canvas );

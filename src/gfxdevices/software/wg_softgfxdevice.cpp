@@ -52,7 +52,6 @@ namespace wg
 	
 	SoftGfxDevice::SoftGfxDevice() : GfxDevice(Size(0,0))
 	{
-		m_bBilinearFiltering = true;
 		m_pCanvas = 0;
 		m_pCanvasPixels = 0;
 		m_canvasPixelBits = 0;
@@ -63,7 +62,6 @@ namespace wg
 	
 	SoftGfxDevice::SoftGfxDevice( const SoftSurface_p& pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
-		m_bBilinearFiltering = true;
 		m_pCanvas = pCanvas;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
@@ -834,112 +832,6 @@ namespace wg
         }
     }
 	
-	//____ clipPlotSoftPixels() _______________________________________________________
-	
-	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
-	{
-		int pitch =m_canvasPitch;
-		int pixelBytes = m_canvasPixelBits/8;
-	
-		int offset[4];
-	
-		offset[0] = -pixelBytes;
-		offset[1] = -pitch;
-		offset[2] = pixelBytes;
-		offset[3] = pitch;
-	
-		int alpha = (int) (256*(thickness - 1.f)/2);
-	
-		int storedRed = ((int)col.r) * alpha;
-		int storedGreen = ((int)col.g) * alpha;
-		int storedBlue = ((int)col.b) * alpha;
-		int invAlpha = 255-alpha;
-	
-		int yp = pCoords[0].y;
-	
-		for( int i = 0 ; i < nCoords ; i++ )
-		{
-			int x = pCoords[i].x;
-			int begY;
-			int endY;
-	
-			if( yp > pCoords[i].y )
-			{
-				begY = pCoords[i].y;
-				endY = yp-1;
-			}
-			else if( pCoords[i].y > yp )
-			{
-				begY = yp+1;
-				endY = pCoords[i].y;
-			}
-			else
-			{
-				begY = endY = yp;
-			}
-	
-			for( int y = begY ; y <= endY ; y++ )
-			{
-				uint8_t * pDst = m_pCanvasPixels + y *m_canvasPitch + pCoords[i].x * pixelBytes;
-	
-				if( y > clip.y && y < clip.y + clip.h -1 && x > clip.x && x < clip.x + clip.w -1 )
-				{
-					pDst[0] = col.b;
-					pDst[1] = col.g;
-					pDst[2] = col.r;
-	
-					for( int x = 0 ; x < 4 ; x++ )
-					{
-						int ofs = offset[x];
-						pDst[ofs] = m_pDivTab[pDst[ofs]*invAlpha + storedBlue];
-						pDst[ofs+1] = m_pDivTab[pDst[ofs+1]*invAlpha + storedGreen];
-						pDst[ofs+2] = m_pDivTab[pDst[ofs+2]*invAlpha + storedRed];
-					}
-				}
-			}
-	
-			yp = pCoords[i].y;
-		}
-	}
-	/*
-	void SoftGfxDevice::clipPlotSoftPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color& col, float thickness )
-	{
-		int pitch =m_canvasPitch;
-		int pixelBytes = m_canvasPixelBits/8;
-	
-		int offset[4];
-	
-		offset[0] = -pixelBytes;
-		offset[1] = -pitch;
-		offset[2] = pixelBytes;
-		offset[3] = pitch;
-	
-		int alpha = (int) (256*(thickness - 1.f)/2);
-	
-		int storedRed = ((int)col.r) * alpha;
-		int storedGreen = ((int)col.g) * alpha;
-		int storedBlue = ((int)col.b) * alpha;
-		int invAlpha = 255-alpha;
-	
-	
-		for( int i = 0 ; i < nCoords ; i++ )
-		{
-			uint8_t * pDst = m_pCanvasPixels + pCoords[i].y *m_canvasPitch + pCoords[i].x * pixelBytes;
-	
-			pDst[0] = col.b;
-			pDst[1] = col.g;
-			pDst[2] = col.r;
-	
-			for( int x = 0 ; x < 4 ; x++ )
-			{
-				int ofs = offset[x];
-				pDst[ofs] = (uint8_t) ((pDst[ofs]*invAlpha + storedBlue) >> 8);
-				pDst[ofs+1] = (uint8_t) ((pDst[ofs+1]*invAlpha + storedGreen) >> 8);
-				pDst[ofs+2] = (uint8_t) ((pDst[ofs+2]*invAlpha + storedRed) >> 8);
-			}
-		}
-	}
-	*/
 	
 	//____ _drawHorrVertLine() ________________________________________________
 	
@@ -1683,14 +1575,14 @@ namespace wg
 	
 	//____ blit() __________________________________________________________________
 	
-	void SoftGfxDevice::blit( const Surface_p& pSrcSurf, const Rect& srcrect, int dx, int dy  )
+	void SoftGfxDevice::blit( const Surface_p& pSrcSurf, const Rect& srcrect, Coord dest  )
 	{
 		Surface * pSrc = pSrcSurf.rawPtr();
 	
 		if( m_tintColor.argb == 0xFFFFFFFF )
-			_blit( pSrc, srcrect, dx, dy );
+			_blit( pSrc, srcrect, dest.x, dest.y );
 		else
-			_tintBlit( pSrc, srcrect, dx, dy );
+			_tintBlit( pSrc, srcrect, dest.x, dest.y );
 	}
 	
 	//____ _blit() _____________________________________________________________
@@ -2175,102 +2067,11 @@ namespace wg
 		}
 	}
 	
-	//____ stretchBlit() ___________________________________________________________
-	
-	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, bool bTriLinear, float mipmapBias )
-	{
-		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), Rect(0,0,m_canvasSize.w,m_canvasSize.h), bTriLinear, mipmapBias );
-	}
-	
-	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipmapBias )
-	{
-		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), dest, bTriLinear, mipmapBias );
-	}
-	
-	void SoftGfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipmapBias )
-	{
-		float srcW = (float) src.w;
-		float srcH = (float) src.h;
-	
-		float destW = (float) dest.w;
-		float destH = (float) dest.h;
-	
-		if( m_bBilinearFiltering )
-		{
-			if( srcW < destW )
-				srcW--;
-	
-			if( srcH < destH )
-				srcH--;
-		}
-	
-		stretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, srcW, srcH, (float) dest.x, (float) dest.y, destW, destH, bTriLinear, mipmapBias );
-	}
-	
-	//____ clipStretchBlit() _______________________________________________________
-	
-	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, bool bTriLinear, float mipBias )
-	{
-		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), Rect( 0,0,m_canvasSize), bTriLinear, mipBias );
-	}
-	
-	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest, bool bTriLinear, float mipBias )
-	{
-		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest, bTriLinear, mipBias );
-	}
-	
-	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear, float mipBias )
-	{
-		clipStretchBlit( clip, pSrc, (float)src.x, (float)src.y, (float)src.w, (float)src.h, (float)dest.x, (float)dest.y, (float)dest.w, (float)dest.h, false );
-	}
-	
-	void SoftGfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias)
-	{
-		if( m_bBilinearFiltering )
-		{
-			if( sw < dw )
-				sw--;
-	
-			if( sh < dh )
-				sh--;
-		}
-	
-		float cx = std::max(float(clip.x), dx);
-		float cy = std::max(float(clip.y), dy);
-		float cw = std::min(float(clip.x + clip.w), dx + dw) - cx;
-		float ch = std::min(float(clip.y + clip.h), dy + dh) - cy;
-	
-		if(cw <= 0 || ch <= 0)
-			return;
-	
-		if( dw > cw )
-		{
-			float	sdxr = sw / dw;			// Source/Destination X Ratio.
-	
-			sw = sdxr * cw;
-	
-			if( dx < cx )
-				sx += sdxr * (cx - dx);
-		}
-	
-		if( dh > ch )
-		{
-			float	sdyr = sh / dh;			// Source/Destination Y Ratio.
-	
-			sh = sdyr * ch;
-	
-			if( dy < cy )
-				sy += sdyr * (cy - dy);
-		}
-	
-		stretchBlitSubPixel( pSrc, sx, sy, sw, sh, cx, cy, cw, ch, bTriLinear, mipBias );
-	}
-	
 	
 	//____ stretchBlitSubPixel() ___________________________________________________
 	
 	void SoftGfxDevice::stretchBlitSubPixel( const Surface_p& _pSrcSurf, float sx, float sy, float sw, float sh,
-							   		 float _dx, float _dy, float _dw, float _dh, bool bTriLinear, float mipBias )
+							   		 float _dx, float _dy, float _dw, float _dh )
 	{
 		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
@@ -2381,7 +2182,7 @@ namespace wg
 																							\
 		_init_																				\
 																							\
-		if( m_bBilinearFiltering )															\
+		if( pSrcSurf->scaleMode() == ScaleMode::Interpolate )									\
 		{																					\
 			int ofsY = (int) (sy*32768);		/* We use 15 binals for all calculations */	\
 			int incY = (int) (sh*32768/dh);													\

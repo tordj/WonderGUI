@@ -69,6 +69,8 @@ namespace wg
 
 		// Methods needed by Surface
 
+		void		setScaleMode( ScaleMode mode );
+
 		Size		size() const;
 		bool		isOpaque() const;
 

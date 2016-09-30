@@ -78,13 +78,9 @@ namespace wg
 		
 		virtual void		setTintColor( Color color );
 		virtual bool		setBlendMode( BlendMode blendMode );
-		virtual uint32_t	setRenderFlags( uint32_t flags );
-		virtual bool		setSaveDirtyRects( bool bSave );
 	
-		inline const Color&	getTintColor() const { return m_tintColor; }
-		inline BlendMode 	getBlendMode() const { return m_blendMode; }
-		inline uint32_t		getRenderFlags() const { return m_renderFlags; }
-		inline bool			getSaveDirtyRects() const { return m_bSaveDirtyRects; }
+		inline const Color&	tintColor() const { return m_tintColor; }
+		inline BlendMode 	blendMode() const { return m_blendMode; }
 	
 		// Geometry related methods.
 	
@@ -111,14 +107,12 @@ namespace wg
 
 	
 		virtual void	blit( const Surface_p& pSrc );
-		virtual void	blit( const Surface_p& pSrc, int dx, int dy );
-		virtual void	blit( const Surface_p& pSrc, const Rect& src, int dx, int dy ) = 0;
+		virtual void	blit( const Surface_p& pSrc, Coord dest );
+		virtual void	blit( const Surface_p& pSrc, const Rect& src, Coord dest ) = 0;
 	
-		virtual void	stretchBlit( const Surface_p& pSrc, bool bTriLinear = false, float mipmapBias = 0.f );
-		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
-		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear = false, float mipmapBias = 0.f );
+		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& dest );
+		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest );
 	
-		virtual void	tileBlit( const Surface_p& pSrc );
 		virtual void	tileBlit( const Surface_p& pSrc, const Rect& dest );
 		virtual void	tileBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest );
 	
@@ -126,16 +120,14 @@ namespace wg
 		virtual void	clipFill( const Rect& clip, const Rect& rect, const Color& col );
 	
 		virtual void	clipBlit( const Rect& clip, const Surface_p& src );
-		virtual void	clipBlit( const Rect& clip, const Surface_p& src, int dx, int dy  );
+		virtual void	clipBlit( const Rect& clip, const Surface_p& src, Coord dest  );
 		virtual void	clipBlit( const Rect& clip, const Surface_p& src,
-								  const Rect& srcrect, int dx, int dy  );
+								  const Rect& srcrect, Coord dest  );
 	
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, bool bTriLinear = false, float mipBias = 0.f );
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest, bool bTriLinear = false, float mipBias = 0.f );
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest, bool bTriLinear = false, float mipBias = 0.f );
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f);
+		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest );
+		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest );
+		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const RectF& src, const Rect& dest );
 	
-		virtual void	clipTileBlit( const Rect& clip, const Surface_p& src );
 		virtual void	clipTileBlit( const Rect& clip, const Surface_p& src,
 									  const Rect& dest );
 		virtual void	clipTileBlit( const Rect& clip, const Surface_p& src,
@@ -146,24 +138,25 @@ namespace wg
 	
 		virtual void	clipBlitHorrBar(	const Rect& _clip, const Surface_p& _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
-											int _dx, int _dy, int _len );
+											Coord dest, int _len );
 	
 		virtual void	clipBlitVertBar(	const Rect& _clip, const Surface_p& _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
-											int _dx, int _dy, int _len );
+											Coord dest, int _len );
 	
 	
 		virtual void	blitHorrBar(		const Surface_p& _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
-											int _dx, int _dy, int _len );
+											Coord dest, int _len );
 	
 		virtual void	blitVertBar(		const Surface_p& _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
-											int _dx, int _dy, int _len );
+											Coord dest, int _len );
 		
 		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
+
 		virtual void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
-									   		 float dx, float dy, float dw, float dh, bool bTriLinear, float mipBias = 0.f ) = 0;
+									   		 float dx, float dy, float dw, float dh ) = 0;
 	
 		
 	protected:
@@ -175,7 +168,6 @@ namespace wg
 		uint32_t	m_renderFlags;		// Current flags.
 	
 		Size		m_canvasSize;
-		bool		m_bSaveDirtyRects;
 	
 	};
 	

@@ -369,7 +369,7 @@ namespace wg
 		Font_p 			pFont;
 		TextStyle_h		hStyle = 0xFFFF;
 
-		Color	baseTint = pDevice->getTintColor();
+		Color	baseTint = pDevice->tintColor();
 		Color	localTint = Color::White;
 
 		const EditState * pEditState = _editState( pItem );
@@ -450,7 +450,7 @@ namespace wg
 							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
 
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
-						pDevice->clipBlit( clip, pBitmap->pSurface, pBitmap->rect, pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY  );
+						pDevice->clipBlit( clip, pBitmap->pSurface, pBitmap->rect, Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY)  );
 	
 						pos.x += pGlyph->advance();
 					}
