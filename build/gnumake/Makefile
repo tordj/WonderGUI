@@ -8,7 +8,7 @@
 # dependency on the FreeType2 development package _UNLESS_ you remove
 # the WG_USE_FREETYPE define from src/wg_userdefines.h.
 #
-# Most examples have a dependency on SDL2, but wondergui itself does not.
+# Most examples have a dependency on SDL2 and SDL2_Image, but wondergui itself does not.
 #
 #-------------------------------------------------------------------------------------------
 #
@@ -24,9 +24,14 @@
 #
 #--------------------------------------------------------------------------------------------
 
-VERSION = debug				# Set to one of the ones listed in VERSIONS below.
-CXX = g++					# C++ compiler for compiling. Note! Makefile still needs gcc for MAKEDEPEND
-FLAGS = 					# General compiler flags, set version specific ones below.
+# Set to one of the ones listed in VERSIONS below.
+VERSION = debug
+
+# C++ compiler for compiling. Note! Makefile still needs gcc for MAKEDEPEND
+CXX = g++
+
+# General compiler flags, set version specific ones below.
+FLAGS = -std=c++11
 
 
 # List of versions that can be built. You can add your own, but should run 'make clean' afterwards
@@ -56,69 +61,55 @@ DEPDIR = deps
 
 
 CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/items/ -I../../src/interfaces/   \
-  -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/widgets/ -I../../src/widgets/capsules/ \
-  -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ -I../../src/gfxdevices/software/
+  -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/textmappers/ -I../../src/valueformatters/ \
+  -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
+  -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/
 
-VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/items:../../src/skins:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/items:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/examples:$(OUTDIR):$(OBJDIR)
 
 BASE = wg_anim.o \
   wg_base.o \
-  wg_bitmapglyphs.o \
+  wg_bitmapfont.o \
   wg_blob.o \
-  wg_caret2.o \
   wg_caret.o \
-  wg_caretinstance.o \
   wg_chain.o \
-  wg_charbuffer.o \
   wg_char.o \
+  wg_charbuffer.o \
   wg_charseq.o \
   wg_codepages.o \
   wg_color.o \
-  wg_event.o \
-  wg_eventfilter.o \
-  wg_eventhandler.o \
-  wg_eventlogger.o \
   wg_finalizer.o \
   wg_font.o \
   wg_geo.o \
   wg_gfxanim.o \
   wg_gfxdevice.o \
-  wg_glyphset.o \
   wg_hook.o \
   wg_hookptr.o \
-  wg_interface_valueholder.o \
+  wg_inputhandler.o \
   wg_mempool.o \
   wg_memstack.o \
-  wg_menuitem.o \
+  wg_msg.o \
+  wg_msgfunc.o \
+  wg_msglogger.o \
+  wg_msgrouter.o \
   wg_nullgfxdevice.o \
   wg_object.o \
   wg_patches.o \
-  wg_pen.o \
   wg_pointers.o \
+  wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
   wg_sizescaler.o \
   wg_string.o \
   wg_surface.o \
   wg_surfacefactory.o \
-  wg_textprop.o \
-  wg_textpropmanager.o \
+  wg_textlink.o \
   wg_textstyle.o \
+  wg_textstylemanager.o \
   wg_texttool.o \
   wg_togglegroup.o \
   wg_util.o \
-  wg_valueformat.o \
-  wg_vectorglyphs.o
-
-ITEMS = wg_columnheaderfield.o \
-  wg_editvaluefield.o \
-  wg_iconfield.o \
-  wg_legacytextfield.o \
-  wg_modvaluefield.o \
-  wg_spanitem.o \
-  wg_textfield.o \
-  wg_valuefield.o
-
+  wg_vectorfont.o
 
 INTERFACES = wg_columnheader.o \
   wg_edittext.o \
@@ -134,6 +125,16 @@ INTERFACES = wg_columnheader.o \
   wg_text.o \
   wg_value.o
 
+ITEMS = wg_columnheaderitem.o \
+  wg_edittextitem.o \
+  wg_editvalueitem.o \
+  wg_iconitem.o \
+  wg_modvalueitem.o \
+  wg_spanitem.o \
+  wg_textbaseitem.o \
+  wg_textitem.o \
+  wg_valueitem.o
+
 SIZEBROKERS = wg_scalepreferred_sizebroker.o \
   wg_sizebroker.o \
   wg_uniform_sizebroker.o
@@ -144,27 +145,28 @@ SKINS = wg_blockskin.o \
   wg_extendedskin.o \
   wg_skin.o
 
+TEXTMAPPERS = wg_stdtextmapper.o \
+  wg_textmapper.o
+
+VALUEFORMATTERS = wg_standardformatter.o \
+  wg_timeformatter.o \
+  wg_valueformatter.o
+
 WIDGETS = wg_animplayer.o \
   wg_button.o \
-  wg_combobox.o \
   wg_container.o \
   wg_filler.o \
   wg_fpsdisplay.o \
   wg_image.o \
-  wg_knob.o \
-  wg_lineeditor.o \
-  wg_menubar.o \
-  wg_menu.o \
   wg_oscilloscope.o \
   wg_refreshbutton.o \
   wg_rulerlabels.o \
   wg_scrollbar.o \
   wg_simplevolumemeter.o \
-  wg_switch.o \
   wg_textdisplay.o \
+  wg_texteditor.o \
   wg_togglebutton.o \
   wg_valuedisplay.o \
-  wg_valueeditor.o \
   wg_volumemeter.o \
   wg_widget.o
 
@@ -189,14 +191,17 @@ PANELS = wg_flexpanel.o \
   wg_stackpanel.o \
   wg_vectorpanel.o
 
-lib_files = $(BASE) $(INTERFACES) $(ITEMS) $(SIZEBROKERS) $(SKINS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
+lib_files = $(BASE) $(INTERFACES) $(ITEMS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
 
 softgfx_files = wg_softgfxdevice.o wg_softsurface.o wg_softsurfacefactory.o
+
+glgfx_files = wg_glgfxdevice.o wg_glsurface.o wg_glsurfacefactory.o
 
 default : lib softgfx example01
 all : lib softgfx examples
 lib : libwondergui.a
 softgfx : libgfxdevice_software.a
+glgfx : libgfxdevice_opengl.a
 examples : example01
 
 
@@ -205,6 +210,9 @@ libwondergui.a : $(lib_files)
 			
 libgfxdevice_software.a : $(softgfx_files)
 	ar rcu $(OUTDIR)/libgfxdevice_software.a $(softgfx_files:%.o=$(OBJDIR)/%.o)
+
+libgfxdevice_opengl.a : $(glgfx_files)
+	ar rcu $(OUTDIR)/libgfxdevice_opengl.a $(glgfx_files:%.o=$(OBJDIR)/%.o)
 
 example01 : libwondergui.a libgfxdevice_software.a example01.o
 	$(CXX) -o $(OUTDIR)/example01 $(OBJDIR)/example01.o -L$(OUTDIR) -lSDL2 -lgfxdevice_software -lwondergui -lfreetype
