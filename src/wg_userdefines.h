@@ -30,7 +30,7 @@
 
 //=============================================================================
 
-	//#define USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+	#define USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
 									// dependency on freetype.
 
 	//#define	SAFE_UTF8		// Use slower, but more robust UTF-8 decoding

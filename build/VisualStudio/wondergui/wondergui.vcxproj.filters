@@ -311,9 +311,6 @@
     <ClInclude Include="..\..\..\src\widgets\wg_image.h">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\wg_knob.h">
-      <Filter>widgets</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_oscilloscope.h">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -327,9 +324,6 @@
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_simplevolumemeter.h">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\wg_switch.h">
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h">
@@ -649,9 +643,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_image.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_knob.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_oscilloscope.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -665,9 +656,6 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_simplevolumemeter.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_switch.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp">

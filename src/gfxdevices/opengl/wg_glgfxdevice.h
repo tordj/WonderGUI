@@ -27,13 +27,13 @@
 #endif
 
 #ifdef WIN32
-#	include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#	include <OpenGL/gl3.h>
+#	include <GL/glew.h>
 #else
-#	include <GLES3/gl3.h>
+#	ifdef __APPLE__
+#		include <OpenGL/gl3.h>
+#	else
+#		include <GLES3/gl3.h>
+#	endif
 #endif
 
 #ifndef	WG_GFXDEVICE_DOT_H

@@ -25,14 +25,16 @@
 
 #define GL_GLEXT_PROTOTYPES 1
 
-#ifdef WIN32
-#	include <windows.h>
-#endif
 
-#ifdef __APPLE__
-#	include <OpenGL/gl.h>
+
+#ifdef WIN32
+#	include <GL/glew.h>
 #else
-#	include <GL/gl.h>
+#	ifdef __APPLE__
+#		include <OpenGL/gl.h>
+#	else
+#		include <GL/gl.h>
+#	endif
 #endif
 
 #ifndef WG_SURFACE_DOT_H

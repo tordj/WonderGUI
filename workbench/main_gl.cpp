@@ -5,6 +5,7 @@
 #ifdef WIN32
 #	include <SDL.h>
 #	include <SDL_image.h>
+#	include <GL/glew.h>
 #else
 #	ifdef __APPLE__
 #		include <SDL2/SDL.h>
@@ -67,7 +68,12 @@ int main ( int argc, char** argv )
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 0 );
     
     SDL_GLContext context = SDL_GL_CreateContext( pWin );
-    
+
+#ifdef WIN32  
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+#endif
+
 	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
 
 	//------------------------------------------------------
@@ -405,7 +411,27 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
     int tick = 0;
-    
+
+	/*
+		I need the following crap on my Windows dev machine to
+		make something that resembles single buffering work :(
+
+		Apparently single buffering in SDL2/Windows doesn't work on my dev machine, 
+		so I get double buffering although I specify single buffering when initializing.
+		(don't know if it is SDL's, Windows' or crappy device drivers fault, 
+		it works fine in SDL2/Linux on same hardware)
+
+		So I render to the front buffer instead, but apparently nothing will be displayed
+		until the rendering pipeline has been filled and flushed twice... so we just clear the
+		color buffer and flush() to make sure that everything is displayed on first render call.
+	*/
+
+	glDrawBuffer(GL_FRONT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
+	glClear( GL_COLOR_BUFFER_BIT );
+	glFlush();
+
+
 	while( !bQuit ) 
 	{
 		translateEvents( pInput, pRoot );
@@ -414,9 +440,10 @@ int main ( int argc, char** argv )
 
 //		updateWindowRects( pRoot, pWin );
 
-//        glClearColor(0.1f, 0.3f, 0.3f, 1.0f );
-//        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-        
+ //       glClearColor(0.1f, 0.3f, 0.3f, 1.0f );
+ //       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+//		glFlush();
+
          pGfxDevice->beginRender();
 
 //        pGfxDevice->setTintColor(Color::Red );
@@ -434,19 +461,19 @@ int main ( int argc, char** argv )
         
         for( int i = 0 ; i < 400 ; i++ )
         {
-            plotColors[i] = Color::White;
+            plotColors[i] = Color::Red;
             plotCoords[i] = Coord(i,i);
         }
         
         
-        pGfxDevice->clipPlotPixels( Rect(0,0,width,height), 2, plotCoords, plotColors);
-/*
+//       pGfxDevice->clipPlotPixels( Rect(0,0,width,height), 100, plotCoords, plotColors);
+
         
-        for(int x = 0 ; x < 200 ; x++ )
-        {
-            pGfxDevice->clipDrawVertLine(Rect(0,0,width,height), Coord(x*2,x), 40, Color::Aquamarine);
-        }
-*/
+//        for(int x = 0 ; x < 200 ; x++ )
+//        {
+//            pGfxDevice->clipDrawVertLine(Rect(0,0,width,height), Coord(x*2,x), 40, Color::Aquamarine);
+//        }
+
         
 //        pGfxDevice->clipDrawHorrLine(Rect(10,10,width-20,height-20), Coord(0,20), 800, Color::Aquamarine);
 //        pGfxDevice->clipDrawVertLine(Rect(10,10,width-20,height-20), Coord(20,0), 800, Color::Aquamarine);
@@ -459,7 +486,6 @@ int main ( int argc, char** argv )
 //        pGfxDevice->fillSubPixel(RectF(21.8f, 21.5f, 0.4f, 0.4f ), Color::AntiqueWhite );
         
         pGfxDevice->endRender();
-        
         
 		SDL_Delay(20);
         tick++;

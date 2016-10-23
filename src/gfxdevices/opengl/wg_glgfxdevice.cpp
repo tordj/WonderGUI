@@ -215,9 +215,9 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice( canvasSize ));
 		
-//		GLEnum err = glGetError();
-//		if( err != 0 )
-//			return GlGfxDevice_p(nullptr);
+		GLenum err = glGetError();
+		if( err != 0 )
+			return GlGfxDevice_p(nullptr);
 		
 		return p;
 	}

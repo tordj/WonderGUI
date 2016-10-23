@@ -20,13 +20,30 @@ gnumake/
 	releases but might be out-of-date if you grab the project from GitHub.
 
 VisualStudio/
-	Solution for building WonderGUI and example files in VisualStudio 13.
-	You will need to add include and library paths to SDL2 and FreeType.
-	A precompiled SDL2 Library for Windows can be downloaded from 
-	www.libsdl.org and a the source package for FreeType can be downloaded
-	from www.freetype.org. It includes a solution for VisualStudio and
-	can be built in minutes. You might also need to change the name of
-	the FreeType-library in the example-projects, since it includes
-	the version number.
+	Solution for building WonderGUI and example files in VisualStudio 2015.
+	You will need to add include and library paths for SDL2, SDL2_Image
+	and FreeType.
 
+	Development packages (binaries) for SDL2 and SDL2_Image containing library
+	and include files can be downloaded from www.libsdl.org and the same for 
+	FreeType can be downloaded from www.freetype.org. 
 
+	Also, the OpenGL graphics device (gfxdevice_opengl) and any examples
+	using OpenGL relies on GLEW to provide access to modern OpenGL. 
+	A development package for GLEW can be downloaded from glew.sourceforge.net.
+
+	Please unpack the development packages to the same directory as WonderGUI.
+	Remove version numbering from the packages base directories so that you
+	have the following directory structure and you should be ready to build:
+
+	freetype\
+	glew\				(optional, only for OpenGL projects)
+	SDL2\
+	SDL2_Image\
+	WonderGUI\
+
+Xcode/
+	Solution for building WonderGUI and example files in Xcode on macOS. This
+	is currently unmaintained so please see the project only as a starting 
+	point. You will need to make modifications to the project files in order
+	to have a working Xcode solution.
