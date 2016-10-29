@@ -223,7 +223,7 @@ namespace wg
 		if( it != m_commandMap.end() )
 		{
 			std::vector<CommandEntry>& v = it->second;
-			for( int i = 0 ; i < v.size() ; i++ )
+			for( unsigned int i = 0 ; i < v.size() ; i++ )
 				if( v[i].modKeys == modKeys )
 					return v[i].command;
 		}

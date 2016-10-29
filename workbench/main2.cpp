@@ -266,12 +266,14 @@ int main ( int argc, char** argv )
 		pLink->setColor(Color::Green );
 		pLink->setLink( TextLink::create( "www.somewhere.net" ) );
 
-		pText->text.set( "This is a\npiece of TEXT with LINK" );
+		pText->text.set("ABCDEF\nGHIJKL");
+
+/*		pText->text.set( "This is a\npiece of TEXT with LINK" );
 		pText->text.setCharStyle( pBig, 5, 2 );
 		pText->text.setCharStyle( pRed, 10, 3 );
 		pText->text.setCharStyle( pAnuv, 19, 4 );
 		pText->text.setCharStyle( pLink, 29, 4 );
-
+*/
 
 		pHorr->addWidget( pText );
 		pHorr->addWidget( pFillerEast );

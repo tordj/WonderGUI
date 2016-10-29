@@ -184,8 +184,8 @@ namespace wg
 		void			    fill( const Char& ch, int ofs, int len );
 	
 	
-		inline void			setGlyphs( uint16_t glyph );
-		void			    setGlyphs( uint16_t glyph, int ofs, int len );
+		inline void			setCharCodes( uint16_t charCode );
+		void			    setCharCodes( uint16_t charCode, int ofs, int len );
 	
 		inline void			setStyle( const TextStyle_p& pProp );
 		void				setStyle( const TextStyle_p& pProp, int ofs, int len);
@@ -202,8 +202,8 @@ namespace wg
 	
 	
 		int					compareTo( const CharBuffer * pBuffer );
-		int					compareGlyphsTo( const CharBuffer * pBuffer );
-		int					compareGlyphsIgnoreCaseTo( const CharBuffer * pBuffer );
+		int					compareCharCodesTo( const CharBuffer * pBuffer );
+		int					compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer );
 	
 	
 	
@@ -429,19 +429,19 @@ namespace wg
 		fill( ch, 0, INT_MAX );
 	}
 	
-	//____ 	setGlyphs() ___________________________________________________________
+	//____ 	setCharCodes() ___________________________________________________________
 	
-	/// @brief	Sets the glyph for all characters currently in the buffer.
+	/// @brief	Sets the charcode for all characters currently in the buffer.
 	///
-	/// @param	glyph	The glyph to be used. This may not be 0.
+	/// @param	charCode	The charcode to be used. This may not be 0.
 	///
-	/// Fully replaces the glyph content of the buffer with the specified glyph.
+	/// Fully replaces the charcode content of the buffer with the specified charcode.
 	/// Only the used section of the buffer is affected, unused capacity is not
-	/// filled with the glyph.
+	/// filled with the charcode.
 	
-	void CharBuffer::setGlyphs( uint16_t glyph )
+	void CharBuffer::setCharCodes( uint16_t charCode )
 	{
-		setGlyphs( glyph, 0, INT_MAX );
+		setCharCodes( charCode, 0, INT_MAX );
 	}
 	
 	//____ setStyle() __________________________________________________________

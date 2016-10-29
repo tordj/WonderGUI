@@ -147,7 +147,7 @@ namespace wg
 
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 
-		int	iPeak = peak * canvas.h;
+		int	iPeak = (int) peak * canvas.h;
 		int iHold = _calcIHold(hold, canvas.h);
 		
 		if( m_bStereo )
@@ -178,7 +178,7 @@ namespace wg
 
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 
-		int	iPeakL = leftPeak * canvas.h;
+		int	iPeakL = (int) leftPeak * canvas.h;
 		int	iPeakR = rightPeak * canvas.h;
 		int iHoldL = _calcIHold(leftHold, canvas.h);
 		int iHoldR = _calcIHold(rightHold, canvas.h);
@@ -408,7 +408,7 @@ namespace wg
 		if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
 			m_iSidePadding = 1;
 					
-		m_iHoldHeight = m_fHoldHeight * sz.h;
+		m_iHoldHeight = (int) m_fHoldHeight * sz.h;
 		if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
 			m_iHoldHeight = 1;
 
@@ -416,8 +416,8 @@ namespace wg
 		m_iSectionHeight[1] =  ((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * sz.h + 0.5f)) - m_iSectionHeight[0];
 		m_iSectionHeight[2] = sz.h - m_iSectionHeight[1] - m_iSectionHeight[0];
 
-		m_iPeak[0] = m_fPeak[0] * sz.h;
-		m_iPeak[1] = m_fPeak[1] * sz.h;
+		m_iPeak[0] = (int) m_fPeak[0] * sz.h;
+		m_iPeak[1] = (int) m_fPeak[1] * sz.h;
 
 		m_iHold[0] = _calcIHold( m_fHold[0], sz.h );
 		m_iHold[1] = _calcIHold( m_fHold[1], sz.h );

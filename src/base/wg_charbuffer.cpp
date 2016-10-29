@@ -364,10 +364,10 @@ namespace wg
 	int CharBuffer::pushFront( const Char& character )
 	{
 		_pushFront(1);
-		*((uint32_t*)_ptr(0)) = character.all;
+		*((uint32_t*)_ptr(0)) = character.m_all;
 	
-		if( character.style )
-			TextStyleManager::_getPointer(character.style)->_incRefCount();
+		if( character.m_style )
+			TextStyleManager::_getPointer(character.m_style)->_incRefCount();
 	
 		return 1;
 	}
@@ -456,10 +456,10 @@ namespace wg
 	int CharBuffer::pushBack( const Char& character )
 	{
 		_pushBack(1);
-		*((uint32_t*)_ptr( m_pHead->m_len - 1)) = character.all;
+		*((uint32_t*)_ptr( m_pHead->m_len - 1)) = character.m_all;
 	
-		if( character.style )
-			TextStyleManager::_getPointer(character.style)->_incRefCount();
+		if( character.m_style )
+			TextStyleManager::_getPointer(character.m_style)->_incRefCount();
 	
 		return 1;
 	}
@@ -1061,24 +1061,24 @@ namespace wg
 		return TextTool::strcmp( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 	
-	//____ compareGlyphsTo() ______________________________________________________
+	//____ compareCharCodesTo() ______________________________________________________
 	
-	int CharBuffer::compareGlyphsTo( const CharBuffer * pBuffer )
+	int CharBuffer::compareCharCodesTo( const CharBuffer * pBuffer )
 	{
 		if( m_pHead == pBuffer->m_pHead )
 			return 0;
 	
-		return TextTool::glyphcmp( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
+		return TextTool::charcodecmp( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 	
-	//____ compareGlyphsIgnoreCaseTo() ____________________________________________
+	//____ compareCharCodesIgnoreCaseTo() ____________________________________________
 	
-	int CharBuffer::compareGlyphsIgnoreCaseTo( const CharBuffer * pBuffer )
+	int CharBuffer::compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer )
 	{
 		if( m_pHead == pBuffer->m_pHead )
 			return 0;
 	
-		return TextTool::glyphcmpIgnoreCase( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
+		return TextTool::charcodecmpIgnoreCase( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 	
 	
@@ -1107,18 +1107,18 @@ namespace wg
 		TextTool::setChars( ch, (Char*)_ptr(ofs), len );
 	}
 	
-	//____ setGlyphs() _____________________________________________________________
+	//____ setCharCodes() _____________________________________________________________
 	//
-	/// @brief	Sets the glyph for a range of characters.
+	/// @brief	Sets the charcode for a range of characters.
 	///
-	/// @param glyph	The glyph to be used. This may not be 0.
-	/// @param ofs		Offset of first character to have its glyph changed.
-	/// @param len		Number of characters to have their glyphs changed.
+	/// @param charCode	The charcode to be used. This may not be 0.
+	/// @param ofs		Offset of first character to have its charcode changed.
+	/// @param len		Number of characters to have their charcode changed.
 	///
-	/// This method sets the glyph for all characters in the specified range. If the
+	/// This method sets the charcode for all characters in the specified range. If the
 	/// range spans outside the buffer content it will be adjusted properly.
 	
-	void CharBuffer::setGlyphs( uint16_t glyph, int ofs, int len )
+	void CharBuffer::setCharCodes( uint16_t charCode, int ofs, int len )
 	{
 		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 			return;
@@ -1129,7 +1129,7 @@ namespace wg
 		if( m_pHead->m_refCnt > 1 )
 			_reshapeBuffer(0,0,m_pHead->m_len,0);
 	
-		TextTool::setGlyph( glyph, (Char*)_ptr(ofs), len );
+		TextTool::setCharCode( charCode, (Char*)_ptr(ofs), len );
 	}
 	
 	
@@ -1206,7 +1206,7 @@ namespace wg
 			int i = 0;
 			while( i < seq.length )
 			{
-				if( pBuff[ofs+i].glyph != seq.ptr[i].glyph )
+				if( pBuff[ofs+i].code() != seq.ptr[i].code() )
 					break;
 				i++;
 			}
@@ -1240,7 +1240,7 @@ namespace wg
 	
 		while( ofs < m_pHead->m_len )
 		{
-			if( pBuff[ofs].glyph == character )
+			if( pBuff[ofs].code() == character )
 				return ofs;
 	
 			ofs++;

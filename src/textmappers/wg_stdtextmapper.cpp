@@ -201,10 +201,10 @@ namespace wg
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
 
-		Glyph_p pGlyph = pFont->getGlyph(pLast->getGlyph());
+		Glyph_p pGlyph = pFont->getGlyph(pLast->code());
 		if( pGlyph )
 			width = pGlyph->advance();				// Do not advance for last, just apply kerning.
-		else if( pLast->getGlyph() == 32 )
+		else if( pLast->code() == 32 )
 			width = pFont->whitespaceAdvance();
 
 		return Rect(xOfs,yOfs,width,pLineInfo->height);
@@ -313,7 +313,7 @@ namespace wg
 				}
 			}
 		
-			pGlyph = pFont->getGlyph(pChar->getGlyph());
+			pGlyph = pFont->getGlyph(pChar->code());
 
 			if( pGlyph )
 			{
@@ -323,7 +323,7 @@ namespace wg
 				if( pChar != pLast )
 					distance += pGlyph->advance();				// Do not advance for last, just apply kerning.
 			}
-			else if( pChar->getGlyph() == 32 && pChar != pLast )
+			else if( pChar->code() == 32 && pChar != pLast )
 				distance += pFont->whitespaceAdvance();
 				
 			pPrevGlyph = pGlyph;
@@ -442,7 +442,7 @@ namespace wg
 					
 					//
 				
-					pGlyph = pFont->getGlyph(pChar->getGlyph());
+					pGlyph = pFont->getGlyph(pChar->code());
 	
 					if( pGlyph )
 					{
@@ -454,7 +454,7 @@ namespace wg
 	
 						pos.x += pGlyph->advance();
 					}
-					else if( pChar->getGlyph() == 32 )
+					else if( pChar->code() == 32 )
 						pos.x += pFont->whitespaceAdvance();
 						
 					pPrevGlyph = pGlyph;
@@ -820,7 +820,7 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 												
-			pGlyph = pFont->getGlyph(pChars->getGlyph());
+			pGlyph = pFont->getGlyph(pChars->code());
 
 			if( pGlyph )
 			{
@@ -829,7 +829,7 @@ namespace wg
 
 				width += pGlyph->advance();
 			}
-			else if( pChars->getGlyph() == 32 )
+			else if( pChars->code() == 32 )
 				width += spaceAdv;
 
 			pPrevGlyph = pGlyph;
@@ -1044,6 +1044,7 @@ namespace wg
 				}
 				return pHead->nbLines-1;
 			}
+			default:
 			case SelectMode::Closest:
 			case SelectMode::Marked:
 			{
@@ -1132,7 +1133,7 @@ namespace wg
 
 			// Forward distance with the glyph
 		
-			pGlyph = pFont->getGlyph(pChar->getGlyph());
+			pGlyph = pFont->getGlyph(pChar->code());
 			int pCharBeg = distance;
 
 			if( pGlyph )
@@ -1142,7 +1143,7 @@ namespace wg
 
 				distance += pGlyph->advance();
 			}
-			else if( pChar->getGlyph() == 32 )
+			else if( pChar->code() == 32 )
 				distance += pFont->whitespaceAdvance();
 				
 			// Check if we have passed our mark.

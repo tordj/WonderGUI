@@ -213,17 +213,17 @@ namespace wg
 		if( !pSrc )
 		{
 		    if( maxChars > 0 )
-	            pDst[0].setGlyph(0);
+	            pDst[0].setCode(0);
 			return 0;
 		}
 		uint32_t n = 0;
 	
 		while( * pSrc != 0 && n < maxChars )
 		{
-			pDst[n++].setGlyph(readChar(pSrc));
+			pDst[n++].setCode(readChar(pSrc));
 		}
 		if( n != maxChars )
-			pDst[n].setGlyph(0);
+			pDst[n].setCode(0);
 		return n;
 	}
 	
@@ -232,16 +232,16 @@ namespace wg
 		if( !pSrc )
 		{
 		    if( maxChars > 0 )
-	            pDst[0].setGlyph(0);
+	            pDst[0].setCode(0);
 			return 0;
 		}
 		uint32_t n = 0;
 	
 		while( * pSrc != 0 && n < maxChars )
-			pDst[n++].setGlyph( * pSrc++);
+			pDst[n++].setCode( * pSrc++);
 	
 		if( n != maxChars )
-			pDst[n].setGlyph(0);
+			pDst[n].setCode(0);
 		return n;
 	}
 	
@@ -252,16 +252,16 @@ namespace wg
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
-	            pDst[0].setGlyph(0);
+	            pDst[0].setCode(0);
 			return 0;
 		}
 	
 		uint32_t n = 0;
 		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
-			pDst[n].setGlyph( pCP[p[n]] );
+			pDst[n].setCode( pCP[p[n]] );
 	
 		if( n != maxChars )
-			pDst[n].setGlyph(0);
+			pDst[n].setCode(0);
 		return n;
 	}
 	
@@ -347,7 +347,7 @@ namespace wg
 		for( ; n < maxChars ; n++ )
 		{
 	
-			TextStyle_h h = pSrc[n].style;
+			TextStyle_h h = pSrc[n].styleHandle();
 			if( h == hStyle )
 				nStyle++;
 			else
@@ -740,14 +740,14 @@ namespace wg
 		if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 			return 0;
 	
-		return pStr1->all - pStr2->all;
+		return pStr1->equals( * pStr2 );
 	}
 	
 	
-	//____ glyphcmp() ____________________________________________________________
-	int TextTool::glyphcmp( const Char * pStr1, const Char * pStr2 )
+	//____ charcodecmp() ____________________________________________________________
+	int TextTool::charcodecmp( const Char * pStr1, const Char * pStr2 )
 	{
-		while( !pStr1->isEndOfText() && pStr1->glyph == pStr2->glyph )
+		while( !pStr1->isEndOfText() && pStr1->code() == pStr2->code() )
 		{
 			pStr1++;
 			pStr2++;
@@ -756,13 +756,13 @@ namespace wg
 		if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 			return 0;
 	
-		return pStr1->glyph - pStr2->glyph;
+		return pStr1->code() - pStr2->code();
 	}
 	
-	//____ glyphcmpIgnoreCase() _______________________________________________________
-	int TextTool::glyphcmpIgnoreCase( const Char * pStr1, const Char * pStr2 )
+	//____ charcodecmpIgnoreCase() _______________________________________________________
+	int TextTool::charcodecmpIgnoreCase( const Char * pStr1, const Char * pStr2 )
 	{
-		while( !pStr1->isEndOfText() && towlower(pStr1->glyph) == towlower(pStr2->glyph) )
+		while( !pStr1->isEndOfText() && towlower(pStr1->code()) == towlower(pStr2->code()) )
 		{
 			pStr1++;
 			pStr2++;
@@ -771,7 +771,7 @@ namespace wg
 		if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 			return 0;
 	
-		return towlower(pStr1->glyph) - towlower(pStr2->glyph);
+		return towlower(pStr1->code()) - towlower(pStr2->code());
 	}
 	
 	
@@ -904,34 +904,34 @@ namespace wg
 	
 		unsigned int nChars = 0;
 	
-		uint16_t glyph = value;
-		if( glyph < 128 )
+		uint16_t charCode = value;
+		if( charCode < 128 )
 		{
-			pDest[nChars++] = (char) glyph;
+			pDest[nChars++] = (char) charCode;
 			if( nChars == maxChars )
 				return nChars;
 		}
-		else if( glyph < 0x800 )
+		else if( charCode < 0x800 )
 		{
-			pDest[nChars++] =  0xC0 | ((char) ((glyph & 0x07C0) >> 6));
+			pDest[nChars++] =  0xC0 | ((char) ((charCode & 0x07C0) >> 6));
 			if( nChars == maxChars )
 				return nChars;
 	
-			pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+			pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			if( nChars == maxChars )
 				return nChars;
 		}
 		else
 		{
-			pDest[nChars++] =  0xE0 | ((char) ((glyph & 0xF000) >> 12));
+			pDest[nChars++] =  0xE0 | ((char) ((charCode & 0xF000) >> 12));
 			if( nChars == maxChars )
 				return nChars;
 	
-			pDest[nChars++] =  0x80 | ((char) ((glyph & 0x0FC0) >> 6));
+			pDest[nChars++] =  0x80 | ((char) ((charCode & 0x0FC0) >> 6));
 			if( nChars == maxChars )
 				return nChars;
 	
-			pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+			pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			if( nChars == maxChars )
 				return nChars;
 		}
@@ -966,33 +966,33 @@ namespace wg
 			return 0;
 	
 		uint32_t nChars = 0;
-		uint16_t glyph;
+		uint16_t charCode;
 	
-		while( (glyph = pSrc->getGlyph()) != 0 )
+		while( (charCode = pSrc->code()) != 0 )
 		{
-			if( glyph < 128 )
+			if( charCode < 128 )
 			{
 				if( nChars +2 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] = (char) glyph;
+				pDest[nChars++] = (char) charCode;
 			}
-			else if( glyph < 0x800 )
+			else if( charCode < 0x800 )
 			{
 				if( nChars +3 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] =  0xC0 | ((char) ((glyph & 0x07C0) >> 6));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+				pDest[nChars++] =  0xC0 | ((char) ((charCode & 0x07C0) >> 6));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			}
 			else
 			{
 				if( nChars +4 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] =  0xE0 | ((char) ((glyph & 0xF000) >> 12));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x0FC0) >> 6));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+				pDest[nChars++] =  0xE0 | ((char) ((charCode & 0xF000) >> 12));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x0FC0) >> 6));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			}
 	
 			pSrc++;
@@ -1008,33 +1008,33 @@ namespace wg
 			return 0;
 	
 		uint32_t nChars = 0;
-		uint16_t glyph;
+		uint16_t charCode;
 	
-		while( (glyph = * pSrc) != 0 )
+		while( (charCode = * pSrc) != 0 )
 		{
-			if( glyph < 128 )
+			if( charCode < 128 )
 			{
 				if( nChars +2 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] = (char) glyph;
+				pDest[nChars++] = (char) charCode;
 			}
-			else if( glyph < 0x800 )
+			else if( charCode < 0x800 )
 			{
 				if( nChars +3 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] =  0xC0 | ((char) ((glyph & 0x07C0) >> 6));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+				pDest[nChars++] =  0xC0 | ((char) ((charCode & 0x07C0) >> 6));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			}
 			else
 			{
 				if( nChars +4 > maxBytes )
 					break;					// Can't fit character + termination, so we just terminate.
 	
-				pDest[nChars++] =  0xE0 | ((char) ((glyph & 0xF000) >> 12));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x0FC0) >> 6));
-				pDest[nChars++] =  0x80 | ((char) ((glyph & 0x003F) >> 0));
+				pDest[nChars++] =  0xE0 | ((char) ((charCode & 0xF000) >> 12));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x0FC0) >> 6));
+				pDest[nChars++] =  0x80 | ((char) ((charCode & 0x003F) >> 0));
 			}
 	
 			pSrc++;
@@ -1072,14 +1072,14 @@ namespace wg
 	uint32_t TextTool::getTextSizeUTF8( const Char* pSrc, uint32_t len )
 	{
 		uint32_t size = 0;
-		uint16_t glyph = 0;
-		for( uint32_t i = 0 ; i < len && (0 != ( glyph = pSrc->getGlyph()) ) ; i++ )
+		uint16_t charCode = 0;
+		for( uint32_t i = 0 ; i < len && (0 != ( charCode = pSrc->code()) ) ; i++ )
 		{
 			size++;
-			if( glyph > 127 )
+			if( charCode > 127 )
 			{
 				size++;
-				if( glyph > 0x7FF )
+				if( charCode > 0x7FF )
 					size++;
 			}
 			pSrc++;
@@ -1093,14 +1093,14 @@ namespace wg
 	uint32_t TextTool::getTextSizeUTF8( const uint16_t* pSrc, uint32_t len )
 	{
 		uint32_t size = 0;
-		uint16_t glyph = 0;
-		for( uint32_t i = 0 ; i < len && (0 != ( glyph = * pSrc) ) ; i++ )
+		uint16_t charCode = 0;
+		for( uint32_t i = 0 ; i < len && (0 != ( charCode = * pSrc) ) ; i++ )
 		{
 			size++;
-			if( glyph > 127 )
+			if( charCode > 127 )
 			{
 				size++;
-				if( glyph > 0x7FF )
+				if( charCode > 0x7FF )
 					size++;
 			}
 			pSrc++;
@@ -1152,12 +1152,12 @@ namespace wg
 	
 	
 	
-	//____ setGlyph() ______________________________________________________________
+	//____ setCharCode() ______________________________________________________________
 	
-	void TextTool::setGlyph( uint16_t glyph, Char * pChar, int nb )
+	void TextTool::setCharCode( uint16_t charCode, Char * pChar, int nb )
 	{
 		for( int i = 0 ; i < nb ; i++ )
-			pChar[i].glyph = glyph;
+			pChar[i].m_code = charCode;
 	}
 	
 	//____ setChars() ______________________________________________________________
@@ -1167,10 +1167,10 @@ namespace wg
 		derefStyle( pChar, nb );
 	
 		for( int i = 0 ; i < nb ; i++ )
-			pChar[i].all = ch.all;
+			pChar[i].m_all = ch.m_all;
 	
-		if( ch.style != 0 )
-			TextStyleManager::_getPointer(ch.style)->_incRefCount( nb );
+		if( ch.m_style != 0 )
+			TextStyleManager::_getPointer(ch.m_style)->_incRefCount( nb );
 	}
 	
 	
@@ -1186,7 +1186,7 @@ namespace wg
 	
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pChar[i].style != old_style )
+			if( pChar[i].m_style != old_style )
 			{
 				if( refCnt != 0 )
 				{
@@ -1196,10 +1196,10 @@ namespace wg
 					refCntTotal += refCnt;
 					refCnt = 0;
 				}
-				old_style = pChar[i].style;
+				old_style = pChar[i].m_style;
 			}
 	
-			pChar[i].style = new_style;
+			pChar[i].m_style = new_style;
 			refCnt++;
 		}
 	

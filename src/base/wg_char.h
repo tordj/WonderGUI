@@ -72,53 +72,53 @@ namespace wg
 	public:
 		/// Initializes an empty character containing null (End of Text) and no properties.
 	
-		Char() : all(0) {};
+		Char() : m_all(0) {};
 	
-		/// Initializes a character to contain the glyph and properties of the specified character.
+		/// Initializes a character to contain the charcode and style of the specified character.
 	
-		Char( const Char& r ) { all = r.all; if( style ) TextStyleManager::_getPointer(style)->_incRefCount(); }
+		Char( const Char& r ) { m_all = r.m_all; if( m_style ) TextStyleManager::_getPointer(m_style)->_incRefCount(); }
 	
-		/// Initializes a character to contain the specified glyph and no properties.
+		/// Initializes a character to contain the specified charcode and no style.
 	
-		Char( uint16_t _glyph ) { style = 0; glyph = _glyph; }
+		Char( uint16_t charCode ) { m_style = 0; m_code = charCode; }
 	
-		/// Initializes a character to contain the glyph and properties as specified.
+		/// Initializes a character to contain the charcode and style as specified.
 	
-		Char( uint16_t _glyph, const TextStyle_p& _pStyle ) { glyph = _glyph; style = _pStyle->handle(); _pStyle->_incRefCount(); }
-		~Char() { if( style ) TextStyleManager::_getPointer(style)->_decRefCount(); }
+		Char( uint16_t charCode, const TextStyle_p& pStyle ) { m_code = charCode; m_style = pStyle->handle(); pStyle->_incRefCount(); }
+		~Char() { if( m_style ) TextStyleManager::_getPointer(m_style)->_decRefCount(); }
 	
 		inline Char & operator=(const Char &ref)
 		{
-			if(style == ref.style)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
+			if(m_style == ref.m_style)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
 			{							// also speeds things up...
-				all = ref.all;
+				m_all = ref.m_all;
 			}
 			else
 			{
-				if(style)
-					TextStyleManager::_getPointer(style)->_decRefCount();
-				all = ref.all;
-				if(style)
-					TextStyleManager::_getPointer(style)->_incRefCount();
+				if(m_style)
+					TextStyleManager::_getPointer(m_style)->_decRefCount();
+				m_all = ref.m_all;
+				if(m_style)
+					TextStyleManager::_getPointer(m_style)->_incRefCount();
 			}
 			return *this;
 		}
 	
-		inline bool				equals(const Char& ch) const { return all == ch.all; }
+		inline bool				equals(const Char& ch) const { return m_all == ch.m_all; }
 	
-								/// Sets the glyph part of the character without affecting the display properties.
+								/// Sets the character code part of the character without affecting the styling.
 	
-		inline void				setGlyph( uint16_t _glyph ) { glyph = _glyph; }
+		inline void				setCode( uint16_t _code ) { m_code = _code; }
 	
-								/// Gets the glyph part of the character.
+								/// Gets the character code part of the character object.
 								///
-								/// @return The glyph part of the character.
+								/// @return The character code part of the character.
 	
-		inline uint16_t			getGlyph() const { return glyph; }
+		inline uint16_t			code() const { return m_code; }
 	
-								/// Sets the properties of the character.
+								/// Sets the style for the character.
 	
-		inline void				setStyle( const TextStyle_p& pStyle ) { if(style) TextStyleManager::_getPointer(style)->_decRefCount(); style = pStyle->handle(); pStyle->_incRefCount(); }
+		inline void				setStyle( const TextStyle_p& pStyle ) { if(m_style) TextStyleManager::_getPointer(m_style)->_decRefCount(); m_style = pStyle->handle(); pStyle->_incRefCount(); }
 	
 								/// Gets a handle to the TextStyle of the character.
 								///
@@ -127,32 +127,29 @@ namespace wg
 								///
 								/// @return A handle to the TextStyle of the character 0 if none.
 	
-		inline TextStyle_h		styleHandle() const { return style; }
+		inline TextStyle_h		styleHandle() const { return m_style; }
 	
 								/// Gets a pointer to the TextStyle of the character.
 								///
 								/// @return Pointer to the TextStyle of the character if one is specified, or null.
 	
-		inline TextStyle_p		stylePtr() const { return style == 0 ? 0 : TextStyleManager::_getPointer(style); }
-	
-								/// Checks if the character is set to be underlined in the given state.
-	
-								/// @param state			The state of the Widget or Item containing the text.
-	
-								/// @return True if the character is set to underlined for the given state.
+		inline TextStyle_p		stylePtr() const { return m_style == 0 ? 0 : TextStyleManager::_getPointer(m_style); }
 	
 	
-		inline bool 			isEndOfLine() const { if( glyph == '\n' || glyph == 0 ) return true; return false; }
+								/// Checks if the character terminates the line.
+								/// @return True if the character code is End-of-line or End-of-Text (null).
+
+		inline bool 			isEndOfLine() const { if( m_code == '\n' || m_code == 0 ) return true; return false; }
 	
 								/// Checks if the character terminates the text.
-								/// @return True if the glyph portion of the character is End-of-Text (null).
+								/// @return True if the character code is End-of-Text (null).
 	
-		inline bool				isEndOfText() const { if( glyph == 0 ) return true; return false; }
+		inline bool				isEndOfText() const { if( m_code == 0 ) return true; return false; }
 	
 								/// Checks if the character is a whitespace.
-								/// @return True if the glyph portion of the characer contains a space or ExtChar::NoBreakSpace.
+								/// @return True if the character code is a space or ExtChar::NoBreakSpace.
 	
-		inline bool 			isWhitespace() const { if( glyph == ' ' || glyph == (uint16_t)ExtChar::NoBreakSpace ) return true; return false; }
+		inline bool 			isWhitespace() const { if( m_code == ' ' || m_code == (uint16_t)ExtChar::NoBreakSpace ) return true; return false; }
 	
 	protected:
 	
@@ -163,10 +160,10 @@ namespace wg
 		{
 			struct
 			{
-				uint16_t	glyph;
-				TextStyle_h	style;				// 0 = Default properties of Text.
+				uint16_t	m_code;
+				TextStyle_h	m_style;				// 0 = Default properties of Text.
 			};
-			uint32_t	all;					// For quickly copying all...
+			uint32_t	m_all;					// For quickly copying all...
 		};
 	};
 	

@@ -134,14 +134,14 @@ namespace wg
 		static uint32_t	strlen( const Char * pSrc );
 		static int		strcmp( const uint16_t * pStr1, const uint16_t * pStr2 );
 		static int		strcmp( const Char * pStr1, const Char * pStr2 );
-		static int		glyphcmp( const Char * pStr1, const Char * pStr2 );
-		static int		glyphcmpIgnoreCase( const Char * pStr1, const Char * pStr2 );
+		static int		charcodecmp( const Char * pStr1, const Char * pStr2 );
+		static int		charcodecmpIgnoreCase( const Char * pStr1, const Char * pStr2 );
 	
 		static void		forwardCharacters( const char *& pChar, int nChars );
 		static void		forwardEscapedCharacters( const char *& pChar, uint32_t nChars );
 		static void		forwardEscapedCharacters( const uint16_t *& pChar, uint32_t nChars );
 	
-		static void			setGlyph( uint16_t glyph, Char * pChar, int nb );
+		static void			setCharCode( uint16_t glyph, Char * pChar, int nb );
 		static void			setChars( const Char& ch, Char * pChar, int nb );
 	
 		static void			setStyle( const TextStyle_p& pStyle, Char * pChar, int nb );

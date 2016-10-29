@@ -384,7 +384,7 @@ namespace wg
 			{
 				uint16_t * p = new uint16_t[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					p[i] = ((Char*)m_pChar)[i].getGlyph();
+					p[i] = ((Char*)m_pChar)[i].code();
 				basket.ptr = p;
 				basket.length = m_nbChars;
 				basket.bIsOwner = true;
@@ -437,7 +437,7 @@ namespace wg
 			{
 				uint16_t * p = new uint16_t[m_nbChars];
 				for( int i = 0 ; i < m_nbChars ; i++ )
-					p[i] = ((Char*)m_pChar)[i].getGlyph();
+					p[i] = ((Char*)m_pChar)[i].code();
 				str.assign( (const wchar_t *)p, m_nbChars );
 				delete [] p;
 				return str;

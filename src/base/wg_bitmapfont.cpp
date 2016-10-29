@@ -268,7 +268,7 @@ namespace wg
 				if( advance != firstAdvance )
 					m_bMonospace = false;
 
-				if( m_maxAscend - bearingY < 0 )
+				if( m_maxAscend < 0 - bearingY )
 					m_maxAscend = -bearingY;
 
 				if( m_maxDescend < h + bearingY )

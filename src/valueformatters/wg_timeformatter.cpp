@@ -99,7 +99,7 @@ namespace wg
 		
 		while( !pSrc->isEndOfText() )
 		{
-			uint16_t glyph = pSrc->getGlyph();
+			uint16_t glyph = pSrc->code();
 			uint16_t style = pSrc->styleHandle();
 			
 			if( glyph == '%' )
@@ -108,7 +108,7 @@ namespace wg
 				pSrc++;
 				if( pSrc->isEndOfText() )
 					goto error;
-				glyph = pSrc->getGlyph();
+				glyph = pSrc->code();
 				while( glyph >= '0' && glyph <= '9' )
 				{
 					chars *= 10;
@@ -116,7 +116,7 @@ namespace wg
 					pSrc++;
 					if( pSrc->isEndOfText() )
 						goto error;
-					glyph = pSrc->getGlyph();
+					glyph = pSrc->code();
 				}	
 	
 				int num;
