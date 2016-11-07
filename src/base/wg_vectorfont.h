@@ -79,9 +79,6 @@ namespace wg
 		};
 
 
-
-		inline Type	type() const { return VECTOR; }
-
 		bool		setSize( int size );
 		inline int	size() { return m_size; }
 

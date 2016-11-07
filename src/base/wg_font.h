@@ -79,24 +79,9 @@ namespace wg
 	
 	typedef Glyph*	Glyph_p;
 	
-	
-	//____ Underline ____________________________________________________________
-	
-	struct Underline
-	{
-		Underline() { pSurf = 0; rect = Rect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
-	
-		Surface_p pSurf;
-		Rect		rect;
-		int8_t		bearingX;
-		int8_t		bearingY;
-		uint8_t		leftBorder;
-		uint8_t		rightBorder;
-	};
-	
 	class Font;
-	typedef	StrongPtr<Font,Object_p>		Font_p;
-	typedef	WeakPtr<Font,Object_wp>	Font_wp;
+	typedef	StrongPtr<Font,Object_p>	Font_p;
+	typedef	WeakPtr<Font,Object_wp>		Font_wp;
 	
 	//____ Font _____________________________________________________________
 	
@@ -108,15 +93,6 @@ namespace wg
 		static const char		CLASSNAME[];
 		static Font_p	cast( const Object_p& pObject );
 	
-		enum Type
-		{
-			VECTOR = 0,
-			BITMAP,
-		};
-	
-	
-		virtual	Type			type() const = 0;
-
 		virtual int				nbGlyphs() = 0;
 		virtual bool			hasGlyphs() = 0;
 		virtual bool			isMonospace() = 0;

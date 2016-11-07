@@ -55,8 +55,6 @@ namespace wg
 		static BitmapFont_p	cast( const Object_p& pObject );
 	
 	
-		inline Type			type() const { return BITMAP; }
-	
 		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec );
 
 

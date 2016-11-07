@@ -201,7 +201,7 @@ namespace wg
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
 
-		Glyph_p pGlyph = pFont->getGlyph(pLast->code());
+		Glyph_p pGlyph = _getGlyph( pFont, pLast->code() );
 		if( pGlyph )
 			width = pGlyph->advance();				// Do not advance for last, just apply kerning.
 		else if( pLast->code() == 32 )
@@ -313,7 +313,7 @@ namespace wg
 				}
 			}
 		
-			pGlyph = pFont->getGlyph(pChar->code());
+			pGlyph = _getGlyph( pFont.rawPtr(), pChar->code() );
 
 			if( pGlyph )
 			{
@@ -442,7 +442,7 @@ namespace wg
 					
 					//
 				
-					pGlyph = pFont->getGlyph(pChar->code());
+					pGlyph = _getGlyph( pFont.rawPtr(), pChar->code());
 	
 					if( pGlyph )
 					{
@@ -820,7 +820,7 @@ namespace wg
 			// TODO: Include handling of special characters
 			// TODO: Support sub/superscript.
 												
-			pGlyph = pFont->getGlyph(pChars->code());
+			pGlyph = _getGlyph( pFont.rawPtr(), pChars->code() );
 
 			if( pGlyph )
 			{
@@ -1133,7 +1133,7 @@ namespace wg
 
 			// Forward distance with the glyph
 		
-			pGlyph = pFont->getGlyph(pChar->code());
+			pGlyph = _getGlyph( pFont.rawPtr(), pChar->code() );
 			int pCharBeg = distance;
 
 			if( pGlyph )

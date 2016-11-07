@@ -138,6 +138,8 @@ namespace wg
 			int spacing;			// Offset from start of line to start of next line.
 		};
 	
+		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
+	
 		int				_countLines( const CharBuffer * pBuffer ) const;
 		void *			_reallocBlock( TextBaseItem * pItem, int lines );
 		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
@@ -172,6 +174,22 @@ namespace wg
 		TextBaseItem * m_pFocusedItem;
 		RouteId			m_tickRouteId;
 	};
+
+
+
+inline Glyph_p	StdTextMapper::_getGlyph( Font * pFont, uint16_t charCode ) const
+{
+	Glyph_p p = pFont->getGlyph(charCode);
+	if( !p )
+	{
+		p = pFont->getGlyph(0x25A1);			// White square character
+		if( !p )
+			p = pFont->getGlyph('?');
+	}	
+	return p;
+}
+
+
 
 } // namespace wg
 #endif //WG_STANDARDTEXTMAPPER_DOT_H
