@@ -35,7 +35,8 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_pFocusedItem(nullptr), m_tickRouteId(0)
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_selectionBackColor(Color::White), m_selectionBackBlend(BlendMode::Invert),
+		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedItem(nullptr), m_tickRouteId(0)
 	{
 	}
 	
@@ -131,8 +132,22 @@ namespace wg
 		}
 	}
 
-	
-	
+	//____ setSelectionBackColor() _________________________________________________
+
+	void StdTextMapper::setSelectionBackColor(Color color, BlendMode blend)
+	{
+		m_selectionBackColor = color;
+		m_selectionBackBlend = blend;
+	}
+
+	//____ setSelectionCharColor() ____________________________________________
+
+	void StdTextMapper::setSelectionCharColor(Color color, BlendMode blend)
+	{
+		m_selectionCharColor = color;
+		m_selectionCharBlend = blend;
+	}
+
 	//____ charAtPos() _________________________________________________________
 	
 	int StdTextMapper::charAtPos( const TextBaseItem * pItem, Coord pos ) const
@@ -379,6 +394,8 @@ namespace wg
 		const Char * pSelBeg = nullptr;
 		const Char * pSelEnd = nullptr;
 
+		bool bInSelection = false;
+
 		if( pEditState && pEditState->selectOfs != pEditState->caretOfs )
 		{
 			pSelBeg = pCharArray + pEditState->selectOfs;
@@ -425,7 +442,11 @@ namespace wg
 						if( attr.color != localTint )
 						{
 							localTint = attr.color;
-							pDevice->setTintColor( baseTint * localTint );
+
+							if (bInSelection)
+								pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
+							else
+								pDevice->setTintColor( baseTint * localTint );
 						}
 					}
 
@@ -433,11 +454,13 @@ namespace wg
 				
 					if( pChar == pSelBeg )
 					{
-						
+						bInSelection = true;
+						pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
 					}
 					else if( pChar == pSelEnd )
 					{
-						
+						bInSelection = false;
+						pDevice->setTintColor(baseTint * localTint);
 					}
 					
 					//
@@ -468,6 +491,8 @@ namespace wg
 		
 		if( localTint != Color::White )
 			pDevice->setTintColor( baseTint );
+
+
 
 		// Render cursor (if there is any)
 				
@@ -501,7 +526,9 @@ namespace wg
 	{
 		///TODO: Implement!
 	}
-	
+
+	//____ onStateChanged() ______________________________________________________
+
 	void StdTextMapper::onStateChanged( TextBaseItem * pItem, State newState, State oldState )
 	{
 		// TODO: Support for more than one input device, focusing different (or same) items.
@@ -525,7 +552,9 @@ namespace wg
 			}
 		}
 	}
-	
+
+	//____ onStyleChanged() ______________________________________________________
+
 	void StdTextMapper::onStyleChanged( TextBaseItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
 		State state = _state(pItem);
@@ -537,6 +566,7 @@ namespace wg
 		_setItemDirty(pItem);
 	}
 	
+	//____ onCharStyleChanged() __________________________________________________
 
 	void StdTextMapper::onCharStyleChanged( TextBaseItem * pItem, int ofs, int len )
 	{
@@ -549,6 +579,7 @@ namespace wg
 		_setItemDirty(pItem);
 	}
 
+	//____ onRefresh() ___________________________________________________________
 	
 	void StdTextMapper::onRefresh( TextBaseItem * pItem )
 	{
@@ -564,6 +595,8 @@ namespace wg
 		_setItemDirty(pItem);
 	}
 	
+	//___ rectForRange() _________________________________________________________
+
 	Rect StdTextMapper::rectForRange( const TextBaseItem * pItem, int ofs, int length ) const
 	{
 		//TODO: Implement!

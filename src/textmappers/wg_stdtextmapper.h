@@ -58,7 +58,16 @@ namespace wg
 		void			setCaret( const Caret_p& pCaret );
 		Caret_p			caret() const { return m_pCaret; }
 
+		void			setSelectionBackColor(Color color, BlendMode blend = BlendMode::Replace );
+		void			setSelectionCharColor(Color color, BlendMode blend = BlendMode::Replace );
 	
+		Color			selectionBackColor() { return m_selectionBackColor;  }
+		BlendMode		selectionBackColorBlend() { return m_selectionBackBlend; }
+
+		Color			selectionCharColor() { return m_selectionCharColor; }
+		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
+
+
 		virtual void	addItem( TextBaseItem * pItem );
 		virtual void	removeItem( TextBaseItem * pItem );
 	
@@ -171,7 +180,14 @@ namespace wg
 		
 		Origo			m_alignment;
 		Caret_p			m_pCaret;
-		TextBaseItem * m_pFocusedItem;
+
+		Color			m_selectionBackColor;
+		BlendMode		m_selectionBackBlend;
+		Color			m_selectionCharColor;
+		BlendMode		m_selectionCharBlend;
+
+
+		TextBaseItem *	m_pFocusedItem;
 		RouteId			m_tickRouteId;
 	};
 

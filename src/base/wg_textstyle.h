@@ -57,7 +57,7 @@ namespace wg
 			Color			bgColor;			
 			TextDecoration	decoration;
 			TextLink_p		pLink;
-			BlendMode			renderMode;
+			BlendMode		renderMode;
 
 			
 			// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
@@ -123,9 +123,9 @@ namespace wg
 		inline Color			bgColor( State state ) const;
 		inline int				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
-		inline BlendMode			colorBlendMode( State state ) const;
-		inline BlendMode			bgColorBlendMode( State state ) const;
-		inline BlendMode			renderMode( State state ) const;
+		inline BlendMode		colorBlendMode( State state ) const;
+		inline BlendMode		bgColorBlendMode( State state ) const;
+		inline BlendMode		renderMode( State state ) const;
 	
 		inline Font_p			combFont() const;
 		inline TextLink_p		combLink() const;
@@ -133,9 +133,9 @@ namespace wg
 		inline Color			combBgColor( State state ) const;
 		inline int				combSize( State state ) const;
 		inline TextDecoration 	combDecoration( State state ) const;
-		inline BlendMode			combcolorBlendMode( State state ) const;
-		inline BlendMode			combBgColorBlendMode( State state ) const;
-		inline BlendMode			combRenderMode( State state ) const;
+		inline BlendMode		combcolorBlendMode( State state ) const;
+		inline BlendMode		combBgColorBlendMode( State state ) const;
+		inline BlendMode		combRenderMode( State state ) const;
 
 	
 		void			exportAttr( State state, TextAttr * pDest ) const;
@@ -159,11 +159,11 @@ namespace wg
 			Color			color[StateEnum_Nb];
 			Color			bgColor[StateEnum_Nb];
 			TextDecoration	decoration[StateEnum_Nb];
-			BlendMode			renderMode[StateEnum_Nb];
+			BlendMode		renderMode[StateEnum_Nb];
 			TextLink_p		pLink;
 
-			BlendMode			colorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend color with color from upstream (parent or already in attr)
-			BlendMode			bgColorBlendMode[StateEnum_Nb];	// Internal use only, operation used to blend bgColor with bgColor from upstream (parent or already in attr)
+			BlendMode		colorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend color with color from upstream (parent or already in attr)
+			BlendMode		bgColorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend bgColor with bgColor from upstream (parent or already in attr)
 
 
 		};
