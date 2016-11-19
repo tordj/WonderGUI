@@ -169,6 +169,14 @@ int main ( int argc, char** argv )
 	pStyle->setSize(10);
 	Base::setDefaultStyle(pStyle);
 
+/*
+	StdTextMapper_p pMapper = StdTextMapper::create();
+	pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
+	Base::setDefaultTextMapper(pMapper);
+*/
+
+	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
+
 	// Init skins
 
 

@@ -368,7 +368,8 @@ namespace wg
 	//____ _renderItem()___________________________________________________________
 	
 	void StdTextMapper::renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
-	{		
+	{	
+	
 		void * pBlock = _itemDataBlock(pItem);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
@@ -406,6 +407,10 @@ namespace wg
 
 		//
 		
+		_renderBack( pItem, pDevice, canvas, clip, pSelBeg, pSelEnd );
+
+		//
+		
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
@@ -427,6 +432,8 @@ namespace wg
 					if( pChar->styleHandle() != hStyle )
 					{
 						int oldFontSize = attr.size;
+						Color oldBgColor = attr.bgColor;
+						
 						attr = baseAttr;
 
 						if( pChar->styleHandle() != 0 )
@@ -447,7 +454,7 @@ namespace wg
 								pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
 							else
 								pDevice->setTintColor( baseTint * localTint );
-						}
+						}						
 					}
 
 					// 
@@ -502,6 +509,123 @@ namespace wg
 		}
 	}
 	
+
+
+
+	//____ _renderBack()___________________________________________________________
+	
+	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, const Char * pSelBeg, const Char * pSelEnd )
+	{	
+		const Char * pCharArray = _charBuffer(pItem)->chars();
+		const Char * pBeg = pCharArray;
+		const Char * pChar;
+
+		TextStyle_h hStyle = 0xFFFF;
+
+		Color		color = Color::Transparent;
+
+		bool bInSelection = false;
+
+		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
+		{
+			if( pChar == pSelBeg )
+			{
+				bInSelection = true;
+				hStyle = 0xFFFF;
+			}
+			
+			if( pChar == pSelEnd )
+			{
+				bInSelection = false;
+				hStyle = 0xFFFF;
+			}
+			
+			if( pChar->styleHandle() != hStyle )
+			{
+				Color newColor = _baseStyle(pItem)->combBgColor( _state(pItem) );
+				
+				TextStyle_p p = pChar->stylePtr();
+				if( p )
+					newColor = Color::blend( newColor, p->combBgColor(_state(pItem)), p->bgColorBlendMode(_state(pItem)) );
+				
+				if( bInSelection )
+					newColor = Color::blend( newColor, m_selectionBackColor, m_selectionBackBlend );
+				
+				if( newColor != color )
+				{
+					if( color.a != 0 )
+						_renderBackSection( pItem, pDevice, canvas, clip, pBeg - pCharArray, pChar - pCharArray, color );
+					color = newColor;
+					pBeg = pChar;
+				}
+				
+				hStyle = pChar->styleHandle();
+			}
+		}
+		
+		if( color.a != 0 )
+			_renderBackSection( pItem, pDevice, canvas, clip, pBeg - pCharArray, pChar - pCharArray, color );
+	}
+
+	//____ _renderBackSection() ________________________________________________
+
+	void StdTextMapper::_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, 
+											int begChar, int endChar, Color color )
+	{
+		
+		Coord begPos = charPos( pItem, begChar );
+		LineInfo * pBegLine = _lineInfo( _itemDataBlock(pItem) ) + charLine( pItem, begChar );
+		
+		Coord endPos = charPos( pItem, endChar );
+		LineInfo * pEndLine = _lineInfo( _itemDataBlock(pItem) ) + charLine( pItem, endChar );
+
+		
+		if( pBegLine == pEndLine )
+		{
+			Rect area;
+			area.x = begPos.x;
+			area.y = begPos.y - pBegLine->base;
+			area.w = endPos.x - begPos.x; 
+			area.h = pBegLine->height;
+			
+			pDevice->clipFill( clip, area, color );			
+		}
+		else
+		{
+			LineInfo * pLine = pBegLine;
+			
+			Rect area;
+			area.x = begPos.x;
+			area.y = begPos.y - pLine->base;
+			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w)); 
+			area.h = pLine->height;
+			
+			pDevice->clipFill( clip, area, color );
+			
+			area.y += pLine->spacing;
+			pLine++;
+			
+			while( pLine != pEndLine )
+			{
+				area.x = _linePosX( pLine, canvas.w); 
+				area.w = pLine->width;
+				area.h = pLine->height;
+
+				pDevice->clipFill( clip, area, color );
+				
+				area.y += pLine->spacing;
+				pLine++;
+			}
+
+
+			area.x = _linePosX( pLine, canvas.w); 
+			area.w = endPos.x - area.x;
+			area.h = pLine->height;
+
+			pDevice->clipFill( clip, area, color );						
+		}
+		
+	}
 	
 	//____ pokeCaret() _________________________________________________________
 

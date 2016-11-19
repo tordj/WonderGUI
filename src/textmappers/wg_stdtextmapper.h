@@ -166,6 +166,10 @@ namespace wg
 		int				_textPosY( const BlockHeader * pHeader, int itemHeight ) const;
 		int				_charPosX( const TextBaseItem * pItem, int charOfs ) const;
 		
+		void 			_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, const Char * pSelBeg, const Char * pSelEnd );
+		void 			_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, 
+											int begChar, int endChar, Color color );
+
 		
 		enum struct SelectMode
 		{
@@ -195,16 +199,22 @@ namespace wg
 
 inline Glyph_p	StdTextMapper::_getGlyph( Font * pFont, uint16_t charCode ) const
 {
-	Glyph_p p = pFont->getGlyph(charCode);
-	if( !p )
+	if( charCode <= 32 )
 	{
-		p = pFont->getGlyph(0x25A1);			// White square character
+		return 0;
+	}
+	else
+	{
+		Glyph_p p = pFont->getGlyph(charCode);
 		if( !p )
-			p = pFont->getGlyph('?');
-	}	
-	return p;
+		{
+			p = pFont->getGlyph(0x25A1);			// White square character
+			if( !p )
+				p = pFont->getGlyph('?');
+		}	
+		return p;
+	}
 }
-
 
 
 } // namespace wg
