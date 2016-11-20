@@ -354,7 +354,7 @@ namespace wg
 	{
 		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
 		{
-			if( m_pFocusedItem->_editState()->bCaret )
+			if( m_pFocusedItem->_editState()->bCaret && m_pCaret )
 			{
 				int ms = static_cast<TickMsg*>(pMsg.rawPtr())->timediff();
 				
@@ -631,7 +631,7 @@ namespace wg
 
 	void StdTextMapper::pokeCaret( TextBaseItem * pText )
 	{
-		if( pText->_editState()->bCaret )
+		if( pText->_editState()->bCaret && m_pCaret )
 		{
 			bool bDirty = m_pCaret->restartCycle();
 			if( bDirty )
