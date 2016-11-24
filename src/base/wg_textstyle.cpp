@@ -381,6 +381,33 @@ namespace wg
 		}
 	}
 
+	//____ setBgRenderMode() _________________________________________________________
+	
+	void TextStyle::setBgRenderMode( BlendMode mode )
+	{
+		if( mode == BlendMode::Undefined )
+			clearBgRenderMode();
+		else
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.bgRenderMode[i] = mode;
+				m_combAttr.bgRenderMode[i] = mode;
+			}
+		}
+	}
+	
+	void TextStyle::setBgRenderMode( BlendMode mode, State state )
+	{
+		if( mode == BlendMode::Undefined )
+			clearBgRenderMode(state);
+		else
+		{
+			int idx = Util::_stateToIndex(state);
+			m_specAttr.bgRenderMode[idx] = mode;
+			m_combAttr.bgRenderMode[idx] = mode;
+		}
+	}
 
 
 	
@@ -587,6 +614,36 @@ namespace wg
 	}
 
 
+	//____ clearBgRenderMode() ____________________________________________________________
+	
+	void TextStyle::clearBgRenderMode()
+	{
+		if( m_pParent )
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
+				m_combAttr.bgRenderMode[i] = m_pParent->m_combAttr.bgRenderMode[i];
+			}
+		}
+		else
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			{
+				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
+				m_combAttr.bgRenderMode[i] = BlendMode::Undefined;
+			}
+		}
+	}
+	
+	void TextStyle::clearBgRenderMode( State state )
+	{
+		int idx = Util::_stateToIndex(state);
+	
+		m_specAttr.bgRenderMode[idx] = BlendMode::Undefined;
+		m_combAttr.bgRenderMode[idx] = m_pParent ? m_pParent->m_combAttr.bgRenderMode[idx] : BlendMode::Undefined;
+	}
+
 	
 	//____ exportAttr() ____________________________________________________________
 	
@@ -601,6 +658,7 @@ namespace wg
 		pDest->bgColor		= m_combAttr.bgColor[idx];
 		pDest->decoration	= m_combAttr.decoration[idx];
 		pDest->renderMode		= m_combAttr.renderMode[idx];
+		pDest->bgRenderMode		= m_combAttr.bgRenderMode[idx];
 				
 		if( pDest->size == 0 )
 			pDest->size = 12;								// Default to size 12.
@@ -625,6 +683,8 @@ namespace wg
 			pDest->decoration = m_combAttr.decoration[idx];
 		if( m_combAttr.renderMode[idx] != BlendMode::Undefined )
 			pDest->renderMode = m_combAttr.renderMode[idx];
+		if( m_combAttr.bgRenderMode[idx] != BlendMode::Undefined )
+			pDest->bgRenderMode = m_combAttr.bgRenderMode[idx];
 
 		pDest->color = Color::blend( pDest->color, m_combAttr.color[idx], m_combAttr.colorBlendMode[idx] );
 		pDest->bgColor = Color::blend( pDest->bgColor, m_combAttr.bgColor[idx], m_combAttr.bgColorBlendMode[idx] );
@@ -664,6 +724,7 @@ namespace wg
 				newComb.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], m_specAttr.bgColor[i], m_specAttr.bgColorBlendMode[i] );
 				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Undefined ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
 				newComb.renderMode[i] = m_specAttr.renderMode[i] == BlendMode::Undefined ? m_pParent->m_combAttr.renderMode[i] : m_specAttr.renderMode[i];
+				newComb.bgRenderMode[i] = m_specAttr.bgRenderMode[i] == BlendMode::Undefined ? m_pParent->m_combAttr.bgRenderMode[i] : m_specAttr.bgRenderMode[i];
 
 				BlendMode parentOp = m_pParent->m_combAttr.colorBlendMode[i];
 				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || m_specAttr.colorBlendMode[i] == BlendMode::Replace )
@@ -700,11 +761,12 @@ namespace wg
 		{
 			pSet->size[i] 			= 0;
 			pSet->color[i] 			= Color::White;
-			pSet->bgColor[i] 		= Color::White;
+			pSet->bgColor[i] 		= Color::Transparent;
 			pSet->colorBlendMode[i]	= BlendMode::Undefined;
 			pSet->bgColorBlendMode[i]	= BlendMode::Undefined;
 			pSet->decoration[i] 	= TextDecoration::Undefined;
 			pSet->renderMode[i] 		= BlendMode::Undefined;
+			pSet->bgRenderMode[i] 		= BlendMode::Undefined;
 		}
 	}
 	
@@ -722,6 +784,7 @@ namespace wg
 				p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
 				p1->decoration[i] 		!= p2->decoration[i] ||
 				p1->renderMode[i]			!= p2->renderMode[i] ||
+				p1->bgRenderMode[i]			!= p2->bgRenderMode[i] ||
 				p1->color[i] 			!= p2->color[i] ||
 				p1->bgColor[i] 			!= p2->bgColor[i] )
 				return false;				
@@ -744,6 +807,7 @@ namespace wg
 			p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
 			p1->decoration[i] 		!= p2->decoration[i] ||
 			p1->renderMode[i]			!= p2->renderMode[i] ||
+			p1->bgRenderMode[i]			!= p2->bgRenderMode[i] ||
 			p1->color[i] 			!= p2->color[i] ||
 			p1->bgColor[i] 			!= p2->bgColor[i] )
 			return false;				

@@ -61,6 +61,7 @@ namespace wg
 		inline int			nbGlyphs() { return m_nGlyphs; }
 		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
 		inline bool			isMonospace() { return m_bMonospace; }
+		inline bool			isMonochrome() { return m_bMonochrome; }
 		bool				hasGlyph( uint16_t chr );
 	
 		inline bool			setSize( int size ) { return (size == m_size);};						// Size is just a dummy for BitmapFont...
@@ -101,6 +102,7 @@ namespace wg
 	
 		int			m_nGlyphs;
 		bool		m_bMonospace;
+		bool		m_bMonochrome;
 		int			m_lineGap;
 		float		m_avgAdvance;
 		int			m_spaceAdvance;

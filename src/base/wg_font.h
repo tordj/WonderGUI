@@ -96,6 +96,7 @@ namespace wg
 		virtual int				nbGlyphs() = 0;
 		virtual bool			hasGlyphs() = 0;
 		virtual bool			isMonospace() = 0;
+		virtual bool			isMonochrome();
 		virtual bool			hasGlyph( uint16_t chr ) = 0;
 
 

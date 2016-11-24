@@ -58,11 +58,12 @@ namespace wg
 		void			setCaret( const Caret_p& pCaret );
 		Caret_p			caret() const { return m_pCaret; }
 
-		void			setSelectionBackColor(Color color, BlendMode blend = BlendMode::Replace );
+		void			setSelectionBack(Color color, BlendMode renderMode = BlendMode::Replace );
+
 		void			setSelectionCharColor(Color color, BlendMode blend = BlendMode::Replace );
 	
 		Color			selectionBackColor() { return m_selectionBackColor;  }
-		BlendMode		selectionBackColorBlend() { return m_selectionBackBlend; }
+		BlendMode		selectionBackRenderMode() { return m_selectionBackRenderMode; }
 
 		Color			selectionCharColor() { return m_selectionCharColor; }
 		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
@@ -166,7 +167,7 @@ namespace wg
 		int				_textPosY( const BlockHeader * pHeader, int itemHeight ) const;
 		int				_charPosX( const TextBaseItem * pItem, int charOfs ) const;
 		
-		void 			_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, const Char * pSelBeg, const Char * pSelEnd );
+		void 			_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 		void 			_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, 
 											int begChar, int endChar, Color color );
 
@@ -186,7 +187,8 @@ namespace wg
 		Caret_p			m_pCaret;
 
 		Color			m_selectionBackColor;
-		BlendMode		m_selectionBackBlend;
+		BlendMode		m_selectionBackRenderMode;
+		
 		Color			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 

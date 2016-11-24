@@ -62,8 +62,8 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
-//	Base::initFreeType();
-//	VectorFont::setSurfaceFactory( SoftSurfaceFactory::create() );
+	Base::initFreeType();
+	VectorFont::setSurfaceFactory( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -159,14 +159,14 @@ int main ( int argc, char** argv )
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
 
 
-//	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
+	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 	
-//	VectorFont_p pFont = VectorFont::create( pFontFile, 1 );
+	VectorFont_p pFont = VectorFont::create( pFontFile, 1 );
 
 
 	TextStyle_p pStyle = TextStyle::create();
-	pStyle->setFont(pBmpFont);
-	pStyle->setSize(10);
+	pStyle->setFont(pFont);
+	pStyle->setSize(16);
 	Base::setDefaultStyle(pStyle);
 
 /*
@@ -175,7 +175,7 @@ int main ( int argc, char** argv )
 	Base::setDefaultTextMapper(pMapper);
 */
 
-	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
+	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
 
 	// Init skins
 
@@ -292,12 +292,12 @@ int main ( int argc, char** argv )
 		pText->grabFocus();
 	}
 
-   {
+ /*  {
         TestWidget_p pTest = TestWidget::create();
         pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
         pTest->start();
     }
-	
+*/	
 /*	
 	{
 		FlexPanel_p pExtraFlex = FlexPanel::create();

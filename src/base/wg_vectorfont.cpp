@@ -52,7 +52,6 @@ namespace wg
 	VectorFont::VectorFont( Blob_p pFontFile, int faceIndex )
 	{
 		m_pFontFile = pFontFile;
-		m_pData = (char*) pFontFile->content();
 		m_ftCharSize	= 0;
 		m_accessCounter = 0;
 		m_sizeOffset	= 0;
@@ -104,7 +103,6 @@ namespace wg
 		}
 	
 		FT_Done_Face( m_ftFace );
-		delete[] m_pData;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________

@@ -43,6 +43,7 @@ namespace wg
 	
 		m_nGlyphs		= 0;
 		m_bMonospace	= true;
+		m_bMonochrome	= true;
 		m_avgAdvance	= 0;
 		m_maxAdvance	= 0;
 		m_spaceAdvance	= 0;
@@ -194,11 +195,15 @@ namespace wg
 		int		x, y, w, h, advance, bearingX, bearingY;
 		int		firstAdvance;
 		int		nRead = 0;
+		int		monochrome = 1;
 
 		// Only interpret header stuff for the first font
 		if(firstInsert)
 		{
-			nRead = sscanf( pGlyphSpec, "%d %d %d", &m_size, &m_lineGap, &m_spaceAdvance );
+			nRead = sscanf( pGlyphSpec, "size: %d linegap: %d space: %d monochrome: %d", &m_size, &m_lineGap, &m_spaceAdvance, &monochrome );
+			
+			m_bMonochrome = (monochrome>0);
+			
 		}
 		else
 		{

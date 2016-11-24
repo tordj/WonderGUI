@@ -35,7 +35,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_selectionBackColor(Color::White), m_selectionBackBlend(BlendMode::Invert),
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
 		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedItem(nullptr), m_tickRouteId(0)
 	{
 	}
@@ -134,10 +134,10 @@ namespace wg
 
 	//____ setSelectionBackColor() _________________________________________________
 
-	void StdTextMapper::setSelectionBackColor(Color color, BlendMode blend)
+	void StdTextMapper::setSelectionBack(Color color, BlendMode renderMode )
 	{
 		m_selectionBackColor = color;
-		m_selectionBackBlend = blend;
+		m_selectionBackRenderMode = renderMode;
 	}
 
 	//____ setSelectionCharColor() ____________________________________________
@@ -388,6 +388,13 @@ namespace wg
 		Color	baseTint = pDevice->tintColor();
 		Color	localTint = Color::White;
 
+		BlendMode renderMode = pDevice->blendMode();
+
+		// Render back colors
+		
+		_renderBack( pItem, pDevice, canvas, clip );
+		
+
 		const EditState * pEditState = _editState( pItem );
 
 		// Get selection start and end
@@ -399,15 +406,24 @@ namespace wg
 
 		if( pEditState && pEditState->selectOfs != pEditState->caretOfs )
 		{
-			pSelBeg = pCharArray + pEditState->selectOfs;
-			pSelEnd = pCharArray + pEditState->caretOfs;
-			if( pSelBeg > pSelEnd )
-				std::swap( pSelBeg, pSelEnd );
+			int selBeg = pEditState->selectOfs;
+			int selEnd = pEditState->caretOfs;
+			if( selBeg > selEnd )
+				std::swap( selBeg, selEnd );
+
+
+			if( m_selectionBackRenderMode != BlendMode::Ignore )
+			{
+				if( m_selectionBackRenderMode != BlendMode::Undefined )
+					pDevice->setBlendMode( m_selectionBackRenderMode );
+				_renderBackSection( pItem, pDevice, canvas, clip, selBeg, selEnd, m_selectionBackColor );
+				pDevice->setBlendMode( renderMode );
+			}
+			
+			pSelBeg = pCharArray + selBeg;
+			pSelEnd = pCharArray + selEnd;
 		}
 
-		//
-		
-		_renderBack( pItem, pDevice, canvas, clip, pSelBeg, pSelEnd );
 
 		//
 		
@@ -423,6 +439,8 @@ namespace wg
 				
 				Coord pos = lineStart;
 				pos.y += pLineInfo->base;
+
+				bool bRecalcColor = false;
 				
 				for( int x = 0 ; x < pLineInfo->length ; x++ )
 				{
@@ -441,6 +459,10 @@ namespace wg
 						
 						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
+							
+							if( !pFont || (pFont->isMonochrome() != attr.pFont->isMonochrome()) )
+								bRecalcColor = true;		// Font tint-color is changed.
+
 							pFont = attr.pFont;
 							pFont->setSize(attr.size);
 							pPrevGlyph = 0;								// No kerning against across different fonts or character of different size.
@@ -449,11 +471,7 @@ namespace wg
 						if( attr.color != localTint )
 						{
 							localTint = attr.color;
-
-							if (bInSelection)
-								pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
-							else
-								pDevice->setTintColor( baseTint * localTint );
+							bRecalcColor = true;
 						}						
 					}
 
@@ -462,12 +480,22 @@ namespace wg
 					if( pChar == pSelBeg )
 					{
 						bInSelection = true;
-						pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
+						bRecalcColor = true;
 					}
 					else if( pChar == pSelEnd )
 					{
 						bInSelection = false;
-						pDevice->setTintColor(baseTint * localTint);
+						bRecalcColor = true;
+					}
+
+					if( bRecalcColor )
+					{
+						if (bInSelection)
+							pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
+						else
+							pDevice->setTintColor( baseTint * localTint );
+							
+						bRecalcColor = false;
 					}
 					
 					//
@@ -496,9 +524,7 @@ namespace wg
 			pLineInfo++;
 		}
 		
-		if( localTint != Color::White )
-			pDevice->setTintColor( baseTint );
-
+		pDevice->setTintColor( baseTint );
 
 
 		// Render cursor (if there is any)
@@ -514,7 +540,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 	
-	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, const Char * pSelBeg, const Char * pSelEnd )
+	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
 	{	
 		const Char * pCharArray = _charBuffer(pItem)->chars();
 		const Char * pBeg = pCharArray;
@@ -528,18 +554,6 @@ namespace wg
 
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{
-			if( pChar == pSelBeg )
-			{
-				bInSelection = true;
-				hStyle = 0xFFFF;
-			}
-			
-			if( pChar == pSelEnd )
-			{
-				bInSelection = false;
-				hStyle = 0xFFFF;
-			}
-			
 			if( pChar->styleHandle() != hStyle )
 			{
 				Color newColor = _baseStyle(pItem)->combBgColor( _state(pItem) );
@@ -547,10 +561,7 @@ namespace wg
 				TextStyle_p p = pChar->stylePtr();
 				if( p )
 					newColor = Color::blend( newColor, p->combBgColor(_state(pItem)), p->bgColorBlendMode(_state(pItem)) );
-				
-				if( bInSelection )
-					newColor = Color::blend( newColor, m_selectionBackColor, m_selectionBackBlend );
-				
+								
 				if( newColor != color )
 				{
 					if( color.a != 0 )
