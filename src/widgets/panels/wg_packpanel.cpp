@@ -435,7 +435,7 @@ namespace wg
 		
 		//
 		
-		_refreshAllWidgets();
+		_refreshAllWidgets();    
 	}
 	
 	//____ _onWidgetDisappeared() ___________________________________________________
@@ -602,6 +602,7 @@ namespace wg
 					if( geo != p->m_geo )
 					{
 						_requestRender(geo);
+						_requestRender(p->m_geo);
 	        
 						int oldW = p->m_geo.w;
 						int oldH = p->m_geo.h;

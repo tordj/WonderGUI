@@ -179,17 +179,39 @@ namespace wg
 				break;
 			}
 
-			case MsgType::MousePress:
+			case MsgType::MousePress:			// Move caret pos and selection pos. Shift-press: only move caret pos.
+			{
+				auto p = static_cast<MousePressMsg*>(pMsg.rawPtr());
+				if( p->button() == MouseButton::Left )
+				{
+					caretToPos(p->pointerPos() - _globalPos());
+					m_editState.bButtonDown = true;
+				}
 				break;
+			}
 
-			case MsgType::MouseRepeat:
+			case MsgType::MouseDrag:			// Move only caret pos
+			{	
+				auto p = static_cast<MouseDragMsg*>(pMsg.rawPtr());
+				if( p->button() == MouseButton::Left )
+					caretToPos(p->pointerPos() - _globalPos());
 				break;
-
+			}
+			
 			case MsgType::MouseRelease:
+			{
+				auto p = static_cast<MouseReleaseMsg*>(pMsg.rawPtr());
+				if( p->button() == MouseButton::Left )
+					m_editState.bButtonDown = false;
 				break;
-
-			case MsgType::MouseClick:
+			}
+			case MsgType::MouseDoubleClick:		// Select word
+			{
+				auto p = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr());
+				if( p->button() == MouseButton::Left )
+					caretSelectWord();
 				break;
+			}
 
 			default:
 				break;
@@ -450,19 +472,19 @@ namespace wg
 
 	//____ setCaretPos() _______________________________________________________
 	
-	bool EditTextItem::setCaretPos( int pos )
+	bool EditTextItem::setCaretOfs( int ofs )
 	{
 		if( m_editMode != TextEditMode::Editable )
 			return false;
 			
 		int max = m_charBuffer.length();	
 			
-		limit( pos, 0, max );
+		limit( ofs, 0, max );
 
-		if( pos != m_editState.selectOfs || pos != m_editState.caretOfs )
+		if( ofs != m_editState.selectOfs || ofs != m_editState.caretOfs )
 		{
-			m_editState.selectOfs = pos;
-			m_editState.caretOfs = pos;
+			m_editState.selectOfs = ofs;
+			m_editState.caretOfs = ofs;
 			m_editState.wantedOfs = -1;
 			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
 
@@ -474,7 +496,7 @@ namespace wg
 
 	//____ caretPos() ___________________________________________________________
 
-	int EditTextItem::caretPos() const
+	int EditTextItem::caretOfs() const
 	{
 		if( !m_editState.bCaret )
 			return -1;
@@ -715,6 +737,30 @@ namespace wg
 		m_editState.selectOfs = lastChar;
 		m_editState.wantedOfs = -1;	
 	}
+
+
+	//____ _caretToPos() __________________________________________________________
+
+	bool EditTextItem::caretToPos( Coord pos)
+	{
+		int ofs = _textMapper()->caretToPos(this,pos, m_editState.wantedOfs );
+		return _moveCaret( ofs, MoveMethod::Mouse );
+	}
+
+	//____ _caretSelectWord() __________________________________________________
+	
+	bool EditTextItem::caretSelectWord()
+	{
+		
+	}
+
+	//____ _caretSelectLine() __________________________________________________
+	
+	bool EditTextItem::caretSelectLine()
+	{
+		
+	}
+
 
 	//____ _moveCaret() ______________________________________________
 

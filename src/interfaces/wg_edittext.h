@@ -83,8 +83,8 @@ namespace wg
 
 		// These methods will fail unless caret is present
 
-		inline bool		setCaretPos( int pos );			// Move cursor to position. Any selection will be unselected.
-		inline int		caretPos() const;
+		inline bool		setCaretOfs( int ofs );			// Move cursor to offset. Any selection will be unselected.
+		inline int		caretOfs() const;
 
 		inline int		caretPut( const CharSeq& str );	// Will insert or overwrite depending on caret mode
 		inline bool		caretPut( uint16_t c );			// " -
@@ -178,15 +178,15 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	inline bool EditText::setCaretPos( int pos )
+	inline bool EditText::setCaretOfs( int ofs )
 	{
-		return _item()->setCaretPos(pos);
+		return _item()->setCaretOfs(ofs);
 	}
 
 	//_____________________________________________________________________________
-	inline int EditText::caretPos() const
+	inline int EditText::caretOfs() const
 	{
-		return _item()->caretPos();
+		return _item()->caretOfs();
 	}
 	
 	//_____________________________________________________________________________

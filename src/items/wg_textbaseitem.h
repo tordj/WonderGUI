@@ -58,7 +58,7 @@ namespace wg
 	
 		virtual void		setTextMapper( const TextMapper_p& pTextMapper );
 		virtual void		clearTextMapper();
-		TextMapper *			textMapper() const { return m_pTextMapper.rawPtr(); }
+		TextMapper *		textMapper() const { return m_pTextMapper.rawPtr(); }
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }

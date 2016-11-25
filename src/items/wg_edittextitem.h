@@ -75,8 +75,8 @@ namespace wg
 
 		// These methods will fail unless caret is present
 
-		bool			setCaretPos( int pos );			// Move cursor to position. Any selection will be unselected.
-		int				caretPos() const;
+		bool			setCaretOfs( int ofs );			// Move cursor to offset. Any selection will be unselected.
+		int				caretOfs() const;
 
 		int				caretPut( const CharSeq& seq );	// Will insert or overwrite depending on caret mode
 		bool			caretPut( uint16_t c );			// " -
@@ -98,8 +98,12 @@ namespace wg
 		bool			caretLineEnd();
 		bool			caretTextBegin();
 		bool			caretTextEnd();
-	
-	
+
+		bool			caretToPos( Coord pos);			// Move caret as close as possible to the given position.
+		bool			caretSelectWord();
+		bool			caretSelectLine();				// Full line with hard line ending.
+
+
 	
 	
 	protected:
