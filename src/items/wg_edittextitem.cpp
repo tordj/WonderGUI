@@ -751,14 +751,16 @@ namespace wg
 	
 	bool EditTextItem::caretSelectWord()
 	{
-		
+		//TODO: Implement!
+		return false;
 	}
 
 	//____ _caretSelectLine() __________________________________________________
 	
 	bool EditTextItem::caretSelectLine()
 	{
-		
+		//TODO: Implement!
+		return false;
 	}
 
 

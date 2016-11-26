@@ -274,10 +274,10 @@ namespace wg
 		{
 			int point = pSeg->x;
 			
-			float min = m_pDisplayPoints[point];
-			float max = m_pDisplayPoints[point];
-			
-			for( int i = 1 ; i < pSeg->w+1 ; i++ )		// include one extra measure for the aa-algorithm
+			float min = m_pDisplayPoints[point > 0 ? point - 1 : 0];
+			float max = min;
+
+			for( int i = 0 ; i < pSeg->w+1 ; i++ )		// include one extra measure for the aa-algorithm
 			{
 				float v = m_pDisplayPoints[point+i];
 				if( v < min ) min = v;
