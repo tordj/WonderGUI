@@ -440,14 +440,14 @@ namespace wg
 
 	int EditTextItem::selectionBegin() const
 	{
-		return m_editState.caretOfs < m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;
+		return m_editState.selectOfs;
 	}
 	
 	//____ selectionEnd() ______________________________________________________
 
 	int EditTextItem::selectionEnd() const
 	{
-		return m_editState.caretOfs > m_editState.selectOfs ? m_editState.caretOfs : m_editState.selectOfs;		
+		return m_editState.caretOfs;		
 	}
 	
 	//____ eraseSelected() _____________________________________________________

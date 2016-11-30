@@ -389,6 +389,9 @@
     <ClInclude Include="..\..\..\src\widgets\panels\wg_vectorpanel.h">
       <Filter>widgets\panels</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -720,6 +723,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\panels\wg_vectorpanel.cpp">
       <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

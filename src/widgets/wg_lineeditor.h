@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_TEXTEDITOR_DOT_H
-#define	WG_TEXTEDITOR_DOT_H
+#ifndef	WG_LINEEDITOR_DOT_H
+#define	WG_LINEEDITOR_DOT_H
 
 
 #ifndef WG_WIDGET_DOT_H
@@ -35,19 +35,19 @@
 namespace wg 
 {
 	
-	class TextEditor;
-	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
-	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
+	class LineEditor;
+	typedef	StrongPtr<LineEditor,Widget_p>		LineEditor_p;
+	typedef	WeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
 	
-	class TextEditor:public Widget
+	class LineEditor:public Widget
 	{
 	public:
-		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
+		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TextEditor_p	cast( const Object_p& pObject );
+		static LineEditor_p	cast( const Object_p& pObject );
 	
 		//____ Interfaces ______________________________________
 	
@@ -56,13 +56,12 @@ namespace wg
 		//____ Methods __________________________________________
 	
 	
-		int				matchingHeight( int width ) const;
 		Size			preferredSize() const;
 		
 	protected:
-		TextEditor();
-		virtual ~TextEditor();
-		virtual Widget* _newOfMyType() const { return new TextEditor(); };
+		LineEditor();
+		virtual ~LineEditor();
+		virtual Widget* _newOfMyType() const { return new LineEditor(); };
 	
 		void			_cloneContent( const Widget * _pOrg );
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
@@ -71,10 +70,11 @@ namespace wg
 		void			_receive( const Msg_p& pMsg );
 		void			_setState( State state );
 		void			_setSkin( const Skin_p& pSkin );
-	
+
 	private:
 		
 		EditTextItem	m_text;
+		int				m_textScrollOfs;
 	};
 	
 	
@@ -83,4 +83,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif // WG_TEXTEDITOR_DOT_H
+#endif // WG_TEXTDISPLAY_DOT_H

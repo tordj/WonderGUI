@@ -734,8 +734,64 @@ namespace wg
 
 	Rect StdTextMapper::rectForRange( const TextBaseItem * pItem, int ofs, int length ) const
 	{
-		//TODO: Implement!
-		return Rect();
+		int begChar = ofs;
+		int endChar = ofs + length;
+
+		Size canvas = pItem->size();
+
+
+		Coord begPos = charPos(pItem, begChar);
+		const LineInfo * pBegLine = _lineInfo(_itemDataBlock(pItem)) + charLine(pItem, begChar);
+
+		Coord endPos = charPos(pItem, endChar);
+		const LineInfo * pEndLine = _lineInfo(_itemDataBlock(pItem)) + charLine(pItem, endChar);
+	
+		int x1, x2, y1, y2;
+
+		if (pBegLine == pEndLine)
+		{
+			x1 = begPos.x;
+			y1 = begPos.y - pBegLine->base;
+			x2 = endPos.x;
+			y2 = y1 + pBegLine->height;
+		}
+		else
+		{
+			const LineInfo * pLine = pBegLine;
+
+			x1 = begPos.x;
+			y1 = begPos.y - pLine->base;
+			x2 = pLine->width + _linePosX(pLine, canvas.w);
+			y2 = y1 + pLine->height;
+
+			pLine++;
+
+			while (pLine != pEndLine)
+			{
+				int nx1 = _linePosX(pLine, canvas.w);
+				int nx2 = nx1 + pLine->width;
+
+				if (nx1 < x1)
+					x1 = nx1;
+				if (nx2 > x2)
+					x2 = nx2;
+
+				y2 += pLine->spacing;
+				pLine++;
+			}
+
+			int nx1 = _linePosX(pLine, canvas.w);
+			int nx2 = endPos.x;
+
+			if (nx1 < x1)
+				x1 = nx1;
+			if (nx2 > x2)
+				x2 = nx2;
+
+			y2 += pLine->height;
+		}
+
+		return Rect( x1, y1, x2-x1, y2-y1);
 	}
 	
 	//____ textDirection() ____________________________________________________

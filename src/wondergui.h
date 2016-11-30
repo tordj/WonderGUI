@@ -273,6 +273,10 @@
 #	include <wg_texteditor.h>
 #endif
 
+#ifndef WG_LINEDITOR_DOT_H
+#	include <wg_lineeditor.h>
+#endif
+
 #ifndef WG_TOGGLEBUTTON_DOT_H
 #	include <wg_togglebutton.h>
 #endif

@@ -246,13 +246,21 @@ int main ( int argc, char** argv )
 		PackPanel_p pHorr = PackPanel::create();
 		
 		Filler_p pFillerEast = Filler::create();
+		Filler_p pFillerMid = Filler::create();
 		Filler_p pFillerSouth = Filler::create();
 		
 		pFillerEast->setSkin( pPressablePlateSkin );
+		pFillerMid->setSkin(pPressablePlateSkin);
 		pFillerSouth->setSkin( pPressablePlateSkin );
 		
 		pVert->setOrientation( Orientation::Vertical );
 		
+		LineEditor_p pEditLine = LineEditor::create();
+		pEditLine->setSkin(ColorSkin::create(Color::Black));
+
+
+		pVert->addWidget(pEditLine);
+		pVert->addWidget(pFillerMid);
 		pVert->addWidget( pHorr );
 		pVert->addWidget( pFillerSouth );
 
@@ -274,14 +282,12 @@ int main ( int argc, char** argv )
 		pLink->setColor(Color::Green );
 		pLink->setLink( TextLink::create( "www.somewhere.net" ) );
 
-		pText->text.set("ABCDEF\nGHIJKL");
-
-/*		pText->text.set( "This is a\npiece of TEXT with LINK" );
+		pText->text.set( "This is a\npiece of TEXT with LINK" );
 		pText->text.setCharStyle( pBig, 5, 2 );
 		pText->text.setCharStyle( pRed, 10, 3 );
 		pText->text.setCharStyle( pAnuv, 19, 4 );
 		pText->text.setCharStyle( pLink, 29, 4 );
-*/
+
 
 		pHorr->addWidget( pText );
 		pHorr->addWidget( pFillerEast );
@@ -289,7 +295,7 @@ int main ( int argc, char** argv )
 		
 		pFlexPanel->addWidget( pVert, Origo::NorthWest, Origo::SouthEast );
 	
-		pText->grabFocus();
+		pEditLine->grabFocus();
 	}
 
  /*  {

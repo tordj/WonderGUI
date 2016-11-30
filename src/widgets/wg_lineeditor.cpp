@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_texteditor.h>
+#include <wg_lineeditor.h>
 #include <wg_key.h>
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
@@ -29,27 +29,27 @@
 namespace wg 
 {
 	
-	const char TextEditor::CLASSNAME[] = {"TextEditor"};
+	const char LineEditor::CLASSNAME[] = {"LineEditor"};
 	
 	
 	
-	//____ TextEditor() _________________________________________________________________
+	//____ LineEditor() _________________________________________________________________
 	
-	TextEditor::TextEditor() : m_text(this), text(&m_text)
+	LineEditor::LineEditor() : m_text(this), text(&m_text), m_textScrollOfs(0)
 	{
 	}
 	
 	
 	//____ Destructor _____________________________________________________________
 	
-	TextEditor::~TextEditor()
+	LineEditor::~LineEditor()
 	{
 	}
 	
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool TextEditor::isInstanceOf( const char * pClassName ) const
+	bool LineEditor::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -59,72 +59,127 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * TextEditor::className( void ) const
+	const char * LineEditor::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	TextEditor_p TextEditor::cast( const Object_p& pObject )
+	LineEditor_p LineEditor::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextEditor_p( static_cast<TextEditor*>(pObject.rawPtr()) );
+			return LineEditor_p( static_cast<LineEditor*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 		
-	//____ matchingHeight() _______________________________________________________
-	
-	int TextEditor::matchingHeight( int width ) const
-	{
-		int textHeight = m_text.matchingHeight( width );
-	
-		if( m_pSkin )
-			textHeight += m_pSkin->contentPadding().h;
-	
-		return textHeight;
-	}
-	
 	//____ preferredSize() _____________________________________________________________
 	
-	Size TextEditor::preferredSize() const
+	Size LineEditor::preferredSize() const
 	{
-		Size contentSize = m_text.preferredSize();
-	
+		Size	contentSize;
+
+		TextStyle * pStyle = m_text._style();
+
+		Font_p pFont = pStyle->font();
+
+		if (pFont)
+		{
+			pFont->setSize( pStyle->size( StateEnum::Normal ) );
+			contentSize.w = pFont->whitespaceAdvance() * 20;
+			contentSize.h = pFont->maxAscend() + pFont->maxDescend();
+		}
+		else
+		{
+			contentSize.w = 100;
+			contentSize.h = 16;
+		}
+
 		if( m_pSkin )
-			return m_pSkin->sizeForContent(contentSize);
+			return m_pSkin->sizeForContent( contentSize );
 		else
 			return contentSize;
 	}
 	
 	//____ _render() ________________________________________________________
 	
-	void TextEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void LineEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		Widget::_render(pDevice,_canvas,_window,_clip);
 	
 		Rect canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
+			canvas = m_pSkin->contentRect( _canvas, m_state );
 		else
 			canvas = _canvas;
 
-		m_text.onRender( pDevice, canvas, _clip );	
+		//TODO: Move this somewhere else where it belongs.
+
+		if( m_text.editMode() != TextEditMode::Static  )
+		{
+			if( m_text.hasSelection() || m_text.editMode() == TextEditMode::Editable )
+			{
+				int selBeg = m_text.selectionBegin();
+				int selEnd = m_text.selectionEnd();
+
+				int beg = selBeg;
+				int end = selEnd;
+
+				if( beg > end )
+					std::swap( beg, end );
+
+				if( beg > 0 )
+					beg--;
+
+				if( end < m_text.length() )
+					end++;
+
+				Rect r = m_text.rectForRange( beg, end - beg );
+
+				int prio1 = r.x;
+				int prio2 = r.x + r.w;
+
+				if( selBeg < selEnd )
+					std::swap( prio1, prio2 );
+
+				if( prio2 < m_textScrollOfs )
+					m_textScrollOfs = prio2;
+
+				if (prio2 > m_textScrollOfs + canvas.w)
+					m_textScrollOfs = prio2 - canvas.w;
+
+				if (prio1 < m_textScrollOfs)
+					m_textScrollOfs = prio1;
+
+				if (prio1 > m_textScrollOfs + canvas.w)
+					m_textScrollOfs = prio1 - canvas.w;
+			}
+		}
+		else
+			m_textScrollOfs = 0;
+
+		//
+
+		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
+
+		Rect textClip(_clip, textCanvas);
+
+		m_text.onRender(pDevice, textCanvas, textClip );
 	}
 	
 	//____ _refresh() _______________________________________________________
 	
-	void TextEditor::_refresh( void )
+	void LineEditor::_refresh( void )
 	{
 		//TODO: Implement more I believe...
 	
 		Widget::_refresh();
 	}
-	
+
 	//____ _setState() ______________________________________________________
 	
-	void TextEditor::_setState( State state )
+	void LineEditor::_setState( State state )
 	{
 		Widget::_setState(state);
 	
@@ -135,7 +190,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void TextEditor::_receive( const Msg_p& pMsg )
+	void LineEditor::_receive( const Msg_p& pMsg )
 	{
 		MsgType type = pMsg->type();
 
@@ -146,18 +201,18 @@ namespace wg
 	
 	//____ _cloneContent() _______________________________________________________
 	
-	void TextEditor::_cloneContent( const Widget * _pOrg )
+	void LineEditor::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
 
-		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
+		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
 	
 		m_text = pOrg->m_text;
 	}
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void TextEditor::_setSkin( const Skin_p& pSkin )
+	void LineEditor::_setSkin( const Skin_p& pSkin )
 	{
 		//TODO: Possibly notify text about new canvas size.
 		
@@ -166,7 +221,7 @@ namespace wg
 	
 	//____ _setSize() ________________________________________________
 	
-	void TextEditor::_setSize( const Size& size )
+	void LineEditor::_setSize( const Size& size )
 	{
 		Widget::_setSize( size );
 		

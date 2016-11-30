@@ -189,6 +189,7 @@
     <ClInclude Include="..\..\..\src\widgets\wg_filler.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_fpsdisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_image.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_oscilloscope.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h" />
@@ -302,6 +303,7 @@
     <ClCompile Include="..\..\..\src\widgets\wg_filler.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_fpsdisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_image.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_oscilloscope.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp" />
