@@ -84,6 +84,12 @@ namespace wg
 		bool				setGeo( const Rect& geo );
 		Rect				geo() const;
 	
+	
+		void				setDebugMode( bool onOff );
+		bool				isDebugMode() const { return m_bDebugMode; }
+		void 				setDebugOverlay( const Skin_p& pOverlaySkin, int afterglowFrames );
+	
+	
 		bool				setVisible( bool bVisible );
 		bool				isVisible() const { return m_bVisible; }
 	
@@ -93,8 +99,7 @@ namespace wg
 		bool				clear();
 		
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
-		
-		
+	
 	
 		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
@@ -167,10 +172,16 @@ namespace wg
 		Widget *			_focusedChild() const;
 
 	
-		Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
-		Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
+		Patches				m_dirtyPatches;		// Dirty patches that needs to be rendered.
+		Patches				m_updatedPatches;	// Patches that were updated in last rendering session.
+
+
+		bool				m_bDebugMode;
+		Skin_p				m_pDebugOverlay;
+		int					m_afterglowFrames;
+		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
-		GfxDevice_p		m_pGfxDevice;
+		GfxDevice_p			m_pGfxDevice;
 		MyHook				m_hook;
 		Rect				m_geo;
 		bool				m_bHasGeo;
