@@ -144,6 +144,8 @@ namespace wg
 			pDevice->fill( Rect(r,clip), Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
+		
+		m_bNeedToRender = false;
 	}
 
 	//____ _updateNeedToRender() _______________________________________________

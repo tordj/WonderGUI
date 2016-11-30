@@ -23,6 +23,7 @@
 #include <wg_rootpanel.h>
 #include <wg_base.h>
 #include <wg_container.h>
+#include <wg_boxskin.h>
 #include <new>
 
 
@@ -42,21 +43,24 @@ namespace wg
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
-		m_geo = Rect(0,0,0,0);
 		m_hook.m_pRoot = this;
-	
+
+		m_bDebugMode = false;
+
+		BoxSkin_p pDebugOverlay = BoxSkin::create( Color(255,0,0,128), 1, Color(255,0,0,128) );
+		pDebugOverlay->setStateColor( StateEnum::Focused, Color(255,255,255,128), Color(255,0,0,255) );
+		m_pDebugOverlay = pDebugOverlay;
+		m_afterglowFrames = 4;	
 	}
 	
-	
-	RootPanel::RootPanel( const GfxDevice_p& pGfxDevice )
+	RootPanel::RootPanel( const GfxDevice_p& pGfxDevice ) : RootPanel()
 	{
-		m_bVisible = true;
-		m_bHasGeo = false;
 		if( pGfxDevice )
 			m_geo = pGfxDevice->canvasSize();
 		m_pGfxDevice = pGfxDevice;
-		m_hook.m_pRoot = this;
 	}
+
+
 	
 	//____ Destructor _____________________________________________________________
 	
@@ -177,6 +181,32 @@ namespace wg
 		return true;
 	}
 	
+	//____ setDebugMode() ______________________________________________________
+	
+	void RootPanel::setDebugMode( bool onOff )
+	{
+		m_bDebugMode = onOff;
+		
+		// Make sure to clean up on the screen.
+		
+		if( m_bDebugMode == false )
+		{			
+			for( auto it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; it++ )
+				m_dirtyPatches.add( &(*it) );
+
+			m_afterglowRects.clear();			
+		}
+	}
+	
+	
+	//____ setDebugOverlay() ____________________________________________________
+
+	void RootPanel::setDebugOverlay( const Skin_p& pOverlaySkin, int afterglowFrames )
+	{
+		m_pDebugOverlay = pOverlaySkin;
+		m_afterglowFrames = afterglowFrames;
+	}
+	
 	
 	//____ render() _______________________________________________________________
 	
@@ -208,6 +238,39 @@ namespace wg
 	{
 		if( !m_pGfxDevice || !m_hook._widget() )
 			return false;						// No GFX-device or no widgets to render.
+
+		// Handle debug overlays.
+	
+		if( m_bDebugMode )
+		{
+			// Remove from afterglow queue patches that are overlapped by our new dirty patches.
+
+			for( std::deque<Patches>::iterator it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; ++it )
+				it->sub(&m_dirtyPatches);
+
+			// Add our new dirty patches to the top of the afterglow queue.
+			
+			
+			m_afterglowRects.push_front(Patches());
+			m_afterglowRects.front().add(&m_dirtyPatches);
+			
+			// Possibly remove overlays from the back, put them into dirty rects for re-render
+			
+			while( m_afterglowRects.size() > m_afterglowFrames+1 )
+			{
+				m_dirtyPatches.add( &m_afterglowRects.back() );
+				m_afterglowRects.pop_back();
+			}
+			
+			// Re-render graphics behind overlays that go from state FOCUSED to NORMAL
+
+			if( m_afterglowRects.size() > 1 )
+			{
+				m_dirtyPatches.add( &m_afterglowRects[1] );
+			}
+		}
+
+		// Initialize GFX-device.
 	
 		return m_pGfxDevice->beginRender();
 	}
@@ -246,6 +309,28 @@ namespace wg
 		// Render the dirty patches recursively
 	
 		m_hook._widget()->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
+
+		// Handle updated rect overlays
+		
+		if( m_bDebugMode && m_pDebugOverlay )
+		{
+			// Render our new overlays
+			
+			for( const Rect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
+			{
+				m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused, clip );
+			}		
+
+			// Render overlays that have turned into afterglow
+
+			if( m_afterglowRects.size() > 1 )
+			{
+				for( const Rect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
+				{
+					m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal, clip );
+				}		
+			}
+		}
 	
 		return true;
 	}
