@@ -83,7 +83,15 @@ namespace wg
 
 	
 		virtual void 	renderItem( TextBaseItem * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
+
+		// Caret/selection update notification methods, only one of these needs to be called.
+		// A caret move implies a poke and a selection change implies a caret move.
+
 		virtual void	pokeCaret( TextBaseItem * pText ) = 0;
+		virtual void	caretMoved( TextBaseItem * pText, int oldOfs ) = 0;
+		virtual void	selectionChanged( TextBaseItem * pText, int oldSelOfs, int oldCaretOfs ) = 0;
+	
+		//
 	
 		virtual void	onTextModified( TextBaseItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
 		virtual void	requestResized( TextBaseItem * pText, Size newSize, Size oldSize ) = 0;

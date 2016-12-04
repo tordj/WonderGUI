@@ -71,6 +71,13 @@ namespace wg
 		void			_setState( State state );
 		void			_setSkin( const Skin_p& pSkin );
 
+		Coord			_itemPos( const Item * pItem ) const;
+		Size			_itemSize( const Item * pItem ) const;
+		Rect			_itemGeo( const Item * pItem ) const;
+
+		void			_itemRenderRequested( const Item * pItem, const Rect& rect );
+		void			_itemResizeRequested( const Item * pItem );
+
 	private:
 		
 		EditTextItem	m_text;

@@ -228,9 +228,84 @@ namespace wg
 		int width = size.w;
 	
 		if( m_pSkin )
-			m_text.onNewSize(size - m_pSkin->contentPadding());
+			m_text.onNewSize( Size( size.h - m_pSkin->contentPadding().h, m_text.preferredSize().w ) );
 		else
-			m_text.onNewSize(size);
+			m_text.onNewSize( Size( size.h, m_text.preferredSize().w ) );
 	}
+
+	//____ _itemPos() __________________________________________________________
+	
+	Coord LineEditor::_itemPos( const Item * pItem ) const
+	{
+		Coord c(-m_textScrollOfs, 0);
+		
+		if( m_pSkin )
+			return m_pSkin->contentOfs( m_state ) + c;
+		else
+			return c;
+	}
+
+	//____ _itemSize() _________________________________________________________
+	
+	Size LineEditor::_itemSize( const Item * pItem ) const
+	{
+		if( m_pSkin )
+			return Size( m_size.h - m_pSkin->contentPadding().h, m_text.preferredSize().w );
+		else
+			return Size( m_size.h, m_text.preferredSize().w );
+	}
+
+	//____ _itemGeo() __________________________________________________________
+	
+	Rect LineEditor::_itemGeo( const Item * pItem ) const
+	{
+		if( m_pSkin )
+		{
+			Rect r = m_pSkin->contentRect( m_size, m_state );
+			r.x -= m_textScrollOfs;
+			r.w = m_text.preferredSize().w;
+			return r;
+		}
+		else
+			return Rect( -m_textScrollOfs, 0, m_size.h, m_text.preferredSize().w );
+	}
+
+	//____ _itemRenderRequested() ______________________________________________
+	
+	void LineEditor::_itemRenderRequested( const Item * pItem, const Rect& rect )
+	{
+		Rect dirt = rect;
+		dirt.x -= m_textScrollOfs;
+		
+		Rect visible(0,0,m_size);		
+
+		if( m_pSkin )
+		{
+			visible = m_pSkin->contentRect( m_size, m_state );
+			dirt += visible.pos();
+		}
+		
+		dirt.intersection( dirt, visible );
+		if( !dirt.isEmpty() )
+			_requestRender( dirt );		
+	}
+
+	//____ _itemResizeRequested() ______________________________________________
+	
+	void LineEditor::_itemResizeRequested( const Item * pItem )
+	{
+		Size preferred = m_text.preferredSize();
+
+		int height = m_size.h;
+		if( m_pSkin )
+			height -= m_pSkin->contentPadding().h;
+
+		if( preferred.h != height )
+			_requestResize();
+
+		m_text.onNewSize( Size( height, preferred.w ));	// Item gets the preferred width right away.
+	}
+
+
 
 } // namespace wg

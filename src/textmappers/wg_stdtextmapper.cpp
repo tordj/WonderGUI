@@ -354,13 +354,17 @@ namespace wg
 	{
 		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
 		{
-			if( m_pFocusedItem->_editState()->bCaret && m_pCaret )
+			const EditState * pEditState = m_pFocusedItem->_editState();
+			
+			if( pEditState && pEditState->bCaret && m_pCaret )
 			{
 				int ms = static_cast<TickMsg*>(pMsg.rawPtr())->timediff();
 				
 				bool bDirty = m_pCaret->tick( ms );					
 				if( bDirty )
-					_setItemDirty( m_pFocusedItem );				//TODO: Only render what is needed.
+				{
+					_setItemDirty( m_pFocusedItem, m_pCaret->dirtyRect(charRect(m_pFocusedItem, pEditState->caretOfs)) );
+				}
 			}		
 		}
 	}
@@ -527,7 +531,7 @@ namespace wg
 		pDevice->setTintColor( baseTint );
 
 
-		// Render cursor (if there is any)
+		// Render caret (if there is any)
 				
 		if( pEditState && pEditState->bCaret && m_pCaret )
 		{
@@ -646,9 +650,56 @@ namespace wg
 		{
 			bool bDirty = m_pCaret->restartCycle();
 			if( bDirty )
-				_setItemDirty( pText );										//TODO: Only render what is needed.
+				_setItemDirty( pText, m_pCaret->dirtyRect(charRect(pText, pText->_editState()->caretOfs)) );
 		}		
 	}
+
+	//____ caretMoved() ________________________________________________________
+
+	void StdTextMapper::caretMoved( TextBaseItem * pText, int oldOfs )
+	{
+		if( pText->_editState()->bCaret && m_pCaret )
+		{
+			_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, oldOfs) ));
+			_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+		}
+	}
+
+	//____ selectionChanged() __________________________________________________
+	
+	void StdTextMapper::selectionChanged( TextBaseItem * pText, int oldSelectOfs, int oldCaretOfs )
+	{
+		Rect dirt;
+
+		const EditState * pEditState = pText->_editState();
+
+		
+		if( oldSelectOfs != pEditState->selectOfs )
+		{
+			int beg = std::min(oldSelectOfs,pEditState->selectOfs);
+			int len = std::max(oldSelectOfs,pEditState->selectOfs) - beg;
+			dirt = rectForRange( pText, beg, len );
+		}
+
+		if( oldCaretOfs != pEditState->caretOfs )
+		{
+			int beg = std::min(oldCaretOfs,pEditState->caretOfs);
+			int len = std::max(oldCaretOfs,pEditState->caretOfs) - beg;
+			
+			if( dirt.isEmpty() )
+				dirt = rectForRange( pText, beg, len );
+			else
+				dirt.growToContain(rectForRange( pText, beg, len ) );
+			
+			dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, oldCaretOfs) ));
+			dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+			
+		}
+
+		
+		_setItemDirty( pText, dirt );
+	}
+
 
 	//____ onTextModified() ____________________________________________________
 	

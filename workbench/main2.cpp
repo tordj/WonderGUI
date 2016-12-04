@@ -247,20 +247,29 @@ int main ( int argc, char** argv )
 		PackPanel_p pHorr = PackPanel::create();
 		
 		Filler_p pFillerEast = Filler::create();
-		Filler_p pFillerMid = Filler::create();
-		Filler_p pFillerSouth = Filler::create();
-		
 		pFillerEast->setSkin( pPressablePlateSkin );
-		pFillerMid->setSkin(pPressablePlateSkin);
+
+		Filler_p pFillerSouth = Filler::create();
 		pFillerSouth->setSkin( pPressablePlateSkin );
 		
 		pVert->setOrientation( Orientation::Vertical );
 		
+		PackPanel_p pHorr2 = PackPanel::create();
+
 		LineEditor_p pEditLine = LineEditor::create();
 		pEditLine->setSkin(ColorSkin::create(Color::Black));
+		pHorr2->addWidget( pEditLine );
+
+		Filler_p pFillerEast2 = Filler::create();
+		pFillerEast2->setSkin( pPressablePlateSkin );
+		pHorr2->addWidget( pFillerEast2 );
+
+		Filler_p pFillerMid = Filler::create();
+		pFillerMid->setSkin(pPressablePlateSkin);
 
 
-		pVert->addWidget(pEditLine);
+
+		pVert->addWidget(pHorr2);
 		pVert->addWidget(pFillerMid);
 		pVert->addWidget( pHorr );
 		pVert->addWidget( pFillerSouth );

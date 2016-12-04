@@ -401,11 +401,13 @@ namespace wg
 
 		if( begin != m_editState.selectOfs || end != m_editState.caretOfs )
 		{
+			int oldSel = m_editState.selectOfs;
+			int oldCaret = m_editState.caretOfs;
+			
 			m_editState.selectOfs = begin;
 			m_editState.caretOfs = end;
-			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
-
-			//TODO: Signal that selection (and possibly cursor position) has changed.
+			
+			_textMapper()->selectionChanged( this, oldSel, oldCaret );			
 		}
 		
 		return true;
@@ -768,19 +770,26 @@ namespace wg
 
 	bool EditTextItem::_moveCaret( int caretOfs, MoveMethod method )
 	{
-		//TODO: Only render parts that are needed (dirty rects for cursors old and new position + possibly changes to selection.
-
-		_textMapper()->pokeCaret(this);			// Animation sequence should restart on every caret move.
-
 		if( caretOfs != m_editState.caretOfs )
 		{
+			int oldSelectOfs = m_editState.selectOfs;
+			int oldCaretOfs = m_editState.caretOfs;
+
+			m_editState.caretOfs = caretOfs;
+
 			if( method == MoveMethod::ApiCall || (method == MoveMethod::Keyboard && !m_editState.bShiftDown) ||
 				(method == MoveMethod::Mouse && !(m_editState.bShiftDown || m_editState.bButtonDown)) )
 			{
 				m_editState.selectOfs = caretOfs;
 			}
+
+			// Notify textmapper of caret and selection changes
+
+			if( m_editState.selectOfs == oldSelectOfs || oldSelectOfs != oldCaretOfs )
+				_textMapper()->selectionChanged( this, oldSelectOfs, oldCaretOfs );
+			else
+				_textMapper()->caretMoved( this, oldCaretOfs );
 			
-			m_editState.caretOfs = caretOfs;
 			
 			// Set charStyle to first in selection or character left of caret if there is no selection.
 			
@@ -790,13 +799,15 @@ namespace wg
 			else
 				ofs = caretOfs > 0 ? caretOfs-1 : 0;
 			
-			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();
-			
-			_requestRender();
+			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();			
+
 			return true;
 		}
-
-		return false;
+		else
+		{
+			_textMapper()->pokeCaret( this );					// Animation sequence should restart on every caret move.
+			return false;								// Caret was not moved.
+		}
 	}
 
 	//____ _editState() ________________________________________________________

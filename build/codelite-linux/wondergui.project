@@ -101,6 +101,8 @@
     <File Name="../../src/widgets/wg_button.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.cpp"/>
     <File Name="../../src/widgets/wg_texteditor.h"/>
+    <File Name="../../src/widgets/wg_lineeditor.cpp"/>
+    <File Name="../../src/widgets/wg_lineeditor.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_item.h"/>

@@ -158,6 +158,7 @@ WIDGETS = wg_animplayer.o \
   wg_filler.o \
   wg_fpsdisplay.o \
   wg_image.o \
+  wg_lineeditor.o \
   wg_oscilloscope.o \
   wg_refreshbutton.o \
   wg_rulerlabels.o \

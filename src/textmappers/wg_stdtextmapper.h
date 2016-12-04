@@ -94,7 +94,10 @@ namespace wg
 	
 		virtual void 	receive( const Msg_p& pMsg );
 		virtual void 	renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
+
 		virtual void	pokeCaret( TextBaseItem * pText );
+		virtual void	caretMoved( TextBaseItem * pText, int oldOfs );
+		virtual void	selectionChanged( TextBaseItem * pText, int oldSelOfs, int oldCaretOfs );
 	
 		virtual void	onTextModified( TextBaseItem * pItem, int ofs, int charsRemoved, int charsAdded );
 		virtual void	requestResized( TextBaseItem * pItem, Size newSize, Size oldSize );
