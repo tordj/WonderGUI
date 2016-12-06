@@ -153,9 +153,22 @@ namespace wg
 	{
 		Hook * p = _hook();
 		if( p )
-			return p->_requestFocus(pWidgetReleasing);
+			return p->_releaseFocus(pWidgetReleasing);
 		return false;
 	}
+	
+	//____ _visibilityRequested() ______________________________________________
+	
+	void Container::_visibilityRequested( Hook * pBranch, const Rect& preferred, const Rect& prio )
+	{
+		Hook * p = _hook();
+		if( p )
+		{
+			Coord ofs = pBranch->pos();
+			p->_requestVisibility( preferred + ofs, prio + ofs);
+		}
+	}
+	
 	
 	
 	ModalLayer *  Container::_getModalLayer() const

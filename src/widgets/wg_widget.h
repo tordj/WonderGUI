@@ -193,16 +193,19 @@ namespace wg
 	
 		// Convenient calls to hook
 	
-		void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
-		void			_requestRender( const Rect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
-		void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
+		inline void		_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
+		inline void		_requestRender( const Rect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
+		inline void		_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
+		inline void		_requestVisibility() const { if( m_pHook ) m_pHook->_requestVisibility(); }
+		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { if( m_pHook ) m_pHook->_requestVisibility( preferred, prio ); }
+		
 	
-		Widget *		_nextSibling() const { if( m_pHook ) {Hook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
-		Widget *		_prevSibling() const { if( m_pHook ) {Hook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
+		inline Widget *	_nextSibling() const { if( m_pHook ) {Hook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
+		inline Widget *	_prevSibling() const { if( m_pHook ) {Hook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
 		inline Hook *	_hook() const { return m_pHook; }
-		Container *		_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+		inline Container *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	
-		Rect			_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return Rect(); }
+		inline Rect		_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return Rect(); }
 	
 		// To be overloaded by Widget
 	
@@ -237,6 +240,8 @@ namespace wg
 		virtual void	_itemResizeRequested( const Item * pItem );
 
  		virtual void	_itemFocusRequested( const Item * pItem );
+		virtual void	_itemVisibilityRequested( const Item * pItem );
+		virtual void	_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio );
 		
 		virtual void	_onItemNotify( Item * pItem, ItemNotif notification, void * pData );
 	

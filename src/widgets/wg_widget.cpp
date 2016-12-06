@@ -578,6 +578,21 @@ namespace wg
 	{
 		grabFocus();
 	}
+
+	//____ _itemVisibilityRequested() ______________________________________________
+
+	void Widget::_itemVisibilityRequested( const Item * pItem )
+	{
+		Rect r = _itemPos( pItem );
+		_requestVisibility( r, r );
+	}
+
+	void Widget::_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio )
+	{
+		Coord ofs = _itemPos( pItem );
+		_requestVisibility( preferred + ofs, prio + ofs );
+	}
+
 	
 	//____ _itemPos() ______________________________________________________________
 

@@ -126,6 +126,20 @@ namespace wg
 		return _parent()->_focusReleased(this, pWidget);
 	}
 	
+	//____ _requestVisibility() ____________________________________________________
+
+	void Hook::_requestVisibility()
+	{
+		Rect r = geo();
+		return _parent()->_visibilityRequested( this, r, r );
+	}
+	
+	void Hook::_requestVisibility( const Rect& preferred, const Rect& prio )
+	{
+		return _parent()->_visibilityRequested( this, preferred, prio );
+	}
+	
+	
 	//____ root() _________________________________________________________________
 	
 	RootPanel_p Hook::root() const

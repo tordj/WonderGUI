@@ -113,6 +113,8 @@ namespace wg
 	
 			bool 					_focusRequested( Hook * pBranch, Widget * pWidgetRequesting );		// Needed until Panel inherits from Widget
 			bool 					_focusReleased( Hook * pBranch, Widget * pWidgetReleasing );		// Needed until Panel inherits from Widget
+
+			virtual void			_visibilityRequested( Hook * pBranch, const Rect& preferred, const Rect& prio );
 	
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*	_getPopupLayer() const;

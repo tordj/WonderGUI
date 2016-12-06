@@ -53,6 +53,8 @@ namespace wg
 		inline void		_requestRender() const { m_pWidget->_itemRenderRequested(this); }
 		inline void		_requestRender( const Rect& rect ) const { m_pWidget->_itemRenderRequested(this, rect); }
 		inline void		_requestResize() const { m_pWidget->_itemResizeRequested(this); }
+		inline void		_requestVisibility() const { m_pWidget->_itemVisibilityRequested( this ); }
+		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { m_pWidget->_itemVisibilityRequested( this, preferred, prio ); }
 		
 		inline void		_notify( ItemNotif notification, void * pData ) { m_pWidget->_onItemNotify( this, notification, pData ); }
 
