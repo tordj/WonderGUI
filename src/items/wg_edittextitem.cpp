@@ -230,6 +230,7 @@ namespace wg
 		m_editState.wantedOfs = -1;
 	
 		TextItem::clear();
+		_updateDisplayArea();
 	}
 	
 	//____ set() ___________________________________________________________________
@@ -237,19 +238,19 @@ namespace wg
 	void EditTextItem::set( const CharSeq& seq )
 	{
 		TextItem::set( seq );
-		_caretToEnd();
+		_caretToEnd( MoveMethod::ApiCall );
 	}
 	
 	void EditTextItem::set( const CharBuffer * pBuffer )
 	{
 		TextItem::set( pBuffer );
-		_caretToEnd();
+		_caretToEnd( MoveMethod::ApiCall );
 	}
 	
 	void EditTextItem::set( const String& str )
 	{
 		TextItem::set( str );
-		_caretToEnd();
+		_caretToEnd( MoveMethod::ApiCall );
 	}
 	
 	//____ append() ________________________________________________________________
@@ -525,6 +526,7 @@ namespace wg
 		}
 
 		//
+		int retVal;
 
 		if( m_editState.caretOfs != m_editState.selectOfs )		// Selection should be replaced with put content.
 		{
@@ -534,10 +536,13 @@ namespace wg
 			if( beg > end )
 				std::swap( beg, end );
 
-			return replace( beg, end-beg, &buffer );					
+			retVal = replace( beg, end-beg, &buffer );					
 		}
 		else													// Just insert the put content
-			return insert( m_editState.caretOfs, &buffer );
+			retVal = insert( m_editState.caretOfs, &buffer );
+
+		_updateDisplayArea();
+		return retVal;
 	}
 	
 	bool EditTextItem::caretPut( uint16_t c )
@@ -723,21 +728,22 @@ namespace wg
 	
 	//____ _caretToBegin() __________________________________________________________
 	
-	void EditTextItem::_caretToBegin()
+	bool EditTextItem::_caretToBegin( MoveMethod method )
 	{
-		m_editState.caretOfs = 0;
-		m_editState.selectOfs = 0;
-		m_editState.wantedOfs = -1;	
+		int caretOfs = 0;
+		m_editState.wantedOfs = -1;
+
+		return _moveCaret(caretOfs, method);
 	}
 
 	//____ _caretToEnd() __________________________________________________________
 	
-	void EditTextItem::_caretToEnd()
+	bool EditTextItem::_caretToEnd( MoveMethod method )
 	{
-		int lastChar = m_charBuffer.length();		// The text terminator is considered part of the text when placing the cursor.
-		m_editState.caretOfs = lastChar;
-		m_editState.selectOfs = lastChar;
-		m_editState.wantedOfs = -1;	
+		int caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
+		m_editState.wantedOfs = -1;
+
+		return _moveCaret(caretOfs, method);
 	}
 
 
@@ -770,6 +776,8 @@ namespace wg
 
 	bool EditTextItem::_moveCaret( int caretOfs, MoveMethod method )
 	{
+		bool retVal;
+
 		if( caretOfs != m_editState.caretOfs )
 		{
 			int oldSelectOfs = m_editState.selectOfs;
@@ -801,13 +809,49 @@ namespace wg
 			
 			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();			
 
-			return true;
+			retVal = true;
 		}
 		else
 		{
 			_textMapper()->pokeCaret( this );					// Animation sequence should restart on every caret move.
-			return false;								// Caret was not moved.
+			retVal = false;								// Caret was not moved.
 		}
+
+		_updateDisplayArea();
+		return retVal;
+	}
+
+	//____ _updateDisplayArea() _______________________________________________
+
+	void EditTextItem::_updateDisplayArea()
+	{
+		// Make sure caret and surrounding characters are visible (and preferably whole selection, if any)
+		// 
+
+		int beg = m_editState.caretOfs;
+		int end = m_editState.selectOfs;
+
+		if (end < beg)
+			std::swap(beg, end);
+
+		if (beg > 0)
+			beg--;
+		if (end < m_charBuffer.length())
+			end++;
+
+		Rect preferred = _textMapper()->rectForRange(this, beg, end - beg);
+
+		beg = m_editState.caretOfs;
+		end = m_editState.caretOfs;
+
+		if (beg > 0)
+			beg--;
+		if (end < m_charBuffer.length())
+			end++;
+
+		Rect prio = _textMapper()->rectForRange(this, beg, end - beg);
+
+		_requestVisibility(preferred, prio);
 	}
 
 	//____ _editState() ________________________________________________________

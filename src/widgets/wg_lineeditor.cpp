@@ -113,7 +113,7 @@ namespace wg
 			canvas = m_pSkin->contentRect( _canvas, m_state );
 		else
 			canvas = _canvas;
-
+/*
 		//TODO: Move this somewhere else where it belongs.
 
 		if( m_text.editMode() != TextEditMode::Static  )
@@ -158,7 +158,7 @@ namespace wg
 		}
 		else
 			m_textScrollOfs = 0;
-
+*/
 		//
 
 		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
@@ -306,6 +306,28 @@ namespace wg
 		m_text.onNewSize( Size( height, preferred.w ));	// Item gets the preferred width right away.
 	}
 
+	//____ _itemVisibilityRequested() ____________________________________________
+
+	void LineEditor::_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio)
+	{
+		int scrollOfs = m_textScrollOfs;
+		Size canvas = size();
+
+		if( m_pSkin )
+			canvas -= m_pSkin->contentPadding();
+
+		if( prio.x < scrollOfs )
+			scrollOfs = prio.x;
+
+		if( prio.x + prio.w > scrollOfs + canvas.w )
+			scrollOfs = prio.x + prio.w - canvas.w;
+
+		if (scrollOfs != m_textScrollOfs)
+		{
+			m_textScrollOfs = scrollOfs;
+			_requestRender();
+		}
+	}
 
 
 } // namespace wg

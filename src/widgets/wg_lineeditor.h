@@ -77,6 +77,7 @@ namespace wg
 
 		void			_itemRenderRequested( const Item * pItem, const Rect& rect );
 		void			_itemResizeRequested( const Item * pItem );
+		void			_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio);
 
 	private:
 		
