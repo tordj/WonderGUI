@@ -44,6 +44,8 @@ namespace wg
 	
 	void TextItem::set( const CharSeq& seq )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		
 		int removed = m_charBuffer.length();
 		m_charBuffer = seq;
 		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
@@ -51,6 +53,8 @@ namespace wg
 	
 	void TextItem::set( const CharBuffer * buffer )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
 		int removed = m_charBuffer.length();
 		m_charBuffer = * buffer;
 		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
@@ -58,6 +62,8 @@ namespace wg
 	
 	void TextItem::set( const String& str )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
 		int removed = m_charBuffer.length();
 		m_charBuffer = str;
 		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
@@ -67,6 +73,8 @@ namespace wg
 	
 	int TextItem::append( const CharSeq& seq )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
 		int ofs = m_charBuffer.length();
 		int len = m_charBuffer.pushBack(seq);
 		_textMapper()->onTextModified(this, ofs, 0, len );
@@ -77,6 +85,8 @@ namespace wg
 	
 	int TextItem::insert( int ofs, const CharSeq& seq )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+ 
 		int len = m_charBuffer.insert(ofs,seq);
 		_textMapper()->onTextModified(this, ofs, 0, seq.length() );
 		return len;
@@ -86,15 +96,19 @@ namespace wg
 	
 	int TextItem::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
-		int len = m_charBuffer.replace(ofs,nDelete,seq);
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int diff = m_charBuffer.replace(ofs,nDelete,seq);
 		_textMapper()->onTextModified(this, ofs, nDelete, seq.length() );
-		return len;
+		return diff;
 	}
 	
 	//____ delete() ____________________________________________________________
 	
 	int TextItem::remove( int ofs, int len )
 	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+		
 		int removed = m_charBuffer.remove(ofs,len);
 		_textMapper()->onTextModified(this, ofs, len, 0 );
 		return removed;

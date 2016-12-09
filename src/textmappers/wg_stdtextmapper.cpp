@@ -642,61 +642,59 @@ namespace wg
 		
 	}
 	
-	//____ pokeCaret() _________________________________________________________
+	//____ caretMove() ________________________________________________________
 
-	void StdTextMapper::pokeCaret( TextBaseItem * pText )
+	void StdTextMapper::caretMove( TextBaseItem * pText, int ofs )
 	{
-		if( pText->_editState()->bCaret && m_pCaret )
+		const EditState * pEditState = pText->_editState();
+
+		if( pEditState->bCaret && m_pCaret )
 		{
 			bool bDirty = m_pCaret->restartCycle();
-			if( bDirty )
-				_setItemDirty( pText, m_pCaret->dirtyRect(charRect(pText, pText->_editState()->caretOfs)) );
-		}		
-	}
 
-	//____ caretMoved() ________________________________________________________
+			if( bDirty || pEditState->caretOfs != ofs )
+			{
+				_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, ofs) ));
 
-	void StdTextMapper::caretMoved( TextBaseItem * pText, int oldOfs )
-	{
-		if( pText->_editState()->bCaret && m_pCaret )
-		{
-			_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, oldOfs) ));
-			_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+				if( pEditState->caretOfs != ofs )
+					_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
+			}
 		}
 	}
 
-	//____ selectionChanged() __________________________________________________
+	//____ selectionChange() __________________________________________________
 	
-	void StdTextMapper::selectionChanged( TextBaseItem * pText, int oldSelectOfs, int oldCaretOfs )
+	void StdTextMapper::selectionChange( TextBaseItem * pText, int selectOfs, int caretOfs )
 	{
 		Rect dirt;
 
 		const EditState * pEditState = pText->_editState();
 
-		
-		if( oldSelectOfs != pEditState->selectOfs )
+		if( selectOfs != pEditState->selectOfs )
 		{
-			int beg = std::min(oldSelectOfs,pEditState->selectOfs);
-			int len = std::max(oldSelectOfs,pEditState->selectOfs) - beg;
+			int beg = std::min(selectOfs,pEditState->selectOfs);
+			int len = std::max(selectOfs,pEditState->selectOfs) - beg;
 			dirt = rectForRange( pText, beg, len );
 		}
 
-		if( oldCaretOfs != pEditState->caretOfs )
+		if( caretOfs != pEditState->caretOfs )
 		{
-			int beg = std::min(oldCaretOfs,pEditState->caretOfs);
-			int len = std::max(oldCaretOfs,pEditState->caretOfs) - beg;
+			int beg = std::min(caretOfs,pEditState->caretOfs);
+			int len = std::max(caretOfs,pEditState->caretOfs) - beg;
 			
 			if( dirt.isEmpty() )
 				dirt = rectForRange( pText, beg, len );
 			else
 				dirt.growToContain(rectForRange( pText, beg, len ) );
 			
-			dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, oldCaretOfs) ));
-			dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
-			
+			if( pEditState->bCaret && m_pCaret )
+			{
+				m_pCaret->restartCycle();
+				dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, caretOfs) ));
+				dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+			}
 		}
 
-		
 		_setItemDirty( pText, dirt );
 	}
 
@@ -708,7 +706,7 @@ namespace wg
 		onRefresh(pItem);
 	}
 	
-	void StdTextMapper::requestResized( TextBaseItem * pItem, Size newSize, Size oldSize )
+	void StdTextMapper::onResized( TextBaseItem * pItem, Size newSize, Size oldSize )
 	{
 		///TODO: Implement!
 	}
@@ -844,6 +842,19 @@ namespace wg
 
 		return Rect( x1, y1, x2-x1, y2-y1);
 	}
+	
+	//____ rectForCaret() ______________________________________________________
+
+	// Includes left/right margin where applicable.
+	
+	Rect StdTextMapper::rectForCaret( const TextBaseItem * pText ) const
+	{
+		if( !pText->_editState()->bCaret || !m_pCaret )
+			return Rect();
+
+		return m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs) );		
+	}
+	
 	
 	//____ textDirection() ____________________________________________________
 

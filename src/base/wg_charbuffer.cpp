@@ -744,7 +744,7 @@ namespace wg
 		if( nChars <= 0 )
 			return 0;
 	
-		return _replace( ofs, nChars, 0 );
+		return 0 - _replace( ofs, nChars, 0 );
 	}
 	
 	//____ replace() _______________________________________________________________
@@ -757,7 +757,7 @@ namespace wg
 	///
 	/// If ofs is larger than number of characters then character is pushed on the back of the buffer instead.
 	///
-	/// @return Number of characters that were replaced. Always equals 1.
+	/// @return Change in number of characters in buffer. Always equals 0.
 	
 	int CharBuffer::replace( int ofs, const Char& character )
 	{
@@ -768,7 +768,7 @@ namespace wg
 			pushBack( character );
 		else
 			*((Char*)_ptr(ofs)) = character;
-		return 1;
+		return 0;
 	}
 	
 	
@@ -784,7 +784,7 @@ namespace wg
 	/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
 	/// everything from ofs and forward is replaced.
 	///
-	/// @return Number of characters that were inserted. Always equals nInsert.
+	/// @return Change in number of characters in buffer.
 	
 	int CharBuffer::replace( int ofs, int nDelete, int nInsert )
 	{
@@ -797,8 +797,7 @@ namespace wg
 		if( nInsert < 0 )
 			nInsert = 0;
 	
-		_replace( ofs, nDelete, nInsert );
-		return nInsert;
+		return _replace( ofs, nDelete, nInsert );
 	}
 	
 	
@@ -815,7 +814,7 @@ namespace wg
 	/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
 	/// everything from ofs and forward is replaced.
 	///
-	/// @return Number of characters that were inserted.
+	/// @return Change in number of characters in buffer.
 	
 	int CharBuffer::replace( int ofs, int nDelete, const Char * pChars )
 	{
@@ -825,8 +824,7 @@ namespace wg
 			nDelete = 0;
 	
 		int nInsert = TextTool::strlen( pChars );
-		_replace( ofs, nDelete, nInsert, pChars );
-		return nInsert;
+		return _replace( ofs, nDelete, nInsert, pChars );
 	}
 	
 	
@@ -845,7 +843,7 @@ namespace wg
 	/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
 	/// everything from ofs and forward is replaced.
 	///
-	/// @return Number of characters that were inserted. Always equals nInsert.
+	/// @return Change in number of characters in buffer.
 	
 	int CharBuffer::replace( int ofs, int nDelete, const Char * pChars, int nInsert)
 	{
@@ -856,8 +854,7 @@ namespace wg
 		if( nInsert < 0 )
 			nInsert = 0;
 	
-		_replace( ofs, nDelete, nInsert, pChars );
-		return nInsert;
+		return _replace( ofs, nDelete, nInsert, pChars );
 	}
 	
 	
@@ -876,7 +873,7 @@ namespace wg
 	/// will just be pushed on the back of the buffer. If nDelete is larger than what is left of the buffer
 	/// everything from ofs and forward is replaced.
 	///
-	/// @return Number of characters that were inserted. Always equals length of sequence.
+	/// @return Change in number of characters in buffer.
 	
 	int CharBuffer::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
@@ -888,11 +885,11 @@ namespace wg
 		if( ofs > m_pHead->m_len )
 			ofs = m_pHead->m_len;
 	
-		_replace( ofs, nDelete, seq.length() );
+		int ret = _replace( ofs, nDelete, seq.length() );
 		Char * pChars = beginWrite();
 		seq.copyTo( pChars+ofs );
 		endWrite();
-		return seq.length();
+		return ret;
 	}
 	
 	
@@ -998,7 +995,7 @@ namespace wg
 			else
 				_setChars( ofs, addSpace, c_emptyChar );
 		}
-		return delChar;
+		return addSpace - delChar;
 	}
 	
 	

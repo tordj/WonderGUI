@@ -152,7 +152,7 @@ namespace wg
 	
 		Size oldSize = m_size;
 		m_size = size;
-		_textMapper()->requestResized(this,size, oldSize);
+		_textMapper()->onResized(this,size, oldSize);
 	}
 	
 	//_____ onRender() _____________________________________________________________

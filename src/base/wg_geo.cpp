@@ -153,8 +153,8 @@ namespace wg
 		Rect out;
 		out.x = r1.x < r2.x ? r1.x : r2.x;
 		out.y = r1.y < r2.y ? r1.y : r2.y;
-		out.w = r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w;
-		out.h = r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h;
+		out.w = (r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w) - out.x;
+		out.h = (r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h) - out.y;
 		return out;
 	}
 	

@@ -90,29 +90,29 @@ namespace wg
 
 		virtual int		wordBegin( const TextBaseItem * pItem, int charOfs ) const;
 		virtual int		wordEnd( const TextBaseItem * pItem, int charOfs ) const;		
-	
-	
+
+
 		virtual void 	receive( const Msg_p& pMsg );
 		virtual void 	renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 
-		virtual void	pokeCaret( TextBaseItem * pText );
-		virtual void	caretMoved( TextBaseItem * pText, int oldOfs );
-		virtual void	selectionChanged( TextBaseItem * pText, int oldSelOfs, int oldCaretOfs );
-	
+		virtual void	caretMove( TextBaseItem * pText, int newOfs );
+		virtual void	selectionChange( TextBaseItem * pText, int newSelectOfs, int newCaretOfs );
+
 		virtual void	onTextModified( TextBaseItem * pItem, int ofs, int charsRemoved, int charsAdded );
-		virtual void	requestResized( TextBaseItem * pItem, Size newSize, Size oldSize );
+		virtual void	onResized( TextBaseItem * pItem, Size newSize, Size oldSize );
 		virtual void	onStateChanged( TextBaseItem * pItem, State newState, State oldState );
 		virtual void	onStyleChanged( TextBaseItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle );
 		virtual void	onCharStyleChanged( TextBaseItem * pText, int ofs, int len );
 		virtual void	onRefresh( TextBaseItem * pItem );
 
-	
-	
+
+
 		virtual Size	preferredSize( const TextBaseItem * pItem ) const;
 		virtual int		matchingWidth( const TextBaseItem * pItem, int height ) const;
 		virtual int		matchingHeight( const TextBaseItem * pItem, int width ) const;
 	
 		virtual Rect	rectForRange( const TextBaseItem * pItem, int ofs, int length ) const;
+		virtual Rect	rectForCaret( const TextBaseItem * pText ) const;
 	
 		virtual String 	tooltip( const TextBaseItem * pItem ) const;
 	

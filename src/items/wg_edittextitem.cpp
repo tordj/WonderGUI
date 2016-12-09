@@ -238,66 +238,139 @@ namespace wg
 	void EditTextItem::set( const CharSeq& seq )
 	{
 		TextItem::set( seq );
-		_caretToEnd( MoveMethod::ApiCall );
+		_caretToEnd();
 	}
 	
 	void EditTextItem::set( const CharBuffer * pBuffer )
 	{
 		TextItem::set( pBuffer );
-		_caretToEnd( MoveMethod::ApiCall );
+		_caretToEnd();
 	}
 	
 	void EditTextItem::set( const String& str )
 	{
 		TextItem::set( str );
-		_caretToEnd( MoveMethod::ApiCall );
+		_caretToEnd();
 	}
 	
 	//____ append() ________________________________________________________________
 	
 	int EditTextItem::append( const CharSeq& seq )
 	{
-		m_editState.selectOfs = m_editState.caretOfs;
-		m_editState.wantedOfs = -1;
-				
-		return TextItem::append( seq );
+		// Appending text should move carret if carret is at end of text and nothing is selected, 
+		// otherwise not affect caret or selection.
+
+		if( m_editState.caretOfs == m_editState.selectOfs && m_editState.caretOfs == m_charBuffer.length() )
+		{
+			int newOfs = m_editState.caretOfs + TextItem::append( seq );
+			_textMapper()->caretMove( this, newOfs );
+			
+			m_editState.caretOfs = newOfs;
+			m_editState.selectOfs = newOfs;
+			m_editState.wantedOfs = -1;
+			_updateDisplayArea();
+		}
+		else
+			return TextItem::append( seq );
+		
 	}
 	
 	//____ insert() ________________________________________________________________
 	
 	int EditTextItem::insert( int ofs, const CharSeq& seq )
 	{
-		if( ofs <= m_editState.caretOfs )
-			m_editState.caretOfs += seq.length();
-		m_editState.selectOfs = m_editState.caretOfs;
-		m_editState.wantedOfs = -1;
-	
-		return TextItem::insert(ofs,seq);
+		limit( ofs, 0, m_charBuffer.length() );
+
+		int added = TextItem::insert(ofs,seq);
+		
+		/* Inserting text should affect the selection as little as possible. Therefore:
+		 * 
+		 * Selected text remains selected when new is inserted before or after.
+		 * If text is inserted into the selection, the selection grows.
+		 * 
+		 * Inserting text to position of caretOfs or selectOfs is considered to
+		 * insert the text before or after the selection, it will not grow the selection.
+		 * 
+		 * Inserting text to caretOfs will move caretOfs only if no text is selected.
+		 */
+
+		int caretOfs = m_editState.caretOfs;
+		int selectOfs = m_editState.selectOfs;
+		
+		int selBeg = std::min(caretOfs,selectOfs);
+		int selEnd = std::max(caretOfs,selectOfs);
+		
+		if( ofs <= selBeg )				// move selection or caret
+		{
+			caretOfs += added;
+			selectOfs += added;
+		}
+		else if( ofs < selEnd )			// grow selection
+		{
+			if( caretOfs == selEnd )
+				caretOfs += added;
+			else
+				selectOfs += added;
+		}
+
+		if( caretOfs != m_editState.caretOfs || selectOfs != m_editState.selectOfs )
+		{
+			if( caretOfs == selectOfs )
+				_textMapper()->caretMove( this, caretOfs );
+			else
+				_textMapper()->selectionChange( this, selectOfs, caretOfs );
+
+			m_editState.caretOfs = caretOfs;
+			m_editState.selectOfs = selectOfs;
+			m_editState.wantedOfs = -1;
+			_updateDisplayArea();			
+		}
+		return added;
 	}
 	
 	//____ replace() _______________________________________________________________
 	
 	int EditTextItem::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
-		int caretOfs = m_editState.caretOfs;
-		if( caretOfs >= ofs )
-		{
-			if( caretOfs < ofs + nDelete )
-				caretOfs = ofs + seq.length();
-			else
-				caretOfs = caretOfs - nDelete + seq.length();
-		}
-		m_editState.caretOfs = caretOfs;
-		m_editState.selectOfs = caretOfs;
-		m_editState.wantedOfs = -1;
-	
-		return TextItem::replace(ofs,nDelete,seq);
+		//TODO: Implement correctly!!!
+		
+		
+		limit( ofs, 0, m_charBuffer.length() );
+		limit( nDelete, 0, m_charBuffer.length() - ofs );
+		
+		int sizeModif = TextItem::replace(ofs,nDelete,seq);
+
+		// Replacing text should not affect caret or selection except where necessary.
+
+		if( m_editState.caretOfs >= ofs + nDelete )
+			m_editState.caretOfs += sizeModif;
+		else if( m_editState.caretOfs > ofs )
+			m_editState.caretOfs = ofs;
+			
+		if( m_editState.selectOfs >= ofs + nDelete )
+			m_editState.selectOfs += sizeModif;
+		else if( m_editState.selectOfs > ofs )
+			m_editState.selectOfs = ofs;
+
+		_updateDisplayArea();
+		return sizeModif;
 	}
 	
 	//____ erase() ________________________________________________________________
 	
 	int EditTextItem::erase( int ofs, int len )
 	{
+		limit( ofs, 0, m_charBuffer.length() );
+		limit( len, 0, m_charBuffer.length() - ofs );
+
+		/* Inserting text should affect the selection as little as possible. Therefore:
+		 * 
+		 * All text that was selected before any text was erased and wasn't erased stays selected.
+		 * 
+		 * Caret stays where it is if possible. If caret position was erased, caret is moved to
+		 * first character after erased section.
+		 */
+		 
 		int caretOfs = m_editState.caretOfs;
 		if( caretOfs > ofs )
 		{
@@ -306,11 +379,32 @@ namespace wg
 			else
 				caretOfs -= len;
 		}
-		m_editState.caretOfs = caretOfs;
-		m_editState.selectOfs = m_editState.caretOfs;
-		m_editState.wantedOfs = -1;
 		
-		return TextItem::remove( ofs, len );
+		int selectOfs = m_editState.selectOfs;
+		if( selectOfs > ofs )
+		{
+			if( selectOfs < ofs + len )
+				selectOfs = ofs;
+			else
+				selectOfs -= len;
+		}
+		
+		if( caretOfs != m_editState.caretOfs || selectOfs != m_editState.selectOfs )
+		{
+			if( m_editState.caretOfs == m_editState.selectOfs )
+				_textMapper()->caretMove( this, caretOfs );
+			else
+				_textMapper()->selectionChange( this, selectOfs, caretOfs );
+
+			m_editState.caretOfs = caretOfs;
+			m_editState.selectOfs = selectOfs;
+			m_editState.wantedOfs = -1;
+			_updateDisplayArea();			
+		}		
+		
+		int ret = TextItem::remove( ofs, len );
+		_updateDisplayArea();
+		return ret;
 	}
 	
 	//____ setState() ______________________________________________________________
@@ -344,7 +438,7 @@ namespace wg
 
 				// Restart caret animation
 
-				_textMapper()->pokeCaret(this);		// TODO: Should not be needed here anymore.
+				_textMapper()->caretMove(this, m_editState.caretOfs);
 			}
 			else
 			{
@@ -390,27 +484,25 @@ namespace wg
 
 	//____ select() ____________________________________________________________
 	
-	bool EditTextItem::select( int begin, int end )
+	bool EditTextItem::select( int beg, int end )
 	{
 		if( m_editMode == TextEditMode::Static )
 			return false;
 			
 		int max = m_charBuffer.length();	
 			
-		limit( begin, 0, max );
+		limit( beg, 0, max );
 		limit( end, 0, max );
 
-		if( begin != m_editState.selectOfs || end != m_editState.caretOfs )
+		if( beg != m_editState.selectOfs || end != m_editState.caretOfs )
 		{
-			int oldSel = m_editState.selectOfs;
-			int oldCaret = m_editState.caretOfs;
-			
-			m_editState.selectOfs = begin;
+			_textMapper()->selectionChange( this, beg, end );			
+
+			m_editState.selectOfs = beg;
 			m_editState.caretOfs = end;
-			
-			_textMapper()->selectionChanged( this, oldSel, oldCaret );			
 		}
 		
+		_updateDisplayArea();
 		return true;
 	}
 
@@ -430,10 +522,9 @@ namespace wg
 
 		if( m_editState.selectOfs != m_editState.caretOfs )
 		{
-			m_editState.selectOfs = m_editState.caretOfs;
-			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
+			_textMapper()->selectionChange( this, m_editState.caretOfs, m_editState.caretOfs );			
 
-			//TODO: Signal that selection (and possibly cursor position) has changed.
+			m_editState.selectOfs = m_editState.caretOfs;
 		}
 		
 		return true;		
@@ -480,21 +571,9 @@ namespace wg
 		if( m_editMode != TextEditMode::Editable )
 			return false;
 			
-		int max = m_charBuffer.length();	
-			
-		limit( ofs, 0, max );
+		limit( ofs, 0, m_charBuffer.length() );
 
-		if( ofs != m_editState.selectOfs || ofs != m_editState.caretOfs )
-		{
-			m_editState.selectOfs = ofs;
-			m_editState.caretOfs = ofs;
-			m_editState.wantedOfs = -1;
-			_requestRender();						//TODO: Optimize. Only render parts that have been selected or unselected.
-
-			//TODO: Signal that selection (and possibly caret position) has changed.
-		}
-
-		return true;
+		return _moveCaret( ofs, MoveMethod::ApiCall );
 	}
 
 	//____ caretPos() ___________________________________________________________
@@ -725,25 +804,15 @@ namespace wg
 		return _moveCaret( caretOfs, MoveMethod::Keyboard );
 	}
 
-	
-	//____ _caretToBegin() __________________________________________________________
-	
-	bool EditTextItem::_caretToBegin( MoveMethod method )
-	{
-		int caretOfs = 0;
-		m_editState.wantedOfs = -1;
-
-		return _moveCaret(caretOfs, method);
-	}
-
 	//____ _caretToEnd() __________________________________________________________
 	
-	bool EditTextItem::_caretToEnd( MoveMethod method )
+	void EditTextItem::_caretToEnd()
 	{
-		int caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
+		m_editState.caretOfs = m_charBuffer.length();		// Caret placed on terminator char following the string.
+		m_editState.selectOfs = m_editState.caretOfs;
 		m_editState.wantedOfs = -1;
-
-		return _moveCaret(caretOfs, method);
+		_updateInsertStyle();
+		_updateDisplayArea();
 	}
 
 
@@ -776,49 +845,41 @@ namespace wg
 
 	bool EditTextItem::_moveCaret( int caretOfs, MoveMethod method )
 	{
-		bool retVal;
+		int selectOfs = m_editState.selectOfs;
 
-		if( caretOfs != m_editState.caretOfs )
+		if( method == MoveMethod::ApiCall || (method == MoveMethod::Keyboard && !m_editState.bShiftDown) ||
+			(method == MoveMethod::Mouse && !(m_editState.bShiftDown || m_editState.bButtonDown)) )
 		{
-			int oldSelectOfs = m_editState.selectOfs;
-			int oldCaretOfs = m_editState.caretOfs;
-
-			m_editState.caretOfs = caretOfs;
-
-			if( method == MoveMethod::ApiCall || (method == MoveMethod::Keyboard && !m_editState.bShiftDown) ||
-				(method == MoveMethod::Mouse && !(m_editState.bShiftDown || m_editState.bButtonDown)) )
-			{
-				m_editState.selectOfs = caretOfs;
-			}
-
-			// Notify textmapper of caret and selection changes
-
-			if( m_editState.selectOfs == oldSelectOfs || oldSelectOfs != oldCaretOfs )
-				_textMapper()->selectionChanged( this, oldSelectOfs, oldCaretOfs );
-			else
-				_textMapper()->caretMoved( this, oldCaretOfs );
-			
-			
-			// Set charStyle to first in selection or character left of caret if there is no selection.
-			
-			int ofs; 
-			if( m_editState.selectOfs != m_editState.caretOfs )
-				ofs = min( m_editState.selectOfs, m_editState.caretOfs );
-			else
-				ofs = caretOfs > 0 ? caretOfs-1 : 0;
-			
-			m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();			
-
-			retVal = true;
+			selectOfs = caretOfs;
 		}
+
+		// Notify textmapper of caret and selection changes
+
+		if( m_editState.selectOfs == selectOfs || m_editState.selectOfs != m_editState.caretOfs )
+			_textMapper()->selectionChange( this, selectOfs, caretOfs );
 		else
-		{
-			_textMapper()->pokeCaret( this );					// Animation sequence should restart on every caret move.
-			retVal = false;								// Caret was not moved.
-		}
+			_textMapper()->caretMove( this, caretOfs );
 
+		// Set charStyle to first in selection or character left of caret if there is no selection.
+		
+		int ofs; 
+		if( selectOfs != caretOfs )
+			ofs = min( selectOfs, caretOfs );
+		else
+			ofs = caretOfs > 0 ? caretOfs-1 : 0;
+		
+		m_editState.pCharStyle = m_charBuffer.chars()[ofs].stylePtr();			
+
+		// Finalize
+
+		bool ret = (m_editState.caretOfs == caretOfs);
+
+		m_editState.caretOfs = caretOfs;
+		m_editState.selectOfs = selectOfs;
+		_updateInsertStyle();
 		_updateDisplayArea();
-		return retVal;
+		
+		return ret;
 	}
 
 	//____ _updateDisplayArea() _______________________________________________
@@ -834,25 +895,19 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		if (beg > 0)
-			beg--;
-		if (end < m_charBuffer.length())
-			end++;
-
 		Rect preferred = _textMapper()->rectForRange(this, beg, end - beg);
-
-		beg = m_editState.caretOfs;
-		end = m_editState.caretOfs;
-
-		if (beg > 0)
-			beg--;
-		if (end < m_charBuffer.length())
-			end++;
-
-		Rect prio = _textMapper()->rectForRange(this, beg, end - beg);
+		Rect prio = _textMapper()->rectForCaret(this);
 
 		_requestVisibility(preferred, prio);
 	}
+
+	//____ _updateInsertStyle() ________________________________________________
+
+	void EditTextItem::_updateInsertStyle()
+	{
+		
+	}
+
 
 	//____ _editState() ________________________________________________________
 

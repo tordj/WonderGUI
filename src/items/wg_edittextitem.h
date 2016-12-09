@@ -118,11 +118,12 @@ namespace wg
 	
 		bool				_moveCaret( int caretOfs, MoveMethod method );
 		void				_updateDisplayArea();
+		void				_updateInsertStyle();
+
 		const EditState * 	_editState() const;
 
 
-		bool			_caretToBegin( MoveMethod method );
-		bool			_caretToEnd( MoveMethod method );
+		void			_caretToEnd();
 	
 		TextEditMode	m_editMode;
 		EditState		m_editState;

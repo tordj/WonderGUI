@@ -85,16 +85,15 @@ namespace wg
 		virtual void 	renderItem( TextBaseItem * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
-		// A caret move implies a poke and a selection change implies a caret move.
+		// A selection change implies a caret move.
 
-		virtual void	pokeCaret( TextBaseItem * pText ) = 0;
-		virtual void	caretMoved( TextBaseItem * pText, int oldOfs ) = 0;
-		virtual void	selectionChanged( TextBaseItem * pText, int oldSelOfs, int oldCaretOfs ) = 0;
+		virtual void	caretMove( TextBaseItem * pText, int newOfs ) = 0;
+		virtual void	selectionChange( TextBaseItem * pText, int newSelectOfs, int newCaretOfs ) = 0;
 	
 		//
 	
 		virtual void	onTextModified( TextBaseItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	requestResized( TextBaseItem * pText, Size newSize, Size oldSize ) = 0;
+		virtual void	onResized( TextBaseItem * pText, Size newSize, Size oldSize ) = 0;
 		virtual void	onStateChanged( TextBaseItem * pText, State newState, State oldState ) = 0;
 		virtual void	onStyleChanged( TextBaseItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
 		virtual void	onCharStyleChanged( TextBaseItem * pText, int ofs = 0, int len = INT_MAX ) = 0;
@@ -106,6 +105,7 @@ namespace wg
 		virtual int		matchingHeight( const TextBaseItem * pText, int width ) const = 0;
 	
 		virtual Rect	rectForRange( const TextBaseItem * pText, int ofs, int length ) const = 0;
+		virtual Rect	rectForCaret( const TextBaseItem * pText ) const = 0;
 	
 		virtual String	tooltip( const TextBaseItem * pText ) const;
 	
