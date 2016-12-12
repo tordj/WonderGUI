@@ -271,7 +271,12 @@ namespace wg
 	}
 
 	//____ _itemRenderRequested() ______________________________________________
-	
+
+	void LineEditor::_itemRenderRequested(const Item * pItem)
+	{
+		_itemRenderRequested(pItem, _itemGeo(pItem));
+	}
+
 	void LineEditor::_itemRenderRequested( const Item * pItem, const Rect& rect )
 	{
 		Rect dirt = rect;

@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <algorithm>
 #include <wg_edittextitem.h>
 #include <wg_charseq.h>
 
@@ -270,9 +271,8 @@ namespace wg
 			m_editState.wantedOfs = -1;
 			_updateDisplayArea();
 		}
-		else
-			return TextItem::append( seq );
-		
+
+		return TextItem::append( seq );		
 	}
 	
 	//____ insert() ________________________________________________________________

@@ -75,6 +75,7 @@ namespace wg
 		Size			_itemSize( const Item * pItem ) const;
 		Rect			_itemGeo( const Item * pItem ) const;
 
+		void			_itemRenderRequested(const Item * pItem);
 		void			_itemRenderRequested( const Item * pItem, const Rect& rect );
 		void			_itemResizeRequested( const Item * pItem );
 		void			_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio);
