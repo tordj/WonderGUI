@@ -250,9 +250,9 @@ namespace wg
 	Size LineEditor::_itemSize( const Item * pItem ) const
 	{
 		if( m_pSkin )
-			return Size( m_size.h - m_pSkin->contentPadding().h, m_text.preferredSize().w );
+			return Size( m_text.preferredSize().w, m_size.h - m_pSkin->contentPadding().h );
 		else
-			return Size( m_size.h, m_text.preferredSize().w );
+			return Size( m_text.preferredSize().w, m_size.h );
 	}
 
 	//____ _itemGeo() __________________________________________________________
@@ -274,11 +274,19 @@ namespace wg
 
 	void LineEditor::_itemRenderRequested(const Item * pItem)
 	{
-		_itemRenderRequested(pItem, _itemGeo(pItem));
+		Rect visible(0, 0, m_size);
+
+		if (m_pSkin)
+			visible = m_pSkin->contentRect(m_size, m_state);
+
+		_requestRender(visible);
 	}
 
 	void LineEditor::_itemRenderRequested( const Item * pItem, const Rect& rect )
 	{
+		if (rect.w > 1)
+			int x = 0;
+
 		Rect dirt = rect;
 		dirt.x -= m_textScrollOfs;
 		
@@ -316,16 +324,20 @@ namespace wg
 	void LineEditor::_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio)
 	{
 		int scrollOfs = m_textScrollOfs;
-		Size canvas = size();
+		Size canvas = pItem->_size();
 
+		Size window = size();
 		if( m_pSkin )
-			canvas -= m_pSkin->contentPadding();
+			window -= m_pSkin->contentPadding();
+
+		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
+			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;
 
 		if( prio.x < scrollOfs )
 			scrollOfs = prio.x;
 
-		if( prio.x + prio.w > scrollOfs + canvas.w )
-			scrollOfs = prio.x + prio.w - canvas.w;
+		if( prio.x + prio.w > scrollOfs + window.w )
+			scrollOfs = prio.x + prio.w - window.w;
 
 		if (scrollOfs != m_textScrollOfs)
 		{

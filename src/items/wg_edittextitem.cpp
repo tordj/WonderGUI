@@ -729,14 +729,19 @@ namespace wg
 			eraseSelected();
 			return true;
 		}
-		else if( m_editState.caretOfs > 0 )							
+
+		int caretOfs = m_editState.caretOfs;
+		if( caretOfs == 0 )
 		{
-			m_editState.caretOfs--;
-			erase( m_editState.caretOfs, 1 );
+			_textMapper()->caretMove(this, 0);
+			return false;
+		}
+		else
+		{
+			caretOfs--;
+			erase(caretOfs, 1);
 			return true;
 		}
-
-		return false;
 	}
 
 	//____ caretEraseNextWord() ________________________________________________
