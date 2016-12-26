@@ -172,8 +172,7 @@ namespace wg
 	
 	void LineEditor::_refresh( void )
 	{
-		//TODO: Implement more I believe...
-	
+		m_text.onRefresh();
 		Widget::_refresh();
 	}
 
@@ -228,9 +227,9 @@ namespace wg
 		int width = size.w;
 	
 		if( m_pSkin )
-			m_text.onNewSize( Size( size.h - m_pSkin->contentPadding().h, m_text.preferredSize().w ) );
+			m_text.onNewSize( Size(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
 		else
-			m_text.onNewSize( Size( size.h, m_text.preferredSize().w ) );
+			m_text.onNewSize( Size( m_text.preferredSize().w, size.h ) );
 	}
 
 	//____ _itemPos() __________________________________________________________
@@ -267,7 +266,7 @@ namespace wg
 			return r;
 		}
 		else
-			return Rect( -m_textScrollOfs, 0, m_size.h, m_text.preferredSize().w );
+			return Rect( -m_textScrollOfs, 0, m_text.preferredSize().w, m_size.h );
 	}
 
 	//____ _itemRenderRequested() ______________________________________________
@@ -316,7 +315,7 @@ namespace wg
 		if( preferred.h != height )
 			_requestResize();
 
-		m_text.onNewSize( Size( height, preferred.w ));	// Item gets the preferred width right away.
+		m_text.onNewSize( Size(preferred.w, height ));	// Item gets the preferred width right away.
 	}
 
 	//____ _itemVisibilityRequested() ____________________________________________

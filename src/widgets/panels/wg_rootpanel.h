@@ -87,8 +87,10 @@ namespace wg
 	
 		void				setDebugMode( bool onOff );
 		bool				isDebugMode() const { return m_bDebugMode; }
-		void 				setDebugOverlay( const Skin_p& pOverlaySkin, int afterglowFrames );
-	
+		void 				setDebugOverlay(const Skin_p& pOverlaySkin );
+		void				setDebugAfterglow(int frames);
+		Skin_p				debugOverlay() const { return m_pDebugOverlay;  }
+		int					debugAfterglow() const { return m_afterglowFrames;  }
 	
 		bool				setVisible( bool bVisible );
 		bool				isVisible() const { return m_bVisible; }

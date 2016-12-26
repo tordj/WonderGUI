@@ -201,13 +201,20 @@ namespace wg
 	
 	//____ setDebugOverlay() ____________________________________________________
 
-	void RootPanel::setDebugOverlay( const Skin_p& pOverlaySkin, int afterglowFrames )
+	void RootPanel::setDebugOverlay( const Skin_p& pOverlaySkin )
 	{
 		m_pDebugOverlay = pOverlaySkin;
-		m_afterglowFrames = afterglowFrames;
 	}
 	
-	
+	//____ setDebugAfterglow() ____________________________________________________
+
+	void RootPanel::setDebugAfterglow( int frames )
+	{
+		limit(frames, 0, 100);
+		m_afterglowFrames = frames;
+	}
+
+
 	//____ render() _______________________________________________________________
 	
 	bool RootPanel::render()

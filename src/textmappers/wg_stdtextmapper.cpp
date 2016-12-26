@@ -598,8 +598,8 @@ namespace wg
 		if( pBegLine == pEndLine )
 		{
 			Rect area;
-			area.x = begPos.x;
-			area.y = begPos.y - pBegLine->base;
+			area.x = canvas.x + begPos.x;
+			area.y = canvas.y + begPos.y - pBegLine->base;
 			area.w = endPos.x - begPos.x; 
 			area.h = pBegLine->height;
 			
@@ -610,8 +610,8 @@ namespace wg
 			LineInfo * pLine = pBegLine;
 			
 			Rect area;
-			area.x = begPos.x;
-			area.y = begPos.y - pLine->base;
+			area.x = canvas.x + begPos.x;
+			area.y = canvas.y + begPos.y - pLine->base;
 			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w)); 
 			area.h = pLine->height;
 			
@@ -622,7 +622,7 @@ namespace wg
 			
 			while( pLine != pEndLine )
 			{
-				area.x = _linePosX( pLine, canvas.w); 
+				area.x = canvas.x + _linePosX( pLine, canvas.w); 
 				area.w = pLine->width;
 				area.h = pLine->height;
 
@@ -633,7 +633,7 @@ namespace wg
 			}
 
 
-			area.x = _linePosX( pLine, canvas.w); 
+			area.x = canvas.x + _linePosX( pLine, canvas.w); 
 			area.w = endPos.x - area.x;
 			area.h = pLine->height;
 
