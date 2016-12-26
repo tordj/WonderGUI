@@ -37,6 +37,7 @@ namespace wg
 	
 	LineEditor::LineEditor() : m_text(this), text(&m_text), m_textScrollOfs(0)
 	{
+		m_text.setMaxLines(1);
 	}
 	
 	

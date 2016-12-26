@@ -48,6 +48,8 @@ namespace wg
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
 		m_editMode = TextEditMode::Editable;
+		m_maxLines = 0;
+		m_maxChars = 0;
 	}
 
 	//____ receive() ___________________________________________________________
@@ -234,22 +236,56 @@ namespace wg
 		_updateDisplayArea();
 	}
 	
+	//____ setMaxLines() _________________________________________________________
+
+	bool EditTextItem::setMaxLines( int maxLines )
+	{
+		if( maxLines < 0 )
+			return false;
+
+		m_maxLines = maxLines;
+
+		//TODO: Cut text and refresh if larger than limit.
+
+		return true;
+	}
+
+	//____ setMaxChars() _________________________________________________________
+
+	bool EditTextItem::setMaxChars( int maxChars )
+	{
+		if( maxChars < 0 )
+			return false;
+
+		m_maxChars = maxChars;
+
+		//TODO: Cut text and refresh if larger than limit.
+
+		return true;
+	}
+
 	//____ set() ___________________________________________________________________
 	
 	void EditTextItem::set( const CharSeq& seq )
 	{
+		//TODO: Cut sequence if too many lines or chars.
+
 		TextItem::set( seq );
 		_caretToEnd();
 	}
 	
 	void EditTextItem::set( const CharBuffer * pBuffer )
 	{
+		//TODO: Cut sequence if too many lines or chars.
+
 		TextItem::set( pBuffer );
 		_caretToEnd();
 	}
 	
 	void EditTextItem::set( const String& str )
 	{
+		//TODO: Cut sequence if too many lines or chars.
+
 		TextItem::set( str );
 		_caretToEnd();
 	}
@@ -258,6 +294,8 @@ namespace wg
 	
 	int EditTextItem::append( const CharSeq& seq )
 	{
+		//TODO: Cut sequence if too many lines or chars.
+
 		// Appending text should move carret if carret is at end of text and nothing is selected, 
 		// otherwise not affect caret or selection.
 
@@ -279,6 +317,8 @@ namespace wg
 	
 	int EditTextItem::insert( int ofs, const CharSeq& seq )
 	{
+		//TODO: Cut sequence if too many lines or chars.
+
 		limit( ofs, 0, m_charBuffer.length() );
 
 		int added = TextItem::insert(ofs,seq);
@@ -332,6 +372,7 @@ namespace wg
 	
 	int EditTextItem::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
+		//TODO: Cut sequence if too many lines or chars.
 		//TODO: Implement correctly!!!
 		
 		
@@ -544,6 +585,13 @@ namespace wg
 		return m_editState.caretOfs;		
 	}
 	
+	//____ selectionSize() ______________________________________________________
+
+	int EditTextItem::selectionSize() const
+	{
+		return abs(m_editState.caretOfs-m_editState.selectOfs);		
+	}
+
 	//____ eraseSelected() _____________________________________________________
 
 	int EditTextItem::eraseSelected()
@@ -592,10 +640,42 @@ namespace wg
 		if( !m_editState.bCaret )
 			return 0;
 
-		// Apply carets styling to all unstyled characters (this is a slow way of doing it)
+		// Copy sequence to a buffer for manipulation (this is a slow way of doing it)
 
 		CharBuffer 	buffer;
 		buffer.pushBack(seq);
+
+		// Remove any newline characters if we only have one line (special case)
+
+		if( m_maxLines == 1 )
+		{
+			const Char * p = buffer.chars();
+			int len = buffer.length();
+
+			for( int i = 0 ; i < len ; i++ )
+			{
+				if( p[i].isEndOfLine() )
+				{
+					buffer.remove(i);
+					i--; len--;
+				}
+			}
+		}
+		else if( m_maxLines > 1 )	// Limit input to lines that will fit
+		{
+			//TODO: Implement
+		}
+
+		// Limit amount of characters
+
+		if( m_maxChars > 0 )
+		{
+			int max = m_maxChars - m_charBuffer.length() + selectionSize();
+			if( buffer.length() > max )
+				buffer.remove(max, INT_MAX );
+		}
+
+		// Apply carets styling to all unstyled characters 
 
 		if( m_editState.pCharStyle )
 		{
@@ -604,7 +684,9 @@ namespace wg
 					buffer[i].setStyle( m_editState.pCharStyle );			
 		}
 
+
 		//
+
 		int retVal;
 
 		if( m_editState.caretOfs != m_editState.selectOfs )		// Selection should be replaced with put content.

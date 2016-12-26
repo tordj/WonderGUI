@@ -43,6 +43,10 @@ namespace wg
 		// Overloaded so we can update caret and selection
 	
 		void			clear();
+		bool			setMaxLines( int maxLines );
+		bool			setMaxChars( int maxChars );
+		int				maxLines() const { return m_maxLines; }
+		int				maxChars() const { return m_maxChars; }
 	
 		void			set( const CharSeq& seq );
 		void			set( const CharBuffer * buffer );
@@ -68,8 +72,9 @@ namespace wg
 		bool			unselect();
 		int				eraseSelected();
 		
-		int				selectionBegin() const;
-		int				selectionEnd() const;
+		int				selectionBegin() const;				// Begin position of selection, might be after end position.
+		int				selectionEnd() const;	
+		int				selectionSize() const;				// Number of characters that are selected.
 
 		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
@@ -127,6 +132,8 @@ namespace wg
 	
 		TextEditMode	m_editMode;
 		EditState		m_editState;
+		int				m_maxLines;
+		int				m_maxChars;
 	};
 	
 } // namespace wg

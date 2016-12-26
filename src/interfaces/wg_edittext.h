@@ -79,6 +79,7 @@ namespace wg
 
 		inline int		selectionBegin() const;
 		inline int		selectionEnd() const;
+		inline int		selectionSize() const;
 
 
 		// These methods will fail unless caret is present
@@ -95,10 +96,12 @@ namespace wg
 		inline bool		caretTextEnd();
 
 
-//		inline void		setMaxLines( int nLines ) { m_maxLines = nLines; }
-//		inline int		maxLines() { return m_maxLines; }
+		inline bool		setMaxLines( int maxLines ) { return _item()->setMaxLines(maxLines); }
+		inline int		maxLines() const { return _item()->maxLines(); }
 
-	
+		inline bool		setMaxChars( int maxChars ) { return _item()->setMaxChars(maxChars); }
+		inline int		maxChars() const { return _item()->maxChars(); }
+
 	private:
 		inline	EditTextItem * 	_item() { return static_cast<EditTextItem*>(m_pItem); }
 		inline	const EditTextItem * 	_item() const { return static_cast<EditTextItem*>(m_pItem); }
@@ -176,7 +179,13 @@ namespace wg
 	{
 		return _item()->selectionEnd();
 	}
-	
+
+	//_____________________________________________________________________________
+	inline int EditText::selectionSize() const
+	{
+		return _item()->selectionSize();
+	}
+
 	//_____________________________________________________________________________
 	inline bool EditText::setCaretOfs( int ofs )
 	{

@@ -258,6 +258,7 @@ int main ( int argc, char** argv )
 
 		LineEditor_p pEditLine = LineEditor::create();
 		pEditLine->setSkin(ColorSkin::create(Color::Black));
+		pEditLine->text.setMaxChars(8);
 		pHorr2->addWidget( pEditLine );
 
 		Filler_p pFillerEast2 = Filler::create();
