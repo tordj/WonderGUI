@@ -309,6 +309,32 @@ int main ( int argc, char** argv )
 		pEditLine->grabFocus();
 	}
 
+	{
+		PackList_p pList = PackList::create();
+
+		pList->header.label.set("Label");
+		pList->header.setSkin( pStateButtonSkin );
+		pList->setSelectMode( SelectMode::SingleEntry );
+
+		pList->setEntrySkin( pListEntrySkin );
+
+		TextDisplay_p pEntry1 = TextDisplay::create();
+		pEntry1->text.set("Entry1");
+		pList->addWidget(pEntry1);
+
+		TextDisplay_p pEntry2 = TextDisplay::create();
+		pEntry2->text.set("Entry2");
+		pList->addWidget(pEntry2);
+
+		TextDisplay_p pEntry3 = TextDisplay::create();
+		pEntry3->text.set("Entry3");
+		pList->addWidget(pEntry3);
+
+		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
+
+	}
+
+
  /*  {
         TestWidget_p pTest = TestWidget::create();
         pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );

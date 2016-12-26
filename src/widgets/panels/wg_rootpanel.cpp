@@ -484,7 +484,17 @@ namespace wg
 	{
 		return m_pRoot->_focusReleased( pWidget );
 	}
-	
+
+	void RootPanel::MyHook::_requestVisibility()
+	{
+		// Do nothing, root ignores visibility requests.
+	}
+
+	void RootPanel::MyHook::_requestVisibility( const Rect& preferred, const Rect& prio )
+	{
+		// Do nothing, root ignores visibility requests.
+	}
+
 	
 	Hook * RootPanel::MyHook::_prevHook() const
 	{

@@ -55,11 +55,12 @@ namespace wg
 		inline void		_requestResize() const { m_pWidget->_itemResizeRequested(this); }
 		inline void		_requestVisibility() const { m_pWidget->_itemVisibilityRequested( this ); }
 		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { m_pWidget->_itemVisibilityRequested( this, preferred, prio ); }
-		
+		inline void		_requestFocus() const { m_pWidget->_itemFocusRequested(this); }
+
 		inline void		_notify( ItemNotif notification, void * pData ) { m_pWidget->_onItemNotify( this, notification, pData ); }
 
 		inline Object *	_object() { return m_pWidget; } 
-		
+
 	protected:
 	
 		Widget * m_pWidget;

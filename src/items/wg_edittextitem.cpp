@@ -185,10 +185,15 @@ namespace wg
 			case MsgType::MousePress:			// Move caret pos and selection pos. Shift-press: only move caret pos.
 			{
 				auto p = static_cast<MousePressMsg*>(pMsg.rawPtr());
-				if( p->button() == MouseButton::Left )
+				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 				{
-					caretToPos(p->pointerPos() - _globalPos());
-					m_editState.bButtonDown = true;
+					if( m_state.isFocused() )
+					{
+						caretToPos(p->pointerPos() - _globalPos());
+						m_editState.bButtonDown = true;
+					}
+					else
+						_requestFocus();
 				}
 				break;
 			}
@@ -196,23 +201,25 @@ namespace wg
 			case MsgType::MouseDrag:			// Move only caret pos
 			{	
 				auto p = static_cast<MouseDragMsg*>(pMsg.rawPtr());
-				if( p->button() == MouseButton::Left )
-					caretToPos(p->pointerPos() - _globalPos());
+				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
+					if( m_state.isFocused() )
+						caretToPos(p->pointerPos() - _globalPos());
 				break;
 			}
 			
 			case MsgType::MouseRelease:
 			{
 				auto p = static_cast<MouseReleaseMsg*>(pMsg.rawPtr());
-				if( p->button() == MouseButton::Left )
+				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					m_editState.bButtonDown = false;
 				break;
 			}
 			case MsgType::MouseDoubleClick:		// Select word
 			{
 				auto p = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr());
-				if( p->button() == MouseButton::Left )
-					caretSelectWord();
+				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
+					if( m_state.isFocused() )
+						caretSelectWord();
 				break;
 			}
 
@@ -459,8 +466,8 @@ namespace wg
 				// Enable and place caret
 				
 				m_editState.bCaret = true;
-				m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
-				m_editState.selectOfs = m_editState.caretOfs;
+//				m_editState.caretOfs = m_charBuffer.length();		//TODO: Not always reset caretOfs.
+//				m_editState.selectOfs = m_editState.caretOfs;
 				m_editState.wantedOfs = -1;
 
 				// Update carets charstyle

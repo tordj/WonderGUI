@@ -153,7 +153,9 @@ namespace wg
 			bool			_requestFocus( Widget * pWidget );
 			bool			_releaseFocus( Widget * pWidget );
 
-	
+			void			_requestVisibility();
+			void			_requestVisibility( const Rect& preferred, const Rect& prio );
+
 			Hook *		_prevHook() const;
 			Hook *		_nextHook() const;
 			Container *	_parent() const;

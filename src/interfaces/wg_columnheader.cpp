@@ -64,6 +64,11 @@ namespace wg
 		return 0;
 	}
 		
-	
+	//____ _object() _______________________________________________________________
+
+	Object * ColumnHeader::_object() const
+	{
+		return m_pItem->_object();
+	}
 
 } // namespace wg
