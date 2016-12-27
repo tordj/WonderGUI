@@ -62,7 +62,7 @@ int main ( int argc, char** argv )
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
-
+	
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
@@ -81,10 +81,9 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		type = PixelType::BGR_8;
 
-	// TODO: USED TO BE RGB ORDER!!! Colors are probably wrong now, needs conversion!!!!
-
+	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
 		
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, (unsigned char*) pWinSurf->pixels, pWinSurf->pitch, 0 );
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
@@ -104,8 +103,6 @@ int main ( int argc, char** argv )
 	
 	// First we load the 24-bit bmp containing the button graphics.
 	// No error handling or such to keep this example short and simple.
-
-	// TODO: USED TO BE RGB ORDER!!! Colors are probably wrong now, needs conversion!!!!
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
 	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );

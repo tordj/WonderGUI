@@ -71,6 +71,10 @@
 #	include <wg_caret2.h>
 #endif
 
+#ifndef WG_DUMMYFONT_DOT_H
+#	include <wg_dummyfont.h>
+#endif
+
 #ifndef WG_MSGFUNC_DOT_H
 #	include <wg_msgfunc.h>
 #endif

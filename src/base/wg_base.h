@@ -127,7 +127,7 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			
 	
-			TextMapper_p		pDefaultTextMapper;
+			TextMapper_p	pDefaultTextMapper;
 			TextStyle_p		pDefaultStyle;
 	
 			//

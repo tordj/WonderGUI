@@ -30,6 +30,7 @@
 #include <wg_memstack.h>
 #include <wg_hook.h>
 #include <wg_stdtextmapper.h>
+#include <wg_dummyfont.h>
 
 
 #ifdef USE_FREETYPE
@@ -66,6 +67,10 @@ namespace wg
 		
 		s_pData->pMsgRouter = MsgRouter::create();
 		s_pData->pInputHandler = InputHandler::create();
+	
+		s_pData->pDefaultStyle = TextStyle::create();
+		s_pData->pDefaultStyle->setFont( DummyFont::create() );
+	
 	
 	#ifdef USE_FREETYPE
 		s_pData->bFreeTypeInitialized = false;
