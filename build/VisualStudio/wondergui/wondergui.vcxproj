@@ -95,6 +95,7 @@
     <ClInclude Include="..\..\..\src\base\wg_charseq.h" />
     <ClInclude Include="..\..\..\src\base\wg_codepages.h" />
     <ClInclude Include="..\..\..\src\base\wg_color.h" />
+    <ClInclude Include="..\..\..\src\base\wg_dummyfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_finalizer.h" />
     <ClInclude Include="..\..\..\src\base\wg_font.h" />
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="..\..\..\src\base\wg_charseq.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_codepages.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_color.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_finalizer.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_font.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
