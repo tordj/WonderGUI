@@ -78,6 +78,7 @@ BASE = wg_anim.o \
   wg_charseq.o \
   wg_codepages.o \
   wg_color.o \
+  wg_dummyfont.o \
   wg_finalizer.o \
   wg_font.o \
   wg_geo.o \
