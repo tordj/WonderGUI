@@ -43,6 +43,11 @@
 #	include <wg_receiver.h>
 #endif
 
+#ifndef WG_ITEMHOLDER_DOT_H
+#	include <wg_itemholder.h>
+#endif
+
+
 namespace wg 
 {
 	class Item;
@@ -74,7 +79,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 	
-	class Widget : public Receiver
+	class Widget : public Receiver, public ItemHolder
 	{
 	friend class MsgRouter;
 	friend class InputHandler;

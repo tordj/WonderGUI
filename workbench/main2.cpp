@@ -204,9 +204,9 @@ int main ( int argc, char** argv )
 	
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
-	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
+	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(2) );
 
 	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -313,10 +313,13 @@ int main ( int argc, char** argv )
 		PackList_p pList = PackList::create();
 
 		pList->header.label.set("Label");
-		pList->header.setSkin( pStateButtonSkin );
+		pList->header.setSkin( ColorSkin::create( Color::Aquamarine ) );
 		pList->setSelectMode( SelectMode::SingleEntry );
 
+		pList->setSkin( ColorSkin::create( Color::Chocolate ));
+
 		pList->setEntrySkin( pListEntrySkin );
+		pList->setLassoSkin( ColorSkin::create( Color(0,0,0,128)));
 
 		TextDisplay_p pEntry1 = TextDisplay::create();
 		pEntry1->text.set("Entry1");

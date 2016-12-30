@@ -187,10 +187,10 @@ namespace wg
 					MsgRouter_p	pRouter = Base::msgRouter();
 				
 					if( m_pMarkedLink )
-						pRouter->post( new LinkMouseLeaveMsg( m_pWidget, m_pMarkedLink ) );
+						pRouter->post( new LinkMouseLeaveMsg( _object(), m_pMarkedLink ) );
 				
 					if( pLink )
-						pRouter->post( new LinkMouseEnterMsg( m_pWidget, pLink ));
+						pRouter->post( new LinkMouseEnterMsg( _object(), pLink ));
 	
 					m_pMarkedLink = pLink;
 				}
@@ -201,7 +201,7 @@ namespace wg
 
 				if( m_pMarkedLink )
 				{
-					Base::msgRouter()->post( new LinkMouseLeaveMsg( m_pWidget, m_pMarkedLink ) );
+					Base::msgRouter()->post( new LinkMouseLeaveMsg( _object(), m_pMarkedLink ) );
 					m_pMarkedLink = 0;
 				}
 				break;
@@ -210,7 +210,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MousePressMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMousePressMsg( m_pWidget, m_pMarkedLink, button ) );
+					Base::msgRouter()->post( new LinkMousePressMsg( _object(), m_pMarkedLink, button ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -226,7 +226,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseRepeatMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseRepeatMsg( m_pWidget, m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( new LinkMouseRepeatMsg( _object(), m_pMarkedLink, button ) );			
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -237,7 +237,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseReleaseMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseReleaseMsg( m_pWidget, m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( new LinkMouseReleaseMsg( _object(), m_pMarkedLink, button ) );			
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -248,11 +248,11 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseClickMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseClickMsg( m_pWidget, m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( new LinkMouseClickMsg( _object(), m_pMarkedLink, button ) );			
 
 					if( button == MouseButton::Left )
 					{
-						Base::msgRouter()->post( new LinkSelectMsg( m_pWidget, m_pMarkedLink ) );			
+						Base::msgRouter()->post( new LinkSelectMsg( _object(), m_pMarkedLink ) );			
 						pMsg->swallow();
 					}
 				}
@@ -262,7 +262,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseDoubleClickMsg( m_pWidget, m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( new LinkMouseDoubleClickMsg( _object(), m_pMarkedLink, button ) );			
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();

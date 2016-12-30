@@ -42,6 +42,11 @@ namespace wg
 	
 	BlockSkin_p BlockSkin::createStatic( const Surface_p& pSurface, Rect block, Border frame )
 	{
+		if( !pSurface || frame.width() >= block.w || frame.height() >= block.h ||
+			block.x < 0 || pSurface->width() < block.right() ||
+			block.y < 0 || pSurface->height() < block.bottom() )
+			return 0;
+
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
 		pSkin->setBlockGeo( block.size(), frame );
@@ -51,6 +56,13 @@ namespace wg
 	
 	BlockSkin_p BlockSkin::createEnable( const Surface_p& pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame )
 	{
+		if( !pSurface || frame.width() >= blockSize.w || frame.height() >= blockSize.h ||
+			pSurface->width() < ofsEnabled.x + blockSize.w ||
+			pSurface->width() < ofsDisabled.x + blockSize.w ||
+			pSurface->height() < ofsEnabled.y + blockSize.h ||
+			pSurface->height() < ofsDisabled.y + blockSize.h )
+			return 0;
+
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
 		pSkin->setBlockGeo( blockSize, frame );
@@ -61,6 +73,11 @@ namespace wg
 	
 	BlockSkin_p BlockSkin::createClickable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
+		if( !pSurface || blockFrame.width() >= blockGeo.w || blockFrame.height() >= blockGeo.h ||
+			pSurface->width() < blockStartOfs.x + blockGeo.w + blockPitch.w*3 ||
+			pSurface->height() < blockStartOfs.y + blockGeo.h + blockPitch.h*3 )
+			return 0;
+		
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
 		pSkin->setBlockGeo( blockGeo, blockFrame );

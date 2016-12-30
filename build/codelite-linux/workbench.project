@@ -29,10 +29,10 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../workbench/main2.cpp" ExcludeProjConfig=""/>
     <File Name="../../workbench/main_gl.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../workbench/testwidget.cpp"/>
     <File Name="../../workbench/testwidget.h"/>
+    <File Name="../../workbench/main2.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release">
     <Project Name="gfxdevice_software"/>
@@ -84,7 +84,8 @@
         <Library Value="GL"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -149,6 +150,7 @@
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

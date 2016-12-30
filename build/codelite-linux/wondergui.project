@@ -266,9 +266,9 @@
     <File Name="../../src/base/wg_caret.h"/>
     <File Name="../../src/base/wg_caret.cpp"/>
     <File Name="../../src/base/wg_textlink.cpp"/>
-    <File Name="../../src/textmappers/wg_stdtextmapper.cpp"/>
     <File Name="../../src/base/wg_dummyfont.cpp"/>
     <File Name="../../src/base/wg_dummyfont.h"/>
+    <File Name="../../src/base/wg_itemholder.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
@@ -278,6 +278,7 @@
     <File Name="../../src/textmappers/wg_stdtextmapper.h"/>
     <File Name="../../src/textmappers/wg_textmapper.cpp"/>
     <File Name="../../src/textmappers/wg_textmapper.h"/>
+    <File Name="../../src/textmappers/wg_stdtextmapper.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="valueformatters">
     <File Name="../../src/valueformatters/wg_valueformatter.cpp"/>

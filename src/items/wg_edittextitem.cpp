@@ -490,6 +490,8 @@ namespace wg
 			}
 			else
 			{
+				//TODO: Re-render portion that was covered by caret.
+				
 				m_editState.bCaret = false;				
 			}
 			
