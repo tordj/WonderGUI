@@ -33,10 +33,10 @@
 namespace wg 
 {
 	
-	class ColumnHeaderItem : public Item
+	class ColumnHeaderItem : public Item, protected ItemHolder
 	{
 	public:
-		ColumnHeaderItem(Widget * pWidget);
+		ColumnHeaderItem(ItemHolder * pHolder);
 	
 		//____ Subitems __________________________________
 	
@@ -46,23 +46,60 @@ namespace wg
 	
 		//____ Methods _____________________________________
 	
+		void			setSortOrder( SortOrder order );
+		inline SortOrder sortOrder() const { return m_sortOrder; }
+
 		void			setSkin( const Skin_p& pSkin );
 		inline Skin_p	skin() const { return m_pSkin; }
 	
-	//private:
+		void			setState( State state );
+		inline State	state() const { return m_state; }
+
+		void			setSize( Size size );	
+		inline Size		size() const { return m_size; }
+
+		Size			preferredSize() const;	
+		int				matchingWidth( int height ) const;
+		int				matchingHeight( int width ) const;
+
+		bool			receive( const Msg_p& pMsg );
+
+
+
+	protected:
 		
 		//TODO: Implement proper solution!!!
 		// Subitems are currently bypassing ColumnHeaderItem and making direct calls to widget
 		// How do we solve this?
+
+		Object * _itemObject();
+		const Object * _itemObject() const;
+
+		Coord	_itemPos( const Item * pItem ) const;
+		Size	_itemSize( const Item * pItem ) const;
+		Rect	_itemGeo( const Item * pItem ) const;
+		Coord	_itemGlobalPos( const Item * pItem ) const;
+		Rect	_itemGlobalGeo( const Item * pItem ) const;
+
+		void	_itemRenderRequested( const Item * pItem );
+		void	_itemRenderRequested( const Item * pItem, const Rect& rect );
+		void	_itemResizeRequested( const Item * pItem );
+
+		void	_itemFocusRequested( const Item * pItem );
+		void	_itemVisibilityRequested( const Item * pItem );
+		void	_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio );
+
+		void	_itemNotified( Item * pItem, ItemNotif notification, void * pData );
+
+
 	
-	
-		Widget *		m_pWidget;
 		Skin_p			m_pSkin;
-		int				m_height;
-		int				m_width;
+
 		State			m_state;
+		Size			m_size;
+
 		bool			m_bPressed;
-	
+		SortOrder		m_sortOrder;
 	};
 	
 	

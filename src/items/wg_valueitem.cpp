@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	ValueItem::ValueItem(Widget * pWidget) : TextBaseItem(pWidget)
+	ValueItem::ValueItem(ItemHolder * pHolder) : TextBaseItem(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
@@ -108,12 +108,12 @@ namespace wg
 	}
 	*/
 	
-	//____ onRefresh() _____________________________________________________________
+	//____ refresh() _____________________________________________________________
 	
-	void ValueItem::onRefresh()
+	void ValueItem::refresh()
 	{	
 		_regenText();
-		TextBaseItem::onRefresh();
+		TextBaseItem::refresh();
 	}
 	
 	//____ _regenText() ____________________________________________________________

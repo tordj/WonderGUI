@@ -173,7 +173,7 @@ namespace wg
 	
 	void LineEditor::_refresh( void )
 	{
-		m_text.onRefresh();
+		m_text.refresh();
 		Widget::_refresh();
 	}
 
@@ -228,9 +228,9 @@ namespace wg
 		int width = size.w;
 	
 		if( m_pSkin )
-			m_text.onNewSize( Size(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
+			m_text.setSize( Size(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
 		else
-			m_text.onNewSize( Size( m_text.preferredSize().w, size.h ) );
+			m_text.setSize( Size( m_text.preferredSize().w, size.h ) );
 	}
 
 	//____ _itemPos() __________________________________________________________
@@ -316,7 +316,7 @@ namespace wg
 		if( preferred.h != height )
 			_requestResize();
 
-		m_text.onNewSize( Size(preferred.w, height ));	// Item gets the preferred width right away.
+		m_text.setSize( Size(preferred.w, height ));	// Item gets the preferred width right away.
 	}
 
 	//____ _itemVisibilityRequested() ____________________________________________

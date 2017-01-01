@@ -27,7 +27,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	TextBaseItem::TextBaseItem( Widget * pWidget ) : Item( pWidget )
+	TextBaseItem::TextBaseItem( ItemHolder * pHolder ) : Item( pHolder )
 	{
 		_textMapper()->addItem(this);
 	}
@@ -136,16 +136,16 @@ namespace wg
 	}
 	
 	
-	//____ onRefresh() _____________________________________________________________
+	//____ refresh() _____________________________________________________________
 	
-	void TextBaseItem::onRefresh()
+	void TextBaseItem::refresh()
 	{
 		_textMapper()->onRefresh(this);
 	}
 	
-	//____ onNewSize() _____________________________________________________________
+	//____ setSize() _____________________________________________________________
 	
-	void TextBaseItem::onNewSize( const Size& size )
+	void TextBaseItem::setSize( Size size )
 	{
 		if( size == m_size )
 			return;

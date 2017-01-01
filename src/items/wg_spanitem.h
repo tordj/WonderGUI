@@ -34,7 +34,7 @@ namespace wg
 	class SpanItem : public Item
 	{
 	public:
-		SpanItem( Widget * pWidget );
+		SpanItem( ItemHolder * pHolder );
 		virtual ~SpanItem() {};
 	
 		bool	setMin( int min );

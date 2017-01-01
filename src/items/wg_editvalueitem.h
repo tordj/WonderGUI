@@ -34,7 +34,7 @@ namespace wg
 	class EditValueItem : public ModValueItem
 	{
 	public:
-		EditValueItem( Widget * pWidget );
+		EditValueItem( ItemHolder * pHolder );
 		~EditValueItem();
 	
 		void				setEditMode(TextEditMode mode);

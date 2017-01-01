@@ -25,7 +25,7 @@
 namespace wg 
 {
 	
-	SpanItem::SpanItem( Widget * pWidget ) : Item( pWidget )
+	SpanItem::SpanItem( ItemHolder * pHolder ) : Item( pHolder )
 	{
 		min = MIN;
 		max = MAX;
@@ -172,7 +172,8 @@ namespace wg
 	}
 	
 	void SpanItem::setRelativeLength( float _length )
-	{	int range = max - min;
+	{
+	int range = max - min;
 		setLength( (int) _length*range );
 	}
 	
@@ -184,7 +185,8 @@ namespace wg
 	}
 	
 	bool SpanItem::stepBackward()
-	{	int beg = begin;
+	{
+	int beg = begin;
 		setBegin( beg - _stepSize() );
 		return beg != begin;
 	}

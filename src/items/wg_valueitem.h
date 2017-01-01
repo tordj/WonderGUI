@@ -38,7 +38,7 @@ namespace wg
 	class ValueItem : public TextBaseItem
 	{
 	public:
-		ValueItem(Widget * pWidget);
+		ValueItem(ItemHolder * pHolder);
 	
 		void				setFormatter( const ValueFormatter_p& pFormatter );
 		void				clearFormatter();
@@ -47,7 +47,7 @@ namespace wg
 		virtual void		clear();
 		virtual bool		set( int64_t value, int scale );
 		
-		void				onRefresh();
+		void				refresh();
 		inline int64_t		value() const { return m_value; }
 		inline int			scale() const { return m_scale; }
 	

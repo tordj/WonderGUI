@@ -48,7 +48,7 @@ namespace wg
 	class IconItem : public Item
 	{
 	public:
-		IconItem( Widget * pWidget );
+		IconItem( ItemHolder * pHolder );
 		virtual ~IconItem() {};
 	
 	
@@ -66,9 +66,9 @@ namespace wg
 	
 		float			scale() const { return m_scale; }
 		Origo			origo() const { return m_origo; }
-		Border		padding() const { return m_padding; }
+		Border			padding() const { return m_padding; }
 		bool			overlap() const { return m_bOverlap; }
-		Skin_p		skin() const { return  m_pSkin; }
+		Skin_p			skin() const { return  m_pSkin; }
 	
 	
 		Rect			getIconRect( const Rect& contentRect ) const;

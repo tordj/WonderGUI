@@ -23,8 +23,8 @@
 #ifndef	WG_ITEM_DOT_H
 #define	WG_ITEM_DOT_H
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
+#ifndef WG_ITEMHOLDER_DOT_H
+#	include <wg_itemholder.h>
 #endif
 
 
@@ -41,29 +41,30 @@ namespace wg
 	class Item
 	{
 	public:
-		Item( Widget * pWidget ) : m_pWidget(pWidget) {}
+		Item( ItemHolder * pHolder ) : m_pHolder(pHolder) {}
 
-		inline Coord	_pos() const  { return m_pWidget->_itemPos(this); }
-		inline Size		_size() const { return m_pWidget->_itemSize(this); }
-		inline Rect		_geo() const { return m_pWidget->_itemGeo(this); }
-		inline Coord	_globalPos() const { return m_pWidget->_itemGlobalPos(this); }
-		inline Rect		_globalGeo() const { return m_pWidget->_itemGlobalGeo(this); }
+		inline Coord	_pos() const  { return m_pHolder->_itemPos(this); }
+		inline Size		_size() const { return m_pHolder->_itemSize(this); }
+		inline Rect		_geo() const { return m_pHolder->_itemGeo(this); }
+		inline Coord	_globalPos() const { return m_pHolder->_itemGlobalPos(this); }
+		inline Rect		_globalGeo() const { return m_pHolder->_itemGlobalGeo(this); }
 
 	
-		inline void		_requestRender() const { m_pWidget->_itemRenderRequested(this); }
-		inline void		_requestRender( const Rect& rect ) const { m_pWidget->_itemRenderRequested(this, rect); }
-		inline void		_requestResize() const { m_pWidget->_itemResizeRequested(this); }
-		inline void		_requestVisibility() const { m_pWidget->_itemVisibilityRequested( this ); }
-		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { m_pWidget->_itemVisibilityRequested( this, preferred, prio ); }
-		inline void		_requestFocus() const { m_pWidget->_itemFocusRequested(this); }
+		inline void		_requestRender() const { m_pHolder->_itemRenderRequested(this); }
+		inline void		_requestRender( const Rect& rect ) const { m_pHolder->_itemRenderRequested(this, rect); }
+		inline void		_requestResize() const { m_pHolder->_itemResizeRequested(this); }
+		inline void		_requestVisibility() const { m_pHolder->_itemVisibilityRequested( this ); }
+		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { m_pHolder->_itemVisibilityRequested( this, preferred, prio ); }
+		inline void		_requestFocus() const { m_pHolder->_itemFocusRequested(this); }
 
-		inline void		_notify( ItemNotif notification, void * pData ) { m_pWidget->_onItemNotify( this, notification, pData ); }
+		inline void		_notify( ItemNotif notification, void * pData ) { m_pHolder->_itemNotified( this, notification, pData ); }
 
-		inline Object *	_object() { return m_pWidget; } 
+		inline Object *	_object() { return m_pHolder->_itemObject(); } 
+		inline const Object *	_object() const { return m_pHolder->_itemObject(); } 
 
 	protected:
 	
-		Widget * m_pWidget;
+		ItemHolder * m_pHolder;
 	};
 	
 	

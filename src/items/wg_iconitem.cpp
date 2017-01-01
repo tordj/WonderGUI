@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	IconItem::IconItem( Widget * pWidget ) : Item(pWidget)
+	IconItem::IconItem( ItemHolder * pHolder ) : Item(pHolder)
 	{
 		m_origo			= Origo::NorthWest;
 		m_scale			= 0.f;

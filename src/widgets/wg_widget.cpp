@@ -638,9 +638,22 @@ namespace wg
 		return _itemGeo( pItem ) + globalPos();
 	}
 
-	//____ _onItemNotify() __________________________________________________
+	//____ _itemObject() ______________________________________________________
 
-	void Widget::_onItemNotify( Item * pItem, ItemNotif notification, void * pData )
+	Object * Widget::_itemObject()
+	{
+		return this;
+	}
+
+	const Object * Widget::_itemObject() const
+	{
+		return this;
+	}
+
+
+	//____ _itemNotified() __________________________________________________
+
+	void Widget::_itemNotified( Item * pItem, ItemNotif notification, void * pData )
 	{
 		// By default we do nothing
 	}

@@ -31,17 +31,18 @@
 #	include <wg_geo.h>
 #endif
 
-
-
-class Item;
-
 namespace wg 
 {
+	class Item;
+	class Object;
+
 	class ItemHolder
 	{
-		protected:
-/*		virtual Coord	_itemPos( const Item * pItem ) const = 0;
+	public:
+		virtual Object * _itemObject() = 0;
+		virtual const Object * _itemObject() const = 0;
 
+		virtual Coord	_itemPos( const Item * pItem ) const = 0;
 		virtual Size	_itemSize( const Item * pItem ) const = 0;
 		virtual Rect	_itemGeo( const Item * pItem ) const = 0;
 		virtual Coord	_itemGlobalPos( const Item * pItem ) const = 0;
@@ -54,9 +55,11 @@ namespace wg
  		virtual void	_itemFocusRequested( const Item * pItem ) = 0;
 		virtual void	_itemVisibilityRequested( const Item * pItem ) = 0;
 		virtual void	_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio ) = 0;
-		
-		virtual void	_onItemNotify( Item * pItem, ItemNotif notification, void * pData ) = 0;
-*/
+
+
+
+		virtual void	_itemNotified( Item * pItem, ItemNotif notification, void * pData ) = 0;
+
 	};
 	
 } // namespace wg

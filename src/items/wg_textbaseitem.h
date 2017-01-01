@@ -49,7 +49,7 @@ namespace wg
 	{
 		friend class TextMapper;
 	public:
-		TextBaseItem( Widget * pWidget );
+		TextBaseItem( ItemHolder * pHolder );
 		virtual ~TextBaseItem();
 	
 		virtual void		setStyle( const TextStyle_p& pStyle );
@@ -62,21 +62,22 @@ namespace wg
 	
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
-	
+
+		virtual void		setSize( Size size );	
+		inline Size			size() const { return m_size; }
+
 		virtual Size		preferredSize() const;	
 		virtual int			matchingWidth( int height ) const;
 		virtual int			matchingHeight( int width ) const;
-		inline Size			size() const { return m_size; }
 	
 		virtual int			charAtPos( Coord pos ) const;
 		virtual Rect		charRect( int charOfs ) const;
 		virtual int			charLine( int charOfs ) const;
 	
-		virtual void		onRefresh();
+		virtual void		refresh();
 	
 		virtual String		tooltip() const;
 	
-		virtual void		onNewSize( const Size& size );	
 		virtual void		onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 	
 		virtual Rect		rectForRange( int ofs, int length ) const;

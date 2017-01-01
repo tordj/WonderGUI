@@ -145,7 +145,7 @@ namespace wg
 	
 		Rect textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 	
-		m_text.onNewSize( textRect );
+		m_text.setSize( textRect );
 	}
 	
 	
@@ -270,7 +270,7 @@ namespace wg
 	void Button::_refresh( void )
 	{
 		Widget::_refresh();
-		m_text.onRefresh();
+		m_text.refresh();
 	
 		//TODO: Handling of icon and text.
 	}

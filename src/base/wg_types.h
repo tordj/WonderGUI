@@ -473,6 +473,7 @@ namespace wg
 	
 	enum class SortOrder
 	{
+		None,
 		Ascending,
 		Descending
 	};
@@ -559,6 +560,7 @@ namespace wg
 	//____ ItemNotif ___________________________________________________________
 
 	enum class ItemNotif {
+		SortOrderChanged,
 		ValueModified,
 		ValueEdited,
 		SpanModified,

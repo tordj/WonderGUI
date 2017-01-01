@@ -105,6 +105,7 @@
     <ClInclude Include="..\..\..\src\base\wg_hookarray.h" />
     <ClInclude Include="..\..\..\src\base\wg_hookptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
+    <ClInclude Include="..\..\..\src\base\wg_itemholder.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
     <ClInclude Include="..\..\..\src\base\wg_mempool.h" />
     <ClInclude Include="..\..\..\src\base\wg_memstack.h" />

@@ -314,7 +314,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 	
-		m_label.onNewSize( m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect )) );
+		m_label.setSize( m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect )) );
 	}
 	
 	

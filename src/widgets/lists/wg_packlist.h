@@ -191,6 +191,14 @@ namespace wg
 		Hook*			_lastHookWithGeo( Rect& geo ) const;
 		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
+
+		// Support methods for header
+
+		Size	_itemSize( const Item * pItem ) const;
+		Rect	_itemGeo( const Item * pItem ) const;
+
+		void	_itemNotified( Item * pItem, ItemNotif notification, void * pData );
+
 		ColumnHeaderItem	m_header;
 	
 		bool				m_bHorizontal;

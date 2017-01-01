@@ -48,7 +48,7 @@ namespace wg
 	class TextItem : public TextBaseItem
 	{
 	public:
-		TextItem( Widget * pWidget );
+		TextItem( ItemHolder * pHolder );
 	
 		virtual void		clear();
 	

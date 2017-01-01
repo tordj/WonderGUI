@@ -36,7 +36,7 @@ namespace wg
 	class EditTextItem : public TextItem
 	{
 	public:
-		EditTextItem( Widget * pWidget );
+		EditTextItem( ItemHolder * pHolder );
 
 		void			receive( const Msg_p& pMsg );
 	

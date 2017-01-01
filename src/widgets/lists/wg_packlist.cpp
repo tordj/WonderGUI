@@ -134,6 +134,7 @@ namespace wg
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
 		m_sortOrder = SortOrder::Ascending;
+		m_header.setSortOrder( SortOrder::Ascending );
 		m_pSortFunc = 0;
 	
 		m_maxEntrySize = Size(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
@@ -294,6 +295,7 @@ namespace wg
 		if( order != m_sortOrder )
 		{
 			m_sortOrder = order;
+			m_header.setSortOrder( order );
 			_sortEntries();
 			_requestRender();		// So we also render the header, which has an arrow with new state.
 		}
@@ -315,17 +317,19 @@ namespace wg
 	Size PackList::preferredSize() const
 	{
 		Size sz;
+		Size header = m_header.size();
+
 		if( m_bHorizontal )
 		{
-			sz =  Size(m_contentPreferredLength + m_header.m_width, m_contentPreferredBreadth);
-			if( m_header.m_height > sz.h )
-				sz.h = m_header.m_height;
+			sz =  Size(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
+			if( header.h > sz.h )
+				sz.h = header.h;
 		}
 		else
 		{
-			sz = Size(m_contentPreferredBreadth,m_contentPreferredLength + m_header.m_height );
-			if( m_header.m_width > sz.w )
-				sz.w = m_header.m_width;
+			sz = Size(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
+			if( header.w > sz.w )
+				sz.w = header.w;
 		}
 	
 		if( m_pSkin )
@@ -338,11 +342,13 @@ namespace wg
 	
 	int PackList::matchingHeight( int width ) const
 	{
+		Size header = m_header.size();
+
 		if( m_bHorizontal )
 		{
 			int height =  m_contentPreferredBreadth;
-			if( m_header.m_height > height )
-				height = m_header.m_height;
+			if( header.h > height )
+				height = header.h;
 	
 			if( m_pSkin )
 				height += m_pSkin->contentPadding().h;
@@ -350,7 +356,7 @@ namespace wg
 		}
 		else
 		{
-			int height = m_header.m_height;
+			int height = header.h;
 			if( m_pSkin )
 			{
 				Size pad = m_pSkin->contentPadding();
@@ -373,9 +379,11 @@ namespace wg
 	
 	int PackList::matchingWidth( int height ) const
 	{
+		Size header = m_header.size();
+
 		if( m_bHorizontal )
 		{
-			int width = m_header.m_width;
+			int width = header.w;
 			if( m_pSkin )
 			{
 				Size pad = m_pSkin->contentPadding();
@@ -395,8 +403,8 @@ namespace wg
 		else
 		{
 			int width =  m_contentPreferredBreadth;
-			if( m_header.m_width > width )
-				width = m_header.m_width;
+			if( header.w > width )
+				width = header.w;
 	
 			if( m_pSkin )
 				width += m_pSkin->contentPadding().w;
@@ -527,13 +535,13 @@ namespace wg
 	
 		// Render header
 	
-		if( m_header.m_height != 0 )
+		if( m_header.size().h != 0 )
 		{
 			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			Rect canvas = _headerGeo() + _canvas.pos();
 	
 			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-				_renderHeader( pDevice, canvas, *pRect, m_header.m_pSkin, &m_header.label, &m_header.icon, &m_header.arrow, m_header.m_state, true, bInvertedSort );
+				_renderHeader( pDevice, canvas, *pRect, m_header.skin(), &m_header.label, &m_header.icon, &m_header.arrow, m_header.state(), true, bInvertedSort );
 		}
 	
 		// Render Lasso
@@ -728,142 +736,46 @@ namespace wg
 	
 	void PackList::_receive( const Msg_p& _pMsg )
 	{
-		State state = m_state;
-	
-		switch( _pMsg->type() )
+		bool bSwallowed = m_header.receive(_pMsg);
+
+		if( !bSwallowed )
 		{
-			case MsgType::MouseMove:
+			switch( _pMsg->type() )
 			{
-				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				Coord ofs = toLocal(pMsg->pointerPos());
-				Rect headerGeo = _headerGeo();
-				bool bHeaderHovered = headerGeo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() || 
-																 (Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_header.m_bPressed));
-				if( bHeaderHovered != m_header.m_state.isHovered() )
+				case MsgType::KeyPress:
 				{
-					m_header.m_state.setHovered(bHeaderHovered);
-					_requestRender( headerGeo );
-				}
-				List::_receive( _pMsg );
-				break;
-			}
-	
-			case MsgType::MouseLeave:
-			{
-				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
-				if( pMsg->source() == this && m_header.m_state.isHovered() )
-				{
-					m_header.m_state.setPressed(false);
-					m_header.m_state.setHovered(false);
-					_requestRender( _headerGeo() );
-				}
-				List::_receive( _pMsg );
-				break;
-			}
-	
-			case MsgType::MousePress:
-			{
-				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
-				Coord ofs = toLocal(pMsg->pointerPos());
-				Rect headerGeo = _headerGeo();
-				if(pMsg->button() == MouseButton::Left && headerGeo.contains(ofs))
-				{
-					m_header.m_bPressed = true;
-					m_header.m_state.setPressed(true);
-					_requestRender( headerGeo );
-					pMsg->swallow();
-				}
-				else
-					List::_receive( _pMsg );
-				break;
-			}
-	
-			case MsgType::MouseDrag:
-			{
-				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
-				if( m_header.m_bPressed )
-				{
-					Coord ofs = toLocal(pMsg->pointerPos());
-					Rect headerGeo = _headerGeo();
-					bool bHeaderHovered = headerGeo.contains(ofs);
-					if( bHeaderHovered != m_header.m_state.isHovered() )
-					{
-						m_header.m_state.setHovered(bHeaderHovered);
-						m_header.m_state.setPressed(bHeaderHovered);
-						_requestRender( headerGeo );
-					}
-					pMsg->swallow();
-				}
-				else
-					List::_receive( _pMsg );
-				break;
-			}
-	
-			case MsgType::MouseRelease:
-			{
-				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
-				if(pMsg->button() == MouseButton::Left && m_header.m_bPressed )
-				{
-					m_header.m_bPressed = false;
-					m_header.m_state.setPressed(false);
-					Rect headerGeo = _headerGeo();
-					_requestRender( headerGeo );
-	
-					Coord ofs = toLocal(pMsg->pointerPos());
-					if( headerGeo.contains(ofs) )
-					{
-						if( m_sortOrder == SortOrder::Ascending )
-							m_sortOrder = SortOrder::Descending;
-						else
-							m_sortOrder = SortOrder::Ascending;
-						_sortEntries();
-					}
-					pMsg->swallow();
-				}
-				else
-					List::_receive( _pMsg );
-				break;
-			}
-			case MsgType::KeyPress:
-			{
-				if( m_selectMode == SelectMode::Unselectable )
-					break;
-	
-				Key keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
-				ModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
-				if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
-					(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
-					keyCode == Key::Home || keyCode == Key::End ||
-					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
+					if( m_selectMode == SelectMode::Unselectable )
+						break;
+
+					Key keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
+					ModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
+					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
+						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
+						keyCode == Key::Home || keyCode == Key::End ||
+						(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
-				List::_receive( _pMsg );
-				break;
-			}
-	
-			case MsgType::KeyRepeat:
-			case MsgType::KeyRelease:
-			{
-				if( m_selectMode == SelectMode::Unselectable )
 					break;
-	
-				Key keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
-				ModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
-				if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
-					(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
-					keyCode == Key::Home || keyCode == Key::End ||
-					(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
+				}
+
+				case MsgType::KeyRepeat:
+				case MsgType::KeyRelease:
+				{
+					if( m_selectMode == SelectMode::Unselectable )
+						break;
+
+					Key keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
+					ModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
+					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) || 
+						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
+						keyCode == Key::Home || keyCode == Key::End ||
+						(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
-				List::_receive( _pMsg );
-				break;
-			}
-		
-			default:
-				List::_receive(_pMsg);
-				return;
+					break;
+				}			
+			}	
+
+			List::_receive( _pMsg );
 		}
-	
-		if( state != m_state )
-			_setState(state);
 	}
 	
 	//____ _onLassoUpdated() ______________________________________________________
@@ -1323,12 +1235,12 @@ namespace wg
 			if( m_bHorizontal )
 			{
 				lengthDiff = (newPadding.w - oldPadding.w)*nEntries;
-				breadthDiff = (newPadding.h - oldPadding.h)*nEntries;
+				breadthDiff = (newPadding.h - oldPadding.h);
 			}
 			else
 			{
 				lengthDiff = (newPadding.h - oldPadding.h)*nEntries;
-				breadthDiff = (newPadding.w - oldPadding.w)*nEntries;
+				breadthDiff = (newPadding.w - oldPadding.w);
 			}
 	
 			if( lengthDiff != 0 || breadthDiff != 0 )
@@ -1521,13 +1433,13 @@ namespace wg
 	
 		if( m_bHorizontal )
 		{
-			r.x += m_header.m_width;
-			r.w -= m_header.m_width;
+			r.x += m_header.size().w;
+			r.w -= m_header.size().w;
 		}
 		else
 		{
-			r.y += m_header.m_height;
-			r.h -= m_header.m_height;
+			r.y += m_header.size().h;
+			r.h -= m_header.size().h;
 		}
 		return r;
 	}
@@ -1536,10 +1448,12 @@ namespace wg
 	
 	Rect PackList::_listCanvas() const
 	{
+		Size header = m_header.size();
+
 		if( m_bHorizontal )
-			return Rect(m_header.m_width, 0, m_size.w - m_header.m_width, m_size.h );
+			return Rect(header.w, 0, m_size.w - header.w, m_size.h );
 		else
-			return Rect(0, m_header.m_height, m_size.w, m_size.h - m_header.m_height);	// List canvas in widgets own coordinate system.
+			return Rect(0, header.h, m_size.w, m_size.h - header.h);	// List canvas in widgets own coordinate system.
 	}
 	
 	//____ _headerGeo() ___________________________________________________________
@@ -1547,9 +1461,9 @@ namespace wg
 	Rect PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return Rect( _windowSection().x, 0, m_header.m_width, m_size.h );
+			return Rect( _windowSection().x, 0, m_header.size().w, m_size.h );
 		else
-			return Rect( 0, _windowSection().y, m_size.w, m_header.m_height );
+			return Rect( 0, _windowSection().y, m_size.w, m_header.size().h );
 	}
 	
 	//____ _windowPadding() _______________________________________________________
@@ -1557,61 +1471,32 @@ namespace wg
 	Size PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return Size( m_header.m_width, 0 );
+			return Size( m_header.size().w, 0 );
 		else
-			return Size( 0, m_header.m_height );
+			return Size( 0, m_header.size().h );
 	}
 	
 	//____ _refreshHeader() _______________________________________________________
 	
 	void PackList::_refreshHeader()
 	{
-		Size wantedIconSize = m_header.icon.preferredSize();
-		Size wantedArrowSize = m_header.arrow.preferredSize();
-		Size wantedTextSize = m_header.label.preferredSize();
-	
-		Size wantedSize;
-	
-		//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
-		//TODO: Assumes text not wrapping.
-	
-		wantedSize.h = wg::max(wantedIconSize.h, wantedArrowSize.h, wantedTextSize.h );
-		wantedSize.w = wantedTextSize.w;
-		if( m_header.icon.overlap() )
-			wantedSize.w = wg::max(wantedSize.w,wantedIconSize.w);
-		else
-			wantedSize.w += wantedIconSize.w;
-	
-		if( m_header.arrow.overlap() )
-			wantedSize.w = wg::max(wantedSize.w,wantedArrowSize.w);
-		else
-			wantedSize.w += wantedArrowSize.w;
-	
-		//
-	
-		if( m_header.m_pSkin )
-			wantedSize = m_header.m_pSkin->sizeForContent(wantedSize);
-		//
-	
+		Size wantedSize = m_header.preferredSize();
+		Size currentSize = m_header.size();
+
 		bool	bRequestResize = false;
-	
-	
+		
 		// Update headers size, possibly request resize.
 	
-		if( wantedSize.h != m_header.m_height )
+		if( wantedSize.h != currentSize.h )
 		{
-			if( !m_bHorizontal || (wantedSize.h > m_contentPreferredBreadth || m_header.m_height > m_contentPreferredBreadth) )
-				bRequestResize = true;
-	
-			m_header.m_height = wantedSize.h;
+			if( !m_bHorizontal || (wantedSize.h > m_contentPreferredBreadth || currentSize.h > m_contentPreferredBreadth) )
+				bRequestResize = true;	
 		}
 	
-		if( wantedSize.w != m_header.m_width )
+		if( wantedSize.w != currentSize.w )
 		{
-			if( m_bHorizontal || (wantedSize.w > m_contentPreferredBreadth || m_header.m_width > m_contentPreferredBreadth) )
-				bRequestResize = true;
-	
-			m_header.m_width = wantedSize.w;
+			if( m_bHorizontal || (wantedSize.w > m_contentPreferredBreadth || currentSize.w > m_contentPreferredBreadth) )
+				bRequestResize = true;	
 		}
 	
 		if( bRequestResize )
@@ -1677,27 +1562,26 @@ namespace wg
 		_requestRenderChildrenFrom( m_hooks.begin() );	// Request render on dirty area
 		return true;
 	}
-/*	
-	//____ _requestRender() _________________________________________________________
-	
-	void PackList::_requestRender(Item * pItem)
-	{
-		_refreshHeader();	//TODO: Just request render on header.
-	}
-	
-	void PackList::_requestRender(Item * pItem, const Rect& rect)
-	{
-		_refreshHeader();	//TODO: Just request render on rectangle.
-	}
 
 
-	//____ _requestResize() ________________________________________________________
-	
-	void PackList::_requestResize(Item * pItem)
+	Size PackList::_itemSize( const Item * pItem ) const
 	{
-		_refreshHeader();
+		return m_header.size();		// We store size internally in the header.
 	}
-*/	
-	
+
+	Rect PackList::_itemGeo( const Item * pItem ) const
+	{
+		return Rect( _itemPos(pItem), m_header.size() );
+	}
+
+	void PackList::_itemNotified( Item * pItem, ItemNotif notification, void * pData )
+	{
+		if( notification == ItemNotif::SortOrderChanged )
+		{
+			m_sortOrder = m_header.sortOrder();
+			_sortEntries();
+		}
+	}
+
 
 } // namespace wg

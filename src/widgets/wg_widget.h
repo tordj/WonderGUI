@@ -79,7 +79,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 	
-	class Widget : public Receiver, public ItemHolder
+	class Widget : public Receiver, protected ItemHolder
 	{
 	friend class MsgRouter;
 	friend class InputHandler;
@@ -233,7 +233,10 @@ namespace wg
 		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for items to access
-		
+
+		virtual Object * _itemObject();
+		virtual const Object * _itemObject() const;
+
 		virtual Coord	_itemPos( const Item * pItem ) const;
 		virtual Size	_itemSize( const Item * pItem ) const;
 		virtual Rect	_itemGeo( const Item * pItem ) const;
@@ -248,7 +251,7 @@ namespace wg
 		virtual void	_itemVisibilityRequested( const Item * pItem );
 		virtual void	_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio );
 		
-		virtual void	_onItemNotify( Item * pItem, ItemNotif notification, void * pData );
+		virtual void	_itemNotified( Item * pItem, ItemNotif notification, void * pData );
 	
 		//
 	

@@ -209,7 +209,7 @@ namespace wg
 		if( m_pSkin )
 			textSize -= m_pSkin->contentPadding();
 	
-		m_text.onNewSize( textSize );
+		m_text.setSize( textSize );
 	}
 	
 

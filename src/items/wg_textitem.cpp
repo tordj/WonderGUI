@@ -27,7 +27,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	TextItem::TextItem( Widget * pWidget ) : TextBaseItem( pWidget )
+	TextItem::TextItem( ItemHolder * pHolder ) : TextBaseItem( pHolder )
 	{
 	}
 	

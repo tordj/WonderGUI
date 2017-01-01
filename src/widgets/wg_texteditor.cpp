@@ -173,9 +173,9 @@ namespace wg
 		int width = size.w;
 	
 		if( m_pSkin )
-			m_text.onNewSize(size - m_pSkin->contentPadding());
+			m_text.setSize(size - m_pSkin->contentPadding());
 		else
-			m_text.onNewSize(size);
+			m_text.setSize(size);
 	}
 
 } // namespace wg

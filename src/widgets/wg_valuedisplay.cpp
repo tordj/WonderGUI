@@ -87,7 +87,7 @@ namespace wg
 	
 	void ValueDisplay::_refresh( void )
 	{
-		m_item.onRefresh();
+		m_item.refresh();
 		Widget::_refresh();
 	}
 	

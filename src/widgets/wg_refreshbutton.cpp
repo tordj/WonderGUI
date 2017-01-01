@@ -183,7 +183,7 @@ namespace wg
 	void RefreshButton::_setSize( const Size& size )
 	{
 		Size contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
-		m_refreshText.onNewSize(contentSize);
+		m_refreshText.setSize(contentSize);
 	
 		Button::_setSize( size );
 	}

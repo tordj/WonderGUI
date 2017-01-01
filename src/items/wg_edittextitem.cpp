@@ -42,7 +42,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	EditTextItem::EditTextItem( Widget * pWidget ) : TextItem(pWidget)
+	EditTextItem::EditTextItem( ItemHolder * pHolder ) : TextItem(pHolder)
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
