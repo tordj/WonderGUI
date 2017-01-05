@@ -166,7 +166,7 @@ namespace wg
 
 		Rect textClip(_clip, textCanvas);
 
-		m_text.onRender(pDevice, textCanvas, textClip );
+		m_text.render(pDevice, textCanvas, textClip );
 	}
 	
 	//____ _refresh() _______________________________________________________

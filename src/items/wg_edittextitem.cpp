@@ -504,9 +504,9 @@ namespace wg
 	}
 	
 	
-	//____ onRender() ______________________________________________________________
+	//____ render() ______________________________________________________________
 	
-	void EditTextItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void EditTextItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
 		_textMapper()->renderItem(this, pDevice, _canvas, _clip);		
 	}

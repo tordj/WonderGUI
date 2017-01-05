@@ -337,7 +337,7 @@ namespace wg
 			pText->setState(m_state);		//TODO: Should be done when state actually is set.
 	
 			Rect clip(textRect,_clip);
-			pText->onRender(pDevice, textRect, clip );
+			pText->render(pDevice, textRect, clip );
 		}
 	}
 	

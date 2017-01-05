@@ -39,7 +39,7 @@ namespace wg
 	
 	class PackList;
 	typedef	StrongPtr<PackList,List_p>		PackList_p;
-	typedef	WeakPtr<PackList,List_wp>	PackList_wp;
+	typedef	WeakPtr<PackList,List_wp>		PackList_wp;
 	
 	class PackListHook;
 	typedef	HookTypePtr<PackListHook,ListHook_p>	PackListHook_p;
@@ -49,9 +49,9 @@ namespace wg
 		friend class PackList;
 		friend class HookArray<PackListHook>;
 	public:
-		virtual bool				isInstanceOf( const char * pClassName ) const;
-		virtual const char *		className( void ) const;
-		static const char			CLASSNAME[];
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
 		static PackListHook_p	cast( const Hook_p& pInterface );
 	
 		Coord			pos() const;
@@ -71,12 +71,12 @@ namespace wg
 		void			_requestRender( const Rect& rect );
 		void			_requestResize();
 	
-		Hook *		_prevHook() const;
-		Hook *		_nextHook() const;
+		Hook *			_prevHook() const;
+		Hook *			_nextHook() const;
 	
 		Container *	_parent() const;
 		
-		PackList *	m_pParent;
+		PackList *		m_pParent;
 		int				m_ofs;				// Offset in pixels for start of this list item.
 		int				m_length;			// Length in pixels of this list item. Includes widget padding.
 		int				m_prefBreadth;		// Prefereed breadth of this widget.
@@ -94,47 +94,47 @@ namespace wg
 	
 		//____ Interfaces ______________________________________
 	
-		ColumnHeader			header;
+		ColumnHeader		header;
 	
 		//____ Methods _________________________________________
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
+		virtual bool		isInstanceOf( const char * pClassName ) const;
+		virtual const char *className( void ) const;
+		static const char	CLASSNAME[];
 		static PackList_p	cast( const Object_p& pObject );
 	
 		PackListHook_p		addWidget( const Widget_p& pWidget );
 		PackListHook_p		insertWidget( const Widget_p& pWidget, const Widget_p& pSibling );
 		PackListHook_p		insertWidgetSorted( const Widget_p& pWidget );
 	
-		bool					removeWidget( const Widget_p& pWidget );
-		bool					clear();
+		bool				removeWidget( const Widget_p& pWidget );
+		bool				clear();
 	
-		void					setOrientation( Orientation orientation );
+		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 	
-		void					sortWidgets();
-		void					setSortOrder( SortOrder order );
-		SortOrder				getSortOrder() const { return m_sortOrder; }
+		void				sortWidgets();
+		void				setSortOrder( SortOrder order );
+		SortOrder			getSortOrder() const { return m_sortOrder; }
 	
-		void					setSortFunction( WidgetSortFunc pSortFunc );
+		void				setSortFunction( WidgetSortFunc pSortFunc );
 		WidgetSortFunc		sortFunction() const { return m_pSortFunc; }
 	
-		Size					preferredSize() const;
-		int						matchingHeight( int width ) const;
-		int						matchingWidth( int height ) const;
+		Size				preferredSize() const;
+		int					matchingHeight( int width ) const;
+		int					matchingWidth( int height ) const;
 	
-		bool					setMinEntrySize( Size min );
-		bool					setMaxEntrySize( Size max );
-		Size					minEntrySize() const { return m_minEntrySize; }
-		Size					maxEntrySize() const { return m_maxEntrySize; }
+		bool				setMinEntrySize( Size min );
+		bool				setMaxEntrySize( Size max );
+		Size				minEntrySize() const { return m_minEntrySize; }
+		Size				maxEntrySize() const { return m_maxEntrySize; }
 	
 	
 	
 	protected:
 		PackList();
 		virtual ~PackList();
-		Widget*		_newOfMyType() const { return new PackList(); };
+		Widget*			_newOfMyType() const { return new PackList(); };
 	
 		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
@@ -158,7 +158,7 @@ namespace wg
 		void			_onWidgetDisappeared( ListHook * pToBeRemoved );		// Call BEFORE widget is removed from m_hooks.
 	
 		Widget * 		_findWidget( const Coord& ofs, SearchMode mode );
-		ListHook *	_findEntry( const Coord& ofs );
+		ListHook *		_findEntry( const Coord& ofs );
 		int				_getInsertionPoint( const Widget * pWidget ) const;
 		void			_getChildGeo( Rect& geo, const PackListHook * pHook ) const;
 		void			_getEntryGeo( Rect& geo, const ListHook * pHook ) const;
@@ -173,10 +173,6 @@ namespace wg
 		void			_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso );
 		void			_refreshHeader();
 		bool			_sortEntries();
-	
-//		void			_requestRender(Item * pItem);
-//		void			_requestRender(Item * pItem, const Rect& rect );
-//		void			_requestResize(Item * pItem);
 	
 		Size			_paddedLimitedPreferredSize( Widget * pChild );
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
@@ -204,7 +200,7 @@ namespace wg
 		bool				m_bHorizontal;
 	
 		SortOrder			m_sortOrder;
-		WidgetSortFunc	m_pSortFunc;
+		WidgetSortFunc		m_pSortFunc;
 	
 		HookArray<PackListHook>	m_hooks;
 	

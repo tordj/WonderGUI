@@ -291,7 +291,7 @@ namespace wg
 	 	if( !m_label.isEmpty() )
 		{
 			Rect	textRect = m_icon.getTextRect( contentRect, iconRect );
-			m_label.onRender( pDevice, textRect, _clip );
+			m_label.render( pDevice, textRect, _clip );
 		}
 	}
 	

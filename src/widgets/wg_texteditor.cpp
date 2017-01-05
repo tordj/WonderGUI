@@ -110,7 +110,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		m_text.onRender( pDevice, canvas, _clip );	
+		m_text.render( pDevice, canvas, _clip );	
 	}
 	
 	//____ _refresh() _______________________________________________________

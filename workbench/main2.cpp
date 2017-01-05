@@ -40,6 +40,12 @@ void freeSDLSurfCallback( void * pSDLSurf )
 
 InputHandler * pDebug;
 
+int sortWidgets( const Widget * p1, const Widget * p2 )
+{
+	return p2->id() - p1->id();
+}
+
+
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
@@ -133,7 +139,7 @@ int main ( int argc, char** argv )
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 
-	pRoot->setDebugMode(true);
+//	pRoot->setDebugMode(true);
 	
 	Base::inputHandler()->setFocusedWindow( pRoot );
 
@@ -206,7 +212,7 @@ int main ( int argc, char** argv )
 	convertSDLFormat( &format, pSDLSurf->format );
 	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
-	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(2) );
+	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface( pListEntrySurface, 0, Border(2) );
 
 	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -214,6 +220,17 @@ int main ( int argc, char** argv )
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
 
+	pSDLSurf = IMG_Load( "../resources/up_down_arrow.png" );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pUpDownArrowSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SDL_FreeSurface( pSDLSurf );
+	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface( pUpDownArrowSurface, 0, Border(0) );
+
+	pSDLSurf = IMG_Load( "../resources/simple_icon.png" );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pSimpleIconSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SDL_FreeSurface( pSDLSurf );
+	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface( pSimpleIconSurface, Border(0) );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -309,31 +326,57 @@ int main ( int argc, char** argv )
 		pEditLine->grabFocus();
 	}
 
+	ScrollPanel_p pScrollPanel;
+	{
+		Scrollbar_p pScrollbar = Scrollbar::create();
+				
+		pScrollPanel = ScrollPanel::create();
+		pScrollPanel->setVerticalScrollbar( pScrollbar );
+
+		pFlexPanel->addWidget( pScrollPanel, FlexOrigo(0,0.75), Origo::SouthEast);
+	}
+
+
+
+
 	{
 		PackList_p pList = PackList::create();
 
-		pList->header.label.set("Label");
-		pList->header.setSkin( ColorSkin::create( Color::Aquamarine ) );
-		pList->setSelectMode( SelectMode::SingleEntry );
+		BoxSkin_p pHeaderSkin = BoxSkin::create( Color::Aquamarine, Border(2), Color::DarkRed );
+		pHeaderSkin->setContentPadding( 8 );
 
-		pList->setSkin( ColorSkin::create( Color::Chocolate ));
+		pList->header.label.set("Label");
+		pList->header.setSkin( pHeaderSkin );
+		pList->header.arrow.set( pUpDownArrowSkin, Origo::East );
+		pList->header.icon.set( pSimpleIconSkin );
+		
+		pList->setSortFunction( sortWidgets );
+		pList->setSelectMode( SelectMode::MultiEntries );
+
+		BoxSkin_p pListSkin = BoxSkin::create( Color::Chocolate, Border(2), Color::Yellow );
+		pListSkin->setContentPadding( 8 );
+		pList->setSkin( pListSkin );
 
 		pList->setEntrySkin( pListEntrySkin );
 		pList->setLassoSkin( ColorSkin::create( Color(0,0,0,128)));
 
 		TextDisplay_p pEntry1 = TextDisplay::create();
 		pEntry1->text.set("Entry1");
+		pEntry1->setId(1);
 		pList->addWidget(pEntry1);
 
 		TextDisplay_p pEntry2 = TextDisplay::create();
 		pEntry2->text.set("Entry2");
+		pEntry1->setId(2);
 		pList->addWidget(pEntry2);
 
 		TextDisplay_p pEntry3 = TextDisplay::create();
 		pEntry3->text.set("Entry3");
+		pEntry1->setId(3);
 		pList->addWidget(pEntry3);
 
-		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
+		pScrollPanel->setContent( pList );
+//		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
 	}
 

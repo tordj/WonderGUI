@@ -173,7 +173,7 @@ namespace wg
 		// Print text
 	
 	 	if( !m_text.isEmpty() )
-			m_text.onRender( pDevice, textRect, _clip );
+			m_text.render( pDevice, textRect, _clip );
 	}
 	
 	//____ _receive() ______________________________________________________________

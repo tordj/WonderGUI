@@ -64,6 +64,7 @@ namespace wg
 
 		bool			receive( const Msg_p& pMsg );
 
+		void			render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 
 
 	protected:

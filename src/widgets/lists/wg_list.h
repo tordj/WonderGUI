@@ -51,20 +51,20 @@ namespace wg
 	{
 		friend class List;
 	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
+		virtual bool		isInstanceOf( const char * pClassName ) const;
+		virtual const char *className( void ) const;
+		static const char	CLASSNAME[];
 		static ListHook_p	cast( const Hook_p& pInterface );
 	
-		ListHook_p	prev() const { return static_cast<ListHook*>(_prevHook()); }
-		ListHook_p	next() const { return static_cast<ListHook*>(_nextHook()); }
-		List_p		parent() const;
+		ListHook_p			prev() const { return static_cast<ListHook*>(_prevHook()); }
+		ListHook_p			next() const { return static_cast<ListHook*>(_nextHook()); }
+		List_p				parent() const;
 	
-		virtual bool	setVisible( bool bVisible );
-		bool			isVisible() { return m_bVisible; }
-	
-		virtual bool	setSelected( bool bSelected );
-		bool			isSelected() { return m_pWidget->state().isSelected(); }
+		virtual bool		setVisible( bool bVisible );
+		bool				isVisible() { return m_bVisible; }
+
+		virtual bool		setSelected( bool bSelected );
+		bool				isSelected() { return m_pWidget->state().isSelected(); }
 	
 	
 	protected:
@@ -85,18 +85,18 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static List_p	cast( const Object_p& pObject );
+		static List_p		cast( const Object_p& pObject );
 	
 		virtual void		setEntrySkin( const Skin_p& pSkin );
 		virtual bool		setEntrySkin( const Skin_p& pOddEntrySkin, const Skin_p& pEvenEntrySkin );
-		Skin_p			oddEntrySkin() const { return m_pEntrySkin[0]; }
-		Skin_p			evenEntrySkin() const { return m_pEntrySkin[1]; }
+		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
+		Skin_p				evenEntrySkin() const { return m_pEntrySkin[1]; }
 	
 		virtual void		setLassoSkin( const Skin_p& pSkin );
-		Skin_p			lassoSkin() const { return m_pLassoSkin; }
+		Skin_p				lassoSkin() const { return m_pLassoSkin; }
 	
 		virtual bool		setSelectMode( SelectMode mode );
-		SelectMode		selectMode() const { return m_selectMode; }
+		SelectMode			selectMode() const { return m_selectMode; }
 	
 	
 	
@@ -127,20 +127,18 @@ namespace wg
 	
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
-		void			_renderHeader( GfxDevice * pDevice, const Rect& _window, const Rect& _clip, 
-										const Skin_p& pSkin, TextItem * pText, IconItem * pLabelIcon, 
-										IconItem * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort );
 	
-		SelectMode	m_selectMode;
-		Skin_p		m_pEntrySkin[2];
-		Skin_p		m_pLassoSkin;
+	
+		SelectMode		m_selectMode;
+		Skin_p			m_pEntrySkin[2];
+		Skin_p			m_pLassoSkin;
 		bool			m_bOpaqueEntries;
 	
 		Coord			m_lassoBegin;
 		Coord			m_lassoEnd;
 	
-		ListHook_p	m_pFocusedEntry;
-		ListHook_p	m_pHoveredEntry;
+		ListHook_p		m_pFocusedEntry;
+		ListHook_p		m_pHoveredEntry;
 	};
 	
 	

@@ -96,7 +96,7 @@ namespace wg
 	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		Widget::_render(pDevice,_canvas,_window,_clip);
-		m_item.onRender(pDevice, _canvas, _clip);
+		m_item.render(pDevice, _canvas, _clip);
 	}
 	
 	//____ _cloneContent() _______________________________________________________

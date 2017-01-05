@@ -118,7 +118,7 @@ namespace wg
 		virtual void	_requestVisibility();
 		virtual void	_requestVisibility( const Rect& preferred, const Rect& prio );
 	
-		virtual Rect	_windowSection() const { return geo(); }			// Returns the window section within the canvas.
+		virtual Rect	_windowSection() const { return Rect(0,0,size()); }			// Returns the window section within the canvas.
 	
 	
 	

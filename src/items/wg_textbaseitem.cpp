@@ -155,9 +155,9 @@ namespace wg
 		_textMapper()->onResized(this,size, oldSize);
 	}
 	
-	//_____ onRender() _____________________________________________________________
+	//_____ render() _____________________________________________________________
 	
-	void  TextBaseItem::onRender( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void  TextBaseItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
 	{
 		_textMapper()->renderItem(this, pDevice, _canvas, _clip);
 	}

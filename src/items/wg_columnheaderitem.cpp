@@ -219,6 +219,40 @@ namespace wg
 		return false;
 	}
 
+	//____ render() ____________________________________________________________
+
+	void ColumnHeaderItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	{
+		Rect canvas( _canvas );
+		Rect clip( _canvas, _clip );
+	
+		if( m_pSkin )
+		{
+			m_pSkin->render( pDevice, canvas, m_state, _clip );
+			canvas = m_pSkin->contentRect( canvas, m_state );
+		}
+	
+		Rect sortRect = arrow.getIconRect( canvas );
+		Rect labelRect = arrow.getTextRect( canvas, sortRect );
+		Rect iconRect = icon.getIconRect( labelRect );
+		labelRect = icon.getTextRect( labelRect, iconRect );
+	
+		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
+		{
+			State iconState = m_state;
+			iconState.setSelected( m_sortOrder == SortOrder::Descending );
+			arrow.skin()->render( pDevice, sortRect, iconState, _clip );
+		}
+	
+		if( !icon.isEmpty() )
+			icon.skin()->render( pDevice, iconRect, m_state, _clip );
+	
+		if( !label.isEmpty() )
+			label.render( pDevice, labelRect, _clip );	
+	}
+
+
+
 	Object * ColumnHeaderItem::_itemObject()
 	{
 		return _object();

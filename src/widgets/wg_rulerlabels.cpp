@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/			
-				pLabel->textItem.onRender(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
+				pLabel->textItem.render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
 				pLabel = pLabel->next();
 			}
 		}
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->textItem.onRender( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
+				pLabel->textItem.render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
 				pLabel = pLabel->next();
 			}
 		}

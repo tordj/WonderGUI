@@ -317,7 +317,7 @@ namespace wg
 	Size PackList::preferredSize() const
 	{
 		Size sz;
-		Size header = m_header.size();
+		Size header = m_header.preferredSize();
 
 		if( m_bHorizontal )
 		{
@@ -342,13 +342,9 @@ namespace wg
 	
 	int PackList::matchingHeight( int width ) const
 	{
-		Size header = m_header.size();
-
 		if( m_bHorizontal )
 		{
-			int height =  m_contentPreferredBreadth;
-			if( header.h > height )
-				height = header.h;
+			int height =  std::max(m_contentPreferredBreadth, m_header.preferredSize().h);
 	
 			if( m_pSkin )
 				height += m_pSkin->contentPadding().h;
@@ -356,7 +352,7 @@ namespace wg
 		}
 		else
 		{
-			int height = header.h;
+			int height = m_header.matchingHeight(width);
 			if( m_pSkin )
 			{
 				Size pad = m_pSkin->contentPadding();
@@ -379,11 +375,9 @@ namespace wg
 	
 	int PackList::matchingWidth( int height ) const
 	{
-		Size header = m_header.size();
-
 		if( m_bHorizontal )
 		{
-			int width = header.w;
+			int width = m_header.matchingWidth( height );
 			if( m_pSkin )
 			{
 				Size pad = m_pSkin->contentPadding();
@@ -402,9 +396,7 @@ namespace wg
 		}
 		else
 		{
-			int width =  m_contentPreferredBreadth;
-			if( header.w > width )
-				width = header.w;
+			int width =  std::max(m_contentPreferredBreadth, m_header.preferredSize().w);
 	
 			if( m_pSkin )
 				width += m_pSkin->contentPadding().w;
@@ -541,7 +533,7 @@ namespace wg
 			Rect canvas = _headerGeo() + _canvas.pos();
 	
 			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-				_renderHeader( pDevice, canvas, *pRect, m_header.skin(), &m_header.label, &m_header.icon, &m_header.arrow, m_header.state(), true, bInvertedSort );
+				m_header.render( pDevice, canvas, *pRect );
 		}
 	
 		// Render Lasso
@@ -620,9 +612,17 @@ namespace wg
 	
 	//____ _setSize() ___________________________________________________________
 	
-	void PackList::_setSize( const Size& size )
+	void PackList::_setSize( const Size& _size )
 	{
-		List::_setSize(size);
+		List::_setSize(_size);
+
+		Size size = _size;
+		if( m_pSkin )
+			size -= m_pSkin->contentPadding();
+
+		Size headerSize = m_bHorizontal ? Size(m_header.matchingWidth(size.h), size.h) : Size( size.w, m_header.matchingHeight( size.w ));
+
+		m_header.setSize( headerSize );
 		
 		int newContentBreadth;
 	
@@ -1563,16 +1563,21 @@ namespace wg
 		return true;
 	}
 
+	//____ _itemSize() _________________________________________________________
 
 	Size PackList::_itemSize( const Item * pItem ) const
 	{
 		return m_header.size();		// We store size internally in the header.
 	}
 
+	//____ _itemGeo() __________________________________________________________
+
 	Rect PackList::_itemGeo( const Item * pItem ) const
 	{
 		return Rect( _itemPos(pItem), m_header.size() );
 	}
+
+	//____ _itemNotified() _____________________________________________________
 
 	void PackList::_itemNotified( Item * pItem, ItemNotif notification, void * pData )
 	{
@@ -1585,3 +1590,4 @@ namespace wg
 
 
 } // namespace wg
+	

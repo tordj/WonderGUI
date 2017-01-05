@@ -551,38 +551,5 @@ namespace wg
 		return nSelected + nDeselected;
 	}
 	
-	//____ _renderHeader() ________________________________________________________
-	
-	void List::_renderHeader( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip, 
-										const Skin_p& pSkin, TextItem * pText, IconItem * pLabelIcon, 
-										IconItem * pSortIcon, State state, bool bShowSortIcon, bool bInvertedSort )
-	{
-		Rect canvas( _canvas );
-		Rect clip( _canvas, _clip );
-	
-		if( pSkin )
-		{
-			pSkin->render( pDevice, canvas, state, _clip );
-			canvas = pSkin->contentRect( canvas, state );
-		}
-	
-		Rect sortRect = pSortIcon->getIconRect( canvas );
-		Rect labelRect = pSortIcon->getTextRect( canvas, sortRect );
-		Rect iconRect = pLabelIcon->getIconRect( labelRect );
-		labelRect = pLabelIcon->getTextRect( labelRect, iconRect );
-	
-		if( bShowSortIcon && !pSortIcon->isEmpty() )
-		{
-			State iconState = state;
-			iconState.setSelected( bInvertedSort );
-			pSortIcon->skin()->render( pDevice, sortRect, iconState, _clip );
-		}
-	
-		if( !pLabelIcon->isEmpty() )
-			pLabelIcon->skin()->render( pDevice, iconRect, state, _clip );
-	
-		if( !pText->isEmpty() )
-			pText->onRender( pDevice, labelRect, _clip );
-	}
 
 } // namespace wg

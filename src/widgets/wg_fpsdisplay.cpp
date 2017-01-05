@@ -140,8 +140,8 @@ namespace wg
 		else
 			content = _canvas;
 
-		m_labelsText.onRender( pDevice, content, _clip );
-		m_valuesText.onRender( pDevice, content, _clip );	
+		m_labelsText.render( pDevice, content, _clip );
+		m_valuesText.render( pDevice, content, _clip );	
 	}
 	
 	
