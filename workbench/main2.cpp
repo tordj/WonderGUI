@@ -329,7 +329,8 @@ int main ( int argc, char** argv )
 	ScrollPanel_p pScrollPanel;
 	{
 		Scrollbar_p pScrollbar = Scrollbar::create();
-				
+		pScrollbar->setBackgroundSkin( ColorSkin::create( Color::Green ));
+		pScrollbar->setHandleSkin( ColorSkin::create( Color::Red ));
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->setVerticalScrollbar( pScrollbar );
 
@@ -360,20 +361,33 @@ int main ( int argc, char** argv )
 		pList->setEntrySkin( pListEntrySkin );
 		pList->setLassoSkin( ColorSkin::create( Color(0,0,0,128)));
 
-		TextDisplay_p pEntry1 = TextDisplay::create();
-		pEntry1->text.set("Entry1");
-		pEntry1->setId(1);
-		pList->addWidget(pEntry1);
 
-		TextDisplay_p pEntry2 = TextDisplay::create();
-		pEntry2->text.set("Entry2");
-		pEntry1->setId(2);
-		pList->addWidget(pEntry2);
+		BoxSkin_p pEditBoxSkin = BoxSkin::create(Color::Black, 1, Color::White );
+		pEditBoxSkin->setContentPadding(2);
 
-		TextDisplay_p pEntry3 = TextDisplay::create();
-		pEntry3->text.set("Entry3");
-		pEntry1->setId(3);
-		pList->addWidget(pEntry3);
+		for( int i = 0 ; i < 20 ; i++ )
+		{
+			auto p = PackPanel::create();
+			p->setId(i);
+
+
+			auto p1 = TextDisplay::create();
+
+			char label[15] = { "Entry " };
+			itoa( i, label+6, 10 );
+
+			p1->text.set( label );
+
+			p->addWidget(p1);
+
+			auto p2 = TextEditor::create();
+			p2->setSkin( pEditBoxSkin );
+			p2->text.set( "Edit me!");
+			p->addWidget(p2);
+
+			pList->addWidget(p);
+		}
+
 
 		pScrollPanel->setContent( pList );
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);

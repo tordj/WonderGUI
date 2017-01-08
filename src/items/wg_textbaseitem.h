@@ -110,8 +110,11 @@ namespace wg
 	
 	};
 	
-	struct EditState
+	class EditState
 	{
+	public:
+		EditState() : bCaret(false), bShiftDown(false), bButtonDown(false), selectOfs(0), caretOfs(0), wantedOfs(-1) {}
+
 		bool 			bCaret;			// Set if caret should be displayed.
 		bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
 		bool			bButtonDown;	// Set when mouse button was pressed inside item and still is down.

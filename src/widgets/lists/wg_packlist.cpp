@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <algorithm>
 #include <wg_packlist.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -316,24 +317,21 @@ namespace wg
 	
 	Size PackList::preferredSize() const
 	{
-		Size sz;
+		Size sz = m_pSkin ? m_pSkin->contentPadding() : Size();
 		Size header = m_header.preferredSize();
 
 		if( m_bHorizontal )
 		{
-			sz =  Size(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
+			sz +=  Size(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
 			if( header.h > sz.h )
 				sz.h = header.h;
 		}
 		else
 		{
-			sz = Size(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
+			sz += Size(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
 			if( header.w > sz.w )
 				sz.w = header.w;
 		}
-	
-		if( m_pSkin )
-			sz += m_pSkin->contentPadding();
 	
 		return sz;
 	}
@@ -344,11 +342,11 @@ namespace wg
 	{
 		if( m_bHorizontal )
 		{
-			int height =  std::max(m_contentPreferredBreadth, m_header.preferredSize().h);
-	
+			int height = m_contentPreferredBreadth;
 			if( m_pSkin )
 				height += m_pSkin->contentPadding().h;
-			return height;
+
+			return std::max(height, m_header.preferredSize().h);
 		}
 		else
 		{
@@ -396,11 +394,11 @@ namespace wg
 		}
 		else
 		{
-			int width =  std::max(m_contentPreferredBreadth, m_header.preferredSize().w);
-	
+			int width = m_contentPreferredBreadth;
 			if( m_pSkin )
 				width += m_pSkin->contentPadding().w;
-			return width;
+
+			return std::max(width, m_header.preferredSize().w);
 		}
 	}
 	
@@ -616,14 +614,13 @@ namespace wg
 	{
 		List::_setSize(_size);
 
+		Size headerSize = m_bHorizontal ? Size(m_header.matchingWidth(_size.h), _size.h) : Size( _size.w, m_header.matchingHeight( _size.w ));
+		m_header.setSize( headerSize );
+
 		Size size = _size;
 		if( m_pSkin )
 			size -= m_pSkin->contentPadding();
 
-		Size headerSize = m_bHorizontal ? Size(m_header.matchingWidth(size.h), size.h) : Size( size.w, m_header.matchingHeight( size.w ));
-
-		m_header.setSize( headerSize );
-		
 		int newContentBreadth;
 	
 		if( m_bHorizontal )
@@ -904,10 +901,13 @@ namespace wg
 	
 		if( prefBreadth != pHook->m_prefBreadth || prefLength != pHook->m_length )
 		{
-			_subFromContentPreferredSize( pHook->m_length, pHook->m_prefBreadth );
+			// NOTE: Order here is important!
+
 			_addToContentPreferredSize( prefLength, prefBreadth );
-	
+			int oldPrefBreadth = pHook->m_prefBreadth;
 			pHook->m_prefBreadth = prefBreadth;
+			_subFromContentPreferredSize( pHook->m_length, oldPrefBreadth );
+	
 			bReqResize = true;
 		}
 	
@@ -1174,7 +1174,7 @@ namespace wg
 					else if( p->m_prefBreadth > highest )
 					{
 						highest = p->m_prefBreadth;
-						m_nbPreferredBreadthEntries = 0;
+						m_nbPreferredBreadthEntries = 1;
 					}
 				}
 				m_contentPreferredBreadth = highest;
@@ -1561,6 +1561,14 @@ namespace wg
 		_updateChildOfsFrom( m_hooks.begin() );
 		_requestRenderChildrenFrom( m_hooks.begin() );	// Request render on dirty area
 		return true;
+	}
+
+	//____ _itemPos() ____________________________________________________________
+
+	Coord PackList::_itemPos( const Item * pItem ) const
+	{
+		Coord c = m_bHorizontal ? Coord(_windowSection().x, 0 ) : Coord(0, _windowSection().y );
+		return c;
 	}
 
 	//____ _itemSize() _________________________________________________________

@@ -44,9 +44,6 @@ namespace wg
 	
 	EditTextItem::EditTextItem( ItemHolder * pHolder ) : TextItem(pHolder)
 	{
-		m_editState.caretOfs = 0;
-		m_editState.selectOfs = 0;
-		m_editState.wantedOfs = -1;
 		m_editMode = TextEditMode::Editable;
 		m_maxLines = 0;
 		m_maxChars = 0;

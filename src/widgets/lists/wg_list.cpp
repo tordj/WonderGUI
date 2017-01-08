@@ -207,9 +207,9 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
-			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
 			{	
-				MouseEnterMsg_p pMsg = MouseEnterMsg::cast(_pMsg);
+				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
 				{

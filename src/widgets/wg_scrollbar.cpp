@@ -302,6 +302,61 @@ namespace wg
 		_requestRender();
 	}
 	
+	//____ setBackgroundSkin() ____________________________________________________________
+
+	void Scrollbar::setBackgroundSkin( const Skin_p& pSkin )
+	{
+		if( pSkin != m_pBgSkin )
+		{
+			m_pBgSkin = pSkin;
+
+			_updateMinSize();
+			_requestRender();
+		}
+	}
+
+	//____ setHandleSkin() ____________________________________________________________
+
+	void Scrollbar::setHandleSkin( const Skin_p& pSkin )
+	{
+		if( pSkin != m_pHandleSkin )
+		{
+			m_pHandleSkin = pSkin;
+
+			_updateMinSize();
+			_requestRender();
+		}
+	}
+
+	//____ setBwdButtonSkin() ____________________________________________________________
+
+	void Scrollbar::setBwdButtonSkin( const Skin_p& pSkin )
+	{
+		if( pSkin != m_pBtnBwdSkin )
+		{
+			m_pBtnBwdSkin = pSkin;
+
+			_headerFooterChanged();
+			_updateMinSize();
+			_requestRender();
+		}
+	}
+
+	//____ setFwdButtonSkin() ____________________________________________________________
+
+	void Scrollbar::setFwdButtonSkin( const Skin_p& pSkin )
+	{
+		if( pSkin != m_pBtnFwdSkin )
+		{
+			m_pBtnFwdSkin = pSkin;
+
+			_headerFooterChanged();
+			_updateMinSize();
+			_requestRender();
+		}
+	}
+
+
 	//____ setButtonLayout() ______________________________________________________
 	/**
 	 * Set the layout of the scrollbar buttons

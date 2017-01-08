@@ -190,6 +190,7 @@ namespace wg
 
 		// Support methods for header
 
+		Coord	_itemPos( const Item * pItem ) const;
 		Size	_itemSize( const Item * pItem ) const;
 		Rect	_itemGeo( const Item * pItem ) const;
 

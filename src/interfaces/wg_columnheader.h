@@ -63,28 +63,28 @@ namespace wg
 	public:
 		ColumnHeader(ColumnHeaderItem* pItem);
 	
-		virtual bool				isInstanceOf( const char * pClassName ) const;
-		virtual const char *		className( void ) const;
-		static const char			CLASSNAME[];
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
 		static ColumnHeader_p	cast( const Interface_p& pInterface );
 		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(),this); }
 	
 		//____ Interfaces ______________________________________
 	
-		Icon				icon;
-		Icon				arrow;
+		Icon			icon;
+		Icon			arrow;
 		ModText			label;
 	
 		//____ Methods _________________________________________
 	
-		inline void			setSkin( const Skin_p& pSkin ) { m_pItem->setSkin(pSkin); }
+		inline void		setSkin( const Skin_p& pSkin ) { m_pItem->setSkin(pSkin); }
 		inline Skin_p	skin() const { return m_pItem->skin(); }
 	
 	
 	protected:
 		Object * 			_object() const;
 	
-		ColumnHeaderItem *		m_pItem;
+		ColumnHeaderItem *	m_pItem;
 	};
 	
 

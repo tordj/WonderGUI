@@ -39,7 +39,12 @@ namespace wg
 	typedef	StrongPtr<AnimPlayer,Widget_p>		AnimPlayer_p;
 	typedef	WeakPtr<AnimPlayer,Widget_wp>	AnimPlayer_wp;
 	
-	
+	//____ AnimPlayer ____________________________________________________________
+	/**
+	* @breif A widget for playing simple animations.
+	*
+	**/
+
 	class AnimPlayer:public Widget
 	{
 	public:

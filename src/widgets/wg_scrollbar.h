@@ -106,29 +106,29 @@ namespace wg
 	
 			//____ Methods __________________________________________
 	
-			inline float			handlePos() const;						///< @brief Get position of the scrollbar handle.
-			inline float			handleSize() const;						///< @brief Get the size of the scrollbar handle.
-			inline Skin_p 		backgroundSkin() const;					///< @brief Get the skin used as a background for the handle slide area.
-			inline Skin_p 		handleSkin() const;						///< @brief Get the skin used for the scrollbar handle.
-			inline Skin_p 		bwdButtonSkin() const;					///< @brief Get the skin used for the backward button.
-			inline Skin_p 		fwdButtonSkin() const;					///< @brief Get the skin used for the forward button.
-			inline BtnLayout		buttonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
+			inline float			handlePos() const;					///< @brief Get position of the scrollbar handle.
+			inline float			handleSize() const;					///< @brief Get the size of the scrollbar handle.
+			inline Skin_p 			backgroundSkin() const;				///< @brief Get the skin used as a background for the handle slide area.
+			inline Skin_p 			handleSkin() const;					///< @brief Get the skin used for the scrollbar handle.
+			inline Skin_p 			bwdButtonSkin() const;				///< @brief Get the skin used for the backward button.
+			inline Skin_p 			fwdButtonSkin() const;				///< @brief Get the skin used for the forward button.
+			inline BtnLayout		buttonLayout() const;				///< @brief Get the layout of the forward/backward buttons.
 	
 			void			setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
 			inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 	
-			void		setBackgroundPressMode( BgPressMode mode );			///< @brief Set action for mouse press on scrollbar background.
+			void		setBackgroundPressMode( BgPressMode mode );		///< @brief Set action for mouse press on scrollbar background.
 			inline BgPressMode backgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
 	
-			void	setHandle( float pos, float size );						///< @brief Set relative size and position of scrollbar handle.
-			void	setHandlePos( float pos );								///< @brief Set relative position of scrollbar handle.
-			void	setHandlePixelPos( int pos );								///< @brief Set pixel position of scrollbar handle.
-			void	setHandleSize( float size );							///< @brief Set size of scrollbar handle.
+			void	setHandle( float pos, float size );					///< @brief Set relative size and position of scrollbar handle.
+			void	setHandlePos( float pos );							///< @brief Set relative position of scrollbar handle.
+			void	setHandlePixelPos( int pos );						///< @brief Set pixel position of scrollbar handle.
+			void	setHandleSize( float size );						///< @brief Set size of scrollbar handle.
 	
 			void	setBackgroundSkin( const Skin_p& pSkin );			///< @brief Set skin for background of handle slide area.
 			void	setHandleSkin( const Skin_p& pSkin );				///< @brief Set skin for scrollbar handle.
-			void	setBwdButtonSkin( const Skin_p& pSkin );				///< @brief Set skin for forward button.
-			void	setFwdButtonSkin( const Skin_p& pSkin );				///< @brief Set skin for backward button.
+			void	setBwdButtonSkin( const Skin_p& pSkin );			///< @brief Set skin for forward button.
+			void	setFwdButtonSkin( const Skin_p& pSkin );			///< @brief Set skin for backward button.
 	
 	
 			void	setSkins( const Skin_p& pBaseSkin, const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin,
