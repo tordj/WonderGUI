@@ -257,6 +257,9 @@ namespace wg
 	
 		int				m_id;
 		Hook *			m_pHook;
+
+		WidgetHolder *	m_pHolder;
+		void *			m_pHolderBag;
 	
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

@@ -269,6 +269,8 @@
     <File Name="../../src/base/wg_dummyfont.cpp"/>
     <File Name="../../src/base/wg_dummyfont.h"/>
     <File Name="../../src/base/wg_itemholder.h"/>
+    <File Name="../../src/base/wg_widgetholder.cpp"/>
+    <File Name="../../src/base/wg_widgetholder.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
