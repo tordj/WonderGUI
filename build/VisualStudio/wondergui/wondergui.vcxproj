@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\..\src\base\wg_types.h" />
     <ClInclude Include="..\..\..\src\base\wg_util.h" />
     <ClInclude Include="..\..\..\src\base\wg_vectorfont.h" />
+    <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_edittext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_editvalue.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\..\..\src\items\wg_textbaseitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_textitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_valueitem.h" />
+    <ClInclude Include="..\..\..\src\items\wg_widgetitem.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
@@ -250,6 +252,7 @@
     <ClCompile Include="..\..\..\src\base\wg_togglegroup.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_vectorfont.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_widgetholder.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_edittext.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_editvalue.cpp" />
@@ -272,6 +275,7 @@
     <ClCompile Include="..\..\..\src\items\wg_textbaseitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_textitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_valueitem.cpp" />
+    <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />

@@ -41,7 +41,7 @@
 
 namespace wg 
 {
-	struct EditState;
+	class EditState;
 	
 	//____ TextBaseItem __________________________________________________________________
 	

@@ -27,6 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
+
 namespace wg 
 {
 	
@@ -44,7 +45,7 @@ namespace wg
 	 * Base class for all widgets that can hold child widgets.
 	 */
 	
-	class Container : public Widget
+	class Container : public Widget, protected WidgetHolder
 	{
 		friend class MsgRouter;
 	
@@ -92,6 +93,38 @@ namespace wg
 			Container();
 			virtual ~Container() {};
 			
+			// WidgetHolder methods, default implementations for widgets
+
+			/* Left to implement in individual classes:
+			
+				Coord			_childPos( void * pChildRef ) const;
+				Size			_childSize( void * pChildRef ) const;
+
+				void	_childRequestRender( void * pChildRef );
+				void	_childRequestRender( void * pChildRef, const Rect& rect );
+				void	_childRequestResize( void * pChildRef );
+
+				Widget *	_prevChild( void * pChildRef ) const;
+				Widget *	_nextChild( void * pChildRef ) const;
+			*/
+
+
+			virtual Coord			_childGlobalPos( void * pChildRef ) const;
+
+			virtual bool			_isChildVisible( void * pChildRef ) const;
+			virtual Rect			_childWindowSection( void * pChildRef ) const;		// Returns the window section within the childs canvas.
+
+			virtual Container *  	_childParent();
+			virtual RootPanel *		_root();
+
+			virtual bool			_childRequestFocus( void * pChildRef, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( void * pChildRef, Widget * pWidget );
+
+			virtual void			_childRequestInView( void * pChildRef );
+			virtual void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
+
+			//
+
 			virtual bool			_isPanel() const;
 	
 			virtual Hook*			_firstHook() const = 0;

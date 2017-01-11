@@ -19,10 +19,26 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef	WG_WIDGETITEM_DOT_H
+#define WG_WIDGETITEM_DOT_H
 
-#include <wg_widgetholder.h>
-#include <wg_container.h>
+#include <wg_item.h>
 
-namespace wg
+namespace wg 
 {
-}
+	
+	//____ WidgetItem ____________________________________________________________
+	
+	class WidgetItem : public Item
+	{
+	public:
+		WidgetItem(ItemHolder * pHolder);
+	
+	
+	protected:
+	};
+	
+	
+
+} // namespace wg
+#endif //WG_WIDGETITEM_DOT_H

@@ -49,7 +49,7 @@
 
 namespace wg 
 {
-	struct EditState;
+	class EditState;
 	class TextBaseItem;
 	
 	class GfxDevice;

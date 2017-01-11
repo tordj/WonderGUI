@@ -47,6 +47,9 @@
 #	include <wg_itemholder.h>
 #endif
 
+#ifndef WG_WIDGETHOLDER_DOT_H
+#	include <wg_widgetholder.h>
+#endif
 
 namespace wg 
 {
@@ -59,6 +62,7 @@ namespace wg
 	class Layer;
 	class MsgRouter;
 	class Patches;
+	class WidgetHolder;
 	
 	class Widget;
 	typedef	StrongPtr<Widget,Receiver_p>	Widget_p;
@@ -198,19 +202,19 @@ namespace wg
 	
 		// Convenient calls to hook
 	
-		inline void		_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }
-		inline void		_requestRender( const Rect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
-		inline void		_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
-		inline void		_requestVisibility() const { if( m_pHook ) m_pHook->_requestVisibility(); }
-		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { if( m_pHook ) m_pHook->_requestVisibility( preferred, prio ); }
+		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef ); }
+		inline void		_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef, rect ); }
+		inline void		_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pHoldersRef ); }
+		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pHoldersRef ); }
+		inline void		_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pHoldersRef, mustHaveArea, niceToHaveArea ); }
 		
 	
-		inline Widget *	_nextSibling() const { if( m_pHook ) {Hook * p = m_pHook->_nextHook(); if( p ) return p->m_pWidget; } return 0; }
-		inline Widget *	_prevSibling() const { if( m_pHook ) {Hook * p = m_pHook->_prevHook(); if( p ) return p->m_pWidget; } return 0; }
+		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pHoldersRef ); else return nullptr; }
+		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pHoldersRef ); else return nullptr; }
 		inline Hook *	_hook() const { return m_pHook; }
-		inline Container *	_parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
+		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
 	
-		inline Rect		_windowSection() const { if( m_pHook ) return m_pHook->_windowSection(); return Rect(); }
+		inline Rect		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pHoldersRef ); return Rect(); }
 	
 		// To be overloaded by Widget
 	
@@ -259,7 +263,7 @@ namespace wg
 		Hook *			m_pHook;
 
 		WidgetHolder *	m_pHolder;
-		void *			m_pHolderBag;
+		void *			m_pHoldersRef;
 	
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

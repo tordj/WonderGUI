@@ -75,7 +75,63 @@ namespace wg
 	{
 		return true;
 	}
-	
+
+	 Coord Container::_childGlobalPos( void * pChildRef ) const
+	 {
+		 return _childPos(pChildRef) + globalPos();
+	 }
+
+	 bool Container::_isChildVisible( void * pChildRef ) const
+	 {
+		 return true;
+	 }
+
+	Rect Container::_childWindowSection( void * pChildRef ) const
+	{
+		return Rect( 0,0, _childSize( pChildRef ) );
+	}
+
+	 Container * Container::_childParent()
+	 {
+		 return this;
+	 }
+
+	 RootPanel * Container::_root()
+	 {
+		 return m_pHolder ? m_pHolder->_root() : nullptr;
+	 }
+
+	 bool Container::_childRequestFocus( void * pChildRef, Widget * pWidget )
+	 {
+		 return m_pHolder ? m_pHolder->_childRequestFocus( m_pHoldersRef, pWidget ) : false;
+	 }
+
+	 bool Container::_childReleaseFocus( void * pChildRef, Widget * pWidget )
+	 {
+		 return m_pHolder ? m_pHolder->_childReleaseFocus( m_pHoldersRef, pWidget ) : false;
+	 }
+
+	 void Container::_childRequestInView( void * pChildRef )
+	 {
+		 if( m_pHolder )
+		 {
+			 Rect area( _childPos( pChildRef ), _childSize( pChildRef ) );
+			 m_pHolder->_childRequestInView( m_pHoldersRef, area, area );
+		 }
+	 }
+
+	 void Container::_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	 {
+		 if( m_pHolder )
+		 {
+			 Coord pos( _childPos( pChildRef ) );
+			 m_pHolder->_childRequestInView( m_pHoldersRef, mustHaveArea + pos, niceToHaveArea + pos );
+		 }
+	 }
+
+
+
+
 	//____ _isPanel() ______________________________________________________________
 	
 	bool Container::_isPanel() const

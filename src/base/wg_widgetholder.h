@@ -24,48 +24,49 @@
 #ifndef WG_WIDGETHOLDER_DOT_H
 #define WG_WIDGETHOLDER_DOT_H
 
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
+#endif
+
 namespace wg 
 {
+	class Container;
+	class RootPanel;
+	class Widget;
 
 	class WidgetHolder
 	{
 	public:
-		virtual Coord			_widgetPos( void * pChildRef ) const;			///< Get the local position of the widget.
-		virtual Size			_widgetSize( void * pChildRef ) const;						///< Get the size of the widget.
-		virtual Rect			_widgetGeo( void * pChildRef ) const;						///< Get the local geometry of the widget.
-		virtual Coord			_widgetGlobalPos( void * pChildRef ) const;
-		virtual Rect			_widgetGlobalGeo( void * pChildRef ) const;
+		virtual Coord			_childPos( void * pChildRef ) const = 0;				///< Get the local position of the widget.
+		virtual Coord			_childGlobalPos( void * pChildRef ) const = 0;
+
+		virtual Size			_childSize( void * pChildRef ) const = 0;
+
+		virtual bool			_isChildVisible( void * pChildRef ) const = 0;
+		virtual Rect			_childWindowSection( void * pChildRef ) const = 0;		// Returns the window section within the childs canvas.
+
 	
-	
-		virtual Container *  	_parent() const;
-		virtual RootPanel *		_root() const;
+		virtual Container *  	_childParent() = 0;
+		virtual RootPanel *		_root() = 0;
 
 
-
-		virtual void	_widgetRenderRequested( void * pChildRef );
-		virtual void	_widgetRenderRequested( void * pChildRef, const Rect& rect );
-		virtual void	_widgetResizeRequested( void * pChildRef );
+		virtual void	_childRequestRender( void * pChildRef ) = 0;
+		virtual void	_childRequestRender( void * pChildRef, const Rect& rect ) = 0;
+		virtual void	_childRequestResize( void * pChildRef ) = 0;
 	
-		inline  bool	_requestFocus() { return _requestFocus(m_pWidget); }
-		virtual bool	_requestFocus( Widget * pWidget );					// Request focus on behalf of child/grandchild.
-		inline  bool	_releaseFocus() { return _releaseFocus(m_pWidget); }
-		virtual bool	_releaseFocus( Widget * pWidget );
+		virtual bool	_childRequestFocus( void * pChildRef, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
+		virtual bool	_childReleaseFocus( void * pChildRef, Widget * pWidget ) = 0;
 	
-		virtual void	_requestVisibility();
-		virtual void	_requestVisibility( const Rect& preferred, const Rect& prio );
+		virtual void	_childRequestInView( void * pChildRef ) = 0;
+		virtual void	_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
 	
-		virtual Rect	_windowSection() const { return Rect(0,0,size()); }			// Returns the window section within the canvas.
-	
-	
-	
-		//
-	
-		virtual Hook *	_prevHook() const = 0;
-		virtual Hook *	_nextHook() const = 0;
-		virtual bool		_isVisible() const;
+		
+		virtual Widget *	_prevChild( void * pChildRef ) const = 0;
+		virtual Widget *	_nextChild( void * pChildRef ) const = 0;
 		
 	};
 	
+
 	
 }
 

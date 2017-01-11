@@ -263,7 +263,7 @@ namespace wg
 			
 			// Possibly remove overlays from the back, put them into dirty rects for re-render
 			
-			while( m_afterglowRects.size() > m_afterglowFrames+1 )
+			while( (int) m_afterglowRects.size() > m_afterglowFrames+1 )
 			{
 				m_dirtyPatches.add( &m_afterglowRects.back() );
 				m_afterglowRects.pop_back();
@@ -411,6 +411,89 @@ namespace wg
 		return m_pFocusedChild.rawPtr(); 
 	}
 
+
+	//____ _childPos() ________________________________________________________
+
+	Coord RootPanel::_childPos( void * pChildRef ) const
+	{
+		return geo().pos();
+	}
+
+	Coord RootPanel::_childGlobalPos( void * pChildRef ) const
+	{
+		return geo().pos();
+	}
+
+	Size RootPanel::_childSize( void * pChildRef ) const
+	{
+		return geo().size();
+	}
+
+	bool RootPanel::_isChildVisible( void * pChildRef ) const
+	{
+		return true;
+	}
+
+	Rect RootPanel::_childWindowSection( void * pChildRef ) const
+	{
+		return geo();
+	}
+
+
+	Container * RootPanel::_childParent()
+	{
+		return nullptr;
+	}
+
+	RootPanel * RootPanel::_root()
+	{
+		return this;
+	}
+
+	void RootPanel::_childRequestRender( void * pChildRef )
+	{
+		if( m_bVisible )
+			addDirtyPatch( geo() );
+	}
+
+	void RootPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		if( m_bVisible )
+			addDirtyPatch( Rect( geo().pos() + rect.pos(), rect.size() ) );
+	}
+	void RootPanel::_childRequestResize( void * pChildRef )
+	{
+		// Do nothing, root ignores resize requests.
+	}
+
+	bool RootPanel::_childRequestFocus( void * pChildRef, Widget * pWidget )
+	{
+		return _focusRequested( pWidget );
+	}
+
+	bool RootPanel::_childReleaseFocus( void * pChildRef, Widget * pWidget )
+	{
+		return _focusReleased( pWidget );
+	}
+
+	void RootPanel::_childRequestInView( void * pChildRef )
+	{
+		// Do nothing, root ignores inView requests.
+	}
+	void RootPanel::_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	{
+		// Do nothing, root ignores inView requests.
+	}
+
+	Widget * RootPanel::_prevChild( void * pChildRef ) const
+	{
+		return nullptr;
+	}
+
+	Widget * RootPanel::_nextChild( void * pChildRef ) const
+	{
+		return nullptr;
+	}
 	
 	///////////////////////////////////////////////////////////////////////////////
 	

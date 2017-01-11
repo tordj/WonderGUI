@@ -100,8 +100,8 @@ namespace wg
 	public:
 		static ScrollPanel_p	create() { return ScrollPanel_p(new ScrollPanel()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ScrollPanel_p	cast( const Object_p& pObject );
 	
@@ -133,7 +133,7 @@ namespace wg
 		Size		contentSize() { return m_contentSize; };
 	
 		void		setContentOrigo( Origo origo );
-		Origo contentOrigo() const { return m_contentOrigo; }
+		Origo		contentOrigo() const { return m_contentOrigo; }
 	
 		void		setContentSizePolicy( SizePolicy widthPolicy, SizePolicy heightPolicy );
 		SizePolicy	contentWidthPolicy() const { return m_widthPolicy; }
@@ -178,16 +178,16 @@ namespace wg
 		bool		autoScrollY() const { return m_bAutoScrollY; }
 	
 		ScrollHook_p setHorizontalScrollbar( const Scrollbar_p& pScrollbar );
-		void			removeHorizontalScrollbar() {setHorizontalScrollbar(0);}
+		void		removeHorizontalScrollbar() {setHorizontalScrollbar(0);}
 		Scrollbar_p	horizontalScrollbar() const;
 	
-		ScrollHook_p	setVerticalScrollbar( const Scrollbar_p& pScrollbar );
-		void			removeVerticalScrollbar() {setVerticalScrollbar(0);}
+		ScrollHook_p setVerticalScrollbar( const Scrollbar_p& pScrollbar );
+		void		removeVerticalScrollbar() {setVerticalScrollbar(0);}
 		Scrollbar_p	verticalScrollbar() const;
 	
-		ScrollHook_p	setContent( const Widget_p& pContent );
-		void			removeContent() {setContent(0); }
-		Widget_p		content() const;
+		ScrollHook_p setContent( const Widget_p& pContent );
+		void		removeContent() {setContent(0); }
+		Widget_p	content() const;
 	
 		bool		removeWidget( const Widget_p& pWidget );
 		bool		clear();
@@ -207,7 +207,7 @@ namespace wg
 		bool		overlayScrollbars() const { return m_bOverlayScrollbars; }
 	
 		void		setCornerSkin( const Skin_p& pSkin );
-		Skin_p	cornerSkin() const { return m_pCornerSkin; }
+		Skin_p		cornerSkin() const { return m_pCornerSkin; }
 	
 		virtual void setSkin( const Skin_p& pSkin );
 	
@@ -249,7 +249,7 @@ namespace wg
 	
 			float		_setPosition( float fraction );
 	
-			Widget*	_getWidget();
+			Widget*		_getWidget();
 			float		_getHandlePosition();
 			float		_getHandleSize();
 	
@@ -279,11 +279,11 @@ namespace wg
 		bool		_alphaTest( const Coord& ofs );
 		void		_cloneContent( const Widget * _pOrg );
 	
-		Hook *	_firstHookWithGeo( Rect& geo ) const;
-		Hook *	_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
+		Hook *		_firstHookWithGeo( Rect& geo ) const;
+		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
-		Hook *	_lastHookWithGeo( Rect& geo ) const;
-		Hook *	_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
+		Hook *		_lastHookWithGeo( Rect& geo ) const;
+		Hook *		_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
 	
 		Size		_calcContentSize( Size mySize );
@@ -323,11 +323,11 @@ namespace wg
 	
 		bool		m_bOverlayScrollbars;
 		
-		ScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
+		ScrollHook	m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 	
 		SizePolicy	m_widthPolicy;
 		SizePolicy	m_heightPolicy;
-		Origo	m_contentOrigo;		// Origo when content is smaller than window
+		Origo		m_contentOrigo;		// Origo when content is smaller than window
 	
 		MyScrollbarTarget	m_scrollbarTargets[2];			// Order: Vertical, horizontal
 	

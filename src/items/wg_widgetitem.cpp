@@ -20,9 +20,10 @@
 
 =========================================================================*/
 
-#include <wg_widgetholder.h>
-#include <wg_container.h>
+#include <wg_widgetitem.h>
 
-namespace wg
+namespace wg 
 {
-}
+
+
+} // namespace wg

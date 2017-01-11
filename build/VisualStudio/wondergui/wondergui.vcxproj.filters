@@ -398,6 +398,12 @@
     <ClInclude Include="..\..\..\src\base\wg_itemholder.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\items\wg_widgetitem.h">
+      <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_widgetholder.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -734,6 +740,12 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp">
+      <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_widgetholder.cpp">
       <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>

@@ -26,6 +26,10 @@
 #	include <wg_widget.h>
 #endif
 
+#ifndef WG_WIDGETHOLDER_DOT_H
+#	include <wg_widgetholder.h>
+#endif
+
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
@@ -64,7 +68,7 @@ namespace wg
 	 */
 	
 	
-	class RootPanel : public Object
+	class RootPanel : public Object, protected WidgetHolder
 	{
 		friend class Container;
 		friend class InputHandler;
@@ -127,6 +131,36 @@ namespace wg
 		RootPanel( const GfxDevice_p& pGfxDevice );
 		~RootPanel();
 	
+
+		// WidgetHolder methods
+
+		Coord			_childPos( void * pChildRef ) const;
+		Coord			_childGlobalPos( void * pChildRef ) const;
+
+		Size			_childSize( void * pChildRef ) const;
+
+		bool			_isChildVisible( void * pChildRef ) const;
+		Rect			_childWindowSection( void * pChildRef ) const;
+
+		Container *  	_childParent();
+		RootPanel *		_root();
+
+		void			_childRequestRender( void * pChildRef );
+		void			_childRequestRender( void * pChildRef, const Rect& rect );
+		void			_childRequestResize( void * pChildRef );
+
+		bool			_childRequestFocus( void * pChildRef, Widget * pWidget );
+		bool			_childReleaseFocus( void * pChildRef, Widget * pWidget );
+
+		void			_childRequestInView( void * pChildRef );
+		void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
+
+		Widget *		_prevChild( void * pChildRef ) const;
+		Widget *		_nextChild( void * pChildRef ) const;
+
+
+
+
 		class MyHook : public Hook
 		{
 			friend class RootPanel;
@@ -142,8 +176,7 @@ namespace wg
 			Rect			geo() const;
 			Coord			globalPos() const;
 			Rect			globalGeo() const;
-	
-	
+
 		protected:
 	
 			void			_requestRender();
