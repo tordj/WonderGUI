@@ -179,7 +179,7 @@ namespace wg
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 
 		int	iPeakL = (int) leftPeak * canvas.h;
-		int	iPeakR = rightPeak * canvas.h;
+		int	iPeakR = (int) rightPeak * canvas.h;
 		int iHoldL = _calcIHold(leftHold, canvas.h);
 		int iHoldR = _calcIHold(rightHold, canvas.h);
 

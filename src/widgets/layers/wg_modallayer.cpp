@@ -301,6 +301,8 @@ namespace wg
 		pHook->m_placementGeo = geometry;
 		m_modalHooks.pushBack(pHook);
 	
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		// Refresh geometry and request render.
 	
 		pHook->_refreshRealGeo();
@@ -312,6 +314,13 @@ namespace wg
 	
 	bool ModalLayer::removeModalWidgets()
 	{
+		ModalHook * pHook = m_modalHooks.first();
+		while( pHook )
+		{
+			pHook->_widget()->_setHolder( nullptr, nullptr );
+			pHook = pHook->_next();
+		}
+
 		m_modalHooks.clear();
 		_requestRender();
 		_updateKeyboardFocus();
@@ -329,7 +338,8 @@ namespace wg
 			return removeBaseWidget();
 		else
 		{
-			ModalHook * pHook = (ModalHook *) pWidget->_hook();
+			ModalHook * pHook = (ModalHook *) reinterpret_cast<Hook*>(pWidget->_holdersRef());
+			pWidget->_setHolder( nullptr, nullptr );
 			pHook->_requestRender();
 			delete pHook;
 			_updateKeyboardFocus();
@@ -444,7 +454,7 @@ namespace wg
 	{
 		// Get message handler, verify that we have a root
 	
-		if( !hook() || !hook()->_root() )
+		if( !_holder() || !_holder()->_root() )
 			return;
 		
 		// Retrieve focused Widget and verify it being a descendant to us.
@@ -466,7 +476,7 @@ namespace wg
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				ModalHook * pHook = static_cast<ModalHook*>(p->_hook());
+				ModalHook * pHook = static_cast<ModalHook*>(reinterpret_cast<Hook*>(p->_holdersRef()));
 				pHook->m_pKeyFocus = pFocused;
 			}
 		}
@@ -493,25 +503,20 @@ namespace wg
 	
 		// Verify that saved focus still is within branch and is not hidden
 	
-		if( pSavedFocus )
+		Widget * pW = pSavedFocus;
+		while( pW && pW->_parent() != this )
+			pW = pW->_parent();
+
+		if( pW )
 		{
-			Hook * p = pSavedFocus->_hook();
-			while( p && p != pBranch )
-			{
-				Container * pHolder = p->_parent();
-				if( pHolder )
-					p = pHolder->_hook();
-				else
-					p = 0;
-			}
-	
-			if( p != pBranch )
+			Hook * pHook = (Hook*) pW->_holdersRef();
+			if( pHook != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
 	
 		// Switch to previously saved focus, or null if not applicable
-	
-		_hook()->parent()->_focusRequested(_hook(), pSavedFocus);
+
+		_holder()->_childRequestFocus( m_pHoldersRef, pSavedFocus );
 	}
 	
 	//____ _setSize() ___________________________________________________________

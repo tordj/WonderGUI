@@ -114,8 +114,12 @@ namespace wg
 	{
 		if( !pWidget )
 			return 0;
-	
+
+		if( m_hook._widget() )
+			m_hook._widget()->_setHolder( nullptr, nullptr );
+
 		m_hook._setWidget(pWidget.rawPtr());
+		pWidget->_setHolder( this, nullptr );
 		pWidget->_setSize(size());
 	
 		_requestRender();
@@ -131,6 +135,7 @@ namespace wg
 			return false;
 	
 		m_hook._setWidget(0);
+		pWidget->_setHolder( nullptr, nullptr );
 		_requestRender();
 		_requestResize();
 		return true;
@@ -144,6 +149,7 @@ namespace wg
 			return false;
 	
 		m_hook._setWidget(0);
+		m_hook._widget()->_setHolder( nullptr, nullptr );
 		_requestRender();
 		_requestResize();
 		return true;
@@ -179,6 +185,68 @@ namespace wg
 			return Size(1,1);
 	}
 	
+	//____ _childPos() ___________________________________________________________
+
+	Coord Capsule::_childPos( void * pChildRef ) const
+	{
+		if( m_pSkin )
+			return m_pSkin->contentOfs( m_state );
+
+		return Coord();
+	}
+
+	//____ _childSize() __________________________________________________________
+
+	Size Capsule::_childSize( void * pChildRef ) const
+	{
+		if( m_pSkin )
+			return m_size - m_pSkin->contentPadding();
+
+		return m_size;
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void Capsule::_childRequestRender( void * pChildRef )
+	{
+		if( m_pSkin )
+			_requestRender( m_pSkin->contentRect( m_size, m_state ));
+		else
+			_requestRender();
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void Capsule::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		if( m_pSkin )
+			_requestRender( rect + m_pSkin->contentOfs( m_state ));
+		else
+			_requestRender( rect );
+	}
+
+	//____ _childRequestResize() _________________________________________________
+
+	void Capsule::_childRequestResize( void * pChildRef )
+	{
+		_requestResize();
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * Capsule::_prevChild( void * pChildRef ) const
+	{
+		return nullptr;
+	}
+
+	//____ _nextChild() __________________________________________________________
+
+	Widget * Capsule::_nextChild( void * pChildRef ) const
+	{
+		return nullptr;
+	}
+
+
 	//____ _collectPatches() _____________________________________________________
 	
 	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )

@@ -141,9 +141,13 @@ namespace wg
 		if( !pWidget )
 			return 0;
 	
+		if( m_hook._widget() )
+			m_hook._widget()->_setHolder( 0, 0 );
+
 		m_hook._setWidget(pWidget.rawPtr());
+		pWidget->_setHolder( this, 0 );
 		m_hook._widget()->_setSize(m_geo.size());
-	
+
 		m_hook._widget()->_collectPatches( m_dirtyPatches, geo(), geo() );
 	
 		return &m_hook;
@@ -157,6 +161,7 @@ namespace wg
 			return false;
 	
 		m_hook._setWidget(0);
+		m_hook._widget()->_setHolder( 0, 0 );
 		m_dirtyPatches.add(m_geo);
 		return true;
 	}

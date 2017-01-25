@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Widget::Widget():m_id(0), m_pHook(0), m_pHolder(0), m_pHoldersRef(0), m_pointerStyle(PointerStyle::Default),
+	Widget::Widget():m_id(0), m_pHolder(0), m_pHoldersRef(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false),
 						m_bTabLock(false), m_bPressed(false), m_size(256,256)
 	{
@@ -77,8 +77,8 @@ namespace wg
 	
 	Container_p Widget::parent() const
 	{ 
-		if( m_pHook ) 
-			return m_pHook->parent(); 
+		if( m_pHolder ) 
+			return m_pHolder->_childParent(); 
 		return 0; 
 	}
 	
@@ -178,12 +178,6 @@ namespace wg
 		
 	}
 		
-	//____ _onNewHook() ___________________________________________________________
-	
-	void Widget::_onNewHook( Hook * pHook )
-	{
-		m_pHook = pHook;
-	}
 	
 	//____ _onNewRoot() ___________________________________________________________
 	
@@ -191,7 +185,16 @@ namespace wg
 	{
 	}
 	
-	//____ toGlobal() ____________________________________________________________
+	//____ _setHolder() __________________________________________________________
+
+	void Widget::_setHolder( WidgetHolder * pHolder, void * pHoldersRef )
+	{
+		m_pHolder = pHolder;
+		m_pHoldersRef = pHoldersRef;	
+	}
+
+
+	//____ toGlobal() __________________________
 	/**
 	 * @brief Convert coordinate from local to global coordinate system
 	 *
@@ -584,13 +587,13 @@ namespace wg
 	void Widget::_itemVisibilityRequested( const Item * pItem )
 	{
 		Rect r = _itemPos( pItem );
-		_requestVisibility( r, r );
+		_requestInView( r, r );
 	}
 
 	void Widget::_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio )
 	{
 		Coord ofs = _itemPos( pItem );
-		_requestVisibility( preferred + ofs, prio + ofs );
+		_requestInView( preferred + ofs, prio + ofs );
 	}
 
 	

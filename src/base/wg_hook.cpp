@@ -37,7 +37,6 @@ namespace wg
 	{
 		if( m_pWidget )
 		{
-			m_pWidget->m_pHook = 0;
 			m_pWidget->_decRefCount();
 		}
 	
@@ -66,22 +65,7 @@ namespace wg
 	{
 		return pHook;
 	}
-	
-	//____ widget() _______________________________________________________________
-	
-	Widget_p Hook::widget() const
-	{ 
-		return m_pWidget; 
-	}
-	
-	//____ parent() _______________________________________________________________
-	
-	Container_p Hook::parent() const 
-	{ 
-		return _parent(); 
-	}
-	
-	
+		
 	//____ _setWidget() __________________________________________________________
 	
 	void Hook::_setWidget( Widget * pWidget )
@@ -90,13 +74,11 @@ namespace wg
 	
 		if( pWidget )
 		{
-			pWidget->m_pHook = this;
 			pWidget->_incRefCount();
 		}
 	
 		if( m_pWidget )
 		{
-			m_pWidget->m_pHook = 0;
 			m_pWidget->_decRefCount();
 		}
 	
@@ -109,58 +91,9 @@ namespace wg
 	void Hook::_relinkWidget()
 	{
 		if( m_pWidget )
-			m_pWidget->m_pHook = this;
-	}
-	
-	//____ _requestFocus() _________________________________________________________
-	
-	bool Hook::_requestFocus(Widget * pWidget)
-	{
-		return _parent()->_focusRequested(this, pWidget);
-	}
-	
-	//____ _releaseFocus() _________________________________________________________
-	
-	bool Hook::_releaseFocus(Widget * pWidget)
-	{
-		return _parent()->_focusReleased(this, pWidget);
-	}
-	
-	//____ _requestVisibility() ____________________________________________________
-
-	void Hook::_requestVisibility()
-	{
-		Rect r = geo();
-		return _parent()->_visibilityRequested( this, r, r );
-	}
-	
-	void Hook::_requestVisibility( const Rect& preferred, const Rect& prio )
-	{
-		return _parent()->_visibilityRequested( this, preferred, prio );
-	}
-	
-	
-	//____ root() _________________________________________________________________
-	
-	RootPanel_p Hook::root() const
-	{
-		return _root();
-	}
-	
-	//____ _root() _________________________________________________________________
-	
-	RootPanel * Hook::_root() const
-	{
-		Container * pParent = _parent();
-	
-		if( pParent )
 		{
-			Hook * pParentHook = pParent->_hook();
-			if( pParentHook )
-				return pParentHook->_root();
+			m_pWidget->m_pHoldersRef = this;
 		}
-	
-		return 0;
 	}
 	
 	//____ _isVisible() ___________________________________________________________

@@ -193,39 +193,6 @@ namespace wg
 		return pResult;
 	}
 	
-	//____ _focusRequested() _______________________________________________________
-	
-	bool Container::_focusRequested( Hook * pBranch, Widget * pWidgetRequesting )
-	{
-		Hook * p = _hook();
-		if( p )
-			return p->_requestFocus(pWidgetRequesting);
-		return false;
-	}
-	
-	//____ _focusReleased() ________________________________________________________
-	
-	bool Container::_focusReleased( Hook * pBranch, Widget * pWidgetReleasing )
-	{
-		Hook * p = _hook();
-		if( p )
-			return p->_releaseFocus(pWidgetReleasing);
-		return false;
-	}
-	
-	//____ _visibilityRequested() ______________________________________________
-	
-	void Container::_visibilityRequested( Hook * pBranch, const Rect& preferred, const Rect& prio )
-	{
-		Hook * p = _hook();
-		if( p )
-		{
-			Coord ofs = pBranch->pos();
-			p->_requestVisibility( preferred + ofs, prio + ofs);
-		}
-	}
-	
-	
 	
 	ModalLayer *  Container::_getModalLayer() const
 	{

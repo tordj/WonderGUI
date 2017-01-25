@@ -229,7 +229,20 @@ namespace wg
 		ScrollPanel();
 		virtual ~ScrollPanel();
 		virtual Widget* _newOfMyType() const { return new ScrollPanel(); };
-	
+
+		//
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
+
+
 		enum ElementType
 		{
 			WINDOW = 0,

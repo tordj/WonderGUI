@@ -93,13 +93,13 @@ namespace wg
 		friend class CapsuleHook;
 	
 	public:
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( const Object_p& pObject );
 	
-		CapsuleHook_p	setWidget( const Widget_p& pWidget );
-		Widget_p			widget() { return m_hook.widget(); }
+		CapsuleHook_p		setWidget( const Widget_p& pWidget );
+		Widget_p			widget() { return m_hook._widget(); }
 		bool				removeWidget( const Widget_p& pWidget );
 		bool				clear();
 	
@@ -117,7 +117,21 @@ namespace wg
 	protected:
 		Capsule();
 		virtual ~Capsule() {}
-	
+
+		//
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
+
+		//
+
 		Hook *		_firstHookWithGeo( Rect& geo ) const;
 		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
@@ -126,14 +140,14 @@ namespace wg
 	
 		//
 	
-		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize( const Size& size );
+		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void		_cloneContent( const Widget * _pOrg );
+		void		_setSize( const Size& size );
 	
 	
-		Hook*			_firstHook() const;
-		Hook*			_lastHook() const;
+		Hook*		_firstHook() const;
+		Hook*		_lastHook() const;
 	
 		CapsuleHook	m_hook;
 	

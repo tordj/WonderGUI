@@ -103,6 +103,11 @@ namespace wg
 	
 	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
 	{
+		// Render our skin
+
+		if( m_pSkin )
+			Capsule::_renderPatches( pDevice, _canvas, _window, _pPatches );
+
 		// Set our tint color and blend mode.
 	
 		BlendMode		oldBM;
@@ -117,8 +122,10 @@ namespace wg
 	
 		// Render children recursively
 	
+		Rect canvas = m_pSkin ? m_pSkin->contentRect( _canvas, m_state ) : _canvas;
+
 		if( m_hook._widget() )
-			m_hook._widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches );
+			m_hook._widget()->_renderPatches( pDevice, canvas, canvas, _pPatches );
 	
 		// Reset old blend mode and tint color
 	
@@ -135,7 +142,7 @@ namespace wg
 		ShaderCapsule * pOrg = (ShaderCapsule*) _pOrg;
 	
 		m_tintColor		= pOrg->m_tintColor;
-		m_renderMode		= pOrg->m_renderMode;
+		m_renderMode	= pOrg->m_renderMode;
 		m_tintMode		= pOrg->m_tintMode;
 	}
 

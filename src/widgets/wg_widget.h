@@ -119,12 +119,12 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Widget_p	cast( const Object_p& pObject );
+		static Widget_p		cast( const Object_p& pObject );
 	
 		inline int			id() const { return m_id; }
 		inline void			setId( int id ) { m_id = id; }
 	
-		virtual String	tooltip() const { return m_tooltip; }
+		virtual String		tooltip() const { return m_tooltip; }
 		inline void			setTooltip( const String& str ) { m_tooltip = str; }
 	
 		inline void			refresh() { _refresh(); }
@@ -147,10 +147,7 @@ namespace wg
 	
 		virtual void		setSkin( const Skin_p& pSkin );
 		Skin_p				skin( ) const	{ return m_pSkin; }
-	
-	
-		Hook_p				hook() const { return m_pHook; }
-	
+		
 		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 	
 		void 				receive( const Msg_p& pMsg );
@@ -190,16 +187,19 @@ namespace wg
 																	///< is a container than calling isInstanceOf(Container::CLASS).
 																	///< @return True if the widget is a subclass of Container.
 	
-	protected:
-		void				_onNewHook( Hook * pHook );
-	
+	protected:	
 		void				_onNewRoot( RootPanel * pRoot );
+
+		void				_setHolder( WidgetHolder * pHolder, void * pHoldersRef );
+		WidgetHolder *		_holder() const { return m_pHolder; }
+		void *				_holdersRef() const { return m_pHoldersRef; }
+
 		virtual BlendMode	_getBlendMode() const;
 	
 	
 		virtual Widget* 	_newOfMyType() const = 0;
 	
-	
+
 		// Convenient calls to hook
 	
 		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef ); }
@@ -211,7 +211,6 @@ namespace wg
 	
 		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pHoldersRef ); else return nullptr; }
 		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pHoldersRef ); else return nullptr; }
-		inline Hook *	_hook() const { return m_pHook; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
 	
 		inline Rect		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pHoldersRef ); return Rect(); }
@@ -260,7 +259,6 @@ namespace wg
 		//
 	
 		int				m_id;
-		Hook *			m_pHook;
 
 		WidgetHolder *	m_pHolder;
 		void *			m_pHoldersRef;
@@ -297,8 +295,8 @@ namespace wg
 	 */
 	Coord Widget::pos() const 
 	{ 
-		if( m_pHook ) 
-			return m_pHook->pos(); 
+		if( m_pHolder ) 
+			return m_pHolder->_childPos( m_pHoldersRef ); 
 		return Coord(0,0); 
 	}
 	
@@ -326,8 +324,8 @@ namespace wg
 	 */
 	Rect Widget::geo() const 
 	{ 
-		if( m_pHook ) 
-			return Rect(m_pHook->pos(),m_size); 
+		if( m_pHolder ) 
+			return Rect(m_pHolder->_childPos( m_pHoldersRef ),m_size); 
 		return Rect(0,0,m_size); 
 	}
 	
@@ -340,8 +338,8 @@ namespace wg
 	 */
 	Coord Widget::globalPos() const 
 	{ 
-		if( m_pHook ) 
-			return m_pHook->globalPos(); 
+		if( m_pHolder ) 
+			return m_pHolder->_childGlobalPos( m_pHoldersRef ); 
 		return Coord(0,0); 
 	}
 	
@@ -356,23 +354,23 @@ namespace wg
 	 */
 	Rect Widget::globalGeo() const 
 	{ 
-		if( m_pHook ) 
-			return Rect(m_pHook->globalPos(), m_size); 
+		if( m_pHolder ) 
+			return Rect(m_pHolder->_childGlobalPos( m_pHoldersRef ), m_size); 
 		return Rect(0,0,m_size); 
 	}
 	
 	
 	bool Widget::grabFocus() 
 	{ 
-		if( m_pHook ) 
-			return m_pHook->_requestFocus(); 
+		if( m_pHolder ) 
+			return m_pHolder->_childRequestFocus( m_pHoldersRef, this ); 
 		return false; 
 	}
 	
 	bool Widget::releaseFocus() 
 	{ 
-		if( m_pHook ) 
-			return m_pHook->_releaseFocus(); 
+		if( m_pHolder ) 
+			return m_pHolder->_childReleaseFocus( m_pHoldersRef, this ); 
 		return false; 
 	}
 	
@@ -399,13 +397,9 @@ namespace wg
 	
 	Widget_p Widget::nextSibling() const 
 	{ 
-		if( m_pHook ) 
-		{
-			Hook * p = m_pHook->_nextHook(); 
-			if( p ) 
-				return p->m_pWidget; 
-		} 
-		return 0; 
+		if( m_pHolder ) 
+			return m_pHolder->_nextChild( m_pHoldersRef );
+		return nullptr; 
 	}
 	
 	/** @brief Get previous sibling.
@@ -419,12 +413,8 @@ namespace wg
 	
 	Widget_p Widget::prevSibling() const 
 	{ 
-		if( m_pHook ) 
-		{
-			Hook * p = m_pHook->_prevHook();
-			if( p ) 
-				return p->m_pWidget; 
-		} 
+		if( m_pHolder ) 
+			return m_pHolder->_prevChild( m_pHoldersRef );
 		return 0; 
 	}
 	

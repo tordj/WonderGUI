@@ -33,6 +33,8 @@
 #	include <wg_sizescaler.h>
 #endif
 
+//TODO: Need to support skin padding.
+
 namespace wg 
 {
 	

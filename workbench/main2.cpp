@@ -727,6 +727,7 @@ Coord dragStartPos;
 
 void cbInitDrag( const Msg_p& _pMsg, const Object_p& pObject )
 {
+/*
 	Widget_p pWidget = Widget::cast(pObject);
 
 	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
@@ -734,12 +735,14 @@ void cbInitDrag( const Msg_p& _pMsg, const Object_p& pObject )
 
 	dragStartPos = pHook->floatOfs();
 	printf( "DRAG START!\n" );
+*/
 }
 
 //____ cbDragWidget() __________________________________________________________
 
 void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 {
+/*
 	Widget_p pWidget = Widget::cast(pObject);
 	
 	if( _pMsg->type() != MsgType::MouseDrag || !pWidget->parent() )
@@ -758,12 +761,14 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
 	pHook->setOfs(dragStartPos+dragDistance);
+*/
 }
 
 //____ cbMoveResize() _________________________________________________________
 
 void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 {
+/*
 	static Coord posAtPress[MouseButton_Max];
 	
 	auto	pWidget = Widget::cast(_pWidget);
@@ -797,6 +802,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 		default:
 		break;
 	}
+*/
 }
 
 

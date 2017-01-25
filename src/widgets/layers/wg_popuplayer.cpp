@@ -345,6 +345,7 @@ namespace wg
 	
 		PopupHook * pHook = new PopupHook( this, pOpener.rawPtr(), launcherGeo, attachPoint, maxSize );
 		pHook->_setWidget(pPopup.rawPtr());
+		pPopup->_setHolder( this, (Hook*) pHook );
 		m_popupHooks.pushBack(pHook);
 		pHook->_updateGeo();
 		_stealKeyboardFocus();
@@ -368,12 +369,13 @@ namespace wg
 	
 	bool PopupLayer::closePopup( const Widget_p& pWidget )
 	{
-		if( !pWidget || pWidget->parent() != this || pWidget == m_baseHook.widget() )
+		if( !pWidget || pWidget->parent() != this || pWidget.rawPtr() == m_baseHook._widget() )
 			return false;
 	
 		MsgRouter * pEH = Base::msgRouter().rawPtr();
 	
-		PopupHook * pHook = (PopupHook *) pWidget->_hook();
+		PopupHook * pHook = (PopupHook *) reinterpret_cast<Hook*>(pWidget->_holdersRef());
+		;
 	
 		while( pHook )
 		{
@@ -383,6 +385,7 @@ namespace wg
 			if( pEH )
 				pEH->post( new PopupClosedMsg( p->_widget(), p->m_pOpener ) );
 	
+			p->_widget()->_setHolder( nullptr, nullptr );
 			p->_requestRender();
 			delete p;
 		}
@@ -608,7 +611,7 @@ namespace wg
 	{
 		// Verify that we have a root
 	
-		if( !hook() || !hook()->root() )
+		if( !_root() )
 			return;
 	
 		// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
@@ -622,7 +625,7 @@ namespace wg
 	
 		Widget * pWidget = m_popupHooks.last()->_widget();
 
-		_hook()->parent()->_focusRequested(_hook(), pWidget);
+		_childRequestFocus( pWidget->_holdersRef(), pWidget );
 	}
 	
 	//____ _restoreKeyboardFocus() _________________________________________________
@@ -631,15 +634,16 @@ namespace wg
 	{
 		// Verify that we have a root
 	
-		if( !hook() || !hook()->root() )
+		if( !_root() )
 			return;
 	
 		//
 	
 		if( m_popupHooks.isEmpty() )
-			_hook()->parent()->_focusRequested(_hook(), m_pKeyFocus.rawPtr());
+			
+			_parent()->_childRequestFocus( _holdersRef(), m_pKeyFocus.rawPtr() );
 		else
-			_hook()->parent()->_focusRequested(_hook(), m_popupHooks.last()->m_pKeyFocus.rawPtr());
+			_parent()->_childRequestFocus( _holdersRef(),  m_popupHooks.last()->m_pKeyFocus.rawPtr() );
 	}
 	
 

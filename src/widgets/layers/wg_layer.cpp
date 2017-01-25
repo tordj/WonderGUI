@@ -69,6 +69,12 @@ namespace wg
 	
 	Hook_p Layer::setBaseWidget( const Widget_p& pWidget )
 	{
+		if( m_baseHook._widget() )
+			m_baseHook._widget()->_setHolder( 0, 0 );
+
+		if( pWidget )
+			pWidget->_setHolder( this, ((Hook*)&m_baseHook) );
+
 		m_baseHook._setWidget(pWidget.rawPtr());
 		_onBaseChanged();
 		return &m_baseHook;
@@ -88,7 +94,10 @@ namespace wg
 	{
 		if( !m_baseHook._widget() )
 			return false;
-	
+
+		if( m_baseHook._widget() )
+			m_baseHook._widget()->_setHolder( 0, 0 );
+
 		m_baseHook._setWidget(0);
 		_onBaseChanged();
 	
@@ -263,6 +272,45 @@ namespace wg
 		_requestResize();
 	}
 	
+	Coord Layer::_childPos( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->pos();
+
+	}
+
+	Size Layer::_childSize( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->size();
+	}
+
+	void Layer::_childRequestRender( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestRender();
+	}
+	
+	void Layer::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		((Hook*)pChildRef)->_requestRender( rect );
+	}
+
+	void Layer::_childRequestResize( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestResize();
+	}
+
+	Widget * Layer::_prevChild( void * pChildRef ) const
+	{
+		Hook * p = ((Hook*)pChildRef)->_prevHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+	Widget * Layer::_nextChild( void * pChildRef ) const
+	{
+		Hook * p = ((Hook*)pChildRef)->_nextHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+
 	//_____________________________________________________________________________
 	void Layer::_BaseHook::_requestRender()
 	{

@@ -526,6 +526,7 @@ namespace wg
 	ScrollHook_p ScrollPanel::setContent( const Widget_p& pContent )
 	{
 		m_elements[WINDOW]._setWidget(pContent.rawPtr());
+		pContent->_setHolder(this, dynamic_cast<Hook*>(&m_elements[WINDOW]));
 	
 		_updateElementGeo( size() );
 		_requestRender( m_elements[WINDOW].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
@@ -550,6 +551,8 @@ namespace wg
 		pScrollbar->setOrientation( Orientation::Horizontal );
 	
 		m_elements[XDRAG]._setWidget(pScrollbar.rawPtr());
+		pScrollbar->_setHolder(this, (Hook*) &m_elements[XDRAG]);
+
 		_updateElementGeo( size() );
 		_requestRender( m_elements[XDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 	
@@ -577,6 +580,8 @@ namespace wg
 		pScrollbar->setOrientation( Orientation::Vertical );
 	
 		m_elements[YDRAG]._setWidget(pScrollbar.rawPtr());
+		pScrollbar->_setHolder(this, (Hook*) &m_elements[YDRAG]);
+
 		_updateElementGeo( size() );
 		_requestRender( m_elements[YDRAG].m_windowGeo );		// If geometry is same as the old one, we need to request render ourselves.
 	
@@ -1365,6 +1370,56 @@ namespace wg
 		return true;
 	}
 	
+	//____ _childPos() ________________________________________________________
+
+	Coord ScrollPanel::_childPos( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->pos();
+	}
+
+	//____ _childSize() __________________________________________________________
+
+	Size ScrollPanel::_childSize( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->size();
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void ScrollPanel::_childRequestRender( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestRender();
+	}
+
+	void ScrollPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		((Hook*)pChildRef)->_requestRender( rect );
+	}
+
+	//____ _childRequestResize() _________________________________________________
+
+	void ScrollPanel::_childRequestResize( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestResize();
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * ScrollPanel::_prevChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_prevHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+	//____ _nextChild() __________________________________________________________
+
+	Widget * ScrollPanel::_nextChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_nextHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+
 	
 	//_____________________________________________________________________________
 	Hook*	ScrollPanel::_firstHook() const

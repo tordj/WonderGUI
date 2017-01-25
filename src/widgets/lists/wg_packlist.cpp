@@ -190,7 +190,8 @@ namespace wg
 		PackListHook * pHook = m_hooks.add();
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
-	
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		_onWidgetAppeared( pHook );
 		return pHook;
 	}
@@ -208,7 +209,7 @@ namespace wg
 			index = m_hooks.size();
 		else 
 		{
-			PackListHook * pHook = static_cast<PackListHook*>(pSibling->_hook());
+			PackListHook * pHook = static_cast<PackListHook*>(reinterpret_cast<Hook*>(pSibling->_holdersRef()));
 			if( pHook && pHook->_parent() == this )
 				index = m_hooks.index(pHook);
 			else
@@ -218,7 +219,8 @@ namespace wg
 		PackListHook * pHook = m_hooks.insert(index);
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
-	
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		_onWidgetAppeared( pHook );
 		return pHook;
 	}
@@ -238,7 +240,8 @@ namespace wg
 		PackListHook * pHook = m_hooks.insert(index);
 		pHook->m_pParent = this;
 		pHook->_setWidget(pWidget.rawPtr());
-	
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		_onWidgetAppeared( pHook );
 		return pHook;
 	}
@@ -247,15 +250,14 @@ namespace wg
 	
 	bool PackList::removeWidget( const Widget_p& pWidget )
 	{
-		if( !pWidget || !pWidget->_hook() )
+		if( !pWidget || pWidget->_parent() != this )
 			return false;
 	
-		PackListHook * pHook = static_cast<PackListHook*>(pWidget->_hook());
-		if( pHook->_parent() != this )
-			return false;
+		PackListHook * pHook = static_cast<PackListHook*>(reinterpret_cast<Hook*>(pWidget->_holdersRef()));
 	
 		int index = m_hooks.index(pHook);
 		_onWidgetDisappeared( pHook );
+		pWidget->_setHolder( nullptr, nullptr );
 		m_hooks.remove(index);
 		return true;
 	}
@@ -264,6 +266,9 @@ namespace wg
 	
 	bool PackList::clear()
 	{
+		for( int i = 0 ; i < m_hooks.size() ; i++ )
+			m_hooks.hook(i)->_widget()->_setHolder( nullptr, nullptr );
+
 		m_hooks.clear();
 		_refreshList();
 		return true;
@@ -1348,6 +1353,55 @@ namespace wg
 		}
 	
 		return sz;
+	}
+
+	//____ _childPos() ________________________________________________________
+
+	Coord PackList::_childPos( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->pos();
+	}
+
+	//____ _childSize() __________________________________________________________
+
+	Size PackList::_childSize( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->size();
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void PackList::_childRequestRender( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestRender();
+	}
+
+	void PackList::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		((Hook*)pChildRef)->_requestRender( rect );
+	}
+
+	//____ _childRequestResize() _________________________________________________
+
+	void PackList::_childRequestResize( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestResize();
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * PackList::_prevChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_prevHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+	//____ _nextChild() __________________________________________________________
+
+	Widget * PackList::_nextChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_nextHook();
+		return p ? p->_widget() : nullptr;
 	}
 	
 	//____ _firstHook() ___________________________________________________________

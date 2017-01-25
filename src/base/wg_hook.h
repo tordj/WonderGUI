@@ -73,6 +73,9 @@ namespace wg
 		friend class VectorPanel;
 		friend class Hook_p;
 		friend class ModalLayer;
+		friend class FlexPanel;
+		friend class ScrollPanel;
+		friend class PackList;
 	
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
@@ -88,12 +91,7 @@ namespace wg
 	
 		Hook_p			prev() const { return _prevHook(); }
 		Hook_p			next() const { return _nextHook(); }
-	
-		Widget_p			widget() const;
-		Container_p 		parent() const;
-	
-		RootPanel_p		root() const;
-	
+			
 	protected:
 	
 		Hook() : m_pWidget(0), m_pPtrHub(0) {}
@@ -109,15 +107,7 @@ namespace wg
 		virtual void	_requestRender() = 0;
 		virtual void	_requestRender( const Rect& rect ) = 0;
 		virtual void	_requestResize() = 0;
-	
-		inline  bool	_requestFocus() { return _requestFocus(m_pWidget); }
-		virtual bool	_requestFocus( Widget * pWidget );					// Request focus on behalf of child/grandchild.
-		inline  bool	_releaseFocus() { return _releaseFocus(m_pWidget); }
-		virtual bool	_releaseFocus( Widget * pWidget );
-	
-		virtual void	_requestVisibility();
-		virtual void	_requestVisibility( const Rect& preferred, const Rect& prio );
-	
+			
 		virtual Rect	_windowSection() const { return Rect(0,0,size()); }			// Returns the window section within the canvas.
 	
 	
@@ -127,7 +117,6 @@ namespace wg
 		virtual Hook *	_prevHook() const = 0;
 		virtual Hook *	_nextHook() const = 0;
 		virtual Container * _parent() const = 0;
-		virtual RootPanel * _root() const;
 		virtual bool		_isVisible() const;
 	
 		Widget *		m_pWidget;

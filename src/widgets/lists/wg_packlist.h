@@ -187,6 +187,19 @@ namespace wg
 		Hook*			_lastHookWithGeo( Rect& geo ) const;
 		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
+		//
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
+
+
 
 		// Support methods for header
 

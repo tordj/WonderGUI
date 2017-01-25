@@ -260,7 +260,8 @@ namespace wg
 		VectorHook * pHook = _newHook();
 		m_hooks.pushBack(pHook);
 		pHook->_setWidget( pWidget );
-	
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		_onWidgetAppeared(pHook);
 		return pHook;
 	}
@@ -273,10 +274,11 @@ namespace wg
 			return 0;
 		
 		VectorHook * pHook = _newHook();
-		pHook->_moveBefore(static_cast<VectorHook*>(pSibling->_hook()));
+		pHook->_moveBefore(static_cast<VectorHook*>(reinterpret_cast<Hook*>(pSibling->_holdersRef())));
 	
 		pHook->_setWidget( pWidget );
-		
+		pWidget->_setHolder( this, (Hook*) pHook );
+
 		_onWidgetAppeared(pHook);
 		return pHook;
 	}
@@ -285,14 +287,15 @@ namespace wg
 	
 	bool VectorPanel::removeWidget( const Widget_p& pWidget )
 	{
-		if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
+		if( !pWidget || pWidget->_parent() != this )
 			return false;
 	
 		// Disconnect and notify subclass that widget has disappeared
 	
-		VectorHook * pHook = (VectorHook *) pWidget->_hook();
+		VectorHook * pHook = (VectorHook *) reinterpret_cast<Hook*>(pWidget->_holdersRef());
 		pHook->_disconnect();
-	
+		pWidget->_setHolder( nullptr, nullptr );
+
 		if( pHook->isVisible() )
 			_onWidgetDisappeared( pHook );
 	
@@ -306,6 +309,13 @@ namespace wg
 	
 	bool VectorPanel::clear()
 	{
+		VectorHook * pHook = m_hooks.first();
+		while( pHook )
+		{
+			pHook->_widget()->_setHolder( nullptr, nullptr );
+			pHook = pHook->_next();
+		}
+
 		m_hooks.clear();
 		_refreshAllWidgets();
 	
@@ -319,6 +329,56 @@ namespace wg
 		Panel::_cloneContent( _pOrg );
 
 		//TODO: Implement		
+	}
+
+
+	//____ _childPos() ______________________________________________________
+
+	Coord VectorPanel::_childPos( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->pos();
+	}
+
+	//____ _childSize() ______________________________________________________
+
+	Size VectorPanel::_childSize( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->size();
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void VectorPanel::_childRequestRender( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestRender();
+	}
+
+	void VectorPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		((Hook*)pChildRef)->_requestRender( rect );
+	}
+
+	//____ _childRequestResize() _________________________________________________
+
+	void VectorPanel::_childRequestResize( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestResize();
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * VectorPanel::_prevChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_prevHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+	//____ _nextChild() _______________________________________________________
+
+	Widget * VectorPanel::_nextChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_nextHook();
+		return p ? p->_widget() : nullptr;
 	}
 
 } // namespace wg

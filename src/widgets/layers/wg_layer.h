@@ -105,10 +105,10 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Layer_p	cast( const Object_p& pObject );
 	
-		Hook_p			setBaseWidget( const Widget_p& pWidget );
+		Hook_p				setBaseWidget( const Widget_p& pWidget );
 		Widget_p			baseWidget();
 		bool				removeBaseWidget();
-		inline Hook_p	baseHook() { return &m_baseHook; }
+		inline Hook_p		baseHook() { return &m_baseHook; }
 	
 		inline LayerHook_p	firstLayerHook() const { return _firstLayerHook(); }
 		inline LayerHook_p	lastLayerHook() const { return _lastLayerHook(); }
@@ -123,6 +123,20 @@ namespace wg
 	protected:
 		Layer();
 	
+		//
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
+
+		//
+
 		class _BaseHook : public Hook
 		{
 			friend class Layer;

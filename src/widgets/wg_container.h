@@ -97,12 +97,12 @@ namespace wg
 
 			/* Left to implement in individual classes:
 			
-				Coord			_childPos( void * pChildRef ) const;
-				Size			_childSize( void * pChildRef ) const;
+				Coord		_childPos( void * pChildRef ) const;
+				Size		_childSize( void * pChildRef ) const;
 
-				void	_childRequestRender( void * pChildRef );
-				void	_childRequestRender( void * pChildRef, const Rect& rect );
-				void	_childRequestResize( void * pChildRef );
+				void		_childRequestRender( void * pChildRef );
+				void		_childRequestRender( void * pChildRef, const Rect& rect );
+				void		_childRequestResize( void * pChildRef );
 
 				Widget *	_prevChild( void * pChildRef ) const;
 				Widget *	_nextChild( void * pChildRef ) const;
@@ -143,12 +143,7 @@ namespace wg
 	
 			virtual Hook*			_lastHookWithGeo( Rect& geo ) const = 0;
 			virtual Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const = 0;
-	
-			bool 					_focusRequested( Hook * pBranch, Widget * pWidgetRequesting );		// Needed until Panel inherits from Widget
-			bool 					_focusReleased( Hook * pBranch, Widget * pWidgetReleasing );		// Needed until Panel inherits from Widget
-
-			virtual void			_visibilityRequested( Hook * pBranch, const Rect& preferred, const Rect& prio );
-	
+		
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*	_getPopupLayer() const;
 	

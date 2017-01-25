@@ -758,7 +758,8 @@ namespace wg
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
-	
+		pWidget->_setHolder( this, (Hook*) p );
+
 		m_hooks.pushBack(p);
 	
 		p->setFloating( Coord(0,0) );
@@ -775,7 +776,8 @@ namespace wg
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-	
+		pWidget->_setHolder( this, (Hook*) p );
+
 		m_hooks.pushBack(p);
 	
 		p->setStretching( topLeftOrigo, bottomRightOrigo, padding );
@@ -790,7 +792,8 @@ namespace wg
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-	
+		pWidget->_setHolder( this, (Hook*) p );
+
 		m_hooks.pushBack(p);
 	
 		p->setStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
@@ -811,6 +814,8 @@ namespace wg
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,bestSize), padding );
 		p->_setWidget( pWidget.rawPtr() );
+		pWidget->_setHolder( this, (Hook*) p );
+
 		m_hooks.pushBack(p);
 		p->setFloating( pos, origo, hotspot );
 		return p;
@@ -828,7 +833,8 @@ namespace wg
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-	
+		pWidget->_setHolder( this, (Hook*) p );
+
 		m_hooks.pushBack(p);
 	
 		p->setFloating( geometry, origo, hotspot );
@@ -840,12 +846,14 @@ namespace wg
 	
 	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling )
 	{
-		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
+		if( !pWidget || !pSibling || pSibling->_parent() != this )
 			return 0;
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (FlexHook*)pSibling->_hook() );
+		pWidget->_setHolder( this, (Hook*) p );
+
+		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
 		p->setFloating( Coord(0,0) );
 		return p;
 	}
@@ -854,12 +862,14 @@ namespace wg
 	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
 										   const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
 	{
-		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
+		if( !pWidget || !pSibling || pSibling->_parent() != this )
 			return 0;
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (FlexHook*)pSibling->_hook() );
+		pWidget->_setHolder( this, (Hook*) p );
+
+		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
 		p->setStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
 		return p;
 	}
@@ -872,12 +882,14 @@ namespace wg
 	
 	FlexHook * FlexPanel::insertWidget(const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
-		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
+		if( !pWidget || !pSibling || pSibling->_parent() != this )
 			return 0;
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (FlexHook*)pSibling->_hook() );
+		pWidget->_setHolder( this, (Hook*) p );
+
+		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
 		p->setFloating( geometry, origo, hotspot );
 		return p;
 	}
@@ -889,12 +901,14 @@ namespace wg
 	
 	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
 	{
-		if( !pWidget || !pSibling || !pSibling->hook() || pSibling->hook()->parent() != this )
+		if( !pWidget || !pSibling ||  pSibling->_parent() != this )
 			return 0;
 	
 		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
 		p->_setWidget( pWidget.rawPtr() );
-		p->_moveBefore( (FlexHook*)pSibling->_hook() );
+		pWidget->_setHolder( this, (Hook*) p );
+
+		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
 		p->setFloating( pos, origo, hotspot );
 		return p;
 	}
@@ -904,12 +918,13 @@ namespace wg
 	
 	bool FlexPanel::removeWidget( const Widget_p& pWidget )
 	{
-		if( !pWidget || !pWidget->hook() || pWidget->hook()->parent() != this )
+		if( !pWidget || pWidget->_parent() != this )
 			return false;
 	
 		// Force rendering of the area the widget was covering
 	
-		FlexHook * pHook = (FlexHook *) pWidget->_hook();
+		FlexHook * pHook = (FlexHook *)reinterpret_cast<Hook*>(pWidget->_holdersRef());
+		pWidget->_setHolder( nullptr, nullptr );
 		_onRequestRender( pHook->m_realGeo, pHook );
 	
 		// Remove the widget and return
@@ -929,6 +944,7 @@ namespace wg
 		FlexHook * pHook = m_hooks.first();
 		while( pHook )
 		{
+			pHook->_widget()->_setHolder( nullptr, nullptr );
 			if( pHook->m_bVisible )
 				dirt.add( pHook->m_realGeo );
 			FlexHook * pDelete = pHook;
@@ -1012,7 +1028,57 @@ namespace wg
 			pHook = pHook->_prev();
 		}
 	}
-	
+
+	//____ _childPos() ________________________________________________________
+
+	Coord FlexPanel::_childPos( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->pos();
+	}
+
+	//____ _childSize() __________________________________________________________
+
+	Size FlexPanel::_childSize( void * pChildRef ) const
+	{
+		return ((Hook*)pChildRef)->size();
+	}
+
+	//____ _childRequestRender() _________________________________________________
+
+	void FlexPanel::_childRequestRender( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestRender();
+	}
+
+	void FlexPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		((Hook*)pChildRef)->_requestRender( rect );
+	}
+
+	//____ _childRequestResize() _________________________________________________
+
+	void FlexPanel::_childRequestResize( void * pChildRef )
+	{
+		((Hook*)pChildRef)->_requestResize();
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * FlexPanel::_prevChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_prevHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+	//____ _nextChild() __________________________________________________________
+
+	Widget * FlexPanel::_nextChild( void * pChildRef ) const
+	{
+		Hook *p = ((Hook*)pChildRef)->_nextHook();
+		return p ? p->_widget() : nullptr;
+	}
+
+
 	//____ _firstHookWithGeo() _____________________________________________________
 	
 	Hook * FlexPanel::_firstHookWithGeo( Rect& writeGeo ) const
