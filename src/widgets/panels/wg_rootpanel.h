@@ -96,12 +96,12 @@ namespace wg
 		Skin_p				debugOverlay() const { return m_pDebugOverlay;  }
 		int					debugAfterglow() const { return m_afterglowFrames;  }
 	
-		bool				setVisible( bool bVisible );
+		bool				setVisible( bool bVisible );							//TODO: Implement!!!
 		bool				isVisible() const { return m_bVisible; }
 	
-		Hook_p				setWidget( const Widget_p& pWidget );
-		inline Widget_p		widget() const { return m_hook._widget(); }
-		bool				removeWidget();
+		bool				setChild( const Widget_p& pWidget );
+		inline Widget_p		child() const { return m_pChild; }
+		bool				removeChild();
 		bool				clear();
 		
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
@@ -157,53 +157,10 @@ namespace wg
 
 		Widget *		_prevChild( void * pChildRef ) const;
 		Widget *		_nextChild( void * pChildRef ) const;
-
-
-
-
-		class MyHook : public Hook
-		{
-			friend class RootPanel;
-		public:
-			MyHook() : m_pRoot(0) {};				// So we can make them members and then make placement new...
-			~MyHook();
 	
-			const char *type( void ) const;
-			static const char * classType();
-	
-			Coord			pos() const;
-			Size			size() const;
-			Rect			geo() const;
-			Coord			globalPos() const;
-			Rect			globalGeo() const;
+		//
 
-		protected:
-	
-			void			_requestRender();
-			void			_requestRender( const Rect& rect );
-			void			_requestResize();
-
-			bool			_requestFocus( Widget * pWidget );
-			bool			_releaseFocus( Widget * pWidget );
-
-			void			_requestVisibility();
-			void			_requestVisibility( const Rect& preferred, const Rect& prio );
-
-			Hook *		_prevHook() const;
-			Hook *		_nextHook() const;
-			Container *	_parent() const;
-			RootPanel *	_root() const;
-	
-			RootPanel *	m_pRoot;
-		};
-	
 		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
-	
-		Hook*				_firstHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
-		Hook*				_lastHook() const { return m_hook._widget()? const_cast<MyHook*>(&m_hook):0; }
-	
-		bool 				_focusRequested( Widget * pWidgetRequesting );
-		bool 				_focusReleased( Widget * pWidgetReleasing );
 
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
@@ -219,7 +176,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		MyHook				m_hook;
+		Widget_p			m_pChild;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

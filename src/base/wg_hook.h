@@ -82,7 +82,7 @@ namespace wg
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static Hook_p		cast( const Hook_p& pInterface );				// Provided just for completeness sake.
+		static Hook_p			cast( const Hook_p& pInterface );				// Provided just for completeness sake.
 	
 		virtual Coord			pos() const = 0;							///< Get the local position of the widget.
 		virtual Size			size() const = 0;							///< Get the size of the widget.
@@ -101,14 +101,7 @@ namespace wg
 		virtual void	_setWidget( Widget * pWidget );				// Attach/release widget.
 		void			_relinkWidget();								// Call when hook has been relocated, so old hook-pointer in widget is dirty and needs to be reset.
 	
-		Widget *		_widget() const { return m_pWidget; }
-	
-		// To be called by Widget
-	
-		virtual void	_requestResize() = 0;
-			
-		virtual Rect	_windowSection() const { return Rect(0,0,size()); }			// Returns the window section within the canvas.
-	
+		Widget *		_widget() const { return m_pWidget; }				
 	
 	
 		//
@@ -119,7 +112,7 @@ namespace wg
 		virtual bool		_isVisible() const;
 	
 		Widget *		m_pWidget;
-		Hook_pHub *	m_pPtrHub;
+		Hook_pHub *		m_pPtrHub;
 	};
 	
 

@@ -83,9 +83,7 @@ namespace wg
 	
 		VectorHook();
 		~VectorHook();
-	
-		void	_requestResize();
-	
+		
 		Hook *	_prevHook() const;
 		Hook *	_nextHook() const;
 	};

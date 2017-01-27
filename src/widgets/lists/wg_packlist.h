@@ -66,11 +66,7 @@ namespace wg
 	
 	protected:
 		PackListHook() {};
-	
-		void			_requestRender();
-		void			_requestRender( const Rect& rect );
-		void			_requestResize();
-	
+		
 		Hook *			_prevHook() const;
 		Hook *			_nextHook() const;
 	
@@ -146,11 +142,7 @@ namespace wg
 		void			_refreshList();
 	
 		void			_receive( const Msg_p& pMsg );
-	
-		void			_onRequestRender( PackListHook * pHook );
-		void			_onRequestRender( PackListHook * pHook, const Rect& rect );
-		void			_onRequestResize( PackListHook * pHook );
-	
+		
 		void			_requestRenderChildrenFrom( PackListHook * pHook );
 		void			_updateChildOfsFrom( PackListHook * pHook );
 	

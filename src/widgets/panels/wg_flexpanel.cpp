@@ -666,15 +666,6 @@ namespace wg
 		return sz;
 	}
 	
-		
-	//____ FlexHook::_requestResize() ____________________________________________
-	
-	void FlexHook::_requestResize()
-	{
-		if( m_widthPolicy != SizePolicy::Bound || m_heightPolicy != SizePolicy::Bound )
-			_refreshRealGeo();
-	}
-	
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -1047,7 +1038,10 @@ namespace wg
 
 	void FlexPanel::_childRequestResize( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestResize();
+		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
+
+		if( pHook->m_widthPolicy != SizePolicy::Bound || pHook->m_heightPolicy != SizePolicy::Bound )
+			pHook->_refreshRealGeo();
 	}
 
 	//____ _prevChild() __________________________________________________________

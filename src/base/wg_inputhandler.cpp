@@ -509,7 +509,7 @@ namespace wg
 			if( p )
 				_setFocused( p );
 			else
-				_setFocused( pRoot->widget().rawPtr() );				// Bottom container gets focus per default.			
+				_setFocused( pRoot->child().rawPtr() );				// Bottom container gets focus per default.			
 		}
 	}
 	

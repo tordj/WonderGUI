@@ -66,10 +66,7 @@ namespace wg
 		
 		Hook *		_prevHook() const;							// Iterates through all hooks, including the base hook
 		Hook *		_nextHook() const;							// Iterates through all hooks, including the base hook
-		
-		void		_requestRender();
-		void		_requestRender( const Rect& rect );
-	
+			
 		Rect		m_geo;
 	};
 	
@@ -157,8 +154,6 @@ namespace wg
 	
 		protected:
 	
-			void		_requestRender();
-			void		_requestRender( const Rect& rect );
 			void		_requestResize();
 	
 			Hook *		_prevHook() const { return 0; }

@@ -160,8 +160,6 @@ namespace wg
 		void			_refreshRealGeo();
 		Size			_sizeNeededForGeo();
 	
-		void			_requestResize();
-	
 		Hook *		_prevHook() const;
 		Hook *		_nextHook() const;
 		Container *	_parent() const;

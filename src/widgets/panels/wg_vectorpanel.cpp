@@ -180,12 +180,6 @@ namespace wg
 	{
 	}
 	
-		
-	void VectorHook::_requestResize()
-	{
-		parent()->_requestResizeRequested(this);
-	}
-	
 	
 	Hook * VectorHook::_prevHook() const
 	{
@@ -352,7 +346,8 @@ namespace wg
 
 	void VectorPanel::_childRequestResize( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestResize();
+		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
+		_requestResizeRequested(pHook);
 	}
 
 	//____ _prevChild() __________________________________________________________

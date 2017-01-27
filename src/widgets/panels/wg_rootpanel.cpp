@@ -33,9 +33,7 @@ namespace wg
 {
 	
 	const char RootPanel::CLASSNAME[] = {"RootPanel"};
-	
-	static const char	c_hookType[] = {"RootHook"};
-	
+		
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -43,7 +41,6 @@ namespace wg
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
-		m_hook.m_pRoot = this;
 
 		m_bDebugMode = false;
 
@@ -102,8 +99,8 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 	
-		if( m_pGfxDevice && !m_bHasGeo && m_hook._widget() )
-			m_hook._widget()->_setSize( m_pGfxDevice->canvasSize() );
+		if( m_pGfxDevice && !m_bHasGeo && m_pChild )
+			m_pChild->_setSize( m_pGfxDevice->canvasSize() );
 	
 		return true;
 	}
@@ -134,34 +131,34 @@ namespace wg
 	}
 	
 	
-	//____ setWidget() _____________________________________________________________
+	//____ setChild() _____________________________________________________________
 	
-	Hook_p RootPanel::setWidget( const Widget_p& pWidget )
+	bool RootPanel::setChild( const Widget_p& pWidget )
 	{
 		if( !pWidget )
-			return 0;
-	
-		if( m_hook._widget() )
-			m_hook._widget()->_setHolder( 0, 0 );
-
-		m_hook._setWidget(pWidget.rawPtr());
-		pWidget->_setHolder( this, 0 );
-		m_hook._widget()->_setSize(m_geo.size());
-
-		m_hook._widget()->_collectPatches( m_dirtyPatches, geo(), geo() );
-	
-		return &m_hook;
-	}
-	
-	//____ removeWidget() _________________________________________________________
-	
-	bool RootPanel::removeWidget()
-	{
-		if( !m_hook._widget() )
 			return false;
 	
-		m_hook._setWidget(0);
-		m_hook._widget()->_setHolder( 0, 0 );
+		if( m_pChild )
+			m_pChild->_setHolder( nullptr, nullptr );
+
+		m_pChild = pWidget;
+		pWidget->_setHolder( this, nullptr );
+		pWidget->_setSize(m_geo.size());
+
+		pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
+	
+		return true;
+	}
+	
+	//____ removeChild() _________________________________________________________
+	
+	bool RootPanel::removeChild()
+	{
+		if( !m_pChild )
+			return false;
+	
+		m_pChild->_setHolder( nullptr, nullptr );
+		m_pChild = nullptr;
 		m_dirtyPatches.add(m_geo);
 		return true;
 	}
@@ -170,7 +167,7 @@ namespace wg
 	
 	bool RootPanel::clear()
 	{
-		return removeWidget();
+		return removeChild();
 	}
 	
 	
@@ -248,7 +245,7 @@ namespace wg
 	
 	bool RootPanel::beginRender()
 	{
-		if( !m_pGfxDevice || !m_hook._widget() )
+		if( !m_pGfxDevice || !m_pChild )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Handle debug overlays.
@@ -292,7 +289,7 @@ namespace wg
 	
 	bool RootPanel::renderSection( const Rect& _clip )
 	{
-		if( !m_pGfxDevice || !m_hook._widget() )
+		if( !m_pGfxDevice || !m_pChild )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -320,7 +317,7 @@ namespace wg
 	
 		// Render the dirty patches recursively
 	
-		m_hook._widget()->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
+		m_pChild->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
 
 		// Handle updated rect overlays
 		
@@ -351,7 +348,7 @@ namespace wg
 	
 	bool RootPanel::endRender( void )
 	{
-		if( !m_pGfxDevice || !m_hook._widget() )
+		if( !m_pGfxDevice || !m_pChild )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Turn dirty patches into update patches
@@ -369,49 +366,22 @@ namespace wg
 	
 	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
 	{
-		if( !geo().contains(ofs) || !m_hook._widget() )
+		if( !geo().contains(ofs) || !m_pChild )
 			return 0;
 	
-		if( m_hook._widget() && m_hook._widget()->isContainer() )
-			return static_cast<Container*>(m_hook._widget())->_findWidget( ofs, mode );
+		if( m_pChild && m_pChild->isContainer() )
+			return static_cast<Container*>(m_pChild.rawPtr())->_findWidget( ofs, mode );
 	
-		return m_hook._widget();
+		return m_pChild.rawPtr();
 	}
 	
-	
-	//____ _focusRequested() _______________________________________________________
-	
-	bool RootPanel::_focusRequested( Widget * pWidgetRequesting )
-	{
-		if( pWidgetRequesting == m_pFocusedChild.rawPtr() )
-			return true;
-
-		Widget * pOldFocus = m_pFocusedChild.rawPtr();
-		m_pFocusedChild = pWidgetRequesting;
-		return Base::inputHandler()->_focusChanged( this, pOldFocus, pWidgetRequesting );
-	}
-	
-	//____ _focusReleased() ________________________________________________________
-	
-	bool RootPanel::_focusReleased( Widget * pWidgetReleasing )
-	{
-		if( pWidgetReleasing != m_pFocusedChild.rawPtr() )
-			return true;					// Never had focus, although widget seems to believe it.
-
-		if( pWidgetReleasing == m_hook._widget() )
-			return false;
-			
-		Widget * pOldFocus = m_pFocusedChild.rawPtr();
-		m_pFocusedChild = m_hook._widget();
-		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_hook._widget());
-	}
 
 	//____ _focusedChild() ______________________________________________________
 
 	Widget * RootPanel::_focusedChild() const
 	{ 
 		if( !m_pFocusedChild )
-			return m_hook._widget();
+			return m_pChild.rawPtr();
 
 		return m_pFocusedChild.rawPtr(); 
 	}
@@ -473,12 +443,25 @@ namespace wg
 
 	bool RootPanel::_childRequestFocus( void * pChildRef, Widget * pWidget )
 	{
-		return _focusRequested( pWidget );
+		if( pWidget == m_pFocusedChild.rawPtr() )
+			return true;
+
+		Widget * pOldFocus = m_pFocusedChild.rawPtr();
+		m_pFocusedChild = pWidget;
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, pWidget );
 	}
 
 	bool RootPanel::_childReleaseFocus( void * pChildRef, Widget * pWidget )
 	{
-		return _focusReleased( pWidget );
+		if( pWidget != m_pFocusedChild.rawPtr() )
+			return true;					// Never had focus, although widget seems to believe it.
+
+		if( pWidget == m_pChild.rawPtr() )
+			return false;
+
+		Widget * pOldFocus = m_pFocusedChild.rawPtr();
+		m_pFocusedChild = m_pChild.rawPtr();
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_pChild.rawPtr());
 	}
 
 	void RootPanel::_childRequestInView( void * pChildRef )
@@ -498,105 +481,6 @@ namespace wg
 	Widget * RootPanel::_nextChild( void * pChildRef ) const
 	{
 		return nullptr;
-	}
-	
-	///////////////////////////////////////////////////////////////////////////////
-	
-	RootPanel::MyHook::~MyHook()
-	{
-	}
-	
-	const char * RootPanel::MyHook::type( void ) const
-	{
-		return classType();
-	}
-	
-	const char * RootPanel::MyHook::classType()
-	{
-		return c_hookType;
-	}
-	
-	Coord RootPanel::MyHook::pos() const
-	{
-		return m_pRoot->geo();
-	}
-	
-	Size RootPanel::MyHook::size() const
-	{
-		return m_pRoot->geo();
-	}
-	
-	Rect RootPanel::MyHook::geo() const
-	{
-		return m_pRoot->geo();
-	}
-	
-	Coord RootPanel::MyHook::globalPos() const
-	{
-		return m_pRoot->geo();
-	}
-	
-	Rect RootPanel::MyHook::globalGeo() const
-	{
-		return m_pRoot->geo();
-	}
-	
-	RootPanel * RootPanel::MyHook::_root() const
-	{
-		return m_pRoot;
-	}
-	
-	void RootPanel::MyHook::_requestRender()
-	{
-		if( m_pRoot->m_bVisible )
-			m_pRoot->addDirtyPatch( geo() );
-	}
-	
-	void RootPanel::MyHook::_requestRender( const Rect& rect )
-	{
-		if( m_pRoot->m_bVisible )
-			m_pRoot->addDirtyPatch( Rect( pos() + rect.pos(), rect.size() ) );
-	}
-	
-	void RootPanel::MyHook::_requestResize()
-	{
-		// Do nothing, root ignores size requests.
-	}
-	
-	bool RootPanel::MyHook::_requestFocus( Widget * pWidget )
-	{
-		return m_pRoot->_focusRequested( pWidget );
-	}
-	
-	bool RootPanel::MyHook::_releaseFocus( Widget * pWidget )
-	{
-		return m_pRoot->_focusReleased( pWidget );
-	}
-
-	void RootPanel::MyHook::_requestVisibility()
-	{
-		// Do nothing, root ignores visibility requests.
-	}
-
-	void RootPanel::MyHook::_requestVisibility( const Rect& preferred, const Rect& prio )
-	{
-		// Do nothing, root ignores visibility requests.
-	}
-
-	
-	Hook * RootPanel::MyHook::_prevHook() const
-	{
-		return 0;
-	}
-	
-	Hook * RootPanel::MyHook::_nextHook() const
-	{
-		return 0;
-	}
-	
-	Container * RootPanel::MyHook::_parent() const
-	{
-		return 0;
 	}
 	
 

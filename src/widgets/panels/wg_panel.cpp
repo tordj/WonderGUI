@@ -197,7 +197,7 @@ namespace wg
 		if( padding != m_padding )
 		{
 			m_padding = padding;
-			_requestResize();
+			m_pWidget->_requestResize();
 		}
 		return true;
 	}

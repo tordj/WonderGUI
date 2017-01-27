@@ -285,17 +285,25 @@ namespace wg
 
 	void Layer::_childRequestRender( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestRender();
+		Hook * pHook = reinterpret_cast<Hook*>(pChildRef);
+		if( pHook == &m_baseHook )
+			_onRequestRender( Rect( 0,0, m_size ), 0 );		//TODO: Take padding into account
+		else
+			_onRequestRender( ((LayerHook*)pHook)->m_geo, (LayerHook*)pHook );
 	}
 	
 	void Layer::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		((Hook*)pChildRef)->_requestRender( rect );
+		Hook * pHook = reinterpret_cast<Hook*>(pChildRef);
+		if( pHook == &m_baseHook )
+			_onRequestRender( rect, 0 );		//TODO: Take padding into account
+		else
+			_onRequestRender( rect + ((LayerHook*)pHook)->m_geo.pos(), (LayerHook*)pHook );
 	}
 
 	void Layer::_childRequestResize( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestResize();
+		_requestResize();			//TODO: Smarter handling, not request resize unless we need to.
 	}
 
 	Widget * Layer::_prevChild( void * pChildRef ) const
@@ -309,26 +317,6 @@ namespace wg
 		Hook * p = ((Hook*)pChildRef)->_nextHook();
 		return p ? p->_widget() : nullptr;
 	}
-
-
-	//_____________________________________________________________________________
-	void Layer::_BaseHook::_requestRender()
-	{
-		m_pParent->_onRequestRender( Rect( 0,0, m_pParent->m_size ), 0 );
-	}
-	
-	//_____________________________________________________________________________
-	void Layer::_BaseHook::_requestRender( const Rect& rect )
-	{
-		m_pParent->_onRequestRender( rect, 0 );
-	}
-	
-	//_____________________________________________________________________________
-	void Layer::_BaseHook::_requestResize()
-	{
-		m_pParent->_requestResize();					// Just forward to our parent
-	}
-	
 	
 	//____ LayerHook::isInstanceOf() __________________________________________
 	
@@ -367,18 +355,6 @@ namespace wg
 	Rect LayerHook::globalGeo() const
 	{
 		return m_geo + parent()->globalPos();
-	}
-	
-	//_____________________________________________________________________________
-	void LayerHook::_requestRender()
-	{
-		parent()->_onRequestRender( m_geo, this );
-	}
-	
-	//_____________________________________________________________________________
-	void LayerHook::_requestRender( const Rect& rect )
-	{
-		parent()->_onRequestRender( rect + m_geo.pos(), this );
 	}
 	
 	//_____________________________________________________________________________

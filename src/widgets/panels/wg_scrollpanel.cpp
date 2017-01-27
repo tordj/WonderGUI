@@ -1090,16 +1090,7 @@ namespace wg
 		out.shrink( m_elements[WINDOW].m_padding );
 		return out;
 	}
-	
-	//____ _onRequestResize() _____________________________________________________
-	
-	void ScrollPanel::_onRequestResize( ScrollHook * pHook )
-	{
-		_updateElementGeo( size() );
-	
-	
-	}
-	
+		
 	
 	//____ _setSize() ____________________________________________________________
 	
@@ -1409,7 +1400,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestResize( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestResize();
+		_updateElementGeo( size() );
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -1428,6 +1419,15 @@ namespace wg
 		return p ? p->_widget() : nullptr;
 	}
 
+	//____ _childWindowSection() _________________________________________________
+
+	Rect ScrollPanel::_childWindowSection( void * pChildRef ) const
+	{
+		ScrollHook * pHook = static_cast<ScrollHook*>(reinterpret_cast<Hook*>(pChildRef));
+
+		Rect window(pHook->m_windowGeo,pHook->m_canvasGeo);			// Use intersection in case canvas is smaller than window.
+		return window - pHook->m_canvasGeo.pos();
+	}
 
 	
 	//_____________________________________________________________________________
@@ -1583,23 +1583,7 @@ namespace wg
 	{
 		return m_canvasGeo + m_pView->globalPos();
 	}
-	
-		
-	//____ ScrollHook::_requestResize() ______________________________________________
-	
-	void ScrollHook::_requestResize()
-	{
-		m_pView->_onRequestResize(this);
-	}
-	
-	//____ ScrollHook::_windowSection() ______________________________________________
-	
-	Rect ScrollHook::_windowSection() const 
-	{ 
-		Rect window(m_windowGeo,m_canvasGeo);			// Use intersection in case canvas is smaller than window.
-		return window - m_canvasGeo.pos();
-	}
-	
+			
 	
 	//____ ScrollHook::_prevHook() ___________________________________________________
 	

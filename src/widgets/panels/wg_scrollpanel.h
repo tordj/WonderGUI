@@ -75,11 +75,7 @@ namespace wg
 		ScrollHook() : m_pView(0) {};				// So we can make them members and then make placement new...
 		~ScrollHook();
 		void			_setParent( ScrollPanel * pParent ) { m_pView = pParent; }
-	
-		void			_requestResize();
-	
-		Rect			_windowSection() const;
-	
+			
 		Hook *		_prevHook() const;
 		Hook *		_nextHook() const;
 		Container *	_parent() const;
@@ -240,6 +236,7 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
+		Rect		_childWindowSection( void * pChildRef ) const;
 
 		enum ElementType
 		{
@@ -285,7 +282,6 @@ namespace wg
 		void		_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void		_onRequestResize( ScrollHook * pHook );
 	
 		bool		_alphaTest( const Coord& ofs );
 		void		_cloneContent( const Widget * _pOrg );

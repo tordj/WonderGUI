@@ -97,23 +97,7 @@ namespace wg
 		return geo + globalPos();
 	}
 	
-	
-	void PackListHook::_requestRender()
-	{
-		m_pParent->_onRequestRender(this);
-	}
-	
-	void PackListHook::_requestRender( const Rect& rect )
-	{
-		m_pParent->_onRequestRender(this, rect);
-	}
-	
-	void PackListHook::_requestResize()
-	{
-		m_pParent->_onRequestResize(this);
-	}
-	
-	Hook *  PackListHook::_prevHook() const
+		Hook *  PackListHook::_prevHook() const
 	{
 		return m_pParent->m_hooks.prev(this);
 	}
@@ -864,88 +848,8 @@ namespace wg
 			}
 		}
 	}
-	
-	
-	
-	//____ _onRequestRender() _____________________________________________________
-	
-	void PackList::_onRequestRender( PackListHook * pHook )
-	{
-		Rect geo;
-		_getChildGeo(geo, pHook);
-		_requestRender(geo);
-	}
-	
-	void PackList::_onRequestRender( PackListHook * pHook, const Rect& rect )
-	{
-		Rect geo;
-		_getChildGeo(geo, pHook);
-		geo.x += rect.x;
-		geo.y += rect.y;
-		geo.w = rect.w;
-		geo.h = rect.h;
-		_requestRender(geo);
-	}
-	
-	//____ _onRequestResize() _____________________________________________________
-	
-	void PackList::_onRequestResize( PackListHook * pHook )
-	{
-		if( !pHook->m_bVisible  || m_minEntrySize == m_maxEntrySize )
-			return;
-	
-		Widget * pChild = pHook->_widget();
-		Size prefEntrySize = _paddedLimitedPreferredSize(pChild);
-	
-		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
-		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
-	
-		bool	bReqResize = false;
-	
-		// Update preferred sizes
-	
-		if( prefBreadth != pHook->m_prefBreadth || prefLength != pHook->m_length )
-		{
-			// NOTE: Order here is important!
 
-			_addToContentPreferredSize( prefLength, prefBreadth );
-			int oldPrefBreadth = pHook->m_prefBreadth;
-			pHook->m_prefBreadth = prefBreadth;
-			_subFromContentPreferredSize( pHook->m_length, oldPrefBreadth );
-	
-			bReqResize = true;
-		}
-	
-		// Calculate new length
-	
-		int length;
-		if( prefBreadth == m_contentBreadth )	
-			length = prefLength;
-		else
-			length = m_bHorizontal ? _paddedLimitedMatchingWidth(pChild, m_contentBreadth ) : _paddedLimitedMatchingHeight(pChild, m_contentBreadth );
-	
-		// Update if length has changed
-	
-		if( length != pHook->m_length )
-		{
-			m_contentLength += length - pHook->m_length;
-			pHook->m_length = length;
-			bReqResize = true;
-	
-			_updateChildOfsFrom( pHook );
-			_requestRenderChildrenFrom( pHook );
-	
-			Rect childGeo;
-			_getChildGeo(childGeo,pHook);
-			pHook->_widget()->_setSize(childGeo);
-		}
-	
-	
-	
-		if( bReqResize )
-			_requestResize();
-	}
-	
+		
 	//____ _onWidgetAppeared() ____________________________________________________
 	
 	void PackList::_onWidgetAppeared( ListHook * pInserted )
@@ -1373,19 +1277,85 @@ namespace wg
 
 	void PackList::_childRequestRender( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestRender();
+		PackListHook * pHook = static_cast<PackListHook*>(reinterpret_cast<Hook*>(pChildRef));
+
+		Rect geo;
+		_getChildGeo(geo, pHook);
+		_requestRender(geo);
 	}
 
 	void PackList::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		((Hook*)pChildRef)->_requestRender( rect );
+		PackListHook * pHook = static_cast<PackListHook*>(reinterpret_cast<Hook*>(pChildRef));
+
+		Rect geo;
+		_getChildGeo(geo, pHook);
+		geo.x += rect.x;
+		geo.y += rect.y;
+		geo.w = rect.w;
+		geo.h = rect.h;
+		_requestRender(geo);
 	}
 
 	//____ _childRequestResize() _________________________________________________
 
 	void PackList::_childRequestResize( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestResize();
+		PackListHook * pHook = static_cast<PackListHook*>(reinterpret_cast<Hook*>(pChildRef));
+
+		if( !pHook->m_bVisible  || m_minEntrySize == m_maxEntrySize )
+			return;
+
+		Widget * pChild = pHook->_widget();
+		Size prefEntrySize = _paddedLimitedPreferredSize(pChild);
+
+		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
+		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
+
+		bool	bReqResize = false;
+
+		// Update preferred sizes
+
+		if( prefBreadth != pHook->m_prefBreadth || prefLength != pHook->m_length )
+		{
+			// NOTE: Order here is important!
+
+			_addToContentPreferredSize( prefLength, prefBreadth );
+			int oldPrefBreadth = pHook->m_prefBreadth;
+			pHook->m_prefBreadth = prefBreadth;
+			_subFromContentPreferredSize( pHook->m_length, oldPrefBreadth );
+
+			bReqResize = true;
+		}
+
+		// Calculate new length
+
+		int length;
+		if( prefBreadth == m_contentBreadth )	
+			length = prefLength;
+		else
+			length = m_bHorizontal ? _paddedLimitedMatchingWidth(pChild, m_contentBreadth ) : _paddedLimitedMatchingHeight(pChild, m_contentBreadth );
+
+		// Update if length has changed
+
+		if( length != pHook->m_length )
+		{
+			m_contentLength += length - pHook->m_length;
+			pHook->m_length = length;
+			bReqResize = true;
+
+			_updateChildOfsFrom( pHook );
+			_requestRenderChildrenFrom( pHook );
+
+			Rect childGeo;
+			_getChildGeo(childGeo,pHook);
+			pHook->_widget()->_setSize(childGeo);
+		}
+
+
+
+		if( bReqResize )
+			_requestResize();
 	}
 
 	//____ _prevChild() __________________________________________________________

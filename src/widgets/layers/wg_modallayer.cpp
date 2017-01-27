@@ -67,7 +67,7 @@ namespace wg
 	void ModalHook::top()
 	{
 		_moveLast();
-		_requestRender();
+		m_pWidget->_requestRender();
 		m_pParent->_updateKeyboardFocus();
 	}
 	
@@ -203,9 +203,9 @@ namespace wg
 	
 		if( newGeo != m_geo )
 		{
-			_requestRender();
+			m_pWidget->_requestRender();
 			m_geo = Rect( ofs, sz );
-			_requestRender();
+			m_pWidget->_requestRender();
 		}
 	
 		return true;
@@ -340,7 +340,7 @@ namespace wg
 		{
 			ModalHook * pHook = (ModalHook *) reinterpret_cast<Hook*>(pWidget->_holdersRef());
 			pWidget->_setHolder( nullptr, nullptr );
-			pHook->_requestRender();
+			_childRequestRender( (Hook*) pHook );
 			delete pHook;
 			_updateKeyboardFocus();
 			return true;
