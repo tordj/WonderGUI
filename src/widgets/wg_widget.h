@@ -105,6 +105,7 @@ namespace wg
 	friend class StackPanel;
 	friend class Container;
 	friend class Panel;
+	friend class PanelHook;
 	friend class VectorPanel;
 	friend class PackPanel;
 	friend class ShaderCapsule;

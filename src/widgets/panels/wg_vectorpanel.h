@@ -84,8 +84,6 @@ namespace wg
 		VectorHook();
 		~VectorHook();
 	
-		void	_requestRender();
-		void	_requestRender( const Rect& rect );
 		void	_requestResize();
 	
 		Hook *	_prevHook() const;

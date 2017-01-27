@@ -76,8 +76,6 @@ namespace wg
 		~ScrollHook();
 		void			_setParent( ScrollPanel * pParent ) { m_pView = pParent; }
 	
-		void			_requestRender();
-		void			_requestRender( const Rect& rect );
 		void			_requestResize();
 	
 		Rect			_windowSection() const;

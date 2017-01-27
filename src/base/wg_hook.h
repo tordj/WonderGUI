@@ -76,6 +76,7 @@ namespace wg
 		friend class FlexPanel;
 		friend class ScrollPanel;
 		friend class PackList;
+		friend class PanelHook;
 	
 	public:
 		virtual bool			isInstanceOf( const char * pClassName ) const;
@@ -104,8 +105,6 @@ namespace wg
 	
 		// To be called by Widget
 	
-		virtual void	_requestRender() = 0;
-		virtual void	_requestRender( const Rect& rect ) = 0;
 		virtual void	_requestResize() = 0;
 			
 		virtual Rect	_windowSection() const { return Rect(0,0,size()); }			// Returns the window section within the canvas.

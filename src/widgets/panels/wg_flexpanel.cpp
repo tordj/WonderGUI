@@ -607,10 +607,10 @@ namespace wg
 	
 		if( newGeo != m_realGeo )
 		{
-			_requestRender();
+			m_pWidget->_requestRender();
 			m_realGeo = newGeo;
 			m_pWidget->_setSize(newGeo);
-			_requestRender();
+			m_pWidget->_requestRender();
 		}
 	}
 	
@@ -666,21 +666,7 @@ namespace wg
 		return sz;
 	}
 	
-	
-	//____ FlexHook::_requestRender() ____________________________________________
-	
-	void FlexHook::_requestRender()
-	{
-		m_pParent->_onRequestRender( m_realGeo, this );
-	}
-	
-	//____ FlexHook::_requestRender() ____________________________________________
-	
-	void FlexHook::_requestRender( const Rect& rect )
-	{
-		m_pParent->_onRequestRender( rect + m_realGeo.pos(), this );
-	}
-	
+		
 	//____ FlexHook::_requestResize() ____________________________________________
 	
 	void FlexHook::_requestResize()
@@ -1047,12 +1033,14 @@ namespace wg
 
 	void FlexPanel::_childRequestRender( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestRender();
+		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
+		_onRequestRender( pHook->m_realGeo, pHook );
 	}
-
+	
 	void FlexPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		((Hook*)pChildRef)->_requestRender( rect );
+		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
+		_onRequestRender( rect + pHook->m_realGeo.pos(), pHook );
 	}
 
 	//____ _childRequestResize() _________________________________________________

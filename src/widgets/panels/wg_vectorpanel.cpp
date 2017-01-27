@@ -180,19 +180,7 @@ namespace wg
 	{
 	}
 	
-	
-	void VectorHook::_requestRender()
-	{
-		VectorPanel * p = static_cast<VectorPanel*>(_parent());
-	
-		p->_renderRequested(this);
-	}
-	
-	void VectorHook::_requestRender( const Rect& rect )
-	{
-		parent()->_renderRequested(this, rect);
-	}
-	
+		
 	void VectorHook::_requestResize()
 	{
 		parent()->_requestResizeRequested(this);
@@ -350,12 +338,14 @@ namespace wg
 
 	void VectorPanel::_childRequestRender( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestRender();
+		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
+		_renderRequested(pHook);		
 	}
 
 	void VectorPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		((Hook*)pChildRef)->_requestRender( rect );
+		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
+		_renderRequested(pHook, rect);
 	}
 
 	//____ _childRequestResize() _________________________________________________

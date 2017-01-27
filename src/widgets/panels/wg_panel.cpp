@@ -179,11 +179,11 @@ namespace wg
 			if( bVisible )
 			{
 				m_bVisible = true;
-				_requestRender();
+				m_pWidget->_requestRender();
 			}
 			else
 			{
-				_requestRender();
+				m_pWidget->_requestRender();
 				m_bVisible = false;
 			}		
 		}

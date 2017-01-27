@@ -1388,12 +1388,21 @@ namespace wg
 
 	void ScrollPanel::_childRequestRender( void * pChildRef )
 	{
-		((Hook*)pChildRef)->_requestRender();
+		ScrollHook * pHook = static_cast<ScrollHook*>(reinterpret_cast<Hook*>(pChildRef));
+		if( pHook->m_bVisible )
+			_requestRender( pHook->m_windowGeo );
 	}
 
 	void ScrollPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		((Hook*)pChildRef)->_requestRender( rect );
+		ScrollHook * pHook = static_cast<ScrollHook*>(reinterpret_cast<Hook*>(pChildRef));
+		if( pHook->m_bVisible )
+		{
+			Rect r( pHook->m_windowGeo, rect + pHook->m_canvasGeo.pos() );
+	
+			if( !r.isEmpty() )
+				_requestRender( r );
+		}
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -1575,26 +1584,7 @@ namespace wg
 		return m_canvasGeo + m_pView->globalPos();
 	}
 	
-	
-	//____ ScrollHook::_requestRender() ______________________________________________
-	
-	void ScrollHook::_requestRender()
-	{
-		if( m_bVisible )
-			m_pView->_requestRender( m_windowGeo );
-	}
-	
-	void ScrollHook::_requestRender( const Rect& rect )
-	{
-		if( m_bVisible )
-		{
-			Rect r( m_windowGeo, rect + m_canvasGeo.pos() );
-	
-			if( !r.isEmpty() )
-				m_pView->_requestRender( r );
-		}
-	}
-	
+		
 	//____ ScrollHook::_requestResize() ______________________________________________
 	
 	void ScrollHook::_requestResize()
