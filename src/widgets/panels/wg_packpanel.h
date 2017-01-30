@@ -94,10 +94,7 @@ namespace wg
 	    
 		void			setOrientation( Orientation orientaiton );
 		Orientation	orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
-		
-		PackHook_p	firstHook() const { return static_cast<PackHook*>(_firstHook()); }
-		PackHook_p	lastHook() const { return static_cast<PackHook*>(_lastHook()); }
-	
+			
 		void			setSizeBroker( const SizeBroker_p& pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 	

@@ -102,10 +102,7 @@ namespace wg
 		Widget_p			widget() { return m_hook._widget(); }
 		bool				removeWidget( const Widget_p& pWidget );
 		bool				clear();
-	
-		inline CapsuleHook_p	firstHook() const { return static_cast<CapsuleHook*>(_firstHook()); }
-		inline CapsuleHook_p	lastHook() const { return static_cast<CapsuleHook*>(_lastHook()); }
-	
+		
 	
 		// Overloaded from Widget
 	

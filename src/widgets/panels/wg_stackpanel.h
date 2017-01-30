@@ -98,10 +98,7 @@ namespace wg
 		
 		inline StackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<StackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
 		inline StackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<StackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
-	
-		inline StackHook_p firstHook() const { return static_cast<StackHook*>(m_hooks.first()); }
-		inline StackHook_p lastHook() const { return static_cast<StackHook*>(m_hooks.last()); }
-	
+		
 		// Overloaded from Widget
 	
 		int		matchingHeight( int width ) const;

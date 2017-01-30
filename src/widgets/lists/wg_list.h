@@ -99,10 +99,6 @@ namespace wg
 		SelectMode			selectMode() const { return m_selectMode; }
 	
 	
-	
-		inline ListHook_p	firstHook() const { return static_cast<ListHook*>(_firstHook()); }
-		inline ListHook_p	lastHook() const { return static_cast<ListHook*>(_lastHook()); }
-	
 	protected:
 	
 		List();

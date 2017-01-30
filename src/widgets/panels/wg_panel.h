@@ -106,10 +106,7 @@ namespace wg
 	
 		void		setMaskOp( MaskOp operation );
 		MaskOp	maskOp() const { return m_maskOp; }
-	
-		inline PanelHook_p	firstHook() const { return static_cast<PanelHook*>(_firstHook()); }
-		inline PanelHook_p	lastHook() const { return static_cast<PanelHook*>(_lastHook()); }
-	
+		
 		// Overloaded from IWidgets
 	
 	

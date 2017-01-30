@@ -38,7 +38,6 @@
 namespace wg 
 {
 	
-	class Hook;
 	
 	class IWidgets;
 	typedef	StrongInterfacePtr<IWidgets,Interface_p>		IWidgets_p;

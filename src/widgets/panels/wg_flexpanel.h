@@ -244,9 +244,6 @@ namespace wg
 		bool			clear();
 	
 	
-		FlexHook*		firstHook() const { return m_hooks.first(); }
-		FlexHook*		lastHook() const { return m_hooks.last(); }
-	
 		// Overloaded from Widget
 	
 		Size			preferredSize() const;
@@ -277,8 +274,8 @@ namespace wg
 	
 		void			_onRequestRender( const Rect& rect, const FlexHook * pHook );	// rect is in our coordinate system.
 	
-		Hook*			_firstHook() const { return firstHook(); }
-		Hook*			_lastHook() const { return lastHook(); }
+		Hook*			_firstHook() const { return  m_hooks.first(); }
+		Hook*			_lastHook() const { return  m_hooks.last(); }
 	
 		Hook *		_firstHookWithGeo( Rect& writeGeo ) const;
 		Hook *		_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const;

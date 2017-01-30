@@ -79,10 +79,7 @@ namespace wg
 	
 			inline Widget_p		firstWidget() const { return Widget_p(_firstWidget()); }
 			inline Widget_p		lastWidget() const { return Widget_p(_lastWidget()); }
-	
-			inline Hook_p		firstHook() const { return _firstHook(); }
-			inline Hook_p		lastHook() const { return _lastHook(); }
-	
+		
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
 	
 	

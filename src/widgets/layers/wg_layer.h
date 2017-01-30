@@ -105,7 +105,6 @@ namespace wg
 		Hook_p				setBaseWidget( const Widget_p& pWidget );
 		Widget_p			baseWidget();
 		bool				removeBaseWidget();
-		inline Hook_p		baseHook() { return &m_baseHook; }
 	
 		inline LayerHook_p	firstLayerHook() const { return _firstLayerHook(); }
 		inline LayerHook_p	lastLayerHook() const { return _lastLayerHook(); }
