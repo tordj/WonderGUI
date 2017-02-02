@@ -170,15 +170,12 @@ namespace wg
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
 		int				_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight );
 	
-		Hook*			_firstHook() const;
-		Hook*			_lastHook() const;
+		Widget*			_firstChild() const;
+		Widget*			_lastChild() const;
 	
-		Hook*			_firstHookWithGeo( Rect& geo ) const;
-		Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
-		Hook*			_lastHookWithGeo( Rect& geo ) const;
-		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
+		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
+		
 		//
 
 		Coord		_childPos( void * pChildRef ) const;

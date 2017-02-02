@@ -332,28 +332,28 @@ namespace wg
         
         glUseProgram( m_fillProg );
         GLint dimLoc = glGetUniformLocation( m_fillProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
         
         glUseProgram( m_aaFillProg );
         dimLoc = glGetUniformLocation( m_aaFillProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
         
         glUseProgram( m_mildSlopeProg );
         dimLoc = glGetUniformLocation( m_mildSlopeProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
         
         glUseProgram( m_steepSlopeProg );
         dimLoc = glGetUniformLocation( m_steepSlopeProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
         
         glUseProgram( m_blitProg );
         dimLoc = glGetUniformLocation( m_blitProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
         glUniform1i( m_blitProgTexIdLoc, 0 );
         
         glUseProgram( m_plotProg );
         dimLoc = glGetUniformLocation( m_plotProg, "dimensions");
-        glUniform2f(dimLoc, canvas.w, canvas.h);
+        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
 	}
 
 	//____ setTintColor() __________________________________________________________
@@ -458,14 +458,14 @@ namespace wg
 		int dx2 = _rect.x + _rect.w;
 		int dy2 = m_canvasSize.h - (_rect.y + _rect.h);
 
-        m_vertexBufferData[0] = dx1;
-        m_vertexBufferData[1] = dy1;
-        m_vertexBufferData[2] = dx2;
-        m_vertexBufferData[3] = dy1;
-        m_vertexBufferData[4] = dx2;
-        m_vertexBufferData[5] = dy2;
-        m_vertexBufferData[6] = dx1;
-        m_vertexBufferData[7] = dy2;
+        m_vertexBufferData[0] = (GLfloat) dx1;
+        m_vertexBufferData[1] = (GLfloat) dy1;
+        m_vertexBufferData[2] = (GLfloat) dx2;
+        m_vertexBufferData[3] = (GLfloat) dy1;
+        m_vertexBufferData[4] = (GLfloat) dx2;
+        m_vertexBufferData[5] = (GLfloat) dy2;
+        m_vertexBufferData[6] = (GLfloat) dx1;
+        m_vertexBufferData[7] = (GLfloat) dy2;
         
         glUseProgram( m_fillProg );
         glUniform4f( m_fillProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );
@@ -510,23 +510,23 @@ namespace wg
 		int		dy1 = m_canvasSize.h - dest.y;
 		int		dy2 = dy1 - _src.h;
 
-        m_vertexBufferData[0] = dx1;
-        m_vertexBufferData[1] = dy1;
-        m_vertexBufferData[2] = dx2;
-        m_vertexBufferData[3] = dy1;
-        m_vertexBufferData[4] = dx2;
-        m_vertexBufferData[5] = dy2;
-        m_vertexBufferData[6] = dx1;
-        m_vertexBufferData[7] = dy2;
+        m_vertexBufferData[0] = (GLfloat) dx1;
+        m_vertexBufferData[1] = (GLfloat) dy1;
+        m_vertexBufferData[2] = (GLfloat) dx2;
+        m_vertexBufferData[3] = (GLfloat) dy1;
+        m_vertexBufferData[4] = (GLfloat) dx2;
+        m_vertexBufferData[5] = (GLfloat) dy2;
+        m_vertexBufferData[6] = (GLfloat) dx1;
+        m_vertexBufferData[7] = (GLfloat) dy2;
         
-        m_texCoordBufferData[0] = sx1;
-        m_texCoordBufferData[1] = sy1;
-        m_texCoordBufferData[2] = sx2;
-        m_texCoordBufferData[3] = sy1;
-        m_texCoordBufferData[4] = sx2;
-        m_texCoordBufferData[5] = sy2;
-        m_texCoordBufferData[6] = sx1;
-        m_texCoordBufferData[7] = sy2;
+        m_texCoordBufferData[0] = (GLfloat) sx1;
+        m_texCoordBufferData[1] = (GLfloat) sy1;
+        m_texCoordBufferData[2] = (GLfloat) sx2;
+        m_texCoordBufferData[3] = (GLfloat) sy1;
+        m_texCoordBufferData[4] = (GLfloat) sx2;
+        m_texCoordBufferData[5] = (GLfloat) sy2;
+        m_texCoordBufferData[6] = (GLfloat) sx1;
+        m_texCoordBufferData[7] = (GLfloat) sy2;
         
         glActiveTexture(GL_TEXTURE0 );
         glBindTexture(GL_TEXTURE_2D, ((GlSurface*)(_pSrc.rawPtr()))->getTexture());
@@ -604,14 +604,14 @@ namespace wg
         
         // Set vertices
         
-        m_vertexBufferData[0] = dx1;
-        m_vertexBufferData[1] = dy1;
-        m_vertexBufferData[2] = dx2;
-        m_vertexBufferData[3] = dy1;
-        m_vertexBufferData[4] = dx2;
-        m_vertexBufferData[5] = dy2;
-        m_vertexBufferData[6] = dx1;
-        m_vertexBufferData[7] = dy2;
+        m_vertexBufferData[0] = (GLfloat) dx1;
+        m_vertexBufferData[1] = (GLfloat) dy1;
+        m_vertexBufferData[2] = (GLfloat) dx2;
+        m_vertexBufferData[3] = (GLfloat) dy1;
+        m_vertexBufferData[4] = (GLfloat) dx2;
+        m_vertexBufferData[5] = (GLfloat) dy2;
+        m_vertexBufferData[6] = (GLfloat) dx1;
+        m_vertexBufferData[7] = (GLfloat) dy2;
 
         // Set buffer and draw
         

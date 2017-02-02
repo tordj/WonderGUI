@@ -1431,7 +1431,7 @@ namespace wg
 
 	
 	//_____________________________________________________________________________
-	Hook*	ScrollPanel::_firstHook() const
+	Hook*	ScrollPanel::_firstChild() const
 	{
 		for( int i = 0 ; i < 3 ; i++ )
 			if( m_elements[i]._widget() )
@@ -1441,7 +1441,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	Hook*	ScrollPanel::_lastHook() const
+	Hook*	ScrollPanel::_lastChild() const
 	{
 		for( int i = 2 ; i >= 0 ; i++ )
 			if( m_elements[i]._widget() )
@@ -1452,7 +1452,7 @@ namespace wg
 	
 	
 	//_____________________________________________________________________________
-	Hook * ScrollPanel::_firstHookWithGeo( Rect& geo ) const
+	Hook * ScrollPanel::_firstChildWithGeo( Rect& geo ) const
 	{
 		for( int i = 0 ; i < 3 ; i++ )
 			if( m_elements[i]._widget() )
@@ -1465,7 +1465,7 @@ namespace wg
 	}
 	
 	//_____________________________________________________________________________
-	Hook * ScrollPanel::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
+	Hook * ScrollPanel::_nextChildWithGeo( Rect& geo, Hook * pHook ) const
 	{
 		const ScrollHook * pLast = &m_elements[2];
 		ScrollHook * p = (ScrollHook*) pHook;
@@ -1482,39 +1482,7 @@ namespace wg
 		}
 		return 0;
 	}
-	
-	//_____________________________________________________________________________
-	Hook * ScrollPanel::_lastHookWithGeo( Rect& geo ) const
-	{
-		for( int i = 2 ; i >= 0 ; i++ )
-			if( m_elements[i]._widget() )
-			{
-				geo = m_elements[i].m_canvasGeo;
-				return const_cast<ScrollHook*>(&m_elements[i]);
-			}
-	
-		return 0;
-	}
-	
-	//_____________________________________________________________________________
-	Hook * ScrollPanel::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
-	{
-		const ScrollHook * pFirst = &m_elements[0];
-		ScrollHook * p = (ScrollHook*) pHook;
-	
-	
-		while( p != pFirst )
-		{
-			p--;
-			if( p->_widget() )
-			{
-				geo = p->m_canvasGeo;
-				return const_cast<ScrollHook*>(p);
-			}
-		}
-		return 0;
-	}
-	
+		
 	//____ ScrollHook::Destructor ___________________________________________________
 	
 	ScrollHook::~ScrollHook()

@@ -274,15 +274,12 @@ namespace wg
 	
 		void			_onRequestRender( const Rect& rect, const FlexHook * pHook );	// rect is in our coordinate system.
 	
-		Hook*			_firstHook() const { return  m_hooks.first(); }
-		Hook*			_lastHook() const { return  m_hooks.last(); }
+		Hook*			_firstChild() const { return  m_hooks.first(); }
+		Hook*			_lastChild() const { return  m_hooks.last(); }
 	
-		Hook *		_firstHookWithGeo( Rect& writeGeo ) const;
-		Hook *		_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const;
-	
-		Hook *		_lastHookWithGeo( Rect& writeGeo ) const;
-		Hook *		_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const;
-	
+		Hook *		_firstChildWithGeo( Rect& writeGeo ) const;
+		Hook *		_nextChildWithGeo( Rect& writeGeo, Hook * pHook ) const;
+		
 		Chain<FlexHook>			m_hooks;
 	
 		bool			m_bConfineWidgets;

@@ -61,8 +61,8 @@ namespace wg
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static Interface_p	cast( const Interface_p& pInterface );			// Provided just for completeness sake.
-		Interface_p			ptr();												///< @brief Get a pointer to this interface.
+		static Interface_p		cast( const Interface_p& pInterface );			// Provided just for completeness sake.
+		Interface_p				ptr();												///< @brief Get a pointer to this interface.
 		Object_p				holder();											///< @breif Get a pointer to the object providing this interface.
 	
 	protected:

@@ -138,35 +138,13 @@ namespace wg
 	{
 		return false;
 	}
-	
-	//____ _firstWidget() __________________________________________________________
-	
-	Widget * Container::_firstWidget() const 
-	{ 
-		Hook * p = _firstHook(); 
-		if( p ) 
-			return p->_widget(); 
-		else 
-			return 0;
-	}
-	
-	//____ _lastWidget() ___________________________________________________________
-	
-	Widget * Container::_lastWidget() const 
-	{ 
-		Hook * p = _lastHook(); 
-		if( p ) 
-			return p->_widget(); 
-		else 
-			return 0; 
-	}
-	
+		
 	//____ _findWidget() ____________________________________________________________
 	
 	Widget * Container::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		Rect childGeo;
-		Hook * pHook = _lastHookWithGeo( childGeo );
+		Hook * pHook = _lastChildWithGeo( childGeo );
 		Widget * pResult = 0;
 	
 		while( pHook && !pResult )
@@ -182,7 +160,7 @@ namespace wg
 						pResult = pHook->_widget();
 				}
 			}
-			pHook = _prevHookWithGeo( childGeo, pHook );
+			pHook = _prevChildWithGeo( childGeo, pHook );
 		}
 	
 		// Check against ourselves
@@ -225,7 +203,7 @@ namespace wg
 		if( oldState.isEnabled() != state.isEnabled() )
 		{
 			bool bEnabled = state.isEnabled();
-			Widget * p = _firstWidget();
+			Widget * p = _firstChild();
 			while( p )
 			{
 				p->setEnabled(bEnabled);
@@ -236,7 +214,7 @@ namespace wg
 		if( oldState.isSelected() != state.isSelected() )
 		{
 			bool bSelected = state.isSelected();
-			Widget * p = _firstWidget();
+			Widget * p = _firstChild();
 			while( p )
 			{
 				State s = p->m_state;
@@ -293,7 +271,7 @@ namespace wg
 			std::vector<WidgetRenderContext> renderList;
 	
 			Rect childGeo;
-			Hook * p = _firstHookWithGeo( childGeo );
+			Hook * p = _firstChildWithGeo( childGeo );
 			while(p)
 			{
 				Rect geo = childGeo + _canvas.pos();
@@ -301,7 +279,7 @@ namespace wg
 				if( p->_isVisible() && geo.intersectsWith( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(p->_widget(), geo ) );
 	
-				p = _nextHookWithGeo( childGeo, p );
+				p = _nextChildWithGeo( childGeo, p );
 			}
 	
 			// Go through WidgetRenderContexts in reverse order (topmost first), push and mask dirt
@@ -330,14 +308,14 @@ namespace wg
 		else
 		{
 			Rect childGeo;
-			Hook * p = _firstHookWithGeo( childGeo );
+			Hook * p = _firstChildWithGeo( childGeo );
 	
 			while(p)
 			{
 				Rect canvas = childGeo + _canvas.pos();
 				if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
 					p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
-				p = _nextHookWithGeo( childGeo, p );
+				p = _nextChildWithGeo( childGeo, p );
 			}
 	
 		}
@@ -362,13 +340,13 @@ namespace wg
 		else
 		{
 			Rect childGeo;
-			Hook * p = _firstHookWithGeo( childGeo );
+			Hook * p = _firstChildWithGeo( childGeo );
 	
 			while(p)
 			{
 				if( p->_isVisible() )
 					p->_widget()->_collectPatches( container, childGeo + geo.pos(), clip );
-				p = _nextHookWithGeo( childGeo, p );
+				p = _nextChildWithGeo( childGeo, p );
 			}
 		}
 	}
@@ -383,13 +361,13 @@ namespace wg
 		else
 		{
 			Rect childGeo;
-			Hook * p = _firstHookWithGeo( childGeo );
+			Hook * p = _firstChildWithGeo( childGeo );
 	
 			while(p)
 			{
 				if( p->_isVisible() )
 					p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-				p = _nextHookWithGeo( childGeo, p );
+				p = _nextChildWithGeo( childGeo, p );
 			}
 		}
 	}

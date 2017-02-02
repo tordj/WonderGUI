@@ -1061,9 +1061,9 @@ namespace wg
 	}
 
 
-	//____ _firstHookWithGeo() _____________________________________________________
+	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * FlexPanel::_firstHookWithGeo( Rect& writeGeo ) const
+	Hook * FlexPanel::_firstChildWithGeo( Rect& writeGeo ) const
 	{
 		FlexHook * p = m_hooks.first();
 		if( p )
@@ -1072,9 +1072,9 @@ namespace wg
 		return p;
 	}
 	
-	//____ _nextHookWithGeo() ______________________________________________________
+	//____ _nextChildWithGeo() ______________________________________________________
 	
-	Hook * FlexPanel::_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const
+	Hook * FlexPanel::_nextChildWithGeo( Rect& writeGeo, Hook * pHook ) const
 	{
 		FlexHook * p = ((FlexHook*)pHook)->_next();
 		if( p )
@@ -1082,28 +1082,6 @@ namespace wg
 	
 		return p;
 	}
-	
-	//____ _lastHookWithGeo() _____________________________________________________
-	
-	Hook * FlexPanel::_lastHookWithGeo( Rect& writeGeo ) const
-	{
-		FlexHook * p = m_hooks.last();
-		if( p )
-			writeGeo = p->m_realGeo;
-	
-		return p;
-	}
-	
-	//____ _prevHookWithGeo() ______________________________________________________
-	
-	Hook * FlexPanel::_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const
-	{
-		FlexHook * p = ((FlexHook*)pHook)->_prev();
-		if( p )
-			writeGeo = p->m_realGeo;
-	
-		return p;
-	}
-	
+		
 
 } // namespace wg

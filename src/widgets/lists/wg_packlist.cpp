@@ -454,13 +454,13 @@ namespace wg
 		else
 		{
 			Rect childGeo;
-			PackListHook * p = static_cast<PackListHook*>(_firstHookWithGeo( childGeo ));
+			PackListHook * p = static_cast<PackListHook*>(_firstChildWithGeo( childGeo ));
 	
 			while(p)
 			{
 				if( p->_isVisible() )
 					p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-				p = static_cast<PackListHook*>(_nextHookWithGeo( childGeo, p ));
+				p = static_cast<PackListHook*>(_nextChildWithGeo( childGeo, p ));
 			}
 		}
 	
@@ -501,14 +501,14 @@ namespace wg
 		
 		{
 			Rect childGeo;
-			PackListHook * p = (PackListHook*)_firstHookWithGeo( childGeo );
+			PackListHook * p = (PackListHook*)_firstChildWithGeo( childGeo );
 	
 			while(p)
 			{
 				Rect canvas = childGeo + _canvas.pos();
 				if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
 					p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
-				p = (PackListHook*) _nextHookWithGeo( childGeo, p );
+				p = (PackListHook*) _nextChildWithGeo( childGeo, p );
 			}
 		}
 	
@@ -1374,29 +1374,29 @@ namespace wg
 		return p ? p->_widget() : nullptr;
 	}
 	
-	//____ _firstHook() ___________________________________________________________
+	//____ _firstChild() ___________________________________________________________
 	
-	Hook* PackList::_firstHook() const
+	Widget* PackList::_firstChild() const
 	{
 		if( m_hooks.size() > 0 )
-			return m_hooks.hook(0);
+			return m_hooks.hook(0)->_widget();
 	
-		return 0;
+		return nullptr;
 	}
 	
-	//____ _lastHook() ____________________________________________________________
+	//____ _lastChild() ____________________________________________________________
 	
-	Hook* PackList::_lastHook() const
+	Widget* PackList::_lastChild() const
 	{
 		if( m_hooks.size() > 0 )
-			return m_hooks.hook(m_hooks.size()-1);
+			return m_hooks.hook(m_hooks.size()-1)->_widget();
 	
-		return 0;
+		return nullptr;
 	}
 	
-	//____ _firstHookWithGeo() ____________________________________________________
+	//____ _firstChildWithGeo() ____________________________________________________
 	
-	Hook* PackList::_firstHookWithGeo( Rect& geo ) const
+	void PackList::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
 		if( m_hooks.size() == 0 )
 			return 0;
@@ -1406,9 +1406,9 @@ namespace wg
 		return p;
 	}
 	
-	//____ _nextHookWithGeo() _____________________________________________________
+	//____ _nextChildWithGeo() _____________________________________________________
 	
-	Hook* PackList::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
+	void PackList::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
 		PackListHook * p = m_hooks.next(static_cast<PackListHook*>(pHook));
 		if( p )
@@ -1416,28 +1416,7 @@ namespace wg
 		return p;
 	}
 	
-	//_____ _lastHookWithGeo() ____________________________________________________
-	
-	Hook* PackList::_lastHookWithGeo( Rect& geo ) const
-	{
-		if( m_hooks.size() == 0 )
-			return 0;
-	
-		PackListHook * p = m_hooks.hook(m_hooks.size()-1);
-		_getChildGeo(geo,p);
-		return p;
-	}
-	
-	//____ _prevHookWithGeo() _____________________________________________________
-	
-	Hook* PackList::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
-	{
-		PackListHook * p = m_hooks.prev(static_cast<PackListHook*>(pHook));
-		if( p )
-			_getChildGeo(geo,p);
-		return p;
-	}
-	
+
 	//____ _listArea() ____________________________________________________________
 	
 	Rect PackList::_listArea() const

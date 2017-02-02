@@ -55,28 +55,28 @@ namespace wg
 	public:
 		ModValue(ModValueItem * pItem) : Value(pItem) {}
 	
-		virtual bool				isInstanceOf( const char * pClassName ) const;
-		virtual const char *		className( void ) const;
-		static const char			CLASSNAME[];
+		virtual bool			isInstanceOf( const char * pClassName ) const;
+		virtual const char *	className( void ) const;
+		static const char		CLASSNAME[];
 		static ModValue_p		cast( const Interface_p& pInterface );
 		inline ModValue_p		ptr() { return ModValue_p(_object(),this); }
 	
 	
-		void						clear();
-		bool						set( int64_t value, int scale = 1);
+		void					clear();
+		bool					set( int64_t value, int scale = 1);
 	
 	
 	/*	For the future...
-		inline void					set( float value );
-		inline void					set( double value );
+		inline void				set( float value );
+		inline void				set( double value );
 	*/
 	
-		inline int64_t				value() const { return _item()->value(); }
-		inline int					scale() const { return _item()->scale(); }
+		inline int64_t			value() const { return _item()->value(); }
+		inline int				scale() const { return _item()->scale(); }
 	
-		bool						setRange( int64_t min, int64_t max );
-		inline int64_t				min() const { return _item()->min(); }
-		inline int64_t				max() const { return _item()->max(); }
+		bool					setRange( int64_t min, int64_t max );
+		inline int64_t			min() const { return _item()->min(); }
+		inline int64_t			max() const { return _item()->max(); }
 	
 	private:
 		inline	ModValueItem * 		_item() { return static_cast<ModValueItem*>(m_pItem); }

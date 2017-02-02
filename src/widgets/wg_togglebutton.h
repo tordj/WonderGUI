@@ -70,9 +70,9 @@ namespace wg
 	public:
 		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
 	
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static ToggleButton_p	cast( const Object_p& pObject );
 	
 		enum ClickArea
@@ -88,7 +88,7 @@ namespace wg
 		//____ Interfaces() ____________________________________
 	
 		ModText		label;
-		Icon			icon;
+		Icon		icon;
 	
 	
 		//____ Methods() _______________________________________
@@ -104,7 +104,6 @@ namespace wg
 	
 		inline ToggleGroup_p toggleGroup() const;
 		Size				preferredSize() const;
-		inline bool			isAutoEllipsisDefault() const;
 	
 	
 	protected:
@@ -166,11 +165,6 @@ namespace wg
 	{
 		return m_pToggleGroup;
 	}
-	
-	inline bool ToggleButton::isAutoEllipsisDefault() const
-	{
-		return false;
-	};
 	
 	
 	

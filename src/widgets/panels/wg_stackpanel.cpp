@@ -193,7 +193,7 @@ namespace wg
 	{
 		int height = 0;
 	
-		StackHook * pHook = _firstHook();
+		StackHook * pHook = _firstChild();
 		while( pHook )
 		{
 			int h = pHook->_widget()->matchingHeight(width);
@@ -211,7 +211,7 @@ namespace wg
 	{
 		int width = 0;
 	
-		StackHook * pHook = _firstHook();
+		StackHook * pHook = _firstChild();
 		while( pHook )
 		{
 			int w = pHook->_widget()->matchingWidth(height);
@@ -351,7 +351,7 @@ namespace wg
 		// Update m_preferredSize, skiping pToBeRemoved
 	
 		Size	preferredSize;
-		StackHook * pHook = _firstHook();
+		StackHook * pHook = _firstChild();
 		while( pHook )
 		{
 			if( pHook != pToBeRemoved )
@@ -411,7 +411,7 @@ namespace wg
 	{
 		Size	preferredSize;
 	
-		StackHook * pHook = _firstHook();
+		StackHook * pHook = _firstChild();
 		while( pHook )
 		{
 			Size sz = pHook->_paddedPreferredSize();
@@ -433,7 +433,7 @@ namespace wg
 	
 	void StackPanel::_adaptChildrenToSize()
 	{
-		StackHook * pHook = _firstHook();
+		StackHook * pHook = _firstChild();
 		while( pHook )
 		{
 			pHook->_widget()->_setSize( pHook->_getGeo(m_size) );
@@ -441,44 +441,22 @@ namespace wg
 		}
 	}
 	
-	//____ _firstHookWithGeo() _____________________________________________________
+	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * StackPanel::_firstHookWithGeo( Rect& writeGeo ) const
+	Hook * StackPanel::_firstChildWithGeo( Rect& writeGeo ) const
 	{
-		StackHook * p = _firstHook();
+		StackHook * p = _firstChild();
 		if( p )
 			writeGeo = p->_getGeo(m_size);
 	
 		return p;
 	}
 	
-	//____ _nextHookWithGeo() ______________________________________________________
+	//____ _nextChildWithGeo() ______________________________________________________
 	
-	Hook * StackPanel::_nextHookWithGeo( Rect& writeGeo, Hook * pHook ) const
+	Hook * StackPanel::_nextChildWithGeo( Rect& writeGeo, Hook * pHook ) const
 	{
 		StackHook * p = ((StackHook*)pHook)->_next();
-		if( p )
-			writeGeo = p->_getGeo(m_size);
-	
-		return p;
-	}
-	
-	//____ _lastHookWithGeo() ______________________________________________________
-	
-	Hook * StackPanel::_lastHookWithGeo( Rect& writeGeo ) const
-	{
-		StackHook * p = _lastHook();
-		if( p )
-			writeGeo = p->_getGeo(m_size);
-	
-		return p;
-	}
-	
-	//____ _prevHookWithGeo() ______________________________________________________
-	
-	Hook * StackPanel::_prevHookWithGeo( Rect& writeGeo, Hook * pHook ) const
-	{
-		StackHook * p = ((StackHook*)pHook)->_prev();
 		if( p )
 			writeGeo = p->_getGeo(m_size);
 	

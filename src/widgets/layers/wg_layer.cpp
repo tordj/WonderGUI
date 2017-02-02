@@ -169,93 +169,70 @@ namespace wg
 	}
 	
 	
-	//____ _firstHook() ___________________________________________________________
+	//____ _firstChild() ___________________________________________________________
 	
-	Hook* Layer::_firstHook() const
+	Widget* Layer::_firstChild() const
 	{
 		if( m_baseHook._widget() )
-			return const_cast<_BaseHook*>(&m_baseHook);
+			return m_baseHook._widget();
 		else
-			return _firstLayerHook();
+			return _firstLayerHook()->_widget();
 	}
 	
-	//____ _lastHook() ____________________________________________________________
+	//____ _lastChild() ____________________________________________________________
 	
-	Hook* Layer::_lastHook() const
+	Widget* Layer::_lastChild() const
 	{
 		Hook * p = _lastLayerHook();
 	
 		if( !p )
 		{
 			if( m_baseHook._widget() )
-				return const_cast<_BaseHook*>(&m_baseHook);	
-			return 0;
+				return m_baseHook._widget();	
+			return nullptr;
 		}
 	
-		return p;
+		return p->_widget();
 	}
 	
-	//____ _firstHookWithGeo() _____________________________________________________
+	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * Layer::_firstHookWithGeo( Rect& geo ) const
+	void Layer::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
 		if( m_baseHook._widget() )
 		{
-			geo = Rect(0,0,m_size);
-			return const_cast<_BaseHook*>(&m_baseHook);
+			package.geo = Rect(0,0,m_size);
+			package.pWidget = m_baseHook._widget();
+			package.pMagic = (Hook*)(&m_baseHook);
 		}
 		else
 		{
 			LayerHook * p = _firstLayerHook();
 			if( p )
-				geo = p->m_geo;
-	
-			return p;
+			{
+				package.geo = p->m_geo;
+				package.pWidget = p->_widget();
+				package.pMagic = (Hook*) p;
+			}
+			else
+				package.pWidget = nullptr;
 		}
 	}
 	
-	//____ _nextHookWithGeo() _______________________________________________________
+	//____ _nextChildWithGeo() _______________________________________________________
 	
-	Hook * Layer::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
+	void Layer::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		Hook * p = pHook->_nextHook();
-		if( p )
-			geo = ((LayerHook*)p)->m_geo;
-	
-		return p;
-	}
-	
-	
-	//____ _lastHookWithGeo() _____________________________________________________
-	
-	Hook * Layer::_lastHookWithGeo( Rect& geo ) const
-	{
-		LayerHook * p = _lastLayerHook();
+		Hook * p = ((Hook*)package.pMagic)->_nextHook();
 		if( p )
 		{
-			geo = p->m_geo;
-			return p;
-		}
-		else if( m_baseHook._widget() )
-		{
-			geo = Rect(0,0,m_size);
-			return const_cast<_BaseHook*>(&m_baseHook);
+			package.geo = ((LayerHook*)p)->m_geo;
+			package.pWidget = p->_widget();
+			package.pMagic = p;
 		}
 		else
-			return 0;
+			package.pWidget = nullptr;	
 	}
-	
-	//____ _prevHookWithGeo() _______________________________________________________
-	
-	Hook * Layer::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
-	{
-		Hook * p = pHook->_prevHook();
-		if( p )
-			geo = p->geo();
-	
-		return p;
-	}
-	
 
 	//____ _cloneContent() _______________________________________________________
 	

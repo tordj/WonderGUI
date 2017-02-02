@@ -152,9 +152,7 @@ namespace wg
 			Rect		globalGeo() const { return m_pParent->globalGeo(); }
 	
 		protected:
-	
-			void		_requestResize();
-	
+		
 			Hook *		_prevHook() const { return 0; }
 			Hook *		_nextHook() const { return m_pParent->_firstLayerHook(); }
 			Container*	_parent() const { return m_pParent; }
@@ -170,15 +168,11 @@ namespace wg
 		virtual LayerHook * _firstLayerHook() const = 0;
 		virtual LayerHook * _lastLayerHook() const = 0;
 	
-		Hook *			_firstHook() const;		// Fist MyHook returned is for the base, then follows the LayerHooks.
-		Hook *			_lastHook() const;		//
-	
-		Hook *			_firstHookWithGeo( Rect& geo ) const;
-		Hook *			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
-		Hook *			_lastHookWithGeo( Rect& geo ) const;
-		Hook *			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
+		Widget *		_firstChild() const;		// Fist MyHook returned is for the base, then follows the LayerHooks.
+		Widget *		_lastChild() const;			//
+
+		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
 	
 		virtual void	 _onBaseChanged();
 	

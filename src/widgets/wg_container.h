@@ -72,13 +72,13 @@ namespace wg
 			virtual bool			isInstanceOf( const char * pClassName ) const;
 			virtual const char *	className( void ) const;
 			static const char		CLASSNAME[];
-			static Container_p	cast( const Object_p& pObject );
+			static Container_p		cast( const Object_p& pObject );
 	
 	
 			bool					isContainer() const;
 	
-			inline Widget_p		firstWidget() const { return Widget_p(_firstWidget()); }
-			inline Widget_p		lastWidget() const { return Widget_p(_lastWidget()); }
+			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
+			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
 		
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
 	
@@ -123,30 +123,33 @@ namespace wg
 			//
 
 			virtual bool			_isPanel() const;
-	
-			virtual Hook*			_firstHook() const = 0;
-			virtual Hook*			_lastHook() const = 0;
-	
-			Widget *				_firstWidget() const;
-			Widget *				_lastWidget() const;
+		
+			virtual Widget *		_firstChild() const = 0;
+			virtual Widget *		_lastChild() const = 0;
 	
 	
 			virtual Widget * 		_findWidget( const Coord& ofs, SearchMode mode );
 			virtual void			_setState( State state );
 	
 			virtual void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-			virtual Hook*			_firstHookWithGeo( Rect& geo ) const = 0;
-			virtual Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const = 0;
-	
-			virtual Hook*			_lastHookWithGeo( Rect& geo ) const = 0;
-			virtual Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const = 0;
+
+			struct WidgetWithGeo
+			{
+				Rect		geo;
+				Widget *	pWidget;
+//				bool		bVisible;
+				void *		pMagic;
+			};
+
+			virtual void			_firstChildWithGeo( WidgetWithGeo& package ) const = 0;
+			virtual void			_nextChildWithGeo( WidgetWithGeo& package ) const = 0;
 		
 			virtual ModalLayer *	_getModalLayer() const;
-			virtual PopupLayer*	_getPopupLayer() const;
+			virtual PopupLayer*		_getPopupLayer() const;
 	
-			virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-			virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-			virtual void	_cloneContent( const Widget * _pOrg );
+			virtual void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+			virtual void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+			virtual void			_cloneContent( const Widget * _pOrg );
 	
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 	

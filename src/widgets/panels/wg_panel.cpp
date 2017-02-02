@@ -117,13 +117,13 @@ namespace wg
 			case MaskOp::Recurse:
 			{
 				Rect childGeo;
-				PanelHook * p = static_cast<PanelHook*>(_firstHookWithGeo( childGeo ));
+				PanelHook * p = static_cast<PanelHook*>(_firstChildWithGeo( childGeo ));
 	
 				while(p)
 				{
 					if( p->isVisible() )
 						p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-					p = static_cast<PanelHook*>(_nextHookWithGeo( childGeo, p ));
+					p = static_cast<PanelHook*>(_nextChildWithGeo( childGeo, p ));
 				}
 				break;
 			}

@@ -115,12 +115,9 @@ namespace wg
 	    
 		// Overloaded from Container
 		
-		Hook*			_firstHookWithGeo( Rect& geo ) const;
-		Hook*			_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
-		
-		Hook*			_lastHookWithGeo( Rect& geo ) const;
-		Hook*			_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
-		
+		Hook*			_firstChildWithGeo( Rect& geo ) const;
+		Hook*			_nextChildWithGeo( Rect& geo, Hook * pHook ) const;
+
 		
 		// Overloaded from VectorPanel
 		
@@ -136,8 +133,8 @@ namespace wg
 		
 		//
 		
-		inline PackHook *	_firstHook() const { return static_cast<PackHook*>(m_hooks.first()); }
-		inline PackHook *	_lastHook() const { return static_cast<PackHook*>(m_hooks.last()); }
+		inline PackHook *	_firstChild() const { return static_cast<PackHook*>(m_hooks.first()); }
+		inline PackHook *	_lastChild() const { return static_cast<PackHook*>(m_hooks.last()); }
 	
 	
 		void			_refreshChildGeo();

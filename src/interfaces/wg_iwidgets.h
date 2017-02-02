@@ -52,13 +52,13 @@ namespace wg
 		static const char		CLASSNAME[];
 		static IWidgets_p	cast( const Interface_p& pInterface );
 	
-		inline Widget_p	firstWidget() const { return Widget_p(_firstWidget()); }
-		inline Widget_p	lastWidget() const { return Widget_p(_lastWidget()); }
+		inline Widget_p	firstChild() const { return Widget_p(_firstChild()); }
+		inline Widget_p	lastChild() const { return Widget_p(_lastChild()); }
 	
 	protected:
 	
-		virtual Widget *		_firstWidget() const = 0;
-		virtual Widget *		_lastWidget() const = 0;
+		virtual Widget *		_firstChild() const = 0;
+		virtual Widget *		_lastChild() const = 0;
 	};
 	
 	

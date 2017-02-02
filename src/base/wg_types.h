@@ -672,10 +672,10 @@ namespace wg
 		PixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 	
-		uint32_t	R_mask;				///< bitmask for getting the red bits out of the pixel
-		uint32_t	G_mask;				///< bitmask for getting the green bits out of the pixel
-		uint32_t	B_mask;				///< bitmask for getting the blue bits out of the pixel
-		uint32_t	A_mask;				///< bitmask for getting the alpha bits out of the pixel
+		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
+		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
+		uint32_t	B_mask;			///< bitmask for getting the blue bits out of the pixel
+		uint32_t	A_mask;			///< bitmask for getting the alpha bits out of the pixel
 	
 		int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
 		int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.

@@ -129,11 +129,9 @@ namespace wg
 
 		//
 
-		Hook *		_firstHookWithGeo( Rect& geo ) const;
-		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
+		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
 	
-		Hook *		_lastHookWithGeo( Rect& geo ) const;
-		Hook *		_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
 	
 		//
 	
@@ -143,8 +141,8 @@ namespace wg
 		void		_setSize( const Size& size );
 	
 	
-		Hook*		_firstHook() const;
-		Hook*		_lastHook() const;
+		Widget*		_firstChild() const;
+		Widget*		_lastChild() const;
 	
 		CapsuleHook	m_hook;
 	

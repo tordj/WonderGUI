@@ -280,64 +280,34 @@ namespace wg
 			m_hook._widget()->_setSize(size);			
 	}
 	
-	//____ _firstHook() ____________________________________________________________
+	//____ _firstChild() ____________________________________________________________
 	
-	Hook* Capsule::_firstHook() const
+	Widget* Capsule::_firstChild() const
 	{
-		if( m_hook._widget() )
-			return const_cast<CapsuleHook*>(&m_hook);
-		else
-			return 0;
+		return m_hook._widget();
 	}
 	
-	//____ _lastHook() _____________________________________________________________
+	//____ _lastChild() _____________________________________________________________
 	
-	Hook* Capsule::_lastHook() const
+	Widget* Capsule::_lastChild() const
 	{
-		if( m_hook._widget() )
-			return const_cast<CapsuleHook*>(&m_hook);
-		else
-			return 0;
+		return m_hook._widget();
 	}
 	
-	//____ _firstHookWithGeo() _____________________________________________________
+	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * Capsule::_firstHookWithGeo( Rect& geo ) const
+	void Capsule::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		if( m_hook._widget() )
-		{
-			geo = Rect(0,0,size());
-			return const_cast<CapsuleHook*>(&m_hook);
-		}
-	
-		return 0;
+		package.pWidget = m_hook._widget();
+		package.geo = Rect(0,0,m_size);
 	}
 	
-	//____ _nextHookWithGeo() ______________________________________________________
+	//____ _nextChildWithGeo() ______________________________________________________
 	
-	Hook * Capsule::_nextHookWithGeo( Rect& geo, Hook * pHook ) const
+	void Capsule::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		return 0;
+		package.pWidget = nullptr;
 	}
 	
-	//____ _lastHookWithGeo() ______________________________________________________
-	
-	Hook * Capsule::_lastHookWithGeo( Rect& geo ) const
-	{
-		if( m_hook._widget() )
-		{
-			geo = Rect(0,0,size());
-			return const_cast<CapsuleHook*>(&m_hook);
-		}
-	
-		return 0;
-	}
-	
-	//_____ _prevHookWithGeo() _____________________________________________________
-	
-	Hook * Capsule::_prevHookWithGeo( Rect& geo, Hook * pHook ) const
-	{
-		return 0;
-	}
 
 } // namespace wg

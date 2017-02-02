@@ -286,12 +286,8 @@ namespace wg
 		bool		_alphaTest( const Coord& ofs );
 		void		_cloneContent( const Widget * _pOrg );
 	
-		Hook *		_firstHookWithGeo( Rect& geo ) const;
-		Hook *		_nextHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
-		Hook *		_lastHookWithGeo( Rect& geo ) const;
-		Hook *		_prevHookWithGeo( Rect& geo, Hook * pHook ) const;
-	
+		Hook *		_firstChildWithGeo( Rect& geo ) const;
+		Hook *		_nextChildWithGeo( Rect& geo, Hook * pHook ) const;	
 	
 		Size		_calcContentSize( Size mySize );
 		void		_updateElementGeo( Size mySize );
@@ -340,8 +336,8 @@ namespace wg
 	
 	private:
 	
-		Hook*	_firstHook() const;
-		Hook*	_lastHook() const;
+		Hook*	_firstChild() const;
+		Hook*	_lastChild() const;
 	
 	
 		Skin_p		m_pCornerSkin;

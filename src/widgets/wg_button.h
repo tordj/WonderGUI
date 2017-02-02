@@ -75,10 +75,7 @@ namespace wg
 		virtual int		matchingHeight( int width ) const;
 	//	virtual int		matchingWidth( int height ) const;
 	
-		Size			preferredSize() const;
-	
-		bool			isAutoEllipsisDefault() const { return false; };
-	
+		Size			preferredSize() const;	
 	
 	protected:
 		Button();
