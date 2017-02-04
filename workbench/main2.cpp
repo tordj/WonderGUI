@@ -373,8 +373,8 @@ int main ( int argc, char** argv )
 
 			auto p1 = TextDisplay::create();
 
-			char label[15] = { "Entry " };
-			_itoa( i, label+6, 10 );
+			char label[15];
+			sprintf(label, "Entry %d", i );
 
 			p1->text.set( label );
 
