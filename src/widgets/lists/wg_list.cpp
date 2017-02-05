@@ -287,8 +287,8 @@ namespace wg
 	
 									if( !(pMsg->modKeys() & MODKEY_CTRL) )
 									{
-										ListHook * pFirst = static_cast<ListHook*>(_firstChild());
-										ListHook * pLast = static_cast<ListHook*>(_lastChild());
+										ListHook * pFirst = _firstHook();
+										ListHook * pLast = _lastHook();
 										if( pFirst < pFirstSel )
 											_selectRange( pFirst, static_cast<ListHook*>(pFirstSel->_prevHook()), false, true );
 										if( pLast > pLastSel )
@@ -407,7 +407,7 @@ namespace wg
 	
 	void List::_clearSelected( bool bPostMsg )
 	{
-		_selectRange( static_cast<ListHook*>(_firstChild()), static_cast<ListHook*>(_lastChild()), false, bPostMsg );
+		_selectRange( _firstHook(), _lastHook(), false, bPostMsg );
 	}
 	
 	//____ _selectRange() _________________________________________________________
@@ -551,5 +551,4 @@ namespace wg
 		return nSelected + nDeselected;
 	}
 	
-
 } // namespace wg

@@ -453,14 +453,13 @@ namespace wg
 		}
 		else
 		{
-			Rect childGeo;
-			PackListHook * p = static_cast<PackListHook*>(_firstChildWithGeo( childGeo ));
+			WidgetWithGeo child;
+			_firstChildWithGeo( child );
 	
-			while(p)
+			while(child.pWidget)
 			{
-				if( p->_isVisible() )
-					p->_widget()->_maskPatches( patches, childGeo + geo.pos(), clip, blendMode );
-				p = static_cast<PackListHook*>(_nextChildWithGeo( childGeo, p ));
+				child.pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				_nextChildWithGeo( child );
 			}
 		}
 	
@@ -500,15 +499,15 @@ namespace wg
 		Rect	dirtBounds = patches.getUnion();
 		
 		{
-			Rect childGeo;
-			PackListHook * p = (PackListHook*)_firstChildWithGeo( childGeo );
+			WidgetWithGeo child;
+			_firstChildWithGeo( child );
 	
-			while(p)
+			while(child.pWidget)
 			{
-				Rect canvas = childGeo + _canvas.pos();
-				if( p->_isVisible() && canvas.intersectsWith( dirtBounds ) )
-					p->_widget()->_renderPatches( pDevice, canvas, canvas, &patches );
-				p = (PackListHook*) _nextChildWithGeo( childGeo, p );
+				Rect canvas = child.geo + _canvas.pos();
+				if( canvas.intersectsWith( dirtBounds ) )
+					child.pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
+				_nextChildWithGeo( child );
 			}
 		}
 	
@@ -1399,21 +1398,29 @@ namespace wg
 	void PackList::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
 		if( m_hooks.size() == 0 )
-			return 0;
-	
-		PackListHook * p = m_hooks.hook(0);
-		_getChildGeo(geo,p);
-		return p;
+			package.pWidget = nullptr;
+		else
+		{
+			PackListHook * p = m_hooks.hook(0);
+			_getChildGeo(package.geo,p);
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+		}
 	}
 	
 	//____ _nextChildWithGeo() _____________________________________________________
 	
 	void PackList::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		PackListHook * p = m_hooks.next(static_cast<PackListHook*>(pHook));
+		PackListHook * p = m_hooks.next(static_cast<PackListHook*>(package.pMagic));
 		if( p )
-			_getChildGeo(geo,p);
-		return p;
+		{
+			_getChildGeo(package.geo,p);
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+		}
+		else
+			package.pWidget = nullptr;
 	}
 	
 
@@ -1434,7 +1441,7 @@ namespace wg
 	{
 		Rect r = _windowSection();		// Window in widgets own coordinate system.
 	
-		if( m_bHorizontal )
+		if( m_bHorizontal )  
 		{
 			r.x += m_header.size().w;
 			r.w -= m_header.size().w;
@@ -1598,6 +1605,21 @@ namespace wg
 			_sortEntries();
 		}
 	}
+
+	//____ _firstHook() _____________________________________________________
+
+	ListHook * PackList::_firstHook()
+	{
+		return m_hooks.first();
+	}
+
+	//____ _lastHook() _____________________________________________________
+
+	ListHook * PackList::_lastHook()
+	{
+		return m_hooks.last();
+	}
+
 
 
 } // namespace wg

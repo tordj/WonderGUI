@@ -193,7 +193,7 @@ namespace wg
 	{
 		int height = 0;
 	
-		StackHook * pHook = _firstChild();
+		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
 		while( pHook )
 		{
 			int h = pHook->_widget()->matchingHeight(width);
@@ -211,7 +211,7 @@ namespace wg
 	{
 		int width = 0;
 	
-		StackHook * pHook = _firstChild();
+		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
 		while( pHook )
 		{
 			int w = pHook->_widget()->matchingWidth(height);
@@ -351,7 +351,7 @@ namespace wg
 		// Update m_preferredSize, skiping pToBeRemoved
 	
 		Size	preferredSize;
-		StackHook * pHook = _firstChild();
+		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
 		while( pHook )
 		{
 			if( pHook != pToBeRemoved )
@@ -411,7 +411,7 @@ namespace wg
 	{
 		Size	preferredSize;
 	
-		StackHook * pHook = _firstChild();
+		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
 		while( pHook )
 		{
 			Size sz = pHook->_paddedPreferredSize();
@@ -433,7 +433,7 @@ namespace wg
 	
 	void StackPanel::_adaptChildrenToSize()
 	{
-		StackHook * pHook = _firstChild();
+		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
 		while( pHook )
 		{
 			pHook->_widget()->_setSize( pHook->_getGeo(m_size) );
@@ -443,24 +443,32 @@ namespace wg
 	
 	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * StackPanel::_firstChildWithGeo( Rect& writeGeo ) const
+	void StackPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		StackHook * p = _firstChild();
+		StackHook * p = static_cast<StackHook*>(m_hooks.first());
 		if( p )
-			writeGeo = p->_getGeo(m_size);
-	
-		return p;
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->_getGeo(m_size);
+		}
+		else
+			package.pWidget = nullptr;
 	}
 	
 	//____ _nextChildWithGeo() ______________________________________________________
 	
-	Hook * StackPanel::_nextChildWithGeo( Rect& writeGeo, Hook * pHook ) const
+	void StackPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		StackHook * p = ((StackHook*)pHook)->_next();
+		StackHook * p = static_cast<StackHook*>(package.pMagic)->_next();
 		if( p )
-			writeGeo = p->_getGeo(m_size);
-	
-		return p;
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->_getGeo(m_size);
+		}
+		else
+			package.pWidget = nullptr;
 	}
 
 	//____ _cloneContent() ______________________________________________________

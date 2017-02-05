@@ -1044,6 +1044,24 @@ namespace wg
 			pHook->_refreshRealGeo();
 	}
 
+
+	//____ _firstChild() __________________________________________________________
+
+	Widget * FlexPanel::_firstChild() const 
+	{
+		FlexHook * p = m_hooks.first();
+		return  p ? p->_widget() : nullptr; 
+	}
+
+	//____ _lastChild() __________________________________________________________
+
+	Widget * FlexPanel::_lastChild() const 
+	{ 
+		FlexHook * p = m_hooks.last();
+		return  p ? p->_widget() : nullptr; 
+	}
+
+
 	//____ _prevChild() __________________________________________________________
 
 	Widget * FlexPanel::_prevChild( void * pChildRef ) const
@@ -1063,24 +1081,32 @@ namespace wg
 
 	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook * FlexPanel::_firstChildWithGeo( Rect& writeGeo ) const
+	void FlexPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
 		FlexHook * p = m_hooks.first();
 		if( p )
-			writeGeo = p->m_realGeo;
-	
-		return p;
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->m_realGeo;
+		}
+		else
+			package.pWidget = nullptr;
 	}
 	
 	//____ _nextChildWithGeo() ______________________________________________________
 	
-	Hook * FlexPanel::_nextChildWithGeo( Rect& writeGeo, Hook * pHook ) const
+	void FlexPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		FlexHook * p = ((FlexHook*)pHook)->_next();
+		FlexHook * p = ((FlexHook*)package.pMagic)->_next();
 		if( p )
-			writeGeo = p->m_realGeo;
-	
-		return p;
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->m_realGeo;
+		}
+		else
+			package.pWidget = nullptr;
 	}
 		
 

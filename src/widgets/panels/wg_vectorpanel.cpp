@@ -350,6 +350,22 @@ namespace wg
 		_requestResizeRequested(pHook);
 	}
 
+	//____ _firstChild() __________________________________________________________
+
+	Widget * VectorPanel::_firstChild() const 
+	{
+		VectorHook * p = m_hooks.first();
+		return  p ? p->_widget() : nullptr; 
+	}
+
+	//____ _lastChild() __________________________________________________________
+
+	Widget * VectorPanel::_lastChild() const 
+	{ 
+		VectorHook * p = m_hooks.last();
+		return  p ? p->_widget() : nullptr; 
+	}
+
 	//____ _prevChild() __________________________________________________________
 
 	Widget * VectorPanel::_prevChild( void * pChildRef ) const

@@ -57,7 +57,11 @@ namespace wg
 	
 		int		index( const H* pHook ) const { return m_pArray - pHook; }
 		int		isInArray( const H* pHook ) const { if( pHook >= m_pArray && pHook < &m_pArray[m_size] ) return true; return false; }
-	
+
+		H*		first() const { return m_pArray; }
+		H*		last() const { return m_pArray + (m_size-1); }
+
+
 		H*		begin() const { return m_pArray; }
 		H*		end() const { return m_pArray + m_size; }
 	

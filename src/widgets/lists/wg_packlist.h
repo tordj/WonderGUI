@@ -188,6 +188,8 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
+		ListHook *	_firstHook();
+		ListHook *	_lastHook();
 
 
 		// Support methods for header

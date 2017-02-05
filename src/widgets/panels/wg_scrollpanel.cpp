@@ -1431,56 +1431,59 @@ namespace wg
 
 	
 	//_____________________________________________________________________________
-	Hook*	ScrollPanel::_firstChild() const
+	Widget * ScrollPanel::_firstChild() const
 	{
 		for( int i = 0 ; i < 3 ; i++ )
 			if( m_elements[i]._widget() )
-				return const_cast<ScrollHook*>(&m_elements[i]);
+				return m_elements[i]._widget();
 	
-		return 0;
+		return nullptr;
 	}
 	
 	//_____________________________________________________________________________
-	Hook*	ScrollPanel::_lastChild() const
+	Widget * ScrollPanel::_lastChild() const
 	{
 		for( int i = 2 ; i >= 0 ; i++ )
 			if( m_elements[i]._widget() )
-				return const_cast<ScrollHook*>(&m_elements[i]);
+				return m_elements[i]._widget();
 	
-		return 0;
+		return nullptr;
 	}
 	
 	
 	//_____________________________________________________________________________
-	Hook * ScrollPanel::_firstChildWithGeo( Rect& geo ) const
+	void ScrollPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
 		for( int i = 0 ; i < 3 ; i++ )
 			if( m_elements[i]._widget() )
 			{
-				geo = m_elements[i].m_canvasGeo;
-				return const_cast<ScrollHook*>(&m_elements[i]);
+				package.pMagic = (void*) &m_elements[i];
+				package.pWidget = m_elements[i]._widget();
+				package.geo = m_elements[i].m_canvasGeo;
+				return;
 			}
 	
-		return 0;
+		package.pWidget = nullptr;
 	}
 	
 	//_____________________________________________________________________________
-	Hook * ScrollPanel::_nextChildWithGeo( Rect& geo, Hook * pHook ) const
+	void ScrollPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
 		const ScrollHook * pLast = &m_elements[2];
-		ScrollHook * p = (ScrollHook*) pHook;
-	
-	
+		ScrollHook * p = (ScrollHook*) package.pMagic;
+		
 		while( p != pLast )
 		{
 			p++;
 			if( p->_widget() )
 			{
-				geo = p->m_canvasGeo;
-				return const_cast<ScrollHook*>(p);
+				package.pMagic = p;
+				package.pWidget = p->_widget();
+				package.geo = p->m_canvasGeo;
+				return;
 			}
 		}
-		return 0;
+		package.pWidget = nullptr;
 	}
 		
 	//____ ScrollHook::Destructor ___________________________________________________

@@ -190,7 +190,7 @@ namespace wg
 	
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, width );
 	
-				PackHook * pH = _firstChild();
+				PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 				SizeBrokerItem * pI = pItemArea;
 	
 				while( pH )
@@ -212,7 +212,7 @@ namespace wg
 			}
 			else 
 			{
-				PackHook * pH = _firstChild();
+				PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 	
 				while( pH )
 				{
@@ -244,7 +244,7 @@ namespace wg
 			}
 			else 
 			{
-				PackHook * p = _firstChild();
+				PackHook * p = static_cast<PackHook*>(m_hooks.first());
 	
 				while( p )
 				{
@@ -279,7 +279,7 @@ namespace wg
 	
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, height );
 	
-				PackHook * pH = _firstChild();
+				PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 				SizeBrokerItem * pI = pItemArea;
 	
 				while( pH )
@@ -301,7 +301,7 @@ namespace wg
 			}
 			else 
 			{
-				PackHook * pH = _firstChild();
+				PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 	
 				while( pH )
 				{
@@ -333,7 +333,7 @@ namespace wg
 			}
 			else 
 			{
-				PackHook * p = _firstChild();
+				PackHook * p = static_cast<PackHook*>(m_hooks.first());
 	
 				while( p )
 				{
@@ -351,22 +351,32 @@ namespace wg
 	
 	//____ _firstChildWithGeo() _____________________________________________________
 	
-	Hook* PackPanel::_firstChildWithGeo( Rect& geo ) const
+	void PackPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{	
-		PackHook * p = _firstChild();
+		PackHook * p = static_cast<PackHook*>(m_hooks.first());
 		if( p )
-			geo = p->m_geo;
-		return p;
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->m_geo;
+		}
+		else
+			package.pWidget = nullptr;
 	}
 	
 	//____ _nextChildWithGeo() _____________________________________________________
 	
-	Hook* PackPanel::_nextChildWithGeo( Rect& geo, Hook * pHook ) const
+	void PackPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		PackHook * p = static_cast<PackHook*>(pHook)->_next();
+		PackHook * p = static_cast<PackHook*>(package.pMagic)->_next();
 		if( p )
-			geo = p->m_geo;
-		return p;	
+		{
+			package.pMagic = p;
+			package.pWidget = p->_widget();
+			package.geo = p->m_geo;
+		}
+		else
+			package.pWidget = nullptr;
 	}
 		
 	//____ _hookGeo() _____________________________________________________________
@@ -477,7 +487,7 @@ namespace wg
 			
 			length = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
 			
-			PackHook * pH = _firstChild();
+			PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 			SizeBrokerItem * pI = pItemArea;
 			while( pH )
 			{
@@ -498,7 +508,7 @@ namespace wg
 		}
 		else
 		{
-			PackHook * p = _firstChild();
+			PackHook * p = static_cast<PackHook*>(m_hooks.first());
 	
 			if( m_bHorizontal )
 			{
@@ -557,7 +567,7 @@ namespace wg
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
 			Coord pos;
-			PackHook * p = _firstChild();
+			PackHook * p = static_cast<PackHook*>(m_hooks.first());
 	        Rect geo;
 			while( p )
 			{
@@ -627,7 +637,7 @@ namespace wg
 			
 			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
 			
-			PackHook * pH = _firstChild();
+			PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 			SizeBrokerItem * pI = pItemArea;
 	
 			Coord pos;
@@ -696,7 +706,7 @@ namespace wg
 	
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray ) const
 	{
-		PackHook * pH = _firstChild();
+		PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )
@@ -735,7 +745,7 @@ namespace wg
 	
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
 	{
-		PackHook * pH = _firstChild();
+		PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )

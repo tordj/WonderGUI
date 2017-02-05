@@ -115,8 +115,8 @@ namespace wg
 	
 		void			_cloneContent( const Widget * _pOrg );
 	
-		Hook*			_firstChild() const { return m_hooks.first(); }
-		Hook*			_lastChild() const { return m_hooks.last(); }
+		Widget *		_firstChild() const;
+		Widget *		_lastChild() const;
 	
 		//
 

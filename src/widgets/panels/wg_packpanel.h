@@ -115,8 +115,8 @@ namespace wg
 	    
 		// Overloaded from Container
 		
-		Hook*			_firstChildWithGeo( Rect& geo ) const;
-		Hook*			_nextChildWithGeo( Rect& geo, Hook * pHook ) const;
+		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
 
 		
 		// Overloaded from VectorPanel
@@ -133,10 +133,6 @@ namespace wg
 		
 		//
 		
-		inline PackHook *	_firstChild() const { return static_cast<PackHook*>(m_hooks.first()); }
-		inline PackHook *	_lastChild() const { return static_cast<PackHook*>(m_hooks.last()); }
-	
-	
 		void			_refreshChildGeo();
 		void			_updatePreferredSize();
 		int				_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;

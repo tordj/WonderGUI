@@ -123,8 +123,10 @@ namespace wg
 	
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
-	
-	
+
+		virtual ListHook * _firstHook() = 0;
+		virtual ListHook * _lastHook() = 0;
+
 		SelectMode		m_selectMode;
 		Skin_p			m_pEntrySkin[2];
 		Skin_p			m_pLassoSkin;
