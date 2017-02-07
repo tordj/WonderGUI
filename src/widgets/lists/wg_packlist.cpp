@@ -230,9 +230,9 @@ namespace wg
 		return pHook;
 	}
 	
-	//____ removeWidget() _________________________________________________________
+	//____ removeChild() _________________________________________________________
 	
-	bool PackList::removeWidget( const Widget_p& pWidget )
+	bool PackList::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->_parent() != this )
 			return false;

@@ -105,10 +105,7 @@ namespace wg
 		Hook_p				setBaseWidget( const Widget_p& pWidget );
 		Widget_p			baseWidget();
 		bool				removeBaseWidget();
-	
-		inline LayerHook_p	firstLayerHook() const { return _firstLayerHook(); }
-		inline LayerHook_p	lastLayerHook() const { return _lastLayerHook(); }
-	
+		
 		// Overloaded from Widget
 	
 		int					matchingHeight( int width ) const;

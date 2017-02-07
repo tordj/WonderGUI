@@ -612,9 +612,9 @@ namespace wg
 	
 	
 	
-	//____ removeWidget() __________________________________________________________
+	//____ removeChild() __________________________________________________________
 	
-	bool ScrollPanel::removeWidget( const Widget_p& pWidget )
+	bool ScrollPanel::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget )
 			return false;

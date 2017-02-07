@@ -183,7 +183,7 @@ namespace wg
 		void		removeContent() {setContent(0); }
 		Widget_p	content() const;
 	
-		bool		removeWidget( const Widget_p& pWidget );
+		bool		removeChild( const Widget_p& pWidget );
 		bool		clear();
 	
 		void		setScrollbarAutoHide( bool bHideVerticalScrollbar, bool bHideHorizontalScrollbar );

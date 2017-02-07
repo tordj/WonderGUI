@@ -114,9 +114,9 @@ namespace wg
 	
 	Size SizeCapsule::preferredSize() const 
 	{
-		if( m_hook._widget() )
+		if( m_pChild )
 		{
-			Size pref = m_hook._widget()->preferredSize();
+			Size pref = m_pChild->preferredSize();
 	
 			if( m_preferred.w != 0 )
 			{
@@ -195,8 +195,8 @@ namespace wg
 	Size SizeCapsule::minSize() const 
 	{
 	
-		if( m_hook._widget() )
-			return Size::max(m_min,m_hook._widget()->minSize());
+		if( m_pChild )
+			return Size::max(m_min,m_pChild->minSize());
 		else
 			return m_min;
 	}
@@ -205,8 +205,8 @@ namespace wg
 	
 	Size SizeCapsule::maxSize() const 
 	{
-		if( m_hook._widget() )
-			return Size::min(m_max,m_hook._widget()->maxSize());
+		if( m_pChild )
+			return Size::min(m_max,m_pChild->maxSize());
 		else
 			return m_max; 
 	}
@@ -222,17 +222,17 @@ namespace wg
 			if( m_pScaler )
 				h = (int) (h * m_pScaler->scaleY() );
 	
-			if( m_hook._widget() )
+			if( m_pChild )
 			{
-				int max = m_hook._widget()->maxSize().h;
-				int min = m_hook._widget()->minSize().h;
+				int max = m_pChild->maxSize().h;
+				int min = m_pChild->minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
-		else if( m_hook._widget() )
+		else if( m_pChild )
 		{
-			int h = m_hook._widget()->matchingHeight(width);
+			int h = m_pChild->matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -251,17 +251,17 @@ namespace wg
 			if( m_pScaler )
 				w = (int) (w * m_pScaler->scaleX() );
 	
-			if( m_hook._widget() )
+			if( m_pChild )
 			{
-				int max = m_hook._widget()->maxSize().w;
-				int min = m_hook._widget()->minSize().w;
+				int max = m_pChild->maxSize().w;
+				int min = m_pChild->minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
-		else if( m_hook._widget() )
+		else if( m_pChild )
 		{
-			int w = m_hook._widget()->matchingWidth(height);
+			int w = m_pChild->matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

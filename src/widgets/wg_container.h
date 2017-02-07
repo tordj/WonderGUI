@@ -83,7 +83,7 @@ namespace wg
 			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
 	
 	
-			virtual bool			removeWidget( const Widget_p& pWidget ) = 0;
+			virtual bool			removeChild( const Widget_p& pWidget ) = 0;
 			virtual bool			clear() = 0;
 				
 		protected:

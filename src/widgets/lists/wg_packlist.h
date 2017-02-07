@@ -103,7 +103,7 @@ namespace wg
 		PackListHook_p		insertWidget( const Widget_p& pWidget, const Widget_p& pSibling );
 		PackListHook_p		insertWidgetSorted( const Widget_p& pWidget );
 	
-		bool				removeWidget( const Widget_p& pWidget );
+		bool				removeChild( const Widget_p& pWidget );
 		bool				clear();
 	
 		void				setOrientation( Orientation orientation );

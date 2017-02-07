@@ -240,7 +240,7 @@ namespace wg
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo = Origo::NorthWest, Border padding = 0 );
 		FlexHook *	insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding = 0 );
 	
-		bool			removeWidget( const Widget_p& pWidget );
+		bool			removeChild( const Widget_p& pWidget );
 		bool			clear();
 	
 	

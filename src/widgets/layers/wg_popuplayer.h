@@ -108,7 +108,7 @@ namespace wg
 	
 		// Overloaded from Panel
 	
-		bool			removeWidget( const Widget_p& pWidget ) { return false; }
+		bool			removeChild( const Widget_p& pWidget ) { return false; }
 		bool			clear() { return false; }
 	
 	protected:

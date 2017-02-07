@@ -327,9 +327,9 @@ namespace wg
 		return true;
 	}
 	
-	//____ removeWidget() _________________________________________________________
+	//____ removeChild() _________________________________________________________
 	
-	bool ModalLayer::removeWidget( const Widget_p& pWidget )
+	bool ModalLayer::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->parent() != this )
 			return false;

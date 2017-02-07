@@ -265,9 +265,9 @@ namespace wg
 		return pHook;
 	}
 	
-	//____ removeWidget() __________________________________________________________
+	//____ removeChild() __________________________________________________________
 	
-	bool VectorPanel::removeWidget( const Widget_p& pWidget )
+	bool VectorPanel::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->_parent() != this )
 			return false;

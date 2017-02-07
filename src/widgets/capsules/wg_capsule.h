@@ -34,57 +34,6 @@ namespace wg
 	typedef	StrongPtr<Capsule,Container_p>	Capsule_p;
 	typedef	WeakPtr<Capsule,Container_p>	Capsule_wp;
 	
-	class CapsuleHook;
-	typedef	HookTypePtr<CapsuleHook,Hook_p>	CapsuleHook_p;
-	
-	/**
-	 * @brief Base class for containers that only holds one child.
-	 *
-	 * Capsule is the base class for WonderGUI Capsules, minimalistic container
-	 * widgets that only can have one child.
-	 *
-	 * Capsules are typically used to "encapsulate" another widget (or branch of widgets) to affect its
-	 * geometry, appearance or behavior.
-	 *
-	 **/
-	
-	class CapsuleHook : public Hook
-	{
-		friend class Capsule;
-		friend class SizeCapsule;
-		friend class ShaderCapsule;
-	
-	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static CapsuleHook_p	cast( const Hook_p& pInterface );
-	
-		// Standard MyHook methods
-	
-		Coord			pos() const;
-		Size			size() const;
-		Rect			geo() const;
-	
-		Coord			globalPos() const;
-		Rect			globalGeo() const;
-	
-		Capsule_p 		parent() const;
-	
-	protected:
-		void			_requestRender();
-		void			_requestRender( const Rect& rect );
-		void			_requestResize();
-	
-		Hook *		_prevHook() const;
-		Hook *		_nextHook() const;
-		Container *	_parent() const;
-	
-	
-		Capsule * 	m_pParent;
-	};
-	
-	
 	
 	//____ Capsule ______________________________________________________________
 	
@@ -98,9 +47,9 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( const Object_p& pObject );
 	
-		CapsuleHook_p		setWidget( const Widget_p& pWidget );
-		Widget_p			widget() { return m_hook._widget(); }
-		bool				removeWidget( const Widget_p& pWidget );
+		bool				setChild( const Widget_p& pWidget );
+		Widget_p			child() { return m_pChild; }
+		bool				removeChild( const Widget_p& pWidget );
 		bool				clear();
 		
 	
@@ -144,7 +93,7 @@ namespace wg
 		Widget*		_firstChild() const;
 		Widget*		_lastChild() const;
 	
-		CapsuleHook	m_hook;
+		Widget_p	m_pChild;
 	
 	};
 	

@@ -116,7 +116,7 @@ namespace wg
 	
 		bool			removeModalWidgets();
 	
-		bool			removeWidget( const Widget_p& pWidget );
+		bool			removeChild( const Widget_p& pWidget );
 		bool			clear();
 	
 		ModalHook_p	firstModalHook();

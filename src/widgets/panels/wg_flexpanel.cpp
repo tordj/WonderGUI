@@ -891,9 +891,9 @@ namespace wg
 	}
 	
 	
-	//____ removeWidget() _________________________________________________________
+	//____ removeChild() _________________________________________________________
 	
-	bool FlexPanel::removeWidget( const Widget_p& pWidget )
+	bool FlexPanel::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->_parent() != this )
 			return false;

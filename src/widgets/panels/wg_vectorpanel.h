@@ -102,7 +102,7 @@ namespace wg
 		VectorHook_p addWidget( const Widget_p& pWidget ) { return _addWidget(pWidget.rawPtr() ); }
 		VectorHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return _insertWidget( pWidget.rawPtr(), pSibling.rawPtr() ); }
 	
-		bool			removeWidget( const Widget_p& pWidget );
+		bool			removeChild( const Widget_p& pWidget );
 		bool			clear();
 	
 	protected:
