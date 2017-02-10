@@ -152,6 +152,8 @@
     <File Name="../../src/interfaces/wg_modtext.h"/>
     <File Name="../../src/interfaces/wg_edittext.cpp"/>
     <File Name="../../src/interfaces/wg_edittext.h"/>
+    <File Name="../../src/interfaces/wg_widgetslot.cpp"/>
+    <File Name="../../src/interfaces/wg_widgetslot.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
