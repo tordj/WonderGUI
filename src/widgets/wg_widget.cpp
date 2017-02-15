@@ -179,21 +179,6 @@ namespace wg
 	}
 		
 	
-	//____ _onNewRoot() ___________________________________________________________
-	
-	void Widget::_onNewRoot( RootPanel * pRoot )
-	{
-	}
-	
-	//____ _setHolder() __________________________________________________________
-
-	void Widget::_setHolder( WidgetHolder * pHolder, void * pHoldersRef )
-	{
-		m_pHolder = pHolder;
-		m_pHoldersRef = pHoldersRef;	
-	}
-
-
 	//____ toGlobal() __________________________
 	/**
 	 * @brief Convert coordinate from local to global coordinate system

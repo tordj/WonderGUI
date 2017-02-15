@@ -124,8 +124,8 @@ namespace wg
 	
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( _canvas, m_state ) : _canvas;
 
-		if( m_pChild )
-			m_pChild->_renderPatches( pDevice, canvas, canvas, _pPatches );
+		if( m_child.pWidget )
+			m_child.pWidget->_renderPatches( pDevice, canvas, canvas, _pPatches );
 	
 		// Reset old blend mode and tint color
 	

@@ -31,12 +31,13 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
+#ifndef WG_CONTAINER_DOT_H
+#	include <wg_container.h>
 #endif
 
 namespace wg 
 {
+
 	class WidgetSlot;
 	typedef	StrongInterfacePtr<WidgetSlot,Interface_p>	WidgetSlot_p;
 	typedef	WeakInterfacePtr<WidgetSlot,Interface_wp>	WidgetSlot_wp;
@@ -45,32 +46,34 @@ namespace wg
 	{
 		
 	public:
+		WidgetSlot( Container * pContainer, ChildSlot * pSlot ) : m_pContainer(pContainer), m_pSlot(pSlot) {}
+
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
 		static WidgetSlot_p		cast( const Interface_p& pInterface );
 	
-		inline WidgetSlot operator=(const Widget_p& pWidget );
-		inline operator Widget_p() const;
+		inline WidgetSlot operator=(const Widget_p& pWidget ) { m_pContainer->_updateSlot(m_pSlot, pWidget.rawPtr()); }
+		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
-		inline bool operator==(const Widget_p& other) const;
-		inline bool operator!=(const Widget_p& other) const;
+		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }
+		inline bool operator!=(const Widget_p& other) const { return other.rawPtr() != m_pSlot->pWidget; }
 	
-		inline operator bool() const;
+		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
 
-		inline Widget& operator*() const;
-		inline Widget* operator->() const;
+//		inline Widget& operator*() const{ return * m_pSlot->pWidget; };
+		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
 
-		void clear();
+		inline void clear() { m_pContainer->_updateSlot(m_pSlot, nullptr); }
 	
 	
 
 	protected:
 		virtual Object * 	_object() const;
 		
-		
-		
+		Container *	m_pContainer;
+		ChildSlot *	m_pSlot;
 	};
 	
 	

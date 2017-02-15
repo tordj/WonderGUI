@@ -60,7 +60,7 @@ namespace wg
 	
 	Object * WidgetSlot::_object() const
 	{
-		return nullptr;
+		return m_pContainer;
 	}
 	
 	

@@ -27,6 +27,10 @@
 #	include <wg_container.h>
 #endif
 
+#ifndef WG_WIDGETSLOT_DOT_H
+#	include <wg_widgetslot.h>
+#endif
+
 namespace wg 
 {
 	
@@ -46,13 +50,16 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( const Object_p& pObject );
-	
-		bool				setChild( const Widget_p& pWidget );
-		Widget_p			child() { return m_pChild; }
+
+		//____ Interfaces ______________________________________
+
+		WidgetSlot			child;
+
+
 		bool				removeChild( const Widget_p& pWidget );
 		bool				clear();
-		
-	
+			
+
 		// Overloaded from Widget
 	
 		int				matchingHeight( int width ) const;
@@ -84,6 +91,9 @@ namespace wg
 	
 		//
 	
+		void		_updateSlot( ChildSlot * pSlot, Widget * pNewWidget );
+
+
 		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_cloneContent( const Widget * _pOrg );
@@ -93,7 +103,7 @@ namespace wg
 		Widget*		_firstChild() const;
 		Widget*		_lastChild() const;
 	
-		Widget_p	m_pChild;
+		ChildSlot	m_child;
 	
 	};
 	

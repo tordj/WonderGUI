@@ -189,9 +189,7 @@ namespace wg
 																	///< @return True if the widget is a subclass of Container.
 	
 	protected:	
-		void				_onNewRoot( RootPanel * pRoot );
-
-		void				_setHolder( WidgetHolder * pHolder, void * pHoldersRef );
+		inline void			_setHolder( WidgetHolder * pHolder, void * pHoldersRef ) { m_pHolder = pHolder; m_pHoldersRef = pHoldersRef; }
 		WidgetHolder *		_holder() const { return m_pHolder; }
 		void *				_holdersRef() const { return m_pHoldersRef; }
 
@@ -201,7 +199,7 @@ namespace wg
 		virtual Widget* 	_newOfMyType() const = 0;
 	
 
-		// Convenient calls to hook
+		// Convenient calls to holder
 	
 		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef ); }
 		inline void		_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef, rect ); }

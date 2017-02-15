@@ -396,4 +396,25 @@ namespace wg
 		}
 	}
 
+	//____ _updateSlot() _________________________________________________________
+
+	void Container::_updateSlot( ChildSlot * pSlot, Widget * pNewWidget )
+	{
+		if( pSlot->pWidget )
+		{
+			pSlot->pWidget->_setHolder( nullptr, nullptr );
+			pSlot->pWidget->_decRefCount();
+		}
+
+		pSlot->pWidget = pNewWidget;
+
+		if( pNewWidget )
+		{
+			pNewWidget->_incRefCount();
+			pNewWidget->_setHolder( this, pSlot );
+		}
+	}
+
+
+
 } // namespace wg
