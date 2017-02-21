@@ -396,9 +396,9 @@ namespace wg
 		}
 	}
 
-	//____ _updateSlot() _________________________________________________________
+	//____ _replaceChild() _________________________________________________________
 
-	void Container::_updateSlot( ChildSlot * pSlot, Widget * pNewWidget )
+	void Container::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
 	{
 		if( pSlot->pWidget )
 		{

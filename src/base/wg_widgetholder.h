@@ -34,36 +34,44 @@ namespace wg
 	class RootPanel;
 	class Widget;
 
+	struct ChildSlot
+	{
+		Widget *	pWidget;
+	};
+
+
 	class WidgetHolder
 	{
 	public:
-		virtual Coord			_childPos( void * pChildRef ) const = 0;				///< Get the local position of the widget.
-		virtual Coord			_childGlobalPos( void * pChildRef ) const = 0;
+		virtual Coord		_childPos( void * pChildRef ) const = 0;				///< Get the local position of the widget.
+		virtual Coord		_childGlobalPos( void * pChildRef ) const = 0;
 
-		virtual Size			_childSize( void * pChildRef ) const = 0;
+		virtual Size		_childSize( void * pChildRef ) const = 0;
 
-		virtual bool			_isChildVisible( void * pChildRef ) const = 0;
-		virtual Rect			_childWindowSection( void * pChildRef ) const = 0;		// Returns the window section within the childs canvas.
+		virtual bool		_isChildVisible( void * pChildRef ) const = 0;
+		virtual Rect		_childWindowSection( void * pChildRef ) const = 0;		// Returns the window section within the childs canvas.
 
 	
-		virtual Container *  	_childParent() = 0;
-		virtual RootPanel *		_root() = 0;
+		virtual Container * _childParent() = 0;
+		virtual RootPanel *	_root() = 0;
 
 
-		virtual void	_childRequestRender( void * pChildRef ) = 0;
-		virtual void	_childRequestRender( void * pChildRef, const Rect& rect ) = 0;
-		virtual void	_childRequestResize( void * pChildRef ) = 0;
+		virtual void		_childRequestRender( void * pChildRef ) = 0;
+		virtual void		_childRequestRender( void * pChildRef, const Rect& rect ) = 0;
+		virtual void		_childRequestResize( void * pChildRef ) = 0;
 	
-		virtual bool	_childRequestFocus( void * pChildRef, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
-		virtual bool	_childReleaseFocus( void * pChildRef, Widget * pWidget ) = 0;
+		virtual bool		_childRequestFocus( void * pChildRef, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
+		virtual bool		_childReleaseFocus( void * pChildRef, Widget * pWidget ) = 0;
 	
-		virtual void	_childRequestInView( void * pChildRef ) = 0;
-		virtual void	_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
+		virtual void		_childRequestInView( void * pChildRef ) = 0;
+		virtual void		_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
 	
 		
 		virtual Widget *	_prevChild( void * pChildRef ) const = 0;
 		virtual Widget *	_nextChild( void * pChildRef ) const = 0;
-		
+
+		virtual void		_replaceChild( ChildSlot * pSlot, Widget * pNewWidget ) {};		// Used by WidgetSlot interface.
+
 	};
 	
 

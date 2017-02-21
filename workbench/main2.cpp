@@ -239,7 +239,7 @@ int main ( int argc, char** argv )
 
 	FlexPanel_p pFlexPanel = FlexPanel::create();
 	pFlexPanel->setSkin( pImgSkin /*ColorSkin::create(Color::Burlywood)*/ );
-	pRoot->setChild(pFlexPanel);
+	pRoot->child = pFlexPanel;
 
 
 /*	Filler_p pBackground = Filler::create();

@@ -32,8 +32,17 @@ namespace wg
 	
 	Capsule::Capsule() : child( this, &m_child )
 	{
+		m_child.pWidget = 0;
 	}
 	
+	//____ Destructor _____________________________________________________________
+
+	Capsule::~Capsule()
+	{
+		if( m_child.pWidget )
+ 			m_child.pWidget->_decRefCount();
+	}
+
 	//____ isInstanceOf() _________________________________________________________
 	
 	bool Capsule::isInstanceOf( const char * pClassName ) const
@@ -68,7 +77,7 @@ namespace wg
 		if( m_child.pWidget != pWidget.rawPtr() )
 			return false;
 	
-		_updateSlot( &m_child, nullptr );
+		_replaceChild( &m_child, nullptr );
 		return true;
 	}
 	
@@ -77,7 +86,7 @@ namespace wg
 	bool Capsule::clear()
 	{
 		if( m_child.pWidget )
-			_updateSlot( &m_child, nullptr );
+			_replaceChild( &m_child, nullptr );
 
 		return true;
 	}
@@ -236,11 +245,11 @@ namespace wg
 		package.pWidget = nullptr;
 	}
 	
-	//____ _updateSlot() ____________________________________________________________
+	//____ _replaceChild() ____________________________________________________________
 
-	void Capsule::_updateSlot( ChildSlot * pSlot, Widget * pNewWidget )
+	void Capsule::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
 	{
-		Container::_updateSlot( pSlot, pNewWidget );
+		Container::_replaceChild( pSlot, pNewWidget );
 
 		pNewWidget->_setSize(size());
 		_requestRender();

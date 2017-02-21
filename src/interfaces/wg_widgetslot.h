@@ -46,14 +46,14 @@ namespace wg
 	{
 		
 	public:
-		WidgetSlot( Container * pContainer, ChildSlot * pSlot ) : m_pContainer(pContainer), m_pSlot(pSlot) {}
+		WidgetSlot( WidgetHolder * pHolder, ChildSlot * pSlot ) : m_pHolder(pHolder), m_pSlot(pSlot) {}
 
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
 		static WidgetSlot_p		cast( const Interface_p& pInterface );
 	
-		inline WidgetSlot operator=(const Widget_p& pWidget ) { m_pContainer->_updateSlot(m_pSlot, pWidget.rawPtr()); }
+		inline WidgetSlot operator=(const Widget_p& pWidget ) { m_pHolder->_replaceChild(m_pSlot, pWidget.rawPtr()); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
 		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }
@@ -65,18 +65,19 @@ namespace wg
 		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
 
-		inline void clear() { m_pContainer->_updateSlot(m_pSlot, nullptr); }
+		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		inline void clear() { m_pHolder->_replaceChild(m_pSlot, nullptr); }
 	
 	
 
 	protected:
 		virtual Object * 	_object() const;
 		
-		Container *	m_pContainer;
-		ChildSlot *	m_pSlot;
+		WidgetHolder *	m_pHolder;
+		ChildSlot *		m_pSlot;
 	};
 	
 	
 
 } // namespace wg
-#endif //WG_WidgetSlot_DOT_H
+#endif //WG_WIDGETSLOT_DOT_H

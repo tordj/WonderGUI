@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	RootPanel::RootPanel()
+	RootPanel::RootPanel() : child( this, &m_child )
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -63,6 +63,8 @@ namespace wg
 	
 	RootPanel::~RootPanel()
 	{
+		if( m_child.pWidget )
+			m_child.pWidget->_decRefCount();
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -99,8 +101,8 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 	
-		if( m_pGfxDevice && !m_bHasGeo && m_pChild )
-			m_pChild->_setSize( m_pGfxDevice->canvasSize() );
+		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
+			m_child.pWidget->_setSize( m_pGfxDevice->canvasSize() );
 	
 		return true;
 	}
@@ -130,46 +132,28 @@ namespace wg
 			return Rect(0,0,0,0);
 	}
 	
-	
-	//____ setChild() _____________________________________________________________
-	
-	bool RootPanel::setChild( const Widget_p& pWidget )
-	{
-		if( !pWidget )
-			return false;
-	
-		if( m_pChild )
-			m_pChild->_setHolder( nullptr, nullptr );
+	//____ _replaceChild() ____________________________________________________________
 
-		m_pChild = pWidget;
-		pWidget->_setHolder( this, nullptr );
-		pWidget->_setSize(m_geo.size());
+	void RootPanel::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
+	{
+		if( pSlot->pWidget )
+		{
+			pSlot->pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
+			pSlot->pWidget->_setHolder( nullptr, nullptr );
+			pSlot->pWidget->_decRefCount();
+		}
 
-		pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
-	
-		return true;
+		pSlot->pWidget = pNewWidget;
+
+		if( pNewWidget )
+		{
+			pNewWidget->_incRefCount();
+			pNewWidget->_setHolder( this, pSlot );
+			pNewWidget->_setSize(m_geo.size());
+			pNewWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
+		}
+
 	}
-	
-	//____ removeChild() _________________________________________________________
-	
-	bool RootPanel::removeChild()
-	{
-		if( !m_pChild )
-			return false;
-	
-		m_pChild->_setHolder( nullptr, nullptr );
-		m_pChild = nullptr;
-		m_dirtyPatches.add(m_geo);
-		return true;
-	}
-	
-	//____ clear() ______________________________________________________
-	
-	bool RootPanel::clear()
-	{
-		return removeChild();
-	}
-	
 	
 	//____ setVisible() ___________________________________________________________
 	
@@ -245,7 +229,7 @@ namespace wg
 	
 	bool RootPanel::beginRender()
 	{
-		if( !m_pGfxDevice || !m_pChild )
+		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Handle debug overlays.
@@ -289,7 +273,7 @@ namespace wg
 	
 	bool RootPanel::renderSection( const Rect& _clip )
 	{
-		if( !m_pGfxDevice || !m_pChild )
+		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -317,7 +301,7 @@ namespace wg
 	
 		// Render the dirty patches recursively
 	
-		m_pChild->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
+		m_child.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
 
 		// Handle updated rect overlays
 		
@@ -348,7 +332,7 @@ namespace wg
 	
 	bool RootPanel::endRender( void )
 	{
-		if( !m_pGfxDevice || !m_pChild )
+		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Turn dirty patches into update patches
@@ -366,13 +350,13 @@ namespace wg
 	
 	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
 	{
-		if( !geo().contains(ofs) || !m_pChild )
+		if( !geo().contains(ofs) || !m_child.pWidget )
 			return 0;
 	
-		if( m_pChild && m_pChild->isContainer() )
-			return static_cast<Container*>(m_pChild.rawPtr())->_findWidget( ofs, mode );
+		if(m_child.pWidget &&m_child.pWidget->isContainer() )
+			return static_cast<Container*>(m_child.pWidget)->_findWidget( ofs, mode );
 	
-		return m_pChild.rawPtr();
+		return m_child.pWidget;
 	}
 	
 
@@ -381,7 +365,7 @@ namespace wg
 	Widget * RootPanel::_focusedChild() const
 	{ 
 		if( !m_pFocusedChild )
-			return m_pChild.rawPtr();
+			return m_child.pWidget;
 
 		return m_pFocusedChild.rawPtr(); 
 	}
@@ -456,12 +440,12 @@ namespace wg
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
 
-		if( pWidget == m_pChild.rawPtr() )
+		if( pWidget == m_child.pWidget )
 			return false;
 
 		Widget * pOldFocus = m_pFocusedChild.rawPtr();
-		m_pFocusedChild = m_pChild.rawPtr();
-		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_pChild.rawPtr());
+		m_pFocusedChild =m_child.pWidget;
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_child.pWidget);
 	}
 
 	void RootPanel::_childRequestInView( void * pChildRef )

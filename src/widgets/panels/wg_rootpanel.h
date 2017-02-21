@@ -46,6 +46,10 @@
 #	include <wg_gfxdevice.h>
 #endif
 
+#ifndef WG_WIDGETSLOT_DOT_H
+#	include <wg_widgetslot.h>
+#endif
+
 namespace wg 
 {
 	
@@ -82,6 +86,10 @@ namespace wg
 		static const char	CLASSNAME[];
 		static RootPanel_p	cast( const Object_p& pObject );
 	
+		//____ Interfaces ___________________________________________________________
+
+		WidgetSlot			child;
+
 		bool				setGfxDevice( const GfxDevice_p& pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 	
@@ -99,10 +107,6 @@ namespace wg
 		bool				setVisible( bool bVisible );							//TODO: Implement!!!
 		bool				isVisible() const { return m_bVisible; }
 	
-		bool				setChild( const Widget_p& pWidget );
-		inline Widget_p		child() const { return m_pChild; }
-		bool				removeChild();
-		bool				clear();
 		
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
 	
@@ -158,6 +162,8 @@ namespace wg
 		Widget *		_prevChild( void * pChildRef ) const;
 		Widget *		_nextChild( void * pChildRef ) const;
 	
+		void			_replaceChild( ChildSlot * pSlot, Widget * pNewWidget );
+
 		//
 
 		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
@@ -176,7 +182,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		Widget_p			m_pChild;
+		ChildSlot			m_child;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

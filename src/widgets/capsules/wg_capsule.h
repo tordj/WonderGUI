@@ -69,9 +69,9 @@ namespace wg
 	
 	protected:
 		Capsule();
-		virtual ~Capsule() {}
+		virtual ~Capsule();
 
-		//
+		// Overloaded from WidgetHolder
 
 		Coord		_childPos( void * pChildRef ) const;
 		Size		_childSize( void * pChildRef ) const;
@@ -83,25 +83,24 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		//
+		void		_replaceChild( ChildSlot * pSlot, Widget * pNewWidget );
+
+		// Overloaded from Container
+
+		Widget*		_firstChild() const;
+		Widget*		_lastChild() const;
 
 		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
 		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
-	
-	
+		
 		//
 	
-		void		_updateSlot( ChildSlot * pSlot, Widget * pNewWidget );
-
-
 		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
 	
 	
-		Widget*		_firstChild() const;
-		Widget*		_lastChild() const;
 	
 		ChildSlot	m_child;
 	

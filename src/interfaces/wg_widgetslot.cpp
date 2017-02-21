@@ -22,6 +22,7 @@
 =========================================================================*/
 
 #include <wg_widgetslot.h>
+#include <wg_rootpanel.h>
 
 namespace wg 
 {
@@ -60,7 +61,11 @@ namespace wg
 	
 	Object * WidgetSlot::_object() const
 	{
-		return m_pContainer;
+		Container * p = m_pHolder->_childParent();
+		if( p ) 
+			return p;
+
+		return m_pHolder->_root();
 	}
 	
 	

@@ -39,12 +39,6 @@ namespace wg
 	typedef	StrongPtr<Container,Widget_p>			Container_p;
 	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
 	
-
-	struct ChildSlot
-	{
-		Widget *	pWidget;
-	};
-
 	/**
 	 * @brief Base class for all widgets that can hold child widgets.
 	 *
@@ -128,9 +122,8 @@ namespace wg
 			virtual void			_childRequestInView( void * pChildRef );
 			virtual void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
 
-			//
+			virtual void			_replaceChild( ChildSlot * pSlot, Widget * pNewWidget );
 
-			virtual void			_updateSlot( ChildSlot * pSlot, Widget * pNewWidget );
 
 			//
 
