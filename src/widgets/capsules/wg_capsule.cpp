@@ -32,15 +32,12 @@ namespace wg
 	
 	Capsule::Capsule() : child( this, &m_child )
 	{
-		m_child.pWidget = 0;
 	}
 	
 	//____ Destructor _____________________________________________________________
 
 	Capsule::~Capsule()
 	{
-		if( m_child.pWidget )
- 			m_child.pWidget->_decRefCount();
 	}
 
 	//____ isInstanceOf() _________________________________________________________

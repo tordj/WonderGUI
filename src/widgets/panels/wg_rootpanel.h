@@ -182,7 +182,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		ChildSlot			m_child;
+		ManagedSlot<ChildSlot>	m_child;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

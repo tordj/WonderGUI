@@ -102,7 +102,7 @@ namespace wg
 	
 	
 	
-		ChildSlot	m_child;
+		ManagedSlot<ChildSlot>	m_child;
 	
 	};
 	

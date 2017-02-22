@@ -40,6 +40,17 @@ namespace wg
 	};
 
 
+	template<class Slot> class ManagedSlot : public Slot
+	{
+		public:
+			ManagedSlot() { Slot::pWidget = nullptr; }
+			~ManagedSlot() { if( Slot::pWidget != nullptr ) { Slot::pWidget->_setHolder( nullptr, nullptr ); Slot::pWidget->_decRefCount(); } }
+
+
+	};
+
+
+
 	class WidgetHolder
 	{
 	public:

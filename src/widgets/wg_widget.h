@@ -112,7 +112,8 @@ namespace wg
 	friend class PopupLayer;
 		
 	friend class Item;
-	
+	template<class Slot> friend class ManagedSlot;
+
 	public:
 		Widget();
 		virtual ~Widget();

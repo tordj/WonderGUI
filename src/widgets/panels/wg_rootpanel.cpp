@@ -63,8 +63,6 @@ namespace wg
 	
 	RootPanel::~RootPanel()
 	{
-		if( m_child.pWidget )
-			m_child.pWidget->_decRefCount();
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
