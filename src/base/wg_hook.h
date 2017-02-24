@@ -70,7 +70,7 @@ namespace wg
 		friend class Layer;
 		friend class Panel;
 		friend class Container;
-		friend class VectorPanel;
+		friend class LegacyVectorPanel;
 		friend class Hook_p;
 		friend class ModalLayer;
 		friend class FlexPanel;

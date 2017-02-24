@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_WIDGETSLOT_DOT_H
-#define	WG_WIDGETSLOT_DOT_H
+#ifndef	WG_WIDGETCOLLECTION_DOT_H
+#define	WG_WIDGETCOLLECTION_DOT_H
 
 #ifndef WG_INTERFACE_DOT_H
 #	include <wg_interface.h>
@@ -43,34 +43,29 @@
 namespace wg 
 {
 
-	class WidgetSlot;
-	typedef	StrongInterfacePtr<WidgetSlot,Interface_p>	WidgetSlot_p;
-	typedef	WeakInterfacePtr<WidgetSlot,Interface_wp>	WidgetSlot_wp;
+	class WidgetCollection;
+	typedef	StrongInterfacePtr<WidgetCollection,Interface_p>	WidgetCollection_p;
+	typedef	WeakInterfacePtr<WidgetCollection,Interface_wp>		WidgetCollection_wp;
 	
-	class WidgetSlot : public Interface
+	class WidgetCollection : public Interface
 	{
 		
 	public:
-		WidgetSlot( WidgetHolder * pHolder, Slot * pSlot ) : m_pHolder(pHolder), m_pSlot(pSlot) {}
+		WidgetCollection( WidgetHolder * pHolder, Slot * pSlot ) : m_pHolder(pHolder), m_pSlot(pSlot) {}
 
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WidgetSlot_p		cast( const Interface_p& pInterface );
+		static WidgetCollection_p		cast( const Interface_p& pInterface );
 	
-		inline WidgetSlot operator=(const Widget_p& pWidget ) { m_pHolder->_replaceChild(m_pSlot, pWidget.rawPtr()); return *this; }
-		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
-		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }
-		inline bool operator!=(const Widget_p& other) const { return other.rawPtr() != m_pSlot->pWidget; }
-	
 		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
 
 //		inline Widget& operator*() const{ return * m_pSlot->pWidget; };
 		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
 
-		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		inline Widget_p get( int index) const { return Widget_p(m_pSlot->pWidget); }
 		inline void clear() { m_pHolder->_replaceChild(m_pSlot, nullptr); }
 	
 	
@@ -79,10 +74,10 @@ namespace wg
 		virtual Object * 	_object() const;
 		
 		WidgetHolder *	m_pHolder;
-		Slot *		m_pSlot;
+		SlotArray *		m_pSlots;
 	};
 	
 	
 
 } // namespace wg
-#endif //WG_WIDGETSLOT_DOT_H
+#endif //WG_WIDGETCOLLECTION_DOT_H

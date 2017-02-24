@@ -31,6 +31,11 @@
 #	include <wg_widgetslot.h>
 #endif
 
+#ifndef WG_SLOT_DOT_H
+#	include <wg_slot.h>
+#endif
+
+
 namespace wg 
 {
 	
@@ -83,7 +88,7 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		void		_replaceChild( ChildSlot * pSlot, Widget * pNewWidget );
+		void		_replaceChild( Slot * pSlot, Widget * pNewWidget );
 
 		// Overloaded from Container
 
@@ -102,7 +107,7 @@ namespace wg
 	
 	
 	
-		ManagedSlot<ChildSlot>	m_child;
+		Slot		m_child;
 	
 	};
 	

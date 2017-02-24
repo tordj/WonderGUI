@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#include <wg_vectorpanel.h>
+#include <wg_legacyvectorpanel.h>
 
 namespace wg 
 {
 	
-	const char VectorPanel::CLASSNAME[] = {"VectorPanel"};
+	const char LegacyVectorPanel::CLASSNAME[] = {"LegacyVectorPanel"};
 	const char VectorHook::CLASSNAME[] = {"VectorHook"};
 	
 	//____ VectorHook::isInstanceOf() __________________________________________
@@ -166,9 +166,9 @@ namespace wg
 		return true;
 	}
 	
-	VectorPanel_p VectorHook::parent() const
+	LegacyVectorPanel_p VectorHook::parent() const
 	{
-		return static_cast<VectorPanel*>(_parent());
+		return static_cast<LegacyVectorPanel*>(_parent());
 	}
 	
 	
@@ -193,7 +193,7 @@ namespace wg
 	
 	//____ Constructor() __________________________________________________________
 	
-	VectorPanel::VectorPanel() : m_nChildPanels(0)
+	LegacyVectorPanel::LegacyVectorPanel() : m_nChildPanels(0)
 	{
 	
 	}
@@ -201,13 +201,13 @@ namespace wg
 	
 	//____ Destructor() ___________________________________________________________
 	
-	VectorPanel::~VectorPanel()
+	LegacyVectorPanel::~LegacyVectorPanel()
 	{
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool VectorPanel::isInstanceOf( const char * pClassName ) const
+	bool LegacyVectorPanel::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -217,24 +217,24 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * VectorPanel::className( void ) const
+	const char * LegacyVectorPanel::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	VectorPanel_p VectorPanel::cast( const Object_p& pObject )
+	LegacyVectorPanel_p LegacyVectorPanel::cast( const Object_p& pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return VectorPanel_p( static_cast<VectorPanel*>(pObject.rawPtr()) );
+			return LegacyVectorPanel_p( static_cast<LegacyVectorPanel*>(pObject.rawPtr()) );
 	
 		return 0;
 	}
 	
 	//____ _addWidget() _____________________________________________________________
 	
-	VectorHook * VectorPanel::_addWidget( Widget * pWidget )
+	VectorHook * LegacyVectorPanel::_addWidget( Widget * pWidget )
 	{
 		if( !pWidget )
 			return 0;
@@ -250,7 +250,7 @@ namespace wg
 	
 	//____ _insertWidget() __________________________________________________________
 	
-	VectorHook * VectorPanel::_insertWidget( Widget * pWidget, Widget * pSibling )
+	VectorHook * LegacyVectorPanel::_insertWidget( Widget * pWidget, Widget * pSibling )
 	{
 		if( !pWidget || !pSibling || !pSibling->parent() || pSibling->parent() != this )
 			return 0;
@@ -267,7 +267,7 @@ namespace wg
 	
 	//____ removeChild() __________________________________________________________
 	
-	bool VectorPanel::removeChild( const Widget_p& pWidget )
+	bool LegacyVectorPanel::removeChild( const Widget_p& pWidget )
 	{
 		if( !pWidget || pWidget->_parent() != this )
 			return false;
@@ -289,7 +289,7 @@ namespace wg
 	
 	//____ clear() ______________________________________________________
 	
-	bool VectorPanel::clear()
+	bool LegacyVectorPanel::clear()
 	{
 		VectorHook * pHook = m_hooks.first();
 		while( pHook )
@@ -306,7 +306,7 @@ namespace wg
 	
 	//____ _cloneContent() ______________________________________________________
 	
-	void VectorPanel::_cloneContent( const Widget * _pOrg )
+	void LegacyVectorPanel::_cloneContent( const Widget * _pOrg )
 	{
 		Panel::_cloneContent( _pOrg );
 
@@ -316,27 +316,27 @@ namespace wg
 
 	//____ _childPos() ______________________________________________________
 
-	Coord VectorPanel::_childPos( void * pChildRef ) const
+	Coord LegacyVectorPanel::_childPos( void * pChildRef ) const
 	{
 		return ((Hook*)pChildRef)->pos();
 	}
 
 	//____ _childSize() ______________________________________________________
 
-	Size VectorPanel::_childSize( void * pChildRef ) const
+	Size LegacyVectorPanel::_childSize( void * pChildRef ) const
 	{
 		return ((Hook*)pChildRef)->size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void VectorPanel::_childRequestRender( void * pChildRef )
+	void LegacyVectorPanel::_childRequestRender( void * pChildRef )
 	{
 		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
 		_renderRequested(pHook);		
 	}
 
-	void VectorPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	void LegacyVectorPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
 		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
 		_renderRequested(pHook, rect);
@@ -344,7 +344,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void VectorPanel::_childRequestResize( void * pChildRef )
+	void LegacyVectorPanel::_childRequestResize( void * pChildRef )
 	{
 		VectorHook * pHook = static_cast<VectorHook*>(reinterpret_cast<Hook*>(pChildRef));
 		_requestResizeRequested(pHook);
@@ -352,7 +352,7 @@ namespace wg
 
 	//____ _firstChild() __________________________________________________________
 
-	Widget * VectorPanel::_firstChild() const 
+	Widget * LegacyVectorPanel::_firstChild() const 
 	{
 		VectorHook * p = m_hooks.first();
 		return  p ? p->_widget() : nullptr; 
@@ -360,7 +360,7 @@ namespace wg
 
 	//____ _lastChild() __________________________________________________________
 
-	Widget * VectorPanel::_lastChild() const 
+	Widget * LegacyVectorPanel::_lastChild() const 
 	{ 
 		VectorHook * p = m_hooks.last();
 		return  p ? p->_widget() : nullptr; 
@@ -368,7 +368,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * VectorPanel::_prevChild( void * pChildRef ) const
+	Widget * LegacyVectorPanel::_prevChild( void * pChildRef ) const
 	{
 		Hook *p = ((Hook*)pChildRef)->_prevHook();
 		return p ? p->_widget() : nullptr;
@@ -376,7 +376,7 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * VectorPanel::_nextChild( void * pChildRef ) const
+	Widget * LegacyVectorPanel::_nextChild( void * pChildRef ) const
 	{
 		Hook *p = ((Hook*)pChildRef)->_nextHook();
 		return p ? p->_widget() : nullptr;

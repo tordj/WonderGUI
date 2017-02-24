@@ -154,6 +154,7 @@
     <File Name="../../src/interfaces/wg_edittext.h"/>
     <File Name="../../src/interfaces/wg_widgetslot.cpp"/>
     <File Name="../../src/interfaces/wg_widgetslot.h"/>
+    <File Name="../../src/interfaces/wg_widgetcollection.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
@@ -273,6 +274,8 @@
     <File Name="../../src/base/wg_itemholder.h"/>
     <File Name="../../src/base/wg_widgetholder.cpp"/>
     <File Name="../../src/base/wg_widgetholder.h"/>
+    <File Name="../../src/base/wg_slotarray.h"/>
+    <File Name="../../src/base/wg_slot.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

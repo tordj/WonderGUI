@@ -26,16 +26,16 @@
 #	include <wg_sizebroker.h>
 #endif
 
-#ifndef WG_VECTORPANEL_DOT_H
-#	include <wg_vectorpanel.h>
+#ifndef WG_LEGACYVECTORPANEL_DOT_H
+#	include <wg_legacyvectorpanel.h>
 #endif
 
 namespace wg 
 {
 	
 	class PackPanel;
-	typedef	StrongPtr<PackPanel,VectorPanel_p>		PackPanel_p;
-	typedef	WeakPtr<PackPanel,VectorPanel_wp>	PackPanel_wp;
+	typedef	StrongPtr<PackPanel,LegacyVectorPanel_p>		PackPanel_p;
+	typedef	WeakPtr<PackPanel,LegacyVectorPanel_wp>	PackPanel_wp;
 	
 	class PackHook;
 	typedef	HookTypePtr<PackHook,VectorHook_p>	PackHook_p;
@@ -77,7 +77,7 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class PackPanel : public VectorPanel
+	class PackPanel : public LegacyVectorPanel
 	{
 		friend class PackHook;
 	
@@ -89,8 +89,8 @@ namespace wg
 		static const char	CLASSNAME[];
 		static PackPanel_p	cast( const Object_p& pObject );
 	
-		inline PackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<PackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline PackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<PackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
+		inline PackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<PackHook*>(LegacyVectorPanel::_addWidget(pWidget.rawPtr())); }
+		inline PackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<PackHook*>(LegacyVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 	    
 		void			setOrientation( Orientation orientaiton );
 		Orientation	orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
@@ -119,7 +119,7 @@ namespace wg
 		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
 
 		
-		// Overloaded from VectorPanel
+		// Overloaded from LegacyVectorPanel
 		
 		Rect			_hookGeo( const VectorHook * pHook );
 		void			_requestResizeRequested( VectorHook * pHook );

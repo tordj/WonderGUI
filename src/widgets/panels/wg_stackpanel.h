@@ -23,16 +23,16 @@
 #ifndef WG_STACKPANEL_DOT_H
 #define WG_STACKPANEL_DOT_H
 
-#ifndef WG_VECTORPANEL_DOT_H
-#	include <wg_vectorpanel.h>
+#ifndef WG_LEGACYVECTORPANEL_DOT_H
+#	include <wg_legacyvectorpanel.h>
 #endif
 
 namespace wg 
 {
 	
 	class StackPanel;
-	typedef	StrongPtr<StackPanel,VectorPanel_p>		StackPanel_p;
-	typedef	WeakPtr<StackPanel,VectorPanel_wp>	StackPanel_wp;
+	typedef	StrongPtr<StackPanel,LegacyVectorPanel_p>		StackPanel_p;
+	typedef	WeakPtr<StackPanel,LegacyVectorPanel_wp>	StackPanel_wp;
 	
 	class StackHook;
 	typedef	HookTypePtr<StackHook,VectorHook_p>		StackHook_p;
@@ -84,7 +84,7 @@ namespace wg
 	
 	//____ StackPanel ___________________________________________________________
 	
-	class StackPanel : public VectorPanel
+	class StackPanel : public LegacyVectorPanel
 	{
 	friend class StackHook;	
 		
@@ -96,8 +96,8 @@ namespace wg
 		static const char	CLASSNAME[];
 		static StackPanel_p	cast( const Object_p& pObject );
 		
-		inline StackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<StackHook*>(VectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline StackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<StackHook*>(VectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
+		inline StackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<StackHook*>(LegacyVectorPanel::_addWidget(pWidget.rawPtr())); }
+		inline StackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<StackHook*>(LegacyVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 		
 		// Overloaded from Widget
 	
@@ -122,7 +122,7 @@ namespace wg
 		void	_nextChildWithGeo( WidgetWithGeo& package ) const;
 	
 	
-		// Overloaded from VectorPanel
+		// Overloaded from LegacyVectorPanel
 	
 		Rect	_hookGeo( const VectorHook * pHook );
 		void	_requestResizeRequested( VectorHook * pHook );

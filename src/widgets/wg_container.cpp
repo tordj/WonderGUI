@@ -398,23 +398,10 @@ namespace wg
 
 	//____ _replaceChild() _________________________________________________________
 
-	void Container::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
+	void Container::_replaceChild( Slot * pSlot, Widget * pNewWidget )
 	{
-		if( pSlot->pWidget )
-		{
-			pSlot->pWidget->_setHolder( nullptr, nullptr );
-			pSlot->pWidget->_decRefCount();
-		}
-
-		pSlot->pWidget = pNewWidget;
-
-		if( pNewWidget )
-		{
-			pNewWidget->_incRefCount();
-			pNewWidget->_setHolder( this, pSlot );
-		}
+		pSlot->replaceWidget( this, pNewWidget );
 	}
-
 
 
 } // namespace wg

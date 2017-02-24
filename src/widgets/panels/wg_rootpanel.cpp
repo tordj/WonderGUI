@@ -132,25 +132,18 @@ namespace wg
 	
 	//____ _replaceChild() ____________________________________________________________
 
-	void RootPanel::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
+	void RootPanel::_replaceChild( Slot * pSlot, Widget * pNewWidget )
 	{
 		if( pSlot->pWidget )
-		{
 			pSlot->pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
-			pSlot->pWidget->_setHolder( nullptr, nullptr );
-			pSlot->pWidget->_decRefCount();
-		}
 
-		pSlot->pWidget = pNewWidget;
+		pSlot->replaceWidget( this, pNewWidget );
 
 		if( pNewWidget )
 		{
-			pNewWidget->_incRefCount();
-			pNewWidget->_setHolder( this, pSlot );
 			pNewWidget->_setSize(m_geo.size());
 			pNewWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
 		}
-
 	}
 	
 	//____ setVisible() ___________________________________________________________

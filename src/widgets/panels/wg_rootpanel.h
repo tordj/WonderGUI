@@ -162,7 +162,7 @@ namespace wg
 		Widget *		_prevChild( void * pChildRef ) const;
 		Widget *		_nextChild( void * pChildRef ) const;
 	
-		void			_replaceChild( ChildSlot * pSlot, Widget * pNewWidget );
+		void			_replaceChild( Slot * pSlot, Widget * pNewWidget );
 
 		//
 
@@ -182,7 +182,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		ManagedSlot<ChildSlot>	m_child;
+		Slot				m_child;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

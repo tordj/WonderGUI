@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG_VECTORPANEL_DOT_H
-#define WG_VECTORPANEL_DOT_H
+#ifndef WG_LEGACYVECTORPANEL_DOT_H
+#define WG_LEGACYVECTORPANEL_DOT_H
 
 #ifndef WG_PANEL_DOT_H
 #	include <wg_panel.h>
@@ -38,9 +38,9 @@
 namespace wg 
 {
 	
-	class VectorPanel;
-	typedef	StrongPtr<VectorPanel,Panel_p>		VectorPanel_p;
-	typedef	WeakPtr<VectorPanel,Panel_wp>	VectorPanel_wp;
+	class LegacyVectorPanel;
+	typedef	StrongPtr<LegacyVectorPanel,Panel_p>		LegacyVectorPanel_p;
+	typedef	WeakPtr<LegacyVectorPanel,Panel_wp>	LegacyVectorPanel_wp;
 	
 	class VectorHook;
 	typedef	HookTypePtr<VectorHook,PanelHook_p>	VectorHook_p;
@@ -49,7 +49,7 @@ namespace wg
 	
 	class VectorHook : public PanelHook, protected Link
 	{
-		friend class VectorPanel;
+		friend class LegacyVectorPanel;
 		friend class Chain<VectorHook>;
 	
 	
@@ -67,7 +67,7 @@ namespace wg
 	
 		VectorHook_p	prev() const { return _prev(); }
 		VectorHook_p	next() const { return _next(); }
-		VectorPanel_p parent() const;
+		LegacyVectorPanel_p parent() const;
 	
 		bool			moveForward();
 		bool			moveBackward();
@@ -88,16 +88,16 @@ namespace wg
 		Hook *	_nextHook() const;
 	};
 	
-	//____ VectorPanel __________________________________________________________
+	//____ LegacyVectorPanel __________________________________________________________
 	
-	class VectorPanel : public Panel
+	class LegacyVectorPanel : public Panel
 	{
 		friend class VectorHook;
 	public:
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static VectorPanel_p	cast( const Object_p& pObject );
+		static LegacyVectorPanel_p	cast( const Object_p& pObject );
 	
 		VectorHook_p addWidget( const Widget_p& pWidget ) { return _addWidget(pWidget.rawPtr() ); }
 		VectorHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return _insertWidget( pWidget.rawPtr(), pSibling.rawPtr() ); }
@@ -106,8 +106,8 @@ namespace wg
 		bool			clear();
 	
 	protected:
-		VectorPanel();
-		virtual ~VectorPanel();
+		LegacyVectorPanel();
+		virtual ~LegacyVectorPanel();
 	
 		VectorHook *	_addWidget( Widget * pWidget );
 		VectorHook *	_insertWidget( Widget * pWidget, Widget * pSibling );
@@ -155,4 +155,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_VECTORPANEL_DOT_H
+#endif //WG_LEGACYVECTORPANEL_DOT_H

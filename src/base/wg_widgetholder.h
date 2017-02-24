@@ -28,27 +28,17 @@
 #	include <wg_geo.h>
 #endif
 
+#ifndef WG_GEO_DOT_H
+#	include <wg_geo.h>
+#endif
+
+
 namespace wg 
 {
 	class Container;
 	class RootPanel;
 	class Widget;
-
-	struct ChildSlot
-	{
-		Widget *	pWidget;
-	};
-
-
-	template<class Slot> class ManagedSlot : public Slot
-	{
-		public:
-			ManagedSlot() { Slot::pWidget = nullptr; }
-			~ManagedSlot() { if( Slot::pWidget != nullptr ) { Slot::pWidget->_setHolder( nullptr, nullptr ); Slot::pWidget->_decRefCount(); } }
-
-
-	};
-
+	class Slot;
 
 
 	class WidgetHolder
@@ -81,7 +71,7 @@ namespace wg
 		virtual Widget *	_prevChild( void * pChildRef ) const = 0;
 		virtual Widget *	_nextChild( void * pChildRef ) const = 0;
 
-		virtual void		_replaceChild( ChildSlot * pSlot, Widget * pNewWidget ) {};		// Used by WidgetSlot interface.
+		virtual void		_replaceChild( Slot * pSlot, Widget * pNewWidget ) {};		// Used by WidgetSlot interface.
 
 	};
 	

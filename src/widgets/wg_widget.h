@@ -106,13 +106,13 @@ namespace wg
 	friend class Container;
 	friend class Panel;
 	friend class PanelHook;
-	friend class VectorPanel;
+	friend class LegacyVectorPanel;
 	friend class PackPanel;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
 		
 	friend class Item;
-	template<class Slot> friend class ManagedSlot;
+	friend class Slot;
 
 	public:
 		Widget();

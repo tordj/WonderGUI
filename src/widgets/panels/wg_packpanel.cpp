@@ -116,7 +116,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return VectorPanel::isInstanceOf(pClassName);
+		return LegacyVectorPanel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________

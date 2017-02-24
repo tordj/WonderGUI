@@ -244,7 +244,7 @@ namespace wg
 	
 	//____ _replaceChild() ____________________________________________________________
 
-	void Capsule::_replaceChild( ChildSlot * pSlot, Widget * pNewWidget )
+	void Capsule::_replaceChild( Slot * pSlot, Widget * pNewWidget )
 	{
 		Container::_replaceChild( pSlot, pNewWidget );
 
