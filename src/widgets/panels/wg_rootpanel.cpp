@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	RootPanel::RootPanel() : child( this, &m_child )
+	RootPanel::RootPanel() : child( &m_child ), m_child( this )
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -99,8 +99,8 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 	
-		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
-			m_child.pWidget->_setSize( m_pGfxDevice->canvasSize() );
+		if( m_pGfxDevice && !m_bHasGeo && m_child.slot.pWidget )
+			m_child.slot.pWidget->_setSize( m_pGfxDevice->canvasSize() );
 	
 		return true;
 	}
@@ -130,9 +130,9 @@ namespace wg
 			return Rect(0,0,0,0);
 	}
 	
-	//____ _replaceChild() ____________________________________________________________
+	//____ _setWidget() ____________________________________________________________
 
-	void RootPanel::_replaceChild( Slot * pSlot, Widget * pNewWidget )
+	void RootPanel::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
 		if( pSlot->pWidget )
 			pSlot->pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
@@ -146,6 +146,18 @@ namespace wg
 		}
 	}
 	
+	//____ _object() ____________________________________________________________
+
+	Object * RootPanel::_object()
+	{
+		return this;
+	}
+
+	const Object * RootPanel::_object() const
+	{
+		return this;
+	}
+
 	//____ setVisible() ___________________________________________________________
 	
 	bool RootPanel::setVisible( bool bVisible )
@@ -220,7 +232,7 @@ namespace wg
 	
 	bool RootPanel::beginRender()
 	{
-		if( !m_pGfxDevice || !m_child.pWidget )
+		if( !m_pGfxDevice || !m_child.slot.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Handle debug overlays.
@@ -264,7 +276,7 @@ namespace wg
 	
 	bool RootPanel::renderSection( const Rect& _clip )
 	{
-		if( !m_pGfxDevice || !m_child.pWidget )
+		if( !m_pGfxDevice || !m_child.slot.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -292,7 +304,7 @@ namespace wg
 	
 		// Render the dirty patches recursively
 	
-		m_child.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
+		m_child.slot.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
 
 		// Handle updated rect overlays
 		
@@ -323,7 +335,7 @@ namespace wg
 	
 	bool RootPanel::endRender( void )
 	{
-		if( !m_pGfxDevice || !m_child.pWidget )
+		if( !m_pGfxDevice || !m_child.slot.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 	
 		// Turn dirty patches into update patches
@@ -341,13 +353,13 @@ namespace wg
 	
 	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
 	{
-		if( !geo().contains(ofs) || !m_child.pWidget )
+		if( !geo().contains(ofs) || !m_child.slot.pWidget )
 			return 0;
 	
-		if(m_child.pWidget &&m_child.pWidget->isContainer() )
-			return static_cast<Container*>(m_child.pWidget)->_findWidget( ofs, mode );
+		if(m_child.slot.pWidget &&m_child.slot.pWidget->isContainer() )
+			return static_cast<Container*>(m_child.slot.pWidget)->_findWidget( ofs, mode );
 	
-		return m_child.pWidget;
+		return m_child.slot.pWidget;
 	}
 	
 
@@ -356,7 +368,7 @@ namespace wg
 	Widget * RootPanel::_focusedChild() const
 	{ 
 		if( !m_pFocusedChild )
-			return m_child.pWidget;
+			return m_child.slot.pWidget;
 
 		return m_pFocusedChild.rawPtr(); 
 	}
@@ -431,12 +443,12 @@ namespace wg
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
 
-		if( pWidget == m_child.pWidget )
+		if( pWidget == m_child.slot.pWidget )
 			return false;
 
 		Widget * pOldFocus = m_pFocusedChild.rawPtr();
-		m_pFocusedChild =m_child.pWidget;
-		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_child.pWidget);
+		m_pFocusedChild =m_child.slot.pWidget;
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_child.slot.pWidget);
 	}
 
 	void RootPanel::_childRequestInView( void * pChildRef )

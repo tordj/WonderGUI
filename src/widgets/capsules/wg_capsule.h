@@ -27,11 +27,11 @@
 #	include <wg_container.h>
 #endif
 
-#ifndef WG_WIDGETSLOT_DOT_H
-#	include <wg_widgetslot.h>
+#ifndef WG_CHILDENTRY_DOT_H
+#	include <wg_childentry.h>
 #endif
 
-#ifndef WG_SLOT_DOT_H
+#ifndef WG_SLOTCAN_DOT_H
 #	include <wg_slot.h>
 #endif
 
@@ -46,7 +46,7 @@ namespace wg
 	
 	//____ Capsule ______________________________________________________________
 	
-	class Capsule : public Container
+	class Capsule : public Container, protected SlotCanHolder
 	{
 		friend class CapsuleHook;
 	
@@ -58,7 +58,7 @@ namespace wg
 
 		//____ Interfaces ______________________________________
 
-		WidgetSlot			child;
+		ChildEntry<Slot>	child;
 
 
 		bool				removeChild( const Widget_p& pWidget );
@@ -76,7 +76,7 @@ namespace wg
 		Capsule();
 		virtual ~Capsule();
 
-		// Overloaded from WidgetHolder
+		// Overloaded from ChildHolder
 
 		Coord		_childPos( void * pChildRef ) const;
 		Size		_childSize( void * pChildRef ) const;
@@ -88,12 +88,17 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		void		_replaceChild( Slot * pSlot, Widget * pNewWidget );
+		// Overloaded from SlotCanHolder
+
+		Object *	_object();
+		const Object * _object() const;
+
+		void		_setWidget( Slot * pSlot, Widget * pWidget );
 
 		// Overloaded from Container
 
-		Widget*		_firstChild() const;
-		Widget*		_lastChild() const;
+		Widget *	_firstChild() const;
+		Widget *	_lastChild() const;
 
 		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
 		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
@@ -107,7 +112,7 @@ namespace wg
 	
 	
 	
-		Slot		m_child;
+		SlotCan<Slot>	m_child;
 	
 	};
 	

@@ -37,6 +37,9 @@
     <Filter Include="textmappers">
       <UniqueIdentifier>{0273b900-38df-4ba7-b6e6-97e549ef2180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="slots">
+      <UniqueIdentifier>{a30bd6a2-d660-4c1e-941d-8c071c4d587e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -401,11 +404,23 @@
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_widgetslot.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\items\wg_widgetitem.h">
       <Filter>items</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slot.h">
+      <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotarray.h">
+      <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotcan.h">
+      <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_childentry.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -747,9 +762,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_widgetholder.cpp">
       <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_widgetslot.cpp">
-      <Filter>interfaces</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp">
       <Filter>items</Filter>

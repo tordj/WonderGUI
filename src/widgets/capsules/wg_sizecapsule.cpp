@@ -114,9 +114,9 @@ namespace wg
 	
 	Size SizeCapsule::preferredSize() const 
 	{
-		if( m_child.pWidget )
+		if( m_child.slot.pWidget )
 		{
-			Size pref = m_child.pWidget->preferredSize();
+			Size pref = m_child.slot.pWidget->preferredSize();
 	
 			if( m_preferred.w != 0 )
 			{
@@ -195,8 +195,8 @@ namespace wg
 	Size SizeCapsule::minSize() const 
 	{
 	
-		if( m_child.pWidget )
-			return Size::max(m_min,m_child.pWidget->minSize());
+		if( m_child.slot.pWidget )
+			return Size::max(m_min,m_child.slot.pWidget->minSize());
 		else
 			return m_min;
 	}
@@ -205,8 +205,8 @@ namespace wg
 	
 	Size SizeCapsule::maxSize() const 
 	{
-		if( m_child.pWidget )
-			return Size::min(m_max,m_child.pWidget->maxSize());
+		if( m_child.slot.pWidget )
+			return Size::min(m_max,m_child.slot.pWidget->maxSize());
 		else
 			return m_max; 
 	}
@@ -222,17 +222,17 @@ namespace wg
 			if( m_pScaler )
 				h = (int) (h * m_pScaler->scaleY() );
 	
-			if( m_child.pWidget )
+			if( m_child.slot.pWidget )
 			{
-				int max = m_child.pWidget->maxSize().h;
-				int min = m_child.pWidget->minSize().h;
+				int max = m_child.slot.pWidget->maxSize().h;
+				int min = m_child.slot.pWidget->minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
-		else if( m_child.pWidget )
+		else if( m_child.slot.pWidget )
 		{
-			int h = m_child.pWidget->matchingHeight(width);
+			int h = m_child.slot.pWidget->matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -251,17 +251,17 @@ namespace wg
 			if( m_pScaler )
 				w = (int) (w * m_pScaler->scaleX() );
 	
-			if( m_child.pWidget )
+			if( m_child.slot.pWidget )
 			{
-				int max = m_child.pWidget->maxSize().w;
-				int min = m_child.pWidget->minSize().w;
+				int max = m_child.slot.pWidget->maxSize().w;
+				int min = m_child.slot.pWidget->minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
-		else if( m_child.pWidget )
+		else if( m_child.slot.pWidget )
 		{
-			int w = m_child.pWidget->matchingWidth(height);
+			int w = m_child.slot.pWidget->matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

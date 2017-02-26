@@ -46,8 +46,8 @@
 #	include <wg_gfxdevice.h>
 #endif
 
-#ifndef WG_WIDGETSLOT_DOT_H
-#	include <wg_widgetslot.h>
+#ifndef WG_CHILDENTRY_DOT_H
+#	include <wg_childentry.h>
 #endif
 
 namespace wg 
@@ -72,7 +72,7 @@ namespace wg
 	 */
 	
 	
-	class RootPanel : public Object, protected WidgetHolder
+	class RootPanel : public Object, protected WidgetHolder, protected SlotCanHolder
 	{
 		friend class Container;
 		friend class InputHandler;
@@ -88,7 +88,7 @@ namespace wg
 	
 		//____ Interfaces ___________________________________________________________
 
-		WidgetSlot			child;
+		ChildEntry<Slot>	child;
 
 		bool				setGfxDevice( const GfxDevice_p& pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
@@ -162,7 +162,13 @@ namespace wg
 		Widget *		_prevChild( void * pChildRef ) const;
 		Widget *		_nextChild( void * pChildRef ) const;
 	
-		void			_replaceChild( Slot * pSlot, Widget * pNewWidget );
+
+		// SlotCanHolder methods
+
+		Object *		_object();
+		const Object *	_object() const;
+
+		void			_setWidget( Slot * pSlot, Widget * pNewWidget );
 
 		//
 
@@ -182,7 +188,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		Slot				m_child;
+		SlotCan<Slot>		m_child;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

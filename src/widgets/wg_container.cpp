@@ -396,12 +396,4 @@ namespace wg
 		}
 	}
 
-	//____ _replaceChild() _________________________________________________________
-
-	void Container::_replaceChild( Slot * pSlot, Widget * pNewWidget )
-	{
-		pSlot->replaceWidget( this, pNewWidget );
-	}
-
-
 } // namespace wg

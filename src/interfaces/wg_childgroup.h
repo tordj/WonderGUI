@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_WIDGETCOLLECTION_DOT_H
-#define	WG_WIDGETCOLLECTION_DOT_H
+#ifndef	WG_CHILDGROUP_DOT_H
+#define	WG_CHILDGROUP_DOT_H
 
 #ifndef WG_INTERFACE_DOT_H
 #	include <wg_interface.h>
@@ -43,41 +43,37 @@
 namespace wg 
 {
 
-	class WidgetCollection;
-	typedef	StrongInterfacePtr<WidgetCollection,Interface_p>	WidgetCollection_p;
-	typedef	WeakInterfacePtr<WidgetCollection,Interface_wp>		WidgetCollection_wp;
+	template<class SlotType> class ChildGroup;
+	typedef	StrongInterfacePtr<ChildGroup<class SlotType>,Interface_p>		ChildGroup_p;
+	typedef	WeakInterfacePtr<ChildGroup<class SlotType>,Interface_wp>		ChildGroup_wp;
 	
-	class WidgetCollection : public Interface
+	template<class SlotType> class ChildGroup : public Interface
 	{
 		
 	public:
-		WidgetCollection( WidgetHolder * pHolder, Slot * pSlot ) : m_pHolder(pHolder), m_pSlot(pSlot) {}
-
+		ChildGroup( SlotArray<SlotType> * pSlotArray ) : m_pSlotArray(pSlotArray) {}
+/*
 		virtual bool			isInstanceOf( const char * pClassName ) const;
 		virtual const char *	className( void ) const;
 		static const char		CLASSNAME[];
-		static WidgetCollection_p		cast( const Interface_p& pInterface );
-	
+		static ChildGroup_p		cast( const Interface_p& pInterface );
+*/	
 
-		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
+		inline const Widget*& operator[](int index) const { return m_pSlots->slot(index)->pWidget; }
 
-//		inline Widget& operator*() const{ return * m_pSlot->pWidget; };
-		inline Widget* operator->() const { return m_pSlot->pWidget; }
+		inline Widget_p get( int index) const { return Widget_p(m_pSlots->slot(index)->pWidget)); }
 
-
-		inline Widget_p get( int index) const { return Widget_p(m_pSlot->pWidget); }
-		inline void clear() { m_pHolder->_replaceChild(m_pSlot, nullptr); }
+		//		inline void clear() { m_pHolder->_replaceChild(m_pSlot, nullptr); }
 	
 	
 
 	protected:
-		virtual Object * 	_object() const;
-		
-		WidgetHolder *	m_pHolder;
-		SlotArray *		m_pSlots;
+		Object * _object() const {	return m_pSlotArray->object(); }
+
+		SlotArray<SlotType> * m_pSlotArray;
 	};
 	
 	
 
 } // namespace wg
-#endif //WG_WIDGETCOLLECTION_DOT_H
+#endif //WG_CHILDGROUP_DOT_H

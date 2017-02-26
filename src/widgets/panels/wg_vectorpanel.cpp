@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_legacyvectorpanel.h>
+#include <wg_vectorpanel.h>
 
 namespace wg 
 {

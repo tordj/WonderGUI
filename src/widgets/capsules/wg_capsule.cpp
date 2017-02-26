@@ -30,7 +30,7 @@ namespace wg
 		
 	//____ Constructor ____________________________________________________________
 	
-	Capsule::Capsule() : child( this, &m_child )
+	Capsule::Capsule() : child( &m_child ), m_child( this )
 	{
 	}
 	
@@ -66,15 +66,27 @@ namespace wg
 	
 		return 0;
 	}
-		
-	//____ removeChild() ___________________________________________________________
+	
+	//____ _object() _________________________________________________________
+
+	Object * Capsule::_object()
+	{
+		return this;
+	}
+
+	const Object * Capsule::_object() const
+	{
+		return this;
+	}
+
+	//____ removeChild() _________________________________________________________
 	
 	bool Capsule::removeChild( const Widget_p& pWidget )
 	{
-		if( m_child.pWidget != pWidget.rawPtr() )
+		if( m_child.slot.pWidget != pWidget.rawPtr() )
 			return false;
 	
-		_replaceChild( &m_child, nullptr );
+		m_child.setWidget( nullptr );
 		return true;
 	}
 	
@@ -82,8 +94,8 @@ namespace wg
 	
 	bool Capsule::clear()
 	{
-		if( m_child.pWidget )
-			_replaceChild( &m_child, nullptr );
+		if( m_child.slot.pWidget )
+			m_child.setWidget( nullptr );
 
 		return true;
 	}
@@ -92,8 +104,8 @@ namespace wg
 	
 	int Capsule::matchingHeight( int width ) const
 	{
-		if( m_child.pWidget )
-			return m_child.pWidget->matchingHeight( width );
+		if( m_child.slot.pWidget )
+			return m_child.slot.pWidget->matchingHeight( width );
 		else
 			return Widget::matchingHeight(width);
 	}
@@ -102,8 +114,8 @@ namespace wg
 	
 	int Capsule::matchingWidth( int height ) const
 	{
-		if( m_child.pWidget )
-			return m_child.pWidget->matchingWidth( height );
+		if( m_child.slot.pWidget )
+			return m_child.slot.pWidget->matchingWidth( height );
 		else
 			return Widget::matchingWidth(height);
 	}
@@ -112,8 +124,8 @@ namespace wg
 	
 	Size Capsule::preferredSize() const
 	{
-		if( m_child.pWidget )
-			return m_child.pWidget->preferredSize();
+		if( m_child.slot.pWidget )
+			return m_child.slot.pWidget->preferredSize();
 		else
 			return Size(1,1);
 	}
@@ -184,16 +196,16 @@ namespace wg
 	
 	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_child.pWidget )
-			m_child.pWidget->_collectPatches( container, geo, clip );
+		if( m_child.slot.pWidget )
+			m_child.slot.pWidget->_collectPatches( container, geo, clip );
 	}
 	
 	//____ _maskPatches() ________________________________________________________
 	
 	void Capsule::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if( m_child.pWidget )
-			m_child.pWidget->_maskPatches( patches, geo, clip, blendMode );
+		if( m_child.slot.pWidget )
+			m_child.slot.pWidget->_maskPatches( patches, geo, clip, blendMode );
 	}
 	
 	//____ _cloneContent() _______________________________________________________
@@ -209,29 +221,29 @@ namespace wg
 	{
 		Container::_setSize( size );
 
-		if( m_child.pWidget )
-			m_child.pWidget->_setSize(size);			
+		if( m_child.slot.pWidget )
+			m_child.slot.pWidget->_setSize(size);			
 	}
 	
 	//____ _firstChild() ____________________________________________________________
 	
 	Widget* Capsule::_firstChild() const
 	{
-		return m_child.pWidget;
+		return m_child.slot.pWidget;
 	}
 	
 	//____ _lastChild() _____________________________________________________________
 	
 	Widget* Capsule::_lastChild() const
 	{
-		return m_child.pWidget;
+		return m_child.slot.pWidget;
 	}
 	
 	//____ _firstChildWithGeo() _____________________________________________________
 	
 	void Capsule::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		package.pWidget = m_child.pWidget;
+		package.pWidget = m_child.slot.pWidget;
 		package.geo = Rect(0,0,m_size);
 	}
 	
@@ -242,13 +254,13 @@ namespace wg
 		package.pWidget = nullptr;
 	}
 	
-	//____ _replaceChild() ____________________________________________________________
+	//____ _setWidget() ____________________________________________________________
 
-	void Capsule::_replaceChild( Slot * pSlot, Widget * pNewWidget )
+	void Capsule::_setWidget( Slot * pSlot, Widget * pWidget )
 	{
-		Container::_replaceChild( pSlot, pNewWidget );
+		pSlot->replaceWidget( this, pWidget );
 
-		pNewWidget->_setSize(size());
+		pWidget->_setSize(size());
 		_requestRender();
 		_requestResize();
 	}

@@ -27,7 +27,7 @@
 #endif
 
 #ifndef WG_LEGACYVECTORPANEL_DOT_H
-#	include <wg_legacyvectorpanel.h>
+#	include <wg_vectorpanel.h>
 #endif
 
 namespace wg 

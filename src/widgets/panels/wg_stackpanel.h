@@ -24,7 +24,7 @@
 #define WG_STACKPANEL_DOT_H
 
 #ifndef WG_LEGACYVECTORPANEL_DOT_H
-#	include <wg_legacyvectorpanel.h>
+#	include <wg_vectorpanel.h>
 #endif
 
 namespace wg 

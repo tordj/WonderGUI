@@ -70,9 +70,6 @@ namespace wg
 		
 		virtual Widget *	_prevChild( void * pChildRef ) const = 0;
 		virtual Widget *	_nextChild( void * pChildRef ) const = 0;
-
-		virtual void		_replaceChild( Slot * pSlot, Widget * pNewWidget ) {};		// Used by WidgetSlot interface.
-
 	};
 	
 

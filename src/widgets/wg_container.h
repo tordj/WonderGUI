@@ -122,9 +122,6 @@ namespace wg
 			virtual void			_childRequestInView( void * pChildRef );
 			virtual void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
 
-			virtual void			_replaceChild( Slot * pSlot, Widget * pNewWidget );
-
-
 			//
 
 			virtual bool			_isPanel() const;
