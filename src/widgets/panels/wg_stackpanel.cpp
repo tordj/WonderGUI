@@ -28,9 +28,6 @@ namespace wg
 {
 	
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
-	const char StackHook::CLASSNAME[] = {"StackHook"};
-	
-	
 	
 	void StackHook::setSizePolicy( SizePolicy policy )
 	{
@@ -51,43 +48,6 @@ namespace wg
 			m_pParent->_renderRequested(this);
 		}
 	}
-	
-	StackHook::StackHook( StackPanel * pParent ): m_pParent(pParent), m_origo( Origo::NorthWest ), m_sizePolicy( STRETCH )
-	{
-	}
-	
-	//____ StackHook::isInstanceOf() __________________________________________
-	
-	bool StackHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return VectorHook::isInstanceOf(pClassName);
-	}
-	
-	//____ StackHook::className() _____________________________________________
-	
-	const char * StackHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ StackHook::cast() __________________________________________________
-	
-	StackHook_p StackHook::cast( const Hook_p& pHook )
-	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return StackHook_p( static_cast<StackHook*>(pHook.rawPtr()) );
-	
-		return 0;
-	}
-	
-	Container * StackHook::_parent() const
-	{
-		return m_pParent;
-	}
-	
 	
 	
 	Rect StackHook::_getGeo( const Rect& parentGeo ) const
@@ -398,12 +358,6 @@ namespace wg
 		_requestRender();
 	}
 	
-	//____ _newHook() _____________________________________________________________
-	
-	VectorHook * StackPanel::_newHook()
-	{
-		return new StackHook(this);
-	}
 	
 	//____ _refreshPreferredSize() _____________________________________________________
 	

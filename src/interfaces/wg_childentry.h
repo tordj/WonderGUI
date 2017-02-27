@@ -48,30 +48,6 @@ namespace wg
 		
 	public:
 		ChildEntry( SlotCan<SlotType> * pSlotCan ) : m_pSlotCan(pSlotCan) {}
-/*
-		static const char CLASSNAME[] = {"ChildEntry<SlotType>"};
-
-		bool isInstanceOf( const char * pClassName ) const
-		{ 
-			if( pClassName==CLASSNAME )
-				return true;
-
-			return Interface::isInstanceOf(pClassName);
-		}
-
-		const char * className( void ) const
-		{ 
-			return CLASSNAME; 
-		}
-
-		ChildEntry_p cast( const Interface_p& pInterface )
-		{
-			if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-				return ChildEntry_p( pInterface.getRealObjectPtr(), static_cast<ChildEntry*>( pInterface.rawPtr()) );
-
-			return 0;
-		}
-*/		
 	
 		inline ChildEntry operator=(const Widget_p& pWidget ) { m_pSlotCan->setWidget(pWidget.rawPtr()); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlotCan->slot.pWidget); }

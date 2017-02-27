@@ -23,81 +23,77 @@
 #ifndef WG_STACKPANEL_DOT_H
 #define WG_STACKPANEL_DOT_H
 
-#ifndef WG_LEGACYVECTORPANEL_DOT_H
-#	include <wg_vectorpanel.h>
+#ifndef WG_PANEL_DOT_H
+#	include <wg_panel.h>
 #endif
+
+#ifndef WG_CHILDGROUP_DOT_H
+#	include <wg_childgroup.h>
+#endif
+
 
 namespace wg 
 {
 	
 	class StackPanel;
-	typedef	StrongPtr<StackPanel,LegacyVectorPanel_p>		StackPanel_p;
-	typedef	WeakPtr<StackPanel,LegacyVectorPanel_wp>	StackPanel_wp;
+	typedef	StrongPtr<StackPanel,Panel_p>	StackPanel_p;
+	typedef	WeakPtr<StackPanel,Panel_wp>	StackPanel_wp;
 	
-	class StackHook;
-	typedef	HookTypePtr<StackHook,VectorHook_p>		StackHook_p;
+
+
+
+
+	//____ StackPanelSlot ____________________________________________________________
 	
-	//____ StackHook ____________________________________________________________
-	
-	class StackHook : public VectorHook
+	class StackPanelSlot : public Slot
 	{
-		friend class StackPanel;
 	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static StackHook_p	cast( const Hook_p& pInterface );
+		Origo			m_origo;
+		SizePolicy		m_sizePolicy;		
+	};
+
+
+	//____ StackPanelChildren ________________________________________________________
+
+	class StackPanelChildren : public ChildGroup<StackPanelSlot>
+	{
+	public:
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray );
+
+		void		add( const Widget_p& pWidget );
+		void		insert( const Widget_p& pWidget );
+
+		void		setSizePolicy( int index, SizePolicy policy );
+		SizePolicy	sizePolicy( int index ) const;
+
+		void		setOrigo( int index, Origo origo );
+		Origo		origo( int index ) const;
+	};
+
+
+
+	//____ StackPanel ___________________________________________________________
 	
+	class StackPanel : public Panel, protected SlotArrayHolder
+	{
+	public:
+		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static StackPanel_p	cast( const Object_p& pObject );
+
+		//____ Interfaces ______________________________________
+
+		StackPanelChildren	children;
+
 		enum SizePolicy
 		{
 			DEFAULT,
 			STRETCH,
 			SCALE
 		};
-	
-		void			setSizePolicy( SizePolicy policy );
-		SizePolicy		getSizePolicy() const { return m_sizePolicy; }
-			
-		void			setOrigo( Origo origo );
-		Origo	origo() const { return m_origo; }
-	
-		StackHook_p	prev() const { return _prev(); }
-		StackHook_p 	next() const { return _next(); }
-	
-		StackPanel_p 	parent() const { return m_pParent; }
-	
-	protected:
-		PROTECTED_LINK_METHODS( StackHook );
-	
-		StackHook( StackPanel * pParent );
-	
-		Container * _parent() const;
-	
-		Rect			_getGeo( const Rect& parentGeo ) const;
-	
-		StackPanel *	m_pParent;
-		
-		Origo	m_origo;
-		SizePolicy		m_sizePolicy;
-		
-	};
-	
-	//____ StackPanel ___________________________________________________________
-	
-	class StackPanel : public LegacyVectorPanel
-	{
-	friend class StackHook;	
-		
-	public:
-		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
-	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
-		static StackPanel_p	cast( const Object_p& pObject );
-		
-		inline StackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<StackHook*>(LegacyVectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline StackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<StackHook*>(LegacyVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
 		
 		// Overloaded from Widget
 	
@@ -113,27 +109,34 @@ namespace wg
 	
 		// Overloaded from Widget
 	
-		void	_cloneContent( const Widget * _pOrg );
-		void	_setSize( const Size& size );
+		void		_cloneContent( const Widget * _pOrg );
+		void		_setSize( const Size& size );
 	
 		// Overloaded from Panel
 	
-		void	_firstChildWithGeo( WidgetWithGeo& package ) const;
-		void	_nextChildWithGeo( WidgetWithGeo& package ) const;
-	
-	
-		// Overloaded from LegacyVectorPanel
-	
-		Rect	_hookGeo( const VectorHook * pHook );
-		void	_requestResizeRequested( VectorHook * pHook );
-		void	_renderRequested( VectorHook * pHook );
-		void	_renderRequested( VectorHook * pHook, const Rect& rect );
-		void	_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.
-		void	_onWidgetDisappeared( VectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
-		void	_onWidgetsReordered();
-		void	_refreshAllWidgets();
-		VectorHook * _newHook();
-	
+		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
+
+		// Overloaded from SlotArrayHolder
+
+		Object *	_object();
+		const Object * _object() const;
+
+		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_willRemoveSlots( Slot * pSlot, int nb );
+
+		// Overloaded from WidgetHolder
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
+
 		// Internal to StackPanel
 	
 		void 	_refreshPreferredSize();
@@ -141,9 +144,9 @@ namespace wg
 		void	_renderFromChildOnward( VectorHook * pHook );	
 	
 		Size	m_preferredSize;	
+
+		SlotArray<StackPanelSlot>	m_children;
 	};
-	
-	
 	
 
 } // namespace wg

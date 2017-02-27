@@ -35,8 +35,8 @@
 #	include <wg_container.h>
 #endif
 
-#ifndef WG_SLOT_DOT_H
-#	include <wg_slot.h>
+#ifndef WG_SLOTARRAY_DOT_H
+#	include <wg_slotarray.h>
 #endif
 
 
@@ -52,21 +52,13 @@ namespace wg
 		
 	public:
 		ChildGroup( SlotArray<SlotType> * pSlotArray ) : m_pSlotArray(pSlotArray) {}
-/*
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static ChildGroup_p		cast( const Interface_p& pInterface );
-*/	
 
-		inline const Widget*& operator[](int index) const { return m_pSlots->slot(index)->pWidget; }
+		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 
-		inline Widget_p get( int index) const { return Widget_p(m_pSlots->slot(index)->pWidget)); }
-
-		//		inline void clear() { m_pHolder->_replaceChild(m_pSlot, nullptr); }
+		inline int		size() const { return m_pSlotArray->size(); } 
+		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget)); }
+		inline void		clear() { m_pSlotArray->clear(); }
 	
-	
-
 	protected:
 		Object * _object() const {	return m_pSlotArray->object(); }
 
