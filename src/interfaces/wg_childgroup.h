@@ -56,7 +56,7 @@ namespace wg
 		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 
 		inline int		size() const { return m_pSlotArray->size(); } 
-		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget)); }
+		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget); }
 		inline void		clear() { m_pSlotArray->clear(); }
 	
 	protected:

@@ -169,8 +169,8 @@ namespace wg
 		inline void		set( short top, short left, short bottom, short right ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
 	
 		inline Size		size() const;
-		inline int			width() const { return ((int)left)+right; }
-		inline int			height() const { return ((int)top)+bottom; }
+		inline int		width() const { return ((int)left)+right; }
+		inline int		height() const { return ((int)top)+bottom; }
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
 		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
 	

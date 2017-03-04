@@ -35,6 +35,15 @@
 #	include <wg_skin.h>
 #endif
 
+#ifndef WG_SLOT_DOT_H
+#	include <wg_slot.h>
+#endif
+
+#ifndef WG_CHILDGROUP_DOT_H
+#	include <wg_childgroup.h>
+#endif
+
+
 namespace wg 
 {
 	
@@ -47,6 +56,40 @@ namespace wg
 	class PanelHook;
 	typedef	HookTypePtr<PanelHook,Hook_p>	PanelHook_p;
 	
+
+	//____ PanelSlot ____________________________________________________________
+	
+	class PanelSlot : public Slot
+	{
+	public:
+		PanelSlot() : bVisible(false) {}
+
+		Size		_paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
+		Size		_paddedMinSize() const { return pWidget->minSize() + padding; }
+		Size		_paddedMaxSize() const { return pWidget->maxSize() + padding; }
+		int			_paddedMatchingWidth( int paddedHeight ) const { return pWidget->matchingWidth( paddedHeight - padding.height() ) + padding.width(); }
+		int			_paddedMatchingHeight( int paddedWidth ) const { return pWidget->matchingHeight( paddedWidth - padding.width() ) + padding.height(); }
+		bool		_isVisible() const { return bVisible; }
+
+	
+		bool		bVisible;
+		Border		padding;
+	};
+
+	//____ PanelChildren ________________________________________________________
+
+	template<class SlotType> class PanelChildren : public ChildGroup<SlotType>
+	{
+	public:
+		PanelChildren( SlotArray<SlotType> * pSlotArray ) : ChildGroup<SlotType>(pSlotArray) {}
+
+		void		setVisible( int index, bool bVisible );
+//		bool		isVisible( int index ) { return m_pSlotArray->slot(index)->bVisible; }
+	
+		bool		setPadding( int index, Border padding );
+//		Border		padding( int index ) const { return m_padding; }
+	};
+
 	
 	//____ PanelHook ____________________________________________________________
 	

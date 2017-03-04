@@ -45,20 +45,22 @@ namespace wg
 
 	//____ StackPanelSlot ____________________________________________________________
 	
-	class StackPanelSlot : public Slot
+	class StackPanelSlot : public PanelSlot
 	{
 	public:
-		Origo			m_origo;
-		SizePolicy		m_sizePolicy;		
+		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy::Default) {}
+	
+		Origo			origo;
+		SizePolicy		sizePolicy;		
 	};
 
 
 	//____ StackPanelChildren ________________________________________________________
 
-	class StackPanelChildren : public ChildGroup<StackPanelSlot>
+	class StackPanelChildren : public PanelChildren<StackPanelSlot>
 	{
 	public:
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray );
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray ) : PanelChildren<StackPanelSlot>(pSlotArray) {}
 
 		void		add( const Widget_p& pWidget );
 		void		insert( const Widget_p& pWidget );
@@ -101,6 +103,11 @@ namespace wg
 		int		matchingWidth( int height ) const;
 	
 		Size	preferredSize() const;
+
+		// Overloaded from Container
+		
+		bool		removeChild( const Widget_p& pWidget );
+		bool		clear();
 	
 	protected:
 		StackPanel();
@@ -111,7 +118,13 @@ namespace wg
 	
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
+
+		// Overloaded from Container
+
+		Widget *	_firstChild() const;
+		Widget *	_lastChild() const;
 	
+			
 		// Overloaded from Panel
 	
 		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
@@ -141,7 +154,9 @@ namespace wg
 	
 		void 	_refreshPreferredSize();
 		void	_adaptChildrenToSize();
-		void	_renderFromChildOnward( VectorHook * pHook );	
+//		void	_renderFromChildOnward( VectorHook * pHook );	
+
+		Rect	_childGeo( const StackPanelSlot * pSlot );
 	
 		Size	m_preferredSize;	
 

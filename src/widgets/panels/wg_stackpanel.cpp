@@ -28,83 +28,68 @@ namespace wg
 {
 	
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
+		
 	
-	void StackHook::setSizePolicy( SizePolicy policy )
+	
+	void StackPanelChildren::add( const Widget_p& pWidget )
 	{
-		if( policy != m_sizePolicy )
+		
+	}
+	
+	void StackPanelChildren::insert( const Widget_p& pWidget )
+	{
+		
+	}
+
+	void StackPanelChildren::setSizePolicy( int index, SizePolicy policy )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return;
+
+		auto pSlot = m_pSlotArray->slot(index);
+			
+		if( policy != pSlot->sizePolicy )
 		{
-			m_pParent->_renderRequested(this);
-			m_sizePolicy = policy;
-			m_pParent->_renderRequested(this);
+			pSlot->pWidget->_requestRender();
+			pSlot->sizePolicy = policy;
+			pSlot->pWidget->_requestRender();
+		};		
+	}
+	
+	SizePolicy StackPanelChildren::sizePolicy( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return SizePolicy::Default;
+
+		return m_pSlotArray->slot(index)->sizePolicy;
+		
+	}
+
+	void StackPanelChildren::setOrigo( int index, Origo origo )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return;
+
+		auto pSlot = m_pSlotArray->slot(index);
+			
+		if( origo != pSlot->origo )
+		{
+			pSlot->pWidget->_requestRender();
+			pSlot->origo = origo;
+			pSlot->pWidget->_requestRender();
 		};
+		
 	}
 	
-	void StackHook::setOrigo( Origo origo )
+	Origo StackPanelChildren::origo( int index ) const
 	{
-		if( origo != m_origo )
-		{
-			m_pParent->_renderRequested(this);
-			m_origo = origo;
-			m_pParent->_renderRequested(this);
-		}
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return Origo::Center;
+
+		return m_pSlotArray->slot(index)->origo;
+		
 	}
-	
-	
-	Rect StackHook::_getGeo( const Rect& parentGeo ) const
-	{
-		Rect base = parentGeo - m_padding;
-	
-		if( base.w <= 0 || base.h <= 0 )
-			return Rect(0,0,0,0);
-	
-		switch( m_sizePolicy )
-		{
-			default:
-			case DEFAULT:
-			{
-				Size	size = m_pWidget->preferredSize();
-				Rect geo = Util::origoToRect( m_origo, base, size );
-	
-				if( geo.w > base.w )
-				{
-					geo.x = 0;
-					geo.w = base.w;
-				}
-	
-				if( geo.h > base.h )
-				{
-					geo.y = 0;
-					geo.h = base.h;
-				}
-				return geo;
-			}
-			case STRETCH:
-			{
-				return base;
-			}
-			case SCALE:
-			{
-				Size	orgSize = m_pWidget->preferredSize();
-				Size	size;
-	
-				float	fracX = orgSize.w / (float) base.w;
-				float	fracY = orgSize.h / (float) base.h;
-	
-				if( fracX > fracY )
-				{
-					size.w = base.w;
-					size.h = int (orgSize.h / fracX);
-				}
-				else
-				{
-					size.h = base.h;
-					size.w = (int) (orgSize.w / fracY);
-				}
-	
-				return Util::origoToRect( m_origo, base, size );
-			}
-		}
-	}
+
 	
 	
 	//____ Constructor ____________________________________________________________
@@ -127,7 +112,7 @@ namespace wg
 		if( pClassName==CLASSNAME )
 			return true;
 	
-		return LegacyVectorPanel::isInstanceOf(pClassName);
+		return Panel::isInstanceOf(pClassName);
 	}
 	
 	//____ className() ____________________________________________________________
@@ -152,14 +137,16 @@ namespace wg
 	int StackPanel::matchingHeight( int width ) const
 	{
 		int height = 0;
+
+		StackPanelSlot * pSlot = m_children.begin();
+		StackPanelSlot * pEnd = m_children.end();
 	
-		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
-		while( pHook )
+		while( pSlot != pEnd )
 		{
-			int h = pHook->_widget()->matchingHeight(width);
+			int h = pSlot->pWidget->matchingHeight(width);
 			if( h > height )
 				height = h;
-			pHook = pHook->_next();
+			pSlot++
 		}
 	
 		return height;
@@ -171,13 +158,15 @@ namespace wg
 	{
 		int width = 0;
 	
-		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
-		while( pHook )
+		StackPanelSlot * pSlot = m_children.begin();
+		StackPanelSlot * pEnd = m_children.end();
+	
+		while( pSlot != pEnd )
 		{
-			int w = pHook->_widget()->matchingWidth(height);
-			if( w > width )
-				width = w;
-			pHook = pHook->_next();
+			int h = pSlot->pWidget->matchingWidth(height);
+			if( h > height )
+				height = h;
+			pSlot++
 		}
 	
 		return width;
@@ -191,6 +180,15 @@ namespace wg
 		return m_preferredSize;
 	}
 	
+	//____ _cloneContent() ______________________________________________________
+	
+	void StackPanel::_cloneContent( const Widget * _pOrg )
+	{
+		Panel::_cloneContent( _pOrg );
+
+		//TODO: Implement		
+	}
+
 	//____ _setSize() ___________________________________________________________
 	
 	void StackPanel::_setSize( const Size& size )
@@ -198,30 +196,132 @@ namespace wg
 		Panel::_setSize(size);
 		_adaptChildrenToSize();
 	}
-	
-	
-	//____ _hookGeo() _____________________________________________________________
-	
-	Rect StackPanel::_hookGeo( const VectorHook * pHook )
+
+	//____ _firstChild() _______________________________________________________
+
+	Widget * StackPanel::_firstChild() const
 	{
-		return ((StackHook*)pHook)->_getGeo(m_size);
+		if( m_children.isEmpty() )
+			return nullptr;
+			
+		return m_children.first()->pWidget;
+	}
+
+	//____ _lastChild() ________________________________________________________
+	
+	Widget * StackPanel::_lastChild() const
+	{
+		if( m_children.isEmpty() )
+			return nullptr;
+			
+		return m_children.last()->pWidget;
+		
 	}
 	
-	//____ _requestResizeRequested() ____________________________________________________
 	
-	void StackPanel::_requestResizeRequested( VectorHook * _pHook )
+	//____ _firstChildWithGeo() _____________________________________________________
+	
+	void StackPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		_refreshPreferredSize();
+		if( m_children.isEmpty() )
+			package.pWidget = nullptr;
+		else
+		{
+			StackPanelSlot * pSlot = m_children.first();
+			package.pMagic = pSlot;
+			package.pWidget = pSlot->pWidget;
+			package.geo = _childGeo(pSlot);
+			
+		}			
+	}
+
+	//____ _nextChildWithGeo() ______________________________________________________
+	
+	void StackPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
+	{
+		StackPanelSlot * pSlot = (StackPanelSlot*) package.pMagic;
+		
+		if( pSlot == m_children.last() )
+			package.pWidget = nullptr;
+		else
+		{
+			pSlot++;
+			package.pMagic = pSlot;
+			package.pWidget = pSlot->pWidget;
+			package.geo = _childGeo(pSlot);			
+		}
+	}
+
+	//____ _object() ___________________________________________________________
+
+	Object * StackPanel::_object()
+	{
+		return this;
 	}
 	
-	//____ _renderRequested() ____________________________________________________
-	
-	void StackPanel::_renderRequested( VectorHook * _pHook )
+	const Object *  StackPanel::_object() const
 	{
-		StackHook * pHook = static_cast<StackHook*>(_pHook);
-	
-		_renderRequested(pHook, pHook->_getGeo(Rect(0,0,m_size)));
+		 return this;
 	}
+
+	void StackPanel::_didAddSlots( Slot * pSlot, int nb )
+	{
+		
+	}
+	
+	void StackPanel::_willRemoveSlots( Slot * pSlot, int nb )
+	{
+		
+	}
+
+	Coord StackPanel::_childPos( void * pChildRef ) const
+	{
+		
+	}
+	
+	Size StackPanel::_childSize( void * pChildRef ) const
+	{
+		
+	}
+
+	void StackPanel::_childRequestRender( void * pChildRef )
+	{
+		_childRequestRender( pChildRef, _childGeo((StackPanelSlot*) pChildRef) );
+	}
+	
+	void StackPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	{
+		
+	}
+	
+	void StackPanel::_childRequestResize( void * pChildRef )
+	{
+		_refreshPreferredSize();		
+	}
+
+	Widget * StackPanel::_prevChild( void * pChildRef ) const
+	{
+		StackPanelSlot * p = (StockPanelSlot *) pChildRef;
+		
+		if( p > m_children.begin() )
+			return p[-1]->pWidget;
+	}
+	
+	Widget * StackPanel::_nextChild( void * pChildRef ) const
+	{
+		StackPanelSlot * p = (StockPanelSlot *) pChildRef;
+		
+		if( p < m_children.last() )
+			return p[1]->pWidget;		
+	}
+
+
+
+	Rect StackPanel::_childGeo( StackPanelSlot * pSlot )
+	{
+		
+	}
+	
 	
 	void StackPanel::_renderRequested( VectorHook * _pHook, const Rect& _rect )
 	{
@@ -342,12 +442,6 @@ namespace wg
 			_requestResize();
 	}
 	
-	//____ _onWidgetsReordered() ___________________________________________________
-	
-	void StackPanel::_onWidgetsReordered()
-	{
-		_requestRender();
-	}
 	
 	//____ _refreshAllWidgets() ____________________________________________________
 	
@@ -364,18 +458,21 @@ namespace wg
 	void StackPanel::_refreshPreferredSize()
 	{
 		Size	preferredSize;
-	
-		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
-		while( pHook )
+
+		auto * pSlot = m_children.begin();
+		auto * pEnd = m_children.end();
+		
+		while( pSlot != pEnd )
 		{
-			Size sz = pHook->_paddedPreferredSize();
+			Size sz = pSlot->_paddedPreferredSize();
 			if( sz.w > preferredSize.w )
 				preferredSize.w = sz.w;
 			if( sz.h > preferredSize.h )
 				preferredSize.h = sz.h;
-			pHook = pHook->_next();
+
+			pSlot++;
 		}
-	
+
 		if( m_preferredSize != preferredSize)
 		{
 			m_preferredSize = preferredSize;
@@ -387,52 +484,75 @@ namespace wg
 	
 	void StackPanel::_adaptChildrenToSize()
 	{
-		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
-		while( pHook )
+		auto * pSlot = m_children.begin();
+		auto * pEnd = m_children.end();
+		
+		while( pSlot != pEnd )
 		{
-			pHook->_widget()->_setSize( pHook->_getGeo(m_size) );
-			pHook = pHook->_next();
+			pSlot->pWidget->_setSize( _childGeo(pSlot) );
+			pSlot++;
 		}
-	}
-	
-	//____ _firstChildWithGeo() _____________________________________________________
-	
-	void StackPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
-	{
-		StackHook * p = static_cast<StackHook*>(m_hooks.first());
-		if( p )
-		{
-			package.pMagic = p;
-			package.pWidget = p->_widget();
-			package.geo = p->_getGeo(m_size);
-		}
-		else
-			package.pWidget = nullptr;
-	}
-	
-	//____ _nextChildWithGeo() ______________________________________________________
-	
-	void StackPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
-	{
-		StackHook * p = static_cast<StackHook*>(package.pMagic)->_next();
-		if( p )
-		{
-			package.pMagic = p;
-			package.pWidget = p->_widget();
-			package.geo = p->_getGeo(m_size);
-		}
-		else
-			package.pWidget = nullptr;
 	}
 
-	//____ _cloneContent() ______________________________________________________
-	
-	void StackPanel::_cloneContent( const Widget * _pOrg )
-	{
-		Panel::_cloneContent( _pOrg );
+	//____ _childGeo() ___________________________________________________________
 
-		//TODO: Implement		
-	}
+	Rect StackPanel::_childGeo( const StackPanelSlot * pSlot ) const
+	{
+		Rect base = Rect( m_size ) - m_padding;
 	
+		if( base.w <= 0 || base.h <= 0 )
+			return Rect(0,0,0,0);
+	
+		switch( m_sizePolicy )
+		{
+			default:
+			case DEFAULT:
+			{
+				Size	size = pSlot->pWidget->preferredSize();
+				Rect geo = Util::origoToRect( pSlot->origo, base, size );
+	
+				if( geo.w > base.w )
+				{
+					geo.x = 0;
+					geo.w = base.w;
+				}
+	
+				if( geo.h > base.h )
+				{
+					geo.y = 0;
+					geo.h = base.h;
+				}
+				return geo;
+			}
+			case STRETCH:
+			{
+				return base;
+			}
+			case SCALE:
+			{
+				Size	orgSize = pSlot->pWidget->preferredSize();
+				Size	size;
+	
+				float	fracX = orgSize.w / (float) base.w;
+				float	fracY = orgSize.h / (float) base.h;
+	
+				if( fracX > fracY )
+				{
+					size.w = base.w;
+					size.h = int (orgSize.h / fracX);
+				}
+				else
+				{
+					size.h = base.h;
+					size.w = (int) (orgSize.w / fracY);
+				}
+	
+				return Util::origoToRect( pSlot->origo, base, size );
+			}
+		}
+	}
+
+
+
 
 } // namespace wg
