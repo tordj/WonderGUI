@@ -38,23 +38,29 @@ namespace wg
 	class TextEditor;
 	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
 	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
-	
+
+	/** 
+	* @brief Editable text widget.
+	*/
 	class TextEditor:public Widget
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
-	
+
+		//.____ Components ____________________________________
+
+		EditText		text;
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextEditor_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ______________________________________
-	
-		EditText		text;
-	
-		//____ Methods __________________________________________
-	
+		//.____ Geometry ____________________________________________
 	
 		int				matchingHeight( int width ) const;
 		Size			preferredSize() const;

@@ -68,44 +68,52 @@ namespace wg
 	{
 	friend class ToggleGroup;
 	public:
-		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
-	
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
-		static const char		CLASSNAME[];
-		static ToggleButton_p	cast( const Object_p& pObject );
-	
 		enum ClickArea
-		{
+		{ 
 			DEFAULT,		///< Full geometry of icon (no alpha test) + text + area between + alpha test on background.
 			ALPHA,			///< Alpha test on background and icon.
 			GEO,			///< Full geometry of Widget is clickable.
 			ICON,			///< Only the icon (alpha test) is clickable.
 			TEXT			///< Only the text (no alpha test) is clickable.
 		};
-	
-	
-		//____ Interfaces() ____________________________________
-	
+
+		//.____ Creation __________________________________________
+
+		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
+
+		//.____ Components ____________________________________
+
 		ModText		label;
 		Icon		icon;
+
+		//.____ Identification __________________________________________
+
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static ToggleButton_p	cast( const Object_p& pObject );
 	
-	
-		//____ Methods() _______________________________________
-	
-	 	void				setClickArea( ClickArea clickArea );
-		inline ClickArea	getClickArea() const;
-	
+		//.____ State _________________________________________________
+
 		inline bool			isSelected();
 		virtual bool		setSelected( bool bSelected );
+
+		//.____ Behavior _______________________________________________________
 	
+	 	void				setClickArea( ClickArea clickArea );
+		inline ClickArea	clickArea() const;
+		
 		void				setFlipOnRelease( bool bFlipOnRelease );
 		inline bool			flipOnRelease();
 	
-		inline ToggleGroup_p toggleGroup() const;
+		//.____ Geometry ____________________________________________
+
 		Size				preferredSize() const;
 	
-	
+		//.____ Misc _________________________________________________________________
+
+		inline ToggleGroup_p toggleGroup() const;
+
 	protected:
 		ToggleButton();
 		virtual ~ToggleButton();
@@ -146,11 +154,16 @@ namespace wg
 	};
 	
 	
-	inline ToggleButton::ClickArea ToggleButton::getClickArea() const
+	inline ToggleButton::ClickArea ToggleButton::clickArea() const
 	{
 		return m_clickArea;
 	}
-	
+
+	inline void ToggleButton::setClickArea( ClickArea clickArea )
+	{
+		m_clickArea = clickArea;
+	}
+
 	inline bool ToggleButton::isSelected()
 	{
 		return m_state.isSelected();

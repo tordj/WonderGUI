@@ -115,81 +115,98 @@ namespace wg
 	friend class Slot;
 
 	public:
-		Widget();
-		virtual ~Widget();
 	
+		//.____ Identification _________________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Widget_p		cast( const Object_p& pObject );
 	
-		inline int			id() const { return m_id; }
 		inline void			setId( int id ) { m_id = id; }
-	
-		virtual String		tooltip() const { return m_tooltip; }
-		inline void			setTooltip( const String& str ) { m_tooltip = str; }
-	
-		inline void			refresh() { _refresh(); }
-		void				setEnabled(bool bEnabled);
-		inline bool			isEnabled() const { return m_state.isEnabled(); }
-	
-		inline State		state() const { return m_state; }
-	
-		inline Widget_p		clone() const { return Widget_p(_clone()); }
-	
-		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
-		virtual PointerStyle	pointerStyle() const;
-	
-		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
-		bool				isTabLocked() const { return m_bTabLock; }
-	
-		void				setMarkOpacity( int opacity ) { m_markOpacity = opacity; }
-		int					markOpacity() const { return m_markOpacity; }
-		bool				markTest( const Coord& ofs );
-	
-		virtual void		setSkin( const Skin_p& pSkin );
-		Skin_p				skin( ) const	{ return m_pSkin; }
-		
-		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
-	
-		void 				receive( const Msg_p& pMsg );
-	
-	
-		// Convenient calls to hook
-	
-		inline Coord		pos() const;
-		inline Size			size() const;
-		inline Rect			geo() const;
-		inline Coord		globalPos() const;
-		inline Rect			globalGeo() const;
-		inline bool			grabFocus();
-		inline bool			releaseFocus();
-		inline bool			isFocused();
-		Container_p			parent() const;
-	
-		inline Widget_p		nextSibling() const;
-		inline Widget_p		prevSibling() const;
-	
-		Coord				toGlobal( const Coord& coord ) const;
-		Coord				toLocal( const Coord& coord ) const; 
-		
-		// To be overloaded by Widget
-	
-		virtual int			matchingHeight( int width ) const;
-		virtual int			matchingWidth( int height ) const;
-	
-		virtual Size		preferredSize() const;	
-		virtual Size		minSize() const;
-		virtual Size		maxSize() const;
-	
+		inline int			id() const { return m_id; }
+
 		virtual bool		isContainer() const { return false; }	///< @brief Check if this widget is a container.
 																	///<
 																	///< Check if widget is a container.
 																	///< This method is a quicker way to check if the widget
 																	///< is a container than calling isInstanceOf(Container::CLASS).
 																	///< @return True if the widget is a subclass of Container.
+
+		//.____ Geometry _________________________________________________
+		
+		inline Coord		pos() const;
+		inline Size			size() const;
+		inline Rect			geo() const;
+		inline Coord		globalPos() const;
+		inline Rect			globalGeo() const;
+
+		Coord				toGlobal( const Coord& coord ) const;
+		Coord				toLocal( const Coord& coord ) const; 
+
+		virtual int			matchingHeight( int width ) const;
+		virtual int			matchingWidth( int height ) const;
+
+		virtual Size		preferredSize() const;	
+		virtual Size		minSize() const;
+		virtual Size		maxSize() const;
+
+
+		//.____ Hierarchy _________________________________________________
+
+		inline Widget_p		nextSibling() const;
+		inline Widget_p		prevSibling() const;
+		Container_p			parent() const;
+
+
+		//.____ State _________________________________________________
+
+		inline State		state() const { return m_state; }
+
+		void				setEnabled(bool bEnabled);
+		inline bool			isEnabled() const { return m_state.isEnabled(); }
+
+		inline bool			grabFocus();
+		inline bool			releaseFocus();
+		inline bool			isFocused();
+
+
+		//.____ Appearance _________________________________________________
+
+		virtual void		setSkin( const Skin_p& pSkin );
+		Skin_p				skin( ) const	{ return m_pSkin; }
+
+		virtual String		tooltip() const { return m_tooltip; }
+		inline void			setTooltip( const String& str ) { m_tooltip = str; }
+	
+		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
+		virtual PointerStyle	pointerStyle() const;
+
+
+		//.____ Behavior _______________________________________________________
+
+		void				setMarkOpacity( int opacity ) { m_markOpacity = opacity; }
+		int					markOpacity() const { return m_markOpacity; }
+
+		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
+		bool				isTabLocked() const { return m_bTabLock; }
+
+
+		//.____ Misc _________________________________________________________________
+
+		bool				markTest( const Coord& ofs );
+		void 				receive( const Msg_p& pMsg );
+
+		inline void			refresh() { _refresh(); }
+	
+		inline Widget_p		clone() const { return Widget_p(_clone()); }
+		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+
 	
 	protected:	
+		Widget();
+		virtual ~Widget();
+
 		inline void			_setHolder( WidgetHolder * pHolder, void * pHoldersRef ) { m_pHolder = pHolder; m_pHoldersRef = pHoldersRef; }
 		WidgetHolder *		_holder() const { return m_pHolder; }
 		void *				_holdersRef() const { return m_pHoldersRef; }

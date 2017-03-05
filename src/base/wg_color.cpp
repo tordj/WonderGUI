@@ -288,10 +288,11 @@ namespace wg
 				return invert( baseColor, blendColor.a );
 			case BlendMode::Multiply:
 				return baseColor * blendColor;
-			case BlendMode::Replace:
-				return blendColor;
 			case BlendMode::Subtract:
 				return baseColor - blendColor;
+			case BlendMode::Replace:
+			default:
+				return blendColor;
 		}		
 	}
 	

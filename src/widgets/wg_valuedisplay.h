@@ -23,13 +23,8 @@
 #ifndef	WG_VALUEDISPLAY_DOT_H
 #define	WG_VALUEDISPLAY_DOT_H
 
-#ifndef	WG_WIDGET_DOT_H
 #	include <wg_widget.h>
-#endif
-
-#ifndef WG_MODVALUE_DOT_H
 #	include <wg_modvalue.h>
-#endif
 
 namespace wg 
 {
@@ -38,22 +33,29 @@ namespace wg
 	class ValueDisplay;
 	typedef	StrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
 	typedef	WeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
-	
+
+	/**
+	* @brief Widget that displays a formatted value.
+	*/ 
 	class ValueDisplay : public Widget
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static ValueDisplay_p	create() { return ValueDisplay_p(new ValueDisplay()); }
-	
+
+		//.____ Components _______________________________________
+
+		ModValue		value;
+
+		//.____ Identification __________________________________________
+
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
 		static ValueDisplay_p	cast( const Object_p& pObject );
-	
-		//____ Interfaces _______________________________________
-	
-		ModValue		value;
-	
-		//____ Methods __________________________________________
+		
+		//.____ Geometry ____________________________________________
 	
 		Size	preferredSize() const;
 	
@@ -72,8 +74,6 @@ namespace wg
 	
 		ModValueItem		m_item;
 	};
-	
-	
 
 } // namespace wg
 #endif // WG_VALUEDISPLAY_DOT_H

@@ -49,26 +49,39 @@ namespace wg
 	class VolumeMeter : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static VolumeMeter_p	create() { return VolumeMeter_p(new VolumeMeter()); }
 	
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static VolumeMeter_p	cast( const Object_p& pObject );
 	
 				
-		//____ Methods __________________________________________
+		//.____ Appearance __________________________________________
 		
 		void			setLEDColors( Color bottomOn, Color middleOn, Color topOn, 
 								   Color bottomOff, Color middleOff, Color topOff );
 		void			setNbLEDs( int bottomSection, int middleSection, int topSection );
 		void			setLEDSpacing( float spacing );
-		void			setValue( float peak, float hold );
-		void			setDirection( Direction direction );
-		void            setSidePadding( float padding ) { m_fSidePadding = padding; }
-		void            setZeroInMiddle(bool mb) { m_bZeroInMiddle = mb; }
+
 		void            enableFades(bool b) { m_bUseFades = b; }
+
+		void			setDirection( Direction direction );
+		void            setZeroInMiddle(bool mb) { m_bZeroInMiddle = mb; }
+
+		//.____ Control ____________________________________________
+
+		void			setValue( float peak, float hold );
+
+		//.____ Geometry ____________________________________________
+
 		Size			preferredSize() const;
+		void            setSidePadding( float padding ) { m_fSidePadding = padding; }
 
 		
 	protected:
