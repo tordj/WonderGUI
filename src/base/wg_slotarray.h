@@ -40,22 +40,19 @@ namespace wg
 	class SlotArrayHolder
 	{
 	public:
-		virtual Object * _object() = 0;
-		virtual const Object * _object() const = 0;
-
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
 	};
 
-	template<class SlotType> class SlotArray
+	template<class SlotType, class HolderType> class SlotArray
 	{
 	public:
-		SlotArray(SlotArrayHolder * pHolder) : m_pHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
-		SlotArray(SlotArrayHolder * pHolder, int capacity) : m_pHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
+		SlotArray(HolderType * pHolder) : m_pHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
+		SlotArray(HolderType * pHolder, int capacity) : m_pHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
 		~SlotArray() { _killBlock( 0, m_size ); free(m_pArray); }
 
-		inline Object *			object() { return m_pHolder->_object(); } 
-		inline const Object *	object() const { return m_pHolder->_object(); } 
+		inline HolderType *			holder() { return m_pHolder; } 
+		inline const HolderType *	holder() const { return m_pHolder; } 
 
 		int			size() const { return m_size; }
 		bool		isEmpty() const { return m_size == 0; }
@@ -189,7 +186,7 @@ namespace wg
 				new (&m_pArray[index++]) SlotType();
 		}
 	
-		SlotArrayHolder * m_pHolder;
+		HolderType * m_pHolder;
 
 		int			m_capacity;
 		int			m_size;

@@ -391,7 +391,7 @@ namespace wg
 	
 		It is used in combination with a size specified by parent. In the case of
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
-		FlexPanel, it is a size specified in the childs hook.
+		FlexPanel, it is a size specified for the child.
 	*/
 	enum class SizePolicy : uint8_t
 	{
@@ -401,6 +401,17 @@ namespace wg
 		Expanded,			///< Childs size is set to at least the size specified by parent.
 	};
 	
+
+	//____ SizePolicy2D ___________________________________________________________
+
+	enum class SizePolicy2D : uint8_t
+	{
+		Default,
+		Stretch,
+		Scale
+	};
+
+
 	//____ MsgType ______________________________________________________________
 	
 	enum class MsgType

@@ -41,7 +41,7 @@ namespace wg
 		
 	}
 
-	void StackPanelChildren::setSizePolicy( int index, SizePolicy policy )
+	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return;
@@ -50,16 +50,16 @@ namespace wg
 			
 		if( policy != pSlot->sizePolicy )
 		{
-			pSlot->pWidget->_requestRender();
+			_holder()->_childRequestRender( pSlot );
 			pSlot->sizePolicy = policy;
-			pSlot->pWidget->_requestRender();
+			_holder()->_childRequestRender( pSlot );
 		};		
 	}
 	
-	SizePolicy StackPanelChildren::sizePolicy( int index ) const
+	SizePolicy2D StackPanelChildren::sizePolicy( int index ) const
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )
-			return SizePolicy::Default;
+			return SizePolicy2D::Default;
 
 		return m_pSlotArray->slot(index)->sizePolicy;
 		
@@ -74,9 +74,9 @@ namespace wg
 			
 		if( origo != pSlot->origo )
 		{
-			pSlot->pWidget->_requestRender();
+			_holder()->_childRequestRender( pSlot );
 			pSlot->origo = origo;
-			pSlot->pWidget->_requestRender();
+			_holder()->_childRequestRender( pSlot );
 		};
 		
 	}
@@ -94,7 +94,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	StackPanel::StackPanel()
+	StackPanel::StackPanel() : children(&m_children), m_children(this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -146,7 +146,7 @@ namespace wg
 			int h = pSlot->pWidget->matchingHeight(width);
 			if( h > height )
 				height = h;
-			pSlot++
+			pSlot++;
 		}
 	
 		return height;
@@ -166,7 +166,7 @@ namespace wg
 			int h = pSlot->pWidget->matchingWidth(height);
 			if( h > height )
 				height = h;
-			pSlot++
+			pSlot++;
 		}
 	
 		return width;
@@ -252,18 +252,6 @@ namespace wg
 		}
 	}
 
-	//____ _object() ___________________________________________________________
-
-	Object * StackPanel::_object()
-	{
-		return this;
-	}
-	
-	const Object *  StackPanel::_object() const
-	{
-		 return this;
-	}
-
 	void StackPanel::_didAddSlots( Slot * pSlot, int nb )
 	{
 		
@@ -276,88 +264,80 @@ namespace wg
 
 	Coord StackPanel::_childPos( void * pChildRef ) const
 	{
-		
+		return _childGeo((StackPanelSlot *)pChildRef).pos();	
 	}
 	
 	Size StackPanel::_childSize( void * pChildRef ) const
 	{
-		
+		return ((StackPanelSlot *) pChildRef)->pWidget->size();
 	}
+
+	//____ _childRequestRender() ______________________________________________
 
 	void StackPanel::_childRequestRender( void * pChildRef )
 	{
 		_childRequestRender( pChildRef, _childGeo((StackPanelSlot*) pChildRef) );
 	}
 	
-	void StackPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	void StackPanel::_childRequestRender( void * pChildRef, const Rect& _rect )
 	{
-		
+		StackPanelSlot * pSlot = (StackPanelSlot *) pChildRef;
+
+		if( !pSlot->bVisible )
+			return;
+
+		// Put our rectangle into patches
+
+		Rect rect = _rect + _childPos(pChildRef);
+
+
+		Patches patches;
+		patches.add( rect );
+
+		// Remove portions of patches that are covered by opaque upper siblings
+
+		for( auto pCover = pSlot+1 ; pCover < m_children.end() ; pCover++ )
+		{
+			Rect geo = _childGeo(pCover);
+			if( pCover->bVisible && geo.intersectsWith( rect ) )
+				pCover->pWidget->_maskPatches( patches, geo, Rect(0,0,65536,65536 ), _getBlendMode() );
+		}
+
+		// Make request render calls
+
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+			_requestRender( * pRect );		
 	}
-	
+
+	//____ _childRequestResize() ______________________________________________
+
 	void StackPanel::_childRequestResize( void * pChildRef )
 	{
 		_refreshPreferredSize();		
 	}
 
+	//____ _prevChild() __________________________________________________________
+
 	Widget * StackPanel::_prevChild( void * pChildRef ) const
 	{
-		StackPanelSlot * p = (StockPanelSlot *) pChildRef;
+		StackPanelSlot * p = (StackPanelSlot *) pChildRef;
 		
 		if( p > m_children.begin() )
-			return p[-1]->pWidget;
+			return p[-1].pWidget;
 	}
 	
+	//____ _nextChild() __________________________________________________________
+
 	Widget * StackPanel::_nextChild( void * pChildRef ) const
 	{
-		StackPanelSlot * p = (StockPanelSlot *) pChildRef;
+		StackPanelSlot * p = (StackPanelSlot *) pChildRef;
 		
 		if( p < m_children.last() )
-			return p[1]->pWidget;		
-	}
-
-
-
-	Rect StackPanel::_childGeo( StackPanelSlot * pSlot )
-	{
-		
-	}
-	
-	
-	void StackPanel::_renderRequested( VectorHook * _pHook, const Rect& _rect )
-	{
-		StackHook * pHook = static_cast<StackHook*>(_pHook);
-	
-		if( !pHook->isVisible() )
-			return;
-	
-		// Put our rectangle into patches
-	
-		Rect rect = _rect + pHook->_getGeo(Rect(0,0,m_size)).pos();
-	
-	
-		Patches patches;
-		patches.add( rect );
-	
-		// Remove portions of patches that are covered by opaque upper siblings
-	
-		StackHook * pCover = ((StackHook*)pHook)->_next();
-		while( pCover )
-		{
-			Rect geo = pCover->_getGeo(m_size);
-			if( pCover->isVisible() && geo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, geo, Rect(0,0,65536,65536 ), _getBlendMode() );
-	
-			pCover = pCover->_next();
-		}
-	
-		// Make request render calls
-	
-		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
-			_requestRender( * pRect );
+			return p[1].pWidget;		
 	}
 	
 	//____ _onWidgetAppeared() _____________________________________________________
-	
+/*	
 	void StackPanel::_onWidgetAppeared( VectorHook * _pInserted )
 	{
 		StackHook * pInserted = (StackHook*) _pInserted;
@@ -396,9 +376,9 @@ namespace wg
 	
 		_renderRequested( pInserted );
 	}
-	
+*/	
 	//____ _onWidgetDisappeared() __________________________________________________
-	
+/*	
 	void StackPanel::_onWidgetDisappeared( VectorHook * _pToBeRemoved )
 	{
 		bool	bRequestResize = false;
@@ -441,17 +421,17 @@ namespace wg
 		if( bRequestResize )
 			_requestResize();
 	}
-	
+*/	
 	
 	//____ _refreshAllWidgets() ____________________________________________________
-	
+/*	
 	void StackPanel::_refreshAllWidgets()
 	{
 		_refreshPreferredSize();
 		_adaptChildrenToSize();
 		_requestRender();
 	}
-	
+*/	
 	
 	//____ _refreshPreferredSize() _____________________________________________________
 	
@@ -498,15 +478,15 @@ namespace wg
 
 	Rect StackPanel::_childGeo( const StackPanelSlot * pSlot ) const
 	{
-		Rect base = Rect( m_size ) - m_padding;
+		Rect base = Rect( m_size ) - pSlot->padding;
 	
 		if( base.w <= 0 || base.h <= 0 )
 			return Rect(0,0,0,0);
 	
-		switch( m_sizePolicy )
+		switch( pSlot->sizePolicy )
 		{
 			default:
-			case DEFAULT:
+		case SizePolicy2D::Default:
 			{
 				Size	size = pSlot->pWidget->preferredSize();
 				Rect geo = Util::origoToRect( pSlot->origo, base, size );
@@ -524,11 +504,11 @@ namespace wg
 				}
 				return geo;
 			}
-			case STRETCH:
+			case SizePolicy2D::Stretch:
 			{
 				return base;
 			}
-			case SCALE:
+			case SizePolicy2D::Scale:
 			{
 				Size	orgSize = pSlot->pWidget->preferredSize();
 				Size	size;

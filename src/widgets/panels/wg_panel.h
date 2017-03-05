@@ -78,16 +78,16 @@ namespace wg
 
 	//____ PanelChildren ________________________________________________________
 
-	template<class SlotType> class PanelChildren : public ChildGroup<SlotType>
+	template<class SlotType, class HolderType> class PanelChildren : public ChildGroup<SlotType,HolderType>
 	{
 	public:
-		PanelChildren( SlotArray<SlotType> * pSlotArray ) : ChildGroup<SlotType>(pSlotArray) {}
+		PanelChildren( SlotArray<SlotType,HolderType> * pSlotArray ) : ChildGroup<SlotType,HolderType>(pSlotArray) {}
 
-		void		setVisible( int index, bool bVisible );
-//		bool		isVisible( int index ) { return m_pSlotArray->slot(index)->bVisible; }
+		void		setVisible( int index, bool bVisible ) {};
+		bool		isVisible( int index ) { return m_pSlotArray->slot(index)->bVisible; }
 	
-		bool		setPadding( int index, Border padding );
-//		Border		padding( int index ) const { return m_padding; }
+		bool		setPadding( int index, Border padding ) {};
+		Border		padding( int index ) const { return m_pSlotArray->slot(index)->padding; }
 	};
 
 	

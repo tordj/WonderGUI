@@ -48,25 +48,25 @@ namespace wg
 	class StackPanelSlot : public PanelSlot
 	{
 	public:
-		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy::Default) {}
+		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Default) {}
 	
 		Origo			origo;
-		SizePolicy		sizePolicy;		
+		SizePolicy2D	sizePolicy;		
 	};
 
 
 	//____ StackPanelChildren ________________________________________________________
 
-	class StackPanelChildren : public PanelChildren<StackPanelSlot>
+	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray ) : PanelChildren<StackPanelSlot>(pSlotArray) {}
+		StackPanelChildren( SlotArray<StackPanelSlot,StackPanel> * pSlotArray ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray) {}
 
 		void		add( const Widget_p& pWidget );
 		void		insert( const Widget_p& pWidget );
 
-		void		setSizePolicy( int index, SizePolicy policy );
-		SizePolicy	sizePolicy( int index ) const;
+		void			setSizePolicy( int index, SizePolicy2D policy );
+		SizePolicy2D	sizePolicy( int index ) const;
 
 		void		setOrigo( int index, Origo origo );
 		Origo		origo( int index ) const;
@@ -76,27 +76,36 @@ namespace wg
 
 	//____ StackPanel ___________________________________________________________
 	
+	/** \nosubgrouping
+	*/
+
 	class StackPanel : public Panel, protected SlotArrayHolder
 	{
-	public:
-		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
+		friend class StackPanelChildren;
 
+	public:
+/** @name Creation
+*/
+///@{
+		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
+///@}
+
+/** @name Introspection
+*/
+///@{
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static StackPanel_p	cast( const Object_p& pObject );
-
+///@}
 		//____ Interfaces ______________________________________
 
+/** @name Interfaces
+*/
+///@{
 		StackPanelChildren	children;
+///@}
 
-		enum SizePolicy
-		{
-			DEFAULT,
-			STRETCH,
-			SCALE
-		};
-		
 		// Overloaded from Widget
 	
 		int		matchingHeight( int width ) const;
@@ -132,9 +141,6 @@ namespace wg
 
 		// Overloaded from SlotArrayHolder
 
-		Object *	_object();
-		const Object * _object() const;
-
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 
@@ -156,11 +162,11 @@ namespace wg
 		void	_adaptChildrenToSize();
 //		void	_renderFromChildOnward( VectorHook * pHook );	
 
-		Rect	_childGeo( const StackPanelSlot * pSlot );
+		Rect	_childGeo( const StackPanelSlot * pSlot ) const;
 	
 		Size	m_preferredSize;	
 
-		SlotArray<StackPanelSlot>	m_children;
+		SlotArray<StackPanelSlot,StackPanel>	m_children;
 	};
 	
 
