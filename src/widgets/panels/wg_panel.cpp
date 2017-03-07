@@ -133,7 +133,7 @@ namespace wg
 				break;
 		}
 	}
-	
+
 	//____ PanelHook::isInstanceOf() __________________________________________
 	
 	bool PanelHook::isInstanceOf( const char * pClassName ) const

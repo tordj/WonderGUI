@@ -60,18 +60,18 @@ namespace wg
 
 		static Button_p	create() { return Button_p(new Button()); }
 	
+		//.____ Components _______________________________________
+
+		ModText			label;
+		Icon			icon;
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Button_p	cast( const Object_p& pObject );
-	
-		//.____ Components _______________________________________
-	
-		ModText			label;
-		Icon			icon;
-	
+		
 		//.____ Behavior ____________________________________________
 	
 		void			setDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.

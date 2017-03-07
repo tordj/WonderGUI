@@ -33,13 +33,48 @@ namespace wg
 	
 	void StackPanelChildren::add( const Widget_p& pWidget )
 	{
-		
+		auto pSlot = m_pSlotArray->add();
+		auto pHolder = m_pSlotArray->holder();
+		pSlot->replaceWidget(pHolder,pWidget.rawPtr());
+		pHolder->_didAddSlots(pSlot, 1);
 	}
 	
-	void StackPanelChildren::insert( const Widget_p& pWidget )
+	bool StackPanelChildren::insert( int index, const Widget_p& pWidget )
 	{
-		
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		auto pSlot = m_pSlotArray->insert(index);
+		auto pHolder = m_pSlotArray->holder();
+		pSlot->replaceWidget(pHolder,pWidget.rawPtr());
+		pSlot->bVisible = false;
+		pHolder->_didAddSlots(pSlot, 1);
+		return true;
 	}
+
+	bool StackPanelChildren::remove( int index )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		auto pSlot = m_pSlotArray->insert(index);
+		auto pHolder = m_pSlotArray->holder();
+		pHolder->_willRemoveSlots(pSlot, 1);
+		m_pSlotArray->remove(index);
+		return true;
+	}
+
+	void StackPanelChildren::clear()
+	{
+		if( m_pSlotArray->isEmpty() )
+			return;
+
+		auto pSlot = m_pSlotArray->begin();
+		auto pHolder = m_pSlotArray->holder();
+		pHolder->_willRemoveSlots(pSlot, m_pSlotArray->size());
+		m_pSlotArray->clear();
+	}
+
 
 	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
@@ -252,21 +287,55 @@ namespace wg
 		}
 	}
 
+	//____ _didAddSlots() ________________________________________________________
+
 	void StackPanel::_didAddSlots( Slot * pSlot, int nb )
 	{
-		
+		_unhideChildren( (StackPanelSlot*) pSlot, nb );
 	}
-	
+
+	//____ _willRemoveSlots() ____________________________________________________
+
 	void StackPanel::_willRemoveSlots( Slot * pSlot, int nb )
 	{
-		
+		_hideChildren( (StackPanelSlot*) pSlot, nb );
 	}
+
+	//____ _hideSlots() _______________________________________________________
+
+	void StackPanel::_hideSlots( PanelSlot * pSlot, int nb )
+	{
+		_hideChildren( (StackPanelSlot*) pSlot, nb );
+	}
+
+	//____ _unhideSlots() _____________________________________________________
+
+	void StackPanel::_unhideSlots( PanelSlot * pSlot, int nb )
+	{
+		_unhideChildren( (StackPanelSlot*) pSlot, nb );
+	}
+
+	//____ _repadSlots() _________________________________________________________
+
+	void StackPanel::_repadSlots( PanelSlot * pSlot, int nb, Border padding )
+	{
+		for( int i = 0 ; i < nb ; i++ )
+			pSlot[i].padding = padding;
+
+		_refreshPreferredSize();
+		_requestRender();				// This is needed here since children might have repositioned.
+										//TODO: Optimize! Only render what really is needed due to changes.
+	}
+
+	//____ _childPos() ________________________________________________________
 
 	Coord StackPanel::_childPos( void * pChildRef ) const
 	{
 		return _childGeo((StackPanelSlot *)pChildRef).pos();	
 	}
 	
+	//____ _childSize() _______________________________________________________
+
 	Size StackPanel::_childSize( void * pChildRef ) const
 	{
 		return ((StackPanelSlot *) pChildRef)->pWidget->size();
@@ -336,73 +405,81 @@ namespace wg
 			return p[1].pWidget;		
 	}
 	
-	//____ _onWidgetAppeared() _____________________________________________________
-/*	
-	void StackPanel::_onWidgetAppeared( VectorHook * _pInserted )
+	//____ _unhideChildren() _____________________________________________________
+	
+	void StackPanel::_unhideChildren( StackPanelSlot * pSlot, int nb )
 	{
-		StackHook * pInserted = (StackHook*) _pInserted;
-	
 		bool	bRequestResize = false;
-	
-		// Check if we need to resize to fit Widget in current width
-	
-		int height = pInserted->_widget()->matchingHeight(m_size.w);
-		if( height > m_size.h )
-			bRequestResize = true;
-	
-		// Update bestSize
-	
-		Size preferred = pInserted->_widget()->preferredSize();
-	
-		if( preferred.w > m_preferredSize.w )
+		
+		// Update m_preferredSize
+
+		for( int i = 0 ; i < nb ; i++ )
 		{
-			m_preferredSize.w = preferred.w;
-			bRequestResize = true;
-		}
-		if( preferred.h > m_preferredSize.h )
-		{
-			m_preferredSize.h = preferred.h;
-			bRequestResize = true;
-		}
+			if( !pSlot[i].bVisible )
+			{
+				Size preferred = pSlot[i]._paddedPreferredSize();
 	
+				if( preferred.w > m_preferredSize.w )
+				{
+					m_preferredSize.w = preferred.w;
+					bRequestResize = true;
+				}
+				if( preferred.h > m_preferredSize.h )
+				{
+					m_preferredSize.h = preferred.h;
+					bRequestResize = true;
+				}
+			}
+		}
+
 		if( bRequestResize )
 			_requestResize();
 	
-		// Adapt inserted Widget to our size
+		// Make unhidden Widgets visible, adapt them to our size and force a render.
 	
-		pInserted->_widget()->_setSize(m_size);
-	
-		// Force a render.
-	
-		_renderRequested( pInserted );
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( !pSlot[i].bVisible )
+			{
+				pSlot[i].bVisible = true;
+				pSlot[i].pWidget->_setSize(_childGeo(pSlot).size() );
+				_childRequestRender( pSlot + i );
+			}
+		}	
 	}
-*/	
-	//____ _onWidgetDisappeared() __________________________________________________
-/*	
-	void StackPanel::_onWidgetDisappeared( VectorHook * _pToBeRemoved )
+
+	//____ _hideChildren() __________________________________________________
+	
+	void StackPanel::_hideChildren( StackPanelSlot * pRemove, int nb )
 	{
 		bool	bRequestResize = false;
-		StackHook * pToBeRemoved = (StackHook*) _pToBeRemoved;
 	
-		// Get dirty rectangles for all visible sections of pToBeRemoved.
+		// Get dirty rectangles for all visible sections of widgets to be removed.
 	
-		_renderRequested( pToBeRemoved );
-	
-		// Update m_preferredSize, skiping pToBeRemoved
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( pRemove[i].bVisible )
+			{
+				_childRequestRender( pRemove + i );
+				pRemove[i].bVisible = false;
+			}
+		}
+		// Update m_preferredSize
 	
 		Size	preferredSize;
-		StackHook * pHook = static_cast<StackHook*>(m_hooks.first());
-		while( pHook )
+		StackPanelSlot * p = m_children.begin();
+		
+		while( p != m_children.end() )
 		{
-			if( pHook != pToBeRemoved )
+			if( p->bVisible )
 			{
-				Size sz = pHook->_widget()->preferredSize();
+				Size sz = p->_paddedPreferredSize();
 				if( sz.w > preferredSize.w )
 					preferredSize.w = sz.w;
 				if( sz.h > preferredSize.h )
 					preferredSize.h = sz.h;
+				p++;
 			}
-			pHook = pHook->_next();
 		}
 	
 		if( preferredSize != m_preferredSize )
@@ -411,17 +488,17 @@ namespace wg
 		m_preferredSize = preferredSize;
 	
 		// Check if removal might affect height for current width
-	
+/*	
 		int height = pToBeRemoved->_widget()->matchingHeight(m_size.w);
 		if( height >= m_size.h )
 			bRequestResize = true;
-	
+*/	
 		//
 	
 		if( bRequestResize )
 			_requestResize();
 	}
-*/	
+	
 	
 	//____ _refreshAllWidgets() ____________________________________________________
 /*	
@@ -444,12 +521,14 @@ namespace wg
 		
 		while( pSlot != pEnd )
 		{
-			Size sz = pSlot->_paddedPreferredSize();
-			if( sz.w > preferredSize.w )
-				preferredSize.w = sz.w;
-			if( sz.h > preferredSize.h )
-				preferredSize.h = sz.h;
-
+			if( pSlot->bVisible )
+			{
+				Size sz = pSlot->_paddedPreferredSize();
+				if( sz.w > preferredSize.w )
+					preferredSize.w = sz.w;
+				if( sz.h > preferredSize.h )
+					preferredSize.h = sz.h;
+			}
 			pSlot++;
 		}
 
@@ -469,7 +548,8 @@ namespace wg
 		
 		while( pSlot != pEnd )
 		{
-			pSlot->pWidget->_setSize( _childGeo(pSlot) );
+			if( pSlot->bVisible )
+				pSlot->pWidget->_setSize( _childGeo(pSlot) );
 			pSlot++;
 		}
 	}

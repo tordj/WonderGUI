@@ -64,8 +64,8 @@ namespace wg
 		SlotType*	insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
 		SlotType*	add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*2) ); _initBlock(m_size); return &m_pArray[m_size++]; }
 		SlotType*	add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
-		void		remove(int index) { m_pHolder->_willRemoveSlots( &m_pArray[index], 1); _deleteBlock(index,1); }
-		void		remove(int index, int entries) { m_pHolder->_willRemoveSlots( &m_pArray[index], entries); _deleteBlock(index,entries); }
+		void		remove(int index) { _deleteBlock(index,1); }
+		void		remove(int index, int entries) { _deleteBlock(index,entries); }
 	
 		void		clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
 		void		setCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }

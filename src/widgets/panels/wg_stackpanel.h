@@ -63,10 +63,12 @@ namespace wg
 		StackPanelChildren( SlotArray<StackPanelSlot,StackPanel> * pSlotArray ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray) {}
 
 		void		add( const Widget_p& pWidget );
-		void		insert( const Widget_p& pWidget );
+		bool		insert( int index, const Widget_p& pWidget );
+		bool		remove( int index );
+		void		clear();
 
-		void			setSizePolicy( int index, SizePolicy2D policy );
-		SizePolicy2D	sizePolicy( int index ) const;
+		void		setSizePolicy( int index, SizePolicy2D policy );
+		SizePolicy2D sizePolicy( int index ) const;
 
 		void		setOrigo( int index, Origo origo );
 		Origo		origo( int index ) const;
@@ -76,45 +78,39 @@ namespace wg
 
 	//____ StackPanel ___________________________________________________________
 	
-	/** \nosubgrouping
+	/**
 	*/
 
-	class StackPanel : public Panel, protected SlotArrayHolder
+	class StackPanel : public Panel, protected PanelSlotHolder
 	{
 		friend class StackPanelChildren;
 
 	public:
-/** @name Creation
-*/
-///@{
-		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
-///@}
 
-/** @name Introspection
-*/
-///@{
+		//.____ Creation __________________________________________
+
+		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
+
+		//.____ Components _______________________________________
+
+		StackPanelChildren	children;
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static StackPanel_p	cast( const Object_p& pObject );
-///@}
-		//____ Interfaces ______________________________________
 
-/** @name Interfaces
-*/
-///@{
-		StackPanelChildren	children;
-///@}
-
-		// Overloaded from Widget
+		//.____ Geometry ____________________________________________
 	
 		int		matchingHeight( int width ) const;
 		int		matchingWidth( int height ) const;
 	
 		Size	preferredSize() const;
 
-		// Overloaded from Container
-		
+		//.____ Hierarchy _________________________________________________
+
 		bool		removeChild( const Widget_p& pWidget );
 		bool		clear();
 	
@@ -143,6 +139,10 @@ namespace wg
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
+		void		_hideSlots( PanelSlot *, int nb );
+		void		_unhideSlots( PanelSlot *, int nb );
+		void		_repadSlots( PanelSlot *, int nb, Border padding );
+
 
 		// Overloaded from WidgetHolder
 
@@ -161,6 +161,10 @@ namespace wg
 		void 	_refreshPreferredSize();
 		void	_adaptChildrenToSize();
 //		void	_renderFromChildOnward( VectorHook * pHook );	
+
+		void	_hideChildren( StackPanelSlot * pSlot, int nb );
+		void	_unhideChildren( StackPanelSlot * pSlot, int nb );
+
 
 		Rect	_childGeo( const StackPanelSlot * pSlot ) const;
 	
