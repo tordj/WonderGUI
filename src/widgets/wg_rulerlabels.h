@@ -25,21 +25,31 @@ namespace wg
 	class RulerLabels : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static RulerLabels_p	create() { return RulerLabels_p(new RulerLabels()); }
 		
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static RulerLabels_p	cast( const Object_p& pObject );
+		static RulerLabels_p cast( const Object_p& pObject );
 		
-		//____ Methods __________________________________________
+		//.____ Geometry ____________________________________________
 		
-		void			addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset );
 	 	Size			preferredSize() const;
+
 		void			setDirection( Direction direction );
+		inline Direction direction() const { return m_direction; }
+		
+		//.____ Control ____________________________________________
+		
+		void		addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset );
 		ModText_p	getLabel(int index);
-	
-	
+
+		
 	protected:
 		RulerLabels();
 		virtual ~RulerLabels();

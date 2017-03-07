@@ -54,12 +54,19 @@ namespace wg
 	class Filler : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static Filler_p	create() { return Filler_p(new Filler()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Filler_p	cast( const Object_p& pObject );
+		static Filler_p		cast( const Object_p& pObject );
+
+		//.____ Geometry ____________________________________________
 	
 		void	setPreferredSize( const Size& size );
 		Size	preferredSize() const;

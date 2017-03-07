@@ -71,22 +71,27 @@ namespace wg
 	
 		public:
 	
+			//.____ Identification __________________________________________
+
 			virtual bool			isInstanceOf( const char * pClassName ) const;
 			virtual const char *	className( void ) const;
 			static const char		CLASSNAME[];
 			static Container_p		cast( const Object_p& pObject );
-	
-	
+		
 			bool					isContainer() const;
+	
+			//.____ Hierarchy _________________________________________________
 	
 			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
 			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
-		
-			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
-	
-	
 			virtual bool			removeChild( const Widget_p& pWidget ) = 0;
 			virtual bool			clear() = 0;
+		
+
+			//.____ Misc _________________________________________________________________
+
+			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
+		
 				
 		protected:
 			Container();

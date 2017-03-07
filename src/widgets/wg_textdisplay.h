@@ -42,25 +42,34 @@ namespace wg
 	class TextDisplay:public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
+
+		//.____ Components ____________________________________
+
+		ModText			text;
 	
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static TextDisplay_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ______________________________________
+		//.____ Geometry ____________________________________________
+
+		int				matchingWidth( int height ) const;
+		int				matchingHeight( int width ) const;
+		Size			preferredSize() const;
+
 	
-		ModText			text;
-	
-		//____ Methods __________________________________________
+		//.____ Appearance _________________________________________________
 	
 		PointerStyle	pointerStyle() const;
 		String			tooltipString() const;
 	
-		int				matchingWidth( int height ) const;
-		int				matchingHeight( int width ) const;
-		Size			preferredSize() const;
 	
 	protected:
 		TextDisplay();

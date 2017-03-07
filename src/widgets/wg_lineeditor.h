@@ -42,19 +42,23 @@ namespace wg
 	class LineEditor:public Widget
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
 	
+		//.____ Components _______________________________________
+	
+		EditText		text;
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static LineEditor_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ______________________________________
 	
-		EditText		text;
-	
-		//____ Methods __________________________________________
-	
+		//.____ Geometry ____________________________________________
 	
 		Size			preferredSize() const;
 		

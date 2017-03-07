@@ -44,19 +44,27 @@ namespace wg
 	class FpsDisplay : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static FpsDisplay_p	create() { return FpsDisplay_p(new FpsDisplay()); }
 	
+
+		//.____ Components _______________________________________
+
+		ModText		labels;
+		Text		values;
+
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FpsDisplay_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ______________________________________
 	
-		ModText		labels;
-		Text		values;
-	
-		//____ Methods __________________________________________
+		//.____ Geometry ____________________________________________
 	
 		Size	preferredSize() const;
 	

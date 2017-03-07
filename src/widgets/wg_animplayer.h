@@ -48,14 +48,19 @@ namespace wg
 	class AnimPlayer:public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static AnimPlayer_p	create() { return AnimPlayer_p(new AnimPlayer()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static AnimPlayer_p	cast( const Object_p& pObject );
 	
-		//____ Methods __________________________________________
+		//.____ Control __________________________________________
 	
 		bool			setAnimation( const GfxAnim_p& pAnim );
 		GfxAnim_p		animation() const { return m_pAnim; }
@@ -77,6 +82,8 @@ namespace wg
 		bool			stop();
 		bool			isPlaying() { return m_bPlaying; };
 	
+		//.____ Geometry ____________________________________________
+		
 		Size			preferredSize() const;
 	
 	protected:

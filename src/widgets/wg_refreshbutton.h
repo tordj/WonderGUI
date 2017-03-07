@@ -46,18 +46,8 @@ namespace wg
 	class RefreshButton : public Button
 	{
 	public:
-		static RefreshButton_p	create() { return RefreshButton_p(new RefreshButton()); }
-		
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
-		static RefreshButton_p	cast( const Object_p& pObject );
-	
-		//____ Interfaces ______________________________________
-	
-		ModText	refreshText;
-	
-		//____ Methods __________________________________________
+
+		//____ Enums __________________________________________
 	
 		enum RefreshMode
 		{
@@ -71,22 +61,43 @@ namespace wg
 			BUTTON_CENTERED,
 			BUTTON_STRETCHED
 		};
+
+		//.____ Creation __________________________________________
+
+		static RefreshButton_p	create() { return RefreshButton_p(new RefreshButton()); }
+
+		//.____ Components _______________________________________
 	
-		void			setRefreshAnimation( const GfxAnim_p& pAnimation );
-		GfxAnim_p	getRefreshAnimation() const { return m_pRefreshAnim; }
+		ModText	refreshText;
+
+		//.____ Identification __________________________________________
+		
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static RefreshButton_p	cast( const Object_p& pObject );
 	
+		//.____ Appearance __________________________________________
+	
+		void			setAnimation( const GfxAnim_p& pAnimation );
+		GfxAnim_p		animation() const { return m_pRefreshAnim; }
+
 		void			setRefreshMode( RefreshMode mode );
-		RefreshMode		getRefreshMode() const { return m_refreshMode; }
+		RefreshMode		refreshMode() const { return m_refreshMode; }
 	
 		void			setAnimTarget( AnimTarget target );
-		AnimTarget		getAnimTarget() const { return m_animTarget; }
+		AnimTarget		animTarget() const { return m_animTarget; }
 	
+		//.____ Behavior ____________________________________________
+		
 		void			setRestartable( bool bRestartable );
 		bool			isRestartable() const { return m_bRestartable; }
 	
 		void			setAutoStartRefresh( bool bAuto ) { m_bAutoRefresh = bAuto; }
 		bool			isAutoStartRefresh( ) const { return m_bAutoRefresh; }
 	
+		//.____ Control ________________________________________________
+		
 		void			startRefresh();
 		void			stopRefresh();
 		void			stopRefreshNow();
@@ -107,8 +118,8 @@ namespace wg
 		State			_getRenderState();
 	
 	
-		RouteId		m_tickRouteId;
-		GfxAnim_p	m_pRefreshAnim;
+		RouteId			m_tickRouteId;
+		GfxAnim_p		m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
 		TextItem		m_refreshText;
@@ -116,7 +127,7 @@ namespace wg
 	
 		bool			m_bRefreshing;
 		bool			m_bAutoRefresh;
-		uint32_t			m_animTimer;
+		uint32_t		m_animTimer;
 		float			m_refreshProgress;
 		bool			m_bStopping;
 	};

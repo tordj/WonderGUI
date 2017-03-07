@@ -47,27 +47,35 @@ namespace wg
 	class SimpleVolumeMeter : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
 		
 		static SimpleVolumeMeter_p	create() { return SimpleVolumeMeter_p(new SimpleVolumeMeter()); }
+
+		//.____ Identification __________________________________________
 
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
 		static SimpleVolumeMeter_p	cast( const Object_p& pObject );
 
-		
-		//____ Methods __________________________________________
+		//.____ Geometry ____________________________________________
+
+		Size			preferredSize() const;
+
+		//.____ Appearance _________________________________________________
 
 		void			setColors( Color bottom, Color middle, Color top );
 		void			setSections( float bottomFraction, float topFraction );
 		void			setHoldHeight( float fraction );
 		
-		void			setValue( float peak, float hold );
-		void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );
 		void            setGaps(float fSides, float fGap) {m_fSidePadding = fSides; m_fGap = fGap; }
-				
+
+		//.____ Control ____________________________________________
+
+		void			setValue( float peak, float hold );
+		void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );				
 		
-		Size			preferredSize() const;
 		
 	protected:
 		SimpleVolumeMeter();

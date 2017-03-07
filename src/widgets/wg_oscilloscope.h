@@ -47,29 +47,50 @@ namespace wg
 	{
 	public:
 
+		//.____ Creation __________________________________________
+
 		static Oscilloscope_p	create() { return Oscilloscope_p(new Oscilloscope()); }
+
+		//.____ Identification __________________________________________
 
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static Oscilloscope_p	cast( const Object_p& pObject );
 
+		//.____ Appearance __________________________________________
+
 		void	setGridColor( Color color );
+		Color   gridColor() const { return m_gridColor; }
+		
 		void	setVGridLines( int nLines, float pLines[] );
 		void	setHGridLines( int nLines, float pLines[] );
 
 		void	setLineColor( Color color );
+		Color	lineColor() const { return m_lineColor; }
+
 		void	setLineThickness( float thickness );
+		float	lineThickness() const { return m_lineThickness; }
+
+		void	setMarkerSkin( const Skin_p& pSkin );
+		Skin_p	markerSkin() const { return m_pMarkerSkin; }
+
+		//.____ Behavior ____________________________________________
+
+		void	setRenderSegments( int nSegments );
+		int		renderSegments() const { return m_nRenderSegments; }
+
+		//.____ Control ________________________________________________
 
 		void	setLinePoints( int nPoints, float pPointValues[] );
 
 		void	clearMarkers();
 		void	addMarker( int xOfs, float yOfs );
-		void	setMarkerSkin( const Skin_p& pSkin );
+
+		//.____ Geometry ____________________________________________
 
 		Size	preferredSize() const;
 		
-		void	setRenderSegments( int nSegments );
 
 
 	protected:

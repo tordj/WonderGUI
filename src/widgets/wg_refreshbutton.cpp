@@ -87,7 +87,7 @@ namespace wg
 	
 	
 	//_____________________________________________________________________________
-	void RefreshButton::setRefreshAnimation( const GfxAnim_p& pAnimation )
+	void RefreshButton::setAnimation( const GfxAnim_p& pAnimation )
 	{
 		m_pRefreshAnim		= pAnimation;
 	

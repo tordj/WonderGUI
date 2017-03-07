@@ -71,142 +71,160 @@ namespace wg
 		friend class ScrollbarTarget;
 		friend class Menu;
 	
-		public:
-			static Scrollbar_p	create() { return Scrollbar_p(new Scrollbar()); }
+	public:
+
+		//____ Enums ____________________________________________
+
+		enum BtnLayout
+		{
+			NONE		= 0,												///< No buttons in scrollbar at all.
+			HEADER_FWD	= 1,												///< Forward button at the top/left end of scrollbar.
+			HEADER_BWD	= 2,												///< Backward button at the top/left end of scrollbar.
+			FOOTER_FWD	= 4,												///< Forward button at the bottom/right end of scrollbar.
+			FOOTER_BWD	= 8,												///< Backward button at the bottom/right end of scrollbar.
+			WINDOWS		= HEADER_BWD | FOOTER_FWD,							///< Like Microsoft Windows. (= HEADER_BWD|FOOTER_FWD)
+			NEXT_VERT	= FOOTER_FWD | FOOTER_BWD,							///< Like NeXT's vertical dragbar. (= FOOTER_FWD|FOOTER_BWD)
+			NEXT_HORR	= HEADER_BWD | HEADER_FWD,							///< Like NeXT's horizontal dragbar. (= HEADER_FWD|HEADER_BWD)
+			ALL			= HEADER_FWD | FOOTER_FWD | HEADER_BWD | FOOTER_BWD, ///< Both forward and backward buttons in both ends.
+
+
+			DEFAULT		= WINDOWS
+		};
+
+		enum BgPressMode
+		{
+			JUMP_PAGE,				///< Jump a page forward/backward when pressing scrollbar background.
+			GOTO_POS				///< Move slider to the position pressed when pressing scrollbar background.
+		};
+
+
+		//.____ Creation __________________________________________
+
+		static Scrollbar_p	create() { return Scrollbar_p(new Scrollbar()); }
+
+		//.____ Identification __________________________________________
+
+		bool		isInstanceOf( const char * pClassName ) const;
+		const char *className( void ) const;
+		static const char	CLASSNAME[];
+		static Scrollbar_p	cast( const Object_p& pObject );
 	
-			bool		isInstanceOf( const char * pClassName ) const;
-			const char *className( void ) const;
-			static const char	CLASSNAME[];
-			static Scrollbar_p	cast( const Object_p& pObject );
-	
-	
-			//____ Enums ____________________________________________
-	
-			enum BtnLayout
-			{
-				NONE		= 0,												///< No buttons in scrollbar at all.
-				HEADER_FWD	= 1,												///< Forward button at the top/left end of scrollbar.
-				HEADER_BWD	= 2,												///< Backward button at the top/left end of scrollbar.
-				FOOTER_FWD	= 4,												///< Forward button at the bottom/right end of scrollbar.
-				FOOTER_BWD	= 8,												///< Backward button at the bottom/right end of scrollbar.
-				WINDOWS		= HEADER_BWD | FOOTER_FWD,							///< Like Microsoft Windows. (= HEADER_BWD|FOOTER_FWD)
-				NEXT_VERT	= FOOTER_FWD | FOOTER_BWD,							///< Like NeXT's vertical dragbar. (= FOOTER_FWD|FOOTER_BWD)
-				NEXT_HORR	= HEADER_BWD | HEADER_FWD,							///< Like NeXT's horizontal dragbar. (= HEADER_FWD|HEADER_BWD)
-				ALL			= HEADER_FWD | FOOTER_FWD | HEADER_BWD | FOOTER_BWD, ///< Both forward and backward buttons in both ends.
-	
-	
-				DEFAULT		= WINDOWS
-			};
-	
-			enum BgPressMode
-			{
-				JUMP_PAGE,				///< Jump a page forward/backward when pressing scrollbar background.
-				GOTO_POS				///< Move slider to the position pressed when pressing scrollbar background.
-			};
-	
-			//____ Methods __________________________________________
-	
-			inline float			handlePos() const;					///< @brief Get position of the scrollbar handle.
-			inline float			handleSize() const;					///< @brief Get the size of the scrollbar handle.
-			inline Skin_p 			backgroundSkin() const;				///< @brief Get the skin used as a background for the handle slide area.
-			inline Skin_p 			handleSkin() const;					///< @brief Get the skin used for the scrollbar handle.
-			inline Skin_p 			bwdButtonSkin() const;				///< @brief Get the skin used for the backward button.
-			inline Skin_p 			fwdButtonSkin() const;				///< @brief Get the skin used for the forward button.
-			inline BtnLayout		buttonLayout() const;				///< @brief Get the layout of the forward/backward buttons.
-	
-			void			setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
-			inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
-	
-			void		setBackgroundPressMode( BgPressMode mode );		///< @brief Set action for mouse press on scrollbar background.
-			inline BgPressMode backgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
-	
-			void	setHandle( float pos, float size );					///< @brief Set relative size and position of scrollbar handle.
-			void	setHandlePos( float pos );							///< @brief Set relative position of scrollbar handle.
-			void	setHandlePixelPos( int pos );						///< @brief Set pixel position of scrollbar handle.
-			void	setHandleSize( float size );						///< @brief Set size of scrollbar handle.
-	
-			void	setBackgroundSkin( const Skin_p& pSkin );			///< @brief Set skin for background of handle slide area.
-			void	setHandleSkin( const Skin_p& pSkin );				///< @brief Set skin for scrollbar handle.
-			void	setBwdButtonSkin( const Skin_p& pSkin );			///< @brief Set skin for forward button.
-			void	setFwdButtonSkin( const Skin_p& pSkin );			///< @brief Set skin for backward button.
-	
-	
-			void	setSkins( const Skin_p& pBaseSkin, const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin,
-							  const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin ); ///< @brief Set all skins in one go.
-			void	setButtonLayout(  BtnLayout layout );				///< @brief Set the layout for the forward/backward buttons.
-	
-			bool	setScrollbarTarget( ScrollbarTarget * pTarget );
-	
-			Size	preferredSize() const;
-	
-		protected:
-			Scrollbar();
-			virtual	~Scrollbar();
-	
-			void	_cloneContent( const Widget * _pOrg );
-			void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-			void	_receive( const Msg_p& pMsg );
-			void	_refresh();
-			bool	_alphaTest( const Coord& ofs );
-			void	_setState( State state );
-	
-			bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
-	
-			virtual Widget* _newOfMyType() const { return new Scrollbar(); };
-	
-			enum Component
-			{
-				C_HEADER_FWD	= 0,
-				C_HEADER_BWD	= 1,
-				C_FOOTER_FWD	= 2,
-				C_FOOTER_BWD	= 3,
-				C_BG			= 4,
-				C_HANDLE		= 5,
-	
-				C_NUMBER_OF_COMPONENTS	= 6,
-				C_NONE			= -1,
-	
-			};
-	
-			Skin_p		m_pBgSkin;
-			Skin_p		m_pHandleSkin;
-			Skin_p		m_pBtnFwdSkin;
-			Skin_p		m_pBtnBwdSkin;
-	
-			float			m_handlePos;
-			float			m_handleSize;
-	
-			BgPressMode		m_bgPressMode;
-			bool			m_bHorizontal;
-			bool			m_bPressOnHandle;
-			int				m_handlePressOfs;
-	
-			BtnLayout		m_btnLayout;
-			uint8_t			m_headerLen;
-			uint8_t			m_footerLen;
-	
-			State			m_states[C_NUMBER_OF_COMPONENTS];
-	
-			Size			m_minSize;
-	
-			ScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
-			Widget_wp	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
-	
-	
-		private:
-	
-	
-	
-			void	_viewToPosLen( int * _wpPos, int * _wpLen );
-			void	_updateMinSize( void );
-	
-	
-			Component	_findMarkedComponent( Coord ofs );								// -1 = None.
-			void		_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, const Skin_p& pSkin, State state );
-			bool		_markTestButton( Coord ofs, Rect& _dest, const Skin_p& pSkin, State state );
-			bool		_markTestHandle( Coord ofs );
-			void		_headerFooterChanged();
-			void		_unhoverReqRender();
+
+		//.____ Geometry ____________________________________________
+
+		Size	preferredSize() const;
+
+		void				setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
+		inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
+
+		//.____ Appearance __________________________________________
+
+		void	setSkins( const Skin_p& pBaseSkin, const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin,
+						  const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin ); ///< @brief Set all skins in one go.
+
+
+		void			setBackgroundSkin( const Skin_p& pSkin );	///< @brief Set skin for background of handle slide area.
+		inline Skin_p 	backgroundSkin() const;						///< @brief Get the skin used as a background for the handle slide area.
+
+		void			setHandleSkin( const Skin_p& pSkin );		///< @brief Set skin for scrollbar handle.
+		inline Skin_p 	handleSkin() const;							///< @brief Get the skin used for the scrollbar handle.
+
+		void			setFwdButtonSkin( const Skin_p& pSkin );	///< @brief Set skin for backward button.
+		inline Skin_p 	fwdButtonSkin() const;						///< @brief Get the skin used for the forward button.
+
+		void			setBwdButtonSkin( const Skin_p& pSkin );	///< @brief Set skin for forward button.
+		inline Skin_p 	bwdButtonSkin() const;						///< @brief Get the skin used for the backward button.
+
+		void			setButtonLayout(  BtnLayout layout );		///< @brief Set the layout for the forward/backward buttons.
+		inline BtnLayout	buttonLayout() const;					///< @brief Get the layout of the forward/backward buttons.
+
+		//.____ Behavior ____________________________________________
+
+		void		setBackgroundPressMode( BgPressMode mode );		///< @brief Set action for mouse press on scrollbar background.
+		inline BgPressMode backgroundPressMode() const;				///< @brief Get action for mouse press on scrollbar background.
+
+		//.____ Control ____________________________________________
+
+		inline float		handlePos() const;						///< @brief Get position of the scrollbar handle.
+		inline float		handleSize() const;						///< @brief Get the size of the scrollbar handle.
+
+		void	setHandle( float pos, float size );					///< @brief Set relative size and position of scrollbar handle.
+		void	setHandlePos( float pos );							///< @brief Set relative position of scrollbar handle.
+		void	setHandlePixelPos( int pos );						///< @brief Set pixel position of scrollbar handle.
+		void	setHandleSize( float size );						///< @brief Set size of scrollbar handle.
+
+		bool	setScrollbarTarget( ScrollbarTarget * pTarget );
+
+
+
+	protected:
+		Scrollbar();
+		virtual	~Scrollbar();
+
+		void	_cloneContent( const Widget * _pOrg );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_receive( const Msg_p& pMsg );
+		void	_refresh();
+		bool	_alphaTest( const Coord& ofs );
+		void	_setState( State state );
+
+		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
+
+		virtual Widget* _newOfMyType() const { return new Scrollbar(); };
+
+		enum Component
+		{
+			C_HEADER_FWD	= 0,
+			C_HEADER_BWD	= 1,
+			C_FOOTER_FWD	= 2,
+			C_FOOTER_BWD	= 3,
+			C_BG			= 4,
+			C_HANDLE		= 5,
+
+			C_NUMBER_OF_COMPONENTS	= 6,
+			C_NONE			= -1,
+
+		};
+
+		Skin_p		m_pBgSkin;
+		Skin_p		m_pHandleSkin;
+		Skin_p		m_pBtnFwdSkin;
+		Skin_p		m_pBtnBwdSkin;
+
+		float			m_handlePos;
+		float			m_handleSize;
+
+		BgPressMode		m_bgPressMode;
+		bool			m_bHorizontal;
+		bool			m_bPressOnHandle;
+		int				m_handlePressOfs;
+
+		BtnLayout		m_btnLayout;
+		uint8_t			m_headerLen;
+		uint8_t			m_footerLen;
+
+		State			m_states[C_NUMBER_OF_COMPONENTS];
+
+		Size			m_minSize;
+
+		ScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
+		Widget_wp	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
+
+
+	private:
+
+
+
+		void	_viewToPosLen( int * _wpPos, int * _wpLen );
+		void	_updateMinSize( void );
+
+
+		Component	_findMarkedComponent( Coord ofs );								// -1 = None.
+		void		_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, const Skin_p& pSkin, State state );
+		bool		_markTestButton( Coord ofs, Rect& _dest, const Skin_p& pSkin, State state );
+		bool		_markTestHandle( Coord ofs );
+		void		_headerFooterChanged();
+		void		_unhoverReqRender();
 	};
 	
 	

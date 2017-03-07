@@ -55,22 +55,29 @@ namespace wg
 	class Button : public Widget
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static Button_p	create() { return Button_p(new Button()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Button_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ______________________________________
+		//.____ Components _______________________________________
 	
 		ModText			label;
 		Icon			icon;
 	
-		//____ Methods __________________________________________
+		//.____ Behavior ____________________________________________
 	
 		void			setDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
 		bool			downWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
+
+		//.____ Geometry ____________________________________________
 		
 		virtual int		matchingHeight( int width ) const;
 	//	virtual int		matchingWidth( int height ) const;
