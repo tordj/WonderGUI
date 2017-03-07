@@ -35,24 +35,12 @@ namespace wg
 	class Object;
 	class Widget;
 
-	//____ SlotArrayHolder _________________________________________________________
-
-	class SlotArrayHolder
+	template<class SlotType> class SlotArray
 	{
 	public:
-		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
-		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
-	};
-
-	template<class SlotType, class HolderType> class SlotArray
-	{
-	public:
-		SlotArray(HolderType * pHolder) : m_pHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
-		SlotArray(HolderType * pHolder, int capacity) : m_pHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
+		SlotArray() : m_pArray(0), m_size(0), m_capacity(0) {}
+		SlotArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
 		~SlotArray() { _killBlock( 0, m_size ); free(m_pArray); }
-
-		inline HolderType *			holder() { return m_pHolder; } 
-		inline const HolderType *	holder() const { return m_pHolder; } 
 
 		int			size() const { return m_size; }
 		bool		isEmpty() const { return m_size == 0; }
@@ -186,8 +174,6 @@ namespace wg
 				new (&m_pArray[index++]) SlotType();
 		}
 	
-		HolderType * m_pHolder;
-
 		int			m_capacity;
 		int			m_size;
 		SlotType *	m_pArray;

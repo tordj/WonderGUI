@@ -46,24 +46,36 @@ namespace wg
 	template<class SlotType, class HolderType> class ChildGroup;
 	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
 	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
-	
+
+	//____ ChildGroupHolder _________________________________________________________
+
+	class ChildGroupHolder
+	{
+	public:
+		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
+		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
+	};
+
+	//____ ChildGroup _________________________________________________________
+
 	template<class SlotType, class HolderType> class ChildGroup : public Interface
 	{
 		
 	public:
-		ChildGroup( SlotArray<SlotType,HolderType> * pSlotArray ) : m_pSlotArray(pSlotArray) {}
+		ChildGroup( SlotArray<SlotType> * pSlotArray ) : m_pSlotArray(pSlotArray) {}
 
 		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 
 		inline int		size() const { return m_pSlotArray->size(); } 
 		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget); }
-		inline void		clear() { m_pSlotArray->clear(); }
+		inline void		clear() { if( m_pSlotArray->isEmpty() ) return; m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); m_pSlotArray->clear(); }
 	
 	protected:
-		Object *	_object() const {	return m_pSlotArray->holder(); }
-		HolderType * _holder() const {	return m_pSlotArray->holder(); }
+		Object *	_object() const {	return m_pHolder; }
 
-		SlotArray<SlotType,HolderType> * m_pSlotArray;
+		SlotArray<SlotType> *	m_pSlotArray;
+		HolderType *			m_pHolder;
+
 	};
 	
 	

@@ -60,7 +60,7 @@ namespace wg
 	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
-		StackPanelChildren( SlotArray<StackPanelSlot,StackPanel> * pSlotArray ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray) {}
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray) {}
 
 		void		add( const Widget_p& pWidget );
 		bool		insert( int index, const Widget_p& pWidget );
@@ -81,7 +81,7 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected PanelSlotHolder
+	class StackPanel : public Panel, protected PanelSlotsHolder
 	{
 		friend class StackPanelChildren;
 
@@ -170,7 +170,7 @@ namespace wg
 	
 		Size	m_preferredSize;	
 
-		SlotArray<StackPanelSlot,StackPanel>	m_children;
+		SlotArray<StackPanelSlot>	m_children;
 	};
 	
 

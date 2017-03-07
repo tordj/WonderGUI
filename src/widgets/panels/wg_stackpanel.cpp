@@ -34,9 +34,9 @@ namespace wg
 	void StackPanelChildren::add( const Widget_p& pWidget )
 	{
 		auto pSlot = m_pSlotArray->add();
-		auto pHolder = m_pSlotArray->holder();
-		pSlot->replaceWidget(pHolder,pWidget.rawPtr());
-		pHolder->_didAddSlots(pSlot, 1);
+		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+		pSlot->bVisible = false;
+		m_pHolder->_didAddSlots(pSlot, 1);
 	}
 	
 	bool StackPanelChildren::insert( int index, const Widget_p& pWidget )
@@ -45,10 +45,9 @@ namespace wg
 			return false;
 
 		auto pSlot = m_pSlotArray->insert(index);
-		auto pHolder = m_pSlotArray->holder();
-		pSlot->replaceWidget(pHolder,pWidget.rawPtr());
+ 		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
 		pSlot->bVisible = false;
-		pHolder->_didAddSlots(pSlot, 1);
+		m_pHolder->_didAddSlots(pSlot, 1);
 		return true;
 	}
 
@@ -58,8 +57,7 @@ namespace wg
 			return false;
 
 		auto pSlot = m_pSlotArray->insert(index);
-		auto pHolder = m_pSlotArray->holder();
-		pHolder->_willRemoveSlots(pSlot, 1);
+		m_pHolder->_willRemoveSlots(pSlot, 1);
 		m_pSlotArray->remove(index);
 		return true;
 	}
@@ -69,9 +67,7 @@ namespace wg
 		if( m_pSlotArray->isEmpty() )
 			return;
 
-		auto pSlot = m_pSlotArray->begin();
-		auto pHolder = m_pSlotArray->holder();
-		pHolder->_willRemoveSlots(pSlot, m_pSlotArray->size());
+		m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size());
 		m_pSlotArray->clear();
 	}
 
@@ -85,9 +81,9 @@ namespace wg
 			
 		if( policy != pSlot->sizePolicy )
 		{
-			_holder()->_childRequestRender( pSlot );
+			m_pHolder->_childRequestRender( pSlot );
 			pSlot->sizePolicy = policy;
-			_holder()->_childRequestRender( pSlot );
+			m_pHolder->_childRequestRender( pSlot );
 		};		
 	}
 	
@@ -109,9 +105,9 @@ namespace wg
 			
 		if( origo != pSlot->origo )
 		{
-			_holder()->_childRequestRender( pSlot );
+			m_pHolder->_childRequestRender( pSlot );
 			pSlot->origo = origo;
-			_holder()->_childRequestRender( pSlot );
+			m_pHolder->_childRequestRender( pSlot );
 		};
 		
 	}
@@ -129,7 +125,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	StackPanel::StackPanel() : children(&m_children), m_children(this)
+	StackPanel::StackPanel() : children(&m_children), m_children()
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -393,6 +389,8 @@ namespace wg
 		
 		if( p > m_children.begin() )
 			return p[-1].pWidget;
+
+		return nullptr;
 	}
 	
 	//____ _nextChild() __________________________________________________________
@@ -403,6 +401,8 @@ namespace wg
 		
 		if( p < m_children.last() )
 			return p[1].pWidget;		
+
+		return nullptr;
 	}
 	
 	//____ _unhideChildren() _____________________________________________________

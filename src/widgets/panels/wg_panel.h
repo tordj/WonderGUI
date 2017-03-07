@@ -76,9 +76,9 @@ namespace wg
 		Border		padding;
 	};
 
-	//____ PanelSlotHolder ____________________________________________________________
+	//____ PanelChildrenHolder ____________________________________________________________
 
-	class PanelSlotHolder : public SlotArrayHolder
+	class PanelSlotsHolder : public ChildGroupHolder
 	{
 		virtual void	_hideSlots( PanelSlot * pSlot, int nb ) = 0;
 		virtual void	_unhideSlots( PanelSlot * pSlot, int nb ) = 0;
@@ -90,18 +90,18 @@ namespace wg
 	template<class SlotType, class HolderType> class PanelChildren : public ChildGroup<SlotType,HolderType>
 	{
 	public:
-		PanelChildren( SlotArray<SlotType,HolderType> * pSlotArray ) : ChildGroup<SlotType,HolderType>(pSlotArray) {}
+		PanelChildren( SlotArray<SlotType> * pSlotArray ) : ChildGroup<SlotType,HolderType>(pSlotArray) {}
 
 		void	hide( int index ) 
 		{
 			if( index >= 0 || index < m_pSlotArray->size() )
-				m_pSlotArray->holder()->_hideSlots( m_pSlotArray->slot(index), 1 );
+				m_pHolder->_hideSlots( m_pSlotArray->slot(index), 1 );
 		};
 		
 		void		unhide( int index )
 		{
 			if( index >= 0 || index < m_pSlotArray->size() )
-				m_pSlotArray->holder()->_unhideSlots( m_pSlotArray->slot(index), 1 );
+				m_pHolder->_unhideSlots( m_pSlotArray->slot(index), 1 );
 		};
 
 		bool		isVisible( int index ) { return m_pSlotArray->slot(index)->bVisible; }
@@ -109,7 +109,7 @@ namespace wg
 		bool		setPadding( int index, Border padding )
 		{
 			if( index >= 0 || index < m_pSlotArray->size() )
-				m_pSlotArray->holder()->_repadSlots( m_pSlotArray->slot(index), 1, padding );
+				m_pHolder->_repadSlots( m_pSlotArray->slot(index), 1, padding );
 		}
 
 		Border		padding( int index ) const { return m_pSlotArray->slot(index)->padding; }
