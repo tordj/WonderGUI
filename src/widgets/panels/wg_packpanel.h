@@ -26,49 +26,45 @@
 #	include <wg_sizebroker.h>
 #endif
 
-#ifndef WG_LEGACYVECTORPANEL_DOT_H
-#	include <wg_vectorpanel.h>
+#ifndef WG_PANEL_DOT_H
+#	include <wg_panel.h>
 #endif
 
 namespace wg 
 {
 	
 	class PackPanel;
-	typedef	StrongPtr<PackPanel,LegacyVectorPanel_p>		PackPanel_p;
-	typedef	WeakPtr<PackPanel,LegacyVectorPanel_wp>	PackPanel_wp;
+	typedef	StrongPtr<PackPanel,Panel_p>		PackPanel_p;
+	typedef	WeakPtr<PackPanel,Panel_wp>			PackPanel_wp;
+
+
+	//____ PackPanelSlot ____________________________________________________________
 	
-	class PackHook;
-	typedef	HookTypePtr<PackHook,VectorHook_p>	PackHook_p;
-	
-	class PackHook : public VectorHook
+	class PackPanelSlot : public PanelSlot
 	{
-		friend class PackPanel;
-	
 	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static PackHook_p	cast( const Hook_p& pInterface );
-		
-		bool	setWeight( float weight );
-		float	weight() { return m_weight; }
+		PackPanelSlot() : weight(1.f) {}
 	
-		PackHook_p	prev() const { return _prev(); }
-		PackHook_p	next() const { return _next(); }
-		PackPanel_p	parent() const;
-	
-	protected:
-		PROTECTED_LINK_METHODS( PackHook );
-	
-		PackHook( PackPanel * pParent );
-	
-		Container * _parent() const;
-		
-		float			m_weight;			// Weight for space allocation.
-		Rect			m_geo;				// Real geo of child (no padding included).
-		Size			m_preferredSize;	// Cached padded preferred size from the child.
-		PackPanel *	m_pParent;
+		float			weight;			// Weight for space allocation.
+		Rect			geo;			// Real geo of child (no padding included).
+		Size			preferredSize;	// Cached padded preferred size from the child.
 	};
+	
+	//____ PackPanelChildren ________________________________________________________
+
+	class PackPanelChildren : public PanelChildren<PackPanelSlot,PackPanel>
+	{
+	public:
+		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
+
+		void		add( const Widget_p& pWidget );
+		bool		insert( int index, const Widget_p& pWidget );
+		bool		remove( int index );
+
+		void		setWeight( int index, float weight );
+		float		weight( int index ) const;
+	};
+
 	
 	
 	/**
@@ -77,31 +73,42 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class PackPanel : public LegacyVectorPanel
+	class PackPanel : public Panel, protected PanelSlotsHolder
 	{
-		friend class PackHook;
+		friend class PackPanelChildren;
 	
 	public:
+
+		//.____ Creation __________________________________________
+
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 		
+		//.____ Components _______________________________________
+
+		PackPanelChildren	children;
+
+		//.____ Identification __________________________________________
+
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
 		static PackPanel_p	cast( const Object_p& pObject );
 	
-		inline PackHook_p addWidget( const Widget_p& pWidget ) { return static_cast<PackHook*>(LegacyVectorPanel::_addWidget(pWidget.rawPtr())); }
-		inline PackHook_p insertWidget( const Widget_p& pWidget, const Widget_p& pSibling ) { return static_cast<PackHook*>(LegacyVectorPanel::_insertWidget(pWidget.rawPtr(),pSibling.rawPtr())); }
-	    
+		//.____ Geometry ____________________________________________
+
 		void			setOrientation( Orientation orientaiton );
-		Orientation	orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
+		Orientation		orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 			
-		void			setSizeBroker( const SizeBroker_p& pBroker );
-		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
-	
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 	
 		Size			preferredSize() const;
+
+		//.____ Control ________________________________________________________
+
+		void			setSizeBroker( const SizeBroker_p& pBroker );
+		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
+
 		
 	protected:
 		PackPanel();
@@ -115,21 +122,37 @@ namespace wg
 	    
 		// Overloaded from Container
 		
+		Widget *	_firstChild() const;
+		Widget *	_lastChild() const;
+
 		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
 		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
+
+
+		// Overloaded from SlotArrayHolder
+
+		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_willRemoveSlots( Slot * pSlot, int nb );
+		void		_hideSlots( PanelSlot *, int nb );
+		void		_unhideSlots( PanelSlot *, int nb );
+		void		_repadSlots( PanelSlot *, int nb, Border padding );
+
+		// Overloaded from WidgetHolder
+
+		Coord		_childPos( void * pChildRef ) const;
+		Size		_childSize( void * pChildRef ) const;
+
+		void		_childRequestRender( void * pChildRef );
+		void		_childRequestRender( void * pChildRef, const Rect& rect );
+		void		_childRequestResize( void * pChildRef );
+
+		Widget *	_prevChild( void * pChildRef ) const;
+		Widget *	_nextChild( void * pChildRef ) const;
 
 		
 		// Overloaded from LegacyVectorPanel
 		
 		Rect			_hookGeo( const VectorHook * pHook );
-		void			_requestResizeRequested( VectorHook * pHook );
-		void			_renderRequested( VectorHook * pHook );
-		void			_renderRequested( VectorHook * pHook, const Rect& rect );
-		void			_onWidgetAppeared( VectorHook * pInserted );				// so parent can update geometry and possibly request render.
-		void			_onWidgetDisappeared( VectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
-		void			_onWidgetsReordered();
-		void			_refreshAllWidgets();
-		VectorHook *	_newHook();
 		
 		//
 		
@@ -138,7 +161,9 @@ namespace wg
 		int				_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int				_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
 	
-	
+
+		SlotArray<PackPanelSlot> m_children;
+		
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
 		Size			m_preferredSize;

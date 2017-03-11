@@ -72,10 +72,11 @@ namespace wg
 	 */
 	
 	
-	class RootPanel : public Object, protected WidgetHolder, protected SlotCanHolder
+	class RootPanel : public Object, protected WidgetHolder, protected ChildEntryHolder
 	{
 		friend class Container;
 		friend class InputHandler;
+		friend class ChildEntry<Slot,RootPanel>;
 	
 	public:
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
@@ -88,7 +89,7 @@ namespace wg
 	
 		//____ Interfaces ___________________________________________________________
 
-		ChildEntry<Slot>	child;
+		ChildEntry<Slot,RootPanel>	child;
 
 		bool				setGfxDevice( const GfxDevice_p& pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
@@ -163,7 +164,6 @@ namespace wg
 		Widget *		_nextChild( void * pChildRef ) const;
 	
 
-		// SlotCanHolder methods
 
 		Object *		_object();
 		const Object *	_object() const;
@@ -188,7 +188,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 		GfxDevice_p			m_pGfxDevice;
-		SlotCan<Slot>		m_child;
+		Slot				m_child;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

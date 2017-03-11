@@ -31,43 +31,55 @@
 #	include <wg_pointers.h>
 #endif
 
-#ifndef WG_SLOTCAN_DOT_H
-#	include <wg_slotcan.h>
+#ifndef WG_SLOT_DOT_H
+#	include <wg_slot.h>
 #endif
 
 
 namespace wg 
 {
 
-	template<class SlotType> class ChildEntry;
-	typedef	StrongInterfacePtr<ChildEntry<class SlotType>,Interface_p>	ChildEntry_p;
-	typedef	WeakInterfacePtr<ChildEntry<class SlotType>,Interface_wp>	ChildEntry_wp;
+	template<class SlotType, class HolderType> class ChildEntry;
+	typedef	StrongInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_p>	ChildEntry_p;
+	typedef	WeakInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_wp>	ChildEntry_wp;
+
+	//____ ChildEntryHolder ____________________________________________________
+
+	class ChildEntryHolder
+	{
+	public:
+		virtual void	_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
+	};
+
 	
-	template<class SlotType> class ChildEntry : public Interface
+	//____ ChildEntry __________________________________________________________
+	
+	template<class SlotType, class HolderType> class ChildEntry : public Interface
 	{
 		
 	public:
-		ChildEntry( SlotCan<SlotType> * pSlotCan ) : m_pSlotCan(pSlotCan) {}
-	
-		inline ChildEntry operator=(const Widget_p& pWidget ) { m_pSlotCan->setWidget(pWidget.rawPtr()); return *this; }
-		inline operator Widget_p() const { return Widget_p(m_pSlotCan->slot.pWidget); }
+		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 
-		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlotCan->slot.pWidget; }
-		inline bool operator!=(const Widget_p& other) const { return other.rawPtr() != m_pSlotCan->slot.pWidget; }
+		inline ChildEntry operator=(const Widget_p& pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget.rawPtr()); return *this; }
+		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
+
+		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }
+		inline bool operator!=(const Widget_p& other) const { return other.rawPtr() != m_pSlot->pWidget; }
 	
-		inline operator bool() const { return m_pSlotCan->slot.pWidget != nullptr; }
+		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
 
 //		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
-		inline Widget* operator->() const { return m_pSlotCan->slot.pWidget; }
+		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
 
-		inline Widget_p get() const { return Widget_p(m_pSlotCan->slot.pWidget); }
-		inline void clear() { m_pSlotCan->_setWidget(nullptr); }
+		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		inline void clear() { m_pHolder->_setWidget( m_pSlot, nullptr); }
 
 	protected:
-		Object * _object() const {	return m_pSlotCan->object(); }
+		Object * _object() const {	return m_pHolder; }
 
-		SlotCan<SlotType> *	m_pSlotCan;
+		SlotType *	m_pSlot;
+		HolderType * m_pHolder;
 	};
 	
 	

@@ -5,7 +5,7 @@
 #include <wg_widget.h>
 #include <wg_panel.h>
 
-namespace wg 
+namespace wg
 {
 
 	uint8_t Util::_limitUint8Table[768] = {	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -60,39 +60,77 @@ namespace wg
 										0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 
-	
+//____ canvasToLayout() ____________________________________________________
+
+	Coord Util::canvasToLayout( const Coord& pos, float scaleFactor )
+	{
+			Return Coord( (int) pos.x / scaleFactor, (int) pos.y / scaleFactor );
+	}
+
+	Rect Util::canvasToLayout( const Rect& geo, float scaleFactor )
+	{
+			Rect layout;
+
+			layout.x = (int) geo.x / scaleFactor;
+			layout.y = (int) geo.y / scaleFactor;
+			layout.w = (int) (geo.x + geo.w) / scaleFactor - layout.x;
+			layout.h = (int) (geo.y + geo.h) / scaleFactor - layout.y;
+
+			return layout;
+	}
+
+	//____ layoutToCanvas() ____________________________________________________
+
+	Coord Util::layoutToCanvas( Coord& pos, float scaleFactor )
+	{
+		return Coord( (int) pos.x * scaleFactor, (int) pos.y * scaleFactor );
+	}
+
+	Rect Util::layoutToCanvas( Rect& geo, float scaleFactor )
+	{
+		Rect canvas;
+
+		canvas.x = (int) geo.x * scaleFactor;
+		canvas.y = (int) geo.y * scaleFactor;
+		canvas.w = (int) (geo.x + geo.w) * scaleFactor - canvas.x;
+		canvas.h = (int) (geo.y + geo.h) * scaleFactor - canvas.y;
+
+		return canvas;
+	}
+
+
 	//____ markTestStretchRect() __________________________________________________
-	
+
 	bool Util::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
 			return false;
-	
+
 		if( pSurface->isOpaque() || opacityTreshold <= 0 )
 			return true;
-	
+
 		// Make cordinates relative area.
-	
+
 		ofs.x -= area.x;
 		ofs.y -= area.y;
-	
+
 		// Convert offset in area to offset in bitmap.
-	
+
 		ofs.x = (int) (ofs.x/((double)area.w) * source.w);
 		ofs.y = (int) (ofs.y/((double)area.h) * source.h);
-	
+
 		// Do alpha test
-	
+
 		int alpha = pSurface->alpha(source.x+ofs.x, source.y+ofs.y);
-	
+
 		return (alpha >= opacityTreshold);
 	}
-	
-	
-	
+
+
+
 	//____ pixelTypeToFormat() _____________________________________________________
-	
+
 	bool Util::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
 	{
 		switch( type )
@@ -183,12 +221,12 @@ namespace wg
 				wFormat.A_bits = 0;
 				return false;
 		}
-			
-		
+
+
 	}
-	
+
 	//____ sizeFromPolicy() __________________________________________________________
-	
+
 	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
@@ -206,23 +244,23 @@ namespace wg
 		}
 		return defaultSize;
 	}
-	
+
 	//____ Checksum8::add() ________________________________________________________
-	
+
 	void Util::Checksum8::add( const void * pData, uint32_t nBytes )
 	{
 		uint32_t x = remainder;
-	
+
 		for( uint32_t i = 0 ; i < nBytes ; i++ )
 			x = ((x << 8) + ((uint8_t*)pData)[i])%dividend;
-	
+
 		remainder = x;
 	}
-	
-	
-	
+
+
+
 	//____ decodeBase64() _________________________________________________________
-	
+
 	uint32_t Util::decodeBase64( const char * pSrc, uint32_t nIn, char * pDest )
 	{
 		const static unsigned char conv[256] =
@@ -258,52 +296,52 @@ namespace wg
 							0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 							0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 							0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-	
+
 		if( nIn == 0 || (nIn%4)!= 0 )
 			return 0;
-	
-	
-	
+
+
+
 		for( unsigned int i = 0 ; i < nIn/4 ; i++ )
 		{
 			uint32_t	acc = 0;
-	
+
 			unsigned char x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF )	return 0;
 			acc += x;
 			acc <<= 6;
-	
+
 			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
 			acc <<= 6;
-	
+
 			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
 			acc <<= 6;
-	
+
 			x = conv[(uint8_t) * pSrc++];
 			if( x == 0xFF ) return 0;
 			acc += x;
-	
+
 			* pDest++ = (char) (acc >> 16);
 			* pDest++ = (char) (acc >> 8);
 			* pDest++ = (char) acc;
 		}
-	
+
 		uint32_t nChar = (nIn/4) * 3;
-	
+
 		if( pSrc[-2] == '=' )
 			nChar-=2;
 		else if( pSrc[-1] == '=' )
 			nChar--;
-	
+
 		return nChar;
 	}
-	
+
 	//____ origoToOfs() ________________________________________________________
-	
+
 	Coord Util::origoToOfs( Origo origo, Size base )
 	{
 		switch( origo )
@@ -311,35 +349,35 @@ namespace wg
 			default:
 			case Origo::NorthWest:
 				return Coord(0,0);
-	
+
 			case Origo::North:
 				return Coord( base.w/2,0 );
-	
+
 			case Origo::NorthEast:
 				return Coord( base.w,0 );
-	
+
 			case Origo::East:
 				return Coord( base.w, base.h/2 );
-	
+
 			case Origo::SouthEast:
 				return Coord( base.w, base.h );
-	
+
 			case Origo::South:
 				return Coord( base.w/2, base.h );
-	
+
 			case Origo::SouthWest:
 				return Coord( 0, base.h );
-	
+
 			case Origo::West:
 				return Coord( 0, base.h/2 );
-	
+
 			case Origo::Center:
 				return Coord( base.w/2, base.h/2 );
 		}
 	}
-	
+
 	//____ origoToRect() ________________________________________________________
-	
+
 	Rect Util::origoToRect( Origo origo, Size base, Size rect )
 	{
 		switch( origo )
@@ -347,28 +385,28 @@ namespace wg
 			default:
 			case Origo::NorthWest:
 				return Rect(0,0, rect);
-	
+
 			case Origo::North:
 				return Rect( base.w/2 - rect.w/2, 0, rect );
-	
+
 			case Origo::NorthEast:
 				return Rect( base.w - rect.w, 0, rect );
-	
+
 			case Origo::East:
 				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
-	
+
 			case Origo::SouthEast:
 				return Rect( base.w - rect.w, base.h - rect.h, rect );
-	
+
 			case Origo::South:
 				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
-	
+
 			case Origo::SouthWest:
 				return Rect( 0, base.h - rect.h, rect );
-	
+
 			case Origo::West:
 				return Rect( 0, base.h/2 - rect.h/2, rect );
-	
+
 			case Origo::Center:
 				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}

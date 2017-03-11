@@ -250,7 +250,6 @@
     <File Name="../../src/base/wg_sizescaler.h"/>
     <File Name="../../src/base/wg_slot.h"/>
     <File Name="../../src/base/wg_slotarray.h"/>
-    <File Name="../../src/base/wg_slotcan.h"/>
     <File Name="../../src/base/wg_string.cpp"/>
     <File Name="../../src/base/wg_string.h"/>
     <File Name="../../src/base/wg_surface.cpp"/>

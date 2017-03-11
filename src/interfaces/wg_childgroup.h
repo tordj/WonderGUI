@@ -62,7 +62,7 @@ namespace wg
 	{
 		
 	public:
-		ChildGroup( SlotArray<SlotType> * pSlotArray ) : m_pSlotArray(pSlotArray) {}
+		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
 
 		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 

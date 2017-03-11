@@ -62,16 +62,6 @@ namespace wg
 		return true;
 	}
 
-	void StackPanelChildren::clear()
-	{
-		if( m_pSlotArray->isEmpty() )
-			return;
-
-		m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size());
-		m_pSlotArray->clear();
-	}
-
-
 	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )
@@ -125,7 +115,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	StackPanel::StackPanel() : children(&m_children), m_children()
+	StackPanel::StackPanel() : children(&m_children,this)
 	{
 		m_bSiblingsOverlap = true;
 	}

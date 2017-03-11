@@ -31,7 +31,7 @@
 #	include <wg_childentry.h>
 #endif
 
-#ifndef WG_SLOTCAN_DOT_H
+#ifndef WG_SLOT_DOT_H
 #	include <wg_slot.h>
 #endif
 
@@ -46,7 +46,7 @@ namespace wg
 	
 	//____ Capsule ______________________________________________________________
 	
-	class Capsule : public Container, protected SlotCanHolder
+	class Capsule : public Container, protected ChildEntryHolder
 	{
 		friend class CapsuleHook;
 	
@@ -58,7 +58,7 @@ namespace wg
 
 		//____ Interfaces ______________________________________
 
-		ChildEntry<Slot>	child;
+		ChildEntry<Slot,Capsule> child;
 
 
 		bool				removeChild( const Widget_p& pWidget );
@@ -112,7 +112,7 @@ namespace wg
 	
 	
 	
-		SlotCan<Slot>	m_child;
+		Slot		m_child;
 	
 	};
 	

@@ -60,12 +60,11 @@ namespace wg
 	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray) {}
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
 
 		void		add( const Widget_p& pWidget );
 		bool		insert( int index, const Widget_p& pWidget );
 		bool		remove( int index );
-		void		clear();
 
 		void		setSizePolicy( int index, SizePolicy2D policy );
 		SizePolicy2D sizePolicy( int index ) const;
@@ -104,10 +103,10 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 	
-		int		matchingHeight( int width ) const;
-		int		matchingWidth( int height ) const;
+		int			matchingHeight( int width ) const;
+		int			matchingWidth( int height ) const;
 	
-		Size	preferredSize() const;
+		Size		preferredSize() const;
 
 		//.____ Hierarchy _________________________________________________
 
@@ -128,10 +127,7 @@ namespace wg
 
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
-	
-			
-		// Overloaded from Panel
-	
+				
 		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
 		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
 
