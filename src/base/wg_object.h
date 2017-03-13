@@ -61,10 +61,13 @@ namespace wg
 		friend class Interface_wp;
 	
 	public:
+
+		//.____ Identification _________________________________________________
+
 		virtual bool		isInstanceOf( const char * pClassName ) const;
+		static Object_p		cast( const Object_p& pObject );				// Provided just for completeness sake.
 		virtual const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static Object_p	cast( const Object_p& pObject );				// Provided just for completeness sake.
 	
 	protected:
 		Object() : m_pWeakPtrHub(0), m_refCount(0) {}

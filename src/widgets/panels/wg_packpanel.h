@@ -104,7 +104,7 @@ namespace wg
 	
 		Size			preferredSize() const;
 
-		//.____ Control ________________________________________________________
+		//.____ Behavior ________________________________________________________
 
 		void			setSizeBroker( const SizeBroker_p& pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }

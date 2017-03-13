@@ -176,9 +176,9 @@ namespace wg
 		virtual void		setSkin( const Skin_p& pSkin );
 		Skin_p				skin( ) const	{ return m_pSkin; }
 
-		virtual String		tooltip() const { return m_tooltip; }
 		inline void			setTooltip( const String& str ) { m_tooltip = str; }
-	
+		virtual String		tooltip() const { return m_tooltip; }
+
 		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
 		virtual PointerStyle	pointerStyle() const;
 

@@ -64,7 +64,7 @@ namespace wg
 
 	Coord Util::canvasToLayout( const Coord& pos, float scaleFactor )
 	{
-			Return Coord( (int) pos.x / scaleFactor, (int) pos.y / scaleFactor );
+			return Coord( (int) pos.x / scaleFactor, (int) pos.y / scaleFactor );
 	}
 
 	Rect Util::canvasToLayout( const Rect& geo, float scaleFactor )
