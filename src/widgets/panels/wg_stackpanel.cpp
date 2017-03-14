@@ -35,7 +35,6 @@ namespace wg
 	{
 		auto pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		pSlot->bVisible = false;
 		m_pHolder->_didAddSlots(pSlot, 1);
 	}
 	
@@ -46,7 +45,6 @@ namespace wg
 
 		auto pSlot = m_pSlotArray->insert(index);
  		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		pSlot->bVisible = false;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return true;
 	}
@@ -56,7 +54,7 @@ namespace wg
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return false;
 
-		auto pSlot = m_pSlotArray->insert(index);
+		auto pSlot = m_pSlotArray->slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, 1);
 		m_pSlotArray->remove(index);
 		return true;

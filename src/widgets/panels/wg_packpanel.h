@@ -109,12 +109,6 @@ namespace wg
 		void			setSizeBroker( const SizeBroker_p& pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 
-
-		//.____ Hierarchy ________________________________________________________
-
-		bool		removeChild( const Widget_p& pWidget );
-		bool		clear();
-
 	
 	protected:
 		PackPanel();
@@ -158,11 +152,15 @@ namespace wg
 				
 		//
 		
-		void			_refreshChildGeo();
-		void			_updatePreferredSize();
-		int				_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
-		int				_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
-	
+		void		_hideChildren(PackPanelSlot * pSlot, int nb);
+		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
+
+		void		_refreshAllWidgets();
+		void		_refreshChildGeo();
+		void		_updatePreferredSize();
+		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
+		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
+
 
 		SlotArray<PackPanelSlot> m_children;
 		

@@ -26,7 +26,11 @@
 
 namespace wg 
 {
-	
+	//____ Constructor() ___________________________________________________________
+
+	ColumnHeader::ColumnHeader(ColumnHeaderItem* pItem) : m_pItem(pItem), icon(&pItem->icon), arrow(&pItem->arrow), label(&pItem->label)
+	{
+	}
 		
 	//____ _object() _______________________________________________________________
 

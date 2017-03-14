@@ -69,8 +69,6 @@ namespace wg
 		Size		paddedMaxSize() const { return pWidget->maxSize() + padding; }
 		int			paddedMatchingWidth( int paddedHeight ) const { return pWidget->matchingWidth( paddedHeight - padding.height() ) + padding.width(); }
 		int			paddedMatchingHeight( int paddedWidth ) const { return pWidget->matchingHeight( paddedWidth - padding.width() ) + padding.height(); }
-		bool		isVisible() const { return bVisible; }
-
 	
 		bool		bVisible;
 		Border		padding;

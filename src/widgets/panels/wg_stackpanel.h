@@ -115,10 +115,6 @@ namespace wg
 	
 		Size		preferredSize() const;
 
-		//.____ Hierarchy _________________________________________________
-
-		bool		removeChild( const Widget_p& pWidget );
-		bool		clear();
 	
 	protected:
 		StackPanel();

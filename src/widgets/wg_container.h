@@ -84,8 +84,6 @@ namespace wg
 	
 			inline Widget_p			firstChild() const { return Widget_p(_firstChild()); }
 			inline Widget_p			lastChild() const { return Widget_p(_lastChild()); }
-			virtual bool			removeChild( const Widget_p& pWidget ) = 0;
-			virtual bool			clear() = 0;
 		
 
 			//.____ Misc _________________________________________________________________

@@ -79,26 +79,6 @@ namespace wg
 		return this;
 	}
 
-	//____ removeChild() _________________________________________________________
-	
-	bool Capsule::removeChild( const Widget_p& pWidget )
-	{
-		if( m_child.pWidget != pWidget.rawPtr() )
-			return false;
-	
-		_setWidget( &m_child, nullptr );
-		return true;
-	}
-	
-	//____ clear() __________________________________________________________
-	
-	bool Capsule::clear()
-	{
-		if( m_child.pWidget )
-			_setWidget( &m_child, nullptr );
-
-		return true;
-	}
 	
 	//____ matchingHeight() ________________________________________________________
 	

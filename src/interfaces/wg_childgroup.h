@@ -71,7 +71,13 @@ namespace wg
 
 		inline int		size() const { return m_pSlotArray->size(); } 
 		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget); }
-		inline void		clear() { if( m_pSlotArray->isEmpty() ) return; m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); m_pSlotArray->clear(); }
+		inline void		clear() 
+		{ 
+			if( m_pSlotArray->isEmpty() ) 
+				return; 
+			m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); 
+			m_pSlotArray->clear(); 
+		}
 	
 	protected:
 		Object *	_object() const {	return m_pHolder; }

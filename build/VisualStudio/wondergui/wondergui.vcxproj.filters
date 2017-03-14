@@ -227,9 +227,6 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iwidgets.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h">
       <Filter>interfaces</Filter>
     </ClInclude>
@@ -387,9 +384,6 @@
       <Filter>widgets\panels</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\panels\wg_stackpanel.h">
-      <Filter>widgets\panels</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\panels\wg_vectorpanel.h">
       <Filter>widgets\panels</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h">
@@ -580,27 +574,6 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_edittext.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_editvalue.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_icon.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_iwidgets.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_modspan.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_modtext.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
@@ -749,9 +722,6 @@
       <Filter>widgets\panels</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\panels\wg_stackpanel.cpp">
-      <Filter>widgets\panels</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\panels\wg_vectorpanel.cpp">
       <Filter>widgets\panels</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp">

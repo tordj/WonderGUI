@@ -276,21 +276,21 @@ int main ( int argc, char** argv )
 		LineEditor_p pEditLine = LineEditor::create();
 		pEditLine->setSkin(ColorSkin::create(Color::Black));
 		pEditLine->text.setMaxChars(8);
-		pHorr2->addWidget( pEditLine );
+		pHorr2->children.add( pEditLine );
 
 		Filler_p pFillerEast2 = Filler::create();
 		pFillerEast2->setSkin( pPressablePlateSkin );
-		pHorr2->addWidget( pFillerEast2 );
+		pHorr2->children.add( pFillerEast2 );
 
 		Filler_p pFillerMid = Filler::create();
 		pFillerMid->setSkin(pPressablePlateSkin);
 
 
 
-		pVert->addWidget(pHorr2);
-		pVert->addWidget(pFillerMid);
-		pVert->addWidget( pHorr );
-		pVert->addWidget( pFillerSouth );
+		pVert->children.add(pHorr2);
+		pVert->children.add(pFillerMid);
+		pVert->children.add( pHorr );
+		pVert->children.add( pFillerSouth );
 
 		TextEditor_p pText = TextEditor::create();
 		pText->setSkin( ColorSkin::create( Color::Black ) );
@@ -317,8 +317,8 @@ int main ( int argc, char** argv )
 		pText->text.setCharStyle( pLink, 29, 4 );
 
 
-		pHorr->addWidget( pText );
-		pHorr->addWidget( pFillerEast );
+		pHorr->children.add( pText );
+		pHorr->children.add( pFillerEast );
 
 		
 		pFlexPanel->addWidget( pVert, Origo::NorthWest, Origo::SouthEast );
@@ -378,12 +378,12 @@ int main ( int argc, char** argv )
 
 			p1->text.set( label );
 
-			p->addWidget(p1);
+			p->children.add(p1);
 
 			auto p2 = TextEditor::create();
 			p2->setSkin( pEditBoxSkin );
 			p2->text.set( "Edit me!");
-			p->addWidget(p2);
+			p->children.add(p2);
 
 			pList->addWidget(p);
 		}

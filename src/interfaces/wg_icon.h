@@ -77,7 +77,7 @@ namespace wg
 		inline bool			overlap() const { return m_pItem->overlap(); }
 		inline Skin_p		skin() const { return m_pItem->skin(); }
 	protected:
-		Object * 			_object() const;
+		Object * 			_object() const { return m_pItem->_object(); };
 	
 		IconItem *			m_pItem;
 	};

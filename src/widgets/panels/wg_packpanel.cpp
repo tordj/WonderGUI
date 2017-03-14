@@ -34,7 +34,6 @@ namespace wg
 	{
 		auto pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		pSlot->bVisible = false;
 		m_pHolder->_didAddSlots(pSlot, 1);		
 	}
 	
@@ -45,7 +44,6 @@ namespace wg
 
 		auto pSlot = m_pSlotArray->insert(index);
  		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		pSlot->bVisible = false;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return true;		
 	}
@@ -55,7 +53,7 @@ namespace wg
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return false;
 
-		auto pSlot = m_pSlotArray->insert(index);
+		auto pSlot = m_pSlotArray->slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, 1);
 		m_pSlotArray->remove(index);
 		return true;		
@@ -185,7 +183,7 @@ namespace wg
 	
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() )
+					if( pS->bVisible )
 					{
 						int itemHeight = pS->paddedMatchingHeight( pI->output );
 						if( itemHeight > height )
@@ -202,7 +200,7 @@ namespace wg
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() && pS->preferredSize.h > height )
+					if( pS->bVisible && pS->preferredSize.h > height )
 							height = pS->preferredSize.h;	
 				}
 			}
@@ -230,7 +228,7 @@ namespace wg
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() )
+					if( pS->bVisible )
 						height += pS->paddedMatchingHeight( width );
 				}
 			}
@@ -263,7 +261,7 @@ namespace wg
 	
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() )
+					if( pS->bVisible )
 					{
 						int itemWidth = pS->paddedMatchingWidth( pI->output );
 						if( itemWidth > width )
@@ -280,7 +278,7 @@ namespace wg
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() && pS->preferredSize.w > width )
+					if( pS->bVisible && pS->preferredSize.w > width )
 							width = pS->preferredSize.w;	
 				}
 			}
@@ -308,7 +306,7 @@ namespace wg
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
-					if( pS->isVisible() )
+					if( pS->bVisible )
 						width += pS->paddedMatchingWidth( height );	
 				}
 			}
@@ -316,7 +314,26 @@ namespace wg
 		return width;
 	}
 	
-	
+	//____ _firstChild() __________________________________________________________
+
+	Widget * PackPanel::_firstChild() const
+	{
+		if (m_children.isEmpty())
+			return nullptr;
+
+		return m_children.first()->pWidget;
+	}
+
+	//____ _lastChild() __________________________________________________________
+
+	Widget * PackPanel::_lastChild() const
+	{
+		if (m_children.isEmpty())
+			return nullptr;
+
+		return m_children.last()->pWidget;
+	}
+
 	
 	//____ _firstChildWithGeo() _____________________________________________________
 	
@@ -349,64 +366,148 @@ namespace wg
 			package.geo = pSlot->geo;			
 		}	
 	}
-		
-	
-	//____ _renderRequested() ____________________________________________________
-	
-	void PackPanel::_renderRequested( VectorHook * pHook )
+
+	//____ _didAddSlots() _____________________________________________________
+
+	void PackPanel::_didAddSlots(Slot * pSlot, int nb)
 	{
-		PackHook * p = static_cast<PackHook*>(pHook);
-		_requestRender( p->m_geo );
+		_unhideChildren((PackPanelSlot*) pSlot, nb);
 	}
 	
-	void PackPanel::_renderRequested( VectorHook * pHook, const Rect& rect )
+	//____ _willRemoveSlots() _________________________________________________
+
+	void PackPanel::_willRemoveSlots(Slot * pSlot, int nb)
 	{
-		PackHook * p = static_cast<PackHook*>(pHook);
-		_requestRender( rect + p->m_geo.pos() );
+		_hideChildren((PackPanelSlot*) pSlot, nb);
 	}
-	
-	//____ _requestResizeRequested() _____________________________________________________
-	
-	void PackPanel::_requestResizeRequested( VectorHook * pHook )
+
+	//____ _hideSlots() _______________________________________________________
+
+	void PackPanel::_hideSlots(PanelSlot * pSlot, int nb)
+	{
+		_hideChildren((PackPanelSlot*) pSlot, nb);
+	}
+
+	//____ _unhideSlots() _____________________________________________________
+
+	void PackPanel::_unhideSlots(PanelSlot * pSlot, int nb)
+	{
+		_unhideChildren((PackPanelSlot*) pSlot, nb);
+	}
+
+	//____ _repadSlots() ______________________________________________________
+
+	void PackPanel::_repadSlots(PanelSlot * pSlot, int nb, Border padding)
+	{
+		for (int i = 0; i < nb; i++)
+			pSlot[i].padding = padding;
+
+		_updatePreferredSize();
+		_requestRender();				// This is needed here since children might have repositioned.
+										//TODO: Optimize! Only render what really is needed due to changes.
+	}
+
+	//____ _childPos() _______________________________________________________
+
+	Coord PackPanel::_childPos(void * pChildRef) const
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		return pSlot->geo;
+	}
+
+	//____ _childSize() _______________________________________________________
+
+	Size PackPanel::_childSize(void * pChildRef) const
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		return pSlot->geo;
+	}
+
+	//____ _childRequestRender() ______________________________________________
+
+	void PackPanel::_childRequestRender(void * pChildRef)
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		_requestRender( pSlot->geo );
+
+	}
+
+	void PackPanel::_childRequestRender(void * pChildRef, const Rect& rect)
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		_requestRender(rect + pSlot->geo.pos());
+	}
+
+	//____ _childRequestResize() ______________________________________________
+
+	void PackPanel::_childRequestResize(void * pChildRef)
 	{
 		// Update cached preferred size of child
-		
-		PackHook * p = static_cast<PackHook*>(pHook);
-		p->m_preferredSize = p->_paddedPreferredSize();
-	
-		//
-		
+
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		pSlot->preferredSize = pSlot->paddedPreferredSize();
+
+		_refreshAllWidgets();
+	}
+
+	//____ _prevChild() _______________________________________________________
+
+	Widget * PackPanel::_prevChild(void * pChildRef) const
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+
+		if (pSlot > m_children.begin())
+			return pSlot[-1].pWidget;
+
+		return nullptr;
+	}
+
+	//____ _nextChild() _______________________________________________________
+
+	Widget * PackPanel::_nextChild(void * pChildRef) const
+	{
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+
+		if (pSlot < m_children.last())
+			return pSlot[1].pWidget;
+
+		return nullptr;
+	}
+
+	//____ _unhideChildren() _______________________________________________________
+
+	void PackPanel::_unhideChildren(PackPanelSlot * pSlot, int nb)
+	{
+		for (int i = 0; i < nb; i++)
+		{
+			if (pSlot[i].bVisible == false)
+			{
+				pSlot[i].bVisible = true;
+				pSlot[i].preferredSize = pSlot[i].paddedPreferredSize();
+			}
+		}
+
 		_refreshAllWidgets();
 	}
 	
-	//____ _onWidgetAppeared() ______________________________________________________
-	
-	void PackPanel::_onWidgetAppeared( VectorHook * pInserted )
+	//____ _hideChildren() _______________________________________________________
+
+	void PackPanel::_hideChildren(PackPanelSlot * pSlot, int nb)
 	{
-		// Update cached preferred size of child
-		
-		PackHook * p = static_cast<PackHook*>(pInserted);
-		p->m_preferredSize = p->_paddedPreferredSize();
-		
-		//
-		
-		_refreshAllWidgets();    
-	}
-	
-	//____ _onWidgetDisappeared() ___________________________________________________
-	
-	void PackPanel::_onWidgetDisappeared( VectorHook * pToBeRemoved )
-	{
+		for (int i = 0; i < nb; i++)
+			pSlot[i].bVisible = true;
+
 		_refreshAllWidgets();
 	}
+		
 	
 	//____ _onWidgetsReordered() ____________________________________________________
-	
+/*	
 	void PackPanel::_onWidgetsReordered()
 	{
 		_refreshChildGeo();
 	}
-	
+*/
 	//____ _refreshAllWidgets() _____________________________________________________
 	
 	void PackPanel::_refreshAllWidgets()
@@ -416,12 +517,6 @@ namespace wg
 	}
 	
 	
-	//____ _newHook() ____________________________________________________________
-	
-	VectorHook * PackPanel::_newHook()
-	{
-		return new PackHook(this);
-	}
 	
 	//____ _setSize() ____________________________________________________________
 	
@@ -443,7 +538,7 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 			
-			int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 			
 			int nItems = _populateSizeBrokerArray(pItemArea);		
@@ -452,18 +547,16 @@ namespace wg
 			
 			length = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
 			
-			PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 			SizeBrokerItem * pI = pItemArea;
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
-					int b = m_bHorizontal?pH->_paddedMatchingHeight(pI->output):pH->_paddedMatchingWidth(pI->output);
+					int b = m_bHorizontal?pS->paddedMatchingHeight(pI->output):pS->paddedMatchingWidth(pI->output);
 					if( b > breadth )
 						breadth = b;			
 					pI++;
 				}
-				pH = pH->_next();
 			}
 			
 			// Release temporary memory area
@@ -473,32 +566,28 @@ namespace wg
 		}
 		else
 		{
-			PackHook * p = static_cast<PackHook*>(m_hooks.first());
-	
 			if( m_bHorizontal )
 			{
-	            while( p )
+				for (auto p = m_children.begin(); p != m_children.end(); p++)
 	            {
-					if( p->isVisible() )
+					if( p->bVisible )
 					{
-						length += p->m_preferredSize.w;
-		                if( p->m_preferredSize.h > breadth )
-		                    breadth = p->m_preferredSize.h;
+						length += p->preferredSize.w;
+		                if( p->preferredSize.h > breadth )
+		                    breadth = p->preferredSize.h;
 					}
-					p = p->_next();
 	            }
 			}
 			else
 			{
-	            while( p )
-	            {
-					if( p->isVisible() )
+				for (auto p = m_children.begin(); p != m_children.end(); p++)
+				{
+					if( p->bVisible )
 					{
-						length += p->m_preferredSize.h;
-						if( p->m_preferredSize.w > breadth )
-						    breadth = p->m_preferredSize.w;
+						length += p->preferredSize.h;
+						if( p->preferredSize.w > breadth )
+						    breadth = p->preferredSize.w;
 					}
-	                p = p->_next();
 	            }
 			}
 		}
@@ -517,7 +606,7 @@ namespace wg
 	
 	void PackPanel::_refreshChildGeo()
 	{
-	    if( m_hooks.isEmpty() )
+	    if( m_children.isEmpty() )
 	        return;
 	    
 		Size sz = size();
@@ -532,48 +621,47 @@ namespace wg
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
 			Coord pos;
-			PackHook * p = static_cast<PackHook*>(m_hooks.first());
 	        Rect geo;
-			while( p )
+			for (auto p = m_children.begin(); p != m_children.end(); p++)
 			{
-				if( p->isVisible() )
+				if( p->bVisible )
 				{
 					geo.x = pos.x;
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = p->m_preferredSize.w;
+						geo.w = p->preferredSize.w;
 						geo.h = sz.h;
-						pos.x += p->m_preferredSize.w;
+						pos.x += p->preferredSize.w;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = p->m_preferredSize.h;
-						pos.y += p->m_preferredSize.h;
+						geo.h = p->preferredSize.h;
+						pos.y += p->preferredSize.h;
 					}
-					geo -= p->m_padding;
+					geo -= p->padding;
 	            
-					if( geo != p->m_geo )
+					if( geo != p->geo )
 					{
 						_requestRender(geo);
-						_requestRender(p->m_geo);
+						_requestRender(p->geo);
 	        
-						int oldW = p->m_geo.w;
-						int oldH = p->m_geo.h;
-						p->m_geo = geo;
+						int oldW = p->geo.w;
+						int oldH = p->geo.h;
+						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							p->m_pWidget->_setSize( geo.size() );
+							p->pWidget->_setSize( geo.size() );
 	                
 					}
 				}
 				else
 				{
-					if( p->m_geo.w != 0 && p->m_geo.h != 0 )
-						_requestRender(p->m_geo);
+					if( p->geo.w != 0 && p->geo.h != 0 )
+						_requestRender(p->geo);
 	
-					p->m_geo.x = pos.x;
-					p->m_geo.y = pos.y;
+					p->geo.x = pos.x;
+					p->geo.y = pos.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -584,16 +672,14 @@ namespace wg
 						geo.w = sz.w;
 						geo.h = 0;
 					}
-				}
-	
-				p = p->_next();
+				}	
 			}
 		}
 		else
 		{
 			// Allocate and populate SizeBroker array
 	
-			int arrayBytes = sizeof(SizeBrokerItem)*m_hooks.size();
+			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 	
 			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);		
@@ -602,14 +688,13 @@ namespace wg
 			
 			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
 			
-			PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 			SizeBrokerItem * pI = pItemArea;
 	
 			Coord pos;
 			Rect geo;
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
 					geo.x = pos.x;
 					geo.y = pos.y;
@@ -625,28 +710,28 @@ namespace wg
 						geo.h = pI->output;
 						pos.y += pI->output;
 					}
-					geo -= pH->m_padding;
+					geo -= pS->padding;
 				
-					if( geo != pH->m_geo )
+					if( geo != pS->geo )
 					{					
 						_requestRender(geo);
-						_requestRender(pH->m_geo);
+						_requestRender(pS->geo);
 	
-						int oldW = pH->m_geo.w;
-						int oldH = pH->m_geo.h;
-						pH->m_geo = geo;
+						int oldW = pS->geo.w;
+						int oldH = pS->geo.h;
+						pS->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							pH->m_pWidget->_setSize( geo.size() );
+							pS->pWidget->_setSize( geo.size() );
 					}
 					pI++;
 				}
 				else
 				{
-					if( pH->m_geo.w != 0 && pH->m_geo.h != 0 )
-						_requestRender(pH->m_geo);
+					if( pS->geo.w != 0 && pS->geo.h != 0 )
+						_requestRender(pS->geo);
 	
-					pH->m_geo.x = pos.x;
-					pH->m_geo.y = pos.y;
+					pS->geo.x = pos.x;
+					pS->geo.y = pos.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -658,7 +743,6 @@ namespace wg
 						geo.h = 0;
 					}
 				}
-				pH = pH->_next();
 			}
 			
 			// Release SizeBroker array
@@ -671,37 +755,34 @@ namespace wg
 	
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray ) const
 	{
-		PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )
 		{
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
-					pI->preferred = pH->m_preferredSize.w;
-					pI->min = pH->_paddedMinSize().w;
-					pI->max = pH->_paddedMaxSize().w;
-					pI->weight = pH->m_weight;			
+					pI->preferred = pS->preferredSize.w;
+					pI->min = pS->paddedMinSize().w;
+					pI->max = pS->paddedMaxSize().w;
+					pI->weight = pS->weight;			
 					pI++;
 				}
-				pH = pH->_next();
 			}
 		}
 		else 
 		{
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
-					pI->preferred = pH->m_preferredSize.h;
-					pI->min = pH->_paddedMinSize().h;
-					pI->max = pH->_paddedMaxSize().h;
-					pI->weight = pH->m_weight;			
+					pI->preferred = pS->preferredSize.h;
+					pI->min = pS->paddedMinSize().h;
+					pI->max = pS->paddedMaxSize().h;
+					pI->weight = pS->weight;			
 					pI++;
 				}
-				pH = pH->_next();
 			}			
 		}
 		
@@ -710,37 +791,34 @@ namespace wg
 	
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
 	{
-		PackHook * pH = static_cast<PackHook*>(m_hooks.first());
 		SizeBrokerItem * pI = pArray;
 		
 		if( m_bHorizontal )
 		{
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
-					pI->preferred = pH->_paddedMatchingWidth(forcedBreadth);
-					pI->min = pH->_paddedMinSize().w;
-					pI->max = pH->_paddedMaxSize().w;
-					pI->weight = pH->m_weight;			
+					pI->preferred = pS->paddedMatchingWidth(forcedBreadth);
+					pI->min = pS->paddedMinSize().w;
+					pI->max = pS->paddedMaxSize().w;
+					pI->weight = pS->weight;			
 					pI++;
 				}
-				pH = pH->_next();
 			}
 		}
 		else 
 		{
-			while( pH )
+			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
-				if( pH->isVisible() )
+				if( pS->bVisible )
 				{
-					pI->preferred = pH->_paddedMatchingHeight(forcedBreadth);
-					pI->min = pH->_paddedMinSize().h;
-					pI->max = pH->_paddedMaxSize().h;
-					pI->weight = pH->m_weight;			
+					pI->preferred = pS->paddedMatchingHeight(forcedBreadth);
+					pI->min = pS->paddedMinSize().h;
+					pI->max = pS->paddedMaxSize().h;
+					pI->weight = pS->weight;			
 					pI++;
 				}
-				pH = pH->_next();
 			}			
 		}
 		

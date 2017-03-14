@@ -48,7 +48,6 @@ namespace wg
 	
 	class Capsule : public Container, protected ChildEntryHolder
 	{
-		friend class CapsuleHook;
 	
 	public:
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -61,9 +60,6 @@ namespace wg
 		ChildEntry<Slot,Capsule> child;
 
 
-		bool				removeChild( const Widget_p& pWidget );
-		bool				clear();
-			
 
 		// Overloaded from Widget
 	
