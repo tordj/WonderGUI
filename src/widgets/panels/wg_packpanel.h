@@ -61,7 +61,7 @@ namespace wg
 		bool		insert( int index, const Widget_p& pWidget );
 		bool		remove( int index );
 
-		void		setWeight( int index, float weight );
+		bool		setWeight( int index, float weight );
 		float		weight( int index ) const;
 	};
 
@@ -109,7 +109,13 @@ namespace wg
 		void			setSizeBroker( const SizeBroker_p& pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 
-		
+
+		//.____ Hierarchy ________________________________________________________
+
+		bool		removeChild( const Widget_p& pWidget );
+		bool		clear();
+
+	
 	protected:
 		PackPanel();
 		virtual ~PackPanel();
@@ -125,11 +131,11 @@ namespace wg
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
 
-		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
-		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
+		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
 
 
-		// Overloaded from SlotArrayHolder
+		// Overloaded from PanelSlotsHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
@@ -149,11 +155,7 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		
-		// Overloaded from LegacyVectorPanel
-		
-		Rect			_hookGeo( const VectorHook * pHook );
-		
+				
 		//
 		
 		void			_refreshChildGeo();

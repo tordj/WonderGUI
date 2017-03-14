@@ -24,37 +24,7 @@
 
 namespace wg 
 {
-	
-	const char ModValue::CLASSNAME[] = {"ModValue"};
-	
-	
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool ModValue::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Value::isInstanceOf(pClassName);
-	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * ModValue::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ cast() _________________________________________________________________
-	
-	ModValue_p ModValue::cast( const Interface_p& pInterface )
-	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return ModValue_p( pInterface.getRealObjectPtr(), static_cast<ModValue*>( pInterface.rawPtr()) );
-	
-		return 0;
-	}
-	
+		
 	//____ clear() _________________________________________________________________
 	
 	void ModValue::clear() 

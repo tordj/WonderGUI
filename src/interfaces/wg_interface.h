@@ -20,17 +20,13 @@
 
 =========================================================================*/
 #ifndef WG_INTERFACE_DOT_H
+#define WG_INTERFACE_DOT_H
+
+#include <wg_pointers.h>
 
 namespace wg 
 {
-	#define WG_INTERFACE_DOT_H
-	
-	class Interface_p;
-	class Interface_wp;
-	
-	class Object;
-	class Object_p;
-	
+		
 	
 	/**
 	 * @brief Provides access to items embedded into a Widget or Object.
@@ -58,12 +54,8 @@ namespace wg
 		friend class Interface_p;
 		friend class Interface_wp;
 	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static Interface_p		cast( const Interface_p& pInterface );			// Provided just for completeness sake.
-		Interface_p				ptr();												///< @brief Get a pointer to this interface.
-		Object_p				holder();											///< @breif Get a pointer to the object providing this interface.
+		inline Interface_p		ptr() { return Interface_p(_object(),this);}		///< @brief Get a pointer to this interface.
+		inline Object_p			holder() { return Object_p( _object() ); };			///< @breif Get a pointer to the object providing this interface.
 	
 	protected:
 		virtual Object * 		_object() const = 0;

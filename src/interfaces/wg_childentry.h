@@ -39,9 +39,9 @@
 namespace wg 
 {
 
-	template<class SlotType, class HolderType> class ChildEntry;
-	typedef	StrongInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_p>	ChildEntry_p;
-	typedef	WeakInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_wp>	ChildEntry_wp;
+//	template<class SlotType, class HolderType> class ChildEntry;
+//	typedef	StrongInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_p>	ChildEntry_p;
+//	typedef	WeakInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_wp>	ChildEntry_wp;
 
 	//____ ChildEntryHolder ____________________________________________________
 
@@ -59,6 +59,7 @@ namespace wg
 		
 	public:
 		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+
 
 		inline ChildEntry operator=(const Widget_p& pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget.rawPtr()); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }

@@ -48,10 +48,6 @@ namespace wg
 	public:
 		Span(SpanItem* pItem) : m_pItem(pItem) {}
 	
-		virtual bool				isInstanceOf( const char * pClassName ) const;
-		virtual const char *		className( void ) const;
-		static const char			CLASSNAME[];
-		static Span_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline Span_p			ptr() { return Span_p(_object(),this); }
 	
 		inline int		min() const { return m_pItem->min; }

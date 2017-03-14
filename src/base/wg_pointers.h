@@ -30,13 +30,12 @@
 #	include <wg_object.h>
 #endif
 
-#ifndef WG_INTERFACE_DOT_H
-#	include	<wg_interface.h>
-#endif
 
 namespace wg 
 {
 	
+	
+	class Interface;
 	class Object_wp;
 	
 	//____ Object_p _____________________________________________________________

@@ -25,37 +25,7 @@
 
 namespace wg 
 {
-	
-	const char Span::CLASSNAME[] = {"Span"};
-	
-	
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool Span::isInstanceOf( const char * pClassName ) const
-	{
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Interface::isInstanceOf(pClassName);
-	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * Span::className( void ) const
-	{
-		return CLASSNAME;
-	}
-	
-	//____ cast() _________________________________________________________________
-	
-	Span_p Span::cast( const Interface_p& pInterface )
-	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return Span_p( pInterface.getRealObjectPtr(), static_cast<Span*>( pInterface.rawPtr()) );
-	
-		return 0;
-	}
-	
+		
 	//____ _object() _______________________________________________________________
 	
 	Object * Span::_object() const

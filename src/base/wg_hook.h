@@ -59,10 +59,6 @@ namespace wg
 	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
 	typedef	WeakPtr<RootPanel,Object_wp>		RootPanel_wp;
 		
-	class IWidgets;
-	typedef	StrongInterfacePtr<IWidgets,Interface_p>		IWidgets_p;
-	typedef	WeakInterfacePtr<IWidgets,Interface_wp>	IWidgets_wp;
-	
 	
 	class Hook
 	{

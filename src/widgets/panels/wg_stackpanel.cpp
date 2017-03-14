@@ -251,8 +251,7 @@ namespace wg
 			StackPanelSlot * pSlot = m_children.first();
 			package.pMagic = pSlot;
 			package.pWidget = pSlot->pWidget;
-			package.geo = _childGeo(pSlot);
-			
+			package.geo = _childGeo(pSlot);			
 		}			
 	}
 
@@ -407,7 +406,7 @@ namespace wg
 		{
 			if( !pSlot[i].bVisible )
 			{
-				Size preferred = pSlot[i]._paddedPreferredSize();
+				Size preferred = pSlot[i].paddedPreferredSize();
 	
 				if( preferred.w > m_preferredSize.w )
 				{
@@ -463,7 +462,7 @@ namespace wg
 		{
 			if( p->bVisible )
 			{
-				Size sz = p->_paddedPreferredSize();
+				Size sz = p->paddedPreferredSize();
 				if( sz.w > preferredSize.w )
 					preferredSize.w = sz.w;
 				if( sz.h > preferredSize.h )
@@ -513,7 +512,7 @@ namespace wg
 		{
 			if( pSlot->bVisible )
 			{
-				Size sz = pSlot->_paddedPreferredSize();
+				Size sz = pSlot->paddedPreferredSize();
 				if( sz.w > preferredSize.w )
 					preferredSize.w = sz.w;
 				if( sz.h > preferredSize.h )

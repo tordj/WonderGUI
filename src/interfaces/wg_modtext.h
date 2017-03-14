@@ -64,10 +64,6 @@ namespace wg
 	public:
 		ModText( TextItem * pItem ) : Text(pItem) {};
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static ModText_p		cast( const Interface_p& pInterface );
 		inline ModText_p		ptr() { return ModText_p(_object(),this); }
 	
 		inline void				clear() { m_pItem->clear(); }

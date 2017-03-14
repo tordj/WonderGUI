@@ -67,10 +67,6 @@ namespace wg
 	public:
 		Text( TextItem * pItem ) : m_pItem(pItem) {};
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static Text_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline Text_p			ptr() { return Text_p(_object(),this); }
 	
 		inline void				setStyle( const TextStyle_p& pStyle ) { m_pItem->setStyle(pStyle); }

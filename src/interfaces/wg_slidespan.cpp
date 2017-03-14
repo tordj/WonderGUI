@@ -26,35 +26,6 @@
 namespace wg 
 {
 	
-	const char SlideSpan::CLASSNAME[] = {"SlideSpan"};
-	
-	
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool SlideSpan::isInstanceOf( const char * pClassName ) const
-	{
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Span::isInstanceOf(pClassName);
-	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * SlideSpan::className( void ) const
-	{
-		return CLASSNAME;
-	}
-	
-	//____ cast() _________________________________________________________________
-	
-	SlideSpan_p SlideSpan::cast( const Interface_p& pInterface )
-	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return SlideSpan_p( pInterface.getRealObjectPtr(), static_cast<SlideSpan*>( pInterface.rawPtr()) );
-	
-		return 0;
-	}
 	
 
 } // namespace wg

@@ -40,10 +40,6 @@ namespace wg
 	public:
 		SlideSpan(SpanItem* pItem) : Span(pItem) {}
 	
-		virtual bool				isInstanceOf( const char * pClassName ) const;
-		virtual const char *		className( void ) const;
-		static const char			CLASSNAME[];
-		static SlideSpan_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline SlideSpan_p		ptr() { return SlideSpan_p(_object(),this); }
 	
 	

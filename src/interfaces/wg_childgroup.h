@@ -43,9 +43,9 @@
 namespace wg 
 {
 
-	template<class SlotType, class HolderType> class ChildGroup;
-	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
-	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
+//	template<class SlotType, class HolderType> class ChildGroup;
+//	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
+//	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
 
 	//____ ChildGroupHolder _________________________________________________________
 
@@ -63,6 +63,9 @@ namespace wg
 		
 	public:
 		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
+
+		inline StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>(_object(),this); }
+
 
 		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 

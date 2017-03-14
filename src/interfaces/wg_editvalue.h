@@ -54,10 +54,6 @@ namespace wg
 	public:
 		EditValue(EditValueItem * pItem) : ModValue(pItem) {}
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static EditValue_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline EditValue_p		ptr() { return EditValue_p(_object(),this); }
 	
 		virtual void			setEditMode(TextEditMode mode) = 0;

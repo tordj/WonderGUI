@@ -63,10 +63,6 @@ namespace wg
 	public:
 		ColumnHeader(ColumnHeaderItem* pItem);
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static ColumnHeader_p	cast( const Interface_p& pInterface );
 		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(),this); }
 	
 		//____ Interfaces ______________________________________

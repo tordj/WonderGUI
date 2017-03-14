@@ -55,12 +55,19 @@ namespace wg
 	};
 
 
+	class StackPanelChildren;
+	typedef	StrongInterfacePtr<StackPanelChildren,Interface_p>	StackPanelChildren_p;
+	typedef	WeakInterfacePtr<StackPanelChildren,Interface_wp>	StackPanelChildren_wp;
+
 	//____ StackPanelChildren ________________________________________________________
 
 	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
 		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
+
+		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(_object(),this); }
+
 
 		void		add( const Widget_p& pWidget );
 		bool		insert( int index, const Widget_p& pWidget );
@@ -131,7 +138,7 @@ namespace wg
 		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
 		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
 
-		// Overloaded from SlotArrayHolder
+		// Overloaded from PanelSlotsHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );

@@ -64,12 +64,12 @@ namespace wg
 	public:
 		PanelSlot() : bVisible(false) {}
 
-		Size		_paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
-		Size		_paddedMinSize() const { return pWidget->minSize() + padding; }
-		Size		_paddedMaxSize() const { return pWidget->maxSize() + padding; }
-		int			_paddedMatchingWidth( int paddedHeight ) const { return pWidget->matchingWidth( paddedHeight - padding.height() ) + padding.width(); }
-		int			_paddedMatchingHeight( int paddedWidth ) const { return pWidget->matchingHeight( paddedWidth - padding.width() ) + padding.height(); }
-		bool		_isVisible() const { return bVisible; }
+		Size		paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
+		Size		paddedMinSize() const { return pWidget->minSize() + padding; }
+		Size		paddedMaxSize() const { return pWidget->maxSize() + padding; }
+		int			paddedMatchingWidth( int paddedHeight ) const { return pWidget->matchingWidth( paddedHeight - padding.height() ) + padding.width(); }
+		int			paddedMatchingHeight( int paddedWidth ) const { return pWidget->matchingHeight( paddedWidth - padding.width() ) + padding.height(); }
+		bool		isVisible() const { return bVisible; }
 
 	
 		bool		bVisible;
@@ -175,8 +175,6 @@ namespace wg
 		void		setMaskOp( MaskOp operation );
 		MaskOp	maskOp() const { return m_maskOp; }
 		
-		// Overloaded from IWidgets
-	
 	
 	protected:
 		Panel();

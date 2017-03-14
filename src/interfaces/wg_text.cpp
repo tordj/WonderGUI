@@ -24,37 +24,7 @@
 
 namespace wg 
 {
-	
-	const char Text::CLASSNAME[] = {"Text"};
-	
-	
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool Text::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Interface::isInstanceOf(pClassName);
-	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * Text::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ cast() _________________________________________________________________
-	
-	Text_p Text::cast( const Interface_p& pInterface )
-	{
-		if( pInterface && pInterface->isInstanceOf(CLASSNAME) )
-			return Text_p( pInterface.getRealObjectPtr(), static_cast<Text*>( pInterface.rawPtr()) );
-	
-		return 0;
-	}
-	
+		
 	//____ _object() _______________________________________________________________
 	
 	Object * Text::_object() const

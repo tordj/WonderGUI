@@ -35,8 +35,6 @@ namespace wg
 	{
 		m_accessMode	= AccessMode::None;
 		m_pPixels		= 0;
-		m_pMetaData		= 0;
-		m_nMetaBytes	= 0;
 		m_scaleMode		= ScaleMode::Nearest;
 		
 		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
@@ -46,8 +44,6 @@ namespace wg
 	
 	Surface::~Surface()
 	{
-		if( m_pMetaData )
-			delete [] m_pMetaData;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -76,37 +72,6 @@ namespace wg
 	
 		return 0;
 	} 
-
-	//_____ setMetaData() _________________________________________________________
-
-	void Surface::setMetaData( void * pData, int bytes )
-	{
-		if( m_pMetaData )
-			delete [] m_pMetaData;
-
-		if( pData == 0 )
-		{
-			m_pMetaData = 0;
-			m_nMetaBytes = 0;
-		}
-		else
-		{
-			m_pMetaData = new uint8_t[bytes];
-			memcpy(m_pMetaData, pData, bytes);
-			m_nMetaBytes = bytes;
-		}
-	}
-
-	//_____ clearMetaData() _________________________________________________________
-
-	void Surface::clearMetaData()
-	{
-		if( m_pMetaData )
-			delete [] m_pMetaData;
-
-		m_pMetaData = 0;
-		m_nMetaBytes = 0;
-	}
 
 	//____ setScaleMode() __________________________________________________________
 

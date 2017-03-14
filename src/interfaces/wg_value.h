@@ -66,10 +66,6 @@ namespace wg
 	public:
 		Value(ValueItem* pItem) : m_pItem(pItem) {}
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static Value_p			cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline Value_p			ptr() { return Value_p(_object(),this); }
 	
 		inline void				setFormatter( const ValueFormatter_p& pFormatter ) { m_pItem->setFormatter(pFormatter); }

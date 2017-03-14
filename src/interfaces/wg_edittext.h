@@ -54,10 +54,6 @@ namespace wg
 	public:
 		EditText(EditTextItem * pItem) : ModText(pItem) {}
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static EditText_p		cast( const Interface_p& pInterface );				// Provided just for completeness sake.
 		inline EditText_p		ptr() { return EditText_p(_object(),this); }
 
 		void			setEditMode(TextEditMode mode);

@@ -59,10 +59,6 @@ namespace wg
 	public:
 		Icon(IconItem* pItem) : m_pItem(pItem) {}
 	
-		virtual bool		isInstanceOf( const char * pClassName ) const;
-		virtual const char *className( void ) const;
-		static const char	CLASSNAME[];
-		static Icon_p		cast( const Interface_p& pInterface );
 		inline Icon_p		ptr() { return Icon_p(_object(),this); }
 	
 		inline bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0),

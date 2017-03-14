@@ -55,10 +55,6 @@ namespace wg
 	public:
 		ModValue(ModValueItem * pItem) : Value(pItem) {}
 	
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static ModValue_p		cast( const Interface_p& pInterface );
 		inline ModValue_p		ptr() { return ModValue_p(_object(),this); }
 	
 	
