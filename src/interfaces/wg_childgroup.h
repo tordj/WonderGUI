@@ -51,7 +51,6 @@ namespace wg
 
 	class ChildGroupHolder
 	{
-	public:
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
 	};
@@ -70,8 +69,46 @@ namespace wg
 		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
 
 		inline int		size() const { return m_pSlotArray->size(); } 
-		inline Widget_p get( int index) const { return Widget_p(m_pSlotArray->slot(index)->pWidget); }
-		inline void		clear() 
+
+		inline Widget_p get( int index) const 
+		{ 
+			if( index < 0 || index >= m_pSlotArray->size() )
+				return nullptr;
+
+			return Widget_p(m_pSlotArray->slot(index)->pWidget); 
+		}
+
+		bool add( const Widget_p& pWidget )
+		{
+			SlotType * pSlot = m_pSlotArray->add();
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			m_pHolder->_didAddSlots(pSlot, 1);		
+		}
+		
+		bool insert( int index, const Widget_p& pWidget )
+		{
+			if( index < 0 || index >= m_pSlotArray->size() )
+				return false;
+
+			SlotType * pSlot = m_pSlotArray->insert(index);
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;		
+		}
+		
+		bool remove( int index )
+		{
+			if( index < 0 || index >= m_pSlotArray->size() )
+				return false;
+
+			SlotType * pSlot = m_pSlotArray->slot(index);
+			m_pHolder->_willRemoveSlots(pSlot, 1);
+			m_pSlotArray->remove(index);
+			return true;		
+		}
+
+
+		void clear() 
 		{ 
 			if( m_pSlotArray->isEmpty() ) 
 				return; 

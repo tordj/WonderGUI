@@ -30,36 +30,6 @@ namespace wg
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 		
 	
-	
-	void StackPanelChildren::add( const Widget_p& pWidget )
-	{
-		auto pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		m_pHolder->_didAddSlots(pSlot, 1);
-	}
-	
-	bool StackPanelChildren::insert( int index, const Widget_p& pWidget )
-	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
-
-		auto pSlot = m_pSlotArray->insert(index);
- 		pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-		m_pHolder->_didAddSlots(pSlot, 1);
-		return true;
-	}
-
-	bool StackPanelChildren::remove( int index )
-	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
-
-		auto pSlot = m_pSlotArray->slot(index);
-		m_pHolder->_willRemoveSlots(pSlot, 1);
-		m_pSlotArray->remove(index);
-		return true;
-	}
-
 	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )

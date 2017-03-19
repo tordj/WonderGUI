@@ -65,21 +65,6 @@ namespace wg
 		int16_t	x, y;
 	};
 	
-	//____ Class: UCord16 _______________________________________________________
-	
-	class	UCord16
-	{
-	public:
-		UCord16() : x(0), y(0) {}
-		UCord16( uint16_t _x, uint16_t _y ) {x=_x;y=_y;};
-	
-		inline UCord16 operator=(const UCord16& k)	{ x = k.x; y = k.y; return *this; }
-	
-		inline bool operator==(const UCord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-		inline bool operator!=(const UCord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-	
-		uint16_t	x, y;
-	};
 	
 	//____ Class: Coord ________________________________________________________
 	/**
@@ -133,6 +118,21 @@ namespace wg
 		int	x, y;
 	};
 	
+	//____ Class: CoordF _______________________________________________________
+	
+	class	CoordF
+	{
+	public:
+		CoordF() : x(0.f), y(0.f) {}
+		CoordF( float _x, float _y ) {x=_x;y=_y;};
+	
+		inline CoordF operator=(const CoordF& k)	{ x = k.x; y = k.y; return *this; }
+	
+		inline bool operator==(const CoordF& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
+		inline bool operator!=(const CoordF& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+	
+		float	x, y;
+	};
 	
 	
 	class Size;

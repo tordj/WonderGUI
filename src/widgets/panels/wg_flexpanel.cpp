@@ -28,9 +28,8 @@ namespace wg
 {
 	
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
-	const char FlexHook::CLASSNAME[] = {"FlexHook"};
 	
-	float	FlexOrigo::s_origoTab[9][2] = {	0.f, 0.f,
+	float	FlexPos::s_origoTab[9][2] = {	0.f, 0.f,
 												0.5f, 0.f,
 												1.f, 0.f,
 												1.f, 0.5f,
@@ -39,184 +38,464 @@ namespace wg
 												0.f, 1.f,
 												0.f, 0.5f,
 												0.5f, 0.5f };
+
+
+	//____ addPinned() _________________________________________________________
 	
-	//____ FlexHook::Constructor ________________________________________________
-	
-	FlexHook::FlexHook( FlexPanel * pParent, const Rect& placementGeo, Border padding ) : m_pParent(pParent),
-		m_bFloating(false), m_widthPolicy(SizePolicy::Bound), m_heightPolicy(SizePolicy::Bound),
-		m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest),
-		m_placementGeo(placementGeo)
+	bool FlexPanelChildren::addPinned( const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
-	    m_padding = padding;
-	}
-	
-	//____ FlexHook::isInstanceOf() __________________________________________
-	
-	bool FlexHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
+			FlexPanelSlot * pSlot = m_pSlotArray->add();
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			
+			pSlot->bPinned = true;
+			pSlot->topLeftPin = topLeft;
+			pSlot->bottomRightPin = bottomRight;
+			
+			m_pHolder->_didAddSlots(pSlot, 1);
 			return true;
-	
-		return PanelHook::isInstanceOf(pClassName);
 	}
 	
-	//____ FlexHook::className() _____________________________________________
+	//____ addMovable() ________________________________________________________
 	
-	const char * FlexHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ FlexHook::cast() __________________________________________________
-	
-	FlexHook_p FlexHook::cast( const Hook_p& pHook )
+	bool FlexPanelChildren::addMovable( const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return FlexHook_p( static_cast<FlexHook*>(pHook.rawPtr()) );
-	
-		return 0;
+			FlexPanelSlot * pSlot = m_pSlotArray->add();
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			
+			pSlot->placementGeo = geometry;
+			pSlot->origo = origo;
+			pSlot->hotspot = hotspot;
+			
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;
 	}
 	
-	
-	//____ FlexHook::setStretching() ______________________________________________
-	
-	bool  FlexHook::setStretching( const FlexOrigo& topLeftOrigo, 
-									 const FlexOrigo& bottomRightOrigo, Border padding )
+	//____ insertPinned() ________________________________________________________
+
+	bool FlexPanelChildren::insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
-		m_bFloating			= false;
-		m_topLeftOrigo		= topLeftOrigo;
-		m_bottomRightOrigo	= bottomRightOrigo;
-		m_padding			= padding;
-	
-		m_topLeftOfs.clear();
-		m_bottomRightOfs.clear();
-	
-		_refreshRealGeo();
-		return true;
+			if( index < 0 || index >= m_pSlotArray->size() )
+				return false;
+
+			FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+
+			pSlot->bPinned = true;
+			pSlot->topLeftPin = topLeft;
+			pSlot->bottomRightPin = bottomRight;
+
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;				
 	}
 	
-	//____ FlexHook::setStretching() ______________________________________________
-	
-	bool  FlexHook::setStretching( const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
-		const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
+	//____ insertMovable() ________________________________________________________
+		
+	bool FlexPanelChildren::insertMovable( int index, const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
-		m_bFloating			= false;
-		m_topLeftOrigo		= topLeftOrigo;
-		m_topLeftOfs		= topLeftOfs;
-		m_bottomRightOrigo	= bottomRightOrigo;
-		m_bottomRightOfs	= bottomRightOfs;
-		m_padding			= padding;
-	
-		_refreshRealGeo();
-		return true;
+			if( index < 0 || index >= m_pSlotArray->size() )
+				return false;
+
+			FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+
+			pSlot->placementGeo = geometry;
+			pSlot->origo = origo;
+			pSlot->hotspot = hotspot;
+
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;		
 	}
+
+	//____ setPinned() ________________________________________________________
 	
-	
-	//____ FlexHook::setFloating() ______________________________________________
-	
-	bool FlexHook::setFloating( const Coord& pos, const FlexOrigo& origo )
+	bool FlexPanelChildren::setPinned( int index )
 	{
-		return setFloating( pos, origo, origo );
-	}
-	
-	bool FlexHook::setFloating( const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot )
-	{
-		m_widthPolicy	= SizePolicy::Default;
-		m_heightPolicy	= SizePolicy::Default;
-		m_bFloating		= true;
-		m_origo			= origo;
-		m_hotspot		= hotspot;
-		m_placementGeo.setPos(pos);
-	
-		_refreshRealGeo();
-		return true;
-	}
-	
-	bool FlexHook::setFloating( const Rect& geometry, const FlexOrigo& origo )
-	{
-		return setFloating( geometry, origo, origo );
-	}
-	
-	bool FlexHook::setFloating( const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot )
-	{
-		m_widthPolicy	= SizePolicy::Bound;
-		m_heightPolicy	= SizePolicy::Bound;
-		m_bFloating		= true;
-		m_origo			= origo;
-		m_hotspot		= hotspot;
-		m_placementGeo	= geometry;
-	
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::top() ______________________________________________________
-	
-	void FlexHook::top()
-	{
-		moveOver( _chain()->last() );
-	}
-	
-	//____ FlexHook::bottom() ___________________________________________________
-	
-	void FlexHook::bottom()
-	{
-		moveUnder( _chain()->first() );
-	}
-	
-	//____ FlexHook::up() _______________________________________________________
-	
-	bool FlexHook::up()
-	{
-		FlexHook * pNext = _next();
-	
-		if( pNext == 0 )
+		if( index < 0 || index >= m_pSlotArray->size() )
 			return false;
-	
-		// Get area potentially exposed
-	
-		Rect cover( m_realGeo, pNext->m_realGeo );
-	
-		// Move up
-	
-		_moveUp();
-	
-		// Request render on potentially exposed area.
-	
-		if( pNext->m_bVisible && cover.w > 0 && cover.h > 0 )
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+
+		if( !p->bPinned )
 		{
-			m_pParent->_onRequestRender( cover, this );
+			p->bPinned = true;
+			
+			Size sz = m_pHolder->size();
+			
+			p->topLeftPin		= FlexPos( p->realGeo.x/(float)sz.w, p->realGeo.y/(float)sz.h );
+			p->bottomRightPin	= FlexPos( p->realGeo.right()/(float)sz.w, p->realGeo.bottom()/(float)sz.h );
+		
+			m_pHolder->_refreshRealGeo( p );
+		}
+		return true;
+	}
+	
+	bool FlexPanelChildren::setPinned( int index, const FlexPos& topLeft, const FlexPos& bottomRight )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+
+		p->bPinned			= true;
+		p->topLeftPin		= topLeft;
+		p->bottomRightPin	= bottomRight;
+			
+		m_pHolder->_refreshRealGeo( p );
+		return true;
+	}
+	
+	//____ setMovable() ________________________________________________________
+		
+	bool FlexPanelChildren::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+
+		if( p->bPinned )
+		{
+			p->bPinned 		= false;
+			p->origo		= origo;
+			p->hotspot		= hotspot;		
+			p->placementGeo	= p->realGeo - origo.pos( m_pHolder->size() ) + hotspot.pos(p->realGeo);		
+			
+			m_pHolder->_refreshRealGeo( p );
+		}
+		return true;
+	}
+	
+	bool FlexPanelChildren::setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+					
+		p->bPinned 		= false;
+		p->origo		= origo;
+		p->hotspot		= hotspot;		
+		p->placementGeo	= geometry;
+
+		m_pHolder->_refreshRealGeo( p );
+		return true;
+	}
+	
+	//____ moveToBack() ________________________________________________________
+		
+	bool FlexPanelChildren::moveToBack( int index )
+	{
+		return moveBelow( index, 0 );
+	}
+	
+	//____ moveToFront() ________________________________________________________
+
+	bool FlexPanelChildren::moveToFront( int index )
+	{
+		return moveAbove( index, m_pSlotArray->size()-1 );
+	}
+		
+	//____ moveAbove() ________________________________________________________
+	
+	bool FlexPanelChildren::moveAbove( int index, int otherWidget )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		if( otherWidget < 0 || otherWidget >= m_pSlotArray->size() )
+			return false;
+
+		if( index == otherWidget )
+			return false;
+
+		m_pSlotArray->move( index, otherWidget );
+
+
+
+
+
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		FlexPanelSlot * pOther = m_pSlotArray->slot(otherWidget);
+
+		FlexPanelSlot * pFirst = p = m_pSlotArray->slot(index);
+	
+	
+		if( pFirst == this )			// Move us forward
+		{
+			FlexHook * p = pFirst->_next();
+	
+			_moveAfter( pSibling );
+	
+			// Request render on all areas covered by siblings we have skipped in front of.
+	
+			if( m_bVisible )
+			{
+				while( p != this )
+				{
+					Rect cover( m_realGeo, p->m_realGeo );
+	
+					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
+						m_pParent->_onRequestRender( cover, this );
+					p = p->_next();
+				}
+			}
+		}
+		else							// Move us backward
+		{
+			FlexHook * p = pLast->_prev();
+			_moveAfter( pSibling );
+	
+			// Request render on our siblings for the area we previously have covered.
+	
+			if( m_bVisible )
+			{
+				while( p != this )
+				{
+					Rect cover( m_realGeo, p->m_realGeo );
+	
+					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
+						m_pParent->_onRequestRender( cover, p );
+					p = p->_prev();
+				}
+			}
 		}
 	
 		return true;
+		
+	}
+		
+	//____ moveBelow() ________________________________________________________
+	
+	bool FlexPanelChildren::moveBelow( int index, int otherWidget )
+	{
+		
 	}
 	
-	//____ FlexHook::down() _____________________________________________________
-	
-	bool FlexHook::down()
+	//____ isMovable() ________________________________________________________
+		
+	bool FlexPanelChildren::isMovable( int index ) const
 	{
-		FlexHook * pPrev = _prev();
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+			
+		return !m_pSlotArray->slot(index)->bPinned;
+	}
+		
+	//____ isPinned() ________________________________________________________
 	
-		if( pPrev == 0 )
+	bool FlexPanelChildren::isPinned( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+			
+		return m_pSlotArray->slot(index)->bPinned;		
+	}
+	
+	//____ setOrigo() ________________________________________________________	
+	
+	bool FlexPanelChildren::setOrigo( int index, const FlexPos& origo )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
 			return false;
 	
-		// Get area of sibling potentially exposed
+		p->origo = origo;
+		m_pHolder->_refreshRealGeo( p );
 	
-		Rect cover( m_realGeo, pPrev->m_realGeo );
-	
-		// Move down
-	
-		_moveDown();
-	
-		// Request render on potentially exposed area.
-	
-		if( m_bVisible && cover.w > 0 && cover.h > 0 )
-		{
-			m_pParent->_onRequestRender( cover, pPrev );
-		}
-	
-		return true;
+		return true;		
 	}
+	
+	//____ origo() ________________________________________________________
+	
+	FlexPos FlexPanelChildren::origo( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return FlexPos();
+			
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return FlexPos();
+			
+		return m_pSlotArray->slot(index)->origo;				
+	}
+		
+	//____ setHotspot() ________________________________________________________
+	
+	bool FlexPanelChildren::setHotspot( int index, const FlexPos& hotspot )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return false;
+	
+		p->hotspot = hotspot;
+		m_pHolder->_refreshRealGeo( p );
+	
+		return true;		
+	}
+
+	//____ hotspot() ________________________________________________________
+	
+	FlexPos FlexPanelChildren::hotspot( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return FlexPos();
+			
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return FlexPos();
+			
+		return m_pSlotArray->slot(index)->hotspot;
+	}
+	
+	//____ setGeo() ________________________________________________________
+		
+	bool FlexPanelChildren::setGeo( int index, const Rect& geometry )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return false;
+	
+		p->placementGeo = geometry;
+		m_pHolder->_refreshRealGeo( p );
+	
+		return true;		
+	}
+
+	//____ geo() ________________________________________________________
+	
+	Rect FlexPanelChildren::geo( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return Rect();
+			
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return Rect();
+			
+		return m_pSlotArray->slot(index)->placementGeo;
+	}
+
+	//____ setOfs() ________________________________________________________
+	
+	bool FlexPanelChildren::setOfs( int index, const Coord& ofs )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return false;
+	
+		p->placementGeo.setPos(ofs);
+		m_pHolder->_refreshRealGeo( p );
+	
+		return true;		
+	}
+	
+	//____ ofs() ________________________________________________________
+		
+	Coord FlexPanelChildren::ofs( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return Coord();
+			
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return Coord();
+			
+		return m_pSlotArray->slot(index)->placementGeo.pos();		
+	}
+
+	//____ setSize() ________________________________________________________
+	
+	bool FlexPanelChildren::setSize( int index, const Size& size )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return false;
+	
+		p->placementGeo.setSize(size);
+		m_pHolder->_refreshRealGeo( p );
+	
+		return true;		
+	}
+	
+	//____ size() ________________________________________________________
+		
+	Rect FlexPanelChildren::size( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return Size();
+			
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return Size();
+			
+		return m_pSlotArray->slot(index)->placementGeo.size();		
+	}
+
+	//____ move() ________________________________________________________
+	
+	bool FlexPanelChildren::move( int index, const Coord& ofs )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( p->bPinned )
+			return false;
+	
+		p->placementGeo += ofs;
+		m_pHolder->_refreshRealGeo( p );
+	
+		return true;				
+	}
+	
+	//____ topLeftCorner() ________________________________________________________
+		
+	FlexPos FlexPanelChildren::topLeftCorner( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return FlexPos();
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( !p->bPinned )
+			return FlexPos();
+
+		return p->topLeftPin;
+	}
+
+	//____ bottomRightCorner() ________________________________________________________
+	
+	FlexPos FlexPanelChildren::bottomRightCorner( int index ) const
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return FlexPos();
+
+		FlexPanelSlot * p = m_pSlotArray->slot(index);
+		if( !p->bPinned )
+			return FlexPos();
+
+		return p->bottomRightPin;		
+	}
+
+
+
+
+	
 	
 	//____ FlexHook::moveOver() _________________________________________________
 	
@@ -339,333 +618,6 @@ namespace wg
 		return true;
 	}
 	
-	//____ FlexHook::setOrigo() _________________________________________________
-	
-	bool FlexHook::setOrigo( const FlexOrigo& origo )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		if( origo != m_origo )
-		{
-			m_origo = origo;
-			_refreshRealGeo();
-		}
-	
-		return true;
-	}
-	
-	//____ FlexHook::setHotspot() _______________________________________________
-	
-	bool FlexHook::setHotspot( const FlexOrigo& hotspot )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		if( hotspot != m_hotspot )
-		{
-			m_hotspot = hotspot;
-			_refreshRealGeo();
-		}
-	
-		return true;
-	}
-	
-	//____ FlexHook::setSizePolicy() ____________________________________________
-	
-	bool FlexHook::setSizePolicy( SizePolicy width, SizePolicy height )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		if( width != m_widthPolicy || height != m_heightPolicy )
-		{
-			m_widthPolicy = width;
-			m_heightPolicy = height;
-			if( m_bFloating )
-				_refreshRealGeo();
-		}
-		return true;
-	}
-	
-	//____ FlexHook::setGeo() ___________________________________________________
-	
-	bool FlexHook::setGeo( const Rect& geometry )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo = geometry;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setOfs() ___________________________________________________
-	
-	bool FlexHook::setOfs( const Coord& ofs )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.x = ofs.x;
-		m_placementGeo.y = ofs.y;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setOfsX() __________________________________________________
-	
-	bool FlexHook::setOfsX( int x )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.x = x;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setOfsY() __________________________________________________
-	
-	bool FlexHook::setOfsY( int y )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.y = y;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setSize() __________________________________________________
-	
-	bool FlexHook::setSize( const Size& size )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.w = size.w;
-		m_placementGeo.h = size.h;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setWidth() _________________________________________________
-	
-	bool FlexHook::setWidth( int width )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.w = width;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::setHeight() ________________________________________________
-	
-	bool FlexHook::setHeight( int height )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.h = height;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::move() _____________________________________________________
-	
-	bool FlexHook::move( const Coord& ofs )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo += ofs;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::moveX() ____________________________________________________
-	
-	bool FlexHook::moveX( int x )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.x += x;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::moveY() ____________________________________________________
-	
-	bool FlexHook::moveY( int y )
-	{
-		if( !m_bFloating )
-			return false;
-	
-		m_placementGeo.y += y;
-		_refreshRealGeo();
-		return true;
-	}
-	
-	//____ FlexHook::globalPos() ________________________________________________
-	
-	Coord FlexHook::globalPos() const
-	{
-		return m_realGeo.pos() + m_pParent->globalPos();
-	}
-	
-	//____ FlexHook::globalGeo() ________________________________________________
-	
-	Rect FlexHook::globalGeo() const
-	{
-		return m_realGeo + m_pParent->globalPos();
-	}
-	
-	//____ FlexHook::_prevHook() ________________________________________________
-	
-	Hook * FlexHook::_prevHook() const
-	{
-		return _prev();
-	}
-	
-	//____ FlexHook::_nextHook() ________________________________________________
-	
-	Hook * FlexHook::_nextHook() const
-	{
-		return _next();
-	}
-	
-	//____ FlexHook::_parent() __________________________________________________
-	
-	Container * FlexHook::_parent() const
-	{
-		return m_pParent;
-	}
-	
-	//____ FlexHook::_refreshRealGeo() ___________________________________________
-	
-	void FlexHook::_refreshRealGeo()
-	{
-		Rect	newGeo;
-		Size	parentSize = m_pParent->size();
-	
-		if( m_bFloating )
-		{
-			// Calculate size
-	
-			Size sz = _sizeFromPolicy( m_placementGeo.size() + m_padding, m_widthPolicy, m_heightPolicy );
-	
-			// Calculate position
-	
-			Coord pos = m_origo.position( parentSize );	// Origo,
-			pos -= m_hotspot.position(sz);					// hotspot
-			pos += m_placementGeo.pos();					// and Offset.
-	
-			// Limit size/pos according to parent
-	
-			if( m_pParent->isConfiningWidgets() )
-			{
-				if( sz.w > parentSize.w )
-					sz.w = parentSize.w;
-				if( sz.h > parentSize.h )
-	
-				if( pos.x + sz.w > parentSize.w )
-					pos.x = parentSize.w - sz.w;
-	
-				if( pos.y + sz.h > parentSize.h )
-					pos.y = parentSize.h - sz.h;
-			}
-	
-			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );		// Respect widgets limits.
-			newGeo = Rect( pos, sz );
-		}
-		else
-		{
-			Coord topLeft = m_topLeftOrigo.position( parentSize ) + m_topLeftOfs;
-			Coord bottomRight = m_bottomRightOrigo.position( parentSize ) + m_bottomRightOfs;
-	
-			newGeo = Rect(topLeft,bottomRight);
-			
-			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
-			
-			Size sz = newGeo.size();
-			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );
-			if( sz != newGeo.size() )
-			{
-				newGeo.x += newGeo.w - sz.w / 2;
-				newGeo.y += newGeo.h - sz.h / 2;
-				newGeo.w = sz.w;
-				newGeo.h = sz.h;
-			}
-		}
-	    newGeo.shrink( m_padding );
-
-		// Request render and update positions.
-	
-		if( newGeo != m_realGeo )
-		{
-			m_pWidget->_requestRender();
-			m_realGeo = newGeo;
-			m_pWidget->_setSize(newGeo);
-			m_pWidget->_requestRender();
-		}
-	}
-	
-	//____ FlexHook::_sizeNeededForGeo() ________________________________________
-	
-	Size FlexHook::_sizeNeededForGeo()
-	{
-		Size sz;
-	
-		if( m_bFloating )
-		{
-	        Rect geo = m_placementGeo + m_padding;
-	        
-			Coord hotspot = m_hotspot.position(geo.size());
-			Coord offset = geo.pos() - hotspot;
-	
-			int leftOfOrigo = 0 - offset.x;
-			int rightOfOrigo = offset.x + geo.w;
-			int aboveOrigo = 0 - offset.y;
-			int belowOrigo = offset.y + geo.h;
-	
-			if( leftOfOrigo > 0 )
-				sz.w = (int) (leftOfOrigo / m_origo.x);
-	
-			if( rightOfOrigo > 0 )
-			{
-				int w = (int) (rightOfOrigo / (1.f - m_origo.x) );
-				if( sz.w < w )
-					sz.w = w;
-			}
-	
-			if( aboveOrigo > 0 )
-				sz.h = (int) (aboveOrigo / m_origo.y);
-	
-			if( belowOrigo > 0 )
-			{
-				int h = (int) (belowOrigo / (1.f - m_origo.y) );
-				if( sz.h < h )
-					sz.h = h;
-			}
-		}
-		else
-		{
-			sz = m_pWidget->preferredSize() + m_padding;
-	
-			sz += Size( m_topLeftOfs.x, m_topLeftOfs.y );
-			sz -= Size( m_bottomRightOfs.x, m_bottomRightOfs.y );
-	
-			sz.w = (int) (sz.w / (float) (m_bottomRightOrigo.x - m_topLeftOrigo.x));
-			sz.h = (int) (sz.w / (float) (m_bottomRightOrigo.y - m_topLeftOrigo.y));
-		}
-	
-		return sz;
-	}
-	
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -714,229 +666,16 @@ namespace wg
 		if( bConfineWidgets != m_bConfineWidgets )
 		{
 			m_bConfineWidgets = bConfineWidgets;
-	
-			FlexHook * pHook = m_hooks.first();
-			while( pHook )
+
+			FlexPanelSlot * p = m_children.begin();
+
+			while( p < m_children.end() )
 			{
-				pHook->_refreshRealGeo();
-				pHook = pHook->_next();
-			}
+				_refreshRealGeo( p );
+				p++;
+			}	
 		}
 	}
-	
-	
-	
-	//____ addWidget() _____________________________________________________________
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget )
-	{
-		if( !pWidget )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		m_hooks.pushBack(p);
-	
-		p->setFloating( Coord(0,0) );
-		return p;
-	}
-	
-	//____ addWidget() _____________________________________________________________
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const FlexOrigo& topLeftOrigo,
-										 const FlexOrigo& bottomRightOrigo, Border padding )
-	{
-		if( !pWidget )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		m_hooks.pushBack(p);
-	
-		p->setStretching( topLeftOrigo, bottomRightOrigo, padding );
-		return p;
-	}
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
-								 const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
-	{
-		if( !pWidget )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		m_hooks.pushBack(p);
-	
-		p->setStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
-		return p;
-	}
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo, Border padding )
-	{
-		return addWidget( pWidget, pos, origo, origo, padding );
-	}
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
-	{
-		if( !pWidget )
-			return 0;
-	
-		Size bestSize = pWidget->preferredSize();
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,bestSize), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		m_hooks.pushBack(p);
-		p->setFloating( pos, origo, hotspot );
-		return p;
-	}
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo, Border padding )
-	{
-		return addWidget( pWidget, geometry, origo, origo, padding );
-	}
-	
-	FlexHook * FlexPanel::addWidget( const Widget_p& pWidget, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
-	{
-		if( !pWidget )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		m_hooks.pushBack(p);
-	
-		p->setFloating( geometry, origo, hotspot );
-		return p;
-	}
-	
-	
-	//____ insertWidget() _________________________________________________
-	
-	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling )
-	{
-		if( !pWidget || !pSibling || pSibling->_parent() != this )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
-		p->setFloating( Coord(0,0) );
-		return p;
-	}
-	
-	
-	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const FlexOrigo& topLeftOrigo, const Coord& topLeftOfs, 
-										   const FlexOrigo& bottomRightOrigo, const Coord& bottomRightOfs, Border padding )
-	{
-		if( !pWidget || !pSibling || pSibling->_parent() != this )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), Border(0) );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
-		p->setStretching( topLeftOrigo, topLeftOfs, bottomRightOrigo, bottomRightOfs, padding );
-		return p;
-	}
-	
-	
-	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, Border padding )
-	{
-		return insertWidget( pWidget, pSibling, geometry, origo, origo, padding );
-	}
-	
-	FlexHook * FlexPanel::insertWidget(const Widget_p& pWidget, const Widget_p& pSibling, const Rect& geometry, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
-	{
-		if( !pWidget || !pSibling || pSibling->_parent() != this )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
-		p->setFloating( geometry, origo, hotspot );
-		return p;
-	}
-	
-	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, Border padding )
-	{
-		return insertWidget( pWidget, pSibling, pos, origo, origo, padding );
-	}
-	
-	FlexHook * FlexPanel::insertWidget( const Widget_p& pWidget, const Widget_p& pSibling, const Coord& pos, const FlexOrigo& origo, const FlexOrigo& hotspot, Border padding )
-	{
-		if( !pWidget || !pSibling ||  pSibling->_parent() != this )
-			return 0;
-	
-		FlexHook * p = new FlexHook( this, Rect(0,0,pWidget->preferredSize()), padding );
-		p->_setWidget( pWidget.rawPtr() );
-		pWidget->_setHolder( this, (Hook*) p );
-
-		p->_moveBefore( (FlexHook*) reinterpret_cast<Hook*>(pSibling->_holdersRef()) );
-		p->setFloating( pos, origo, hotspot );
-		return p;
-	}
-	
-	
-	//____ removeChild() _________________________________________________________
-	
-	bool FlexPanel::removeChild( const Widget_p& pWidget )
-	{
-		if( !pWidget || pWidget->_parent() != this )
-			return false;
-	
-		// Force rendering of the area the widget was covering
-	
-		FlexHook * pHook = (FlexHook *)reinterpret_cast<Hook*>(pWidget->_holdersRef());
-		pWidget->_setHolder( nullptr, nullptr );
-		_onRequestRender( pHook->m_realGeo, pHook );
-	
-		// Remove the widget and return
-	
-		delete pHook;
-		return true;
-	}
-	
-	//____ clear() ______________________________________________________
-	
-	bool FlexPanel::clear()
-	{
-		Patches	dirt;
-	
-		// Collect dirty areas and delete hooks.
-	
-		FlexHook * pHook = m_hooks.first();
-		while( pHook )
-		{
-			pHook->_widget()->_setHolder( nullptr, nullptr );
-			if( pHook->m_bVisible )
-				dirt.add( pHook->m_realGeo );
-			FlexHook * pDelete = pHook;
-			pHook = pHook->_next();
-			delete pDelete;
-		}
-	
-		// RequestRender on all dirty patches
-	
-		for( const Rect * pRect = dirt.begin() ; pRect != dirt.end() ; pRect++ )
-			_requestRender( * pRect );
-	
-		return true;
-	}
-	
 	
 	//____ preferredSize() _____________________________________________________________
 	
@@ -944,21 +683,67 @@ namespace wg
 	{
 		Size minSize;
 	
-		FlexHook * pHook = m_hooks.first();
-		while( pHook )
+		FlexPanelSlot * p = m_children.begin();
+		while( p < m_children.end() )
 		{
-			Size sz = pHook->_sizeNeededForGeo();
-			minSize = Size::max(minSize,sz);
-			pHook = pHook->_next();
-		}
+			minSize = Size::max(minSize,_sizeNeededForGeo(p));
+			p++;
+		}			
 		return minSize;
 	}
 	
+	
+	//____ _didAddSlots() _____________________________________________________________
+		
+	void FlexPanel::_didAddSlots( Slot * _pSlot, int nb )
+	{
+		_unhideSlots(_pSlot,nb);
+	}
+	
+	//____ _willRemoveSlots() _____________________________________________________________
+	
+	void FlexPanel::_willRemoveSlots( Slot * pSlot, int nb )
+	{
+		_hideSlots(pSlot,nb);
+	}
+	
+	//____ _hideSlots() _____________________________________________________________
+
+	void FlexPanel::_hideSlots( PanelSlot *, int nb )
+	{
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( pSlot[i].bVisible == true )
+			{
+				pSlot[i].bVisible = false;
+				_onRequestRender(pSlot[i].realGeo);
+			}
+		}		
+	}
+	
+	//____ _unhideSlots() _____________________________________________________________
+
+	void FlexPanel::_unhideSlots( PanelSlot *, int nb )
+	{
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( pSlot[i].bVisible == false )
+			{
+				pSlot[i].bVisible = true;
+				_refreshRealGeo(&pSlot[i]);
+				_onRequestRender(pSlot[i].realGeo);
+			}
+		}
+	}
+
+		
 	//____ _onRequestRender() ______________________________________________________
 	
-	void FlexPanel::_onRequestRender( const Rect& rect, const FlexHook * pHook )
+	void FlexPanel::_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot )
 	{
-		if( !pHook->m_bVisible )
+		if( !pSlot->bVisible )
 			return;
 	
 		// Clip our geometry and put it in a dirtyrect-list
@@ -968,13 +753,15 @@ namespace wg
 	
 		// Remove portions of patches that are covered by opaque upper siblings
 	
-		FlexHook * pCover = pHook->_next();
-		while( pCover )
-		{
-			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
+		
 	
-			pCover = pCover->_next();
+		FlexPanelSlot * pCover = pSlot+1;
+		while( pCover < m_children.end() )
+		{
+			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
+				pCover->pWidget->_maskPatches( patches, pCover->realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
+	
+			pCover++;
 		}
 	
 		// Make request render calls
@@ -997,12 +784,12 @@ namespace wg
 	void FlexPanel::_setSize( const Size& size )
 	{
 		Panel::_setSize(size);
-		FlexHook * pHook = m_hooks.last();
-	
-		while( pHook )
+
+		FlexPanelSlot * p = m_children.begin();
+		while( p < m_children.end() )
 		{
-			pHook->_refreshRealGeo();
-			pHook = pHook->_prev();
+			_refreshRealGeo(p);
+			p++;
 		}
 	}
 
@@ -1010,38 +797,37 @@ namespace wg
 
 	Coord FlexPanel::_childPos( void * pChildRef ) const
 	{
-		return ((Hook*)pChildRef)->pos();
+		return ((FlexPanelSlot*)pChildRef)->realGeo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
 	Size FlexPanel::_childSize( void * pChildRef ) const
 	{
-		return ((Hook*)pChildRef)->size();
+		return ((FlexPanelSlot*)pChildRef)->realGeo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void FlexPanel::_childRequestRender( void * pChildRef )
 	{
-		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
-		_onRequestRender( pHook->m_realGeo, pHook );
+		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		_onRequestRender( pSlot->realGeo, pSlot );
 	}
 	
 	void FlexPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
-		_onRequestRender( rect + pHook->m_realGeo.pos(), pHook );
+		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		_onRequestRender( rect + pSlot->m_realGeo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() _________________________________________________
 
 	void FlexPanel::_childRequestResize( void * pChildRef )
 	{
-		FlexHook * pHook = static_cast<FlexHook*>(reinterpret_cast<Hook*>(pChildRef));
-
-		if( pHook->m_widthPolicy != SizePolicy::Bound || pHook->m_heightPolicy != SizePolicy::Bound )
-			pHook->_refreshRealGeo();
+		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		
+		_refreshRealGeo(pSlot);
 	}
 
 
@@ -1049,16 +835,20 @@ namespace wg
 
 	Widget * FlexPanel::_firstChild() const 
 	{
-		FlexHook * p = m_hooks.first();
-		return  p ? p->_widget() : nullptr; 
+		if (m_children.isEmpty())
+			return nullptr;
+
+		return m_children.first()->pWidget;
 	}
 
 	//____ _lastChild() __________________________________________________________
 
 	Widget * FlexPanel::_lastChild() const 
 	{ 
-		FlexHook * p = m_hooks.last();
-		return  p ? p->_widget() : nullptr; 
+		if (m_children.isEmpty())
+			return nullptr;
+
+		return m_children.last()->pWidget;
 	}
 
 
@@ -1066,16 +856,24 @@ namespace wg
 
 	Widget * FlexPanel::_prevChild( void * pChildRef ) const
 	{
-		Hook *p = ((Hook*)pChildRef)->_prevHook();
-		return p ? p->_widget() : nullptr;
+		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+
+		if (pSlot > m_children.begin())
+			return pSlot[-1].pWidget;
+
+		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
 	Widget * FlexPanel::_nextChild( void * pChildRef ) const
 	{
-		Hook *p = ((Hook*)pChildRef)->_nextHook();
-		return p ? p->_widget() : nullptr;
+		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+
+		if (pSlot < m_children.last())
+			return pSlot[1].pWidget;
+
+		return nullptr;
 	}
 
 
@@ -1083,31 +881,154 @@ namespace wg
 	
 	void FlexPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		FlexHook * p = m_hooks.first();
-		if( p )
-		{
-			package.pMagic = p;
-			package.pWidget = p->_widget();
-			package.geo = p->m_realGeo;
-		}
-		else
+		if( m_children.isEmpty() )
 			package.pWidget = nullptr;
+		else
+		{
+			FlexPanelSlot * pSlot = m_children.first();
+			package.pMagic = pSlot;
+			package.pWidget = pSlot->pWidget;
+			package.geo = pSlot->realGeo;			
+		}			
 	}
 	
 	//____ _nextChildWithGeo() ______________________________________________________
 	
 	void FlexPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		FlexHook * p = ((FlexHook*)package.pMagic)->_next();
-		if( p )
+		PackPanelSlot * pSlot = (PackPanelSlot*) package.pMagic;
+		
+		if( pSlot == m_children.last() )
+			package.pWidget = nullptr;
+		else
 		{
-			package.pMagic = p;
-			package.pWidget = p->_widget();
-			package.geo = p->m_realGeo;
+			pSlot++;
+			package.pMagic = pSlot;
+			package.pWidget = pSlot->pWidget;
+			package.geo = pSlot->realGeo;			
+		}	
+	}
+	
+
+	//____ _refreshRealGeo() ___________________________________________
+	
+	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot )
+	{
+		Rect	newGeo;
+	
+		if( pSlot->bPinned )
+		{
+			Coord topLeft = pSlot->topLeftPin.pos( m_size );
+			Coord bottomRight = pSlot->bottomRightPin.pos( m_size );
+	
+			newGeo = Rect(topLeft,bottomRight);
+			
+			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
+			
+			Size sz = newGeo.size();
+			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );
+			if( sz != newGeo.size() )
+			{
+				newGeo.x += newGeo.w - sz.w / 2;
+				newGeo.y += newGeo.h - sz.h / 2;
+				newGeo.w = sz.w;
+				newGeo.h = sz.h;
+			}
 		}
 		else
-			package.pWidget = nullptr;
+		{
+			// Calculate size
+	
+			Size sz = pSlot->placementGeo.isEmpty() ? pSlot->pWidget->preferredSize() : pSlot->placementGeo.size();
+			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );		// Respect widgets limits.
+	
+			// Calculate position
+	
+			Coord pos = pSlot->origo.pos( m_size );			// Origo,
+			pos -= pSlot->hotspot.pos(sz);					// hotspot
+			pos += pSlot->placementGeo.pos();				// and Offset.
+	
+			// Limit size/pos according to parent
+	
+			if( isConfiningWidgets() )
+			{
+				if( sz.w > m_size.w )
+					sz.w = m_size.w;
+				if( sz.h > m_size.h )
+	
+				if( pos.x + sz.w > m_size.w )
+					pos.x = m_size.w - sz.w;
+	
+				if( pos.y + sz.h > m_size.h )
+					pos.y = m_size.h - sz.h;
+			}
+	
+			newGeo = Rect( pos, sz );
+		}
+
+		// Request render and update positions.
+	
+		if( newGeo != m_realGeo )
+		{
+			_onRequestRender( pSlot->realGeo, pSlot );
+			pSlot->realGeo = newGeo;
+			pSlot->pWidget->_setSize(newGeo);
+			_onRequestRender( pSlot->realGeo, pSlot );
+		}
 	}
-		
+	
+	//____ _sizeNeededForGeo() ________________________________________
+	
+	Size FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot )
+	{
+		Size sz;
+	
+		if( pSlot->bPinned )
+		{
+			sz = pSlot->pWidget->preferredSize();
+	
+			sz += Size( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
+			sz -= Size( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );
+	
+			sz.w = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.x - pSlot->topLeftPin.origo.x));
+			sz.h = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.y - pSlot->topLeftPin.origo.y));
+		}
+		else
+		{
+	        Rect geo = pSlot->placementGeo;
+	        
+			Coord hotspot = pSlot->hotspot.pos(geo.size());
+			Coord offset = geo.pos() - hotspot;
+	
+			int leftOfOrigo = 0 - offset.x;
+			int rightOfOrigo = offset.x + geo.w;
+			int aboveOrigo = 0 - offset.y;
+			int belowOrigo = offset.y + geo.h;
+	
+			if( leftOfOrigo > 0 )
+				sz.w = (int) (leftOfOrigo / pSlot->origo.x);
+	
+			if( rightOfOrigo > 0 )
+			{
+				int w = (int) (rightOfOrigo / (1.f - pSlot->origo.x) );
+				if( sz.w < w )
+					sz.w = w;
+			}
+	
+			if( aboveOrigo > 0 )
+				sz.h = (int) (aboveOrigo / pSlot->origo.y);
+	
+			if( belowOrigo > 0 )
+			{
+				int h = (int) (belowOrigo / (1.f - pSlot->origo.y) );
+				if( sz.h < h )
+					sz.h = h;
+			}
+		}
+	
+		return sz;
+	}
+
+	
 
 } // namespace wg

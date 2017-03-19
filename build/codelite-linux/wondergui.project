@@ -81,8 +81,6 @@
       <File Name="../../src/widgets/panels/wg_scrollpanel.h"/>
       <File Name="../../src/widgets/panels/wg_stackpanel.cpp"/>
       <File Name="../../src/widgets/panels/wg_stackpanel.h"/>
-      <File Name="../../src/widgets/panels/wg_vectorpanel.cpp"/>
-      <File Name="../../src/widgets/panels/wg_vectorpanel.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="lists">
       <File Name="../../src/widgets/lists/wg_list.cpp"/>

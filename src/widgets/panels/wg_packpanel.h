@@ -50,6 +50,11 @@ namespace wg
 		Size			preferredSize;	// Cached padded preferred size from the child.
 	};
 	
+	
+	class PackPanelChildren;
+	typedef	StrongInterfacePtr<PackPanelChildren,Interface_p>	PackPanelChildren_p;
+	typedef	WeakInterfacePtr<PackPanelChildren,Interface_wp>	PackPanelChildren_wp;
+	
 	//____ PackPanelChildren ________________________________________________________
 
 	class PackPanelChildren : public PanelChildren<PackPanelSlot,PackPanel>
@@ -57,9 +62,7 @@ namespace wg
 	public:
 		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
 
-		void		add( const Widget_p& pWidget );
-		bool		insert( int index, const Widget_p& pWidget );
-		bool		remove( int index );
+		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(_object(),this); }
 
 		bool		setWeight( int index, float weight );
 		float		weight( int index ) const;
@@ -76,6 +79,8 @@ namespace wg
 	class PackPanel : public Panel, protected PanelSlotsHolder
 	{
 		friend class PackPanelChildren;
+		friend class PanelChildren<PackPanelSlot,PackPanel>;
+		friend class ChildGroup<PackPanelSlot,PackPanel>;
 	
 	public:
 

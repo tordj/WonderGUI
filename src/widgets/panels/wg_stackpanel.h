@@ -41,8 +41,6 @@ namespace wg
 	
 
 
-
-
 	//____ StackPanelSlot ____________________________________________________________
 	
 	class StackPanelSlot : public PanelSlot
@@ -69,10 +67,6 @@ namespace wg
 		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(_object(),this); }
 
 
-		void		add( const Widget_p& pWidget );
-		bool		insert( int index, const Widget_p& pWidget );
-		bool		remove( int index );
-
 		void		setSizePolicy( int index, SizePolicy2D policy );
 		SizePolicy2D sizePolicy( int index ) const;
 
@@ -90,6 +84,8 @@ namespace wg
 	class StackPanel : public Panel, protected PanelSlotsHolder
 	{
 		friend class StackPanelChildren;
+		friend class PanelChildren<StackPanelSlot,StackPanel>;
+		friend class ChildGroup<StackPanelSlot,StackPanel>;
 
 	public:
 

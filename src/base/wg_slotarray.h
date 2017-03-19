@@ -48,12 +48,32 @@ namespace wg
 	
 		SlotType*	slot(int index) const { return &m_pArray[index]; }
 	
-		SlotType*	insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
-		SlotType*	insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
 		SlotType*	add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*2) ); _initBlock(m_size); return &m_pArray[m_size++]; }
 		SlotType*	add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
+		SlotType*	insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
+		SlotType*	insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
 		void		remove(int index) { _deleteBlock(index,1); }
 		void		remove(int index, int entries) { _deleteBlock(index,entries); }
+
+		void		move( int index, int newIndex )
+		{
+			if( index < newIndex )
+			{
+				SlotType temp = m_pArray[index];
+				int blocksToMove = newIndex-index;
+				memmove( (void*)&m_pArray[index], &m_pArray[index+1], sizeof(SlotType) * blocksToMove );
+				m_pArray[newIndex] = temp;
+				_reallocBlock(index, blocksToMove+1);
+			}
+			else
+			{
+				SlotType temp = m_pArray[index];
+				int blocksToMove = index-newIndex;
+				memmove( (void*)&m_pArray[newIndex+1], &m_pArray[newIndex], sizeof(SlotType) * blocksToMove );
+				m_pArray[newIndex] = temp;
+				_reallocBlock(newIndex, blocksToMove+1);				
+			}
+		}
 	
 		void		clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
 		void		setCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
