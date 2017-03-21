@@ -121,7 +121,7 @@ int main ( int argc, char** argv )
 
 	Filler_p pBackground = Filler::create();
 	pBackground->setSkin( ColorSkin::create(Color::Aqua) );
-	pFlexPanel->addWidget(pBackground, Origo::NorthWest, Origo::SouthEast);
+	pFlexPanel->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 	// Now we create the button, using a clickable skin built from
 	// the BMP with the button graphics. createClickableFromSurface()
@@ -135,7 +135,7 @@ int main ( int argc, char** argv )
 
 	Button_p pButton = Button::create();
 	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) ) );
-	pFlexPanel->addWidget( pButton, Rect(0,0,80,33), Origo::Center );
+	pFlexPanel->children.addMovable(pButton, { 0,0,80,33 }, Origo::Center);
 
 	// Finally we add a callback to the click-event of the button.
 

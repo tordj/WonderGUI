@@ -82,7 +82,8 @@ namespace wg
 		{
 			SlotType * pSlot = m_pSlotArray->add();
 			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
-			m_pHolder->_didAddSlots(pSlot, 1);		
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;
 		}
 		
 		bool insert( int index, const Widget_p& pWidget )

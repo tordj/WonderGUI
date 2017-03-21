@@ -120,7 +120,7 @@ namespace wg
 
 		bool		addPinned( const Widget_p& pWidget, const FlexPos& topLeft, 
 									const FlexPos& bottomRight );
-		bool		addMovable( const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo = Origo::NorthWest, 
+		bool		addMovable( const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
 									const FlexPos& hotspot = Origo::NorthWest );
 	
 		bool		insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft,
@@ -166,142 +166,9 @@ namespace wg
 	
 		FlexPos	topLeftCorner( int index ) const;
 		FlexPos	bottomRightCorner( int index ) const;
-
-
-
 	};
 	
 	
-	//____ FlexHook _____________________________________________________________
-/*	
-	class FlexHook : public PanelHook, protected Link
-	{
-		friend class Widget;
-		friend class Panel;
-		friend class FlexPanel;
-		friend class Chain<FlexHook>;
-	
-	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static FlexHook_p	cast( const Hook_p& pInterface );
-	
-		// Flex-specific methods
-	
-		bool	setStretching( const FlexPos& topLeftOrigo, const FlexPos& bottomRightOrigo, Border padding = 0 );
-		bool	setStretching( const FlexPos& topLeftOrigo, const Coord& topLeftOfs, const FlexPos& bottomRightOrigo, const Coord& bottomRightOfs, Border padding = 0 );
-	
-		bool	setFloating( const Coord& pos, const FlexPos& origo = Origo::NorthWest );
-		bool	setFloating( const Coord& pos, const FlexPos& origo, const FlexPos& hotspot );
-		bool	setFloating( const Rect& geometry, const FlexPos& origo = Origo::NorthWest );
-		bool	setFloating( const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
-	
-	
-		void	top();								// Put us ontop all our silbings.
-		void	bottom();							// Put us below all our siblings.
-		bool	up();								// Move us one step up among siblings.
-		bool	down();								// Move us one step down among siblings.
-	
-		bool	moveOver( const FlexHook_p& pSibling );
-		bool	moveUnder( const FlexHook_p& pSibling );
-	
-		bool	isFloating() const { return m_bFloating; }
-		bool	isStretching() const { return !m_bFloating; }
-	
-		// Methods for floating hooks
-	
-		bool	setOrigo( const FlexPos& origo );
-		bool	setHotspot( const FlexPos& hotspot );
-	
-		bool	setSizePolicy( SizePolicy width, SizePolicy height );
-	
-		bool	setGeo( const Rect& geometry );
-	
-		bool	setOfs( const Coord& ofs );
-		bool	setOfsX( int x );
-		bool	setOfsY( int y );
-	
-		bool	setSize( const Size& size );
-		bool	setWidth( int width );
-		bool	setHeight( int height );
-	
-		bool	move( const Coord& ofs );
-		bool	moveX( int x );
-		bool	moveY( int y );
-	
-		SizePolicy	widthPolicy() const { return m_widthPolicy; }
-		SizePolicy	heightPolicy() const { return m_heightPolicy; }
-		FlexPos		floatOrigo() const { return m_origo; }
-		FlexPos		floatHotspot() const { return m_hotspot; }
-		Rect			floatGeo() const { return m_placementGeo; }
-		Coord			floatOfs() const { return m_placementGeo.pos(); }
-		Rect			floatSize() const { return m_placementGeo.size(); }
-	
-		// Methods for stretching hooks
-	
-		FlexPos		topLeftOrigo() const { return m_topLeftOrigo; }
-		FlexPos		bottomRightOrigo() const { return m_bottomRightOrigo; }
-		Coord			topLeftOfs() const { return m_topLeftOfs; }
-		Coord			bottomRightOfs() const { return m_bottomRightOfs; }
-	
-		// Standard MyHook methods
-	
-		Coord			pos() const { return m_realGeo.pos(); }
-		Size			size() const { 	return m_realGeo.size(); }
-		Rect			geo() const { return m_realGeo; }
-	
-	
-		Coord			globalPos() const;
-		Rect			globalGeo() const;
-	
-		FlexHook_p	prev() const { return _prev(); }
-		FlexHook_p	next() const { return _next(); }
-	
-		FlexPanel_p	parent() const { return m_pParent; }
-	
-	protected:
-		// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
-	
-		PROTECTED_LINK_METHODS( FlexHook );
-	
-		FlexHook( FlexPanel * pParent, const Rect& placementGeo, Border padding );
-	
-		void			_refreshRealGeo();
-		Size			_sizeNeededForGeo();
-	
-		Hook *		_prevHook() const;
-		Hook *		_nextHook() const;
-		Container *	_parent() const;
-	
-		FlexPanel* m_pParent;
-	
-		bool			m_bFloating;		// true = floating, false = anchored
-		Rect			m_realGeo;			// Widgets geo relative parent
-	
-	//	union
-	//	{
-	//		struct // Floating hooks
-	//		{
-				FlexPos		m_origo;
-				FlexPos		m_hotspot;
-				Rect			m_placementGeo;	// Widgets geo relative anchor and hotspot.
-	//		};
-	//		struct	// Stretching hooks
-	//		{
-				FlexPos		m_topLeftOrigo;
-				FlexPos		m_bottomRightOrigo;
-				Coord			m_topLeftOfs;
-				Coord			m_bottomRightOfs;
-	//		};
-	//	};
-	
-		// Only used for floating hooks, but kept safe when set to stretch.
-	
-		SizePolicy	m_widthPolicy;
-		SizePolicy	m_heightPolicy;
-	};
-*/	
 	
 	//____ FlexPanel _________________________________________________________
 	
@@ -364,8 +231,8 @@ namespace wg
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( PanelSlot *, int nb );
-		void		_unhideSlots( PanelSlot *, int nb );
+		void		_hideSlots( FlexPanelSlot *, int nb );
+		void		_unhideSlots( FlexPanelSlot *, int nb );
 
 		// Overloaded from WidgetHolder
 
@@ -388,8 +255,9 @@ namespace wg
 		void		_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot );
 
 		void		_refreshRealGeo( FlexPanelSlot * pSlot );
-		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot );
+		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 	
+		void		_moveSlot(int oldPos, int newPos);
 	
 		SlotArray<FlexPanelSlot>	m_children;
 	

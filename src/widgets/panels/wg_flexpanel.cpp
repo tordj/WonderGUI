@@ -197,68 +197,40 @@ namespace wg
 		
 	//____ moveAbove() ________________________________________________________
 	
-	bool FlexPanelChildren::moveAbove( int index, int otherWidget )
+	bool FlexPanelChildren::moveAbove( int index, int sibling )
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return false;
 
-		if( otherWidget < 0 || otherWidget >= m_pSlotArray->size() )
+		if( sibling < 0 || sibling >= m_pSlotArray->size() )
 			return false;
 
-		if( index > otherWidget )
-			otherWidget++;
+		if( index > sibling )
+			sibling++;
 
-		if( index == otherWidget )
-			return false;
-
-		m_pSlotArray->move( index, otherWidget );
-
-		FlexPanelSlot * pOther = m_pSlotArray->slot(index);				// This is correct, we have already switched places...
-		FlexPanelSlot * pIndex = m_pSlotArray->slot(otherWidget);
-
-	
-		if( pIndex->bVisible )
-		{
-			if( pIndex > pOther )			// We were moved forward
-			{
-				// Request render on all areas covered by siblings we have skipped in front of.
-		
-				FlexPanelSlot * p = pOther;
-				while( p < pIndex )
-				{
-					Rect cover( pIndex->realGeo, p->realGeo );
-
-					if( p->bVisible && !cover.isEmpty() )
-						m_pHolder->_onRequestRender( cover, pIndex );
-					p++;
-				}
-			}
-			else							// Move us backward
-			{
-		
-				// Request render on our siblings for the area we previously have covered.
-		
-				FlexPanelSlot * p = pIndex+1;
-				while( p <= pOther )
-				{
-					Rect cover( pIndex->realGeo, p->realGeo );
-	
-					if( p->bVisible && !cover.isEmpty() )
-						m_pHolder->_onRequestRender( cover, p );
-					p++;
-				}
-			}
-		}
+		if (index != sibling)
+			m_pHolder->_moveSlot(index, sibling);
 		
 		return true;
-		
 	}
 		
 	//____ moveBelow() ________________________________________________________
 	
-	bool FlexPanelChildren::moveBelow( int index, int otherWidget )
+	bool FlexPanelChildren::moveBelow( int index, int sibling )
 	{
-		
+		if (index < 0 || index >= m_pSlotArray->size())
+			return false;
+
+		if (sibling < 0 || sibling >= m_pSlotArray->size())
+			return false;
+
+		if (index < sibling)
+			sibling--;
+
+		if (index != sibling)
+			m_pHolder->_moveSlot(index, sibling);
+
+		return true;
 	}
 	
 	//____ isMovable() ________________________________________________________
@@ -480,137 +452,10 @@ namespace wg
 
 		return p->bottomRightPin;		
 	}
-
-
-
-
-	
-	
-	//____ FlexHook::moveOver() _________________________________________________
-	
-	bool FlexHook::moveOver( const FlexHook_p& _pSibling )
-	{
-		FlexHook * pSibling = _pSibling.rawPtr();
-	
-		if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
-			return false;
-	
-		FlexHook * pFirst = _chain()->first();
-		while( pFirst != this && pFirst != pSibling )
-			pFirst = pFirst->_next();
-	
-		FlexHook * pLast = pFirst->_next();
-		while( pLast != this && pLast != pSibling )
-			pLast = pLast->_next();
-	
-		if( pFirst == this )			// Move us forward
-		{
-			FlexHook * p = pFirst->_next();
-	
-			_moveAfter( pSibling );
-	
-			// Request render on all areas covered by siblings we have skipped in front of.
-	
-			if( m_bVisible )
-			{
-				while( p != this )
-				{
-					Rect cover( m_realGeo, p->m_realGeo );
-	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, this );
-					p = p->_next();
-				}
-			}
-		}
-		else							// Move us backward
-		{
-			FlexHook * p = pLast->_prev();
-			_moveAfter( pSibling );
-	
-			// Request render on our siblings for the area we previously have covered.
-	
-			if( m_bVisible )
-			{
-				while( p != this )
-				{
-					Rect cover( m_realGeo, p->m_realGeo );
-	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, p );
-					p = p->_prev();
-				}
-			}
-		}
-	
-		return true;
-	}
-	
-	//____ FlexHook::moveUnder() ________________________________________________
-	
-	bool FlexHook::moveUnder( const FlexHook_p& _pSibling )
-	{
-		FlexHook * pSibling = _pSibling.rawPtr();
-	
-		if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
-			return false;
-	
-		FlexHook * pFirst = _chain()->first();
-		while( pFirst != this && pFirst != pSibling )
-			pFirst = pFirst->_next();
-	
-		FlexHook * pLast = pFirst->_next();
-		while( pLast != this && pLast != pSibling )
-			pLast = pLast->_next();
-	
-		if( pFirst == this )			// Move us forward
-		{
-			FlexHook * p = _next();
-			_moveBefore( pSibling );
-	
-			// Request render on all areas covered by siblings we have skipped in front of.
-	
-			if( m_bVisible )
-			{
-				while( p != this )
-				{
-					Rect cover( m_realGeo, p->m_realGeo );
-	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, this );
-	
-					p = p->_next();
-				}
-			}
-		}
-		else							// Move us backward
-		{
-			FlexHook * p = _prev();
-			_moveBefore( pSibling );
-	
-			// Request render on our siblings for the area we previously have covered.
-	
-			if( m_bVisible )
-			{
-				while( p != this )
-				{
-					Rect cover( m_realGeo, p->m_realGeo );
-	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, p );
-	
-					p = p->_prev();
-				}
-			}
-		}
-	
-		return true;
-	}
-	
 	
 	//____ Constructor ____________________________________________________________
 	
-	FlexPanel::FlexPanel() : m_bConfineWidgets(false)
+	FlexPanel::FlexPanel() : m_bConfineWidgets(false), children(&m_children,this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -681,48 +526,90 @@ namespace wg
 		return minSize;
 	}
 	
-	
+
+	//____ _moveSlot() ___________________________________________________________
+
+	void FlexPanel::_moveSlot(int oldPos, int newPos)
+	{
+		m_children.move(oldPos, newPos);
+
+		FlexPanelSlot * pOther = m_children.slot(oldPos);				// This is correct, we have already switched places...
+		FlexPanelSlot * pIndex = m_children.slot(newPos);
+
+		if (pIndex->bVisible)
+		{
+			if (pIndex > pOther)			// We were moved forward
+			{
+				// Request render on all areas covered by siblings we have skipped in front of.
+
+				FlexPanelSlot * p = pOther;
+				while (p < pIndex)
+				{
+					Rect cover(pIndex->realGeo, p->realGeo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, pIndex);
+					p++;
+				}
+			}
+			else							// Move us backward
+			{
+				// Request render on our siblings for the area we previously have covered.
+
+				FlexPanelSlot * p = pIndex + 1;
+				while (p <= pOther)
+				{
+					Rect cover(pIndex->realGeo, p->realGeo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, p);
+					p++;
+				}
+			}
+		}
+	}
+
 	//____ _didAddSlots() _____________________________________________________________
 		
 	void FlexPanel::_didAddSlots( Slot * _pSlot, int nb )
 	{
-		_unhideSlots(_pSlot,nb);
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		_unhideSlots(pSlot,nb);
 	}
 	
 	//____ _willRemoveSlots() _____________________________________________________________
 	
-	void FlexPanel::_willRemoveSlots( Slot * pSlot, int nb )
+	void FlexPanel::_willRemoveSlots( Slot * _pSlot, int nb )
 	{
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_hideSlots(pSlot,nb);
 	}
 	
 	//____ _hideSlots() _____________________________________________________________
 
-	void FlexPanel::_hideSlots( PanelSlot *, int nb )
+	void FlexPanel::_hideSlots( FlexPanelSlot * pSlot, int nb )
 	{
-		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == true )
 			{
 				pSlot[i].bVisible = false;
-				_onRequestRender(pSlot[i].realGeo);
+				_onRequestRender(pSlot[i].realGeo, pSlot);
 			}
 		}		
 	}
 	
 	//____ _unhideSlots() _____________________________________________________________
 
-	void FlexPanel::_unhideSlots( PanelSlot *, int nb )
+	void FlexPanel::_unhideSlots( FlexPanelSlot * pSlot, int nb )
 	{
-		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == false )
 			{
 				pSlot[i].bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].realGeo);
+				_onRequestRender(pSlot[i].realGeo, pSlot);
 			}
 		}
 	}
@@ -744,7 +631,7 @@ namespace wg
 	
 		
 	
-		FlexPanelSlot * pCover = pSlot+1;
+		const FlexPanelSlot * pCover = pSlot+1;
 		while( pCover < m_children.end() )
 		{
 			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
@@ -807,7 +694,7 @@ namespace wg
 	void FlexPanel::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
 		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
-		_onRequestRender( rect + pSlot->m_realGeo.pos(), pSlot );
+		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -885,7 +772,7 @@ namespace wg
 	
 	void FlexPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		PackPanelSlot * pSlot = (PackPanelSlot*) package.pMagic;
+		FlexPanelSlot * pSlot = (FlexPanelSlot*) package.pMagic;
 		
 		if( pSlot == m_children.last() )
 			package.pWidget = nullptr;
@@ -915,7 +802,7 @@ namespace wg
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 			
 			Size sz = newGeo.size();
-			sz.limit( m_pWidget->minSize(), m_pWidget->maxSize() );
+			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );
 			if( sz != newGeo.size() )
 			{
 				newGeo.x += newGeo.w - sz.w / 2;
@@ -957,7 +844,7 @@ namespace wg
 
 		// Request render and update positions.
 	
-		if( newGeo != m_realGeo )
+		if( newGeo != pSlot->realGeo )
 		{
 			_onRequestRender( pSlot->realGeo, pSlot );
 			pSlot->realGeo = newGeo;
@@ -968,7 +855,7 @@ namespace wg
 	
 	//____ _sizeNeededForGeo() ________________________________________
 	
-	Size FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot )
+	Size FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot ) const
 	{
 		Size sz;
 	
@@ -987,7 +874,7 @@ namespace wg
 	        Rect geo = pSlot->placementGeo;
 	        
 			Coord hotspot = pSlot->hotspot.pos(geo.size());
-			Coord offset = geo.pos() - hotspot;
+			Coord offset = geo.pos() + pSlot->origo.offset - hotspot;
 	
 			int leftOfOrigo = 0 - offset.x;
 			int rightOfOrigo = offset.x + geo.w;
@@ -995,21 +882,21 @@ namespace wg
 			int belowOrigo = offset.y + geo.h;
 	
 			if( leftOfOrigo > 0 )
-				sz.w = (int) (leftOfOrigo / pSlot->origo.x);
+				sz.w = (int) (leftOfOrigo / pSlot->origo.origo.x);
 	
 			if( rightOfOrigo > 0 )
 			{
-				int w = (int) (rightOfOrigo / (1.f - pSlot->origo.x) );
+				int w = (int) (rightOfOrigo / (1.f - pSlot->origo.origo.x) );
 				if( sz.w < w )
 					sz.w = w;
 			}
 	
 			if( aboveOrigo > 0 )
-				sz.h = (int) (aboveOrigo / pSlot->origo.y);
+				sz.h = (int) (aboveOrigo / pSlot->origo.origo.y);
 	
 			if( belowOrigo > 0 )
 			{
-				int h = (int) (belowOrigo / (1.f - pSlot->origo.y) );
+				int h = (int) (belowOrigo / (1.f - pSlot->origo.origo.y) );
 				if( sz.h < h )
 					sz.h = h;
 			}

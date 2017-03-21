@@ -249,7 +249,8 @@ int main ( int argc, char** argv )
 
 	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->addWidget( pImage, Rect(0,0,80,33), Origo::Center );
+	pFlexPanel->children.addMovable( pImage, Rect(0,0,80,33), Origo::Center, Origo::Center );
+//	pFlexPanel->children.addPinned(pImage, { Origo::Center,-100,-20 }, { Origo::SouthEast, -10, -10 } );
 
 
 //	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -321,7 +322,7 @@ int main ( int argc, char** argv )
 		pHorr->children.add( pFillerEast );
 
 		
-		pFlexPanel->addWidget( pVert, Origo::NorthWest, Origo::SouthEast );
+		pFlexPanel->children.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
 	
 		pEditLine->grabFocus();
 	}
@@ -334,7 +335,7 @@ int main ( int argc, char** argv )
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->setVerticalScrollbar( pScrollbar );
 
-		pFlexPanel->addWidget( pScrollPanel, FlexOrigo(0,0.75), Origo::SouthEast);
+		pFlexPanel->children.addPinned(pScrollPanel, { 0,0.75 }, Origo::SouthEast);
 	}
 
 
@@ -810,9 +811,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	FlexHook * pHook = pParent->addWidget( pChild );
-	pHook->setSizePolicy(SizePolicy::Bound, SizePolicy::Bound);
-
+	pParent->children.add( pChild );
 	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
 }
 
