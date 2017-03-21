@@ -205,62 +205,51 @@ namespace wg
 		if( otherWidget < 0 || otherWidget >= m_pSlotArray->size() )
 			return false;
 
+		if( index > otherWidget )
+			otherWidget++;
+
 		if( index == otherWidget )
 			return false;
 
 		m_pSlotArray->move( index, otherWidget );
 
+		FlexPanelSlot * pOther = m_pSlotArray->slot(index);				// This is correct, we have already switched places...
+		FlexPanelSlot * pIndex = m_pSlotArray->slot(otherWidget);
 
-
-
-
-
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		FlexPanelSlot * pOther = m_pSlotArray->slot(otherWidget);
-
-		FlexPanelSlot * pFirst = p = m_pSlotArray->slot(index);
 	
-	
-		if( pFirst == this )			// Move us forward
+		if( pIndex->bVisible )
 		{
-			FlexHook * p = pFirst->_next();
-	
-			_moveAfter( pSibling );
-	
-			// Request render on all areas covered by siblings we have skipped in front of.
-	
-			if( m_bVisible )
+			if( pIndex > pOther )			// We were moved forward
 			{
-				while( p != this )
+				// Request render on all areas covered by siblings we have skipped in front of.
+		
+				FlexPanelSlot * p = pOther;
+				while( p < pIndex )
 				{
-					Rect cover( m_realGeo, p->m_realGeo );
+					Rect cover( pIndex->realGeo, p->realGeo );
+
+					if( p->bVisible && !cover.isEmpty() )
+						m_pHolder->_onRequestRender( cover, pIndex );
+					p++;
+				}
+			}
+			else							// Move us backward
+			{
+		
+				// Request render on our siblings for the area we previously have covered.
+		
+				FlexPanelSlot * p = pIndex+1;
+				while( p <= pOther )
+				{
+					Rect cover( pIndex->realGeo, p->realGeo );
 	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, this );
-					p = p->_next();
+					if( p->bVisible && !cover.isEmpty() )
+						m_pHolder->_onRequestRender( cover, p );
+					p++;
 				}
 			}
 		}
-		else							// Move us backward
-		{
-			FlexHook * p = pLast->_prev();
-			_moveAfter( pSibling );
-	
-			// Request render on our siblings for the area we previously have covered.
-	
-			if( m_bVisible )
-			{
-				while( p != this )
-				{
-					Rect cover( m_realGeo, p->m_realGeo );
-	
-					if( p->m_bVisible && cover.w > 0 && cover.h > 0 )
-						m_pParent->_onRequestRender( cover, p );
-					p = p->_prev();
-				}
-			}
-		}
-	
+		
 		return true;
 		
 	}
