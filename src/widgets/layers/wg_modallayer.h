@@ -27,13 +27,22 @@
 #	include <wg_layer.h>
 #endif
 
+#include <wg_childgroup.h>
+
 namespace wg 
 {
-	
+
+	class ModalLayer;
+	typedef	StrongPtr<ModalLayer, Layer_p>	ModalLayer_p;
+	typedef	WeakPtr<ModalLayer, Layer_wp>	ModalLayer_wp;
+
 	//____ ModalSlot ___________________________________________________________
 	
 	class ModalSlot : public LayerSlot
 	{
+	public:
+		ModalSlot() : origo(Origo::NorthWest) {}
+
 		Origo		origo;
 		Rect		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.	
@@ -51,19 +60,19 @@ namespace wg
 	class ModalChildren : public ChildGroup<ModalSlot,ModalLayer>
 	{
 	public:
-		ModalChildren( SlotArray<ModalSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
+		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : ChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
 
 		inline ModalChildren_p	ptr() { return ModalChildren_p(_object(),this); }
 
 		bool		add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { addModalWidget( pWidget, Rect(pos,0,0), origo); }
+		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { add( pWidget, Rect(pos,0,0), origo); }
 
 		bool		moveToBack( int index );								// Put us ontop all our silbings.
 		bool		moveToFront( int index );							// Put us below all our siblings.	
 		bool		moveAbove( int index, int otherWidget );
 		bool		moveBelow( int index, int otherWidget );
 
-		bool		setOrigo( int index, const FlexPos& origo );
+		bool		setOrigo( int index, const Origo origo );
 		Origo		origo( int index ) const;
 		
 		bool		setGeo( int index, const Rect& geometry );
@@ -80,15 +89,12 @@ namespace wg
 	
 	
 	
-	class ModalLayer;
-	typedef	StrongPtr<ModalLayer,Layer_p>	ModalLayer_p;
-	typedef	WeakPtr<ModalLayer,Layer_wp>	ModalLayer_wp;	
 
 	//____ ModalLayer __________________________________________________________
 	
-	class ModalLayer : public Layer
+	class ModalLayer : public Layer, protected ChildGroupHolder
 	{
-		friend class ModalHook;
+		friend class ModalChildren;
 	
 	public:
 
@@ -127,15 +133,21 @@ namespace wg
 	
 		void			_updateKeyboardFocus();
 		bool			_refreshRealGeo( ModalSlot * pSlot );
-	
+		void			_moveSlot(int oldPos, int newPos);
+
 		// Overloaded from Panel
 	
 		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
 	
-	
 		// Overloaded from WidgetHolder
 	
 		void			_childRequestResize( void * pChildRef );
+
+		// Methods for ModalChildren
+
+		void			_didAddSlots(Slot * pSlot, int nb);
+		void			_willRemoveSlots(Slot * pSlot, int nb);
+
 
 		// Overloaded from Layer
 	
@@ -143,7 +155,7 @@ namespace wg
 		LayerSlot * 	_endLayerSlots() const;
 		int				_sizeOfLayerSlot() const;
 	
-		//
+		// Overloaded from Widget
 	
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const Size& size );

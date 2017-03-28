@@ -221,6 +221,17 @@ namespace wg
 		_requestResize();
 	}
 
+	//____ _setSize() _______________________________________________________
+
+	void Layer::_setSize(const Size& size)
+	{
+		Container::_setSize(size);
+
+		if (m_baseSlot.pWidget)
+			m_baseSlot.pWidget->_setSize(size);
+	}
+
+
 	//____ _childPos() _________________________________________________________
 	
 	Coord Layer::_childPos( void * pChildRef ) const

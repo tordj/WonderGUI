@@ -123,11 +123,14 @@ namespace wg
 
 		void		_setWidget( Slot * pSlot, Widget * pNewWidget );
 
-		
-		void		_cloneContent( const Widget * _pOrg );
-		
-		virtual	void	_onRequestRender( const Rect& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
+		// Overloaded from Widget
 
+		void		_setSize(const Size& size);		
+		void		_cloneContent( const Widget * _pOrg );
+
+		//
+
+		virtual	void	_onRequestRender( const Rect& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
 
 		virtual LayerSlot * _beginLayerSlots() const = 0;
 		virtual LayerSlot * _endLayerSlots() const = 0;

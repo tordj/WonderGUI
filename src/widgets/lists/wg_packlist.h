@@ -80,6 +80,20 @@ namespace wg
 	};
 	
 	
+	//____ PackListSlot ____________________________________________________________
+
+	class PackListSlot : public ListSlot
+	{
+	public:
+		PackListSlot() {}
+
+		int				ofs;				// Offset in pixels for start of this list item.
+		int				length;				// Length in pixels of this list item. Includes widget padding.
+		int				prefBreadth;		// Prefereed breadth of this widget.
+	};
+
+
+
 	//____ PackList ____________________________________________________________
 	
 	class PackList : public List

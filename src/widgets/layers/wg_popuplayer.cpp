@@ -31,53 +31,22 @@ namespace wg
 {
 	
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
-	const char PopupHook::CLASSNAME[] = {"PopupHook"};
 	
-	
-	
-	//_____________________________________________________________________________
-	PopupLayer_p PopupHook::parent() const
+
+	bool PopupChildren::add(const Widget_p& _pPopup, const Widget_p& _pOpener, const Rect& _launcherGeo, Origo _attachPoint = Origo::NorthEast, Size _maxSize )
 	{
-		return m_pParent;
+		PopupSlot * pSlot = m_pSlotArray->add();
+		pSlot->pOpener = _pOpener.rawPtr();
+		pSlot->launcherGeo = _launcherGeo;
+		pSlot->attachPoint = _attachPoint;
+		pSlot->maxSize = _maxSize;
+		
+		pSlot->replaceWidget(m_pHolder, _pPopup.rawPtr());
+		return true;
 	}
-	
-	//_____________________________________________________________________________
-	PopupHook::PopupHook( PopupLayer * pParent, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, Size maxSize )
-	{
-		m_pParent 		= pParent;
-		m_pOpener		= pOpener;
-		m_launcherGeo	= launcherGeo;
-		m_attachPoint 	= attachPoint;
-		m_maxSize 		= maxSize;
-	}
-	
-	//____ PopupHook::isInstanceOf() __________________________________________
-	
-	bool PopupHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return LayerHook::isInstanceOf(pClassName);
-	}
-	
-	//____ PopupHook::className() _____________________________________________
-	
-	const char * PopupHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ PopupHook::cast() __________________________________________________
-	
-	PopupHook_p PopupHook::cast( const Hook_p& pHook )
-	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return PopupHook_p( static_cast<PopupHook*>(pHook.rawPtr()) );
-	
-		return 0;
-	}
-	
+
+
+
 	//_____________________________________________________________________________
 	void PopupHook::_requestRender()
 	{
@@ -122,11 +91,6 @@ namespace wg
 			return 0;
 	}
 	
-	//_____________________________________________________________________________
-	Container * PopupHook::_parent() const
-	{
-		return m_pParent;
-	}
 	
 	//____ _updateGeo() __________________________________________________________
 	
@@ -353,16 +317,7 @@ namespace wg
 	}
 	
 	
-	//____ closeAllPopups() ________________________________________________
-	
-	bool PopupLayer::closeAllPopups()
-	{
-		PopupHook * pHook = m_popupHooks.first();
-		if( pHook )
-			closePopup( pHook->_widget() );
-	
-		return true;
-	}
+
 	
 	
 	//____ closePopup() _________________________________________________________
@@ -393,20 +348,8 @@ namespace wg
 		return true;
 	}
 	
-	//____ firstPopupHook() ______________________________________________________
-	
-	PopupHook_p PopupLayer::firstPopupHook()
-	{
-		return m_popupHooks.first();
-	}
-	
-	//____ lastPopupHook() _______________________________________________________
-	
-	PopupHook_p PopupLayer::lastPopupHook()
-	{
-		return m_popupHooks.last();
-	}
-	
+
+
 	//____ _findWidget() ____________________________________________________________
 	
 	Widget *  PopupLayer::_findWidget( const Coord& ofs, SearchMode mode )
@@ -502,11 +445,6 @@ namespace wg
 	void PopupLayer::_setSize( const Size& sz )
 	{
 		Layer::_setSize(sz);
-		
-		// Update size of base widget
-	
-		if( m_baseHook._widget() )
-			m_baseHook._widget()->_setSize(sz);
 	}
 	
 	//____ _cloneContent() ______________________________________________________
@@ -616,14 +554,14 @@ namespace wg
 	
 		// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 	
-		if( m_popupHooks.size() < 2 )
+		if( m_popups.size() < 2 )
 			m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 		else
-			m_popupHooks.last()->prev()->m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
+			m_popups.last()->prev()->m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 	
 		// Steal keyboard focus to top menu
 	
-		Widget * pWidget = m_popupHooks.last()->_widget();
+		Widget * pWidget = m_popups.last()->pWidget;
 
 		_childRequestFocus( pWidget->_holdersRef(), pWidget );
 	}
@@ -639,12 +577,45 @@ namespace wg
 	
 		//
 	
-		if( m_popupHooks.isEmpty() )
-			
+		if( m_popups.isEmpty() )
 			_parent()->_childRequestFocus( _holdersRef(), m_pKeyFocus.rawPtr() );
 		else
-			_parent()->_childRequestFocus( _holdersRef(),  m_popupHooks.last()->m_pKeyFocus.rawPtr() );
+			_parent()->_childRequestFocus( _holdersRef(),  m_popups.last()->pKeyFocus.rawPtr() );
 	}
-	
+
+	void PopupLayer::_childRequestResize(void * pChildRef)
+	{
+	}
+
+	void PopupLayer::_didAddSlots(Slot * pSlot, int nb)
+	{
+		
+		pHook->_updateGeo();
+		_stealKeyboardFocus();
+		return pHook;
+
+	}
+
+	void PopupLayer::_willRemoveSlots(Slot * pSlot, int nb)
+	{
+	}
+
+	LayerSlot * PopupLayer::_beginLayerSlots() const
+	{
+		return m_popups.begin();
+	}
+
+	LayerSlot * PopupLayer::_endLayerSlots() const
+	{
+		return m_popups.end();
+	}
+
+	int PopupLayer::_sizeOfLayerSlot() const
+	{
+		return sizeof(PopupSlot);
+	}
+
+
+
 
 } // namespace wg

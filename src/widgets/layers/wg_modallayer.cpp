@@ -31,104 +31,154 @@ namespace wg
 	
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 	
-	
-	//TODO: Improve ModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
-	
-	
-	
-	//_____________________________________________________________________________
-	void ModalHook::top()
+	//TODO: Improve ModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.	
+
+	//____ add() _________________________________________________________________
+
+	bool ModalChildren::add(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
-		_moveLast();
-		m_pWidget->_requestRender();
-		m_pParent->_updateKeyboardFocus();
+		ModalSlot * pSlot = m_pSlotArray->add();
+		pSlot->geo = geometry;
+		pSlot->origo = origo;
+
+		pSlot->replaceWidget(m_pHolder, pWidget.rawPtr());
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return true;
+	}
+
+	//____ moveToBack() ______________________________________________________________
+
+	bool ModalChildren::moveToBack( int index )
+	{
+		return moveBelow(index, 0);
 	}
 	
-	//_____________________________________________________________________________
-	bool ModalHook::setGeo( const Rect& geometry, Origo origo )
+	//____ moveToFront() ______________________________________________________________
+
+	bool ModalChildren::moveToFront(int index)
 	{
-		m_placementGeo 	= geometry;
-		m_origo 		= origo;
-	
-		if( m_placementGeo.w <= 0 )
-			m_placementGeo.w = 1;
-	
-		if( m_placementGeo.h <= 0 )
-			m_placementGeo.h = 1;
-	
-		return _refreshRealGeo();
+		return moveAbove(index, m_pSlotArray->size() - 1);
 	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::setGeo( const Coord& ofs, Origo origo )
+
+	//____ moveAbove() ______________________________________________________________
+
+	bool ModalChildren::moveAbove(int index, int sibling)
 	{
-		m_placementGeo.setPos(ofs);
-		m_origo	= origo;
-		return _refreshRealGeo();
-	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::setOfs( const Coord& ofs )
-	{
-		m_placementGeo.setPos(ofs);
-		return _refreshRealGeo();
-	}
-	
-		
-	//_____________________________________________________________________________
-	bool ModalHook::setSize( Size sz )
-	{
-		if( sz.w < 0 || sz.h < 0 )
+		if (index < 0 || index >= m_pSlotArray->size())
 			return false;
-	
-		m_placementGeo.setSize( sz );
-		return _refreshRealGeo();
-	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::setWidth( int width )
-	{
-		if( width < 0 )
+
+		if (sibling < 0 || sibling >= m_pSlotArray->size())
 			return false;
-	
-		m_placementGeo.w = width;
-		return _refreshRealGeo();
+
+		if (index > sibling)
+			sibling++;
+
+		if (index != sibling)
+			m_pHolder->_moveSlot(index, sibling);
+
+		return true;
 	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::setHeight( int height )
+
+	//____ moveBelow() ______________________________________________________________
+
+	bool ModalChildren::moveBelow(int index, int sibling)
 	{
-		if( height < 0 )
+		if (index < 0 || index >= m_pSlotArray->size())
 			return false;
-	
-		m_placementGeo.h = height;
-		return _refreshRealGeo();
+
+		if (sibling < 0 || sibling >= m_pSlotArray->size())
+			return false;
+
+		if (index < sibling)
+			sibling--;
+
+		if (index != sibling)
+			m_pHolder->_moveSlot(index, sibling);
+
+		return true;
 	}
-	
 
+	//____ setOrigo() ______________________________________________________________
 
-	bool ModalLayer::add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest )
-	bool ModalLayer::add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { addModalWidget( pWidget, Rect(pos,0,0), origo); }
-
-	bool ModalLayer::moveToBack( int index )
+	bool ModalChildren::setOrigo(int index, const Origo origo)
 	{
-			
+		if (index < 0 || index >= m_pSlotArray->size())
+			return false;
+
+		ModalSlot * pSlot = m_pSlotArray->slot(index);
+
+		pSlot->origo = origo;
+		return m_pHolder->_refreshRealGeo(pSlot);
 	}
-	
-	bool ModalChildren::moveToFront( int index )
-	bool ModalChildren::moveAbove( int index, int otherWidget );
-	bool ModalChildren::moveBelow( int index, int otherWidget );
 
-	bool ModalChildren::setOrigo( int index, const FlexPos& origo );
-	Origo ModalChildren::origo( int index ) const;
-	
-	bool ModalChildren::setGeo( int index, const Rect& geometry );
-	Rect ModalChildren::geo( int index ) const;
+	//____ origo() ______________________________________________________________
 
-	bool ModalChildren::setOfs( int index, const Coord& ofs );
-	Coord ModalChildren::ofs( int index ) const;
+	Origo ModalChildren::origo(int index) const
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return { Origo::NorthWest };
 
-	bool ModalChildren::setSize( int index, const Size& size );
+		return m_pSlotArray->slot(index)->origo;
+	}
+
+	//____ setGeo() ______________________________________________________________
+
+	bool ModalChildren::setGeo(int index, const Rect& geometry)
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return false;
+
+		ModalSlot * pSlot = m_pSlotArray->slot(index);
+
+		pSlot->placementGeo = geometry;
+		return m_pHolder->_refreshRealGeo(pSlot);
+	}
+
+	//____ geo() _________________________________________________________________
+
+	Rect ModalChildren::geo(int index) const
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return { 0,0,0,0 };
+
+		return m_pSlotArray->slot(index)->geo;
+	}
+
+	//____ setOfs() ______________________________________________________________
+
+	bool ModalChildren::setOfs(int index, const Coord& ofs)
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return false;
+
+		ModalSlot * pSlot = m_pSlotArray->slot(index);
+
+		pSlot->placementGeo.setPos(ofs);
+		return m_pHolder->_refreshRealGeo(pSlot);
+	}
+
+	//____ ofs() _________________________________________________________________
+
+	Coord ModalChildren::ofs(int index) const
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return { 0,0 };
+
+		return m_pSlotArray->slot(index)->geo.pos();
+	}
+
+	//____ setSize() __________________________________________________________
+
+	bool ModalChildren::setSize(int index, const Size& size)
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return false;
+
+		ModalSlot * pSlot = m_pSlotArray->slot(index);
+
+		pSlot->placementGeo.setSize(size);
+		return m_pHolder->_refreshRealGeo(pSlot);
+	}
 
 
 	//____ size() ______________________________________________________________
@@ -156,7 +206,7 @@ namespace wg
 
 
 	
-	//_____________________________________________________________________________
+	//____ _refreshRealGeo() __________________________________________________
 	
 	bool ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
@@ -179,7 +229,7 @@ namespace wg
 	
 		Rect newGeo( ofs, sz );
 	
-		if( newGeo != m_geo )
+		if( newGeo != pSlot->geo )
 		{
 			_onRequestRender(pSlot->geo, pSlot);
 			pSlot->geo = Rect( ofs, sz );
@@ -189,10 +239,10 @@ namespace wg
 		return true;
 	}
 	
-	//_____________________________________________________________________________
+	//____ _childRequestResize() ______________________________________________
 	void ModalLayer::_childRequestResize( void * pChildRef )
 	{
-		if( pChildRef == m_baseSlot )
+		if( pChildRef == &m_baseSlot )
 			_requestResize();
 		else
 			_refreshRealGeo( (ModalSlot *) pChildRef );
@@ -201,7 +251,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	ModalLayer::ModalLayer()
+	ModalLayer::ModalLayer() : modals(&m_modals, this)
 	{
 	}
 	
@@ -238,82 +288,13 @@ namespace wg
 	
 		return 0;
 	}
-	
-	//____ addModalWidget() ________________________________________________________
-	
-	ModalHook_p ModalLayer::addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo )
-	{
-		// Create MyHook and fill in members.
-	
-		ModalHook * pHook = new ModalHook( this );
-		pHook->_setWidget(pWidget.rawPtr());
-		pHook->m_origo = origo;
-		pHook->m_placementGeo = geometry;
-		m_modalHooks.pushBack(pHook);
-	
-		pWidget->_setHolder( this, (Hook*) pHook );
-
-		// Refresh geometry and request render.
-	
-		pHook->_refreshRealGeo();
-		_updateKeyboardFocus();
-		return pHook;
-	}
-	
-	//____ removeModalWidgets() ________________________________________________
-	
-	bool ModalLayer::removeModalWidgets()
-	{
-		ModalHook * pHook = m_modalHooks.first();
-		while( pHook )
-		{
-			pHook->_widget()->_setHolder( nullptr, nullptr );
-			pHook = pHook->_next();
-		}
-
-		m_modalHooks.clear();
-		_requestRender();
-		_updateKeyboardFocus();
-		return true;
-	}
-	
-	//____ removeChild() _________________________________________________________
-	
-	bool ModalLayer::removeChild( const Widget_p& pWidget )
-	{
-		if( !pWidget || pWidget->parent() != this )
-			return false;
-	
-		if( pWidget == m_baseHook._widget() )
-			return removeBaseWidget();
-		else
-		{
-			ModalHook * pHook = (ModalHook *) reinterpret_cast<Hook*>(pWidget->_holdersRef());
-			pWidget->_setHolder( nullptr, nullptr );
-			_childRequestRender( (Hook*) pHook );
-			delete pHook;
-			_updateKeyboardFocus();
-			return true;
-		}
-	
-	}
-	
-	//____ clear() ________________________________________________________________
-	
-	bool ModalLayer::clear()
-	{
-		removeBaseWidget();
-		removeModalWidgets();
-		return true;
-	}
-	
-	
+		
 	//____ matchingHeight() _______________________________________________________
 	
 	int ModalLayer::matchingHeight( int width ) const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->matchingHeight( width );
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->matchingHeight( width );
 		else
 			return Widget::matchingHeight(width);
 	}
@@ -322,8 +303,8 @@ namespace wg
 	
 	int ModalLayer::matchingWidth( int height ) const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->matchingWidth( height );
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->matchingWidth( height );
 		else
 			return Widget::matchingWidth(height);
 	}
@@ -332,8 +313,8 @@ namespace wg
 	
 	Size ModalLayer::preferredSize() const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->preferredSize();
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->preferredSize();
 		else
 			return Size(1,1);
 	}
@@ -347,34 +328,34 @@ namespace wg
 	
 		if( mode == SearchMode::ActionTarget )
 		{
-			ModalHook * pHook = m_modalHooks.last();
+			ModalSlot * pSlot = m_modals.last();
 	
-			if( pHook )
+			if( pSlot )
 			{
-				if( pHook->_widget()->isContainer() )
+				if( pSlot->pWidget->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - pHook->pos(), mode );
+					Widget * pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - pSlot->geo.pos(), mode );
 					if( pResult )
 						return pResult;
 				}
 				else
 				{
-					if( pHook->_widget()->markTest(ofs - pHook->pos()) )
-						return pHook->_widget();
+					if( pSlot->pWidget->markTest(ofs - pSlot->geo.pos()) )
+						return pSlot->pWidget;
 					else
 						return this;
 				}
 			}
-			else if( m_baseHook._widget() )
+			else if( m_baseSlot.pWidget )
 			{
-				if( m_baseHook._widget()->isContainer() )
+				if( m_baseSlot.pWidget->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(m_baseHook._widget())->_findWidget( ofs - m_baseHook.pos(), mode );
+					Widget * pResult = static_cast<Container*>(m_baseSlot.pWidget)->_findWidget( ofs, mode );
 					if( pResult )
 						return pResult;
 				}
 				else
-					return m_baseHook._widget();
+					return m_baseSlot.pWidget;
 			}
 			else
 				return 0;
@@ -409,33 +390,33 @@ namespace wg
 		// Save old focus so we can return it properly in the future.
 		if( p )
 		{
-			if( p == m_baseHook._widget() )
+			if( p == m_baseSlot.pWidget )
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				ModalHook * pHook = static_cast<ModalHook*>(reinterpret_cast<Hook*>(p->_holdersRef()));
-				pHook->m_pKeyFocus = pFocused;
+				ModalSlot * pSlot = static_cast<ModalSlot*>(reinterpret_cast<Slot*>(p->_holdersRef()));
+				pSlot->pKeyFocus = pFocused;
 			}
 		}
 	
 		// Find which child-branch to focus and switch to our previously saved focus
 	
-		ModalHook * pHook = m_modalHooks.last();
+		ModalSlot * pSlot = m_modals.last();
 	
-		Widget * 	pSavedFocus = 0;
-		Hook *	pBranch	= 0;
+		Widget * 	pSavedFocus = nullptr;
+		Slot *		pBranch	= nullptr;
 	
-		if( pHook )
+		if( pSlot )
 		{
-			pSavedFocus = pHook->m_pKeyFocus.rawPtr();
-			pHook->m_pKeyFocus = 0;								// Needs to be cleared for the future.
-			pBranch = pHook;
+			pSavedFocus = pSlot->pKeyFocus.rawPtr();
+			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
+			pBranch = pSlot;
 		}
-		else if( m_baseHook._widget() )
+		else if( m_baseSlot.pWidget )
 		{
 			pSavedFocus = m_pBaseKeyFocus.rawPtr();
 			m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
-			pBranch = &m_baseHook;
+			pBranch = &m_baseSlot;
 		}
 	
 		// Verify that saved focus still is within branch and is not hidden
@@ -446,14 +427,76 @@ namespace wg
 
 		if( pW )
 		{
-			Hook * pHook = (Hook*) pW->_holdersRef();
-			if( pHook != pBranch )
+			Slot * pSlot = (Slot*) pW->_holdersRef();
+			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
 	
 		// Switch to previously saved focus, or null if not applicable
 
 		_holder()->_childRequestFocus( m_pHoldersRef, pSavedFocus );
+	}
+
+	//____ _moveSlot() ___________________________________________________________
+
+	void ModalLayer::_moveSlot(int oldPos, int newPos)
+	{
+		m_modals.move(oldPos, newPos);
+
+		ModalSlot * pOther = m_modals.slot(oldPos);				// This is correct, we have already switched places...
+		ModalSlot * pIndex = m_modals.slot(newPos);
+
+		if (pIndex > pOther)			// We were moved forward
+		{
+			// Request render on all areas covered by siblings we have skipped in front of.
+
+			ModalSlot * p = pOther;
+			while (p < pIndex)
+			{
+				Rect cover(pIndex->geo, p->geo);
+
+				if (!cover.isEmpty())
+					_onRequestRender(cover, pIndex);
+				p++;
+			}
+		}
+		else							// Move us backward
+		{
+			// Request render on our siblings for the area we previously have covered.
+
+			ModalSlot * p = pIndex + 1;
+			while (p <= pOther)
+			{
+				Rect cover(pIndex->geo, p->geo);
+
+				if (!cover.isEmpty())
+					_onRequestRender(cover, p);
+				p++;
+			}
+		}
+	}
+
+
+	//____ _didAddSlots() __________________________________________________
+
+	void ModalLayer::_didAddSlots(Slot * _pSlot, int nb)
+	{
+		ModalSlot * pSlot = (ModalSlot*) _pSlot;
+		for( int i = 0 ; i < nb ; i++ )
+			_refreshRealGeo(&pSlot[i]);
+
+		_updateKeyboardFocus();
+	}
+
+	//____ _willRemoveSlots() __________________________________________________
+
+	void ModalLayer::_willRemoveSlots(Slot * pSlot, int nb)
+	{
+		FIX SUPPORT FOR MULTIPLE HERE AND IN OTHER WIDGETS!!!!!
+
+		_childRequestRender(pSlot);
+		((ModalSlot*)pSlot)->geo = { 0,0,0,0 };
+		_updateKeyboardFocus();
 	}
 
 	//____ _beginLayerSlots() __________________________________________________
@@ -483,21 +526,11 @@ namespace wg
 	void ModalLayer::_setSize( const Size& sz )
 	{
 		Layer::_setSize(sz);
-			
-		// Update size of base widget
-	
-		if( m_baseHook._widget() )
-			m_baseHook._widget()->_setSize(sz);
-	
+				
 		// Refresh modal widgets geometry, their positions might have changed.
 	
-		ModalHook * pHook = m_modalHooks.first();
-	
-		while( pHook )
-		{
-			pHook->_refreshRealGeo();
-			pHook = pHook->_next();
-		}
+		for( auto pSlot = m_modals.begin() ; pSlot != m_modals.end() ; pSlot++ )
+			_refreshRealGeo( pSlot );
 	}
 	
 	//____ _cloneContent() ______________________________________________________
@@ -517,7 +550,7 @@ namespace wg
 		{
 			InputMsg_p pMsg = InputMsg::cast(_pMsg);
 			
-			if( !m_modalHooks.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
+			if( !m_modals.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{

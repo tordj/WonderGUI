@@ -31,67 +31,8 @@ namespace wg
 	
 	
 	const char List::CLASSNAME[] = {"List"};
-	const char ListHook::CLASSNAME[] = {"ListHook"};
 	
-	
-	//____ ListHook::isInstanceOf() __________________________________________
-	
-	bool ListHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Hook::isInstanceOf(pClassName);
-	}
-	
-	//____ ListHook::className() _____________________________________________
-	
-	const char * ListHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ ListHook::cast() __________________________________________________
-	
-	ListHook_p ListHook::cast( const Hook_p& pHook )
-	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return ListHook_p( static_cast<ListHook*>(pHook.rawPtr()) );
-	
-		return 0;
-	}
-	
-	//____ ListHook::parent() ___________________________________________________
-	
-	List_p ListHook::parent() const 
-	{ 
-		return static_cast<List*>(_parent()); 
-	}
-	
-	//____ ListHook::setVisible() ________________________________________________
-	
-	bool ListHook::setVisible( bool bVisible )
-	{
-		if( m_bVisible != bVisible )
-		{
-			m_bVisible = bVisible;
-			if( bVisible )
-				static_cast<List*>(_parent())->_onWidgetAppeared( this );
-			else
-				static_cast<List*>(_parent())->_onWidgetDisappeared( this );
-		}
-		return true;
-	}
-	
-	//____ ListHook::setSelected() ________________________________________________
-	
-	bool ListHook::setSelected( bool bSelected )
-	{
-		if( !m_bVisible )
-			return false;
-	
-		return (static_cast<List*>(_parent()))->_selectEntry( this, bSelected, false );
-	}
+		
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -210,7 +151,7 @@ namespace wg
 			case MsgType::MouseMove:
 			{	
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
 				{
 					Rect geo;
@@ -229,7 +170,7 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
-				ListHook * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( m_pHoveredEntry && !pEntry )
 				{
 					Rect geo;
@@ -249,7 +190,7 @@ namespace wg
 						break;								// Click on header or somewhere else outside the real list.
 					
 					Rect listArea = _listArea();
-					ListHook * pEntry = _findEntry(ofs);
+					ListSlot * pEntry = _findEntry(ofs);
 	
 					ofs = listArea.limit(ofs);
 					m_lassoBegin = ofs;
@@ -262,7 +203,7 @@ namespace wg
 							case SelectMode::Unselectable:
 								break;
 							case SelectMode::SingleEntry:
-								if( !pEntry->isSelected() )
+								if( !pEntry->pWidget->state.isSelected() )
 								{
 									_clearSelected( true );
 									_selectEntry( pEntry, true, true );
@@ -372,7 +313,25 @@ namespace wg
 		if( state != m_state )
 			_setState(state);
 	}
+
+
+
+	int List::_selectSlots(ListSlot * pSlot, int nb, bool bPostMsg)
+	{
+
+	}
+
+	int List::_unselectSlots(ListSlot * pSlot, int nb, bool bPostMsg)
+	{
+
+	}
+
+	int List::_flipSelection(ListSlot * pSlot, int nb, bool bPostMsg)
+	{
 	
+	}
+
+
 	//____ _selectEntry() _________________________________________________________
 	
 	bool List::_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg )
@@ -401,13 +360,6 @@ namespace wg
 		}
 	
 		return true;
-	}
-	
-	//____ _clearSelected() _______________________________________________________
-	
-	void List::_clearSelected( bool bPostMsg )
-	{
-		_selectRange( _firstHook(), _lastHook(), false, bPostMsg );
 	}
 	
 	//____ _selectRange() _________________________________________________________

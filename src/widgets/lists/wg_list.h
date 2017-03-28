@@ -35,58 +35,108 @@
 #	include <wg_skin.h>
 #endif
 
+#include <wg_childgroup.h>
+
 namespace wg 
 {
 	
-	class IconItem;
-	class TextItem;
 	class List;
 	typedef	StrongPtr<List,Container_p>		List_p;
-	typedef	WeakPtr<List,Container_wp>	List_wp;
-	
-	class ListHook;
-	typedef	HookTypePtr<ListHook,Hook_p>	ListHook_p;
-	
-	class ListHook : public Hook
-	{
-		friend class List;
-	public:
-		virtual bool		isInstanceOf( const char * pClassName ) const;
-		virtual const char *className( void ) const;
-		static const char	CLASSNAME[];
-		static ListHook_p	cast( const Hook_p& pInterface );
-	
-		ListHook_p			prev() const { return static_cast<ListHook*>(_prevHook()); }
-		ListHook_p			next() const { return static_cast<ListHook*>(_nextHook()); }
-		List_p				parent() const;
-	
-		virtual bool		setVisible( bool bVisible );
-		bool				isVisible() { return m_bVisible; }
+	typedef	WeakPtr<List,Container_wp>		List_wp;
+		
+	//____ ListSlot ____________________________________________________________
 
-		virtual bool		setSelected( bool bSelected );
-		bool				isSelected() { return m_pWidget->state().isSelected(); }
-	
-	
-	protected:
-	
-		ListHook() : m_bVisible(true) {}
-		 virtual ~ListHook() {};
-	
-	
-		 bool			m_bVisible;
+	class ListSlot : public Slot
+	{
+	public:
+		ListSlot() : bVisible(false) {}
+
+		bool		bVisible;
 	};
-	
+
+	//____ ListChildrenHolder ____________________________________________________________
+
+	class ListChildrenHolder : public ChildGroupHolder
+	{
+		virtual void	_hideSlots(ListSlot * pSlot, int nb) = 0;
+		virtual void	_unhideSlots(ListSlot * pSlot, int nb) = 0;
+	};
+
+	//____ ListChildren ________________________________________________________
+
+	template<class SlotType, class HolderType> class ListChildren : public ChildGroup<SlotType, HolderType>
+	{
+	public:
+		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : ChildGroup<SlotType, HolderType>(pSlotArray, pHolder) {}
+
+		void	hide(int index)
+		{
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+				ChildGroup<SlotType, HolderType>::m_pHolder->_hideSlots(ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index), 1);
+		};
+
+		void	unhide(int index)
+		{
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+				ChildGroup<SlotType, HolderType>::m_pHolder->_unhideSlots(ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index), 1);
+		};
+
+		bool	isVisible(int index) 
+		{ 
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+				return ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index)->bVisible;
+
+			return false;
+		}
+
+		void	select(int index)
+		{
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+			{
+				ListSlot * pSlot = ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index);
+				if( pSlot->bVisible)
+					ChildGroup<SlotType, HolderType>::m_pHolder->_selectSlots(pSlot, 1);
+			}
+		}
+
+		void	unselect(int index)
+		{
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+			{
+				ListSlot * pSlot = ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index);
+				if (pSlot->bVisible)
+					ChildGroup<SlotType, HolderType>::m_pHolder->_unselectSlots(pSlot, 1);
+			}
+		}
+
+		bool	isVisible(int index)
+		{
+			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
+				return ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index)->pWidget->state().isSelected();
+
+			return false;
+		}
+
+
+	};
+
+
 	//____ List _________________________________________________________________
 	
 	class List : public Container
 	{
 		friend class ListHook;
 	public:
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static List_p		cast( const Object_p& pObject );
-	
+
+		//.____ Appearance _________________________________________________
+
 		virtual void		setEntrySkin( const Skin_p& pSkin );
 		virtual bool		setEntrySkin( const Skin_p& pOddEntrySkin, const Skin_p& pEvenEntrySkin );
 		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
@@ -94,7 +144,9 @@ namespace wg
 	
 		virtual void		setLassoSkin( const Skin_p& pSkin );
 		Skin_p				lassoSkin() const { return m_pLassoSkin; }
-	
+
+		//.____ Behavior ________________________________________________________
+
 		virtual bool		setSelectMode( SelectMode mode );
 		SelectMode			selectMode() const { return m_selectMode; }
 	
@@ -108,14 +160,12 @@ namespace wg
 
 		void			_cloneContent( const Widget * _pOrg );
 	
-		virtual bool	_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg );
-		virtual int		_selectRange( ListHook * pFirst, ListHook * pLast, bool bSelected, bool bPostMsg );
-		virtual int		_flipRange( ListHook * pFirst, ListHook * pLast, bool bPostMsg );
-		virtual void	_clearSelected( bool bPostMsg );
-		virtual void	_onWidgetAppeared( ListHook * pInserted ) = 0;
-		virtual void	_onWidgetDisappeared( ListHook * pToBeRemoved ) = 0;		// Call BEFORE widget is removed from m_hooks.
-		virtual ListHook * _findEntry( const Coord& ofs ) = 0;
-		virtual void	_getEntryGeo( Rect& geo, const ListHook * pHook ) const = 0;
+		virtual int		_selectSlots( ListSlot * pSlot, int nb, bool bPostMsg );
+		virtual int		_unselectSlots(ListSlot * pSlot, int nb, bool bPostMsg);
+		virtual int		_flipSelection( ListSlot * pSlot, int nb, bool bPostMsg );
+
+		virtual ListSlot * _findEntry( const Coord& ofs ) = 0;
+		virtual void	_getEntryGeo( Rect& geo, const ListSlot * pSlot ) const = 0;
 	
 		virtual Rect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
 		virtual Rect	_listWindow() const = 0;
@@ -124,8 +174,6 @@ namespace wg
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
-		virtual ListHook * _firstHook() = 0;
-		virtual ListHook * _lastHook() = 0;
 
 		SelectMode		m_selectMode;
 		Skin_p			m_pEntrySkin[2];
@@ -135,8 +183,8 @@ namespace wg
 		Coord			m_lassoBegin;
 		Coord			m_lassoEnd;
 	
-		ListHook_p		m_pFocusedEntry;
-		ListHook_p		m_pHoveredEntry;
+		int				m_focusedEntry;					// -1 = none
+		int				m_hoveredEntry;					// -1 = none
 	};
 	
 	

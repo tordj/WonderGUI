@@ -99,8 +99,7 @@ namespace wg
 				FlexPos			bottomRightPin;
 //			};
 //		};
-	
-	
+		
 	};
 	
 	
@@ -136,8 +135,8 @@ namespace wg
 	
 		bool		moveToBack( int index );								// Put us ontop all our silbings.
 		bool		moveToFront( int index );							// Put us below all our siblings.	
-		bool		moveAbove( int index, int otherWidget );
-		bool		moveBelow( int index, int otherWidget );
+		bool		moveAbove( int index, int sibling );
+		bool		moveBelow( int index, int sibling );
 	
 		bool		isMovable( int index ) const;
 		bool		isPinned( int index ) const;
