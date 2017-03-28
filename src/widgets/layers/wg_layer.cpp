@@ -27,14 +27,12 @@ namespace wg
 {
 	
 	const char Layer::CLASSNAME[] = {"Layer"};
-	const char LayerHook::CLASSNAME[] = {"LayerHook"};
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	Layer::Layer()
+	Layer::Layer() : base( &m_baseSlot, this )
 	{
-		m_baseHook.m_pParent = this;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -65,51 +63,13 @@ namespace wg
 	}
 	
 	
-	//____ setBaseWidget() _________________________________________________________
-	
-	Hook_p Layer::setBaseWidget( const Widget_p& pWidget )
-	{
-		if( m_baseHook._widget() )
-			m_baseHook._widget()->_setHolder( 0, 0 );
-
-		if( pWidget )
-			pWidget->_setHolder( this, ((Hook*)&m_baseHook) );
-
-		m_baseHook._setWidget(pWidget.rawPtr());
-		_onBaseChanged();
-		return &m_baseHook;
-	}
-	
-	//____ baseWidget() ____________________________________________________________
-	
-	Widget_p Layer::baseWidget()
-	{
-		return m_baseHook._widget();
-	}
-	
-	
-	//____ removeBaseWidget() _____________________________________________________
-	
-	bool Layer::removeBaseWidget()
-	{
-		if( !m_baseHook._widget() )
-			return false;
-
-		if( m_baseHook._widget() )
-			m_baseHook._widget()->_setHolder( 0, 0 );
-
-		m_baseHook._setWidget(0);
-		_onBaseChanged();
-	
-		return true;
-	}
 	
 	//____ matchingHeight() _______________________________________________________
 	
 	int Layer::matchingHeight( int width ) const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->matchingHeight( width );
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->matchingHeight( width );
 		else
 			return Widget::matchingHeight(width);
 	}
@@ -118,8 +78,8 @@ namespace wg
 	
 	int Layer::matchingWidth( int height ) const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->matchingWidth( height );
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->matchingWidth( height );
 		else
 			return Widget::matchingWidth(height);
 	}
@@ -128,8 +88,8 @@ namespace wg
 	
 	Size Layer::preferredSize() const
 	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget()->preferredSize();
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget->preferredSize();
 		else
 			return Size(1,1);
 	}
@@ -137,7 +97,7 @@ namespace wg
 	
 	//____ _onRequestRender() _____________________________________________________
 	
-	void Layer::_onRequestRender( const Rect& rect, const LayerHook * pHook )
+	void Layer::_onRequestRender( const Rect& rect, const LayerSlot * pSlot )
 	{
 		// Clip our geometry and put it in a dirtyrect-list
 	
@@ -147,19 +107,22 @@ namespace wg
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 	
-		LayerHook * pCover;
+		const LayerSlot * pCover;
+		const LayerSlot * pEnd = _endLayerSlots();
 	
-		if( pHook )
-			pCover = pHook->_nextLayerHook();
+		int incNext = _sizeOfLayerSlot();
+	
+		if( pSlot )
+			pCover = _incLayerSlot(pSlot,incNext);
 		else
-			pCover = _firstLayerHook();
+			pCover = _beginLayerSlots();
 	
-		while( pCover )
+		while( pCover <  pEnd )
 		{
-			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_geo, Rect(0,0,65536,65536 ), _getBlendMode() );
+			if( pCover->geo.intersectsWith( rect ) )
+				pCover->pWidget->_maskPatches( patches, pCover->geo, Rect(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
 	
-			pCover = pCover->_nextLayerHook();
+			pCover = _incLayerSlot(pSlot,incNext);
 		}
 	
 		// Make request render calls
@@ -172,47 +135,50 @@ namespace wg
 	//____ _firstChild() ___________________________________________________________
 	
 	Widget* Layer::_firstChild() const
-	{
-		if( m_baseHook._widget() )
-			return m_baseHook._widget();
+	{		
+		if( m_baseSlot.pWidget )
+			return m_baseSlot.pWidget;
 		else
-			return _firstLayerHook()->_widget();
+		{
+			LayerSlot * p = _beginLayerSlots();
+			if( p != _endLayerSlots() )
+				return p->pWidget;
+	
+			return nullptr;
+		}	
 	}
 	
 	//____ _lastChild() ____________________________________________________________
 	
 	Widget* Layer::_lastChild() const
 	{
-		Hook * p = _lastLayerHook();
+		LayerSlot * pSlot = _endLayerSlots();
 	
-		if( !p )
-		{
-			if( m_baseHook._widget() )
-				return m_baseHook._widget();	
-			return nullptr;
-		}
-	
-		return p->_widget();
+		if( pSlot == _beginLayerSlots() )
+			return m_baseSlot.pWidget;
+
+		pSlot = _decLayerSlot(pSlot,_sizeOfLayerSlot());
+		return pSlot->pWidget;
 	}
 	
 	//____ _firstChildWithGeo() _____________________________________________________
 	
 	void Layer::_firstChildWithGeo( WidgetWithGeo& package ) const
 	{
-		if( m_baseHook._widget() )
+		if( m_baseSlot.pWidget )
 		{
 			package.geo = Rect(0,0,m_size);
-			package.pWidget = m_baseHook._widget();
-			package.pMagic = (Hook*)(&m_baseHook);
+			package.pWidget = m_baseSlot.pWidget;
+			package.pMagic = (void *) &m_baseSlot;
 		}
 		else
 		{
-			LayerHook * p = _firstLayerHook();
-			if( p )
+			LayerSlot * p = _beginLayerSlots();
+			if( p < _endLayerSlots() )
 			{
-				package.geo = p->m_geo;
-				package.pWidget = p->_widget();
-				package.pMagic = (Hook*) p;
+				package.geo = p->geo;
+				package.pWidget = p->pWidget;
+				package.pMagic = p;
 			}
 			else
 				package.pWidget = nullptr;
@@ -223,15 +189,21 @@ namespace wg
 	
 	void Layer::_nextChildWithGeo( WidgetWithGeo& package ) const
 	{
-		Hook * p = ((Hook*)package.pMagic)->_nextHook();
-		if( p )
+		LayerSlot * p = (LayerSlot*) package.pMagic;
+
+		if( p == &m_baseSlot )
+			p = _beginLayerSlots();
+		else
+			p = _incLayerSlot(p,_sizeOfLayerSlot());
+
+		if( p < _endLayerSlots() )
 		{
-			package.geo = ((LayerHook*)p)->m_geo;
-			package.pWidget = p->_widget();
+			package.geo = ((LayerSlot*)p)->geo;
+			package.pWidget = p->pWidget;
 			package.pMagic = p;
 		}
 		else
-			package.pWidget = nullptr;	
+			package.pWidget = nullptr;
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -241,127 +213,97 @@ namespace wg
 		Container::_cloneContent( _pOrg );
 	}
 	
-	//____ _onBaseChanged() _______________________________________________________
+	//____ _setWidget() _______________________________________________________
 	
-	void Layer::_onBaseChanged()
+	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
 		_onRequestRender( Rect(0,0,m_size), 0 );
 		_requestResize();
 	}
+
+	//____ _childPos() _________________________________________________________
 	
 	Coord Layer::_childPos( void * pChildRef ) const
 	{
-		return ((Hook*)pChildRef)->pos();
-
+		if( pChildRef == &m_baseSlot )
+			return {0,0};
+		
+		return ((LayerSlot*)pChildRef)->geo;
 	}
+
+	//____ _childSize() ________________________________________________________
 
 	Size Layer::_childSize( void * pChildRef ) const
 	{
-		return ((Hook*)pChildRef)->size();
+		if( pChildRef == &m_baseSlot )
+			return m_size;
+		
+		return ((LayerSlot*)pChildRef)->geo;
 	}
+
+	//____ _childRequestRender() _______________________________________________
 
 	void Layer::_childRequestRender( void * pChildRef )
 	{
-		Hook * pHook = reinterpret_cast<Hook*>(pChildRef);
-		if( pHook == &m_baseHook )
+		if( pChildRef == &m_baseSlot )
 			_onRequestRender( Rect( 0,0, m_size ), 0 );		//TODO: Take padding into account
 		else
-			_onRequestRender( ((LayerHook*)pHook)->m_geo, (LayerHook*)pHook );
+		{
+			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(pChildRef);
+			_onRequestRender( pSlot->geo, pSlot );
+		}
 	}
 	
 	void Layer::_childRequestRender( void * pChildRef, const Rect& rect )
 	{
-		Hook * pHook = reinterpret_cast<Hook*>(pChildRef);
-		if( pHook == &m_baseHook )
+		if( pChildRef == &m_baseSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account
 		else
-			_onRequestRender( rect + ((LayerHook*)pHook)->m_geo.pos(), (LayerHook*)pHook );
+		{
+			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(pChildRef);
+			_onRequestRender( rect + pSlot->geo.pos(), pSlot );
+		}
 	}
 
+	//____ _childRequestResize() _______________________________________________
+ 
 	void Layer::_childRequestResize( void * pChildRef )
 	{
 		_requestResize();			//TODO: Smarter handling, not request resize unless we need to.
 	}
 
+	//____ _prevChild() ________________________________________________________
+
 	Widget * Layer::_prevChild( void * pChildRef ) const
 	{
-		Hook * p = ((Hook*)pChildRef)->_prevHook();
-		return p ? p->_widget() : nullptr;
+		if( pChildRef == &m_baseSlot )
+			return nullptr;
+		
+		if( pChildRef == _beginLayerSlots() )
+			return m_baseSlot.pWidget;
+			
+		LayerSlot * p = _decLayerSlot((LayerSlot*)pChildRef,_sizeOfLayerSlot());
+		return p->pWidget;
 	}
+
+	//____ _nextChild() ________________________________________________________
 
 	Widget * Layer::_nextChild( void * pChildRef ) const
 	{
-		Hook * p = ((Hook*)pChildRef)->_nextHook();
-		return p ? p->_widget() : nullptr;
-	}
-	
-	//____ LayerHook::isInstanceOf() __________________________________________
-	
-	bool LayerHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Hook::isInstanceOf(pClassName);
-	}
-	
-	//____ LayerHook::className() _____________________________________________
-	
-	const char * LayerHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ LayerHook::cast() __________________________________________________
-	
-	LayerHook_p LayerHook::cast( const Hook_p& pHook )
-	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return LayerHook_p( static_cast<LayerHook*>(pHook.rawPtr()) );
-	
-		return 0;
-	}
-	
-	//_____________________________________________________________________________
-	Coord LayerHook::globalPos() const
-	{
-		return parent()->globalPos() + m_geo.pos();
-	}
-	
-	//_____________________________________________________________________________
-	Rect LayerHook::globalGeo() const
-	{
-		return m_geo + parent()->globalPos();
-	}
-	
-	//_____________________________________________________________________________
-	Hook * LayerHook::_prevHook() const
-	{
-		Hook * p = _prevLayerHook();
-		if( !p )
+		if( pChildRef == &m_baseSlot )
 		{
-			Container * c = _parent();
-			if( c != 0 )
-			{
-				Layer * l = static_cast<Layer*>(c);
-				if( l->m_baseHook._widget() )	
-					p = &l->m_baseHook;
-			}
+			if( _beginLayerSlots() < _endLayerSlots() )
+				return _beginLayerSlots()->pWidget;
 		}
-		return p;
+		else
+		{
+			LayerSlot * p = _incLayerSlot((LayerSlot*)pChildRef,_sizeOfLayerSlot());
+			if( p < _endLayerSlots() )
+				return p->pWidget;
+		}
+
+		return nullptr;
 	}
 	
-	//_____________________________________________________________________________
-	Hook * LayerHook::_nextHook() const
-	{
-		return _nextLayerHook();
-	}
-	
-	
-	//_____________________________________________________________________________
-	Layer_p LayerHook::parent() const
-	{ 
-		return static_cast<Layer*>(_parent()); 
-	}
 
 } // namespace wg

@@ -30,100 +30,85 @@
 namespace wg 
 {
 	
+	//____ ModalSlot ___________________________________________________________
+	
+	class ModalSlot : public LayerSlot
+	{
+		Origo		origo;
+		Rect		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.	
+		Widget_wp	pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
+		
+	};
+	
+	
+	class ModalChildren;
+	typedef	StrongInterfacePtr<ModalChildren,Interface_p>	ModalChildren_p;
+	typedef	WeakInterfacePtr<ModalChildren,Interface_wp>	ModalChildren_wp;
+	
+	//____ ModalChildren ________________________________________________________
+
+	class ModalChildren : public ChildGroup<ModalSlot,ModalLayer>
+	{
+	public:
+		ModalChildren( SlotArray<ModalSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
+
+		inline ModalChildren_p	ptr() { return ModalChildren_p(_object(),this); }
+
+		bool		add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
+		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { addModalWidget( pWidget, Rect(pos,0,0), origo); }
+
+		bool		moveToBack( int index );								// Put us ontop all our silbings.
+		bool		moveToFront( int index );							// Put us below all our siblings.	
+		bool		moveAbove( int index, int otherWidget );
+		bool		moveBelow( int index, int otherWidget );
+
+		bool		setOrigo( int index, const FlexPos& origo );
+		Origo		origo( int index ) const;
+		
+		bool		setGeo( int index, const Rect& geometry );
+		Rect		geo( int index ) const;
+	
+		bool		setOfs( int index, const Coord& ofs );
+		Coord		ofs( int index ) const;
+
+		bool		setSize( int index, const Size& size );
+		Size		size( int index ) const;
+	
+		bool		move( int index, const Coord& ofs );
+	};
+	
+	
 	
 	class ModalLayer;
 	typedef	StrongPtr<ModalLayer,Layer_p>	ModalLayer_p;
-	typedef	WeakPtr<ModalLayer,Layer_wp>	ModalLayer_wp;
-	
-	class ModalHook;
-	typedef	HookTypePtr<ModalHook,LayerHook_p>	ModalHook_p;
-	
-	class ModalHook : public LayerHook, protected Link
-	{
-		friend class ModalLayer;
-		friend class Chain<ModalHook>;
-	
-	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static ModalHook_p	cast( const Hook_p& pInterface );
-	
-		void	top();								// Put us ontop of all our siblings.
-	
-		bool	setGeo( const Rect& geometry, Origo origo = Origo::NorthWest );
-		bool	setGeo( const Coord& ofs, Origo origo = Origo::NorthWest );
-	
-		bool	setOfs( const Coord& ofs );
-		bool	setOfsX( int x );
-		bool	setOfsY( int y );
-	
-		bool	setSize( Size sz );
-		bool	setWidth( int width );
-		bool	setHeight( int height );
-	
-		bool	move( const Coord& ofs );
-		bool	moveX( int x );
-		bool	moveY( int y );
-	
-	
-		// Standard MyHook methods
-	
-		ModalHook_p	prev() const { return _prev(); }
-		ModalHook_p	next() const { return _next(); }
-	
-		ModalLayer_p	parent() const;
-	
-	protected:
-		// TODO: Constructor should in the future call setHook() on Widget, once we are totally rid of widgets...
-	
-		PROTECTED_LINK_METHODS( ModalHook );
-	
-		ModalHook( ModalLayer * pParent );
-	
-		bool		_refreshRealGeo();	// Return false if we couldn't get exactly the requested (floating) geometry.
-		void		_requestResize();
-	
-		LayerHook *	_prevLayerHook() const;			// Iterate through all hooks except the base hook
-		LayerHook *	_nextLayerHook() const;			// Iterate through all hooks except the base hook
-		Container *	_parent() const;
-	
-	
-		ModalLayer *	m_pParent;
-	
-		Origo	m_origo;
-		Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
-											// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
-	
-		Widget_wp	m_pKeyFocus;		// Pointer at child that held focus when this modal was last on top.
-	};
-	
+	typedef	WeakPtr<ModalLayer,Layer_wp>	ModalLayer_wp;	
+
+	//____ ModalLayer __________________________________________________________
 	
 	class ModalLayer : public Layer
 	{
 		friend class ModalHook;
 	
 	public:
+
+		//.____ Creation __________________________________________
+
 		static ModalLayer_p	create() { return ModalLayer_p(new ModalLayer()); }
+
+		//.____ Components _______________________________________
+
+		ModalChildren	modals;
+
+		//.____ Identification __________________________________________
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ModalLayer_p	cast( const Object_p& pObject );
 	
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		ModalHook_p	addModalWidget( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return addModalWidget( pWidget, Rect(pos,0,0), origo); }
-	
-		bool			removeModalWidgets();
-	
-		bool			removeChild( const Widget_p& pWidget );
-		bool			clear();
-	
-		ModalHook_p	firstModalHook();
-		ModalHook_p	lastModalHook();
-	
-	
-		// Overloaded from Widget
+		
+		//.____ Geometry ____________________________________________
 	
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
@@ -141,16 +126,22 @@ namespace wg
 		ModalLayer *	_getModalLayer() const { return const_cast<ModalLayer*>(this); }
 	
 		void			_updateKeyboardFocus();
+		bool			_refreshRealGeo( ModalSlot * pSlot );
 	
 		// Overloaded from Panel
 	
 		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
 	
 	
+		// Overloaded from WidgetHolder
+	
+		void			_childRequestResize( void * pChildRef );
+
 		// Overloaded from Layer
 	
-		LayerHook *	_firstLayerHook() const { return m_modalHooks.first(); }
-		LayerHook *	_lastLayerHook() const { return m_modalHooks.last(); }
+		LayerSlot * 	_beginLayerSlots() const;
+		LayerSlot * 	_endLayerSlots() const;
+		int				_sizeOfLayerSlot() const;
 	
 		//
 	
@@ -158,9 +149,10 @@ namespace wg
 		void			_setSize( const Size& size );
 		void			_receive( const Msg_p& pMsg );
 	
-		Chain<ModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 	
 		Widget_wp			m_pBaseKeyFocus;
+
+		SlotArray<ModalSlot>	m_modals;
 	
 	};
 	

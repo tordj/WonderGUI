@@ -26,6 +26,10 @@
 #	include <wg_container.h>
 #endif
 
+#include <wg_slot.h>
+#include <wg_childentry.h>
+
+
 namespace wg 
 {
 	
@@ -33,42 +37,16 @@ namespace wg
 	typedef	StrongPtr<Layer,Container_p>	Layer_p;
 	typedef	WeakPtr<Layer,Container_p>	Layer_wp;
 	
-	class LayerHook;
-	typedef	HookTypePtr<LayerHook,Hook_p>	LayerHook_p;
+
 	
+	//____ LayerSlot ___________________________________________________________
 	
-	class LayerHook : public Hook
+	class LayerSlot : public Slot
 	{
-		friend class Layer;
-		friend class ModalLayer;
-	
 	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static LayerHook_p	cast( const Hook_p& pInterface );
-	
-		Coord			pos() const { return m_geo.pos(); }
-		Size			size() const { 	return m_geo.size(); }
-		Rect			geo() const { return m_geo; }
-	
-		Coord			globalPos() const;
-		Rect			globalGeo() const;
-	
-		LayerHook_p	prev() const { return _prevLayerHook(); }
-		LayerHook_p	next() const { return _nextLayerHook(); }
-		Layer_p		parent() const;
-	
-	protected:
-	
-		virtual LayerHook *	_prevLayerHook() const = 0;			// Iterate through all hooks except the base hook
-		virtual LayerHook *	_nextLayerHook() const = 0;			// Iterate through all hooks except the base hook
-		
-		Hook *		_prevHook() const;							// Iterates through all hooks, including the base hook
-		Hook *		_nextHook() const;							// Iterates through all hooks, including the base hook
-			
-		Rect		m_geo;
+		Rect	geo;
 	};
+
 	
 	
 	/**
@@ -92,21 +70,24 @@ namespace wg
 	 *
 	 **/
 	
-	class Layer : public Container
+	class Layer : public Container, protected ChildEntryHolder
 	{
-		friend class LayerHook;
 	
 	public:
+
+		//.____ Components _______________________________________
+
+		ChildEntry<Slot,Layer> base;
+
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Layer_p	cast( const Object_p& pObject );
 	
-		Hook_p				setBaseWidget( const Widget_p& pWidget );
-		Widget_p			baseWidget();
-		bool				removeBaseWidget();
-		
-		// Overloaded from Widget
+		//.____ Geometry ____________________________________________
 	
 		int					matchingHeight( int width ) const;
 		int					matchingWidth( int height ) const;
@@ -116,7 +97,7 @@ namespace wg
 	protected:
 		Layer();
 	
-		//
+		// Overloaded from WidgetHolder
 
 		Coord		_childPos( void * pChildRef ) const;
 		Size		_childSize( void * pChildRef ) const;
@@ -128,51 +109,38 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		//
 
-		class _BaseHook : public Hook
-		{
-			friend class Layer;
-			friend class LayerHook;
-			friend class ModalLayer;
-			friend class PopupLayer;
-	
-		public:
-	
-			// Standard MyHook methods
-	
-			Coord		pos() const { return m_pParent->pos(); }
-			Size		size() const { 	return m_pParent->size(); }
-			Rect		geo() const { return m_pParent->geo(); }
-	
-			Coord		globalPos() const { return m_pParent->globalPos(); }
-			Rect		globalGeo() const { return m_pParent->globalGeo(); }
-	
-		protected:
+		// Overloaded from Container
 		
-			Hook *		_prevHook() const { return 0; }
-			Hook *		_nextHook() const { return m_pParent->_firstLayerHook(); }
-			Container*	_parent() const { return m_pParent; }
-	
-			Layer * 	m_pParent;
-		};
-	
-		_BaseHook		m_baseHook;
-	
-		void			_cloneContent( const Widget * _pOrg );
-		
-		virtual	void	_onRequestRender( const Rect& rect, const LayerHook * pHook );	// rect is in our coordinate system.
-		virtual LayerHook * _firstLayerHook() const = 0;
-		virtual LayerHook * _lastLayerHook() const = 0;
-	
-		Widget *		_firstChild() const;		// Fist MyHook returned is for the base, then follows the LayerHooks.
-		Widget *		_lastChild() const;			//
+		Widget *	_firstChild() const;
+		Widget *	_lastChild() const;
 
-		void			_firstChildWithGeo( WidgetWithGeo& package ) const;
-		void			_nextChildWithGeo( WidgetWithGeo& package ) const;
+		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
+		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
+
+
+		// Overloaded from ChildEntryHolder
+
+		void		_setWidget( Slot * pSlot, Widget * pNewWidget );
+
+		
+		void		_cloneContent( const Widget * _pOrg );
+		
+		virtual	void	_onRequestRender( const Rect& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
+
+
+		virtual LayerSlot * _beginLayerSlots() const = 0;
+		virtual LayerSlot * _endLayerSlots() const = 0;
+		virtual int			_sizeOfLayerSlot() const = 0;
+		
+		inline LayerSlot * _incLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)+sizeOf); }
+		inline const LayerSlot * _incLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)+sizeOf); }
+
+		inline LayerSlot * _decLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)-sizeOf); }
+		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
+
 	
-		virtual void	 _onBaseChanged();
-	
+		Slot				m_baseSlot;
 	};
 	
 	

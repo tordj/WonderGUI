@@ -30,38 +30,11 @@ namespace wg
 {
 	
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
-	const char ModalHook::CLASSNAME[] = {"ModalHook"};
 	
 	
 	//TODO: Improve ModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 	
 	
-	//____ ModalHook::isInstanceOf() __________________________________________
-	
-	bool ModalHook::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return LayerHook::isInstanceOf(pClassName);
-	}
-	
-	//____ ModalHook::className() _____________________________________________
-	
-	const char * ModalHook::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
-	//____ ModalHook::cast() __________________________________________________
-	
-	ModalHook_p ModalHook::cast( const Hook_p& pHook )
-	{
-		if( pHook && pHook->isInstanceOf(CLASSNAME) )
-			return ModalHook_p( static_cast<ModalHook*>(pHook.rawPtr()) );
-	
-		return 0;
-	}
 	
 	//_____________________________________________________________________________
 	void ModalHook::top()
@@ -101,21 +74,7 @@ namespace wg
 		return _refreshRealGeo();
 	}
 	
-	//_____________________________________________________________________________
-	bool ModalHook::setOfsX( int x )
-	{
-		m_placementGeo.x = x;
-		return _refreshRealGeo();
-	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::setOfsY( int y )
-	{
-		m_placementGeo.y = y;
-		return _refreshRealGeo();
-	}
-	
-	
+		
 	//_____________________________________________________________________________
 	bool ModalHook::setSize( Size sz )
 	{
@@ -146,108 +105,99 @@ namespace wg
 		return _refreshRealGeo();
 	}
 	
-	//_____________________________________________________________________________
-	bool ModalHook::move( const Coord& ofs )
+
+
+	bool ModalLayer::add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest )
+	bool ModalLayer::add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { addModalWidget( pWidget, Rect(pos,0,0), origo); }
+
+	bool ModalLayer::moveToBack( int index )
 	{
-		m_placementGeo += ofs;
-		return _refreshRealGeo();
+			
 	}
 	
-	//_____________________________________________________________________________
-	bool ModalHook::moveX( int x )
+	bool ModalChildren::moveToFront( int index )
+	bool ModalChildren::moveAbove( int index, int otherWidget );
+	bool ModalChildren::moveBelow( int index, int otherWidget );
+
+	bool ModalChildren::setOrigo( int index, const FlexPos& origo );
+	Origo ModalChildren::origo( int index ) const;
+	
+	bool ModalChildren::setGeo( int index, const Rect& geometry );
+	Rect ModalChildren::geo( int index ) const;
+
+	bool ModalChildren::setOfs( int index, const Coord& ofs );
+	Coord ModalChildren::ofs( int index ) const;
+
+	bool ModalChildren::setSize( int index, const Size& size );
+
+
+	//____ size() ______________________________________________________________
+
+	Size ModalChildren::size( int index ) const
 	{
-		m_placementGeo.x += x;
-		return _refreshRealGeo();
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return {0,0};
+		
+		return m_pSlotArray->slot(index)->geo.size();			
 	}
+
+	//____ move() ______________________________________________________________
+
+	bool ModalChildren::move( int index, const Coord& ofs )
+	{
+		if( index < 0 || index >= m_pSlotArray->size() )
+			return false;
+		
+		ModalSlot * pSlot = m_pSlotArray->slot(index);		
+	
+		pSlot->placementGeo += ofs;
+		return m_pHolder->_refreshRealGeo( pSlot );		
+	}
+
+
 	
 	//_____________________________________________________________________________
-	bool ModalHook::moveY( int y )
-	{
-		m_placementGeo.y += y;
-		return _refreshRealGeo();
-	}
 	
-	//_____________________________________________________________________________
-	ModalLayer_p ModalHook::parent() const
+	bool ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
-		return m_pParent;
-	}
-	
-	//_____________________________________________________________________________
-	ModalHook::ModalHook( ModalLayer * pParent )
-	{
-		m_pParent = pParent;
-	}
-	
-	//_____________________________________________________________________________
-	bool ModalHook::_refreshRealGeo()	// Return false if we couldn't get exactly the requested (floating) geometry.
-	{
-		Size sz = m_placementGeo.size();
+		Size sz = pSlot->placementGeo.size();
 	
 		if( sz.w == 0 && sz.h == 0 )
-			sz = m_pWidget->preferredSize();
+			sz = pSlot->pWidget->preferredSize();
 		else if( sz.w == 0 )
-			sz.w = m_pWidget->matchingWidth(sz.h);
+			sz.w = pSlot->pWidget->matchingWidth(sz.h);
 		else if( sz.h == 0 )
-			sz.h = m_pWidget->matchingHeight(sz.w);
+			sz.h = pSlot->pWidget->matchingHeight(sz.w);
 	
 		if( sz.w <= 0 )
 			sz.w = 1;
 		if( sz.h <= 0 )
 			sz.h = 1;
 	
-		Coord ofs = Util::origoToOfs( m_origo, m_pParent->size() ) - Util::origoToOfs( m_origo, sz );
-		ofs += m_placementGeo.pos();
+		Coord ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
+		ofs += pSlot->placementGeo.pos();
 	
 		Rect newGeo( ofs, sz );
 	
 		if( newGeo != m_geo )
 		{
-			m_pWidget->_requestRender();
-			m_geo = Rect( ofs, sz );
-			m_pWidget->_requestRender();
+			_onRequestRender(pSlot->geo, pSlot);
+			pSlot->geo = Rect( ofs, sz );
+			_onRequestRender(pSlot->geo, pSlot);
 		}
 	
 		return true;
 	}
 	
 	//_____________________________________________________________________________
-	void ModalHook::_requestResize()
+	void ModalLayer::_childRequestResize( void * pChildRef )
 	{
-		_refreshRealGeo();
-	}
-	
-	//_____________________________________________________________________________
-	LayerHook * ModalHook::_prevLayerHook() const
-	{
-		ModalHook * p = _prev();
-	
-		// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
-	
-		if( p )
-			return p;
+		if( pChildRef == m_baseSlot )
+			_requestResize();
 		else
-			return 0;
+			_refreshRealGeo( (ModalSlot *) pChildRef );
 	}
 	
-	//_____________________________________________________________________________
-	LayerHook * ModalHook::_nextLayerHook() const
-	{
-		ModalHook * p = _next();
-	
-		// We have multiple inheritance, so lets make the cast in a safe way, preserving NULL-pointer as NULL.
-	
-		if( p )
-			return p;
-		else
-			return 0;
-	}
-	
-	//_____________________________________________________________________________
-	Container * ModalHook::_parent() const
-	{
-		return m_pParent;
-	}
 	
 	//____ Constructor ____________________________________________________________
 	
@@ -357,19 +307,6 @@ namespace wg
 		return true;
 	}
 	
-	//____ firstModalHook() ______________________________________________________
-	
-	ModalHook_p ModalLayer::firstModalHook()
-	{
-		return m_modalHooks.first();
-	}
-	
-	//____ lastModalHook() _______________________________________________________
-	
-	ModalHook_p ModalLayer::lastModalHook()
-	{
-		return m_modalHooks.last();
-	}
 	
 	//____ matchingHeight() _______________________________________________________
 	
@@ -518,6 +455,28 @@ namespace wg
 
 		_holder()->_childRequestFocus( m_pHoldersRef, pSavedFocus );
 	}
+
+	//____ _beginLayerSlots() __________________________________________________
+	
+	LayerSlot * ModalLayer::_beginLayerSlots() const
+	{
+		return m_modals.begin();
+	}
+
+	//____ _endLayerSlots() ____________________________________________________
+
+	LayerSlot *  ModalLayer::_endLayerSlots() const
+	{
+		return m_modals.end();
+	}
+
+	//____ _sizeOfLayerSlot() __________________________________________________
+
+	int ModalLayer::_sizeOfLayerSlot() const
+	{
+		return sizeof(ModalSlot);
+	}
+	
 	
 	//____ _setSize() ___________________________________________________________
 	
