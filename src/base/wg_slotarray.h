@@ -45,7 +45,10 @@ namespace wg
 		int			size() const { return m_size; }
 		bool		isEmpty() const { return m_size == 0; }
 		int			capacity() const { return m_capacity; }
-	
+
+		inline SlotType& operator[](int index) { return m_pArray[index]; }
+		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
+
 		SlotType*	slot(int index) const { return &m_pArray[index]; }
 	
 		SlotType*	add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*2) ); _initBlock(m_size); return &m_pArray[m_size++]; }

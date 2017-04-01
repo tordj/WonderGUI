@@ -405,8 +405,11 @@ namespace wg
 	
 		Widget * 	pSavedFocus = nullptr;
 		Slot *		pBranch	= nullptr;
+
+		while( pSlot > m_modals.first() && pSlot->geo.isEmpty() )
+			pSlot--;
 	
-		if( pSlot )
+		if( pSlot > m_modals.first() )
 		{
 			pSavedFocus = pSlot->pKeyFocus.rawPtr();
 			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
@@ -492,10 +495,13 @@ namespace wg
 
 	void ModalLayer::_willRemoveSlots(Slot * pSlot, int nb)
 	{
-		FIX SUPPORT FOR MULTIPLE HERE AND IN OTHER WIDGETS!!!!!
+		ModalSlot * pSlot = (ModalSlot*) _pSlot;
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			_childRequestRender(pSlot+i);
+			pSlot[i].geo = { 0,0,0,0 };			
+		}
 
-		_childRequestRender(pSlot);
-		((ModalSlot*)pSlot)->geo = { 0,0,0,0 };
 		_updateKeyboardFocus();
 	}
 

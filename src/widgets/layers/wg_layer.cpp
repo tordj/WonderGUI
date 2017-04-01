@@ -275,14 +275,14 @@ namespace wg
 			_onRequestRender( rect + pSlot->geo.pos(), pSlot );
 		}
 	}
-
+/*
 	//____ _childRequestResize() _______________________________________________
  
 	void Layer::_childRequestResize( void * pChildRef )
 	{
 		_requestResize();			//TODO: Smarter handling, not request resize unless we need to.
 	}
-
+*/
 	//____ _prevChild() ________________________________________________________
 
 	Widget * Layer::_prevChild( void * pChildRef ) const

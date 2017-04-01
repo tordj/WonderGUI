@@ -27,6 +27,8 @@
 #	include <wg_layer.h>
 #endif
 
+#include <wg_slotarray.h>
+
 namespace wg 
 {
 
@@ -55,20 +57,34 @@ namespace wg
 
 	//____ PopupChildren ________________________________________________________
 
-	class PopupChildren : public ChildGroup<PopupSlot, PopupLayer>
+	class PopupChildren : public Interface
 	{
 	public:
-		PopupChildren(SlotArray<PopupSlot> * pSlotArray, PopupLayer * pHolder) : ChildGroup<PopupSlot, PopupLayer>(pSlotArray, pHolder) {}
+		PopupChildren(PopupLayer * pHolder) : m_pHolder(pHolder) {}
 
 		inline PopupChildren_p	ptr() { return PopupChildren_p(_object(), this); }
 
-		bool	add(const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
+		Widget& operator[](int index) const;
+
+		int		size() const;
+
+		Widget_p get( int index) const;
+
+		void	push(const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
+		void	pop(int nb = 1);
+		void	clear();
+		
+
+	protected:
+		Object *		_object() const;
+		PopupLayer *	m_pHolder;
+		
 	};
 
 	
 	//____ PopupLayer ____________________________________________________________
 	
-	class PopupLayer : public Layer, protected ChildGroupHolder
+	class PopupLayer : public Layer
 	{
 		friend class PopupChildren;
 	
@@ -99,7 +115,8 @@ namespace wg
 
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
-		void			_updateGeo(PopupSlot * pSlot);
+		bool			_updateGeo(PopupSlot * pSlot);
+		void			_removeSlots(int nb);
 
 		// Overloaded from Panel
 
@@ -108,11 +125,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		void			_childRequestResize(void * pChildRef);
-
-		// Methods for PopupChildren
-
-		void			_didAddSlots(Slot * pSlot, int nb);
-		void			_willRemoveSlots(Slot * pSlot, int nb);
 
 		// Overloaded from Layer
 

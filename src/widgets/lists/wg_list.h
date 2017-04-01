@@ -109,7 +109,7 @@ namespace wg
 			}
 		}
 
-		bool	isVisible(int index)
+		bool	isSelected(int index)
 		{
 			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
 				return ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index)->pWidget->state().isSelected();
@@ -174,6 +174,17 @@ namespace wg
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
+		virtual ListSlot * _beginSlots() const = 0;
+		virtual ListSlot * _endSlots() const = 0;
+		
+		inline ListSlot * _nextSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
+		inline const ListSlot * _nextSlot( const ListSlot * pSlot, int sizeOf ) const { return (const ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
+
+		inline ListSlot * _prevSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
+		inline const ListSlot * _prevSlot( const ListSlot * pSlot ) const { return (const ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
+
+
+		int				m_sizeOfSlot;
 
 		SelectMode		m_selectMode;
 		Skin_p			m_pEntrySkin[2];

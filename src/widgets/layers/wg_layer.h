@@ -104,7 +104,7 @@ namespace wg
 
 		void		_childRequestRender( void * pChildRef );
 		void		_childRequestRender( void * pChildRef, const Rect& rect );
-		void		_childRequestResize( void * pChildRef );
+//		void		_childRequestResize( void * pChildRef );
 
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
@@ -146,7 +146,7 @@ namespace wg
 		Slot				m_baseSlot;
 	};
 	
-	
+
 
 } // namespace wg
 #endif //WG_LAYER_DOT_H

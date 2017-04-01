@@ -36,9 +36,8 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	List::List()
+	List::List() : m_selectMode(SelectMode::SingleEntry)
 	{
-		m_selectMode = SelectMode::SingleEntry;
 	}
 	
 	//____ Destructor _____________________________________________________________
@@ -318,7 +317,40 @@ namespace wg
 
 	int List::_selectSlots(ListSlot * pSlot, int nb, bool bPostMsg)
 	{
-
+		// Count slots to be selected
+		
+		int nbChanges = 0;
+		
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( !pSlot[i].pWidget->state().isSelected() )
+				nbChanges++;
+		}
+			
+		// 
+		
+		ItemInfo * pItemInfo = new ItemInfo[nbChanges];
+		int nbItems = 0;
+		
+		for( int i = 0 ; i < nb ; i++ )
+		{
+			if( bSelected != state.isSelected() )
+			{
+				State	state = pSlot[i].pWidget->state();
+				state.setSelected(true);
+				pSlot[i].pWidget->_setState( state );
+		
+				if( bPostMsg )
+				{
+					pItemInfo[nbItems].pObject	= pSlot[i].pWidget;
+					pItemInfo[nbItems].id		= pSlot[i].pWidget->id();		
+					nbItems++;
+				}
+			}			
+		}		
+		
+		if( bPostMsg )
+			Base::msgRouter()->post( new ItemsSelectMsg(this, nbItems, pItemInfo) );
 	}
 
 	int List::_unselectSlots(ListSlot * pSlot, int nb, bool bPostMsg)

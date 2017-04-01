@@ -66,7 +66,7 @@ namespace wg
 		inline StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>(_object(),this); }
 
 
-		inline const Widget*& operator[](int index) const { return m_pSlotArray->slot(index)->pWidget; }
+		inline Widget& operator[](int index) const { return * m_pSlotArray->slot(index)->pWidget; }
 
 		inline int		size() const { return m_pSlotArray->size(); } 
 
