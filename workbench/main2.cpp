@@ -386,7 +386,7 @@ int main ( int argc, char** argv )
 			p2->text.set( "Edit me!");
 			p->children.add(p2);
 
-			pList->addWidget(p);
+			pList->children.add(p);
 		}
 
 

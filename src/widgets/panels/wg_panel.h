@@ -162,16 +162,21 @@ namespace wg
 	class Panel : public Container
 	{
 	public:
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
-		static Panel_p	cast( const Object_p& pObject );
 		
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static Panel_p		cast( const Object_p& pObject );
+		
+		//.____ Behavior _______________________________________________________
+
 		void		setTooltipGroup( bool bTooltipGroup ) { m_bTooltipGroup = bTooltipGroup; }
 		bool		isTooltipGroup() const { return m_bTooltipGroup; }
 	
 		void		setMaskOp( MaskOp operation );
-		MaskOp	maskOp() const { return m_maskOp; }
+		MaskOp		maskOp() const { return m_maskOp; }
 		
 	
 	protected:

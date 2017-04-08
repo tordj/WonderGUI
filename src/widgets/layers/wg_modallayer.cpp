@@ -493,7 +493,7 @@ namespace wg
 
 	//____ _willRemoveSlots() __________________________________________________
 
-	void ModalLayer::_willRemoveSlots(Slot * pSlot, int nb)
+	void ModalLayer::_willRemoveSlots(Slot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )

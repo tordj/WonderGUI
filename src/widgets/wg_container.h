@@ -50,8 +50,7 @@ namespace wg
 		friend class MsgRouter;
 	
 		friend class Hook;
-		friend class FlexHook;
-		friend class ModalHook;
+
 	
 		friend class Menu;
 		friend class Menubar;
@@ -63,10 +62,8 @@ namespace wg
 		friend class ModalLayer;
 		friend class ScrollPanel;
 		friend class StackPanel;
-		friend class LegacyVectorPanel;
 		friend class Capsule;
 		friend class PackList;
-
 		friend class WidgetSlot;
 	
 		public:

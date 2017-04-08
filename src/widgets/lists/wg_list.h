@@ -123,9 +123,8 @@ namespace wg
 
 	//____ List _________________________________________________________________
 	
-	class List : public Container
+	class List : public Container, protected ListChildrenHolder
 	{
-		friend class ListHook;
 	public:
 
 		//.____ Identification __________________________________________
@@ -160,9 +159,23 @@ namespace wg
 
 		void			_cloneContent( const Widget * _pOrg );
 	
-		virtual int		_selectSlots( ListSlot * pSlot, int nb, bool bPostMsg );
-		virtual int		_unselectSlots(ListSlot * pSlot, int nb, bool bPostMsg);
-		virtual int		_flipSelection( ListSlot * pSlot, int nb, bool bPostMsg );
+		int				_selectSlot(ListSlot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
+		int				_selectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
+		int				_unselectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }
+
+		Widget*			_firstChild() const;
+		Widget*			_lastChild() const;
+
+
+		virtual void	_didAddSlots(Slot * pSlot, int nb);
+		virtual void	_willRemoveSlots(Slot * pSlot, int nb);
+		virtual void	_hideSlots(ListSlot * pSlot, int nb);
+		virtual void	_unhideSlots(ListSlot * pSlot, int nb);
+
+
+		virtual int		_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelect, bool bPostMsg);
+
+		virtual int		_flipSelection( ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg );
 
 		virtual ListSlot * _findEntry( const Coord& ofs ) = 0;
 		virtual void	_getEntryGeo( Rect& geo, const ListSlot * pSlot ) const = 0;
@@ -174,15 +187,15 @@ namespace wg
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
+
 		virtual ListSlot * _beginSlots() const = 0;
 		virtual ListSlot * _endSlots() const = 0;
-		
+
 		inline ListSlot * _nextSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
 		inline const ListSlot * _nextSlot( const ListSlot * pSlot, int sizeOf ) const { return (const ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
 
 		inline ListSlot * _prevSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
 		inline const ListSlot * _prevSlot( const ListSlot * pSlot ) const { return (const ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
-
 
 		int				m_sizeOfSlot;
 
@@ -194,8 +207,8 @@ namespace wg
 		Coord			m_lassoBegin;
 		Coord			m_lassoEnd;
 	
-		int				m_focusedEntry;					// -1 = none
-		int				m_hoveredEntry;					// -1 = none
+		Widget_wp		m_pFocusedChild;
+		Widget_wp		m_pHoveredChild;
 	};
 	
 	

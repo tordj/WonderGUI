@@ -151,18 +151,18 @@ namespace wg
 			{	
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
-				if( pEntry && pEntry != m_pHoveredEntry.rawPtr() )
+				if( pEntry && pEntry->pWidget != m_pHoveredChild.rawPtr() )
 				{
 					Rect geo;
-					if( m_pHoveredEntry )
+					if( m_pHoveredChild )
 					{
-						_getEntryGeo( geo, m_pHoveredEntry.rawPtr() ); 
+						_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_holdersRef() ); 
 						_requestRender(geo);
 					}
 	
 					_getEntryGeo( geo, pEntry ); 
 					_requestRender(geo);
-					m_pHoveredEntry = pEntry;
+					m_pHoveredChild = pEntry->pWidget;
 				}
 				break;
 			}
@@ -170,12 +170,12 @@ namespace wg
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
 				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
-				if( m_pHoveredEntry && !pEntry )
+				if( m_pHoveredChild && !pEntry )
 				{
 					Rect geo;
-					_getEntryGeo( geo, m_pHoveredEntry.rawPtr() ); 
+					_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_holdersRef() ); 
 					_requestRender(geo);
-					m_pHoveredEntry = 0;
+					m_pHoveredChild = nullptr;
 				}
 				break;
 			}
@@ -202,37 +202,37 @@ namespace wg
 							case SelectMode::Unselectable:
 								break;
 							case SelectMode::SingleEntry:
-								if( !pEntry->pWidget->state.isSelected() )
+								if( !pEntry->pWidget->state().isSelected() )
 								{
-									_clearSelected( true );
-									_selectEntry( pEntry, true, true );
-									m_pFocusedEntry = pEntry;	
+									_unselectSlots( _beginSlots(), _endSlots(), true );
+									_selectSlot( pEntry, true );
+									m_pFocusedChild = pEntry->pWidget;	
 								}
 								break;
 							case SelectMode::FlipOnSelect:
-								_selectEntry( pEntry, !pEntry->isSelected(), true );
-								m_pFocusedEntry = pEntry;
+								_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->pWidget->state().isSelected(), true );
+								m_pFocusedChild = pEntry->pWidget;
 								break;
 							case SelectMode::MultiEntries:
-								if( pMsg->modKeys() & MODKEY_SHIFT && m_pFocusedEntry )
+								if( pMsg->modKeys() & MODKEY_SHIFT && m_pFocusedChild )
 								{
 									// Select range from focused to clicked entry.
 	
-									ListHook * pFocused = m_pFocusedEntry.rawPtr();
-									ListHook * pFirstSel = wg::min( pEntry, pFocused );
-									ListHook * pLastSel = wg::max( pEntry, pFocused );
-									_selectRange( pFirstSel, pLastSel, true, true );
+									ListSlot * pFocused = (ListSlot*) m_pFocusedChild->_holdersRef();
+									ListSlot * pBeginSel = wg::min( pEntry, pFocused );
+									ListSlot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
+									_selectSlots( pBeginSel, pEndSel, true );
 	
 									// Unselect the rest if not CTRL-click.
 	
 									if( !(pMsg->modKeys() & MODKEY_CTRL) )
 									{
-										ListHook * pFirst = _firstHook();
-										ListHook * pLast = _lastHook();
-										if( pFirst < pFirstSel )
-											_selectRange( pFirst, static_cast<ListHook*>(pFirstSel->_prevHook()), false, true );
-										if( pLast > pLastSel )
-											_selectRange( static_cast<ListHook*>(pLastSel->_nextHook()), pLast, false, true );
+										ListSlot * pBegin = _beginSlots();
+										ListSlot * pEnd = _endSlots();
+										if( pBegin < pBeginSel )
+											_unselectSlots( pBegin, pBeginSel, true );
+										if( pEnd > pEndSel )
+											_unselectSlots( pEndSel, pEnd, true );
 									}
 								}
 								else
@@ -240,23 +240,23 @@ namespace wg
 									if( pMsg->modKeys() & MODKEY_CTRL )
 									{
 										// CTRL-click: We just flip the entry.
-										_selectEntry( pEntry, !pEntry->isSelected(), true );
+										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->pWidget->state().isSelected(), true );
 									}
 									else
 									{
 										//TODO: Not post unselected/selected for already selected pressed entry.
-										_clearSelected( true );
-										_selectEntry( pEntry, true, true );
+										_unselectSlots(_beginSlots(), _endSlots(), true);
+										_selectSlot( pEntry, true );
 									}
-									m_pFocusedEntry = pEntry;
+									m_pFocusedChild = pEntry->pWidget;
 								}
 								break;
 						}
 					}
 					else if( m_selectMode == SelectMode::SingleEntry || m_selectMode == SelectMode::MultiEntries )
 					{
-						_clearSelected(true);
-						m_pFocusedEntry = 0;
+						_unselectSlots(_beginSlots(), _endSlots(), true);
+						m_pFocusedChild = nullptr;
 					}
 	
 					_pMsg->swallow();
@@ -313,166 +313,129 @@ namespace wg
 			_setState(state);
 	}
 
+	//____ _firstChild() __________________________________________________________
 
-
-	int List::_selectSlots(ListSlot * pSlot, int nb, bool bPostMsg)
+	Widget * List::_firstChild() const
 	{
-		// Count slots to be selected
-		
+		ListSlot * p = _beginSlots();
+		if (p == _endSlots())
+			return nullptr;
+
+		return p->pWidget;
+	}
+
+	//____ _lastChild() __________________________________________________________
+
+	Widget * List::_lastChild() const
+	{
+		ListSlot * p = _endSlots();
+		if (p == _beginSlots())
+			return nullptr;
+
+		return _prevSlot(p)->pWidget;
+	}
+
+	//____ _didAddSlots() _________________________________________________________
+
+	void List::_didAddSlots(Slot * pSlot, int nb)
+	{
+		// Do nothing
+	}
+
+	//____ _willRemoveSlots() _________________________________________________________
+
+	void List::_willRemoveSlots(Slot * _pSlot, int nb)
+	{
+		// Unselect slots that will be removed.
+
+		ListSlot * pSlot = (ListSlot*) _pSlot;
+		ListSlot * pEnd = (ListSlot*) (((char *)_pSlot) + m_sizeOfSlot*nb);
+		_setSlotSelection(pSlot, pEnd, false, true);
+	}
+
+	//____ _hideSlots() _________________________________________________________
+
+	void List::_hideSlots(ListSlot * pSlot, int nb)
+	{
+		for (int i = 0; i < nb; i++)
+			pSlot[i].bVisible = false;
+	}
+
+	//____ _unhideSlots() _________________________________________________________
+
+	void List::_unhideSlots(ListSlot * pSlot, int nb)
+	{
+		for (int i = 0; i < nb; i++)
+			pSlot[i].bVisible = true;
+	}
+
+	//____ _setSlotSelection() _________________________________________________________
+
+	int List::_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelected, bool bPostMsg)
+	{
+		// Count slots to be selected (if we need to post a message)
+
 		int nbChanges = 0;
-		
-		for( int i = 0 ; i < nb ; i++ )
+		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if( !pSlot[i].pWidget->state().isSelected() )
+			if (bSelected != p->pWidget->state().isSelected())
 				nbChanges++;
 		}
-			
-		// 
+
+		ItemInfo * pItemInfo = 0;
+		if( bPostMsg )
+			pItemInfo = new ItemInfo[nbChanges];
 		
-		ItemInfo * pItemInfo = new ItemInfo[nbChanges];
+		//
+
 		int nbItems = 0;
-		
-		for( int i = 0 ; i < nb ; i++ )
+		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if( bSelected != state.isSelected() )
+			if( bSelected != p->pWidget->state().isSelected() )
 			{
-				State	state = pSlot[i].pWidget->state();
-				state.setSelected(true);
-				pSlot[i].pWidget->_setState( state );
+				State	state = p->pWidget->state();
+				state.setSelected(bSelected);
+				p->pWidget->_setState( state );
 		
 				if( bPostMsg )
 				{
-					pItemInfo[nbItems].pObject	= pSlot[i].pWidget;
-					pItemInfo[nbItems].id		= pSlot[i].pWidget->id();		
+					pItemInfo[nbItems].pObject	= p->pWidget;
+					pItemInfo[nbItems].id		= p->pWidget->id();		
 					nbItems++;
 				}
 			}			
 		}		
 		
-		if( bPostMsg )
-			Base::msgRouter()->post( new ItemsSelectMsg(this, nbItems, pItemInfo) );
-	}
+		// 
 
-	int List::_unselectSlots(ListSlot * pSlot, int nb, bool bPostMsg)
-	{
-
-	}
-
-	int List::_flipSelection(ListSlot * pSlot, int nb, bool bPostMsg)
-	{
-	
-	}
-
-
-	//____ _selectEntry() _________________________________________________________
-	
-	bool List::_selectEntry( ListHook * pHook, bool bSelected, bool bPostMsg )
-	{
-		State	state = pHook->m_pWidget->state();
-	
-		if( bSelected != state.isSelected() )
+		if (bPostMsg)
 		{
-	
-			state.setSelected(bSelected);
-			pHook->m_pWidget->_setState( state );
-	
-			if( bPostMsg )
-			{
-				ItemInfo * pItemInfo	= new ItemInfo[1];
-				pItemInfo->pObject	= pHook->_widget();
-				pItemInfo->id		= pHook->_widget()->id();
-	
-				Msg * pMsg;
-				if( bSelected )
-					pMsg = new ItemsSelectMsg(this, 1, pItemInfo);
-				else
-					pMsg = new ItemsUnselectMsg(this, 1, pItemInfo);
-				Base::msgRouter()->post( pMsg );
-			}
-		}
-	
-		return true;
-	}
-	
-	//____ _selectRange() _________________________________________________________
-	
-	int List::_selectRange( ListHook * pFirst, ListHook * pLast, bool bSelected, bool bPostMsg )
-	{
-		int	nModified = 0;
-		ListHook * pEnd = static_cast<ListHook*>(pLast->_nextHook());
-	
-		// Request render for the range (not necessary, can be faster to take them one by one depending on circumstances).
-	
-		Rect geoFirst;
-		Rect geoLast;
-		_getEntryGeo( geoFirst, pFirst );
-		_getEntryGeo( geoLast, pLast );
-		_requestRender( Rect::getUnion(geoFirst,geoLast) );
-	
-		// Reserve ItemInfo array of right size if we are going to post message
-	
-		ItemInfo * pItemInfo = 0;
-		if( bPostMsg )
-		{
-			int size = 0;
-			for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
-			{
-				if( bSelected != pHook->_widget()->state().isSelected() )
-					size++;
-			}
-	
-			if( size > 0 )
-				pItemInfo = new ItemInfo[size];
-		}
-	
-		// Loop through entries
-	
-		for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
-		{
-			State	state = pHook->m_pWidget->state();
-			if( bSelected != state.isSelected() )
-			{
-				state.setSelected(bSelected);
-				pHook->m_pWidget->_setState( state );
-	
-				if( bPostMsg )
-				{
-					pItemInfo[nModified].pObject	= pHook->_widget();
-					pItemInfo[nModified].id			= pHook->_widget()->id();
-	
-				}
-				nModified++;
-			}
-		}
-	
-		// Post message
-	
-		if( bPostMsg )
-		{
-			Msg * pMsg;
-			if( bSelected )
-				pMsg = new ItemsSelectMsg(this, 1, pItemInfo);
+			if (bSelected)
+				Base::msgRouter()->post(new ItemsSelectMsg(this, nbItems, pItemInfo));
 			else
-				pMsg = new ItemsUnselectMsg(this, 1, pItemInfo);
-			Base::msgRouter()->post( pMsg );
+				Base::msgRouter()->post(new ItemsUnselectMsg(this, nbItems, pItemInfo));
 		}
-	
-		return nModified;
+
+		return nbChanges;
 	}
+
+
 	
-	//____ _flipRange() _________________________________________________________
 	
-	int List::_flipRange( ListHook * pFirst, ListHook * pLast, bool bPostMsg )
+	
+	//____ _flipSelection() _________________________________________________________
+
+	int List::_flipSelection( ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg )
 	{
 		int nSelected = 0;
 		int nDeselected = 0;
-		ListHook * pEnd = static_cast<ListHook*>(pLast->_nextHook());
+		ListSlot * pLast = _prevSlot(pEnd);
 	
 		// Request render for the range
 	
 		Rect geoFirst;
 		Rect geoLast;
-		_getEntryGeo( geoFirst, pFirst );
+		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
 		_requestRender( Rect::getUnion(geoFirst,geoLast) );
 	
@@ -485,9 +448,9 @@ namespace wg
 			int nToSelect = 0;
 			int nToDeselect = 0;
 	
-			for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
+			for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 			{
-				if( pHook->_widget()->state().isSelected() )
+				if( pSlot->pWidget->state().isSelected() )
 					nToDeselect++;
 				else
 					nToSelect++;
@@ -501,12 +464,12 @@ namespace wg
 	
 		// Loop through entries
 	
-		for( ListHook * pHook = pFirst ; pHook != pEnd ; pHook = static_cast<ListHook*>(pHook->_nextHook()) )
+		for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 		{
-			State	state = pHook->m_pWidget->state();
+			State	state = pSlot->pWidget->state();
 	
 			state.setSelected(!state.isSelected());
-			pHook->m_pWidget->_setState( state );
+			pSlot->pWidget->_setState( state );
 	
 			if( bPostMsg )
 			{
@@ -516,8 +479,8 @@ namespace wg
 				else
 					p = &pSelectedItemsInfo[nDeselected++];
 	
-				p->pObject	= pHook->_widget();
-				p->id		= pHook->_widget()->id();
+				p->pObject	= pSlot->pWidget;
+				p->id		= pSlot->pWidget->id();
 			}
 		}
 	
