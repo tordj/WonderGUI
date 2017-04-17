@@ -206,4 +206,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_HOOKARRAY_DOT_H
+#endif //WG_SLOTARRAY_DOT_H

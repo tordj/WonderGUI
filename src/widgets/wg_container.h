@@ -49,8 +49,6 @@ namespace wg
 	{
 		friend class MsgRouter;
 	
-		friend class Hook;
-
 	
 		friend class Menu;
 		friend class Menubar;

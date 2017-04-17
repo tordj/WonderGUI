@@ -168,27 +168,6 @@ namespace wg
 			_nextChildWithGeo( child );
 		}
 
-/*
-		Rect childGeo;
-		Hook * pHook = _lastChildWithGeo( childGeo );
-		Widget * pResult = 0;
-	
-		while( pHook && !pResult )
-		{
-			if( pHook->_isVisible() && childGeo.contains( ofs ) )
-			{
-				if( pHook->_widget()->isContainer() )
-				{
-					pResult = static_cast<Container*>(pHook->_widget())->_findWidget( ofs - childGeo.pos(), mode );
-				}
-				else if( mode == SearchMode::Geometry || pHook->_widget()->markTest( ofs - childGeo.pos() ) )
-				{
-						pResult = pHook->_widget();
-				}
-			}
-			pHook = _prevChildWithGeo( childGeo, pHook );
-		}
-*/	
 		// Check against ourselves
 	
 		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )

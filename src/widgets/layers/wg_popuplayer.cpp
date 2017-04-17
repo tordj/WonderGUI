@@ -495,7 +495,6 @@ namespace wg
 						return;
 					}
 				}
-	
 			}
 			break;
             

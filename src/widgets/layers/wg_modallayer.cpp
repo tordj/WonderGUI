@@ -31,7 +31,7 @@ namespace wg
 	
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 	
-	//TODO: Improve ModalHook geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.	
+	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.	
 
 	//____ add() _________________________________________________________________
 
@@ -259,7 +259,6 @@ namespace wg
 	
 	ModalLayer::~ModalLayer()
 	{
-		// Children are deleted automaticallly when their hooks are deteled.
 	}
 	
 	//____ isInstanceOf() _________________________________________________________

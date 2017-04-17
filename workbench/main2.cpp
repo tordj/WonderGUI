@@ -15,6 +15,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+#include <wg_packlist.h>
 #include <testwidget.h>
 
 using namespace wg;
@@ -333,7 +334,7 @@ int main ( int argc, char** argv )
 		pScrollbar->setBackgroundSkin( ColorSkin::create( Color::Green ));
 		pScrollbar->setHandleSkin( ColorSkin::create( Color::Red ));
 		pScrollPanel = ScrollPanel::create();
-		pScrollPanel->setVerticalScrollbar( pScrollbar );
+		pScrollPanel->vscrollbar = pScrollbar;
 
 		pFlexPanel->children.addPinned(pScrollPanel, { 0,0.75 }, Origo::SouthEast);
 	}
@@ -390,7 +391,11 @@ int main ( int argc, char** argv )
 		}
 
 
-		pScrollPanel->setContent( pList );
+		pScrollPanel->view = pList;
+
+		pScrollPanel->setStepFunc([](Direction dir, int steps) { if (dir == Direction::Left || dir == Direction::Up) return -10; else return 10; });
+		pScrollPanel->setJumpFunc([](Direction dir, int steps) { if (dir == Direction::Left || dir == Direction::Up) return -100; else return 100; });
+
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
 	}

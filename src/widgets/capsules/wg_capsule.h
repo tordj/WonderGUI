@@ -84,7 +84,7 @@ namespace wg
 		Widget *	_prevChild( void * pChildRef ) const;
 		Widget *	_nextChild( void * pChildRef ) const;
 
-		// Overloaded from SlotCanHolder
+		// Overloaded from ChildEntryHolder
 
 		Object *	_object();
 		const Object * _object() const;

@@ -179,10 +179,6 @@
 #	include <wg_panel.h>
 #endif
 
-#ifndef WG_HOOK_DOT_H
-#	include <wg_hook.h>
-#endif
-
 #ifndef WG_INPUTHANDLER_DOT_H
 #	include <wg_inputhandler.h>
 #endif

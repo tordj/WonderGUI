@@ -31,10 +31,6 @@
 #	include <wg_string.h>
 #endif
 
-#ifndef WG_HOOK_DOT_H
-#	include <wg_hook.h>
-#endif
-
 #ifndef WG_SKIN_DOT_H
 #	include <wg_skin.h>
 #endif
@@ -88,12 +84,6 @@ namespace wg
 	friend class MsgRouter;
 	friend class InputHandler;
 	
-	friend class Hook;
-	friend class FlexHook;
-	friend class ModalHook;
-	friend class ListHook;
-	friend class StackHook;
-	
 	friend class RootPanel;
 	friend class FlexPanel;
 	friend class ModalLayer;
@@ -105,11 +95,11 @@ namespace wg
 	friend class StackPanel;
 	friend class Container;
 	friend class Panel;
-	friend class PanelHook;
 	friend class LegacyVectorPanel;
 	friend class PackPanel;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
+	friend class ViewSlot;
 		
 	friend class Item;
 	friend class Slot;

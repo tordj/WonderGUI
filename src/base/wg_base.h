@@ -72,7 +72,6 @@ namespace wg
 	class Font;
 	class MemPool;
 	class WeakPtrHub;
-	class Hook_pHub;
 	class MemStack;
 	
 	/**
@@ -116,8 +115,6 @@ namespace wg
 		static WeakPtrHub *	allocWeakPtrHub();
 		static void			freeWeakPtrHub( WeakPtrHub * pHub );
 	
-		static Hook_pHub *	allocHookPtrHub();
-		static void			freeHookPtrHub( Hook_pHub * pHub );
 	
 	private:
 	

@@ -101,9 +101,6 @@
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxanim.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h" />
-    <ClInclude Include="..\..\..\src\base\wg_hook.h" />
-    <ClInclude Include="..\..\..\src\base\wg_hookarray.h" />
-    <ClInclude Include="..\..\..\src\base\wg_hookptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_itemholder.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
@@ -228,8 +225,6 @@
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxanim.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxdevice.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_hook.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_hookptr.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_inputhandler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mempool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_memstack.cpp" />

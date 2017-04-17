@@ -53,8 +53,6 @@ namespace wg
 	typedef	StrongPtr<Panel,Container_p>		Panel_p;
 	typedef	WeakPtr<Panel,Container_wp>	Panel_wp;
 	
-	class PanelHook;
-	typedef	HookTypePtr<PanelHook,Hook_p>	PanelHook_p;
 	
 
 	//____ PanelSlot ____________________________________________________________
@@ -114,42 +112,6 @@ namespace wg
 	};
 
 	
-	//____ PanelHook ____________________________________________________________
-	
-	class PanelHook : public Hook
-	{
-	public:
-		virtual bool			isInstanceOf( const char * pClassName ) const;
-		virtual const char *	className( void ) const;
-		static const char		CLASSNAME[];
-		static PanelHook_p	cast( const Hook_p& pInterface );
-	
-		PanelHook_p	prev() const { return static_cast<PanelHook*>(_prevHook()); }
-		PanelHook_p	next() const { return static_cast<PanelHook*>(_nextHook()); }
-		Panel_p		parent() const;
-	
-		virtual bool	setVisible( bool bVisible );
-		bool			isVisible() { return m_bVisible; }
-	
-		virtual bool	setPadding( Border padding );
-		Border		padding() const { return m_padding; }
-	
-	protected:
-		PanelHook() : m_bVisible(true) {}
-		 virtual ~PanelHook() {};
-	
-		Size		_paddedPreferredSize() const;
-		Size		_paddedMinSize() const;
-		Size		_paddedMaxSize() const;
-		int			_paddedMatchingWidth( int paddedHeight ) const;
-		int			_paddedMatchingHeight( int paddedWidth ) const;
-		bool		_isVisible() const { return m_bVisible; }				// Overloading Hook::_isVisible().
-	
-		Size		_sizeFromPolicy( Size specifiedSize, SizePolicy widthPolicy, SizePolicy heightPolicy ) const;
-	
-		bool			m_bVisible;
-		Border		m_padding;
-	};
 	
 	/**
 	 * @brief	Base class for layout widgets.

@@ -60,8 +60,7 @@ namespace wg
 	public:
 		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 
-
-		inline ChildEntry operator=(const Widget_p& pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget.rawPtr()); return *this; }
+		inline ChildEntry<SlotType,HolderType> operator=(const Widget_p& pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget.rawPtr()); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
 		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }

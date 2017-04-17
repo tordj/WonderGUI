@@ -60,45 +60,6 @@ namespace wg
 										0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 
-//____ canvasToLayout() ____________________________________________________
-
-	Coord Util::canvasToLayout( const Coord& pos, float scaleFactor )
-	{
-			return Coord( (int) pos.x / scaleFactor, (int) pos.y / scaleFactor );
-	}
-
-	Rect Util::canvasToLayout( const Rect& geo, float scaleFactor )
-	{
-			Rect layout;
-
-			layout.x = (int) geo.x / scaleFactor;
-			layout.y = (int) geo.y / scaleFactor;
-			layout.w = (int) (geo.x + geo.w) / scaleFactor - layout.x;
-			layout.h = (int) (geo.y + geo.h) / scaleFactor - layout.y;
-
-			return layout;
-	}
-
-	//____ layoutToCanvas() ____________________________________________________
-
-	Coord Util::layoutToCanvas( Coord& pos, float scaleFactor )
-	{
-		return Coord( (int) pos.x * scaleFactor, (int) pos.y * scaleFactor );
-	}
-
-	Rect Util::layoutToCanvas( Rect& geo, float scaleFactor )
-	{
-		Rect canvas;
-
-		canvas.x = (int) geo.x * scaleFactor;
-		canvas.y = (int) geo.y * scaleFactor;
-		canvas.w = (int) (geo.x + geo.w) * scaleFactor - canvas.x;
-		canvas.h = (int) (geo.y + geo.h) * scaleFactor - canvas.y;
-
-		return canvas;
-	}
-
-
 	//____ markTestStretchRect() __________________________________________________
 
 	bool Util::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )

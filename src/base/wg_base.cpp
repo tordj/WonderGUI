@@ -28,7 +28,6 @@
 #include <wg_textstylemanager.h>
 #include <wg_texttool.h>
 #include <wg_memstack.h>
-#include <wg_hook.h>
 #include <wg_stdtextmapper.h>
 #include <wg_dummyfont.h>
 
@@ -50,7 +49,6 @@ namespace wg
 	void Base::init()
 	{
 		assert( s_pData == 0 );
-		assert( sizeof( WeakPtrHub ) == sizeof( Hook_pHub ) );			// Need to be same as we are sharing object stack!
 
 		TextStyleManager::init();
 
@@ -88,7 +86,7 @@ namespace wg
 			return -1;					// Base already exited or not intialized.
 	
 		if( !s_pData->pPtrPool->isEmpty() )
-			return -2;					// There are weak pointers or hook pointers left.
+			return -2;					// There are weak pointers left.
 	
 		if( !s_pData->pMemStack->isEmpty() )
 			return -3;					// There is data left in memstack.
@@ -128,23 +126,7 @@ namespace wg
 		assert( s_pData != 0 );
 		s_pData->pPtrPool->freeEntry( pHub );
 	}
-	
-	//____ allocHookPtrHub() ______________________________________________________
-	
-	Hook_pHub * Base::allocHookPtrHub()
-	{
-		assert( s_pData != 0 );
-		return (Hook_pHub*) s_pData->pPtrPool->allocEntry();
-	}
-	
-	//____ freeHookPtrHub() _______________________________________________________
-	
-	void Base::freeHookPtrHub( Hook_pHub * pHub )
-	{
-		assert( s_pData != 0 );
-		s_pData->pPtrPool->freeEntry( pHub );
-	}
-	
+		
 	//____ initFreeType() _________________________________________________________
 	
 	#ifdef USE_FREETYPE

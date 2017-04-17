@@ -585,10 +585,10 @@ namespace wg
 
         // Calc frame coordinates and outside frame AA while we are still in normal coordinate space
         
-        float frameX1 = (int)(rect.x+0.999f);
-        float frameY1 = (int)(rect.y+0.999f);
-        float frameX2 = (int)(rect.x + rect.w);
-        float frameY2 = (int)(rect.y + rect.h);
+        float frameX1 = (float)((int)(rect.x+0.999f));
+        float frameY1 = (float)((int)(rect.y+0.999f));
+        float frameX2 = (float)((int)(rect.x + rect.w));
+        float frameY2 = (float)((int)(rect.y + rect.h));
         
         glUniform4f( m_aaFillProgOutsideAALoc, frameX1 - rect.x, frameY1 - rect.y, rect.x + rect.w - frameX2, rect.y + rect.h - frameY2 );
 
@@ -599,9 +599,9 @@ namespace wg
         
         // Convert rect to topLeft and bottomRight coordinates in GL coordinate space
         
-        int	dx1 = rect.x;
+        int	dx1 = (int) rect.x;
         int	dy1 = m_canvasSize.h - (int)rect.y;
-        int dx2 = rect.x + rect.w+0.999f;
+        int dx2 = (int) (rect.x + rect.w+0.999f);
         int dy2 = m_canvasSize.h - (int)(rect.y + rect.h + 0.999f);
         
         // Set vertices
@@ -984,14 +984,14 @@ namespace wg
             Color fillColor = color * m_tintColor;
             glUniform4f( m_mildSlopeProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );            
 //            glUniform2f( m_mildSlopeProgStartLoc, beg.x + 0.5, m_canvasSize.h - (beg.y + 0.5));
-            glUniform1f( m_mildSlopeProgSLoc, (beg.x + 0.5)*slope + (m_canvasSize.h - (beg.y + 0.5)));
-            glUniform1f( m_mildSlopeProgWLoc, width/2 + 0.5 );
+            glUniform1f( m_mildSlopeProgSLoc, (beg.x + 0.5f)*slope + (m_canvasSize.h - (beg.y + 0.5f)));
+            glUniform1f( m_mildSlopeProgWLoc, width/2 + 0.5f );
             glUniform1f( m_mildSlopeProgSlopeLoc, slope );
             
             
-            float   x1 = beg.x;
+            float   x1 = (float) beg.x;
             float   y1 = m_canvasSize.h - (beg.y - width/2);
-            float   x2 = end.x;
+            float   x2 = (float) end.x;
             float   y2 = m_canvasSize.h - (end.y - width/2);
             
             m_vertexBufferData[0] = x1;
@@ -1022,15 +1022,15 @@ namespace wg
             Color fillColor = color * m_tintColor;
             glUniform4f( m_steepSlopeProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );
 //            glUniform2f( m_steepSlopeProgStartLoc, beg.x + 0.5, m_canvasSize.h - (beg.y + 0.5));
-            glUniform1f( m_steepSlopeProgSLoc, (beg.x + 0.5) + (m_canvasSize.h - (beg.y + 0.5))*slope );
+            glUniform1f( m_steepSlopeProgSLoc, (beg.x + 0.5f) + (m_canvasSize.h - (beg.y + 0.5f))*slope );
             glUniform1f( m_steepSlopeProgWLoc, width/2 + 0.5f );
             glUniform1f( m_steepSlopeProgSlopeLoc, slope );
             
             
             float   x1 = beg.x - width/2;
-            float   y1 = m_canvasSize.h - beg.y;
+            float   y1 = (float) (m_canvasSize.h - beg.y);
             float   x2 = end.x - width/2;
-            float   y2 = m_canvasSize.h - end.y;
+            float   y2 = (float) (m_canvasSize.h - end.y);
 
             m_vertexBufferData[0] = x1 -1;
             m_vertexBufferData[1] = y1;

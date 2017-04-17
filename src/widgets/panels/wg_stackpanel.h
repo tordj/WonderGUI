@@ -155,7 +155,6 @@ namespace wg
 	
 		void 	_refreshPreferredSize();
 		void	_adaptChildrenToSize();
-//		void	_renderFromChildOnward( VectorHook * pHook );	
 
 		void	_hideChildren( StackPanelSlot * pSlot, int nb );
 		void	_unhideChildren( StackPanelSlot * pSlot, int nb );

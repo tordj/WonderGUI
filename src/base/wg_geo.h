@@ -32,6 +32,7 @@ namespace wg
 {
 	class Size;
 	class Rect;
+	class RectF;
 	
 	//____ Class: Coord8 _________________________________________________________
 	
@@ -244,6 +245,69 @@ namespace wg
 	
 	};
 	
+
+	//____ Class: SizeF ________________________________________________________
+
+	/**
+	@brief Specifies the size of a rectangular area.
+
+	Specifies the size of a rectangular area.
+	Members are float precision and can be negative.
+	**/
+
+	class	SizeF
+	{
+	public:
+		SizeF() : w(0.f), h(0.f) {}
+		SizeF(float width, float height) : w(width), h(height) {}
+		SizeF(const SizeF& size) : w(size.w), h(size.h) {}
+		SizeF(const RectF& rect);
+		SizeF(const CoordF& c1, const CoordF& c2) { w = c2.x - c1.x; h = c2.y - c1.y; }
+		inline void limit(const SizeF& min, const SizeF& max);
+		inline void clear() { w = 0.f; h = 0.f; }
+
+		inline CoordF toCoord() { return CoordF(w, h); }
+
+		inline SizeF operator=(const SizeF& k) { w = k.w; h = k.h; return *this; }
+		inline SizeF operator=(const RectF& k);
+
+		inline bool operator==(const SizeF& k) const { if (w == k.w && h == k.h) return true; return false; }
+		inline bool operator!=(const SizeF& k) const { if (w != k.w || h != k.h) return true; return false; }
+
+		inline void operator+=(const SizeF& k) { w += k.w; h += k.h; }
+		inline void operator-=(const SizeF& k) { w -= k.w; h -= k.h; }
+		inline SizeF operator+(const SizeF& k) const { SizeF res; res.w = w + k.w; res.h = h + k.h; return res; }
+		inline SizeF operator-(const SizeF& k) const { SizeF res; res.w = w - k.w; res.h = h - k.h; return res; }
+/*
+		inline void operator+=(const Border& k) { w += k.left + k.right; h += k.top + k.bottom; }
+		inline void operator-=(const Border& k) { w -= k.left + k.right; h -= k.top + k.bottom; }
+		inline Size operator+(const Border& k) const { Size res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+		inline Size operator-(const Border& k) const { Size res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+*/
+		inline void operator*=(double x) { w = (float)(w*x); h = (float)(h*x); }
+		inline void operator/=(double x) { w = (float)(w / x); h = (float)(h / x); }
+		inline SizeF operator*(double x) const { SizeF res; res.w = (float)(w*x); res.h = (float)(h*x); return res; }
+		inline SizeF operator/(double x) const { SizeF res; res.w = (float)(w / x); res.h = (float)(h / x); return res; }
+
+		inline void operator*=(float x) { w *= x; h *= x; }
+		inline void operator/=(float x) { w /= x; h /= x; }
+		inline SizeF operator*(float x) const { SizeF res; res.w = w*x; res.h = h*x; return res; }
+		inline SizeF operator/(float x) const { SizeF res; res.w = w / x; res.h = h / x; return res; }
+
+		inline void operator*=(int x) { w *= x; h *= x; }
+		inline void operator/=(int x) { w /= x; h /= x; }
+		inline SizeF operator*(int x) const { SizeF res; res.w = w * x; res.h = h * x; return res; }
+		inline SizeF operator/(int x) const { SizeF res; res.w = w / x; res.h = h / x; return res; }
+
+		static inline SizeF min(SizeF sz1, Size sz2) { return SizeF(sz1.w<sz2.w ? sz1.w : sz2.w, sz1.h<sz2.h ? sz1.h : sz2.h); }
+		static inline SizeF max(SizeF sz1, Size sz2) { return SizeF(sz1.w>sz2.w ? sz1.w : sz2.w, sz1.h>sz2.h ? sz1.h : sz2.h); }
+
+		float	w;		///< Width of the rectangular area in pixels.
+		float	h;		///< Height of the rectangular area in pixels.
+
+	};
+
+
 	
 	//____ Rect ___________________________________________________________
 	
@@ -382,7 +446,11 @@ namespace wg
 		RectF( const Rect& r ) : x((float)r.x), y((float)r.y), w((float)r.w), h((float)r.h) {}
 		RectF( const RectF& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
 		RectF( const RectF& r1, const RectF& r2 );
-	
+		RectF(const CoordF& pos, const SizeF& size) : x(pos.x), y(pos.y), w(size.w), h(size.h) {}
+
+
+
+
 		bool intersection( const RectF& r1, const RectF& r2 );
 			
 		float x, y, w, h;

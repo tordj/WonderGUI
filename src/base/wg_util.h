@@ -24,12 +24,6 @@ namespace wg
 
 	namespace Util
 	{
-		Coord 		layoutToCanvas( Coord& pos, float scaleFactor );
-		Rect 		layoutToCanvas( Rect& geo, float scaleFactor );
-
-		Coord 		canvasToLayout( const Coord& pos, float scaleFactor );
-		Rect 		canvasToLayout( const Rect& geo, float scaleFactor );
-
 
 		bool		markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold );
 
