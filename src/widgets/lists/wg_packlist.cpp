@@ -291,13 +291,13 @@ namespace wg
 		}
 		else
 		{
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
 	
-			while(child.pWidget)
+			while(child.pSlot)
 			{
-				child.pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
-				_nextChildWithGeo( child );
+				child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				_nextSlotWithGeo( child );
 			}
 		}
 	
@@ -337,15 +337,15 @@ namespace wg
 		Rect	dirtBounds = patches.getUnion();
 		
 		{
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
 	
-			while(child.pWidget)
+			while(child.pSlot)
 			{
 				Rect canvas = child.geo + _canvas.pos();
 				if( canvas.intersectsWith( dirtBounds ) )
-					child.pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
-				_nextChildWithGeo( child );
+					child.pSlot->pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
+				_nextSlotWithGeo( child );
 			}
 		}
 	
@@ -669,7 +669,7 @@ namespace wg
 			if( oldFirst != newFirst )
 			{
 				int beg = wg::min(oldFirst,newFirst);
-				int end = wg::max(oldFirst,newFirst)-1;
+				int end = wg::max(oldFirst,newFirst);
 	
 				_flipSelection( m_children.slot(beg), m_children.slot(end), true );
 			}
@@ -677,7 +677,7 @@ namespace wg
 			if( oldLast != newLast )
 			{
 				int beg = wg::min(oldLast,newLast)+1;
-				int end = wg::max(oldLast,newLast);
+				int end = wg::max(oldLast,newLast)+1;
 	
 				_flipSelection( m_children.slot(beg), m_children.slot(end), true );
 			}
@@ -1258,34 +1258,32 @@ namespace wg
 		return nullptr;
 	}
 		
-	//____ _firstChildWithGeo() ____________________________________________________
+	//____ _firstSlotWithGeo() ____________________________________________________
 	
-	void PackList::_firstChildWithGeo( WidgetWithGeo& package ) const
+	void PackList::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		if (m_children.isEmpty())
-			package.pWidget = nullptr;
+			package.pSlot = nullptr;
 		else
 		{
 			PackListSlot * pSlot = m_children.first();
-			package.pMagic = pSlot;
-			package.pWidget = pSlot->pWidget;
+			package.pSlot = pSlot;
 			_getChildGeo(package.geo, pSlot);
 		}
 	}
 	
-	//____ _nextChildWithGeo() _____________________________________________________
+	//____ _nextSlotWithGeo() _____________________________________________________
 	
-	void PackList::_nextChildWithGeo( WidgetWithGeo& package ) const
+	void PackList::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		PackListSlot * pSlot = (PackListSlot*)package.pMagic;
+		PackListSlot * pSlot = (PackListSlot*)package.pSlot;
 
 		if (pSlot == m_children.last())
-			package.pWidget = nullptr;
+			package.pSlot = nullptr;
 		else
 		{
 			pSlot++;
-			package.pMagic = pSlot;
-			package.pWidget = pSlot->pWidget;
+			package.pSlot = pSlot;
 			_getChildGeo(package.geo, pSlot);
 		}
 	}

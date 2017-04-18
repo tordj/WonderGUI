@@ -147,21 +147,21 @@ namespace wg
 		 * own _findWidget(), which probably will be faster than just a revers loop anyway.
 		*/
 		
-		WidgetWithGeo	child;
-		_firstChildWithGeo(child);
+		SlotWithGeo	child;
+		_firstSlotWithGeo(child);
 		
 		Widget * pResult = 0;
 	
-		while( child.pWidget )
+		while( child.pSlot )
 		{
 			if( child.geo.contains( ofs ) )
 			{
-				if( child.pWidget->isContainer() )
-					pResult = static_cast<Container*>(child.pWidget)->_findWidget( ofs - child.geo.pos(), mode );
-				else if( mode == SearchMode::Geometry || child.pWidget->markTest( ofs - child.geo.pos() ) )
-					pResult = child.pWidget;
+				if( child.pSlot->pWidget->isContainer() )
+					pResult = static_cast<Container*>(child.pSlot->pWidget)->_findWidget( ofs - child.geo.pos(), mode );
+				else if( mode == SearchMode::Geometry || child.pSlot->pWidget->markTest( ofs - child.geo.pos() ) )
+					pResult = child.pSlot->pWidget;
 			}
-			_nextChildWithGeo( child );
+			_nextSlotWithGeo( child );
 		}
 
 		// Check against ourselves
@@ -271,16 +271,16 @@ namespace wg
 	
 			std::vector<WidgetRenderContext> renderList;
 	
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
-			while(child.pWidget)
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
+			while(child.pSlot)
 			{
 				Rect geo = child.geo + _canvas.pos();
 	
 				if( geo.intersectsWith( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pWidget, geo ) );
+					renderList.push_back( WidgetRenderContext(child.pSlot->pWidget, geo ) );
 	
-				_nextChildWithGeo( child );
+				_nextSlotWithGeo( child );
 			}
 	
 			// Go through WidgetRenderContexts in reverse order (topmost first), push and mask dirt
@@ -308,15 +308,15 @@ namespace wg
 		}
 		else
 		{
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
 	
-			while(child.pWidget)
+			while(child.pSlot)
 			{
 				Rect canvas = child.geo + _canvas.pos();
 				if( canvas.intersectsWith( dirtBounds ) )
-					child.pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
-				_nextChildWithGeo( child );
+					child.pSlot->pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
+				_nextSlotWithGeo( child );
 			}
 	
 		}
@@ -340,13 +340,13 @@ namespace wg
 			container.add( Rect( geo, clip ) );
 		else
 		{
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
 	
-			while(child.pWidget)
+			while(child.pSlot)
 			{
-				child.pWidget->_collectPatches( container, child.geo + geo.pos(), clip );
-				_nextChildWithGeo( child );
+				child.pSlot->pWidget->_collectPatches( container, child.geo + geo.pos(), clip );
+				_nextSlotWithGeo( child );
 			}
 		}
 	}
@@ -360,13 +360,13 @@ namespace wg
 			patches.sub( Rect(geo,clip) );
 		else
 		{
-			WidgetWithGeo child;
-			_firstChildWithGeo( child );
+			SlotWithGeo child;
+			_firstSlotWithGeo( child );
 	
-			while(child.pWidget)
+			while(child.pSlot)
 			{
-				child.pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
-				_nextChildWithGeo( child );
+				child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				_nextSlotWithGeo( child );
 			}
 		}
 	}

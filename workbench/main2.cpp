@@ -393,8 +393,8 @@ int main ( int argc, char** argv )
 
 		pScrollPanel->view = pList;
 
-		pScrollPanel->setStepFunc([](Direction dir, int steps) { if (dir == Direction::Left || dir == Direction::Up) return -10; else return 10; });
-		pScrollPanel->setJumpFunc([](Direction dir, int steps) { if (dir == Direction::Left || dir == Direction::Up) return -100; else return 100; });
+		pScrollPanel->setStepFunc([](Direction dir, int steps) { return 10*steps; });
+		pScrollPanel->setJumpFunc([](Direction dir, int steps) { return 100*steps; });
 
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 

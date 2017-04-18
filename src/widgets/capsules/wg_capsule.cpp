@@ -219,19 +219,19 @@ namespace wg
 		return m_child.pWidget;
 	}
 	
-	//____ _firstChildWithGeo() _____________________________________________________
+	//____ _firstSlotWithGeo() _____________________________________________________
 	
-	void Capsule::_firstChildWithGeo( WidgetWithGeo& package ) const
+	void Capsule::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		package.pWidget = m_child.pWidget;
+		package.pSlot = &m_child;
 		package.geo = Rect(0,0,m_size);
 	}
 	
-	//____ _nextChildWithGeo() ______________________________________________________
+	//____ _nextSlotWithGeo() ______________________________________________________
 	
-	void Capsule::_nextChildWithGeo( WidgetWithGeo& package ) const
+	void Capsule::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		package.pWidget = nullptr;
+		package.pSlot = nullptr;
 	}
 	
 	//____ _setWidget() ____________________________________________________________

@@ -752,34 +752,32 @@ namespace wg
 	}
 
 
-	//____ _firstChildWithGeo() _____________________________________________________
+	//____ _firstSlotWithGeo() _____________________________________________________
 	
-	void FlexPanel::_firstChildWithGeo( WidgetWithGeo& package ) const
+	void FlexPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		if( m_children.isEmpty() )
-			package.pWidget = nullptr;
+			package.pSlot = nullptr;
 		else
 		{
 			FlexPanelSlot * pSlot = m_children.first();
-			package.pMagic = pSlot;
-			package.pWidget = pSlot->pWidget;
+			package.pSlot = pSlot;
 			package.geo = pSlot->realGeo;			
 		}			
 	}
 	
-	//____ _nextChildWithGeo() ______________________________________________________
+	//____ _nextSlotWithGeo() ______________________________________________________
 	
-	void FlexPanel::_nextChildWithGeo( WidgetWithGeo& package ) const
+	void FlexPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		FlexPanelSlot * pSlot = (FlexPanelSlot*) package.pMagic;
+		FlexPanelSlot * pSlot = (FlexPanelSlot*) package.pSlot;
 		
 		if( pSlot == m_children.last() )
-			package.pWidget = nullptr;
+			package.pSlot = nullptr;
 		else
 		{
 			pSlot++;
-			package.pMagic = pSlot;
-			package.pWidget = pSlot->pWidget;
+			package.pSlot = pSlot;
 			package.geo = pSlot->realGeo;			
 		}	
 	}

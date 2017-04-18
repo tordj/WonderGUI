@@ -161,15 +161,14 @@ namespace wg
 		return pSlot->pWidget;
 	}
 	
-	//____ _firstChildWithGeo() _____________________________________________________
+	//____ _firstSlotWithGeo() _____________________________________________________
 	
-	void Layer::_firstChildWithGeo( WidgetWithGeo& package ) const
+	void Layer::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		if( m_baseSlot.pWidget )
 		{
 			package.geo = Rect(0,0,m_size);
-			package.pWidget = m_baseSlot.pWidget;
-			package.pMagic = (void *) &m_baseSlot;
+			package.pSlot = &m_baseSlot;
 		}
 		else
 		{
@@ -177,19 +176,18 @@ namespace wg
 			if( p < _endLayerSlots() )
 			{
 				package.geo = p->geo;
-				package.pWidget = p->pWidget;
-				package.pMagic = p;
+				package.pSlot = p;
 			}
 			else
-				package.pWidget = nullptr;
+				package.pSlot = nullptr;
 		}
 	}
 	
-	//____ _nextChildWithGeo() _______________________________________________________
+	//____ _nextSlotWithGeo() _______________________________________________________
 	
-	void Layer::_nextChildWithGeo( WidgetWithGeo& package ) const
+	void Layer::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		LayerSlot * p = (LayerSlot*) package.pMagic;
+		LayerSlot * p = (LayerSlot*) package.pSlot;
 
 		if( p == &m_baseSlot )
 			p = _beginLayerSlots();
@@ -199,11 +197,10 @@ namespace wg
 		if( p < _endLayerSlots() )
 		{
 			package.geo = ((LayerSlot*)p)->geo;
-			package.pWidget = p->pWidget;
-			package.pMagic = p;
+			package.pSlot = p;
 		}
 		else
-			package.pWidget = nullptr;
+			package.pSlot = nullptr;
 	}
 
 	//____ _cloneContent() _______________________________________________________

@@ -126,8 +126,8 @@ namespace wg
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
 
-		void		_firstChildWithGeo( WidgetWithGeo& package ) const;
-		void		_nextChildWithGeo( WidgetWithGeo& package ) const;
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
 
 		// Overloaded from PanelSlotsHolder

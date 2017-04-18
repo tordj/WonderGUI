@@ -111,13 +111,13 @@ namespace wg
 		{
 			case MaskOp::Recurse:
 			{
-				WidgetWithGeo child;
-				_firstChildWithGeo( child );
+				SlotWithGeo child;
+				_firstSlotWithGeo( child );
 	
-				while(child.pWidget)
+				while(child.pSlot)
 				{
-					child.pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
-					_nextChildWithGeo( child );
+					child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+					_nextSlotWithGeo( child );
 				}
 				break;
 			}

@@ -132,16 +132,16 @@ namespace wg
 	
 			virtual void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
 
-			struct WidgetWithGeo
+			struct SlotWithGeo
 			{
-				Rect		geo;
-				Widget *	pWidget;
-//				bool		bVisible;
-				void *		pMagic;
+				Rect			geo;
+//				Widget *		pWidget;
+//				bool			bVisible;
+				const Slot *	pSlot;
 			};
 
-			virtual void			_firstChildWithGeo( WidgetWithGeo& package ) const = 0;
-			virtual void			_nextChildWithGeo( WidgetWithGeo& package ) const = 0;
+			virtual void			_firstSlotWithGeo( SlotWithGeo& package ) const = 0;
+			virtual void			_nextSlotWithGeo( SlotWithGeo& package ) const = 0;
 		
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*		_getPopupLayer() const;

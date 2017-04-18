@@ -159,8 +159,8 @@ namespace wg
 
 		// Overloaded from Container
 
-		void			_firstChildWithGeo(WidgetWithGeo& package) const;
-		void			_nextChildWithGeo(WidgetWithGeo& package) const;
+		void			_firstSlotWithGeo(SlotWithGeo& package) const;
+		void			_nextSlotWithGeo(SlotWithGeo& package) const;
 
 		Widget * 		_findWidget(const Coord& ofs, SearchMode mode);
 

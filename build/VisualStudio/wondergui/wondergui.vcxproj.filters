@@ -451,9 +451,6 @@
     <ClCompile Include="..\..\..\src\base\wg_chain.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_char.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_charbuffer.cpp">
       <Filter>base</Filter>
     </ClCompile>
@@ -713,9 +710,6 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_widgetholder.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp">
