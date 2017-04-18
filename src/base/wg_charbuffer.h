@@ -22,14 +22,10 @@
 
 #ifndef WG_CHARBUFFER_DOT_H
 #define WG_CHARBUFFER_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_CHAR_DOT_H
-#	include <wg_char.h>
-#endif
+#include <wg_types.h>
+#include <wg_char.h>
 
 namespace wg 
 {

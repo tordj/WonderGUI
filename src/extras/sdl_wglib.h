@@ -2,17 +2,9 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
-
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
-
-#ifndef WG_RESDB_DOT_H
-#	include <wg_resdb.h>
-#endif
+#include <wg_surface.h>
+#include <wg_surfacefactory.h>
+#include <wg_resdb.h>
 
 class WgEventHandler;
 class Surface;

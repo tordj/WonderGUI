@@ -22,10 +22,9 @@
 
 #ifndef	WG_GLSURFACEFACTORY_DOT_H
 #define	WG_GLSURFACEFACTORY_DOT_H
+#pragma once
 
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
+#include <wg_surfacefactory.h>
 
 namespace wg
 {

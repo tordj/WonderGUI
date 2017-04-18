@@ -22,11 +22,7 @@
 
 #include <wg_base.h>
 #include <wg_animplayer.h>
-
-#include <wg_surface.h>
-#include <wg_gfxdevice.h>
 #include <wg_util.h>
-
 #include <wg_msgrouter.h>
 #include <math.h>
 

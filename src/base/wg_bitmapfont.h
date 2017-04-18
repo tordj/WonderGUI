@@ -22,18 +22,11 @@
 
 #ifndef	WG_BITMAPFONT_DOT_H
 #define	WG_BITMAPFONT_DOT_H
+#pragma once
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
-
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg_geo.h>
+#include <wg_font.h>
+#include <wg_surface.h>
 
 namespace wg 
 {

@@ -21,20 +21,17 @@
 =========================================================================*/
 #ifndef WG_MSGROUTER_DOT_H
 #define WG_MSGROUTER_DOT_H
+#pragma once
 
 #include <deque>
 #include <map>
 #include <vector>
 
-#ifndef WG_MSG_DOT_H
-#	include <wg_msg.h>
-#endif
+#include <wg_msg.h>
 
 
 
-#ifndef WG_KEY_DOT_H
-#	include <wg_key.h>
-#endif
+#include <wg_key.h>
 
 namespace wg 
 {

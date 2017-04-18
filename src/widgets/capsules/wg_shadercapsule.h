@@ -22,10 +22,9 @@
 
 #ifndef WG_SHADERCAPSULE_DOT_H
 #define WG_SHADERCAPSULE_DOT_H
+#pragma once
 
-#ifndef WG_CAPSULE_DOT_H
-#	include <wg_capsule.h>
-#endif
+#include <wg_capsule.h>
 
 namespace wg 
 {

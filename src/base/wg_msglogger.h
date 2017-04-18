@@ -22,6 +22,7 @@
 
 #ifndef WG_MSGLOGGER_DOT_H
 #define WG_MSGLOGGER_DOT_H
+#pragma once
 
 #include <iostream>
 #include <wg_msgrouter.h>

@@ -22,15 +22,11 @@
 
 #ifndef WG_SURFACEFACTORY_DOT_H
 #define	WG_SURFACEFACTORY_DOT_H
+#pragma once
 //==============================================================================
 
-#ifndef	WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
-
-#ifndef	WG_BLOB_DOT_H
-#	include <wg_blob.h>
-#endif
+#include <wg_surface.h>
+#include <wg_blob.h>
 
 
 namespace wg 

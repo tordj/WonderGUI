@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef WG_MODSPAN_DOT_H
 #define WG_MODSPAN_DOT_H
+#pragma once
 
-#ifndef WG_SLIDESPAN_DOT_H
-#	include <wg_slidespan.h>
-#endif
+#include <wg_slidespan.h>
 
 namespace wg 
 {

@@ -24,14 +24,10 @@
 
 #ifndef WG_SIZECAPSULE_DOT_H
 #define WG_SIZECAPSULE_DOT_H
+#pragma once
 
-#ifndef WG_CAPSULE_DOT_H
-#	include <wg_capsule.h>
-#endif
-
-#ifndef WG_SIZESCALER_DOT_H
-#	include <wg_sizescaler.h>
-#endif
+#include <wg_capsule.h>
+#include <wg_sizescaler.h>
 
 //TODO: Need to support skin padding.
 

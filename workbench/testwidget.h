@@ -23,9 +23,7 @@
 #define WG_TESTWIDGET_DOT_H
 
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
+#include <wg_widget.h>
 
 namespace wg
 {

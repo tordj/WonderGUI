@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef WG_COLUMNHEADERITEM_DOT_H
 #define WG_COLUMNHEADERITEM_DOT_H
+#pragma once
 
-#ifndef WG_ICONITEM_DOT_H
-#	include <wg_iconitem.h>
-#endif
-
-#ifndef WG_TEXTITEM_DOT_H
-#	include <wg_textitem.h>
-#endif
+#include <wg_iconitem.h>
+#include <wg_textitem.h>
 
 namespace wg 
 {

@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef WG_MEMPOOL_DOT_H
 #define WG_MEMPOOL_DOT_H
+#pragma once
 
 
 #include <wg_types.h>

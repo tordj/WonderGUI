@@ -22,30 +22,14 @@
 
 #ifndef	WG_TEXTMAPPER_DOT_H
 #define	WG_TEXTMAPPER_DOT_H
+#pragma once
 
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif 
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
-#ifndef WG_KEY_DOT_H
-#	include <wg_key.h>
-#endif
-
-#ifndef WG_RECEIVER_DOT_H
-#	include <wg_receiver.h>
-#endif
+#include <wg_userdefines.h>
+#include <wg_pointers.h>
+#include <wg_geo.h>
+#include <wg_string.h>
+#include <wg_key.h>
+#include <wg_receiver.h>
 
 namespace wg 
 {

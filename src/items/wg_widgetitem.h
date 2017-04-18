@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef	WG_WIDGETITEM_DOT_H
 #define WG_WIDGETITEM_DOT_H
+#pragma once
 
 #include <wg_item.h>
 

@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef	WG_EDITVALUEITEM_DOT_H
 #define WG_EDITVALUEITEM_DOT_H
+#pragma once
 
-#ifndef WG_MODVALUEITEM_DOT_H
-#	include <wg_modvalueitem.h>
-#endif
+#include <wg_modvalueitem.h>
 
 namespace wg 
 {

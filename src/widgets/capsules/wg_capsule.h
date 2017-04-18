@@ -22,18 +22,11 @@
 
 #ifndef WG_CAPSULE_DOT_H
 #define WG_CAPSULE_DOT_H
+#pragma once
 
-#ifndef WG_CONTAINER_DOT_H
-#	include <wg_container.h>
-#endif
-
-#ifndef WG_CHILDENTRY_DOT_H
-#	include <wg_childentry.h>
-#endif
-
-#ifndef WG_SLOT_DOT_H
-#	include <wg_slot.h>
-#endif
+#include <wg_container.h>
+#include <wg_childentry.h>
+#include <wg_slot.h>
 
 
 namespace wg 

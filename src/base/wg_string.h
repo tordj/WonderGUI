@@ -1,17 +1,10 @@
 #ifndef	WG_STRING_DOT_H
 #define WG_STRING_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_CHARBUFFER_DOT_H
-#	include <wg_charbuffer.h>
-#endif
-
-#ifndef WG_CHARSEQ_DOT_H
-#	include <wg_charseq.h>
-#endif
+#include <wg_types.h>
+#include <wg_charbuffer.h>
+#include <wg_charseq.h>
 
 namespace wg 
 {

@@ -22,27 +22,18 @@
 
 #ifndef WG_VALUE_DOT_H
 #define WG_VALUE_DOT_H
+#pragma once
 
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_TEXTMAPPER_DOT_H
-#	include <wg_textmapper.h>
-#endif
+#include <wg_interface.h>
+#include <wg_textstyle.h>
+#include <wg_textmapper.h>
 
 
 //#ifndef WG_VALUEFORMAT_DOT_H
 //#	include <wg_valueformat.h>
 //#endif
 
-#ifndef WG_VALUEITEM_DOT_H
-#	include <wg_valueitem.h>
-#endif
+#include <wg_valueitem.h>
 
 namespace wg 
 {

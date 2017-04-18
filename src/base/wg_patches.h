@@ -21,12 +21,11 @@
 =========================================================================*/
 #ifndef WG_PATCHES_DOT_H
 #define WG_PATCHES_DOT_H
+#pragma once
 
 #include <limits.h>
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
+#include <wg_geo.h>
 
 namespace wg 
 {

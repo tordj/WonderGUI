@@ -22,26 +22,13 @@
 
 #ifndef	WG_TEXTTOOL_DOT_H
 #define WG_TEXTTOOL_DOT_H
+#pragma once
 
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif
-
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_CHARSEQ_DOT_H
-#	include <wg_charseq.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_userdefines.h>
+#include <wg_types.h>
+#include <wg_textstyle.h>
+#include <wg_charseq.h>
+#include <wg_pointers.h>
 
 namespace wg 
 {

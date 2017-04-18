@@ -20,20 +20,13 @@
 
 =========================================================================*/
 
-#ifndef	WG_STANDARDTEXTMAPPER_DOT_H
-#define	WG_STANDARDTEXTMAPPER_DOT_H
+#ifndef	WG_STDTEXTMAPPER_DOT_H
+#define	WG_STDTEXTMAPPER_DOT_H
+#pragma once
 
-#ifndef WG_TEXTMAPPER_DOT_H
-#	include <wg_textmapper.h>
-#endif 
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
+#include <wg_textmapper.h>
+#include <wg_textstyle.h>
+#include <wg_caret.h>
 
 namespace wg 
 {
@@ -223,4 +216,4 @@ inline Glyph_p	StdTextMapper::_getGlyph( Font * pFont, uint16_t charCode ) const
 
 
 } // namespace wg
-#endif //WG_STANDARDTEXTMAPPER_DOT_H
+#endif //WG_STDTEXTMAPPER_DOT_H

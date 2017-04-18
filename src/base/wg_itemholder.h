@@ -22,14 +22,10 @@
 
 #ifndef WG_ITEMHOLDER_DOT_H
 #define WG_ITEMHOLDER_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
+#include <wg_types.h>
+#include <wg_geo.h>
 
 namespace wg 
 {

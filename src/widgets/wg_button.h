@@ -21,22 +21,12 @@
 =========================================================================*/
 #ifndef WG_BUTTON_DOT_H
 #define WG_BUTTON_DOT_H
+#pragma once
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef	WG_TEXTITEM_DOT_H
-#	include <wg_textitem.h>
-#endif
-
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
-#endif
-
-#ifndef	WG_ICON_DOT_H
-#	include <wg_icon.h>
-#endif
+#include <wg_widget.h>
+#include <wg_textitem.h>
+#include <wg_modtext.h>
+#include <wg_icon.h>
 
 namespace wg 
 {

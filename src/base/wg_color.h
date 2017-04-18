@@ -22,10 +22,9 @@
 
 #ifndef	WG_COLOR_DOT_H
 #define	WG_COLOR_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include	<wg_types.h>
-#endif
+#include	<wg_types.h>
 
 namespace wg 
 {

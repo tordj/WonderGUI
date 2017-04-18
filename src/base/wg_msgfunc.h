@@ -22,10 +22,9 @@
 
 #ifndef WG_MSGFUNC_DOT_H
 #define WG_MSGFUNC_DOT_H
+#pragma once
 
-#ifndef WG_RECEIVER_DOT_H
-#	include <wg_receiver.h>
-#endif
+#include <wg_receiver.h>
 
 namespace wg 
 {

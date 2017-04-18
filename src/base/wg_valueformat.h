@@ -23,26 +23,13 @@
 
 #ifndef	WG_VALUEFORMAT_DOT_H
 #define WG_VALUEFORMAT_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_CHARSEQ_DOT_H
-#	include <wg_charseq.h>
-#endif
-
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_types.h>
+#include <wg_textstyle.h>
+#include <wg_charseq.h>
+#include <wg_string.h>
+#include <wg_pointers.h>
 
 namespace wg 
 {

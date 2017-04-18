@@ -22,16 +22,12 @@
 
 #ifndef	WG_TOGGLEGROUP_DOT_H
 #define	WG_TOGGLEGROUP_DOT_H
+#pragma once
 
 #include <vector>
 
-#ifndef	WG_OBJECT_DOT_H
-#	include <wg_object.h>
-#endif
-
-#ifndef WG_TOGGLEBUTTON_DOT_H
-#	include <wg_togglebutton.h>
-#endif
+#include <wg_object.h>
+#include <wg_togglebutton.h>
 
 namespace wg 
 {

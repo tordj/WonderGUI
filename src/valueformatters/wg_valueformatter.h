@@ -21,18 +21,11 @@
 =========================================================================*/
 #ifndef	WG_VALUEFORMATTER_DOT_H
 #define WG_VALUEFORMATTER_DOT_H
+#pragma once
 
-#ifndef WG_OBJECT_DOT_H
-#	include <wg_object.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
+#include <wg_object.h>
+#include <wg_pointers.h>
+#include <wg_string.h>
 
 namespace wg 
 {

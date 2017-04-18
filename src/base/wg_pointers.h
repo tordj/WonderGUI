@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef	WG_POINTERS_DOT_H
 #define	WG_POINTERS_DOT_H
+#pragma once
 
-#ifndef WG_MEMPOOL_DOT_H
-#	include <wg_mempool.h>
-#endif
-
-#ifndef	WG_OBJECT_DOT_H
-#	include <wg_object.h>
-#endif
+#include <wg_mempool.h>
+#include <wg_object.h>
 
 
 namespace wg 

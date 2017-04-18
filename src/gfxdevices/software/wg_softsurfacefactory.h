@@ -22,13 +22,8 @@
 #ifndef WG_SURFACEFACTORY_SOFT_DOT_H
 #define WG_SURFACEFACTORY_SOFT_DOT_H
 
-#ifndef WG_SOFTSURFACE_DOT_H
-#	include <wg_softsurface.h>
-#endif
-
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
+#include <wg_softsurface.h>
+#include <wg_surfacefactory.h>
 
 #include <vector>
 

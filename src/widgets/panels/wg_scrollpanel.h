@@ -22,25 +22,15 @@
 
 #ifndef	WG_SCROLLPANEL_DOT_H
 #define	WG_SCROLLPANEL_DOT_H
+#pragma once
 
 
 #include <functional>
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
-#endif
-
-#ifndef	WG_SCROLLBAR_DOT_H
-#	include <wg_scrollbar.h>
-#endif
-
-#ifndef WG_SCROLLBARTARGET_DOT_H
-#	include <wg_scrollbartarget.h>
-#endif
-
-#ifndef WG_CHILDENTRY_DOT_H
-#	include <wg_childentry.h>
-#endif
+#include <wg_panel.h>
+#include <wg_scrollbar.h>
+#include <wg_scrollbartarget.h>
+#include <wg_childentry.h>
 
 
 namespace wg 

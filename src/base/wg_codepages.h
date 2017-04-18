@@ -19,12 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CODEPAGE_DOT_H
-#define WG_CODEPAGE_DOT_H
+#ifndef WG_CODEPAGES_DOT_H
+#define WG_CODEPAGES_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
+#include <wg_types.h>
 
 namespace wg 
 {
@@ -52,4 +51,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_CODEPAGE_DOT_H
+#endif //WG_CODEPAGES_DOT_H

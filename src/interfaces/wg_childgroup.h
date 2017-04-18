@@ -22,22 +22,12 @@
 
 #ifndef	WG_CHILDGROUP_DOT_H
 #define	WG_CHILDGROUP_DOT_H
+#pragma once
 
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_CONTAINER_DOT_H
-#	include <wg_container.h>
-#endif
-
-#ifndef WG_SLOTARRAY_DOT_H
-#	include <wg_slotarray.h>
-#endif
+#include <wg_interface.h>
+#include <wg_pointers.h>
+#include <wg_container.h>
+#include <wg_slotarray.h>
 
 
 namespace wg 

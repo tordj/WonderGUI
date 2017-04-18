@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef	WG_SIZEBROKER_DOT_H
 #define	WG_SIZEBROKER_DOT_H
+#pragma once
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_pointers.h>
 
 namespace wg 
 {

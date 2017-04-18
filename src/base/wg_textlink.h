@@ -22,13 +22,12 @@
 
 #ifndef WG_TEXTLINK_DOT_H
 #define WG_TEXTLINK_DOT_H
+#pragma once
 
 #include <string>
 
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_pointers.h>
 
 namespace wg 
 {

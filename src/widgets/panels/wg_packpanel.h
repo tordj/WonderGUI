@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef WG_PACKPANEL_DOT_H
 #define WG_PACKPANEL_DOT_H
+#pragma once
 
-#ifndef	WG_SIZEBROKER_DOT_H
-#	include <wg_sizebroker.h>
-#endif
-
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
-#endif
+#include <wg_sizebroker.h>
+#include <wg_panel.h>
 
 namespace wg 
 {

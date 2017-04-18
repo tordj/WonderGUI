@@ -1,18 +1,13 @@
 #ifndef WG_UTIL_DOT_H
 #define WG_UTIL_DOT_H
+#pragma once
 
 #include <string>
 #include <sstream>
 #include <vector>
 #include <wg_geo.h>
-
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg_types.h>
+#include <wg_surface.h>
 
 namespace wg
 {

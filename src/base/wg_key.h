@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef WG_KEY_DOT_H
 #define WG_KEY_DOT_H
+#pragma once
 
 namespace wg 
 {

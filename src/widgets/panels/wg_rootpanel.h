@@ -21,34 +21,15 @@
 =========================================================================*/
 #ifndef WG_ROOTPANEL_DOT_H
 #define WG_ROOTPANEL_DOT_H
+#pragma once
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_WIDGETHOLDER_DOT_H
-#	include <wg_widgetholder.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_PATCHES_DOT_H
-#	include <wg_patches.h>
-#endif
-
-#ifndef WG_MSGROUTER_DOT_H
-#	include <wg_msgrouter.h>
-#endif
-
-#ifndef WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
-
-#ifndef WG_CHILDENTRY_DOT_H
-#	include <wg_childentry.h>
-#endif
+#include <wg_widget.h>
+#include <wg_widgetholder.h>
+#include <wg_geo.h>
+#include <wg_patches.h>
+#include <wg_msgrouter.h>
+#include <wg_gfxdevice.h>
+#include <wg_childentry.h>
 
 namespace wg 
 {

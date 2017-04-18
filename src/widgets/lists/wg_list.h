@@ -22,19 +22,11 @@
 
 #ifndef	WG_LIST_DOT_H
 #define	WG_LIST_DOT_H
+#pragma once
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_CONTAINER_DOT_H
-#	include <wg_container.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
+#include <wg_widget.h>
+#include <wg_container.h>
+#include <wg_skin.h>
 #include <wg_childgroup.h>
 
 namespace wg 

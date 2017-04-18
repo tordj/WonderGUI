@@ -21,17 +21,13 @@
 =========================================================================*/
 #ifndef WG_CHARSEQ_DOT_H
 #define WG_CHARSEQ_DOT_H
+#pragma once
 
 #include <climits>
 #include <string>
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef	WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif
+#include <wg_types.h>
+#include <wg_userdefines.h>
 
 namespace wg 
 {

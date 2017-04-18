@@ -22,33 +22,18 @@
 
 #ifndef	WG_GFXDEVICE_DOT_H
 #define WG_GFXDEVICE_DOT_H
+#pragma once
 
 #include <climits>
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef	WG_COLOR_DOT_H
-#	include <wg_color.h>
-#endif
+#include <wg_pointers.h>
+#include <wg_types.h>
+#include <wg_color.h>
 
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
-
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
+#include <wg_geo.h>
+#include <wg_surface.h>
+#include <wg_surfacefactory.h>
 
 namespace wg 
 {

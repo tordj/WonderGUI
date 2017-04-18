@@ -22,9 +22,7 @@
 #ifndef	WG_UNIFORM_SIZEBROKER_DOT_H
 #define	WG_UNIFORM_SIZEBROKER_DOT_H
 
-#ifndef WG_SIZEBROKER_DOT_H
-#	include <wg_sizebroker.h>
-#endif
+#include <wg_sizebroker.h>
 
 namespace wg 
 {

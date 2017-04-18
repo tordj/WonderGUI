@@ -21,18 +21,11 @@
 =========================================================================*/
 #ifndef WG_SKIN_DOT_H
 #define WG_SKIN_DOT_H
+#pragma once
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
+#include <wg_pointers.h>
+#include <wg_geo.h>
+#include <wg_types.h>
 
 namespace wg 
 {

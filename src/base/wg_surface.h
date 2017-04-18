@@ -22,27 +22,14 @@
 
 #ifndef WG_SURFACE_DOT_H
 #define	WG_SURFACE_DOT_H
+#pragma once
 //==============================================================================
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_COLOR_DOT_H
-#	include <wg_color.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_BLOB_DOT_H
-#	include <wg_blob.h>
-#endif
+#include <wg_types.h>
+#include <wg_geo.h>
+#include <wg_color.h>
+#include <wg_pointers.h>
+#include <wg_blob.h>
 
 namespace wg 
 {

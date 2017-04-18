@@ -24,12 +24,8 @@
 #include <wg_container.h>
 #include <wg_panel.h>
 #include <wg_rootpanel.h>
-
 #include <wg_patches.h>
-
-#ifndef WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
+#include <wg_gfxdevice.h>
 
 namespace wg 
 {
