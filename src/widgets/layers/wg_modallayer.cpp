@@ -240,12 +240,12 @@ namespace wg
 	}
 	
 	//____ _childRequestResize() ______________________________________________
-	void ModalLayer::_childRequestResize( void * pChildRef )
+	void ModalLayer::_childRequestResize( Slot * pSlot )
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 			_requestResize();
 		else
-			_refreshRealGeo( (ModalSlot *) pChildRef );
+			_refreshRealGeo( (ModalSlot *) pSlot );
 	}
 	
 	
@@ -393,7 +393,7 @@ namespace wg
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				ModalSlot * pSlot = static_cast<ModalSlot*>(reinterpret_cast<Slot*>(p->_holdersRef()));
+				ModalSlot * pSlot = static_cast<ModalSlot*>(p->_slot());
 				pSlot->pKeyFocus = pFocused;
 			}
 		}
@@ -429,14 +429,14 @@ namespace wg
 
 		if( pW )
 		{
-			Slot * pSlot = (Slot*) pW->_holdersRef();
+			Slot * pSlot = (Slot*) pW->_slot();
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
 	
 		// Switch to previously saved focus, or null if not applicable
 
-		_holder()->_childRequestFocus( m_pHoldersRef, pSavedFocus );
+		_holder()->_childRequestFocus( m_pSlot, pSavedFocus );
 	}
 
 	//____ _moveSlot() ___________________________________________________________

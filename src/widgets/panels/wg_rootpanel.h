@@ -120,29 +120,29 @@ namespace wg
 
 		// WidgetHolder methods
 
-		Coord			_childPos( void * pChildRef ) const;
-		Coord			_childGlobalPos( void * pChildRef ) const;
+		Coord			_childPos( Slot * pSlot ) const;
+		Coord			_childGlobalPos( Slot * pSlot ) const;
 
-		Size			_childSize( void * pChildRef ) const;
+		Size			_childSize( Slot * pSlot ) const;
 
-		bool			_isChildVisible( void * pChildRef ) const;
-		Rect			_childWindowSection( void * pChildRef ) const;
+		bool			_isChildVisible( Slot * pSlot ) const;
+		Rect			_childWindowSection( Slot * pSlot ) const;
 
 		Container *  	_childParent();
 		RootPanel *		_root();
 
-		void			_childRequestRender( void * pChildRef );
-		void			_childRequestRender( void * pChildRef, const Rect& rect );
-		void			_childRequestResize( void * pChildRef );
+		void			_childRequestRender( Slot * pSlot );
+		void			_childRequestRender( Slot * pSlot, const Rect& rect );
+		void			_childRequestResize( Slot * pSlot );
 
-		bool			_childRequestFocus( void * pChildRef, Widget * pWidget );
-		bool			_childReleaseFocus( void * pChildRef, Widget * pWidget );
+		bool			_childRequestFocus( Slot * pSlot, Widget * pWidget );
+		bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget );
 
-		void			_childRequestInView( void * pChildRef );
-		void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
+		void			_childRequestInView( Slot * pSlot );
+		void			_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea );
 
-		Widget *		_prevChild( void * pChildRef ) const;
-		Widget *		_nextChild( void * pChildRef ) const;
+		Widget *		_prevChild( Slot * pSlot ) const;
+		Widget *		_nextChild( Slot * pSlot ) const;
 	
 
 

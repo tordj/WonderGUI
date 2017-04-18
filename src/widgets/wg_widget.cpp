@@ -34,7 +34,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Widget::Widget():m_id(0), m_pHolder(0), m_pHoldersRef(0), m_pointerStyle(PointerStyle::Default),
+	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false),
 						m_bTabLock(false), m_bPressed(false), m_size(256,256)
 	{

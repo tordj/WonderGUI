@@ -122,7 +122,7 @@ namespace wg
 	
 		// Overloaded from WidgetHolder
 
-		void			_childRequestResize(void * pChildRef);
+		void			_childRequestResize(Slot * pSlot);
 
 		// Overloaded from Layer
 

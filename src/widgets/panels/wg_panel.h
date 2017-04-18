@@ -75,24 +75,39 @@ namespace wg
 	public:
 		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
 
-		void	hide( int index ) 
+		bool	hide( int index ) 
 		{
-			if( index >= 0 || index < ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
+			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
+				return false;
+				
+			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
+			return true;
 		};
 		
-		void		unhide( int index )
+		bool	unhide( int index )
 		{
-			if( index >= 0 || index < ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
+			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
+				return false;
+				
+			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
+			return true;
 		};
 
-		bool		isVisible( int index ) { return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->bVisible; }
+		bool		isVisible( int index ) 
+		{ 
+			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
+				return false;
+
+			return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->bVisible; 
+		}
 	
 		bool		setPadding( int index, Border padding )
 		{
-			if( index >= 0 || index < ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				ChildGroup<SlotType,HolderType>::m_pHolder->_repadSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1, padding );
+			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
+				return false;
+				
+			ChildGroup<SlotType,HolderType>::m_pHolder->_repadSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1, padding );
+			return true;
 		}
 
 		Border		padding( int index ) const { return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->padding; }

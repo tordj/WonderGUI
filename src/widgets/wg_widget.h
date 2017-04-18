@@ -181,9 +181,9 @@ namespace wg
 		Widget();
 		virtual ~Widget();
 
-		inline void			_setHolder( WidgetHolder * pHolder, void * pHoldersRef ) { m_pHolder = pHolder; m_pHoldersRef = pHoldersRef; }
+		inline void			_setHolder( WidgetHolder * pHolder, Slot * pSlot ) { m_pHolder = pHolder; m_pSlot = pSlot; }
 		WidgetHolder *		_holder() const { return m_pHolder; }
-		void *				_holdersRef() const { return m_pHoldersRef; }
+		Slot *				_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 	
@@ -193,18 +193,18 @@ namespace wg
 
 		// Convenient calls to holder
 	
-		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef ); }
-		inline void		_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pHoldersRef, rect ); }
-		inline void		_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pHoldersRef ); }
-		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pHoldersRef ); }
-		inline void		_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pHoldersRef, mustHaveArea, niceToHaveArea ); }
+		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
+		inline void		_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
+		inline void		_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
+		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
+		inline void		_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 		
 	
-		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pHoldersRef ); else return nullptr; }
-		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pHoldersRef ); else return nullptr; }
+		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
+		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
 	
-		inline Rect		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pHoldersRef ); return Rect(); }
+		inline Rect		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return Rect(); }
 	
 		// To be overloaded by Widget
 	
@@ -252,7 +252,7 @@ namespace wg
 		int				m_id;
 
 		WidgetHolder *	m_pHolder;
-		void *			m_pHoldersRef;
+		Slot *			m_pSlot;
 	
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;
@@ -287,7 +287,7 @@ namespace wg
 	Coord Widget::pos() const 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_childPos( m_pHoldersRef ); 
+			return m_pHolder->_childPos( m_pSlot ); 
 		return Coord(0,0); 
 	}
 	
@@ -316,7 +316,7 @@ namespace wg
 	Rect Widget::geo() const 
 	{ 
 		if( m_pHolder ) 
-			return Rect(m_pHolder->_childPos( m_pHoldersRef ),m_size); 
+			return Rect(m_pHolder->_childPos( m_pSlot ),m_size); 
 		return Rect(0,0,m_size); 
 	}
 	
@@ -330,7 +330,7 @@ namespace wg
 	Coord Widget::globalPos() const 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_childGlobalPos( m_pHoldersRef ); 
+			return m_pHolder->_childGlobalPos( m_pSlot ); 
 		return Coord(0,0); 
 	}
 	
@@ -346,7 +346,7 @@ namespace wg
 	Rect Widget::globalGeo() const 
 	{ 
 		if( m_pHolder ) 
-			return Rect(m_pHolder->_childGlobalPos( m_pHoldersRef ), m_size); 
+			return Rect(m_pHolder->_childGlobalPos( m_pSlot ), m_size); 
 		return Rect(0,0,m_size); 
 	}
 	
@@ -354,14 +354,14 @@ namespace wg
 	bool Widget::grabFocus() 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_childRequestFocus( m_pHoldersRef, this ); 
+			return m_pHolder->_childRequestFocus( m_pSlot, this ); 
 		return false; 
 	}
 	
 	bool Widget::releaseFocus() 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_childReleaseFocus( m_pHoldersRef, this ); 
+			return m_pHolder->_childReleaseFocus( m_pSlot, this ); 
 		return false; 
 	}
 	
@@ -389,7 +389,7 @@ namespace wg
 	Widget_p Widget::nextSibling() const 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_nextChild( m_pHoldersRef );
+			return m_pHolder->_nextChild( m_pSlot );
 		return nullptr; 
 	}
 	
@@ -405,7 +405,7 @@ namespace wg
 	Widget_p Widget::prevSibling() const 
 	{ 
 		if( m_pHolder ) 
-			return m_pHolder->_prevChild( m_pHoldersRef );
+			return m_pHolder->_prevChild( m_pSlot );
 		return 0; 
 	}
 	

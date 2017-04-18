@@ -234,81 +234,81 @@ namespace wg
 
 	//____ _childPos() _________________________________________________________
 	
-	Coord Layer::_childPos( void * pChildRef ) const
+	Coord Layer::_childPos( Slot * pSlot ) const
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 			return {0,0};
 		
-		return ((LayerSlot*)pChildRef)->geo;
+		return ((LayerSlot*)pSlot)->geo;
 	}
 
 	//____ _childSize() ________________________________________________________
 
-	Size Layer::_childSize( void * pChildRef ) const
+	Size Layer::_childSize( Slot * pSlot ) const
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 			return m_size;
 		
-		return ((LayerSlot*)pChildRef)->geo;
+		return ((LayerSlot*)pSlot)->geo;
 	}
 
 	//____ _childRequestRender() _______________________________________________
 
-	void Layer::_childRequestRender( void * pChildRef )
+	void Layer::_childRequestRender( Slot * _pSlot )
 	{
-		if( pChildRef == &m_baseSlot )
+		if( _pSlot == &m_baseSlot )
 			_onRequestRender( Rect( 0,0, m_size ), 0 );		//TODO: Take padding into account
 		else
 		{
-			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(pChildRef);
+			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(_pSlot);
 			_onRequestRender( pSlot->geo, pSlot );
 		}
 	}
 	
-	void Layer::_childRequestRender( void * pChildRef, const Rect& rect )
+	void Layer::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
-		if( pChildRef == &m_baseSlot )
+		if( _pSlot == &m_baseSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account
 		else
 		{
-			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(pChildRef);
+			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(_pSlot);
 			_onRequestRender( rect + pSlot->geo.pos(), pSlot );
 		}
 	}
 /*
 	//____ _childRequestResize() _______________________________________________
  
-	void Layer::_childRequestResize( void * pChildRef )
+	void Layer::_childRequestResize( Slot * pSlot )
 	{
 		_requestResize();			//TODO: Smarter handling, not request resize unless we need to.
 	}
 */
 	//____ _prevChild() ________________________________________________________
 
-	Widget * Layer::_prevChild( void * pChildRef ) const
+	Widget * Layer::_prevChild( Slot * pSlot ) const
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 			return nullptr;
 		
-		if( pChildRef == _beginLayerSlots() )
+		if( pSlot == _beginLayerSlots() )
 			return m_baseSlot.pWidget;
 			
-		LayerSlot * p = _decLayerSlot((LayerSlot*)pChildRef,_sizeOfLayerSlot());
+		LayerSlot * p = _decLayerSlot((LayerSlot*)pSlot,_sizeOfLayerSlot());
 		return p->pWidget;
 	}
 
 	//____ _nextChild() ________________________________________________________
 
-	Widget * Layer::_nextChild( void * pChildRef ) const
+	Widget * Layer::_nextChild( Slot * pSlot ) const
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 		{
 			if( _beginLayerSlots() < _endLayerSlots() )
 				return _beginLayerSlots()->pWidget;
 		}
 		else
 		{
-			LayerSlot * p = _incLayerSlot((LayerSlot*)pChildRef,_sizeOfLayerSlot());
+			LayerSlot * p = _incLayerSlot((LayerSlot*)pSlot,_sizeOfLayerSlot());
 			if( p < _endLayerSlots() )
 				return p->pWidget;
 		}

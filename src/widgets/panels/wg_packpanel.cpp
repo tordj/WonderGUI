@@ -379,42 +379,38 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	Coord PackPanel::_childPos(void * pChildRef) const
+	Coord PackPanel::_childPos(Slot * pSlot) const
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
-		return pSlot->geo;
+		return ((PackPanelSlot*)pSlot)->geo;
 	}
 
 	//____ _childSize() _______________________________________________________
 
-	Size PackPanel::_childSize(void * pChildRef) const
+	Size PackPanel::_childSize(Slot * pSlot) const
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
-		return pSlot->geo;
+		return ((PackPanelSlot*)pSlot)->geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void PackPanel::_childRequestRender(void * pChildRef)
+	void PackPanel::_childRequestRender(Slot * pSlot)
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
-		_requestRender( pSlot->geo );
+		_requestRender( ((PackPanelSlot*)pSlot)->geo );
 
 	}
 
-	void PackPanel::_childRequestRender(void * pChildRef, const Rect& rect)
+	void PackPanel::_childRequestRender(Slot * pSlot, const Rect& rect)
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
-		_requestRender(rect + pSlot->geo.pos());
+		_requestRender(rect + ((PackPanelSlot*)pSlot)->geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void PackPanel::_childRequestResize(void * pChildRef)
+	void PackPanel::_childRequestResize(Slot * _pSlot)
 	{
 		// Update cached preferred size of child
 
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		PackPanelSlot * pSlot = static_cast<PackPanelSlot*>(_pSlot);
 		pSlot->preferredSize = pSlot->paddedPreferredSize();
 
 		_refreshAllWidgets();
@@ -422,9 +418,9 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * PackPanel::_prevChild(void * pChildRef) const
+	Widget * PackPanel::_prevChild(Slot * _pSlot) const
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		PackPanelSlot * pSlot = static_cast<PackPanelSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -434,9 +430,9 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * PackPanel::_nextChild(void * pChildRef) const
+	Widget * PackPanel::_nextChild(Slot * _pSlot) const
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(pChildRef);
+		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

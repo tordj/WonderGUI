@@ -156,7 +156,7 @@ namespace wg
 					Rect geo;
 					if( m_pHoveredChild )
 					{
-						_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_holdersRef() ); 
+						_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() ); 
 						_requestRender(geo);
 					}
 	
@@ -173,7 +173,7 @@ namespace wg
 				if( m_pHoveredChild && !pEntry )
 				{
 					Rect geo;
-					_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_holdersRef() ); 
+					_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() ); 
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
 				}
@@ -218,7 +218,7 @@ namespace wg
 								{
 									// Select range from focused to clicked entry.
 	
-									ListSlot * pFocused = (ListSlot*) m_pFocusedChild->_holdersRef();
+									ListSlot * pFocused = (ListSlot*) m_pFocusedChild->_slot();
 									ListSlot * pBeginSel = wg::min( pEntry, pFocused );
 									ListSlot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
 									_selectSlots( pBeginSel, pEndSel, true );

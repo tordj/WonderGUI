@@ -1254,45 +1254,45 @@ namespace wg
 	
 	//____ _childPos() ________________________________________________________
 
-	Coord ScrollPanel::_childPos( void * pChildRef ) const
+	Coord ScrollPanel::_childPos( Slot * pSlot ) const
 	{
-		if (pChildRef == &m_viewSlot)
-			return ((ViewSlot*)pChildRef)->canvasGeo.pos();
+		if (pSlot == &m_viewSlot)
+			return ((ViewSlot*)pSlot)->canvasGeo.pos();
 		else
-			return ((ScrollbarSlot*)pChildRef)->geo.pos();
+			return ((ScrollbarSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	Size ScrollPanel::_childSize( void * pChildRef ) const
+	Size ScrollPanel::_childSize( Slot * pSlot ) const
 	{
-		if (pChildRef == &m_viewSlot)
-			return ((ViewSlot*)pChildRef)->canvasGeo.size();
+		if (pSlot == &m_viewSlot)
+			return ((ViewSlot*)pSlot)->canvasGeo.size();
 		else
-			return ((ScrollbarSlot*)pChildRef)->geo.size();
+			return ((ScrollbarSlot*)pSlot)->geo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void ScrollPanel::_childRequestRender( void * pChildRef )
+	void ScrollPanel::_childRequestRender( Slot * _pSlot )
 	{
-		PanelSlot * pSlot = (PanelSlot *)pChildRef;
+		PanelSlot * pSlot = (PanelSlot *)_pSlot;
 		if (!pSlot->bVisible)
 			return;
 
-		if (pChildRef == &m_viewSlot)
+		if (pSlot == &m_viewSlot)
 			_requestRender(((ViewSlot*)pSlot)->windowGeo);
 		else
 			_requestRender(((ScrollbarSlot*)pSlot)->geo);
 	}
 
-	void ScrollPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	void ScrollPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
-		PanelSlot * pSlot = (PanelSlot *)pChildRef;
+		PanelSlot * pSlot = (PanelSlot *)pSlot;
 		if (!pSlot->bVisible)
 			return;
 
-		if (pChildRef == &m_viewSlot)
+		if (pSlot == &m_viewSlot)
 		{
 			ViewSlot * p = (ViewSlot*)pSlot;
 			Rect r(p->windowGeo, rect + p->canvasGeo.pos());
@@ -1305,21 +1305,19 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void ScrollPanel::_childRequestResize( void * pChildRef )
+	void ScrollPanel::_childRequestResize( Slot * pSlot )
 	{
 		_updateElementGeo( size() );
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * ScrollPanel::_prevChild( void * pChildRef ) const
+	Widget * ScrollPanel::_prevChild( Slot * pSlot ) const
 	{
-		Slot * p = (Slot *)pChildRef;
-
-		if( p == &m_scrollbarSlots[1] )
+		if( pSlot == &m_scrollbarSlots[1] )
 			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_viewSlot.pWidget;
 		
-		if(p == &m_scrollbarSlots[0])
+		if(pSlot == &m_scrollbarSlots[0])
 			return m_viewSlot.pWidget;
 
 		return nullptr;
@@ -1327,14 +1325,12 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * ScrollPanel::_nextChild( void * pChildRef ) const
+	Widget * ScrollPanel::_nextChild( Slot * pSlot ) const
 	{
-		Slot * p = (Slot *)pChildRef;
-
-		if (p == &m_viewSlot)
+		if (pSlot == &m_viewSlot)
 			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_scrollbarSlots[1].pWidget;
 
-		if (p == &m_scrollbarSlots[0])
+		if (pSlot == &m_scrollbarSlots[0])
 			return m_scrollbarSlots[1].pWidget;
 
 		return nullptr;
@@ -1342,18 +1338,18 @@ namespace wg
 
 	//____ _childWindowSection() _________________________________________________
 
-	Rect ScrollPanel::_childWindowSection( void * pChildRef ) const
+	Rect ScrollPanel::_childWindowSection( Slot * _pSlot ) const
 	{
-		if( pChildRef == &m_viewSlot )
+		if( _pSlot == &m_viewSlot )
 		{ 
-			ViewSlot * pSlot = (ViewSlot*) pChildRef;
+			ViewSlot * pSlot = (ViewSlot*) _pSlot;
 
 			Rect window(pSlot->windowGeo, pSlot->canvasGeo);			// Use intersection in case canvas is smaller than window.
 			return window - pSlot->canvasGeo.pos();
 		}
 		else
 		{
-			ScrollbarSlot * pSlot = (ScrollbarSlot*)pChildRef;
+			ScrollbarSlot * pSlot = (ScrollbarSlot*)_pSlot;
 			return { 0,0, pSlot->geo.size() };
 		}
 

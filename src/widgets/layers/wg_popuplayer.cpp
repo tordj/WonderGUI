@@ -523,7 +523,7 @@ namespace wg
 	
 		Widget * pWidget = m_popups.last()->pWidget;
 
-		_childRequestFocus( pWidget->_holdersRef(), pWidget );
+		_childRequestFocus( pWidget->_slot(), pWidget );
 	}
 	
 	//____ _restoreKeyboardFocus() _________________________________________________
@@ -538,21 +538,21 @@ namespace wg
 		//
 	
 		if( m_popups.isEmpty() )
-			_parent()->_childRequestFocus( _holdersRef(), m_pKeyFocus.rawPtr() );
+			_parent()->_childRequestFocus( _slot(), m_pKeyFocus.rawPtr() );
 		else
-			_parent()->_childRequestFocus( _holdersRef(),  m_popups.last()->pKeyFocus.rawPtr() );
+			_parent()->_childRequestFocus( _slot(),  m_popups.last()->pKeyFocus.rawPtr() );
 	}
 
 
 
 	//____ _childRequestResize() _______________________________________________
 
-	void PopupLayer::_childRequestResize(void * pChildRef)
+	void PopupLayer::_childRequestResize(Slot * pSlot)
 	{
-		if( pChildRef == &m_baseSlot )
+		if( pSlot == &m_baseSlot )
 			_requestResize();
 		else
-			_updateGeo( (PopupSlot *) pChildRef );
+			_updateGeo( (PopupSlot *) pSlot );
 	}
 
 	//____ _removeSlots() __________________________________________________

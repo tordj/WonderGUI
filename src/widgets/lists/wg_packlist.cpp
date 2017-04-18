@@ -1127,9 +1127,9 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord PackList::_childPos( void * pChildRef ) const
+	Coord PackList::_childPos( Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		Rect geo;
 		_getChildGeo(geo, pSlot);
@@ -1139,9 +1139,9 @@ namespace wg
 
 	//____ _childSize() __________________________________________________________
 
-	Size PackList::_childSize( void * pChildRef ) const
+	Size PackList::_childSize( Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		Rect geo;
 		_getChildGeo(geo, pSlot);
@@ -1151,18 +1151,18 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void PackList::_childRequestRender( void * pChildRef )
+	void PackList::_childRequestRender( Slot * _pSlot )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		Rect geo;
 		_getChildGeo(geo, pSlot);
 		_requestRender(geo);
 	}
 
-	void PackList::_childRequestRender( void * pChildRef, const Rect& rect )
+	void PackList::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		Rect geo;
 		_getChildGeo(geo, pSlot);
@@ -1175,9 +1175,9 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void PackList::_childRequestResize( void * pChildRef )
+	void PackList::_childRequestResize( Slot * _pSlot )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		if( !pSlot->bVisible  || m_minEntrySize == m_maxEntrySize )
 			return;
@@ -1236,9 +1236,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * PackList::_prevChild( void * pChildRef ) const
+	Widget * PackList::_prevChild( Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -1248,9 +1248,9 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * PackList::_nextChild( void * pChildRef ) const
+	Widget * PackList::_nextChild( Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(pChildRef);
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

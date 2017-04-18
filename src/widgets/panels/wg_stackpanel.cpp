@@ -282,35 +282,35 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord StackPanel::_childPos( void * pChildRef ) const
+	Coord StackPanel::_childPos( Slot * pSlot ) const
 	{
-		return _childGeo((StackPanelSlot *)pChildRef).pos();	
+		return _childGeo((StackPanelSlot *)pSlot).pos();	
 	}
 	
 	//____ _childSize() _______________________________________________________
 
-	Size StackPanel::_childSize( void * pChildRef ) const
+	Size StackPanel::_childSize( Slot * pSlot ) const
 	{
-		return ((StackPanelSlot *) pChildRef)->pWidget->size();
+		return ((StackPanelSlot *) pSlot)->pWidget->size();
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void StackPanel::_childRequestRender( void * pChildRef )
+	void StackPanel::_childRequestRender( Slot * pSlot )
 	{
-		_childRequestRender( pChildRef, _childGeo((StackPanelSlot*) pChildRef) );
+		_childRequestRender( pSlot, _childGeo((StackPanelSlot*) pSlot) );
 	}
 	
-	void StackPanel::_childRequestRender( void * pChildRef, const Rect& _rect )
+	void StackPanel::_childRequestRender( Slot * _pSlot, const Rect& _rect )
 	{
-		StackPanelSlot * pSlot = (StackPanelSlot *) pChildRef;
+		StackPanelSlot * pSlot = (StackPanelSlot *) _pSlot;
 
 		if( !pSlot->bVisible )
 			return;
 
 		// Put our rectangle into patches
 
-		Rect rect = _rect + _childPos(pChildRef);
+		Rect rect = _rect + _childPos(pSlot);
 
 
 		Patches patches;
@@ -333,16 +333,16 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void StackPanel::_childRequestResize( void * pChildRef )
+	void StackPanel::_childRequestResize( Slot * pSlot )
 	{
 		_refreshPreferredSize();		
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * StackPanel::_prevChild( void * pChildRef ) const
+	Widget * StackPanel::_prevChild( Slot * pSlot ) const
 	{
-		StackPanelSlot * p = (StackPanelSlot *) pChildRef;
+		StackPanelSlot * p = (StackPanelSlot *) pSlot;
 		
 		if( p > m_children.begin() )
 			return p[-1].pWidget;
@@ -352,9 +352,9 @@ namespace wg
 	
 	//____ _nextChild() __________________________________________________________
 
-	Widget * StackPanel::_nextChild( void * pChildRef ) const
+	Widget * StackPanel::_nextChild( Slot * pSlot ) const
 	{
-		StackPanelSlot * p = (StackPanelSlot *) pChildRef;
+		StackPanelSlot * p = (StackPanelSlot *) pSlot;
 		
 		if( p < m_children.last() )
 			return p[1].pWidget;		

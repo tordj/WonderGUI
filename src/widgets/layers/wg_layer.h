@@ -96,15 +96,15 @@ namespace wg
 	
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( void * pChildRef ) const;
-		Size		_childSize( void * pChildRef ) const;
+		Coord		_childPos( Slot * pSlot ) const;
+		Size		_childSize( Slot * pSlot ) const;
 
-		void		_childRequestRender( void * pChildRef );
-		void		_childRequestRender( void * pChildRef, const Rect& rect );
-//		void		_childRequestResize( void * pChildRef );
+		void		_childRequestRender( Slot * pSlot );
+		void		_childRequestRender( Slot * pSlot, const Rect& rect );
+//		void		_childRequestResize( Slot * pSlot );
 
-		Widget *	_prevChild( void * pChildRef ) const;
-		Widget *	_nextChild( void * pChildRef ) const;
+		Widget *	_prevChild( Slot * pSlot ) const;
+		Widget *	_nextChild( Slot * pSlot ) const;
 
 
 		// Overloaded from Container

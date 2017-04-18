@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ _childPos() ___________________________________________________________
 
-	Coord Capsule::_childPos( void * pChildRef ) const
+	Coord Capsule::_childPos( Slot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentOfs( m_state );
@@ -122,7 +122,7 @@ namespace wg
 
 	//____ _childSize() __________________________________________________________
 
-	Size Capsule::_childSize( void * pChildRef ) const
+	Size Capsule::_childSize( Slot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->contentPadding();
@@ -132,7 +132,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( void * pChildRef )
+	void Capsule::_childRequestRender( Slot * pSlot )
 	{
 		if( m_pSkin )
 			_requestRender( m_pSkin->contentRect( m_size, m_state ));
@@ -142,7 +142,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( void * pChildRef, const Rect& rect )
+	void Capsule::_childRequestRender( Slot * pSlot, const Rect& rect )
 	{
 		if( m_pSkin )
 			_requestRender( rect + m_pSkin->contentOfs( m_state ));
@@ -152,21 +152,21 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void Capsule::_childRequestResize( void * pChildRef )
+	void Capsule::_childRequestResize( Slot * pSlot )
 	{
 		_requestResize();
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * Capsule::_prevChild( void * pChildRef ) const
+	Widget * Capsule::_prevChild( Slot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * Capsule::_nextChild( void * pChildRef ) const
+	Widget * Capsule::_nextChild( Slot * pSlot ) const
 	{
 		return nullptr;
 	}

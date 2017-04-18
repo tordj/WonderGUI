@@ -72,19 +72,19 @@ namespace wg
 		return true;
 	}
 
-	 Coord Container::_childGlobalPos( void * pChildRef ) const
+	 Coord Container::_childGlobalPos( Slot * pSlot ) const
 	 {
-		 return _childPos(pChildRef) + globalPos();
+		 return _childPos(pSlot) + globalPos();
 	 }
 
-	 bool Container::_isChildVisible( void * pChildRef ) const
+	 bool Container::_isChildVisible( Slot * pSlot ) const
 	 {
 		 return true;
 	 }
 
-	Rect Container::_childWindowSection( void * pChildRef ) const
+	Rect Container::_childWindowSection( Slot * pSlot ) const
 	{
-		return Rect( 0,0, _childSize( pChildRef ) );
+		return Rect( 0,0, _childSize( pSlot ) );
 	}
 
 	 Container * Container::_childParent()
@@ -97,31 +97,31 @@ namespace wg
 		 return m_pHolder ? m_pHolder->_root() : nullptr;
 	 }
 
-	 bool Container::_childRequestFocus( void * pChildRef, Widget * pWidget )
+	 bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
 	 {
-		 return m_pHolder ? m_pHolder->_childRequestFocus( m_pHoldersRef, pWidget ) : false;
+		 return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
 	 }
 
-	 bool Container::_childReleaseFocus( void * pChildRef, Widget * pWidget )
+	 bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
 	 {
-		 return m_pHolder ? m_pHolder->_childReleaseFocus( m_pHoldersRef, pWidget ) : false;
+		 return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
 	 }
 
-	 void Container::_childRequestInView( void * pChildRef )
+	 void Container::_childRequestInView( Slot * pSlot )
 	 {
 		 if( m_pHolder )
 		 {
-			 Rect area( _childPos( pChildRef ), _childSize( pChildRef ) );
-			 m_pHolder->_childRequestInView( m_pHoldersRef, area, area );
+			 Rect area( _childPos( pSlot ), _childSize( pSlot ) );
+			 m_pHolder->_childRequestInView( m_pSlot, area, area );
 		 }
 	 }
 
-	 void Container::_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	 void Container::_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
 	 {
 		 if( m_pHolder )
 		 {
-			 Coord pos( _childPos( pChildRef ) );
-			 m_pHolder->_childRequestInView( m_pHoldersRef, mustHaveArea + pos, niceToHaveArea + pos );
+			 Coord pos( _childPos( pSlot ) );
+			 m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		 }
 	 }
 

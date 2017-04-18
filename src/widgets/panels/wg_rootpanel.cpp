@@ -376,27 +376,27 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord RootPanel::_childPos( void * pChildRef ) const
+	Coord RootPanel::_childPos( Slot * pSlot ) const
 	{
 		return geo().pos();
 	}
 
-	Coord RootPanel::_childGlobalPos( void * pChildRef ) const
+	Coord RootPanel::_childGlobalPos( Slot * pSlot ) const
 	{
 		return geo().pos();
 	}
 
-	Size RootPanel::_childSize( void * pChildRef ) const
+	Size RootPanel::_childSize( Slot * pSlot ) const
 	{
 		return geo().size();
 	}
 
-	bool RootPanel::_isChildVisible( void * pChildRef ) const
+	bool RootPanel::_isChildVisible( Slot * pSlot ) const
 	{
 		return true;
 	}
 
-	Rect RootPanel::_childWindowSection( void * pChildRef ) const
+	Rect RootPanel::_childWindowSection( Slot * pSlot ) const
 	{
 		return geo();
 	}
@@ -412,23 +412,23 @@ namespace wg
 		return this;
 	}
 
-	void RootPanel::_childRequestRender( void * pChildRef )
+	void RootPanel::_childRequestRender( Slot * pSlot )
 	{
 		if( m_bVisible )
 			addDirtyPatch( geo() );
 	}
 
-	void RootPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	void RootPanel::_childRequestRender( Slot * pSlot, const Rect& rect )
 	{
 		if( m_bVisible )
 			addDirtyPatch( Rect( geo().pos() + rect.pos(), rect.size() ) );
 	}
-	void RootPanel::_childRequestResize( void * pChildRef )
+	void RootPanel::_childRequestResize( Slot * pSlot )
 	{
 		// Do nothing, root ignores resize requests.
 	}
 
-	bool RootPanel::_childRequestFocus( void * pChildRef, Widget * pWidget )
+	bool RootPanel::_childRequestFocus( Slot * pSlot, Widget * pWidget )
 	{
 		if( pWidget == m_pFocusedChild.rawPtr() )
 			return true;
@@ -438,7 +438,7 @@ namespace wg
 		return Base::inputHandler()->_focusChanged( this, pOldFocus, pWidget );
 	}
 
-	bool RootPanel::_childReleaseFocus( void * pChildRef, Widget * pWidget )
+	bool RootPanel::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
 	{
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
@@ -451,21 +451,21 @@ namespace wg
 		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_child.pWidget);
 	}
 
-	void RootPanel::_childRequestInView( void * pChildRef )
+	void RootPanel::_childRequestInView( Slot * pSlot )
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	void RootPanel::_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
 	{
 		// Do nothing, root ignores inView requests.
 	}
 
-	Widget * RootPanel::_prevChild( void * pChildRef ) const
+	Widget * RootPanel::_prevChild( Slot * pSlot ) const
 	{
 		return nullptr;
 	}
 
-	Widget * RootPanel::_nextChild( void * pChildRef ) const
+	Widget * RootPanel::_nextChild( Slot * pSlot ) const
 	{
 		return nullptr;
 	}

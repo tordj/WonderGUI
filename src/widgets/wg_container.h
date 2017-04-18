@@ -93,31 +93,31 @@ namespace wg
 
 			/* Left to implement in individual classes:
 			
-				Coord		_childPos( void * pChildRef ) const;
-				Size		_childSize( void * pChildRef ) const;
+				Coord		_childPos( Slot * pSlot ) const;
+				Size		_childSize( Slot * pSlot ) const;
 
-				void		_childRequestRender( void * pChildRef );
-				void		_childRequestRender( void * pChildRef, const Rect& rect );
-				void		_childRequestResize( void * pChildRef );
+				void		_childRequestRender( Slot * pSlot );
+				void		_childRequestRender( Slot * pSlot, const Rect& rect );
+				void		_childRequestResize( Slot * pSlot );
 
-				Widget *	_prevChild( void * pChildRef ) const;
-				Widget *	_nextChild( void * pChildRef ) const;
+				Widget *	_prevChild( Slot * pSlot ) const;
+				Widget *	_nextChild( Slot * pSlot ) const;
 			*/
 
 
-			virtual Coord			_childGlobalPos( void * pChildRef ) const;
+			virtual Coord			_childGlobalPos( Slot * pSlot ) const;
 
-			virtual bool			_isChildVisible( void * pChildRef ) const;
-			virtual Rect			_childWindowSection( void * pChildRef ) const;		// Returns the window section within the childs canvas.
+			virtual bool			_isChildVisible( Slot * pSlot ) const;
+			virtual Rect			_childWindowSection( Slot * pSlot ) const;		// Returns the window section within the childs canvas.
 
 			virtual Container *  	_childParent();
 			virtual RootPanel *		_root();
 
-			virtual bool			_childRequestFocus( void * pChildRef, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
-			virtual bool			_childReleaseFocus( void * pChildRef, Widget * pWidget );
+			virtual bool			_childRequestFocus( Slot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget );
 
-			virtual void			_childRequestInView( void * pChildRef );
-			virtual void			_childRequestInView( void * pChildRef, const Rect& mustHaveArea, const Rect& niceToHaveArea );
+			virtual void			_childRequestInView( Slot * pSlot );
+			virtual void			_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea );
 
 			//
 

@@ -34,7 +34,7 @@
 #include <wg_charseq.h>
 #include <wg_codepages.h>
 #include <wg_color.h>
-#include <wg_caret2.h>
+#include <wg_caret.h>
 #include <wg_dummyfont.h>
 #include <wg_msgfunc.h>
 #include <wg_msgrouter.h>

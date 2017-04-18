@@ -671,38 +671,37 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord FlexPanel::_childPos( void * pChildRef ) const
+	Coord FlexPanel::_childPos( Slot * pSlot ) const
 	{
-		return ((FlexPanelSlot*)pChildRef)->realGeo.pos();
+		return ((FlexPanelSlot*)pSlot)->realGeo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	Size FlexPanel::_childSize( void * pChildRef ) const
+	Size FlexPanel::_childSize( Slot * pSlot ) const
 	{
-		return ((FlexPanelSlot*)pChildRef)->realGeo.size();
+		return ((FlexPanelSlot*)pSlot)->realGeo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void FlexPanel::_childRequestRender( void * pChildRef )
+	void FlexPanel::_childRequestRender( Slot * _pSlot )
 	{
-		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_onRequestRender( pSlot->realGeo, pSlot );
 	}
 	
-	void FlexPanel::_childRequestRender( void * pChildRef, const Rect& rect )
+	void FlexPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
-		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() _________________________________________________
 
-	void FlexPanel::_childRequestResize( void * pChildRef )
+	void FlexPanel::_childRequestResize( Slot * _pSlot )
 	{
-		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
-		
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_refreshRealGeo(pSlot);
 	}
 
@@ -730,9 +729,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * FlexPanel::_prevChild( void * pChildRef ) const
+	Widget * FlexPanel::_prevChild( Slot * _pSlot ) const
 	{
-		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -742,9 +741,9 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * FlexPanel::_nextChild( void * pChildRef ) const
+	Widget * FlexPanel::_nextChild( Slot * _pSlot ) const
 	{
-		FlexPanelSlot * pSlot = reinterpret_cast<FlexPanelSlot*>(pChildRef);
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

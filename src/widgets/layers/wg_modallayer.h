@@ -63,7 +63,7 @@ namespace wg
 		inline ModalChildren_p	ptr() { return ModalChildren_p(_object(),this); }
 
 		bool		add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { add( pWidget, Rect(pos,0,0), origo); }
+		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
 
 		bool		moveToBack( int index );								// Put us ontop all our silbings.
 		bool		moveToFront( int index );							// Put us below all our siblings.	
@@ -139,7 +139,7 @@ namespace wg
 	
 		// Overloaded from WidgetHolder
 	
-		void			_childRequestResize( void * pChildRef );
+		void			_childRequestResize( Slot * pSlot );
 
 		// Methods for ModalChildren
 
