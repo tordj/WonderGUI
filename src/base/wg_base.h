@@ -22,43 +22,22 @@
  
 #ifndef	WG_BASE_DOT_H
 #define	WG_BASE_DOT_H
+#pragma once
 
 /*
-#ifndef WG_TEXTMGR_DOT_H
-#	include <wg_textmgr.h>
-#endif
+#include <wg_textmgr.h>
 */
 
 #include <assert.h>
 #include <map>
 
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif
-
-#ifndef WG_KEY_DOT_H
-#	include <wg_key.h>
-#endif
-
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
-
-#ifndef WG_TEXTMAPPER_DOT_H
-#	include <wg_textmapper.h>
-#endif
-
-#ifndef WG_MSGROUTER_DOT_H
-#	include <wg_msgrouter.h>
-#endif
-
-#ifndef WG_INPUTHANDLER_DOT_H
-#	include <wg_inputhandler.h>
-#endif
+#include <wg_userdefines.h>
+#include <wg_key.h>
+#include <wg_caret.h>
+#include <wg_textstyle.h>
+#include <wg_textmapper.h>
+#include <wg_msgrouter.h>
+#include <wg_inputhandler.h>
 
 #ifdef USE_FREETYPE
 

@@ -22,14 +22,10 @@
 
 #ifndef WG_STACKPANEL_DOT_H
 #define WG_STACKPANEL_DOT_H
+#pragma once
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
-#endif
-
-#ifndef WG_CHILDGROUP_DOT_H
-#	include <wg_childgroup.h>
-#endif
+#include <wg_panel.h>
+#include <wg_childgroup.h>
 
 
 namespace wg 

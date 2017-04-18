@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef WG_EXTENDEDSKIN_DOT_H
 #define WG_EXTENDEDSKIN_DOT_H
+#pragma once
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg_skin.h>
 
 namespace wg 
 {

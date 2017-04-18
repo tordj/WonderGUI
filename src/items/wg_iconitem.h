@@ -22,22 +22,12 @@
 
 #ifndef	WG_ICONITEM_DOT_H
 #define	WG_ICONITEM_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_ITEM_DOT_H
-#	include <wg_item.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg_types.h>
+#include <wg_item.h>
+#include <wg_geo.h>
+#include <wg_skin.h>
 
 namespace wg 
 {

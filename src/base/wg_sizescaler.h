@@ -22,18 +22,11 @@
 
 #ifndef	WG_SIZESCALER_DOT_H
 #define	WG_SIZESCALER_DOT_H
+#pragma once
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
+#include <wg_pointers.h>
+#include <wg_chain.h>
+#include <wg_types.h>
 
 namespace wg 
 {

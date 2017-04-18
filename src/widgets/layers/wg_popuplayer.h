@@ -22,11 +22,9 @@
 
 #ifndef WG_POPUPLAYER_DOT_H
 #define WG_POPUPLAYER_DOT_H
+#pragma once
 
-#ifndef WG_LAYER_DOT_H
-#	include <wg_layer.h>
-#endif
-
+#include <wg_layer.h>
 #include <wg_slotarray.h>
 
 namespace wg 

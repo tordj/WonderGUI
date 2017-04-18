@@ -22,11 +22,10 @@
 
 #ifndef	WG_EDITTEXTITEM_DOT_H
 #define WG_EDITTEXTITEM_DOT_H
+#pragma once
 
 
-#ifndef WG_TEXTITEM_DOT_H
-#	include <wg_textitem.h>
-#endif
+#include <wg_textitem.h>
 
 namespace wg 
 {

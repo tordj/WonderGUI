@@ -22,14 +22,10 @@
 
 #ifndef WG_NULLGFXDEVICE_DOT_H
 #define WG_NULLGFXDEVICE_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
+#include <wg_types.h>
+#include <wg_gfxdevice.h>
 
 namespace wg 
 {

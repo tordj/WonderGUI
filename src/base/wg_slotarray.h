@@ -22,13 +22,12 @@
 
 #ifndef WG_SLOTARRAY_DOT_H
 #define WG_SLOTARRAY_DOT_H
+#pragma once
 
 #include <stdlib.h>
 #include <memory.h>
 
-#ifndef WG_SLOT_DOT_H
-#	include <wg_slot.h>
-#endif
+#include <wg_slot.h>
 
 namespace wg 
 {

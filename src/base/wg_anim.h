@@ -22,18 +22,11 @@
 
 #ifndef WG_ANIM_DOT_H
 #define WG_ANIM_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_types.h>
+#include <wg_chain.h>
+#include <wg_pointers.h>
 
 namespace wg 
 {

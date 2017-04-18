@@ -22,30 +22,14 @@
 
 #ifndef WG_WIDGET_DOT_H
 #define WG_WIDGET_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
-#ifndef WG_RECEIVER_DOT_H
-#	include <wg_receiver.h>
-#endif
-
-#ifndef WG_ITEMHOLDER_DOT_H
-#	include <wg_itemholder.h>
-#endif
-
-#ifndef WG_WIDGETHOLDER_DOT_H
-#	include <wg_widgetholder.h>
-#endif
+#include <wg_types.h>
+#include <wg_string.h>
+#include <wg_skin.h>
+#include <wg_receiver.h>
+#include <wg_itemholder.h>
+#include <wg_widgetholder.h>
 
 namespace wg 
 {

@@ -21,12 +21,9 @@
 =========================================================================*/
 #ifndef WG_LAYER_DOT_H
 #define WG_LAYER_DOT_H
+#pragma once
 
-#ifndef WG_CONTAINER_DOT_H
-#	include <wg_container.h>
-#endif
-
-#include <wg_slot.h>
+#include <wg_container.h>
 #include <wg_childentry.h>
 
 

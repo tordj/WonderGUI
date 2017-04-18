@@ -22,6 +22,7 @@
 
 #ifndef	WG_GLSURFACE_DOT_H
 #define	WG_GLSURFACE_DOT_H
+#pragma once
 
 #define GL_GLEXT_PROTOTYPES 1
 
@@ -37,9 +38,7 @@
 #	endif
 #endif
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg_surface.h>
 
 namespace wg
 {

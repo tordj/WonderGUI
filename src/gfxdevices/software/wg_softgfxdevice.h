@@ -21,22 +21,12 @@
 =========================================================================*/
 #ifndef WG_SOFTGFXDEVICE_DOT_H
 #define WG_SOFTGFXDEVICE_DOT_H
+#pragma once
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef	WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
-
-#ifndef WG_SOFTSURFACE_DOT_H
-#	include <wg_softsurface.h>
-#endif
-
-#ifndef WG_SOFTSURFACEFACTORY_DOT_H
-#	include <wg_softsurfacefactory.h>
-#endif
+#include <wg_geo.h>
+#include <wg_gfxdevice.h>
+#include <wg_softsurface.h>
+#include <wg_softsurfacefactory.h>
 
 namespace wg 
 {

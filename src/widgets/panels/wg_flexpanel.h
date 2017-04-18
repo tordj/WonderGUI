@@ -22,12 +22,11 @@
 
 #ifndef WG_FLEXPANEL_DOT_H
 #define WG_FLEXPANEL_DOT_H
+#pragma once
 
 #include <vector>
 
-#ifndef WG_PANEL_DOT_H
-#	include <wg_panel.h>
-#endif
+#include <wg_panel.h>
 
 namespace wg 
 {

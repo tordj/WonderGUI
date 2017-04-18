@@ -21,18 +21,11 @@
 =========================================================================*/
 #ifndef WG_REFRESHBUTTON_DOT_H
 #define WG_REFRESHBUTTON_DOT_H
+#pragma once
 
-#ifndef WG_BUTTON_DOT_H
-#	include <wg_button.h>
-#endif
-
-#ifndef	WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
-#endif
-
-#ifndef WG_GFXANIM_DOT_H
-#	include <wg_gfxanim.h>
-#endif
+#include <wg_button.h>
+#include <wg_modtext.h>
+#include <wg_gfxanim.h>
 
 namespace wg 
 {

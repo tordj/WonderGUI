@@ -22,15 +22,11 @@
 
 #ifndef	WG_LINEEDITOR_DOT_H
 #define	WG_LINEEDITOR_DOT_H
+#pragma once
 
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef	WG_EDITTEXT_DOT_H
-#	include <wg_edittext.h>
-#endif
+#include <wg_widget.h>
+#include <wg_edittext.h>
 
 namespace wg 
 {

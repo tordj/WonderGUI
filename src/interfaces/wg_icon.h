@@ -22,30 +22,14 @@
 
 #ifndef	WG_ICON_DOT_H
 #define	WG_ICON_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
-#ifndef WG_ICONITEM_DOT_H
-#	include <wg_iconitem.h>
-#endif
+#include <wg_types.h>
+#include <wg_geo.h>
+#include <wg_interface.h>
+#include <wg_pointers.h>
+#include <wg_skin.h>
+#include <wg_iconitem.h>
 
 namespace wg 
 {

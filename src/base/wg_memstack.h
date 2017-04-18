@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef WG_MEMSTACK_DOT_H
 #define WG_MEMSTACK_DOT_H
+#pragma once
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg_chain.h>
 
 namespace wg 
 {
@@ -53,7 +52,7 @@ namespace wg
 			int		allocated;
 		};
 	
-		int						m_blockSize;
+		int					m_blockSize;
 		Chain<BlockHeader>	m_blocks;
 	};
 	

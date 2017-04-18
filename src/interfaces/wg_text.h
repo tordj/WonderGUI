@@ -22,22 +22,12 @@
 
 #ifndef WG_TEXT_DOT_H
 #define WG_TEXT_DOT_H
+#pragma once
 
-#ifndef WG_TEXTITEM_DOT_H
-#	include <wg_textitem.h>
-#endif
-
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
+#include <wg_textitem.h>
+#include <wg_interface.h>
+#include <wg_pointers.h>
+#include <wg_textstyle.h>
 
 namespace wg 
 {

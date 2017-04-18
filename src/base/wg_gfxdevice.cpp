@@ -21,8 +21,6 @@
 =========================================================================*/
 
 #include <wg_gfxdevice.h>
-
-#include <wg_surface.h>
 #include <wg_geo.h>
 #include <algorithm>
 

@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef WG_INTERFACE_DOT_H
 #define WG_INTERFACE_DOT_H
+#pragma once
 
 #include <wg_pointers.h>
 

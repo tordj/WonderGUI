@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef WG_BLOCKSKIN_DOT_H
 #define WG_BLOCKSKIN_DOT_H
+#pragma once
 
-#ifndef WG_EXTENDEDSKIN_DOT_H
-#	include <wg_extendedskin.h>
-#endif
-
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg_extendedskin.h>
+#include <wg_surface.h>
 
 namespace wg 
 {

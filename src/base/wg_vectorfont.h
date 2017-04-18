@@ -23,33 +23,19 @@
 
 #ifndef WG_VECTORFONT_DOT_H
 #define WG_VECTORFONT_DOT_H
+#pragma once
 
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif
+#include <wg_userdefines.h>
 
 #ifdef USE_FREETYPE
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg_types.h>
+#include <wg_chain.h>
 
 
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
-
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
-
-#ifndef WG_BLOB_DOT_H
-#	include <wg_blob.h>
-#endif
+#include <wg_font.h>
+#include <wg_surfacefactory.h>
+#include <wg_blob.h>
 
 struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;

@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef WG_SOFTSURFACE_DOT_H
 #define WG_SOFTSURFACE_DOT_H
+#pragma once
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg_surface.h>
 
 #include <vector>
 

@@ -22,14 +22,10 @@
 
 #ifndef WG_SCROLLBARTARGET_DOT_H
 #define WG_SCROLLBARTARGET_DOT_H
+#pragma once
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
+#include <wg_pointers.h>
+#include <wg_widget.h>
 
 namespace wg 
 {

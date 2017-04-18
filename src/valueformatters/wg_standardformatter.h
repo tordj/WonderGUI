@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef	WG_STANDARDFORMATTER_DOT_H
 #define WG_STANDARDFORMATTER_DOT_H
+#pragma once
 
 #include <wg_valueformatter.h>
 

@@ -22,6 +22,7 @@
 
 #ifndef	WG_VALUEDISPLAY_DOT_H
 #define	WG_VALUEDISPLAY_DOT_H
+#pragma once
 
 #	include <wg_widget.h>
 #	include <wg_modvalue.h>

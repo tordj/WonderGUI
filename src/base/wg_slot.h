@@ -23,10 +23,9 @@
 
 #ifndef WG_SLOT_DOT_H
 #define WG_SLOT_DOT_H
+#pragma once
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
+#include <wg_widget.h>
 
 namespace wg 
 {

@@ -22,19 +22,13 @@
 
 #ifndef	WG_TEXTITEM_DOT_H
 #define WG_TEXTITEM_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_TEXTBASEITEM_DOT_H
-#	include <wg_textbaseitem.h>
-#endif
+#include <wg_types.h>
+#include <wg_textbaseitem.h>
 
 
-#ifndef WG_BASE_DOT_H
-#	include <wg_base.h>
-#endif
+#include <wg_base.h>
 
 namespace wg 
 {

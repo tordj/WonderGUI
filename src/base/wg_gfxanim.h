@@ -22,22 +22,12 @@
 
 #ifndef WG_GFXANIM_DOT_H
 #define WG_GFXANIM_DOT_H
+#pragma once
 
-#ifndef WG_ANIM_DOT_H
-#	include <wg_anim.h>
-#endif
-
-#ifndef	WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_SURFACE_DOT_H
-#	include	<wg_surface.h>
-#endif
+#include <wg_anim.h>
+#include <wg_types.h>
+#include <wg_geo.h>
+#include	<wg_surface.h>
 
 namespace wg 
 {

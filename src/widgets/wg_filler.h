@@ -21,15 +21,11 @@
 =========================================================================*/
 #ifndef WG_FILLER_DOT_H
 #define WG_FILLER_DOT_H
+#pragma once
 
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg_widget.h>
+#include <wg_skin.h>
 
 namespace wg 
 {

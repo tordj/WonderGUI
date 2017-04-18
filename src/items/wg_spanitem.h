@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef	WG_SPANITEM_DOT_H
 #define WG_SPANITEM_DOT_H
+#pragma once
 
-#ifndef WG_ITEM_DOT_H
-#	include <wg_item.h>
-#endif
+#include <wg_item.h>
 
 namespace wg 
 {

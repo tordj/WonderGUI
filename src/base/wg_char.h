@@ -23,14 +23,11 @@
 
 #ifndef	WG_CHAR_DOT_H
 #define	WG_CHAR_DOT_H
+#pragma once
 
-#ifndef	WG_TYPES_DOT_H
-#	include "wg_types.h"
-#endif
+#include "wg_types.h"
 
-#ifndef WG_TEXTSTYLEMANAGER_DOT_H
-#	include "wg_textstylemanager.h"
-#endif
+#include "wg_textstylemanager.h"
 
 #include <wg_texttool.h>
 

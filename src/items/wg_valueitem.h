@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef	WG_VALUEITEM_DOT_H
 #define WG_VALUEITEM_DOT_H
+#pragma once
 
-#ifndef WG_TEXTBASEITEM_DOT_H
-#	include <wg_textbaseitem.h>
-#endif
-
-#ifndef WG_VALUEFORMATTER_DOT_H
-#	include <wg_valueformatter.h>
-#endif
+#include <wg_textbaseitem.h>
+#include <wg_valueformatter.h>
 
 namespace wg 
 {

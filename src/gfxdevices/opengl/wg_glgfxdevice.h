@@ -21,10 +21,9 @@
 =========================================================================*/
 #ifndef WG_GLGFXDEVICE_DOT_H
 #define WG_GLGFXDEVICE_DOT_H
+#pragma once
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
+#include <wg_geo.h>
 
 #ifdef WIN32
 #	include <GL/glew.h>
@@ -36,9 +35,7 @@
 #	endif
 #endif
 
-#ifndef	WG_GFXDEVICE_DOT_H
-#	include <wg_gfxdevice.h>
-#endif
+#include <wg_gfxdevice.h>
 
 
 namespace wg

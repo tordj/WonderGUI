@@ -1,17 +1,10 @@
 #ifndef WG_RULERLABELS_DOT_H
 #define WG_RULERLABELS_DOT_H
+#pragma once
 
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
-#endif
+#include <wg_widget.h>
+#include <wg_chain.h>
+#include <wg_modtext.h>
 
 namespace wg 
 {

@@ -22,11 +22,10 @@
 
 #ifndef WG_TEXTSTYLEMANAGER_DOT_H
 #define WG_TEXTSTYLEMANAGER_DOT_H
+#pragma once
 
 
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
+#include <wg_textstyle.h>
 
 namespace wg
 {

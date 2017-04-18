@@ -22,14 +22,10 @@
 
 #ifndef	WG_DUMMYFONT_DOT_H
 #define	WG_DUMMYFONT_DOT_H
+#pragma once
 
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
+#include <wg_geo.h>
+#include <wg_font.h>
 
 
 

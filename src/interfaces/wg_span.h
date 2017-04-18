@@ -22,18 +22,11 @@
 
 #ifndef WG_SPAN_DOT_H
 #define WG_SPAN_DOT_H
+#pragma once
 
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_SPANITEM_DOT_H
-#	include <wg_spanitem.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_interface.h>
+#include <wg_spanitem.h>
+#include <wg_pointers.h>
 
 namespace wg 
 {

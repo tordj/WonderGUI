@@ -22,39 +22,20 @@
 
 #ifndef WG_RESDB_DOT_H
 #define WG_RESDB_DOT_H
+#pragma once
 
 #include <string>
 #include <vector>
 #include <map>
 
 
-#ifndef WG_OBJECT_DOT_H
-#	include <wg_object.h>
-#endif
-
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
-#ifndef WG_GFXANIM_DOT_H
-#	include <wg_gfxanim.h>
-#endif
-
-#ifndef WG_CARET_DOT_H
-#	include <wg_caret.h>
-#endif
-
-#ifndef WG_TEXTSTYLE_DOT_H
-#	include <wg_textstyle.h>
-#endif
+#include <wg_object.h>
+#include <wg_widget.h>
+#include <wg_chain.h>
+#include <wg_skin.h>
+#include <wg_gfxanim.h>
+#include <wg_caret.h>
+#include <wg_textstyle.h>
 
 namespace wg 
 {

@@ -22,18 +22,11 @@
 
 #ifndef	WG_CHILDENTRY_DOT_H
 #define	WG_CHILDENTRY_DOT_H
+#pragma once
 
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_SLOT_DOT_H
-#	include <wg_slot.h>
-#endif
+#include <wg_interface.h>
+#include <wg_pointers.h>
+#include <wg_slot.h>
 
 
 namespace wg 

@@ -22,12 +22,11 @@
 
 #ifndef	WG_BLOB_DOT_H
 #define	WG_BLOB_DOT_H
+#pragma once
 
 #include <stddef.h>
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
+#include <wg_pointers.h>
 
 namespace wg 
 {

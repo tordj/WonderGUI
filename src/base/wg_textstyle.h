@@ -21,26 +21,13 @@
 =========================================================================*/
 #ifndef WG_TEXTSTYLE_DOT_H
 #define WG_TEXTSTYLE_DOT_H
+#pragma once
 
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_COLOR_DOT_H
-#	include <wg_color.h>
-#endif
-
-#ifndef WG_UTIL_DOT_H
-#	include <wg_util.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
-
-#ifndef WG_TEXTLINK_DOT_H
-#	include <wg_textlink.h>
-#endif
+#include <wg_pointers.h>
+#include <wg_color.h>
+#include <wg_util.h>
+#include <wg_font.h>
+#include <wg_textlink.h>
 
 namespace wg 
 {

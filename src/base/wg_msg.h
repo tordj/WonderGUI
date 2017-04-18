@@ -22,32 +22,16 @@
 
 #ifndef WG_MSG_DOT_H
 #define WG_MSG_DOT_H
+#pragma once
 
 #include <string>
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_USERDEFINES_DOT_H
-#	include <wg_userdefines.h>
-#endif
-
-#ifndef WG_GEO_DOT_H
-#	include <wg_geo.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_WIDGET_DOT_H
-#	include <wg_widget.h>
-#endif
-
-#ifndef WG_KEY_DOT_H
-#	include <wg_key.h>
-#endif
+#include <wg_types.h>
+#include <wg_userdefines.h>
+#include <wg_geo.h>
+#include <wg_pointers.h>
+#include <wg_widget.h>
+#include <wg_key.h>
 
 
 

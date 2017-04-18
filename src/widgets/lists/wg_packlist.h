@@ -21,14 +21,10 @@
 =========================================================================*/
 #ifndef WG_PACKLIST_DOT_H
 #define WG_PACKLIST_DOT_H
+#pragma once
 
-#ifndef WG_LIST_DOT_H
-#	include <wg_list.h>
-#endif
-
-#ifndef WG_COLUMNHEADER_DOT_H
-#	include <wg_columnheader.h>
-#endif
+#include <wg_list.h>
+#include <wg_columnheader.h>
 
 namespace wg 
 {

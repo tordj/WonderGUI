@@ -22,14 +22,10 @@
 
 #ifndef WG_EDITVALUE_DOT_H
 #define WG_EDITVALUE_DOT_H
+#pragma once
 
-#ifndef WG_MODVALUE_DOT_H
-#	include <wg_modvalue.h>
-#endif
-
-#ifndef WG_EDITVALUEITEM_DOT_H
-#	include <wg_editvalueitem.h>
-#endif
+#include <wg_modvalue.h>
+#include <wg_editvalueitem.h>
 
 
 namespace wg 

@@ -24,12 +24,9 @@
 
 #include <wg_base.h>
 #include <wg_msgrouter.h>
-
-#include <wg_textstylemanager.h>
-#include <wg_texttool.h>
+#include <wg_dummyfont.h>
 #include <wg_memstack.h>
 #include <wg_stdtextmapper.h>
-#include <wg_dummyfont.h>
 
 
 #ifdef USE_FREETYPE

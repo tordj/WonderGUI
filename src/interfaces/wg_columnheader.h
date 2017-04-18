@@ -22,34 +22,15 @@
 
 #ifndef	WG_COLUMNHEADER_DOT_H
 #define	WG_COLUMNHEADER_DOT_H
+#pragma once
 
-#ifndef WG_TYPES_DOT_H
-#	include <wg_types.h>
-#endif
-
-#ifndef WG_INTERFACE_DOT_H
-#	include <wg_interface.h>
-#endif
-
-#ifndef WG_POINTERS_DOT_H
-#	include <wg_pointers.h>
-#endif
-
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
-
-#ifndef WG_COLUMNHEADERITEM_DOT_H
-#	include <wg_columnheaderitem.h>
-#endif
-
-#ifndef WG_ICON_DOT_H
-#	include <wg_icon.h>
-#endif
-
-#ifndef WG_MODTEXT_DOT_H
-#	include <wg_modtext.h>
-#endif
+#include <wg_types.h>
+#include <wg_interface.h>
+#include <wg_pointers.h>
+#include <wg_skin.h>
+#include <wg_columnheaderitem.h>
+#include <wg_icon.h>
+#include <wg_modtext.h>
 
 namespace wg 
 {

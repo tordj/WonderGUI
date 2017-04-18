@@ -22,6 +22,7 @@
 
 #ifndef	WG_TYPES_DOT_H
 #define WG_TYPES_DOT_H
+#pragma once
 
 #include <stdint.h>			// Use the C99 official header
 

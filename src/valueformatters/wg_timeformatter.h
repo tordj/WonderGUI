@@ -21,6 +21,7 @@
 =========================================================================*/
 #ifndef	WG_TIMEFORMATTER_DOT_H
 #define WG_TIMEFORMATTER_DOT_H
+#pragma once
 
 #include <wg_valueformatter.h>
 
