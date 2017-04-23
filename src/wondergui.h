@@ -59,7 +59,6 @@
 #include <wg_types.h>
 #include <wg_userdefines.h>
 #include <wg_util.h>
-#include <wg_valueformat.h>
 #include <wg_vectorfont.h>
 #include <wg_panel.h>
 #include <wg_inputhandler.h>

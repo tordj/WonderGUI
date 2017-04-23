@@ -135,7 +135,7 @@ int main ( int argc, char** argv )
 
 	Button_p pButton = Button::create();
 	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) ) );
-	pFlexPanel->children.addMovable(pButton, { 0,0,80,33 }, Origo::Center);
+	pFlexPanel->children.addMovable(pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
 	// Finally we add a callback to the click-event of the button.
 

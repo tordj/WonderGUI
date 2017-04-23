@@ -178,7 +178,6 @@
     <File Name="../../src/base/wg_caret.h"/>
     <File Name="../../src/base/wg_chain.cpp"/>
     <File Name="../../src/base/wg_chain.h"/>
-    <File Name="../../src/base/wg_char.cpp"/>
     <File Name="../../src/base/wg_char.h"/>
     <File Name="../../src/base/wg_charbuffer.cpp"/>
     <File Name="../../src/base/wg_charbuffer.h"/>
@@ -256,7 +255,6 @@
     <File Name="../../src/base/wg_util.h"/>
     <File Name="../../src/base/wg_vectorfont.cpp"/>
     <File Name="../../src/base/wg_vectorfont.h"/>
-    <File Name="../../src/base/wg_widgetholder.cpp"/>
     <File Name="../../src/base/wg_widgetholder.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">

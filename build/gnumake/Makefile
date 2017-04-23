@@ -73,7 +73,6 @@ BASE = wg_anim.o \
   wg_blob.o \
   wg_caret.o \
   wg_chain.o \
-  wg_char.o \
   wg_charbuffer.o \
   wg_charseq.o \
   wg_codepages.o \
@@ -84,8 +83,6 @@ BASE = wg_anim.o \
   wg_geo.o \
   wg_gfxanim.o \
   wg_gfxdevice.o \
-  wg_hook.o \
-  wg_hookptr.o \
   wg_inputhandler.o \
   wg_mempool.o \
   wg_memstack.o \
@@ -113,13 +110,6 @@ BASE = wg_anim.o \
   wg_vectorfont.o
 
 INTERFACES = wg_columnheader.o \
-  wg_edittext.o \
-  wg_editvalue.o \
-  wg_icon.o \
-  wg_interface.o \
-  wg_iwidgets.o \
-  wg_modspan.o \
-  wg_modtext.o \
   wg_modvalue.o \
   wg_slidespan.o \
   wg_span.o \
@@ -183,15 +173,13 @@ LAYERS = wg_layer.o \
 
 LISTS = wg_list.o \
   wg_packlist.o 
-#  wg_tablelist.o
 
 PANELS = wg_flexpanel.o \
   wg_packpanel.o \
   wg_panel.o \
   wg_rootpanel.o \
   wg_scrollpanel.o \
-  wg_stackpanel.o \
-  wg_vectorpanel.o
+  wg_stackpanel.o
 
 lib_files = $(BASE) $(INTERFACES) $(ITEMS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
 
