@@ -146,7 +146,7 @@ namespace wg
 		 * Therefore, widgets with potentially thousands of children should implement their 
 		 * own _findWidget(), which probably will be faster than just a revers loop anyway.
 		*/
-		
+
 		SlotWithGeo	child;
 		_firstSlotWithGeo(child);
 		
@@ -156,8 +156,12 @@ namespace wg
 		{
 			if( child.geo.contains( ofs ) )
 			{
-				if( child.pSlot->pWidget->isContainer() )
-					pResult = static_cast<Container*>(child.pSlot->pWidget)->_findWidget( ofs - child.geo.pos(), mode );
+				if (child.pSlot->pWidget->isContainer())
+				{
+					Widget * pRes = static_cast<Container*>(child.pSlot->pWidget)->_findWidget(ofs - child.geo.pos(), mode);
+					if (pRes)
+						pResult = pRes;
+				}
 				else if( mode == SearchMode::Geometry || child.pSlot->pWidget->markTest( ofs - child.geo.pos() ) )
 					pResult = child.pSlot->pWidget;
 			}

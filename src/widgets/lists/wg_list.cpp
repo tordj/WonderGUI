@@ -181,6 +181,8 @@ namespace wg
 			}
 			case MsgType::MousePress:
 			{
+				grabFocus();
+
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{

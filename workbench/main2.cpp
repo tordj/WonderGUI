@@ -248,9 +248,14 @@ int main ( int argc, char** argv )
 	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
 */
 
+	Button_p pImage0 = Button::create();
+	pImage0->setSkin(pSimpleButtonSkin);
+	pFlexPanel->children.addMovable(pImage0, Rect(0, 0, 80 * 2, 33 * 2), Origo::East, Origo::East);
+
+
 	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->children.addMovable( pImage, Rect(0,0,80,33), Origo::Center, Origo::Center );
+	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
 //	pFlexPanel->children.addPinned(pImage, { Origo::Center,-100,-20 }, { Origo::SouthEast, -10, -10 } );
 
 
@@ -393,8 +398,9 @@ int main ( int argc, char** argv )
 
 		pScrollPanel->view = pList;
 
-		pScrollPanel->setStepFunc([](Direction dir, int steps) { return 10*steps; });
-		pScrollPanel->setJumpFunc([](Direction dir, int steps) { return 100*steps; });
+//		pScrollPanel->setStepFunc([](Direction dir, int steps) { return 10*steps; });
+//		pScrollPanel->setJumpFunc([](Direction dir, int steps) { return 100*steps; });
+		pScrollPanel->setWheelRollFunc([](Direction dir, int steps) { return 1*steps; });
 
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
@@ -586,8 +592,8 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 			case SDL_MOUSEWHEEL:
 			{
 				Coord distance( e.wheel.x, e.wheel.y );
-//				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
-//					distance *= -1;
+				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
+					distance *= -1;
 			
 				pInput->setWheelRoll( 1, distance );
 				break;

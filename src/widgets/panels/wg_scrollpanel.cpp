@@ -31,6 +31,7 @@ namespace wg
 {
 	const char ScrollPanel::CLASSNAME[] = {"ScrollPanel"};
 
+
 	float ViewSlot::windowFractionX() const
 	{
 		if (contentSize.w == 0)
@@ -423,8 +424,6 @@ namespace wg
 		m_scrollbarSlots[0].placement = Direction::Down;
 		m_scrollbarSlots[1].placement = Direction::Right;
 
-
-
 		m_scrollbarTargets[0].m_bHorizontal = false;
 		m_scrollbarTargets[0].m_pParent = this;
 	
@@ -433,6 +432,7 @@ namespace wg
 	
 		m_pStepFunction = nullptr;
 		m_pJumpFunction = nullptr;
+		m_pWheelRollFunction = nullptr;
 	
 		m_bOverlayScrollbars	= false;	
 		m_wheelForScroll	= 1;
@@ -487,11 +487,22 @@ namespace wg
 		m_pJumpFunction = function;
 	}
 
+	//____ setWheelRollFunc() ____________________________________________________
+
+	void ScrollPanel::setWheelRollFunc(std::function<int(Direction, int steps)> function)
+	{
+		m_pWheelRollFunction = function;
+	}
+
 	//____ _step() _______________________________________________________________
 
-	bool ScrollPanel::_step(Direction dir)
+	bool ScrollPanel::_step(Direction dir, int nSteps)
 	{
-		int offset = m_pStepFunction(dir, 1);
+		int offset;
+		if (m_pStepFunction)
+			offset = m_pStepFunction(dir, nSteps);
+		else
+			offset = _defaultStepFunction(dir, 1);
 
 		Coord pos = m_viewSlot.viewPixOfs;
 
@@ -515,9 +526,13 @@ namespace wg
 
 	//____ _jump() _______________________________________________________________
 
-	bool ScrollPanel::_jump(Direction dir)
+	bool ScrollPanel::_jump(Direction dir, int nJumps)
 	{
-		int offset = m_pJumpFunction(dir, 1);
+		int offset;
+		if (m_pJumpFunction)
+			offset = m_pJumpFunction(dir, 1);
+		else
+			offset = _defaultJumpFunction(dir, 1);
 
 		Coord pos = m_viewSlot.viewPixOfs;
 
@@ -539,35 +554,72 @@ namespace wg
 		return _setWindowPos(pos);
 	}
 
+	//____ _wheelRoll() ___________________________________________________________
 
-	//____ _wheelRollX() ___________________________________________________________
-	
-	bool ScrollPanel::_wheelRollX(int distance)
+	bool ScrollPanel::_wheelRoll(Direction dir, int steps)
 	{
-		int ofs;
+		int offset;
+		if (m_pWheelRollFunction)
+		{
+			offset = m_pWheelRollFunction(dir, 1);
 
-		if( distance < 0 )
-			ofs = m_pStepFunction(Direction::Up, distance*3);
+			Coord pos = m_viewSlot.viewPixOfs;
+
+			switch (dir)
+			{
+			case Direction::Up:
+				pos.y -= offset;
+				break;
+			case Direction::Down:
+				pos.y += offset;
+				break;
+			case Direction::Left:
+				pos.x -= offset;
+				break;
+			case Direction::Right:
+				pos.x += offset;
+				break;
+			}
+			return _setWindowPos(pos);
+		}
 		else
-			ofs = m_pStepFunction(Direction::Down, distance * 3);
-	
-		return view.setWindowPos( Coord(m_viewSlot.viewPixOfs.x + ofs, m_viewSlot.viewPixOfs.y) );
+			return _step(dir,steps*3);
 	}
 	
-	//____ _wheelRollY() ___________________________________________________________
-	
-	bool ScrollPanel::_wheelRollY(int distance)
+	//____ _defaultStepFunction() ________________________________________________
+
+	int ScrollPanel::_defaultStepFunction(Direction dir, int steps)
 	{
-		int ofs;
+		// Default is 10% of window size 
 
-		if (distance < 0)
-			ofs = m_pStepFunction(Direction::Left, distance * 3);
+		int windowLen;
+		if( dir == Direction::Up || dir == Direction::Down )
+			windowLen = m_viewSlot.paddedWindowPixelLenY();
 		else
-			ofs = m_pStepFunction(Direction::Right, distance * 3);
+			windowLen = m_viewSlot.paddedWindowPixelLenX();
 
-		return view.setWindowPos(Coord(m_viewSlot.viewPixOfs.x, m_viewSlot.viewPixOfs.y + ofs));
+		return max(1, windowLen*steps / 10 );
 	}
-	
+
+	//____ _defaultJumpFunction() ________________________________________________
+
+	int ScrollPanel::_defaultJumpFunction(Direction dir, int steps)
+	{
+		// Default is window size minus one step.
+
+		int windowLen;
+		if (dir == Direction::Up || dir == Direction::Down)
+			windowLen = m_viewSlot.paddedWindowPixelLenY();
+		else
+			windowLen = m_viewSlot.paddedWindowPixelLenX();
+
+		if (m_pStepFunction)
+			windowLen -= m_pStepFunction(dir, 1);
+		else
+			windowLen -= _defaultStepFunction(dir, 1);
+
+		return windowLen*steps;
+	}
 
 	
 	//____ setOverlayScrollbars() ____________________________________________________
@@ -1016,10 +1068,15 @@ namespace wg
 					if( m_viewSlot.windowGeo.contains( toLocal(pMsg->pointerPos())) )
 					{
 						Coord dist = pMsg->distance();
-						if( dist.x != 0 )
-							_wheelRollX( dist.x );
-						if( dist.y != 0 )
-							_wheelRollY( dist.y );
+						if( dist.x < 0 )
+							_wheelRoll( Direction::Left, -dist.x );
+						if (dist.x > 0)
+							_wheelRoll(Direction::Right, dist.x);
+
+						if (dist.y < 0)
+							_wheelRoll(Direction::Up, -dist.y);
+						if (dist.y > 0)
+							_wheelRoll(Direction::Down, dist.y);
 					}		
 					_pMsg->swallow();
 				}
@@ -1244,7 +1301,7 @@ namespace wg
 		//
 	}
 	
-	//______________________________________________________________________________
+	//____ _setScrollWheel() ___________________________________________________
 	bool ScrollPanel::setScrollWheel( int wheel )
 	{
 		m_wheelForScroll = wheel;
@@ -1399,7 +1456,8 @@ namespace wg
 		}
 	}
 
-	//_____________________________________________________________________________
+	//____ _firstChild() ______________________________________________________
+
 	Widget * ScrollPanel::_firstChild() const
 	{
 		if (m_viewSlot.pWidget)
@@ -1410,7 +1468,8 @@ namespace wg
 			return m_scrollbarSlots[1].pWidget;
 	}
 	
-	//_____________________________________________________________________________
+	//____ _lastChild() _______________________________________________________
+
 	Widget * ScrollPanel::_lastChild() const
 	{
 		if (m_scrollbarSlots[1].pWidget)
@@ -1422,7 +1481,8 @@ namespace wg
 	}
 	
 	
-	//_____________________________________________________________________________
+	//____ _firstSlotWithGeo() ___________________________________________________
+
 	void ScrollPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		if( m_viewSlot.pWidget )
@@ -1443,7 +1503,8 @@ namespace wg
 		package.pSlot = nullptr;
 	}
 	
-	//_____________________________________________________________________________
+	//____ _nextSlotWithGeo() ____________________________________________________
+
 	void ScrollPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		for (int i = 1; i >= 0; i++)
@@ -1525,12 +1586,18 @@ namespace wg
 	{
 		if( m_bHorizontal )
 		{
-			m_pParent->_wheelRollX(distance);
+			if( distance < 0 )
+				m_pParent->_wheelRoll(Direction::Left, -distance);
+			else
+				m_pParent->_wheelRoll(Direction::Left, distance);
 			return m_pParent->m_viewSlot.windowOffsetX();
 		}
 		else
 		{	
-			m_pParent->_wheelRollY(distance);
+			if (distance < 0)
+				m_pParent->_wheelRoll(Direction::Up, -distance);
+			else
+				m_pParent->_wheelRoll(Direction::Down, distance);
 			return m_pParent->m_viewSlot.windowOffsetY();
 		}
 	}

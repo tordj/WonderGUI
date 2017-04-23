@@ -130,6 +130,7 @@ namespace wg
 		void			_refresh();
 	
 		void			_receive( const Msg_p& pMsg );
+		Size			_windowPadding() const;
 
 
 		// Overloaded from ListChildrenHolder
@@ -197,7 +198,6 @@ namespace wg
 		void			_getChildGeo( Rect& geo, const PackListSlot * pSlot ) const;
 		int				_getEntryAt( int pixelofs ) const;
 		Rect			_headerGeo() const;
-		Size			_windowPadding() const;
 	
 		void			_refreshHeader();
 		void			_refreshList();

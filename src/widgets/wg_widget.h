@@ -350,16 +350,36 @@ namespace wg
 		return Rect(0,0,m_size); 
 	}
 	
-	
+	/** @brief Get keyboard focus.
+	*
+	* Attempt to get keyboard focus. This can be blocked by parent or further up the hierarchy.
+	* Widget needs to descend from a RootPanel in order to be able to get keyboard focus.
+	*
+	* @return True if widget has focus now, no matter if it already had focus or not before the call.
+	*/
+
 	bool Widget::grabFocus() 
-	{ 
+	{
+		if (m_state.isFocused())
+			return true;
+
 		if( m_pHolder ) 
 			return m_pHolder->_childRequestFocus( m_pSlot, this ); 
 		return false; 
 	}
 	
-	bool Widget::releaseFocus() 
+	/** @brief Release keyboard focus.
+	*
+	* Attempt to release keyboard focus, returning it to previous widget being focused.
+	*
+	* @return True if widget no longer has focus, no matter if it had focus or not before the call.
+	*/
+
+	bool Widget::releaseFocus()
 	{ 
+		if (!m_state.isFocused())
+			return true;
+
 		if( m_pHolder ) 
 			return m_pHolder->_childReleaseFocus( m_pSlot, this ); 
 		return false; 

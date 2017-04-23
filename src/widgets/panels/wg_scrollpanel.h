@@ -214,6 +214,7 @@ namespace wg
 
 		void		setStepFunc(std::function<int (Direction,int steps)> func );
 		void		setJumpFunc(std::function<int (Direction, int steps)> func);
+		void		setWheelRollFunc(std::function<int(Direction, int steps)> func);
 
 		//.____ Appearance _________________________________________________
 
@@ -312,14 +313,17 @@ namespace wg
 		bool		_setWindowOffset(CoordF ofs);
 
 
-		bool		_step(Direction dir);
-		bool		_jump(Direction dir);
-		bool		_wheelRollX(int distance);
-		bool		_wheelRollY(int distance);
+		bool		_step(Direction dir, int nSteps = 1);
+		bool		_jump(Direction dir, int nJumps = 1);
+		bool		_wheelRoll(Direction dir, int nSteps = 1);
+
+		int			_defaultStepFunction(Direction dir, int steps);
+		int			_defaultJumpFunction(Direction dir, int steps);
 
 
-		std::function<int(Direction, int steps)> m_pStepFunction;
-		std::function<int(Direction, int steps)> m_pJumpFunction;
+		std::function<int(Direction dir, int steps)> m_pStepFunction;
+		std::function<int(Direction dir, int steps)> m_pJumpFunction;
+		std::function<int(Direction dir, int steps)> m_pWheelRollFunction;
 
 
 		ViewSlot	m_viewSlot;
