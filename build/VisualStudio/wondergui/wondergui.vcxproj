@@ -121,7 +121,6 @@
     <ClInclude Include="..\..\..\src\base\wg_sizescaler.h" />
     <ClInclude Include="..\..\..\src\base\wg_slot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h" />
-    <ClInclude Include="..\..\..\src\base\wg_slotcan.h" />
     <ClInclude Include="..\..\..\src\base\wg_string.h" />
     <ClInclude Include="..\..\..\src\base\wg_surface.h" />
     <ClInclude Include="..\..\..\src\base\wg_surfacefactory.h" />

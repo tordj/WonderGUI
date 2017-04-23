@@ -43,8 +43,8 @@ namespace wg
 	
 
 	//____ PanelSlot ____________________________________________________________
-	
-	class PanelSlot : public Slot
+
+	class PanelSlot : public Slot 	/** @private */
 	{
 	public:
 		PanelSlot() : bVisible(false) {}
@@ -59,9 +59,9 @@ namespace wg
 		Border		padding;
 	};
 
-	//____ PanelChildrenHolder ____________________________________________________________
+	//____ PanelSlotsHolder ____________________________________________________________
 
-	class PanelSlotsHolder : public ChildGroupHolder
+	class PanelSlotsHolder : public ChildGroupHolder  /** @private */
 	{
 		virtual void	_hideSlots( PanelSlot * pSlot, int nb ) = 0;
 		virtual void	_unhideSlots( PanelSlot * pSlot, int nb ) = 0;

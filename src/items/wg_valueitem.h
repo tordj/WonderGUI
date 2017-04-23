@@ -29,9 +29,9 @@
 namespace wg 
 {
 	
-		//____ ValueItem ____________________________________________________________
-	
-	class ValueItem : public TextBaseItem
+	//____ ValueItem ____________________________________________________________
+
+	class ValueItem : public TextBaseItem		/** @private */
 	{
 	public:
 		ValueItem(ItemHolder * pHolder);

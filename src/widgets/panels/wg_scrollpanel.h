@@ -35,22 +35,14 @@
 
 namespace wg 
 {
-	
-	class ScrollPanel;
-	
+		
 	class ScrollPanel;
 	typedef	StrongPtr<ScrollPanel,Panel_p>	ScrollPanel_p;
 	typedef	WeakPtr<ScrollPanel,Panel_wp>	ScrollPanel_wp;
 
-/*
-	class ScrollMethod
-	{
-	public:
-		virtual int operator() (Direction dir, int steps) = 0;
-	};
-*/
+	//____ ScrollbarSlot ______________________________________________________
 
-	class ScrollbarSlot : public PanelSlot
+	class ScrollbarSlot : public PanelSlot		/** @private */
 	{
 	public:
 		ScrollbarSlot() : bAutoHide(false), bAutoScroll(false) {}
@@ -61,7 +53,9 @@ namespace wg
 		Direction		placement;
 	};
 
-	class ViewSlot : public PanelSlot
+	//____ ViewSlot ______________________________________________________
+
+	class ViewSlot : public PanelSlot		/** @private */
 	{
 	public:
 		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
@@ -95,6 +89,7 @@ namespace wg
 		Coord			viewPixOfs;
 	};
 
+	//____ ViewEntry ______________________________________________________
 
 	class ViewEntry : public ChildEntry<ViewSlot, ScrollPanel>
 	{
@@ -127,6 +122,8 @@ namespace wg
 		bool		step( Direction dir );
 		bool		jump( Direction dir );
 	};
+
+	//____ ScrollbarEntry ______________________________________________________
 
 	class ScrollbarEntry : public Interface
 	{

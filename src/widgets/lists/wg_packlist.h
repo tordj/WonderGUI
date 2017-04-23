@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ PackListSlot ____________________________________________________________
 
-	class PackListSlot : public ListSlot
+	class PackListSlot : public ListSlot	/** @private */
 	{
 	public:
 		PackListSlot() {}

@@ -37,8 +37,8 @@ namespace wg
 
 	
 	//____ LayerSlot ___________________________________________________________
-	
-	class LayerSlot : public Slot
+
+	class LayerSlot : public Slot		/** @private */
 	{
 	public:
 		Rect	geo;

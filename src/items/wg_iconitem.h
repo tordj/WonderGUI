@@ -34,8 +34,8 @@ namespace wg
 		
 	
 	//____ IconItem _____________________________________________________________
-	
-	class IconItem : public Item
+
+	class IconItem : public Item	/** @private */
 	{
 	public:
 		IconItem( ItemHolder * pHolder );

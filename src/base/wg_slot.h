@@ -30,7 +30,7 @@
 namespace wg 
 {
 
-	class Slot
+	class Slot		/** @private */
 	{
 	public:
 		Slot() : pWidget(nullptr) {}

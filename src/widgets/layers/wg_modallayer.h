@@ -35,8 +35,8 @@ namespace wg
 	typedef	WeakPtr<ModalLayer, Layer_wp>	ModalLayer_wp;
 
 	//____ ModalSlot ___________________________________________________________
-	
-	class ModalSlot : public LayerSlot
+
+	class ModalSlot : public LayerSlot		/** @private */
 	{
 	public:
 		ModalSlot() : origo(Origo::NorthWest) {}

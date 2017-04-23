@@ -23,7 +23,7 @@ namespace wg
 	class Link;
 	
 	//____ Class ChainImp _________________________________________________________
-	
+	/** \internal */
 	class ChainImp
 	{
 		friend	class Link;
@@ -60,7 +60,8 @@ namespace wg
 	
 	
 	//____ Class Chain ____________________________________________________________
-	
+	/** \internal */
+
 	template<class T>
 	class Chain : public ChainImp
 	{

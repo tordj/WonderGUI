@@ -38,8 +38,8 @@ namespace wg
 
 
 	//____ StackPanelSlot ____________________________________________________________
-	
-	class StackPanelSlot : public PanelSlot
+
+	class StackPanelSlot : public PanelSlot		/** @private */
 	{
 	public:
 		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Default) {}
