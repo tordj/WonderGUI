@@ -35,15 +35,30 @@ namespace wg
 	class BoxSkin : public ExtendedSkin
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static BoxSkin_p	create();
-		static BoxSkin_p create( Color color, Border frame, Color frameColor );
-		~BoxSkin() {};
+		static BoxSkin_p 	create( Color color, Border frame, Color frameColor );
+
+		//.____ Identification __________________________________________
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static BoxSkin_p	cast( const Object_p& pObject );
+
+		//.____ Rendering ________________________________________________
+
+		void render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
+
+		//.____ Geometry _________________________________________________
 	
+		Size	minSize() const;
+		Size	preferredSize() const;
+		Size	sizeForContent( const Size contentSize ) const;
+
+		//.____ Appearance _________________________________________________
+
 		void	setColor( Color color );
 		void	setFrameColor( Color color );
 		void	setFrameThickness( Border frame );
@@ -52,12 +67,9 @@ namespace wg
 		void	setStateColor( StateEnum state, Color color );
 		void	setStateColor( StateEnum state, Color color, Color frameColor );
 	
-		void render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
 		
-		Size	minSize() const;
-		Size	preferredSize() const;
-	
-		Size	sizeForContent( const Size contentSize ) const;
+		//.____ Misc ____________________________________________________
+
 		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
 	
 		bool	isOpaque() const;
@@ -69,6 +81,8 @@ namespace wg
 	private:
 		BoxSkin();
 		BoxSkin( Color color, Border frame, Color frameColor );
+		~BoxSkin() {};
+
 		void	_updateOpaqueFlag();
 	
 		bool		m_bOpaque;

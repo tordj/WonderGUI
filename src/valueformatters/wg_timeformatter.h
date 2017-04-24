@@ -44,15 +44,20 @@ namespace wg
 	class TimeFormatter : public ValueFormatter
 	{
 	public:
+		//.____ Creation __________________________________________
+
+		static TimeFormatter_p	create() { return TimeFormatter_p(new TimeFormatter()); }
+		static TimeFormatter_p	create( const CharSeq& format24 ) { return TimeFormatter_p(new TimeFormatter(format24)); }
+		static TimeFormatter_p	create( const CharSeq& formatAM, const CharSeq& formatPM ) { return TimeFormatter_p(new TimeFormatter(formatAM,formatPM)); }
+
+		//.____ Identification __________________________________________
 		
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static TimeFormatter_p	cast( const Object_p& pObject );
 	
-		static TimeFormatter_p	create() { return TimeFormatter_p(new TimeFormatter()); }
-		static TimeFormatter_p	create( const CharSeq& format24 ) { return TimeFormatter_p(new TimeFormatter(format24)); }
-		static TimeFormatter_p	create( const CharSeq& formatAM, const CharSeq& formatPM ) { return TimeFormatter_p(new TimeFormatter(formatAM,formatPM)); }
+		//.____ Misc __________________________________________________
 	
 		String 		format( int64_t value, int scale ) const;
 		String 		format( double value ) const;

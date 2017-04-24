@@ -34,13 +34,19 @@ namespace wg
 	class ScalePreferredSizeBroker : public SizeBroker
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static ScalePreferredSizeBroker_p	create() { return ScalePreferredSizeBroker_p(new ScalePreferredSizeBroker()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ScalePreferredSizeBroker_p	cast( const Object_p& pObject );
 	
+		//.____ Misc __________________________________________________
+
 		int setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const;
 		int setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const;
 		bool mayAlterPreferredLengths() const;

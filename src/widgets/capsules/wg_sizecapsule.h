@@ -41,13 +41,19 @@ namespace wg
 	class SizeCapsule : public Capsule, public Scalable
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static SizeCapsule_p	create() { return SizeCapsule_p(new SizeCapsule()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static SizeCapsule_p	cast( const Object_p& pObject );
 	
+		//.____ Geometry _________________________________________________
+		
 		void	setSizes( Size min, Size preferred, Size max );
 	
 		void	setPreferredSize( Size size );

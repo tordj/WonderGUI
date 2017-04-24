@@ -40,10 +40,14 @@ namespace wg
 	{
 	public:
 		
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		//.____ Identification __________________________________________
+		
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static ValueFormatter_p	cast( const Object_p& pObject );
+
+		//.____ Misc __________________________________________________
 	
 		virtual String format( int64_t value, int scale ) const = 0;
 		virtual String format( double value ) const = 0;

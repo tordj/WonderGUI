@@ -43,18 +43,19 @@ namespace wg
 	{
 	
 	public:
+
+		//.____ Components _______________________________________
+
+		ChildEntry<Slot,Capsule> child;
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( const Object_p& pObject );
 
-		//____ Interfaces ______________________________________
-
-		ChildEntry<Slot,Capsule> child;
-
-
-
-		// Overloaded from Widget
+		//.____ Geometry _________________________________________________
 	
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;

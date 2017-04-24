@@ -38,13 +38,19 @@ namespace wg
 	class StandardFormatter : public ValueFormatter
 	{
 	public:	
+		//.____ Creation __________________________________________
+
+		static StandardFormatter_p	create() { return StandardFormatter_p(new StandardFormatter()); }
+		static StandardFormatter_p	create( const CharSeq& format ) { return StandardFormatter_p(new StandardFormatter(format)); }
+
+		//.____ Identification __________________________________________
+
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
 		static StandardFormatter_p	cast( const Object_p& pObject );
 	
-		static StandardFormatter_p	create() { return StandardFormatter_p(new StandardFormatter()); }
-		static StandardFormatter_p	create( const CharSeq& format ) { return StandardFormatter_p(new StandardFormatter(format)); }
+		//.____ Misc __________________________________________________
 	
 		String 		format( int64_t value, int scale ) const;
 		String 		format( double value ) const;

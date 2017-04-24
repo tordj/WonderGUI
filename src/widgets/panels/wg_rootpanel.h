@@ -60,25 +60,48 @@ namespace wg
 		friend class ChildEntry<Slot,RootPanel>;
 	
 	public:
+
+		//.____ Creation __________________________________________
+
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
 		static RootPanel_p	create( const GfxDevice_p& pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
+
+		//.____ Components ____________________________________
+
+		ChildEntry<Slot,RootPanel>	child;
+
+		//.____ Identification __________________________________________
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static RootPanel_p	cast( const Object_p& pObject );
 	
-		//____ Interfaces ___________________________________________________________
+		//.____ Geometry _________________________________________________
 
-		ChildEntry<Slot,RootPanel>	child;
-
-		bool				setGfxDevice( const GfxDevice_p& pDevice );
-		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
-	
 		bool				setGeo( const Rect& geo );
 		Rect				geo() const;
+
+		//.____ State _________________________________________________
+
+		bool				setVisible( bool bVisible );							//TODO: Implement!!!
+		bool				isVisible() const { return m_bVisible; }
+
+		inline Widget_p		focusedChild() const { return _focusedChild(); }
+
+		//.____ Rendering ________________________________________________
+
+
+		bool		render();
+		bool		render( const Rect& clip );
 	
-	
+		bool		beginRender();
+		bool		renderSection( const Rect& clip );
+		bool		endRender();
+
+
+		//.____ Debug __________________________________________________________
+
 		void				setDebugMode( bool onOff );
 		bool				isDebugMode() const { return m_bDebugMode; }
 		void 				setDebugOverlay(const Skin_p& pOverlaySkin );
@@ -86,12 +109,11 @@ namespace wg
 		Skin_p				debugOverlay() const { return m_pDebugOverlay;  }
 		int					debugAfterglow() const { return m_afterglowFrames;  }
 	
-		bool				setVisible( bool bVisible );							//TODO: Implement!!!
-		bool				isVisible() const { return m_bVisible; }
+		//.____ Misc ___________________________________________________________
 	
-		
-		inline Widget_p		focusedChild() const { return _focusedChild(); }
-	
+		bool				setGfxDevice( const GfxDevice_p& pDevice );
+		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
+			
 	
 		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 	
@@ -100,14 +122,6 @@ namespace wg
 	
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
 		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
-	
-	
-		bool		render();
-		bool		render( const Rect& clip );
-	
-		bool		beginRender();
-		bool		renderSection( const Rect& clip );
-		bool		endRender();
 	
 		inline void	addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
 	

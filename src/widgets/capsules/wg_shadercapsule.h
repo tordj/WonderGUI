@@ -36,15 +36,21 @@ namespace wg
 	class ShaderCapsule : public Capsule
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static ShaderCapsule_p	create() { return ShaderCapsule_p(new ShaderCapsule()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
+		//.____ Identification __________________________________________
+
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static ShaderCapsule_p	cast( const Object_p& pObject );
+
+		//.____ Appearance _________________________________________________
 	
-		void		setTintColor( Color color, BlendMode operation = BlendMode::Replace );
-		void		setRenderMode( BlendMode mode );
+		void				setTintColor( Color color, BlendMode operation = BlendMode::Replace );
+		void				setRenderMode( BlendMode mode );
 	
 		inline Color		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }

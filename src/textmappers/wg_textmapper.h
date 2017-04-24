@@ -47,10 +47,14 @@ namespace wg
 	class TextMapper : public Receiver
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextMapper_p	cast( const Object_p& pObject );
+
+		//.____ Internal __________________________________________
 	
 		virtual void	addItem( TextBaseItem * pItem ) = 0;
 		virtual void	removeItem( TextBaseItem * pItem ) = 0;

@@ -37,33 +37,45 @@ namespace wg
 	class ColorSkin : public Skin
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static ColorSkin_p create( Color col );
-		~ColorSkin() {};
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ColorSkin_p	cast( const Object_p& pObject );
 	
+		//.____ Rendering ________________________________________________
+		
 		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
-		bool	isOpaque() const;
-		bool	isOpaque(State state) const;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+
+		//.____ Geometry _________________________________________________
 	
 		Size	minSize() const;
 		Size	preferredSize() const;
+		Size	sizeForContent( const Size contentSize ) const;
 	
 		Size	contentPadding() const;
-		Size	sizeForContent( const Size contentSize ) const;
 		Coord	contentOfs( State state ) const;
 		Rect	contentRect( const Rect& canvas, State state ) const;
 	
+
+		//.____ Misc ____________________________________________________
+
 		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
+
+		bool	isOpaque() const;
+		bool	isOpaque(State state) const;
+		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 	
 		bool	isStateIdentical( State state, State comparedTo ) const;
 	
 	private:
 		ColorSkin( Color col );
+		~ColorSkin() {};
 	
 		Color		m_color;
 		

@@ -38,18 +38,28 @@ namespace wg
 	class StdTextMapper : public TextMapper
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static StdTextMapper_p create() { return StdTextMapper_p(new StdTextMapper()); }
+
+		//.____ Identification __________________________________________
 	
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
-		static const char			CLASSNAME[];
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static StdTextMapper_p	cast( const Object_p& pObject );
+	
+		//.____ Behavior __________________________________________________
 	
 		void			setAlignment( Origo alignment );
 		Origo			alignment() const { return m_alignment; }
 
+		//.____ Misc __________________________________________________
+
 		void			setCaret( const Caret_p& pCaret );
 		Caret_p			caret() const { return m_pCaret; }
+
+		//.____ Appearance _________________________________________________
 
 		void			setSelectionBack(Color color, BlendMode renderMode = BlendMode::Replace );
 
@@ -61,6 +71,8 @@ namespace wg
 		Color			selectionCharColor() { return m_selectionCharColor; }
 		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
 
+
+		//.____ Internal __________________________________________
 
 		virtual void	addItem( TextBaseItem * pItem );
 		virtual void	removeItem( TextBaseItem * pItem );

@@ -34,26 +34,34 @@ namespace wg
 	class ExtendedSkin : public Skin
 	{
 	public:
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
-		static const char	CLASSNAME[];
+		//.____ Identification __________________________________________
+
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
 		static ExtendedSkin_p	cast( const Object_p& pObject );
 	
+		//.____ Geometry _________________________________________________
+		
+		virtual Size	minSize() const;
+		virtual Size	preferredSize() const;
+		virtual Size	sizeForContent( const Size contentSize ) const;
+
 		virtual void	setContentPadding( Border padding );
+		virtual Size	contentPadding() const;
+		virtual Coord	contentOfs( State state ) const;
+		virtual Rect	contentRect( const Rect& canvas, State state ) const;
+
+		//.____ Behavior _______________________________________________________
+
 		virtual void	setContentShift( StateEnum state, Coord shift );
 	
 		virtual void	setHoveredContentShift( Coord shift );
 		virtual void	setPressedContentShift( Coord shift );
 		virtual void	setSelectedContentShift( Coord shift );
 		virtual void	setFocusedContentShift( Coord shift );
-	
-		virtual Size	minSize() const;
-		virtual Size	preferredSize() const;
-	
-		virtual Size	contentPadding() const;
-		virtual Size	sizeForContent( const Size contentSize ) const;
-		virtual Coord	contentOfs( State state ) const;
-		virtual Rect	contentRect( const Rect& canvas, State state ) const;
+
+		//.____ Misc ____________________________________________________
 	
 		virtual	bool	isStateIdentical( State state, State comparedTo ) const;
 	

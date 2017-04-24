@@ -40,6 +40,9 @@ namespace wg
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
 	
 	public:
+
+		//.____ Creation __________________________________________
+
 		static BlockSkin_p create();
 		static BlockSkin_p createStatic( const Surface_p& pSurface, Rect block, Border frame = Border(0) );
 		static BlockSkin_p createEnable( const Surface_p& pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame = Border(0) );
@@ -54,14 +57,26 @@ namespace wg
 		static BlockSkin_p createSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
 		static BlockSkin_p createClickSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame = Border(0) );
 	
-		~BlockSkin() {};
+		//.____ Identification __________________________________________
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static BlockSkin_p	cast( const Object_p& pObject );
 	
+		//.____ Rendering ________________________________________________
+
+		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
 	
+		//.____ Geometry _________________________________________________
+
+		Size	minSize() const;
+		Size	preferredSize() const;
+	
+		Size	sizeForContent( const Size contentSize ) const;
+
+		//.____ Appearance _________________________________________________
+
 		void	setSurface( const Surface_p& pSurf );
 		bool	setBlockGeo( Size size, Border frame = Border(0) );
 		void	setStateBlock( StateEnum state, const Coord& ofs );
@@ -78,15 +93,9 @@ namespace wg
 		void	setTiledLeftBorder( bool bTiled );
 		void	setTiledRightBorder( bool bTiled );
 		void	setTiledCenter( bool bTiled );
-	
-		void	optimizeRenderMethods();
-	
-		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
-	
-		Size	minSize() const;
-		Size	preferredSize() const;
-	
-		Size	sizeForContent( const Size contentSize ) const;
+
+
+		//.____ Misc ____________________________________________________	
 	
 		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
 	
@@ -96,6 +105,8 @@ namespace wg
 	
 		bool	isStateIdentical( State state, State comparedTo ) const;
 	
+		void	optimizeRenderMethods();
+
 	private:
 		struct StateData
 		{
@@ -105,6 +116,8 @@ namespace wg
 		};
 	
 		BlockSkin();
+		~BlockSkin() {};
+
 		void	_setBitFlag( int& bitmask, int bit, bool bSet );
 		void	_renderNoClip( GfxDevice * pDevice, const StateData * pState, const Rect& _canvas ) const;
 		void	_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea );

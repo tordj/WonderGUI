@@ -40,22 +40,30 @@ namespace wg
 	{
 	public:
 		virtual ~Skin() {};
+
+		//.____ Identification __________________________________________
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Skin_p	cast( const Object_p& pObject );
-	
-	
-		virtual void render( GfxDevice * pDevice, const Rect& canvas, State state, const Rect& clip ) const = 0;
-	
+		static Skin_p		cast( const Object_p& pObject );
+
+		//.____ Rendering ________________________________________________
+
+		virtual void 	render( GfxDevice * pDevice, const Rect& canvas, State state, const Rect& clip ) const = 0;
+
+		//.____ Geometry _________________________________________________
+
 		virtual Size	minSize() const = 0;
 		virtual Size	preferredSize() const = 0;
+		virtual Size	sizeForContent( const Size contentSize ) const = 0;
 	
 		virtual Size	contentPadding() const = 0;
-		virtual Size	sizeForContent( const Size contentSize ) const = 0;
 		virtual Coord	contentOfs( State state ) const = 0;
 		virtual Rect	contentRect( const Rect& canvas, State state ) const = 0;
+	
+
+		//.____ Misc ____________________________________________________
 	
 		virtual bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const = 0;
 	

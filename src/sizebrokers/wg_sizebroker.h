@@ -46,10 +46,14 @@ namespace wg
 	class SizeBroker : public Object
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static SizeBroker_p	cast( const Object_p& pObject );
+
+		//.____ Misc __________________________________________
 	    
 		virtual int setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
 		virtual int setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;

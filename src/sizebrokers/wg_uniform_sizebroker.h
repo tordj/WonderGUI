@@ -35,12 +35,18 @@ namespace wg
 	class UniformSizeBroker : public SizeBroker
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static UniformSizeBroker_p	create() { return UniformSizeBroker_p(new UniformSizeBroker()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static UniformSizeBroker_p	cast( const Object_p& pObject );
+
+		//.____ Misc __________________________________________________
 	    
 		int setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const;
 		int setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const;
