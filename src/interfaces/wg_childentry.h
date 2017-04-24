@@ -38,7 +38,7 @@ namespace wg
 
 	//____ ChildEntryHolder ____________________________________________________
 
-	class ChildEntryHolder
+	class ChildEntryHolder		/** @private */
 	{
 	public:
 		virtual void	_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;

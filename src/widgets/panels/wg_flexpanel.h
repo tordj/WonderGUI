@@ -74,8 +74,8 @@ namespace wg
 
 
 	//____ FlexPanelSlot ____________________________________________________________
-	
-	class FlexPanelSlot : public Slot
+
+	class FlexPanelSlot : public Slot		/** @private */
 	{
 	public:
 		FlexPanelSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}

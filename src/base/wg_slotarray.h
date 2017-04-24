@@ -34,7 +34,7 @@ namespace wg
 	class Object;
 	class Widget;
 
-	template<class SlotType> class SlotArray
+	template<class SlotType> class SlotArray		/** @private */
 	{
 	public:
 		SlotArray() : m_pArray(0), m_size(0), m_capacity(0) {}

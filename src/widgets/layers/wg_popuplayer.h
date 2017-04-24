@@ -36,7 +36,7 @@ namespace wg
 
 	//____ PopupSlot ___________________________________________________________
 
-	class PopupSlot : public LayerSlot
+	class PopupSlot : public LayerSlot		/** @private */
 	{
 	public:
 		PopupSlot() : attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}

@@ -38,8 +38,8 @@ namespace wg
 	class CharBuffer;
 		
 	//____ TextItem __________________________________________________________________
-	
-	class TextItem : public TextBaseItem
+
+	class TextItem : public TextBaseItem		/** @private */
 	{
 	public:
 		TextItem( ItemHolder * pHolder );

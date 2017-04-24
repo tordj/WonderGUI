@@ -34,8 +34,8 @@ namespace wg
 	class EditState;
 	
 	//____ TextBaseItem __________________________________________________________________
-	
-	class TextBaseItem : public Item
+
+	class TextBaseItem : public Item		/** @private */
 	{
 		friend class TextMapper;
 	public:

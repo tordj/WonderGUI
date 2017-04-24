@@ -39,7 +39,7 @@ namespace wg
 
 	//____ ChildGroupHolder _________________________________________________________
 
-	class ChildGroupHolder
+	class ChildGroupHolder		/** @private */
 	{
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;

@@ -121,7 +121,6 @@
     <ClInclude Include="..\..\..\src\base\wg_sizescaler.h" />
     <ClInclude Include="..\..\..\src\base\wg_slot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h" />
-    <ClInclude Include="..\..\..\src\base\wg_slotcan.h" />
     <ClInclude Include="..\..\..\src\base\wg_string.h" />
     <ClInclude Include="..\..\..\src\base\wg_surface.h" />
     <ClInclude Include="..\..\..\src\base\wg_surfacefactory.h" />
@@ -158,7 +157,6 @@
     <ClInclude Include="..\..\..\src\items\wg_textbaseitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_textitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_valueitem.h" />
-    <ClInclude Include="..\..\..\src\items\wg_widgetitem.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
@@ -264,7 +262,6 @@
     <ClCompile Include="..\..\..\src\items\wg_textbaseitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_textitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_valueitem.cpp" />
-    <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />

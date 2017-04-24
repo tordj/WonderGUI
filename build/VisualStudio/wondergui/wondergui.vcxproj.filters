@@ -389,9 +389,6 @@
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\items\wg_widgetitem.h">
-      <Filter>items</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slot.h">
       <Filter>slots</Filter>
     </ClInclude>
@@ -400,9 +397,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.h">
       <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_slotcan.h">
-      <Filter>slots</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_childentry.h">
       <Filter>interfaces</Filter>
@@ -711,9 +705,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp">
       <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\items\wg_widgetitem.cpp">
-      <Filter>items</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

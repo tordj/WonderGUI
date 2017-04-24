@@ -29,8 +29,8 @@ namespace wg
 {
 		
 	//____ SpanItem _____________________________________________________________
-	
-	class SpanItem : public Item
+
+	class SpanItem : public Item		/** @private */
 	{
 	public:
 		SpanItem( ItemHolder * pHolder );

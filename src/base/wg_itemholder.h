@@ -32,6 +32,7 @@ namespace wg
 	class Item;
 	class Object;
 
+	/** \internal */
 	class ItemHolder
 	{
 	public:

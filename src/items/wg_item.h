@@ -34,8 +34,8 @@ namespace wg
 {
 		
 	//____ Item _________________________________________________________________
-	
-	class Item
+
+	class Item		/** @private */
 	{
 	public:
 		Item( ItemHolder * pHolder ) : m_pHolder(pHolder) {}

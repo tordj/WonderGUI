@@ -28,8 +28,9 @@
 
 namespace wg 
 {
-	
-	class ColumnHeaderItem : public Item, protected ItemHolder
+	//____ ColumnHeaderItem ___________________________________________________
+
+	class ColumnHeaderItem : public Item, protected ItemHolder   /** @private */
 	{
 	public:
 		ColumnHeaderItem(ItemHolder * pHolder);

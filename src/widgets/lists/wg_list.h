@@ -38,7 +38,7 @@ namespace wg
 		
 	//____ ListSlot ____________________________________________________________
 
-	class ListSlot : public Slot
+	class ListSlot : public Slot		/** @private */
 	{
 	public:
 		ListSlot() : bVisible(false) {}
@@ -48,7 +48,7 @@ namespace wg
 
 	//____ ListChildrenHolder ____________________________________________________________
 
-	class ListChildrenHolder : public ChildGroupHolder
+	class ListChildrenHolder : public ChildGroupHolder		/** @private */
 	{
 		virtual void	_hideSlots(ListSlot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(ListSlot * pSlot, int nb) = 0;

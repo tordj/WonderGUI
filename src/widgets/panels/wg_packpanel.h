@@ -35,8 +35,8 @@ namespace wg
 
 
 	//____ PackPanelSlot ____________________________________________________________
-	
-	class PackPanelSlot : public PanelSlot
+
+	class PackPanelSlot : public PanelSlot		/** @private */
 	{
 	public:
 		PackPanelSlot() : weight(1.f) {}

@@ -29,8 +29,8 @@ namespace wg
 {
 	
 	//____ EditValueItem ____________________________________________________________
-	
-	class EditValueItem : public ModValueItem
+
+	class EditValueItem : public ModValueItem	/** @private */
 	{
 	public:
 		EditValueItem( ItemHolder * pHolder );

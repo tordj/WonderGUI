@@ -30,8 +30,8 @@ namespace wg
 		
 	
 	//____ ModValueItem ____________________________________________________________
-	
-	class ModValueItem : public ValueItem
+
+	class ModValueItem : public ValueItem		/** @private */
 	{
 	public:
 		ModValueItem( ItemHolder * pHolder ) : ValueItem(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}

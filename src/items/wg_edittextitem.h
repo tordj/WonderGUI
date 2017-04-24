@@ -32,7 +32,7 @@ namespace wg
 		
 	//____ EditTextItem __________________________________________________________________
 	
-	class EditTextItem : public TextItem
+	class EditTextItem : public TextItem	/** @private */
 	{
 	public:
 		EditTextItem( ItemHolder * pHolder );
