@@ -47,9 +47,11 @@ def sortMemberTables( tables )
 
     sorted_tables = tables.sort_by { |node| memberTablePrio( node ) }
 
-    tables.clear
-    for table in sorted_tables
-        puts memberTableHeader(table)
+
+    for i in 0..sorted_tables.length-2
+       	puts memberTableHeader(sorted_tables[i])
+
+		sorted_tables[i].add_next_sibling(sorted_tables[i+1])
     end
 
 #  rows = tables[index].css('tr')
