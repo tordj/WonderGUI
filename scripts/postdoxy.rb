@@ -7,6 +7,19 @@ def memberTableHeader( memberTableNode )
   return memberTableNode.css('tr')[0].css('td h2').text.gsub( /\n/, '' )
 end
 
+def memberTablePrio( memberTableNode )
+
+    header = memberTableHeader(memberTableNode)
+
+    prio = 1000
+    if( header == 'Creation' )
+        prio = 1
+    elsif( header == 'Components' )
+        prio = 2
+    end
+    return prio
+end
+
 def mergeMemberTables( tables )
   for index in 0..tables.size-1
     for prev in 0..index-1
@@ -30,6 +43,21 @@ def sortMembers( table )
 
 end
 
+def sortMemberTables( tables )
+
+    sorted_tables = tables.sort_by { |node| memberTablePrio( node ) }
+
+    tables.clear
+    for table in sorted_tables
+        puts memberTableHeader(table)
+    end
+
+#  rows = tables[index].css('tr')
+#  rows.sort_by! { |row| row.}
+
+end
+
+
 for fileName in $*
   puts "Processing: " + fileName
 
@@ -38,6 +66,9 @@ for fileName in $*
 
   memberTables = doc.css("table[class=memberdecls]")
   mergeMemberTables( memberTables )
+
+  memberTables = doc.css("table[class=memberdecls]")
+  sortMemberTables( memberTables );
 
   memberTables.each { |table| sortMembers(table) }
 
