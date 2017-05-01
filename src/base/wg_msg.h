@@ -215,47 +215,6 @@ namespace wg
 	typedef	StrongPtr<ModalBlockedReleaseMsg,Msg_p>		ModalBlockedReleaseMsg_p;
 	typedef	WeakPtr<ModalBlockedReleaseMsg,Msg_wp>	ModalBlockedReleaseMsg_wp;
 
-	//
-
-	class LinkMsg;
-	typedef	StrongPtr<LinkMsg,Msg_p>		LinkMsg_p;
-	typedef	WeakPtr<LinkMsg,Msg_wp>	LinkMsg_wp;
-
-	class LinkSelectMsg;
-	typedef	StrongPtr<LinkSelectMsg,LinkMsg_p>		LinkSelectMsg_p;
-	typedef	WeakPtr<LinkSelectMsg,LinkMsg_wp>		LinkSelectMsg_wp;
-
-	class LinkMouseEnterMsg;
-	typedef	StrongPtr<LinkMouseEnterMsg,LinkMsg_p>		LinkMouseEnterMsg_p;
-	typedef	WeakPtr<LinkMouseEnterMsg,LinkMsg_wp>		LinkMouseEnterMsg_wp;
-
-	class LinkMouseLeaveMsg;
-	typedef	StrongPtr<LinkMouseLeaveMsg,LinkMsg_p>		LinkMouseLeaveMsg_p;
-	typedef	WeakPtr<LinkMouseLeaveMsg,LinkMsg_wp>		LinkMouseLeaveMsg_wp;
-
-	class LinkMouseButtonMsg;
-	typedef	StrongPtr<LinkMouseButtonMsg,LinkMsg_p>		LinkMouseButtonMsg_p;
-	typedef	WeakPtr<LinkMouseButtonMsg,LinkMsg_wp>		LinkMouseButtonMsg_wp;
-
-	class LinkMousePressMsg;
-	typedef	StrongPtr<LinkMousePressMsg,LinkMouseButtonMsg_p>		LinkMousePressMsg_p;
-	typedef	WeakPtr<LinkMousePressMsg,LinkMouseButtonMsg_wp>		LinkMousePressMsg_wp;
-
-	class LinkMouseRepeatMsg;
-	typedef	StrongPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_p>		LinkMouseRepeatMsg_p;
-	typedef	WeakPtr<LinkMouseRepeatMsg,LinkMouseButtonMsg_wp>		LinkMouseRepeatMsg_wp;
-
-	class LinkMouseReleaseMsg;
-	typedef	StrongPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_p>		LinkMouseReleaseMsg_p;
-	typedef	WeakPtr<LinkMouseReleaseMsg,LinkMouseButtonMsg_wp>		LinkMouseReleaseMsg_wp;
-
-	class LinkMouseClickMsg;
-	typedef	StrongPtr<LinkMouseClickMsg,LinkMouseButtonMsg_p>		LinkMouseClickMsg_p;
-	typedef	WeakPtr<LinkMouseClickMsg,LinkMouseButtonMsg_wp>		LinkMouseClickMsg_wp;
-
-	class LinkMouseDoubleClickMsg;
-	typedef	StrongPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_p>		LinkMouseDoubleClickMsg_p;
-	typedef	WeakPtr<LinkMouseDoubleClickMsg,LinkMouseButtonMsg_wp>		LinkMouseDoubleClickMsg_wp;
 
 	//____ Msg _________________________________________________________________
 	/**
@@ -269,27 +228,32 @@ namespace wg
 	{
 
 		public:
+		
+			//.____ Identification __________________________________________
 
 			bool				isInstanceOf( const char * pClassName ) const;
 			const char *		className( void ) const;
 			static const char	CLASSNAME[];
 			static Msg_p		cast( const Object_p& pObject );
-
 			MsgType				type() const { return m_type; }
-			bool				hasSource() const { return m_pSource; } 
-			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-			Object_wp			source() const { return m_pSource; } 
-				
 			bool				isMouseMsg() const;
 			bool				isMouseButtonMsg() const;
 			bool				isKeyMsg() const;
 
+			//.____ Content ____________________________________________________
+
+			bool				hasSource() const { return m_pSource; } 
+			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
+			Object_wp			source() const { return m_pSource; } 
+				
 			bool				hasCopyTo() { return m_pCopyTo; }
 			Receiver_p			getCopyTo() { return m_pCopyTo; }
 			bool				hasRepost() { return m_pRepostSource; }
 
+			//.____ Control ____________________________________________________
+
 			void				setCopyTo( const Receiver_p& pReceiver );
-			void				setRepost( const Object_p& pSource, const Receiver_p& pCopyTo );
+			void				setRepost( const Object_p& pFromSource, const Receiver_p& pCopyTo );
 			void				swallow();
 			bool				doRepost();
 
@@ -315,10 +279,15 @@ namespace wg
 	class InputMsg : public Msg
 	{
 	public:
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static InputMsg_p	cast( const Object_p& pObject );
+
+		//.____ Content ____________________________________________________
 
 		char				inputId() const { return m_inputId; }
 		int64_t				timestamp() const { return m_timestamp; }
@@ -344,12 +313,17 @@ namespace wg
 	class MouseButtonMsg : public InputMsg
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseButtonMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ____________________________________________________
+
 		MouseButton		button() const { return m_button; }
+
 	protected:
 		MouseButtonMsg(char inputId, MouseButton button, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp), m_button(button) {}
 
@@ -367,15 +341,20 @@ namespace wg
 	class KeyMsg : public InputMsg
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static KeyMsg_p		cast( const Object_p& pObject );
 
+		//.____ Content ____________________________________________________
+
 		int		nativeKeyCode() const { return m_nativeKeyCode; }
 		Key		translatedKeyCode() const { return m_translatedKeyCode; }
 		bool	isCursorKey() const;
 		bool	isMovementKey() const;
+
 	protected:
 		KeyMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp), m_nativeKeyCode(nativeKeyCode), m_translatedKeyCode(translatedKeyCode) {}
 
@@ -389,14 +368,14 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
-//		static FocusGainedMsg_p	create( Widget * pWidget ) { return new FocusGainedMsg( pWidget ); }
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusGainedMsg_p	cast( const Object_p& pObject );
-	protected:
 
+	protected:
 		FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
 	};
 
@@ -406,12 +385,13 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
-//		static FocusLostMsg_p	create( Widget * pWidget ) { return new FocusLostMsg( pWidget ); }
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FocusLostMsg_p	cast( const Object_p& pObject );
+
 	protected:
 		FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
 	};
@@ -420,73 +400,105 @@ namespace wg
 
 	class MouseEnterMsg : public InputMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseEnterMsg_p create( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+			{ return new MouseEnterMsg( inputId, pSource, modKeys, pointerPos, timestamp ); }
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseEnterMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseEnterMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseEnterMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseLeaveMsg _______________________________________________________
 
 	class MouseLeaveMsg : public InputMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseLeaveMsg_p create( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+			{ return new MouseLeaveMsg( inputId, pSource, modKeys, pointerPos, timestamp ); }
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseLeaveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseLeaveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseMoveMsg ________________________________________________________
 
 	class MouseMoveMsg : public InputMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseMoveMsg_p create( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+			{ return new MouseMoveMsg( inputId, pSource, modKeys, pointerPos, timestamp ); }
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseMoveMsg_p	cast( const Object_p& pObject );
 	protected:
-		MouseMoveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MousePressMsg _______________________________________________________
 
 	class MousePressMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MousePressMsg_p create( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+			{ return new MousePressMsg( inputId, button, pSource, modKeys, pointerPos, timestamp ); }
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MousePressMsg_p	cast( const Object_p& pObject );
 	protected:
-		MousePressMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	//____ MouseReleaseMsg _____________________________________________________
 
 	class MouseReleaseMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseReleaseMsg_p create( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+			{ return new MouseReleaseMsg( inputId, button, pSource, bReleaseInside, modKeys, pointerPos, timestamp ); }
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseReleaseMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		bool			releaseInside() const;
 
 	protected:
-		MouseReleaseMsg( char inputId, MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseReleaseMsg( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		bool			m_bReleaseInside;
 	};
@@ -497,6 +509,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -511,6 +525,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -525,13 +541,18 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextInputMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		String	text() const;
 		char	inputId() const { return m_inputId; }
+
 	protected:
 		TextInputMsg( char inputId, String text, Widget * pWidget );
 	protected:
@@ -545,13 +566,18 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static EditCommandMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		EditCmd	command() const { return m_command; }
 		char	inputId() const { return m_inputId; }
+
 	protected:
 		EditCommandMsg( char inputId, EditCmd command, Widget * pWidget );
 	protected:
@@ -566,10 +592,14 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static WheelRollMsg_p	cast( const Object_p& pObject );
+
+		//.____ Content ________________________________________________________
 
 		int			wheel() const;
 		Coord		distance() const;
@@ -585,12 +615,18 @@ namespace wg
 	class TickMsg : public Msg
 	{
 	public:
-		static TickMsg_p	create( int64_t timestamp, int timediff ) { return new TickMsg(timestamp, timediff); }
+		//.____ Creation __________________________________________
+
+		inline static TickMsg_p	create( int64_t timestamp, int timediff ) { return new TickMsg(timestamp, timediff); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TickMsg_p	cast( const Object_p& pObject );
+
+		//.____ Content ________________________________________________________
 
 		inline int			timediff() const { return m_timediff; }
 		inline int64_t		timestamp() const { return m_timestamp; }
@@ -607,10 +643,14 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static PointerChangeMsg_p	cast( const Object_p& pObject );
+
+		//.____ Content ________________________________________________________
 
 		PointerStyle	style() const;
 		inline char		inputId() const { return m_inputId; }
@@ -628,12 +668,19 @@ namespace wg
 	class SelectMsg : public Msg
 	{
 	public:
-		SelectMsg( Object * pSource );
+		//.____ Creation __________________________________________
+
+		inline static SelectMsg_p	create( Object * pSource ) { return new SelectMsg(pSource); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static SelectMsg_p	cast( const Object_p& pObject );
+	
+	protected:
+		SelectMsg( Object * pSource );	
 	};
 
 	//____ ToggleMsg ___________________________________________________________
@@ -641,16 +688,24 @@ namespace wg
 	class ToggleMsg : public Msg
 	{
 	public:
-		ToggleMsg( Object * pSource, bool bSet );
+		//.____ Creation __________________________________________
+
+		inline static ToggleMsg_p	create( Object * pSource, bool bSet ) { return new ToggleMsg(pSource,bSet); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ToggleMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content _________________________________________________
+
 		bool		isSet() const;
 
-	private:
+	protected:
+		ToggleMsg( Object * pSource, bool bSet );
+
 		bool	m_bSet;
 	};
 
@@ -659,18 +714,26 @@ namespace wg
 	class ValueUpdateMsg : public Msg
 	{
 	public:
-		ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal );
+		//.____ Creation __________________________________________
+
+		inline static ValueUpdateMsg_p	create( Object * pSource, int64_t value, double fraction, bool bFinal ) { return new ValueUpdateMsg(pSource, value, fraction, bFinal ); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ValueUpdateMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		int64_t		value() const;
 		double		fraction() const;
 		bool		isFinal() const;
 
 	protected:
+		ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal );
+
 		int64_t		m_value;
 		double		m_fraction;
 		bool		m_bFinal;
@@ -681,18 +744,28 @@ namespace wg
 	class RangeUpdateMsg : public Msg
 	{
 	public:
-		RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ); 
+		//.____ Creation __________________________________________
+
+		inline static RangeUpdateMsg_p create( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ) 
+										{ return new RangeUpdateMsg( pSource, intOfs, intLength, fracOfs, fracLength, bFinal ); } 
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static RangeUpdateMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		int			offset() const;
 		int			length() const;
 		double		fracOffset() const;
 		double		fracLength() const;
 		bool		isFinal() const;
+
+	protected:
+		RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ); 
 
 		int			m_ofs;
 		int			m_length;
@@ -706,23 +779,31 @@ namespace wg
 	class TextEditMsg : public Msg
 	{
 	public:
-		TextEditMsg( const EditText_p& pText, bool bFinal );
+		//.____ Creation __________________________________________
+
+		inline static TextEditMsg_p create( const EditText_p& pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextEditMsg_p	cast( const Object_p& pObject );
 
+		//.____ Content ________________________________________________________
+
 		EditText_p			text() const;
 		bool				isFinal() const;
 
 	protected:
+		TextEditMsg( const EditText_p& pText, bool bFinal );
+
 		EditText_p			m_pText;
 		bool				m_bFinal;
 	};
 
 
-	//____
+	//____ ItemInfo _______________________________
 
 	class ItemInfo
 	{
@@ -842,6 +923,8 @@ namespace wg
 	{
 		friend class PopupLayer;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -858,6 +941,8 @@ namespace wg
 	{
 		friend class ModalLayer;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -871,6 +956,8 @@ namespace wg
 	{
 		friend class ModalLayer;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -884,6 +971,8 @@ namespace wg
 	{
 		friend class ModalLayer;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -893,138 +982,25 @@ namespace wg
 		ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
-	//____ Link messages _________________________________________________________
-
-	class LinkMsg : public Msg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMsg_p	cast( const Object_p& pObject );
-
-		TextLink_p			link() const;
-	protected:
-		LinkMsg( Object * pSource, const TextLink_p& pLink );
-	
-		TextLink_p			m_pLink;
-
-	};
-
-	class LinkSelectMsg : public LinkMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkSelectMsg_p	cast( const Object_p& pObject );
-
-		LinkSelectMsg( Object * pSource, const TextLink_p& pLink );
-	};
-
-
-	class LinkMouseEnterMsg : public LinkMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseEnterMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseEnterMsg( Object * pSource, const TextLink_p& pLink );
-	};
-
-	class LinkMouseLeaveMsg : public LinkMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseLeaveMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseLeaveMsg(  Object * pSource, const TextLink_p& pLink );
-	};
-
-	class LinkMouseButtonMsg : public LinkMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseButtonMsg_p	cast( const Object_p& pObject );
-
-		MouseButton		button() const;
-	protected:
-		LinkMouseButtonMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
-
-		MouseButton		m_button;
-	};
-
-	class LinkMousePressMsg : public LinkMouseButtonMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMousePressMsg_p	cast( const Object_p& pObject );
-
-		LinkMousePressMsg(  Object * pSource, const TextLink_p& pLink, MouseButton button );
-	};
-
-	class LinkMouseRepeatMsg : public LinkMouseButtonMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseRepeatMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseRepeatMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
-	};
-
-	class LinkMouseReleaseMsg : public LinkMouseButtonMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseReleaseMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseReleaseMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
-	};
-
-	class LinkMouseClickMsg : public LinkMouseButtonMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseClickMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
-	};
-
-	class LinkMouseDoubleClickMsg : public LinkMouseButtonMsg
-	{
-	public:
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static LinkMouseDoubleClickMsg_p	cast( const Object_p& pObject );
-
-		LinkMouseDoubleClickMsg( Object * pSource, const TextLink_p& pLink, MouseButton button );
-	};
 
 	//____ Internally posted messages ____________________________________________
 
 	class MouseDragMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+
+		inline static MouseDragMsg_p create( char inputId, MouseButton button, Object * pSource, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
+						{ return new MouseDragMsg( inputId, button, pSource, orgPos, prevPos, modKeys, pointerPos, timestamp ); }
+		
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MouseDragMsg_p	cast( const Object_p& pObject );
+
+		//.____ Content ______________________________________________
 
 		Coord			draggedTotal() const;
 		Coord			draggedNow() const;
@@ -1032,7 +1008,7 @@ namespace wg
 		Coord			prevPos() const;
 		Coord			currPos() const;
 	protected:
-		MouseDragMsg( char inputId, MouseButton button, Widget * pWidget, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDragMsg( char inputId, MouseButton button, Object * pSource, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 
 		Coord			m_startPos;
 		Coord			m_prevPos;
@@ -1042,6 +1018,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -1055,6 +1033,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -1068,6 +1048,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -1081,6 +1063,8 @@ namespace wg
 	{
 		friend class InputHandler;
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];

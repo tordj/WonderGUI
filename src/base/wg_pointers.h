@@ -99,7 +99,7 @@ namespace wg
 	
 	//____ StrongPtr ________________________________________________________
 	
-	template<class T,class P> class StrongPtr : public P
+	template<class T,class P> class StrongPtr : public P		/** @private */
 	{
 	public:
 		StrongPtr(T* p=0) : P( p ) {};
@@ -179,7 +179,7 @@ namespace wg
 	
 	//____ WeakPtr _________________________________________________________
 	
-	template<class T,class P> class WeakPtr : public P
+	template<class T,class P> class WeakPtr : public P		/** @private */
 	{
 	public:
 		WeakPtr() {}
@@ -282,7 +282,7 @@ namespace wg
 	
 	//____ StrongInterfacePtr ________________________________________________________
 	
-	template<class T,class P> class StrongInterfacePtr : public P
+	template<class T,class P> class StrongInterfacePtr : public P		/** @private */
 	{
 	public:
 		StrongInterfacePtr( int dummy = 0 ) : P( 0, 0 ) {};
@@ -354,7 +354,7 @@ namespace wg
 	
 	//____ WeakInterfacePtr _________________________________________________________
 	
-	template<class T,class P> class WeakInterfacePtr : public P
+	template<class T,class P> class WeakInterfacePtr : public P		/** @private */
 	{
 	public:
 		WeakInterfacePtr(Object* pObj, T* pInterface=0) : P( pObj, pInterface ) {};

@@ -28,7 +28,7 @@ namespace wg
 	class Object;
 	class Object_p;
 	
-	class WeakPtrHub
+	class WeakPtrHub		/** @private */
 	{
 	public:
 		int					refCnt;

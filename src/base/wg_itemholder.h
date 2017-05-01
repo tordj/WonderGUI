@@ -32,8 +32,7 @@ namespace wg
 	class Item;
 	class Object;
 
-	/** \internal */
-	class ItemHolder
+	class ItemHolder		/** @private */
 	{
 	public:
 		virtual Object * _itemObject() = 0;

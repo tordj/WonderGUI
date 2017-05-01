@@ -965,7 +965,7 @@ namespace wg
 	
 						int pxlPos, pxlLen;
 						_viewToPosLen( &pxlPos, &pxlLen );
-						pHandler->post( new RangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+						pHandler->post( RangeUpdateMsg::create(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 	
 						break;
 					case GOTO_POS:
@@ -994,7 +994,7 @@ namespace wg
 	
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
-				pHandler->post( new RangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+				pHandler->post( RangeUpdateMsg::create(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 				break;
 			}
 	
@@ -1034,7 +1034,7 @@ namespace wg
 	
 				int pxlPos, pxlLen;
 				_viewToPosLen( &pxlPos, &pxlLen );
-				pHandler->post( new RangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+				pHandler->post( RangeUpdateMsg::create(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 				break;
 			}
 	
@@ -1061,7 +1061,7 @@ namespace wg
 	
 						int pxlPos, pxlLen;
 						_viewToPosLen( &pxlPos, &pxlLen );
-						pHandler->post( new RangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+						pHandler->post(RangeUpdateMsg::create(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 						_requestRender();
 					}
 				}
@@ -1080,7 +1080,7 @@ namespace wg
 					
 					int pxlPos, pxlLen;
 					_viewToPosLen( &pxlPos, &pxlLen );
-					pHandler->post( new RangeUpdateMsg(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
+					pHandler->post( RangeUpdateMsg::create(this,pxlPos,pxlLen,m_handlePos,m_handleSize,true) );
 					pMsg->swallow();
 				}
 			}

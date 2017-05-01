@@ -56,7 +56,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Image_p		cast( const Object_p& pObject );
 
-		//.____ Control ________________________________________________________
+		//.____ Appearance ________________________________________________________
 			
 		void				setImage( const Surface_p& pSurface, const Rect& rect );	///< @brief Set image to display.
 		void				setImage( const Surface_p& pSurface );						///< @brief Set image to display.

@@ -48,24 +48,34 @@ namespace wg
 	class Caret : public Object
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static Caret_p	create() { return Caret_p(new Caret()); }
+
+		//.____ Identification __________________________________________
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Caret_p		cast( const Object_p& pObject );
+
+		//.____ Control ________________________________________________________
 	
 		virtual bool		setCycleLength( int millisec );
 		inline int			cycleLength() const { return m_cycleLength; }
 		virtual bool		restartCycle();
-	
 		virtual bool		setMode( CaretMode mode );
-		virtual int			eolWidth( const Size& eolCell ) const;
 		inline CaretMode	mode() const { return m_mode; }
+
+
+		//.____ Internal ___________________________________________________________
+
+		virtual int			eolWidth( const Size& eolCell ) const;
+		virtual Rect		dirtyRect( Rect cell ) const;
 		virtual bool		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
-		virtual Rect		dirtyRect( Rect cell ) const;
 		virtual void		render( GfxDevice * pDevice, Rect cell, const Rect& clip );
+
 	
 	protected:
 		Caret();

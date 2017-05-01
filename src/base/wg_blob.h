@@ -49,13 +49,19 @@ namespace wg
 	class Blob : public Object
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static Blob_p	create( int bytes );
 		static Blob_p	create( void * pData, void(*pDestructor)(void*) );
+
+		//.____ Identification __________________________________________
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Blob_p	cast( const Object_p& pObject );
+
+		//.____ Misc ___________________________________________________________
 	    
 		inline int		size() const { return m_size; }			///< @brief Get the size of the blobs content.
 																///<

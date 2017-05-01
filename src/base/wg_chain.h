@@ -23,8 +23,8 @@ namespace wg
 	class Link;
 	
 	//____ Class ChainImp _________________________________________________________
-	/** \internal */
-	class ChainImp
+
+	class ChainImp		/** @private */
 	{
 		friend	class Link;
 	
@@ -60,10 +60,9 @@ namespace wg
 	
 	
 	//____ Class Chain ____________________________________________________________
-	/** \internal */
 
 	template<class T>
-	class Chain : public ChainImp
+	class Chain : public ChainImp				/** @private */
 	{
 	public:
 		inline bool	isMemberOf( T* pLink ) const { return ChainImp::isMemberOf(pLink); };
@@ -117,7 +116,7 @@ namespace wg
 	
 	
 	
-	class Link
+	class Link		/** @private */
 	{
 		friend	class ChainImp;
 	//	friend	class Chain;

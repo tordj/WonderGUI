@@ -154,8 +154,13 @@ namespace wg
 	
 	//____ receive() ___________________________________________________________
 
-	void TextItem::receive( const Msg_p& pMsg )
+	void TextItem::receive( const Msg_p& _pMsg )
 	{
+		if( !_pMsg->isMouseMsg() )
+			return;
+			
+		InputMsg_p pMsg = InputMsg::cast( _pMsg );
+
 		switch( pMsg->type() )
 		{			
 			case MsgType::MouseEnter:
@@ -187,10 +192,10 @@ namespace wg
 					MsgRouter_p	pRouter = Base::msgRouter();
 				
 					if( m_pMarkedLink )
-						pRouter->post( new LinkMouseLeaveMsg( _object(), m_pMarkedLink ) );
+						pRouter->post( MouseLeaveMsg::create( pMsg->inputId(), m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 				
 					if( pLink )
-						pRouter->post( new LinkMouseEnterMsg( _object(), pLink ));
+						pRouter->post( MouseEnterMsg::create( pMsg->inputId(), pLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 	
 					m_pMarkedLink = pLink;
 				}
@@ -201,7 +206,7 @@ namespace wg
 
 				if( m_pMarkedLink )
 				{
-					Base::msgRouter()->post( new LinkMouseLeaveMsg( _object(), m_pMarkedLink ) );
+					Base::msgRouter()->post( MouseLeaveMsg::create( pMsg->inputId(), m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 					m_pMarkedLink = 0;
 				}
 				break;
@@ -210,7 +215,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MousePressMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMousePressMsg( _object(), m_pMarkedLink, button ) );
+					Base::msgRouter()->post( MousePressMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -248,7 +253,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseClickMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseClickMsg( _object(), m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( new LinkMouseClickMsg( _object(), m_pMarkedLink, button ) ));			
 
 					if( button == MouseButton::Left )
 					{

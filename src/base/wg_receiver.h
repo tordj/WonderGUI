@@ -40,12 +40,14 @@ namespace wg
 	{
 		friend class MsgRouter;
 	public:
+		//.____ Identification _________________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Receiver_p	cast( const Object_p& pObject );
 	
-		virtual void 		receive( const Msg_p& pMsg ) = 0;
+		virtual void 	receive( const Msg_p& pMsg ) = 0;
 	
 	protected:
 		Receiver() {};

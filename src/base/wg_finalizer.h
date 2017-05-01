@@ -37,8 +37,12 @@ namespace wg
 	class Finalizer : public Object
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static Finalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new Finalizer(pCallback,pObject); };
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];

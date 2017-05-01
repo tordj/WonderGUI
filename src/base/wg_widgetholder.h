@@ -37,7 +37,7 @@ namespace wg
 	class Slot;
 
 
-	class WidgetHolder
+	class WidgetHolder		/** @private */
 	{
 	public:
 		virtual Coord		_childPos( Slot * pSlot ) const = 0;				///< Get the local position of the widget.

@@ -3,6 +3,26 @@
 require 'nokogiri'
 
 
+$prioTable = {
+  'Creation' => 1,
+  'Components' => 2,
+  'Appearance' => 3,
+  'Control' => 4,
+  'Behavior' => 5,
+  'State' => 6,
+  'Rendering' => 7,
+  'Geometry' => 8,
+  'Hierarchy' => 9,
+  'Debug' => 10,
+  'Identification' => 11,
+  'Misc' => 12,
+  'Internal' => 13,
+
+}
+
+$unknownHeaders = Hash.new(0)
+
+
 def memberTableHeader( memberTableNode )
   return memberTableNode.css('tr')[0].css('td h2').text.gsub( /\n/, '' )
 end
@@ -11,12 +31,12 @@ def memberTablePrio( memberTableNode )
 
     header = memberTableHeader(memberTableNode)
 
-    prio = 1000
-    if( header == 'Creation' )
-        prio = 1
-    elsif( header == 'Components' )
-        prio = 2
+    prio = $prioTable[header]
+    if( prio == nil )
+        prio = 1000
+        $unknownHeaders[header] = $unknownHeaders[header]+1
     end
+
     return prio
 end
 
@@ -49,9 +69,7 @@ def sortMemberTables( tables )
 
 
     for i in 0..sorted_tables.length-2
-       	puts memberTableHeader(sorted_tables[i])
-
-		sorted_tables[i].add_next_sibling(sorted_tables[i+1])
+  		sorted_tables[i].add_next_sibling(sorted_tables[i+1])
     end
 
 #  rows = tables[index].css('tr')
@@ -79,3 +97,5 @@ for fileName in $*
   fi.close
 
 end
+
+$unknownHeaders.each { |key, value| puts "Warning: Unknow Section '#{key}' was found #{value} times." }

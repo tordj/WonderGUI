@@ -253,7 +253,7 @@ namespace wg
 			m_pAnimFrame = pAnimFrame;
 			_requestRender();
 	
-			Base::msgRouter()->post( new ValueUpdateMsg(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
+			Base::msgRouter()->post( ValueUpdateMsg::create(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
 		}
 	}
 	

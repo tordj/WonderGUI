@@ -202,7 +202,7 @@ namespace wg
 				if( KeyReleaseMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
-					pHandler->post( new SelectMsg(this) );
+					pHandler->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;
@@ -230,7 +230,7 @@ namespace wg
 			case MsgType::MouseClick:
 				if( MouseClickMsg::cast(_pMsg)->button() == MouseButton::Left )
 				{
-					pHandler->post( new SelectMsg(this) );
+					pHandler->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;

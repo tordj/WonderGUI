@@ -141,16 +141,16 @@ namespace wg
 
 		//.____ Control ____________________________________________
 
-		inline float		handlePos() const;						///< @brief Get position of the scrollbar handle.
-		inline float		handleSize() const;						///< @brief Get the size of the scrollbar handle.
+		void			setHandle( float pos, float size );			///< @brief Set relative size and position of scrollbar handle.
+		void			setHandlePos( float pos );					///< @brief Set relative position of scrollbar handle.
+		inline float	handlePos() const;							///< @brief Get position of the scrollbar handle.
 
-		void	setHandle( float pos, float size );					///< @brief Set relative size and position of scrollbar handle.
-		void	setHandlePos( float pos );							///< @brief Set relative position of scrollbar handle.
-		void	setHandlePixelPos( int pos );						///< @brief Set pixel position of scrollbar handle.
-		void	setHandleSize( float size );						///< @brief Set size of scrollbar handle.
+		void			setHandlePixelPos( int pos );				///< @brief Set pixel position of scrollbar handle.
 
-		bool	setScrollbarTarget( ScrollbarTarget * pTarget );
+		void			setHandleSize( float size );				///< @brief Set size of scrollbar handle.
+		inline float	handleSize() const;							///< @brief Get the size of the scrollbar handle.
 
+		bool			setScrollbarTarget( ScrollbarTarget * pTarget );
 
 
 	protected:

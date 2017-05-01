@@ -252,7 +252,7 @@ namespace wg
 	
 		if( state.isSelected() != oldState.isSelected() )
 		{
-			Base::msgRouter()->post( new ToggleMsg(this, state.isSelected() ) );
+			Base::msgRouter()->post( ToggleMsg::create(this, state.isSelected() ) );
 	
 			if( m_pToggleGroup && state.isSelected() )
 				m_pToggleGroup->_select(this);
