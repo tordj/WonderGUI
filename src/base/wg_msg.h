@@ -989,9 +989,10 @@ namespace wg
 	{
 	public:
 
+		//.____ Creation __________________________________________
+
 		inline static MouseDragMsg_p create( char inputId, MouseButton button, Object * pSource, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
-						{ return new MouseDragMsg( inputId, button, pSource, orgPos, prevPos, modKeys, pointerPos, timestamp ); }
-		
+						{ return new MouseDragMsg( inputId, button, pSource, orgPos, prevPos, modKeys, pointerPos, timestamp ); }		
 
 		//.____ Identification __________________________________________
 
@@ -1016,8 +1017,12 @@ namespace wg
 
 	class MouseRepeatMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseRepeatMsg_p create(char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp)
+							{ return new MouseRepeatMsg(inputId, button, pSource, modKeys, pointerPos, timestamp); }
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -1026,13 +1031,17 @@ namespace wg
 		static MouseRepeatMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseRepeatMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseClickMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseClickMsg_p create(char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp)
+									{ return new MouseClickMsg(inputId, button, pSource, modKeys, pointerPos, timestamp); }
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -1041,13 +1050,17 @@ namespace wg
 		static MouseClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class MouseDoubleClickMsg : public MouseButtonMsg
 	{
-		friend class InputHandler;
 	public:
+		//.____ Creation __________________________________________
+
+		inline static MouseDoubleClickMsg_p create(char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp)
+					{ return new MouseDoubleClickMsg(inputId, button, pSource, modKeys, pointerPos, timestamp); }
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -1056,7 +1069,7 @@ namespace wg
 		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
 
 	protected:
-		MouseDoubleClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
+		MouseDoubleClickMsg( char inputId, MouseButton button, Object * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
 
 	class KeyRepeatMsg : public KeyMsg

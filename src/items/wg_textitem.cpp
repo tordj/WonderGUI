@@ -231,7 +231,7 @@ namespace wg
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseRepeatMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseRepeatMsg( _object(), m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( MouseRepeatMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );			
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -239,10 +239,12 @@ namespace wg
 				break;
 
 			case MsgType::MouseRelease:
+				//TODO: Should only post if press was inside.
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseReleaseMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseReleaseMsg( _object(), m_pMarkedLink, button ) );			
+					bool bReleasedInside = static_cast<MouseReleaseMsg*>(pMsg.rawPtr())->releaseInside();
+					Base::msgRouter()->post( MouseReleaseMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), bReleasedInside, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();
@@ -250,24 +252,26 @@ namespace wg
 				break;
 
 			case MsgType::MouseClick:
+				//TODO: Doesn't check if we stay on link during whole click.
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseClickMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseClickMsg( _object(), m_pMarkedLink, button ) ));			
+					Base::msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
 					{
-						Base::msgRouter()->post( new LinkSelectMsg( _object(), m_pMarkedLink ) );			
+						Base::msgRouter()->post( SelectMsg::create( m_pMarkedLink.rawPtr() ) );			
 						pMsg->swallow();
 					}
 				}
 				break;
 
 			case MsgType::MouseDoubleClick:
+				//TODO: Doesn't check if we stay on link during whole double click.
 				if( m_pMarkedLink )
 				{
 					MouseButton button = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr())->button();
-					Base::msgRouter()->post( new LinkMouseDoubleClickMsg( _object(), m_pMarkedLink, button ) );			
+					Base::msgRouter()->post( MouseDoubleClickMsg::create(pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 
 					if( button == MouseButton::Left )
 						pMsg->swallow();

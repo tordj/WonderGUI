@@ -467,15 +467,6 @@ namespace wg
 		ModalMoveOutside,
 		ModalBlockedPress,
 		ModalBlockedRelease,
-	
-		LinkSelect,
-		LinkMouseEnter,
-		LinkMouseLeave,
-		LinkMousePress,
-		LinkMouseRepeat,
-		LinkMouseRelease,
-		LinkMouseClick,
-		LinkMouseDoubleClick,
 		
 		Max
 	};

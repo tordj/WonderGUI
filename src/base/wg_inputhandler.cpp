@@ -287,21 +287,27 @@ namespace wg
 	
 		Widget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked.rawPtr(), timestamp );
 		
-		if( pFirstAlreadyMarked )
-			Base::msgRouter()->post( new MouseMoveMsg( m_inputId, pFirstAlreadyMarked, m_modKeys, pos, timestamp ) );
-	
+		if (pFirstAlreadyMarked)
+		{
+			MouseMoveMsg_p p = MouseMoveMsg::create(m_inputId, pFirstAlreadyMarked, m_modKeys, pos, timestamp);
+			p->setCopyTo(pFirstAlreadyMarked);
+			Base::msgRouter()->post(p);
+		}
 		// Copy content of pNowMarked to m_pMarkedWidget
 	
 		m_pMarkedWidget = pNowMarked.rawPtr();
 	
 		// Post events for button drag
 	
-		for( int i = 0 ; i <= MouseButton_Max ; i++ )
+		for (int i = 0; i <= MouseButton_Max; i++)
 		{
-			if( m_bButtonPressed[i] )
-				Base::msgRouter()->post( new MouseDragMsg( m_inputId, (MouseButton) i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, m_modKeys, m_pointerPos, timestamp ) );
+			if (m_bButtonPressed[i])
+			{
+				MouseDragMsg_p p = MouseDragMsg::create(m_inputId, (MouseButton)i, m_latestPressWidgets[i].rawPtr(), m_latestPressPosition[i], prevPointerPos, m_modKeys, m_pointerPos, timestamp);
+				p->setCopyTo(m_latestPressWidgets[i].rawPtr());
+				Base::msgRouter()->post(p);
+			}
 		}
-		
 		// Update PointerStyle
 		
 		PointerStyle newStyle;
@@ -340,15 +346,22 @@ namespace wg
 				m_vEnteredWidgets[ofs] = 0;			
 			}
 			else
-				Base::msgRouter()->post( new MouseEnterMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, timestamp ) );		
+			{
+				MouseEnterMsg_p p = MouseEnterMsg::create(m_inputId, pWidget, m_modKeys, m_pointerPos, timestamp);
+				p->setCopyTo(pWidget);
+				Base::msgRouter()->post(p);
+			}
 		}
 	
 		// Send MouseLeave to those that were left.
 	
 		for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
-			if(m_vEnteredWidgets[i] )
-				Base::msgRouter()->post( new MouseLeaveMsg( m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, timestamp) );
-		
+			if (m_vEnteredWidgets[i])
+			{
+				MouseLeaveMsg_p p = MouseLeaveMsg::create(m_inputId, m_vEnteredWidgets[i].rawPtr(), m_modKeys, m_pointerPos, timestamp);
+				p->setCopyTo(m_vEnteredWidgets[i].rawPtr());
+				Base::msgRouter()->post(p);
+			}
 		// Replace the old list with a new one.
 		
 		m_vEnteredWidgets.clear();
@@ -405,7 +418,8 @@ namespace wg
 	
 		Widget * pWidget = m_pMarkedWidget.rawPtr();
 	
-		MousePressMsg * pMsg = new MousePressMsg( m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp );
+		auto pMsg = MousePressMsg::create( m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp );
+		pMsg->setCopyTo(pWidget);
 		Base::msgRouter()->post( pMsg );
 	
 		// Handle possible double-click
@@ -421,11 +435,15 @@ namespace wg
 				distance.y <= m_doubleClickDistanceTreshold &&
 				distance.y >= -m_doubleClickDistanceTreshold )
 				{
-					if( pWidget && pWidget ==  m_latestPressWidgets[(int)button].rawPtr() )
-						Base::msgRouter()->post( new MouseDoubleClickMsg(m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp) );
+					if (pWidget && pWidget == m_latestPressWidgets[(int)button].rawPtr())
+					{
+						auto p = MouseDoubleClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp);
+						p->setCopyTo(pWidget);
+						Base::msgRouter()->post(p);
+					}
 					else
-						Base::msgRouter()->post( new MouseDoubleClickMsg(m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp) );
-					
+						Base::msgRouter()->post(MouseDoubleClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp));
+
 					doubleClick = true;
 				}				
 		}
@@ -453,17 +471,22 @@ namespace wg
 		Widget * pWidget = m_latestPressWidgets[(int)button].rawPtr();
 		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 	
-		MouseReleaseMsg * pMsg = new MouseReleaseMsg( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
+		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
+		pMsg->setCopyTo(pWidget);
 		Base::msgRouter()->post( pMsg );
 	
 		// Post click event, if press didn't already resulted in a double click.
 	
 		if( m_bButtonPressed[(int)button] && !m_latestPressDoubleClick[(int)button] )
 		{
-			if( bIsInside )
-				Base::msgRouter()->post( new MouseClickMsg( m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp ) );
+			if (bIsInside)
+			{
+				auto p = MouseClickMsg::create(m_inputId, button, pWidget, m_modKeys, m_pointerPos, timestamp);
+				p->setCopyTo(pWidget);
+				Base::msgRouter()->post(p);
+			}
 			else
-				Base::msgRouter()->post( new MouseClickMsg( m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp ) );
+				Base::msgRouter()->post(MouseClickMsg::create(m_inputId, button, 0, m_modKeys, m_pointerPos, timestamp));
 		}	
 	}
 	
@@ -732,7 +755,8 @@ namespace wg
 
 				while( repeatPos <= timestamp )
 				{
-					Base::msgRouter()->post( new MouseRepeatMsg( m_inputId, (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, repeatPos ));
+					auto p = MouseRepeatMsg::create(m_inputId, (MouseButton)button, m_latestPressWidgets[button].rawPtr(), m_modKeys, m_pointerPos, repeatPos);
+					Base::msgRouter()->post(p);
 					repeatPos += m_keyRepeatRate;
 				}
 			}

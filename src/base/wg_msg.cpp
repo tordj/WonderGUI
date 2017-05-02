@@ -323,11 +323,10 @@ namespace wg
 	
 	const char MouseLeaveMsg::CLASSNAME[] = {"MouseLeaveMsg"};
 		
-	MouseLeaveMsg::MouseLeaveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
+	MouseLeaveMsg::MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseLeave;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MouseLeaveMsg::isInstanceOf( const char * pClassName ) const
@@ -355,11 +354,10 @@ namespace wg
 	
 	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
 		
-	MouseMoveMsg::MouseMoveMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
+	MouseMoveMsg::MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseMove;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MouseMoveMsg::isInstanceOf( const char * pClassName ) const
@@ -388,11 +386,10 @@ namespace wg
 	
 	const char MousePressMsg::CLASSNAME[] = {"MousePressMsg"};
 		
-	MousePressMsg::MousePressMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MousePressMsg::MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MousePress;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MousePressMsg::isInstanceOf( const char * pClassName ) const
@@ -420,11 +417,10 @@ namespace wg
 	
 	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
 		
-	MouseRepeatMsg::MouseRepeatMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseRepeatMsg::MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRepeat;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MouseRepeatMsg::isInstanceOf( const char * pClassName ) const
@@ -454,11 +450,10 @@ namespace wg
 	const char MouseReleaseMsg::CLASSNAME[] = {"MouseReleaseMsg"};
 	
 	
-	MouseReleaseMsg::MouseReleaseMsg( char inputId, MouseButton button, Widget * pWidget, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseReleaseMsg::MouseReleaseMsg( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRelease;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	
 		m_bReleaseInside = bReleaseInside;
 	}
@@ -495,11 +490,10 @@ namespace wg
 	
 	const char MouseClickMsg::CLASSNAME[] = {"MouseClickMsg"};
 		
-	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseClick;
-		m_pSource		= pWidget;
-		m_pCopyTo 		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MouseClickMsg::isInstanceOf( const char * pClassName ) const
@@ -527,11 +521,10 @@ namespace wg
 	
 	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
 	
-	MouseDoubleClickMsg::MouseDoubleClickMsg( char inputId, MouseButton button, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseDoubleClickMsg::MouseDoubleClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseDoubleClick;
-		m_pSource		= pWidget;
-		m_pCopyTo		= pWidget;
+		m_pSource		= pSource;
 	}
 	
 	bool MouseDoubleClickMsg::isInstanceOf( const char * pClassName ) const
@@ -1413,11 +1406,10 @@ namespace wg
 	const char MouseDragMsg::CLASSNAME[] = {"MouseDragMsg"};
 	
 	
-	MouseDragMsg::MouseDragMsg( char inputId, MouseButton button, Widget * pWidget, const Coord& startPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
+	MouseDragMsg::MouseDragMsg( char inputId, MouseButton button, Object * pSource, const Coord& startPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::MouseDrag;
-		m_pSource		= pWidget;
-		m_pCopyTo	= pWidget;
+		m_pSource		= pSource;
 	
 		m_startPos = startPos;
 		m_prevPos = prevPos;
