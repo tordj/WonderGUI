@@ -18,7 +18,7 @@ rm *~
 
 cd $ROOT
 cd doc
-rm -rf *~ doxygen_sqlite3.db html latex
+rm -rf *~ doxygen_sqlite3.db html latex temp
 
 cd $ROOT
 rm -f $PACKAGE
