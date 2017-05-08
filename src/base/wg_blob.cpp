@@ -33,7 +33,7 @@ namespace wg
 	 *
 	 * Create an empty blob of the specified size.
 	 *
-	 * @param bytes Bytes to allocate.
+	 * @param size Size in bytes of area to allocate.
 	 * 
 	 * Allocates a memory buffer of the given size and wraps it into a Blob.
 	 * The memory buffer will not move and can be accessed randomly at any
@@ -41,9 +41,9 @@ namespace wg
 	 * buffer is released.
 	 */
 	
-	Blob_p Blob::create( int bytes )
+	Blob_p Blob::create( int size )
 	{
-		Blob * pBlob = new(bytes) Blob( bytes );
+		Blob * pBlob = new(size) Blob( size );
 		return Blob_p(pBlob);
 	}
 	
@@ -54,24 +54,48 @@ namespace wg
 	 * 
 	 * @param pData			Pointer at the data to be considered the content of the Blob.
 	 * 
-	 * @param pDestructor 	Pointer at a function that is called to destroy the data
+	 * @param destructor 	Lambda function that is called to destroy the data
 	 * 						when the Blob is destroyed.
 	 * 
 	 * This method creates a Blob that refers to the object or data structure given as its content.
-	 * When the Blob is destroyed, it will make a call to pDestructor with pData as parameter. It will
-	 * then be up to pDestructor to actually destroy the data (or not).
+	 * When the Blob is destroyed, the destructor function is called.
 	 * 
 	 * Since the size of the object/data is unknown to the blob, a call to size() will return 0.
 	 * 
 	 */
 	
 	
-	Blob_p Blob::create(void * pData, void(*pDestructor)(void*) )
+	Blob_p Blob::create(void * pData, std::function<void()> destructor )
 	{
-		Blob * pBlob = new(0) Blob( pData, pDestructor );
+		Blob * pBlob = new(0) Blob( pData, 0, destructor );
 		return Blob_p(pBlob);
 	}
 	
+	/**
+	 * @brief Wrap a non-WonderGUI object or arbritary data into a Blob.
+	 *
+	 * Wrap a non-WonderGUI object or arbitrary data into a Blob.
+	 * 
+	 * @param pData			Pointer at the data to be considered the content of the Blob.
+	 * 
+	 * @param size			Size of the data pointed to by pData.
+	 *
+	 * @param destructor 	Lambda function that is called to destroy the data
+	 * 						when the Blob is destroyed.
+	 * 
+	 * This method creates a Blob that refers to the object or data structure given as its content.
+	 * When the Blob is destroyed, the destructor function is called.
+	 * 
+	 * The size parameter is not used internally, just kept and returned when size() is called.
+	 * 
+	 */
+	
+	
+	Blob_p Blob::create(void * pData, int size, std::function<void()> destructor )
+	{
+		Blob * pBlob = new(0) Blob( pData, size, destructor );
+		return Blob_p(pBlob);
+	}
 	
 	
 	//____ Constructor ____________________________________________________________
@@ -80,14 +104,14 @@ namespace wg
 	{
 		m_size = size;
 		m_pContent = ((char*)this) + sizeof(Blob);
-		m_pDestructor = 0;
+		m_destructor = nullptr;
 	}
 	
-	Blob::Blob( void * pData, void(*pDestructor)(void*) )
+	Blob::Blob( void * pData, int size, std::function<void()> destructor )
 	{
-		m_size = 0;
+		m_size = size;
 		m_pContent = pData;
-		m_pDestructor = pDestructor;
+		m_destructor = destructor;
 	}
 	
 	
@@ -95,8 +119,8 @@ namespace wg
 	
 	Blob::~Blob()
 	{
-		if( m_pDestructor )
-			m_pDestructor( m_pContent );
+		if( m_destructor != nullptr )
+			m_destructor();
 	}
 	
 	//____ isInstanceOf() _________________________________________________________

@@ -29,10 +29,9 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Finalizer::Finalizer( void(*pCallback)(void*), void * pObject )
+	Finalizer::Finalizer( void * pObject, std::function<void()> func )
 	{
-		m_pCallback = pCallback;
-		m_pObject = pObject;
+		m_function = func;
 	}
 	
 	
@@ -40,8 +39,7 @@ namespace wg
 	
 	Finalizer::~Finalizer()
 	{
-		if( m_pCallback )
-			m_pCallback( m_pObject );
+		m_function();
 	}
 	
 	//____ isInstanceOf() _________________________________________________________

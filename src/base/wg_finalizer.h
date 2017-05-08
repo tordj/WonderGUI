@@ -24,7 +24,7 @@
 #define	WG_FINALIZER_DOT_H
 #pragma once
 
-
+#include <functional>
 #include <wg_pointers.h>
 
 namespace wg 
@@ -39,7 +39,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static Finalizer_p	create( void(*pCallback)(void*), void * pObject ) { return new Finalizer(pCallback,pObject); };
+		static Finalizer_p	create( void * pObject, std::function<void()> func ) { return new Finalizer(pObject,func); };
 	
 		//.____ Identification __________________________________________
 
@@ -49,11 +49,10 @@ namespace wg
 		static Finalizer_p	cast( const Object_p& pObject );
 	
 	protected:
-		Finalizer(void(*pCallback)(void*),void * pObject);
+		Finalizer(void * pObject, std::function<void()> func);
 		virtual ~Finalizer();
 	
-		void(*m_pCallback)(void*);
-		void *	m_pObject;
+		std::function<void()>	m_function;
 	};
 	
 	

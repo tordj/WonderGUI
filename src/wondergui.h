@@ -39,6 +39,7 @@
 #include <wg_msgfunc.h>
 #include <wg_msgrouter.h>
 #include <wg_msglogger.h>
+#include <wg_finalizer.h>
 #include <wg_font.h>
 #include <wg_geo.h>
 #include <wg_gfxanim.h>

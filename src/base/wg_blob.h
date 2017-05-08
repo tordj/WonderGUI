@@ -25,6 +25,7 @@
 #pragma once
 
 #include <stddef.h>
+#include <functional>
 
 #include <wg_pointers.h>
 
@@ -51,8 +52,9 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static Blob_p	create( int bytes );
-		static Blob_p	create( void * pData, void(*pDestructor)(void*) );
+		static Blob_p	create( int size );
+		static Blob_p	create( void * pData, std::function<void()> destructor );
+		static Blob_p	create( void * pData, int size, std::function<void()> destructor );
 
 		//.____ Identification __________________________________________
 	
@@ -76,7 +78,7 @@ namespace wg
 	
 	protected:
 		Blob( int bytes );
-		Blob( void * pData, void(*pDestructor)(void*) );
+		Blob( void * pData, int size, std::function<void()> destructor );
 		virtual ~Blob();
 	
 		void* operator new (size_t s, int bytes) { return new char[sizeof(Blob) + bytes]; }
@@ -85,7 +87,8 @@ namespace wg
 	
 		int		m_size;
 		void *	m_pContent;
-		void(*m_pDestructor)(void*);
+
+		std::function<void()> m_destructor;
 	};
 	
 
