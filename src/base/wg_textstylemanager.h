@@ -29,7 +29,7 @@
 
 namespace wg
 {
-	class TextStyleManager
+	class TextStyleManager  /** @private */
 	{
 	friend class Base;
 	friend class TextStyle;

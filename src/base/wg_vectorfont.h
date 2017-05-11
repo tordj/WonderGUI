@@ -50,12 +50,6 @@ namespace wg
 	class VectorFont : public Font
 	{
 	public:
-		static VectorFont_p	create( Blob_p pFontFile, int faceIndex ) { return VectorFont_p(new VectorFont(pFontFile,faceIndex)); }
-
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
-		static const char	CLASSNAME[];
-		static VectorFont_p	cast( const Object_p& pObject );
 
 		enum class RenderMode
 		{
@@ -64,11 +58,21 @@ namespace wg
 			BestShapes
 		};
 
+		//.____ Creation __________________________________________
+		
+		static VectorFont_p	create( Blob_p pFontFile, int faceIndex ) { return VectorFont_p(new VectorFont(pFontFile,faceIndex)); }
+
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf( const char * pClassName ) const;
+		const char *		className( void ) const;
+		static const char	CLASSNAME[];
+		static VectorFont_p	cast( const Object_p& pObject );
+
+		//.____ Rendering ______________________________________________________
 
 		bool		setSize( int size );
 		inline int	size() { return m_size; }
-
-		//---
 
 		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
 		Glyph_p		getGlyph( uint16_t chr );
@@ -79,12 +83,17 @@ namespace wg
 		int			maxAscend();
 		int			maxDescend();
 
-		//----
+		//.____ Misc ___________________________________________________________		
 
 		int			nbGlyphs();
 		bool		hasGlyphs();
 		bool		hasGlyph( uint16_t chr );
 		bool		isMonospace();
+
+		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
+		static void	clearCache();
+
+		//.____ Appearance ___________________________________________
 
 		inline void	setSizeOffset( int offset ) { m_sizeOffset = offset; }
 		inline int	sizeOffset() const { return m_sizeOffset; }
@@ -94,8 +103,6 @@ namespace wg
 		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
 		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= MaxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
 
-		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
-		static void	clearCache();
 
 	private:
 		VectorFont( Blob_p pFontFile, int faceIndex );

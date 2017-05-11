@@ -49,13 +49,19 @@ namespace wg
 	class TextLink : public Object
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static TextLink_p create( const std::string& link ) { return TextLink_p(new TextLink(link)); }
 		static TextLink_p create( const std::string& link, const TextStyle_p& pStyle ) { return TextLink_p(new TextLink(link, pStyle)); }
+
+		//.____ Identification __________________________________________
 	
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static TextLink_p		cast( const Object_p& pObject );
+
+		//.____ Misc ___________________________________________________________		
 		
 		const std::string&		link() const { return m_link; }
 		TextStyle_p				style() const;

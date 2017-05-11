@@ -50,25 +50,33 @@ namespace wg
 	{
 	friend class ToggleButton;
 	public:
+
+		//.____ Creation __________________________________________
+
 		static ToggleGroup_p	create() { return ToggleGroup_p(new ToggleGroup()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ToggleGroup_p	cast( const Object_p& pObject );	
-	
+
+		//.____ Behavior _____________________________________________
 	
 		inline bool			requireSelected() const { return m_bRequireSelected; } 	///< @brief Check if group requires a button to be selected at all time.
 		void				setRequireSelected(bool bRequire);						///< @brief Set if group should require a button to always be selected.
+
+		//.____ Misc _______________________________________________
 	
-		void				add( const ToggleButton_p& pToggleButton );			///< @brief Add widget to this group.
-		bool				remove( const ToggleButton_p& pToggleButton );		///< @brief Remove a widget from this group.
+		void				add( const ToggleButton_p& pToggleButton );				///< @brief Add widget to this group.
+		bool				remove( const ToggleButton_p& pToggleButton );			///< @brief Remove a widget from this group.
 		void				clear();												///< @brief Remove all widgets from this group.
 		
-		ToggleButton_p	get( int index );										///< @brief Get widget at specified index in group.
+		ToggleButton_p		get( int index );										///< @brief Get widget at specified index in group.
 		int					size() const;											///< @brief Get number of widgets in group.
 			
-		ToggleButton_p	selected() const;										///< @brief Get the selected widget.
+		ToggleButton_p		selected() const;										///< @brief Get the selected widget.
 	
 	
 	protected:

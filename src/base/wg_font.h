@@ -81,32 +81,38 @@ namespace wg
 	class Font : public Object
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static Font_p	cast( const Object_p& pObject );
+
+		//.____ Rendering ____________________________________________
 	
-		virtual int				nbGlyphs() = 0;
-		virtual bool			hasGlyphs() = 0;
-		virtual bool			isMonospace() = 0;
-		virtual bool			isMonochrome();
-		virtual bool			hasGlyph( uint16_t chr ) = 0;
-
-
 		virtual bool			setSize( int size ) = 0;
 		virtual int				size() = 0;
-
-
-		// Methods dealing with the font in the specified size.
-	
 		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
 		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
-	
+
 		virtual int				lineGap() = 0;
 		virtual int				whitespaceAdvance() = 0;
 		virtual int				maxAdvance() = 0;
 		virtual int				maxAscend() = 0;
 		virtual int				maxDescend() = 0;
+
+		//.____ Misc ___________________________________________________________
+	
+		virtual int				nbGlyphs() = 0;
+		virtual bool			hasGlyphs() = 0;
+		virtual bool			hasGlyph( uint16_t chr ) = 0;
+		virtual bool			isMonospace() = 0;
+		virtual bool			isMonochrome();
+
+
+
+
+	
 	
 	protected:
 		Font() {}

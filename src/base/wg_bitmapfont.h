@@ -40,35 +40,40 @@ namespace wg
 	class BitmapFont : public Font
 	{
 	public:
+		//.____ Creation __________________________________________
+		
 		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
+
+		//.____ Identification __________________________________________
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static BitmapFont_p	cast( const Object_p& pObject );
 	
-	
-		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec );
+		//.____ Rendering ______________________________________________________
 
-
-		inline int			nbGlyphs() { return m_nGlyphs; }
-		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
-		inline bool			isMonospace() { return m_bMonospace; }
-		inline bool			isMonochrome() { return m_bMonochrome; }
-		bool				hasGlyph( uint16_t chr );
-	
 		inline bool			setSize( int size ) { return (size == m_size);};						// Size is just a dummy for BitmapFont...
 		inline int			size() { return m_size; }
-	
-	
+		
 		Glyph_p				getGlyph( uint16_t chr );
 		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
-	
+
 		inline int			lineGap() { return m_lineGap; }
 		inline int			whitespaceAdvance() { return m_spaceAdvance; }
 		inline int			maxAdvance() { return m_maxAdvance; }
 		inline int 			maxAscend() { return m_maxAscend; }
 		inline int 			maxDescend() { return m_maxDescend; }
+
+		//.____ Misc ___________________________________________________________
+
+		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec );
+
+		inline int			nbGlyphs() { return m_nGlyphs; }
+		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
+		bool				hasGlyph( uint16_t chr );
+		inline bool			isMonospace() { return m_bMonospace; }
+		inline bool			isMonochrome() { return m_bMonochrome; }
 	
 	protected:
 		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec );

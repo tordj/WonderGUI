@@ -49,18 +49,22 @@ namespace wg
 	friend class RootPanel;
 	
 	public:
+		//.____ Creation __________________________________________
+
 		static MsgRouter_p	create() { return MsgRouter_p(new MsgRouter()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static MsgRouter_p	cast( const Object_p& pObject );
+
+		//.____ Control _________________________________________________
 	
-		bool		post( const Msg_p& pMsg );
-	
+		bool		post( const Msg_p& pMsg );	
 		void		dispatch();
 		
-		//----
 	
 		bool		broadcastTo( const Receiver_p& pReceiver );
 		bool		endBroadcast( const Receiver_p& pReceiver );
