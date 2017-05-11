@@ -39,7 +39,7 @@ namespace wg
 		if (!pWidget)
 			return false;
 
-		if (m_pSlotArray->isEmpty() || !m_pHolder->m_pSortFunc)
+		if (m_pSlotArray->isEmpty() || !m_pHolder->m_sortFunc)
 			return add(pWidget);
 
 		int index = m_pHolder->_getInsertionPoint(pWidget.rawPtr());
@@ -63,7 +63,6 @@ namespace wg
 		m_bHorizontal = false;
 		m_sortOrder = SortOrder::Ascending;
 		m_header.setSortOrder( SortOrder::Ascending );
-		m_pSortFunc = 0;
 	
 		m_maxEntrySize = Size(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 	
@@ -135,13 +134,10 @@ namespace wg
 	
 	//____ setSortFunction() ______________________________________________________
 	
-	void PackList::setSortFunction( WidgetSortFunc pSortFunc )
+	void PackList::setSortFunction( std::function<int(const Widget *,const Widget *)> func )
 	{
-		if( pSortFunc != m_pSortFunc )
-		{
-			m_pSortFunc = pSortFunc;
-			_sortEntries();
-		}
+		m_sortFunc = func;
+		_sortEntries();
 	}
 	
 	//____ preferredSize() ________________________________________________________
@@ -831,7 +827,7 @@ namespace wg
 		{
 			PackListSlot * pSlot = m_children.slot(middle);
 	
-			int cmpRes = m_pSortFunc( pSlot->pWidget, pWidget )*negator;
+			int cmpRes = m_sortFunc( pSlot->pWidget, pWidget )*negator;
 	
 			if( cmpRes < 0 )
 				first = middle + 1;
@@ -1382,7 +1378,7 @@ namespace wg
 	
 	bool PackList::_sortEntries()
 	{
-		if( !m_pSortFunc )
+		if( !m_sortFunc )
 			return false;
 	
 		if( m_children.isEmpty() )
@@ -1407,7 +1403,7 @@ namespace wg
 			{
 				Widget * pEntry = m_children.slot(pOrderList[middle])->pWidget;
 	
-				int cmpRes = m_pSortFunc( pEntry, pWidget ) * negator;
+				int cmpRes = m_sortFunc( pEntry, pWidget ) * negator;
 	
 				if( cmpRes < 0 )
 					first = middle + 1;

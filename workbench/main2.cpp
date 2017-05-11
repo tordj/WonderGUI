@@ -826,7 +826,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
 	pParent->children.add( pChild );
-	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
+//	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
 }
 
 //____ convertSDLFormat() ______________________________________________________

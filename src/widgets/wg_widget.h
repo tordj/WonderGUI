@@ -270,9 +270,7 @@ namespace wg
 		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
 	
 	};
-	
-	typedef	int(*WidgetSortFunc)(const Widget *,const Widget *);
-	
+		
 	
 	
 	//____ Inline methods __________________________________________________________

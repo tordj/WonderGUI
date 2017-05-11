@@ -23,8 +23,11 @@
 #define WG_PACKLIST_DOT_H
 #pragma once
 
+#include <functional>
+
 #include <wg_list.h>
 #include <wg_columnheader.h>
+
 
 namespace wg 
 {
@@ -110,8 +113,11 @@ namespace wg
 		void				setSortOrder( SortOrder order );
 		SortOrder			sortOrder() const { return m_sortOrder; }
 	
-		void				setSortFunction( WidgetSortFunc pSortFunc );
-		WidgetSortFunc		sortFunction() const { return m_pSortFunc; }
+
+//		typedef	int(*WidgetSortFunc)(const Widget *, const Widget *);
+
+		void				setSortFunction( std::function<int(const Widget *, const Widget *)> func );
+		std::function<int(const Widget *, const Widget *)> sortFunction() const { return m_sortFunc; }
 	
 
 	protected:
@@ -216,7 +222,7 @@ namespace wg
 		bool				m_bHorizontal;
 	
 		SortOrder			m_sortOrder;
-		WidgetSortFunc		m_pSortFunc;
+		std::function<int(const Widget *,const Widget *)> m_sortFunc;
 		
 		int					m_contentBreadth;
 		int					m_contentLength;

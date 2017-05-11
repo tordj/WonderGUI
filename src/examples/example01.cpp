@@ -44,7 +44,6 @@ using namespace wg;
 void 			translateEvents( RootPanel_p pRoot );
 MouseButton 	translateMouseButton( uint8_t button );
 void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
-void 			myButtonClickCallback( const Msg_p& pMsg );
 
 bool			bQuit = false;	// Set to false by myButtonClickCallback() or translateEvents().
 
@@ -139,7 +138,7 @@ int main ( int argc, char** argv )
 
 	// Finally we add a callback to the click-event of the button.
 
-	Base::msgRouter()->addRoute( MsgType::Select, MsgFunc::create( myButtonClickCallback ) );
+	Base::msgRouter()->addRoute(MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; } );
 	
 
 	//------------------------------------------------------
@@ -277,12 +276,5 @@ void updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow )
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );
 
 	Base::memStackRelease( sizeof(SDL_Rect) * nRects );
-}
-
-//____ myButtonClickCallback() _________________________________________________
-
-void myButtonClickCallback( const Msg_p& pMsg )
-{
-	bQuit = true;
 }
 

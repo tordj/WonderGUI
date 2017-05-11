@@ -36,7 +36,6 @@
 #include <wg_color.h>
 #include <wg_caret.h>
 #include <wg_dummyfont.h>
-#include <wg_msgfunc.h>
 #include <wg_msgrouter.h>
 #include <wg_msglogger.h>
 #include <wg_finalizer.h>
