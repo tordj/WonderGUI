@@ -77,22 +77,30 @@ namespace wg
 	
 	//____ broadcastTo() ___________________________________________________________
 	
-	bool  MsgRouter::broadcastTo( const Receiver_p& pReceiver )
+	RouteId  MsgRouter::broadcastTo( const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
+		p->m_handle = m_routeCounter++;
 		m_broadcasts.pushBack( p );
-		return true;
+		return p->m_handle;
 	}
-		
+
+	RouteId  MsgRouter::broadcastTo(std::function<void(const Msg_p& pMsg)> func)
+	{
+		Route * p = new FunctionRoute(func, MsgType::Dummy);
+		p->m_handle = m_routeCounter++;
+		m_broadcasts.pushBack(p);
+		return p->m_handle;
+	}
+
 	//____ endBroadcast() __________________________________________________________
 	
-	bool  MsgRouter::endBroadcast( const Receiver_p& _pReceiver )
+	bool  MsgRouter::endBroadcast( RouteId handle )
 	{
-		Receiver * pReceiver = _pReceiver.rawPtr();
 		Route * p = m_broadcasts.first();
 		while( p )
 		{
-			if( p->receiver() == pReceiver )
+			if( p->m_handle == handle )
 			{
 				delete p;
 				return true;
@@ -103,34 +111,51 @@ namespace wg
 		return false;
 	}
 	
-	
 	//____ addRoute() __________________________________________________________
 	
 	RouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
 		return _addRoute( pSource, p );
 	}
 	
 	RouteId MsgRouter::addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr(), filter );
+		Route * p = new ObjectRoute( pReceiver.rawPtr(), filter );
 		return _addRoute( pSource, p );
 	}
 	
 	RouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
 	{
-		Route * p = new Route( pReceiver.rawPtr(), MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
 		return _addRoute( msgType, p );	
 	}
 	
 	RouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
 	{
-		Route * p = new Route( pReceiver, MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver, MsgType::Dummy );
 		return _addRoute( msgType, p );	
 	}
 
-	
+	RouteId MsgRouter::addRoute(const Object_p& pSource, std::function<void(const Msg_p& pMsg)> func)
+	{
+		Route * p = new FunctionRoute(func, MsgType::Dummy);
+		return _addRoute(pSource, p);
+	}
+
+	RouteId MsgRouter::addRoute(const Object_p& pSource, MsgType filter, std::function<void(const Msg_p& pMsg)> func)
+	{
+		Route * p = new FunctionRoute(func, filter);
+		return _addRoute(pSource, p);
+	}
+
+	RouteId MsgRouter::addRoute(MsgType msgType, std::function<void(const Msg_p& pMsg)> func)
+	{
+		Route * p = new FunctionRoute(func, MsgType::Dummy);
+		return _addRoute(msgType, p);
+	}
+
+
 	//____ deleteRoutesTo() _______________________________________________________
 	
 	int MsgRouter::deleteRoutesTo( const Receiver_p& _pReceiver )
@@ -477,34 +502,67 @@ namespace wg
 		}
 	}
 		
-	
-	MsgRouter::Route::Route( Receiver * pReceiver, MsgType filter )
+
+	MsgRouter::Route::Route(MsgType filter)
+	{
+		m_filter = filter;
+	}
+
+	MsgRouter::Route::~Route()
+	{
+	}
+
+	MsgRouter::ObjectRoute::ObjectRoute( Receiver * pReceiver, MsgType filter ) : Route(filter)
 	{
 		m_pReceiver = pReceiver;
-		m_filter 	= filter;
 		pReceiver->_onRouteAdded();
 	}
 	
-	MsgRouter::Route::~Route()
+	MsgRouter::ObjectRoute::~ObjectRoute()
 	{
 		if( m_pReceiver )
 			m_pReceiver->_onRouteRemoved();
 	}
 	
-	void MsgRouter::Route::dispatch( const Msg_p& pMsg )
+	void MsgRouter::ObjectRoute::dispatch( const Msg_p& pMsg )
 	{
 		m_pReceiver->receive( pMsg );
 	}
 	
-	bool MsgRouter::Route::isAlive() const
+	bool MsgRouter::ObjectRoute::isAlive() const
 	{
-		return true;
+		return m_pReceiver != nullptr;
 	}
 	
-	Receiver * MsgRouter::Route::receiver() const
+	Receiver * MsgRouter::ObjectRoute::receiver() const
 	{
 		return m_pReceiver.rawPtr();
 	}
 	
+	MsgRouter::FunctionRoute::FunctionRoute(std::function<void(const Msg_p& pMsg)> func, MsgType filter) : Route(filter)
+	{
+		m_func = func;
+	}
+
+	MsgRouter::FunctionRoute::~FunctionRoute()
+	{
+	}
+
+	void MsgRouter::FunctionRoute::dispatch(const Msg_p& pMsg)
+	{
+		m_func(pMsg);
+	}
+
+	bool MsgRouter::FunctionRoute::isAlive() const
+	{
+		return true;
+	}
+
+	Receiver * MsgRouter::FunctionRoute::receiver() const
+	{
+		return nullptr;
+	}
+
+
 
 } // namespace wg

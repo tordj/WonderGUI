@@ -26,6 +26,7 @@
 #include <deque>
 #include <map>
 #include <vector>
+#include <functional>
 
 #include <wg_msg.h>
 
@@ -66,13 +67,19 @@ namespace wg
 		void		dispatch();
 		
 	
-		bool		broadcastTo( const Receiver_p& pReceiver );
-		bool		endBroadcast( const Receiver_p& pReceiver );
+		RouteId		broadcastTo( const Receiver_p& pReceiver );
+		RouteId		broadcastTo(std::function<void(const Msg_p& pMsg)> func );
+		bool		endBroadcast( RouteId handle );
 		
 		RouteId		addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
 		RouteId		addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver );
 		RouteId		addRoute( MsgType type, const Receiver_p& pReceiver );
-	
+
+		RouteId		addRoute(const Object_p& pSource, std::function<void(const Msg_p& pMsg)> func);
+		RouteId		addRoute(const Object_p& pSource, MsgType filter, std::function<void(const Msg_p& pMsg)> func);
+		RouteId		addRoute(MsgType type, std::function<void(const Msg_p& pMsg)> func);
+
+
 		RouteId		addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
 		bool		deleteRoute( RouteId handle );
@@ -98,8 +105,8 @@ namespace wg
 		void		_dispatchToSourceRoutes( const Msg_p& pMsg );
 		void		_dispatchToTypeRoutes( const Msg_p& pMsg );
 			
-		RouteId	_addRoute( const Object_p& pSource, Route * pRoute );
-		RouteId	_addRoute( MsgType type, Route * pRoute );
+		RouteId		_addRoute( const Object_p& pSource, Route * pRoute );
+		RouteId		_addRoute( MsgType type, Route * pRoute );
 	
 		//
 			
@@ -107,26 +114,60 @@ namespace wg
 		{
 		friend class MsgRouter;
 		public:
-			Route( Receiver * pReceiver, MsgType filter );
+			Route( MsgType filter );
 			virtual ~Route();
 	
 			LINK_METHODS(Route);
 	
-			void 	dispatch( const Msg_p& pMsg );
-			bool 	isAlive() const;
-			Receiver *	receiver() const;
+			virtual void 		dispatch( const Msg_p& pMsg ) = 0;
+			virtual bool 		isAlive() const = 0;
+			virtual Receiver *	receiver() const = 0;
 	
 		protected:
 			RouteId				m_handle;
-			Receiver_wp			m_pReceiver;
 			MsgType				m_filter;					// Filter for dispatching. Message needs to be the same if filter != Dummy
 		};
-	
+
+		//
+
+		class ObjectRoute : public Route
+		{
+		public:
+			ObjectRoute( Receiver * pReceiver, MsgType filter);
+			virtual ~ObjectRoute();
+
+			void 		dispatch(const Msg_p& pMsg);
+			bool 		isAlive() const;
+			Receiver *	receiver() const;
+
+		protected:
+			Receiver_wp			m_pReceiver;
+		};
+
+		//
+
+		class FunctionRoute : public Route
+		{
+		public:
+			FunctionRoute(std::function<void(const Msg_p& pMsg)> func, MsgType filter);
+			virtual ~FunctionRoute();
+
+			void 		dispatch(const Msg_p& pMsg);
+			bool 		isAlive() const;
+			Receiver *	receiver() const;
+
+		protected:
+			std::function<void( const Msg_p& pMsg )> m_func;
+		};
+
+
+
+
 		std::deque<Msg_p>			m_msgQueue;
 		bool						m_bIsProcessing;		// Set when we are inside dispatch().
 		std::deque<Msg_p>::iterator	m_insertPos;			// Position where we insert messages being queued when processing.
 	
-		RouteId				m_routeCounter;					// Increment by one for each new callbackHandle, gives unique IDs.
+		RouteId					m_routeCounter;				// Increment by one for each new callbackHandle, gives unique IDs.
 		Chain<Route>			m_broadcasts;
 	
 		std::map<Object_wp,Chain<Route> >	m_sourceRoutes;

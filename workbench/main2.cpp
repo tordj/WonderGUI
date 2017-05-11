@@ -155,7 +155,6 @@ int main ( int argc, char** argv )
 	
 	Base::msgRouter()->broadcastTo( pLogger );
 
-
 	// Init font
 
 	PixelFormat	format;
@@ -255,11 +254,12 @@ int main ( int argc, char** argv )
 	pImage0->setSkin(pSimpleButtonSkin);
 	pFlexPanel->children.addMovable(pImage0, Rect(0, 0, 80 * 2, 33 * 2), Origo::East, Origo::East);
 
+	Base::msgRouter()->addRoute(MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
-	Image_p pImage = Image::create();
-	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
-//	pFlexPanel->children.addPinned(pImage, { Origo::Center,-100,-20 }, { Origo::SouthEast, -10, -10 } );
+
+//	Image_p pImage = Image::create();
+//	pImage->setSkin( pSimpleButtonSkin );
+//	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
 
 
 //	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
