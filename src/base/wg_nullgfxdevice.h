@@ -41,18 +41,24 @@ namespace wg
 	class NullGfxDevice : public GfxDevice
 	{
 	public:
+		//.____ Creation ________________________________________________
+
 		static NullGfxDevice_p	create( Size size );
 	
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static NullGfxDevice_p	cast( const Object_p& pObject );
-
 		const char *			surfaceClassName( void ) const;
+
+		//.____ Misc _______________________________________________________
+
 		SurfaceFactory_p		surfaceFactory();
 	
-		//
-	
+		//.____ Rendering ________________________________________________
+
 		void	fill( const Rect& rect, const Color& col ) override;
 		void	blit( const Surface_p& src, const Rect& srcrect, Coord dest  ) override;
 		void	tileBlit( const Surface_p& src, const Rect& srcrect, const Rect& dest ) override;

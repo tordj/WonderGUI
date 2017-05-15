@@ -63,18 +63,25 @@ namespace wg
 
 		
 	public:
+		//.____ Creation __________________________________________
+
 		static TextStyle_p	create() { return TextStyle_p(new TextStyle()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static TextStyle_p	cast( const Object_p& pObject );
+
 	
-		inline TextStyle_h	handle() { return m_handle; }
-	
+		//.____ Hierarchy _____________________________________________
+
 		bool			setParent( const TextStyle_p& pParent );
 		void			cascade();
 	
+		//.____ Content _______________________________________________
+
 		void			setFont( const Font_p& pFont );
 		void			setLink( const TextLink_p& pLink );
 	
@@ -131,11 +138,13 @@ namespace wg
 		inline BlendMode		combRenderMode( State state ) const;
 		inline BlendMode		combBgRenderMode( State state ) const;
 
-	
+		//.____ Misc __________________________________________________________
+
+		inline TextStyle_h	handle() { return m_handle; }
+
 		void			exportAttr( State state, TextAttr * pDest ) const;
 		void			addToAttr( State state, TextAttr * pDest ) const;
 	
-
 		inline bool		isIdentical( const TextStyle_p& pOther ) { return isIdentical( pOther.rawPtr() ); }
 		inline bool		isIdenticalForState( const TextStyle_p& pOther, State state ) { return isIdenticalForState( pOther.rawPtr(), state ); }
 	

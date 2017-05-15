@@ -51,32 +51,36 @@ namespace wg
 	class GfxDevice : public Object
 	{
 	public:
-	
+
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static GfxDevice_p		cast( const Object_p& pObject );
-
 		virtual const char *	surfaceClassName( void ) const = 0;
+
+		//.____ Misc _______________________________________________________
+
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
 		
-		
+		//.____ Geometry _________________________________________________
+
+		inline Size	canvasSize() const { return m_canvasSize; }
+
+		//.____ State _________________________________________________
+
 		virtual void		setTintColor( Color color );
 		virtual bool		setBlendMode( BlendMode blendMode );
 	
 		inline const Color&	tintColor() const { return m_tintColor; }
 		inline BlendMode 	blendMode() const { return m_blendMode; }
-	
-		// Geometry related methods.
-	
-		inline Size	canvasSize() const { return m_canvasSize; }
-	
-		// Begin/end render methods.
+		
+		//.____ Rendering ________________________________________________
 	
 		virtual bool	beginRender();
 		virtual bool	endRender();
-	
-	
+		
 		// Low level draw methods.
 	
 		virtual void	fill( const Rect& rect, const Color& col ) = 0;

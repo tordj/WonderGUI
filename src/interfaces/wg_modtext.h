@@ -52,10 +52,12 @@ namespace wg
 	class ModText : public Text
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		ModText( TextItem * pItem ) : Text(pItem) {};
 	
-		inline ModText_p		ptr() { return ModText_p(_object(),this); }
-	
+		//.____ Content _____________________________________________
+
 		inline void				clear() { m_pItem->clear(); }
 	
 		inline void				set( const CharSeq& seq ) { m_pItem->set(seq); }
@@ -67,11 +69,18 @@ namespace wg
 		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pItem->replace(ofs,len,seq); }
 		inline int				remove( int ofs, int len ) { return m_pItem->remove(ofs,len); }
 
+		//.____ Appearance _____________________________________________
+
 		inline void				setCharStyle( const TextStyle_p& pStyle ) { m_pItem->setCharStyle(pStyle); }
 		inline void				setCharStyle( const TextStyle_p& pStyle, int ofs, int len) { m_pItem->setCharStyle(pStyle, ofs, len); }
 
 		inline void				clearCharStyle() { m_pItem->clearCharStyle(); }
 		inline void				clearCharStyle( int ofs, int len ) { m_pItem->clearCharStyle(ofs,len); }
+
+		//.____ Misc __________________________________________________
+
+		inline ModText_p		ptr() { return ModText_p(_object(), this); }
+
 	};
 	
 	

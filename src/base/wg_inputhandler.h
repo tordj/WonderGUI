@@ -56,48 +56,41 @@ namespace wg
 		
 	friend class RootPanel;	
 	public:
+		//.____ Creation __________________________________________
+
 		static InputHandler_p	create() { return new InputHandler(); }
-	
+
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static InputHandler_p	cast( const Object_p& pObject );
-	
-		void 		setPointer( const RootPanel_p& pRoot, Coord pos, int64_t timestamp = 0 );
-		void 		setButton( MouseButton button, bool bPressed, int64_t timestamp = 0 );
-		void 		setWheelRoll( int wheel, Coord distance, int64_t timestamp = 0 );
 
-		void 		setFocusedWindow( const RootPanel_p& pRoot );
+		//.____ Control _______________________________________________________
 
-		void 		setKey( int nativeKeyCode, bool bPressed, int64_t timestamp = 0 );
-		
-		bool		putText( const CharSeq& text );
-		
-		Widget_p 	focusedWidget() const { return _focusedWidget(); }
-		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
-		
-		bool		isButtonPressed( MouseButton button ) const;
-		bool		isAnyButtonPressed() const;
-		
-		bool		isKeyPressed( int nativeKeyCode ) const;
-		ModifierKeys modifierKeys() const { return m_modKeys; }
-		
-		void 		receive( const Msg_p& pMsg );
+		void 		setPointer(const RootPanel_p& pRoot, Coord pos, int64_t timestamp = 0);
+		void 		setButton(MouseButton button, bool bPressed, int64_t timestamp = 0);
+		void 		setWheelRoll(int wheel, Coord distance, int64_t timestamp = 0);
 
+		void 		setFocusedWindow(const RootPanel_p& pRoot);
 
-		void		mapKey( int native_keycode, Key translated_keycode );
-		void		unmapKey( int native_keycode );
+		void 		setKey(int nativeKeyCode, bool bPressed, int64_t timestamp = 0);
+
+		bool		putText(const CharSeq& text);
+
+		//.____ Behavior ____________________________________________________________
+
+		void		mapKey(int native_keycode, Key translated_keycode);
+		void		unmapKey(int native_keycode);
 		void		clearKeyMap();
-		Key			translateKey( int native_keycode );
 
-		void		mapCommand( int native_keycode, ModifierKeys modKeys, EditCmd command );
-		void		unmapCommand( int native_keycode, ModifierKeys modKeys );
+		void		mapCommand(int native_keycode, ModifierKeys modKeys, EditCmd command);
+		void		unmapCommand(int native_keycode, ModifierKeys modKeys);
 		void		clearCommandMap();
-		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
 
-
-		bool		setButtonRepeat( int delay, int rate );
-		bool		setKeyRepeat( int delay, int rate );
+		bool		setButtonRepeat(int delay, int rate);
+		bool		setKeyRepeat(int delay, int rate);
 
 		inline int	buttonRepeatDelay() { return m_buttonRepeatDelay; }
 		inline int	buttonRepeatRate() { return m_buttonRepeatRate; }
@@ -105,9 +98,28 @@ namespace wg
 		inline int	keyRepeatDelay() { return m_keyRepeatDelay; }
 		inline int	keyRepeatRate() { return m_keyRepeatRate; }
 
-		inline bool	setDoubleClickTresholds( int millisec, int pixels );
+		inline bool	setDoubleClickTresholds(int millisec, int pixels);
 		inline int	doubleClickTimeTreshold() { return m_doubleClickTimeTreshold; }
 		inline int	doubleClickDistanceTreshold() { return m_doubleClickDistanceTreshold; }
+
+		//.____ State _________________________________________________
+
+		Widget_p 	focusedWidget() const { return _focusedWidget(); }
+		RootPanel_p focusedWindow() const { return m_pFocusedRoot.rawPtr(); }
+
+		bool		isButtonPressed(MouseButton button) const;
+		bool		isAnyButtonPressed() const;
+
+		bool		isKeyPressed(int nativeKeyCode) const;
+		ModifierKeys modifierKeys() const { return m_modKeys; }
+
+		//.____ Misc _______________________________________________________
+
+		void 		receive( const Msg_p& pMsg );
+
+		Key			translateKey( int native_keycode );
+
+		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
 
 		
 	protected:

@@ -4,20 +4,23 @@ require 'nokogiri'
 
 
 $prioTable = {
-  'Creation' => 1,
-  'Components' => 2,
-  'Appearance' => 3,
-  'Content' => 4,
-  'Control' => 5,
-  'Behavior' => 6,
-  'State' => 7,
-  'Rendering' => 8,
-  'Geometry' => 9,
-  'Hierarchy' => 10,
-  'Debug' => 11,
-  'Identification' => 12,
-  'Misc' => 13,
-  'Internal' => 14,
+  'Creation' => 10,
+  'Components' => 20,
+  'Properties' => 30,
+  'Appearance' => 40,
+  'Content' => 50,
+  'Control' => 60,
+  'Behavior' => 70,
+  'State' => 80,
+  'Rendering' => 90,
+  'Geometry' => 100,
+  'Hierarchy' => 110,
+  'Debug' => 120,
+  'Identification' => 130,
+  'Misc' => 140,
+  'Operators' => 150,
+  'Definitions' => 160,
+  'Internal' => 170,
 
 }
 

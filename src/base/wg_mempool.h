@@ -33,9 +33,13 @@ namespace wg
 	class MemPool
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		MemPool( int entriesPerBlock, int entrySize );
 		virtual ~MemPool();
-	
+
+		//.____ Misc _______________________________________________________
+
 		void *	allocEntry();
 		void	freeEntry( void * pEntry );
 	

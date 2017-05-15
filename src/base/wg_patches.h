@@ -33,15 +33,20 @@ namespace wg
 	class Patches
 	{
 	public:
-		
+
+		//.____ Creation ______________________________________________________
+
 		Patches();
 		Patches( int startCapacity );
 		Patches( Rect * pArray, int capacity );
 		~Patches();
 	
+		//.____ Control ________________________________________________________
+
 		bool			setCapacity( int capacity );
 		bool			setArray( Rect * pArray, int capacity );
-	
+		inline void		clear() { m_size = 0; }
+
 		inline void		add( const Rect& rect ) { if( rect.w > 0 && rect.h > 0 ) _add( rect, 0 ); }						// Adds the area
 		void			add( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 		
@@ -50,18 +55,21 @@ namespace wg
 	
 		inline void		push( const Rect& rect );											// Adds the rect (no optimizations, overlap may occur).
 		int				push( const Patches * pSource, int ofs = 0, int len = INT_MAX );
-		inline Rect	pop();																// Pops last rect from the patches.
+		inline Rect		pop();																// Pops last rect from the patches.
 	
 		void			remove( int ofs );													// Deletes specific rect from the patches.
 		int				remove( int ofs, int len );											// Deletes range of rects from the patches.
 	
-		inline void		clear() { m_size = 0; }
+		//.____ Misc __________________________________________________________
+
 		void			clip( const Rect& clip );
 		Rect			getUnion() const;
 	
 		int				repair();															// Fixes any overlap that might have resulted from push()
 		int				optimize();															// Combines small patches into larger ones where possible
 	
+		//.____ Content ________________________________________________________
+
 		const Rect *	begin() const { return m_pFirst; }
 		const Rect *	end() const { return m_pFirst + m_size; }
 		int				size() const { return m_size; }

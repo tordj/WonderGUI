@@ -41,14 +41,18 @@ namespace wg
 	class Icon : public Interface
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Icon(IconItem* pItem) : m_pItem(pItem) {}
 	
-		inline Icon_p		ptr() { return Icon_p(_object(),this); }
-	
+		//.____ Content _____________________________________________
+
 		inline bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0),
 								 float scale = 0.f, bool bOverlap = false ) { return m_pItem->set(pIconGfx,origo,padding,scale,bOverlap); }
 		inline void			clear() { m_pItem->clear(); }
-	
+
+		//.____ Appearance _____________________________________________
+
 		inline bool			setScale( float scaleFactor ) { return m_pItem->setScale(scaleFactor); }
 		inline void			setOrigo( Origo origo ) { m_pItem->setOrigo(origo); }
 		inline void			setPadding( Border padding ) { m_pItem->setPadding(padding); }
@@ -60,6 +64,12 @@ namespace wg
 		inline Border		padding() const { return m_pItem->padding(); }
 		inline bool			overlap() const { return m_pItem->overlap(); }
 		inline Skin_p		skin() const { return m_pItem->skin(); }
+
+		//.____ Misc __________________________________________________
+
+		inline Icon_p		ptr() { return Icon_p(_object(), this); }
+
+
 	protected:
 		Object * 			_object() const { return m_pItem->_object(); };
 	

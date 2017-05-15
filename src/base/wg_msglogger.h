@@ -38,15 +38,19 @@ namespace wg
 	class MsgLogger : public Receiver
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static MsgLogger_p		create( std::ostream& stream ) { return MsgLogger_p( new MsgLogger(stream)); }
-	
+
+		//.____ Identification __________________________________________
+
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
 		static MsgLogger_p		cast( const Object_p& pObject );
-	
-		void receive( const Msg_p& _pMsg );
-	
+
+		//.____ Control _______________________________________________________
+
 		void ignoreMsg( MsgType msg );
 		void logMsg( MsgType msg );
 	
@@ -68,6 +72,10 @@ namespace wg
 		void logAllMsgs();
 		void ignoreAllMsgs();
 	
+		//.____ Misc _______________________________________________________
+
+		void receive(const Msg_p& _pMsg);
+
 		bool isMsgLogged( MsgType msg ) { return m_msgFilter[(int)msg]; }
 	
 	private:

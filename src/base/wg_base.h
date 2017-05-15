@@ -66,7 +66,12 @@ namespace wg
 	
 	class Base
 	{
+		friend class Object_wp;
+		friend class Interface_wp;
 	public:
+
+		//.____ Creation __________________________________________
+
 		static void init();
 		static int exit();
 	
@@ -75,28 +80,28 @@ namespace wg
 		static bool					initFreeType();
 		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 	#endif
-		
+
+		//.____ Content _____________________________________________
+
+		static MsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
+		static InputHandler_p	inputHandler() { return s_pData->pInputHandler; }
+
 		static void			setDefaultTextMapper( const TextMapper_p& pTextMapper );
 		static TextMapper_p defaultTextMapper() { assert(s_pData!=0); return s_pData->pDefaultTextMapper; }
 	
 		static void			setDefaultStyle( const TextStyle_p& pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 	
-		
+		//.____ Misc ________________________________________________
+
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
-	
-		static MsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
-		static InputHandler_p	inputHandler() { return s_pData->pInputHandler; }
-	 
-		//____
-	
-		static WeakPtrHub *	allocWeakPtrHub();
-		static void			freeWeakPtrHub( WeakPtrHub * pHub );
-	
-	
+		
 	private:
-	
+
+		static WeakPtrHub *	_allocWeakPtrHub();
+		static void			_freeWeakPtrHub(WeakPtrHub * pHub);
+
 		struct Data
 		{
 			MsgRouter_p		pMsgRouter;

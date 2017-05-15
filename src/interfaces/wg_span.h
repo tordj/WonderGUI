@@ -39,10 +39,12 @@ namespace wg
 	class Span : public Interface
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Span(SpanItem* pItem) : m_pItem(pItem) {}
-	
-		inline Span_p			ptr() { return Span_p(_object(),this); }
-	
+		
+		//.____ Control ___________________________________________	
+
 		inline int		min() const { return m_pItem->min; }
 		inline int		max() const { return m_pItem->max; }
 		inline int 		begin() const { return m_pItem->begin; }
@@ -52,7 +54,10 @@ namespace wg
 		inline float	relativeBegin() const { return m_pItem->relativeBegin(); }
 		inline float	relativeLength() const { return m_pItem->relativeLength(); };
 	
-	
+		//.____ Misc __________________________________________________
+
+		inline Span_p			ptr() { return Span_p(_object(), this); }
+
 	protected:
 		virtual Object * 		_object() const;
 	

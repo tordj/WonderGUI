@@ -39,19 +39,29 @@ namespace wg
 	class SoftGfxDevice : public GfxDevice
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static SoftGfxDevice_p	create();
 		static SoftGfxDevice_p	create( const SoftSurface_p& pCanvas );
 	
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static SoftGfxDevice_p	cast( const Object_p& pObject );
-	
 		const char *			surfaceClassName( void ) const;
+
+		//.____ Misc _______________________________________________________
+
 		SurfaceFactory_p		surfaceFactory();
 		
+		//.____ Geometry _________________________________________________
+
 		bool	setCanvas( const Surface_p& pCanvas );
 	
+		//.____ Rendering ________________________________________________
+
 		bool	beginRender();
 		bool	endRender();
 		

@@ -55,10 +55,12 @@ namespace wg
 	class Value : public Interface
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Value(ValueItem* pItem) : m_pItem(pItem) {}
 	
-		inline Value_p			ptr() { return Value_p(_object(),this); }
-	
+		//.____ Appearance _____________________________________________
+
 		inline void				setFormatter( const ValueFormatter_p& pFormatter ) { m_pItem->setFormatter(pFormatter); }
 		inline void				clearFormatter() { m_pItem->clearFormatter(); }
 		inline ValueFormatter_p	formatter() const { return m_pItem->formatter(); }
@@ -70,8 +72,16 @@ namespace wg
 		inline void				setTextMapper( const TextMapper_p& pTextMapper ) { m_pItem->setTextMapper(pTextMapper); }
 		inline void				clearTextMapper() { m_pItem->clearTextMapper(); }
 		inline TextMapper_p		textMapper() const { return m_pItem->textMapper(); }
-	
+
+		//.____ State _______________________________________________
+
 		inline State			state() const { return m_pItem->state(); }
+
+		//.____ Misc __________________________________________________
+
+		inline Value_p			ptr() { return Value_p(_object(), this); }
+
+
 	protected:
 		Object * 		_object() const;
 

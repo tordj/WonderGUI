@@ -42,21 +42,25 @@ namespace wg
 	class ColumnHeader : public Interface
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		ColumnHeader(ColumnHeaderItem* pItem);
-	
-		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(),this); }
-	
-		//____ Interfaces ______________________________________
+		
+		//.____ Components _______________________________________
 	
 		Icon			icon;
 		Icon			arrow;
 		ModText			label;
 	
-		//____ Methods _________________________________________
+		//.____ Appearance ____________________________________________
 	
 		inline void		setSkin( const Skin_p& pSkin ) { m_pItem->setSkin(pSkin); }
 		inline Skin_p	skin() const { return m_pItem->skin(); }
-	
+
+		//.____ Misc __________________________________________________
+
+		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(), this); }
+
 	
 	protected:
 		Object * 			_object() const;

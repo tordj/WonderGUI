@@ -48,20 +48,16 @@ namespace wg
 	class Color
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		inline Color() {};
 		inline Color( const Color& col );
 		inline Color( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
 		inline Color( uint32_t argb );
 		inline Color( uint32_t rgb, uint8_t a );
-	
-		inline bool operator==( const Color& k ) const;
-		inline bool operator!=( const Color& k ) const;
-	
-		Color	operator+( const Color& k ) const;
-		Color	operator-( const Color& k ) const;
-	
-		Color	operator*( float f ) const;
-		Color	operator*( const Color& k ) const;
+
+		//.____ Misc ________________________________________________
 
 		static Color	mix( Color color1, Color color2, uint8_t balance );
 		static Color	invert( Color color, uint8_t grade );
@@ -69,7 +65,20 @@ namespace wg
 	
 		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
 		void	getCMYK( float* c, float* m, float* y, float* k );
-	
+
+		//.____ Operators ___________________________________________
+
+		inline bool operator==(const Color& k) const;
+		inline bool operator!=(const Color& k) const;
+
+		Color	operator+(const Color& k) const;
+		Color	operator-(const Color& k) const;
+
+		Color	operator*(float f) const;
+		Color	operator*(const Color& k) const;
+
+		//.____ Properties __________________________________________
+
 		union
 		{
 			struct
@@ -82,7 +91,7 @@ namespace wg
 			uint32_t argb;
 		};
 	
-	
+		//.____ Definitions _________________________________________
 	
 		const static Color	Transparent;		// 0x00FFFFFF
 		const static Color	None;				// 0x00000000	// Handled differently than 'transparent' when cascading colors.

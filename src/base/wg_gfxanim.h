@@ -43,13 +43,19 @@ namespace wg
 	class	GfxAnim : public Anim
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static GfxAnim_p	create() { return GfxAnim_p(new GfxAnim()); }
-	
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static GfxAnim_p	cast( const Object_p& pObject );
-	
+
+		//.____ Misc ________________________________________________
+
 		void		setSize( Size size );
 		Size		size() const { return m_size; }
 	

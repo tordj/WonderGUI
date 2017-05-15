@@ -37,10 +37,11 @@ namespace wg
 	class ModSpan : public SlideSpan
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		ModSpan(SpanItem* pItem) : SlideSpan(pItem) {}
 	
-		inline ModSpan_p		ptr() { return ModSpan_p(_object(),this); }
-	
+		//.____ Control ___________________________________________	
 	
 		inline bool	setMin( int min ) { return m_pItem->setMin(min); }
 		inline bool	setMax( int max ) { return m_pItem->setMax(max); }
@@ -51,7 +52,11 @@ namespace wg
 	
 		inline void	setRelativeSpan( float begin, float length ) { m_pItem->setRelativeSpan(begin,length); }
 		inline void	setRelativeLength( float length ) { m_pItem->setRelativeLength(length); }
-	
+
+		//.____ Misc __________________________________________________
+
+		inline ModSpan_p		ptr() { return ModSpan_p(_object(), this); }
+
 	};
 	
 	

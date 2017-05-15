@@ -42,32 +42,50 @@ namespace wg
 		friend class SoftSurfaceFactory;
 	
 	 public:
-		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
+
+		 //.____ Creation __________________________________________
+		 
+		 static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
         static SoftSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
 		static SoftSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
 	
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static SoftSurface_p	cast( const Object_p& pObject );
 	
+		//.____ Geometry _________________________________________________
+
 		Size		size() const;
+		static Size	maxSize();
+
+		//.____ Appearance ____________________________________________________
+
 		bool		isOpaque() const;
 	
+		//.____ Content _______________________________________________________
+
 		uint32_t	pixel( Coord coord ) const;
 		uint8_t		alpha( Coord coord ) const;
 	
+		//.____ Control _______________________________________________________
+
 		uint8_t *	lock( AccessMode mode );
 		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
 		void		unlock();
-	
+
+		//.____ Misc __________________________________________________________
+
 		inline float scaleAlpha() { return m_fScaleAlpha; }
 		void		setScaleAlpha(float fScaleAlpha);
 	
+		//.____  Internal ____________________________________________________
+
 		void putPixels(const std::vector<int> &x, const std::vector<int> &y, const std::vector<uint32_t> &col, int length, bool replace);
 
-		static Size	maxSize();
 	
 	protected:
 		SoftSurface( Size size, PixelType type = PixelType::BGRA_8 );

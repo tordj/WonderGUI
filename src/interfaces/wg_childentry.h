@@ -51,7 +51,11 @@ namespace wg
 	{
 		
 	public:
+		//.____ Creation __________________________________________
+
 		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+
+		//.____ Operators __________________________________________
 
 		inline ChildEntry<SlotType,HolderType> operator=(const Widget_p& pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget.rawPtr()); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
@@ -64,6 +68,7 @@ namespace wg
 //		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
 		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
+		//.____ Content _______________________________________________________
 
 		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
 		inline void clear() { m_pHolder->_setWidget( m_pSlot, nullptr); }

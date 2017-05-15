@@ -57,13 +57,14 @@ namespace wg
 	{
 	
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Surface_p	cast( const Object_p& pObject );
 
-	
-		// Methods for reading dimensions and abilities.
+		//.____ Geometry _________________________________________________
 	
 		virtual	Size		size() const = 0;					///< @brief Get the size of the surface.
 																///<
@@ -72,6 +73,13 @@ namespace wg
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 	
+
+
+		//.____ Appearance ____________________________________________________
+
+		virtual void		setScaleMode( ScaleMode mode );
+		ScaleMode			scaleMode() const { return m_scaleMode; }
+
 		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
 																///<
 																///< Check if surface is entirely opaque.
@@ -85,12 +93,7 @@ namespace wg
 																///< @return True if surface is guaranteed to only contain completely opaque pixels. False if
 																///< if it does contain (semi)transparent pixels or we simply just don't know.
 
-		virtual void		setScaleMode( ScaleMode mode );
-		ScaleMode			scaleMode() const { return m_scaleMode; }
-
-	
-		// Slow, simple methods for reading and parsing individual pixels.
-	
+		//.____ Content _______________________________________________________
 	
 		virtual uint32_t	pixel( Coord coord ) const = 0;		///< @brief Get pixel at specified coordinate.
 																///<
@@ -129,7 +132,7 @@ namespace wg
 		virtual	uint32_t	colorToPixel( const Color& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 	
-		// Enums and methods for locking/unlocking of surface.
+		//.____ Control _______________________________________________________
 	
 		virtual uint8_t *	lock( AccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
 																///<
@@ -203,7 +206,7 @@ namespace wg
 																			///<		 null if surface is not locked.
 	
 	
-		// Methods for modifying surface content
+		//.____  Rendering ____________________________________________________
 	
 		virtual bool		fill( Color col );						///< @brief Fill surface with specified color.
 		virtual bool		fill( Color col, const Rect& region );	///< @brief Fill section of surface with specified color

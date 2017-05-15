@@ -42,7 +42,7 @@ namespace wg
 		{
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = Base::allocWeakPtrHub();
+				m_pHub = Base::_allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -67,7 +67,7 @@ namespace wg
 		{
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = Base::allocWeakPtrHub();
+				m_pHub = Base::_allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -94,7 +94,7 @@ namespace wg
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				Base::freeWeakPtrHub(m_pHub);
+				Base::_freeWeakPtrHub(m_pHub);
 			}
 		}
 	}
@@ -113,7 +113,7 @@ namespace wg
 				{
 					if( m_pHub->pObj )
 						m_pHub->pObj->m_pWeakPtrHub = 0;
-					Base::freeWeakPtrHub(m_pHub);
+					Base::_freeWeakPtrHub(m_pHub);
 				}
 			}
 	
@@ -132,7 +132,7 @@ namespace wg
 	
 			if( !pObj->m_pWeakPtrHub )
 			{
-				m_pHub = Base::allocWeakPtrHub();
+				m_pHub = Base::_allocWeakPtrHub();
 				m_pHub->refCnt = 1;
 				m_pHub->pObj = pObj;
 				pObj->m_pWeakPtrHub = m_pHub;
@@ -161,7 +161,7 @@ namespace wg
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pWeakPtrHub = 0;
-				Base::freeWeakPtrHub(m_pHub);
+				Base::_freeWeakPtrHub(m_pHub);
 			}
 		}
 	}
@@ -182,7 +182,7 @@ namespace wg
 				{
 					if( m_pHub->pObj )
 						m_pHub->pObj->m_pWeakPtrHub = 0;
-					Base::freeWeakPtrHub(m_pHub);
+					Base::_freeWeakPtrHub(m_pHub);
 				}
 			}
 	

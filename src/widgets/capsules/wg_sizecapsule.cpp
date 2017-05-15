@@ -119,17 +119,10 @@ namespace wg
 			Size pref = m_child.pWidget->preferredSize();
 	
 			if( m_preferred.w != 0 )
-			{
 				pref.w = m_preferred.w;
-				if( m_pScaler )
-					pref.w = (int) (pref.w * m_pScaler->scaleX());
-			}
+
 			if( m_preferred.h != 0 )
-			{
 				pref.h = m_preferred.h;
-				if( m_pScaler )
-					pref.h = (int) (pref.h * m_pScaler->scaleY());
-			}
 	
 			// Constrain against min/max, taking MatchingWidth/MatchingHeight into account.
 			//TODO: Check so we don't have any corner cases that breaks the constraints and
@@ -180,13 +173,7 @@ namespace wg
 		}
 		else
 		{
-			Size pref = m_preferred;
-			if( m_pScaler )
-			{
-				pref.w = (int) (pref.w * m_pScaler->scaleX());
-				pref.h = (int) (pref.h * m_pScaler->scaleY());
-			}
-			return pref;
+			return m_preferred;
 		}
 	}
 	
@@ -218,10 +205,7 @@ namespace wg
 		if( m_preferred.h != 0 )
 		{
 			int h = m_preferred.h;
-			
-			if( m_pScaler )
-				h = (int) (h * m_pScaler->scaleY() );
-	
+				
 			if( m_child.pWidget )
 			{
 				int max = m_child.pWidget->maxSize().h;
@@ -247,10 +231,7 @@ namespace wg
 		if( m_preferred.w != 0 )
 		{
 			int w = m_preferred.w;		
-	
-			if( m_pScaler )
-				w = (int) (w * m_pScaler->scaleX() );
-	
+		
 			if( m_child.pWidget )
 			{
 				int max = m_child.pWidget->maxSize().w;
@@ -269,11 +250,5 @@ namespace wg
 			return m_min.w;
 	}
 	
-	//____ _onScaleChanged() ______________________________________________________
-	
-	void SizeCapsule::_onScaleChanged()
-	{
-		_requestResize();
-	}
 
 } // namespace wg

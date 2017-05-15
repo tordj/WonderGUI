@@ -55,6 +55,9 @@ namespace wg
 		friend class Interface_p;
 		friend class Interface_wp;
 	public:
+
+		//.____ Misc __________________________________________________
+
 		inline Interface_p		ptr() { return Interface_p(_object(),this);}		///< @brief Get a pointer to this interface.
 		inline Object_p			holder() { return Object_p( _object() ); };			///< @breif Get a pointer to the object providing this interface.
 	

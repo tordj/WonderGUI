@@ -27,7 +27,6 @@
 #pragma once
 
 #include <wg_capsule.h>
-#include <wg_sizescaler.h>
 
 //TODO: Need to support skin padding.
 
@@ -38,7 +37,7 @@ namespace wg
 	typedef	StrongPtr<SizeCapsule,Capsule_p>		SizeCapsule_p;
 	typedef	WeakPtr<SizeCapsule,Capsule_p>		SizeCapsule_wp;
 	
-	class SizeCapsule : public Capsule, public Scalable
+	class SizeCapsule : public Capsule
 	{
 	public:
 		//.____ Creation __________________________________________
@@ -73,7 +72,6 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new SizeCapsule(); };
 	
 	private:
-		void	_onScaleChanged();
 	
 		Size			m_min;
 		Size			m_max;

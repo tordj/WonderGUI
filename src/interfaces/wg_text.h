@@ -55,10 +55,12 @@ namespace wg
 	class Text : public Interface
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Text( TextItem * pItem ) : m_pItem(pItem) {};
 	
-		inline Text_p			ptr() { return Text_p(_object(),this); }
-	
+		//.____ Appearance _____________________________________________
+
 		inline void				setStyle( const TextStyle_p& pStyle ) { m_pItem->setStyle(pStyle); }
 		inline void				clearStyle() { m_pItem->clearStyle(); }
 		inline TextStyle_p		style() const { return m_pItem->style(); }
@@ -66,13 +68,21 @@ namespace wg
 		inline void				setTextMapper( const TextMapper_p& pTextMapper ) { m_pItem->setTextMapper(pTextMapper); }
 		inline void				clearTextMapper() { m_pItem->clearTextMapper(); }
 		inline TextMapper_p		textMapper() const { return m_pItem->textMapper(); }
-	
-		inline 	String			get() const { return m_pItem->getString(); }
-	
+
+		//.____ State _______________________________________________
+
 		inline State			state() const { return m_pItem->state(); }
+
+		//.____ Content _____________________________________________
+
+		inline 	String			get() const { return m_pItem->getString(); }
 		inline int				length() const { return m_pItem->length(); }
 		inline bool				isEmpty() const { return m_pItem->isEmpty(); }
-	
+
+		//.____ Misc __________________________________________________
+
+		inline Text_p			ptr() { return Text_p(_object(), this); }
+
 	protected:
 		Object *				_object() const;
 	

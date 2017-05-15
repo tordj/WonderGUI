@@ -54,35 +54,45 @@ namespace wg
 		friend class GlSurfaceFactory;
 
 	public:
-        
+
+		//.____ Creation __________________________________________
+
         static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
         static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
         static GlSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
        
-        
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static GlSurface_p	cast( const Object_p& pObject );
 
-		inline	GLuint	getTexture() const { return m_texture; }
-
-		// Methods needed by Surface
-
-		void		setScaleMode( ScaleMode mode );
+		//.____ Geometry _________________________________________________
 
 		Size		size() const;
+		static Size	maxSize();
+
+		//.____ Appearance ____________________________________________________
+
+		void		setScaleMode(ScaleMode mode);
 		bool		isOpaque() const;
 
-		uint32_t	pixel( Coord coord ) const;
-		uint8_t		alpha( Coord coord ) const;
+		//.____ Content _______________________________________________________
 
-		uint8_t *	lock( AccessMode mode );
-		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
+		uint32_t	pixel(Coord coord) const;
+		uint8_t		alpha(Coord coord) const;
+
+		//.____ Control _______________________________________________________
+
+		uint8_t *	lock(AccessMode mode);
+		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
 		void		unlock();
 
-		static Size	maxSize();
+		//.____ Misc __________________________________________________________
+
+		inline	GLuint	getTexture() const { return m_texture; }
 
 	private:
         GlSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );

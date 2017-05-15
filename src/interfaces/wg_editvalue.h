@@ -48,9 +48,11 @@ namespace wg
 	class EditValue : public ModValue
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		EditValue(EditValueItem * pItem) : ModValue(pItem) {}
-	
-		inline EditValue_p		ptr() { return EditValue_p(_object(),this); }
+
+		//.____ State __________________________________________________
 	
 		virtual void			setEditMode(TextEditMode mode) = 0;
 		virtual TextEditMode	editMode() const = 0;
@@ -58,6 +60,8 @@ namespace wg
 		virtual bool			isEditable() const = 0;
 		virtual bool			isSelectable() const = 0;
 		
+		//.____ Content _____________________________________________
+
 		// Calling these methods gets item into edit mode, displaying caret.
 	
 		virtual int				insertAtCaret( const CharSeq& str ) = 0;
@@ -68,7 +72,9 @@ namespace wg
 		virtual int				replace( int ofs, int nDelete, const CharSeq& seq ) = 0;
 		virtual int				erase( int ofs, int len ) = 0;
 		virtual void			eraseSelected() = 0;
-	
+
+		//.____ Control _____________________________________________
+
 		virtual void			select( int ofs, int len ) = 0;
 		virtual void			selectAll() = 0;
 		virtual int				selectionBegin() const = 0;
@@ -79,7 +85,12 @@ namespace wg
 		virtual void			goEol() = 0;
 		virtual void			goBof() = 0;
 		virtual void			goEof() = 0;
-	
+
+		//.____ Misc __________________________________________________
+
+		inline EditValue_p		ptr() { return EditValue_p(_object(), this); }
+
+
 	private:
 		inline	EditValueItem * 	_item() { return static_cast<EditValueItem*>(m_pItem); }
 	};

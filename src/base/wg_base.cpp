@@ -108,17 +108,17 @@ namespace wg
 		return 0;
 	}
 	
-	//____ allocWeakPtrHub() ______________________________________________________
+	//____ _allocWeakPtrHub() ______________________________________________________
 	
-	WeakPtrHub * Base::allocWeakPtrHub()
+	WeakPtrHub * Base::_allocWeakPtrHub()
 	{
 		assert( s_pData != 0 );
 		return (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
 	}
 	
-	//____ freeWeakPtrHub() _______________________________________________________
+	//____ _freeWeakPtrHub() _______________________________________________________
 	
-	void Base::freeWeakPtrHub( WeakPtrHub * pHub )
+	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
 	{
 		assert( s_pData != 0 );
 		s_pData->pPtrPool->freeEntry( pHub );

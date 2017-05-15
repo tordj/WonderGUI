@@ -51,21 +51,26 @@ namespace wg
 	{
 		
 	public:
+		//.____ Creation __________________________________________
+
 		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
 
-		inline StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType,HolderType>,Interface_p>(_object(),this); }
 
+		//.____ Operators __________________________________________
 
 		inline Widget& operator[](int index) const { return * m_pSlotArray->slot(index)->pWidget; }
 
-		inline int		size() const { return m_pSlotArray->size(); } 
 
-		inline Widget_p get( int index) const 
-		{ 
-			if( index < 0 || index >= m_pSlotArray->size() )
+		//.____ Content _______________________________________________________
+
+		inline int		size() const { return m_pSlotArray->size(); }
+
+		inline Widget_p get(int index) const
+		{
+			if (index < 0 || index >= m_pSlotArray->size())
 				return nullptr;
 
-			return Widget_p(m_pSlotArray->slot(index)->pWidget); 
+			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
 		bool add( const Widget_p& pWidget )
@@ -106,7 +111,12 @@ namespace wg
 			m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); 
 			m_pSlotArray->clear(); 
 		}
-	
+
+		//.____ Misc _______________________________________________________
+
+		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>, Interface_p>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>, Interface_p>(_object(), this); }
+
+
 	protected:
 		Object *	_object() const {	return m_pHolder; }
 

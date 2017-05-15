@@ -48,26 +48,42 @@ namespace wg
 	class EditText : public ModText
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		EditText(EditTextItem * pItem) : ModText(pItem) {}
 	
-		inline EditText_p		ptr() { return EditText_p(_object(),this); }
+		//.____ State __________________________________________________
 
 		void			setEditMode(TextEditMode mode);
 		TextEditMode	editMode() const;
 		inline bool		isSelectable() const;
 		inline bool		isEditable() const;
-		
+
+		//.____ Content _____________________________________________
+
 		inline int		append( const CharSeq& seq );
 		inline int		insert( int ofs, const CharSeq& seq );
 		inline int		replace( int ofs, int nDelete, const CharSeq& seq );
 		inline int		erase( int ofs, int len );
-	
+
+		inline int		caretPut(const CharSeq& str);	// Will insert or overwrite depending on caret mode
+		inline bool		caretPut(uint16_t c);			// " -
+
+		inline int		eraseSelected();
+
+		inline bool		setMaxLines(int maxLines) { return _item()->setMaxLines(maxLines); }
+		inline int		maxLines() const { return _item()->maxLines(); }
+
+		inline bool		setMaxChars(int maxChars) { return _item()->setMaxChars(maxChars); }
+		inline int		maxChars() const { return _item()->maxChars(); }
+
+		//.____ Control _____________________________________________
+
 		// These methods will fail if editMode is Static
 
 		inline bool		select( int begin, int end );		// Cursor (if enabled) gets end position. End can be smaller than begin.
 		inline bool		selectAll();
 		inline bool		unselect();
-		inline int		eraseSelected();
 
 		inline int		selectionBegin() const;
 		inline int		selectionEnd() const;
@@ -79,20 +95,15 @@ namespace wg
 		inline bool		setCaretOfs( int ofs );			// Move cursor to offset. Any selection will be unselected.
 		inline int		caretOfs() const;
 
-		inline int		caretPut( const CharSeq& str );	// Will insert or overwrite depending on caret mode
-		inline bool		caretPut( uint16_t c );			// " -
 
 		inline bool		caretLineBegin();
 		inline bool		caretLineEnd();
 		inline bool		caretTextBegin();
 		inline bool		caretTextEnd();
 
+		//.____ Misc __________________________________________________
 
-		inline bool		setMaxLines( int maxLines ) { return _item()->setMaxLines(maxLines); }
-		inline int		maxLines() const { return _item()->maxLines(); }
-
-		inline bool		setMaxChars( int maxChars ) { return _item()->setMaxChars(maxChars); }
-		inline int		maxChars() const { return _item()->maxChars(); }
+		inline EditText_p		ptr() { return EditText_p(_object(), this); }
 
 	private:
 		inline	EditTextItem * 	_item() { return static_cast<EditTextItem*>(m_pItem); }

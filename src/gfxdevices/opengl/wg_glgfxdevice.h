@@ -48,23 +48,33 @@ namespace wg
 	class GlGfxDevice : public GfxDevice
 	{
 	public:
+
+		//.____ Creation __________________________________________
+
 		static GlGfxDevice_p	create( Size canvasSize );
+
+		//.____ Identification __________________________________________
 
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static GlGfxDevice_p	cast( const Object_p& pObject );
-
 		const char *			surfaceClassName( void ) const;
+
+		//.____ Misc _______________________________________________________
+
 		SurfaceFactory_p		surfaceFactory();
 
+		//.____ Geometry _________________________________________________
 
 		void	setCanvas( Size canvas );
+
+		//.____ State _________________________________________________
 
 		void	setTintColor( Color color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
 
-		//
+		//.____ Rendering ________________________________________________
 
 		bool	beginRender() override;;
 		bool	endRender() override;;

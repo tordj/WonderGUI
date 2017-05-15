@@ -27,16 +27,24 @@ namespace wg
 	public:
 		friend class CharBuffer;
 	
+		//.____ Creation ______________________________________________________
+
 		String();
 		String( const String& str );
 		String( const CharBuffer* pBuffer );
 		String( const CharSeq& seq );
 		~String();
-	
+
+		//.____ Content _______________________________________________________
+
 		const Char*	chars() const;
 		int				length() const;
 		bool			isEmpty() const;
-	
+
+		//.____ Control _______________________________________________________
+
+		void			clear();
+
 		void			set( const String& str );
 		void			set( const CharBuffer* pBuffer );
 		void			set( const CharSeq& seq );
@@ -49,8 +57,7 @@ namespace wg
 		void			prepend( const CharBuffer* pBuffer );
 		void			prepend( const CharSeq& seq );
 	
-		void			clear();
-	
+		//.____ Operators _____________________________________________________	
 	
 		inline String& operator = ( const String& kSource )
 		{

@@ -31,9 +31,13 @@ namespace wg
 	class MemStack
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		MemStack( int blockSize );
 		~MemStack() {}
-	
+
+		//.____ Misc _______________________________________________________
+
 		char *  alloc( int bytes );
 		void	release( int bytes );
 		void	clear();

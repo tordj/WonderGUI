@@ -117,7 +117,6 @@
     <ClInclude Include="..\..\..\src\base\wg_resdb.h" />
     <ClInclude Include="..\..\..\src\base\wg_resloader.h" />
     <ClInclude Include="..\..\..\src\base\wg_scrollbartarget.h" />
-    <ClInclude Include="..\..\..\src\base\wg_sizescaler.h" />
     <ClInclude Include="..\..\..\src\base\wg_slot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h" />
     <ClInclude Include="..\..\..\src\base\wg_string.h" />
@@ -234,7 +233,6 @@
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_sizescaler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_string.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_surface.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_surfacefactory.cpp" />

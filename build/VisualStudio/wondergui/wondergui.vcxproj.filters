@@ -164,9 +164,6 @@
     <ClInclude Include="..\..\..\src\base\wg_scrollbartarget.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_sizescaler.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_string.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -506,9 +503,6 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_sizescaler.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_string.cpp">

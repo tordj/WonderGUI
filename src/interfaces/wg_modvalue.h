@@ -49,15 +49,16 @@ namespace wg
 	class ModValue : public Value
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		ModValue(ModValueItem * pItem) : Value(pItem) {}
 	
-		inline ModValue_p		ptr() { return ModValue_p(_object(),this); }
-	
+		//.____ Content _____________________________________________
 	
 		void					clear();
 		bool					set( int64_t value, int scale = 1);
 	
-	
+
 	/*	For the future...
 		inline void				set( float value );
 		inline void				set( double value );
@@ -69,7 +70,12 @@ namespace wg
 		bool					setRange( int64_t min, int64_t max );
 		inline int64_t			min() const { return _item()->min(); }
 		inline int64_t			max() const { return _item()->max(); }
-	
+
+		//.____ Misc __________________________________________________
+
+		inline ModValue_p		ptr() { return ModValue_p(_object(), this); }
+
+
 	private:
 		inline	ModValueItem * 		_item() { return static_cast<ModValueItem*>(m_pItem); }
 		inline	const ModValueItem * _item() const { return static_cast<ModValueItem*>(m_pItem); }

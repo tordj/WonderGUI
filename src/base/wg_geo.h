@@ -38,14 +38,20 @@ namespace wg
 	class	Coord8
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Coord8() : x(0), y(0) {}
 		Coord8( int8_t x, int8_t y ) : x(x), y(y) {}
-	
+
+		//.____ Operators ___________________________________________
+
 		inline Coord8 operator=(const Coord8& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const Coord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const Coord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 	
+		//.____ Properties __________________________________________
+
 		int8_t		x, y;
 	};
 	
@@ -54,14 +60,20 @@ namespace wg
 	class	Coord16
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Coord16() : x(0), y(0) {}
 		Coord16( int16_t x, int16_t y ) : x(x), y(y) {}
-	
+
+		//.____ Operators ___________________________________________
+
 		inline Coord16 operator=(const Coord16& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const Coord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const Coord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-	
+
+		//.____ Properties __________________________________________
+
 		int16_t	x, y;
 	};
 	
@@ -79,14 +91,21 @@ namespace wg
 	class	Coord
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Coord() : x(0), y(0) {}
 		Coord( int x, int y ) : x(x), y(y) {}
 		Coord( const Rect& rect );
 		Coord( Coord8 coord8 ) : x(coord8.x), y(coord8.y) {}
 		Coord( Coord16 coord16 ) : x(coord16.x), y(coord16.y) {}
 
+		//.____ Misc ______________________________________________
+
 		inline Size toSize();
-	
+		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
+
+		//.____ Operators ___________________________________________
+
 		inline Coord operator=(const Coord& k)	{ x = k.x; y = k.y; return *this; }
 		inline Coord operator=(const Rect& r);
 	
@@ -112,8 +131,8 @@ namespace wg
 		inline void operator/=(int v)				{ x /= v; y /= v; }
 		inline Coord operator*(int v) const	{ Coord res; res.x = x * v; res.y = y * v; return res; }
 		inline Coord operator/(int v) const	{ Coord res; res.x = x / v; res.y = y / v; return res; }
-	
-		inline void clear()						{ x = 0; y = 0; }			///< Sets X and Y to 0.
+
+		//.____ Properties __________________________________________
 	
 		int	x, y;
 	};
@@ -123,14 +142,20 @@ namespace wg
 	class	CoordF
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		CoordF() : x(0.f), y(0.f) {}
 		CoordF( float _x, float _y ) {x=_x;y=_y;};
 	
+		//.____ Operators ___________________________________________
+
 		inline CoordF operator=(const CoordF& k)	{ x = k.x; y = k.y; return *this; }
 	
 		inline bool operator==(const CoordF& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const CoordF& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
 	
+		//.____ Properties __________________________________________
+
 		float	x, y;
 	};
 	
@@ -157,12 +182,16 @@ namespace wg
 	class Border
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Border() : top(0), right(0), bottom(0), left(0) {}
 		Border( short topBottom, short leftRight ) : top(topBottom), right(leftRight), bottom(topBottom), left(leftRight) {}
 		Border( short top, short leftRight, short bottom ) : top(top), right(leftRight), bottom(bottom), left(leftRight) {}
 		Border( short top, short right, short bottom, short left ) : top(top), right(right), bottom(bottom), left(left) {}
 		Border( short all ) : top(all), right(all), bottom(all), left(all) {}
 	
+		//.____ Misc ______________________________________________
+
 		inline void		set( short all ) { left = right = top = bottom = all; }
 		inline void		set( short topBottom, short leftRight ) { top = bottom = topBottom; left = right = leftRight; }
 		inline void		set( short top, short leftRight, short bottom ) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
@@ -174,12 +203,16 @@ namespace wg
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
 		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
 	
+		//.____ Operators ___________________________________________
+
 		bool			operator==(const Border& borders) const { return left == borders.left &&
 																			right == borders.right &&
 																			top == borders.top &&
 																			bottom == borders.bottom; }
 		bool			operator!=(const Border& borders) const { return !(*this == borders); }
 	
+		//.____ Properties __________________________________________
+
 		short		top, right, bottom, left;
 	};
 	
@@ -195,16 +228,23 @@ namespace wg
 	class	Size
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Size() : w(0), h(0) {}
 		Size( int width, int height ) : w(width), h(height) {}
 		Size( const Size& size ) : w(size.w), h(size.h) {}
 		Size( const Rect& rect );
 		Size( const Coord& c1, const Coord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
+
+		//.____ Misc ______________________________________________
+
 		inline void limit( const Size& min, const Size& max );
 		inline void clear()		{ w = 0; h = 0; }
 
 		inline Coord toCoord() { return Coord(w,h); }
 	
+		//.____ Operators ___________________________________________
+
 		inline Size operator=(const Size& k)	{ w = k.w; h = k.h; return *this; }
 		inline Size operator=(const Rect& k);
 	
@@ -239,6 +279,8 @@ namespace wg
 		static inline Size min( Size sz1, Size sz2 ) { return Size( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 		static inline Size max( Size sz1, Size sz2 ) { return Size( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
 	
+		//.____ Properties __________________________________________
+
 		int	w;		///< Width of the rectangular area in pixels.
 		int h;		///< Height of the rectangular area in pixels.
 	
@@ -257,15 +299,22 @@ namespace wg
 	class	SizeF
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		SizeF() : w(0.f), h(0.f) {}
 		SizeF(float width, float height) : w(width), h(height) {}
 		SizeF(const SizeF& size) : w(size.w), h(size.h) {}
 		SizeF(const RectF& rect);
 		SizeF(const CoordF& c1, const CoordF& c2) { w = c2.x - c1.x; h = c2.y - c1.y; }
+
+		//.____ Misc ______________________________________________
+
 		inline void limit(const SizeF& min, const SizeF& max);
 		inline void clear() { w = 0.f; h = 0.f; }
 
 		inline CoordF toCoord() { return CoordF(w, h); }
+
+		//.____ Operators ___________________________________________
 
 		inline SizeF operator=(const SizeF& k) { w = k.w; h = k.h; return *this; }
 		inline SizeF operator=(const RectF& k);
@@ -301,6 +350,8 @@ namespace wg
 		static inline SizeF min(SizeF sz1, Size sz2) { return SizeF(sz1.w<sz2.w ? sz1.w : sz2.w, sz1.h<sz2.h ? sz1.h : sz2.h); }
 		static inline SizeF max(SizeF sz1, Size sz2) { return SizeF(sz1.w>sz2.w ? sz1.w : sz2.w, sz1.h>sz2.h ? sz1.h : sz2.h); }
 
+		//.____ Properties __________________________________________
+
 		float	w;		///< Width of the rectangular area in pixels.
 		float	h;		///< Height of the rectangular area in pixels.
 
@@ -333,6 +384,8 @@ namespace wg
 	class Rect
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		Rect() : x(0), y(0), w(0), h(0) {}								///< @brief Create rectangle with x, y, w and h set to 0.
 																			///<
 																			///< Create rectangle with x, y, w and h set to 0.
@@ -369,31 +422,11 @@ namespace wg
 																			///<
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
-		inline void operator=( const Rect& );					///< @brief Normal assignment operator.
-		inline void operator=( const Size& sz);				///< @brief Set rectangle to specified size. Position is cleared.
-		inline void operator=( const Coord& c);				///< @brief Set rectangle to specified position. Size is cleared.
-		inline bool operator==( const Rect& rect) const;
-		inline bool operator!=( const Rect& rect) const;
-	
-		inline void operator+=(const Size& k);				///< @brief Increase size of rectangle.
-		inline void operator-=(const Size& k);				///< @brief Decrease size of rectangle.
-		inline Rect operator+(const Size& k) const; 		///< @brief Returns rectangle with size increased by Size.
-		inline Rect operator-(const Size& k) const; 		///< @brief Returns rectangle with size decreased by Size.
-	
-	
-	
-		inline void operator+=(const Coord& k); 				///< @brief Increase position of rectangle.
-		inline void operator-=(const Coord& k);				///< @brief Decrease position of rectangle.
-		inline Rect operator+(const Coord& k) const; 		///< @brief Returns rectangle with position increased by Coord.
-		inline Rect operator-(const Coord& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
-	
-		inline void operator+=(const Border& k);				///< @brief Grow rectangle by the specified border.
-		inline void operator-=(const Border& k);
-		inline Rect operator+(const Border& k) const;
-		inline Rect operator-(const Border& k) const;
 		
+		//.____ Misc ______________________________________________
+
 		inline void setPos( const Coord& p );					///< @brief Set position of rectangle.
-		inline void setSize( const Size& sz );				///< @brief Set size of rectangle.
+		inline void setSize( const Size& sz );					///< @brief Set size of rectangle.
 	
 		void shrink( const Border &borders );
 		void shrink( int top, int right, int bottom, int left );
@@ -410,9 +443,9 @@ namespace wg
 		
 		inline bool contains( int x, int y ) const;				///< @brief Check if coordinate is within rectangle.
 		inline bool	contains( const Coord& coord ) const;		///< @brief Check if coordinate is within rectangle.
-		inline bool contains( const Rect& rect ) const;		///< @brief Check if rectangle is fully within our rectangle.
+		inline bool contains( const Rect& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
 	
-		inline Coord limit( const Coord& coord ) const;		///< @brief Limit given coordinate to stay within rectangle.
+		inline Coord limit( const Coord& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
 	
 		inline bool intersectsWith( const Rect& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 	
@@ -428,7 +461,34 @@ namespace wg
 	
 		inline bool	isEmpty() const;							///< @brief Check if rectangle has no area.
 		inline void clear();									///< @brief Sets all values to zero.
-	
+
+		//.____ Operators ___________________________________________
+
+		inline void operator=(const Rect&);					///< @brief Normal assignment operator.
+		inline void operator=(const Size& sz);				///< @brief Set rectangle to specified size. Position is cleared.
+		inline void operator=(const Coord& c);				///< @brief Set rectangle to specified position. Size is cleared.
+		inline bool operator==(const Rect& rect) const;
+		inline bool operator!=(const Rect& rect) const;
+
+		inline void operator+=(const Size& k);				///< @brief Increase size of rectangle.
+		inline void operator-=(const Size& k);				///< @brief Decrease size of rectangle.
+		inline Rect operator+(const Size& k) const; 		///< @brief Returns rectangle with size increased by Size.
+		inline Rect operator-(const Size& k) const; 		///< @brief Returns rectangle with size decreased by Size.
+
+
+
+		inline void operator+=(const Coord& k); 				///< @brief Increase position of rectangle.
+		inline void operator-=(const Coord& k);				///< @brief Decrease position of rectangle.
+		inline Rect operator+(const Coord& k) const; 		///< @brief Returns rectangle with position increased by Coord.
+		inline Rect operator-(const Coord& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
+
+		inline void operator+=(const Border& k);				///< @brief Grow rectangle by the specified border.
+		inline void operator-=(const Border& k);
+		inline Rect operator+(const Border& k) const;
+		inline Rect operator-(const Border& k) const;
+
+		//.____ Properties __________________________________________
+
 		int	x;		///< Start position in pixels along the X axis.
 		int y;		///< Start position in pixels along the Y axis.
 		int w;		///< Width, i.e. length of rectangle along the X axis. 
@@ -440,6 +500,8 @@ namespace wg
 	class RectF
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		RectF() : x(0.f), y(0.f), w(0.f), h(0.f) {}
 		RectF( float x, float y, float w, float h ) : x(x), y(y), w(w), h(h) {}	
 		RectF( const Rect& r ) : x((float)r.x), y((float)r.y), w((float)r.w), h((float)r.h) {}
@@ -447,11 +509,12 @@ namespace wg
 		RectF( const RectF& r1, const RectF& r2 );
 		RectF(const CoordF& pos, const SizeF& size) : x(pos.x), y(pos.y), w(size.w), h(size.h) {}
 
-
-
+		//.____ Misc ______________________________________________
 
 		bool intersection( const RectF& r1, const RectF& r2 );
 			
+		//.____ Properties __________________________________________
+
 		float x, y, w, h;
 	};
 	

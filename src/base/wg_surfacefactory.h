@@ -50,13 +50,19 @@ namespace wg
 	class SurfaceFactory : public Object
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static SurfaceFactory_p	cast( const Object_p& pObject );
 
+		//.____ Geometry _________________________________________________
+
 		virtual Size		maxSize() const = 0;
- 
+
+		//.____ Misc _______________________________________________________
+
 		virtual Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static ) const = 0;
         virtual Surface_p	createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static ) const = 0;
         virtual Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static ) const = 0;
