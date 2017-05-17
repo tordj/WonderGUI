@@ -230,8 +230,6 @@
     <File Name="../../src/base/wg_resloader.h"/>
     <File Name="../../src/base/wg_scrollbartarget.cpp"/>
     <File Name="../../src/base/wg_scrollbartarget.h"/>
-    <File Name="../../src/base/wg_sizescaler.cpp"/>
-    <File Name="../../src/base/wg_sizescaler.h"/>
     <File Name="../../src/base/wg_slot.h"/>
     <File Name="../../src/base/wg_slotarray.h"/>
     <File Name="../../src/base/wg_string.cpp"/>

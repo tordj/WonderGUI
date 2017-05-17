@@ -97,7 +97,6 @@ BASE = wg_anim.o \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
-  wg_sizescaler.o \
   wg_string.o \
   wg_surface.o \
   wg_surfacefactory.o \
