@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class StdTextMapper;
-	typedef	StrongPtr<StdTextMapper,TextMapper_p>		StdTextMapper_p;
+	typedef	StrongPtr<StdTextMapper>		StdTextMapper_p;
 	typedef	WeakPtr<StdTextMapper,TextMapper_wp>	StdTextMapper_wp;
 	
 	class StdTextMapper : public TextMapper

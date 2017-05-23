@@ -28,7 +28,7 @@
 namespace wg
 {
 	class TestWidget;
-	typedef	StrongPtr<TestWidget,Widget_p>		TestWidget_p;
+	typedef	StrongPtr<TestWidget>		TestWidget_p;
 	typedef	WeakPtr<TestWidget,Widget_wp>       TestWidget_wp;
 
 

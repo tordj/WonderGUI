@@ -44,7 +44,7 @@ typedef struct  FT_Bitmap_ FT_Bitmap;
 namespace wg 
 {
 	class VectorFont;
-	typedef	StrongPtr<VectorFont,Font_p>		VectorFont_p;
+	typedef	StrongPtr<VectorFont>		VectorFont_p;
 	typedef	WeakPtr<VectorFont,Font_wp>	VectorFont_wp;
 
 	class VectorFont : public Font

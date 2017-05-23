@@ -41,7 +41,7 @@ namespace wg
 	class TextStyle;
 	
 	class TextMapper;
-	typedef	StrongPtr<TextMapper,Object_p>	TextMapper_p;
+	typedef	StrongPtr<TextMapper>	TextMapper_p;
 	typedef	WeakPtr<TextMapper,Object_wp>	TextMapper_wp;
 	
 	class TextMapper : public Receiver

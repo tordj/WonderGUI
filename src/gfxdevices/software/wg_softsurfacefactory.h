@@ -31,7 +31,7 @@ namespace wg
 {
 	
 	class SoftSurfaceFactory;
-	typedef	StrongPtr<SoftSurfaceFactory,SurfaceFactory_p>	SoftSurfaceFactory_p;
+	typedef	StrongPtr<SoftSurfaceFactory>	SoftSurfaceFactory_p;
 	typedef	WeakPtr<SoftSurfaceFactory,SurfaceFactory_wp>	SoftSurfaceFactory_wp;
 	
 	//____ SoftSurfaceFactory _______________________________________________________

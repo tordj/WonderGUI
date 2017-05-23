@@ -30,7 +30,7 @@ namespace wg
 {
 	
 	class PackPanel;
-	typedef	StrongPtr<PackPanel,Panel_p>		PackPanel_p;
+	typedef	StrongPtr<PackPanel>		PackPanel_p;
 	typedef	WeakPtr<PackPanel,Panel_wp>			PackPanel_wp;
 
 

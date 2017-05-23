@@ -30,7 +30,7 @@ namespace wg
 {
 
 	class GlSurfaceFactory;
-	typedef	StrongPtr<GlSurfaceFactory,SurfaceFactory_p>		GlSurfaceFactory_p;
+	typedef	StrongPtr<GlSurfaceFactory>		GlSurfaceFactory_p;
 	typedef	WeakPtr<GlSurfaceFactory,SurfaceFactory_wp>	GlSurfaceFactory_wp;
 
 	//____ GlSurfaceFactory _____________________________________________________

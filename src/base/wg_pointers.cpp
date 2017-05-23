@@ -27,14 +27,7 @@ namespace wg
 {
 	
 	
-	class FreeWeakPtrHub;
-	Object_p::Object_p( const Object_wp& r )
-	{
-		m_pObj = r.rawPtr();
-		if( m_pObj )
-			m_pObj->_incRefCount();
-	}
-	
+	class FreeWeakPtrHub;	
 	
 	Object_wp::Object_wp( Object * pObj )
 	{

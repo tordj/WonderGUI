@@ -24,108 +24,14 @@
 #pragma once
 
 #include <wg_mempool.h>
+#include <wg_strongptr.h>
 #include <wg_object.h>
 
 
 namespace wg 
 {
-	
-	
 	class Interface;
 	class Object_wp;
-	
-	//____ Object_p _____________________________________________________________
-	
-	class Object_p
-	{
-	public:
-		Object_p(Object* p=0)
-		{
-			m_pObj = p;
-			if( p )
-				p->_incRefCount();
-		}
-	
-		Object_p(const Object_p& r)
-		{
-			m_pObj = r.m_pObj;
-			if( m_pObj )
-				m_pObj->_incRefCount();
-		}
-	
-		Object_p( const Object_wp& r );
-	
-		~Object_p()
-		{
-			if( m_pObj )
-				m_pObj->_decRefCount();
-		}
-	
-	
-	    inline Object_p & operator=( Object_p const & r)
-		{
-			copy( r );
-			return *this;
-		}
-	
-		inline Object& operator*() const { return * m_pObj; }
-		inline Object* operator->() const{ return m_pObj; }
-	
-		inline bool operator==(const Object_p& other) const { return m_pObj == other.m_pObj; }
-		inline bool operator!=(const Object_p& other) const { return m_pObj != other.m_pObj; }
-	
-		inline operator bool() const { return (m_pObj != 0); }
-	
-		inline Object * rawPtr() const { return m_pObj; }
-		operator Object*() const { return m_pObj; }
-	
-	protected:
-		void copy( Object_p const & r )
-		{
-			if( m_pObj != r.m_pObj )
-			{
-				if( m_pObj )
-					m_pObj->_decRefCount();
-	
-				m_pObj = r.m_pObj;
-				if( m_pObj )
-					m_pObj->_incRefCount();
-			}
-		}
-	
-	
-		Object * m_pObj;
-	};
-	
-	
-	//____ StrongPtr ________________________________________________________
-	
-	template<class T,class P> class StrongPtr : public P		/** @private */
-	{
-	public:
-		StrongPtr(T* p=0) : P( p ) {};
-		StrongPtr(const StrongPtr<T,P>& r) : P( (T*) r.m_pObj ) {};
-	//	StrongPtr(const WeakPtr<T,P>& r) : P( (T*) r.rawPtr() ) {};
-		~StrongPtr() {};
-	
-	/*
-	    inline StrongPtr<T,P> & operator=( StrongPtr<T,P> const & r)
-		{
-			copy( r );
-			return *this;
-		}
-	*/
-		inline T & operator*() const { return * (T*) this->m_pObj; }
-		inline T * operator->() const{ return (T*) this->m_pObj; }
-	
-		inline bool operator==(const StrongPtr<T,P>& other) const { return this->m_pObj == other.m_pObj; }
-		inline bool operator!=(const StrongPtr<T,P>& other) const { return this->m_pObj != other.m_pObj; }
-	
-	//	inline operator bool() const { return (this->m_pObj != 0); }
-	
-		inline T * rawPtr() const { return (T*) this->m_pObj; }
-		operator T*() const { return (T*) this->m_pObj; }
-	};
 	
 	
 	//____ Object_wp ______________________________________________________________

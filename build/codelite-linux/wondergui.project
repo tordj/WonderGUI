@@ -254,6 +254,7 @@
     <File Name="../../src/base/wg_vectorfont.cpp"/>
     <File Name="../../src/base/wg_vectorfont.h"/>
     <File Name="../../src/base/wg_widgetholder.h"/>
+    <File Name="../../src/base/wg_strongptr.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class StackPanel;
-	typedef	StrongPtr<StackPanel,Panel_p>	StackPanel_p;
+	typedef	StrongPtr<StackPanel>	StackPanel_p;
 	typedef	WeakPtr<StackPanel,Panel_wp>	StackPanel_wp;
 	
 

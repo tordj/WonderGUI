@@ -29,7 +29,7 @@ namespace wg
 {
 	
 	class ExtendedSkin;
-	typedef	StrongPtr<ExtendedSkin,Skin_p>	ExtendedSkin_p;
+	typedef	StrongPtr<ExtendedSkin>	ExtendedSkin_p;
 	
 	class ExtendedSkin : public Skin
 	{

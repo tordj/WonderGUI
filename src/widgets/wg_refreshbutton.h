@@ -31,7 +31,7 @@ namespace wg
 {
 	
 	class RefreshButton;
-	typedef	StrongPtr<RefreshButton,Button_p>		RefreshButton_p;
+	typedef	StrongPtr<RefreshButton>		RefreshButton_p;
 	typedef	WeakPtr<RefreshButton,Button_wp>		RefreshButton_wp;
 	
 	//____ WidgetRefreshButton ____________________________________________________________

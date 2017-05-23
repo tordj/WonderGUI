@@ -73,7 +73,7 @@ namespace wg
 	typedef Glyph*	Glyph_p;
 	
 	class Font;
-	typedef	StrongPtr<Font,Object_p>	Font_p;
+	typedef	StrongPtr<Font>	Font_p;
 	typedef	WeakPtr<Font,Object_wp>		Font_wp;
 	
 	//____ Font _____________________________________________________________

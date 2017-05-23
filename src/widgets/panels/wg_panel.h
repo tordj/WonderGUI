@@ -37,7 +37,7 @@ namespace wg
 	class Patches;
 	
 	class Panel;
-	typedef	StrongPtr<Panel,Container_p>		Panel_p;
+	typedef	StrongPtr<Panel>		Panel_p;
 	typedef	WeakPtr<Panel,Container_wp>	Panel_wp;
 	
 	

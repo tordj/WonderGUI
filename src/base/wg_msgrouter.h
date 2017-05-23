@@ -41,7 +41,7 @@ namespace wg
 	
 	
 	class MsgRouter;
-	typedef	StrongPtr<MsgRouter,Object_p>		MsgRouter_p;
+	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	WeakPtr<MsgRouter,Object_wp>	MsgRouter_wp;
 	
 	class MsgRouter : public Object

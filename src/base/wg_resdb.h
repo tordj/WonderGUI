@@ -45,7 +45,7 @@ namespace wg
 	
 	
 	class ResDB;
-	typedef	StrongPtr<ResDB,Object_p>	ResDB_p;
+	typedef	StrongPtr<ResDB>	ResDB_p;
 	typedef	WeakPtr<ResDB,Object_wp>	ResDB_wp;
 	
 	class ResDB : public Object

@@ -32,7 +32,7 @@
 namespace wg
 {
 	class DummyFont;
-	typedef	StrongPtr<DummyFont,Font_p>	DummyFont_p;
+	typedef	StrongPtr<DummyFont>	DummyFont_p;
 	typedef	WeakPtr<DummyFont,Font_wp>		DummyFont_wp;
 
 	class DummyFont : public Font

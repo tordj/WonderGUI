@@ -34,7 +34,7 @@ namespace wg
 {
 	
 	class SizeCapsule;
-	typedef	StrongPtr<SizeCapsule,Capsule_p>		SizeCapsule_p;
+	typedef	StrongPtr<SizeCapsule>		SizeCapsule_p;
 	typedef	WeakPtr<SizeCapsule,Capsule_p>		SizeCapsule_wp;
 	
 	class SizeCapsule : public Capsule

@@ -44,11 +44,11 @@ namespace wg
 {
 	
 	class RootPanel;
-	typedef	StrongPtr<RootPanel,Object_p>		RootPanel_p;
+	typedef	StrongPtr<RootPanel>		RootPanel_p;
 	typedef	WeakPtr<RootPanel,Object_wp>		RootPanel_wp;
 	
 	class InputHandler;
-	typedef	StrongPtr<InputHandler,Receiver_p>		InputHandler_p;
+	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	WeakPtr<InputHandler,Receiver_wp>		InputHandler_wp;
 	
 	class InputHandler : public Receiver

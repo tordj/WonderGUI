@@ -31,7 +31,7 @@ namespace wg
 {
 	
 	class Finalizer;
-	typedef	StrongPtr<Finalizer,Object_p>		Finalizer_p;
+	typedef	StrongPtr<Finalizer>		Finalizer_p;
 	typedef	WeakPtr<Finalizer,Object_wp>	Finalizer_wp;
 	
 	class Finalizer : public Object

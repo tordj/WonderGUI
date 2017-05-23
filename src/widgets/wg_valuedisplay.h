@@ -32,7 +32,7 @@ namespace wg
 	
 	
 	class ValueDisplay;
-	typedef	StrongPtr<ValueDisplay,Widget_p>		ValueDisplay_p;
+	typedef	StrongPtr<ValueDisplay>		ValueDisplay_p;
 	typedef	WeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
 
 	/**

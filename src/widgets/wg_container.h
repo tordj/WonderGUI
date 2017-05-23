@@ -35,7 +35,7 @@ namespace wg
 	class PopupLayer;
 	
 	class Container;
-	typedef	StrongPtr<Container,Widget_p>			Container_p;
+	typedef	StrongPtr<Container>			Container_p;
 	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
 	
 	/**

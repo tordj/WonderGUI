@@ -34,7 +34,7 @@ namespace wg
 	
 	
 	class SurfaceFactory;
-	typedef	StrongPtr<SurfaceFactory,Object_p>	SurfaceFactory_p;
+	typedef	StrongPtr<SurfaceFactory>	SurfaceFactory_p;
 	typedef	WeakPtr<SurfaceFactory,Object_wp>	SurfaceFactory_wp;
 	
 	

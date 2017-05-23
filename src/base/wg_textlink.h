@@ -35,11 +35,11 @@ namespace wg
 	class Coord;
 	
 	class TextStyle;
-	typedef	StrongPtr<TextStyle,Object_p>		TextStyle_p;
+	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
 		
 	class TextLink;
-	typedef	StrongPtr<class TextLink,Object_p> TextLink_p;
+	typedef	StrongPtr<class TextLink> TextLink_p;
 	typedef	WeakPtr<class TextLink,Object_wp> TextLink_wp;
 	
 	

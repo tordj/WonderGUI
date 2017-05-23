@@ -20,13 +20,17 @@
 
 =========================================================================*/
 #ifndef WG_OBJECT_DOT_H
+#define WG_OBJECT_DOT_H
+#pragma once
+
+#include <wg_strongptr.h>
 
 namespace wg 
 {
-	#define WG_OBJECT_DOT_H
 	
 	class Object;
-	class Object_p;
+	
+	typedef StrongPtr<Object>	Object_p;
 	
 	class WeakPtrHub		/** @private */
 	{
@@ -52,9 +56,8 @@ namespace wg
 	
 	class Object
 	{
-		friend class Object_p;
 		friend class Object_wp;
-		template<class T, class P> friend class StrongPtr;
+		template<class T> friend class StrongPtr;
 		template<class T, class P> friend class WeakPtr;
 	
 		friend class Interface_p;

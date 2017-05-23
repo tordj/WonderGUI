@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class LineEditor;
-	typedef	StrongPtr<LineEditor,Widget_p>		LineEditor_p;
+	typedef	StrongPtr<LineEditor>		LineEditor_p;
 	typedef	WeakPtr<LineEditor,Widget_wp>	LineEditor_wp;
 	
 	class LineEditor:public Widget

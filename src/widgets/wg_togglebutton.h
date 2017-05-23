@@ -34,11 +34,11 @@ namespace wg
 	class	Surface;
 	
 	class ToggleButton;
-	typedef	StrongPtr<ToggleButton,Widget_p>		ToggleButton_p;
+	typedef	StrongPtr<ToggleButton>		ToggleButton_p;
 	typedef	WeakPtr<ToggleButton,Widget_wp>	ToggleButton_wp;
 	
 	class ToggleGroup;
-	typedef	StrongPtr<ToggleGroup,Object_p>		ToggleGroup_p;
+	typedef	StrongPtr<ToggleGroup>		ToggleGroup_p;
 	typedef	WeakPtr<ToggleGroup,Object_wp>	ToggleGroup_wp;
 	
 	

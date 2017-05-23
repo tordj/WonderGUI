@@ -30,10 +30,10 @@ namespace wg
 {
 	
 	class Msg;
-	typedef	StrongPtr<Msg,Object_p>			Msg_p;
+	typedef	StrongPtr<Msg>			Msg_p;
 	
 	class Receiver;
-	typedef	StrongPtr<Receiver,Object_p>	Receiver_p;
+	typedef	StrongPtr<Receiver>	Receiver_p;
 	typedef	WeakPtr<Receiver,Object_wp>		Receiver_wp;
 	
 	class Receiver : public Object

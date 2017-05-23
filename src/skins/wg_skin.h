@@ -33,7 +33,7 @@ namespace wg
 	class Skin;
 	class GfxDevice;
 	
-	typedef	StrongPtr<Skin,Object_p>	Skin_p;
+	typedef	StrongPtr<Skin>	Skin_p;
 	
 	
 	class Skin : public Object

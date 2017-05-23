@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class AnimPlayer;
-	typedef	StrongPtr<AnimPlayer,Widget_p>		AnimPlayer_p;
+	typedef	StrongPtr<AnimPlayer>		AnimPlayer_p;
 	typedef	WeakPtr<AnimPlayer,Widget_wp>	AnimPlayer_wp;
 	
 	//____ AnimPlayer ____________________________________________________________

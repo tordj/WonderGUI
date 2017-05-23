@@ -34,7 +34,7 @@ namespace wg
 	class Font;
 	
 	class FpsDisplay;
-	typedef	StrongPtr<FpsDisplay,Widget_p>		FpsDisplay_p;
+	typedef	StrongPtr<FpsDisplay>		FpsDisplay_p;
 	typedef	WeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
 	
 	class FpsDisplay : public Widget

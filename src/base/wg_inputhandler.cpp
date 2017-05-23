@@ -566,7 +566,7 @@ namespace wg
 	
 	void InputHandler::_setFocused( Widget * pWidget ) 
 	{
-		FocusGainedMsg * pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
+		FocusGainedMsg_p pMsg = new FocusGainedMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
 		Base::msgRouter()->post( pMsg );
 	}
 
@@ -574,7 +574,7 @@ namespace wg
 	
 	void InputHandler::_setUnfocused( Widget * pWidget ) 
 	{
-		FocusLostMsg * pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
+		FocusLostMsg_p pMsg = new FocusLostMsg( m_inputId, pWidget, m_modKeys, m_pointerPos, m_timeStamp );
 		Base::msgRouter()->post( pMsg );
 	}
 	

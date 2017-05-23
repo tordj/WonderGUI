@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class TextEditor;
-	typedef	StrongPtr<TextEditor,Widget_p>		TextEditor_p;
+	typedef	StrongPtr<TextEditor>		TextEditor_p;
 	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
 
 	/** 

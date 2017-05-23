@@ -29,7 +29,7 @@ namespace wg
 	
 	
 	class UniformSizeBroker;
-	typedef	StrongPtr<UniformSizeBroker,SizeBroker_p>		UniformSizeBroker_p;
+	typedef	StrongPtr<UniformSizeBroker>		UniformSizeBroker_p;
 	typedef	WeakPtr<UniformSizeBroker,SizeBroker_wp>	UniformSizeBroker_wp;
 	
 	class UniformSizeBroker : public SizeBroker

@@ -45,15 +45,15 @@ namespace wg
 	class WidgetHolder;
 	
 	class Widget;
-	typedef	StrongPtr<Widget,Receiver_p>	Widget_p;
+	typedef	StrongPtr<Widget>	Widget_p;
 	typedef	WeakPtr<Widget,Receiver_wp>		Widget_wp;
 	
 	class Container;
-	typedef	StrongPtr<Container,Widget_p>	Container_p;
+	typedef	StrongPtr<Container>	Container_p;
 	typedef	WeakPtr<Container,Widget_wp>	Container_wp;
 	
 	class Msg;
-	typedef	StrongPtr<Msg,Object_p>			Msg_p;
+	typedef	StrongPtr<Msg>			Msg_p;
 	typedef	WeakPtr<Msg,Object_wp>			Msg_wp;
 	
 	

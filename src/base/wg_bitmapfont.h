@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class BitmapFont;
-	typedef	StrongPtr<BitmapFont,Font_p>	BitmapFont_p;
+	typedef	StrongPtr<BitmapFont>	BitmapFont_p;
 	typedef	WeakPtr<BitmapFont,Font_wp>		BitmapFont_wp;
 	
 	//____ BitmapFont _____________________________________________________________

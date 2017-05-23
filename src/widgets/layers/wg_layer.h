@@ -31,7 +31,7 @@ namespace wg
 {
 	
 	class Layer;
-	typedef	StrongPtr<Layer,Container_p>	Layer_p;
+	typedef	StrongPtr<Layer>	Layer_p;
 	typedef	WeakPtr<Layer,Container_p>	Layer_wp;
 	
 

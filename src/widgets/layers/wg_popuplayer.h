@@ -31,7 +31,7 @@ namespace wg
 {
 
 	class PopupLayer;
-	typedef	StrongPtr<PopupLayer,Layer_p>	PopupLayer_p;
+	typedef	StrongPtr<PopupLayer>	PopupLayer_p;
 	typedef	WeakPtr<PopupLayer,Layer_wp>	PopupLayer_wp;
 
 	//____ PopupSlot ___________________________________________________________

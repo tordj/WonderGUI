@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class TextDisplay;
-	typedef	StrongPtr<TextDisplay,Widget_p>		TextDisplay_p;
+	typedef	StrongPtr<TextDisplay>		TextDisplay_p;
 	typedef	WeakPtr<TextDisplay,Widget_wp>	TextDisplay_wp;
 	
 	class TextDisplay:public Widget

@@ -44,7 +44,7 @@ namespace wg
 {
 
 	class GlSurface;
-	typedef	StrongPtr<GlSurface,Surface_p>	GlSurface_p;
+	typedef	StrongPtr<GlSurface>	GlSurface_p;
 	typedef	WeakPtr<GlSurface,Surface_wp>	GlSurface_wp;
 
 	//____ GlSurface _____________________________________________________________

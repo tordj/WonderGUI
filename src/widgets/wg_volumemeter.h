@@ -33,7 +33,7 @@
 namespace wg
 {
 	class VolumeMeter;
-	typedef	StrongPtr<VolumeMeter,Widget_p>		VolumeMeter_p;
+	typedef	StrongPtr<VolumeMeter>		VolumeMeter_p;
 	typedef	WeakPtr<VolumeMeter,Widget_wp>		VolumeMeter_wp;
 
 	

@@ -36,7 +36,7 @@ namespace wg
 	
 	
 	class Surface;
-	typedef	StrongPtr<Surface,Object_p>		Surface_p;
+	typedef	StrongPtr<Surface>		Surface_p;
 	typedef	WeakPtr<Surface,Object_wp>	Surface_wp;
 	
 	//____ Surface ______________________________________________________________

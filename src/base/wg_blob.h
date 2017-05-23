@@ -33,7 +33,7 @@ namespace wg
 {
 	
 	class Blob;
-	typedef	StrongPtr<Blob,Object_p>	Blob_p;
+	typedef	StrongPtr<Blob>				Blob_p;
 	typedef	WeakPtr<Blob,Object_wp>		Blob_wp;
 	
 	

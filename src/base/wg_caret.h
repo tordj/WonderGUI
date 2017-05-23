@@ -33,7 +33,7 @@ namespace wg
 	class GfxDevice;
 	
 	class Caret;
-	typedef	StrongPtr<Caret,Object_p>		Caret_p;
+	typedef	StrongPtr<Caret>		Caret_p;
 	typedef	WeakPtr<Caret,Object_wp>		Caret_wp;
 	
 	

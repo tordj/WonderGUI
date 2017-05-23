@@ -33,7 +33,7 @@ namespace wg
 {
 
 	class PackList;
-	typedef	StrongPtr<PackList,List_p>		PackList_p;
+	typedef	StrongPtr<PackList>		PackList_p;
 	typedef	WeakPtr<PackList,List_wp>		PackList_wp;
 	
 	
