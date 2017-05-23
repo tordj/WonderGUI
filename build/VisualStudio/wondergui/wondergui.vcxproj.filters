@@ -395,6 +395,9 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_childentry.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_strongptr.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

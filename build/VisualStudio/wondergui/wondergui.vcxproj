@@ -120,6 +120,7 @@
     <ClInclude Include="..\..\..\src\base\wg_slot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h" />
     <ClInclude Include="..\..\..\src\base\wg_string.h" />
+    <ClInclude Include="..\..\..\src\base\wg_strongptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_surface.h" />
     <ClInclude Include="..\..\..\src\base\wg_surfacefactory.h" />
     <ClInclude Include="..\..\..\src\base\wg_textlink.h" />
