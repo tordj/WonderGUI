@@ -37,9 +37,9 @@ namespace wg
 	
 	//____ setFormatter() __________________________________________________________
 	
-	void ValueItem::setFormatter( const ValueFormatter_p& pFormatter )
+	void ValueItem::setFormatter( ValueFormatter * pFormatter )
 	{
-		if( m_pFormatter != pFormatter )
+		if( m_pFormatter.rawPtr() != pFormatter )
 		{
 			m_pFormatter = pFormatter;
 			_regenText();

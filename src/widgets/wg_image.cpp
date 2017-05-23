@@ -64,17 +64,17 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Image_p Image::cast( const Object_p& pObject )
+	Image_p Image::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Image_p( static_cast<Image*>(pObject.rawPtr()) );
+			return Image_p( static_cast<Image*>(pObject) );
 	
 		return 0;
 	}
 	
 	//____ setImage() _____________________________________________________________
 	
-	void Image::setImage( const Surface_p& pSurface, const Rect& rect )
+	void Image::setImage( Surface * pSurface, const Rect& rect )
 	{
 		if( pSurface != m_pSurface || rect != m_rect )
 		{
@@ -95,7 +95,7 @@ namespace wg
 		}
 	}
 	
-	void Image::setImage( const Surface_p& pSurface )
+	void Image::setImage( Surface * pSurface )
 	{
 		if( pSurface != m_pSurface )
 		{

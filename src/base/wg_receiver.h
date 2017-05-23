@@ -45,11 +45,11 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Receiver_p	cast( const Object_p& pObject );
+		static Receiver_p	cast( Object * pObject );
 
 		//.____ Misc ____________________________________________________________
 
-		virtual void 	receive( const Msg_p& pMsg ) = 0;
+		virtual void 	receive( Msg * pMsg ) = 0;
 	
 	protected:
 		Receiver() {};

@@ -52,18 +52,18 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static GfxAnim_p	cast( const Object_p& pObject );
+		static GfxAnim_p	cast( Object * pObject );
 
 		//.____ Misc ________________________________________________
 
 		void		setSize( Size size );
 		Size		size() const { return m_size; }
 	
-		bool		insertFrame( int pos, const Surface_p& pSurf, Coord ofs, int duration );
-		bool		insertFrame( GfxFrame * pBefore, const Surface_p& pSurf, Coord ofs, int duration );
-		bool		addFrame( const Surface_p& pSurf, Coord ofs, int duration );
-		int			addFrames( const Surface_p& pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames = 0, Size spacing = Size() );
-		int			addFrames(const Surface_p& pSurf, int duration, int nFrames = 0, Size spacing = Size() );
+		bool		insertFrame( int pos, Surface * pSurf, Coord ofs, int duration );
+		bool		insertFrame( GfxFrame * pBefore, Surface * pSurf, Coord ofs, int duration );
+		bool		addFrame( Surface * pSurf, Coord ofs, int duration );
+		int			addFrames( Surface * pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames = 0, Size spacing = Size() );
+		int			addFrames(Surface * pSurf, int duration, int nFrames = 0, Size spacing = Size() );
 	
 		GfxFrame * getFrame( int64_t ticks, GfxFrame * pProximity = 0 ) const;
 	

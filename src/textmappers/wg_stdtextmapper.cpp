@@ -71,10 +71,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	StdTextMapper_p StdTextMapper::cast( const Object_p& pObject )
+	StdTextMapper_p StdTextMapper::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StdTextMapper_p( static_cast<StdTextMapper*>(pObject.rawPtr()) );
+			return StdTextMapper_p( static_cast<StdTextMapper*>(pObject) );
 	
 		return 0;
 	}
@@ -122,9 +122,9 @@ namespace wg
 
 	//____ setCaret() __________________________________________________________
 
-	void StdTextMapper::setCaret( const Caret_p& pCaret )
+	void StdTextMapper::setCaret( Caret * pCaret )
 	{
-		if( m_pCaret != pCaret )
+		if( m_pCaret.rawPtr() != pCaret )
 		{
 			m_pCaret = pCaret;
 			
@@ -350,7 +350,7 @@ namespace wg
 
 	//____ receive() ___________________________________________________________
 
-	void StdTextMapper::receive( const Msg_p& pMsg )
+	void StdTextMapper::receive( Msg * pMsg )
 	{
 		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
 		{
@@ -358,7 +358,7 @@ namespace wg
 			
 			if( pEditState && pEditState->bCaret && m_pCaret )
 			{
-				int ms = static_cast<TickMsg*>(pMsg.rawPtr())->timediff();
+				int ms = static_cast<TickMsg*>(pMsg)->timediff();
 				
 				bool bDirty = m_pCaret->tick( ms );					
 				if( bDirty )

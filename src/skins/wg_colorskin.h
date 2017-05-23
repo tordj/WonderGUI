@@ -46,7 +46,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ColorSkin_p	cast( const Object_p& pObject );
+		static ColorSkin_p	cast( Object * pObject );
 	
 		//.____ Rendering ________________________________________________
 		

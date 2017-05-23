@@ -93,10 +93,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	BoxSkin_p BoxSkin::cast( const Object_p& pObject )
+	BoxSkin_p BoxSkin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BoxSkin_p( static_cast<BoxSkin*>(pObject.rawPtr()) );
+			return BoxSkin_p( static_cast<BoxSkin*>(pObject) );
 	
 		return 0;
 	}

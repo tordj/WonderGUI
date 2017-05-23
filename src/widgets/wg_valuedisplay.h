@@ -54,7 +54,7 @@ namespace wg
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static ValueDisplay_p	cast( const Object_p& pObject );
+		static ValueDisplay_p	cast( Object * pObject );
 		
 		//.____ Geometry ____________________________________________
 	
@@ -69,7 +69,7 @@ namespace wg
 		void	_cloneContent( const Widget * _pOrg );
 		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void	_setState( State state );
-		void	_setSkin( const Skin_p& pSkin );
+		void	_setSkin( Skin * pSkin );
 	
 	private:
 	

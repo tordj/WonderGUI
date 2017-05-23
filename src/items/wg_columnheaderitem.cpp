@@ -42,7 +42,7 @@ namespace wg
 
 	//____ setSkin() _____________________________________________________________
 	
-	void ColumnHeaderItem::setSkin( const Skin_p& pSkin )
+	void ColumnHeaderItem::setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{
@@ -126,7 +126,7 @@ namespace wg
 
 	//____ receive() _____________________________________________________________
 
-	bool  ColumnHeaderItem::receive( const Msg_p& _pMsg )
+	bool  ColumnHeaderItem::receive( Msg * _pMsg )
 	{
 		switch( _pMsg->type() )
 		{

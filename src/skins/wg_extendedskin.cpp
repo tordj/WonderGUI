@@ -49,10 +49,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ExtendedSkin_p ExtendedSkin::cast( const Object_p& pObject )
+	ExtendedSkin_p ExtendedSkin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ExtendedSkin_p( static_cast<ExtendedSkin*>(pObject.rawPtr()) );
+			return ExtendedSkin_p( static_cast<ExtendedSkin*>(pObject) );
 	
 		return 0;
 	}

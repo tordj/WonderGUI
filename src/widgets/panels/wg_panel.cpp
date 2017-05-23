@@ -56,10 +56,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Panel_p Panel::cast( const Object_p& pObject )
+	Panel_p Panel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Panel_p( static_cast<Panel*>(pObject.rawPtr()) );
+			return Panel_p( static_cast<Panel*>(pObject) );
 	
 		return 0;
 	}

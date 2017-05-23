@@ -49,10 +49,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TextMapper_p TextMapper::cast( const Object_p& pObject )
+	TextMapper_p TextMapper::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextMapper_p( static_cast<TextMapper*>(pObject.rawPtr()) );
+			return TextMapper_p( static_cast<TextMapper*>(pObject) );
 	
 		return 0;
 	}

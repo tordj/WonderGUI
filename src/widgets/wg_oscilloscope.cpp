@@ -88,10 +88,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Oscilloscope_p Oscilloscope::cast( const Object_p& pObject )
+	Oscilloscope_p Oscilloscope::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Oscilloscope_p( static_cast<Oscilloscope*>(pObject.rawPtr()) );
+			return Oscilloscope_p( static_cast<Oscilloscope*>(pObject) );
 	
 		return 0;
 	}
@@ -389,9 +389,9 @@ namespace wg
 
 	//____ setMarkerSkin() _________________________________________________________
 
-	void Oscilloscope::setMarkerSkin( const Skin_p& pSkin )
+	void Oscilloscope::setMarkerSkin( Skin * pSkin )
 	{
-		if( m_pMarkerSkin != pSkin )
+		if( m_pMarkerSkin.rawPtr() != pSkin )
 		{
 			m_pMarkerSkin = pSkin;
 			_requestRender();

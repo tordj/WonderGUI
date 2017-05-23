@@ -61,10 +61,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Anim_p Anim::cast( const Object_p& pObject )
+	Anim_p Anim::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Anim_p( static_cast<Anim*>(pObject.rawPtr()) );
+			return Anim_p( static_cast<Anim*>(pObject) );
 	
 		return 0;
 	}

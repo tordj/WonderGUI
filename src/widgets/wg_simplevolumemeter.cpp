@@ -78,10 +78,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SimpleVolumeMeter_p SimpleVolumeMeter::cast( const Object_p& pObject )
+	SimpleVolumeMeter_p SimpleVolumeMeter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SimpleVolumeMeter_p( static_cast<SimpleVolumeMeter*>(pObject.rawPtr()) );
+			return SimpleVolumeMeter_p( static_cast<SimpleVolumeMeter*>(pObject) );
 	
 		return 0;
 	}
@@ -297,7 +297,7 @@ namespace wg
 
 	//____ _setSkin() ________________________________________________________________
 
-	void SimpleVolumeMeter::_setSkin( const Skin_p& pSkin )
+	void SimpleVolumeMeter::_setSkin( Skin * pSkin )
 	{
 		Size sz = Size();
 		

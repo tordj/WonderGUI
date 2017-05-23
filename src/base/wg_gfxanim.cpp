@@ -60,10 +60,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	GfxAnim_p GfxAnim::cast( const Object_p& pObject )
+	GfxAnim_p GfxAnim::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxAnim_p( static_cast<GfxAnim*>(pObject.rawPtr()) );
+			return GfxAnim_p( static_cast<GfxAnim*>(pObject) );
 	
 		return 0;
 	}
@@ -77,7 +77,7 @@ namespace wg
 	
 	//____ insertFrame() __________________________________________________________
 	
-	bool GfxAnim::insertFrame( int pos, const Surface_p& pSurf, Coord ofs, int duration )
+	bool GfxAnim::insertFrame( int pos, Surface * pSurf, Coord ofs, int duration )
 	{
 		if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 			return false;
@@ -96,7 +96,7 @@ namespace wg
 		return bOk;
 	}
 	
-	bool GfxAnim::insertFrame( GfxFrame * pBefore, const Surface_p& pSurf, Coord ofs, int duration )
+	bool GfxAnim::insertFrame( GfxFrame * pBefore, Surface * pSurf, Coord ofs, int duration )
 	{
 		if( !pSurf )
 			return false;
@@ -116,7 +116,7 @@ namespace wg
 	
 	//____ addFrame() _____________________________________________________________
 	
-	bool GfxAnim::addFrame( const Surface_p& pSurf, Coord ofs, int duration )
+	bool GfxAnim::addFrame( Surface * pSurf, Coord ofs, int duration )
 	{
 		if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 			return false;
@@ -137,7 +137,7 @@ namespace wg
 	
 	//____ addFrames() ____________________________________________________________
 	
-	int GfxAnim::addFrames( const Surface_p& pSurf, int duration, int nFrames, Size spacing )
+	int GfxAnim::addFrames( Surface * pSurf, int duration, int nFrames, Size spacing )
 	{
 		if( !pSurf )
 			return 0;
@@ -151,7 +151,7 @@ namespace wg
 	}
 	
 	
-	int GfxAnim::addFrames( const Surface_p& pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames, Size spacing )
+	int GfxAnim::addFrames( Surface * pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames, Size spacing )
 	{
 		int nFramesX = arraySize.w;
 		int nFramesY = arraySize.h;

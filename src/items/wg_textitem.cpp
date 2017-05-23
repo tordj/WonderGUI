@@ -125,13 +125,13 @@ namespace wg
 	
 	//____ setCharStyle() ______________________________________________________
 	
-	void TextItem::setCharStyle( const TextStyle_p& pStyle )
+	void TextItem::setCharStyle( TextStyle * pStyle )
 	{
 		m_charBuffer.setStyle(pStyle);
 		_textMapper()->onCharStyleChanged(this );
 	}
 	
-	void TextItem::setCharStyle( const TextStyle_p& pStyle, int ofs, int len)
+	void TextItem::setCharStyle( TextStyle * pStyle, int ofs, int len)
 	{
 		m_charBuffer.setStyle(pStyle, ofs, len);
 		_textMapper()->onCharStyleChanged(this, ofs,len);		
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ receive() ___________________________________________________________
 
-	void TextItem::receive( const Msg_p& _pMsg )
+	void TextItem::receive( Msg * _pMsg )
 	{
 		if( !_pMsg->isMouseMsg() )
 			return;

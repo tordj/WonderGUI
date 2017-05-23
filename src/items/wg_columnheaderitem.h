@@ -46,7 +46,7 @@ namespace wg
 		void			setSortOrder( SortOrder order );
 		inline SortOrder sortOrder() const { return m_sortOrder; }
 
-		void			setSkin( const Skin_p& pSkin );
+		void			setSkin( Skin * pSkin );
 		inline Skin_p	skin() const { return m_pSkin; }
 	
 		void			setState( State state );
@@ -59,7 +59,7 @@ namespace wg
 		int				matchingWidth( int height ) const;
 		int				matchingHeight( int width ) const;
 
-		bool			receive( const Msg_p& pMsg );
+		bool			receive( Msg * pMsg );
 
 		void			render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
 

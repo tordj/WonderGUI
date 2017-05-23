@@ -34,7 +34,7 @@ namespace wg
 
 	//____ insertSorted() ___________________________________________________
 
-	bool PackListChildren::insertSorted(const Widget_p& pWidget)
+	bool PackListChildren::insertSorted(Widget * pWidget)
 	{
 		if (!pWidget)
 			return false;
@@ -42,7 +42,7 @@ namespace wg
 		if (m_pSlotArray->isEmpty() || !m_pHolder->m_sortFunc)
 			return add(pWidget);
 
-		int index = m_pHolder->_getInsertionPoint(pWidget.rawPtr());
+		int index = m_pHolder->_getInsertionPoint(pWidget);
 		return insert(index, pWidget);
 	}
 
@@ -98,10 +98,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	PackList_p PackList::cast( const Object_p& pObj )
+	PackList_p PackList::cast( Object * pObj )
 	{
 		if( pObj && pObj->isInstanceOf(CLASSNAME) )
-			return PackList_p( static_cast<PackList*>(pObj.rawPtr()) );
+			return PackList_p( static_cast<PackList*>(pObj) );
 	
 		return 0;
 	}
@@ -551,7 +551,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void PackList::_receive( const Msg_p& _pMsg )
+	void PackList::_receive( Msg * _pMsg )
 	{
 		bool bSwallowed = m_header.receive(_pMsg);
 

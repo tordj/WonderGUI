@@ -66,15 +66,15 @@ namespace wg
 
 	//____ push() ________________________________________________
 
-	void PopupChildren::push(const Widget_p& _pPopup, const Widget_p& _pOpener, const Rect& _launcherGeo, Origo _attachPoint, Size _maxSize )
+	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, Size _maxSize )
 	{
 		PopupSlot * pSlot = m_pHolder->m_popups.add();
-		pSlot->pOpener = _pOpener.rawPtr();
+		pSlot->pOpener = _pOpener;
 		pSlot->launcherGeo = _launcherGeo;
 		pSlot->attachPoint = _attachPoint;
 		pSlot->maxSize = _maxSize;
 		
-		pSlot->replaceWidget(m_pHolder, _pPopup.rawPtr());
+		pSlot->replaceWidget(m_pHolder, _pPopup);
 		
 		m_pHolder->_updateGeo(pSlot);
 		m_pHolder->_stealKeyboardFocus();
@@ -135,10 +135,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	PopupLayer_p PopupLayer::cast( const Object_p& pObject )
+	PopupLayer_p PopupLayer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PopupLayer_p( static_cast<PopupLayer*>(pObject.rawPtr()) );
+			return PopupLayer_p( static_cast<PopupLayer*>(pObject) );
 	
 		return 0;
 	}
@@ -417,7 +417,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void PopupLayer::_receive( const Msg_p& _pMsg )
+	void PopupLayer::_receive( Msg * _pMsg )
 	{
 		Layer::_receive(_pMsg);
 	

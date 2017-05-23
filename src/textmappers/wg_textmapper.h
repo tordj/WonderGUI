@@ -52,7 +52,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TextMapper_p	cast( const Object_p& pObject );
+		static TextMapper_p	cast( Object * pObject );
 
 		//.____ Internal __________________________________________
 	

@@ -36,7 +36,7 @@ namespace wg
 	public:
 		ValueItem(ItemHolder * pHolder);
 	
-		void				setFormatter( const ValueFormatter_p& pFormatter );
+		void				setFormatter( ValueFormatter * pFormatter );
 		void				clearFormatter();
 		inline ValueFormatter_p	formatter() const { return m_pFormatter; }
 	

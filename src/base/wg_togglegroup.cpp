@@ -63,10 +63,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ToggleGroup_p ToggleGroup::cast( const Object_p& pObject )
+	ToggleGroup_p ToggleGroup::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ToggleGroup_p( static_cast<ToggleGroup*>(pObject.rawPtr()) );
+			return ToggleGroup_p( static_cast<ToggleGroup*>(pObject) );
 	
 		return 0;
 	}
@@ -116,9 +116,9 @@ namespace wg
 	 *
 	 **/
 	
-	void ToggleGroup::add( const ToggleButton_p& pToggleButton )
+	void ToggleGroup::add( ToggleButton * pToggleButton )
 	{
-		ToggleButton * p = pToggleButton.rawPtr();
+		ToggleButton * p = pToggleButton;
 		if( p )
 		{
 			if( p->isSelected() )
@@ -150,12 +150,12 @@ namespace wg
 	 **/
 	
 	
-	bool ToggleGroup::remove( const ToggleButton_p& pToggleButton )
+	bool ToggleGroup::remove( ToggleButton * pToggleButton )
 	{
 		if( pToggleButton && pToggleButton->_toggleGroup() == this )
 		{
 			pToggleButton->_setToggleGroup(0);
-			_remove( pToggleButton.rawPtr() );
+			_remove( pToggleButton );
 			return true;
 		}
 	

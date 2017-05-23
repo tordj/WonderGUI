@@ -65,7 +65,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Anim_p	cast( const Object_p& pObject );
+		static Anim_p	cast( Object * pObject );
 	
 		bool				setPlayMode( AnimMode mode );
 		bool				setTimeScaler( float scale );

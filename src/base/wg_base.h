@@ -86,10 +86,10 @@ namespace wg
 		static MsgRouter_p	msgRouter() { return s_pData->pMsgRouter; }
 		static InputHandler_p	inputHandler() { return s_pData->pInputHandler; }
 
-		static void			setDefaultTextMapper( const TextMapper_p& pTextMapper );
+		static void			setDefaultTextMapper( TextMapper * pTextMapper );
 		static TextMapper_p defaultTextMapper() { assert(s_pData!=0); return s_pData->pDefaultTextMapper; }
 	
-		static void			setDefaultStyle( const TextStyle_p& pStyle );
+		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 	
 		//.____ Misc ________________________________________________

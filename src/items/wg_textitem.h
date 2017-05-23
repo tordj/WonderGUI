@@ -61,13 +61,13 @@ namespace wg
 		TextLink_p			markedLink() const;
 	
 		
-		virtual void		setCharStyle( const TextStyle_p& pStyle );
-		virtual void		setCharStyle( const TextStyle_p& pStyle, int ofs, int len);
+		virtual void		setCharStyle( TextStyle * pStyle );
+		virtual void		setCharStyle( TextStyle * pStyle, int ofs, int len);
 
 		virtual void		clearCharStyle();
 		virtual void		clearCharStyle( int ofs, int len );
 
-		virtual void		receive( const Msg_p& pMsg );
+		virtual void		receive( Msg * pMsg );
 	
 	protected:
 		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link

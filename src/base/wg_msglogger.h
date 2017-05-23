@@ -47,7 +47,7 @@ namespace wg
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static MsgLogger_p		cast( const Object_p& pObject );
+		static MsgLogger_p		cast( Object * pObject );
 
 		//.____ Control _______________________________________________________
 
@@ -74,7 +74,7 @@ namespace wg
 	
 		//.____ Misc _______________________________________________________
 
-		void receive(const Msg_p& _pMsg);
+		void receive(Msg * _pMsg);
 
 		bool isMsgLogged( MsgType msg ) { return m_msgFilter[(int)msg]; }
 	
@@ -86,11 +86,11 @@ namespace wg
 		void	_onRouteRemoved();
 	
 		std::string	_formatTimestamp( int64_t ms ) const;
-		std::string _formatSource( const Msg_p& _pMsg ) const;
-		std::string _formatCopyTo( const Msg_p& _pMsg ) const;
-		std::string _formatModkeys( const InputMsg_p& _pMsg ) const;
-		std::string _formatPointerPos( const InputMsg_p& _pMsg ) const;
-		std::string _formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const;
+		std::string _formatSource( Msg * _pMsg ) const;
+		std::string _formatCopyTo( Msg * _pMsg ) const;
+		std::string _formatModkeys( InputMsg * _pMsg ) const;
+		std::string _formatPointerPos( InputMsg * _pMsg ) const;
+		std::string _formatPointerStyle( PointerChangeMsg * _pMsg ) const;
 		std::string _formatMouseButton( MouseButton button ) const;
 		std::string _formatEditCommand( EditCmd command ) const;
 	

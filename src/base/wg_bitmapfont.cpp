@@ -36,7 +36,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	BitmapFont::BitmapFont( const Surface_p& pSurf, char * pGlyphSpec )
+	BitmapFont::BitmapFont( Surface * pSurf, char * pGlyphSpec )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
@@ -116,10 +116,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	BitmapFont_p BitmapFont::cast( const Object_p& pObject )
+	BitmapFont_p BitmapFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BitmapFont_p( static_cast<BitmapFont*>(pObject.rawPtr()) );
+			return BitmapFont_p( static_cast<BitmapFont*>(pObject) );
 	
 		return 0;
 	}
@@ -181,7 +181,7 @@ namespace wg
 	
 	//____ insertGlyphs() _________________________________________________________
 	
-	void BitmapFont::insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec )
+	void BitmapFont::insertGlyphs( Surface * pSurf, char* pGlyphSpec )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgAdvance *= m_nGlyphs;
@@ -352,7 +352,7 @@ namespace wg
 		m_src.pSurface = 0;
 	}
 	
-	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, const Surface_p& pSurf, const Rect& rect )
+	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const Rect& rect )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;

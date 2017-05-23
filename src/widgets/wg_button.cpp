@@ -68,10 +68,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Button_p Button::cast( const Object_p& pObject )
+	Button_p Button::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Button_p( static_cast<Button*>(pObject.rawPtr()) );
+			return Button_p( static_cast<Button*>(pObject) );
 	
 		return 0;
 	}
@@ -178,7 +178,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void Button::_receive( const Msg_p& _pMsg )
+	void Button::_receive( Msg * _pMsg )
 	{
 		State state = m_state;
 		MsgRouter_p	pHandler = Base::msgRouter();

@@ -183,8 +183,8 @@ namespace wg
 		inline void			setCharCodes( uint16_t charCode );
 		void			    setCharCodes( uint16_t charCode, int ofs, int len );
 	
-		inline void			setStyle( const TextStyle_p& pProp );
-		void				setStyle( const TextStyle_p& pProp, int ofs, int len);
+		inline void			setStyle( TextStyle * pProp );
+		void				setStyle( TextStyle * pProp, int ofs, int len);
 	
 		
 		inline void			clear();
@@ -446,7 +446,7 @@ namespace wg
 	///
 	/// @param	pStyle	Pointer to the new style for all the characters.
 	
-	void CharBuffer::setStyle( const TextStyle_p& pStyle )
+	void CharBuffer::setStyle( TextStyle * pStyle )
 	{
 		setStyle( pStyle, 0, INT_MAX );
 	}

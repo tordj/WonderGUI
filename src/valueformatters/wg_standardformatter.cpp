@@ -63,10 +63,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	StandardFormatter_p StandardFormatter::cast( const Object_p& pObject )
+	StandardFormatter_p StandardFormatter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StandardFormatter_p( static_cast<StandardFormatter*>(pObject.rawPtr()) );
+			return StandardFormatter_p( static_cast<StandardFormatter*>(pObject) );
 	
 		return 0;
 	}

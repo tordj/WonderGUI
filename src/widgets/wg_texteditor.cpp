@@ -66,10 +66,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TextEditor_p TextEditor::cast( const Object_p& pObject )
+	TextEditor_p TextEditor::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextEditor_p( static_cast<TextEditor*>(pObject.rawPtr()) );
+			return TextEditor_p( static_cast<TextEditor*>(pObject) );
 	
 		return 0;
 	}
@@ -135,7 +135,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void TextEditor::_receive( const Msg_p& pMsg )
+	void TextEditor::_receive( Msg * pMsg )
 	{
 		MsgType type = pMsg->type();
 
@@ -157,7 +157,7 @@ namespace wg
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void TextEditor::_setSkin( const Skin_p& pSkin )
+	void TextEditor::_setSkin( Skin * pSkin )
 	{
 		//TODO: Possibly notify text about new canvas size.
 		

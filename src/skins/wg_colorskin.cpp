@@ -63,10 +63,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ColorSkin_p ColorSkin::cast( const Object_p& pObject )
+	ColorSkin_p ColorSkin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ColorSkin_p( static_cast<ColorSkin*>(pObject.rawPtr()) );
+			return ColorSkin_p( static_cast<ColorSkin*>(pObject) );
 	
 		return 0;
 	}

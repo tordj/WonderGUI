@@ -60,10 +60,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TimeFormatter_p TimeFormatter::cast( const Object_p& pObject )
+	TimeFormatter_p TimeFormatter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TimeFormatter_p( static_cast<TimeFormatter*>(pObject.rawPtr()) );
+			return TimeFormatter_p( static_cast<TimeFormatter*>(pObject) );
 	
 		return 0;
 	}

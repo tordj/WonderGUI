@@ -52,7 +52,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static VolumeMeter_p	cast( const Object_p& pObject );
+		static VolumeMeter_p	cast( Object * pObject );
 	
 				
 		//.____ Appearance __________________________________________
@@ -82,7 +82,7 @@ namespace wg
 		virtual ~VolumeMeter();
 		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
 		
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_cloneContent( const Widget * _pOrg );
 		bool			_alphaTest( const Coord& ofs );

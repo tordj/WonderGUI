@@ -47,7 +47,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static StdTextMapper_p	cast( const Object_p& pObject );
+		static StdTextMapper_p	cast( Object * pObject );
 	
 		//.____ Behavior __________________________________________________
 	
@@ -56,7 +56,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		void			setCaret( const Caret_p& pCaret );
+		void			setCaret( Caret * pCaret );
 		Caret_p			caret() const { return m_pCaret; }
 
 		//.____ Appearance _________________________________________________
@@ -97,7 +97,7 @@ namespace wg
 		virtual int		wordEnd( const TextBaseItem * pItem, int charOfs ) const;		
 
 
-		virtual void 	receive( const Msg_p& pMsg );
+		virtual void 	receive( Msg * pMsg );
 		virtual void 	renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
 
 		virtual void	caretMove( TextBaseItem * pText, int newOfs );

@@ -57,7 +57,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static GfxDevice_p		cast( const Object_p& pObject );
+		static GfxDevice_p		cast( Object * pObject );
 		virtual const char *	surfaceClassName( void ) const = 0;
 
 		//.____ Misc _______________________________________________________
@@ -95,56 +95,56 @@ namespace wg
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 
 	
-		virtual void	blit( const Surface_p& pSrc );
-		virtual void	blit( const Surface_p& pSrc, Coord dest );
-		virtual void	blit( const Surface_p& pSrc, const Rect& src, Coord dest ) = 0;
+		virtual void	blit( Surface * pSrc );
+		virtual void	blit( Surface * pSrc, Coord dest );
+		virtual void	blit( Surface * pSrc, const Rect& src, Coord dest ) = 0;
 	
-		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& dest );
-		virtual void	stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest );
+		virtual void	stretchBlit( Surface * pSrc, const Rect& dest );
+		virtual void	stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest );
 	
-		virtual void	tileBlit( const Surface_p& pSrc, const Rect& dest );
-		virtual void	tileBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest );
+		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
+		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
 	
 	
 		virtual void	clipFill( const Rect& clip, const Rect& rect, const Color& col );
 	
-		virtual void	clipBlit( const Rect& clip, const Surface_p& src );
-		virtual void	clipBlit( const Rect& clip, const Surface_p& src, Coord dest  );
-		virtual void	clipBlit( const Rect& clip, const Surface_p& src,
+		virtual void	clipBlit( const Rect& clip, Surface * src );
+		virtual void	clipBlit( const Rect& clip, Surface * src, Coord dest  );
+		virtual void	clipBlit( const Rect& clip, Surface * src,
 								  const Rect& srcrect, Coord dest  );
 	
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest );
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest );
-		virtual void	clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const RectF& src, const Rect& dest );
+		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
+		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
+		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& src, const Rect& dest );
 	
-		virtual void	clipTileBlit( const Rect& clip, const Surface_p& src,
+		virtual void	clipTileBlit( const Rect& clip, Surface * src,
 									  const Rect& dest );
-		virtual void	clipTileBlit( const Rect& clip, const Surface_p& src,
+		virtual void	clipTileBlit( const Rect& clip, Surface * src,
 									  const Rect& srcrect, const Rect& dest );
 	
 	
 		// Mid-level draw methods
 	
-		virtual void	clipBlitHorrBar(	const Rect& _clip, const Surface_p& _pSurf, const Rect& _src,
+		virtual void	clipBlitHorrBar(	const Rect& _clip, Surface * _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 	
-		virtual void	clipBlitVertBar(	const Rect& _clip, const Surface_p& _pSurf, const Rect& _src,
+		virtual void	clipBlitVertBar(	const Rect& _clip, Surface * _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 	
 	
-		virtual void	blitHorrBar(		const Surface_p& _pSurf, const Rect& _src,
+		virtual void	blitHorrBar(		Surface * _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 	
-		virtual void	blitVertBar(		const Surface_p& _pSurf, const Rect& _src,
+		virtual void	blitVertBar(		Surface * _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 		
 		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
 
-		virtual void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
+		virtual void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 									   		 float dx, float dy, float dw, float dh ) = 0;
 	
 		

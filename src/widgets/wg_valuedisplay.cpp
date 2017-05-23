@@ -61,10 +61,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ValueDisplay_p ValueDisplay::cast( const Object_p& pObject )
+	ValueDisplay_p ValueDisplay::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ValueDisplay_p( static_cast<ValueDisplay*>(pObject.rawPtr()) );
+			return ValueDisplay_p( static_cast<ValueDisplay*>(pObject) );
 	
 		return 0;
 	}
@@ -118,7 +118,7 @@ namespace wg
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void ValueDisplay::_setSkin( const Skin_p& pSkin )
+	void ValueDisplay::_setSkin( Skin * pSkin )
 	{
 		Widget::_setSkin(pSkin);
 	}

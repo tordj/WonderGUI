@@ -46,10 +46,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ScalePreferredSizeBroker_p ScalePreferredSizeBroker::cast( const Object_p& pObject )
+	ScalePreferredSizeBroker_p ScalePreferredSizeBroker::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ScalePreferredSizeBroker_p( static_cast<ScalePreferredSizeBroker*>(pObject.rawPtr()) );
+			return ScalePreferredSizeBroker_p( static_cast<ScalePreferredSizeBroker*>(pObject) );
 	
 		return 0;
 	}

@@ -77,17 +77,17 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	RefreshButton_p RefreshButton::cast( const Object_p& pObject )
+	RefreshButton_p RefreshButton::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RefreshButton_p( static_cast<RefreshButton*>(pObject.rawPtr()) );
+			return RefreshButton_p( static_cast<RefreshButton*>(pObject) );
 	
 		return 0;
 	}
 	
 	
 	//_____________________________________________________________________________
-	void RefreshButton::setAnimation( const GfxAnim_p& pAnimation )
+	void RefreshButton::setAnimation( GfxAnim * pAnimation )
 	{
 		m_pRefreshAnim		= pAnimation;
 	
@@ -191,7 +191,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void RefreshButton::_receive( const Msg_p& pMsg )
+	void RefreshButton::_receive( Msg * pMsg )
 	{
 		Button::_receive( pMsg );
 	

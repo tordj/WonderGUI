@@ -287,9 +287,9 @@ namespace wg
 		return len;
 	}
 
-	ViewEntry ViewEntry::operator=(const Widget_p& pWidget) 
+	ViewEntry ViewEntry::operator=(Widget * pWidget) 
 	{ 
-		m_pHolder->_setWidget(m_pSlot, pWidget.rawPtr()); 
+		m_pHolder->_setWidget(m_pSlot, pWidget); 
 		return *this; 
 	}
 
@@ -399,9 +399,9 @@ namespace wg
 		return true;
 	}
 
-	ScrollbarEntry ScrollbarEntry::operator=(const Scrollbar_p& pWidget) 
+	ScrollbarEntry ScrollbarEntry::operator=(Scrollbar * pWidget) 
 	{ 
-		m_pHolder->_setWidget(m_pSlot, pWidget.rawPtr()); 
+		m_pHolder->_setWidget(m_pSlot, pWidget); 
 		return *this; 
 	}
 	
@@ -465,10 +465,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ScrollPanel_p ScrollPanel::cast( const Object_p& pObject )
+	ScrollPanel_p ScrollPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ScrollPanel_p( static_cast<ScrollPanel*>(pObject.rawPtr()) );
+			return ScrollPanel_p( static_cast<ScrollPanel*>(pObject) );
 	
 		return 0;
 	}
@@ -635,7 +635,7 @@ namespace wg
 			
 	//____ setSkin() ______________________________________________________________
 	
-	void ScrollPanel::setSkin( const Skin_p& pSkin )
+	void ScrollPanel::setSkin( Skin * pSkin )
 	{
 		Panel::setSkin(pSkin);
 		m_viewSlot.updateCanvasGeo();
@@ -645,7 +645,7 @@ namespace wg
 		
 	//____ setCornerSkin() ______________________________________________________
 	
-	void ScrollPanel::setCornerSkin( const Skin_p& pSkin )
+	void ScrollPanel::setCornerSkin( Skin * pSkin )
 	{
 		m_pCornerSkin = pSkin;
 		_requestRender( m_cornerGeo );
@@ -1053,7 +1053,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void ScrollPanel::_receive( const Msg_p& _pMsg )
+	void ScrollPanel::_receive( Msg * _pMsg )
 	{
 		Panel::_receive(_pMsg);
 	

@@ -42,11 +42,11 @@ namespace wg
 		TextBaseItem( ItemHolder * pHolder );
 		virtual ~TextBaseItem();
 	
-		virtual void		setStyle( const TextStyle_p& pStyle );
+		virtual void		setStyle( TextStyle * pStyle );
 		virtual void		clearStyle();
 		TextStyle *			style() const { return m_pStyle.rawPtr(); }
 	
-		virtual void		setTextMapper( const TextMapper_p& pTextMapper );
+		virtual void		setTextMapper( TextMapper * pTextMapper );
 		virtual void		clearTextMapper();
 		TextMapper *		textMapper() const { return m_pTextMapper.rawPtr(); }
 	

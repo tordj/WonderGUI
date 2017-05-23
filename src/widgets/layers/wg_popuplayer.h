@@ -68,7 +68,7 @@ namespace wg
 
 		Widget_p get( int index) const;
 
-		void	push(const Widget_p& pPopup, const Widget_p& pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
+		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
 		void	pop(int nb = 1);
 		void	clear();
 		
@@ -101,7 +101,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static PopupLayer_p	cast( const Object_p& pObject );
+		static PopupLayer_p	cast( Object * pObject );
 	
 	
 	protected:
@@ -136,7 +136,7 @@ namespace wg
 	
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const Size& size );
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 	
 	
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.	

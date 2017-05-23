@@ -124,16 +124,16 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static List_p		cast( const Object_p& pObject );
+		static List_p		cast( Object * pObject );
 
 		//.____ Appearance _________________________________________________
 
-		virtual void		setEntrySkin( const Skin_p& pSkin );
-		virtual bool		setEntrySkin( const Skin_p& pOddEntrySkin, const Skin_p& pEvenEntrySkin );
+		virtual void		setEntrySkin( Skin * pSkin );
+		virtual bool		setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin );
 		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
 		Skin_p				evenEntrySkin() const { return m_pEntrySkin[1]; }
 	
-		virtual void		setLassoSkin( const Skin_p& pSkin );
+		virtual void		setLassoSkin( Skin * pSkin );
 		Skin_p				lassoSkin() const { return m_pLassoSkin; }
 
 		//.____ Behavior ________________________________________________________
@@ -147,7 +147,7 @@ namespace wg
 		List();
 		virtual ~List();
 	
-		virtual void	_receive( const Msg_p& pMsg );
+		virtual void	_receive( Msg * pMsg );
 
 		void			_cloneContent( const Widget * _pOrg );
 	

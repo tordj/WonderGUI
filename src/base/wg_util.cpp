@@ -62,7 +62,7 @@ namespace wg
 
 	//____ markTestStretchRect() __________________________________________________
 
-	bool Util::markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold )
+	bool Util::markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )

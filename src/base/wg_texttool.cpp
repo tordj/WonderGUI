@@ -1177,7 +1177,7 @@ namespace wg
 	
 	//____ setStyle() ________________________________________________________
 	
-	void TextTool::setStyle( const TextStyle_p& pStyle, Char * pChar, int nb )
+	void TextTool::setStyle( TextStyle * pStyle, Char * pChar, int nb )
 	{
 		int				refCnt = 0;
 		int				refCntTotal = 0;

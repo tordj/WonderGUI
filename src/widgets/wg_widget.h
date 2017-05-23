@@ -95,7 +95,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Widget_p		cast( const Object_p& pObject );
+		static Widget_p		cast( Object * pObject );
 	
 		inline void			setId( int id ) { m_id = id; }
 		inline int			id() const { return m_id; }
@@ -147,7 +147,7 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		virtual void		setSkin( const Skin_p& pSkin );
+		virtual void		setSkin( Skin * pSkin );
 		Skin_p				skin( ) const	{ return m_pSkin; }
 
 		inline void			setTooltip( const String& str ) { m_tooltip = str; }
@@ -169,7 +169,7 @@ namespace wg
 		//.____ Misc _________________________________________________________________
 
 		bool				markTest( const Coord& ofs );
-		void 				receive( const Msg_p& pMsg );
+		void 				receive( Msg * pMsg );
 
 		inline void			refresh() { _refresh(); }
 	
@@ -218,10 +218,10 @@ namespace wg
 	
 		virtual void	_refresh();
 		virtual void	_setSize( const Size& size );
-		virtual void	_setSkin( const Skin_p& pSkin );
+		virtual void	_setSkin( Skin * pSkin );
 		virtual void	_setState( State state );
 	
-		virtual void	_receive( const Msg_p& pMsg );
+		virtual void	_receive( Msg * pMsg );
 		virtual	bool	_alphaTest( const Coord& ofs );
 	
 		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.

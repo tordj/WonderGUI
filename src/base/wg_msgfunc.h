@@ -36,23 +36,23 @@ namespace wg
 	class MsgFunc : public Receiver
 	{
 	public:
-		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg) ) { return new MsgFunc( fp ); }
-		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, int param), int param ) { return new MsgFunc( fp, param ); }
-		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, void * pParam), void * pParam ) { return new MsgFunc( fp, pParam ); }
-		static MsgFunc_p	create( void(*fp)( const Msg_p& pMsg, const Object_p& pParam), const Object_p& pParam ) { return new MsgFunc( fp, pParam ); }
+		static MsgFunc_p	create( void(*fp)( Msg * pMsg) ) { return new MsgFunc( fp ); }
+		static MsgFunc_p	create( void(*fp)( Msg * pMsg, int param), int param ) { return new MsgFunc( fp, param ); }
+		static MsgFunc_p	create( void(*fp)( Msg * pMsg, void * pParam), void * pParam ) { return new MsgFunc( fp, pParam ); }
+		static MsgFunc_p	create( void(*fp)( Msg * pMsg, Object * pParam), Object * pParam ) { return new MsgFunc( fp, pParam ); }
 	
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static MsgFunc_p	cast( const Object_p& pObject );
+		static MsgFunc_p	cast( Object * pObject );
 	
-		void receive( const Msg_p& pMsg );
+		void receive( Msg * pMsg );
 	
 	protected:
-		MsgFunc( void(*fp)( const Msg_p& pMsg) );
-		MsgFunc( void(*fp)( const Msg_p& pMsg, int param), int param );
-		MsgFunc( void(*fp)( const Msg_p& pMsg, void * pParam), void * pParam );
-		MsgFunc( void(*fp)( const Msg_p& pMsg, const Object_p& pParam), const Object_p& pParam );
+		MsgFunc( void(*fp)( Msg * pMsg) );
+		MsgFunc( void(*fp)( Msg * pMsg, int param), int param );
+		MsgFunc( void(*fp)( Msg * pMsg, void * pParam), void * pParam );
+		MsgFunc( void(*fp)( Msg * pMsg, Object * pParam), Object * pParam );
 	
 		void	_onRouteAdded();
 		void	_onRouteRemoved();

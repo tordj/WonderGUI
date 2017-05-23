@@ -72,10 +72,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	AnimPlayer_p AnimPlayer::cast( const Object_p& pObject )
+	AnimPlayer_p AnimPlayer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return AnimPlayer_p( static_cast<AnimPlayer*>(pObject.rawPtr()) );
+			return AnimPlayer_p( static_cast<AnimPlayer*>(pObject) );
 	
 		return 0;
 	}
@@ -83,7 +83,7 @@ namespace wg
 	
 	//____ setAnimation() ____________________________________________________________
 	
-	bool AnimPlayer::setAnimation( const GfxAnim_p& pAnim )
+	bool AnimPlayer::setAnimation( GfxAnim * pAnim )
 	{
 		m_pAnim			= pAnim;
 		m_playPos		= 0.0;
@@ -260,7 +260,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void AnimPlayer::_receive( const Msg_p& pMsg )
+	void AnimPlayer::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
 	

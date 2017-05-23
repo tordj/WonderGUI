@@ -58,7 +58,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static GlGfxDevice_p	cast( const Object_p& pObject );
+		static GlGfxDevice_p	cast( Object * pObject );
 		const char *			surfaceClassName( void ) const;
 
 		//.____ Misc _______________________________________________________
@@ -93,9 +93,9 @@ namespace wg
 
 
 
-		void	blit( const Surface_p& src, const Rect& srcrect, Coord dest  ) override;
+		void	blit( Surface * src, const Rect& srcrect, Coord dest  ) override;
 
-		void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
+		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 									 float dx, float dy, float dw, float dh ) override;
 
 

@@ -50,7 +50,7 @@ namespace wg
 		m_afterglowFrames = 4;	
 	}
 	
-	RootPanel::RootPanel( const GfxDevice_p& pGfxDevice ) : RootPanel()
+	RootPanel::RootPanel( GfxDevice * pGfxDevice ) : RootPanel()
 	{
 		if( pGfxDevice )
 			m_geo = pGfxDevice->canvasSize();
@@ -84,10 +84,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	RootPanel_p RootPanel::cast( const Object_p& pObject )
+	RootPanel_p RootPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RootPanel_p( static_cast<RootPanel*>(pObject.rawPtr()) );
+			return RootPanel_p( static_cast<RootPanel*>(pObject) );
 	
 		return 0;
 	}
@@ -95,7 +95,7 @@ namespace wg
 	
 	//____ setGfxDevice() _________________________________________________________
 	
-	bool RootPanel::setGfxDevice( const GfxDevice_p& pDevice )
+	bool RootPanel::setGfxDevice( GfxDevice * pDevice )
 	{
 		m_pGfxDevice = pDevice;
 	
@@ -190,7 +190,7 @@ namespace wg
 	
 	//____ setDebugOverlay() ____________________________________________________
 
-	void RootPanel::setDebugOverlay( const Skin_p& pOverlaySkin )
+	void RootPanel::setDebugOverlay( Skin * pOverlaySkin )
 	{
 		m_pDebugOverlay = pOverlaySkin;
 	}

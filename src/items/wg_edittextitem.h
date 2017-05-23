@@ -37,7 +37,7 @@ namespace wg
 	public:
 		EditTextItem( ItemHolder * pHolder );
 
-		void			receive( const Msg_p& pMsg );
+		void			receive( Msg * pMsg );
 	
 		// Overloaded so we can update caret and selection
 	

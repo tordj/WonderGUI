@@ -38,7 +38,7 @@ namespace wg
 	public:
 		virtual Surface_p	loadSurface( const std::string& filename, bool bRequired ) = 0;
 		virtual Font_p	loadFont( const std::string& filename ) = 0;
-		virtual ResDB_p		loadDb( const std::string& filename, const ResDB_p& pDependencies = 0 ) = 0;
+		virtual ResDB_p		loadDb( const std::string& filename, ResDB * pDependencies = 0 ) = 0;
 		virtual std::string		loadString( const std::string& token ) = 0;
 	};
 	

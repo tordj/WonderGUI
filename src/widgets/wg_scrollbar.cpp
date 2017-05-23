@@ -85,10 +85,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Scrollbar_p Scrollbar::cast( const Object_p& pObject )
+	Scrollbar_p Scrollbar::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Scrollbar_p( static_cast<Scrollbar*>(pObject.rawPtr()) );
+			return Scrollbar_p( static_cast<Scrollbar*>(pObject) );
 	
 		return 0;
 	}
@@ -287,9 +287,9 @@ namespace wg
 	 **/
 	
 	
-	void Scrollbar::setSkins( const Skin_p& pBaseSkin, const Skin_p& pBackgroundSkin,
-								const Skin_p& pHandleSkin,
-								const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin )
+	void Scrollbar::setSkins( Skin * pBaseSkin, Skin * pBackgroundSkin,
+								Skin * pHandleSkin,
+								Skin * pBwdButtonSkin, Skin * pFwdButtonSkin )
 	{
 		m_pSkin 		= pBaseSkin;
 		m_pBgSkin		= pBackgroundSkin;
@@ -304,7 +304,7 @@ namespace wg
 	
 	//____ setBackgroundSkin() ____________________________________________________________
 
-	void Scrollbar::setBackgroundSkin( const Skin_p& pSkin )
+	void Scrollbar::setBackgroundSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pBgSkin )
 		{
@@ -317,7 +317,7 @@ namespace wg
 
 	//____ setHandleSkin() ____________________________________________________________
 
-	void Scrollbar::setHandleSkin( const Skin_p& pSkin )
+	void Scrollbar::setHandleSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pHandleSkin )
 		{
@@ -330,7 +330,7 @@ namespace wg
 
 	//____ setBwdButtonSkin() ____________________________________________________________
 
-	void Scrollbar::setBwdButtonSkin( const Skin_p& pSkin )
+	void Scrollbar::setBwdButtonSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pBtnBwdSkin )
 		{
@@ -344,7 +344,7 @@ namespace wg
 
 	//____ setFwdButtonSkin() ____________________________________________________________
 
-	void Scrollbar::setFwdButtonSkin( const Skin_p& pSkin )
+	void Scrollbar::setFwdButtonSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pBtnFwdSkin )
 		{
@@ -663,7 +663,7 @@ namespace wg
 	
 	//____ _renderButton() _________________________________________________________
 	
-	void Scrollbar::_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, const Skin_p& pSkin, State state )
+	void Scrollbar::_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
 				_dest.w = pSkin->preferredSize().w;
@@ -749,7 +749,7 @@ namespace wg
 	
 	//____ _markTestButton() _______________________________________________________
 	
-	bool Scrollbar::_markTestButton( Coord ofs, Rect& _dest, const Skin_p& pSkin, State state )
+	bool Scrollbar::_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
 				_dest.w = pSkin->preferredSize().w;
@@ -850,7 +850,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void Scrollbar::_receive( const Msg_p& pMsg )
+	void Scrollbar::_receive( Msg * pMsg )
 	{
 		int		handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );

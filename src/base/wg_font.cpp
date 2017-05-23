@@ -51,10 +51,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Font_p Font::cast( const Object_p& pObject )
+	Font_p Font::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Font_p( static_cast<Font*>(pObject.rawPtr()) );
+			return Font_p( static_cast<Font*>(pObject) );
 	
 		return 0;
 	}

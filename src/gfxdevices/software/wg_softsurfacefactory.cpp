@@ -49,10 +49,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SoftSurfaceFactory_p SoftSurfaceFactory::cast( const Object_p& pObject )
+	SoftSurfaceFactory_p SoftSurfaceFactory::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurfaceFactory_p( static_cast<SoftSurfaceFactory*>(pObject.rawPtr()) );
+			return SoftSurfaceFactory_p( static_cast<SoftSurfaceFactory*>(pObject) );
 	
 		return 0;
 	}
@@ -72,7 +72,7 @@ namespace wg
         return SoftSurface::create(size,type,hint);
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint ) const
 	{
 		return SoftSurface::create(size,type, pBlob, pitch, hint);
 	}
@@ -82,7 +82,7 @@ namespace wg
 		return SoftSurface::create(size,type, pPixels, pitch, pPixelFormat, hint);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( const Surface_p& pOther, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, SurfaceHint hint ) const
 	{
 		return SoftSurface::create( pOther, hint );
 	}

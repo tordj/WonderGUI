@@ -46,10 +46,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SurfaceFactory_p SurfaceFactory::cast( const Object_p& pObject )
+	SurfaceFactory_p SurfaceFactory::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SurfaceFactory_p( static_cast<SurfaceFactory*>(pObject.rawPtr()) );
+			return SurfaceFactory_p( static_cast<SurfaceFactory*>(pObject) );
 	
 		return 0;
 	}

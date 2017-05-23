@@ -54,7 +54,7 @@ namespace wg
 	
 		//.____ Appearance ____________________________________________
 	
-		inline void		setSkin( const Skin_p& pSkin ) { m_pItem->setSkin(pSkin); }
+		inline void		setSkin( Skin * pSkin ) { m_pItem->setSkin(pSkin); }
 		inline Skin_p	skin() const { return m_pItem->skin(); }
 
 		//.____ Misc __________________________________________________

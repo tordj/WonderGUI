@@ -54,11 +54,11 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static AnimPlayer_p	cast( const Object_p& pObject );
+		static AnimPlayer_p	cast( Object * pObject );
 	
 		//.____ Control __________________________________________
 	
-		bool			setAnimation( const GfxAnim_p& pAnim );
+		bool			setAnimation( GfxAnim * pAnim );
 		GfxAnim_p		animation() const { return m_pAnim; }
 			
 		int				playPos();										/// Returns play position in ticks.
@@ -90,7 +90,7 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg );
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_refresh();
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 		bool			_alphaTest( const Coord& ofs );
 		void			_setState( State state );
 	

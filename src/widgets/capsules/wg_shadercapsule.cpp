@@ -59,10 +59,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ShaderCapsule_p ShaderCapsule::cast( const Object_p& pObject )
+	ShaderCapsule_p ShaderCapsule::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ShaderCapsule_p( static_cast<ShaderCapsule*>(pObject.rawPtr()) );
+			return ShaderCapsule_p( static_cast<ShaderCapsule*>(pObject) );
 	
 		return 0;
 	}

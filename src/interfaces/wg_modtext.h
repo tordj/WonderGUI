@@ -71,8 +71,8 @@ namespace wg
 
 		//.____ Appearance _____________________________________________
 
-		inline void				setCharStyle( const TextStyle_p& pStyle ) { m_pItem->setCharStyle(pStyle); }
-		inline void				setCharStyle( const TextStyle_p& pStyle, int ofs, int len) { m_pItem->setCharStyle(pStyle, ofs, len); }
+		inline void				setCharStyle( TextStyle * pStyle ) { m_pItem->setCharStyle(pStyle); }
+		inline void				setCharStyle( TextStyle * pStyle, int ofs, int len) { m_pItem->setCharStyle(pStyle, ofs, len); }
 
 		inline void				clearCharStyle() { m_pItem->clearCharStyle(); }
 		inline void				clearCharStyle( int ofs, int len ) { m_pItem->clearCharStyle(ofs,len); }

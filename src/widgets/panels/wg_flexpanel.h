@@ -116,14 +116,14 @@ namespace wg
 		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(_object(),this); }
 
 
-		bool		addPinned( const Widget_p& pWidget, const FlexPos& topLeft, 
+		bool		addPinned( Widget * pWidget, const FlexPos& topLeft, 
 									const FlexPos& bottomRight );
-		bool		addMovable( const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
+		bool		addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
 									const FlexPos& hotspot = Origo::NorthWest );
 	
-		bool		insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft,
+		bool		insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		bool		insertMovable( int index, const Widget_p& pWidget, const Rect& geometry, 
+		bool		insertMovable( int index, Widget * pWidget, const Rect& geometry, 
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
 		bool		setPinned( int index );
@@ -198,7 +198,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static FlexPanel_p	cast( const Object_p& pObject );
+		static FlexPanel_p	cast( Object * pObject );
 	
 		//.____ Behavior ________________________________________________________
 

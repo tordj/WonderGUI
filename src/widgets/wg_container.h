@@ -70,7 +70,7 @@ namespace wg
 			virtual bool			isInstanceOf( const char * pClassName ) const;
 			virtual const char *	className( void ) const;
 			static const char		CLASSNAME[];
-			static Container_p		cast( const Object_p& pObject );
+			static Container_p		cast( Object * pObject );
 		
 			bool					isContainer() const;
 	

@@ -102,10 +102,10 @@ namespace wg
 
 	//____ cast() _________________________________________________________________
 
-	VolumeMeter_p VolumeMeter::cast( const Object_p& pObject )
+	VolumeMeter_p VolumeMeter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return VolumeMeter_p( static_cast<VolumeMeter*>(pObject.rawPtr()) );
+			return VolumeMeter_p( static_cast<VolumeMeter*>(pObject) );
 
 		return 0;
 	}
@@ -246,7 +246,7 @@ namespace wg
 
 	//____ _onEvent() ______________________________________________________________
 
-	void VolumeMeter::_receive( const Msg_p& pMsg )
+	void VolumeMeter::_receive( Msg * pMsg )
 	{
 		switch( pMsg->type() )
 		{

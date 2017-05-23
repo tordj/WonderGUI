@@ -38,7 +38,7 @@ namespace wg
 	
 	//____ set() ___________________________________________________________________
 	
-	bool IconItem::set( const Skin_p& pSkin, Origo origo, Border padding, float scale, bool bOverlap )
+	bool IconItem::set( Skin * pSkin, Origo origo, Border padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_origo 	= origo;
@@ -114,7 +114,7 @@ namespace wg
 	
 	//____ setSkin() ______________________________________________________________
 	
-	void IconItem::setSkin( const Skin_p& pSkin )
+	void IconItem::setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{

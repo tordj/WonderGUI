@@ -65,15 +65,15 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static InputHandler_p	cast( const Object_p& pObject );
+		static InputHandler_p	cast( Object * pObject );
 
 		//.____ Control _______________________________________________________
 
-		void 		setPointer(const RootPanel_p& pRoot, Coord pos, int64_t timestamp = 0);
+		void 		setPointer(RootPanel * pRoot, Coord pos, int64_t timestamp = 0);
 		void 		setButton(MouseButton button, bool bPressed, int64_t timestamp = 0);
 		void 		setWheelRoll(int wheel, Coord distance, int64_t timestamp = 0);
 
-		void 		setFocusedWindow(const RootPanel_p& pRoot);
+		void 		setFocusedWindow(RootPanel * pRoot);
 
 		void 		setKey(int nativeKeyCode, bool bPressed, int64_t timestamp = 0);
 
@@ -115,7 +115,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		void 		receive( const Msg_p& pMsg );
+		void 		receive( Msg * pMsg );
 
 		Key			translateKey( int native_keycode );
 

@@ -54,7 +54,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TextEditor_p	cast( const Object_p& pObject );
+		static TextEditor_p	cast( Object * pObject );
 	
 		//.____ Geometry ____________________________________________
 	
@@ -70,9 +70,9 @@ namespace wg
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_setSize( const Size& size );
 		void			_refresh();
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 		void			_setState( State state );
-		void			_setSkin( const Skin_p& pSkin );
+		void			_setSkin( Skin * pSkin );
 	
 	private:
 		

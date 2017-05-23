@@ -40,7 +40,7 @@ namespace wg
 	}
 	
 	
-	BlockSkin_p BlockSkin::createStatic( const Surface_p& pSurface, Rect block, Border frame )
+	BlockSkin_p BlockSkin::createStatic( Surface * pSurface, Rect block, Border frame )
 	{
 		if( !pSurface || frame.width() >= block.w || frame.height() >= block.h ||
 			block.x < 0 || pSurface->width() < block.right() ||
@@ -54,7 +54,7 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createEnable( const Surface_p& pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame )
+	BlockSkin_p BlockSkin::createEnable( Surface * pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame )
 	{
 		if( !pSurface || frame.width() >= blockSize.w || frame.height() >= blockSize.h ||
 			pSurface->width() < ofsEnabled.x + blockSize.w ||
@@ -71,7 +71,7 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createClickable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
+	BlockSkin_p BlockSkin::createClickable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
 		if( !pSurface || blockFrame.width() >= blockGeo.w || blockFrame.height() >= blockGeo.h ||
 			pSurface->width() < blockStartOfs.x + blockGeo.w + blockPitch.w*3 ||
@@ -94,7 +94,7 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createSelectable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
+	BlockSkin_p BlockSkin::createSelectable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
@@ -110,7 +110,7 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createClickSelectable( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
+	BlockSkin_p BlockSkin::createClickSelectable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
@@ -144,7 +144,7 @@ namespace wg
 	
 	/** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
 	*/
-	BlockSkin_p BlockSkin::createClickSelectableWidget( const Surface_p& pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
+	BlockSkin_p BlockSkin::createClickSelectableWidget( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame )
 	{
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
@@ -187,7 +187,7 @@ namespace wg
 	
 	
 	
-	BlockSkin_p BlockSkin::createStaticFromSurface( const Surface_p& pSurface, Border frame )
+	BlockSkin_p BlockSkin::createStaticFromSurface( Surface * pSurface, Border frame )
 	{
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
@@ -196,7 +196,7 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createEnableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame )
+	BlockSkin_p BlockSkin::createEnableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame )
 	{
 		BlockSkin * pSkin = new BlockSkin();
 		pSkin->setSurface( pSurface );
@@ -209,19 +209,19 @@ namespace wg
 		return BlockSkin_p(pSkin);
 	}
 	
-	BlockSkin_p BlockSkin::createClickableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame )
+	BlockSkin_p BlockSkin::createClickableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame )
 	{
 		Size	blockSize = Size( (pSurface->width()-blockSpacing*3)/4, pSurface->height() );
 		return createClickable( pSurface, blockSize, Coord(0,0), Size(blockSize.w+blockSpacing,0), blockFrame );
 	}
 	
-	BlockSkin_p BlockSkin::createSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame )
+	BlockSkin_p BlockSkin::createSelectableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame )
 	{
 		Size	blockSize( (pSurface->width()-blockSpacing*2)/3, pSurface->height() );
 		return createSelectable( pSurface, blockSize, Coord(0,0), Size(blockSize.w+blockSpacing,0), blockFrame );
 	}
 	
-	BlockSkin_p BlockSkin::createClickSelectableFromSurface( const Surface_p& pSurface, int blockSpacing, Border blockFrame )
+	BlockSkin_p BlockSkin::createClickSelectableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame )
 	{
 		Size	blockSize( (pSurface->width()-blockSpacing*4)/5, pSurface->height() );
 		return createClickSelectable( pSurface, blockSize, Coord(0,0), Size(blockSize.w+blockSpacing,0), blockFrame );
@@ -262,10 +262,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	BlockSkin_p BlockSkin::cast( const Object_p& pObject )
+	BlockSkin_p BlockSkin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BlockSkin_p( static_cast<BlockSkin*>(pObject.rawPtr()) );
+			return BlockSkin_p( static_cast<BlockSkin*>(pObject) );
 	
 		return 0;
 	}
@@ -285,7 +285,7 @@ namespace wg
 	
 	//____ setSurface() ______________________________________________________
 	
-	void BlockSkin::setSurface( const Surface_p& pSurf )
+	void BlockSkin::setSurface( Surface * pSurf )
 	{
 		m_pSurface = pSurf;
 		if( m_pSurface )

@@ -61,11 +61,11 @@ namespace wg
 	
 		//.____ Appearance _____________________________________________
 
-		inline void				setStyle( const TextStyle_p& pStyle ) { m_pItem->setStyle(pStyle); }
+		inline void				setStyle( TextStyle * pStyle ) { m_pItem->setStyle(pStyle); }
 		inline void				clearStyle() { m_pItem->clearStyle(); }
 		inline TextStyle_p		style() const { return m_pItem->style(); }
 	
-		inline void				setTextMapper( const TextMapper_p& pTextMapper ) { m_pItem->setTextMapper(pTextMapper); }
+		inline void				setTextMapper( TextMapper * pTextMapper ) { m_pItem->setTextMapper(pTextMapper); }
 		inline void				clearTextMapper() { m_pItem->clearTextMapper(); }
 		inline TextMapper_p		textMapper() const { return m_pItem->textMapper(); }
 

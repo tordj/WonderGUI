@@ -84,10 +84,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	InputHandler_p InputHandler::cast( const Object_p& pObject )
+	InputHandler_p InputHandler::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return InputHandler_p( static_cast<InputHandler*>(pObject.rawPtr()) );
+			return InputHandler_p( static_cast<InputHandler*>(pObject) );
 	
 		return 0;
 	}
@@ -247,7 +247,7 @@ namespace wg
 	//____ setPointer() ___________________________________________________________
 	
 	
-	void InputHandler::setPointer( const RootPanel_p& pRoot, Coord pos, int64_t timestamp )
+	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
 	{
 		Coord	prevPointerPos = m_pointerPos;
 		if( timestamp == 0 )
@@ -261,7 +261,7 @@ namespace wg
 	
 		if( pRoot && pRoot->geo().contains( pos ) )
 		{
-			m_pMarkedRoot = pRoot.rawPtr();
+			m_pMarkedRoot = pRoot;
 			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );
 		}
 	
@@ -278,7 +278,7 @@ namespace wg
 		// We are only marking the Widget if no mouse button is pressed or the first pressed button
 		// was pressed on it.
 	
-		if( button == 0 || pWidgetTarget == m_latestPressWidgets[button].rawPtr() )
+		if( button == 0 || pWidgetTarget.rawPtr() == m_latestPressWidgets[button].rawPtr() )
 			pNowMarked = pWidgetTarget;
 	
 		// Post Leave events for widgets no longer marked,
@@ -512,9 +512,9 @@ namespace wg
 	
 	//____ setFocusedWindow() ____________________________________________________________
 	
-	void InputHandler::setFocusedWindow( const RootPanel_p& pRoot )
+	void InputHandler::setFocusedWindow( RootPanel * pRoot )
 	{
-		if( pRoot == m_pFocusedRoot )
+		if( pRoot == m_pFocusedRoot.rawPtr() )
 			return;
 			
 		if( m_pFocusedRoot )
@@ -523,7 +523,7 @@ namespace wg
 			if( p )
 				_setUnfocused( p );			
 		}
-		m_pFocusedRoot = pRoot.rawPtr();
+		m_pFocusedRoot = pRoot;
 		
 		if( pRoot )
 		{
@@ -723,7 +723,7 @@ namespace wg
 	
 	//____ receive() _________________________________________________________________
 	
-	void InputHandler::receive( const Msg_p& pMsg )
+	void InputHandler::receive( Msg * pMsg )
 	{
 		
 		if( pMsg->type() == MsgType::Tick ) {

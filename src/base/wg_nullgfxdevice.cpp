@@ -62,10 +62,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	NullGfxDevice_p NullGfxDevice::cast( const Object_p& pObject )
+	NullGfxDevice_p NullGfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return NullGfxDevice_p( static_cast<NullGfxDevice*>(pObject.rawPtr()) );
+			return NullGfxDevice_p( static_cast<NullGfxDevice*>(pObject) );
 	
 		return 0;
 	}
@@ -90,11 +90,11 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::blit( const Surface_p& src, const Rect& srcrect, Coord dest  )
+	void NullGfxDevice::blit( Surface * src, const Rect& srcrect, Coord dest  )
 	{
 	}
 	
-	void NullGfxDevice::tileBlit( const Surface_p& src, const Rect& srcrect, const Rect& dest )
+	void NullGfxDevice::tileBlit( Surface * src, const Rect& srcrect, const Rect& dest )
 	{
 	}
 	
@@ -102,7 +102,7 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::stretchBlitSubPixel( 	const Surface_p& pSrc, float sx, float sy, float sw, float sh,
+	void NullGfxDevice::stretchBlitSubPixel( 	Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 			float dx, float dy, float dw, float dh )
 	{
 	}

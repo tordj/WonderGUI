@@ -57,10 +57,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	GfxDevice_p GfxDevice::cast( const Object_p& pObject )
+	GfxDevice_p GfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxDevice_p( static_cast<GfxDevice*>(pObject.rawPtr()) );
+			return GfxDevice_p( static_cast<GfxDevice*>(pObject) );
 	
 		return 0;
 	}
@@ -102,24 +102,24 @@ namespace wg
 	
 	//____ blit() __________________________________________________________________
 	
-	void GfxDevice::blit( const Surface_p& pSrc )
+	void GfxDevice::blit( Surface * pSrc )
 	{
 		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), Coord(0,0) );
 	}
 	
-	void GfxDevice::blit( const Surface_p& pSrc, Coord dest )
+	void GfxDevice::blit( Surface * pSrc, Coord dest )
 	{
 		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), dest );
 	}
 	
 	//____ stretchBlit() ___________________________________________________________
 	
-	void GfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& dest )
+	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& dest )
 	{
 		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), dest );
 	}
 	
-	void GfxDevice::stretchBlit( const Surface_p& pSrc, const Rect& src, const Rect& dest )
+	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest )
 	{
 		float srcW = (float) src.w;
 		float srcH = (float) src.h;
@@ -141,12 +141,12 @@ namespace wg
 	
 	//____ tileBlit() ______________________________________________________________
 	
-	void GfxDevice::tileBlit( const Surface_p& _pSrc, const Rect& _dest )
+	void GfxDevice::tileBlit( Surface * _pSrc, const Rect& _dest )
 	{
 		tileBlit( _pSrc, Rect( 0, 0, _pSrc->width(), _pSrc->height() ), _dest );
 	}
 	
-	void GfxDevice::tileBlit( const Surface_p& _pSrc, const Rect& _src, const Rect& _dest )
+	void GfxDevice::tileBlit( Surface * _pSrc, const Rect& _src, const Rect& _dest )
 	{
 		if( !_pSrc || _dest.h == 0 || _dest.w == 0 )
 			return;
@@ -201,17 +201,17 @@ namespace wg
 	
 	//____ clipBlit() ______________________________________________________________
 	
-	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc )
+	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc )
 	{
 		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), Coord(0,0) );
 	}
 	
-	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc, Coord dest )
+	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc, Coord dest )
 	{
 		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dest );
 	}
 	
-	void GfxDevice::clipBlit( const Rect& clip, const Surface_p& pSrc, const Rect& srcRect, Coord dest  )
+	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc, const Rect& srcRect, Coord dest  )
 	{
 		if( (clip.x <= dest.x) && (clip.x + clip.w > dest.x + srcRect.w) &&
 	      (clip.y <= dest.y) && (clip.y + clip.h > dest.y + srcRect.h) )
@@ -254,17 +254,17 @@ namespace wg
 	
 	//____ clipStretchBlit() _______________________________________________________
 	
-	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& dest )
+	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest )
 	{
 		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest );
 	}
 	
-	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const Rect& src, const Rect& dest )
+	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest )
 	{
 		clipStretchBlit( clip, pSrc, RectF(src), Rect(dest) );
 	}
 	
-	void GfxDevice::clipStretchBlit( const Rect& clip, const Surface_p& pSrc, const RectF& _src, const Rect& _dest)
+	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& _src, const Rect& _dest)
 	{
 		RectF src = _src;
 		RectF  dest = _dest;
@@ -313,14 +313,14 @@ namespace wg
 	
 	//____ clipTileBlit() __________________________________________________________
 	
-	void GfxDevice::clipTileBlit( const Rect& clip, const Surface_p& pSrc,
+	void GfxDevice::clipTileBlit( const Rect& clip, Surface * pSrc,
 									  const Rect& dest )
 	{
 		clipTileBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dest );
 	}
 	
 	
-	void GfxDevice::clipTileBlit( const Rect& _clip, const Surface_p& _pSrc, const Rect& _src, const Rect& _dest )
+	void GfxDevice::clipTileBlit( const Rect& _clip, Surface * _pSrc, const Rect& _src, const Rect& _dest )
 	{
 		if( !_pSrc )
 			return;
@@ -385,7 +385,7 @@ namespace wg
 	
 	//____ clipBlitHorrBar() ______________________________________________________
 	
-	void GfxDevice::clipBlitHorrBar(	const Rect& _clip, const Surface_p& _pSurf,
+	void GfxDevice::clipBlitHorrBar(	const Rect& _clip, Surface * _pSurf,
 									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
@@ -436,7 +436,7 @@ namespace wg
 	
 	//____ clipBlitVertBar() ______________________________________________________
 	
-	void GfxDevice::clipBlitVertBar(	const Rect& _clip, const Surface_p& _pSurf,
+	void GfxDevice::clipBlitVertBar(	const Rect& _clip, Surface * _pSurf,
 									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
@@ -488,7 +488,7 @@ namespace wg
 	
 	//____ blitHorrBar() __________________________________________________________
 	
-	void GfxDevice::blitHorrBar(	const Surface_p& _pSurf, const Rect& _src,
+	void GfxDevice::blitHorrBar(	Surface * _pSurf, const Rect& _src,
 									const Border& _borders, bool _bTile,
 									Coord dest, int _len )
 	{
@@ -535,7 +535,7 @@ namespace wg
 	
 	//____ blitVertBar() __________________________________________________________
 	
-	void GfxDevice::blitVertBar(	const Surface_p& _pSurf, const Rect& _src,
+	void GfxDevice::blitVertBar(	Surface * _pSurf, const Rect& _src,
 									const Border& _borders, bool _bTile,
 									Coord dest, int _len )
 	{

@@ -1141,7 +1141,7 @@ namespace wg
 	///
 	/// If the range spans outside the buffer content it will be adjusted properly.
 	
-	void CharBuffer::setStyle( const TextStyle_p& pStyle, int ofs, int len  )
+	void CharBuffer::setStyle( TextStyle * pStyle, int ofs, int len  )
 	{
 		if( ofs < 0 || len <= 0 || ofs >= m_pHead->m_len )
 			return;

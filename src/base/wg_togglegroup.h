@@ -60,7 +60,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ToggleGroup_p	cast( const Object_p& pObject );	
+		static ToggleGroup_p	cast( Object * pObject );	
 
 		//.____ Behavior _____________________________________________
 	
@@ -69,8 +69,8 @@ namespace wg
 
 		//.____ Misc _______________________________________________
 	
-		void				add( const ToggleButton_p& pToggleButton );				///< @brief Add widget to this group.
-		bool				remove( const ToggleButton_p& pToggleButton );			///< @brief Remove a widget from this group.
+		void				add( ToggleButton * pToggleButton );				///< @brief Add widget to this group.
+		bool				remove( ToggleButton * pToggleButton );			///< @brief Remove a widget from this group.
 		void				clear();												///< @brief Remove all widgets from this group.
 		
 		ToggleButton_p		get( int index );										///< @brief Get widget at specified index in group.

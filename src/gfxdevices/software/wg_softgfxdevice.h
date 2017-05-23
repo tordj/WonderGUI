@@ -42,14 +42,14 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
-		static SoftGfxDevice_p	create( const SoftSurface_p& pCanvas );
+		static SoftGfxDevice_p	create( SoftSurface * pCanvas );
 	
 		//.____ Identification __________________________________________
 
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static SoftGfxDevice_p	cast( const Object_p& pObject );
+		static SoftGfxDevice_p	cast( Object * pObject );
 		const char *			surfaceClassName( void ) const;
 
 		//.____ Misc _______________________________________________________
@@ -58,7 +58,7 @@ namespace wg
 		
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas( const Surface_p& pCanvas );
+		bool	setCanvas( Surface * pCanvas );
 	
 		//.____ Rendering ________________________________________________
 
@@ -68,7 +68,7 @@ namespace wg
 		//
 	
 		void	fill( const Rect& rect, const Color& col )  override;
-		void	blit( const Surface_p& pSrc, const Rect& srcrect, Coord dest ) override;
+		void	blit( Surface * pSrc, const Rect& srcrect, Coord dest ) override;
 	
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
@@ -80,7 +80,7 @@ namespace wg
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 	
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
-		void	stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy, float sw, float sh,
+		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 float dx, float dy, float dw, float dh ) override;
 
 
@@ -97,7 +97,7 @@ namespace wg
 		
 	protected:
 		SoftGfxDevice();
-		SoftGfxDevice( const SoftSurface_p& pCanvas );
+		SoftGfxDevice( SoftSurface * pCanvas );
 		~SoftGfxDevice();
 
 		const static int c_nCurveTabEntries = 1024;

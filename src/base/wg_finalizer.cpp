@@ -61,10 +61,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Finalizer_p Finalizer::cast( const Object_p& pObject )
+	Finalizer_p Finalizer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Finalizer_p( static_cast<Finalizer*>(pObject.rawPtr()) );
+			return Finalizer_p( static_cast<Finalizer*>(pObject) );
 	
 		return 0;
 	}

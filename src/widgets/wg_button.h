@@ -60,7 +60,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Button_p	cast( const Object_p& pObject );
+		static Button_p	cast( Object * pObject );
 		
 		//.____ Behavior ____________________________________________
 	
@@ -79,7 +79,7 @@ namespace wg
 		virtual ~Button();
 		virtual Widget* _newOfMyType() const { return new Button(); };
 	
-		virtual void	_receive( const Msg_p& pMsg );
+		virtual void	_receive( Msg * pMsg );
 		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_refresh();
 		virtual void	_cloneContent( const Widget * _pOrg );

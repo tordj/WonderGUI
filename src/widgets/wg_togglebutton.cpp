@@ -75,10 +75,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ToggleButton_p ToggleButton::cast( const Object_p& pObject )
+	ToggleButton_p ToggleButton::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ToggleButton_p( static_cast<ToggleButton*>(pObject.rawPtr()) );
+			return ToggleButton_p( static_cast<ToggleButton*>(pObject) );
 	
 		return 0;
 	}
@@ -143,7 +143,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void ToggleButton::_receive( const Msg_p& _pMsg )
+	void ToggleButton::_receive( Msg * _pMsg )
 	{
 		State state = m_state;
 	
@@ -261,7 +261,7 @@ namespace wg
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void ToggleButton::_setSkin( const Skin_p& pSkin )
+	void ToggleButton::_setSkin( Skin * pSkin )
 	{
 		Widget::_setSkin(pSkin);
 	}

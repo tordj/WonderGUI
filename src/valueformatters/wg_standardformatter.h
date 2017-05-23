@@ -48,7 +48,7 @@ namespace wg
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static StandardFormatter_p	cast( const Object_p& pObject );
+		static StandardFormatter_p	cast( Object * pObject );
 	
 		//.____ Misc __________________________________________________
 	

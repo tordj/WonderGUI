@@ -46,16 +46,16 @@ namespace wg
 		 //.____ Creation __________________________________________
 		 
 		 static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
-        static SoftSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        static SoftSurface_p	create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
-		static SoftSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
+		static SoftSurface_p	create( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );
 	
 		//.____ Identification __________________________________________
 
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static SoftSurface_p	cast( const Object_p& pObject );
+		static SoftSurface_p	cast( Object * pObject );
 	
 		//.____ Geometry _________________________________________________
 
@@ -89,9 +89,9 @@ namespace wg
 	
 	protected:
 		SoftSurface( Size size, PixelType type = PixelType::BGRA_8 );
-		SoftSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch );
+		SoftSurface( Size size, PixelType type, Blob * pBlob, int pitch );
 		SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat );
-		SoftSurface( const Surface_p& pOther );
+		SoftSurface( Surface * pOther );
 
 		virtual ~SoftSurface();
 		

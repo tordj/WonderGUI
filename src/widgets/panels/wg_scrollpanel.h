@@ -96,7 +96,7 @@ namespace wg
 	public:
 		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : ChildEntry(pSlot, pPanel) {}
 
-		ViewEntry operator=(const Widget_p& pWidget);
+		ViewEntry operator=(Widget * pWidget);
 		Size		canvasSize() const { return m_pSlot->contentSize; };
 
 		void		setOrigo(Origo origo);
@@ -141,11 +141,11 @@ namespace wg
 		bool		setPlacement( Direction );
 		Direction	placement() const { return m_pSlot->placement; }
 
-		ScrollbarEntry operator=(const Scrollbar_p& pWidget);
+		ScrollbarEntry operator=(Scrollbar * pWidget);
 		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->pWidget); }
 
-		inline bool operator==(const Widget_p& other) const { return other.rawPtr() == m_pSlot->pWidget; }
-		inline bool operator!=(const Widget_p& other) const { return other.rawPtr() != m_pSlot->pWidget; }
+		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }
+		inline bool operator!=(Widget * other) const { return other != m_pSlot->pWidget; }
 
 		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
 
@@ -187,7 +187,7 @@ namespace wg
 		bool					isInstanceOf(const char * pClassName) const;
 		const char *			className(void) const;
 		static const char		CLASSNAME[];
-		static ScrollPanel_p	cast(const Object_p& pObject);
+		static ScrollPanel_p	cast(Object * pObject);
 
 		//.____ Geometry _________________________________________________
 
@@ -215,10 +215,10 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void		setCornerSkin(const Skin_p& pSkin);
+		void		setCornerSkin(Skin * pSkin);
 		Skin_p		cornerSkin() const { return m_pCornerSkin; }
 
-		virtual void setSkin(const Skin_p& pSkin);
+		virtual void setSkin(Skin * pSkin);
 
 		//.____ Misc _________________________________________________________________
 
@@ -244,7 +244,7 @@ namespace wg
 
 		virtual void _setSize(const Size& size);
 
-		void		_receive(const Msg_p& pMsg);
+		void		_receive(Msg * pMsg);
 		void		_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches);
 		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);

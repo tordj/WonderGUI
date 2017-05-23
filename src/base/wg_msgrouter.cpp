@@ -67,25 +67,25 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	MsgRouter_p MsgRouter::cast( const Object_p& pObject )
+	MsgRouter_p MsgRouter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MsgRouter_p( static_cast<MsgRouter*>(pObject.rawPtr()) );
+			return MsgRouter_p( static_cast<MsgRouter*>(pObject) );
 	
 		return 0;
 	}
 	
 	//____ broadcastTo() ___________________________________________________________
 	
-	RouteId  MsgRouter::broadcastTo( const Receiver_p& pReceiver )
+	RouteId  MsgRouter::broadcastTo( Receiver * pReceiver )
 	{
-		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver, MsgType::Dummy );
 		p->m_handle = m_routeCounter++;
 		m_broadcasts.pushBack( p );
 		return p->m_handle;
 	}
 
-	RouteId  MsgRouter::broadcastTo(std::function<void(const Msg_p& pMsg)> func)
+	RouteId  MsgRouter::broadcastTo(std::function<void(Msg * pMsg)> func)
 	{
 		Route * p = new FunctionRoute(func, MsgType::Dummy);
 		p->m_handle = m_routeCounter++;
@@ -113,22 +113,16 @@ namespace wg
 	
 	//____ addRoute() __________________________________________________________
 	
-	RouteId MsgRouter::addRoute( const Object_p& pSource, const Receiver_p& pReceiver )
+	RouteId MsgRouter::addRoute( Object * pSource, Receiver * pReceiver )
 	{
-		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
+		Route * p = new ObjectRoute( pReceiver, MsgType::Dummy );
 		return _addRoute( pSource, p );
 	}
 	
-	RouteId MsgRouter::addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver )
+	RouteId MsgRouter::addRoute( Object * pSource, MsgType filter, Receiver * pReceiver )
 	{
-		Route * p = new ObjectRoute( pReceiver.rawPtr(), filter );
+		Route * p = new ObjectRoute( pReceiver, filter );
 		return _addRoute( pSource, p );
-	}
-	
-	RouteId MsgRouter::addRoute( MsgType msgType, const Receiver_p& pReceiver )
-	{
-		Route * p = new ObjectRoute( pReceiver.rawPtr(), MsgType::Dummy );
-		return _addRoute( msgType, p );	
 	}
 	
 	RouteId MsgRouter::addRoute( MsgType msgType, Receiver * pReceiver )
@@ -136,20 +130,20 @@ namespace wg
 		Route * p = new ObjectRoute( pReceiver, MsgType::Dummy );
 		return _addRoute( msgType, p );	
 	}
-
-	RouteId MsgRouter::addRoute(const Object_p& pSource, std::function<void(const Msg_p& pMsg)> func)
+	
+	RouteId MsgRouter::addRoute(Object * pSource, std::function<void(Msg * pMsg)> func)
 	{
 		Route * p = new FunctionRoute(func, MsgType::Dummy);
 		return _addRoute(pSource, p);
 	}
 
-	RouteId MsgRouter::addRoute(const Object_p& pSource, MsgType filter, std::function<void(const Msg_p& pMsg)> func)
+	RouteId MsgRouter::addRoute(Object * pSource, MsgType filter, std::function<void(Msg * pMsg)> func)
 	{
 		Route * p = new FunctionRoute(func, filter);
 		return _addRoute(pSource, p);
 	}
 
-	RouteId MsgRouter::addRoute(MsgType msgType, std::function<void(const Msg_p& pMsg)> func)
+	RouteId MsgRouter::addRoute(MsgType msgType, std::function<void(Msg * pMsg)> func)
 	{
 		Route * p = new FunctionRoute(func, MsgType::Dummy);
 		return _addRoute(msgType, p);
@@ -158,9 +152,9 @@ namespace wg
 
 	//____ deleteRoutesTo() _______________________________________________________
 	
-	int MsgRouter::deleteRoutesTo( const Receiver_p& _pReceiver )
+	int MsgRouter::deleteRoutesTo( Receiver * _pReceiver )
 	{
-		Receiver * pReceiver = _pReceiver.rawPtr();
+		Receiver * pReceiver = _pReceiver;
 		int nDeleted = 0;
 	
 		// Delete from source routes
@@ -207,9 +201,9 @@ namespace wg
 	
 	//____ deleteRoutesFrom() _______________________________________________________
 	
-	int MsgRouter::deleteRoutesFrom( const Object_p& pSource )
+	int MsgRouter::deleteRoutesFrom( Object * pSource )
 	{
-		auto it = m_sourceRoutes.find(Object_wp(pSource.rawPtr()) );
+		auto it = m_sourceRoutes.find(Object_wp(pSource) );
 	
 		if( it == m_sourceRoutes.end() )
 			return 0;
@@ -355,12 +349,12 @@ namespace wg
 	
 	//____ _addRoute() _________________________________________________________
 	
-	RouteId MsgRouter::_addRoute( const Object_p& pSource, Route * pRoute )
+	RouteId MsgRouter::_addRoute( Object * pSource, Route * pRoute )
 	{
 		if( !pSource )
 			return 0;
 	
-		Chain<Route>& chain = m_sourceRoutes[pSource.rawPtr()];
+		Chain<Route>& chain = m_sourceRoutes[pSource];
 		chain.pushBack(pRoute);
 		pRoute->m_handle = m_routeCounter++;
 		return pRoute->m_handle;
@@ -382,7 +376,7 @@ namespace wg
 	
 	//____ post() ___________________________________________________________
 	
-	bool MsgRouter::post( const Msg_p& pMsg )
+	bool MsgRouter::post( Msg * pMsg )
 	{
 	
 		if( m_bIsProcessing )
@@ -451,7 +445,7 @@ namespace wg
 	
 	//____ _broadcast() ________________________________________________
 	
-	void MsgRouter::_broadcast( const Msg_p& pMsg )
+	void MsgRouter::_broadcast( Msg * pMsg )
 	{
 		Route * pRoute = m_broadcasts.first();
 	
@@ -465,7 +459,7 @@ namespace wg
 	
 	//____ _dispatchToTypeRoutes() __________________________________________________
 	
-	void MsgRouter::_dispatchToTypeRoutes( const Msg_p& pMsg )
+	void MsgRouter::_dispatchToTypeRoutes( Msg * pMsg )
 	{
 		auto it = m_typeRoutes.find(pMsg->type());
 		if( it != m_typeRoutes.end() )
@@ -482,7 +476,7 @@ namespace wg
 	
 	//____ _dispatchToSourceRoutes() ________________________________________________
 	
-	void MsgRouter::_dispatchToSourceRoutes( const Msg_p& pMsg )
+	void MsgRouter::_dispatchToSourceRoutes( Msg * pMsg )
 	{
 		Object * pSource = pMsg->sourceRawPtr();
 	
@@ -524,7 +518,7 @@ namespace wg
 			m_pReceiver->_onRouteRemoved();
 	}
 	
-	void MsgRouter::ObjectRoute::dispatch( const Msg_p& pMsg )
+	void MsgRouter::ObjectRoute::dispatch( Msg * pMsg )
 	{
 		m_pReceiver->receive( pMsg );
 	}
@@ -539,7 +533,7 @@ namespace wg
 		return m_pReceiver.rawPtr();
 	}
 	
-	MsgRouter::FunctionRoute::FunctionRoute(std::function<void(const Msg_p& pMsg)> func, MsgType filter) : Route(filter)
+	MsgRouter::FunctionRoute::FunctionRoute(std::function<void(Msg * pMsg)> func, MsgType filter) : Route(filter)
 	{
 		m_func = func;
 	}
@@ -548,7 +542,7 @@ namespace wg
 	{
 	}
 
-	void MsgRouter::FunctionRoute::dispatch(const Msg_p& pMsg)
+	void MsgRouter::FunctionRoute::dispatch(Msg * pMsg)
 	{
 		m_func(pMsg);
 	}

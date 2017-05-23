@@ -58,10 +58,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SizeCapsule_p SizeCapsule::cast( const Object_p& pObject )
+	SizeCapsule_p SizeCapsule::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SizeCapsule_p( static_cast<SizeCapsule*>(pObject.rawPtr()) );
+			return SizeCapsule_p( static_cast<SizeCapsule*>(pObject) );
 	
 		return 0;
 	}

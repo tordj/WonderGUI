@@ -47,10 +47,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ValueFormatter_p ValueFormatter::cast( const Object_p& pObject )
+	ValueFormatter_p ValueFormatter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ValueFormatter_p( static_cast<ValueFormatter*>(pObject.rawPtr()) );
+			return ValueFormatter_p( static_cast<ValueFormatter*>(pObject) );
 	
 		return 0;
 	}

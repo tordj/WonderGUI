@@ -64,7 +64,7 @@ namespace wg
 
 		inline PackListChildren_p	ptr() { return PackListChildren_p(_object(), this); }
 
-		bool		insertSorted(const Widget_p& pWidget);
+		bool		insertSorted(Widget * pWidget);
 		void		sort();
 
 	};
@@ -92,7 +92,7 @@ namespace wg
 		virtual bool		isInstanceOf( const char * pClassName ) const;
 		virtual const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static PackList_p	cast( const Object_p& pObject );
+		static PackList_p	cast( Object * pObject );
 		
 		//.____ Geometry ____________________________________________
 
@@ -135,7 +135,7 @@ namespace wg
 		void			_setSize( const Size& size );
 		void			_refresh();
 	
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 		Size			_windowPadding() const;
 
 

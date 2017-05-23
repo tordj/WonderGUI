@@ -113,10 +113,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	StackPanel_p StackPanel::cast( const Object_p& pObject )
+	StackPanel_p StackPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StackPanel_p( static_cast<StackPanel*>(pObject.rawPtr()) );
+			return StackPanel_p( static_cast<StackPanel*>(pObject) );
 	
 		return 0;
 	}

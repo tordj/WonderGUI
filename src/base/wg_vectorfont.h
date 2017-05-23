@@ -67,7 +67,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static VectorFont_p	cast( const Object_p& pObject );
+		static VectorFont_p	cast( Object * pObject );
 
 		//.____ Rendering ______________________________________________________
 
@@ -90,7 +90,7 @@ namespace wg
 		bool		hasGlyph( uint16_t chr );
 		bool		isMonospace();
 
-		static void	setSurfaceFactory( const SurfaceFactory_p& pFactory );
+		static void	setSurfaceFactory( SurfaceFactory * pFactory );
 		static void	clearCache();
 
 		//.____ Appearance ___________________________________________
@@ -134,7 +134,7 @@ namespace wg
 		class CacheSurf : public Link
 		{
 		public:
-			CacheSurf( const Surface_p& _pSurf ) { pSurf = _pSurf; access = 0; }
+			CacheSurf( Surface * _pSurf ) { pSurf = _pSurf; access = 0; }
 			~CacheSurf();
 
 			LINK_METHODS( CacheSurf );		

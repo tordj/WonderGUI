@@ -87,10 +87,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	PackPanel_p PackPanel::cast( const Object_p& pObject )
+	PackPanel_p PackPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PackPanel_p( static_cast<PackPanel*>(pObject.rawPtr()) );
+			return PackPanel_p( static_cast<PackPanel*>(pObject) );
 	
 		return 0;
 	}
@@ -111,9 +111,9 @@ namespace wg
 	
 	//____ setSizeBroker() _______________________________________________________
 	
-	void PackPanel::setSizeBroker( const SizeBroker_p& pBroker )
+	void PackPanel::setSizeBroker( SizeBroker * pBroker )
 	{
-		if( m_pSizeBroker != pBroker )
+		if( m_pSizeBroker.rawPtr() != pBroker )
 		{
 			m_pSizeBroker = pBroker;
 			_updatePreferredSize();

@@ -45,10 +45,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Skin_p Skin::cast( const Object_p& pObject )
+	Skin_p Skin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Skin_p( static_cast<Skin*>(pObject.rawPtr()) );
+			return Skin_p( static_cast<Skin*>(pObject) );
 	
 		return 0;
 	}

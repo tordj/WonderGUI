@@ -146,7 +146,7 @@ namespace wg
 		
 	//____ setDefaultTextMapper() ___________________________________________________
 	
-	void Base::setDefaultTextMapper( const TextMapper_p& pTextMapper )
+	void Base::setDefaultTextMapper( TextMapper * pTextMapper )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultTextMapper = pTextMapper;	
@@ -154,7 +154,7 @@ namespace wg
 	
 	//____ setDefaultStyle() _______________________________________________________
 	
-	void Base::setDefaultStyle( const TextStyle_p& pStyle )
+	void Base::setDefaultStyle( TextStyle * pStyle )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultStyle = pStyle;	

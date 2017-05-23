@@ -51,7 +51,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static SizeBroker_p	cast( const Object_p& pObject );
+		static SizeBroker_p	cast( Object * pObject );
 
 		//.____ Misc __________________________________________
 	    

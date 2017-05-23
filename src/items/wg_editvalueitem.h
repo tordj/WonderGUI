@@ -42,7 +42,7 @@ namespace wg
 		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
 		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
-		void				setCaret( const Caret_p& pCaret );
+		void				setCaret( Caret * pCaret );
 		inline Caret_p		caret() const { return m_pCaret; }
 	
 		int					insertAtCaret( const CharSeq& str );

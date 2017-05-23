@@ -73,21 +73,21 @@ namespace wg
 			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
-		bool add( const Widget_p& pWidget )
+		bool add( Widget * pWidget )
 		{
 			SlotType * pSlot = m_pSlotArray->add();
-			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			pSlot->replaceWidget(m_pHolder,pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
 			return true;
 		}
 		
-		bool insert( int index, const Widget_p& pWidget )
+		bool insert( int index, Widget * pWidget )
 		{
 			if( index < 0 || index >= m_pSlotArray->size() )
 				return false;
 
 			SlotType * pSlot = m_pSlotArray->insert(index);
-			pSlot->replaceWidget(m_pHolder,pWidget.rawPtr());
+			pSlot->replaceWidget(m_pHolder,pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
 			return true;		
 		}

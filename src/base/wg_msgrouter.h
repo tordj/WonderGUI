@@ -59,32 +59,30 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MsgRouter_p	cast( const Object_p& pObject );
+		static MsgRouter_p	cast( Object * pObject );
 
 		//.____ Control _________________________________________________
 	
-		bool		post( const Msg_p& pMsg );	
+		bool		post( Msg * pMsg );	
 		void		dispatch();
 		
 	
-		RouteId		broadcastTo( const Receiver_p& pReceiver );
-		RouteId		broadcastTo(std::function<void(const Msg_p& pMsg)> func );
+		RouteId		broadcastTo( Receiver * pReceiver );
+		RouteId		broadcastTo(std::function<void(Msg * pMsg)> func );
 		bool		endBroadcast( RouteId handle );
 		
-		RouteId		addRoute( const Object_p& pSource, const Receiver_p& pReceiver );
-		RouteId		addRoute( const Object_p& pSource, MsgType filter, const Receiver_p& pReceiver );
-		RouteId		addRoute( MsgType type, const Receiver_p& pReceiver );
+		RouteId		addRoute( Object * pSource, Receiver * pReceiver );
+		RouteId		addRoute( Object * pSource, MsgType filter, Receiver * pReceiver );
+		RouteId		addRoute( MsgType type, Receiver * pReceiver );
 
-		RouteId		addRoute(const Object_p& pSource, std::function<void(const Msg_p& pMsg)> func);
-		RouteId		addRoute(const Object_p& pSource, MsgType filter, std::function<void(const Msg_p& pMsg)> func);
-		RouteId		addRoute(MsgType type, std::function<void(const Msg_p& pMsg)> func);
+		RouteId		addRoute(Object * pSource, std::function<void(Msg * pMsg)> func);
+		RouteId		addRoute(Object * pSource, MsgType filter, std::function<void(Msg * pMsg)> func);
+		RouteId		addRoute(MsgType type, std::function<void(Msg * pMsg)> func);
 
-
-		RouteId		addRoute( MsgType type, Receiver * pReceiver );		// For calls from constructors.
 	
 		bool		deleteRoute( RouteId handle );
-		int			deleteRoutesTo( const Receiver_p& pReceiver );
-		int			deleteRoutesFrom( const Object_p& pSource );
+		int			deleteRoutesTo( Receiver * pReceiver );
+		int			deleteRoutesFrom( Object * pSource );
 		int			deleteRoutesFrom( MsgType type );
 	
 		int			clearRoutes();
@@ -101,11 +99,11 @@ namespace wg
 		void 		_dispatchQueued();
 	
 	
-		void		_broadcast( const Msg_p& pMsg );
-		void		_dispatchToSourceRoutes( const Msg_p& pMsg );
-		void		_dispatchToTypeRoutes( const Msg_p& pMsg );
+		void		_broadcast( Msg * pMsg );
+		void		_dispatchToSourceRoutes( Msg * pMsg );
+		void		_dispatchToTypeRoutes( Msg * pMsg );
 			
-		RouteId		_addRoute( const Object_p& pSource, Route * pRoute );
+		RouteId		_addRoute( Object * pSource, Route * pRoute );
 		RouteId		_addRoute( MsgType type, Route * pRoute );
 	
 		//
@@ -119,7 +117,7 @@ namespace wg
 	
 			LINK_METHODS(Route);
 	
-			virtual void 		dispatch( const Msg_p& pMsg ) = 0;
+			virtual void 		dispatch( Msg * pMsg ) = 0;
 			virtual bool 		isAlive() const = 0;
 			virtual Receiver *	receiver() const = 0;
 	
@@ -136,7 +134,7 @@ namespace wg
 			ObjectRoute( Receiver * pReceiver, MsgType filter);
 			virtual ~ObjectRoute();
 
-			void 		dispatch(const Msg_p& pMsg);
+			void 		dispatch(Msg * pMsg);
 			bool 		isAlive() const;
 			Receiver *	receiver() const;
 
@@ -149,15 +147,15 @@ namespace wg
 		class FunctionRoute : public Route
 		{
 		public:
-			FunctionRoute(std::function<void(const Msg_p& pMsg)> func, MsgType filter);
+			FunctionRoute(std::function<void(Msg * pMsg)> func, MsgType filter);
 			virtual ~FunctionRoute();
 
-			void 		dispatch(const Msg_p& pMsg);
+			void 		dispatch(Msg * pMsg);
 			bool 		isAlive() const;
 			Receiver *	receiver() const;
 
 		protected:
-			std::function<void( const Msg_p& pMsg )> m_func;
+			std::function<void( Msg * pMsg )> m_func;
 		};
 
 

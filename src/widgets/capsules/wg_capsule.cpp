@@ -59,10 +59,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Capsule_p Capsule::cast( const Object_p& pObject )
+	Capsule_p Capsule::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Capsule_p( static_cast<Capsule*>(pObject.rawPtr()) );
+			return Capsule_p( static_cast<Capsule*>(pObject) );
 	
 		return 0;
 	}

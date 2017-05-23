@@ -234,7 +234,7 @@ namespace wg
 			bool				isInstanceOf( const char * pClassName ) const;
 			const char *		className( void ) const;
 			static const char	CLASSNAME[];
-			static Msg_p		cast( const Object_p& pObject );
+			static Msg_p		cast( Object * pObject );
 			MsgType				type() const { return m_type; }
 			bool				isMouseMsg() const;
 			bool				isMouseButtonMsg() const;
@@ -252,8 +252,8 @@ namespace wg
 
 			//.____ Control ____________________________________________________
 
-			void				setCopyTo( const Receiver_p& pReceiver );
-			void				setRepost( const Object_p& pFromSource, const Receiver_p& pCopyTo );
+			void				setCopyTo( Receiver * pReceiver );
+			void				setRepost( Object * pFromSource, Receiver * pCopyTo );
 			void				swallow();
 			bool				doRepost();
 
@@ -285,7 +285,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static InputMsg_p	cast( const Object_p& pObject );
+		static InputMsg_p	cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -318,7 +318,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseButtonMsg_p	cast( const Object_p& pObject );
+		static MouseButtonMsg_p	cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -346,7 +346,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static KeyMsg_p		cast( const Object_p& pObject );
+		static KeyMsg_p		cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -373,7 +373,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static FocusGainedMsg_p	cast( const Object_p& pObject );
+		static FocusGainedMsg_p	cast( Object * pObject );
 
 	protected:
 		FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -390,7 +390,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static FocusLostMsg_p	cast( const Object_p& pObject );
+		static FocusLostMsg_p	cast( Object * pObject );
 
 	protected:
 		FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -411,7 +411,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseEnterMsg_p	cast( const Object_p& pObject );
+		static MouseEnterMsg_p	cast( Object * pObject );
 	protected:
 		MouseEnterMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -431,7 +431,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseLeaveMsg_p	cast( const Object_p& pObject );
+		static MouseLeaveMsg_p	cast( Object * pObject );
 	protected:
 		MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -451,7 +451,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseMoveMsg_p	cast( const Object_p& pObject );
+		static MouseMoveMsg_p	cast( Object * pObject );
 	protected:
 		MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -471,7 +471,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MousePressMsg_p	cast( const Object_p& pObject );
+		static MousePressMsg_p	cast( Object * pObject );
 	protected:
 		MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -491,7 +491,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseReleaseMsg_p	cast( const Object_p& pObject );
+		static MouseReleaseMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -514,7 +514,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static KeyPressMsg_p	cast( const Object_p& pObject );
+		static KeyPressMsg_p	cast( Object * pObject );
 	protected:
 		KeyPressMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -530,7 +530,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static KeyReleaseMsg_p	cast( const Object_p& pObject );
+		static KeyReleaseMsg_p	cast( Object * pObject );
 	protected:
 		KeyReleaseMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -546,7 +546,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TextInputMsg_p	cast( const Object_p& pObject );
+		static TextInputMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -571,7 +571,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static EditCommandMsg_p	cast( const Object_p& pObject );
+		static EditCommandMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -597,7 +597,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static WheelRollMsg_p	cast( const Object_p& pObject );
+		static WheelRollMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -624,7 +624,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TickMsg_p	cast( const Object_p& pObject );
+		static TickMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -648,7 +648,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static PointerChangeMsg_p	cast( const Object_p& pObject );
+		static PointerChangeMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -677,7 +677,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static SelectMsg_p	cast( const Object_p& pObject );
+		static SelectMsg_p	cast( Object * pObject );
 	
 	protected:
 		SelectMsg( Object * pSource );	
@@ -697,7 +697,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ToggleMsg_p	cast( const Object_p& pObject );
+		static ToggleMsg_p	cast( Object * pObject );
 
 		//.____ Content _________________________________________________
 
@@ -723,7 +723,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ValueUpdateMsg_p	cast( const Object_p& pObject );
+		static ValueUpdateMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -754,7 +754,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static RangeUpdateMsg_p	cast( const Object_p& pObject );
+		static RangeUpdateMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -781,14 +781,14 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( const EditText_p& pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( EditText * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static TextEditMsg_p	cast( const Object_p& pObject );
+		static TextEditMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -796,7 +796,7 @@ namespace wg
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( const EditText_p& pText, bool bFinal );
+		TextEditMsg( EditText * pText, bool bFinal );
 
 		EditText_p			m_pText;
 		bool				m_bFinal;
@@ -809,7 +809,7 @@ namespace wg
 	{
 	public:
 		ItemInfo(): id(-1) {}
-		ItemInfo( int _id, const Object_p& _pObject ) : id(_id), pObject(_pObject) {}
+		ItemInfo( int _id, Object * _pObject ) : id(_id), pObject(_pObject) {}
 
 		int				id;
 		Object_p		pObject;
@@ -823,13 +823,13 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemMsg_p	cast( const Object_p& pObject );
+		static ItemMsg_p	cast( Object * pObject );
 
 		int				itemId() const;
 		Object_p		itemObject() const;
 
 	protected:
-		ItemMsg( Object * pSource, int itemId, const Object_p& pItemObject );
+		ItemMsg( Object * pSource, int itemId, Object * pItemObject );
 
 		ItemInfo		m_item;
 	};
@@ -842,12 +842,12 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemToggleMsg_p	cast( const Object_p& pObject );
+		static ItemToggleMsg_p	cast( Object * pObject );
 
 		bool		isSet() const;
 
 	//protected:
-		ItemToggleMsg( Object * pSource, int itemId, const Object_p& pItemObject, bool bSet );
+		ItemToggleMsg( Object * pSource, int itemId, Object * pItemObject, bool bSet );
 
 		bool		m_bSet;
 	};
@@ -860,11 +860,11 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemMousePressMsg_p	cast( const Object_p& pObject );
+		static ItemMousePressMsg_p	cast( Object * pObject );
 
 		MouseButton		button() const;
 	//protected:
-		ItemMousePressMsg( Object * pSource, int itemId, const Object_p& pItemObject, MouseButton button );
+		ItemMousePressMsg( Object * pSource, int itemId, Object * pItemObject, MouseButton button );
 
 		MouseButton		m_button;
 	};
@@ -878,7 +878,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemListMsg_p	cast( const Object_p& pObject );
+		static ItemListMsg_p	cast( Object * pObject );
 
 		int					nbItems() const;
 		const ItemInfo *	items() const;
@@ -901,7 +901,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemsSelectMsg_p	cast( const Object_p& pObject );
+		static ItemsSelectMsg_p	cast( Object * pObject );
 	};
 
 	//____ ItemsUnselectMsg _____________________________________________________
@@ -914,7 +914,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ItemsUnselectMsg_p	cast( const Object_p& pObject );
+		static ItemsUnselectMsg_p	cast( Object * pObject );
 	};
 
 	//____ PopupClosedMsg ______________________________________________________
@@ -928,7 +928,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static PopupClosedMsg_p	cast( const Object_p& pObject );
+		static PopupClosedMsg_p	cast( Object * pObject );
 
 	protected:
 		PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller );
@@ -946,7 +946,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ModalMoveOutsideMsg_p	cast( const Object_p& pObject );
+		static ModalMoveOutsideMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalMoveOutsideMsg( char inputId, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -961,7 +961,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ModalBlockedPressMsg_p	cast( const Object_p& pObject );
+		static ModalBlockedPressMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -976,7 +976,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ModalBlockedReleaseMsg_p	cast( const Object_p& pObject );
+		static ModalBlockedReleaseMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -999,7 +999,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseDragMsg_p	cast( const Object_p& pObject );
+		static MouseDragMsg_p	cast( Object * pObject );
 
 		//.____ Content ______________________________________________
 
@@ -1028,7 +1028,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseRepeatMsg_p	cast( const Object_p& pObject );
+		static MouseRepeatMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1047,7 +1047,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseClickMsg_p	cast( const Object_p& pObject );
+		static MouseClickMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1066,7 +1066,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static MouseDoubleClickMsg_p	cast( const Object_p& pObject );
+		static MouseDoubleClickMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseDoubleClickMsg( char inputId, MouseButton button, Object * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1081,7 +1081,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static KeyRepeatMsg_p	cast( const Object_p& pObject );
+		static KeyRepeatMsg_p	cast( Object * pObject );
 
 	protected:
 		KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );

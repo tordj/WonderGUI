@@ -58,16 +58,16 @@ namespace wg
 		//.____ Creation __________________________________________
 
         static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
-        static GlSurface_p	create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
-        static GlSurface_p	create( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
+        static GlSurface_p	create( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );
        
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static GlSurface_p	cast( const Object_p& pObject );
+		static GlSurface_p	cast( Object * pObject );
 
 		//.____ Geometry _________________________________________________
 
@@ -96,9 +96,9 @@ namespace wg
 
 	private:
         GlSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
-        GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint = SurfaceHint::Static );
-        GlSurface( const Surface_p& pOther, SurfaceHint hint = SurfaceHint::Static );
+        GlSurface( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );
 		~GlSurface();
 
 

@@ -61,7 +61,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Blob_p	cast( const Object_p& pObject );
+		static Blob_p	cast( Object * pObject );
 
 		//.____ Misc ___________________________________________________________
 	    

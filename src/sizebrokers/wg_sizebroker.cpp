@@ -57,10 +57,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SizeBroker_p SizeBroker::cast( const Object_p& pObject )
+	SizeBroker_p SizeBroker::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SizeBroker_p( static_cast<SizeBroker*>(pObject.rawPtr()) );
+			return SizeBroker_p( static_cast<SizeBroker*>(pObject) );
 	
 		return 0;
 	}

@@ -66,10 +66,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TextDisplay_p TextDisplay::cast( const Object_p& pObject )
+	TextDisplay_p TextDisplay::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextDisplay_p( static_cast<TextDisplay*>(pObject.rawPtr()) );
+			return TextDisplay_p( static_cast<TextDisplay*>(pObject) );
 	
 		return 0;
 	}
@@ -166,7 +166,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void TextDisplay::_receive( const Msg_p& pMsg )
+	void TextDisplay::_receive( Msg * pMsg )
 	{
 		Widget::_receive(pMsg);
 	/*
@@ -192,7 +192,7 @@ namespace wg
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void TextDisplay::_setSkin( const Skin_p& pSkin )
+	void TextDisplay::_setSkin( Skin * pSkin )
 	{
 		//TODO: Possibly notify text about new canvas size.
 		

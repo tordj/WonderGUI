@@ -40,10 +40,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	DummyFont_p DummyFont::cast( const Object_p& pObject )
+	DummyFont_p DummyFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return DummyFont_p( static_cast<DummyFont*>(pObject.rawPtr()) );
+			return DummyFont_p( static_cast<DummyFont*>(pObject) );
 	
 		return 0;
 	}

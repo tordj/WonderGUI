@@ -65,7 +65,7 @@ namespace wg
 		//.____ Identification _________________________________________________
 
 		virtual bool		isInstanceOf( const char * pClassName ) const;
-		static Object_p		cast( const Object_p& pObject );				// Provided just for completeness sake.
+		static Object_p		cast( Object * pObject );				// Provided just for completeness sake.
 		virtual const char *className( void ) const;
 		static const char	CLASSNAME[];
 	

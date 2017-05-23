@@ -41,11 +41,11 @@ namespace wg
 	
 	//____ setStyle() ______________________________________________________________
 	
-	void TextBaseItem::setStyle( const TextStyle_p& pStyle )
+	void TextBaseItem::setStyle( TextStyle * pStyle )
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = pStyle;
-		_textMapper()->onStyleChanged(this, pStyle.rawPtr(), pOld.rawPtr());
+		_textMapper()->onStyleChanged(this, pStyle, pOld);
 	}
 	
 	//____ clearStyle() ____________________________________________________________
@@ -54,12 +54,12 @@ namespace wg
 	{
 		TextStyle_p pOld = m_pStyle;			// Keep ref count until onStyleChanged has been called.
 		m_pStyle = 0;
-		_textMapper()->onStyleChanged(this, nullptr, pOld.rawPtr());
+		_textMapper()->onStyleChanged(this, nullptr, pOld);
 	}
 	
 	//____ setTextMapper() __________________________________________________________
 	
-	void TextBaseItem::setTextMapper( const TextMapper_p& pTextMapper )
+	void TextBaseItem::setTextMapper( TextMapper * pTextMapper )
 	{
 		if( pTextMapper == m_pTextMapper )
 			return;

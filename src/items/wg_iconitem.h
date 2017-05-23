@@ -42,7 +42,7 @@ namespace wg
 		virtual ~IconItem() {};
 	
 	
-		bool			set( const Skin_p& pIconGfx, Origo origo = Origo::West, Border padding = Border(0), 
+		bool			set( Skin * pIconGfx, Origo origo = Origo::West, Border padding = Border(0), 
 									float _scale = 0.f, bool _bOverlap = false );
 		void			clear();
 	
@@ -52,7 +52,7 @@ namespace wg
 		void			setOrigo( Origo origo );
 		void			setPadding( Border borders );
 		void			setOverlap( bool bOverlap );
-		void			setSkin( const Skin_p& pSkin );
+		void			setSkin( Skin * pSkin );
 	
 		float			scale() const { return m_scale; }
 		Origo			origo() const { return m_origo; }

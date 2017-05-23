@@ -35,13 +35,13 @@ namespace wg
 
 	//____ add() _________________________________________________________________
 
-	bool ModalChildren::add(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	bool ModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
 		ModalSlot * pSlot = m_pSlotArray->add();
 		pSlot->geo = geometry;
 		pSlot->origo = origo;
 
-		pSlot->replaceWidget(m_pHolder, pWidget.rawPtr());
+		pSlot->replaceWidget(m_pHolder, pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return true;
 	}
@@ -280,10 +280,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ModalLayer_p ModalLayer::cast( const Object_p& pObject )
+	ModalLayer_p ModalLayer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ModalLayer_p( static_cast<ModalLayer*>(pObject.rawPtr()) );
+			return ModalLayer_p( static_cast<ModalLayer*>(pObject) );
 	
 		return 0;
 	}
@@ -379,7 +379,7 @@ namespace wg
 		Widget * pFocused = Base::inputHandler()->focusedWidget().rawPtr();
 	
 		Widget * p = pFocused;
-		while( p && p->parent() && p->parent() != this )
+		while( p && p->parent() && p->parent().rawPtr() != this )
 			p = p->_parent();
 	
 		if( p && p->_parent() != this )
@@ -547,7 +547,7 @@ namespace wg
 	
 	//____ _receive() ______________________________________________________________
 	
-	void ModalLayer::_receive( const Msg_p& _pMsg )
+	void ModalLayer::_receive( Msg * _pMsg )
 	{
 		Layer::_receive(_pMsg);
 	

@@ -46,10 +46,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	UniformSizeBroker_p UniformSizeBroker::cast( const Object_p& pObject )
+	UniformSizeBroker_p UniformSizeBroker::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return UniformSizeBroker_p( static_cast<UniformSizeBroker*>(pObject.rawPtr()) );
+			return UniformSizeBroker_p( static_cast<UniformSizeBroker*>(pObject) );
 	
 		return 0;
 	}

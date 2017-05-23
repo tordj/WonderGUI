@@ -34,7 +34,7 @@ namespace wg
 	{
 	}
 
-	TextLink::TextLink( const std::string& link, const TextStyle_p& style ) : m_link(link), m_pStyle(style) 
+	TextLink::TextLink( const std::string& link, TextStyle * style ) : m_link(link), m_pStyle(style) 
 	{
 	}
 
@@ -64,10 +64,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TextLink_p TextLink::cast( const Object_p& pObject )
+	TextLink_p TextLink::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextLink_p( static_cast<TextLink*>(pObject.rawPtr()) );
+			return TextLink_p( static_cast<TextLink*>(pObject) );
 	
 		return 0;
 	}

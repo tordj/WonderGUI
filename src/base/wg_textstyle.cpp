@@ -77,25 +77,25 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	TextStyle_p TextStyle::cast( const Object_p& pObject )
+	TextStyle_p TextStyle::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextStyle_p( static_cast<TextStyle*>(pObject.rawPtr()) );
+			return TextStyle_p( static_cast<TextStyle*>(pObject) );
 	
 		return 0;
 	}
 	
 	//____ setParent() _____________________________________________________________
 	
-	bool TextStyle::setParent( const TextStyle_p& pParent )
+	bool TextStyle::setParent( TextStyle * pParent )
 	{
 		// Check so we don't get circular references.
 	
 		if( pParent )
 		{
-			TextStyle * p = pParent.rawPtr();
+			TextStyle * p = pParent;
 			while( p != 0 && p != this )
-				p = p->m_pParent.rawPtr();
+				p = p->m_pParent;
 	
 			if( p == this )
 				return false;
@@ -145,7 +145,7 @@ namespace wg
 	
 	//____ setFont() _______________________________________________________________
 	
-	void TextStyle::setFont( const Font_p& pFont )
+	void TextStyle::setFont( Font * pFont )
 	{
 		if( pFont != m_specAttr.pFont )
 		{
@@ -159,7 +159,7 @@ namespace wg
 	
 	//____ setLink() _______________________________________________________________
 	
-	void TextStyle::setLink( const TextLink_p& pLink )
+	void TextStyle::setLink( TextLink * pLink )
 	{
 		if( pLink != m_specAttr.pLink )
 		{

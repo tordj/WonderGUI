@@ -65,10 +65,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Surface_p Surface::cast( const Object_p& pObject )
+	Surface_p Surface::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Surface_p( static_cast<Surface*>(pObject.rawPtr()) );
+			return Surface_p( static_cast<Surface*>(pObject) );
 	
 		return 0;
 	} 
@@ -300,7 +300,7 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( const Surface_p& pSrcSurface, Coord dst )
+	bool Surface::copyFrom( Surface * pSrcSurface, Coord dst )
 	{
 		if( !pSrcSurface )
 			return false;
@@ -324,7 +324,7 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( const Surface_p& pSrcSurface, const Rect& _srcRect, Coord _dst )
+	bool Surface::copyFrom( Surface * pSrcSurface, const Rect& _srcRect, Coord _dst )
 	{
 		if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == PixelType::Unknown || m_pixelFormat.type == PixelType::Unknown )
 			return false;

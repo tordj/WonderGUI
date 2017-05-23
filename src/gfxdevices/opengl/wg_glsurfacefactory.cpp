@@ -52,10 +52,10 @@ namespace wg
 
 	//____ cast() _________________________________________________________________
 
-	GlSurfaceFactory_p GlSurfaceFactory::cast( const Object_p& pObject )
+	GlSurfaceFactory_p GlSurfaceFactory::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlSurfaceFactory_p( static_cast<GlSurfaceFactory*>(pObject.rawPtr()) );
+			return GlSurfaceFactory_p( static_cast<GlSurfaceFactory*>(pObject) );
 
 		return 0;
 	}
@@ -75,7 +75,7 @@ namespace wg
 	}
 
 
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint ) const
 	{
 		return GlSurface::create(size,type, pBlob,pitch,hint);
 	}
@@ -85,7 +85,7 @@ namespace wg
 		return GlSurface::create(size,type, pPixels, pitch, pPixelFormat,hint);
 	}
 	
-	Surface_p GlSurfaceFactory::createSurface( const Surface_p& pOther, SurfaceHint hint ) const
+	Surface_p GlSurfaceFactory::createSurface( Surface * pOther, SurfaceHint hint ) const
 	{
 		return GlSurface::create( pOther,hint );
 	}

@@ -47,10 +47,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Receiver_p Receiver::cast( const Object_p& pObject )
+	Receiver_p Receiver::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Receiver_p( static_cast<Receiver*>(pObject.rawPtr()) );
+			return Receiver_p( static_cast<Receiver*>(pObject) );
 	
 		return 0;
 	}

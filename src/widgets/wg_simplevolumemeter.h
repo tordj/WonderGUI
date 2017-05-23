@@ -50,7 +50,7 @@ namespace wg
 		bool						isInstanceOf( const char * pClassName ) const;
 		const char *				className( void ) const;
 		static const char			CLASSNAME[];
-		static SimpleVolumeMeter_p	cast( const Object_p& pObject );
+		static SimpleVolumeMeter_p	cast( Object * pObject );
 
 		//.____ Geometry ____________________________________________
 
@@ -79,7 +79,7 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg );
 		bool			_alphaTest( const Coord& ofs );
 		void			_setSize( const Size& size );
-		void			_setSkin( const Skin_p& pSkin );
+		void			_setSkin( Skin * pSkin );
 		
 		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip );
 		void 			_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );

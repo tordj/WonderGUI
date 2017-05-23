@@ -77,6 +77,7 @@ namespace wg
 		inline operator bool() const { return (m_pObj != 0); }
 	
 		inline Object * rawPtr() const { return m_pObj; }
+		operator Object*() const { return m_pObj; }
 	
 	protected:
 		void copy( Object_p const & r )
@@ -123,6 +124,7 @@ namespace wg
 	//	inline operator bool() const { return (this->m_pObj != 0); }
 	
 		inline T * rawPtr() const { return (T*) this->m_pObj; }
+		operator T*() const { return (T*) this->m_pObj; }
 	};
 	
 	
@@ -227,6 +229,8 @@ namespace wg
 			if( pObj )
 				pObj->_incRefCount();
 		}
+
+		Interface_p(Interface* pInterface );
 	
 		Interface_p(const Interface_p& r)
 		{
@@ -287,6 +291,7 @@ namespace wg
 	public:
 		StrongInterfacePtr( int dummy = 0 ) : P( 0, 0 ) {};
 		StrongInterfacePtr(Object* pObj, T* pInterface) : P( pObj, pInterface ) {};
+		StrongInterfacePtr(T* pInterface) : P(pInterface) {};
 		StrongInterfacePtr(const StrongInterfacePtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
 		~StrongInterfacePtr() {};
 	
@@ -307,6 +312,7 @@ namespace wg
 	public:
 		Interface_wp() { m_pHub = 0; m_pInterface = 0; }
 		Interface_wp( Object * pObj, Interface * pInterface );
+		Interface_wp( Interface * pInterface );
 	
 		Interface_wp(const Interface_wp& r)
 		{

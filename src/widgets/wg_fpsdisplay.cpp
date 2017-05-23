@@ -94,10 +94,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	FpsDisplay_p FpsDisplay::cast( const Object_p& pObject )
+	FpsDisplay_p FpsDisplay::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FpsDisplay_p( static_cast<FpsDisplay*>(pObject.rawPtr()) );
+			return FpsDisplay_p( static_cast<FpsDisplay*>(pObject) );
 	
 		return 0;
 	}
@@ -147,7 +147,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void FpsDisplay::_receive( const Msg_p& pMsg )
+	void FpsDisplay::_receive( Msg * pMsg )
 	{
 		Widget::_receive(pMsg);
 	

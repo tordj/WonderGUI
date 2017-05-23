@@ -52,7 +52,7 @@ namespace wg
         return GlSurface_p(new GlSurface(size,type,hint));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
+    GlSurface_p	GlSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
     {
         if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
             return GlSurface_p();
@@ -68,9 +68,9 @@ namespace wg
         return  GlSurface_p(new GlSurface(size,type,pPixels,pitch, pPixelFormat,hint));
     };
     
-    GlSurface_p	GlSurface::create( const Surface_p& pOther, SurfaceHint hint )
+    GlSurface_p	GlSurface::create( Surface * pOther, SurfaceHint hint )
     {
-        return GlSurface_p(new GlSurface( pOther.rawPtr(),hint ));
+        return GlSurface_p(new GlSurface( pOther,hint ));
     }
 
     
@@ -104,7 +104,7 @@ namespace wg
     }
     
     
-	GlSurface::GlSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
+	GlSurface::GlSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
 	{
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
 
@@ -164,7 +164,7 @@ namespace wg
     }
 
 
-    GlSurface::GlSurface( const Surface_p& pOther, SurfaceHint hint )
+    GlSurface::GlSurface( Surface * pOther, SurfaceHint hint )
     {
 		assert( pOther );
 		
@@ -174,7 +174,7 @@ namespace wg
         Blob_p pBlob = Blob::create(m_pitch*m_size.h);
         
         m_pPixels = (uint8_t *) pBlob->content();
-        _copyFrom( pOther->pixelFormat(), (uint8_t*)pOther->pixels(), pOther-pitch(), m_size, m_size );
+        _copyFrom( pOther->pixelFormat(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
         m_pPixels = 0;
         
         glGenBuffers( 1, &m_buffer );
@@ -246,10 +246,10 @@ namespace wg
 
 	//____ cast() _________________________________________________________________
 
-	GlSurface_p GlSurface::cast( const Object_p& pObject )
+	GlSurface_p GlSurface::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlSurface_p( static_cast<GlSurface*>(pObject.rawPtr()) );
+			return GlSurface_p( static_cast<GlSurface*>(pObject) );
 
 		return 0;
 	}

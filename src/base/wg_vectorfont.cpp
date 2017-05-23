@@ -124,10 +124,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	VectorFont_p VectorFont::cast( const Object_p& pObject )
+	VectorFont_p VectorFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return VectorFont_p( static_cast<VectorFont*>(pObject.rawPtr()) );
+			return VectorFont_p( static_cast<VectorFont*>(pObject) );
 	
 		return 0;
 	}
@@ -595,7 +595,7 @@ namespace wg
 	
 	//____ setSurfaceFactory() ____________________________________________________
 	
-	void VectorFont::setSurfaceFactory( const SurfaceFactory_p& pFactory )
+	void VectorFont::setSurfaceFactory( SurfaceFactory * pFactory )
 	{
 		s_pSurfaceFactory = pFactory;
 	}

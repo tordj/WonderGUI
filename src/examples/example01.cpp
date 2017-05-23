@@ -138,7 +138,7 @@ int main ( int argc, char** argv )
 
 	// Finally we add a callback to the click-event of the button.
 
-	Base::msgRouter()->addRoute(MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; } );
+	Base::msgRouter()->addRoute(MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
 	
 
 	//------------------------------------------------------

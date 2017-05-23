@@ -65,10 +65,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	MsgLogger_p MsgLogger::cast( const Object_p& pObject )
+	MsgLogger_p MsgLogger::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MsgLogger_p( static_cast<MsgLogger*>(pObject.rawPtr()) );
+			return MsgLogger_p( static_cast<MsgLogger*>(pObject) );
 	
 		return 0;
 	}
@@ -208,7 +208,7 @@ namespace wg
 	
 	//____ receive() ______________________________________________________________
 	
-	void MsgLogger::receive( const Msg_p& _pMsg )
+	void MsgLogger::receive( Msg * _pMsg )
 	{
 		if( m_msgFilter[(int)_pMsg->type()] == false )
 			return;
@@ -414,7 +414,7 @@ namespace wg
 	
 	//____ _formatSource() __________________________________________________________
 	
-	string MsgLogger::_formatSource( const Msg_p& _pMsg ) const
+	string MsgLogger::_formatSource( Msg * _pMsg ) const
 	{
 		std::string	out;
 	
@@ -438,7 +438,7 @@ namespace wg
 	
 	//____ _formatCopyTo() __________________________________________________________
 	
-	string MsgLogger::_formatCopyTo( const Msg_p& _pMsg ) const
+	string MsgLogger::_formatCopyTo( Msg * _pMsg ) const
 	{
 		std::string	out;
 	
@@ -459,7 +459,7 @@ namespace wg
 	
 	//____ _formatModkeys() __________________________________________________________
 	
-	string MsgLogger::_formatModkeys( const InputMsg_p& _pMsg ) const
+	string MsgLogger::_formatModkeys( InputMsg * _pMsg ) const
 	{
 		ModifierKeys keys = _pMsg->modKeys();
 	
@@ -477,7 +477,7 @@ namespace wg
 	
 	//____ _formatPointerPos() _____________________________________________________
 	
-	string MsgLogger::_formatPointerPos( const InputMsg_p& _pMsg ) const
+	string MsgLogger::_formatPointerPos( InputMsg * _pMsg ) const
 	{
 		Coord globalPos = _pMsg->pointerPos();
 	
@@ -491,7 +491,7 @@ namespace wg
 	
 	//____ _formatPointerStyle() _____________________________________________________
 	
-	string MsgLogger::_formatPointerStyle( const PointerChangeMsg_p& _pMsg ) const
+	string MsgLogger::_formatPointerStyle( PointerChangeMsg * _pMsg ) const
 	{
 		switch( _pMsg->style() )
 		{

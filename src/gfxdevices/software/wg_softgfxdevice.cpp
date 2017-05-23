@@ -42,7 +42,7 @@ namespace wg
 		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
 	
-	SoftGfxDevice_p SoftGfxDevice::create( const SoftSurface_p& pCanvas )
+	SoftGfxDevice_p SoftGfxDevice::create( SoftSurface * pCanvas )
 	{
 		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
 	}
@@ -60,7 +60,7 @@ namespace wg
 		_genCurveTab();
 	}
 	
-	SoftGfxDevice::SoftGfxDevice( const SoftSurface_p& pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
+	SoftGfxDevice::SoftGfxDevice( SoftSurface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
 		m_pCanvas = pCanvas;
 		m_canvasPixelBits = 0;
@@ -96,10 +96,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SoftGfxDevice_p SoftGfxDevice::cast( const Object_p& pObject )
+	SoftGfxDevice_p SoftGfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftGfxDevice_p( static_cast<SoftGfxDevice*>(pObject.rawPtr()) );
+			return SoftGfxDevice_p( static_cast<SoftGfxDevice*>(pObject) );
 	
 		return 0;
 	}
@@ -123,7 +123,7 @@ namespace wg
 	
 	//____ setCanvas() _______________________________________________________________
 	
-	bool SoftGfxDevice::setCanvas( const Surface_p& pCanvas )
+	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
 	{
 		if( (pCanvas->pixelFormat()->type != PixelType::BGRA_8) && (pCanvas->pixelFormat()->type != PixelType::BGR_8) )
 			return false;
@@ -1613,9 +1613,9 @@ namespace wg
 	
 	//____ blit() __________________________________________________________________
 	
-	void SoftGfxDevice::blit( const Surface_p& pSrcSurf, const Rect& srcrect, Coord dest  )
+	void SoftGfxDevice::blit( Surface * pSrcSurf, const Rect& srcrect, Coord dest  )
 	{
-		Surface * pSrc = pSrcSurf.rawPtr();
+		Surface * pSrc = pSrcSurf;
 	
 		if( m_tintColor.argb == 0xFFFFFFFF )
 			_blit( pSrc, srcrect, dest.x, dest.y );
@@ -2108,13 +2108,13 @@ namespace wg
 	
 	//____ stretchBlitSubPixel() ___________________________________________________
 	
-	void SoftGfxDevice::stretchBlitSubPixel( const Surface_p& _pSrcSurf, float sx, float sy, float sw, float sh,
+	void SoftGfxDevice::stretchBlitSubPixel( Surface * _pSrcSurf, float sx, float sy, float sw, float sh,
 							   		 float _dx, float _dy, float _dw, float _dh )
 	{
 		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
 	
-		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf.rawPtr();
+		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
 	
 		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;

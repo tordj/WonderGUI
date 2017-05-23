@@ -90,7 +90,7 @@ namespace wg
 	 * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
 	 */
 	 
-	Object_p Object::cast( const Object_p& pObject )
+	Object_p Object::cast( Object * pObject )
 	{
 		return pObject;
 	}

@@ -62,7 +62,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Surface_p	cast( const Object_p& pObject );
+		static Surface_p	cast( Object * pObject );
 
 		//.____ Geometry _________________________________________________
 	
@@ -210,8 +210,8 @@ namespace wg
 	
 		virtual bool		fill( Color col );						///< @brief Fill surface with specified color.
 		virtual bool		fill( Color col, const Rect& region );	///< @brief Fill section of surface with specified color
-		virtual bool		copyFrom( const Surface_p& pSrcSurf, const Rect& srcRect, Coord dst );	///< @brief Copy block of graphics from other surface
-		virtual bool		copyFrom( const Surface_p& pSrcSurf, Coord dst );	///< @brief Copy other surface as a block
+		virtual bool		copyFrom( Surface * pSrcSurf, const Rect& srcRect, Coord dst );	///< @brief Copy block of graphics from other surface
+		virtual bool		copyFrom( Surface * pSrcSurf, Coord dst );	///< @brief Copy other surface as a block
 
 	
 	protected:

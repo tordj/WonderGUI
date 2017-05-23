@@ -52,7 +52,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static Oscilloscope_p	cast( const Object_p& pObject );
+		static Oscilloscope_p	cast( Object * pObject );
 
 		//.____ Appearance __________________________________________
 
@@ -68,7 +68,7 @@ namespace wg
 		void	setLineThickness( float thickness );
 		float	lineThickness() const { return m_lineThickness; }
 
-		void	setMarkerSkin( const Skin_p& pSkin );
+		void	setMarkerSkin( Skin * pSkin );
 		Skin_p	markerSkin() const { return m_pMarkerSkin; }
 
 		//.____ Behavior ____________________________________________

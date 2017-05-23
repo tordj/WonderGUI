@@ -93,7 +93,7 @@ namespace wg
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static PackPanel_p	cast( const Object_p& pObject );
+		static PackPanel_p	cast( Object * pObject );
 	
 		//.____ Geometry ____________________________________________
 
@@ -107,7 +107,7 @@ namespace wg
 
 		//.____ Behavior ________________________________________________________
 
-		void			setSizeBroker( const SizeBroker_p& pBroker );
+		void			setSizeBroker( SizeBroker * pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 
 	

@@ -28,7 +28,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static RulerLabels_p cast( const Object_p& pObject );
+		static RulerLabels_p cast( Object * pObject );
 		
 		//.____ Geometry ____________________________________________
 		
@@ -39,7 +39,7 @@ namespace wg
 		
 		//.____ Control ____________________________________________
 		
-		void		addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset );
+		void		addLabel( const CharSeq& text, TextStyle * pStyle, float offset );
 		ModText_p	getLabel(int index);
 
 		

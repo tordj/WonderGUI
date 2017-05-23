@@ -42,14 +42,14 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 		
-		static BitmapFont_p	create( const Surface_p& pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
+		static BitmapFont_p	create( Surface * pSurf, char * pGlyphSpec ) { return BitmapFont_p(new BitmapFont(pSurf,pGlyphSpec)); }
 
 		//.____ Identification __________________________________________
 	
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static BitmapFont_p	cast( const Object_p& pObject );
+		static BitmapFont_p	cast( Object * pObject );
 	
 		//.____ Rendering ______________________________________________________
 
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Misc ___________________________________________________________
 
-		void				insertGlyphs( const Surface_p& pSurf, char* pGlyphSpec );
+		void				insertGlyphs( Surface * pSurf, char* pGlyphSpec );
 
 		inline int			nbGlyphs() { return m_nGlyphs; }
 		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
@@ -76,14 +76,14 @@ namespace wg
 		inline bool			isMonochrome() { return m_bMonochrome; }
 	
 	protected:
-		BitmapFont( const Surface_p& pSurf, char * pGlyphSpec );
+		BitmapFont( Surface * pSurf, char * pGlyphSpec );
 		~BitmapFont();
 	
 		class MyGlyph : public Glyph
 		{
 		public:
 			MyGlyph();
-			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, const Surface_p& pSurf, const Rect& rect );
+			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const Rect& rect );
 	
 			const GlyphBitmap * getBitmap() { return &m_src; }
 	

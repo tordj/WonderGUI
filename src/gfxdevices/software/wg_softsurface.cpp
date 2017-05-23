@@ -49,7 +49,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,type));
 	}
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, const Blob_p& pBlob, int pitch, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
 	{ 
 		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
@@ -65,12 +65,12 @@ namespace wg
 		return  SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pPixelFormat)); 
 	};
 
-	SoftSurface_p SoftSurface::create( const Surface_p& pOther, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Surface * pOther, SurfaceHint hint )
 	{
 		if( !pOther )
 			return SoftSurface_p();
 			
-		return SoftSurface_p(new SoftSurface( pOther.rawPtr() )); 
+		return SoftSurface_p(new SoftSurface( pOther )); 
 	}
 	
 	
@@ -89,7 +89,7 @@ namespace wg
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, PixelType type, const Blob_p& pBlob, int pitch )
+	SoftSurface::SoftSurface( Size size, PixelType type, Blob * pBlob, int pitch )
 	{
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
 		Util::pixelTypeToFormat(type, m_pixelFormat);
@@ -119,7 +119,7 @@ namespace wg
 	
 	
 	
-	SoftSurface::SoftSurface( const Surface_p& pOther )
+	SoftSurface::SoftSurface( Surface * pOther )
 	{
 		assert( pOther );
 
@@ -167,10 +167,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	SoftSurface_p SoftSurface::cast( const Object_p& pObject )
+	SoftSurface_p SoftSurface::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurface_p( static_cast<SoftSurface*>(pObject.rawPtr()) );
+			return SoftSurface_p( static_cast<SoftSurface*>(pObject) );
 	
 		return 0;
 	}

@@ -65,17 +65,17 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	List_p List::cast( const Object_p& pObject )
+	List_p List::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return List_p( static_cast<List*>(pObject.rawPtr()) );
+			return List_p( static_cast<List*>(pObject) );
 	
 		return 0;
 	}
 	
 	//____ setEntrySkin() _________________________________________________________
 	
-	void List::setEntrySkin( const Skin_p& pSkin )
+	void List::setEntrySkin( Skin * pSkin )
 	{
 		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : Size();
 	
@@ -86,7 +86,7 @@ namespace wg
 		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : Size() );
 	}
 	
-	bool List::setEntrySkin( const Skin_p& pOddEntrySkin, const Skin_p& pEvenEntrySkin )
+	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
 		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : Size();
 		Size padding[2];
@@ -123,7 +123,7 @@ namespace wg
 	
 	//____ setLassoSkin() _________________________________________________________
 	
-	void List::setLassoSkin( const Skin_p& pSkin )
+	void List::setLassoSkin( Skin * pSkin )
 	{
 		m_pLassoSkin = pSkin;
 	}
@@ -139,7 +139,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void List::_receive( const Msg_p& _pMsg )
+	void List::_receive( Msg * _pMsg )
 	{
 		Container::_receive(_pMsg);
 	

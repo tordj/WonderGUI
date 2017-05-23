@@ -56,7 +56,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ResDB_p	cast( const Object_p& pObject );
+		static ResDB_p	cast( Object * pObject );
 	
 	
 		class MetaData
@@ -125,14 +125,14 @@ namespace wg
 	
 		//----
 	
-		static std::string	generateName( const Surface_p& data );
-		static std::string	generateName( const Font_p& data );
-		static std::string	generateName( const GfxAnim_p& data );
-		static std::string	generateName( const Caret_p& data );
+		static std::string	generateName( Surface * data );
+		static std::string	generateName( Font * data );
+		static std::string	generateName( GfxAnim * data );
+		static std::string	generateName( Caret * data );
 		static std::string	generateName( const Color data );
-		static std::string	generateName( const TextStyle_p& data );
-		static std::string	generateName( const Skin_p& data );
-		static std::string	generateName( const Widget_p& data );
+		static std::string	generateName( TextStyle * data );
+		static std::string	generateName( Skin * data );
+		static std::string	generateName( Widget * data );
 	
 		void				setResLoader( ResLoader * pLoader );
 		void				clear();
@@ -143,20 +143,20 @@ namespace wg
 		std::string			loadString( const std::string& token );
 	
 		bool				addResDb( const std::string& file, MetaData * pMetaData = 0 );
-		bool				addResDb( const ResDB_p& db, const std::string& file, MetaData * pMetaData = 0 );
+		bool				addResDb( ResDB * db, const std::string& file, MetaData * pMetaData = 0 );
 	
 		bool				addSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
-		bool				addSurface( const std::string& id, const Surface_p& pSurf, const std::string& filename, MetaData * pMetaData = 0 );
+		bool				addSurface( const std::string& id, Surface * pSurf, const std::string& filename, MetaData * pMetaData = 0 );
 		
-		bool				addFont( const std::string& id, const Font_p& pFont, MetaData * pMetaData = 0 );
-		bool				addGfxAnim( const std::string& id, const GfxAnim_p& pAnim, MetaData * pMetaData = 0 );
-		bool				addCaret( const std::string& id, const Caret_p& pCaret, MetaData * pMetaData = 0 );
-		bool				addTextStyle( const std::string& id, const TextStyle_p& pProp, MetaData * pMetaData = 0 );
+		bool				addFont( const std::string& id, Font * pFont, MetaData * pMetaData = 0 );
+		bool				addGfxAnim( const std::string& id, GfxAnim * pAnim, MetaData * pMetaData = 0 );
+		bool				addCaret( const std::string& id, Caret * pCaret, MetaData * pMetaData = 0 );
+		bool				addTextStyle( const std::string& id, TextStyle * pProp, MetaData * pMetaData = 0 );
 		bool				addColor( const std::string& id, Color col, MetaData * pMetaData = 0 );
 		bool				addLegoSource( const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData * pMetaData = 0 );
-		bool				addSkin( const std::string& id, const Skin_p& pSkin, MetaData * pMetaData = 0 );
+		bool				addSkin( const std::string& id, Skin * pSkin, MetaData * pMetaData = 0 );
 		bool				addConnect( MetaData * pMetaData );
-		bool				addWidget( const std::string& id, const Widget_p& pWidget, MetaData * pMetaData = 0 );
+		bool				addWidget( const std::string& id, Widget * pWidget, MetaData * pMetaData = 0 );
 		bool				addDataSet( const std::string& id, MetaData * pMetaData );
 	
 		bool				removeSurface( const std::string& id );
@@ -215,24 +215,24 @@ namespace wg
 		WidgetRes *			getResWidget( const std::string& id ) const;
 		DataSetRes *		getResDataSet( const std::string& id ) const;
 	
-		ResDBRes *			findResDbRes( const ResDB_p& data ) const;
-		SurfaceRes *		findResSurface( const Surface_p& data ) const;
-		FontRes *			findResFont( const Font_p& data ) const;
-		GfxAnimRes *		findResGfxAnim( const GfxAnim_p& data ) const;
-		CaretRes *			findResCaret( const Caret_p& data ) const;
-		TextStyleRes *		findResTextStyle( const TextStyle_p& data ) const;
+		ResDBRes *			findResDbRes( ResDB * data ) const;
+		SurfaceRes *		findResSurface( Surface * data ) const;
+		FontRes *			findResFont( Font * data ) const;
+		GfxAnimRes *		findResGfxAnim( GfxAnim * data ) const;
+		CaretRes *			findResCaret( Caret * data ) const;
+		TextStyleRes *		findResTextStyle( TextStyle * data ) const;
 		ColorRes *			findResColor( const Color col ) const;
-		SkinRes *			findResSkin( const Skin_p& data ) const;
-		WidgetRes *			findResWidget( const Widget_p& data ) const;
+		SkinRes *			findResSkin( Skin * data ) const;
+		WidgetRes *			findResWidget( Widget * data ) const;
 	
-		std::string			findSurfaceId( const Surface_p& data ) const		{ SurfaceRes * r =	findResSurface(data); return r ? r->id : ""; }
-		std::string			findFontId( const Font_p& data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
-		std::string			findGfxAnimId( const GfxAnim_p& data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
-		std::string			findCaretId( const Caret_p& data ) const			{ CaretRes *	r =	findResCaret(data); return r ? r->id : ""; }
-		std::string			findTextStyleId( const TextStyle_p& data ) const	{ TextStyleRes *r =  findResTextStyle(data); return r ? r->id : ""; }
+		std::string			findSurfaceId( Surface * data ) const		{ SurfaceRes * r =	findResSurface(data); return r ? r->id : ""; }
+		std::string			findFontId( Font * data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
+		std::string			findGfxAnimId( GfxAnim * data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
+		std::string			findCaretId( Caret * data ) const			{ CaretRes *	r =	findResCaret(data); return r ? r->id : ""; }
+		std::string			findTextStyleId( TextStyle * data ) const	{ TextStyleRes *r =  findResTextStyle(data); return r ? r->id : ""; }
 		std::string			findColorId( const Color data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
-		std::string			findSkinId( const Skin_p& data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
-		std::string			findWidgetId( const Widget_p& data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
+		std::string			findSkinId( Skin * data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
+		std::string			findWidgetId( Widget * data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
 	
 		inline ResDBRes *		getFirstResDbRes() const { return m_resDbs.first(); }
 		inline SurfaceRes *		getFirstResSurface() const { return m_surfaces.first(); }

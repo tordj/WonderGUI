@@ -67,10 +67,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	ResDB_p ResDB::cast( const Object_p& pObject )
+	ResDB_p ResDB::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ResDB_p( static_cast<ResDB*>(pObject.rawPtr()) );
+			return ResDB_p( static_cast<ResDB*>(pObject) );
 	
 		return 0;
 	}
@@ -129,28 +129,28 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	std::string	ResDB::generateName( const Surface_p& data )
+	std::string	ResDB::generateName( Surface * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_surf__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 		
-	std::string	ResDB::generateName( const Font_p& data )
+	std::string	ResDB::generateName( Font * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_font__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const GfxAnim_p& data )
+	std::string	ResDB::generateName( GfxAnim * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_anim__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Caret_p& data )
+	std::string	ResDB::generateName( Caret * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -164,21 +164,21 @@ namespace wg
 		return std::string("_color__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const TextStyle_p& data )
+	std::string	ResDB::generateName( TextStyle * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_textprop__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Skin_p& data )
+	std::string	ResDB::generateName( Skin * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_skin__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 	
-	std::string	ResDB::generateName( const Widget_p& data )
+	std::string	ResDB::generateName( Widget * data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -207,7 +207,7 @@ namespace wg
 		return false;
 	}
 	
-	bool ResDB::addResDb( const ResDB_p& db, const std::string& file, MetaData * pMetaData )
+	bool ResDB::addResDb( ResDB * db, const std::string& file, MetaData * pMetaData )
 	{
 		assert(getResDbRes(file) == 0);
 	
@@ -246,7 +246,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addSurface( const std::string& id, const Surface_p& pSurface, const std::string& filename, MetaData * pMetaData )
+	bool ResDB::addSurface( const std::string& id, Surface * pSurface, const std::string& filename, MetaData * pMetaData )
 	{
 		assert(m_mapSurfaces.find(id) == m_mapSurfaces.end());
 		if(m_mapSurfaces.find(id) == m_mapSurfaces.end())
@@ -264,7 +264,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addFont( const std::string& id, const Font_p& pFont, MetaData * pMetaData )
+	bool ResDB::addFont( const std::string& id, Font * pFont, MetaData * pMetaData )
 	{
 		assert(m_mapFonts.find(id) == m_mapFonts.end());
 		if(m_mapFonts.find(id) == m_mapFonts.end())
@@ -280,7 +280,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addGfxAnim( const std::string& id, const GfxAnim_p& pAnim, MetaData * pMetaData )
+	bool ResDB::addGfxAnim( const std::string& id, GfxAnim * pAnim, MetaData * pMetaData )
 	{
 		assert(m_mapGfxAnims.find(id) == m_mapGfxAnims.end());
 		if(m_mapGfxAnims.find(id) == m_mapGfxAnims.end())
@@ -296,7 +296,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addCaret( const std::string& id, const Caret_p& pCaret, MetaData * pMetaData )
+	bool ResDB::addCaret( const std::string& id, Caret * pCaret, MetaData * pMetaData )
 	{
 		assert(m_mapCarets.find(id) == m_mapCarets.end());
 		if(m_mapCarets.find(id) == m_mapCarets.end())
@@ -312,7 +312,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addTextStyle( const std::string& id, const TextStyle_p& pProp, MetaData * pMetaData )
+	bool ResDB::addTextStyle( const std::string& id, TextStyle * pProp, MetaData * pMetaData )
 	{
 		//assert(m_mapTextStyles.find(id) == m_mapTextStyles.end());
 		if(m_mapTextStyles.find(id) == m_mapTextStyles.end())
@@ -365,7 +365,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addSkin( const std::string& id, const Skin_p& pSkin, MetaData * pMetaData )
+	bool ResDB::addSkin( const std::string& id, Skin * pSkin, MetaData * pMetaData )
 	{
 		assert(m_mapSkins.find(id) == m_mapSkins.end());
 		if(m_mapSkins.find(id) == m_mapSkins.end())
@@ -398,7 +398,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	bool ResDB::addWidget( const std::string& id, const Widget_p& pWidget, MetaData * pMetaData )
+	bool ResDB::addWidget( const std::string& id, Widget * pWidget, MetaData * pMetaData )
 	{
 		assert(m_mapWidgets.find(id) == m_mapWidgets.end());
 		if(m_mapWidgets.find(id) == m_mapWidgets.end())
@@ -715,11 +715,11 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::ResDBRes * ResDB::findResDbRes( const ResDB_p& data ) const
+	ResDB::ResDBRes * ResDB::findResDbRes( ResDB * data ) const
 	{
 		for(ResDBRes* res = getFirstResDbRes(); res; res = res->next())
 		{
-			if(res->res == data)
+			if(res->res.rawPtr() == data)
 				return res;
 			if(res->res)
 			{
@@ -733,7 +733,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::SurfaceRes* ResDB::findResSurface( const Surface_p& surf ) const
+	ResDB::SurfaceRes* ResDB::findResSurface( Surface * surf ) const
 	{
 		SurfaceRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -745,14 +745,14 @@ namespace wg
 			}
 		}
 		for(res = getFirstResSurface(); res; res = res->next())
-			if(res->res == surf)
+			if(res->res.rawPtr() == surf)
 				return res;
 		return 0;
 	}	
 	
 	//____ () _________________________________________________________
 	
-	ResDB::FontRes* ResDB::findResFont( const Font_p& meta ) const
+	ResDB::FontRes* ResDB::findResFont( Font * meta ) const
 	{
 		FontRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -764,14 +764,14 @@ namespace wg
 			}
 		}
 		for(res = getFirstResFont(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}
 	
 	//____ () _________________________________________________________
 	
-	ResDB::GfxAnimRes* ResDB::findResGfxAnim( const GfxAnim_p& meta ) const
+	ResDB::GfxAnimRes* ResDB::findResGfxAnim( GfxAnim * meta ) const
 	{
 		GfxAnimRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -783,14 +783,14 @@ namespace wg
 			}
 		}
 		for(res = getFirstResGfxAnim(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}
 	
 	//____ () _________________________________________________________
 	
-	ResDB::CaretRes* ResDB::findResCaret( const Caret_p& meta ) const
+	ResDB::CaretRes* ResDB::findResCaret( Caret * meta ) const
 	{
 		CaretRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -802,14 +802,14 @@ namespace wg
 			}
 		}
 		for(res = getFirstResCaret(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}
 	
 	//____ () _________________________________________________________
 	
-	ResDB::TextStyleRes* ResDB::findResTextStyle( const TextStyle_p& meta ) const
+	ResDB::TextStyleRes* ResDB::findResTextStyle( TextStyle * meta ) const
 	{
 		TextStyleRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -821,7 +821,7 @@ namespace wg
 			}
 		}
 		for(res = getFirstResTextStyle(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}
@@ -847,7 +847,7 @@ namespace wg
 	
 	//____ () _________________________________________________________
 	
-	ResDB::SkinRes* ResDB::findResSkin( const Skin_p& meta ) const
+	ResDB::SkinRes* ResDB::findResSkin( Skin * meta ) const
 	{
 		SkinRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -859,14 +859,14 @@ namespace wg
 			}
 		}
 		for(res = getFirstResSkin(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}
 	
 	//____ () _________________________________________________________
 	
-	ResDB::WidgetRes* ResDB::findResWidget( const Widget_p& meta ) const
+	ResDB::WidgetRes* ResDB::findResWidget( Widget * meta ) const
 	{
 		WidgetRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
@@ -878,7 +878,7 @@ namespace wg
 			}
 		}
 		for(res = getFirstResWidget(); res; res = res->next())
-			if(res->res == meta)
+			if(res->res.rawPtr() == meta)
 				return res;
 		return 0;
 	}

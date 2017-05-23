@@ -51,7 +51,7 @@ namespace wg
 
 	//____ receive() ___________________________________________________________
 
-	void EditTextItem::receive( const Msg_p& pMsg )
+	void EditTextItem::receive( Msg * pMsg )
 	{
 		TextItem::receive( pMsg );
 
@@ -181,7 +181,7 @@ namespace wg
 
 			case MsgType::MousePress:			// Move caret pos and selection pos. Shift-press: only move caret pos.
 			{
-				auto p = static_cast<MousePressMsg*>(pMsg.rawPtr());
+				auto p = static_cast<MousePressMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 				{
 					if( m_state.isFocused() )
@@ -197,7 +197,7 @@ namespace wg
 
 			case MsgType::MouseDrag:			// Move only caret pos
 			{	
-				auto p = static_cast<MouseDragMsg*>(pMsg.rawPtr());
+				auto p = static_cast<MouseDragMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					if( m_state.isFocused() )
 						caretToPos(p->pointerPos() - _globalPos());
@@ -206,14 +206,14 @@ namespace wg
 			
 			case MsgType::MouseRelease:
 			{
-				auto p = static_cast<MouseReleaseMsg*>(pMsg.rawPtr());
+				auto p = static_cast<MouseReleaseMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					m_editState.bButtonDown = false;
 				break;
 			}
 			case MsgType::MouseDoubleClick:		// Select word
 			{
-				auto p = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr());
+				auto p = static_cast<MouseDoubleClickMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					if( m_state.isFocused() )
 						caretSelectWord();

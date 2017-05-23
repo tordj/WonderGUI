@@ -301,10 +301,10 @@ namespace wg
 
 	//____ cast() _________________________________________________________________
 
-	GlGfxDevice_p GlGfxDevice::cast( const Object_p& pObject )
+	GlGfxDevice_p GlGfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlGfxDevice_p( static_cast<GlGfxDevice*>(pObject.rawPtr()) );
+			return GlGfxDevice_p( static_cast<GlGfxDevice*>(pObject) );
 
 		return 0;
 	}
@@ -494,7 +494,7 @@ namespace wg
 
 	//____ blit() __________________________________________________________________
 
-	void GlGfxDevice::blit( const Surface_p& _pSrc, const Rect& _src, Coord dest  )
+	void GlGfxDevice::blit( Surface * _pSrc, const Rect& _src, Coord dest  )
 	{
         if( !_pSrc )
 			return;
@@ -531,7 +531,7 @@ namespace wg
         m_texCoordBufferData[7] = (GLfloat) sy2;
         
         glActiveTexture(GL_TEXTURE0 );
-        glBindTexture(GL_TEXTURE_2D, ((GlSurface*)(_pSrc.rawPtr()))->getTexture());
+        glBindTexture(GL_TEXTURE_2D, ((GlSurface*)(_pSrc))->getTexture());
 
         glUseProgram( m_blitProg );
         
@@ -640,7 +640,7 @@ namespace wg
 
 	//____ stretchBlitSubPixel() ___________________________________________________
 
-	void GlGfxDevice::stretchBlitSubPixel( const Surface_p& pSrc, float sx, float sy,
+	void GlGfxDevice::stretchBlitSubPixel( Surface * pSrc, float sx, float sy,
 											 float sw, float sh,
 											 float dx, float dy, float dw, float dh )
 	{
@@ -689,7 +689,7 @@ namespace wg
         m_texCoordBufferData[7] = sy2;
         
         glActiveTexture(GL_TEXTURE0 );
-        glBindTexture(GL_TEXTURE_2D, ((GlSurface*)(pSrc.rawPtr()))->getTexture());
+        glBindTexture(GL_TEXTURE_2D, ((GlSurface*)(pSrc))->getTexture());
         
         glUseProgram( m_blitProg );
         

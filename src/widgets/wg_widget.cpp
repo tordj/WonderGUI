@@ -65,10 +65,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Widget_p Widget::cast( const Object_p& pObject )
+	Widget_p Widget::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Widget_p( static_cast<Widget*>(pObject.rawPtr()) );
+			return Widget_p( static_cast<Widget*>(pObject) );
 	
 		return 0;
 	}
@@ -141,7 +141,7 @@ namespace wg
 	
 	//____ setSkin() ______________________________________________________________
 	
-	void Widget::setSkin( const Skin_p& pSkin )
+	void Widget::setSkin( Skin * pSkin )
 	{
 		_setSkin( pSkin );
 	}
@@ -315,7 +315,7 @@ namespace wg
 	
 	//____ receive() _______________________________________________________________
 	
-	void Widget::receive( const Msg_p& pMsg )
+	void Widget::receive( Msg * pMsg )
 	{
 		// SetRepost before _receive() so that subclasses can swallow the respost.
 		
@@ -436,7 +436,7 @@ namespace wg
 	
 	//____ _setSkin() _______________________________________________________
 	
-	void Widget::_setSkin( const Skin_p& pSkin )
+	void Widget::_setSkin( Skin * pSkin )
 	{
 		if( !m_pSkin || !pSkin || m_pSkin->contentPadding() != pSkin->contentPadding() ||
 			m_pSkin->preferredSize() != pSkin->preferredSize() ||
@@ -470,7 +470,7 @@ namespace wg
 	
 	//____ _receive() _____________________________________________________________
 	
-	void Widget::_receive( const Msg_p& _pMsg )
+	void Widget::_receive( Msg * _pMsg )
 	{
 		State state = m_state;
 	

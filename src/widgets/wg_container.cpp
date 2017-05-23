@@ -57,10 +57,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Container_p Container::cast( const Object_p& pObject )
+	Container_p Container::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Container_p( static_cast<Container*>(pObject.rawPtr()) );
+			return Container_p( static_cast<Container*>(pObject) );
 	
 		return 0;
 	}

@@ -84,7 +84,7 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
-		static ToggleButton_p	cast( const Object_p& pObject );
+		static ToggleButton_p	cast( Object * pObject );
 	
 		//.____ State _________________________________________________
 
@@ -114,12 +114,12 @@ namespace wg
 	
 		void	_cloneContent( const Widget * _pOrg );
 		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_receive( const Msg_p& pMsg );
+		void	_receive( Msg * pMsg );
 		void	_refresh();
 		void	_setSize( const Size& size );
 		bool	_alphaTest( const Coord& ofs );
 		void	_setState( State state );
-		void	_setSkin( const Skin_p& pSkin );
+		void	_setSkin( Skin * pSkin );
 			
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }

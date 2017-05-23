@@ -40,10 +40,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	RulerLabels_p RulerLabels::cast( const Object_p& pObject )
+	RulerLabels_p RulerLabels::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RulerLabels_p( static_cast<RulerLabels*>(pObject.rawPtr()) );
+			return RulerLabels_p( static_cast<RulerLabels*>(pObject) );
 	
 		return 0;
 	}
@@ -51,7 +51,7 @@ namespace wg
 	
 	//____ addLabel() ____________________________________________________________
 	
-	void RulerLabels::addLabel( const CharSeq& text, const TextStyle_p& pStyle, float offset )
+	void RulerLabels::addLabel( const CharSeq& text, TextStyle * pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
 		pLabel->textItem.set(text);

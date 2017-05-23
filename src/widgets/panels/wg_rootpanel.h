@@ -64,7 +64,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
-		static RootPanel_p	create( const GfxDevice_p& pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
+		static RootPanel_p	create( GfxDevice * pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
 
 		//.____ Components ____________________________________
 
@@ -75,7 +75,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static RootPanel_p	cast( const Object_p& pObject );
+		static RootPanel_p	cast( Object * pObject );
 	
 		//.____ Geometry _________________________________________________
 
@@ -104,14 +104,14 @@ namespace wg
 
 		void				setDebugMode( bool onOff );
 		bool				isDebugMode() const { return m_bDebugMode; }
-		void 				setDebugOverlay(const Skin_p& pOverlaySkin );
+		void 				setDebugOverlay(Skin * pOverlaySkin );
 		void				setDebugAfterglow(int frames);
 		Skin_p				debugOverlay() const { return m_pDebugOverlay;  }
 		int					debugAfterglow() const { return m_afterglowFrames;  }
 	
 		//.____ Misc ___________________________________________________________
 	
-		bool				setGfxDevice( const GfxDevice_p& pDevice );
+		bool				setGfxDevice( GfxDevice * pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 			
 	
@@ -128,7 +128,7 @@ namespace wg
 	
 	protected:
 		RootPanel();
-		RootPanel( const GfxDevice_p& pGfxDevice );
+		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
 	
 

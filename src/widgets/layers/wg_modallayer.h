@@ -62,8 +62,8 @@ namespace wg
 
 		inline ModalChildren_p	ptr() { return ModalChildren_p(_object(),this); }
 
-		bool		add( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		bool		add( const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
+		bool		add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
+		bool		add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
 
 		bool		moveToBack( int index );								// Put us ontop all our silbings.
 		bool		moveToFront( int index );							// Put us below all our siblings.	
@@ -109,7 +109,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ModalLayer_p	cast( const Object_p& pObject );
+		static ModalLayer_p	cast( Object * pObject );
 	
 		
 		//.____ Geometry ____________________________________________
@@ -157,7 +157,7 @@ namespace wg
 	
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const Size& size );
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 	
 	
 		Widget_wp			m_pBaseKeyFocus;

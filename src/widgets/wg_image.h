@@ -54,12 +54,12 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static Image_p		cast( const Object_p& pObject );
+		static Image_p		cast( Object * pObject );
 
 		//.____ Appearance ________________________________________________________
 			
-		void				setImage( const Surface_p& pSurface, const Rect& rect );	///< @brief Set image to display.
-		void				setImage( const Surface_p& pSurface );						///< @brief Set image to display.
+		void				setImage( Surface * pSurface, const Rect& rect );	///< @brief Set image to display.
+		void				setImage( Surface * pSurface );						///< @brief Set image to display.
 	
 		inline Surface_p	imageSurface() const;											///< @brief Get surface of image displayed.
 		inline Rect			imageRect() const;												///< @brief Get area of surface rectangle of image displayed.

@@ -123,6 +123,19 @@ namespace wg
 		}
 	}
 	
+	Interface_p::Interface_p(Interface* pInterface )
+		{
+			m_pInterface = pInterface;
+			if( pInterface )
+			{
+				m_pObj = pInterface->_object();
+				if( m_pObj )
+					m_pObj->_incRefCount();
+			}
+			else
+				m_pObj = nullptr;				
+		}
+
 	
 	Interface_wp::Interface_wp( Object * pObj, Interface * pInterface )
 	{
@@ -149,6 +162,34 @@ namespace wg
 			m_pInterface = 0;
 		}
 	};
+
+	Interface_wp::Interface_wp( Interface * pInterface )
+	{
+		if( pInterface )
+		{
+			m_pInterface = pInterface;
+			Object * pObj = pInterface->_object();
+	
+			if( !pObj->m_pWeakPtrHub )
+			{
+				m_pHub = Base::_allocWeakPtrHub();
+				m_pHub->refCnt = 1;
+				m_pHub->pObj = pObj;
+				pObj->m_pWeakPtrHub = m_pHub;
+			}
+			else
+			{
+				m_pHub = pObj->m_pWeakPtrHub;
+				m_pHub->refCnt++;
+			}
+		}
+		else
+		{
+			m_pHub = 0;
+			m_pInterface = 0;
+		}
+	};
+
 	
 	
 	Interface_wp::~Interface_wp()

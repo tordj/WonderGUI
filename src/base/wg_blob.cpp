@@ -142,10 +142,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Blob_p Blob::cast( const Object_p& pObject )
+	Blob_p Blob::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Blob_p( static_cast<Blob*>(pObject.rawPtr()) );
+			return Blob_p( static_cast<Blob*>(pObject) );
 	
 		return 0;
 	}

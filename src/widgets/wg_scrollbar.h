@@ -103,7 +103,7 @@ namespace wg
 		bool		isInstanceOf( const char * pClassName ) const;
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
-		static Scrollbar_p	cast( const Object_p& pObject );
+		static Scrollbar_p	cast( Object * pObject );
 	
 
 		//.____ Geometry ____________________________________________
@@ -115,20 +115,20 @@ namespace wg
 
 		//.____ Appearance __________________________________________
 
-		void	setSkins( const Skin_p& pBaseSkin, const Skin_p& pBackgroundSkin, const Skin_p& pHandleSkin,
-						  const Skin_p& pBwdButtonSkin, const Skin_p& pFwdButtonSkin ); ///< @brief Set all skins in one go.
+		void	setSkins( Skin * pBaseSkin, Skin * pBackgroundSkin, Skin * pHandleSkin,
+						  Skin * pBwdButtonSkin, Skin * pFwdButtonSkin ); ///< @brief Set all skins in one go.
 
 
-		void			setBackgroundSkin( const Skin_p& pSkin );	///< @brief Set skin for background of handle slide area.
+		void			setBackgroundSkin( Skin * pSkin );	///< @brief Set skin for background of handle slide area.
 		inline Skin_p 	backgroundSkin() const;						///< @brief Get the skin used as a background for the handle slide area.
 
-		void			setHandleSkin( const Skin_p& pSkin );		///< @brief Set skin for scrollbar handle.
+		void			setHandleSkin( Skin * pSkin );		///< @brief Set skin for scrollbar handle.
 		inline Skin_p 	handleSkin() const;							///< @brief Get the skin used for the scrollbar handle.
 
-		void			setFwdButtonSkin( const Skin_p& pSkin );	///< @brief Set skin for backward button.
+		void			setFwdButtonSkin( Skin * pSkin );	///< @brief Set skin for backward button.
 		inline Skin_p 	fwdButtonSkin() const;						///< @brief Get the skin used for the forward button.
 
-		void			setBwdButtonSkin( const Skin_p& pSkin );	///< @brief Set skin for forward button.
+		void			setBwdButtonSkin( Skin * pSkin );	///< @brief Set skin for forward button.
 		inline Skin_p 	bwdButtonSkin() const;						///< @brief Get the skin used for the backward button.
 
 		void			setButtonLayout(  BtnLayout layout );		///< @brief Set the layout for the forward/backward buttons.
@@ -159,7 +159,7 @@ namespace wg
 
 		void	_cloneContent( const Widget * _pOrg );
 		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
-		void	_receive( const Msg_p& pMsg );
+		void	_receive( Msg * pMsg );
 		void	_refresh();
 		bool	_alphaTest( const Coord& ofs );
 		void	_setState( State state );
@@ -216,8 +216,8 @@ namespace wg
 
 
 		Component	_findMarkedComponent( Coord ofs );								// -1 = None.
-		void		_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, const Skin_p& pSkin, State state );
-		bool		_markTestButton( Coord ofs, Rect& _dest, const Skin_p& pSkin, State state );
+		void		_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, Skin * pSkin, State state );
+		bool		_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state );
 		bool		_markTestHandle( Coord ofs );
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();

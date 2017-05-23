@@ -62,10 +62,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Filler_p Filler::cast( const Object_p& pObject )
+	Filler_p Filler::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Filler_p( static_cast<Filler*>(pObject.rawPtr()) );
+			return Filler_p( static_cast<Filler*>(pObject) );
 	
 		return 0;
 	}

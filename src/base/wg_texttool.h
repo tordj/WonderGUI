@@ -131,7 +131,7 @@ namespace wg
 		static void			setCharCode( uint16_t glyph, Char * pChar, int nb );
 		static void			setChars( const Char& ch, Char * pChar, int nb );
 	
-		static void			setStyle( const TextStyle_p& pStyle, Char * pChar, int nb );
+		static void			setStyle( TextStyle * pStyle, Char * pChar, int nb );
 	
 		inline static void	clearStyle( Char * pChar, uint32_t nb ) { setStyle( 0, pChar, nb ); }	
 	

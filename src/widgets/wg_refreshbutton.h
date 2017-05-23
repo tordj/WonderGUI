@@ -68,11 +68,11 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static RefreshButton_p	cast( const Object_p& pObject );
+		static RefreshButton_p	cast( Object * pObject );
 	
 		//.____ Appearance __________________________________________
 	
-		void			setAnimation( const GfxAnim_p& pAnimation );
+		void			setAnimation( GfxAnim * pAnimation );
 		GfxAnim_p		animation() const { return m_pRefreshAnim; }
 
 		void			setRefreshMode( RefreshMode mode );
@@ -103,7 +103,7 @@ namespace wg
 		virtual ~RefreshButton();
 		virtual Widget* _newOfMyType() const { return new RefreshButton(); };
 	
-		void			_receive( const Msg_p& pMsg );
+		void			_receive( Msg * pMsg );
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
 		void			_cloneContent( const Widget * _pOrg );
 		virtual void 	_setSize( const Size& size );

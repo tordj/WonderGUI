@@ -54,10 +54,10 @@ namespace wg
 	
 	//____ cast() _________________________________________________________________
 	
-	Layer_p Layer::cast( const Object_p& pObject )
+	Layer_p Layer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Layer_p( static_cast<Layer*>(pObject.rawPtr()) );
+			return Layer_p( static_cast<Layer*>(pObject) );
 	
 		return 0;
 	}

@@ -20,7 +20,7 @@ namespace wg
 	namespace Util
 	{
 
-		bool		markTestStretchRect( Coord ofs, const Surface_p& pSurface, const Rect& source, const Rect& area, int opacityTreshold );
+		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold );
 
 		bool		pixelTypeToFormat( PixelType type, PixelFormat& wFormat );
 
