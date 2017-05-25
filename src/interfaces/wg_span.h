@@ -33,7 +33,7 @@ namespace wg
 	
 	class Span;
 	typedef	StrongInterfacePtr<Span>			Span_p;
-	typedef	WeakInterfacePtr<Span,Interface_wp>		Span_wp;
+	typedef	WeakInterfacePtr<Span>		Span_wp;
 	
 	
 	class Span : public Interface

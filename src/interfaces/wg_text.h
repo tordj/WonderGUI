@@ -39,7 +39,7 @@ namespace wg
 	
 	class Text;
 	typedef	StrongInterfacePtr<Text>	Text_p;
-	typedef	WeakInterfacePtr<Text,Interface_wp>		Text_wp;
+	typedef	WeakInterfacePtr<Text>		Text_wp;
 	
 	/**
 	 * @brief Interface to a basic text item.

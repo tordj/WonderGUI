@@ -51,7 +51,7 @@ namespace wg
 	
 	class ModalChildren;
 	typedef	StrongInterfacePtr<ModalChildren>	ModalChildren_p;
-	typedef	WeakInterfacePtr<ModalChildren,Interface_wp>	ModalChildren_wp;
+	typedef	WeakInterfacePtr<ModalChildren>	ModalChildren_wp;
 	
 	//____ ModalChildren ________________________________________________________
 

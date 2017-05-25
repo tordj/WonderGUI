@@ -49,7 +49,7 @@ namespace wg
 	
 	class PackPanelChildren;
 	typedef	StrongInterfacePtr<PackPanelChildren>	PackPanelChildren_p;
-	typedef	WeakInterfacePtr<PackPanelChildren,Interface_wp>	PackPanelChildren_wp;
+	typedef	WeakInterfacePtr<PackPanelChildren>	PackPanelChildren_wp;
 	
 	//____ PackPanelChildren ________________________________________________________
 

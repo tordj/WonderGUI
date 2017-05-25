@@ -53,7 +53,7 @@ namespace wg
 
 	class PackListChildren;
 	typedef	StrongInterfacePtr<PackListChildren>	PackListChildren_p;
-	typedef	WeakInterfacePtr<PackListChildren,Interface_wp>	PackListChildren_wp;
+	typedef	WeakInterfacePtr<PackListChildren>	PackListChildren_wp;
 
 	//____ PackListChildren ______________________________________________________
 

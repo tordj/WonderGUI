@@ -37,7 +37,7 @@ namespace wg
 	
 	class ColumnHeader;
 	typedef	StrongInterfacePtr<ColumnHeader>		ColumnHeader_p;
-	typedef	WeakInterfacePtr<ColumnHeader,Interface_wp>	ColumnHeader_wp;
+	typedef	WeakInterfacePtr<ColumnHeader>	ColumnHeader_wp;
 	
 	class ColumnHeader : public Interface
 	{

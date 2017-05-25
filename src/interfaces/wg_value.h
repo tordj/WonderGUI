@@ -41,7 +41,7 @@ namespace wg
 	
 	class Value;
 	typedef	StrongInterfacePtr<Value>	Value_p;
-	typedef	WeakInterfacePtr<Value,Interface_wp>	Value_wp;
+	typedef	WeakInterfacePtr<Value>	Value_wp;
 	
 	/**
 	 * @brief Interface to a basic value display item

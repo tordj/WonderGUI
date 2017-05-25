@@ -132,6 +132,7 @@
     <ClInclude Include="..\..\..\src\base\wg_types.h" />
     <ClInclude Include="..\..\..\src\base\wg_util.h" />
     <ClInclude Include="..\..\..\src\base\wg_vectorfont.h" />
+    <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h" />
@@ -232,7 +233,6 @@
     <ClCompile Include="..\..\..\src\base\wg_nullgfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_object.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_patches.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_pointers.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />

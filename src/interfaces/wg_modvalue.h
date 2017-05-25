@@ -36,7 +36,7 @@ namespace wg
 	
 	class ModValue;
 	typedef	StrongInterfacePtr<ModValue>	ModValue_p;
-	typedef	WeakInterfacePtr<ModValue,Value_wp>	ModValue_wp;
+	typedef	WeakInterfacePtr<ModValue>	ModValue_wp;
 	
 	/**
 	 * @brief Interface to a value item where the value is modifiable through the api

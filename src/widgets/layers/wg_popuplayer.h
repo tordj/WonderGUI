@@ -51,7 +51,7 @@ namespace wg
 
 	class PopupChildren;
 	typedef	StrongInterfacePtr<PopupChildren>	PopupChildren_p;
-	typedef	WeakInterfacePtr<PopupChildren, Interface_wp>	PopupChildren_wp;
+	typedef	WeakInterfacePtr<PopupChildren>	PopupChildren_wp;
 
 	//____ PopupChildren ________________________________________________________
 

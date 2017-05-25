@@ -29,7 +29,7 @@
 #include <functional>
 
 #include <wg_msg.h>
-
+#include <wg_chain.h>
 
 
 #include <wg_key.h>

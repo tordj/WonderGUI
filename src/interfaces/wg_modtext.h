@@ -39,7 +39,7 @@ namespace wg
 	
 	class ModText;
 	typedef	StrongInterfacePtr<ModText>	ModText_p;
-	typedef	WeakInterfacePtr<ModText,Text_wp>	ModText_wp;
+	typedef	WeakInterfacePtr<ModText>	ModText_wp;
 	
 	/**
 	 * @brief Interface to a text item with text that is modifiable through the api

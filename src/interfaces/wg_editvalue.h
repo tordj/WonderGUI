@@ -33,7 +33,7 @@ namespace wg
 	
 	class EditValue;
 	typedef	StrongInterfacePtr<EditValue>		EditValue_p;
-	typedef	WeakInterfacePtr<EditValue,ModValue_wp>	EditValue_wp;
+	typedef	WeakInterfacePtr<EditValue>	EditValue_wp;
 	
 	/**
 	 * @brief Interface to a value display item with editable text.

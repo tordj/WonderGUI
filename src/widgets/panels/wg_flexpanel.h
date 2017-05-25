@@ -104,7 +104,7 @@ namespace wg
 	
 	class FlexPanelChildren;
 	typedef	StrongInterfacePtr<FlexPanelChildren>	FlexPanelChildren_p;
-	typedef	WeakInterfacePtr<FlexPanelChildren,Interface_wp>	FlexPanelChildren_wp;
+	typedef	WeakInterfacePtr<FlexPanelChildren>	FlexPanelChildren_wp;
 	
 	//____ FlexPanelChildren ________________________________________________________
 

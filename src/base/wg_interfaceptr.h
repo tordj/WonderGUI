@@ -108,16 +108,8 @@ namespace wg
 		inline Cls & operator*() const { return * this->m_pInterface; }
 		inline Cls * operator->() const{ return this->m_pInterface; }
 
-		template<typename _Tp1> bool operator==( const StrongInterfacePtr<_Tp1>& _p) const
-	    { 
-			return this->m_pInterface == _p.m_pInterface;
-	    }
-
-		template<typename _Tp1> bool operator!=( const StrongInterfacePtr<_Tp1>& _p) const
-	    { 
-	    	return this->m_pInterface != _p.m_pInterface;
-	    }
-
+		template<typename _Tp1> bool operator==( const StrongInterfacePtr<_Tp1>& _p) const { return this->m_pInterface == _p.m_pInterface; }
+		template<typename _Tp1> bool operator!=( const StrongInterfacePtr<_Tp1>& _p) const { return this->m_pInterface != _p.m_pInterface; }
 		template<typename _Tp1> bool operator<(const StrongInterfacePtr<_Tp1>& other) const { return m_pInterface < other.m_pInterface; }
 		template<typename _Tp1> bool operator>(const StrongInterfacePtr<_Tp1>& other) const { return m_pInterface > other.m_pInterface; }
 		template<typename _Tp1> bool operator<=(const StrongInterfacePtr<_Tp1>& other) const { return m_pInterface <= other.m_pInterface; }

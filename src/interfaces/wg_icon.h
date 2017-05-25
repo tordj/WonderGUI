@@ -36,7 +36,7 @@ namespace wg
 	
 	class Icon;
 	typedef	StrongInterfacePtr<Icon>	Icon_p;
-	typedef	WeakInterfacePtr<Icon,Interface_wp>		Icon_wp;
+	typedef	WeakInterfacePtr<Icon>		Icon_wp;
 	
 	class Icon : public Interface
 	{

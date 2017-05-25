@@ -51,7 +51,7 @@ namespace wg
 
 	class StackPanelChildren;
 	typedef	StrongInterfacePtr<StackPanelChildren>	StackPanelChildren_p;
-	typedef	WeakInterfacePtr<StackPanelChildren,Interface_wp>	StackPanelChildren_wp;
+	typedef	WeakInterfacePtr<StackPanelChildren>	StackPanelChildren_wp;
 
 	//____ StackPanelChildren ________________________________________________________
 

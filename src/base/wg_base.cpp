@@ -27,7 +27,7 @@
 #include <wg_dummyfont.h>
 #include <wg_memstack.h>
 #include <wg_stdtextmapper.h>
-
+#include <wg_mempool.h>
 
 #ifdef USE_FREETYPE
 #	include <ft2build.h>

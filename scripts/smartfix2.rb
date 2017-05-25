@@ -12,8 +12,8 @@ def smartfix( lines )
   output = []
  
   for line in lines
-    if( line =~ /typedef\s+StrongInterfacePtr<[A-Za-z]+,[A-Za-z]+_p>/ ) 
-      line = line.gsub( /,[A-Za-z]+_p/, '' ) 
+    if( line =~ /typedef\s+WeakInterfacePtr<[A-Za-z]+,[A-Za-z]+_wp>/ ) 
+      line = line.gsub( /,[A-Za-z]+_wp/, '' ) 
     end
     output << line
   end
