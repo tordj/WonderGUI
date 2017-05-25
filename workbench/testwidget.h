@@ -29,7 +29,7 @@ namespace wg
 {
 	class TestWidget;
 	typedef	StrongPtr<TestWidget>		TestWidget_p;
-	typedef	WeakPtr<TestWidget,Widget_wp>       TestWidget_wp;
+	typedef	WeakPtr<TestWidget>       TestWidget_wp;
 
 
 	//____ TestWidget ____________________________________________________________

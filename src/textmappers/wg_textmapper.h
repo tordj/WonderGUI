@@ -42,7 +42,7 @@ namespace wg
 	
 	class TextMapper;
 	typedef	StrongPtr<TextMapper>	TextMapper_p;
-	typedef	WeakPtr<TextMapper,Object_wp>	TextMapper_wp;
+	typedef	WeakPtr<TextMapper>	TextMapper_wp;
 	
 	class TextMapper : public Receiver
 	{

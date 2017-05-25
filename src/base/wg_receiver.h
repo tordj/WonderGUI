@@ -34,7 +34,7 @@ namespace wg
 	
 	class Receiver;
 	typedef	StrongPtr<Receiver>	Receiver_p;
-	typedef	WeakPtr<Receiver,Object_wp>		Receiver_wp;
+	typedef	WeakPtr<Receiver>		Receiver_wp;
 	
 	class Receiver : public Object
 	{

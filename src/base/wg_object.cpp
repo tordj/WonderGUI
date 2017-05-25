@@ -23,12 +23,49 @@
 #include <wg_object.h>
 #include <wg_mempool.h>
 #include <wg_pointers.h>
+#include <wg_base.h>
 
 namespace wg 
 {
 	
 	const char Object::CLASSNAME[] = {"Object"};
 	
+	
+	WeakPtrHub * WeakPtrHub::getHub(Object * pObj)
+	{
+		if( !pObj)
+			return nullptr;
+			
+		WeakPtrHub * pHub;
+		if( !pObj->m_pWeakPtrHub )
+		{
+			pHub = Base::_allocWeakPtrHub();
+			pHub->refCnt = 1;
+			pHub->pObj = pObj;
+			pObj->m_pWeakPtrHub = pHub;
+		}
+		else
+		{
+			pHub = pObj->m_pWeakPtrHub;
+			pHub->refCnt++;
+		}
+		return pHub;
+	}
+	
+	void WeakPtrHub::releaseHub(WeakPtrHub * pHub)
+	{
+		if( pHub )
+		{
+			pHub->refCnt--;
+	
+			if( pHub->refCnt == 0 )
+			{
+				if( pHub->pObj )
+					pHub->pObj->m_pWeakPtrHub = 0;
+				Base::_freeWeakPtrHub(pHub);
+			}
+		}	
+	}
 	
 	/**
 	 * @brief	Check if the object is an instance or subclass of specified class.
@@ -94,5 +131,6 @@ namespace wg
 	{
 		return pObject;
 	}
+
 
 } // namespace wg

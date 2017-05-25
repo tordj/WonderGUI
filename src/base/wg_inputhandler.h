@@ -45,11 +45,11 @@ namespace wg
 	
 	class RootPanel;
 	typedef	StrongPtr<RootPanel>		RootPanel_p;
-	typedef	WeakPtr<RootPanel,Object_wp>		RootPanel_wp;
+	typedef	WeakPtr<RootPanel>		RootPanel_wp;
 	
 	class InputHandler;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
-	typedef	WeakPtr<InputHandler,Receiver_wp>		InputHandler_wp;
+	typedef	WeakPtr<InputHandler>		InputHandler_wp;
 	
 	class InputHandler : public Receiver
 	{

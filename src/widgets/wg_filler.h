@@ -32,7 +32,7 @@ namespace wg
 	
 	class Filler;
 	typedef	StrongPtr<Filler>		Filler_p;
-	typedef	WeakPtr<Filler,Widget_wp>	Filler_wp;
+	typedef	WeakPtr<Filler>	Filler_wp;
 	
 	//____ Filler ____________________________________________________________
 	/**

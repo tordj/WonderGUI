@@ -33,7 +33,7 @@ namespace wg
 	
 	class FlexPanel;
 	typedef	StrongPtr<FlexPanel>		FlexPanel_p;
-	typedef	WeakPtr<FlexPanel,Panel_wp>	FlexPanel_wp;
+	typedef	WeakPtr<FlexPanel>	FlexPanel_wp;
 	
 	
 	//____ FlexPos ____________________________________________________________

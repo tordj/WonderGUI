@@ -50,6 +50,8 @@ namespace wg
 	class ModText;
 	class EditText;
 
+	typedef WeakPtr<Object>		Object_wp;
+
 	typedef	StrongInterfacePtr<Text,Interface_p>	Text_p;
 	typedef	WeakInterfacePtr<Text,Interface_wp> 	Text_wp;
 
@@ -60,160 +62,160 @@ namespace wg
 	typedef	WeakInterfacePtr<EditText,ModText_wp>	EditText_wp;
 
 
-	typedef WeakPtr<Widget,Receiver_wp> Widget_wp;
+	typedef WeakPtr<Widget> Widget_wp;
 
 	class Msg;
 	typedef	StrongPtr<Msg>		Msg_p;
-	typedef	WeakPtr<Msg,Object_wp>	Msg_wp;
+	typedef	WeakPtr<Msg>	Msg_wp;
 
 	class InputMsg;
 	typedef	StrongPtr<InputMsg>		InputMsg_p;
-	typedef	WeakPtr<InputMsg,Msg_wp>	InputMsg_wp;
+	typedef	WeakPtr<InputMsg>	InputMsg_wp;
 
 
 	class FocusGainedMsg;
 	typedef	StrongPtr<FocusGainedMsg>		FocusGainedMsg_p;
-	typedef	WeakPtr<FocusGainedMsg,Msg_wp>	FocusGainedMsg_wp;
+	typedef	WeakPtr<FocusGainedMsg>	FocusGainedMsg_wp;
 
 	class FocusLostMsg;
 	typedef	StrongPtr<FocusLostMsg>		FocusLostMsg_p;
-	typedef	WeakPtr<FocusLostMsg,Msg_wp>	FocusLostMsg_wp;
+	typedef	WeakPtr<FocusLostMsg>	FocusLostMsg_wp;
 
 	class MouseEnterMsg;
 	typedef	StrongPtr<MouseEnterMsg>		MouseEnterMsg_p;
-	typedef	WeakPtr<MouseEnterMsg,InputMsg_wp>	MouseEnterMsg_wp;
+	typedef	WeakPtr<MouseEnterMsg>	MouseEnterMsg_wp;
 
 	class MouseLeaveMsg;
 	typedef	StrongPtr<MouseLeaveMsg>		MouseLeaveMsg_p;
-	typedef	WeakPtr<MouseLeaveMsg,InputMsg_wp>	MouseLeaveMsg_wp;
+	typedef	WeakPtr<MouseLeaveMsg>	MouseLeaveMsg_wp;
 
 	class MouseMoveMsg;
 	typedef	StrongPtr<MouseMoveMsg>		MouseMoveMsg_p;
-	typedef	WeakPtr<MouseMoveMsg,InputMsg_wp>		MouseMoveMsg_wp;
+	typedef	WeakPtr<MouseMoveMsg>		MouseMoveMsg_wp;
 
 	class MouseButtonMsg;
 	typedef	StrongPtr<MouseButtonMsg>		MouseButtonMsg_p;
-	typedef	WeakPtr<MouseButtonMsg,InputMsg_wp>	MouseButtonMsg_wp;
+	typedef	WeakPtr<MouseButtonMsg>	MouseButtonMsg_wp;
 
 	class MousePressMsg;
 	typedef	StrongPtr<MousePressMsg>		MousePressMsg_p;
-	typedef	WeakPtr<MousePressMsg,MouseButtonMsg_wp>	MousePressMsg_wp;
+	typedef	WeakPtr<MousePressMsg>	MousePressMsg_wp;
 
 	class MouseReleaseMsg;
 	typedef	StrongPtr<MouseReleaseMsg>		MouseReleaseMsg_p;
-	typedef	WeakPtr<MouseReleaseMsg,MouseButtonMsg_wp>	MouseReleaseMsg_wp;
+	typedef	WeakPtr<MouseReleaseMsg>	MouseReleaseMsg_wp;
 
 	class MouseRepeatMsg;
 	typedef	StrongPtr<MouseRepeatMsg>		MouseRepeatMsg_p;
-	typedef	WeakPtr<MouseRepeatMsg,MouseButtonMsg_wp>	MouseRepeatMsg_wp;
+	typedef	WeakPtr<MouseRepeatMsg>	MouseRepeatMsg_wp;
 
 	class MouseClickMsg;
 	typedef	StrongPtr<MouseClickMsg>		MouseClickMsg_p;
-	typedef	WeakPtr<MouseClickMsg,MouseButtonMsg_wp>	MouseClickMsg_wp;
+	typedef	WeakPtr<MouseClickMsg>	MouseClickMsg_wp;
 
 	class MouseDoubleClickMsg;
 	typedef	StrongPtr<MouseDoubleClickMsg>		MouseDoubleClickMsg_p;
-	typedef	WeakPtr<MouseDoubleClickMsg,MouseButtonMsg_wp>	MouseDoubleClickMsg_wp;
+	typedef	WeakPtr<MouseDoubleClickMsg>	MouseDoubleClickMsg_wp;
 
 	class MouseDragMsg;
 	typedef	StrongPtr<MouseDragMsg>		MouseDragMsg_p;
-	typedef	WeakPtr<MouseDragMsg,MouseButtonMsg_wp>	MouseDragMsg_wp;
+	typedef	WeakPtr<MouseDragMsg>	MouseDragMsg_wp;
 
 	class KeyMsg;
 	typedef	StrongPtr<KeyMsg>		KeyMsg_p;
-	typedef	WeakPtr<KeyMsg,InputMsg_wp>	KeyMsg_wp;
+	typedef	WeakPtr<KeyMsg>	KeyMsg_wp;
 
 	class KeyPressMsg;
 	typedef	StrongPtr<KeyPressMsg>		KeyPressMsg_p;
-	typedef	WeakPtr<KeyPressMsg,KeyMsg_wp>	KeyPressMsg_wp;
+	typedef	WeakPtr<KeyPressMsg>	KeyPressMsg_wp;
 
 	class KeyReleaseMsg;
 	typedef	StrongPtr<KeyReleaseMsg>		KeyReleaseMsg_p;
-	typedef	WeakPtr<KeyReleaseMsg,KeyMsg_wp>	KeyReleaseMsg_wp;
+	typedef	WeakPtr<KeyReleaseMsg>	KeyReleaseMsg_wp;
 
 	class KeyRepeatMsg;
 	typedef	StrongPtr<KeyRepeatMsg>		KeyRepeatMsg_p;
-	typedef	WeakPtr<KeyRepeatMsg,KeyMsg_wp>	KeyRepeatMsg_wp;
+	typedef	WeakPtr<KeyRepeatMsg>	KeyRepeatMsg_wp;
 
 	class TextInputMsg;
 	typedef	StrongPtr<TextInputMsg>		TextInputMsg_p;
-	typedef	WeakPtr<TextInputMsg,Msg_wp>	TextInputMsg_wp;
+	typedef	WeakPtr<TextInputMsg>	TextInputMsg_wp;
 
 	class EditCommandMsg;
 	typedef	StrongPtr<EditCommandMsg>		EditCommandMsg_p;
-	typedef	WeakPtr<EditCommandMsg,Msg_wp>	EditCommandMsg_wp;
+	typedef	WeakPtr<EditCommandMsg>	EditCommandMsg_wp;
 
 	class WheelRollMsg;
 	typedef	StrongPtr<WheelRollMsg>		WheelRollMsg_p;
-	typedef	WeakPtr<WheelRollMsg,InputMsg_wp>	WheelRollMsg_wp;
+	typedef	WeakPtr<WheelRollMsg>	WheelRollMsg_wp;
 
 	class TickMsg;
 	typedef	StrongPtr<TickMsg>		TickMsg_p;
-	typedef	WeakPtr<TickMsg,Msg_wp>	TickMsg_wp;
+	typedef	WeakPtr<TickMsg>	TickMsg_wp;
 
 	class PointerChangeMsg;
 	typedef	StrongPtr<PointerChangeMsg>		PointerChangeMsg_p;
-	typedef	WeakPtr<PointerChangeMsg,Msg_wp>	PointerChangeMsg_wp;
+	typedef	WeakPtr<PointerChangeMsg>	PointerChangeMsg_wp;
 
 	class SelectMsg;
 	typedef	StrongPtr<SelectMsg>		SelectMsg_p;
-	typedef	WeakPtr<SelectMsg,Msg_wp>	SelectMsg_wp;
+	typedef	WeakPtr<SelectMsg>	SelectMsg_wp;
 
 	class ToggleMsg;
 	typedef	StrongPtr<ToggleMsg>		ToggleMsg_p;
-	typedef	WeakPtr<ToggleMsg,Msg_wp>	ToggleMsg_wp;
+	typedef	WeakPtr<ToggleMsg>	ToggleMsg_wp;
 
 	class ValueUpdateMsg;
 	typedef	StrongPtr<ValueUpdateMsg>		ValueUpdateMsg_p;
-	typedef	WeakPtr<ValueUpdateMsg,Msg_wp>	ValueUpdateMsg_wp;
+	typedef	WeakPtr<ValueUpdateMsg>	ValueUpdateMsg_wp;
 
 	class RangeUpdateMsg;
 	typedef	StrongPtr<RangeUpdateMsg>		RangeUpdateMsg_p;
-	typedef	WeakPtr<RangeUpdateMsg,Msg_wp>	RangeUpdateMsg_wp;
+	typedef	WeakPtr<RangeUpdateMsg>	RangeUpdateMsg_wp;
 
 	class TextEditMsg;
 	typedef	StrongPtr<TextEditMsg>		TextEditMsg_p;
-	typedef	WeakPtr<TextEditMsg,Msg_wp>	TextEditMsg_wp;
+	typedef	WeakPtr<TextEditMsg>	TextEditMsg_wp;
 
 	class ItemMsg;
 	typedef	StrongPtr<ItemMsg>		ItemMsg_p;
-	typedef	WeakPtr<ItemMsg,Msg_wp>	ItemMsg_wp;
+	typedef	WeakPtr<ItemMsg>	ItemMsg_wp;
 
 	class ItemListMsg;
 	typedef	StrongPtr<ItemListMsg>		ItemListMsg_p;
-	typedef	WeakPtr<ItemListMsg,Msg_wp>	ItemListMsg_wp;
+	typedef	WeakPtr<ItemListMsg>	ItemListMsg_wp;
 
 	class ItemsSelectMsg;
 	typedef	StrongPtr<ItemsSelectMsg>		ItemsSelectMsg_p;
-	typedef	WeakPtr<ItemsSelectMsg,ItemListMsg_wp>	ItemsSelectMsg_wp;
+	typedef	WeakPtr<ItemsSelectMsg>	ItemsSelectMsg_wp;
 
 	class ItemsUnselectMsg;
 	typedef	StrongPtr<ItemsUnselectMsg>		ItemsUnselectMsg_p;
-	typedef	WeakPtr<ItemsUnselectMsg,ItemListMsg_wp>	ItemsUnselectMsg_wp;
+	typedef	WeakPtr<ItemsUnselectMsg>	ItemsUnselectMsg_wp;
 
 	class ItemToggleMsg;
 	typedef	StrongPtr<ItemToggleMsg>		ItemToggleMsg_p;
-	typedef	WeakPtr<ItemToggleMsg,ItemMsg_wp>	ItemToggleMsg_wp;
+	typedef	WeakPtr<ItemToggleMsg>	ItemToggleMsg_wp;
 
 	class ItemMousePressMsg;
 	typedef	StrongPtr<ItemMousePressMsg>		ItemMousePressMsg_p;
-	typedef	WeakPtr<ItemMousePressMsg,ItemMsg_wp>	ItemMousePressMsg_wp;
+	typedef	WeakPtr<ItemMousePressMsg>	ItemMousePressMsg_wp;
 
 	class PopupClosedMsg;
 	typedef	StrongPtr<PopupClosedMsg>		PopupClosedMsg_p;
-	typedef	WeakPtr<PopupClosedMsg,Msg_wp>	PopupClosedMsg_wp;
+	typedef	WeakPtr<PopupClosedMsg>	PopupClosedMsg_wp;
 
 	class ModalMoveOutsideMsg;
 	typedef	StrongPtr<ModalMoveOutsideMsg>		ModalMoveOutsideMsg_p;
-	typedef	WeakPtr<ModalMoveOutsideMsg,Msg_wp>	ModalMoveOutsideMsg_wp;
+	typedef	WeakPtr<ModalMoveOutsideMsg>	ModalMoveOutsideMsg_wp;
 
 	class ModalBlockedPressMsg;
 	typedef	StrongPtr<ModalBlockedPressMsg>		ModalBlockedPressMsg_p;
-	typedef	WeakPtr<ModalBlockedPressMsg,Msg_wp>	ModalBlockedPressMsg_wp;
+	typedef	WeakPtr<ModalBlockedPressMsg>	ModalBlockedPressMsg_wp;
 
 	class ModalBlockedReleaseMsg;
 	typedef	StrongPtr<ModalBlockedReleaseMsg>		ModalBlockedReleaseMsg_p;
-	typedef	WeakPtr<ModalBlockedReleaseMsg,Msg_wp>	ModalBlockedReleaseMsg_wp;
+	typedef	WeakPtr<ModalBlockedReleaseMsg>	ModalBlockedReleaseMsg_wp;
 
 
 	//____ Msg _________________________________________________________________
@@ -244,7 +246,7 @@ namespace wg
 
 			bool				hasSource() const { return m_pSource; } 
 			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-			Object_wp			source() const { return m_pSource; } 
+			Object_wp			source() const { return m_pSource.rawPtr(); } 
 				
 			bool				hasCopyTo() { return m_pCopyTo; }
 			Receiver_p			getCopyTo() { return m_pCopyTo; }

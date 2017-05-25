@@ -35,7 +35,7 @@ namespace wg
 	
 	class FpsDisplay;
 	typedef	StrongPtr<FpsDisplay>		FpsDisplay_p;
-	typedef	WeakPtr<FpsDisplay,Widget_wp>	FpsDisplay_wp;
+	typedef	WeakPtr<FpsDisplay>	FpsDisplay_wp;
 	
 	class FpsDisplay : public Widget
 	{

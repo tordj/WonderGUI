@@ -34,7 +34,7 @@ namespace wg
 	
 	class List;
 	typedef	StrongPtr<List>		List_p;
-	typedef	WeakPtr<List,Container_wp>		List_wp;
+	typedef	WeakPtr<List>		List_wp;
 		
 	//____ ListSlot ____________________________________________________________
 

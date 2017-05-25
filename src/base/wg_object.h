@@ -37,6 +37,9 @@ namespace wg
 	public:
 		int					refCnt;
 		Object *			pObj;
+		
+		static WeakPtrHub *	getHub(Object * pObj);
+		static void			releaseHub(WeakPtrHub * pHub);		
 	};
 	
 	
@@ -56,13 +59,13 @@ namespace wg
 	
 	class Object
 	{
-		friend class Object_wp;
 		template<class T> friend class StrongPtr;
-		template<class T, class P> friend class WeakPtr;
+		template<class T> friend class WeakPtr;
 	
 		friend class Interface_p;
 		friend class Interface_wp;
-	
+
+		friend class WeakPtrHub;
 	public:
 
 		//.____ Identification _________________________________________________

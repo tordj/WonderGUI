@@ -45,7 +45,7 @@ namespace wg
 {
 	class VectorFont;
 	typedef	StrongPtr<VectorFont>		VectorFont_p;
-	typedef	WeakPtr<VectorFont,Font_wp>	VectorFont_wp;
+	typedef	WeakPtr<VectorFont>	VectorFont_wp;
 
 	class VectorFont : public Font
 	{

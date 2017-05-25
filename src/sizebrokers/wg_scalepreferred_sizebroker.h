@@ -29,7 +29,7 @@ namespace wg
 	
 	class ScalePreferredSizeBroker;
 	typedef	StrongPtr<ScalePreferredSizeBroker>		ScalePreferredSizeBroker_p;
-	typedef	WeakPtr<ScalePreferredSizeBroker,SizeBroker_wp>	ScalePreferredSizeBroker_wp;
+	typedef	WeakPtr<ScalePreferredSizeBroker>	ScalePreferredSizeBroker_wp;
 	
 	class ScalePreferredSizeBroker : public SizeBroker
 	{

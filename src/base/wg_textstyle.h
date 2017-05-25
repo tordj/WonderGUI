@@ -34,7 +34,7 @@ namespace wg
 	
 	class TextStyle;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
-	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
+	typedef	WeakPtr<TextStyle>		TextStyle_wp;
 	
 	struct TextAttr
 	{

@@ -38,7 +38,7 @@ namespace wg
 		
 	class ScrollPanel;
 	typedef	StrongPtr<ScrollPanel>	ScrollPanel_p;
-	typedef	WeakPtr<ScrollPanel,Panel_wp>	ScrollPanel_wp;
+	typedef	WeakPtr<ScrollPanel>	ScrollPanel_wp;
 
 	//____ ScrollbarSlot ______________________________________________________
 

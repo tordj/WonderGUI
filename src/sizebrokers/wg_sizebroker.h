@@ -41,7 +41,7 @@ namespace wg
 	
 	class SizeBroker;
 	typedef	StrongPtr<SizeBroker>		SizeBroker_p;
-	typedef	WeakPtr<SizeBroker,Object_wp>	SizeBroker_wp;
+	typedef	WeakPtr<SizeBroker>	SizeBroker_wp;
 	
 	class SizeBroker : public Object
 	{

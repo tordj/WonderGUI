@@ -32,7 +32,7 @@ namespace wg
 
 	class ModalLayer;
 	typedef	StrongPtr<ModalLayer>	ModalLayer_p;
-	typedef	WeakPtr<ModalLayer, Layer_wp>	ModalLayer_wp;
+	typedef	WeakPtr<ModalLayer>		ModalLayer_wp;
 
 	//____ ModalSlot ___________________________________________________________
 

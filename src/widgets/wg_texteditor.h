@@ -33,7 +33,7 @@ namespace wg
 	
 	class TextEditor;
 	typedef	StrongPtr<TextEditor>		TextEditor_p;
-	typedef	WeakPtr<TextEditor,Widget_wp>	TextEditor_wp;
+	typedef	WeakPtr<TextEditor>	TextEditor_wp;
 
 	/** 
 	* @brief Editable text widget.

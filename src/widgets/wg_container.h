@@ -36,7 +36,7 @@ namespace wg
 	
 	class Container;
 	typedef	StrongPtr<Container>			Container_p;
-	typedef	WeakPtr<Container,Widget_wp>		Container_wp;
+	typedef	WeakPtr<Container>		Container_wp;
 	
 	/**
 	 * @brief Base class for all widgets that can hold child widgets.

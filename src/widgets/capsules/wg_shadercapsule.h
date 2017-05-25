@@ -31,7 +31,7 @@ namespace wg
 	
 	class ShaderCapsule;
 	typedef	StrongPtr<ShaderCapsule>		ShaderCapsule_p;
-	typedef	WeakPtr<ShaderCapsule,Capsule_wp>	ShaderCapsule_wp;
+	typedef	WeakPtr<ShaderCapsule>	ShaderCapsule_wp;
 	
 	class ShaderCapsule : public Capsule
 	{

@@ -31,7 +31,7 @@ namespace wg
 	
 	class TimeFormatter;
 	typedef	StrongPtr<TimeFormatter>	TimeFormatter_p;
-	typedef	WeakPtr<TimeFormatter,ValueFormatter_wp>	TimeFormatter_wp;
+	typedef	WeakPtr<TimeFormatter>	TimeFormatter_wp;
 	
 	//____ TimeFormatter __________________________________________________________
 	

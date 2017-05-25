@@ -33,7 +33,7 @@ namespace wg
 	
 	class ValueDisplay;
 	typedef	StrongPtr<ValueDisplay>		ValueDisplay_p;
-	typedef	WeakPtr<ValueDisplay,Widget_wp>	ValueDisplay_wp;
+	typedef	WeakPtr<ValueDisplay>	ValueDisplay_wp;
 
 	/**
 	* @brief Widget that displays a formatted value.

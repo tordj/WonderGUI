@@ -34,7 +34,7 @@ namespace wg
 	
 	class Caret;
 	typedef	StrongPtr<Caret>		Caret_p;
-	typedef	WeakPtr<Caret,Object_wp>		Caret_wp;
+	typedef	WeakPtr<Caret>		Caret_wp;
 	
 	
 	enum class CaretMode

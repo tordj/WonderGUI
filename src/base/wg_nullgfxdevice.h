@@ -36,7 +36,7 @@ namespace wg
 	
 	class NullGfxDevice;
 	typedef	StrongPtr<NullGfxDevice>	NullGfxDevice_p;
-	typedef	WeakPtr<NullGfxDevice,GfxDevice_wp>	NullGfxDevice_wp;
+	typedef	WeakPtr<NullGfxDevice>	NullGfxDevice_wp;
 	
 	class NullGfxDevice : public GfxDevice
 	{

@@ -32,7 +32,7 @@ namespace wg
 	
 	class Image;
 	typedef	StrongPtr<Image>		Image_p;
-	typedef	WeakPtr<Image,Widget_wp>		Image_wp;
+	typedef	WeakPtr<Image>		Image_wp;
 	
 	//____ Image __________________________________________________________
 	/**

@@ -33,7 +33,7 @@ namespace wg
 	
 	class MsgLogger;
 	typedef	StrongPtr<MsgLogger>		MsgLogger_p;
-	typedef	WeakPtr<MsgLogger,Receiver_wp>		MsgLogger_wp;
+	typedef	WeakPtr<MsgLogger>		MsgLogger_wp;
 	
 	class MsgLogger : public Receiver
 	{

@@ -36,11 +36,11 @@ namespace wg
 	
 	class TextStyle;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
-	typedef	WeakPtr<TextStyle,Object_wp>		TextStyle_wp;
+	typedef	WeakPtr<TextStyle>		TextStyle_wp;
 		
 	class TextLink;
 	typedef	StrongPtr<class TextLink> TextLink_p;
-	typedef	WeakPtr<class TextLink,Object_wp> TextLink_wp;
+	typedef	WeakPtr<class TextLink> TextLink_wp;
 	
 	
 	//____ TextLink _____________________________________________________________

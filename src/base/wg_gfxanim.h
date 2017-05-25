@@ -36,7 +36,7 @@ namespace wg
 	
 	class GfxAnim;
 	typedef	StrongPtr<GfxAnim>		GfxAnim_p;
-	typedef	WeakPtr<GfxAnim,Anim_wp>	GfxAnim_wp;
+	typedef	WeakPtr<GfxAnim>	GfxAnim_wp;
 	
 	//____ Class GfxAnim ________________________________________________________
 	

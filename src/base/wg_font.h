@@ -74,7 +74,7 @@ namespace wg
 	
 	class Font;
 	typedef	StrongPtr<Font>	Font_p;
-	typedef	WeakPtr<Font,Object_wp>		Font_wp;
+	typedef	WeakPtr<Font>		Font_wp;
 	
 	//____ Font _____________________________________________________________
 	

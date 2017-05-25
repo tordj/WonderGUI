@@ -38,7 +38,7 @@ namespace wg
 	
 	class Panel;
 	typedef	StrongPtr<Panel>		Panel_p;
-	typedef	WeakPtr<Panel,Container_wp>	Panel_wp;
+	typedef	WeakPtr<Panel>	Panel_wp;
 	
 	
 

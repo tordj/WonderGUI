@@ -46,7 +46,7 @@ namespace wg
 	
 	class GfxDevice;
 	typedef	StrongPtr<GfxDevice>	GfxDevice_p;
-	typedef	WeakPtr<GfxDevice,Object_wp>	GfxDevice_wp;
+	typedef	WeakPtr<GfxDevice>	GfxDevice_wp;
 	
 	class GfxDevice : public Object
 	{

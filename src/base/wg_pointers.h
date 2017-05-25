@@ -25,95 +25,15 @@
 
 #include <wg_mempool.h>
 #include <wg_strongptr.h>
+#include <wg_weakptr.h>
 #include <wg_object.h>
 
 
 namespace wg 
 {
 	class Interface;
-	class Object_wp;
 	
-	
-	//____ Object_wp ______________________________________________________________
-	
-	class Object_wp
-	{
-	public:
-		Object_wp() : m_pHub(0) {}
-		Object_wp( Object * pObj );
-		Object_wp(const Object_p& r);
-		Object_wp(const Object_wp& r)
-		{
-	
-			m_pHub = r.m_pHub;
-			if( m_pHub )
-				m_pHub->refCnt++;
-		}
-	
-		~Object_wp();
-	
-	    inline Object_wp& operator=( Object_wp const & r)
-		{
-			copy( r );
-			return *this;
-		}
-	
-		inline Object& operator*() const { return * rawPtr(); }
-		inline Object * operator->() const { return rawPtr(); }
-	
-		//TODO: Fix so that we get right value if both are null-pointers, but have different hubs.
-		inline bool operator==(const Object_wp& other) const { return m_pHub == other.m_pHub; }
-		inline bool operator!=(const Object_wp& other) const { return m_pHub != other.m_pHub; }
-		inline bool operator<(const Object_wp& other) const { return m_pHub < other.m_pHub ? true : false; }
-		inline bool operator>(const Object_wp& other) const { return m_pHub > other.m_pHub ? true : false; }
-		inline bool operator<=(const Object_wp& other) const { return m_pHub <= other.m_pHub ? true : false; }
-		inline bool operator>=(const Object_wp& other) const { return m_pHub >= other.m_pHub ? true : false; }
-	
-		inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
-	
-		inline Object * rawPtr() const
-		{
-			if( m_pHub )
-				return m_pHub->pObj;
-			else
-				return 0;
-		}
-	
-		void copy( Object_wp const & r );
-	
-		WeakPtrHub * m_pHub;
-	
-	};
-	
-	//____ WeakPtr _________________________________________________________
-	
-	template<class T,class P> class WeakPtr : public P		/** @private */
-	{
-	public:
-		WeakPtr() {}
-		WeakPtr(T* p) : P( p ) {};
-		WeakPtr(const WeakPtr<T,P>& r) : P( r.rawPtr() ) {};
-	//	WeakPtr(const StrongPtr<T,P>& r) : P( r.rawPtr() ) {};
-		~WeakPtr() {};
-	
-		inline T & operator*() const { return * rawPtr(); }
-		inline T * operator->() const{ return rawPtr(); }
-	
-		inline bool operator==(const WeakPtr<T,P>& other) const { return this->m_pHub == other.m_pHub; }
-		inline bool operator!=(const WeakPtr<T,P>& other) const { return this->m_pHub != other.m_pHub; }
-	
-	//	inline operator bool() const { return (this->m_pObj != 0); }
-	
-		inline T * rawPtr() const
-		{
-			if( this->m_pHub && this->m_pHub->pObj )
-				return static_cast<T*>(this->m_pHub->pObj);
-			else
-				return reinterpret_cast<T*>(0);
-		}
-	};
-	
-	
+		
 	//____ Interface_p _____________________________________________________________
 	
 	// m_pObj and m_pInterface must both be valid or null.

@@ -66,8 +66,9 @@ namespace wg
 	
 	class Base
 	{
-		friend class Object_wp;
+//		friend class Object_wp;
 		friend class Interface_wp;
+		friend class WeakPtrHub;
 	public:
 
 		//.____ Creation __________________________________________

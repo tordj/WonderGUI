@@ -11,7 +11,7 @@ namespace wg
 	
 	class RulerLabels;
 	typedef	StrongPtr<RulerLabels>		RulerLabels_p;
-	typedef	WeakPtr<RulerLabels,Widget_wp>	RulerLabels_wp;
+	typedef	WeakPtr<RulerLabels>	RulerLabels_wp;
 	
 	//____ RulerLabels ____________________________________________________________
 	

@@ -35,11 +35,11 @@ namespace wg
 	
 	class ToggleButton;
 	typedef	StrongPtr<ToggleButton>		ToggleButton_p;
-	typedef	WeakPtr<ToggleButton,Widget_wp>	ToggleButton_wp;
+	typedef	WeakPtr<ToggleButton>	ToggleButton_wp;
 	
 	class ToggleGroup;
 	typedef	StrongPtr<ToggleGroup>		ToggleGroup_p;
-	typedef	WeakPtr<ToggleGroup,Object_wp>	ToggleGroup_wp;
+	typedef	WeakPtr<ToggleGroup>	ToggleGroup_wp;
 	
 	
 	/**

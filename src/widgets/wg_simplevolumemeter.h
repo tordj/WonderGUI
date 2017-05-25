@@ -34,7 +34,7 @@ namespace wg
 
 	class SimpleVolumeMeter;
 	typedef	StrongPtr<SimpleVolumeMeter>		SimpleVolumeMeter_p;
-	typedef	WeakPtr<SimpleVolumeMeter,Widget_wp>		SimpleVolumeMeter_wp;	
+	typedef	WeakPtr<SimpleVolumeMeter>		SimpleVolumeMeter_wp;	
 
 
 	class SimpleVolumeMeter : public Widget

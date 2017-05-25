@@ -31,7 +31,7 @@ namespace wg
 	
 	class MsgFunc;
 	typedef	StrongPtr<MsgFunc>		MsgFunc_p;
-	typedef	WeakPtr<MsgFunc,Receiver_wp>	MsgFunc_wp;
+	typedef	WeakPtr<MsgFunc>	MsgFunc_wp;
 	
 	class MsgFunc : public Receiver
 	{
