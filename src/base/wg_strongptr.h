@@ -103,10 +103,10 @@ namespace wg
 
 		inline Cls* rawPtr() const { return m_pObj; }
 	
-		operator  Cls*() const { return (Cls*) m_pObj; }
+		operator  Cls*() const { return m_pObj; }
 
-		inline Cls & operator*() const { return * (Cls*) this->m_pObj; }
-		inline Cls * operator->() const{ return (Cls*) this->m_pObj; }
+		inline Cls & operator*() const { return * this->m_pObj; }
+		inline Cls * operator->() const{ return this->m_pObj; }
 
 		template<typename _Tp1> bool operator==( const StrongPtr<_Tp1>& _p) const
 	    { 
@@ -117,6 +117,14 @@ namespace wg
 	    { 
 	    	return this->m_pObj != _p.m_pObj;
 	    }
+
+		template<typename _Tp1> bool operator<(const StrongPtr<_Tp1>& other) const { return m_pObj < other.m_pObj; }
+		template<typename _Tp1> bool operator>(const StrongPtr<_Tp1>& other) const { return m_pObj > other.m_pObj; }
+		template<typename _Tp1> bool operator<=(const StrongPtr<_Tp1>& other) const { return m_pObj <= other.m_pObj; }
+		template<typename _Tp1> bool operator>=(const StrongPtr<_Tp1>& other) const { return m_pObj >= other.m_pObj; }
+
+		inline operator bool() const { return m_pObj != 0; }
+
 
 		Cls *	m_pObj;
 	};

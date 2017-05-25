@@ -52,13 +52,13 @@ namespace wg
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongInterfacePtr<Text,Interface_p>	Text_p;
+	typedef	StrongInterfacePtr<Text>	Text_p;
 	typedef	WeakInterfacePtr<Text,Interface_wp> 	Text_wp;
 
-	typedef	StrongInterfacePtr<ModText,Text_p>		ModText_p;
+	typedef	StrongInterfacePtr<ModText>		ModText_p;
 	typedef	WeakInterfacePtr<ModText,Text_wp>		ModText_wp;
 
-	typedef	StrongInterfacePtr<EditText,ModText_p>	EditText_p;
+	typedef	StrongInterfacePtr<EditText>	EditText_p;
 	typedef	WeakInterfacePtr<EditText,ModText_wp>	EditText_wp;
 
 

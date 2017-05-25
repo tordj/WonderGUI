@@ -30,7 +30,7 @@ namespace wg
 	
 	
 	class SlideSpan;
-	typedef	StrongInterfacePtr<SlideSpan,Span_p>		SlideSpan_p;
+	typedef	StrongInterfacePtr<SlideSpan>		SlideSpan_p;
 	typedef	WeakInterfacePtr<SlideSpan,Span_wp>	SlideSpan_wp;
 	
 	
@@ -54,7 +54,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline SlideSpan_p		ptr() { return SlideSpan_p(_object(), this); }
+		inline SlideSpan_p		ptr() { return SlideSpan_p(this); }
 
 	};
 	

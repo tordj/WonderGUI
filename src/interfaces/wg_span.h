@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class Span;
-	typedef	StrongInterfacePtr<Span,Interface_p>			Span_p;
+	typedef	StrongInterfacePtr<Span>			Span_p;
 	typedef	WeakInterfacePtr<Span,Interface_wp>		Span_wp;
 	
 	
@@ -56,7 +56,7 @@ namespace wg
 	
 		//.____ Misc __________________________________________________
 
-		inline Span_p			ptr() { return Span_p(_object(), this); }
+		inline Span_p			ptr() { return Span_p(this); }
 
 	protected:
 		virtual Object * 		_object() const;

@@ -79,7 +79,7 @@ namespace wg
 		if( index >= m_labels.size() )
 			return ModText_p();
 	
-		return ModText_p(this, &m_labels.get(index)->textInterface);
+		return ModText_p(&m_labels.get(index)->textInterface);
 	}
 	
 	

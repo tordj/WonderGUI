@@ -38,7 +38,7 @@ namespace wg
 	class CharBuffer;
 	
 	class Text;
-	typedef	StrongInterfacePtr<Text,Interface_p>	Text_p;
+	typedef	StrongInterfacePtr<Text>	Text_p;
 	typedef	WeakInterfacePtr<Text,Interface_wp>		Text_wp;
 	
 	/**
@@ -81,7 +81,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline Text_p			ptr() { return Text_p(_object(), this); }
+		inline Text_p			ptr() { return Text_p(this); }
 
 	protected:
 		Object *				_object() const;

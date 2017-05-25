@@ -52,8 +52,8 @@ namespace wg
 
 
 	class PackListChildren;
-	typedef	StrongInterfacePtr<PackListChildren, Interface_p>	PackListChildren_p;
-	typedef	WeakInterfacePtr<PackListChildren, Interface_wp>	PackListChildren_wp;
+	typedef	StrongInterfacePtr<PackListChildren>	PackListChildren_p;
+	typedef	WeakInterfacePtr<PackListChildren,Interface_wp>	PackListChildren_wp;
 
 	//____ PackListChildren ______________________________________________________
 
@@ -62,7 +62,7 @@ namespace wg
 	public:
 		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : ListChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
 
-		inline PackListChildren_p	ptr() { return PackListChildren_p(_object(), this); }
+		inline PackListChildren_p	ptr() { return PackListChildren_p(this); }
 
 		bool		insertSorted(Widget * pWidget);
 		void		sort();

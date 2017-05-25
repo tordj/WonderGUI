@@ -26,110 +26,13 @@
 #include <wg_mempool.h>
 #include <wg_strongptr.h>
 #include <wg_weakptr.h>
+#include <wg_interfaceptr.h>
 #include <wg_object.h>
 
 
 namespace wg 
 {
 	class Interface;
-	
-		
-	//____ Interface_p _____________________________________________________________
-	
-	// m_pObj and m_pInterface must both be valid or null.
-	
-	class Interface_p
-	{
-	public:
-	
-		Interface_p()
-		{
-			m_pObj = 0;
-			m_pInterface = 0;
-		}
-	
-		Interface_p(Object* pObj, Interface* pInterface )
-		{
-			m_pInterface = pInterface;
-			m_pObj = pObj;
-			if( pObj )
-				pObj->_incRefCount();
-		}
-
-		Interface_p(Interface* pInterface );
-	
-		Interface_p(const Interface_p& r)
-		{
-			m_pInterface = r.m_pInterface;
-			m_pObj = r.m_pObj;
-			if( m_pObj )
-				m_pObj->_incRefCount();
-		}
-	
-		~Interface_p()
-		{
-			if( m_pObj )
-				m_pObj->_decRefCount();
-		}
-	
-	
-	    inline Interface_p & operator=( Interface_p const & r)
-		{
-			copy( r );
-			return *this;
-		}
-	
-		inline Interface& operator*() const { return * m_pInterface; }
-		inline Interface* operator->() const{ return m_pInterface; }
-	
-		inline bool operator==(const Interface_p& other) const { return m_pInterface == other.m_pInterface; }
-		inline bool operator!=(const Interface_p& other) const { return m_pInterface != other.m_pInterface; }
-	
-		inline operator bool() const { return (m_pInterface != 0); }
-	
-		inline Interface * rawPtr() const { return m_pInterface; }
-		inline Object * getRealObjectPtr() const { return m_pObj; }
-	
-	protected:
-		void copy( Interface_p const & r )
-		{
-			m_pInterface = r.m_pInterface;
-			if( m_pObj != r.m_pObj )
-			{
-				if( m_pObj )
-					m_pObj->_decRefCount();
-	
-				m_pObj = r.m_pObj;
-				if( m_pObj )
-					m_pObj->_incRefCount();
-			}
-		}
-	
-	
-		Object *		m_pObj;
-		Interface *	m_pInterface;
-	};
-	
-	//____ StrongInterfacePtr ________________________________________________________
-	
-	template<class T,class P> class StrongInterfacePtr : public P		/** @private */
-	{
-	public:
-		StrongInterfacePtr( int dummy = 0 ) : P( 0, 0 ) {};
-		StrongInterfacePtr(Object* pObj, T* pInterface) : P( pObj, pInterface ) {};
-		StrongInterfacePtr(T* pInterface) : P(pInterface) {};
-		StrongInterfacePtr(const StrongInterfacePtr<T,P>& r) : P( r.m_pObj, (T*) r.m_pInterface ) {};
-		~StrongInterfacePtr() {};
-	
-		inline T & operator*() const { return * (T*) this->m_pInterface; }
-		inline T * operator->() const{ return (T*) this->m_pInterface; }
-	
-		inline bool operator==(const StrongInterfacePtr<T,P>& other) const { return this->m_pInterface == other.m_pInterface; }
-		inline bool operator!=(const StrongInterfacePtr<T,P>& other) const { return this->m_pInterface != other.m_pInterface; }
-	
-		inline T * rawPtr() const { return (T*) this->m_pInterface; }
-	};
-	
 	
 	//____ Interface_wp ______________________________________________________________
 	

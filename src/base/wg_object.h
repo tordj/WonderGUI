@@ -62,7 +62,7 @@ namespace wg
 		template<class T> friend class StrongPtr;
 		template<class T> friend class WeakPtr;
 	
-		friend class Interface_p;
+		template<class T> friend class StrongInterfacePtr;
 		friend class Interface_wp;
 
 		friend class WeakPtrHub;

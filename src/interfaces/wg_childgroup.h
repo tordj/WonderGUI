@@ -114,7 +114,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>, Interface_p>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>, Interface_p>(_object(), this); }
+		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>>(this); }
 
 
 	protected:

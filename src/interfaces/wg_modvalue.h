@@ -35,7 +35,7 @@ namespace wg
 	class CharBuffer;
 	
 	class ModValue;
-	typedef	StrongInterfacePtr<ModValue,Value_p>	ModValue_p;
+	typedef	StrongInterfacePtr<ModValue>	ModValue_p;
 	typedef	WeakInterfacePtr<ModValue,Value_wp>	ModValue_wp;
 	
 	/**
@@ -73,7 +73,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline ModValue_p		ptr() { return ModValue_p(_object(), this); }
+		inline ModValue_p		ptr() { return ModValue_p(this); }
 
 
 	private:

@@ -29,21 +29,6 @@ namespace wg
 	
 	class FreeWeakPtrHub;	
 	
-	
-	Interface_p::Interface_p(Interface* pInterface )
-		{
-			m_pInterface = pInterface;
-			if( pInterface )
-			{
-				m_pObj = pInterface->_object();
-				if( m_pObj )
-					m_pObj->_incRefCount();
-			}
-			else
-				m_pObj = nullptr;				
-		}
-
-	
 	Interface_wp::Interface_wp( Object * pObj, Interface * pInterface )
 	{
 		if( pObj && pInterface )

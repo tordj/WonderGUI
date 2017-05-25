@@ -27,7 +27,10 @@
 
 namespace wg 
 {
-		
+	class Interface;
+
+	typedef StrongInterfacePtr<Interface>	Interface_p;
+
 	
 	/**
 	 * @brief Provides access to items embedded into a Widget or Object.
@@ -52,13 +55,13 @@ namespace wg
 	
 	class Interface
 	{
-		friend class Interface_p;
+		template<class T> friend class StrongInterfacePtr;
 		friend class Interface_wp;
 	public:
 
 		//.____ Misc __________________________________________________
 
-		inline Interface_p		ptr() { return Interface_p(_object(),this);}		///< @brief Get a pointer to this interface.
+		inline Interface_p		ptr() { return Interface_p(this);}					///< @brief Get a pointer to this interface.
 		inline Object_p			holder() { return Object_p( _object() ); };			///< @breif Get a pointer to the object providing this interface.
 	
 	protected:

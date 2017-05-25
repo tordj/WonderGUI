@@ -36,7 +36,7 @@ namespace wg
 {
 	
 	class ColumnHeader;
-	typedef	StrongInterfacePtr<ColumnHeader,Interface_p>		ColumnHeader_p;
+	typedef	StrongInterfacePtr<ColumnHeader>		ColumnHeader_p;
 	typedef	WeakInterfacePtr<ColumnHeader,Interface_wp>	ColumnHeader_wp;
 	
 	class ColumnHeader : public Interface
@@ -59,7 +59,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline ColumnHeader_p	ptr() { return ColumnHeader_p(_object(), this); }
+		inline ColumnHeader_p	ptr() { return ColumnHeader_p(this); }
 
 	
 	protected:

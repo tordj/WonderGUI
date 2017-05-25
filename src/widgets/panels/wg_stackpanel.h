@@ -50,7 +50,7 @@ namespace wg
 
 
 	class StackPanelChildren;
-	typedef	StrongInterfacePtr<StackPanelChildren,Interface_p>	StackPanelChildren_p;
+	typedef	StrongInterfacePtr<StackPanelChildren>	StackPanelChildren_p;
 	typedef	WeakInterfacePtr<StackPanelChildren,Interface_wp>	StackPanelChildren_wp;
 
 	//____ StackPanelChildren ________________________________________________________
@@ -60,7 +60,7 @@ namespace wg
 	public:
 		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
 
-		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(_object(),this); }
+		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(this); }
 
 
 		void		setSizePolicy( int index, SizePolicy2D policy );

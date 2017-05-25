@@ -120,11 +120,10 @@ namespace wg
 	    	return this->m_pHub != _p.m_pHub;
 	    }
 
-		inline bool operator<(const WeakPtr<Cls>& other) const { return m_pHub < other.m_pHub ? true : false; }
-		inline bool operator>(const WeakPtr<Cls>& other) const { return m_pHub > other.m_pHub ? true : false; }
-		inline bool operator<=(const WeakPtr<Cls>& other) const { return m_pHub <= other.m_pHub ? true : false; }
-		inline bool operator>=(const WeakPtr<Cls>& other) const { return m_pHub >= other.m_pHub ? true : false; }
-
+		template<typename _Tp1> bool operator<(const WeakPtr<_Tp1>& other) const { return m_pHub < other.m_pHub; }
+		template<typename _Tp1> bool operator>(const WeakPtr<_Tp1>& other) const { return m_pHub > other.m_pHub; }
+		template<typename _Tp1> bool operator<=(const WeakPtr<_Tp1>& other) const { return m_pHub <= other.m_pHub; }
+		template<typename _Tp1> bool operator>=(const WeakPtr<_Tp1>& other) const { return m_pHub >= other.m_pHub; }
 
 		inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 

@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class EditValue;
-	typedef	StrongInterfacePtr<EditValue,ModValue_p>		EditValue_p;
+	typedef	StrongInterfacePtr<EditValue>		EditValue_p;
 	typedef	WeakInterfacePtr<EditValue,ModValue_wp>	EditValue_wp;
 	
 	/**

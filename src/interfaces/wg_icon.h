@@ -35,7 +35,7 @@ namespace wg
 {
 	
 	class Icon;
-	typedef	StrongInterfacePtr<Icon,Interface_p>	Icon_p;
+	typedef	StrongInterfacePtr<Icon>	Icon_p;
 	typedef	WeakInterfacePtr<Icon,Interface_wp>		Icon_wp;
 	
 	class Icon : public Interface
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline Icon_p		ptr() { return Icon_p(_object(), this); }
+		inline Icon_p		ptr() { return Icon_p(this); }
 
 
 	protected:

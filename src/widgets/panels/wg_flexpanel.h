@@ -103,7 +103,7 @@ namespace wg
 	
 	
 	class FlexPanelChildren;
-	typedef	StrongInterfacePtr<FlexPanelChildren,Interface_p>	FlexPanelChildren_p;
+	typedef	StrongInterfacePtr<FlexPanelChildren>	FlexPanelChildren_p;
 	typedef	WeakInterfacePtr<FlexPanelChildren,Interface_wp>	FlexPanelChildren_wp;
 	
 	//____ FlexPanelChildren ________________________________________________________
@@ -113,7 +113,7 @@ namespace wg
 	public:
 		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : PanelChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
 
-		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(_object(),this); }
+		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(this); }
 
 
 		bool		addPinned( Widget * pWidget, const FlexPos& topLeft, 

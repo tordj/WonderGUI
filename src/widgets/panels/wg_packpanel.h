@@ -48,7 +48,7 @@ namespace wg
 	
 	
 	class PackPanelChildren;
-	typedef	StrongInterfacePtr<PackPanelChildren,Interface_p>	PackPanelChildren_p;
+	typedef	StrongInterfacePtr<PackPanelChildren>	PackPanelChildren_p;
 	typedef	WeakInterfacePtr<PackPanelChildren,Interface_wp>	PackPanelChildren_wp;
 	
 	//____ PackPanelChildren ________________________________________________________
@@ -58,7 +58,7 @@ namespace wg
 	public:
 		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
 
-		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(_object(),this); }
+		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(this); }
 
 		bool		setWeight( int index, float weight );
 		float		weight( int index ) const;

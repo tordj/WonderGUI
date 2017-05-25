@@ -32,7 +32,7 @@ namespace wg
 {
 	
 	class EditText;
-	typedef	StrongInterfacePtr<EditText,ModText_p>	EditText_p;
+	typedef	StrongInterfacePtr<EditText>	EditText_p;
 	typedef	WeakInterfacePtr<EditText,ModText_wp>	EditText_wp;
 	
 	/**
@@ -103,7 +103,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline EditText_p		ptr() { return EditText_p(_object(), this); }
+		inline EditText_p		ptr() { return EditText_p(this); }
 
 	private:
 		inline	EditTextItem * 	_item() { return static_cast<EditTextItem*>(m_pItem); }

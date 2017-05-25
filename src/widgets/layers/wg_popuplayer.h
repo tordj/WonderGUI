@@ -50,7 +50,7 @@ namespace wg
 
 
 	class PopupChildren;
-	typedef	StrongInterfacePtr<PopupChildren, Interface_p>	PopupChildren_p;
+	typedef	StrongInterfacePtr<PopupChildren>	PopupChildren_p;
 	typedef	WeakInterfacePtr<PopupChildren, Interface_wp>	PopupChildren_wp;
 
 	//____ PopupChildren ________________________________________________________
@@ -60,7 +60,7 @@ namespace wg
 	public:
 		PopupChildren(PopupLayer * pHolder) : m_pHolder(pHolder) {}
 
-		inline PopupChildren_p	ptr() { return PopupChildren_p(_object(), this); }
+		inline PopupChildren_p	ptr() { return PopupChildren_p(this); }
 
 		Widget& operator[](int index) const;
 

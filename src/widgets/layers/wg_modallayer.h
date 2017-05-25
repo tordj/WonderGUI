@@ -50,7 +50,7 @@ namespace wg
 	
 	
 	class ModalChildren;
-	typedef	StrongInterfacePtr<ModalChildren,Interface_p>	ModalChildren_p;
+	typedef	StrongInterfacePtr<ModalChildren>	ModalChildren_p;
 	typedef	WeakInterfacePtr<ModalChildren,Interface_wp>	ModalChildren_wp;
 	
 	//____ ModalChildren ________________________________________________________
@@ -60,7 +60,7 @@ namespace wg
 	public:
 		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : ChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
 
-		inline ModalChildren_p	ptr() { return ModalChildren_p(_object(),this); }
+		inline ModalChildren_p	ptr() { return ModalChildren_p(this); }
 
 		bool		add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
 		bool		add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }

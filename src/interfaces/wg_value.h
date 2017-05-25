@@ -40,7 +40,7 @@ namespace wg
 	
 	
 	class Value;
-	typedef	StrongInterfacePtr<Value,Interface_p>	Value_p;
+	typedef	StrongInterfacePtr<Value>	Value_p;
 	typedef	WeakInterfacePtr<Value,Interface_wp>	Value_wp;
 	
 	/**
@@ -79,7 +79,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline Value_p			ptr() { return Value_p(_object(), this); }
+		inline Value_p			ptr() { return Value_p(this); }
 
 
 	protected:
