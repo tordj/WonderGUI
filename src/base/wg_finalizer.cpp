@@ -29,7 +29,7 @@ namespace wg
 	
 	//____ Constructor ____________________________________________________________
 	
-	Finalizer::Finalizer( void * pObject, std::function<void()> func )
+	Finalizer::Finalizer( std::function<void(Object*)> func )
 	{
 		m_function = func;
 	}
@@ -39,7 +39,6 @@ namespace wg
 	
 	Finalizer::~Finalizer()
 	{
-		m_function();
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -68,5 +67,40 @@ namespace wg
 	
 		return 0;
 	}
+
+	//____ attach() ______________________________________________________________
+
+	bool Finalizer::attach(Object* pObject)
+	{
+		Finalizer * pFinalizer = WeakPtrHub::getFinalizer(pObject);
+		if (pFinalizer == nullptr)
+		{
+			WeakPtrHub::setFinalizer(pObject, this);
+			return true;
+		}
+		return pFinalizer == this;
+	}
+
+	//____ detach() ______________________________________________________________
+ 
+	bool Finalizer::detach(Object* pObject)
+	{
+		Finalizer * pFinalizer = WeakPtrHub::getFinalizer(pObject);
+		if (pFinalizer == this)
+		{
+			WeakPtrHub::setFinalizer(pObject, nullptr);
+			return true;
+		}
+		return false;
+	}
+
+
+	//____ _objectWillBeDestroyed() ___________________________________________
+
+	void Finalizer::_objectWillBeDestroyed(Object * pObject)
+	{
+		m_function(pObject);
+	}
+
 
 } // namespace wg

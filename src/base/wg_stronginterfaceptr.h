@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_INTERFACEPTR_DOT_H
-#define	WG_INTERFACEPTR_DOT_H
+#ifndef	WG_STRONGINTERFACEPTR_DOT_H
+#define	WG_STRONGINTERFACEPTR_DOT_H
 #pragma once
 
 
@@ -56,6 +56,20 @@ namespace wg
 		{
 			if( m_pInterface )
 				static_cast<Interface*>(m_pInterface)->_object()->_decRefCount();
+		}
+
+		StrongInterfacePtr<Cls>& operator=(Cls * const _p)
+		{
+			if (m_pInterface != _p)
+			{
+				if (m_pInterface)
+					static_cast<Interface*>(m_pInterface)->_object()->_decRefCount();
+
+				m_pInterface = _p;
+				if (m_pInterface)
+					static_cast<Interface*>(m_pInterface)->_object()->_incRefCount();
+			}
+			return *this;
 		}
 
 	    StrongInterfacePtr<Cls>& operator=( const StrongInterfacePtr<Cls>& _p)
@@ -125,5 +139,5 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_INTERFACEPTR_DOT_H
+#endif //WG_STRONGINTERFACEPTR_DOT_H
 

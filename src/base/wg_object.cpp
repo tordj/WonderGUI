@@ -24,6 +24,7 @@
 #include <wg_mempool.h>
 #include <wg_pointers.h>
 #include <wg_base.h>
+#include <wg_finalizer.h>
 
 namespace wg 
 {
@@ -58,15 +59,55 @@ namespace wg
 		{
 			pHub->refCnt--;
 	
-			if( pHub->refCnt == 0 )
+			if( pHub->refCnt == 0 && !pHub->pFinalizer )
 			{
 				if( pHub->pObj )
-					pHub->pObj->m_pWeakPtrHub = 0;
+					pHub->pObj->m_pWeakPtrHub = nullptr;
 				Base::_freeWeakPtrHub(pHub);
 			}
 		}	
 	}
 	
+	void WeakPtrHub::objectWillDestroy(WeakPtrHub * pHub)
+	{
+		if (pHub->pFinalizer)
+		{
+			pHub->pFinalizer->_objectWillBeDestroyed(pHub->pObj);
+			pHub->pObj = nullptr;
+			pHub->pFinalizer = nullptr;
+			if (pHub->refCnt == 0)
+				Base::_freeWeakPtrHub(pHub);
+		}
+		else
+			pHub->pObj = nullptr;
+	}
+
+	void WeakPtrHub::setFinalizer(Object * pObj, Finalizer * pFinalizer)
+	{
+		WeakPtrHub * pHub;
+		if (!pObj->m_pWeakPtrHub)
+		{
+			pHub = Base::_allocWeakPtrHub();
+			pHub->refCnt = 0;
+			pHub->pObj = pObj;
+			pObj->m_pWeakPtrHub = pHub;
+		}
+		else
+		{
+			pHub = pObj->m_pWeakPtrHub;
+		}
+
+		pHub->pFinalizer = pFinalizer;
+	}
+
+	Finalizer * WeakPtrHub::getFinalizer(Object * pObj)
+	{
+		if (pObj->m_pWeakPtrHub)
+			return pObj->m_pWeakPtrHub->pFinalizer;
+
+		return nullptr;
+	}
+
 	/**
 	 * @brief	Check if the object is an instance or subclass of specified class.
 	 *
@@ -111,6 +152,8 @@ namespace wg
 	
 	void Object::_destroy()
 	{
+		if (m_pWeakPtrHub) 
+			WeakPtrHub::objectWillDestroy(m_pWeakPtrHub);
 		delete this;
 	}
 	

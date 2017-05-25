@@ -62,6 +62,22 @@ namespace wg
 			WeakPtrHub::releaseHub(m_pHub);
 		}
 
+		WeakInterfacePtr<Cls>& operator=(Cls * const _p)
+		{
+			m_pInterface = _p;
+
+			if (m_pHub && (!_p || m_pHub->pObj != _p->_object()))
+			{
+				WeakPtrHub::releaseHub(m_pHub);
+				m_pHub = nullptr;
+			}
+
+			if (_p && !m_pHub)
+				m_pHub = WeakPtrHub::getHub(_p->_object());
+
+			return *this;
+		}
+
 	    WeakInterfacePtr<Cls>& operator=( const WeakInterfacePtr<Cls>& _p)
 		{
 			m_pInterface = _p.m_pInterface;

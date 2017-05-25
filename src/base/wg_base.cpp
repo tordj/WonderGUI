@@ -28,6 +28,7 @@
 #include <wg_memstack.h>
 #include <wg_stdtextmapper.h>
 #include <wg_mempool.h>
+#include <wg_finalizer.h>
 
 #ifdef USE_FREETYPE
 #	include <ft2build.h>
@@ -113,7 +114,11 @@ namespace wg
 	WeakPtrHub * Base::_allocWeakPtrHub()
 	{
 		assert( s_pData != 0 );
-		return (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
+		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
+
+		new (pHub) WeakPtrHub();
+
+		return pHub;
 	}
 	
 	//____ _freeWeakPtrHub() _______________________________________________________
@@ -121,6 +126,7 @@ namespace wg
 	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
 	{
 		assert( s_pData != 0 );
+		pHub->~WeakPtrHub();
 		s_pData->pPtrPool->freeEntry( pHub );
 	}
 		

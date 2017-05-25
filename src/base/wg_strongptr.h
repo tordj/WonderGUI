@@ -57,8 +57,22 @@ namespace wg
 			if( m_pObj )
 				m_pObj->_decRefCount();
 		}
+		
+		StrongPtr<Cls>& operator=(Cls * const _p)
+		{
+			if (m_pObj != _p)
+			{
+				if (m_pObj)
+					m_pObj->_decRefCount();
 
-	    StrongPtr<Cls>& operator=( const StrongPtr<Cls>& _p)
+				m_pObj = _p;
+				if (m_pObj)
+					m_pObj->_incRefCount();
+			}
+			return *this;
+		}
+
+		StrongPtr<Cls>& operator=( const StrongPtr<Cls>& _p)
 		{
 			if( m_pObj != _p.m_pObj )
 			{

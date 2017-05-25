@@ -57,7 +57,17 @@ namespace wg
 			WeakPtrHub::releaseHub(m_pHub);
 		}
 
-	    WeakPtr<Cls>& operator=( const WeakPtr<Cls>& _p)
+		WeakPtr<Cls>& operator=(Cls * const _p)
+		{
+			if (!m_pHub || m_pHub->pObj != _p)
+			{
+				WeakPtrHub::releaseHub(m_pHub);
+				m_pHub = WeakPtrHub::getHub(_p);
+			}
+			return *this;
+		}
+
+		WeakPtr<Cls>& operator=( const WeakPtr<Cls>& _p)
 		{
 			if( m_pHub != _p.m_pHub )
 			{

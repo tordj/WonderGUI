@@ -25,7 +25,7 @@
 
 #include <wg_strongptr.h>
 #include <wg_weakptr.h>
-#include <wg_interfaceptr.h>
+#include <wg_stronginterfaceptr.h>
 #include <wg_weakinterfaceptr.h>
 
 

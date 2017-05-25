@@ -128,7 +128,33 @@ int main ( int argc, char** argv )
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL, EditCmd::Undo );
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
 
-	
+
+	Object_wp wpFin1;
+	Finalizer_wp wpFin2;
+
+	auto pButton = Button::create();
+	auto pFinalizer1 = Finalizer::create([](Object * pObj) { printf("Finalizing object %d of type %s\n", (int)pObj, pObj->className()); });
+	auto pFinalizer2 = Finalizer::create([](Object * pObj) { printf("Finalizing object %d of type %s\n", (int)pObj, pObj->className()); });
+	{
+
+
+		pFinalizer1->attach(pButton);
+
+		pFinalizer2->attach(pFinalizer1);
+
+		wpFin1 = pFinalizer1;
+		wpFin2 = pFinalizer2;
+	}
+
+	printf("Killing button\n");
+	pButton = nullptr;
+	pFinalizer1 = nullptr;
+
+	printf("Weak pointer manip\n");
+	wpFin1 = wpFin2;
+	wpFin2 = nullptr;
+	wpFin1 = nullptr;
+
 	PixelType type = PixelType::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )

@@ -401,10 +401,10 @@
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_interfaceptr.h">
+    <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h">
+    <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h">
       <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>

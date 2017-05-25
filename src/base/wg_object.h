@@ -29,17 +29,23 @@ namespace wg
 {
 	
 	class Object;
+	class Finalizer;
 	
 	typedef StrongPtr<Object>	Object_p;
 	
 	class WeakPtrHub		/** @private */
 	{
 	public:
-		int					refCnt;
-		Object *			pObj;
-		
+		int				refCnt;
+		Object *		pObj;
+		StrongPtr<Finalizer> pFinalizer;
+
 		static WeakPtrHub *	getHub(Object * pObj);
 		static void			releaseHub(WeakPtrHub * pHub);		
+
+		static void			objectWillDestroy(WeakPtrHub * pHub);
+		static void			setFinalizer(Object * pObj, Finalizer * pFinalizer);
+		static Finalizer*	getFinalizer(Object * pObj);
 	};
 	
 	
@@ -77,7 +83,7 @@ namespace wg
 	
 	protected:
 		Object() : m_pWeakPtrHub(0), m_refCount(0) {}
-		virtual ~Object() { if( m_pWeakPtrHub ) m_pWeakPtrHub->pObj = 0; }
+		virtual ~Object() {};
 	
 		inline void _incRefCount() { m_refCount++; }
 		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }

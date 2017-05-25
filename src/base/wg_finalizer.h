@@ -26,6 +26,7 @@
 
 #include <functional>
 #include <wg_pointers.h>
+#include <wg_object.h>
 
 namespace wg 
 {
@@ -36,10 +37,11 @@ namespace wg
 	
 	class Finalizer : public Object
 	{
+		friend class WeakPtrHub;
 	public:
 		//.____ Creation __________________________________________
 
-		static Finalizer_p	create( void * pObject, std::function<void()> func ) { return new Finalizer(pObject,func); };
+		static Finalizer_p	create( std::function<void(Object*)> func ) { return new Finalizer(func); };
 	
 		//.____ Identification __________________________________________
 
@@ -48,11 +50,19 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Finalizer_p	cast( Object * pObject );
 	
+		//.____ Control _______________________________________________________
+
+		bool	attach(Object* pObject);
+		bool	detach(Object* pObject);
+
+
 	protected:
-		Finalizer(void * pObject, std::function<void()> func);
+		Finalizer(std::function<void(Object*)> func);
 		virtual ~Finalizer();
 	
-		std::function<void()>	m_function;
+		void	_objectWillBeDestroyed(Object * pObject);
+
+		std::function<void(Object*)>	m_function;
 	};
 	
 	
