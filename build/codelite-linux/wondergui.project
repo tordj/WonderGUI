@@ -256,6 +256,8 @@
     <File Name="../../src/base/wg_widgetholder.h"/>
     <File Name="../../src/base/wg_strongptr.h"/>
     <File Name="../../src/base/wg_weakptr.h"/>
+    <File Name="../../src/base/wg_stronginterfaceptr.h"/>
+    <File Name="../../src/base/wg_weakinterfaceptr.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
