@@ -74,6 +74,13 @@ namespace wg
 	}
 	
 	//____ parent() _______________________________________________________________
+	/**
+	 * @brief Returns the parent of the widget.
+	 *
+	 * Returns the parent of the widget. 
+	 * 
+	 * @return Parent of the widget or null if widget has no parent.
+	*/
 	
 	Container_p Widget::parent() const
 	{ 
@@ -90,6 +97,18 @@ namespace wg
 	}
 	
 	//____ setEnabled() _______________________________________________________________
+	/**
+	 * @brief Enables or disables the widget.
+	 *
+	 * Enables or disables the widget and all child widgets if the widget is a container.
+	 * 
+	 * @param bEnabled	True to enable Widget, false to disable.Coordinate to check in widgets own coordinate system.
+	 * 
+	 * A Widget that is disabled does not react on mouse or keyboard events or updates its content.
+	 * A disabled Widget is rendered in disabled state, how that looks depends on the skin.
+	 *
+	 * This method never fails.
+	 */
 	
 	void Widget::setEnabled( bool bEnabled )
 	{

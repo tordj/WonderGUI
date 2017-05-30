@@ -69,7 +69,20 @@ namespace wg
 	}
 
 	//____ attach() ______________________________________________________________
-
+	/**
+	 * @brief Attaches the specified Object.
+	 * 
+	 * @param pObject  The object to attach.
+	 * 
+	 * When an attached object is destroyed, the function of the Finalizer will be called.
+	 * 
+	 * @return True if the object and Finalizer was successfully attached or already attached.
+	 * 			False if the object already is attached to another Finalizer. 
+	 * 
+	 * The value in a modifiable value item can be set through the API, but isn't
+	 * editable through the UI.
+	 * 
+	*/
 	bool Finalizer::attach(Object* pObject)
 	{
 		Finalizer * pFinalizer = WeakPtrHub::getFinalizer(pObject);
@@ -82,6 +95,20 @@ namespace wg
 	}
 
 	//____ detach() ______________________________________________________________
+	/**
+	 * @brief Detaches a previously attached object.
+	 * 
+	 * @param pObject  The object to detach.
+	 * 
+	 * Detaches the specified object from the Finalizer, making it possible to attach it to another Finalizer.
+	 * Once an object is detached the Finalizer function won't be called when it is destroyed.
+	 * 
+	 * @return True if the object was attached, otherwise False. 
+	 * 
+	 * The value in a modifiable value item can be set through the API, but isn't
+	 * editable through the UI.
+	 * 
+	*/
  
 	bool Finalizer::detach(Object* pObject)
 	{
