@@ -28,6 +28,7 @@
 #include <wg_pointers.h>
 #include <wg_container.h>
 #include <wg_slotarray.h>
+#include <wg_slotiterator.h>
 
 
 namespace wg 
@@ -48,9 +49,11 @@ namespace wg
 	//____ ChildGroup _________________________________________________________
 
 	template<class SlotType, class HolderType> class ChildGroup : public Interface
-	{
-		
+	{		
 	public:
+
+		using		iterator = SlotIterator<SlotType>;
+
 		//.____ Creation __________________________________________
 
 		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
@@ -64,8 +67,10 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		inline int		size() const { return m_pSlotArray->size(); }
+		inline int		capacity() const { return m_pSlotArray->capacity(); }
+		inline int		setCapacity(int capacity) { return m_pSlotArray->setCapacity(capacity);  }
 
-		inline Widget_p get(int index) const
+		inline Widget_p at(int index) const
 		{
 			if (index < 0 || index >= m_pSlotArray->size())
 				return nullptr;
@@ -91,7 +96,19 @@ namespace wg
 			m_pHolder->_didAddSlots(pSlot, 1);
 			return true;		
 		}
-		
+
+		bool insert(iterator pos, Widget * pWidget)
+		{
+			if (pos < m_pSlotArray->begin() || pos > m_pSlotArray->end())
+				return false;
+
+			SlotType * pSlot = m_pSlotArray->insert(pos-m_pSlotArray->begin());
+			pSlot->replaceWidget(m_pHolder, pWidget);
+			m_pHolder->_didAddSlots(pSlot, 1);
+			return true;
+		}
+
+
 		bool remove( int index )
 		{
 			if( index < 0 || index >= m_pSlotArray->size() )
@@ -115,6 +132,9 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>>(this); }
+
+		iterator	begin() const { return iterator(m_pSlotArray->begin()); }
+		iterator	end() const { return iterator(m_pSlotArray->end()); }
 
 
 	protected:

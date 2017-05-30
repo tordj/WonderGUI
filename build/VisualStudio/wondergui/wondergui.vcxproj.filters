@@ -407,6 +407,9 @@
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotiterator.h">
+      <Filter>slots</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

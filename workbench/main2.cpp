@@ -360,6 +360,24 @@ int main ( int argc, char** argv )
 		pFlexPanel->children.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
 	
 		pEditLine->grabFocus();
+
+/*
+		for( int i = 0 ; i < pVert->children.size() ; i++ )
+		{
+			printf("%s\n", pVert->children[i].className());
+		}
+*/
+
+		for (auto it = pVert->children.begin(); it != pVert->children.end(); it++ )
+			printf("%s\n", it->className());
+
+
+		for (auto& it : pVert->children)
+		{
+//			Rect r = it.geo;
+			printf("%s\n", it.className() );
+		}
+
 	}
 
 	ScrollPanel_p pScrollPanel;
