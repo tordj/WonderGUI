@@ -66,6 +66,14 @@ namespace wg
 	}
 		
 	//____ setMode() _______________________________________________________________
+	/**
+	 * @brief Set the carets animation mode (insert, overwrite or end of line).
+	 * 
+	 * Set the carets animation mode (insert, overwrite or end of line).
+	 * 
+	 * @param mode One of Insert, Overwrite or Eol (end of line)
+	 * @return True 
+	 */
 	
 	bool Caret::setMode( CaretMode mode )
 	{
@@ -80,6 +88,17 @@ namespace wg
 
 	//____ setCycleLength() ____________________________________________________
 
+	/**
+	 * @brief Set the length of the caret animation cycle (blink frequency)
+	 * 
+	 * Sets the length in milliseconds of the caret animation cycle. For a normal, blinking
+	 * cursor this means the time between when the cursor appears and reappears again.
+	 * 
+	 * Default is 1000 milliseconds.
+	 * 
+	 * @param millisec Number of milliseconds for a full animation cycle.
+	 * @return True as long as millisec is >=2.
+	 */
 	bool Caret::setCycleLength( int millisec )
 	{
 		if( millisec < 2 )

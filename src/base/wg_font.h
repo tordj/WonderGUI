@@ -77,6 +77,16 @@ namespace wg
 	typedef	WeakPtr<Font>		Font_wp;
 	
 	//____ Font _____________________________________________________________
+	/**
+	 * @class Font
+	 * @file wg_font.h
+	 * @brief Base class for various types of fonts.
+	 * 
+	 * The Font class is the base class from which all fonts are subclassed,
+	 * providing the functionality to get metrics for the font and metrics
+	 * and bitmaps of all its character glyphs.
+	 */
+	
 	
 	class Font : public Object
 	{
@@ -90,24 +100,24 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 	
-		virtual bool			setSize( int size ) = 0;
+		virtual bool			setSize( int size ) = 0;		///@brief Set the font size for subsequent calls.
 		virtual int				size() = 0;
 		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
-		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
+		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;	
 
-		virtual int				lineGap() = 0;
-		virtual int				whitespaceAdvance() = 0;
-		virtual int				maxAdvance() = 0;
-		virtual int				maxAscend() = 0;
-		virtual int				maxDescend() = 0;
+		virtual int				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
+		virtual int				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
+		virtual int				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
+		virtual int				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
+		virtual int				maxDescend() = 0;				///@breif Returns largets depth from baseline of a character for current size.
 
 		//.____ Misc ___________________________________________________________
 	
-		virtual int				nbGlyphs() = 0;
-		virtual bool			hasGlyphs() = 0;
-		virtual bool			hasGlyph( uint16_t chr ) = 0;
-		virtual bool			isMonospace() = 0;
-		virtual bool			isMonochrome();
+		virtual int				nbGlyphs() = 0;					///@brief Return number of distinct glyphs in the font.
+		virtual bool			hasGlyphs() = 0;				///@brief Check if font has any glyphs at all.
+		virtual bool			hasGlyph( uint16_t chr ) = 0;	///@brief Check if font provides a glyph for specified character.
+		virtual bool			isMonospace() = 0;				///@brief Check if font is monospaced.
+		virtual bool			isMonochrome();					///@brief Check if font is monochrome or multi-colored.
 
 
 

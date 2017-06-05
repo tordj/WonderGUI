@@ -43,8 +43,24 @@ namespace wg
 		Overwrite,
 		Eol
 	};
-	
-	
+
+	/**
+	 * @brief Graphical presentation and rendering of a text-field caret
+	 * 
+	 * A Caret object contains information about the graphical presentation 
+	 * of a caret in an editable text-field and methods for rendering it.
+	 * 
+	 * Displaying the caret in a text-field is the responsibility of a TextMapper
+	 * object, which might have a custom implementation, but typically use a Caret
+	 * object for this.
+	 * 
+	 * The default Caret class displays a simple, vertical blinking line, but can
+	 * be subclassed to use animations or something else.
+	 * 
+	 * Typically you create only one caret and provide it to the TextMapper(s) being
+	 * used.
+	 */
+		
 	class Caret : public Object
 	{
 	public:
@@ -59,17 +75,17 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Caret_p		cast( Object * pObject );
 
-		//.____ Control ________________________________________________________
+		//.____ Appearance ________________________________________________________
 	
 		virtual bool		setCycleLength( int millisec );
-		inline int			cycleLength() const { return m_cycleLength; }
-		virtual bool		restartCycle();
-		virtual bool		setMode( CaretMode mode );
-		inline CaretMode	mode() const { return m_mode; }
+		inline int			cycleLength() const { return m_cycleLength; }	///@brief Returns the length the carrets animation cycle (=blink frequency)
 
 
 		//.____ Internal ___________________________________________________________
 
+		virtual bool		setMode( CaretMode mode );
+		inline CaretMode	mode() const { return m_mode; }
+		virtual bool		restartCycle();
 		virtual int			eolWidth( const Size& eolCell ) const;
 		virtual Rect		dirtyRect( Rect cell ) const;
 		virtual bool		tick( int millisec );

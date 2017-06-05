@@ -209,8 +209,6 @@
     <File Name="../../src/base/wg_memstack.h"/>
     <File Name="../../src/base/wg_msg.cpp"/>
     <File Name="../../src/base/wg_msg.h"/>
-    <File Name="../../src/base/wg_msgfunc.cpp"/>
-    <File Name="../../src/base/wg_msgfunc.h"/>
     <File Name="../../src/base/wg_msglogger.cpp"/>
     <File Name="../../src/base/wg_msglogger.h"/>
     <File Name="../../src/base/wg_msgrouter.cpp"/>
@@ -221,7 +219,6 @@
     <File Name="../../src/base/wg_object.h"/>
     <File Name="../../src/base/wg_patches.cpp"/>
     <File Name="../../src/base/wg_patches.h"/>
-    <File Name="../../src/base/wg_pointers.cpp"/>
     <File Name="../../src/base/wg_pointers.h"/>
     <File Name="../../src/base/wg_receiver.cpp"/>
     <File Name="../../src/base/wg_receiver.h"/>
