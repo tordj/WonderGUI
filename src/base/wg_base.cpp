@@ -29,6 +29,7 @@
 #include <wg_stdtextmapper.h>
 #include <wg_mempool.h>
 #include <wg_finalizer.h>
+#include <wg_standardformatter.h>
 
 #ifdef USE_FREETYPE
 #	include <ft2build.h>
@@ -61,6 +62,8 @@ namespace wg
 
 		s_pData->pDefaultStyle = TextStyle::create();
 		
+		s_pData->pDefaultValueFormatter = StandardFormatter::create();
+
 		s_pData->pMsgRouter = MsgRouter::create();
 		s_pData->pInputHandler = InputHandler::create();
 	
@@ -99,6 +102,7 @@ namespace wg
 	#endif
 		s_pData->pDefaultTextMapper = 0;
 		s_pData->pDefaultStyle = 0;
+		s_pData->pDefaultValueFormatter = 0;
 	
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
@@ -166,7 +170,14 @@ namespace wg
 		s_pData->pDefaultStyle = pStyle;	
 	}
 		
-	
+	//____ setDefaultValueFormatter() _______________________________________________________
+
+	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
+	{
+		assert(s_pData != 0);
+		s_pData->pDefaultValueFormatter = pFormatter;
+	}
+
 	//____ memStackAlloc() ________________________________________________________
 	
 	char * Base::memStackAlloc( int bytes )

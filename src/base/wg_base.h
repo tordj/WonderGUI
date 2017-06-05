@@ -38,6 +38,7 @@
 #include <wg_textmapper.h>
 #include <wg_msgrouter.h>
 #include <wg_inputhandler.h>
+#include <wg_valueformatter.h>
 
 #ifdef USE_FREETYPE
 
@@ -92,7 +93,11 @@ namespace wg
 	
 		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
-	
+
+		static void			setDefaultValueFormatter(ValueFormatter * pFormatter);
+		static ValueFormatter_p defaultValueFormatter() { assert(s_pData != 0); return s_pData->pDefaultValueFormatter; }
+
+
 		//.____ Misc ________________________________________________
 
 		static char *		memStackAlloc( int bytes );
@@ -109,9 +114,11 @@ namespace wg
 			InputHandler_p	pInputHandler;
 			
 	
-			TextMapper_p	pDefaultTextMapper;
-			TextStyle_p		pDefaultStyle;
-	
+			TextMapper_p		pDefaultTextMapper;
+			TextStyle_p			pDefaultStyle;
+			ValueFormatter_p	pDefaultValueFormatter;
+
+
 			//
 	
 			MemPool *		pPtrPool;

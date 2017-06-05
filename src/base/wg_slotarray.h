@@ -169,7 +169,8 @@ namespace wg
 	
 				memcpy( (void*)pNew, pOld, sizeof(SlotType) * index );
                 memcpy( (void*)&pNew[index + entries], pOld + index, sizeof(SlotType) * (m_size - index) );
-				free( pOld );
+				if( pOld )
+					free( pOld );
 				m_pArray = pNew;
 				_reallocBlock( 0, index );
 			}

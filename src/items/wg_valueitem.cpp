@@ -120,7 +120,8 @@ namespace wg
 	
 	void ValueItem::_regenText()
 	{
-		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : 0; //Base::DefaultValueFormatter();
+		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : Base::defaultValueFormatter();
+
 		if( m_pFormatter )
 			m_charBuffer = pFormatter->format(m_value, m_scale);
 		_requestRender();
