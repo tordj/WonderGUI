@@ -97,15 +97,15 @@ namespace wg
 			return true;		
 		}
 
-		bool insert(iterator pos, Widget * pWidget)
+		iterator insert(iterator pos, Widget * pWidget)
 		{
-			if (pos < m_pSlotArray->begin() || pos > m_pSlotArray->end())
-				return false;
+//			if (pos < m_pSlotArray->begin() || pos > m_pSlotArray->end())
+//				return false;
 
-			SlotType * pSlot = m_pSlotArray->insert(pos-m_pSlotArray->begin());
+			SlotType * pSlot = m_pSlotArray->insert(pos._slot()-m_pSlotArray->begin());
 			pSlot->replaceWidget(m_pHolder, pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;
+			return iterator(pSlot);
 		}
 
 

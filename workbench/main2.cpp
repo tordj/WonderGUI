@@ -294,7 +294,7 @@ int main ( int argc, char** argv )
 	// Test transparency issue
 
 
-
+/*
 	{
 		PackPanel_p pVert = PackPanel::create();
 		PackPanel_p pHorr = PackPanel::create();
@@ -360,14 +360,6 @@ int main ( int argc, char** argv )
 		pFlexPanel->children.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
 	
 		pEditLine->grabFocus();
-
-/*
-		for( int i = 0 ; i < pVert->children.size() ; i++ )
-		{
-			printf("%s\n", pVert->children[i].className());
-		}
-*/
-
 		for (auto it = pVert->children.begin(); it != pVert->children.end(); it++ )
 			printf("%s\n", it->className());
 
@@ -379,6 +371,34 @@ int main ( int argc, char** argv )
 		}
 
 	}
+	*/
+
+	{
+		PackPanel_p pPanel = PackPanel::create();
+		pFlexPanel->children.addPinned(pPanel, Origo::NorthWest, Origo::SouthEast);
+
+		Widget_p widgets[5];
+
+		char temp[100];
+
+		for (int i = 0; i < 5; i++)
+		{
+			sprintf(temp, "%d", i);
+
+			TextDisplay_p p = TextDisplay::create();
+			p->setSkin(pPressablePlateSkin);
+			p->text.set(temp);
+			widgets[i] = p;
+		}
+
+
+
+		auto it = pPanel->children.begin();
+		for (int i = 0; i < 5; i++)
+			it = pPanel->children.insert(it, widgets[i]);
+	}
+
+
 
 	ScrollPanel_p pScrollPanel;
 	{

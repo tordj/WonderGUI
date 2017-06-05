@@ -100,8 +100,10 @@ namespace wg
 			return pSlot != rhs.pSlot;
 		}
 
-
-
+		SlotType * _slot() const
+		{
+			return pSlot;
+		}
 
 	private:
 		SlotType * pSlot;
