@@ -23,6 +23,8 @@
 #define	WG_STRONGINTERFACEPTR_DOT_H
 #pragma once
 
+#include <wg_interface.h>
+#include <wg_object.h>
 
 namespace wg 
 {

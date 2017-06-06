@@ -133,8 +133,8 @@ int main ( int argc, char** argv )
 	Finalizer_wp wpFin2;
 
 	auto pButton = Button::create();
-	auto pFinalizer1 = Finalizer::create([](Object * pObj) { printf("Finalizing object %d of type %s\n", (int)pObj, pObj->className()); });
-	auto pFinalizer2 = Finalizer::create([](Object * pObj) { printf("Finalizing object %d of type %s\n", (int)pObj, pObj->className()); });
+	auto pFinalizer1 = Finalizer::create([](Object * pObj) { printf("Finalizing object %p of type %s\n", pObj, pObj->className()); });
+	auto pFinalizer2 = Finalizer::create([](Object * pObj) { printf("Finalizing object %p of type %s\n", pObj, pObj->className()); });
 	{
 
 

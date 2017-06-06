@@ -23,13 +23,16 @@
 #define WG_INTERFACE_DOT_H
 #pragma once
 
-#include <wg_pointers.h>
 
 namespace wg 
 {
 	class Interface;
-
+	template<class T> class StrongInterfacePtr;
 	typedef StrongInterfacePtr<Interface>	Interface_p;
+
+	class Object;
+	template<class T> class StrongPtr;
+	typedef StrongPtr<Object>				Object_p;
 
 	
 	/**
@@ -61,8 +64,8 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline Interface_p		ptr() { return Interface_p(this);}					///< @brief Get a pointer to this interface.
-		inline Object_p			holder() { return Object_p( _object() ); };			///< @breif Get a pointer to the object providing this interface.
+		Interface_p				ptr();
+		Object_p				object();
 	
 	protected:
 		virtual Object * 		_object() const = 0;

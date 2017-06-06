@@ -144,6 +144,7 @@
     <File Name="../../src/interfaces/wg_text.h"/>
     <File Name="../../src/interfaces/wg_value.cpp"/>
     <File Name="../../src/interfaces/wg_value.h"/>
+    <File Name="../../src/interfaces/wg_interface.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>

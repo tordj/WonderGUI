@@ -1024,7 +1024,7 @@ namespace wg
 	TextEditMsg::TextEditMsg( EditText * pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
-		m_pSource 	= pText->holder();
+		m_pSource 	= pText->object();
 		m_pText 	= pText;
 		m_bFinal	= bFinal;
 	}
