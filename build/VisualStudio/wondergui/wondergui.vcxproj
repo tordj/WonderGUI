@@ -248,6 +248,7 @@
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_vectorfont.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp" />
+    <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_slidespan.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_span.cpp" />

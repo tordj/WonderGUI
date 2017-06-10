@@ -34,10 +34,11 @@ namespace wg
 
 	//____ insertSorted() ___________________________________________________
 
-	bool PackListChildren::insertSorted(Widget * pWidget)
+	PackListChildren::iterator PackListChildren::insertSorted(Widget * pWidget)
 	{
-		if (!pWidget)
-			return false;
+		//TODO: Replace with assert
+//		if (!pWidget)
+//			return false;
 
 		if (m_pSlotArray->isEmpty() || !m_pHolder->m_sortFunc)
 			return add(pWidget);

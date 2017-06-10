@@ -64,7 +64,7 @@ namespace wg
 
 		inline PackListChildren_p	ptr() { return PackListChildren_p(this); }
 
-		bool		insertSorted(Widget * pWidget);
+		iterator	insertSorted(Widget * pWidget);
 		void		sort();
 
 	};
@@ -113,9 +113,6 @@ namespace wg
 		void				setSortOrder( SortOrder order );
 		SortOrder			sortOrder() const { return m_sortOrder; }
 	
-
-//		typedef	int(*WidgetSortFunc)(const Widget *, const Widget *);
-
 		void				setSortFunction( std::function<int(const Widget *, const Widget *)> func );
 		std::function<int(const Widget *, const Widget *)> sortFunction() const { return m_sortFunc; }
 	

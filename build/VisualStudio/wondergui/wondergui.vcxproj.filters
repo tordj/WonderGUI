@@ -706,6 +706,9 @@
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp">
       <Filter>base</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

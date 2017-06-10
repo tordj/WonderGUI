@@ -78,48 +78,56 @@ namespace wg
 			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
-		bool add( Widget * pWidget )
+		iterator add( Widget * pWidget )
 		{
 			SlotType * pSlot = m_pSlotArray->add();
 			pSlot->replaceWidget(m_pHolder,pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;
+			return iterator(pSlot);
 		}
 		
-		bool insert( int index, Widget * pWidget )
+		iterator insert( int index, Widget * pWidget )
 		{
-			if( index < 0 || index >= m_pSlotArray->size() )
-				return false;
+//TODO: Replace with asserts, here and in other methods.
+//			if( index < 0 || index >= m_pSlotArray->size() )
+//				return false;
 
 			SlotType * pSlot = m_pSlotArray->insert(index);
 			pSlot->replaceWidget(m_pHolder,pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;		
+			return iterator(pSlot);		
 		}
 
 		iterator insert(iterator pos, Widget * pWidget)
 		{
+//TODO: Replace with asserts, here and in other methods.
 //			if (pos < m_pSlotArray->begin() || pos > m_pSlotArray->end())
 //				return false;
 
-			SlotType * pSlot = m_pSlotArray->insert(pos._slot()-m_pSlotArray->begin());
+			SlotType * pSlot = m_pSlotArray->insert(pos._slot());
 			pSlot->replaceWidget(m_pHolder, pWidget);
 			m_pHolder->_didAddSlots(pSlot, 1);
 			return iterator(pSlot);
 		}
 
-
-		bool remove( int index )
+		iterator remove( int index )
 		{
-			if( index < 0 || index >= m_pSlotArray->size() )
-				return false;
+//TODO: Replace with asserts, here and in other methods.
+//			if( index < 0 || index >= m_pSlotArray->size() )
+//				return false;
 
 			SlotType * pSlot = m_pSlotArray->slot(index);
 			m_pHolder->_willRemoveSlots(pSlot, 1);
-			m_pSlotArray->remove(index);
-			return true;		
+			return m_pSlotArray->remove(index);
 		}
 
+		iterator remove(iterator pos)
+		{
+			//TODO: Add assert here and in other methods.
+
+			m_pHolder->_willRemoveSlots(pos._slot(), 1);
+			return m_pSlotArray->remove(pos._slot());
+		}
 
 		void clear() 
 		{ 

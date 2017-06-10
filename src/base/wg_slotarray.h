@@ -39,7 +39,7 @@ namespace wg
 	public:
 		SlotArray() : m_pArray(0), m_size(0), m_capacity(0) {}
 		SlotArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
-		~SlotArray() { _killBlock( 0, m_size ); free(m_pArray); }
+		~SlotArray() { _killBlock( begin(), end() ); free(m_pArray); }
 
 		int			size() const { return m_size; }
 		bool		isEmpty() const { return m_size == 0; }
@@ -50,34 +50,40 @@ namespace wg
 
 		SlotType*	slot(int index) const { return &m_pArray[index]; }
 	
-		SlotType*	add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*2) ); _initBlock(m_size); return &m_pArray[m_size++]; }
-		SlotType*	add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(m_size,entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
-		SlotType*	insert(int index) { _insertBlock( index, 1); return &m_pArray[index]; }
-		SlotType*	insert(int index, int entries) { _insertBlock( index, entries ); return &m_pArray[index]; }
-		void		remove(int index) { _deleteBlock(index,1); }
-		void		remove(int index, int entries) { _deleteBlock(index,entries); }
+		SlotType*	add() { if( m_size == m_capacity ) _reallocArray( ((m_capacity+1)*2) ); _initBlock(end()); return &m_pArray[m_size++]; }
+		SlotType*	add(int entries) { if( m_size+entries > m_capacity ) _reallocArray( m_capacity+entries ); _initBlock(end(),end()+entries); int ofs = m_size ; m_size += entries; return &m_pArray[ofs]; }
+		
+		SlotType*	insert(int index) { return _insertBlock( &m_pArray[index], 1); }
+		SlotType*	insert(int index, int entries) { return _insertBlock(&m_pArray[index], entries ); }
+		SlotType*	insert(SlotType * pPos) { return _insertBlock(pPos, 1); }
+		SlotType*	insert(SlotType * pPos, int entries) { return _insertBlock(pPos, entries); }
 
-		void		move( int index, int newIndex )
+		SlotType*	remove(int index) { return _deleteBlock( &m_pArray[index], &m_pArray[index+1]); }
+		SlotType*	remove(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
+		SlotType*	remove(SlotType * pPos) { return _deleteBlock(pPos, pPos+1); }
+		SlotType*	remove(SlotType * pPos, int entries) { return _deleteBlock(pPos, pPos+entries); }
+
+		void		move(int index, int newIndex) { move(&m_pArray[index], &m_pArray[newIndex]); }
+		void		move(SlotType * pFrom, SlotType * pTo)
 		{
-			if( index < newIndex )
+			if (pFrom < pTo)
 			{
-				SlotType temp = m_pArray[index];
-				int blocksToMove = newIndex-index;
-				memmove( (void*)&m_pArray[index], &m_pArray[index+1], sizeof(SlotType) * blocksToMove );
-				m_pArray[newIndex] = temp;
-				_reallocBlock(index, blocksToMove+1);
+				SlotType temp = * pFrom;
+				memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo-pFrom));
+				* pTo = temp;
+				_reallocBlock(pFrom, pTo + 1);
 			}
 			else
 			{
-				SlotType temp = m_pArray[index];
-				int blocksToMove = index-newIndex;
-				memmove( (void*)&m_pArray[newIndex+1], &m_pArray[newIndex], sizeof(SlotType) * blocksToMove );
-				m_pArray[newIndex] = temp;
-				_reallocBlock(newIndex, blocksToMove+1);				
+				SlotType temp = * pFrom;
+				memmove((void*)&pFrom[1], pFrom, sizeof(SlotType) * (pFrom-pTo));
+				* pTo = temp;
+				_reallocBlock(pTo, pFrom + 1);
 			}
 		}
-	
-		void		clear() { _killBlock( 0, m_size ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
+
+
+		void		clear() { _killBlock( begin(), end() ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
 		void		setCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
 	
 		SlotType*	prev( const SlotType* pSlot ) const { if( pSlot > m_pArray ) return const_cast<SlotType*>(pSlot)-1; return 0; }
@@ -100,13 +106,13 @@ namespace wg
 			int size = sizeof(SlotType)*m_capacity;
 			SlotType* pOld = m_pArray;
 			m_pArray = (SlotType*) malloc( size );
-			_initBlock(0,m_size);
+			_initBlock(begin(),end());
 			for( int i = 0 ; i < m_size ; i++ )
 			{
 				int ofs = order[i];
 				m_pArray[i] = pOld[ofs];
 			}
-			_reallocBlock( 0, m_size );
+			_reallocBlock( begin(), end() );
 			free( pOld );
 		}
 	
@@ -123,79 +129,89 @@ namespace wg
 			if( pOld )
 			{
 				memcpy( (void*)pNew, pOld, sizeof(SlotType)*m_size );
-				_reallocBlock( 0, m_size );
+				_reallocBlock( begin(), end() );
 				free( pOld );
 			}
 		}
 	
-		void	_reallocBlock( int index, int entries )
+		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd)
 		{
-			int end = index + entries;
-			while( index < end )
+			while (pBeg < pEnd)
 			{
-				SlotType * p = &m_pArray[index++];
-				p->relink();
+				pBeg->relink();
+				pBeg++;
 			}
 		}
-	
-		void	_deleteBlock( int index, int entries )
+
+		SlotType* _deleteBlock(SlotType * pBeg, SlotType * pEnd)
 		{
-			_killBlock( index, entries );
-			if( index + entries < m_size )
+			_killBlock(pBeg, pEnd);
+			int blocksToMove = end() - pEnd;
+			if( blocksToMove > 0 )
 			{
-				int blocksToMove = m_size - index - entries;
-				memmove( (void*)&m_pArray[index], &m_pArray[index+entries], sizeof(SlotType) * blocksToMove );
-				_reallocBlock( index, blocksToMove );
+				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
+				_reallocBlock(pBeg, pBeg+blocksToMove);
 			}
-			m_size -= entries;
+			m_size -= pEnd - pBeg;
+			return pBeg;
 		}
-	
-		void	_insertBlock( int index, int entries )
+
+
+		SlotType*	_insertBlock(SlotType * pPos, int entries)
 		{
-			if( entries <= m_capacity - m_size )
+			if (entries <= m_capacity - m_size)
 			{
-				memmove( (void*)&m_pArray[index+entries], &m_pArray[index], sizeof(SlotType) * (m_size - index) );
+				memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
 			}
 			else
 			{
 				int grow = entries - (m_capacity - m_size);
-				if( grow == 1 )
-					m_capacity = ((m_capacity+1)*3) / 2;
+				if (grow == 1)
+					m_capacity = ((m_capacity + 1) * 3) / 2;
 				else
 					m_capacity += grow;
-	
-				SlotType* pNew = (SlotType*) malloc( sizeof(SlotType) * m_capacity );
+
+				SlotType* pNew = (SlotType*)malloc(sizeof(SlotType) * m_capacity);
 				SlotType* pOld = m_pArray;
-	
-				memcpy( (void*)pNew, pOld, sizeof(SlotType) * index );
-                memcpy( (void*)&pNew[index + entries], pOld + index, sizeof(SlotType) * (m_size - index) );
-				if( pOld )
-					free( pOld );
+				SlotType* pNewPos = pNew + (pPos - pOld);
+
+				memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos-pOld));
+				memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
+				if (pOld)
+					free(pOld);
 				m_pArray = pNew;
-				_reallocBlock( 0, index );
+				_reallocBlock(pNew, pNewPos);
+				pPos = pNewPos;
 			}
-			_reallocBlock( index + entries, m_size - index );
-			_initBlock( index, entries );
 			m_size += entries;
+			_reallocBlock(&pPos[entries], end());
+			_initBlock(pPos, &pPos[entries]);
+			return pPos;
 		}
-	
-		void	_killBlock( int index, int entries )
+
+		void	_killBlock(SlotType * pBlock)
 		{
-			for( int i = 0 ; i < entries ; i++ )
-				m_pArray[index++].~SlotType();
+			pBlock->~SlotType();
 		}
-	
-		inline void	_initBlock( int index )
+
+
+		void	_killBlock(SlotType * pBeg, SlotType * pEnd)
 		{
-				new (&m_pArray[index]) SlotType();
+			while (pBeg < pEnd)
+				(pBeg++)->~SlotType();
 		}
-	
-	
-		void	_initBlock( int index, int entries )
+
+		inline void	_initBlock(SlotType * pBlock)
 		{
-			for( int i = 0 ; i < entries ; i++ )
-				new (&m_pArray[index++]) SlotType();
+			new (pBlock) SlotType();
 		}
+
+		void	_initBlock(SlotType * pBeg, SlotType * pEnd)
+		{
+			while (pBeg < pEnd)
+				new (pBeg++) SlotType();
+		}
+
 	
 		int			m_capacity;
 		int			m_size;
