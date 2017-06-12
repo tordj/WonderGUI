@@ -59,7 +59,7 @@ namespace wg
 
 		static RefreshButton_p	create() { return RefreshButton_p(new RefreshButton()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 	
 		ModText	refreshText;
 

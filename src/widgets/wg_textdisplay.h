@@ -43,7 +43,7 @@ namespace wg
 
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
 
-		//.____ Components ____________________________________
+		//.____ Interfaces ____________________________________
 
 		ModText			text;
 	

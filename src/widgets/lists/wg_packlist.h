@@ -82,7 +82,7 @@ namespace wg
 
 		static PackList_p	create() { return PackList_p(new PackList()); }
 	
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ColumnHeader		header;
 		PackListChildren	children;

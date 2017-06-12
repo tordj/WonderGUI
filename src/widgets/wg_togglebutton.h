@@ -74,7 +74,7 @@ namespace wg
 
 		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
 
-		//.____ Components ____________________________________
+		//.____ Interfaces ____________________________________
 
 		ModText		label;
 		Icon		icon;

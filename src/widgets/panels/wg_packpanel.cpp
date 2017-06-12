@@ -43,6 +43,21 @@ namespace wg
 		}
 		return true;
 	}
+
+	bool PackPanelChildren::setWeight( iterator it, float weight )
+	{
+		//TODO: Add assert
+
+		auto pSlot = it._slot();		
+
+		if( weight != pSlot->weight )
+		{
+			pSlot->weight = weight;
+			m_pHolder->_refreshChildGeo();
+		}
+		return true;
+	}
+
 	
 	float PackPanelChildren::weight( int index ) const
 	{
@@ -52,6 +67,14 @@ namespace wg
 		return m_pSlotArray->slot(index)->weight;
 		
 	}
+
+	float PackPanelChildren::weight( iterator it ) const
+	{
+		//TODO: Add assert
+
+		return it._slot()->weight;		
+	}
+
 
 	//____ Constructor ____________________________________________________________
 	
@@ -459,7 +482,7 @@ namespace wg
 	void PackPanel::_hideChildren(PackPanelSlot * pSlot, int nb)
 	{
 		for (int i = 0; i < nb; i++)
-			pSlot[i].bVisible = true;
+			pSlot[i].bVisible = false;
 
 		_refreshAllWidgets();
 	}

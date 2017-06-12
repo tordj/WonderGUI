@@ -72,7 +72,7 @@ namespace wg
 	
 	public:
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ChildEntry<Slot,Layer> base;
 

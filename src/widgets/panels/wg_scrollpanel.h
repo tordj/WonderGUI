@@ -177,7 +177,7 @@ namespace wg
 
 		static ScrollPanel_p	create() { return ScrollPanel_p(new ScrollPanel()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ViewEntry		view;
 		ScrollbarEntry	hscrollbar, vscrollbar;

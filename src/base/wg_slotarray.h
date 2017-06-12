@@ -61,7 +61,7 @@ namespace wg
 		SlotType*	remove(int index) { return _deleteBlock( &m_pArray[index], &m_pArray[index+1]); }
 		SlotType*	remove(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
 		SlotType*	remove(SlotType * pPos) { return _deleteBlock(pPos, pPos+1); }
-		SlotType*	remove(SlotType * pPos, int entries) { return _deleteBlock(pPos, pPos+entries); }
+		SlotType*	remove(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
 
 		void		move(int index, int newIndex) { move(&m_pArray[index], &m_pArray[newIndex]); }
 		void		move(SlotType * pFrom, SlotType * pTo)

@@ -92,7 +92,7 @@ namespace wg
 
 		static PopupLayer_p	create() { return PopupLayer_p(new PopupLayer()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		PopupChildren	popups;
 

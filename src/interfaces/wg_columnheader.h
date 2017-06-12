@@ -46,7 +46,7 @@ namespace wg
 
 		ColumnHeader(ColumnHeaderItem* pItem);
 		
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 	
 		Icon			icon;
 		Icon			arrow;

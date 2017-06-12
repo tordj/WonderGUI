@@ -66,7 +66,7 @@ namespace wg
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
 		static RootPanel_p	create( GfxDevice * pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
 
-		//.____ Components ____________________________________
+		//.____ Interfaces ____________________________________
 
 		ChildEntry<Slot,RootPanel>	child;
 

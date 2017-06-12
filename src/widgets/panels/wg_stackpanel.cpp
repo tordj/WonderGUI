@@ -35,15 +35,16 @@ namespace wg
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return;
 
-		auto pSlot = m_pSlotArray->slot(index);
-			
-		if( policy != pSlot->sizePolicy )
-		{
-			m_pHolder->_childRequestRender( pSlot );
-			pSlot->sizePolicy = policy;
-			m_pHolder->_childRequestRender( pSlot );
-		};		
+		_setSizePolicy( m_pSlotArray->slot(index), policy );
 	}
+
+	void StackPanelChildren::setSizePolicy( iterator it, SizePolicy2D policy )
+	{
+		//TODO: Assert
+
+		_setSizePolicy( it._slot(), policy );
+	}
+
 	
 	SizePolicy2D StackPanelChildren::sizePolicy( int index ) const
 	{
@@ -51,24 +52,29 @@ namespace wg
 			return SizePolicy2D::Default;
 
 		return m_pSlotArray->slot(index)->sizePolicy;
-		
 	}
+
+	SizePolicy2D StackPanelChildren::sizePolicy( iterator it ) const
+	{
+		return it._slot()->sizePolicy;
+	}
+
 
 	void StackPanelChildren::setOrigo( int index, Origo origo )
 	{
 		if( index < 0 || index >= m_pSlotArray->size() )
 			return;
 
-		auto pSlot = m_pSlotArray->slot(index);
-			
-		if( origo != pSlot->origo )
-		{
-			m_pHolder->_childRequestRender( pSlot );
-			pSlot->origo = origo;
-			m_pHolder->_childRequestRender( pSlot );
-		};
-		
+		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
+
+	void StackPanelChildren::setOrigo( iterator it, Origo origo )
+	{
+		//TODO: Assert
+
+		_setOrigo( it._slot(), origo );
+	}
+
 	
 	Origo StackPanelChildren::origo( int index ) const
 	{
@@ -76,7 +82,34 @@ namespace wg
 			return Origo::Center;
 
 		return m_pSlotArray->slot(index)->origo;
+	}
+
+	Origo StackPanelChildren::origo( iterator it ) const
+	{
+		//TODO: Assert
+
+		return it._slot()->origo;		
+	}
+
+
+	void StackPanelChildren::_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy )
+	{
+		if( policy != pSlot->sizePolicy )
+		{
+			m_pHolder->_childRequestRender( pSlot );
+			pSlot->sizePolicy = policy;
+			m_pHolder->_childRequestRender( pSlot );
+		};		
+	}
 		
+	void StackPanelChildren::_setOrigo( StackPanelSlot * pSlot, Origo origo )
+	{
+		if( origo != pSlot->origo )
+		{
+			m_pHolder->_childRequestRender( pSlot );
+			pSlot->origo = origo;
+			m_pHolder->_childRequestRender( pSlot );
+		};		
 	}
 
 	

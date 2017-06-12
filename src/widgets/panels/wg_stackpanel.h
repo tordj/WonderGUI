@@ -64,10 +64,21 @@ namespace wg
 
 
 		void		setSizePolicy( int index, SizePolicy2D policy );
+		void		setSizePolicy( iterator it, SizePolicy2D policy );
+
 		SizePolicy2D sizePolicy( int index ) const;
+		SizePolicy2D sizePolicy( iterator it ) const;
 
 		void		setOrigo( int index, Origo origo );
+		void		setOrigo( iterator it, Origo origo );
+
 		Origo		origo( int index ) const;
+		Origo		origo( iterator it ) const;
+		
+		
+	protected:
+		void		_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy );
+		void		_setOrigo( StackPanelSlot * pSlot, Origo origo );
 	};
 
 
@@ -89,7 +100,7 @@ namespace wg
 
 		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		StackPanelChildren	children;
 

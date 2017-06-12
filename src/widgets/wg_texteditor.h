@@ -45,7 +45,7 @@ namespace wg
 
 		static TextEditor_p	create() { return TextEditor_p(new TextEditor()); }
 
-		//.____ Components ____________________________________
+		//.____ Interfaces ____________________________________
 
 		EditText		text;
 

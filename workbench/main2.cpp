@@ -151,7 +151,7 @@ int main ( int argc, char** argv )
 	pFinalizer1 = nullptr;
 
 	printf("Weak pointer manip\n");
-	wpFin1 = wpFin2;
+//	wpFin1 = wpFin2;
 	wpFin2 = nullptr;
 	wpFin1 = nullptr;
 
@@ -390,12 +390,19 @@ int main ( int argc, char** argv )
 			p->text.set(temp);
 			widgets[i] = p;
 		}
+		
 
+//		auto it = pPanel->children.begin();
+//		for (int i = 0; i < 5; i++)
 
+		auto it = pPanel->children << widgets[0];
 
-		auto it = pPanel->children.begin();
-		for (int i = 0; i < 5; i++)
-			it = pPanel->children.insert(it, widgets[i]);
+		pPanel->children.insert( 1, &widgets[1], 4 );
+
+//			it = pPanel->children.insert(it, widgets[i]);
+
+		pPanel->children.remove( 1,2 );
+
 	}
 
 

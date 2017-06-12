@@ -45,7 +45,7 @@ namespace wg
 
 		static ValueDisplay_p	create() { return ValueDisplay_p(new ValueDisplay()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ModValue		value;
 

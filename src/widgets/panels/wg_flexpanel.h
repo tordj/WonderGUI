@@ -189,7 +189,7 @@ namespace wg
 
 		static FlexPanel_p	create() { return FlexPanel_p(new FlexPanel()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		FlexPanelChildren	children;
 

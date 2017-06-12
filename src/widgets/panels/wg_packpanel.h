@@ -61,7 +61,9 @@ namespace wg
 		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(this); }
 
 		bool		setWeight( int index, float weight );
+		bool		setWeight( iterator it, float weight );
 		float		weight( int index ) const;
+		float		weight( iterator it ) const;
 	};
 
 	
@@ -84,7 +86,7 @@ namespace wg
 
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 		
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		PackPanelChildren	children;
 

@@ -100,7 +100,7 @@ namespace wg
 
 		static ModalLayer_p	create() { return ModalLayer_p(new ModalLayer()); }
 
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ModalChildren	modals;
 

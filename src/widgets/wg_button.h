@@ -50,7 +50,7 @@ namespace wg
 
 		static Button_p	create() { return Button_p(new Button()); }
 	
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 
 		ModText			label;
 		Icon			icon;

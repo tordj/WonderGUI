@@ -5,7 +5,7 @@ require 'nokogiri'
 
 $prioTable = {
   'Creation' => 10,
-  'Components' => 20,
+  'Interfaces' => 20,
   'Properties' => 30,
   'Appearance' => 40,
   'Content' => 50,

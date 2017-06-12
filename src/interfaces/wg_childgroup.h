@@ -62,6 +62,7 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline Widget& operator[](int index) const { return * m_pSlotArray->slot(index)->pWidget; }
+		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }	
 
 
 		//.____ Content _______________________________________________________
@@ -85,12 +86,22 @@ namespace wg
 			m_pHolder->_didAddSlots(pSlot, 1);
 			return iterator(pSlot);
 		}
+
+		iterator add( const Widget_p pWidgets[], int amount )
+		{
+			//TODO: Add assert
+
+			SlotType * pSlot = m_pSlotArray->add(amount);
+
+			for( int i = 0; i < amount ; i++ )
+				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
+			m_pHolder->_didAddSlots(pSlot, amount);
+			return iterator(pSlot);		
+		}
 		
 		iterator insert( int index, Widget * pWidget )
 		{
-//TODO: Replace with asserts, here and in other methods.
-//			if( index < 0 || index >= m_pSlotArray->size() )
-//				return false;
+			//TODO: Add assert
 
 			SlotType * pSlot = m_pSlotArray->insert(index);
 			pSlot->replaceWidget(m_pHolder,pWidget);
@@ -100,9 +111,7 @@ namespace wg
 
 		iterator insert(iterator pos, Widget * pWidget)
 		{
-//TODO: Replace with asserts, here and in other methods.
-//			if (pos < m_pSlotArray->begin() || pos > m_pSlotArray->end())
-//				return false;
+			//TODO: Add assert
 
 			SlotType * pSlot = m_pSlotArray->insert(pos._slot());
 			pSlot->replaceWidget(m_pHolder, pWidget);
@@ -110,23 +119,62 @@ namespace wg
 			return iterator(pSlot);
 		}
 
+		iterator insert( int index, const Widget_p pWidgets[], int amount )
+		{
+			//TODO: Add assert
+
+			SlotType * pSlot = m_pSlotArray->insert(index, amount);
+
+			for( int i = 0; i < amount ; i++ )
+				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
+			m_pHolder->_didAddSlots(pSlot, amount);
+			return iterator(pSlot);		
+		}
+
+		iterator insert(iterator pos, const Widget_p pWidgets[], int amount )
+		{
+			//TODO: Add assert
+
+			SlotType * pSlot = m_pSlotArray->insert(pos._slot(), amount);
+			
+			for( int i = 0 ; i < amount ; i++ )
+				pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
+			m_pHolder->_didAddSlots(pSlot, amount);
+			return iterator(pSlot);
+		}
+
 		iterator remove( int index )
 		{
-//TODO: Replace with asserts, here and in other methods.
-//			if( index < 0 || index >= m_pSlotArray->size() )
-//				return false;
+			//TODO: Add assert
 
 			SlotType * pSlot = m_pSlotArray->slot(index);
 			m_pHolder->_willRemoveSlots(pSlot, 1);
-			return m_pSlotArray->remove(index);
+			return iterator(m_pSlotArray->remove(index));
 		}
 
 		iterator remove(iterator pos)
 		{
-			//TODO: Add assert here and in other methods.
+			//TODO: Add assert
 
 			m_pHolder->_willRemoveSlots(pos._slot(), 1);
-			return m_pSlotArray->remove(pos._slot());
+			return iterator(m_pSlotArray->remove(pos._slot()));
+		}
+
+		iterator remove( int index, int amount )
+		{
+			//TODO: Add assert
+
+			SlotType * pSlot = m_pSlotArray->slot(index);
+			m_pHolder->_willRemoveSlots(pSlot, amount);
+			return iterator(m_pSlotArray->remove(index, amount));
+		}
+
+		iterator remove(iterator beg, iterator end)
+		{
+			//TODO: Add assert
+
+			m_pHolder->_willRemoveSlots(beg._slot(), end._slot() - beg._slot());
+			return iterator(m_pSlotArray->remove(beg._slot(), end._slot() ));
 		}
 
 		void clear() 
@@ -152,7 +200,6 @@ namespace wg
 		HolderType *			m_pHolder;
 
 	};
-	
 	
 
 } // namespace wg

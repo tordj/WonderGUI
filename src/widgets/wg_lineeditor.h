@@ -42,7 +42,7 @@ namespace wg
 
 		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
 	
-		//.____ Components _______________________________________
+		//.____ Interfaces _______________________________________
 	
 		EditText		text;
 

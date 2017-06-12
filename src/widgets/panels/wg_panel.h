@@ -73,6 +73,8 @@ namespace wg
 	template<class SlotType, class HolderType> class PanelChildren : public ChildGroup<SlotType,HolderType>
 	{
 	public:
+		using		iterator = SlotIterator<SlotType>;
+		
 		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
 
 		bool	hide( int index ) 
@@ -83,6 +85,15 @@ namespace wg
 			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
 			return true;
 		};
+
+		bool	hide( iterator it ) 
+		{
+			//TODO: Assert
+				
+			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( it._slot(), 1 );
+			return true;
+		};
+
 		
 		bool	unhide( int index )
 		{
@@ -93,6 +104,15 @@ namespace wg
 			return true;
 		};
 
+		bool	unhide( iterator it )
+		{
+			//TODO: Assert
+
+			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( it._slot(), 1 );
+			return true;
+		};
+
+
 		bool		isVisible( int index ) 
 		{ 
 			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
@@ -100,6 +120,14 @@ namespace wg
 
 			return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->bVisible; 
 		}
+
+		bool		isVisible( iterator it ) 
+		{ 
+			//TODO: Assert
+
+			return it._slot()->bVisible; 
+		}
+
 	
 		bool		setPadding( int index, Border padding )
 		{
@@ -110,7 +138,17 @@ namespace wg
 			return true;
 		}
 
+		bool		setPadding( iterator it, Border padding )
+		{
+			//TODO: Assert
+
+			ChildGroup<SlotType,HolderType>::m_pHolder->_repadSlots( it._slot(), 1, padding );
+			return true;
+		}
+
+
 		Border		padding( int index ) const { return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->padding; }
+		Border		padding( iterator it ) const { return it._slot()->padding; }
 	};
 
 	
