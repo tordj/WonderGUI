@@ -126,44 +126,116 @@ namespace wg
 		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry, 
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
-		bool		setPinned( int index );
-		bool		setPinned( int index, const FlexPos& topLeft, const FlexPos& bottomRight );
+		void		setPinned( int index );
+		void		setPinned( iterator it );
 
-		bool		setMovable( int index, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
-		bool		setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
-	
-		bool		moveToBack( int index );								// Put us ontop all our silbings.
-		bool		moveToFront( int index );							// Put us below all our siblings.	
-		bool		moveAbove( int index, int sibling );
-		bool		moveBelow( int index, int sibling );
-	
+		void		setPinned( int index, const FlexPos& topLeft, const FlexPos& bottomRight );
+		void		setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight);
+
+		void		setMovable( int index, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
+		void		setMovable(iterator it, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
+
+		void		setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
+		void		setMovable(iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
+
+
+		void		moveToBack( int index );								// Put us ontop all our silbings.
+		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
+
+		void		moveToFront( int index );							// Put us below all our siblings.	
+		iterator	moveToFront( iterator it );							// Put us below all our siblings.	
+
+		void		moveAbove( int index, int sibling );
+		iterator	moveAbove( iterator it, iterator sibling );
+
+		void		moveBelow( int index, int sibling );
+		iterator	moveBelow( iterator it, iterator sibling );
+
 		bool		isMovable( int index ) const;
+		bool		isMovable( iterator it ) const;
+
 		bool		isPinned( int index ) const;
-	
+		bool		isPinned( iterator it ) const;
+
 		// Methods for movable children
 	
 		bool		setOrigo( int index, const FlexPos& origo );
+		bool		setOrigo( iterator it, const FlexPos& origo);
+
 		FlexPos		origo( int index ) const;
+		FlexPos		origo( iterator it ) const;
 
 		bool		setHotspot( int index, const FlexPos& hotspot );
+		bool		setHotspot( iterator it, const FlexPos& hotspot);
+
 		FlexPos		hotspot( int index ) const;
-		
+		FlexPos		hotspot( iterator it ) const;
+
 		bool		setGeo( int index, const Rect& geometry );
+		bool		setGeo( iterator it, const Rect& geometry);
+
 		Rect		geo( int index ) const;
-	
+		Rect		geo( iterator it ) const;
+
 		bool		setOfs( int index, const Coord& ofs );
+		bool		setOfs( iterator it, const Coord& ofs);
+
 		Coord		ofs( int index ) const;
+		Coord		ofs( iterator it ) const;
 
 		bool		setSize( int index, const Size& size );
+		bool		setSize( iterator it, const Size& size);
+
 		Rect		size( int index ) const;
-	
+		Rect		size( iterator it ) const;
+
 		bool		move( int index, const Coord& ofs );
-	
+		bool		move( iterator it, const Coord& ofs);
+
 	
 		// Methods for pinned children
 	
 		FlexPos	topLeftCorner( int index ) const;
+		FlexPos	topLeftCorner( iterator it ) const;
+
 		FlexPos	bottomRightCorner( int index ) const;
+		FlexPos	bottomRightCorner( iterator it ) const;
+
+	protected:
+		void		_setPinned(FlexPanelSlot * p);
+		void		_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
+
+		void		_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot);
+		void		_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
+
+		FlexPanelSlot * _moveAbove(FlexPanelSlot * p, FlexPanelSlot * sibling);
+		FlexPanelSlot *	_moveBelow(FlexPanelSlot * p, FlexPanelSlot * sibling);
+
+		// Methods for movable children
+
+		bool		_setOrigo(FlexPanelSlot * p, const FlexPos& origo);
+		FlexPos		_origo(FlexPanelSlot * p) const;
+
+		bool		_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot);
+		FlexPos		_hotspot(FlexPanelSlot * p) const;
+
+		bool		_setGeo(FlexPanelSlot * p, const Rect& geometry);
+		Rect		_geo(FlexPanelSlot * p) const;
+
+		bool		_setOfs(FlexPanelSlot * p, const Coord& ofs);
+		Coord		_ofs(FlexPanelSlot * p) const;
+
+		bool		_setSize(FlexPanelSlot * p, const Size& size);
+		Rect		_size(FlexPanelSlot * p) const;
+
+		bool		_move(FlexPanelSlot * p, const Coord& ofs);
+
+		// Methods for pinned children
+
+		FlexPos	_topLeftCorner(FlexPanelSlot * p) const;
+		FlexPos	_bottomRightCorner(FlexPanelSlot * p) const;
+
+
 	};
 	
 	
@@ -257,7 +329,7 @@ namespace wg
 		void		_refreshRealGeo( FlexPanelSlot * pSlot );
 		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 	
-		void		_moveSlot(int oldPos, int newPos);
+		void		_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo);
 	
 		SlotArray<FlexPanelSlot>	m_children;
 	

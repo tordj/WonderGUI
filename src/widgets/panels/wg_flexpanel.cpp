@@ -106,243 +106,257 @@ namespace wg
 
 	//____ setPinned() ________________________________________________________
 	
-	bool FlexPanelChildren::setPinned( int index )
+	void FlexPanelChildren::setPinned( int index )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-
-		if( !p->bPinned )
-		{
-			p->bPinned = true;
-			
-			Size sz = m_pHolder->size();
-			
-			p->topLeftPin		= FlexPos( p->realGeo.x/(float)sz.w, p->realGeo.y/(float)sz.h );
-			p->bottomRightPin	= FlexPos( p->realGeo.right()/(float)sz.w, p->realGeo.bottom()/(float)sz.h );
-		
-			m_pHolder->_refreshRealGeo( p );
-		}
-		return true;
+		_setPinned(m_pSlotArray->slot(index));
 	}
-	
-	bool FlexPanelChildren::setPinned( int index, const FlexPos& topLeft, const FlexPos& bottomRight )
+
+	void FlexPanelChildren::setPinned(iterator it)
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-
-		p->bPinned			= true;
-		p->topLeftPin		= topLeft;
-		p->bottomRightPin	= bottomRight;
-			
-		m_pHolder->_refreshRealGeo( p );
-		return true;
+		_setPinned(it._slot());
 	}
-	
+
+	void FlexPanelChildren::setPinned(int index, const FlexPos& topLeft, const FlexPos& bottomRight)
+	{
+		//TODO: Assert
+
+		_setPinned(m_pSlotArray->slot(index), topLeft, bottomRight);
+	}
+
+	void FlexPanelChildren::setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight )
+	{
+		//TODO: Assert
+
+		_setPinned(it._slot(), topLeft, bottomRight);
+	}
+
 	//____ setMovable() ________________________________________________________
 		
-	bool FlexPanelChildren::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
+	void FlexPanelChildren::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-
-		if( p->bPinned )
-		{
-			p->bPinned 		= false;
-			p->origo		= origo;
-			p->hotspot		= hotspot;		
-			p->placementGeo	= p->realGeo - origo.pos( m_pHolder->size() ) + hotspot.pos(p->realGeo);		
-			
-			m_pHolder->_refreshRealGeo( p );
-		}
-		return true;
+		_setMovable(m_pSlotArray->slot(index), origo, hotspot);
 	}
-	
-	bool FlexPanelChildren::setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+
+	void FlexPanelChildren::setMovable(iterator it, const FlexPos& origo, const FlexPos& hotspot)
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-					
-		p->bPinned 		= false;
-		p->origo		= origo;
-		p->hotspot		= hotspot;		
-		p->placementGeo	= geometry;
+		_setMovable(it._slot(), origo, hotspot);
+	}
 
-		m_pHolder->_refreshRealGeo( p );
-		return true;
+	void FlexPanelChildren::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	{
+		//TODO: Assert
+
+		_setMovable(m_pSlotArray->slot(index), geometry, origo, hotspot);
+	}
+
+	void FlexPanelChildren::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	{
+		//TODO: Assert
+
+		_setMovable(it._slot(), geometry, origo, hotspot);
 	}
 	
 	//____ moveToBack() ________________________________________________________
 		
-	bool FlexPanelChildren::moveToBack( int index )
+	void FlexPanelChildren::moveToBack( int index )
 	{
-		return moveBelow( index, 0 );
+		//TODO: Assert
+
+		_moveBelow( m_pSlotArray->slot(index),m_pSlotArray->first() );
 	}
 	
+	FlexPanelChildren::iterator FlexPanelChildren::moveToBack(iterator it)
+	{
+		return iterator( _moveBelow(it._slot(), m_pSlotArray->first()) );
+	}
+
 	//____ moveToFront() ________________________________________________________
 
-	bool FlexPanelChildren::moveToFront( int index )
+	void FlexPanelChildren::moveToFront( int index )
 	{
-		return moveAbove( index, m_pSlotArray->size()-1 );
+		_moveAbove( m_pSlotArray->slot(index), m_pSlotArray->last() );
 	}
-		
+
+	FlexPanelChildren::iterator FlexPanelChildren::moveToFront(iterator it)
+	{
+		return iterator( _moveAbove(it._slot(), m_pSlotArray->last()) );
+	}
+
 	//____ moveAbove() ________________________________________________________
 	
-	bool FlexPanelChildren::moveAbove( int index, int sibling )
+	void FlexPanelChildren::moveAbove( int index, int sibling )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 
-		if( sibling < 0 || sibling >= m_pSlotArray->size() )
-			return false;
-
-		if( index > sibling )
-			sibling++;
-
-		if (index != sibling)
-			m_pHolder->_moveSlot(index, sibling);
-		
-		return true;
+		_moveAbove(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
 	}
-		
+
+	FlexPanelChildren::iterator FlexPanelChildren::moveAbove(iterator it, iterator sibling)
+	{
+		//TODO: Assert
+
+		return iterator( _moveAbove(it._slot(), sibling._slot()) );
+	}
+
+
 	//____ moveBelow() ________________________________________________________
-	
-	bool FlexPanelChildren::moveBelow( int index, int sibling )
+
+	void FlexPanelChildren::moveBelow(int index, int sibling)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert!
 
-		if (sibling < 0 || sibling >= m_pSlotArray->size())
-			return false;
-
-		if (index < sibling)
-			sibling--;
-
-		if (index != sibling)
-			m_pHolder->_moveSlot(index, sibling);
-
-		return true;
+		_moveBelow(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
 	}
-	
+
+	FlexPanelChildren::iterator FlexPanelChildren::moveBelow(iterator it, iterator sibling)
+	{
+		//TODO: Assert
+
+		return iterator(_moveBelow(it._slot(), sibling._slot()));
+	}
+
+
+
 	//____ isMovable() ________________________________________________________
 		
 	bool FlexPanelChildren::isMovable( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert!
 			
 		return !m_pSlotArray->slot(index)->bPinned;
 	}
-		
-	//____ isPinned() ________________________________________________________
-	
-	bool FlexPanelChildren::isPinned( int index ) const
+
+	bool FlexPanelChildren::isMovable(iterator it) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert!
+
+		return !it._slot()->bPinned;
+	}
+
+
+	//____ isPinned() ________________________________________________________
+
+	bool FlexPanelChildren::isPinned(int index) const
+	{
+		//TODO: Assert!
+
+		return m_pSlotArray->slot(index)->bPinned;
+	}
+	
+	bool FlexPanelChildren::isPinned( iterator it ) const
+	{
+		//TODO: Assert!
 			
-		return m_pSlotArray->slot(index)->bPinned;		
+		return it._slot()->bPinned;		
 	}
 	
 	//____ setOrigo() ________________________________________________________	
 	
 	bool FlexPanelChildren::setOrigo( int index, const FlexPos& origo )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert!
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return false;
-	
-		p->origo = origo;
-		m_pHolder->_refreshRealGeo( p );
-	
-		return true;		
+		return _setOrigo(m_pSlotArray->slot(index), origo);
 	}
-	
+
+	bool FlexPanelChildren::setOrigo( iterator it, const FlexPos& origo)
+	{
+		//TODO: Assert!
+
+		return _setOrigo(it._slot(), origo);
+	}
+
+
 	//____ origo() ________________________________________________________
 	
 	FlexPos FlexPanelChildren::origo( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return FlexPos();
+		//TODO: Assert!
 			
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return FlexPos();
-			
-		return m_pSlotArray->slot(index)->origo;				
+		return _origo(m_pSlotArray->slot(index));
 	}
-		
+
+	FlexPos FlexPanelChildren::origo( iterator it ) const
+	{
+		//TODO: Assert!
+
+		return _origo(it._slot());
+	}
+
+
 	//____ setHotspot() ________________________________________________________
 	
 	bool FlexPanelChildren::setHotspot( int index, const FlexPos& hotspot )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert!
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return false;
-	
-		p->hotspot = hotspot;
-		m_pHolder->_refreshRealGeo( p );
-	
-		return true;		
+		return _setHotspot(m_pSlotArray->slot(index), hotspot);
+	}
+
+	bool FlexPanelChildren::setHotspot(iterator it, const FlexPos& hotspot)
+	{
+		//TODO: Assert!
+
+		return _setHotspot(it._slot(), hotspot);
 	}
 
 	//____ hotspot() ________________________________________________________
 	
 	FlexPos FlexPanelChildren::hotspot( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return FlexPos();
+		//TODO: Assert!
 			
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return FlexPos();
-			
-		return m_pSlotArray->slot(index)->hotspot;
+		return _hotspot( m_pSlotArray->slot(index) );
 	}
-	
+
+	FlexPos FlexPanelChildren::hotspot(iterator it) const
+	{
+		//TODO: Assert!
+
+		return _hotspot(it._slot());
+	}
+
+
 	//____ setGeo() ________________________________________________________
 		
 	bool FlexPanelChildren::setGeo( int index, const Rect& geometry )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert!
 
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return false;
-	
-		p->placementGeo = geometry;
-		m_pHolder->_refreshRealGeo( p );
-	
-		return true;		
+		return _setGeo(m_pSlotArray->slot(index), geometry);
+	}
+
+	bool FlexPanelChildren::setGeo(iterator it, const Rect& geometry)
+	{
+		//TODO: Assert!
+
+		return _setGeo(it._slot(), geometry);
 	}
 
 	//____ geo() ________________________________________________________
 	
 	Rect FlexPanelChildren::geo( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return Rect();
+		//TODO: Assert
 			
-		FlexPanelSlot * p = m_pSlotArray->slot(index);
-		if( p->bPinned )
-			return Rect();
-			
-		return m_pSlotArray->slot(index)->placementGeo;
+		return _geo(m_pSlotArray->slot(index));
 	}
+
+	Rect FlexPanelChildren::geo( iterator it ) const
+	{
+		//TODO: Assert
+
+		return _geo(it._slot());
+	}
+
 
 	//____ setOfs() ________________________________________________________
 	
@@ -451,6 +465,155 @@ namespace wg
 		return p->bottomRightPin;		
 	}
 	
+	//____ _setPinned() ________________________________________________________
+
+	void FlexPanelChildren::_setPinned(FlexPanelSlot * p)
+	{
+		if (!p->bPinned)
+		{
+			p->bPinned = true;
+
+			Size sz = m_pHolder->size();
+
+			p->topLeftPin = FlexPos(p->realGeo.x / (float)sz.w, p->realGeo.y / (float)sz.h);
+			p->bottomRightPin = FlexPos(p->realGeo.right() / (float)sz.w, p->realGeo.bottom() / (float)sz.h);
+
+			m_pHolder->_refreshRealGeo(p);
+		}
+	}
+
+	void FlexPanelChildren::_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight)
+	{
+		p->bPinned = true;
+		p->topLeftPin = topLeft;
+		p->bottomRightPin = bottomRight;
+
+		m_pHolder->_refreshRealGeo(p);
+	}
+
+	//____ _setMovable() ________________________________________________________
+
+	void FlexPanelChildren::_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot)
+	{
+		if (p->bPinned)
+		{
+			p->bPinned = false;
+			p->origo = origo;
+			p->hotspot = hotspot;
+			p->placementGeo = p->realGeo - origo.pos(m_pHolder->size()) + hotspot.pos(p->realGeo);
+
+			m_pHolder->_refreshRealGeo(p);
+		}
+	}
+
+	void FlexPanelChildren::_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	{
+		p->bPinned = false;
+		p->origo = origo;
+		p->hotspot = hotspot;
+		p->placementGeo = geometry;
+
+		m_pHolder->_refreshRealGeo(p);
+	}
+
+	//____ _moveAbove() ________________________________________________________
+
+	FlexPanelSlot * FlexPanelChildren::_moveAbove(FlexPanelSlot * p, FlexPanelSlot * pSibling)
+	{
+		if (p > pSibling)
+			pSibling++;
+
+		if (p != pSibling)
+			m_pHolder->_moveSlot(p, pSibling);
+
+		return pSibling;
+	}
+
+
+	//____ _moveBelow() ________________________________________________________
+
+	FlexPanelSlot * FlexPanelChildren::_moveBelow(FlexPanelSlot * p, FlexPanelSlot * pSibling)
+	{
+		if (p < pSibling)
+			pSibling--;
+
+		if (p != pSibling)
+			m_pHolder->_moveSlot(p, pSibling);
+
+		return pSibling;
+	}
+
+	//____ _setOrigo() ________________________________________________________	
+
+	bool FlexPanelChildren::_setOrigo(FlexPanelSlot * p, const FlexPos& origo)
+	{
+		if (p->bPinned)
+			return false;
+
+		p->origo = origo;
+		m_pHolder->_refreshRealGeo(p);
+
+		return true;
+	}
+
+	//____ _origo() ________________________________________________________
+
+	FlexPos FlexPanelChildren::_origo(FlexPanelSlot * p) const
+	{
+		if (p->bPinned)
+			return FlexPos();
+
+		return p->origo;
+	}
+
+	//____ _setHotspot() ________________________________________________________
+
+	bool FlexPanelChildren::_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot)
+	{
+		if (p->bPinned)
+			return false;
+
+		p->hotspot = hotspot;
+		m_pHolder->_refreshRealGeo(p);
+
+		return true;
+	}
+
+	//____ _hotspot() ________________________________________________________
+
+	FlexPos FlexPanelChildren::_hotspot(FlexPanelSlot * p) const
+	{
+		if (p->bPinned)
+			return FlexPos();
+
+		return p->hotspot;
+	}
+
+	//____ _setGeo() ________________________________________________________
+
+	bool FlexPanelChildren::_setGeo(FlexPanelSlot * p, const Rect& geometry)
+	{
+		if (p->bPinned)
+			return false;
+
+		p->placementGeo = geometry;
+		m_pHolder->_refreshRealGeo(p);
+
+		return true;
+	}
+
+	//____ _geo() ________________________________________________________
+
+	Rect FlexPanelChildren::_geo(FlexPanelSlot * p) const
+	{
+		if (p->bPinned)
+			return Rect();
+
+		return p->placementGeo;
+	}
+
+
+
 	//____ Constructor ____________________________________________________________
 	
 	FlexPanel::FlexPanel() : m_bConfineWidgets(false), children(&m_children,this)
@@ -527,26 +690,23 @@ namespace wg
 
 	//____ _moveSlot() ___________________________________________________________
 
-	void FlexPanel::_moveSlot(int oldPos, int newPos)
+	void FlexPanel::_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo)
 	{
-		m_children.move(oldPos, newPos);
+		m_children.move(pFrom, pTo);
 
-		FlexPanelSlot * pOther = m_children.slot(oldPos);				// This is correct, we have already switched places...
-		FlexPanelSlot * pIndex = m_children.slot(newPos);
-
-		if (pIndex->bVisible)
+		if (pTo->bVisible)		// This is correct, we have already switched places...
 		{
-			if (pIndex > pOther)			// We were moved forward
+			if (pTo > pFrom)			// We were moved forward
 			{
 				// Request render on all areas covered by siblings we have skipped in front of.
 
-				FlexPanelSlot * p = pOther;
-				while (p < pIndex)
+				FlexPanelSlot * p = pFrom;
+				while (p < pTo)
 				{
-					Rect cover(pIndex->realGeo, p->realGeo);
+					Rect cover(pTo->realGeo, p->realGeo);
 
 					if (p->bVisible && !cover.isEmpty())
-						_onRequestRender(cover, pIndex);
+						_onRequestRender(cover, pTo);
 					p++;
 				}
 			}
@@ -554,10 +714,10 @@ namespace wg
 			{
 				// Request render on our siblings for the area we previously have covered.
 
-				FlexPanelSlot * p = pIndex + 1;
-				while (p <= pOther)
+				FlexPanelSlot * p = pTo + 1;
+				while (p <= pFrom)
 				{
-					Rect cover(pIndex->realGeo, p->realGeo);
+					Rect cover(pTo->realGeo, p->realGeo);
 
 					if (p->bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
