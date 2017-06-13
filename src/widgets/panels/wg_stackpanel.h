@@ -92,6 +92,7 @@ namespace wg
 	{
 		friend class StackPanelChildren;
 		friend class PanelChildren<StackPanelSlot,StackPanel>;
+		friend class HideableChildren<StackPanelSlot,StackPanel>;
 		friend class ChildGroup<StackPanelSlot,StackPanel>;
 
 	public:
@@ -141,8 +142,8 @@ namespace wg
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( PanelSlot *, int nb );
-		void		_unhideSlots( PanelSlot *, int nb );
+		void		_hideSlots( Slot *, int nb );
+		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( PanelSlot *, int nb, Border padding );
 
 

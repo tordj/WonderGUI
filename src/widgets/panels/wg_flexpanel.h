@@ -116,14 +116,14 @@ namespace wg
 		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(this); }
 
 
-		bool		addPinned( Widget * pWidget, const FlexPos& topLeft, 
+		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft, 
 									const FlexPos& bottomRight );
-		bool		addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
+		iterator	addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
 									const FlexPos& hotspot = Origo::NorthWest );
 	
-		bool		insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
+		iterator	insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		bool		insertMovable( int index, Widget * pWidget, const Rect& geometry, 
+		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry, 
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
 		bool		setPinned( int index );
@@ -181,6 +181,8 @@ namespace wg
 	class FlexPanel : public Panel
 	{
 		friend class FlexPanelChildren;
+		friend class PanelChildren<FlexPanelSlot,FlexPanel>;
+		friend class HideableChildren<FlexPanelSlot,FlexPanel>;
 		friend class ChildGroup<FlexPanelSlot,FlexPanel>;
 	
 	public:

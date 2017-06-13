@@ -685,7 +685,7 @@ namespace wg
 
 	void PackList::_didAddSlots(Slot * pSlot, int nb)
 	{
-		_unhideSlots((ListSlot*)pSlot, nb);
+		_unhideSlots(pSlot, nb);
 		List::_didAddSlots(pSlot, nb);
 	}
 
@@ -693,13 +693,13 @@ namespace wg
 
 	void PackList::_willRemoveSlots(Slot * pSlot, int nb)
 	{
-		_hideSlots((ListSlot*)pSlot, nb);
+		_hideSlots(pSlot, nb);
 		List::_willRemoveSlots(pSlot, nb);
 	}
 
 	//____ _hideSlots() _____________________________________________________
 
-	void PackList::_hideSlots(ListSlot * _pSlot, int nb)
+	void PackList::_hideSlots(Slot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -724,7 +724,7 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackList::_unhideSlots(ListSlot * _pSlot, int nb)
+	void PackList::_unhideSlots(Slot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 

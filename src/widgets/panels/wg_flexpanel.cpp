@@ -42,68 +42,66 @@ namespace wg
 
 	//____ addPinned() _________________________________________________________
 	
-	bool FlexPanelChildren::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	FlexPanelChildren::iterator FlexPanelChildren::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
-			FlexPanelSlot * pSlot = m_pSlotArray->add();
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			
-			pSlot->bPinned = true;
-			pSlot->topLeftPin = topLeft;
-			pSlot->bottomRightPin = bottomRight;
-			
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;
+		FlexPanelSlot * pSlot = m_pSlotArray->add();
+		pSlot->replaceWidget(m_pHolder,pWidget);
+		
+		pSlot->bPinned = true;
+		pSlot->topLeftPin = topLeft;
+		pSlot->bottomRightPin = bottomRight;
+		
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
 	}
 	
 	//____ addMovable() ________________________________________________________
 	
-	bool FlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	FlexPanelChildren::iterator FlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
-			FlexPanelSlot * pSlot = m_pSlotArray->add();
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			
-			pSlot->placementGeo = geometry;
-			pSlot->origo = origo;
-			pSlot->hotspot = hotspot;
-			
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;
+		FlexPanelSlot * pSlot = m_pSlotArray->add();
+		pSlot->replaceWidget(m_pHolder,pWidget);
+		
+		pSlot->placementGeo = geometry;
+		pSlot->origo = origo;
+		pSlot->hotspot = hotspot;
+		
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
 	}
 	
 	//____ insertPinned() ________________________________________________________
 
-	bool FlexPanelChildren::insertPinned( int index, Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	FlexPanelChildren::iterator FlexPanelChildren::insertPinned( int index, Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
-			if( index < 0 || index >= m_pSlotArray->size() )
-				return false;
+		//TODO: Assert
 
-			FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
-			pSlot->replaceWidget(m_pHolder,pWidget);
+		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+		pSlot->replaceWidget(m_pHolder,pWidget);
 
-			pSlot->bPinned = true;
-			pSlot->topLeftPin = topLeft;
-			pSlot->bottomRightPin = bottomRight;
+		pSlot->bPinned = true;
+		pSlot->topLeftPin = topLeft;
+		pSlot->bottomRightPin = bottomRight;
 
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;				
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);				
 	}
 	
 	//____ insertMovable() ________________________________________________________
 		
-	bool FlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	FlexPanelChildren::iterator FlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
-			if( index < 0 || index >= m_pSlotArray->size() )
-				return false;
+		//TODO: Assert
 
-			FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
-			pSlot->replaceWidget(m_pHolder,pWidget);
+		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+		pSlot->replaceWidget(m_pHolder,pWidget);
 
-			pSlot->placementGeo = geometry;
-			pSlot->origo = origo;
-			pSlot->hotspot = hotspot;
+		pSlot->placementGeo = geometry;
+		pSlot->origo = origo;
+		pSlot->hotspot = hotspot;
 
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return true;		
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);		
 	}
 
 	//____ setPinned() ________________________________________________________

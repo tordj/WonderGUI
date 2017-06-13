@@ -75,7 +75,9 @@ namespace wg
 	class PackList : public List
 	{
 		friend class PackListChildren;
-		template<class T, class P> friend class ChildGroup;
+		friend class HideableChildren<PackListSlot,PackList>;
+		friend class ChildGroup<PackListSlot,PackList>;
+//		template<class T, class P> friend class ChildGroup;
 	public:
 
 		//.____ Creation __________________________________________
@@ -141,8 +143,8 @@ namespace wg
 		void			_didAddSlots(Slot * pSlot, int nb);
 		void			_willRemoveSlots(Slot * pSlot, int nb);
 
-		void			_hideSlots(ListSlot * pSlot, int nb);
-		void			_unhideSlots(ListSlot * pSlot, int nb);
+		void			_hideSlots(Slot * pSlot, int nb);
+		void			_unhideSlots(Slot * pSlot, int nb);
 
 
 		// Overloaded from List

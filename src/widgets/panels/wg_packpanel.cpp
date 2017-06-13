@@ -374,14 +374,14 @@ namespace wg
 
 	//____ _hideSlots() _______________________________________________________
 
-	void PackPanel::_hideSlots(PanelSlot * pSlot, int nb)
+	void PackPanel::_hideSlots(Slot * pSlot, int nb)
 	{
 		_hideChildren((PackPanelSlot*) pSlot, nb);
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackPanel::_unhideSlots(PanelSlot * pSlot, int nb)
+	void PackPanel::_unhideSlots(Slot * pSlot, int nb)
 	{
 		_unhideChildren((PackPanelSlot*) pSlot, nb);
 	}

@@ -27,8 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_slot.h>
-#include <wg_childgroup.h>
+#include <wg_hideablechildren.h>
 
 
 namespace wg 
@@ -37,8 +36,8 @@ namespace wg
 	class Patches;
 	
 	class Panel;
-	typedef	StrongPtr<Panel>		Panel_p;
-	typedef	WeakPtr<Panel>	Panel_wp;
+	typedef	StrongPtr<Panel>	Panel_p;
+	typedef	WeakPtr<Panel>		Panel_wp;
 	
 	
 
@@ -61,73 +60,19 @@ namespace wg
 
 	//____ PanelSlotsHolder ____________________________________________________________
 
-	class PanelSlotsHolder : public ChildGroupHolder  /** @private */
+	class PanelSlotsHolder : public HideableChildrenHolder  /** @private */
 	{
-		virtual void	_hideSlots( PanelSlot * pSlot, int nb ) = 0;
-		virtual void	_unhideSlots( PanelSlot * pSlot, int nb ) = 0;
 		virtual void	_repadSlots( PanelSlot * pSlot, int nb, Border padding ) = 0;
 	};
 
 	//____ PanelChildren ________________________________________________________
 
-	template<class SlotType, class HolderType> class PanelChildren : public ChildGroup<SlotType,HolderType>
+	template<class SlotType, class HolderType> class PanelChildren : public HideableChildren<SlotType,HolderType>
 	{
 	public:
 		using		iterator = SlotIterator<SlotType>;
 		
-		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
-
-		bool	hide( int index ) 
-		{
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
-				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
-			return true;
-		};
-
-		bool	hide( iterator it ) 
-		{
-			//TODO: Assert
-				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( it._slot(), 1 );
-			return true;
-		};
-
-		
-		bool	unhide( int index )
-		{
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
-				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
-			return true;
-		};
-
-		bool	unhide( iterator it )
-		{
-			//TODO: Assert
-
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( it._slot(), 1 );
-			return true;
-		};
-
-
-		bool		isVisible( int index ) 
-		{ 
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
-
-			return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->bVisible; 
-		}
-
-		bool		isVisible( iterator it ) 
-		{ 
-			//TODO: Assert
-
-			return it._slot()->bVisible; 
-		}
-
+		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : HideableChildren<SlotType,HolderType>(pSlotArray, pHolder) {}
 	
 		bool		setPadding( int index, Border padding )
 		{

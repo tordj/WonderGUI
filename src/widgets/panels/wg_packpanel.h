@@ -78,6 +78,7 @@ namespace wg
 	{
 		friend class PackPanelChildren;
 		friend class PanelChildren<PackPanelSlot,PackPanel>;
+		friend class HideableChildren<PackPanelSlot,PackPanel>;
 		friend class ChildGroup<PackPanelSlot,PackPanel>;
 	
 	public:
@@ -136,8 +137,8 @@ namespace wg
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( PanelSlot *, int nb );
-		void		_unhideSlots( PanelSlot *, int nb );
+		void		_hideSlots( Slot *, int nb );
+		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( PanelSlot *, int nb, Border padding );
 
 		// Overloaded from WidgetHolder

@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_childgroup.h>
+#include <wg_hideablechildren.h>
 
 namespace wg 
 {
@@ -48,7 +48,7 @@ namespace wg
 
 	//____ ListChildrenHolder ____________________________________________________________
 
-	class ListChildrenHolder : public ChildGroupHolder		/** @private */
+	class ListChildrenHolder : public HideableChildrenHolder		/** @private */
 	{
 		virtual void	_hideSlots(ListSlot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(ListSlot * pSlot, int nb) = 0;
@@ -56,30 +56,10 @@ namespace wg
 
 	//____ ListChildren ________________________________________________________
 
-	template<class SlotType, class HolderType> class ListChildren : public ChildGroup<SlotType, HolderType>
+	template<class SlotType, class HolderType> class ListChildren : public HideableChildren<SlotType, HolderType>
 	{
 	public:
-		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : ChildGroup<SlotType, HolderType>(pSlotArray, pHolder) {}
-
-		void	hide(int index)
-		{
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-				ChildGroup<SlotType, HolderType>::m_pHolder->_hideSlots(ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index), 1);
-		};
-
-		void	unhide(int index)
-		{
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-				ChildGroup<SlotType, HolderType>::m_pHolder->_unhideSlots(ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index), 1);
-		};
-
-		bool	isVisible(int index) 
-		{ 
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-				return ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index)->bVisible;
-
-			return false;
-		}
+		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
 
 		void	select(int index)
 		{

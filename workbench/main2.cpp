@@ -397,11 +397,14 @@ int main ( int argc, char** argv )
 
 		auto it = pPanel->children << widgets[0];
 
-		pPanel->children.insert( 1, &widgets[1], 4 );
+		pPanel->children.insert( 0, &widgets[1], 4 );
 
 //			it = pPanel->children.insert(it, widgets[i]);
 
-		pPanel->children.remove( 1,2 );
+		it = pPanel->children.begin();
+		auto it2 = it;
+		it2++;
+		pPanel->children.hide( it, ++it2 );
 
 	}
 

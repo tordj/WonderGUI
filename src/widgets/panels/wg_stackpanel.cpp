@@ -287,14 +287,14 @@ namespace wg
 
 	//____ _hideSlots() _______________________________________________________
 
-	void StackPanel::_hideSlots( PanelSlot * pSlot, int nb )
+	void StackPanel::_hideSlots( Slot * pSlot, int nb )
 	{
 		_hideChildren( (StackPanelSlot*) pSlot, nb );
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void StackPanel::_unhideSlots( PanelSlot * pSlot, int nb )
+	void StackPanel::_unhideSlots( Slot * pSlot, int nb )
 	{
 		_unhideChildren( (StackPanelSlot*) pSlot, nb );
 	}
