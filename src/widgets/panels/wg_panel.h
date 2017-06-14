@@ -71,15 +71,17 @@ namespace wg
 	{
 	public:
 		using		iterator = SlotIterator<SlotType>;
+		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
+		using		ChildGroup<SlotType,HolderType>::m_pHolder;
 		
 		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : HideableChildren<SlotType,HolderType>(pSlotArray, pHolder) {}
 	
 		bool		setPadding( int index, Border padding )
 		{
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
+			if( index < 0 || index >= m_pSlotArray->size() )
 				return false;
 				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_repadSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1, padding );
+			m_pHolder->_repadSlots( m_pSlotArray->slot(index), 1, padding );
 			return true;
 		}
 
@@ -87,12 +89,12 @@ namespace wg
 		{
 			//TODO: Assert
 
-			ChildGroup<SlotType,HolderType>::m_pHolder->_repadSlots( it._slot(), 1, padding );
+			m_pHolder->_repadSlots( it._slot(), 1, padding );
 			return true;
 		}
 
 
-		Border		padding( int index ) const { return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->padding; }
+		Border		padding( int index ) const { return m_pSlotArray->slot(index)->padding; }
 		Border		padding( iterator it ) const { return it._slot()->padding; }
 	};
 

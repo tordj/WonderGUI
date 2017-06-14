@@ -35,180 +35,295 @@ namespace wg
 
 	//____ add() _________________________________________________________________
 
-	bool ModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
+	ModalChildren::iterator ModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
+		//TODO: Assert
+		
 		ModalSlot * pSlot = m_pSlotArray->add();
 		pSlot->geo = geometry;
 		pSlot->origo = origo;
 
 		pSlot->replaceWidget(m_pHolder, pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return true;
+		return iterator(pSlot);
 	}
 
 	//____ moveToBack() ______________________________________________________________
 
-	bool ModalChildren::moveToBack( int index )
+	void ModalChildren::moveToBack( int index )
 	{
-		return moveBelow(index, 0);
+		//TODO: Assert
+
+		_moveBelow(m_pSlotArray->slot(index),m_pSlotArray->first());
+	}
+
+	ModalChildren::iterator ModalChildren::moveToBack(iterator it)
+	{
+		//TODO: Assert
+		
+		return iterator(_moveBelow(it._slot(),m_pSlotArray->first()));
 	}
 	
 	//____ moveToFront() ______________________________________________________________
 
-	bool ModalChildren::moveToFront(int index)
+	void ModalChildren::moveToFront(int index)
 	{
-		return moveAbove(index, m_pSlotArray->size() - 1);
+		//TODO: Assert
+		
+		_moveAbove(m_pSlotArray->slot(index),m_pSlotArray->last());
+	}
+
+	ModalChildren::iterator ModalChildren::moveToFront(iterator it)
+	{
+		//TODO: Assert
+		
+		return iterator(_moveAbove(it._slot(),m_pSlotArray->last()));
 	}
 
 	//____ moveAbove() ______________________________________________________________
 
-	bool ModalChildren::moveAbove(int index, int sibling)
+	void ModalChildren::moveAbove(int index, int sibling)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
 
-		if (sibling < 0 || sibling >= m_pSlotArray->size())
-			return false;
+		_moveAbove(m_pSlotArray->slot(index),m_pSlotArray->slot(sibling));
+	}
 
-		if (index > sibling)
-			sibling++;
+	ModalChildren::iterator ModalChildren::moveAbove(iterator it, iterator sibling)
+	{
+		//TODO: Assert
 
-		if (index != sibling)
-			m_pHolder->_moveSlot(index, sibling);
-
-		return true;
+		return iterator(_moveAbove(it._slot(),sibling._slot()));
 	}
 
 	//____ moveBelow() ______________________________________________________________
 
-	bool ModalChildren::moveBelow(int index, int sibling)
+	void ModalChildren::moveBelow(int index, int sibling)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
+		
+		_moveBelow(m_pSlotArray->slot(index),m_pSlotArray->slot(sibling));
+	}
 
-		if (sibling < 0 || sibling >= m_pSlotArray->size())
-			return false;
+	ModalChildren::iterator ModalChildren::moveBelow(iterator it, iterator sibling)
+	{
+		//TODO: Assert
 
-		if (index < sibling)
-			sibling--;
-
-		if (index != sibling)
-			m_pHolder->_moveSlot(index, sibling);
-
-		return true;
+		return iterator(_moveBelow(it._slot(),sibling._slot()));
 	}
 
 	//____ setOrigo() ______________________________________________________________
 
-	bool ModalChildren::setOrigo(int index, const Origo origo)
+	void ModalChildren::setOrigo(int index, const Origo origo)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
+		
+		_setOrigo( m_pSlotArray->slot(index), origo );
+	}
 
-		ModalSlot * pSlot = m_pSlotArray->slot(index);
-
-		pSlot->origo = origo;
-		return m_pHolder->_refreshRealGeo(pSlot);
+	void ModalChildren::setOrigo(iterator it, const Origo origo)
+	{
+		//TODO: Assert
+		
+		_setOrigo( it._slot(), origo );
 	}
 
 	//____ origo() ______________________________________________________________
 
 	Origo ModalChildren::origo(int index) const
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return { Origo::NorthWest };
+		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
+	Origo ModalChildren::origo(iterator it) const
+	{
+		//TODO: Assert
+
+		return it._slot()->origo;
+	}
+
 	//____ setGeo() ______________________________________________________________
 
-	bool ModalChildren::setGeo(int index, const Rect& geometry)
+	void ModalChildren::setGeo(int index, const Rect& geometry)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
 
-		ModalSlot * pSlot = m_pSlotArray->slot(index);
+		_setGeo(m_pSlotArray->slot(index), geometry);
+	}
 
-		pSlot->placementGeo = geometry;
-		return m_pHolder->_refreshRealGeo(pSlot);
+	void ModalChildren::setGeo(iterator it, const Rect& geometry)
+	{
+		//TODO: Assert
+
+		_setGeo(it._slot(), geometry);
 	}
 
 	//____ geo() _________________________________________________________________
 
 	Rect ModalChildren::geo(int index) const
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return { 0,0,0,0 };
-
+		//TODO: Assert
+		
 		return m_pSlotArray->slot(index)->geo;
+	}
+
+	Rect ModalChildren::geo(iterator it) const
+	{
+		//TODO: Assert
+		
+		return it._slot()->geo;
 	}
 
 	//____ setOfs() ______________________________________________________________
 
-	bool ModalChildren::setOfs(int index, const Coord& ofs)
+	void ModalChildren::setOfs(int index, const Coord& ofs)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
 
-		ModalSlot * pSlot = m_pSlotArray->slot(index);
+		_setOfs(m_pSlotArray->slot(index), ofs);
+	}
 
-		pSlot->placementGeo.setPos(ofs);
-		return m_pHolder->_refreshRealGeo(pSlot);
+	void ModalChildren::setOfs(iterator it, const Coord& ofs)
+	{
+		//TODO: Assert
+
+		_setOfs(it._slot(), ofs);
 	}
 
 	//____ ofs() _________________________________________________________________
 
 	Coord ModalChildren::ofs(int index) const
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return { 0,0 };
+		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->geo.pos();
 	}
 
-	//____ setSize() __________________________________________________________
-
-	bool ModalChildren::setSize(int index, const Size& size)
+	Coord ModalChildren::ofs(iterator it) const
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
 
-		ModalSlot * pSlot = m_pSlotArray->slot(index);
-
-		pSlot->placementGeo.setSize(size);
-		return m_pHolder->_refreshRealGeo(pSlot);
+		return it._slot()->geo.pos();
 	}
 
+	//____ setSize() __________________________________________________________
+
+	void ModalChildren::setSize(int index, const Size& size)
+	{
+		//TODO: Assert
+
+		_setSize(m_pSlotArray->slot(index), size);
+	}
+
+	void ModalChildren::setSize(iterator it, const Size& size)
+	{
+		//TODO: Assert
+
+		_setSize(it._slot(), size);
+	}
 
 	//____ size() ______________________________________________________________
 
 	Size ModalChildren::size( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return {0,0};
+		//TODO: Assert
 		
 		return m_pSlotArray->slot(index)->geo.size();			
 	}
 
-	//____ move() ______________________________________________________________
-
-	bool ModalChildren::move( int index, const Coord& ofs )
+	Size ModalChildren::size( iterator it ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return false;
+		//TODO: Assert
 		
-		ModalSlot * pSlot = m_pSlotArray->slot(index);		
-	
-		pSlot->placementGeo += ofs;
-		return m_pHolder->_refreshRealGeo( pSlot );		
+		return it._slot()->geo.size();			
 	}
 
+	//____ move() ______________________________________________________________
 
+	void ModalChildren::move( int index, const Coord& ofs )
+	{
+		//TODO: Assert
+		
+		_move(m_pSlotArray->slot(index), ofs);		
+	}
+
+	void ModalChildren::move( iterator it, const Coord& ofs )
+	{
+		//TODO: Assert
+		
+		_move(it._slot(), ofs);		
+	}
+
+	//____ _moveAbove() ______________________________________________________________
+
+	ModalSlot * ModalChildren::_moveAbove(ModalSlot * p, ModalSlot * pSibling)
+	{
+		if (p > pSibling)
+			pSibling++;
+
+		if (p != pSibling)
+			m_pHolder->_moveSlot(p, pSibling);
+
+		return pSibling;
+	}
+
+	//____ _moveBelow() ______________________________________________________________
+
+	ModalSlot * ModalChildren::_moveBelow(ModalSlot * p, ModalSlot * pSibling)
+	{
+		if (p < pSibling)
+			pSibling--;
+
+		if (p != pSibling)
+			m_pHolder->_moveSlot(p, pSibling);
+
+		return pSibling;
+	}
+
+	//____ _setOrigo() ______________________________________________________________
+
+	void ModalChildren::_setOrigo(ModalSlot * p, const Origo origo)
+	{
+		p->origo = origo;
+		m_pHolder->_refreshRealGeo(p);
+	}
+
+	//____ _setGeo() ______________________________________________________________
+
+	void ModalChildren::_setGeo(ModalSlot * p, const Rect& geometry)
+	{
+		p->placementGeo = geometry;
+		m_pHolder->_refreshRealGeo(p);
+	}
+
+	//____ _setOfs() ______________________________________________________________
+
+	void ModalChildren::_setOfs(ModalSlot * p, const Coord& ofs)
+	{
+		p->placementGeo.setPos(ofs);
+		m_pHolder->_refreshRealGeo(p);
+	}
+	//____ _setSize() __________________________________________________________
+
+	void ModalChildren::_setSize(ModalSlot * p, const Size& size)
+	{
+		p->placementGeo.setSize(size);
+		m_pHolder->_refreshRealGeo(p);
+	}
+
+	//____ _move() ______________________________________________________________
+
+	void ModalChildren::_move( ModalSlot * p, const Coord& ofs )
+	{
+		p->placementGeo += ofs;
+		m_pHolder->_refreshRealGeo(p);		
+	}
 	
 	//____ _refreshRealGeo() __________________________________________________
 	
-	bool ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		Size sz = pSlot->placementGeo.size();
 	
@@ -234,9 +349,7 @@ namespace wg
 			_onRequestRender(pSlot->geo, pSlot);
 			pSlot->geo = Rect( ofs, sz );
 			_onRequestRender(pSlot->geo, pSlot);
-		}
-	
-		return true;
+		}	
 	}
 	
 	//____ _childRequestResize() ______________________________________________
@@ -441,24 +554,23 @@ namespace wg
 
 	//____ _moveSlot() ___________________________________________________________
 
-	void ModalLayer::_moveSlot(int oldPos, int newPos)
+	void ModalLayer::_moveSlot(ModalSlot * pOldPos, ModalSlot * pNewPos)
 	{
-		m_modals.move(oldPos, newPos);
+		m_modals.move(pOldPos, pNewPos);
 
-		ModalSlot * pOther = m_modals.slot(oldPos);				// This is correct, we have already switched places...
-		ModalSlot * pIndex = m_modals.slot(newPos);
+		// Now we have switched places, pNewPos contains the widget that was moved
 
-		if (pIndex > pOther)			// We were moved forward
+		if (pNewPos > pOldPos)			// We were moved forward
 		{
 			// Request render on all areas covered by siblings we have skipped in front of.
 
-			ModalSlot * p = pOther;
-			while (p < pIndex)
+			ModalSlot * p = pOldPos;
+			while (p < pNewPos)
 			{
-				Rect cover(pIndex->geo, p->geo);
+				Rect cover(pNewPos->geo, p->geo);
 
 				if (!cover.isEmpty())
-					_onRequestRender(cover, pIndex);
+					_onRequestRender(cover, pNewPos);
 				p++;
 			}
 		}
@@ -466,10 +578,10 @@ namespace wg
 		{
 			// Request render on our siblings for the area we previously have covered.
 
-			ModalSlot * p = pIndex + 1;
-			while (p <= pOther)
+			ModalSlot * p = pNewPos + 1;
+			while (p <= pOldPos)
 			{
-				Rect cover(pIndex->geo, p->geo);
+				Rect cover(pNewPos->geo, p->geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);

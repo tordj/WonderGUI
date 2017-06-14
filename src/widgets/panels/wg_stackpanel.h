@@ -93,6 +93,7 @@ namespace wg
 		friend class StackPanelChildren;
 		friend class PanelChildren<StackPanelSlot,StackPanel>;
 		friend class HideableChildren<StackPanelSlot,StackPanel>;
+		friend class DynamicChildGroup<StackPanelSlot,StackPanel>;
 		friend class ChildGroup<StackPanelSlot,StackPanel>;
 
 	public:

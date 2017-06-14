@@ -76,6 +76,7 @@ namespace wg
 	{
 		friend class PackListChildren;
 		friend class HideableChildren<PackListSlot,PackList>;
+		friend class DynamicChildGroup<PackListSlot,PackList>;
 		friend class ChildGroup<PackListSlot,PackList>;
 //		template<class T, class P> friend class ChildGroup;
 	public:

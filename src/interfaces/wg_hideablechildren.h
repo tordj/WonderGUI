@@ -25,14 +25,14 @@
 #pragma once
 
 #include <wg_slot.h>
-#include <wg_childgroup.h>
+#include <wg_dynamicchildgroup.h>
 
 namespace wg
 {
 	
 	//____ HideableChildrenHolder ____________________________________________________________
 
-	class HideableChildrenHolder : public ChildGroupHolder		/** @private */
+	class HideableChildrenHolder : public DynamicChildGroupHolder		/** @private */
 	{
 		virtual void	_hideSlots(Slot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(Slot * pSlot, int nb) = 0;
@@ -41,88 +41,79 @@ namespace wg
 	
 	//____ HideableChildren ________________________________________________________
 
-	template<class SlotType, class HolderType> class HideableChildren : public ChildGroup<SlotType,HolderType>
+	template<class SlotType, class HolderType> class HideableChildren : public DynamicChildGroup<SlotType,HolderType>
 	{
 	public:
 		using		iterator = SlotIterator<SlotType>;
+		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
+		using		ChildGroup<SlotType,HolderType>::m_pHolder;
 		
-		HideableChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
+		HideableChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : DynamicChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
 
-		bool	hide( int index ) 
+		void	hide( int index ) 
 		{
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
-				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
-			return true;
+			//TODO: Assert
+			
+			m_pHolder->_hideSlots( m_pSlotArray->slot(index), 1 );
 		};
 
-		bool	hide( iterator it ) 
+		void	hide( iterator it ) 
 		{
 			//TODO: Assert
 				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( it._slot(), 1 );
-			return true;
+			m_pHolder->_hideSlots( it._slot(), 1 );
 		};
 
 
-		bool	hide( int index, int amount ) 
+		void	hide( int index, int amount ) 
 		{
 			//TODO: Assert
 				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), amount );
-			return true;
+			m_pHolder->_hideSlots( m_pSlotArray->slot(index), amount );
 		};
 
-		bool	hide( iterator beg, iterator end ) 
+		void	hide( iterator beg, iterator end ) 
 		{
 			//TODO: Assert
 				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_hideSlots( beg._slot(), end._slot() - beg._slot() );
-			return true;
+			m_pHolder->_hideSlots( beg._slot(), end._slot() - beg._slot() );
 		};
 
 		
-		bool	unhide( int index )
+		void	unhide( int index )
 		{
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
-				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), 1 );
-			return true;
+			//TODO: Assert
+			
+			m_pHolder->_unhideSlots( m_pSlotArray->slot(index), 1 );
 		};
 
-		bool	unhide( iterator it )
+		void	unhide( iterator it )
 		{
 			//TODO: Assert
 
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( it._slot(), 1 );
-			return true;
+			m_pHolder->_unhideSlots( it._slot(), 1 );
 		};
 
-		bool	unhide( int index, int amount )
+		void	unhide( int index, int amount )
 		{
 			//TODO: Assert
 				
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index), amount );
-			return true;
+			m_pHolder->_unhideSlots( m_pSlotArray->slot(index), amount );
 		};
 
-		bool	unhide( iterator beg, iterator end )
+		void	unhide( iterator beg, iterator end )
 		{
 			//TODO: Assert
 
-			ChildGroup<SlotType,HolderType>::m_pHolder->_unhideSlots( beg._slot(), end._slot() - beg._slot() );
-			return true;
+			m_pHolder->_unhideSlots( beg._slot(), end._slot() - beg._slot() );
 		};
 
 
-		bool		isVisible( int index ) 
+		bool	isVisible( int index ) 
 		{ 
-			if( index < 0 || index >= ChildGroup<SlotType,HolderType>::m_pSlotArray->size() )
-				return false;
+			//TODO: Assert
 
-			return ChildGroup<SlotType,HolderType>::m_pSlotArray->slot(index)->bVisible; 
+			return m_pSlotArray->slot(index)->bVisible; 
 		}
 
 		bool		isVisible( iterator it ) 

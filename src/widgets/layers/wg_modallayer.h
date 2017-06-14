@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_childgroup.h>
+#include <wg_dynamicchildgroup.h>
 
 namespace wg 
 {
@@ -55,42 +55,62 @@ namespace wg
 	
 	//____ ModalChildren ________________________________________________________
 
-	class ModalChildren : public ChildGroup<ModalSlot,ModalLayer>
+	class ModalChildren : public DynamicChildGroup<ModalSlot,ModalLayer>
 	{
 	public:
-		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : ChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
+		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
 
 		inline ModalChildren_p	ptr() { return ModalChildren_p(this); }
 
-		bool		add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		bool		add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
+		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
+		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
 
-		bool		moveToBack( int index );								// Put us ontop all our silbings.
-		bool		moveToFront( int index );							// Put us below all our siblings.	
-		bool		moveAbove( int index, int otherWidget );
-		bool		moveBelow( int index, int otherWidget );
+		void		moveToBack( int index );								// Put us ontop all our silbings.
+		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
+		void		moveToFront( int index );							// Put us below all our siblings.	
+		iterator	moveToFront( iterator it );							// Put us below all our siblings.	
+		void		moveAbove( int index, int sibling );
+		iterator	moveAbove( iterator it, iterator sibling );
+		void		moveBelow( int index, int sibling );
+		iterator	moveBelow( iterator it, iterator sibling );
 
-		bool		setOrigo( int index, const Origo origo );
+		void		setOrigo( int index, const Origo origo );
+		void		setOrigo( iterator it, const Origo origo );
 		Origo		origo( int index ) const;
+		Origo		origo( iterator it ) const;
 		
-		bool		setGeo( int index, const Rect& geometry );
+		void		setGeo( int index, const Rect& geometry );
+		void		setGeo( iterator it, const Rect& geometry );
 		Rect		geo( int index ) const;
+		Rect		geo( iterator it ) const;
 	
-		bool		setOfs( int index, const Coord& ofs );
+		void		setOfs( int index, const Coord& ofs );
+		void		setOfs( iterator it, const Coord& ofs );
 		Coord		ofs( int index ) const;
+		Coord		ofs( iterator it ) const;
 
-		bool		setSize( int index, const Size& size );
+		void		setSize( int index, const Size& size );
+		void		setSize( iterator it, const Size& size );
 		Size		size( int index ) const;
+		Size		size( iterator it ) const;
 	
-		bool		move( int index, const Coord& ofs );
+		void		move( int index, const Coord& ofs );
+		void		move( iterator it, const Coord& ofs );
+		
+	protected:
+		ModalSlot * _moveAbove(ModalSlot * p, ModalSlot * pSibling);
+		ModalSlot * _moveBelow(ModalSlot * p, ModalSlot * pSibling);
+		void 		_setOrigo(ModalSlot * p, const Origo origo);
+		void 		_setGeo(ModalSlot * p, const Rect& geometry);
+		void 		_setOfs(ModalSlot * p, const Coord& ofs);
+		void 		_setSize(ModalSlot * p, const Size& size);
+		void 		_move( ModalSlot * p, const Coord& ofs );
 	};
 	
 	
-	
-
 	//____ ModalLayer __________________________________________________________
 	
-	class ModalLayer : public Layer, protected ChildGroupHolder
+	class ModalLayer : public Layer, protected DynamicChildGroupHolder
 	{
 		friend class ModalChildren;
 	
@@ -130,8 +150,8 @@ namespace wg
 		ModalLayer *	_getModalLayer() const { return const_cast<ModalLayer*>(this); }
 	
 		void			_updateKeyboardFocus();
-		bool			_refreshRealGeo( ModalSlot * pSlot );
-		void			_moveSlot(int oldPos, int newPos);
+		void			_refreshRealGeo( ModalSlot * pSlot );
+		void			_moveSlot(ModalSlot * pOldPos, ModalSlot * pNewPos);
 
 		// Overloaded from Panel
 	

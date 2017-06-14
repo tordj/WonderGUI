@@ -38,13 +38,6 @@ namespace wg
 //	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
 //	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
 
-	//____ ChildGroupHolder _________________________________________________________
-
-	class ChildGroupHolder		/** @private */
-	{
-		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
-		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
-	};
 
 	//____ ChildGroup _________________________________________________________
 
@@ -62,12 +55,12 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline Widget& operator[](int index) const { return * m_pSlotArray->slot(index)->pWidget; }
-		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }	
 
 
 		//.____ Content _______________________________________________________
 
 		inline int		size() const { return m_pSlotArray->size(); }
+		inline int 		isEmpty() const { return m_pSlotArray->isEmpty(); }
 		inline int		capacity() const { return m_pSlotArray->capacity(); }
 		inline int		setCapacity(int capacity) { return m_pSlotArray->setCapacity(capacity);  }
 
@@ -79,119 +72,12 @@ namespace wg
 			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
-		iterator add( Widget * pWidget )
-		{
-			SlotType * pSlot = m_pSlotArray->add();
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);
-		}
-
-		iterator add( const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->add(amount);
-
-			for( int i = 0; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);		
-		}
-		
-		iterator insert( int index, Widget * pWidget )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->insert(index);
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);		
-		}
-
-		iterator insert(iterator pos, Widget * pWidget)
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->insert(pos._slot());
-			pSlot->replaceWidget(m_pHolder, pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);
-		}
-
-		iterator insert( int index, const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->insert(index, amount);
-
-			for( int i = 0; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);		
-		}
-
-		iterator insert(iterator pos, const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->insert(pos._slot(), amount);
-			
-			for( int i = 0 ; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);
-		}
-
-		iterator remove( int index )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->slot(index);
-			m_pHolder->_willRemoveSlots(pSlot, 1);
-			return iterator(m_pSlotArray->remove(index));
-		}
-
-		iterator remove(iterator pos)
-		{
-			//TODO: Add assert
-
-			m_pHolder->_willRemoveSlots(pos._slot(), 1);
-			return iterator(m_pSlotArray->remove(pos._slot()));
-		}
-
-		iterator remove( int index, int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->slot(index);
-			m_pHolder->_willRemoveSlots(pSlot, amount);
-			return iterator(m_pSlotArray->remove(index, amount));
-		}
-
-		iterator remove(iterator beg, iterator end)
-		{
-			//TODO: Add assert
-
-			m_pHolder->_willRemoveSlots(beg._slot(), end._slot() - beg._slot());
-			return iterator(m_pSlotArray->remove(beg._slot(), end._slot() ));
-		}
-
-		void clear() 
-		{ 
-			if( m_pSlotArray->isEmpty() ) 
-				return; 
-			m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); 
-			m_pSlotArray->clear(); 
-		}
-
 		//.____ Misc _______________________________________________________
 
 		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>>(this); }
 
 		iterator	begin() const { return iterator(m_pSlotArray->begin()); }
 		iterator	end() const { return iterator(m_pSlotArray->end()); }
-
 
 	protected:
 		Object *	_object() const {	return m_pHolder; }

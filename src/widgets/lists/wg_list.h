@@ -59,36 +59,62 @@ namespace wg
 	template<class SlotType, class HolderType> class ListChildren : public HideableChildren<SlotType, HolderType>
 	{
 	public:
+		using		iterator = SlotIterator<SlotType>;
+		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
+		using		ChildGroup<SlotType,HolderType>::m_pHolder;
+
 		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
 
 		void	select(int index)
 		{
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-			{
-				ListSlot * pSlot = ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index);
-				if( pSlot->bVisible)
-					ChildGroup<SlotType, HolderType>::m_pHolder->_selectSlots(pSlot, 1);
-			}
+			//TODO: Assert
+
+			ListSlot * pSlot = m_pSlotArray->slot(index);
+			if( pSlot->bVisible)
+				m_pHolder->_selectSlots(pSlot, 1);
+		}
+
+		void	select(iterator it)
+		{
+			//TODO: Assert
+
+			ListSlot * pSlot = it._slot();
+			if( pSlot->bVisible)
+				m_pHolder->_selectSlots(pSlot, 1);
 		}
 
 		void	unselect(int index)
 		{
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-			{
-				ListSlot * pSlot = ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index);
-				if (pSlot->bVisible)
-					ChildGroup<SlotType, HolderType>::m_pHolder->_unselectSlots(pSlot, 1);
-			}
+			//TODO: Assert
+
+			ListSlot * pSlot = m_pSlotArray->slot(index);
+			if (pSlot->bVisible)
+				m_pHolder->_unselectSlots(pSlot, 1);
 		}
+
+		void	unselect(iterator it)
+		{
+			//TODO: Assert
+
+			ListSlot * pSlot = it._slot();
+			if (pSlot->bVisible)
+				m_pHolder->_unselectSlots(pSlot, 1);
+		}
+
 
 		bool	isSelected(int index)
 		{
-			if (index >= 0 || index < ChildGroup<SlotType, HolderType>::m_pSlotArray->size())
-				return ChildGroup<SlotType, HolderType>::m_pSlotArray->slot(index)->pWidget->state().isSelected();
-
-			return false;
+			//TODO: Assert
+			
+			return m_pSlotArray->slot(index)->pWidget->state().isSelected();
 		}
 
+		bool	isSelected(iterator it)
+		{
+			//TODO: Assert
+			
+			return it._slot()->pWidget->state().isSelected();
+		}
 
 	};
 
