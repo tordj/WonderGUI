@@ -58,20 +58,26 @@ namespace wg
 	class PopupChildren : public Interface
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		PopupChildren(PopupLayer * pHolder) : m_pHolder(pHolder) {}
+
+		//.____ Misc __________________________________________________________
 
 		inline PopupChildren_p	ptr() { return PopupChildren_p(this); }
 
+		//.____ Operators _____________________________________________________
+
 		Widget& operator[](int index) const;
 
+		//.____ Content _______________________________________________________
+
 		int		size() const;
-
-		Widget_p get( int index) const;
-
 		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
 		void	pop(int nb = 1);
 		void	clear();
 		
+		Widget_p at(int index) const;
 
 	protected:
 		Object *		_object() const;

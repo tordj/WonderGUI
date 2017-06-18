@@ -58,10 +58,15 @@ namespace wg
 	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
+
+		//.____ Misc __________________________________________________________
 
 		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(this); }
 
+		//.____ Geometry ______________________________________________________
 
 		void		setSizePolicy( int index, SizePolicy2D policy );
 		void		setSizePolicy( iterator it, SizePolicy2D policy );

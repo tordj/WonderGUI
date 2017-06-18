@@ -40,7 +40,7 @@ namespace wg
 
 	//____ object() _______________________________________________________________
 
-	/** @breif Get a pointer to the object providing this interface.
+	/** @brief Get a pointer to the object providing this interface.
 	 * 
 	 * 
 	 */ 

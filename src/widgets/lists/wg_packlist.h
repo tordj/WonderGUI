@@ -60,18 +60,37 @@ namespace wg
 	class PackListChildren : public ListChildren<PackListSlot, PackList>
 	{
 	public:
+
+		//.____ Internal ______________________________________________________
+
 		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : ListChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
+
+		//.____ Misc __________________________________________________________
 
 		inline PackListChildren_p	ptr() { return PackListChildren_p(this); }
 
+		//.____ Content _______________________________________________________
+
 		iterator	insertSorted(Widget * pWidget);
+
+		//.____ Ordering ______________________________________________________
+
 		void		sort();
 
 	};
 
 
 	//____ PackList ____________________________________________________________
-	
+
+	/**
+	 * @brief	List widget aligning its entries horizontally or vertically.
+	 * 			
+	 * PackList provides a standard list, where all contained children are
+	 * aligned ("packed") either vertically or horizontally and can be selected 
+	 * using mouse or keyboard.
+	 * 
+	 */
+
 	class PackList : public List
 	{
 		friend class PackListChildren;

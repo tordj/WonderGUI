@@ -9,6 +9,7 @@ $prioTable = {
   'Properties' => 30,
   'Appearance' => 40,
   'Content' => 50,
+  'Ordering' => 55,
   'Control' => 60,
   'Behavior' => 70,
   'State' => 80,

@@ -62,8 +62,8 @@ namespace wg
 	 * In similar way, placing a widget in a ModalLayer will make it modal only against the
 	 * children of that specific layer.
 	 *
-	 * All Layers have a BaseChild (or BaseWidget), which is the child through which the normal hierarchy continues.
-	 * Children that resides within the layer itself are usually referred to as Layer Children.
+	 * All layers have a base child, which is the child through which the normal hierarchy continues.
+	 * Children that resides within the layer itself are usually referred to as layer children.
 	 *
 	 **/
 	

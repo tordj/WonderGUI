@@ -97,15 +97,10 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Widget_p		cast( Object * pObject );
 	
-		inline void			setId( int id ) { m_id = id; }
-		inline int			id() const { return m_id; }
+		inline void			setId(int id);
+		inline int			id() const;
 
-		virtual bool		isContainer() const { return false; }	///< @brief Check if this widget is a container.
-																	///<
-																	///< Check if widget is a container.
-																	///< This method is a quicker way to check if the widget
-																	///< is a container than calling isInstanceOf(Container::CLASS).
-																	///< @return True if the widget is a subclass of Container.
+		virtual bool		isContainer() const;
 
 		//.____ Geometry _________________________________________________
 		
@@ -274,7 +269,35 @@ namespace wg
 	
 	
 	//____ Inline methods __________________________________________________________
-	
+	/**
+	* @brief	Set a user specified ID for this widget.
+	*
+	* Sets a user specified ID, which can be read with id() and used to identify this
+	* widget. It has no other purpose, is not used internally and does not need to be unique.
+	* 
+	* Default ID is 0.
+	*/
+
+	void Widget::setId(int id) 
+	{ 
+		m_id = id; 
+	}
+
+	/**
+	* @brief	Read the ID set through setId().
+	* 
+	* Reads the user specified ID.
+	*
+	* @return	The ID earlier specified with setId() or 0.
+	*/
+
+	int Widget::id() const
+	{ 
+		return m_id; 
+	}
+
+
+
 	/**
 	 * @brief	Get the local position of widget.
 	 * 
@@ -321,7 +344,7 @@ namespace wg
 	/**
 	 * @brief	Get the global position of widget.
 	 * 
-	 * Get the global position of widet, which is the position relative to RootPanel.
+	 * Get the global position of widget, which is the position relative to RootPanel.
 	 * 
 	 * @return Global position in pixels. 
 	 */

@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ AnimPlayer ____________________________________________________________
 	/**
-	* @breif A widget for playing simple animations.
+	* @brief A widget for playing simple animations.
 	*
 	**/
 

@@ -63,7 +63,11 @@ namespace wg
 		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
 		using		ChildGroup<SlotType,HolderType>::m_pHolder;
 
+		//.____ Internal ______________________________________________________
+
 		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
+
+		//.____ Control _______________________________________________________
 
 		void	select(int index)
 		{
@@ -121,6 +125,13 @@ namespace wg
 
 	//____ List _________________________________________________________________
 	
+	/**
+	* @brief	Base class for widgets providing lists of selectable entries.
+	* 
+	* List is the base class for widgets that provide lists of selectable entries.
+	* 
+	*/ 
+
 	class List : public Container, protected ListChildrenHolder
 	{
 	public:

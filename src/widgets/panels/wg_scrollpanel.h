@@ -94,9 +94,16 @@ namespace wg
 	class ViewEntry : public ChildEntry<ViewSlot, ScrollPanel>
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : ChildEntry(pSlot, pPanel) {}
 
+		//.____ Operators _____________________________________________________
+
 		ViewEntry operator=(Widget * pWidget);
+
+		//.____ Geometry ______________________________________________________
+
 		Size		canvasSize() const { return m_pSlot->contentSize; };
 
 		void		setOrigo(Origo origo);
@@ -119,6 +126,8 @@ namespace wg
 		bool		setWindowPos( Coord pos );
 		bool		setWindowOffset( CoordF ofs);
 
+		//.____ Control _______________________________________________________
+
 		bool		step( Direction dir );
 		bool		jump( Direction dir );
 	};
@@ -128,9 +137,15 @@ namespace wg
 	class ScrollbarEntry : public Interface
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		ScrollbarEntry(ScrollbarSlot * pSlot, ScrollPanel * pPanel) : m_pSlot(pSlot), m_pHolder(pPanel) {}
 
+		//.____ State _________________________________________________________
+
 		bool		isVisible() const { return m_pSlot->bVisible; }
+
+		//.____ Behavior ______________________________________________________
 
 		void		setAutoHide(bool autohide);
 		bool		autoHide() const { return m_pSlot->bAutoHide; }
@@ -138,8 +153,18 @@ namespace wg
 		bool		setAutoScroll(bool bAuto);
 		bool		autoScroll() const { return m_pSlot->bAutoScroll; }
 
+		//.____ Geometry ______________________________________________________
+
 		bool		setPlacement( Direction );
 		Direction	placement() const { return m_pSlot->placement; }
+
+
+		//.____ Content _______________________________________________________
+
+		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		void clear();
+
+		//.____ Operators _____________________________________________________
 
 		ScrollbarEntry operator=(Scrollbar * pWidget);
 		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->pWidget); }
@@ -152,9 +177,6 @@ namespace wg
 		//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
 		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
-
-		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
-		void clear();
 
 	protected:
 		Object * _object() const;

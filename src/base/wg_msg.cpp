@@ -99,7 +99,8 @@ namespace wg
 			return false;
 				
 	}
-		
+
+
 	bool Msg::isMouseButtonMsg() const
 	{
 		if( m_type == MsgType::MouseClick ||
@@ -124,7 +125,7 @@ namespace wg
 	}
 
 	//____ InputMsg __________________________________________________________
-	
+
 	const char InputMsg::CLASSNAME[] = {"InputMsg"};
 	
 	bool InputMsg::isInstanceOf( const char * pClassName ) const

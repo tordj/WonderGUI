@@ -37,6 +37,14 @@ namespace wg
 	typedef	StrongPtr<SizeCapsule>		SizeCapsule_p;
 	typedef	WeakPtr<SizeCapsule>		SizeCapsule_wp;
 	
+	/**
+	* @brief	A widget that controls the size of a single child.
+	*
+	* The SizeCapsule overrides the min, max and preferred size reported by its child, thus
+	* affecting its geometry. Exactly how the geometry is affected depends on the parent widget.
+	*
+	*/
+
 	class SizeCapsule : public Capsule
 	{
 	public:

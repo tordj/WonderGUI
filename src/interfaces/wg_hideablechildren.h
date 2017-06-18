@@ -47,8 +47,12 @@ namespace wg
 		using		iterator = SlotIterator<SlotType>;
 		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
 		using		ChildGroup<SlotType,HolderType>::m_pHolder;
-		
+
+		//.____ Internal ______________________________________________________
+
 		HideableChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : DynamicChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
+
+		//.____ Appearance ____________________________________________________
 
 		void	hide( int index ) 
 		{

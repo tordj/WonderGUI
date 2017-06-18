@@ -38,7 +38,19 @@ namespace wg
 	
 	
 	//____ Capsule ______________________________________________________________
-	
+
+	/**
+	* @brief	Base class for container widgets with only one child.
+	*
+	* A capsule is a light-weight container widget that can only have one child.
+	*
+	* The purpose of a capsule is to encapsulate a single widget or a branch in
+	* the widget hierarchy to control or modify its appearance or behavior.
+	*
+	* Various subclasses of Capsule control specific aspects of their children
+	* such as size, tint and transparency.
+	*/
+
 	class Capsule : public Container, protected ChildEntryHolder
 	{
 	

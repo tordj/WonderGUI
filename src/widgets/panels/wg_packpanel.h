@@ -56,9 +56,15 @@ namespace wg
 	class PackPanelChildren : public PanelChildren<PackPanelSlot,PackPanel>
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
 
+		//.____ Misc __________________________________________________________
+
 		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(this); }
+
+		//.____ Geometry _______________________________________________________
 
 		bool		setWeight( int index, float weight );
 		bool		setWeight( iterator it, float weight );

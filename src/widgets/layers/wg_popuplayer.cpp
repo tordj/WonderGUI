@@ -46,9 +46,9 @@ namespace wg
 		return m_pHolder->m_popups.size(); 
 	} 
 
-	//____ get() _______________________________________________________________
+	//____ at() _______________________________________________________________
 	
-	Widget_p PopupChildren::get( int index) const 
+	Widget_p PopupChildren::at( int index) const 
 	{ 
 		if( index < 0 || index >= m_pHolder->m_popups.size() )
 			return nullptr;

@@ -32,7 +32,17 @@ namespace wg
 	class ShaderCapsule;
 	typedef	StrongPtr<ShaderCapsule>		ShaderCapsule_p;
 	typedef	WeakPtr<ShaderCapsule>	ShaderCapsule_wp;
-	
+
+	/**
+	* @brief	A widget that sets the tint color and blend mode of a single child.
+	*
+	* The ShaderCapsule sets the tint color and blend mode, which is inherited by its
+	* sub-widgets branch during the rendering process.
+	* 
+	* This can for example be used to create fading effects when parts of the UI (dis)appears.
+	*  
+	*/
+
 	class ShaderCapsule : public Capsule
 	{
 	public:

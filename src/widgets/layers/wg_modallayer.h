@@ -58,12 +58,20 @@ namespace wg
 	class ModalChildren : public DynamicChildGroup<ModalSlot,ModalLayer>
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
+
+		//.____ Misc __________________________________________________________
 
 		inline ModalChildren_p	ptr() { return ModalChildren_p(this); }
 
+		//.____ Content _______________________________________________________
+
 		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
 		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
+
+		//.____ Ordering ______________________________________________________		
 
 		void		moveToBack( int index );								// Put us ontop all our silbings.
 		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
@@ -73,6 +81,8 @@ namespace wg
 		iterator	moveAbove( iterator it, iterator sibling );
 		void		moveBelow( int index, int sibling );
 		iterator	moveBelow( iterator it, iterator sibling );
+
+		//.____ Geometry ______________________________________________________
 
 		void		setOrigo( int index, const Origo origo );
 		void		setOrigo( iterator it, const Origo origo );

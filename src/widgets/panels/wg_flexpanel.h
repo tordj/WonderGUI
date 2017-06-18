@@ -111,10 +111,15 @@ namespace wg
 	class FlexPanelChildren : public PanelChildren<FlexPanelSlot,FlexPanel>
 	{
 	public:
+		//.____ Internal ______________________________________________________
+
 		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : PanelChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
+
+		//.____ Misc __________________________________________________________
 
 		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(this); }
 
+		//.____ Content _______________________________________________________
 
 		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft, 
 									const FlexPos& bottomRight );
@@ -125,6 +130,8 @@ namespace wg
 									const FlexPos& bottomRight );
 		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry, 
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
+
+		//.____ State _________________________________________________________
 
 		void		setPinned( int index );
 		void		setPinned( iterator it );
@@ -138,6 +145,13 @@ namespace wg
 		void		setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
 		void		setMovable(iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
 
+		bool		isMovable(int index) const;
+		bool		isMovable(iterator it) const;
+
+		bool		isPinned(int index) const;
+		bool		isPinned(iterator it) const;
+
+		//.____ Ordering ______________________________________________________
 
 		void		moveToBack( int index );								// Put us ontop all our silbings.
 		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
@@ -151,11 +165,8 @@ namespace wg
 		void		moveBelow( int index, int sibling );
 		iterator	moveBelow( iterator it, iterator sibling );
 
-		bool		isMovable( int index ) const;
-		bool		isMovable( iterator it ) const;
 
-		bool		isPinned( int index ) const;
-		bool		isPinned( iterator it ) const;
+		//.____ Geometry ______________________________________________________
 
 		// Methods for movable children
 	

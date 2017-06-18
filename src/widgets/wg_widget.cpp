@@ -72,7 +72,26 @@ namespace wg
 	
 		return 0;
 	}
-	
+
+
+	//____ isContainer() ______________________________________________________
+	/**  
+	 * @brief Check if this widget is a container.
+	 * 
+	 *  Check if widget is a container.
+	 *  
+	 *  This method is a quicker way to check if the widget
+	 *  is a container than calling isInstanceOf(Container::CLASS).
+	 *  
+	 *  @return True if the widget is a subclass of Container.
+	 */
+
+	bool Widget::isContainer() const 
+	{ 
+		return false; 
+	}
+
+
 	//____ parent() _______________________________________________________________
 	/**
 	 * @brief Returns the parent of the widget.

@@ -109,7 +109,7 @@ namespace wg
 		virtual int				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
 		virtual int				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
 		virtual int				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
-		virtual int				maxDescend() = 0;				///@breif Returns largets depth from baseline of a character for current size.
+		virtual int				maxDescend() = 0;				///@brief Returns largets depth from baseline of a character for current size.
 
 		//.____ Misc ___________________________________________________________
 	

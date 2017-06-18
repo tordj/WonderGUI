@@ -37,7 +37,7 @@ namespace wg
 	
 	//____ Button ____________________________________________________________
 	/**
-	 * @breif A normal push button widget.
+	 * @brief A normal push button widget.
 	 *
 	 * A simple push button widget with label and icon.
 	 **/

@@ -137,8 +137,10 @@
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildgroup.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_edittext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_editvalue.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icon.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h" />
