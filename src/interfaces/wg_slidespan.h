@@ -37,7 +37,7 @@ namespace wg
 	class SlideSpan : public Span
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		SlideSpan(SpanItem* pItem) : Span(pItem) {}
 		

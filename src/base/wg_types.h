@@ -108,8 +108,13 @@ namespace wg
 	class State 
 	{
 	public:
+
+		//.____ Creation _______________________________________________________
+
 		State() { m_state = (uint8_t) StateEnum::Normal; }
 		State( StateEnum state ) { m_state = (uint8_t) state; }
+
+		//.____ State __________________________________________________________
 	
 		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
 		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
@@ -124,6 +129,8 @@ namespace wg
 		bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
 		bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
 	
+		//._____ Operators _____________________________________________________
+
 		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
 		inline bool operator!=(StateEnum state) const { return m_state != ((uint8_t)state); }
 	
@@ -523,19 +530,7 @@ namespace wg
 		Escape,
 		Break
 	};
-	
-	//____ TextPos ______________________________________________________________
-	
-	class TextPos
-	{
-	public:
-		TextPos() : line(0), col(0) {}
-		TextPos( int line, int col ) : line(line), col(col) {}
-	
-		int	line;
-		int col;
-	};
-	
+		
 	//___  TextDecoration ________________________________________________________
 	
 	enum class TextDecoration
@@ -545,20 +540,6 @@ namespace wg
 		Underline
 	};
 	
-	//____ Range ____________________________________________________________
-	
-	class Range
-	{
-	public:
-		Range() : ofs(0), len(0) {}
-		Range( int ofs, int len ) : ofs(ofs), len(len) {}
-	
-		inline int	begin() const { return ofs; }
-		inline int	end() const { return ofs+len; }
-	
-		int ofs;
-		int len;
-	};
 
 	//____ ItemNotif ___________________________________________________________
 
@@ -568,15 +549,6 @@ namespace wg
 		ValueEdited,
 		SpanModified,
 		Other
-	};
-	
-	
-	//____ SortContext __________________________________________________________
-	
-	struct SortContext
-	{
-	public:
-		bool	bAscend;
 	};
 	
 	//____ AccessMode ____________________________________________________________
@@ -672,6 +644,9 @@ namespace wg
 	
 	struct PixelFormat
 	{
+	public:	
+		//.____ Properties _____________________________________________________
+		
 		PixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 	

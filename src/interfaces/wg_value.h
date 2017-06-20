@@ -55,7 +55,7 @@ namespace wg
 	class Value : public Interface
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		Value(ValueItem* pItem) : m_pItem(pItem) {}
 	

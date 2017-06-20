@@ -52,7 +52,7 @@ namespace wg
 	class ModText : public Text
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		ModText( TextItem * pItem ) : Text(pItem) {};
 	

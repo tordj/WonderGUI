@@ -56,7 +56,7 @@ namespace wg
 	class PackPanelChildren : public PanelChildren<PackPanelSlot,PackPanel>
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
 

@@ -258,6 +258,7 @@
     <File Name="../../src/base/wg_weakptr.h"/>
     <File Name="../../src/base/wg_stronginterfaceptr.h"/>
     <File Name="../../src/base/wg_weakinterfaceptr.h"/>
+    <File Name="../../src/base/wg_slotiterator.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

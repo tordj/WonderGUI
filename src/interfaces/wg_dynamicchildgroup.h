@@ -51,7 +51,7 @@ namespace wg
 		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
 		using		ChildGroup<SlotType,HolderType>::m_pHolder;
 		
-		//.____ Creation __________________________________________
+		/** @private */
 
 		DynamicChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray,pHolder) {}
 

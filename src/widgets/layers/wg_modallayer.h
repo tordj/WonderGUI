@@ -58,7 +58,7 @@ namespace wg
 	class ModalChildren : public DynamicChildGroup<ModalSlot,ModalLayer>
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
 

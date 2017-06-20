@@ -51,7 +51,8 @@ namespace wg
 	{
 		
 	public:
-		//.____ Creation __________________________________________
+
+		/** @private */
 
 		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 

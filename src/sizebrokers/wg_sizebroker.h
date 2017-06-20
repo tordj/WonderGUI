@@ -31,6 +31,9 @@ namespace wg
 	class SizeBrokerItem
 	{
 	public:	
+	
+		//.____ Properties _____________________________________________________
+	
 		int		preferred;		// Preferred length for this item (input)
 		int		min;			// Min length for this item (input)
 		int		max;			// Max length for this item (input)

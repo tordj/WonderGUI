@@ -810,8 +810,13 @@ namespace wg
 	class ItemInfo
 	{
 	public:
+
+		//.____ Creation _________________________________
+
 		ItemInfo(): id(-1) {}
 		ItemInfo( int _id, Object * _pObject ) : id(_id), pObject(_pObject) {}
+
+		//.____ Properties _________________________________
 
 		int				id;
 		Object_p		pObject;
@@ -822,10 +827,15 @@ namespace wg
 	class ItemMsg : public Msg
 	{
 	public:
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemMsg_p	cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
 
 		int				itemId() const;
 		Object_p		itemObject() const;
@@ -841,10 +851,14 @@ namespace wg
 	class ItemToggleMsg : public ItemMsg
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemToggleMsg_p	cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
 
 		bool		isSet() const;
 
@@ -859,10 +873,14 @@ namespace wg
 	class ItemMousePressMsg : public ItemMsg
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemMousePressMsg_p	cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
 
 		MouseButton		button() const;
 	//protected:
@@ -877,10 +895,14 @@ namespace wg
 	class ItemListMsg : public Msg
 	{
 	public:
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemListMsg_p	cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
 
 		int					nbItems() const;
 		const ItemInfo *	items() const;
@@ -898,12 +920,19 @@ namespace wg
 	class ItemsSelectMsg : public ItemListMsg
 	{
 	public:
-		ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
+		//.____ Creation __________________________________________
+
+		static ItemsSelectMsg_p	create( Object * pSource, int nbItems, ItemInfo * pItems ) { return new ItemsSelectMsg(pSource, nbItems, pItems); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemsSelectMsg_p	cast( Object * pObject );
+		
+	protected:
+			ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
 	};
 
 	//____ ItemsUnselectMsg _____________________________________________________
@@ -911,12 +940,20 @@ namespace wg
 	class ItemsUnselectMsg : public ItemListMsg
 	{
 	public:
-		ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
+		//.____ Creation __________________________________________
+
+		static ItemsUnselectMsg_p create( Object * pSource, int nbItems, ItemInfo * pItems ) { return new ItemsUnselectMsg( pSource, nbItems, pItems ); }
+
+		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemsUnselectMsg_p	cast( Object * pObject );
+
+	protected:
+		ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
+
 	};
 
 	//____ PopupClosedMsg ______________________________________________________

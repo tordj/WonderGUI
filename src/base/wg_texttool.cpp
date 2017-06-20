@@ -248,7 +248,7 @@ namespace wg
 	
 	uint32_t TextTool::readString( const char *& pSrc, CodePage codepage, Char * pDst, uint32_t maxChars )
 	{
-		uint16_t * pCP = CodePages::getCodePage( codepage );
+		const uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -267,7 +267,7 @@ namespace wg
 	
 	uint32_t TextTool::readString( const char *& pSrc, CodePage codepage, uint16_t * pDst, uint32_t maxChars )
 	{
-		uint16_t * pCP = CodePages::getCodePage( codepage );
+		const uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP || !pSrc )
 		{
 		    if( maxChars > 0 )
@@ -1048,7 +1048,7 @@ namespace wg
 	
 	uint32_t TextTool::getTextUTF8( const char * pSrc, CodePage codepage, char * pDest, int maxChars )
 	{
-		uint16_t * pCP = CodePages::getCodePage( codepage );
+		const uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 		{
 			pDest[0] = 0;
@@ -1113,7 +1113,7 @@ namespace wg
 	
 	uint32_t TextTool::getTextSizeUTF8( const char * pSrc, CodePage codepage, int maxChars )
 	{
-		uint16_t * pCP = CodePages::getCodePage( codepage );
+		const uint16_t * pCP = CodePages::getCodePage( codepage );
 		if( !pCP )
 			return 0;
 	

@@ -29,7 +29,14 @@ namespace wg
 	
 	template<class Cls> class StrongPtr		/** @private */
 	{
+		template<class T> friend class StrongPtr;
+		
+		
 	public:
+
+		//.____ Creation ___________________________________________________________
+
+
 		StrongPtr(Cls * const _p=0)
 		{
 	    	m_pObj = _p;
@@ -58,6 +65,8 @@ namespace wg
 				m_pObj->_decRefCount();
 		}
 		
+		//.____ Operators ______________________________________________________
+				
 		StrongPtr<Cls>& operator=(Cls * const _p)
 		{
 			if (m_pObj != _p)
@@ -114,8 +123,6 @@ namespace wg
 			return *this;
 		}
 
-
-		inline Cls* rawPtr() const { return m_pObj; }
 	
 		operator  Cls*() const { return m_pObj; }
 
@@ -139,7 +146,12 @@ namespace wg
 
 		inline operator bool() const { return m_pObj != 0; }
 
+		//.____ Misc ___________________________________________________________
 
+		inline Cls* rawPtr() const { return m_pObj; }
+
+
+protected:
 		Cls *	m_pObj;
 	};
 

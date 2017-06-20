@@ -55,7 +55,7 @@ namespace wg
 	class Text : public Interface
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		Text( TextItem * pItem ) : m_pItem(pItem) {};
 	

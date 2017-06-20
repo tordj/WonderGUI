@@ -26,7 +26,7 @@ def doxify( lines )
 
     end
 
-    if( inPublic and line =~ /^\s*\/\/\._+\s+[A-Za-z]+\s+_+\Z/ )
+    if( inPublic and line =~ /^\s*\/\/\._+\s+[A-Za-z]+\s+_+/ )
       groupName = line.gsub( /[.\s_\/]/, '' ).chomp
       puts "Found group: '#{groupName}'"
 

@@ -38,6 +38,10 @@ namespace wg
 	
 	struct TextAttr
 	{
+		public:
+		
+			//.____ Properties ___________________________________________________________
+		
 			Font_p			pFont;
 			int				size;
 			Color			color;

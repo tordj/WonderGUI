@@ -105,12 +105,16 @@ namespace wg
 	class CharBuffer
 	{
 	public:
+
+		//.____ Creation ___________________________________________________
 	
 		CharBuffer( int size = 0 );
 		inline CharBuffer(const CharBuffer& r);
 	
 		~CharBuffer() { _derefBuffer(); }
 	
+
+		//.____ Operators ______________________________________________________
 	
 	    CharBuffer& operator=( CharBuffer const & r);
 		CharBuffer& operator=( String const & r);
@@ -125,6 +129,8 @@ namespace wg
 		const Char&		operator[](int i) const							{ return *(const Char*)_ptr(i); }
 	
 		inline operator bool() const { return m_pHead->m_len != 0?true:false; }
+
+		//.____ Content ___________________________________________________________
 	
 		void	trim();
 		void	trimWhiteSpace();
@@ -192,6 +198,7 @@ namespace wg
 		inline void 		clearStyle();
 		void				clearStyle( int ofs, int len );
 		
+		//.____ Misc ___________________________________________________________
 	
 		int					findFirst( const CharSeq& seq, int ofs = 0 );
 		int					findFirst( uint16_t character, int ofs = 0 );

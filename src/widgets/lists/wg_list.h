@@ -63,7 +63,7 @@ namespace wg
 		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
 		using		ChildGroup<SlotType,HolderType>::m_pHolder;
 
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
 

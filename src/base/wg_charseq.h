@@ -61,6 +61,9 @@ namespace wg
 	class CharSeq
 	{
 	public:
+	
+		//.____ Creation _______________________________________________________
+	
 		CharSeq( const char * pChar );
 		CharSeq( const char * pChar, int len );
 		CharSeq( const uint16_t * pChar );
@@ -81,10 +84,14 @@ namespace wg
 		{
 		public:
 			friend class CharSeq;
+
+			//.____ Creation ___________________________________________________
 	
 			CharBasket() {};
 			CharBasket(const CharBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
 			~CharBasket();
+
+			//.____ Properties _________________________________________________
 	
 			const Char *	ptr;
 			int				length;
@@ -100,10 +107,14 @@ namespace wg
 		public:
 			friend class CharSeq;
 	
+			//.____ Creation ___________________________________________________
+
 			UTF8Basket() {};
 			UTF8Basket(const UTF8Basket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
 			~UTF8Basket() { if( bIsOwner ) delete [] ptr; }
 	
+			//.____ Properties _________________________________________________
+
 			const char *	ptr;
 			int				length;		// Length of char string, NOT number of UTF8 characters!
 	
@@ -118,10 +129,14 @@ namespace wg
 		public:
 			friend class CharSeq;
 	
+			//.____ Creation ___________________________________________________
+
 			UnicodeBasket() {};
 			UnicodeBasket(const UnicodeBasket& r) { ptr = r.ptr ; length = r.length; bIsOwner = r.bIsOwner; r.bIsOwner = false; }
 			~UnicodeBasket() { if( bIsOwner ) delete [] ptr; }
 	
+			//.____ Properties _________________________________________________
+
 			const uint16_t *	ptr;
 			int				length;
 	
@@ -130,6 +145,8 @@ namespace wg
 	
 			mutable bool	bIsOwner;
 		};
+
+		//.____ Content ________________________________________________________
 	
 		inline int				length() const { return m_nbChars; }
 		int						lengthUtf8() const;
@@ -139,6 +156,9 @@ namespace wg
 		std::string				getStdString() const;
 		std::wstring			getStdWstring() const;
 		int						getNbLines() const;
+
+		//.____ Misc ___________________________________________________________
+
 		void					copyTo( Char * pDest ) const;
 	//	void					copyTo( char * pDest ) const;			//TODO: implement.
 	//	void					copyTo( uint16_t * pDest ) const;			//TODO: implement.
@@ -170,6 +190,8 @@ namespace wg
 	class CharSeqLiteral : public CharSeq
 	{
 	public:
+		//.____ Creation _______________________________________________________
+	
 		CharSeqLiteral( const char * pChar );
 		CharSeqLiteral( const char * pChar, int len );
 		CharSeqLiteral( const uint16_t * pChar );
@@ -187,6 +209,8 @@ namespace wg
 	{
 		friend class CharSeq;
 	public:
+		//.____ Creation _______________________________________________________
+
 		CharSeq8( const char * pChar, CodePage codePage = DefaultCodePage );
 		CharSeq8( const char * pChar, int len, CodePage codePage = DefaultCodePage );
 		CharSeq8( const std::string& str, CodePage codePage = DefaultCodePage );

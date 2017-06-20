@@ -28,10 +28,15 @@
 
 namespace wg 
 {
-	
-	template<class Cls> class StrongInterfacePtr		/** @private */
+		
+	template<class Cls> class StrongInterfacePtr
 	{
+		template<class T> friend class StrongInterfacePtr;
+		
 	public:
+
+	//.____ Creation ___________________________________________________________
+
 		StrongInterfacePtr(Cls * const _p=0)
 		{
 			m_pInterface = _p;
@@ -59,6 +64,8 @@ namespace wg
 			if( m_pInterface )
 				static_cast<Interface*>(m_pInterface)->_object()->_decRefCount();
 		}
+
+		//.____ Operators ______________________________________________________
 
 		StrongInterfacePtr<Cls>& operator=(Cls * const _p)
 		{
@@ -115,9 +122,6 @@ namespace wg
 			}
 			return *this;
 		}
-
-
-		inline Cls* rawPtr() const { return m_pInterface; }
 	
 		operator  Cls*() const { return m_pInterface; }
 
@@ -133,7 +137,12 @@ namespace wg
 
 		inline operator bool() const { return m_pInterface != 0; }
 
+		//.____ Misc ___________________________________________________________
+		
+		inline Cls* rawPtr() const { return m_pInterface; }
 
+
+protected:
 		Cls *	m_pInterface;
 	};
 

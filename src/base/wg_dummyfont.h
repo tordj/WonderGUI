@@ -38,25 +38,21 @@ namespace wg
 	class DummyFont : public Font
 	{
 	public:
+		//.____ Creation __________________________________________
+
 		static DummyFont_p	create() { return DummyFont_p(new DummyFont()); }
 	
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static DummyFont_p	cast( Object * pObject );
 
-		int				nbGlyphs();
-		bool			hasGlyphs();
-		bool			isMonospace();
-		bool			isMonochrome();
-		bool			hasGlyph( uint16_t chr );
-
+		//.____ Rendering ____________________________________________
 
 		bool			setSize( int size );
 		int				size();
-
-
-		// Methods dealing with the font in the specified size.
 	
 		int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
 		Glyph_p			getGlyph( uint16_t chr );
@@ -66,6 +62,16 @@ namespace wg
 		int				maxAdvance();
 		int				maxAscend();
 		int				maxDescend();
+
+		//.____ Misc ___________________________________________________________
+
+		int				nbGlyphs();
+		bool			hasGlyphs();
+		bool			isMonospace();
+		bool			isMonochrome();
+		bool			hasGlyph( uint16_t chr );
+
+
 
 
 	protected:

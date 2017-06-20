@@ -49,7 +49,7 @@ namespace wg
 	class ModValue : public Value
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		ModValue(ModValueItem * pItem) : Value(pItem) {}
 	

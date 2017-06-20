@@ -54,9 +54,6 @@ namespace wg
 				pNewWidget->_setHolder( pHolder, this );
 			}
 		}
-			
-			
-
 
 		Widget *	pWidget;
 	};

@@ -39,7 +39,7 @@ namespace wg
 	class Span : public Interface
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		Span(SpanItem* pItem) : m_pItem(pItem) {}
 		

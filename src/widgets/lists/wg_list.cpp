@@ -413,9 +413,9 @@ namespace wg
 		if (bPostMsg)
 		{
 			if (bSelected)
-				Base::msgRouter()->post(new ItemsSelectMsg(this, nbItems, pItemInfo));
+				Base::msgRouter()->post(ItemsSelectMsg::create(this, nbItems, pItemInfo));
 			else
-				Base::msgRouter()->post(new ItemsUnselectMsg(this, nbItems, pItemInfo));
+				Base::msgRouter()->post(ItemsUnselectMsg::create(this, nbItems, pItemInfo));
 		}
 
 		return nbChanges;
@@ -491,10 +491,10 @@ namespace wg
 		if( bPostMsg )
 		{
 			if( nSelected > 0 )
-				Base::msgRouter()->post( new ItemsSelectMsg(this, 1, pSelectedItemsInfo) );
+				Base::msgRouter()->post( ItemsSelectMsg::create(this, 1, pSelectedItemsInfo) );
 	
 			if( nDeselected > 0 )
-				Base::msgRouter()->post( new ItemsUnselectMsg(this, 1, pDeselectedItemsInfo) );
+				Base::msgRouter()->post( ItemsUnselectMsg::create(this, 1, pDeselectedItemsInfo) );
 		}
 	
 		return nSelected + nDeselected;

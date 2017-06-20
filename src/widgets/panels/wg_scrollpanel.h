@@ -94,7 +94,7 @@ namespace wg
 	class ViewEntry : public ChildEntry<ViewSlot, ScrollPanel>
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : ChildEntry(pSlot, pPanel) {}
 
@@ -137,7 +137,7 @@ namespace wg
 	class ScrollbarEntry : public Interface
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		ScrollbarEntry(ScrollbarSlot * pSlot, ScrollPanel * pPanel) : m_pSlot(pSlot), m_pHolder(pPanel) {}
 

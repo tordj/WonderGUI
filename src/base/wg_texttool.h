@@ -41,7 +41,7 @@ namespace wg
 	
 	//____ TextTool _____________________________________________________________
 	
-	class TextTool
+	class TextTool		/** @private */
 	{
 		friend class CharBuffer;
 		friend class String;

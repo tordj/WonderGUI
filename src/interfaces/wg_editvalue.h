@@ -48,7 +48,7 @@ namespace wg
 	class EditValue : public ModValue
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		EditValue(EditValueItem * pItem) : ModValue(pItem) {}
 

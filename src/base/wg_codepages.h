@@ -40,10 +40,12 @@ namespace wg
 		to the array index.
 	**/
 	
-	class CodePages
+	class CodePages /** @private */
 	{
 	public:
-		static inline uint16_t* getCodePage( CodePage codePage ) { return LookupTable[(int)codePage]; }
+		//.____ Misc ___________________________________________________________
+
+		static inline const uint16_t* getCodePage( CodePage codePage ) { return LookupTable[(int)codePage]; }
 			
 	private:		
 		static uint16_t* LookupTable[CodePage_Max];

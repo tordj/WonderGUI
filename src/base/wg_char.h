@@ -67,6 +67,9 @@ namespace wg
 	friend class CharBuffer;
 	
 	public:
+	
+		//.____ Creation ___________________________________________________
+	
 		/// Initializes an empty character containing null (End of Text) and no properties.
 	
 		Char() : m_all(0) {};
@@ -83,6 +86,8 @@ namespace wg
 	
 		Char( uint16_t charCode, TextStyle * pStyle ) { m_code = charCode; m_style = pStyle->handle(); pStyle->_incRefCount(); }
 		~Char() { if( m_style ) TextStyleManager::_getPointer(m_style)->_decRefCount(); }
+
+		//.____ Operators ______________________________________________________
 	
 		inline Char & operator=(const Char &ref)
 		{
@@ -100,6 +105,8 @@ namespace wg
 			}
 			return *this;
 		}
+
+		//.____ Misc ___________________________________________________________
 	
 		inline bool				equals(const Char& ch) const { return m_all == ch.m_all; }
 	

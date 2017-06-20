@@ -61,7 +61,7 @@ namespace wg
 	{
 	public:
 
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : ListChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
 

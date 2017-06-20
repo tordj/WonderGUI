@@ -58,7 +58,7 @@ namespace wg
 	class PopupChildren : public Interface
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		PopupChildren(PopupLayer * pHolder) : m_pHolder(pHolder) {}
 

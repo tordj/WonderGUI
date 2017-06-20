@@ -17,7 +17,7 @@ namespace wg
 
 	//____ Util _________________________________________________________________
 
-	namespace Util
+	namespace Util		/** @private */
 	{
 
 		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold );

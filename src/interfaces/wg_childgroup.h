@@ -47,7 +47,7 @@ namespace wg
 
 		using		iterator = SlotIterator<SlotType>;
 
-		//.____ Creation __________________________________________
+		/** @private */
 
 		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
 

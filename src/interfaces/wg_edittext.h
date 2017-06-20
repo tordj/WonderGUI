@@ -48,7 +48,7 @@ namespace wg
 	class EditText : public ModText
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		EditText(EditTextItem * pItem) : ModText(pItem) {}
 	

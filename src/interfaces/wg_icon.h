@@ -41,7 +41,7 @@ namespace wg
 	class Icon : public Interface
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		Icon(IconItem* pItem) : m_pItem(pItem) {}
 	

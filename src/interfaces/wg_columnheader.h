@@ -42,7 +42,7 @@ namespace wg
 	class ColumnHeader : public Interface
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		ColumnHeader(ColumnHeaderItem* pItem);
 		

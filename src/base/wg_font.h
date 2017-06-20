@@ -40,6 +40,10 @@ namespace wg
 	
 	struct GlyphBitmap
 	{
+	public:
+		
+		//.____ Properties _________________________________
+		
 		Surface_p 	pSurface;
 		Rect		rect;
 		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
@@ -54,11 +58,15 @@ namespace wg
 	friend class Font;
 	
 	public:
+	
+		//.____ Rendering ___________________________________________________________
+	
 		virtual const GlyphBitmap * getBitmap() = 0;
+		
+		//.____ Misc ___________________________________________________________
 	
 		inline int		advance() { return m_advance; }
 		inline int		kerningIndex() { return m_kerningIndex; }
-		inline Font *	glyphset() { return m_pFont; }
 	
 	protected:
 		Glyph();

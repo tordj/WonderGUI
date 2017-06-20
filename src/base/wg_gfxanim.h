@@ -83,6 +83,8 @@ namespace wg
 	{
 	public:
 		// Derived from KeyFrame: uint32_t	timestamp
+
+		//.____ Misc ___________________________________________________________
 	
 		GfxFrame * getNext(void) {return (GfxFrame *) KeyFrame::next();};
 		GfxFrame * getPrev(void) {return (GfxFrame *) KeyFrame::prev();};

@@ -41,6 +41,9 @@ namespace wg
 	{
 		friend class Anim;
 	public:
+	
+		//.____ Misc ___________________________________________________________
+	
 		bool	setDuration( int ticks );
 		int		duration( void ) { return m_duration; };
 		int		timestamp( void ) { return m_timestamp; };
@@ -62,11 +65,16 @@ namespace wg
 		friend class KeyFrame;
 	
 	public:
+
+		//.____ Identification __________________________________________
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Anim_p	cast( Object * pObject );
 	
+		//.____ Misc ________________________________________________
+
 		bool				setPlayMode( AnimMode mode );
 		bool				setTimeScaler( float scale );
 	
@@ -114,6 +122,8 @@ namespace wg
 	
 	struct AnimPlayPos
 	{
+		//.____ Properties _____________________________________________________
+		
 		KeyFrame *	pKeyFrame1;					// KeyFrame we are transitioning from.
 		KeyFrame *	pKeyFrame2;					// KeyFrame we are transitioning towards.
 		float			transition;					// 0 -> 1.0, current position. (1.0 only when anim has ended).

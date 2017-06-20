@@ -58,7 +58,7 @@ namespace wg
 	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
 

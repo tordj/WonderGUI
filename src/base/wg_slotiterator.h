@@ -41,14 +41,16 @@ namespace wg
 		using reference = Widget&;
 		using iterator_category = std::bidirectional_iterator_tag;
 
-		// Default constructible.
+		//.____ Creation ___________________________________________________
+
 		SlotIterator() = default;
 		explicit SlotIterator(SlotType* pSlot)
 		{
 			this->pSlot = pSlot;
 		}
 
-		// Dereferencable.
+		//.____ Operators ______________________________________________________
+
 		reference operator*() const
 		{
 			return *pSlot->pWidget;
@@ -60,7 +62,6 @@ namespace wg
 		}
 
 
-		// Pre- and post-incrementable.
 		SlotIterator& operator++()
 		{
 			pSlot++;
@@ -74,7 +75,6 @@ namespace wg
 			return tmp;
 		}
 
-		// Pre- and post-decrementable.
 		SlotIterator& operator--()
 		{
 			pSlot--;
@@ -88,8 +88,6 @@ namespace wg
 			return tmp;
 		}
 
-
-		// Equality / inequality.
 		bool operator==(const SlotIterator& rhs)
 		{
 			return pSlot == rhs.pSlot;
@@ -99,6 +97,8 @@ namespace wg
 		{
 			return pSlot != rhs.pSlot;
 		}
+
+		//.____ Internal _______________________________________________________
 
 		SlotType * _slot() const
 		{

@@ -37,7 +37,7 @@ namespace wg
 	class ModSpan : public SlideSpan
 	{
 	public:
-		//.____ Creation __________________________________________
+		/** @private */
 
 		ModSpan(SpanItem* pItem) : SlideSpan(pItem) {}
 	

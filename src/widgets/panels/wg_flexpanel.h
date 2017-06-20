@@ -42,6 +42,9 @@ namespace wg
 	class FlexPos
 	{
 	public:
+
+		//.____ Creation _______________________________________________________
+
 		inline FlexPos() {}
 
 		inline FlexPos( Origo _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
@@ -56,11 +59,16 @@ namespace wg
 		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(_offset) {}
 		inline FlexPos( float _origoX, float _origoY, int _ofsX, int _ofsY ) : origo(_origoX, _origoY), offset(_ofsX,_ofsY) {}
 
+		//.____ Geometry _______________________________________________________
+
+		Coord	pos( Size canvas ) const { return Coord( ((int)(origo.x*canvas.w+0.5f)) + offset.x, ((int)(origo.y*canvas.h+0.5f)) + offset.y ); }
+
+		//.____ Properties _____________________________________________________
 
 		CoordF	origo;
 		Coord	offset;
 			
-		Coord	pos( Size canvas ) const { return Coord( ((int)(origo.x*canvas.w+0.5f)) + offset.x, ((int)(origo.y*canvas.h+0.5f)) + offset.y ); }
+		//.____ Operators ______________________________________________________
 			
 		bool			operator==(const FlexPos& other) const { return origo == other.origo &&
 																			offset == other.offset; }
@@ -111,7 +119,7 @@ namespace wg
 	class FlexPanelChildren : public PanelChildren<FlexPanelSlot,FlexPanel>
 	{
 	public:
-		//.____ Internal ______________________________________________________
+		/** @private */
 
 		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : PanelChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
 
