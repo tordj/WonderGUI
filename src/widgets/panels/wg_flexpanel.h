@@ -24,8 +24,6 @@
 #define WG_FLEXPANEL_DOT_H
 #pragma once
 
-#include <vector>
-
 #include <wg_panel.h>
 
 namespace wg 
@@ -161,11 +159,11 @@ namespace wg
 
 		//.____ Ordering ______________________________________________________
 
-		void		moveToBack( int index );								// Put us ontop all our silbings.
-		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
+		void		moveToFront( int index );
+		iterator	moveToFront( iterator it );
 
-		void		moveToFront( int index );							// Put us below all our siblings.	
-		iterator	moveToFront( iterator it );							// Put us below all our siblings.	
+		void		moveToBack( int index );
+		iterator	moveToBack( iterator it );
 
 		void		moveAbove( int index, int sibling );
 		iterator	moveAbove( iterator it, iterator sibling );
