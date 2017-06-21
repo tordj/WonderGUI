@@ -108,9 +108,10 @@ namespace wg
 		
 		//.____ Geometry ____________________________________________
 
-		void				setMinSize(Size sz);
-		void				setMaxSize(Size sz);
-		void				setPreferredSize(Size sz);
+		bool				setMinSize(Size min);
+		bool				setMaxSize(Size max);
+		bool				setSizeLimits( Size min, Size max );
+		bool				setPreferredSize(Size pref);
 		
 		Size				preferredSize() const;
 	
@@ -159,6 +160,10 @@ namespace wg
 		void		_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo);
 		
 		SlotArray<LambdaPanelSlot>	m_children;
+	
+		Size		m_minSize;
+		Size		m_maxSize;
+		Size		m_preferredSize;
 	
 	};
 	

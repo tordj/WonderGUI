@@ -77,7 +77,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : children(&m_children,this)
+	LambdaPanel::LambdaPanel() : children(&m_children,this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(INT_MAX,INT_MAX)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -115,26 +115,90 @@ namespace wg
 		return 0;
 	}
 
-	void LambdaPanel::setMinSize(Size sz)
+	//____ setMinSize() _________________________________________________________________
+
+	bool LambdaPanel::setMinSize(Size min)
 	{
+		//TODO: Assert >= 0.
 		
+		if( m_minSize != min )
+		{
+			if( min.w > m_maxSize.w || min.h > m_maxSize.h )
+				return false;
+			
+			m_minSize = min;
+			if( m_preferredSize.w < min.w )
+				m_preferredSize.w = min.w;
+			if( m_preferredSize.h < min.h )
+				m_preferredSize.h = min.h;
+				
+			_requestResize();
+		}
+		return true;
 	}
 	
-	void LambdaPanel::setMaxSize(Size sz)
-	{
-		
-	}
+	//____ setMaxSize() ________________________________________________________
 	
-	void LambdaPanel::setPreferredSize(Size sz)
+	bool LambdaPanel::setMaxSize(Size sz)
 	{
-		
+		//TODO: Assert >= 0.
+
+ 		if( m_maxSize != max )
+		{
+			if( max.w < m_minSize.w || max.h < m_minSize.h )
+				return false;
+			
+			m_maxSize = max;
+			if( m_preferredSize.w > max.w )
+				m_preferredSize.w = max.w;
+			if( m_preferredSize.h > max.h )
+				m_preferredSize.h = max.h;
+				
+			_requestResize();
+		}
+		return true;		
 	}
 
+	//____ setSizeLimits() _____________________________________________________
+	
+	bool LambdaPanel::setSizeLimits( Size min, Size max )
+	{
+		//TODO: Assert >= 0.
+
+		if( min.w > max.w || min.h > max.h )
+			return false;
+			
+		m_minSize = min;
+		m_maxSize = max;
+		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
+		limit( m_preferredSize.h, m_minSize.h, m_maxSize.h );
+
+		_requestResize();
+		return true;
+	}
+	
+	//____ setPreferredSize() __________________________________________________
+	
+	bool LambdaPanel::setPreferredSize(Size pref)
+	{
+		//TODO: Assert >= 0.
+
+		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
+			return false;
+			
+		m_preferredSize = pref;
+		_requestResize();
+		return true;
+	}
+
+	//____ preferredSize() _____________________________________________________
 	
 	Size LambdaPanel::preferredSize() const
 	{
-		
+		return m_preferredSize;
 	}
+
+	//____ _firstChild() _______________________________________________________
 	
 	Widget * LambdaPanel::_firstChild() const
 	{
@@ -143,6 +207,8 @@ namespace wg
 
 		return m_children.first()->pWidget;		
 	}
+
+	//____ _lastChild() ________________________________________________________
 	
 	Widget * LambdaPanel::_lastChild() const
 	{
@@ -151,6 +217,8 @@ namespace wg
 
 		return m_children.last()->pWidget;		
 	}
+
+	//____ _firstSlotWithGeo() _________________________________________________
 
 	void LambdaPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
@@ -165,6 +233,8 @@ namespace wg
 		
 	}
 	
+	//____ _nextSlotWithGeo() _________________________________________________
+
 	void LambdaPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		LambdaPanelSlot * pSlot = (LambdaPanelSlot*) package.pSlot;
