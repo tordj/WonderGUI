@@ -266,9 +266,9 @@ int main ( int argc, char** argv )
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
-	FlexPanel_p pFlexPanel = FlexPanel::create();
-	pFlexPanel->setSkin( pImgSkin /*ColorSkin::create(Color::Burlywood)*/ );
-	pRoot->child = pFlexPanel;
+	LambdaPanel_p pBasePanel = LambdaPanel::create();
+	pBasePanel->setSkin( pImgSkin /*ColorSkin::create(Color::Burlywood)*/ );
+	pRoot->child = pBasePanel;
 
 
 /*	Filler_p pBackground = Filler::create();
@@ -278,7 +278,7 @@ int main ( int argc, char** argv )
 
 	Button_p pImage0 = Button::create();
 	pImage0->setSkin(pSimpleButtonSkin);
-	pFlexPanel->children.addMovable(pImage0, Rect(0, 0, 80 * 2, 33 * 2), Origo::East, Origo::East);
+	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2);});
 
 	Base::msgRouter()->addRoute(MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
@@ -375,7 +375,7 @@ int main ( int argc, char** argv )
 
 	{
 		PackPanel_p pPanel = PackPanel::create();
-		pFlexPanel->children.addPinned(pPanel, Origo::NorthWest, Origo::SouthEast);
+		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); } );
 
 		Widget_p widgets[5];
 
@@ -418,7 +418,7 @@ int main ( int argc, char** argv )
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->vscrollbar = pScrollbar;
 
-		pFlexPanel->children.addPinned(pScrollPanel, { 0,0.75 }, Origo::SouthEast);
+		pBasePanel->children.add(pScrollPanel, [](Widget *p, Size sz) { return Rect(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
 	}
 
 

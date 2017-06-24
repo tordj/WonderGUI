@@ -185,6 +185,7 @@
     <ClInclude Include="..\..\..\src\widgets\lists\wg_list.h" />
     <ClInclude Include="..\..\..\src\widgets\lists\wg_packlist.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_flexpanel.h" />
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_lambdapanel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_packpanel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_panel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_rootpanel.h" />
@@ -287,6 +288,7 @@
     <ClCompile Include="..\..\..\src\widgets\lists\wg_list.cpp" />
     <ClCompile Include="..\..\..\src\widgets\lists\wg_packlist.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_flexpanel.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_lambdapanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_packpanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_panel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_rootpanel.cpp" />

@@ -167,7 +167,7 @@ namespace wg
 			{
 				int grow = entries - (m_capacity - m_size);
 				if (grow == 1)
-					m_capacity = ((m_capacity + 1) * 3) / 2;
+					m_capacity = (m_capacity + 1) * 2;
 				else
 					m_capacity += grow;
 

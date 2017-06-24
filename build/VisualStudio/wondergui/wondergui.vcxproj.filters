@@ -416,6 +416,9 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_lambdapanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -714,6 +717,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp">
       <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_lambdapanel.cpp">
+      <Filter>widgets\panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

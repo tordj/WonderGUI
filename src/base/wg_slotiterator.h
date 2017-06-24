@@ -51,52 +51,58 @@ namespace wg
 
 		//.____ Operators ______________________________________________________
 
-		reference operator*() const
+		inline reference operator*() const
 		{
 			return *pSlot->pWidget;
 		}
 
-		pointer operator->() const
+		inline pointer operator->() const
 		{
 			return pSlot->pWidget;
 		}
 
 
-		SlotIterator& operator++()
+		inline SlotIterator& operator++()
 		{
 			pSlot++;
 			return *this;
 		}
 
-		SlotIterator operator++(int)
+		inline SlotIterator operator++(int)
 		{
 			SlotIterator tmp = *this;
 			pSlot++;
 			return tmp;
 		}
 
-		SlotIterator& operator--()
+		inline SlotIterator& operator--()
 		{
 			pSlot--;
 			return *this;
 		}
 
-		SlotIterator operator--(int)
+		inline SlotIterator operator--(int)
 		{
 			SlotIterator tmp = *this;
 			pSlot--;
 			return tmp;
 		}
 
-		bool operator==(const SlotIterator& rhs)
+		inline bool operator==(const SlotIterator& rhs)
 		{
 			return pSlot == rhs.pSlot;
 		}
 
-		bool operator!=(const SlotIterator& rhs)
+		inline bool operator!=(const SlotIterator& rhs)
 		{
 			return pSlot != rhs.pSlot;
 		}
+
+		inline bool operator< (const SlotIterator& rhs) { return pSlot < rhs.pSlot; }
+		inline bool operator> (const SlotIterator& rhs) { return pSlot > rhs.pSlot; }
+		inline bool operator<=(const SlotIterator& rhs) { return pSlot <= rhs.pSlot; }
+		inline bool operator>=(const SlotIterator& rhs) { return pSlot >= rhs.pSlot; }
+
 
 		//.____ Internal _______________________________________________________
 
@@ -109,6 +115,7 @@ namespace wg
 		SlotType * pSlot;
 
 	};
+
 
 } // namespace wg
 #endif //WG_SLOTITERATOR_DOT_H

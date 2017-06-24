@@ -102,6 +102,7 @@ namespace wg
 		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
 			m_child.pWidget->_setSize( m_pGfxDevice->canvasSize() );
 	
+		addDirtyPatch( geo() );
 		return true;
 	}
 	

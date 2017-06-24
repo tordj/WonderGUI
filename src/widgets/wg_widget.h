@@ -84,6 +84,7 @@ namespace wg
 	friend class ShaderCapsule;
 	friend class PopupLayer;
 	friend class ViewSlot;
+	friend class LambdaPanel;
 		
 	friend class Item;
 	friend class Slot;

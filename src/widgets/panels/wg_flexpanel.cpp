@@ -44,6 +44,8 @@ namespace wg
 
 	FlexPanelChildren::iterator FlexPanelChildren::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
+		//TODO: Assert
+
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder,pWidget);
 
@@ -59,6 +61,8 @@ namespace wg
 
 	FlexPanelChildren::iterator FlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
+		//TODO: Assert
+
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder,pWidget);
 
@@ -175,6 +179,8 @@ namespace wg
 
 	FlexPanelChildren::iterator FlexPanelChildren::moveToBack(iterator it)
 	{
+		//TODO: Assert
+
 		return iterator( _moveBelow(it._slot(), m_pSlotArray->first()) );
 	}
 
@@ -182,11 +188,15 @@ namespace wg
 
 	void FlexPanelChildren::moveToFront( int index )
 	{
+		//TODO: Assert
+
 		_moveAbove( m_pSlotArray->slot(index), m_pSlotArray->last() );
 	}
 
 	FlexPanelChildren::iterator FlexPanelChildren::moveToFront(iterator it)
 	{
+		//TODO: Assert
+
 		return iterator( _moveAbove(it._slot(), m_pSlotArray->last()) );
 	}
 

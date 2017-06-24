@@ -71,6 +71,7 @@
 #include <wg_flexpanel.h>
 #include <wg_image.h>
 #include <wg_popuplayer.h>
+#include <wg_lambdapanel.h>
 #include <wg_modallayer.h>
 #include <wg_oscilloscope.h>
 #include <wg_packpanel.h>

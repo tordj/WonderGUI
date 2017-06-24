@@ -456,7 +456,7 @@ namespace wg
 	void Widget::_setSize( const Size& size )
 	{
 		m_size = size;
-		_requestRender();
+//		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
 	}
 	
 	//____ _refresh() ___________________________________________________________

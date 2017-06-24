@@ -29,49 +29,91 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	iterator LambdaPanelChildren::add( Widget * pWidget, std::function<Rect(const Rect& parentGeo)> func )
+	LambdaPanelChildren::iterator LambdaPanelChildren::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
-		
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->add();
+		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->pFunc = func;
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
 	}
 
-	iterator LambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(const Rect& parentGeo)> func )
+	LambdaPanelChildren::iterator LambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
-		
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->pFunc = func;
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
 	}
 	
-	iterator LambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(const Rect& parentGeo)> func )
+	LambdaPanelChildren::iterator LambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
-		
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->pFunc = func;
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
 	}
 
 	void LambdaPanelChildren::moveToBack( int index )
 	{
-		
+		//TODO: Assert
+
+		m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->end() );
 	}
 	
-	iterator LambdaPanelChildren::moveToBack( iterator it )
+	LambdaPanelChildren::iterator LambdaPanelChildren::moveToBack( iterator it )
 	{
-		
+		//TODO: Assert
+
+		m_pHolder->_moveSlot(it._slot(), m_pSlotArray->end());
+		return iterator(m_pSlotArray->last());
 	}
 
 	void LambdaPanelChildren::moveToFront( int index )
 	{
-		
+		//TODO: Assert
+
+		m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->begin());
 	}
 	
-	iterator LambdaPanelChildren::moveToFront( iterator it )
+	LambdaPanelChildren::iterator LambdaPanelChildren::moveToFront( iterator it )
 	{
-		
+		//TODO: Assert
+
+		m_pHolder->_moveSlot(it._slot(), m_pSlotArray->begin());
+		return iterator(m_pSlotArray->begin());
 	}
 
 	void LambdaPanelChildren::moveBefore( int index, int sibling )
 	{
-		
+		//TODO: Assert
+
+		if (index < sibling)
+			sibling--;
+
+		if( index != sibling )
+			m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
 	}
 	
-	iterator LambdaPanelChildren::moveBefore( iterator it, iterator sibling )
+	LambdaPanelChildren::iterator LambdaPanelChildren::moveBefore( iterator it, iterator sibling )
 	{
-		
+		//TODO: Assert
+
+		if(it < sibling)
+			sibling--;
+
+		if (it != sibling)
+			m_pHolder->_moveSlot(it._slot(), sibling._slot());
+
+		return sibling;
 	}
 
 
@@ -139,7 +181,7 @@ namespace wg
 	
 	//____ setMaxSize() ________________________________________________________
 	
-	bool LambdaPanel::setMaxSize(Size sz)
+	bool LambdaPanel::setMaxSize(Size max)
 	{
 		//TODO: Assert >= 0.
 
@@ -249,70 +291,88 @@ namespace wg
 		}		
 	}
 
+	//____ _didAddSlots() ________________________________________________________
+
 	void LambdaPanel::_didAddSlots( Slot * pSlot, int nb )
 	{
-		
+		_unhideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
 	}
-	
+
+	//____ _willRemoveSlots() _________________________________________________
+
 	void LambdaPanel::_willRemoveSlots( Slot * pSlot, int nb )
 	{
-		
+		_hideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
 	}
 	
-	void LambdaPanel::_hideSlots( LambdaPanelSlot *, int nb )
+	//____ _hideSlots() __________________________________________________________
+
+	void LambdaPanel::_hideSlots( LambdaPanelSlot * pSlot, int nb )
 	{
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == true )
 			{
 				pSlot[i].bVisible = false;
-				_onRequestRender(pSlot[i].realGeo, pSlot);
+				_onRequestRender(pSlot[i].geo, pSlot);
 			}
 		}		
 	}
 	
-	void LambdaPanel::_unhideSlots( LambdaPanelSlot *, int nb )
+	//____ _unhideSlots() ________________________________________________________
+
+	void LambdaPanel::_unhideSlots( LambdaPanelSlot * pSlot, int nb )
 	{
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == false )
 			{
 				pSlot[i].bVisible = true;
-				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].realGeo, pSlot);
+				_updateGeo(&pSlot[i]);
+				_onRequestRender(pSlot[i].geo, pSlot);
 			}
 		}
 		
 	}
 
+	//____ _childPos() __________________________________________________________
+
 	Coord LambdaPanel::_childPos( Slot * pSlot ) const
 	{
 		return ((LambdaPanelSlot*)pSlot)->geo.pos();		
 	}
-	
+
+	//____ _childSize() __________________________________________________________
+
 	Size LambdaPanel::_childSize( Slot * pSlot ) const
 	{
 		return ((LambdaPanelSlot*)pSlot)->geo.size();
 	}
 
-	void LambdaPanel::_childRequestRender( Slot * pSlot )
+	//____ _childRequestRender() _________________________________________________
+
+	void LambdaPanel::_childRequestRender( Slot * _pSlot )
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->realGeo, pSlot );		
+		_onRequestRender( pSlot->geo, pSlot );		
 	}
 	
-	void LambdaPanel::_childRequestRender( Slot * pSlot, const Rect& rect )
+	void LambdaPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );		
-	}
-	
-	void LambdaPanel::_childRequestResize( Slot * pSlot )
-	{
-		
+		_onRequestRender( rect + pSlot->geo.pos(), pSlot );		
 	}
 
-	Widget * LambdaPanel::_prevChild( Slot * pSlot ) const
+	//____ _childRequestResize() ______________________________________________
+
+	void LambdaPanel::_childRequestResize( Slot * pSlot )
+	{
+		_updateGeo(static_cast<LambdaPanelSlot*>(pSlot));
+	}
+
+	//____ _prevChild() __________________________________________________________
+
+	Widget * LambdaPanel::_prevChild( Slot * _pSlot ) const
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
@@ -322,8 +382,10 @@ namespace wg
 		return nullptr;
 		
 	}
-	
-	Widget * LambdaPanel::_nextChild( Slot * pSlot ) const
+
+	//____ _nextChild() __________________________________________________________
+
+	Widget * LambdaPanel::_nextChild( Slot * _pSlot ) const
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 
@@ -333,24 +395,132 @@ namespace wg
 		return nullptr;		
 	}
 
+	//____ _cloneContent() _______________________________________________________
+
 	void LambdaPanel::_cloneContent( const Widget * _pOrg )
 	{
-		
+		//TODO: Implement
 	}
-	
+
+	//____ _setSize() ____________________________________________________________
+
 	void LambdaPanel::_setSize( const Size& size )
 	{
-		
+		Panel::_setSize( size );
+
+		for (auto& slot : m_children)
+			_updateGeo(&slot);
 	}
+
+	//____ _updateGeo() _______________________________________________________
+
+	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot)
+	{
+		Rect geo = pSlot->pFunc(pSlot->pWidget, m_size );
+
+
+		if (geo != pSlot->geo)
+		{
+			if (pSlot->bVisible)
+			{
+				// Clip our geometry and put it in a dirtyrect-list
+
+				Patches patches;
+				patches.add(Rect(pSlot->geo, Rect(0, 0, size())));
+				patches.add(Rect(geo, Rect(0, 0, size())));
+
+				// Remove portions of patches that are covered by opaque upper siblings
+
+				const LambdaPanelSlot * pCover = pSlot + 1;
+				while (pCover < m_children.end())
+				{
+					if (pCover->bVisible && (pCover->geo.intersectsWith(pSlot->geo) || pCover->geo.intersectsWith(geo)) )
+						pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+
+					pCover++;
+				}
+
+				// Make request render calls
+
+				for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+					_requestRender(*pRect);
+
+			}
+		}
+
+		pSlot->geo = geo;
+		
+		pSlot->pWidget->_setSize(geo.size());
+
+	}
+
+	//____ _onRequestRender() ____________________________________________________
 
 	void LambdaPanel::_onRequestRender( const Rect& rect, const LambdaPanelSlot * pSlot )
 	{
-		
+		if (!pSlot->bVisible)
+			return;
+
+		// Clip our geometry and put it in a dirtyrect-list
+
+		Patches patches;
+		patches.add(Rect(rect, Rect(0, 0, size())));
+
+		// Remove portions of patches that are covered by opaque upper siblings
+
+		const LambdaPanelSlot * pCover = pSlot + 1;
+		while (pCover < m_children.end())
+		{
+			if (pCover->bVisible && pCover->geo.intersectsWith(rect))
+				pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+
+			pCover++;
+		}
+
+		// Make request render calls
+
+		for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+			_requestRender(*pRect);
+
 	}
 
-	void LambdaPanel::_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo)
+	//____ _moveSlot() ________________________________________________________
+
+	void LambdaPanel::_moveSlot(LambdaPanelSlot * pFrom, LambdaPanelSlot * pTo)
 	{
-		
+		m_children.move(pFrom, pTo);
+
+		if (pTo->bVisible)		// This is correct, we have already switched places...
+		{
+			if (pTo > pFrom)			// We were moved forward
+			{
+				// Request render on all areas covered by siblings we have skipped in front of.
+
+				LambdaPanelSlot * p = pFrom;
+				while (p < pTo)
+				{
+					Rect cover(pTo->geo, p->geo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, pTo);
+					p++;
+				}
+			}
+			else							// Move us backward
+			{
+				// Request render on our siblings for the area we previously have covered.
+
+				LambdaPanelSlot * p = pTo + 1;
+				while (p <= pFrom)
+				{
+					Rect cover(pTo->geo, p->geo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, p);
+					p++;
+				}
+			}
+		}
 	}
 
 

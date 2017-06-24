@@ -39,13 +39,18 @@ namespace wg
 	class LambdaPanelSlot : public Slot		/** @private */
 	{
 	public:
-		LambdaPanelSlot() : bVisible(false), m_pFunct(nullptr) {}
+		LambdaPanelSlot() : bVisible(false), pFunc(nullptr) {}
 	
-		std::function<Rect(Widget * pWidget, const Rect& parentGeo)>	m_pFunc;
+		std::function<Rect(Widget * pWidget, Size parentSize)>	pFunc;
 		bool			bVisible;
 		Rect			geo;				// Widgets geo relative parent	
 	};
-	
+
+
+	class LambdaPanelChildren;
+	typedef	StrongInterfacePtr<LambdaPanelChildren>	LambdaPanelChildren_p;
+	typedef	WeakInterfacePtr<LambdaPanelChildren>	LambdaPanelChildren_wp;
+
 	//____ LambdaPanelChildren ________________________________________________________
 
 	class LambdaPanelChildren : public HideableChildren<LambdaPanelSlot,LambdaPanel>
@@ -57,10 +62,10 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	add( Widget * pWidget, std::function<Rect(Widget * pWidget, const Rect& parentGeo)> func );
+		iterator	add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func );
 
-		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, const Rect& parentGeo)> func );
-		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, const Rect& parentGeo)> func );
+		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
+		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 
 		//.____ Ordering ______________________________________________________
 
@@ -134,8 +139,8 @@ namespace wg
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( LambdaPanelSlot *, int nb );
-		void		_unhideSlots( LambdaPanelSlot *, int nb );
+		void		_hideSlots( LambdaPanelSlot * pSlot, int nb );
+		void		_unhideSlots( LambdaPanelSlot * pSlot, int nb );
 
 		// Overloaded from WidgetHolder
 
@@ -154,17 +159,17 @@ namespace wg
 	
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
+		void		_updateGeo(LambdaPanelSlot * pSlot);
 
 		void		_onRequestRender( const Rect& rect, const LambdaPanelSlot * pSlot );
 
-		void		_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo);
+		void		_moveSlot(LambdaPanelSlot * pFrom, LambdaPanelSlot * pTo);
 		
 		SlotArray<LambdaPanelSlot>	m_children;
 	
 		Size		m_minSize;
 		Size		m_maxSize;
 		Size		m_preferredSize;
-	
 	};
 	
 	
