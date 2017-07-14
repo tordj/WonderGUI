@@ -40,11 +40,8 @@
 #include <wg_inputhandler.h>
 #include <wg_valueformatter.h>
 
-#ifdef USE_FREETYPE
 
-typedef struct FT_LibraryRec_  *FT_Library;
 
-#endif
 
 
 namespace wg 
@@ -76,12 +73,6 @@ namespace wg
 
 		static void init();
 		static int exit();
-	
-	
-	#ifdef USE_FREETYPE
-		static bool					initFreeType();
-		static inline FT_Library	getFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
-	#endif
 
 		//.____ Content _____________________________________________
 
@@ -124,10 +115,6 @@ namespace wg
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
 	
-	#ifdef USE_FREETYPE
-			bool			bFreeTypeInitialized;
-			FT_Library		freeTypeLibrary;
-	#endif
 	
 		};
 	

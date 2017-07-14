@@ -26,9 +26,8 @@
 
 #include <wg_userdefines.h>
 
-#ifdef	USE_FREETYPE
 #include <wg_base.h>
-#include <wg_vectorfont.h>
+#include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
 #include <assert.h>
@@ -40,16 +39,19 @@
 namespace wg 
 {
 	
-	const char VectorFont::CLASSNAME[] = {"VectorFont"};
+	const char FreeTypeFont::CLASSNAME[] = {"FreeTypeFont"};
 	
-	Chain<VectorFont::CacheSlot>	VectorFont::s_cacheSlots[c_glyphSlotSizes];
-	Chain<VectorFont::CacheSurf>	VectorFont::s_cacheSurfaces;
-	SurfaceFactory_p					VectorFont::s_pSurfaceFactory = 0;
+	bool				FreeTypeFont::s_bFreeTypeInitialized = false;
+	FT_Library			FreeTypeFont::s_freeTypeLibrary;
+
+	Chain<FreeTypeFont::CacheSlot>	FreeTypeFont::s_cacheSlots[c_glyphSlotSizes];
+	Chain<FreeTypeFont::CacheSurf>	FreeTypeFont::s_cacheSurfaces;
+	SurfaceFactory_p				FreeTypeFont::s_pSurfaceFactory = 0;
 	
 	
 	//____ Constructor ____________________________________________________________
 	
-	VectorFont::VectorFont( Blob_p pFontFile, int faceIndex )
+	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
 	{
 		m_pFontFile = pFontFile;
 		m_ftCharSize	= 0;
@@ -57,7 +59,7 @@ namespace wg
 		m_sizeOffset	= 0;
 		m_size 			= 0;
 	
-		for( int i = 0 ; i <= MaxFontSize ; i++ )
+		for( int i = 0 ; i <= c_maxFontSize ; i++ )
 		{
 			m_cachedGlyphsIndex[i] = 0;
 			m_whitespaceAdvance[i] = 0;
@@ -67,7 +69,7 @@ namespace wg
 		void * p = pFontFile->content();
 		
 	
-		FT_Error err = FT_New_Memory_Face(	Base::getFreeTypeLibrary(),
+		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
 											(const FT_Byte *)pFontFile->content(),
 											pFontFile->size(),
 											0,
@@ -86,9 +88,9 @@ namespace wg
 	
 	//____ Destructor _____________________________________________________________
 	
-	VectorFont::~VectorFont()
+	FreeTypeFont::~FreeTypeFont()
 	{
-		for( int size = 0 ; size <= MaxFontSize ; size++ )
+		for( int size = 0 ; size <= c_maxFontSize ; size++ )
 		{
 			if( m_cachedGlyphsIndex[size] != 0 )
 			{
@@ -107,7 +109,7 @@ namespace wg
 	
 	//____ isInstanceOf() _________________________________________________________
 	
-	bool VectorFont::isInstanceOf( const char * pClassName ) const
+	bool FreeTypeFont::isInstanceOf( const char * pClassName ) const
 	{ 
 		if( pClassName==CLASSNAME )
 			return true;
@@ -117,24 +119,64 @@ namespace wg
 	
 	//____ className() ____________________________________________________________
 	
-	const char * VectorFont::className( void ) const
+	const char * FreeTypeFont::className( void ) const
 	{ 
 		return CLASSNAME; 
 	}
 	
 	//____ cast() _________________________________________________________________
 	
-	VectorFont_p VectorFont::cast( Object * pObject )
+	FreeTypeFont_p FreeTypeFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return VectorFont_p( static_cast<VectorFont*>(pObject) );
+			return FreeTypeFont_p( static_cast<FreeTypeFont*>(pObject) );
 	
 		return 0;
 	}
-	
+
+
+	//____ init() _________________________________________________________
+
+	bool FreeTypeFont::init( SurfaceFactory * pFactory )
+	{
+		if (!pFactory)
+			return false;
+
+		s_pSurfaceFactory = pFactory;
+
+		if (s_bFreeTypeInitialized)
+			return true;
+
+		FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
+		if (err == 0)
+		{
+			s_bFreeTypeInitialized = true;
+			return true;
+		}
+
+		return false;
+	}
+
+	//____ exit() __________________________________________________________________
+
+	bool FreeTypeFont::exit()
+	{
+		if (!s_bFreeTypeInitialized)
+			return true;				// Was never initialized, this is not an error.
+
+		//TODO: Should check so we don't have any still existing FreeTypeFonts...
+
+		setSurfaceFactory(0);
+		clearCache();
+
+		FT_Done_FreeType(s_freeTypeLibrary);
+		return true;
+	}
+
+
 	//____ setSize() __________________________________________________________
 	
-	bool VectorFont::setSize( int size )
+	bool FreeTypeFont::setSize( int size )
 	{
 			if( size == m_ftCharSize )
 				return true;
@@ -143,7 +185,7 @@ namespace wg
 		
 			// Sanity check
 		
-			if( ftSize > MaxFontSize || ftSize < 0 )
+			if( ftSize > c_maxFontSize || ftSize < 0 )
 				return 0;
 
 		
@@ -167,7 +209,7 @@ namespace wg
 
 	//____ _refreshRenderFlags() _______________________________________________
 	
-	void VectorFont::_refreshRenderFlags()
+	void FreeTypeFont::_refreshRenderFlags()
 	{
 		switch( m_renderMode[m_ftCharSize] )
 		{
@@ -189,13 +231,13 @@ namespace wg
 	
 	//____ setRenderMode() ________________________________________________________
 	
-	bool VectorFont::setRenderMode( RenderMode mode, int startSize, int endSize )
+	bool FreeTypeFont::setRenderMode( RenderMode mode, int startSize, int endSize )
 	{
-		if( startSize < 0 || startSize > endSize || startSize > MaxFontSize )
+		if( startSize < 0 || startSize > endSize || startSize > c_maxFontSize )
 			return false;
 	
-		if( endSize > MaxFontSize )
-			endSize = MaxFontSize;
+		if( endSize > c_maxFontSize )
+			endSize = c_maxFontSize;
 	
 		for( int i = startSize ; i <= endSize ; i++ )
 			m_renderMode[i] =mode;
@@ -209,7 +251,7 @@ namespace wg
 	
 	//____ kerning() ___________________________________________________________
 	
-	int VectorFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	int FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !pLeftGlyph || !pRightGlyph )
 			return 0;
@@ -224,7 +266,7 @@ namespace wg
 	
 	//____ whitespaceAdvance() _________________________________________________
 	
-	int VectorFont::whitespaceAdvance()
+	int FreeTypeFont::whitespaceAdvance()
 	{
 		if( !m_whitespaceAdvance[m_ftCharSize] )
 		{
@@ -245,7 +287,7 @@ namespace wg
 	
 	//____ lineGap() ____________________________________________________________
 	
-	int VectorFont::lineGap()
+	int FreeTypeFont::lineGap()
 	{
 		return (m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6;
 	}
@@ -253,14 +295,14 @@ namespace wg
 	
 	//____ maxAscend() ____________________________________________________________
 	
-	int VectorFont::maxAscend()
+	int FreeTypeFont::maxAscend()
 	{	
 		return (m_ftFace->size->metrics.ascender) >> 6;
 	}
 	
 	//____ maxDescend() ____________________________________________________________
 	
-	int VectorFont::maxDescend()
+	int FreeTypeFont::maxDescend()
 	{	
 		return -(m_ftFace->size->metrics.descender) >> 6;
 	}
@@ -268,28 +310,28 @@ namespace wg
 	
 	//____ nbGlyphs() __________________________________________________________
 	
-	int VectorFont::nbGlyphs()
+	int FreeTypeFont::nbGlyphs()
 	{
 		return m_ftFace->num_glyphs;
 	}
 	
 	//____ hasGlyphs() ____________________________________________________________
 	
-	bool VectorFont::hasGlyphs()
+	bool FreeTypeFont::hasGlyphs()
 	{
 		return m_ftFace->num_glyphs?true:false;
 	}
 	
 	//____ isMonospace() __________________________________________________________
 	
-	bool VectorFont::isMonospace()
+	bool FreeTypeFont::isMonospace()
 	{
 		return FT_IS_FIXED_WIDTH( m_ftFace )>0?true:false;
 	}
 	
 	//____ maxAdvance() ___________________________________________________
 	
-	int VectorFont::maxAdvance()
+	int FreeTypeFont::maxAdvance()
 	{
 		return m_ftFace->size->metrics.max_advance >> 6;
 	}
@@ -297,7 +339,7 @@ namespace wg
 	
 	//____ hasGlyph() _____________________________________________________________
 	
-	bool VectorFont::hasGlyph( uint16_t ch )
+	bool FreeTypeFont::hasGlyph( uint16_t ch )
 	{
 		int index = FT_Get_Char_Index( m_ftFace, ch );
 		if( index == 0 )
@@ -308,7 +350,7 @@ namespace wg
 	
 	//____ getGlyph() _____________________________________________________________
 	
-	Glyph_p VectorFont::getGlyph( uint16_t ch )
+	Glyph_p FreeTypeFont::getGlyph( uint16_t ch )
 	{	
 		// Get cached glyph if we have one
 	
@@ -342,13 +384,13 @@ namespace wg
 	
 	
 	/*
-	Glyph_p VectorFont::getGlyph( uint16_t ch, int size )
+	Glyph_p FreeTypeFont::getGlyph( uint16_t ch, int size )
 	{
 		size += m_sizeOffset;
 	
 		// Sanity check
 	
-		if( size > MaxFontSize || size < 0 )
+		if( size > c_maxFontSize || size < 0 )
 			return 0;
 	
 		// Get cached glyph if we have one
@@ -419,7 +461,7 @@ namespace wg
 	
 	//____ _______________________________________________________
 	
-	VectorFont::CacheSlot * VectorFont::_generateBitmap( MyGlyph * pGlyph )
+	FreeTypeFont::CacheSlot * FreeTypeFont::_generateBitmap( MyGlyph * pGlyph )
 	{
 		FT_Error err;
 		
@@ -461,7 +503,7 @@ namespace wg
 	
 	// Currently only supports 32-bit RGBA surfaces!
 	
-	void VectorFont::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
+	void FreeTypeFont::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	{
 		Surface_p pSurf = pSlot->bitmap.pSurface;
 	
@@ -506,7 +548,7 @@ namespace wg
 	
 	//____ _copyA8ToRGBA8() _____________________________________________________
 	
-	void VectorFont::_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+	void FreeTypeFont::_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
 									    uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 	
@@ -535,7 +577,7 @@ namespace wg
 	
 	//____ _copyA1ToRGBA8() _____________________________________________________
 	
-	void VectorFont::_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
+	void FreeTypeFont::_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
 									    uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 		uint8_t lookup[2] = { 0, 255 };
@@ -568,7 +610,7 @@ namespace wg
 	
 	//___ _addGlyph() ________________________________________________________
 	
-	VectorFont::MyGlyph * VectorFont::_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex )
+	FreeTypeFont::MyGlyph * FreeTypeFont::_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex )
 	{
 		if( m_cachedGlyphsIndex[size] == 0 )
 		{
@@ -595,7 +637,7 @@ namespace wg
 	
 	//____ setSurfaceFactory() ____________________________________________________
 	
-	void VectorFont::setSurfaceFactory( SurfaceFactory * pFactory )
+	void FreeTypeFont::setSurfaceFactory( SurfaceFactory * pFactory )
 	{
 		s_pSurfaceFactory = pFactory;
 	}
@@ -603,7 +645,7 @@ namespace wg
 	
 	//____ clearCache() ___________________________________________________________
 	
-	void VectorFont::clearCache()
+	void FreeTypeFont::clearCache()
 	{
 		for( int i = 0 ; i < c_glyphSlotSizes ; i++ )
 		{
@@ -624,7 +666,7 @@ namespace wg
 	
 	//____ getCacheSlot() _________________________________________________________
 	
-	VectorFont::CacheSlot * VectorFont::getCacheSlot( int width, int height )
+	FreeTypeFont::CacheSlot * FreeTypeFont::getCacheSlot( int width, int height )
 	{
 		// Calculate size and index
 	
@@ -657,7 +699,7 @@ namespace wg
 		Creates all slots that can fit into this surface and adds them to the specified chain.
 	*/
 	
-	int VectorFont::addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots )
+	int FreeTypeFont::addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots )
 	{
 		// Create and add the cache surface
 	
@@ -691,7 +733,7 @@ namespace wg
 	
 	//____ maxSlotsInSurface() ____________________________________________________
 	
-	int VectorFont::maxSlotsInSurface( const Size& surf, const Size& slot )
+	int FreeTypeFont::maxSlotsInSurface( const Size& surf, const Size& slot )
 	{
 		int rows = (surf.w+1)/(slot.w+1);			// +1 since we need one pixel spacing between each slot.
 		int columns = (surf.h+1)/(surf.h+1);
@@ -702,7 +744,7 @@ namespace wg
 	
 	//____ calcTextureSize() ______________________________________________________
 	
-	Size VectorFont::calcTextureSize( const Size& slotSize, int nSlots )
+	Size FreeTypeFont::calcTextureSize( const Size& slotSize, int nSlots )
 	{
 		Size	surfSize( 128, 128 );
 	
@@ -728,11 +770,11 @@ namespace wg
 	
 	
 	
-	VectorFont::CacheSurf::~CacheSurf()
+	FreeTypeFont::CacheSurf::~CacheSurf()
 	{
 	}
 	
-	VectorFont::MyGlyph::MyGlyph()
+	FreeTypeFont::MyGlyph::MyGlyph()
 	: Glyph( 0, 0, 0 )
 	{
 		m_pSlot = 0;
@@ -741,7 +783,7 @@ namespace wg
 	}
 	
 	
-	VectorFont::MyGlyph::MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Font * pFont )
+	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Font * pFont )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 		m_pSlot = 0;
@@ -749,7 +791,7 @@ namespace wg
 		m_character = character;
 	}
 	
-	VectorFont::MyGlyph::~MyGlyph()
+	FreeTypeFont::MyGlyph::~MyGlyph()
 	{
 		if(  m_pSlot != 0 )
 		{
@@ -760,17 +802,16 @@ namespace wg
 		}
 	}
 	
-	const GlyphBitmap * VectorFont::MyGlyph::getBitmap()
+	const GlyphBitmap * FreeTypeFont::MyGlyph::getBitmap()
 	{
 		if( !m_pSlot )
 		{
-			m_pSlot = ((VectorFont*)m_pFont)->_generateBitmap( this );
+			m_pSlot = ((FreeTypeFont*)m_pFont)->_generateBitmap( this );
 		}
 	
-		((VectorFont*)m_pFont)->_touchSlot(m_pSlot);
+		((FreeTypeFont*)m_pFont)->_touchSlot(m_pSlot);
 		return &m_pSlot->bitmap;
 	}
 	
 } // namespace wg
-#endif //USE_FREETYPE
 

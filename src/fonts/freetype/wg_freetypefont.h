@@ -21,13 +21,12 @@
 =========================================================================*/
 
 
-#ifndef WG_VECTORFONT_DOT_H
-#define WG_VECTORFONT_DOT_H
+#ifndef WG_FREETYPEFONT_DOT_H
+#define WG_FREETYPEFONT_DOT_H
 #pragma once
 
 #include <wg_userdefines.h>
 
-#ifdef USE_FREETYPE
 
 #include <wg_types.h>
 #include <wg_chain.h>
@@ -37,17 +36,20 @@
 #include <wg_surfacefactory.h>
 #include <wg_blob.h>
 
+
+typedef struct FT_LibraryRec_  *FT_Library;
+
 struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
 namespace wg 
 {
-	class VectorFont;
-	typedef	StrongPtr<VectorFont>		VectorFont_p;
-	typedef	WeakPtr<VectorFont>	VectorFont_wp;
+	class FreeTypeFont;
+	typedef	StrongPtr<FreeTypeFont>		FreeTypeFont_p;
+	typedef	WeakPtr<FreeTypeFont>	FreeTypeFont_wp;
 
-	class VectorFont : public Font
+	class FreeTypeFont : public Font
 	{
 	public:
 
@@ -60,14 +62,14 @@ namespace wg
 
 		//.____ Creation __________________________________________
 		
-		static VectorFont_p	create( Blob_p pFontFile, int faceIndex ) { return VectorFont_p(new VectorFont(pFontFile,faceIndex)); }
+		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex)); }
 
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static VectorFont_p	cast( Object * pObject );
+		static FreeTypeFont_p	cast( Object * pObject );
 
 		//.____ Rendering ______________________________________________________
 
@@ -90,8 +92,14 @@ namespace wg
 		bool		hasGlyph( uint16_t chr );
 		bool		isMonospace();
 
+
+		static bool init(SurfaceFactory * pFactory );
+		static bool exit();
+
 		static void	setSurfaceFactory( SurfaceFactory * pFactory );
 		static void	clearCache();
+
+
 
 		//.____ Appearance ___________________________________________
 
@@ -101,15 +109,16 @@ namespace wg
 		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
 		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
 		bool		setRenderMode( RenderMode mode, int startSize, int endSize );
-		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= MaxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
+		inline RenderMode	renderMode( int size ) const { if( size >= 0 && size <= c_maxFontSize ) return m_renderMode[size]; else return RenderMode::Monochrome; }
 
 
 	private:
-		VectorFont( Blob_p pFontFile, int faceIndex );
-		~VectorFont();
+		FreeTypeFont( Blob_p pFontFile, int faceIndex );
+		~FreeTypeFont();
 
+		const static int	c_maxFontSize = 256;	// Max size (pixels) for font.
 		const static int	c_minGlyphPixelSize = 12;		
-		const static int	c_maxGlyphPixelSize = MaxFontSize*2;
+		const static int	c_maxGlyphPixelSize = c_maxFontSize*2;
 		const static int	c_glyphPixelSizeQuantization = 4;
 		const static int	c_glyphSlotSizes = ((c_maxGlyphPixelSize-c_minGlyphPixelSize)/c_glyphPixelSizeQuantization)+1;
 
@@ -181,15 +190,17 @@ namespace wg
 		Blob_p				m_pFontFile;
 		char*				m_pData;
 		int					m_ftCharSize;
-		MyGlyph **			m_cachedGlyphsIndex[MaxFontSize+1];
+		MyGlyph **			m_cachedGlyphsIndex[c_maxFontSize+1];
 		uint32_t			m_accessCounter;
 		int					m_renderFlags;
-		RenderMode			m_renderMode[MaxFontSize+1];
+		RenderMode			m_renderMode[c_maxFontSize+1];
 		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
-		int					m_whitespaceAdvance[MaxFontSize+1];
+		int					m_whitespaceAdvance[c_maxFontSize+1];
 		int					m_size;
 
 		//____ Static stuff __________________________________________________________
+
+
 
 
 		static CacheSlot *	getCacheSlot( int width, int height );
@@ -197,6 +208,8 @@ namespace wg
 		static int			maxSlotsInSurface( const Size& surf, const Size& slot );
 		static Size			calcTextureSize( const Size& slotSize, int nSlots );
 
+		static bool			s_bFreeTypeInitialized;
+		static FT_Library	s_freeTypeLibrary;
 
 		static Chain<CacheSlot>	s_cacheSlots[c_glyphSlotSizes];
 		static Chain<CacheSurf>	s_cacheSurfaces;
@@ -210,7 +223,7 @@ namespace wg
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	VectorFont::MyGlyph * VectorFont::_findGlyph( uint16_t ch, int size ) const
+	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, int size ) const
 	{
 		if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() )
 			return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
@@ -220,7 +233,7 @@ namespace wg
 
 	//____ _touchSlot() _________________________________________________________
 
-	void VectorFont::_touchSlot( CacheSlot * pSlot )
+	void FreeTypeFont::_touchSlot( CacheSlot * pSlot )
 	{
 		pSlot->moveFirst();								// Move slot to the top
 
@@ -231,5 +244,4 @@ namespace wg
 
 } // namespace wg
 
-#endif //USE_FREETYPE
-#endif //WG_VECTORFONT_DOT_H
+#endif //WG_FREETYPEFONT_DOT_H

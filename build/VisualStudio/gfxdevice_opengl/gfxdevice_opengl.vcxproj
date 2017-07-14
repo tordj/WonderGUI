@@ -22,7 +22,7 @@
     <ProjectGuid>{B03F7354-7BD2-4A7C-8CA5-E367EED1B44A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gfxdevice_opengl</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -138,9 +138,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glgfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glsurface.cpp" />

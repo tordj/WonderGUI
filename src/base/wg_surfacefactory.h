@@ -44,7 +44,7 @@ namespace wg
 	 *
 	 * SurfaceFactory is the base class for all surface factories. The surface factories
 	 * are used by WonderGUI components that needs to dynamically create surfaces as
-	 * part of their operation, like VectorFont.
+	 * part of their operation, like FreeTypeFont.
 	 *
 	 **/
 	class SurfaceFactory : public Object

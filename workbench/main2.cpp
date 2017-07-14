@@ -15,6 +15,7 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+#include <wg_freetypefont.h>
 #include <wg_packlist.h>
 #include <testwidget.h>
 
@@ -72,8 +73,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
-	Base::initFreeType();
-	VectorFont::setSurfaceFactory( SoftSurfaceFactory::create() );
+	FreeTypeFont::init( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -197,7 +197,7 @@ int main ( int argc, char** argv )
 
 	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 	
-	VectorFont_p pFont = VectorFont::create( pFontFile, 1 );
+	FreeTypeFont_p pFont = FreeTypeFont::create( pFontFile, 1 );
 
 
 	TextStyle_p pStyle = TextStyle::create();

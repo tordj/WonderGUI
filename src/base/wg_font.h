@@ -75,7 +75,7 @@ namespace wg
 	
 		Font *			m_pFont;		// glyphset that this glyph belongs to
 		int				m_advance;		// spacing to next glyph
-		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (VectorFont)
+		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (FreeTypeFont)
 	};
 	
 	typedef Glyph*	Glyph_p;

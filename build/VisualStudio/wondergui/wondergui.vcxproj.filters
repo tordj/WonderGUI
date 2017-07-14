@@ -42,9 +42,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
     <ClInclude Include="..\..\..\src\wondergui.h" />
     <ClInclude Include="..\..\..\src\skins\wg_blockskin.h">
@@ -75,9 +72,6 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_base.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h">
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_blob.h">
@@ -192,9 +186,6 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_util.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_vectorfont.h">
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h">
@@ -419,6 +410,9 @@
     <ClInclude Include="..\..\..\src\widgets\panels\wg_lambdapanel.h">
       <Filter>widgets\panels</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -449,9 +443,6 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_base.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_blob.cpp">
@@ -551,9 +542,6 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_util.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_vectorfont.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp">
@@ -720,6 +708,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\panels\wg_lambdapanel.cpp">
       <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

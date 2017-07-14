@@ -31,11 +31,6 @@
 #include <wg_finalizer.h>
 #include <wg_standardformatter.h>
 
-#ifdef USE_FREETYPE
-#	include <ft2build.h>
-#	include <wg_vectorfont.h>
-#	include FT_FREETYPE_H
-#endif
 
 namespace wg 
 {
@@ -71,10 +66,6 @@ namespace wg
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
 	
 	
-	#ifdef USE_FREETYPE
-		s_pData->bFreeTypeInitialized = false;
-	#endif
-	
 		TextTool::setDefaultBreakRules();
 	}
 	
@@ -92,14 +83,6 @@ namespace wg
 		if( !s_pData->pMemStack->isEmpty() )
 			return -3;					// There is data left in memstack.
 	
-	#ifdef USE_FREETYPE
-	
-		VectorFont::setSurfaceFactory(0);
-		VectorFont::clearCache();
-	
-		if( s_pData->bFreeTypeInitialized )
-			FT_Done_FreeType( s_pData->freeTypeLibrary );
-	#endif
 		s_pData->pDefaultTextMapper = 0;
 		s_pData->pDefaultStyle = 0;
 		s_pData->pDefaultValueFormatter = 0;
@@ -133,26 +116,6 @@ namespace wg
 		pHub->~WeakPtrHub();
 		s_pData->pPtrPool->freeEntry( pHub );
 	}
-		
-	//____ initFreeType() _________________________________________________________
-	
-	#ifdef USE_FREETYPE
-	bool Base::initFreeType()
-	{
-		assert( s_pData != 0 );
-		if( s_pData->bFreeTypeInitialized )
-			return true;
-	
-		FT_Error err = FT_Init_FreeType( &s_pData->freeTypeLibrary );
-		if( err == 0 )
-		{
-			s_pData->bFreeTypeInitialized = true;
-			return true;
-		}
-	
-		return false;
-	}
-	#endif
 		
 	//____ setDefaultTextMapper() ___________________________________________________
 	

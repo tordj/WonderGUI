@@ -14,6 +14,7 @@
     <ProjectGuid>{61381138-0C8C-4E62-A557-6ACC3D4D35BF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wondergui</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -81,9 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\src\base\wg_anim.h" />
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
     <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h" />
@@ -132,7 +130,6 @@
     <ClInclude Include="..\..\..\src\base\wg_togglegroup.h" />
     <ClInclude Include="..\..\..\src\base\wg_types.h" />
     <ClInclude Include="..\..\..\src\base\wg_util.h" />
-    <ClInclude Include="..\..\..\src\base\wg_vectorfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
@@ -249,7 +246,6 @@
     <ClCompile Include="..\..\..\src\base\wg_texttool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_togglegroup.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_vectorfont.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp" />
