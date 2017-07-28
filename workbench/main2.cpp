@@ -55,6 +55,11 @@ int main ( int argc, char** argv )
 	printf( "SizeOf Finalizer: %d\n", sizeof(Finalizer) );
 	printf( "SizeOf Filler: %d\n", sizeof(Filler) );
 
+	printf( "Slot is safe to relocate: %d\n", Slot::safe_to_relocate );
+	printf( "PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
+	printf("LambdaPanelSlot is safe to relocate: %d\n", LambdaPanelSlot::safe_to_relocate);
+
+
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------

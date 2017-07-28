@@ -128,9 +128,22 @@ namespace wg
 	
 			if( pOld )
 			{
-				memcpy( (void*)pNew, pOld, sizeof(SlotType)*m_size );
-				_reallocBlock( begin(), end() );
-				free( pOld );
+				if (SlotType::safe_to_relocate)
+				{
+					memcpy((void*)pNew, pOld, sizeof(SlotType)*m_size);
+					_reallocBlock(begin(), end());
+				}
+				else
+				{
+					for (int i = 0; i < m_size; i++)
+					{
+						new (&pNew[i]) SlotType();
+						pNew[i] = pOld[i];
+						(&pOld[i])->SlotType::~SlotType();
+						pNew[i].relink();
+					}
+				}
+				free(pOld);
 			}
 		}
 	
@@ -149,8 +162,21 @@ namespace wg
 			int blocksToMove = end() - pEnd;
 			if( blocksToMove > 0 )
 			{
-				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
-				_reallocBlock(pBeg, pBeg+blocksToMove);
+				if (SlotType::safe_to_relocate)
+				{
+					memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
+					_reallocBlock(pBeg, pBeg + blocksToMove);
+				}
+				else
+				{
+					for(int i = 0; i < blocksToMove; i++)
+					{
+						pBeg[i] = pEnd[i];
+						(&pEnd[i])->SlotType::~SlotType();
+						pBeg[i].relink();
+					}
+
+				}
 			}
 			m_size -= pEnd - pBeg;
 			return pBeg;
@@ -161,7 +187,47 @@ namespace wg
 		{
 			if (entries <= m_capacity - m_size)
 			{
-				memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
+				int nToCopy = (int) (end() - pPos);
+				if (nToCopy > 0)
+				{
+					if (SlotType::safe_to_relocate)
+					{
+						memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToCopy);
+						_reallocBlock(&pPos[entries], &pPos[entries+nToCopy] );
+					}
+					else
+					{
+
+						int nCopyToNew = min(entries, nToCopy);
+						int nCopyToExisting = nToCopy - nCopyToNew;
+						int nDestroy = nCopyToNew;
+
+						SlotType * pFrom = end();
+						SlotType * pTo = pFrom + entries;
+
+						// Copy first batch of entries to uninitialized objects
+
+						for (int i = 0; i < nCopyToNew; i++)
+						{
+							new (--pTo) SlotType();
+							*pTo = * (--pFrom);
+							pTo->relink();
+						}
+
+						// Copy the rest to existing objects
+
+						for (int i = 0; i < nCopyToNew; i++)
+						{
+							*(--pTo) = *(--pFrom);
+							pTo->relink();
+						}
+
+						// Destroy what needs to be destroyed
+
+						for (int i = 0; i < nDestroy; i++)
+							(&pPos[i])->SlotType::~SlotType();
+					}
+				}
 			}
 			else
 			{
@@ -175,16 +241,41 @@ namespace wg
 				SlotType* pOld = m_pArray;
 				SlotType* pNewPos = pNew + (pPos - pOld);
 
-				memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos-pOld));
-				memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
+				if (SlotType::safe_to_relocate)
+				{
+					memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos - pOld));
+					memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
+					_reallocBlock(pNew, pNewPos);
+					_reallocBlock(&pNewPos[entries], pNew + m_size + entries);
+				}
+				else
+				{
+					for (int i = 0; i < pPos - pOld; i++)
+					{
+						new (&pNew[i]) SlotType();
+						pNew[i] = pOld[i];
+						(&pOld[i])->SlotType::~SlotType();
+						pNew[i].relink();
+					}
+
+					SlotType * pDest = &pNewPos[entries];
+					for (int i = 0; i < end() - pPos; i++)
+					{
+						new (&pDest[i]) SlotType();
+						pDest[i] = pPos[i];
+						(&pPos[i])->SlotType::~SlotType();
+						pDest[i].relink();
+					}
+				}
+
 				if (pOld)
 					free(pOld);
+
 				m_pArray = pNew;
-				_reallocBlock(pNew, pNewPos);
 				pPos = pNewPos;
 			}
+
 			m_size += entries;
-			_reallocBlock(&pPos[entries], end());
 			_initBlock(pPos, &pPos[entries]);
 			return pPos;
 		}

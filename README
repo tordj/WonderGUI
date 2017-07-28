@@ -22,7 +22,7 @@ resources/
         Various files such as fonts and bitmaps used by the examples.
 		
 src/
-        The source tree for WonderGUI, graphics devices and examples.
+        The source tree for WonderGUI, graphics devices, font libaries and examples.
 
 
 
@@ -33,19 +33,17 @@ Dependencies
 The WonderGUI library does not have any dependencies beyond the standard
 libraries supplied with any modern C++ compiler.
 
-WonderGUI is however by default configured to use FreeType2 for text
-rendering which adds a dependency on the FreeType2 development libary and
-headers. To disable the use of FreeType2 (which will limit you to WonderGUI's
-built-in bitmap-based fontsystem) you remove the WG_USE_FREETYPE define from
-src/wg_userdefines.h. This will also prevent some examples from compiling.
+However, if you want to use vector fonts for text rendering (which you
+likely do) you also need to build the font_freetype library, which adds a 
+dependency on the FreeType2 development libary and headers.
 
 The WonderGUI examples might have additional dependencies, most notably SDL2
 (Simple DirectMedia Libary v2, www.libsdl.org) for handling user input and
 displaying graphics on screen, as well as SDLImage2 for loading graphics files.
+Some examples depend on font_freetype and thus also FreeType2.
  
 The various GfxDevices naturally have dependencies on the graphics systems
-they are created for. Only the software-only device has no additional 
-dependencies.
+they are created for (like OpenGL development files for glgfxdevice). Only the software-only device has no additional dependencies.
 
 
 

@@ -36,6 +36,8 @@ namespace wg
 		Slot() : pWidget(nullptr) {}
 		~Slot() { if( pWidget != nullptr ) { pWidget->_setHolder( nullptr, nullptr ); pWidget->_decRefCount(); } }
 
+		const static bool safe_to_relocate = true;
+
 		inline void relink() { pWidget->_setHolder( pWidget->_holder(), this ); }
 
 		inline void replaceWidget( WidgetHolder * pHolder, Widget * pNewWidget )

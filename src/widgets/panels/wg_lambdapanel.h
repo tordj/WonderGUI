@@ -40,7 +40,9 @@ namespace wg
 	{
 	public:
 		LambdaPanelSlot() : bVisible(false), pFunc(nullptr) {}
-	
+
+		const static bool safe_to_relocate = false;
+
 		std::function<Rect(Widget * pWidget, Size parentSize)>	pFunc;
 		bool			bVisible;
 		Rect			geo;				// Widgets geo relative parent	
