@@ -81,7 +81,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\..\src\fonts\freetype;..\..\..\..\freetype\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\src\fonts\freetype;..\..\..\..\freetype\include;..\..\..\..\freetype\include\freetype2;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\..\..\src\fonts\freetype;$(IncludePath)</IncludePath>
