@@ -68,17 +68,33 @@ namespace wg
 		{
 			if (pFrom < pTo)
 			{
-				SlotType temp = * pFrom;
-				memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo-pFrom));
-				* pTo = temp;
-				_reallocBlock(pFrom, pTo + 1);
+				SlotType temp = std::move(* pFrom);
+				if (SlotType::safe_to_relocate)
+				{
+					memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo - pFrom));
+					_reallocBlock(pFrom, pTo);
+				}
+				else
+				{
+					for (int i = 0; i < pTo - pFrom; i++)
+						pFrom[i] = std::move(pFrom[i + 1]);
+				}
+				* pTo = std::move(temp);
 			}
 			else
 			{
-				SlotType temp = * pFrom;
-				memmove((void*)&pFrom[1], pFrom, sizeof(SlotType) * (pFrom-pTo));
-				* pTo = temp;
-				_reallocBlock(pTo, pFrom + 1);
+				SlotType temp = std::move(* pFrom);
+				if (SlotType::safe_to_relocate)
+				{
+					memmove((void*)&pFrom[1], pFrom, sizeof(SlotType) * (pFrom - pTo));
+					_reallocBlock(pTo, pFrom);
+				}
+				else
+				{
+					for (int i = pTo-pFrom; i > 0; i--)
+						pFrom[i] = std::move(pFrom[i - 1]);
+				}
+				* pTo = std::move(temp);
 			}
 		}
 
@@ -106,13 +122,11 @@ namespace wg
 			int size = sizeof(SlotType)*m_capacity;
 			SlotType* pOld = m_pArray;
 			m_pArray = (SlotType*) malloc( size );
-			_initBlock(begin(),end());
 			for( int i = 0 ; i < m_size ; i++ )
 			{
 				int ofs = order[i];
-				m_pArray[i] = pOld[ofs];
+				new (&m_pArray[i]) SlotType(std::move(pOld[ofs]));
 			}
-			_reallocBlock( begin(), end() );
 			free( pOld );
 		}
 	
@@ -136,12 +150,7 @@ namespace wg
 				else
 				{
 					for (int i = 0; i < m_size; i++)
-					{
-						new (&pNew[i]) SlotType();
-						pNew[i] = pOld[i];
-						(&pOld[i])->SlotType::~SlotType();
-						pNew[i].relink();
-					}
+						new (&pNew[i]) SlotType(std::move(pOld[i]));
 				}
 				free(pOld);
 			}
@@ -158,24 +167,19 @@ namespace wg
 
 		SlotType* _deleteBlock(SlotType * pBeg, SlotType * pEnd)
 		{
-			_killBlock(pBeg, pEnd);
 			int blocksToMove = end() - pEnd;
 			if( blocksToMove > 0 )
 			{
 				if (SlotType::safe_to_relocate)
 				{
+					_killBlock(pBeg, pEnd);
 					memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
 					_reallocBlock(pBeg, pBeg + blocksToMove);
 				}
 				else
 				{
 					for(int i = 0; i < blocksToMove; i++)
-					{
-						pBeg[i] = pEnd[i];
-						(&pEnd[i])->SlotType::~SlotType();
-						pBeg[i].relink();
-					}
-
+						pBeg[i] = std::move( pEnd[i] );
 				}
 			}
 			m_size -= pEnd - pBeg;
@@ -205,27 +209,21 @@ namespace wg
 						SlotType * pFrom = end();
 						SlotType * pTo = pFrom + entries;
 
-						// Copy first batch of entries to uninitialized objects
+						// Move first batch of entries to uninitialized objects
 
 						for (int i = 0; i < nCopyToNew; i++)
 						{
-							new (--pTo) SlotType();
+							new (--pTo) SlotType(std::move(*(--pFrom)));
+/*							new (--pTo) SlotType();
 							*pTo = * (--pFrom);
 							pTo->relink();
-						}
+*/						}
 
-						// Copy the rest to existing objects
+						// Move the rest to existing objects
 
 						for (int i = 0; i < nCopyToNew; i++)
-						{
-							*(--pTo) = *(--pFrom);
-							pTo->relink();
-						}
+							*(--pTo) = std::move(*(--pFrom));
 
-						// Destroy what needs to be destroyed
-
-						for (int i = 0; i < nDestroy; i++)
-							(&pPos[i])->SlotType::~SlotType();
 					}
 				}
 			}
@@ -252,19 +250,13 @@ namespace wg
 				{
 					for (int i = 0; i < pPos - pOld; i++)
 					{
-						new (&pNew[i]) SlotType();
-						pNew[i] = pOld[i];
-						(&pOld[i])->SlotType::~SlotType();
-						pNew[i].relink();
+						new (&pNew[i]) SlotType(std::move(pOld[i]));
 					}
 
 					SlotType * pDest = &pNewPos[entries];
 					for (int i = 0; i < end() - pPos; i++)
 					{
-						new (&pDest[i]) SlotType();
-						pDest[i] = pPos[i];
-						(&pPos[i])->SlotType::~SlotType();
-						pDest[i].relink();
+						new (&pDest[i]) SlotType(std::move(pPos[i]));
 					}
 				}
 
@@ -285,7 +277,6 @@ namespace wg
 			pBlock->~SlotType();
 		}
 
-
 		void	_killBlock(SlotType * pBeg, SlotType * pEnd)
 		{
 			while (pBeg < pEnd)
@@ -302,7 +293,6 @@ namespace wg
 			while (pBeg < pEnd)
 				new (pBeg++) SlotType();
 		}
-
 	
 		int			m_capacity;
 		int			m_size;

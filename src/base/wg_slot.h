@@ -34,9 +34,46 @@ namespace wg
 	{
 	public:
 		Slot() : pWidget(nullptr) {}
-		~Slot() { if( pWidget != nullptr ) { pWidget->_setHolder( nullptr, nullptr ); pWidget->_decRefCount(); } }
 
 		const static bool safe_to_relocate = true;
+
+		Slot(Slot&& o) 
+		{
+			pWidget = o.pWidget; 
+			if (pWidget)
+			{
+				pWidget->_setHolder(pWidget->_holder(), this);
+				o.pWidget = nullptr;
+			}
+		}
+
+		~Slot() 
+		{ 
+			if( pWidget != nullptr ) 
+			{ 
+				pWidget->_setHolder( nullptr, nullptr ); 
+				pWidget->_decRefCount(); 
+			} 
+		}
+
+		Slot& operator=(Slot&& o) 
+		{
+			if (pWidget)
+			{
+				pWidget->_setHolder(nullptr, nullptr);
+				pWidget->_decRefCount();
+			}
+
+			pWidget =o.pWidget;
+
+			if (pWidget)
+			{
+				pWidget->_setHolder(pWidget->_holder(), this);
+				o.pWidget = nullptr;
+			}
+
+			return *this;
+		}
 
 		inline void relink() { pWidget->_setHolder( pWidget->_holder(), this ); }
 
