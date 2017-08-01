@@ -468,13 +468,10 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		const LambdaPanelSlot * pCover = pSlot + 1;
-		while (pCover < m_children.end())
+		for (LambdaPanelSlot * pCover = m_children.begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->bVisible && pCover->geo.intersectsWith(rect))
 				pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, 65536, 65536), _getBlendMode());
-
-			pCover++;
 		}
 
 		// Make request render calls

@@ -742,7 +742,7 @@ namespace wg
 	
 		//
 	
-		return 0;
+		return nullptr;
 	}
 	
 	//____ preferredSize() ___________________________________________________________
@@ -1460,18 +1460,6 @@ namespace wg
 
 	Widget * ScrollPanel::_firstChild() const
 	{
-		if (m_viewSlot.pWidget)
-			return m_viewSlot.pWidget;
-		else if (m_scrollbarSlots[0].pWidget)
-			return m_scrollbarSlots[0].pWidget;
-		else
-			return m_scrollbarSlots[1].pWidget;
-	}
-	
-	//____ _lastChild() _______________________________________________________
-
-	Widget * ScrollPanel::_lastChild() const
-	{
 		if (m_scrollbarSlots[1].pWidget)
 			return m_scrollbarSlots[1].pWidget;
 		else if (m_scrollbarSlots[0].pWidget)
@@ -1480,34 +1468,24 @@ namespace wg
 			return m_viewSlot.pWidget;
 	}
 	
+	//____ _lastChild() _______________________________________________________
+
+	Widget * ScrollPanel::_lastChild() const
+	{
+		if (m_viewSlot.pWidget)
+			return m_viewSlot.pWidget;
+		else if (m_scrollbarSlots[0].pWidget)
+			return m_scrollbarSlots[0].pWidget;
+		else
+			return m_scrollbarSlots[1].pWidget;
+	}
+	
 	
 	//____ _firstSlotWithGeo() ___________________________________________________
 
 	void ScrollPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		if( m_viewSlot.pWidget )
-		{
-			package.pSlot = &m_viewSlot;
-			package.geo = m_viewSlot.canvasGeo;
-			return;
-		}
-
-		for (int i = 0; i < 2; i++)
-			if (m_scrollbarSlots[i].pWidget)
-			{
-				package.pSlot = &m_scrollbarSlots[i];
-				package.geo = m_scrollbarSlots[i].geo;
-				return;
-			}
-
-		package.pSlot = nullptr;
-	}
-	
-	//____ _nextSlotWithGeo() ____________________________________________________
-
-	void ScrollPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
-	{
-		for (int i = 1; i >= 0; i++)
+		for (int i = 1; i >= 0; --i)
 			if (m_scrollbarSlots[i].pWidget)
 			{
 				package.pSlot = &m_scrollbarSlots[i];
@@ -1520,6 +1498,27 @@ namespace wg
 			package.pSlot = &m_viewSlot;
 			package.geo = m_viewSlot.canvasGeo;
 			return;
+		}
+
+		package.pSlot = nullptr;
+	}
+	
+	//____ _nextSlotWithGeo() ____________________________________________________
+
+	void ScrollPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
+	{
+		if (package.pSlot == &m_viewSlot)
+			package.pSlot = nullptr;
+		
+		if (package.pSlot == &m_scrollbarSlots[1] && m_scrollbarSlots[0].pWidget )
+		{
+			package.pSlot = &m_scrollbarSlots[0];
+			package.geo = m_scrollbarSlots[0].geo;
+		}
+		else if (m_viewSlot.pWidget)
+		{
+			package.pSlot = &m_viewSlot;
+			package.geo = m_viewSlot.canvasGeo;
 		}
 		package.pSlot = nullptr;
 	}

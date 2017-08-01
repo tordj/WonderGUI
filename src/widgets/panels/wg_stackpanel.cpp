@@ -349,7 +349,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for( auto pCover = pSlot+1 ; pCover < m_children.end() ; pCover++ )
+		for( auto pCover = m_children.begin() ; pCover < pSlot ; pCover++ )
 		{
 			Rect geo = _childGeo(pCover);
 			if( pCover->bVisible && geo.intersectsWith( rect ) )

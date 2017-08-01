@@ -139,14 +139,6 @@ namespace wg
 	
 	Widget * Container::_findWidget( const Coord& ofs, SearchMode mode )
 	{
-		/* NOTE: This searches through all children forward, which is inefficient.
-		 * Better would be to search backwards and break the loop when a widget is found,
-		 * but that would require _lastChildWithGeo() and _prevChildWithGeo() methods which
-		 * we won't add to all containers just for this.
-		 * Therefore, widgets with potentially thousands of children should implement their 
-		 * own _findWidget(), which probably will be faster than just a revers loop anyway.
-		*/
-
 		SlotWithGeo	child;
 		_firstSlotWithGeo(child);
 		
@@ -160,20 +152,20 @@ namespace wg
 				{
 					Widget * pRes = static_cast<Container*>(child.pSlot->pWidget)->_findWidget(ofs - child.geo.pos(), mode);
 					if (pRes)
-						pResult = pRes;
+						return pRes;
 				}
 				else if( mode == SearchMode::Geometry || child.pSlot->pWidget->markTest( ofs - child.geo.pos() ) )
-					pResult = child.pSlot->pWidget;
+					return child.pSlot->pWidget;
 			}
 			_nextSlotWithGeo( child );
 		}
 
 		// Check against ourselves
 	
-		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )
-			pResult = this;
+		if( mode == SearchMode::Geometry || markTest(ofs) )
+			return this;
 			
-		return pResult;
+		return nullptr;
 	}
 	
 	
@@ -287,9 +279,9 @@ namespace wg
 				_nextSlotWithGeo( child );
 			}
 	
-			// Go through WidgetRenderContexts in reverse order (topmost first), push and mask dirt
+			// Go through WidgetRenderContexts, push and mask dirt
 	
-			for( int i = renderList.size()-1 ; i >= 0 ; i-- )
+			for (int i = 0 ; i < renderList.size(); i++)
 			{
 				WidgetRenderContext * p = &renderList[i];
 	
@@ -301,9 +293,9 @@ namespace wg
 					break;
 			}
 	
-			// Go through WidgetRenderContexts and render the patches
+			// Go through WidgetRenderContexts and render the patches in reverse order (topmost child rendered last).
 	
-			for( int i = 0 ; i < (int) renderList.size() ; i++ )
+			for (int i = renderList.size() - 1; i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
 				p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches );

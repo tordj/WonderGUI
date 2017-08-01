@@ -107,16 +107,11 @@ namespace wg
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 	
-		const LayerSlot * pCover;
-		const LayerSlot * pEnd = _endLayerSlots();
+		const LayerSlot * pCover = _beginLayerSlots();
+		const LayerSlot * pEnd = pSlot ? pSlot : _endLayerSlots();
 	
 		int incNext = _sizeOfLayerSlot();
-	
-		if( pSlot )
-			pCover = _incLayerSlot(pSlot,incNext);
-		else
-			pCover = _beginLayerSlots();
-	
+		
 		while( pCover <  pEnd )
 		{
 			if( pCover->geo.intersectsWith( rect ) )
@@ -136,51 +131,49 @@ namespace wg
 	
 	Widget* Layer::_firstChild() const
 	{		
-		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget;
-		else
-		{
-			LayerSlot * p = _beginLayerSlots();
-			if( p != _endLayerSlots() )
-				return p->pWidget;
-	
-			return nullptr;
-		}	
+		LayerSlot * p = _beginLayerSlots();
+		if (p != _endLayerSlots())
+			return p->pWidget;
+
+		return m_baseSlot.pWidget;
 	}
 	
 	//____ _lastChild() ____________________________________________________________
 	
 	Widget* Layer::_lastChild() const
 	{
-		LayerSlot * pSlot = _endLayerSlots();
-	
-		if( pSlot == _beginLayerSlots() )
+		if (m_baseSlot.pWidget)
 			return m_baseSlot.pWidget;
+		else
+		{
+			LayerSlot * pSlot = _endLayerSlots();
+			if (pSlot > _beginLayerSlots())
+			{
+				pSlot = _decLayerSlot(pSlot, _sizeOfLayerSlot());
+				return pSlot->pWidget;
+			}
 
-		pSlot = _decLayerSlot(pSlot,_sizeOfLayerSlot());
-		return pSlot->pWidget;
+			return nullptr;
+		}
 	}
 	
 	//____ _firstSlotWithGeo() _____________________________________________________
 	
 	void Layer::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		if( m_baseSlot.pWidget )
+		LayerSlot * p = _beginLayerSlots();
+		if( p < _endLayerSlots() )
 		{
-			package.geo = Rect(0,0,m_size);
+			package.geo = p->geo;
+			package.pSlot = p;
+		}
+		else if (m_baseSlot.pWidget)
+		{
+			package.geo = Rect(0, 0, m_size);
 			package.pSlot = &m_baseSlot;
 		}
 		else
-		{
-			LayerSlot * p = _beginLayerSlots();
-			if( p < _endLayerSlots() )
-			{
-				package.geo = p->geo;
-				package.pSlot = p;
-			}
-			else
-				package.pSlot = nullptr;
-		}
+			package.pSlot = nullptr;
 	}
 	
 	//____ _nextSlotWithGeo() _______________________________________________________
@@ -189,15 +182,22 @@ namespace wg
 	{
 		LayerSlot * p = (LayerSlot*) package.pSlot;
 
-		if( p == &m_baseSlot )
-			p = _beginLayerSlots();
-		else
-			p = _incLayerSlot(p,_sizeOfLayerSlot());
+		if (p == &m_baseSlot)
+		{
+			package.pSlot = nullptr;
+			return;
+		}
 
+		p = _incLayerSlot(p,_sizeOfLayerSlot());
 		if( p < _endLayerSlots() )
 		{
 			package.geo = ((LayerSlot*)p)->geo;
 			package.pSlot = p;
+		}
+		else if (m_baseSlot.pWidget)
+		{
+			package.geo = Rect(0, 0, m_size);
+			package.pSlot = &m_baseSlot;
 		}
 		else
 			package.pSlot = nullptr;
@@ -285,11 +285,11 @@ namespace wg
 	Widget * Layer::_prevChild( Slot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
-			return nullptr;
+			pSlot = _endLayerSlots();
 		
-		if( pSlot == _beginLayerSlots() )
-			return m_baseSlot.pWidget;
-			
+		if (pSlot == _beginLayerSlots())
+			return nullptr;
+
 		LayerSlot * p = _decLayerSlot((LayerSlot*)pSlot,_sizeOfLayerSlot());
 		return p->pWidget;
 	}
@@ -298,19 +298,14 @@ namespace wg
 
 	Widget * Layer::_nextChild( Slot * pSlot ) const
 	{
-		if( pSlot == &m_baseSlot )
-		{
-			if( _beginLayerSlots() < _endLayerSlots() )
-				return _beginLayerSlots()->pWidget;
-		}
-		else
-		{
-			LayerSlot * p = _incLayerSlot((LayerSlot*)pSlot,_sizeOfLayerSlot());
-			if( p < _endLayerSlots() )
-				return p->pWidget;
-		}
+		if (pSlot == &m_baseSlot)
+			return nullptr;
 
-		return nullptr;
+		LayerSlot * p = _incLayerSlot((LayerSlot*)pSlot, _sizeOfLayerSlot());
+		if (p < _endLayerSlots())
+			return p->pWidget;
+
+		return m_baseSlot.pWidget;
 	}
 	
 
