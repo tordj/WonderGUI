@@ -86,13 +86,13 @@ namespace wg
 				SlotType temp = std::move(* pFrom);
 				if (SlotType::safe_to_relocate)
 				{
-					memmove((void*)&pFrom[1], pFrom, sizeof(SlotType) * (pFrom - pTo));
+					memmove((void*)&pTo[1], pTo, sizeof(SlotType) * (pFrom - pTo));
 					_reallocBlock(pTo, pFrom);
 				}
 				else
 				{
-					for (int i = pTo-pFrom; i > 0; i--)
-						pFrom[i] = std::move(pFrom[i - 1]);
+					for (int i = pFrom-pTo; i > 0; i--)
+						pTo[i] = std::move(pTo[i - 1]);
 				}
 				* pTo = std::move(temp);
 			}
