@@ -30,6 +30,7 @@
 namespace wg 
 {
 	class Size;
+	class SizeF;
 	class Rect;
 	class RectF;
 	
@@ -146,14 +147,42 @@ namespace wg
 
 		CoordF() : x(0.f), y(0.f) {}
 		CoordF( float _x, float _y ) {x=_x;y=_y;};
-	
+		CoordF(const RectF& rect);
+
+		//.____ Misc ______________________________________________
+
+		inline SizeF toSize();
+		inline void clear() { x = 0.f; y = 0.f; }			///< Sets X and Y to 0.
+
 		//.____ Operators ___________________________________________
 
 		inline CoordF operator=(const CoordF& k)	{ x = k.x; y = k.y; return *this; }
-	
+		inline CoordF operator=(const RectF& r);
+
 		inline bool operator==(const CoordF& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
 		inline bool operator!=(const CoordF& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-	
+
+		inline void operator+=(const CoordF& k) { x += k.x; y += k.y; }
+		inline void operator-=(const CoordF& k) { x -= k.x; y -= k.y; }
+		inline CoordF operator+(const CoordF& k) const { CoordF res; res.x = x + k.x; res.y = y + k.y; return res; }
+		inline CoordF operator-(const CoordF& k) const { CoordF res; res.x = x - k.x; res.y = y - k.y; return res; }
+
+		inline void operator*=(double v) { x = (float) (x*v); y = (float) (x*v); }
+		inline void operator/=(double v) { x = (float) (x/v); y = (float) (y/v); }
+		inline CoordF operator*(double v) const { CoordF res; res.x = (float) (x*v); res.y = (float) (y*v); return res; }
+		inline CoordF operator/(double v) const { CoordF res; res.x = (float) (x/v); res.y = (float) (y/v); return res; }
+
+		inline void operator*=(float v) { x *= v; y *= v; }
+		inline void operator/=(float v) { x /= v; y /= v; }
+		inline CoordF operator*(float v) const { CoordF res; res.x = x*v; res.y = y*v; return res; }
+		inline CoordF operator/(float v) const { CoordF res; res.x = x / v; res.y = y / v; return res; }
+ 
+		inline void operator*=(int v) { x *= v; y *= v; }
+		inline void operator/=(int v) { x /= v; y /= v; }
+		inline CoordF operator*(int v) const { CoordF res; res.x = x * v; res.y = y * v; return res; }
+		inline CoordF operator/(int v) const { CoordF res; res.x = x / v; res.y = y / v; return res; }
+
+
 		//.____ Properties __________________________________________
 
 		float	x, y;
@@ -539,8 +568,29 @@ namespace wg
 	{ 
 		return Size(x,y); 
 	}
-	
-	
+
+	//_____________________________________________________________________________
+	inline CoordF::CoordF(const RectF& rect)
+	{
+		x = rect.x;
+		y = rect.y;
+	}
+
+	//_____________________________________________________________________________
+	inline CoordF CoordF::operator=(const RectF& r)
+	{
+		x = r.x;
+		y = r.y;
+		return *this;
+	}
+
+
+	//_____________________________________________________________________________
+	inline SizeF CoordF::toSize()
+	{
+		return SizeF(x, y);
+	}
+
 	//_____________________________________________________________________________
 	inline Size Border::size() const
 	{
@@ -575,7 +625,36 @@ namespace wg
 		if( h > max.h )
 			h = max.h;
 	}
-	
+
+	//_____________________________________________________________________________
+	inline SizeF::SizeF(const RectF& rect)
+	{
+		w = rect.w;
+		h = rect.h;
+	}
+
+	//_____________________________________________________________________________
+	inline SizeF SizeF::operator=(const RectF& k)
+	{
+		w = k.w;
+		h = k.h;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	inline void SizeF::limit(const SizeF& min, const SizeF& max)
+	{
+		if (w < min.w)
+			w = min.w;
+		if (h < min.h)
+			h = min.h;
+
+		if (w > max.w)
+			w = max.w;
+		if (h > max.h)
+			h = max.h;
+	}
+
 	//___________________________________________________________________________
 	/**
 	 * Check if given coordinate is within rectangle.
