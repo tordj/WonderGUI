@@ -25,6 +25,7 @@
 
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
+#include <wg_paddedchildren.h>
 
 namespace wg 
 {
@@ -53,12 +54,12 @@ namespace wg
 	
 	//____ PackPanelChildren ________________________________________________________
 
-	class PackPanelChildren : public PanelChildren<PackPanelSlot,PackPanel>
+	class PackPanelChildren : public PaddedChildren<PackPanelSlot,PackPanel>
 	{
 	public:
 		/** @private */
 
-		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PanelChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
+		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PaddedChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -80,10 +81,10 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class PackPanel : public Panel, protected PanelSlotsHolder
+	class PackPanel : public Panel, protected PaddedSlotsHolder
 	{
 		friend class PackPanelChildren;
-		friend class PanelChildren<PackPanelSlot,PackPanel>;
+		friend class PaddedChildren<PackPanelSlot,PackPanel>;
 		friend class HideableChildren<PackPanelSlot,PackPanel>;
 		friend class DynamicChildGroup<PackPanelSlot,PackPanel>;
 		friend class ChildGroup<PackPanelSlot,PackPanel>;
@@ -143,10 +144,11 @@ namespace wg
 		// Overloaded from PanelSlotsHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
-		void		_repadSlots( PanelSlot *, int nb, Border padding );
+		void		_repadSlots( Slot *, int nb, Border padding );
 
 		// Overloaded from WidgetHolder
 

@@ -71,17 +71,6 @@ namespace wg
 		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
 		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
 
-		//.____ Ordering ______________________________________________________		
-
-		void		moveToBack( int index );								// Put us ontop all our silbings.
-		iterator	moveToBack( iterator it );								// Put us ontop all our silbings.
-		void		moveToFront( int index );							// Put us below all our siblings.	
-		iterator	moveToFront( iterator it );							// Put us below all our siblings.	
-		void		moveAbove( int index, int sibling );
-		iterator	moveAbove( iterator it, iterator sibling );
-		void		moveBelow( int index, int sibling );
-		iterator	moveBelow( iterator it, iterator sibling );
-
 		//.____ Geometry ______________________________________________________
 
 		void		setOrigo( int index, const Origo origo );
@@ -108,8 +97,6 @@ namespace wg
 		void		move( iterator it, const Coord& ofs );
 		
 	protected:
-		ModalSlot * _moveAbove(ModalSlot * p, ModalSlot * pSibling);
-		ModalSlot * _moveBelow(ModalSlot * p, ModalSlot * pSibling);
 		void 		_setOrigo(ModalSlot * p, const Origo origo);
 		void 		_setGeo(ModalSlot * p, const Rect& geometry);
 		void 		_setOfs(ModalSlot * p, const Coord& ofs);
@@ -161,7 +148,6 @@ namespace wg
 	
 		void			_updateKeyboardFocus();
 		void			_refreshRealGeo( ModalSlot * pSlot );
-		void			_moveSlot(ModalSlot * pOldPos, ModalSlot * pNewPos);
 
 		// Overloaded from Panel
 	
@@ -174,6 +160,7 @@ namespace wg
 		// Methods for ModalChildren
 
 		void			_didAddSlots(Slot * pSlot, int nb);
+		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void			_willRemoveSlots(Slot * pSlot, int nb);
 
 

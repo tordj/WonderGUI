@@ -378,6 +378,26 @@ int main ( int argc, char** argv )
 	}
 	*/
 
+/*
+	{
+		auto pPanel = LambdaPanel::create();
+		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); });
+
+		Color cols[5] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {128,128,128}, {255,255,255} };
+
+		for (int i = 0; i < 5; i++)
+		{
+			auto pChild = Filler::create();
+			pChild->setSkin(ColorSkin::create(cols[i]));
+			pPanel->children.add(pChild, [&](Widget*p, Size sz) { return Rect(i * 10, i * 10, 100, 50);  });
+		}
+
+		pPanel->children.moveToFront(4);
+	}
+*/
+
+
+
 	{
 		PackPanel_p pPanel = PackPanel::create();
 		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); } );
@@ -414,7 +434,7 @@ int main ( int argc, char** argv )
 	}
 
 
-
+/*
 	ScrollPanel_p pScrollPanel;
 	{
 		Scrollbar_p pScrollbar = Scrollbar::create();
@@ -425,10 +445,10 @@ int main ( int argc, char** argv )
 
 		pBasePanel->children.add(pScrollPanel, [](Widget *p, Size sz) { return Rect(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
 	}
+*/
 
 
-
-
+/*
 	{
 		PackList_p pList = PackList::create();
 
@@ -487,7 +507,7 @@ int main ( int argc, char** argv )
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
 	}
-
+*/
 
  /*  {
         TestWidget_p pTest = TestWidget::create();

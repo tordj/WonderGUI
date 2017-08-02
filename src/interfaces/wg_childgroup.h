@@ -62,7 +62,7 @@ namespace wg
 		inline int		size() const { return m_pSlotArray->size(); }
 		inline int 		isEmpty() const { return m_pSlotArray->isEmpty(); }
 		inline int		capacity() const { return m_pSlotArray->capacity(); }
-		inline int		setCapacity(int capacity) { return m_pSlotArray->setCapacity(capacity);  }
+		inline void		setCapacity(int capacity) { m_pSlotArray->setCapacity(capacity);  }
 
 		inline Widget_p at(int index) const
 		{

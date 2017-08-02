@@ -24,11 +24,8 @@
 #define	WG_PANEL_DOT_H
 #pragma once
 
-#include <wg_widget.h>
 #include <wg_container.h>
-#include <wg_skin.h>
-#include <wg_hideablechildren.h>
-
+#include <wg_slot.h>
 
 namespace wg 
 {
@@ -57,50 +54,6 @@ namespace wg
 		bool		bVisible;
 		Border		padding;
 	};
-
-	//____ PanelSlotsHolder ____________________________________________________________
-
-	class PanelSlotsHolder : public HideableChildrenHolder  /** @private */
-	{
-		virtual void	_repadSlots( PanelSlot * pSlot, int nb, Border padding ) = 0;
-	};
-
-	//____ PanelChildren ________________________________________________________
-
-	template<class SlotType, class HolderType> class PanelChildren : public HideableChildren<SlotType,HolderType>
-	{
-	public:
-		using		iterator = SlotIterator<SlotType>;
-		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
-		using		ChildGroup<SlotType,HolderType>::m_pHolder;
-
-		/** @private */
-
-		PanelChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : HideableChildren<SlotType,HolderType>(pSlotArray, pHolder) {}
-
-		//.____ Geometry ______________________________________________________
-
-		bool		setPadding( int index, Border padding )
-		{
-			if( index < 0 || index >= m_pSlotArray->size() )
-				return false;
-				
-			m_pHolder->_repadSlots( m_pSlotArray->slot(index), 1, padding );
-			return true;
-		}
-
-		bool		setPadding( iterator it, Border padding )
-		{
-			//TODO: Assert
-
-			m_pHolder->_repadSlots( it._slot(), 1, padding );
-			return true;
-		}
-
-		Border		padding( int index ) const { return m_pSlotArray->slot(index)->padding; }
-		Border		padding( iterator it ) const { return it._slot()->padding; }
-	};
-
 	
 	
 	/**

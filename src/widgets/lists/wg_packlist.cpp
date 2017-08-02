@@ -689,6 +689,17 @@ namespace wg
 		List::_didAddSlots(pSlot, nb);
 	}
 
+	//____ _didMoveSlots() _______________________________________________________
+
+	void PackList::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb)
+	{
+		Slot * pBeg = min(pFrom, pTo);
+		Slot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
+
+		_requestRenderChildren((PackListSlot*)pBeg, (PackListSlot*)pEnd);	// Request render on dirty area
+	}
+
+
 	//____ _willRemoveSlots() _____________________________________________________
 
 	void PackList::_willRemoveSlots(Slot * pSlot, int nb)
@@ -703,7 +714,7 @@ namespace wg
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
-		_requestRenderChildrenFrom(pSlot);	// Request render on dirty area
+		_requestRenderChildren(pSlot,m_children.end());	// Request render on dirty area
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -769,7 +780,7 @@ namespace wg
 		// Finish up
 
 		_updateChildOfsFrom(pSlot);
-		_requestRenderChildrenFrom(pSlot);	// Request render on dirty area
+		_requestRenderChildren(pSlot, m_children.end());	// Request render on dirty area
 		_requestResize();						// This should preferably be done first once we have changed the method.	}
 	}
 
@@ -955,27 +966,32 @@ namespace wg
 		}
 	}
 	
-	
-	//____ _requestRenderChildrenFrom() ___________________________________________
-	
-	void PackList::_requestRenderChildrenFrom( PackListSlot * pSlot )
+
+	//____ _requestRenderChildren() ___________________________________________
+
+	void PackList::_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd)
 	{
 		Rect box = _listArea();
-	
-		if( m_bHorizontal )
+
+		int beg = pBegin->ofs;
+		int end = pEnd < m_children.end() ? pEnd->ofs + pEnd->length : m_contentLength;
+
+
+		if (m_bHorizontal)
 		{
-			box.x += pSlot->ofs;
-			box.w = m_contentLength - pSlot->ofs;
+			box.x += beg;
+			box.w = end - beg;
 		}
 		else
 		{
-			box.y += pSlot->ofs;
-			box.h = m_contentLength - pSlot->ofs;
+			box.y += beg;
+			box.h = end - beg;
 		}
-	
-		_requestRender( box );
+
+		_requestRender(box);
 	}
-	
+
+
 	//____ _updateChildOfsFrom() __________________________________________________
 	
 	void PackList::_updateChildOfsFrom( PackListSlot * pSlot )
@@ -1218,7 +1234,7 @@ namespace wg
 			bReqResize = true;
 
 			_updateChildOfsFrom( pSlot );
-			_requestRenderChildrenFrom( pSlot );
+			_requestRenderChildren( pSlot, m_children.end() );
 
 			Rect childGeo;
 			_getChildGeo(childGeo,pSlot);
@@ -1431,7 +1447,7 @@ namespace wg
 		// Update ofs in the slots
 	
 		_updateChildOfsFrom( m_children.begin() );
-		_requestRenderChildrenFrom( m_children.begin() );	// Request render on dirty area
+		_requestRenderChildren( m_children.begin(), m_children.end() );	// Request render on dirty area
 		return true;
 	}
 

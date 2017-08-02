@@ -161,6 +161,7 @@ namespace wg
 		// Overloaded from ListChildrenHolder
 
 		void			_didAddSlots(Slot * pSlot, int nb);
+		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void			_willRemoveSlots(Slot * pSlot, int nb);
 
 		void			_hideSlots(Slot * pSlot, int nb);
@@ -215,7 +216,8 @@ namespace wg
 
 		// Internal
 
-		void			_requestRenderChildrenFrom( PackListSlot * pSlot );
+		void			_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd);
+
 		void			_updateChildOfsFrom( PackListSlot* pSlot );
 	
 	

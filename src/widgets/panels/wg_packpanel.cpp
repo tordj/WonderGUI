@@ -22,10 +22,12 @@
 
 #include <wg_packpanel.h>
 #include <wg_base.h>
+#include <wg_paddedchildren.impl.h>
 
 namespace wg 
 {
-	
+	INSTANTIATE_PADDEDCHILDREN(PackPanelSlot, PackPanel)
+
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 	
 
@@ -364,7 +366,19 @@ namespace wg
 	{
 		_unhideChildren((PackPanelSlot*) pSlot, nb);
 	}
-	
+
+	//____ _didMoveSlots() _____________________________________________________
+
+	void PackPanel::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb)
+	{
+		//TODO: Optimize! Only update and re-render what is needed, but take
+		// into account that SizeBroker might have weird rules and might affect
+		// sizes in various ways when children change place...
+
+		_updatePreferredSize();
+		_refreshChildGeo();
+	}
+
 	//____ _willRemoveSlots() _________________________________________________
 
 	void PackPanel::_willRemoveSlots(Slot * pSlot, int nb)
@@ -388,10 +402,10 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(PanelSlot * pSlot, int nb, Border padding)
+	void PackPanel::_repadSlots(Slot * pSlot, int nb, Border padding)
 	{
 		for (int i = 0; i < nb; i++)
-			pSlot[i].padding = padding;
+			((PackPanelSlot*)pSlot)[i].padding = padding;
 
 		_updatePreferredSize();
 		_requestRender();				// This is needed here since children might have repositioned.

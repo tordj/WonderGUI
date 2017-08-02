@@ -38,6 +38,7 @@ namespace wg
 	class DynamicChildGroupHolder		/** @private */
 	{
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
+		virtual void	_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
 	};
 
@@ -61,111 +62,32 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator add( Widget * pWidget )
-		{
-			SlotType * pSlot = m_pSlotArray->add();
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);
-		}
-
-		iterator add( const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->add(amount);
-
-			for( int i = 0; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);		
-		}
+		iterator add(Widget * pWidget);
+		iterator add(const Widget_p pWidgets[], int amount);
 		
-		iterator insert( int index, Widget * pWidget )
-		{
-			//TODO: Add assert
+		iterator insert(int index, Widget * pWidget);
+		iterator insert(iterator pos, Widget * pWidget);
+		iterator insert(int index, const Widget_p pWidgets[], int amount);
+		iterator insert(iterator pos, const Widget_p pWidgets[], int amount);
 
-			SlotType * pSlot = m_pSlotArray->insert(index);
-			pSlot->replaceWidget(m_pHolder,pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);		
-		}
+		iterator remove(int index);
+		iterator remove(iterator pos);
+		iterator remove(int index, int amount);
+		iterator remove(iterator beg, iterator end);
 
-		iterator insert(iterator pos, Widget * pWidget)
-		{
-			//TODO: Add assert
+		void clear();
 
-			SlotType * pSlot = m_pSlotArray->insert(pos._slot());
-			pSlot->replaceWidget(m_pHolder, pWidget);
-			m_pHolder->_didAddSlots(pSlot, 1);
-			return iterator(pSlot);
-		}
+		//.____ Ordering ______________________________________________________
 
-		iterator insert( int index, const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
+		void		moveToFront(int index);
+		iterator	moveToFront(iterator it);
 
-			SlotType * pSlot = m_pSlotArray->insert(index, amount);
+		void		moveToBack(int index);
+		iterator	moveToBack(iterator it);
 
-			for( int i = 0; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder,pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);		
-		}
+		void		moveBefore(int index, int sibling);
+		iterator	moveBefore(iterator it, iterator sibling);
 
-		iterator insert(iterator pos, const Widget_p pWidgets[], int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->insert(pos._slot(), amount);
-
-			for( int i = 0 ; i < amount ; i++ )
-				pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
-			m_pHolder->_didAddSlots(pSlot, amount);
-			return iterator(pSlot);
-		}
-
-		iterator remove( int index )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->slot(index);
-			m_pHolder->_willRemoveSlots(pSlot, 1);
-			return iterator(m_pSlotArray->remove(index));
-		}
-
-		iterator remove(iterator pos)
-		{
-			//TODO: Add assert
-
-			m_pHolder->_willRemoveSlots(pos._slot(), 1);
-			return iterator(m_pSlotArray->remove(pos._slot()));
-		}
-
-		iterator remove( int index, int amount )
-		{
-			//TODO: Add assert
-
-			SlotType * pSlot = m_pSlotArray->slot(index);
-			m_pHolder->_willRemoveSlots(pSlot, amount);
-			return iterator(m_pSlotArray->remove(index, amount));
-		}
-
-		iterator remove(iterator beg, iterator end)
-		{
-			//TODO: Add assert
-
-			m_pHolder->_willRemoveSlots(beg._slot(), end._slot() - beg._slot());
-			return iterator(m_pSlotArray->remove(beg._slot(), end._slot() ));
-		}
-
-		void clear() 
-		{ 
-			if( m_pSlotArray->isEmpty() ) 
-				return; 
-			m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size()); 
-			m_pSlotArray->clear(); 
-		}
 	};
 	
 

@@ -24,8 +24,13 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
+#include <wg_hideablechildren.impl.h>
+#include <assert.h>
+
+
 namespace wg
 {
+	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaPanel)
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
@@ -61,61 +66,6 @@ namespace wg
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
-
-	void LambdaPanelChildren::moveToBack( int index )
-	{
-		//TODO: Assert
-
-		m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->end() );
-	}
-	
-	LambdaPanelChildren::iterator LambdaPanelChildren::moveToBack( iterator it )
-	{
-		//TODO: Assert
-
-		m_pHolder->_moveSlot(it._slot(), m_pSlotArray->end());
-		return iterator(m_pSlotArray->last());
-	}
-
-	void LambdaPanelChildren::moveToFront( int index )
-	{
-		//TODO: Assert
-
-		m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->begin());
-	}
-	
-	LambdaPanelChildren::iterator LambdaPanelChildren::moveToFront( iterator it )
-	{
-		//TODO: Assert
-
-		m_pHolder->_moveSlot(it._slot(), m_pSlotArray->begin());
-		return iterator(m_pSlotArray->begin());
-	}
-
-	void LambdaPanelChildren::moveBefore( int index, int sibling )
-	{
-		//TODO: Assert
-
-		if (index < sibling)
-			sibling--;
-
-		if( index != sibling )
-			m_pHolder->_moveSlot(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
-	}
-	
-	LambdaPanelChildren::iterator LambdaPanelChildren::moveBefore( iterator it, iterator sibling )
-	{
-		//TODO: Assert
-
-		if(it < sibling)
-			sibling--;
-
-		if (it != sibling)
-			m_pHolder->_moveSlot(it._slot(), sibling._slot());
-
-		return sibling;
-	}
-
 
 	//____ Constructor ____________________________________________________________
 
@@ -307,8 +257,10 @@ namespace wg
 	
 	//____ _hideSlots() __________________________________________________________
 
-	void LambdaPanel::_hideSlots( LambdaPanelSlot * pSlot, int nb )
+	void LambdaPanel::_hideSlots( Slot * _pSlot, int nb )
 	{
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == true )
@@ -321,8 +273,10 @@ namespace wg
 	
 	//____ _unhideSlots() ________________________________________________________
 
-	void LambdaPanel::_unhideSlots( LambdaPanelSlot * pSlot, int nb )
+	void LambdaPanel::_unhideSlots( Slot * _pSlot, int nb )
 	{
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == false )
@@ -331,9 +285,55 @@ namespace wg
 				_updateGeo(&pSlot[i]);
 				_onRequestRender(pSlot[i].geo, pSlot);
 			}
-		}
-		
+		}	
 	}
+
+	//____ _didMoveSlots() ________________________________________________________
+
+	void LambdaPanel::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
+	{
+		if (nb > 1)
+		{
+			_requestRender();	//TODO: Optimize! Correctly calculate what is dirty even if more than one is moved.
+			return;
+		}
+
+		auto pFrom = static_cast<LambdaPanelSlot*>(_pFrom);
+		auto pTo = static_cast<LambdaPanelSlot*>(_pTo);
+
+		if (pTo->bVisible)		// This is correct, we have already switched places...
+		{
+			if (pTo < pFrom)			// We were moved forward
+			{
+				// Request render on all areas covered by siblings we have skipped in front of.
+
+				LambdaPanelSlot * p = pTo+1;
+				while (p <= pFrom)
+				{
+					Rect cover(pTo->geo, p->geo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, pTo);
+					p++;
+				}
+			}
+			else							// Move us backward
+			{
+				// Request render on our siblings for the area we previously have covered.
+
+				LambdaPanelSlot * p = pFrom;
+				while (p < pTo)
+				{
+					Rect cover(pTo->geo, p->geo);
+
+					if (p->bVisible && !cover.isEmpty())
+						_onRequestRender(cover, p);
+					p++;
+				}
+			}
+		}
+	}
+
 
 	//____ _childPos() __________________________________________________________
 
@@ -479,45 +479,6 @@ namespace wg
 		for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
 
-	}
-
-	//____ _moveSlot() ________________________________________________________
-
-	void LambdaPanel::_moveSlot(LambdaPanelSlot * pFrom, LambdaPanelSlot * pTo)
-	{
-		m_children.move(pFrom, pTo);
-
-		if (pTo->bVisible)		// This is correct, we have already switched places...
-		{
-			if (pTo > pFrom)			// We were moved forward
-			{
-				// Request render on all areas covered by siblings we have skipped in front of.
-
-				LambdaPanelSlot * p = pFrom;
-				while (p < pTo)
-				{
-					Rect cover(pTo->geo, p->geo);
-
-					if (p->bVisible && !cover.isEmpty())
-						_onRequestRender(cover, pTo);
-					p++;
-				}
-			}
-			else							// Move us backward
-			{
-				// Request render on our siblings for the area we previously have covered.
-
-				LambdaPanelSlot * p = pTo + 1;
-				while (p <= pFrom)
-				{
-					Rect cover(pTo->geo, p->geo);
-
-					if (p->bVisible && !cover.isEmpty())
-						_onRequestRender(cover, p);
-					p++;
-				}
-			}
-		}
 	}
 
 

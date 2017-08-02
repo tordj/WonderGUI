@@ -28,7 +28,6 @@
 
 namespace wg 
 {
-	
 	const char Panel::CLASSNAME[] = {"Panel"};
 	
 	//____ Constructor _____________________________________________________________

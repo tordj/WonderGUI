@@ -133,16 +133,20 @@
     <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildgroup.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_edittext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_editvalue.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icon.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modtext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_paddedchildren.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_paddedchildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_slidespan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_span.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_text.h" />
@@ -310,6 +314,8 @@
     <ClCompile Include="..\..\..\src\widgets\wg_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\src\base\wg_slotarray.ih" />
+    <None Include="..\..\..\src\interfaces\wg_dynamicchildgroup.impl.h" />
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

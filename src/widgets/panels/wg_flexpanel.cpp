@@ -24,8 +24,13 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
+#include <wg_hideablechildren.impl.h>
+#include <assert.h>
+
 namespace wg
 {
+	INSTANTIATE_HIDEABLECHILDREN(FlexPanelSlot, FlexPanel)
+
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
 
@@ -167,7 +172,7 @@ namespace wg
 
 		_setMovable(it._slot(), geometry, origo, hotspot);
 	}
-
+/*
 	//____ moveToBack() ________________________________________________________
 
 	void FlexPanelChildren::moveToBack( int index )
@@ -232,7 +237,7 @@ namespace wg
 
 		return iterator(_moveBelow(it._slot(), sibling._slot()));
 	}
-
+*/
 
 
 	//____ isMovable() ________________________________________________________
@@ -531,33 +536,6 @@ namespace wg
 		m_pHolder->_refreshRealGeo(p);
 	}
 
-	//____ _moveAbove() ________________________________________________________
-
-	FlexPanelSlot * FlexPanelChildren::_moveAbove(FlexPanelSlot * p, FlexPanelSlot * pSibling)
-	{
-		if (p > pSibling)
-			pSibling++;
-
-		if (p != pSibling)
-			m_pHolder->_moveSlot(p, pSibling);
-
-		return pSibling;
-	}
-
-
-	//____ _moveBelow() ________________________________________________________
-
-	FlexPanelSlot * FlexPanelChildren::_moveBelow(FlexPanelSlot * p, FlexPanelSlot * pSibling)
-	{
-		if (p < pSibling)
-			pSibling--;
-
-		if (p != pSibling)
-			m_pHolder->_moveSlot(p, pSibling);
-
-		return pSibling;
-	}
-
 	//____ _setOrigo() ________________________________________________________
 
 	bool FlexPanelChildren::_setOrigo(FlexPanelSlot * p, const FlexPos& origo)
@@ -781,20 +759,27 @@ namespace wg
 	}
 
 
-	//____ _moveSlot() ___________________________________________________________
+	//____ _didMoveSlots() ___________________________________________________________
 
-	void FlexPanel::_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo)
+	void FlexPanel::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
 	{
-		m_children.move(pFrom, pTo);
+		if (nb > 1)
+		{
+			_requestRender();	//TODO: Optimize! Correctly calculate what is dirty even if more than one is moved.
+			return;
+		}
+
+		FlexPanelSlot * pFrom = static_cast<FlexPanelSlot*>(_pFrom);
+		FlexPanelSlot * pTo = static_cast<FlexPanelSlot*>(_pTo);
 
 		if (pTo->bVisible)		// This is correct, we have already switched places...
 		{
-			if (pTo > pFrom)			// We were moved forward
+			if (pTo < pFrom)			// We were moved forward
 			{
 				// Request render on all areas covered by siblings we have skipped in front of.
 
-				FlexPanelSlot * p = pFrom;
-				while (p < pTo)
+				FlexPanelSlot * p = pTo+1;
+				while (p <= pFrom)
 				{
 					Rect cover(pTo->realGeo, p->realGeo);
 
@@ -807,8 +792,8 @@ namespace wg
 			{
 				// Request render on our siblings for the area we previously have covered.
 
-				FlexPanelSlot * p = pTo + 1;
-				while (p <= pFrom)
+				FlexPanelSlot * p = pFrom;
+				while (p < pTo)
 				{
 					Rect cover(pTo->realGeo, p->realGeo);
 

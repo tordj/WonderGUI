@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_childgroup.h>
+#include <wg_paddedchildren.h>
 
 
 namespace wg 
@@ -55,12 +55,12 @@ namespace wg
 
 	//____ StackPanelChildren ________________________________________________________
 
-	class StackPanelChildren : public PanelChildren<StackPanelSlot,StackPanel>
+	class StackPanelChildren : public PaddedChildren<StackPanelSlot,StackPanel>
 	{
 	public:
 		/** @private */
 
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PanelChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PaddedChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -93,10 +93,10 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected PanelSlotsHolder
+	class StackPanel : public Panel, protected PaddedSlotsHolder
 	{
 		friend class StackPanelChildren;
-		friend class PanelChildren<StackPanelSlot,StackPanel>;
+		friend class PaddedChildren<StackPanelSlot,StackPanel>;
 		friend class HideableChildren<StackPanelSlot,StackPanel>;
 		friend class DynamicChildGroup<StackPanelSlot,StackPanel>;
 		friend class ChildGroup<StackPanelSlot,StackPanel>;
@@ -144,13 +144,14 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
-		// Overloaded from PanelSlotsHolder
+		// Overloaded from PaddedSlotsHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
-		void		_repadSlots( PanelSlot *, int nb, Border padding );
+		void		_repadSlots( Slot *, int nb, Border padding );
 
 
 		// Overloaded from WidgetHolder

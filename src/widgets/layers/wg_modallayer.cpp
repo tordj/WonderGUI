@@ -48,70 +48,6 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ moveToBack() ______________________________________________________________
-
-	void ModalChildren::moveToBack( int index )
-	{
-		//TODO: Assert
-
-		_moveBelow(m_pSlotArray->slot(index),m_pSlotArray->first());
-	}
-
-	ModalChildren::iterator ModalChildren::moveToBack(iterator it)
-	{
-		//TODO: Assert
-		
-		return iterator(_moveBelow(it._slot(),m_pSlotArray->first()));
-	}
-	
-	//____ moveToFront() ______________________________________________________________
-
-	void ModalChildren::moveToFront(int index)
-	{
-		//TODO: Assert
-		
-		_moveAbove(m_pSlotArray->slot(index),m_pSlotArray->last());
-	}
-
-	ModalChildren::iterator ModalChildren::moveToFront(iterator it)
-	{
-		//TODO: Assert
-		
-		return iterator(_moveAbove(it._slot(),m_pSlotArray->last()));
-	}
-
-	//____ moveAbove() ______________________________________________________________
-
-	void ModalChildren::moveAbove(int index, int sibling)
-	{
-		//TODO: Assert
-
-		_moveAbove(m_pSlotArray->slot(index),m_pSlotArray->slot(sibling));
-	}
-
-	ModalChildren::iterator ModalChildren::moveAbove(iterator it, iterator sibling)
-	{
-		//TODO: Assert
-
-		return iterator(_moveAbove(it._slot(),sibling._slot()));
-	}
-
-	//____ moveBelow() ______________________________________________________________
-
-	void ModalChildren::moveBelow(int index, int sibling)
-	{
-		//TODO: Assert
-		
-		_moveBelow(m_pSlotArray->slot(index),m_pSlotArray->slot(sibling));
-	}
-
-	ModalChildren::iterator ModalChildren::moveBelow(iterator it, iterator sibling)
-	{
-		//TODO: Assert
-
-		return iterator(_moveBelow(it._slot(),sibling._slot()));
-	}
-
 	//____ setOrigo() ______________________________________________________________
 
 	void ModalChildren::setOrigo(int index, const Origo origo)
@@ -254,32 +190,6 @@ namespace wg
 		//TODO: Assert
 		
 		_move(it._slot(), ofs);		
-	}
-
-	//____ _moveAbove() ______________________________________________________________
-
-	ModalSlot * ModalChildren::_moveAbove(ModalSlot * p, ModalSlot * pSibling)
-	{
-		if (p > pSibling)
-			pSibling++;
-
-		if (p != pSibling)
-			m_pHolder->_moveSlot(p, pSibling);
-
-		return pSibling;
-	}
-
-	//____ _moveBelow() ______________________________________________________________
-
-	ModalSlot * ModalChildren::_moveBelow(ModalSlot * p, ModalSlot * pSibling)
-	{
-		if (p < pSibling)
-			pSibling--;
-
-		if (p != pSibling)
-			m_pHolder->_moveSlot(p, pSibling);
-
-		return pSibling;
 	}
 
 	//____ _setOrigo() ______________________________________________________________
@@ -552,44 +462,6 @@ namespace wg
 		_holder()->_childRequestFocus( m_pSlot, pSavedFocus );
 	}
 
-	//____ _moveSlot() ___________________________________________________________
-
-	void ModalLayer::_moveSlot(ModalSlot * pOldPos, ModalSlot * pNewPos)
-	{
-		m_modals.move(pOldPos, pNewPos);
-
-		// Now we have switched places, pNewPos contains the widget that was moved
-
-		if (pNewPos > pOldPos)			// We were moved forward
-		{
-			// Request render on all areas covered by siblings we have skipped in front of.
-
-			ModalSlot * p = pOldPos;
-			while (p < pNewPos)
-			{
-				Rect cover(pNewPos->geo, p->geo);
-
-				if (!cover.isEmpty())
-					_onRequestRender(cover, pNewPos);
-				p++;
-			}
-		}
-		else							// Move us backward
-		{
-			// Request render on our siblings for the area we previously have covered.
-
-			ModalSlot * p = pNewPos + 1;
-			while (p <= pOldPos)
-			{
-				Rect cover(pNewPos->geo, p->geo);
-
-				if (!cover.isEmpty())
-					_onRequestRender(cover, p);
-				p++;
-			}
-		}
-	}
-
 
 	//____ _didAddSlots() __________________________________________________
 
@@ -601,6 +473,53 @@ namespace wg
 
 		_updateKeyboardFocus();
 	}
+
+	//____ _didMoveSlots() ___________________________________________________________
+
+	void ModalLayer::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
+	{
+		if (nb > 1)
+		{
+			_requestRender();	//TODO: Optimize! Correctly calculate what is dirty even if more than one is moved.
+			return;
+		}
+
+		auto pFrom = static_cast<ModalSlot*>(_pFrom);
+		auto pTo = static_cast<ModalSlot*>(_pTo);
+
+
+		// Now we have switched places, pTo contains the widget that was moved
+
+		if (pTo < pFrom)			// We were moved forward
+		{
+			// Request render on all areas covered by siblings we have skipped in front of.
+
+			ModalSlot * p = pTo+1;
+			while (p <= pFrom)
+			{
+				Rect cover(pTo->geo, p->geo);
+
+				if (!cover.isEmpty())
+					_onRequestRender(cover, pTo);
+				p++;
+			}
+		}
+		else							// Move us backward
+		{
+			// Request render on our siblings for the area we previously have covered.
+
+			ModalSlot * p = pFrom;
+			while (p < pTo)
+			{
+				Rect cover(pTo->geo, p->geo);
+
+				if (!cover.isEmpty())
+					_onRequestRender(cover, p);
+				p++;
+			}
+		}
+	}
+
 
 	//____ _willRemoveSlots() __________________________________________________
 

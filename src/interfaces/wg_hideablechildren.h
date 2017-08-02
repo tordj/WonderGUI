@@ -54,79 +54,18 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		void	hide( int index ) 
-		{
-			//TODO: Assert
-			
-			m_pHolder->_hideSlots( m_pSlotArray->slot(index), 1 );
-		};
-
-		void	hide( iterator it ) 
-		{
-			//TODO: Assert
-				
-			m_pHolder->_hideSlots( it._slot(), 1 );
-		};
-
-
-		void	hide( int index, int amount ) 
-		{
-			//TODO: Assert
-				
-			m_pHolder->_hideSlots( m_pSlotArray->slot(index), amount );
-		};
-
-		void	hide( iterator beg, iterator end ) 
-		{
-			//TODO: Assert
-				
-			m_pHolder->_hideSlots( beg._slot(), end._slot() - beg._slot() );
-		};
-
+		void	hide( int index );
+		void	hide( iterator it ); 
+		void	hide( int index, int amount ); 
+		void	hide( iterator beg, iterator end ); 
 		
-		void	unhide( int index )
-		{
-			//TODO: Assert
-			
-			m_pHolder->_unhideSlots( m_pSlotArray->slot(index), 1 );
-		};
+		void	unhide( int index );
+		void	unhide( iterator it );
+		void	unhide( int index, int amount );
+		void	unhide( iterator beg, iterator end );
 
-		void	unhide( iterator it )
-		{
-			//TODO: Assert
-
-			m_pHolder->_unhideSlots( it._slot(), 1 );
-		};
-
-		void	unhide( int index, int amount )
-		{
-			//TODO: Assert
-				
-			m_pHolder->_unhideSlots( m_pSlotArray->slot(index), amount );
-		};
-
-		void	unhide( iterator beg, iterator end )
-		{
-			//TODO: Assert
-
-			m_pHolder->_unhideSlots( beg._slot(), end._slot() - beg._slot() );
-		};
-
-
-		bool	isVisible( int index ) 
-		{ 
-			//TODO: Assert
-
-			return m_pSlotArray->slot(index)->bVisible; 
-		}
-
-		bool		isVisible( iterator it ) 
-		{ 
-			//TODO: Assert
-
-			return it._slot()->bVisible; 
-		}
-
+		bool	isVisible( int index ); 
+		bool	isVisible( iterator it ); 
 	};	
 	
 };

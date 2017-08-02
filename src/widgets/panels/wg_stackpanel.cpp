@@ -23,10 +23,12 @@
 #include <wg_stackpanel.h>
 #include <wg_util.h>
 #include <wg_patches.h>
+#include <wg_paddedchildren.impl.h>
 
 namespace wg 
 {
-	
+	INSTANTIATE_PADDEDCHILDREN(StackPanelSlot, StackPanel)
+
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 		
 	
@@ -301,14 +303,21 @@ namespace wg
 
 	//____ _repadSlots() _________________________________________________________
 
-	void StackPanel::_repadSlots( PanelSlot * pSlot, int nb, Border padding )
+	void StackPanel::_repadSlots( Slot * pSlot, int nb, Border padding )
 	{
 		for( int i = 0 ; i < nb ; i++ )
-			pSlot[i].padding = padding;
+			((StackPanelSlot*)pSlot)[i].padding = padding;
 
 		_refreshPreferredSize();
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
+	}
+
+	//____ _didMoveSlots() ________________________________________________________
+
+	void StackPanel::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb )
+	{
+		_requestRender();	//TODO: Optimize! Only re-render what might have changed.
 	}
 
 	//____ _childPos() ________________________________________________________

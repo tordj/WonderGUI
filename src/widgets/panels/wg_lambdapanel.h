@@ -26,6 +26,7 @@
 
 
 #include <wg_panel.h>
+#include <wg_hideablechildren.h>
 
 namespace wg 
 {
@@ -68,18 +69,6 @@ namespace wg
 
 		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
-
-		//.____ Ordering ______________________________________________________
-
-		void		moveToFront( int index );
-		iterator	moveToFront( iterator it );
-
-		void		moveToBack( int index );
-		iterator	moveToBack( iterator it );
-
-		void		moveBefore( int index, int sibling );
-		iterator	moveBefore( iterator it, iterator sibling );
-
 
 		//.____ Misc __________________________________________________________
 
@@ -140,9 +129,10 @@ namespace wg
 		// Methods for LambdaPanelChildren
 
 		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( LambdaPanelSlot * pSlot, int nb );
-		void		_unhideSlots( LambdaPanelSlot * pSlot, int nb );
+		void		_hideSlots( Slot * pSlot, int nb );
+		void		_unhideSlots( Slot * pSlot, int nb );
 
 		// Overloaded from WidgetHolder
 
@@ -165,7 +155,6 @@ namespace wg
 
 		void		_onRequestRender( const Rect& rect, const LambdaPanelSlot * pSlot );
 
-		void		_moveSlot(LambdaPanelSlot * pFrom, LambdaPanelSlot * pTo);
 		
 		SlotArray<LambdaPanelSlot>	m_children;
 	

@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
+#include <wg_hideablechildren.h>
 
 namespace wg 
 {
@@ -114,12 +115,12 @@ namespace wg
 	
 	//____ FlexPanelChildren ________________________________________________________
 
-	class FlexPanelChildren : public PanelChildren<FlexPanelSlot,FlexPanel>
+	class FlexPanelChildren : public HideableChildren<FlexPanelSlot,FlexPanel>
 	{
 	public:
 		/** @private */
 
-		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : PanelChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
+		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : HideableChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -156,21 +157,6 @@ namespace wg
 
 		bool		isPinned(int index) const;
 		bool		isPinned(iterator it) const;
-
-		//.____ Ordering ______________________________________________________
-
-		void		moveToFront( int index );
-		iterator	moveToFront( iterator it );
-
-		void		moveToBack( int index );
-		iterator	moveToBack( iterator it );
-
-		void		moveAbove( int index, int sibling );
-		iterator	moveAbove( iterator it, iterator sibling );
-
-		void		moveBelow( int index, int sibling );
-		iterator	moveBelow( iterator it, iterator sibling );
-
 
 		//.____ Geometry ______________________________________________________
 
@@ -225,8 +211,8 @@ namespace wg
 		void		_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot);
 		void		_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
 
-		FlexPanelSlot * _moveAbove(FlexPanelSlot * p, FlexPanelSlot * sibling);
-		FlexPanelSlot *	_moveBelow(FlexPanelSlot * p, FlexPanelSlot * sibling);
+//		FlexPanelSlot * _moveAbove(FlexPanelSlot * p, FlexPanelSlot * sibling);
+//		FlexPanelSlot *	_moveBelow(FlexPanelSlot * p, FlexPanelSlot * sibling);
 
 		// Methods for movable children
 
@@ -270,7 +256,6 @@ namespace wg
 	class FlexPanel : public Panel
 	{
 		friend class FlexPanelChildren;
-		friend class PanelChildren<FlexPanelSlot,FlexPanel>;
 		friend class HideableChildren<FlexPanelSlot,FlexPanel>;
 		friend class DynamicChildGroup<FlexPanelSlot,FlexPanel>;
 		friend class ChildGroup<FlexPanelSlot,FlexPanel>;
@@ -320,6 +305,7 @@ namespace wg
 		// Methods for FlexPanelChildren
 
 		void		_didAddSlots( Slot * pSlot, int nb );
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( FlexPanelSlot *, int nb );
 		void		_unhideSlots( FlexPanelSlot *, int nb );
@@ -347,7 +333,6 @@ namespace wg
 		void		_refreshRealGeo( FlexPanelSlot * pSlot );
 		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 	
-		void		_moveSlot(FlexPanelSlot * pFrom, FlexPanelSlot * pTo);
 	
 		SlotArray<FlexPanelSlot>	m_children;
 	
