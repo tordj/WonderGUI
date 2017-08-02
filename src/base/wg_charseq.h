@@ -163,8 +163,8 @@ namespace wg
 	//	void					copyTo( char * pDest ) const;			//TODO: implement.
 	//	void					copyTo( uint16_t * pDest ) const;			//TODO: implement.
 	
-		void					copyFormattedTo( char * pDest ) const;
-		void					copyFormattedTo( uint16_t * pDest ) const;
+//		void					copyFormattedTo( char * pDest ) const;
+//		void					copyFormattedTo( uint16_t * pDest ) const;
 	
 	protected:
 		CharSeq() {};

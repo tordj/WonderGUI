@@ -47,6 +47,9 @@ namespace wg
 			}
 		}
 
+		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
+		// if content has been moved to another slot!
+
 		~Slot() 
 		{ 
 			if( pWidget != nullptr ) 

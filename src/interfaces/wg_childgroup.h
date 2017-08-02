@@ -72,6 +72,15 @@ namespace wg
 			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
+		inline int index(Widget * pChild) const
+		{
+			if( pChild->_holder() == m_pHolder )
+				return m_pSlotArray->index(static_cast<SlotType*>(pChild->_slot()));
+
+			return -1;
+		}
+
+
 		//.____ Misc _______________________________________________________
 
 		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>>(this); }

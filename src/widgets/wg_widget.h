@@ -79,7 +79,6 @@ namespace wg
 	friend class StackPanel;
 	friend class Container;
 	friend class Panel;
-	friend class LegacyVectorPanel;
 	friend class PackPanel;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
@@ -88,6 +87,9 @@ namespace wg
 		
 	friend class Item;
 	friend class Slot;
+	template<class S, class H> friend class ChildGroup;
+
+
 
 	public:
 	

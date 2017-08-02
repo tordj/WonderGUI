@@ -506,8 +506,35 @@ int main ( int argc, char** argv )
 
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
+
+		auto pChildren = pList->children.ptr();
+
+		for (int i = 0; i < pChildren->size(); i++)
+		{
+			bool bSelected = pChildren->isSelected(i);
+		}
+
+		for (auto it = pList->children.begin(); it != pList->children.end(); it++)
+		{
+			bool bSelected = pList->children.isSelected(it);
+		}
+
+		for (Widget& child : pList->children)
+		{
+			bool bSelected = pList->children.isSelected(pList->children.index(&child));
+			if (bSelected)
+				printf("Selected!\n");
+			else
+				printf("Not selected!\n");
+		}
+
+
+//		auto selected = pList->children.subset([](it) { return pList->children.isSelected(it); });
+
 	}
 */
+
+
 
  /*  {
         TestWidget_p pTest = TestWidget::create();
