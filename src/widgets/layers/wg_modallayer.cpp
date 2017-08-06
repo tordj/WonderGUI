@@ -25,10 +25,12 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
+#include <wg_slotarray.impl.h>
 
 namespace wg 
 {
-	
+	template class SlotArray<ModalSlot>;
+
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 	
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.	

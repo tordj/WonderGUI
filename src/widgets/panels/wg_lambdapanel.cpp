@@ -24,6 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
+#include <wg_slotarray.impl.h>
 #include <wg_hideablechildren.impl.h>
 #include <assert.h>
 
@@ -31,6 +32,9 @@
 namespace wg
 {
 	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaPanel)
+
+	template class SlotArray<LambdaPanelSlot>;
+
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 

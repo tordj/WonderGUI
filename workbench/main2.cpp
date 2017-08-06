@@ -434,7 +434,7 @@ int main ( int argc, char** argv )
 	}
 
 
-/*
+
 	ScrollPanel_p pScrollPanel;
 	{
 		Scrollbar_p pScrollbar = Scrollbar::create();
@@ -445,10 +445,10 @@ int main ( int argc, char** argv )
 
 		pBasePanel->children.add(pScrollPanel, [](Widget *p, Size sz) { return Rect(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
 	}
-*/
 
 
-/*
+
+
 	{
 		PackList_p pList = PackList::create();
 
@@ -532,7 +532,7 @@ int main ( int argc, char** argv )
 //		auto selected = pList->children.subset([](it) { return pList->children.isSelected(it); });
 
 	}
-*/
+
 
 
 

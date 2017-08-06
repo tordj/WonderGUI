@@ -24,13 +24,16 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
+#include <wg_slotarray.impl.h>
 #include <wg_hideablechildren.impl.h>
+
 #include <assert.h>
 
 namespace wg
 {
 	INSTANTIATE_HIDEABLECHILDREN(FlexPanelSlot, FlexPanel)
 
+	template class SlotArray<FlexPanelSlot>;
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
 

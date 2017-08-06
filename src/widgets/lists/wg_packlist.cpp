@@ -26,9 +26,15 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 
+#include <wg_slotarray.impl.h>
+#include <wg_selectablechildren.impl.h>
+
 namespace wg 
 {
-	
+	INSTANTIATE_SELECTABLECHILDREN(PackListSlot, PackList)
+
+	template class SlotArray<PackListSlot>;
+
 	const char PackList::CLASSNAME[] = {"PackList"};
 	
 
@@ -783,6 +789,21 @@ namespace wg
 		_requestRenderChildren(pSlot, m_children.end());	// Request render on dirty area
 		_requestResize();						// This should preferably be done first once we have changed the method.	}
 	}
+
+	//____ _selectSlots() ________________________________________________________
+
+	void PackList::_selectSlots(Slot * pSlot, int nb)
+	{
+		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, true, false);
+	}
+
+	//____ _unselectSlots() ______________________________________________________
+
+	void PackList::_unselectSlots(Slot * pSlot, int nb)
+	{
+		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, false, false);
+	}
+
 
 	//____ _beginSlots() _____________________________________________________
 

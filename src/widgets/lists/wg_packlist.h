@@ -27,6 +27,8 @@
 
 #include <wg_list.h>
 #include <wg_columnheader.h>
+#include <wg_selectablechildren.h>
+
 
 
 namespace wg 
@@ -57,13 +59,13 @@ namespace wg
 
 	//____ PackListChildren ______________________________________________________
 
-	class PackListChildren : public ListChildren<PackListSlot, PackList>
+	class PackListChildren : public SelectableChildren<PackListSlot, PackList>
 	{
 	public:
 
 		/** @private */
 
-		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : ListChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
+		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : SelectableChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -94,6 +96,7 @@ namespace wg
 	class PackList : public List
 	{
 		friend class PackListChildren;
+		friend class SelectableChildren<PackListSlot, PackList>;
 		friend class HideableChildren<PackListSlot,PackList>;
 		friend class DynamicChildGroup<PackListSlot,PackList>;
 		friend class ChildGroup<PackListSlot,PackList>;
@@ -158,7 +161,7 @@ namespace wg
 		Size			_windowPadding() const;
 
 
-		// Overloaded from ListChildrenHolder
+		// Overloaded from SelectableChildrenHolder
 
 		void			_didAddSlots(Slot * pSlot, int nb);
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
@@ -166,6 +169,9 @@ namespace wg
 
 		void			_hideSlots(Slot * pSlot, int nb);
 		void			_unhideSlots(Slot * pSlot, int nb);
+
+		void			_selectSlots(Slot * pSlot, int nb);
+		void			_unselectSlots(Slot * pSlot, int nb);
 
 
 		// Overloaded from List

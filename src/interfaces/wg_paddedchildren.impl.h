@@ -41,8 +41,7 @@ namespace wg
 	template < class SlotType, class HolderType>
 	bool PaddedChildren<SlotType, HolderType>::setPadding(int index, Border padding)
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
-			return false;
+		//TODO: Assert
 
 		m_pHolder->_repadSlots(m_pSlotArray->slot(index), 1, padding);
 		return true;

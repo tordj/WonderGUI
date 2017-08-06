@@ -23,11 +23,15 @@
 #include <wg_stackpanel.h>
 #include <wg_util.h>
 #include <wg_patches.h>
+
+#include <wg_slotarray.impl.h>
 #include <wg_paddedchildren.impl.h>
 
 namespace wg 
 {
 	INSTANTIATE_PADDEDCHILDREN(StackPanelSlot, StackPanel)
+
+	template class SlotArray<StackPanelSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 		

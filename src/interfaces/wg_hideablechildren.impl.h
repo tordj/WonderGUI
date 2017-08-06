@@ -71,19 +71,12 @@ namespace wg
 
 		m_pHolder->_hideSlots(beg._slot(), end._slot() - beg._slot());
 	};
-/*
+
 	template < class SlotType, class HolderType>
 	void HideableChildren<SlotType, HolderType>::hideAll()
 	{
 		m_pHolder->_hideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
-
-	template < class SlotType, class HolderType>
-	void HideableChildren<SlotType, HolderType>::unhideAll()
-	{
-		m_pHolder->_unhideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
-	};
-*/
 
 	template < class SlotType, class HolderType>
 	void HideableChildren<SlotType, HolderType>::unhide(int index)
@@ -115,6 +108,12 @@ namespace wg
 		//TODO: Assert
 
 		m_pHolder->_unhideSlots(beg._slot(), end._slot() - beg._slot());
+	};
+
+	template < class SlotType, class HolderType>
+	void HideableChildren<SlotType, HolderType>::unhideAll()
+	{
+		m_pHolder->_unhideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
 
 

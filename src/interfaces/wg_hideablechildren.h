@@ -64,8 +64,8 @@ namespace wg
 		void	unhide( int index, int amount );
 		void	unhide( iterator beg, iterator end );
 
-//		void	hideAll();
-//		void	unhideAll();
+		void	hideAll();
+		void	unhideAll();
 
 		bool	isVisible( int index ); 
 		bool	isVisible( iterator it ); 

@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_hideablechildren.h>
+#include <wg_selectablechildren.h>
 
 namespace wg 
 {
@@ -46,83 +46,6 @@ namespace wg
 		bool		bVisible;
 	};
 
-	//____ ListChildrenHolder ____________________________________________________________
-
-	class ListChildrenHolder : public HideableChildrenHolder		/** @private */
-	{
-		virtual void	_hideSlots(ListSlot * pSlot, int nb) = 0;
-		virtual void	_unhideSlots(ListSlot * pSlot, int nb) = 0;
-	};
-
-	//____ ListChildren ________________________________________________________
-
-	template<class SlotType, class HolderType> class ListChildren : public HideableChildren<SlotType, HolderType>
-	{
-	public:
-		using		iterator = SlotIterator<SlotType>;
-		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
-		using		ChildGroup<SlotType,HolderType>::m_pHolder;
-
-		/** @private */
-
-		ListChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
-
-		//.____ Control _______________________________________________________
-
-		void	select(int index)
-		{
-			//TODO: Assert
-
-			ListSlot * pSlot = m_pSlotArray->slot(index);
-			if( pSlot->bVisible)
-				m_pHolder->_selectSlots(pSlot, 1);
-		}
-
-		void	select(iterator it)
-		{
-			//TODO: Assert
-
-			ListSlot * pSlot = it._slot();
-			if( pSlot->bVisible)
-				m_pHolder->_selectSlots(pSlot, 1);
-		}
-
-		void	unselect(int index)
-		{
-			//TODO: Assert
-
-			ListSlot * pSlot = m_pSlotArray->slot(index);
-			if (pSlot->bVisible)
-				m_pHolder->_unselectSlots(pSlot, 1);
-		}
-
-		void	unselect(iterator it)
-		{
-			//TODO: Assert
-
-			ListSlot * pSlot = it._slot();
-			if (pSlot->bVisible)
-				m_pHolder->_unselectSlots(pSlot, 1);
-		}
-
-
-		bool	isSelected(int index)
-		{
-			//TODO: Assert
-			
-			return m_pSlotArray->slot(index)->pWidget->state().isSelected();
-		}
-
-		bool	isSelected(iterator it)
-		{
-			//TODO: Assert
-			
-			return it._slot()->pWidget->state().isSelected();
-		}
-
-	};
-
-
 	//____ List _________________________________________________________________
 	
 	/**
@@ -132,7 +55,7 @@ namespace wg
 	* 
 	*/ 
 
-	class List : public Container, protected ListChildrenHolder
+	class List : public Container, protected SelectableChildrenHolder
 	{
 	public:
 

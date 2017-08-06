@@ -281,7 +281,7 @@ namespace wg
 	
 			// Go through WidgetRenderContexts, push and mask dirt
 	
-			for (int i = 0 ; i < renderList.size(); i++)
+			for (unsigned int i = 0 ; i < renderList.size(); i++)
 			{
 				WidgetRenderContext * p = &renderList[i];
 	

@@ -64,40 +64,7 @@ namespace wg
 		SlotType*	remove(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
 
 		void		move(int index, int newIndex) { move(&m_pArray[index], &m_pArray[newIndex]); }
-		void		move(SlotType * pFrom, SlotType * pTo)
-		{
-			if (pFrom < pTo)
-			{
-				SlotType temp = std::move(* pFrom);
-				if (SlotType::safe_to_relocate)
-				{
-					memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo - pFrom));
-					_reallocBlock(pFrom, pTo);
-				}
-				else
-				{
-					for (int i = 0; i < pTo - pFrom; i++)
-						pFrom[i] = std::move(pFrom[i + 1]);
-				}
-				* pTo = std::move(temp);
-			}
-			else
-			{
-				SlotType temp = std::move(* pFrom);
-				if (SlotType::safe_to_relocate)
-				{
-					memmove((void*)&pTo[1], pTo, sizeof(SlotType) * (pFrom - pTo));
-					_reallocBlock(pTo, pFrom);
-				}
-				else
-				{
-					for (int i = pFrom-pTo; i > 0; i--)
-						pTo[i] = std::move(pTo[i - 1]);
-				}
-				* pTo = std::move(temp);
-			}
-		}
-
+		void		move(SlotType * pFrom, SlotType * pTo);
 
 		void		clear() { _killBlock( begin(), end() ); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
 		void		setCapacity(int capacity) { if( capacity != m_capacity ) _reallocArray(capacity); }
@@ -114,185 +81,31 @@ namespace wg
 		SlotType*	begin() const { return m_pArray; }
 		SlotType*	end() const { return m_pArray + m_size; }
 	
-		void	reorder( int order[] )
-		{
-			if( m_size == 0 ) 
-				return;
-	
-			int size = sizeof(SlotType)*m_capacity;
-			SlotType* pOld = m_pArray;
-			m_pArray = (SlotType*) malloc( size );
-			for( int i = 0 ; i < m_size ; i++ )
-			{
-				int ofs = order[i];
-				new (&m_pArray[i]) SlotType(std::move(pOld[ofs]));
-			}
-			free( pOld );
-		}
+		void		reorder(int order[]);
 	
 	protected:
 	
-		void	_reallocArray( int capacity )
-		{
-			int size = sizeof(SlotType)*capacity;
-			SlotType* pNew = (SlotType*) malloc( size );
-			SlotType* pOld = m_pArray;
-			m_pArray = pNew;
-			m_capacity = capacity;
+		void	_reallocArray(int capacity);
 	
-			if( pOld )
-			{
-				if (SlotType::safe_to_relocate)
-				{
-					memcpy((void*)pNew, pOld, sizeof(SlotType)*m_size);
-					_reallocBlock(begin(), end());
-				}
-				else
-				{
-					for (int i = 0; i < m_size; i++)
-						new (&pNew[i]) SlotType(std::move(pOld[i]));
-				}
-				free(pOld);
-			}
-		}
-	
-		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd)
-		{
-			while (pBeg < pEnd)
-			{
-				pBeg->relink();
-				pBeg++;
-			}
-		}
+		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd);
 
-		SlotType* _deleteBlock(SlotType * pBeg, SlotType * pEnd)
-		{
-			int blocksToMove = end() - pEnd;
-			if( blocksToMove > 0 )
-			{
-				if (SlotType::safe_to_relocate)
-				{
-					_killBlock(pBeg, pEnd);
-					memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
-					_reallocBlock(pBeg, pBeg + blocksToMove);
-				}
-				else
-				{
-					for(int i = 0; i < blocksToMove; i++)
-						pBeg[i] = std::move( pEnd[i] );
-				}
-			}
-			m_size -= pEnd - pBeg;
-			return pBeg;
-		}
+		SlotType* _deleteBlock(SlotType * pBeg, SlotType * pEnd);
 
+		SlotType*	_insertBlock(SlotType * pPos, int entries);
 
-		SlotType*	_insertBlock(SlotType * pPos, int entries)
-		{
-			if (entries <= m_capacity - m_size)
-			{
-				int nToCopy = (int) (end() - pPos);
-				if (nToCopy > 0)
-				{
-					if (SlotType::safe_to_relocate)
-					{
-						memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToCopy);
-						_reallocBlock(&pPos[entries], &pPos[entries+nToCopy] );
-					}
-					else
-					{
-
-						int nCopyToNew = min(entries, nToCopy);
-						int nCopyToExisting = nToCopy - nCopyToNew;
-						int nDestroy = nCopyToNew;
-
-						SlotType * pFrom = end();
-						SlotType * pTo = pFrom + entries;
-
-						// Move first batch of entries to uninitialized objects
-
-						for (int i = 0; i < nCopyToNew; i++)
-						{
-							new (--pTo) SlotType(std::move(*(--pFrom)));
-/*							new (--pTo) SlotType();
-							*pTo = * (--pFrom);
-							pTo->relink();
-*/						}
-
-						// Move the rest to existing objects
-
-						for (int i = 0; i < nCopyToNew; i++)
-							*(--pTo) = std::move(*(--pFrom));
-
-					}
-				}
-			}
-			else
-			{
-				int grow = entries - (m_capacity - m_size);
-				if (grow == 1)
-					m_capacity = (m_capacity + 1) * 2;
-				else
-					m_capacity += grow;
-
-				SlotType* pNew = (SlotType*)malloc(sizeof(SlotType) * m_capacity);
-				SlotType* pOld = m_pArray;
-				SlotType* pNewPos = pNew + (pPos - pOld);
-
-				if (SlotType::safe_to_relocate)
-				{
-					memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos - pOld));
-					memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (end() - pPos));
-					_reallocBlock(pNew, pNewPos);
-					_reallocBlock(&pNewPos[entries], pNew + m_size + entries);
-				}
-				else
-				{
-					for (int i = 0; i < pPos - pOld; i++)
-					{
-						new (&pNew[i]) SlotType(std::move(pOld[i]));
-					}
-
-					SlotType * pDest = &pNewPos[entries];
-					for (int i = 0; i < end() - pPos; i++)
-					{
-						new (&pDest[i]) SlotType(std::move(pPos[i]));
-					}
-				}
-
-				if (pOld)
-					free(pOld);
-
-				m_pArray = pNew;
-				pPos = pNewPos;
-			}
-
-			m_size += entries;
-			_initBlock(pPos, &pPos[entries]);
-			return pPos;
-		}
-
-		void	_killBlock(SlotType * pBlock)
+		inline void	_killBlock(SlotType * pBlock)
 		{
 			pBlock->~SlotType();
 		}
 
-		void	_killBlock(SlotType * pBeg, SlotType * pEnd)
-		{
-			while (pBeg < pEnd)
-				(pBeg++)->~SlotType();
-		}
+		void	_killBlock(SlotType * pBeg, SlotType * pEnd);
 
 		inline void	_initBlock(SlotType * pBlock)
 		{
 			new (pBlock) SlotType();
 		}
 
-		void	_initBlock(SlotType * pBeg, SlotType * pEnd)
-		{
-			while (pBeg < pEnd)
-				new (pBeg++) SlotType();
-		}
+		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
 	
 		int			m_capacity;
 		int			m_size;

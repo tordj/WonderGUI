@@ -100,6 +100,7 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxanim.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
+    <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_itemholder.h" />
@@ -147,6 +148,8 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_paddedchildren.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_paddedchildren.impl.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_selectablechildren.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_selectablechildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_slidespan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_span.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_text.h" />
@@ -314,7 +317,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\base\wg_slotarray.ih" />
     <None Include="..\..\..\src\interfaces\wg_dynamicchildgroup.impl.h" />
     <None Include="ClassDiagram.cd" />
   </ItemGroup>

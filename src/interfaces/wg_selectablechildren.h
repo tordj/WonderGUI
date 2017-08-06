@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_PADDEDCHILDREN_DOT_H
-#define	WG_PADDEDCHILDREN_DOT_H
+#ifndef	WG_SELECTABLECHILDREN_DOT_H
+#define	WG_SELECTABLECHILDREN_DOT_H
 #pragma once
 
 #include <wg_slot.h>
@@ -30,16 +30,18 @@
 namespace wg
 {
 
-	//____ PaddedSlotsHolder ____________________________________________________________
 
-	class PaddedSlotsHolder : public HideableChildrenHolder  /** @private */
+	//____ SelectableChildrenHolder ____________________________________________________________
+
+	class SelectableChildrenHolder : public HideableChildrenHolder		/** @private */
 	{
-		virtual void	_repadSlots(Slot * pSlot, int nb, Border padding) = 0;
+		virtual void	_selectSlots(Slot * pSlot, int nb) = 0;
+		virtual void	_unselectSlots(Slot * pSlot, int nb) = 0;
 	};
 
-	//____ PaddedChildren ________________________________________________________
+	//____ SelectableChildren ________________________________________________________
 
-	template<class SlotType, class HolderType> class PaddedChildren : public HideableChildren<SlotType, HolderType>
+	template<class SlotType, class HolderType> class SelectableChildren : public HideableChildren<SlotType, HolderType>
 	{
 	public:
 		using		iterator = SlotIterator<SlotType>;
@@ -48,16 +50,21 @@ namespace wg
 
 		/** @private */
 
-		PaddedChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
+		SelectableChildren(SlotArray<SlotType> * pSlotArray, HolderType * pHolder) : HideableChildren<SlotType, HolderType>(pSlotArray, pHolder) {}
 
-		//.____ Geometry ______________________________________________________
+		//.____ Control _______________________________________________________
 
-		bool		setPadding(int index, Border padding);
-		bool		setPadding(iterator it, Border padding);
+		void	select(int index);
+		void	select(iterator it);
 
-		inline Border	padding(int index) const { return m_pSlotArray->slot(index)->padding; }
-		inline Border	padding(iterator it) const { return it._slot()->padding; }
-	};	
-};
+		void	unselect(int index);
+		void	unselect(iterator it);
 
-#endif	//WG_PADDEDCHILDREN_DOT_H
+		bool	isSelected(int index);
+		bool	isSelected(iterator it);
+
+	};
+
+  };
+
+#endif	//WG_SELECTABLECHILDREN_DOT_H

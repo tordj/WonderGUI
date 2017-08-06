@@ -26,10 +26,13 @@
 #include <wg_msgrouter.h>
 #include <wg_panel.h>
 #include <wg_base.h>
+#include <wg_slotarray.impl.h>
+
 
 namespace wg 
 {
-	
+	template class SlotArray<PopupSlot>;
+
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 
 	//____ operator[] __________________________________________________________

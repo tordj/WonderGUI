@@ -425,6 +425,15 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h">
+      <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_selectablechildren.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_selectablechildren.impl.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -727,9 +736,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="..\..\..\src\base\wg_slotarray.ih">
-      <Filter>slots</Filter>
-    </None>
     <None Include="..\..\..\src\interfaces\wg_dynamicchildgroup.impl.h">
       <Filter>interfaces</Filter>
     </None>

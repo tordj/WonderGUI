@@ -22,11 +22,16 @@
 
 #include <wg_packpanel.h>
 #include <wg_base.h>
+
+
+#include <wg_slotarray.impl.h>
 #include <wg_paddedchildren.impl.h>
 
 namespace wg 
 {
 	INSTANTIATE_PADDEDCHILDREN(PackPanelSlot, PackPanel)
+
+	template class SlotArray<PackPanelSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 	
