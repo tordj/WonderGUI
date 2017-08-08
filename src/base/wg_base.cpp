@@ -50,10 +50,10 @@ namespace wg
 		
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
-	
-		StdTextMapper_p pTextMapper = StdTextMapper::create();
-		pTextMapper->setCaret( Caret::create() );
-		s_pData->pDefaultTextMapper = pTextMapper;
+
+		s_pData->pDefaultCaret = Caret::create();
+
+		s_pData->pDefaultTextMapper = StdTextMapper::create();
 
 		s_pData->pDefaultStyle = TextStyle::create();
 		
@@ -83,14 +83,15 @@ namespace wg
 		if( !s_pData->pMemStack->isEmpty() )
 			return -3;					// There is data left in memstack.
 	
-		s_pData->pDefaultTextMapper = 0;
-		s_pData->pDefaultStyle = 0;
-		s_pData->pDefaultValueFormatter = 0;
+		s_pData->pDefaultCaret = nullptr;
+		s_pData->pDefaultTextMapper = nullptr;
+		s_pData->pDefaultStyle = nullptr;
+		s_pData->pDefaultValueFormatter = nullptr;
 	
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
 		delete s_pData;
-		s_pData = 0;
+		s_pData = nullptr;
 		
 		TextStyleManager::exit();
 		return 0;

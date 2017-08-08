@@ -81,7 +81,10 @@ namespace wg
 
 		static void			setDefaultTextMapper( TextMapper * pTextMapper );
 		static TextMapper_p defaultTextMapper() { assert(s_pData!=0); return s_pData->pDefaultTextMapper; }
-	
+
+		static void			setDefaultCaret(Caret * pCaret);
+		static Caret_p		defaultCaret() { assert(s_pData != 0); return s_pData->pDefaultCaret; }
+
 		static void			setDefaultStyle( TextStyle * pStyle );
 		static TextStyle_p 	defaultStyle() { assert(s_pData!=0); return s_pData->pDefaultStyle; }
 
@@ -106,6 +109,7 @@ namespace wg
 			
 	
 			TextMapper_p		pDefaultTextMapper;
+			Caret_p				pDefaultCaret;
 			TextStyle_p			pDefaultStyle;
 			ValueFormatter_p	pDefaultValueFormatter;
 

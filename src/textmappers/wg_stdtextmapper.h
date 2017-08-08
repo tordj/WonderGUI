@@ -54,6 +54,10 @@ namespace wg
 		void			setAlignment( Origo alignment );
 		Origo			alignment() const { return m_alignment; }
 
+		void			setLineWrap(bool wrap);
+		bool			lineWrapt() const { return m_bLineWrap; }
+
+
 		//.____ Misc __________________________________________________
 
 		void			setCaret( Caret * pCaret );
@@ -158,10 +162,19 @@ namespace wg
 	
 		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
 	
-		int				_countLines( const CharBuffer * pBuffer ) const;
+		int				_countLines( TextBaseItem * pItem, const CharBuffer * pBuffer ) const;
+
+		int				_countFixedLines(const CharBuffer * pBuffer) const;
+		int				_countWrapLines(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
+
 		void *			_reallocBlock( TextBaseItem * pItem, int lines );
-		void			_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
-												State state );
+
+		void			_updateLineInfo(TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer );
+
+		void			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
+		void			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
+
+
 		bool   			_updatePreferredSize( TextBaseItem * pItem );
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
 		
@@ -193,6 +206,7 @@ namespace wg
 		
 		Origo			m_alignment;
 		Caret_p			m_pCaret;
+		bool			m_bLineWrap;
 
 		Color			m_selectionBackColor;
 		BlendMode		m_selectionBackRenderMode;

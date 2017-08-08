@@ -35,7 +35,7 @@ namespace wg
 	
 	//____ Constructor _____________________________________________________________
 	
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
 		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedItem(nullptr), m_tickRouteId(0)
 	{
 	}
@@ -84,12 +84,12 @@ namespace wg
 	void StdTextMapper::addItem( TextBaseItem * pItem )
 	{
 		CharBuffer * pBuffer = _charBuffer(pItem);
-		int nLines = _countLines( pBuffer );
+		int nLines = _countLines( pItem, pBuffer );
 	
 		_setItemDataBlock(pItem,0);					// Make sure pointer is null for the realloc call.
 		void * pBlock = _reallocBlock(pItem,nLines);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem) );
+		_updateLineInfo( pItem, pBlock, pBuffer );
 		_updatePreferredSize( pItem );	
 	}
 	
@@ -119,6 +119,19 @@ namespace wg
 			//TODO: Make all items dirty
 		}
 	}
+
+	//____ setLineWrap() __________________________________________________________
+
+	void StdTextMapper::setLineWrap(bool bWrap)
+	{
+		if (bWrap != m_bLineWrap)
+		{
+			m_bLineWrap = bWrap;
+
+			//TODO: Make all items dirty
+		}
+	}
+
 
 	//____ setCaret() __________________________________________________________
 
@@ -356,14 +369,15 @@ namespace wg
 		{
 			const EditState * pEditState = m_pFocusedItem->_editState();
 			
-			if( pEditState && pEditState->bCaret && m_pCaret )
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			if( pEditState && pEditState->bCaret && pCaret )
 			{
 				int ms = static_cast<TickMsg*>(pMsg)->timediff();
 				
-				bool bDirty = m_pCaret->tick( ms );					
+				bool bDirty = pCaret->tick( ms );					
 				if( bDirty )
 				{
-					_setItemDirty( m_pFocusedItem, m_pCaret->dirtyRect(charRect(m_pFocusedItem, pEditState->caretOfs)) );
+					_setItemDirty( m_pFocusedItem, pCaret->dirtyRect(charRect(m_pFocusedItem, pEditState->caretOfs)) );
 				}
 			}		
 		}
@@ -533,9 +547,10 @@ namespace wg
 
 		// Render caret (if there is any)
 				
-		if( pEditState && pEditState->bCaret && m_pCaret )
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		if( pEditState && pEditState->bCaret && pCaret )
 		{
-			m_pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos(), clip );
+			pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos(), clip );
 		}
 	}
 	
@@ -648,16 +663,17 @@ namespace wg
 	{
 		const EditState * pEditState = pText->_editState();
 
-		if( pEditState->bCaret && m_pCaret )
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		if( pEditState->bCaret && pCaret )
 		{
-			bool bDirty = m_pCaret->restartCycle();
+			bool bDirty = pCaret->restartCycle();
 
 			if( bDirty || pEditState->caretOfs != ofs )
 			{
-				_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, ofs) ));
+				_setItemDirty( pText, pCaret->dirtyRect( charRect(pText, ofs) ));
 
 				if( pEditState->caretOfs != ofs )
-					_setItemDirty( pText, m_pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
+					_setItemDirty( pText, pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
 			}
 		}
 	}
@@ -687,11 +703,12 @@ namespace wg
 			else
 				dirt.growToContain(rectForRange( pText, beg, len ) );
 			
-			if( pEditState->bCaret && m_pCaret )
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			if( pEditState->bCaret && pCaret )
 			{
-				m_pCaret->restartCycle();
-				dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, caretOfs) ));
-				dirt.growToContain( m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+				pCaret->restartCycle();
+				dirt.growToContain( pCaret->dirtyRect( charRect(pText, caretOfs) ));
+				dirt.growToContain( pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
 			}
 		}
 
@@ -706,8 +723,14 @@ namespace wg
 		onRefresh(pItem);
 	}
 	
+	//____ onResized() ___________________________________________________________
+
 	void StdTextMapper::onResized( TextBaseItem * pItem, Size newSize, Size oldSize )
 	{
+		if (m_bLineWrap)
+			onRefresh(pItem);
+
+
 		///TODO: Implement!
 	}
 
@@ -744,7 +767,7 @@ namespace wg
 		State state = _state(pItem);
 		void * pBlock = _itemDataBlock(pItem);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pItem), _baseStyle(pItem), _state(pItem) );
+		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
 		_updatePreferredSize( pItem );
 
 		_setItemDirty(pItem);
@@ -757,7 +780,7 @@ namespace wg
 		State state = _state(pItem);
 		void * pBlock = _itemDataBlock(pItem);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), _charBuffer(pItem), _baseStyle(pItem), _state(pItem) );
+		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
 		_updatePreferredSize( pItem );
 
 		_setItemDirty(pItem);
@@ -768,13 +791,13 @@ namespace wg
 	void StdTextMapper::onRefresh( TextBaseItem * pItem )
 	{
 		CharBuffer * pBuffer = _charBuffer(pItem);
-		int nLines = _countLines( pBuffer );
+		int nLines = _countLines( pItem, pBuffer );
 	
 		void * pBlock = _itemDataBlock(pItem);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
 			pBlock = _reallocBlock(pItem,nLines);
 		
-		_updateLineInfo( _header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem) );
+		_updateLineInfo( pItem, pBlock, pBuffer );
 		_updatePreferredSize( pItem );
 		_setItemDirty(pItem);
 	}
@@ -849,10 +872,11 @@ namespace wg
 	
 	Rect StdTextMapper::rectForCaret( const TextBaseItem * pText ) const
 	{
-		if( !pText->_editState()->bCaret || !m_pCaret )
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		if( !pText->_editState()->bCaret || !pCaret )
 			return Rect();
 
-		return m_pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs) );		
+		return pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs) );		
 	}
 	
 	
@@ -1009,22 +1033,166 @@ namespace wg
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int StdTextMapper::_countLines( const CharBuffer * pBuffer ) const
+	int StdTextMapper::_countLines( TextBaseItem * pItem, const CharBuffer * pBuffer ) const
+	{
+		if (m_bLineWrap)
+		return _countWrapLines(pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+		else
+			return _countFixedLines(pBuffer);
+	}
+
+	//____ _countFixedLines() ___________________________________________________________
+
+	int StdTextMapper::_countFixedLines(const CharBuffer * pBuffer) const
 	{
 		const Char * pChars = pBuffer->chars();
 		int lines = 0;
-		while( true )
+		while (true)
 		{
-			if( pChars->isEndOfLine() )
-			{	
+			if (pChars->isEndOfLine())
+			{
 				lines++;
-				if( pChars->isEndOfText() )
+				if (pChars->isEndOfText())
 					return lines;
-			}	
+			}
 			pChars++;
 		}
 	}
-	
+
+	//____ _countWrapLines() ________________________________________________
+
+	int StdTextMapper::_countWrapLines(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
+	{
+		const Char * pChars = pBuffer->chars();
+
+		TextAttr		baseAttr;
+		pBaseStyle->exportAttr(state, &baseAttr);
+
+
+		TextAttr		attr;
+		Font_p 			pFont;
+
+		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
+
+		Glyph_p	pGlyph = nullptr;
+		Glyph_p	pPrevGlyph = nullptr;
+
+		int spaceAdv = 0;
+		int width = 0;
+		int potentialWidth = 0;
+		int eolCaretWidth = 0;
+		//
+
+		const Char * pBreakpoint = nullptr;
+		int bpWidth = 0;
+
+		int nLines = 0;												//
+
+		while (true)
+		{
+
+			if (pChars->styleHandle() != hCharStyle)
+			{
+
+				int oldFontSize = attr.size;
+
+				attr = baseAttr;
+				if (pChars->styleHandle() != 0)
+					pChars->stylePtr()->addToAttr(state, &attr);
+
+				if (pFont != attr.pFont || attr.size != oldFontSize)
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+				}
+
+				spaceAdv = pFont->whitespaceAdvance();
+
+				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+				if (pCaret)
+				{
+					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+				}
+				else
+					eolCaretWidth = 0;
+
+			}
+
+			// TODO: Include handling of special characters
+			// TODO: Support sub/superscript.
+
+			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+
+			if (pGlyph)
+			{
+				if (pPrevGlyph)
+					width += pFont->kerning(pPrevGlyph, pGlyph);
+
+				potentialWidth += pGlyph->advance();
+				width = potentialWidth;
+			}
+			else if (pChars->code() == 32)
+				potentialWidth += spaceAdv;
+
+			pPrevGlyph = pGlyph;
+
+			// Handle end of line
+
+			if (pChars->isEndOfLine())
+			{
+				nLines++;
+
+				// 
+
+				if (pChars->isEndOfText())
+					break;
+
+				// Prepare for next line
+
+				pChars++;			// Line terminator belongs to previous line.
+
+				width = 0;
+				potentialWidth = 0;
+				pBreakpoint = nullptr;
+			}
+			else
+			{
+				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr)
+				{
+					bpWidth += eolCaretWidth;
+
+					nLines++;
+
+					// Prepare for next line
+
+					pChars = pBreakpoint;
+
+					width = 0;
+					potentialWidth = 0;
+					pBreakpoint = nullptr;
+
+				}
+				else
+				{
+					int code = pChars->code();
+					if (code == 32)
+					{
+						pBreakpoint = pChars + 1;
+						bpWidth = width;
+					}
+
+					pChars++;
+				}
+			}
+		}
+		return nLines;
+	}
+
+
+
+
 	//____ _reallocBlock() _________________________________________________________
 	
 	void * StdTextMapper::_reallocBlock( TextBaseItem* pItem, int nLines )
@@ -1042,10 +1210,215 @@ namespace wg
 	
 	
 	//____ _updateLineInfo() _______________________________________________________
-	
-	void StdTextMapper::_updateLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+
+	void StdTextMapper::_updateLineInfo( TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer )
+	{
+		if (m_bLineWrap)
+			_updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+		else
+			_updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
+	}
+
+	//____ _updateWrapLineInfo() ________________________________________________
+
+	void StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
+	{
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		const Char * pChars = pBuffer->chars();
+
+		TextAttr		baseAttr;
+		pBaseStyle->exportAttr(state, &baseAttr);
+
+
+		TextAttr		attr;
+		Font_p 			pFont;
+
+		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
+
+		Glyph_p	pGlyph = nullptr;
+		Glyph_p	pPrevGlyph = nullptr;
+
+		int maxAscend = 0;
+		int maxDescend = 0;
+		int maxDescendGap = 0;							// Including the line gap.
+		int spaceAdv = 0;
+		int width = 0;
+		int potentialWidth = 0;
+		int eolCaretWidth = 0;
+		//
+
+		const Char * pBreakpoint = nullptr;
+		int bpWidth = 0;
+		int bpMaxAscend = 0;
+		int bpMaxDescend = 0;
+		int bpMaxDescendGap = 0;							// Including the line gap.
+
+		//
+
+		pLines->offset = pChars - pBuffer->chars();
+
+		while (true)
+		{
+
+			if (pChars->styleHandle() != hCharStyle)
+			{
+
+				int oldFontSize = attr.size;
+
+				attr = baseAttr;
+				if (pChars->styleHandle() != 0)
+					pChars->stylePtr()->addToAttr(state, &attr);
+
+				if (pFont != attr.pFont || attr.size != oldFontSize)
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+				}
+
+				int ascend = pFont->maxAscend();
+				if (ascend > maxAscend)
+					maxAscend = ascend;
+
+				int descend = pFont->maxDescend();
+				if (descend > maxDescend)
+					maxDescend = descend;
+
+				int descendGap = descend + pFont->lineGap();
+				if (descendGap > maxDescendGap)
+					maxDescendGap = descendGap;
+
+				spaceAdv = pFont->whitespaceAdvance();
+
+				if (pCaret)
+				{
+					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+				}
+				else
+					eolCaretWidth = 0;
+
+			}
+
+			// TODO: Include handling of special characters
+			// TODO: Support sub/superscript.
+
+			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+
+			if (pGlyph)
+			{
+				if (pPrevGlyph)
+					width += pFont->kerning(pPrevGlyph, pGlyph);
+
+				potentialWidth += pGlyph->advance();
+				width = potentialWidth;
+			}
+			else if (pChars->code() == 32)
+				potentialWidth += spaceAdv;
+
+			pPrevGlyph = pGlyph;
+
+			// Handle end of line
+
+			if (pChars->isEndOfLine())
+			{
+				// Make sure we have space for eol caret
+
+				if (pCaret)
+				{
+					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					int w = pCaret->eolWidth(eolCellSize);
+					if (w > eolCellSize.w)
+						width += w - eolCellSize.w;
+				}
+
+				// Finish this line
+
+				pLines->length = pChars - (pBuffer->chars() + pLines->offset) + 1; 		// +1 to include line terminator.
+
+				pLines->width = width;
+				pLines->height = maxAscend + maxDescend;
+				pLines->base = maxAscend;
+				pLines->spacing = maxAscend + maxDescendGap;
+				pLines++;
+
+				if (pChars->isEndOfText())
+					break;
+
+				// Prepare for next line
+
+				pChars++;			// Line terminator belongs to previous line.
+
+				pLines->offset = pChars - pBuffer->chars();
+				width = 0;
+				potentialWidth = 0;
+				pBreakpoint = nullptr;
+
+				if (pChars->styleHandle() != hCharStyle)
+				{
+					maxAscend = 0;
+					maxDescend = 0;
+					maxDescendGap = 0;
+				}
+			}
+			else
+			{
+				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr )
+				{
+					bpWidth += eolCaretWidth;
+
+					// Finish this line
+
+					pLines->length = pBreakpoint - (pBuffer->chars() + pLines->offset);
+
+					pLines->width = bpWidth;
+					pLines->height = bpMaxAscend + bpMaxDescend;
+					pLines->base = bpMaxAscend;
+					pLines->spacing = bpMaxAscend + bpMaxDescendGap;
+					pLines++;
+
+					// Prepare for next line
+
+					pChars = pBreakpoint;
+
+					pLines->offset = pChars - pBuffer->chars();
+					width = 0;
+					potentialWidth = 0;
+					pBreakpoint = nullptr;
+
+					if (pChars->styleHandle() != hCharStyle)
+					{
+						maxAscend = 0;
+						maxDescend = 0;
+						maxDescendGap = 0;
+					}
+				}
+				else
+				{
+					int code = pChars->code();
+					if (code == 32)
+					{
+						pBreakpoint = pChars + 1;
+						bpWidth = width;
+						bpMaxAscend = maxAscend;
+						bpMaxDescend = maxDescend;
+						bpMaxDescendGap = maxDescendGap;							// Including the line gap.
+					}
+
+					pChars++;
+				}
+			}
+		}
+	}
+
+
+
+	//____ _updateFixedLineInfo() ________________________________________________
+
+	void StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state )
 	{
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pChars = pBuffer->chars();
 	
 		TextAttr		baseAttr;
@@ -1057,8 +1430,8 @@ namespace wg
 	
 		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
 				
-		Glyph_p	pGlyph;
-		Glyph_p	pPrevGlyph;
+		Glyph_p	pGlyph = nullptr;
+		Glyph_p	pPrevGlyph = nullptr;
 
 		int maxAscend = 0;
 		int maxDescend = 0;
@@ -1126,10 +1499,10 @@ namespace wg
 			{
 				// Make sure we have space for eol caret
 
-				if( m_pCaret )
+				if( pCaret )
 				{
 					Size eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
-					int w = m_pCaret->eolWidth( eolCellSize );
+					int w = pCaret->eolWidth( eolCellSize );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;
 				}

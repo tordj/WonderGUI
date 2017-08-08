@@ -397,7 +397,7 @@ int main ( int argc, char** argv )
 */
 
 
-
+/*
 	{
 		PackPanel_p pPanel = PackPanel::create();
 		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); } );
@@ -432,9 +432,9 @@ int main ( int argc, char** argv )
 		pPanel->children.hide( it, ++it2 );
 
 	}
+*/
 
-
-
+/*
 	ScrollPanel_p pScrollPanel;
 	{
 		Scrollbar_p pScrollbar = Scrollbar::create();
@@ -532,7 +532,7 @@ int main ( int argc, char** argv )
 //		auto selected = pList->children.subset([](it) { return pList->children.isSelected(it); });
 
 	}
-
+*/
 
 
 
@@ -542,12 +542,18 @@ int main ( int argc, char** argv )
         pTest->start();
     }
 */	
-/*	
+	
 	{
 		FlexPanel_p pExtraFlex = FlexPanel::create();
-		pExtraFlex->setSkin( ColorSkin::create( Color(0,0,0,128)));
 
 		TextEditor_p pText = TextEditor::create();
+
+		auto pMapper = StdTextMapper::create();
+		pMapper->setLineWrap(true);
+		pMapper->setAlignment(Origo::North);
+
+		pText->text.setTextMapper(pMapper);
+
 		
 		TextStyle_p pBig = TextStyle::create();
 		pBig->setSize( 16 );
@@ -563,10 +569,13 @@ int main ( int argc, char** argv )
 		pText->text.setCharStyle( pBig, 5, 2 );
 		pText->text.setCharStyle( pRed, 10, 3 );
 		pText->text.setCharStyle( pAnuv, 19, 20 );
-		
-		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
+		pText->setSkin(ColorSkin::create(Color(0, 0, 0, 128)));
 
-		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
+		pExtraFlex->children.addMovable( pText, Rect( 10,10,100,100) );
+
+		pBasePanel->children.add(pExtraFlex, [](Widget*pWidget, Size parentSize) { return Rect(parentSize); });
+
+//		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
 
 		pText->grabFocus();
 
@@ -575,7 +584,7 @@ int main ( int argc, char** argv )
 		pText->text.caretTextBegin();
 		pText->text.caretLineEnd();
 	}
-*/
+
 /*
 	{
 		VolumeMeter_p p = VolumeMeter::create();
