@@ -194,6 +194,7 @@
     <ClInclude Include="..\..\..\src\widgets\panels\wg_panel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_rootpanel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_scrollpanel.h" />
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_splitpanel.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_stackpanel.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_animplayer.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_button.h" />
@@ -296,6 +297,7 @@
     <ClCompile Include="..\..\..\src\widgets\panels\wg_panel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_rootpanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_scrollpanel.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_splitpanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_stackpanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_button.cpp" />

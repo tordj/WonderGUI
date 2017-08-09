@@ -84,6 +84,7 @@ namespace wg
 	friend class PopupLayer;
 	friend class ViewSlot;
 	friend class LambdaPanel;
+	friend class SplitPanel;
 		
 	friend class Item;
 	friend class Slot;
@@ -174,6 +175,7 @@ namespace wg
 		inline Widget_p		clone() const { return Widget_p(_clone()); }
 		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
 
+		inline bool			isOpaque() const { return m_bOpaque;  }
 	
 	protected:	
 		Widget();

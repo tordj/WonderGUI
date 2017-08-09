@@ -69,6 +69,8 @@ namespace wg
 		void			setOrientation(Orientation orientaiton);
 		Orientation		orientation() const { return m_bHorizontal ? Orientation::Horizontal : Orientation::Vertical; }
 
+		Size			preferredSize() const;
+
 		//.____ Appearance _________________________________________________
 
 		void			setHandleSkin(Skin * pSkin);
@@ -79,22 +81,28 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		void			setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int sizeChange)> func);
-		std::function<int(Widget * pFirst, Widget * pSecond, int sizeChange)> brokerFunction() const { return m_brokerFunc;  }
+		void			setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)> func);
+		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)> brokerFunction() const { return m_brokerFunc;  }
 
 	protected:
 		SplitPanel();
 		virtual ~SplitPanel();
 		virtual Widget* _newOfMyType() const { return new SplitPanel(); };
 
+		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
+		void		_updatePreferredSize();
 		bool		_updateGeo();
+		int			_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float fraction);
 
 		// Overloaded from Widget
 
 		void		_setSize(const Size& size);
+		void		_setState(State state);
 		void		_refresh();
 		void		_receive(Msg * pMsg);
-		void		_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches);
+
+		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip);
+
 		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
 
@@ -128,16 +136,18 @@ namespace wg
 
 
 		bool			m_bHorizontal;
+		Size			m_preferredSize;
+		float			m_lengthFraction;			// fraction of available child length that goes to first child. Measured in 1/65536.
 
 		Skin_p			m_pHandleSkin;
 		int				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		Rect			m_handleGeo;
-		int				m_lengthFraction;			// fraction of available child length that goes to first child. Measured in 1/65536.
+		State			m_handleState;
 
 		SplitPanelSlot	m_firstChild;
 		SplitPanelSlot	m_secondChild;
 
-		std::function<int(Widget * pFirst, Widget * pSecond, int sizeChange)>	m_brokerFunc;
+		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)>	m_brokerFunc;
 	};
 
 }

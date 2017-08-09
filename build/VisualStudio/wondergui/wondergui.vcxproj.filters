@@ -434,6 +434,9 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_selectablechildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\panels\wg_splitpanel.h">
+      <Filter>widgets\panels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -732,6 +735,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\panels\wg_splitpanel.cpp">
+      <Filter>widgets\panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
