@@ -378,6 +378,50 @@ int main ( int argc, char** argv )
 	}
 	*/
 
+
+	{
+		auto pSplit = SplitPanel::create();
+		pSplit->setSkin(ColorSkin::create(Color::Beige));
+		pSplit->setSplitFactor(0.2);
+		pSplit->setHandleSkin(pPressablePlateSkin);
+//		pSplit->setHandleThickness(10);
+//		pSplit->setOrientation(Orientation::Horizontal);
+
+
+		auto pMapper = StdTextMapper::create();
+		pMapper->setLineWrap(true);
+		pMapper->setAlignment(Origo::North);
+
+		TextEditor_p pText1 = TextEditor::create();
+		pText1->setSkin(ColorSkin::create(Color::SandyBrown));
+		pText1->text.set("Once upon a time in a land far, far away...");
+		pText1->text.setTextMapper(pMapper);
+
+		TextEditor_p pText2 = TextEditor::create();
+		pText2->setSkin(ColorSkin::create(Color::Black));
+		pText2->text.set("Once upon a time in a land far, far away...");
+		pText2->text.setTextMapper(pMapper);
+
+		auto pCapsule = SizeCapsule::create();
+		pCapsule->setMinSize({ 0, 10 } );
+		pCapsule->setMaxSize({ INT_MAX,pText1->matchingHeight(100) });
+		pCapsule->child = pText1;
+
+		pSplit->first = pCapsule;
+		pSplit->second = pText2;
+
+		pSplit->setScaleBehavior(SplitPanel::ScaleBehavior::ScaleBoth);
+//		pSplit->setBrokerFunction([](Widget*pFirst, Widget*pSecond, int length, float splitFactor, int handle) { return handle + pFirst->size().h; });
+
+		auto pOuterSplit = SplitPanel::create();
+		pOuterSplit->setHandleSkin(pPressablePlateSkin);
+		pOuterSplit->first = pSplit;
+
+
+		pBasePanel->children.add(pOuterSplit, [](Widget*pWidget, Size parentSize) {return Rect(0, 0, 100, parentSize.h); });
+	}
+
+
 /*
 	{
 		auto pPanel = LambdaPanel::create();
@@ -542,7 +586,8 @@ int main ( int argc, char** argv )
         pTest->start();
     }
 */	
-	
+
+/*
 	{
 		FlexPanel_p pExtraFlex = FlexPanel::create();
 
@@ -584,7 +629,7 @@ int main ( int argc, char** argv )
 		pText->text.caretTextBegin();
 		pText->text.caretLineEnd();
 	}
-
+*/
 /*
 	{
 		VolumeMeter_p p = VolumeMeter::create();

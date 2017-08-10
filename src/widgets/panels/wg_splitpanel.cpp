@@ -36,7 +36,8 @@ namespace wg
 	{
 		m_bHorizontal = false;
 		m_handleThickness = 0;
-		m_lengthFraction = 0.5f;
+		m_splitFactor = 0.5f;
+		m_scaleBehavior = ScaleBehavior::ScaleBoth;
 
 		m_bSiblingsOverlap = false;
 	}
@@ -123,13 +124,33 @@ namespace wg
 		}
 	}
 
+	//____ setScaleBehavior() ___________________________________________________
+
+	void SplitPanel::setScaleBehavior(ScaleBehavior behavior)
+	{
+		if (behavior != m_scaleBehavior)
+		{
+			m_scaleBehavior = behavior;
+		}
+	}
+
 	//____ setBrokerFunction() ___________________________________________________
 
-	void SplitPanel::setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)> func)
+	void SplitPanel::setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction, int handleMovement)> func)
 	{
 		m_brokerFunc = func;
 		_updateGeo();
 	}
+
+	//____ setSplitFactor() _________________________________________________
+
+	void SplitPanel::setSplitFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+		m_splitFactor = factor;
+		_updateGeo();
+	}
+
 
 	//____ _handleThickness() ____________________________________________________
 
@@ -195,7 +216,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	bool SplitPanel::_updateGeo()
+	bool SplitPanel::_updateGeo(int handleMovement)
 	{
 		Rect geo = m_size;
 		Rect contentGeo = m_pSkin ? m_pSkin->contentRect(geo, m_state) : geo;
@@ -204,24 +225,33 @@ namespace wg
 		Rect secondChildGeo;
 		Rect handleGeo;
 
+		// Calculate new lengths using broker
+
 		int handleThickness = _handleThickness();
 
-		int totalLength = m_bHorizontal ? contentGeo.w : contentGeo.h;
+		int totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h) - handleThickness;
 		int firstChildLength;
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			firstChildLength = m_brokerFunc(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_lengthFraction);
+			firstChildLength = m_brokerFunc(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_splitFactor, handleMovement);
 		else
-			firstChildLength = _defaultBroker(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_lengthFraction);
+			firstChildLength = _defaultBroker(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_splitFactor, handleMovement);
 
 		secondChildLength = totalLength - firstChildLength;
+
+		// Update lengthFraction if we had handle movement
+
+		if (handleMovement )
+			m_splitFactor = (firstChildLength+0.5f) / totalLength;
+
+		// Update geo rectangles
 
 		if( m_bHorizontal )
 		{ 
 			firstChildGeo = Rect(contentGeo.x, contentGeo.y, firstChildLength, contentGeo.h);
-			secondChildGeo = Rect(contentGeo.x + contentGeo.h - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
-			handleGeo = Rect(contentGeo.x, contentGeo.y + firstChildLength, contentGeo.w, handleThickness);
+			secondChildGeo = Rect(contentGeo.x + contentGeo.w - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
+			handleGeo = Rect(contentGeo.x + firstChildLength, contentGeo.y, handleThickness, contentGeo.h );
 		}
 		else
 		{
@@ -229,6 +259,8 @@ namespace wg
 			secondChildGeo = Rect(contentGeo.x, contentGeo.y + contentGeo.h - secondChildLength, contentGeo.w, secondChildLength);
 			handleGeo = Rect(contentGeo.x, contentGeo.y + firstChildLength, contentGeo.w, handleThickness);
 		}
+
+		// Request render and set sizes
 
 		if (handleGeo != m_handleGeo || firstChildGeo != m_firstChild.geo || secondChildGeo != m_secondChild.geo)
 		{
@@ -242,6 +274,8 @@ namespace wg
 			if (m_secondChild.pWidget)
 				m_secondChild.pWidget->_setSize(secondChildGeo);
 
+			m_handleGeo = handleGeo;
+
 			return true;
 		}
 
@@ -250,9 +284,27 @@ namespace wg
 
 	//____ _defaultBroker() ___________________________________________________
 
-	int SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)
+	int SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)
 	{
-		int firstLength = (int) ((fraction * totalLength) + 0.5f);
+		int firstLength;
+		
+		if (handleMovement == 0)
+		{
+			switch (m_scaleBehavior)
+			{
+			case ScaleBehavior::ScaleFirst:
+				firstLength = totalLength - (m_bHorizontal ? m_secondChild.geo.w : m_secondChild.geo.h);
+				break;
+			case ScaleBehavior::ScaleSecond:
+				firstLength = m_bHorizontal ? m_firstChild.geo.w : m_firstChild.geo.h;
+				break;
+			case ScaleBehavior::ScaleBoth:
+				firstLength = (int)((splitFactor * totalLength) + 0.5f);
+				break;
+			}
+		}
+		else
+			firstLength = (m_bHorizontal ? m_firstChild.geo.w : m_firstChild.geo.h) + handleMovement;
 
 		int minLengthFirst = 0;
 		int minLengthSecond = 0;
@@ -269,8 +321,8 @@ namespace wg
 
 			if (pSecond)
 			{
-				minLengthSecond = pFirst->minSize().w;
-				maxLengthSecond = pFirst->maxSize().w;
+				minLengthSecond = pSecond->minSize().w;
+				maxLengthSecond = pSecond->maxSize().w;
 			}
 		}
 		else
@@ -283,8 +335,8 @@ namespace wg
 
 			if (pSecond)
 			{
-				minLengthSecond = pFirst->minSize().h;
-				maxLengthSecond = pFirst->maxSize().h;
+				minLengthSecond = pSecond->minSize().h;
+				maxLengthSecond = pSecond->maxSize().h;
 			}
 		}
 
@@ -317,25 +369,88 @@ namespace wg
 	{
 		//TODO: Implement!!!
 
+		State handleState = m_handleState;
+
 		switch (pMsg->type())
 		{
 			case MsgType::MouseEnter:
-			break;
+			case MsgType::MouseMove:
+			{
+				if (m_handleState.isPressed())
+					return;
+
+				Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+
+				bool bHovered = m_handleGeo.contains(pos);
+				handleState.setHovered(bHovered);
+				break;
+			}
 
 			case MsgType::MouseLeave:
-			break;
+			{
+				// Unhover handle unless it is pressed
 
-			case MsgType::MouseMove:
-			break;
-
+				if (!handleState.isPressed())
+					handleState.setHovered(false);
+				break;
+			}
 			case MsgType::MousePress:
-			break;
+			{
+				auto p = MouseButtonMsg::cast(pMsg);
+
+				if (p->button() != MouseButton::Left)
+					return;
+
+				Coord pos = p->pointerPos() - globalPos();
+				if (m_handleGeo.contains(pos))
+				{
+					m_handlePressOfs = m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y;
+					handleState.setPressed(true);
+					pMsg->swallow();
+				}
+				break;
+			}
 
 			case MsgType::MouseRelease:
+			{
+				auto p = MouseButtonMsg::cast(pMsg);
+
+				if (p->button() != MouseButton::Left)
+					return;
+
+				if (handleState.isPressed() )
+				{
+					handleState.setPressed(false);
+					pMsg->swallow();
+				}
 				break;
+			}
 
 			case MsgType::MouseDrag:
+			{
+				auto p = MouseButtonMsg::cast(pMsg);
+
+				if (p->button() != MouseButton::Left)
+					return;
+
+				if (handleState.isPressed())
+				{
+					Coord pos = p->pointerPos() - globalPos();
+					int diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
+
+					_updateGeo(diff);
+					pMsg->swallow();
+				}
 				break;
+			}
+		}
+
+		if (handleState != m_handleState && m_pHandleSkin)
+		{
+			if (!m_pHandleSkin->isStateIdentical(handleState, m_handleState))
+				_requestRender(m_handleGeo);
+
+			m_handleState = handleState;
 		}
 	}
 
@@ -485,13 +600,16 @@ namespace wg
 
 	//____ _setWidget() _______________________________________________________
 
-	void SplitPanel::_setWidget(Slot * pSlot, Widget * pNewWidget)
+	void SplitPanel::_setWidget(Slot * _pSlot, Widget * pNewWidget)
 	{
+		auto pSlot = static_cast<SplitPanelSlot*>(_pSlot);
+
 		pSlot->replaceWidget(this, pNewWidget);
+		pNewWidget->_setSize(pSlot->geo);
 		_updatePreferredSize();
 		bool bGeoChanged =_updateGeo();
 		if (!bGeoChanged)
-			_requestRender(static_cast<SplitPanelSlot*>(pSlot)->geo);
+			_requestRender(pSlot->geo);
 
 	}
 

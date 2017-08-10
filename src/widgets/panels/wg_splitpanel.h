@@ -47,6 +47,8 @@ namespace wg
 
 	class SplitPanel : public Panel, protected ChildEntryHolder
 	{
+		friend class ChildEntry<SplitPanelSlot,SplitPanel>;
+
 	public:
 		//.____ Creation __________________________________________
 
@@ -81,8 +83,23 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		void			setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)> func);
-		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)> brokerFunction() const { return m_brokerFunc;  }
+		enum ScaleBehavior
+		{
+			ScaleBoth,
+			ScaleFirst,
+			ScaleSecond
+		};
+
+		void			setScaleBehavior(ScaleBehavior behavior);
+		ScaleBehavior	scaleBehavior() const { return m_scaleBehavior; }
+
+		void			setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)> func);
+		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)> brokerFunction() const { return m_brokerFunc;  }
+
+		//.____ Control ________________________________________________________
+
+		void		setSplitFactor(float fraction);
+		float		splitFactor() const { return m_splitFactor; }
 
 	protected:
 		SplitPanel();
@@ -91,8 +108,8 @@ namespace wg
 
 		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
-		bool		_updateGeo();
-		int			_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float fraction);
+		bool		_updateGeo(int handleMovement=0);
+		int			_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement);
 
 		// Overloaded from Widget
 
@@ -137,17 +154,19 @@ namespace wg
 
 		bool			m_bHorizontal;
 		Size			m_preferredSize;
-		float			m_lengthFraction;			// fraction of available child length that goes to first child. Measured in 1/65536.
+		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
+		ScaleBehavior	m_scaleBehavior;
 
 		Skin_p			m_pHandleSkin;
 		int				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		Rect			m_handleGeo;
 		State			m_handleState;
+		int				m_handlePressOfs;
 
 		SplitPanelSlot	m_firstChild;
 		SplitPanelSlot	m_secondChild;
 
-		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction)>	m_brokerFunc;
+		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)>	m_brokerFunc;
 	};
 
 }

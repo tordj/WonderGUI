@@ -93,5 +93,6 @@
 #include <wg_timeformatter.h>
 #include <wg_fpsdisplay.h>
 #include <wg_volumemeter.h>
+#include <wg_splitpanel.h>
 
 #endif //WONDERGUI_DOT_H

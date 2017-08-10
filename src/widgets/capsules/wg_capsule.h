@@ -53,7 +53,7 @@ namespace wg
 
 	class Capsule : public Container, protected ChildEntryHolder
 	{
-	
+		friend class ChildEntry<Slot, Capsule>;
 	public:
 
 		//.____ Interfaces _______________________________________
