@@ -310,7 +310,7 @@ namespace wg
 		if (policy != m_pSlot->widthPolicy)
 		{
 			m_pSlot->widthPolicy = policy;
-			m_pHolder->_updateElementGeo(m_pHolder->size());
+			m_pHolder->_updateViewGeo();
 		}
 	}
 
@@ -319,7 +319,7 @@ namespace wg
 		if (policy != m_pSlot->heightPolicy)
 		{
 			m_pSlot->heightPolicy = policy;
-			m_pHolder->_updateElementGeo(m_pHolder->m_size);
+			m_pHolder->_updateViewGeo();
 		}
 	}
 
@@ -1333,7 +1333,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestRender( Slot * _pSlot )
 	{
-		PanelSlot * pSlot = (PanelSlot *)_pSlot;
+		PaddedSlot * pSlot = (PaddedSlot *)_pSlot;
 		if (!pSlot->bVisible)
 			return;
 
@@ -1345,7 +1345,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
-		PanelSlot * pSlot = (PanelSlot *)_pSlot;
+		PaddedSlot * pSlot = (PaddedSlot *)_pSlot;
 		if (!pSlot->bVisible)
 			return;
 

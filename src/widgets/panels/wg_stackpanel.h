@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
+#include <wg_paddedslot.h>
 #include <wg_paddedchildren.h>
 
 
@@ -39,7 +40,7 @@ namespace wg
 
 	//____ StackPanelSlot ____________________________________________________________
 
-	class StackPanelSlot : public PanelSlot		/** @private */
+	class StackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
 		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Default) {}

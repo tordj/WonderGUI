@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		Child<Slot,Layer> base;
+		Child<Slot,ChildHolder> base;
 
 
 		//.____ Identification __________________________________________
@@ -119,6 +119,7 @@ namespace wg
 		// Overloaded from ChildHolder
 
 		void		_setWidget( Slot * pSlot, Widget * pNewWidget );
+		Object *	_object() { return this; }
 
 		// Overloaded from Widget
 

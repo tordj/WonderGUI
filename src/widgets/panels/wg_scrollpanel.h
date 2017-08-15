@@ -31,6 +31,7 @@
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
 #include <wg_child.h>
+#include <wg_paddedslot.h>
 
 
 namespace wg 
@@ -42,7 +43,7 @@ namespace wg
 
 	//____ ScrollbarSlot ______________________________________________________
 
-	class ScrollbarSlot : public PanelSlot		/** @private */
+	class ScrollbarSlot : public PaddedSlot		/** @private */
 	{
 	public:
 		ScrollbarSlot() : bAutoHide(false), bAutoScroll(false) {}
@@ -55,7 +56,7 @@ namespace wg
 
 	//____ ViewSlot ______________________________________________________
 
-	class ViewSlot : public PanelSlot		/** @private */
+	class ViewSlot : public PaddedSlot		/** @private */
 	{
 	public:
 		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
@@ -84,19 +85,32 @@ namespace wg
 		SizePolicy		widthPolicy;
 		SizePolicy		heightPolicy;
 		Origo			contentOrigo;		// Origo when content is smaller than window
-
 		Size			contentSize;
 		Coord			viewPixOfs;
 	};
 
+	//____ ViewEntryHolder _______________________________________________
+
+	class ViewEntryHolder : public ChildHolder
+	{
+	public:
+		virtual bool		_setWindowPos(Coord pos) = 0;
+		virtual bool		_setWindowOffset(CoordF ofs) = 0;
+		virtual bool		_step(Direction dir, int nSteps = 1) = 0;
+		virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
+		virtual void		_requestRender(const Rect& rect) = 0;
+		virtual void		_updateViewGeo() = 0;
+	};
+
+
 	//____ ViewEntry ______________________________________________________
 
-	class ViewEntry : public Child<ViewSlot, ScrollPanel>
+	class ViewEntry : public Child<ViewSlot, ViewEntryHolder>
 	{
 	public:
 		/** @private */
 
-		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : Child(pSlot, pPanel) {}
+		ViewEntry(ViewSlot * pSlot, ViewEntryHolder * pHolder) : Child(pSlot, pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
@@ -189,7 +203,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 	
-	class ScrollPanel : public Panel, protected ChildHolder
+	class ScrollPanel : public Panel, protected ViewEntryHolder
 	{
 		friend class ViewEntry;
 		friend class ScrollbarEntry;
@@ -290,7 +304,11 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		void		_setWidget(Slot * pSlot, Widget * pWidget);
+		void			_setWidget(Slot * pSlot, Widget * pWidget);
+		Object *		_object() { return this;  }
+		inline void		_requestRender(const Rect& rect) { Panel::_requestRender(rect); }
+		inline void		_requestRender() { Panel::_requestRender(); }
+		virtual void	_updateViewGeo() { _updateElementGeo(m_size); }
 
 		// Overloaded from Container
 

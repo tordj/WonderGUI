@@ -25,6 +25,7 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 #include <wg_gfxdevice.h>
+#include <wg_slot.h>
 
 namespace wg 
 {

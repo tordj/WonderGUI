@@ -57,7 +57,6 @@ namespace wg
 	{
 		friend class Container;
 		friend class InputHandler;
-		friend class Child<Slot,RootPanel>;
 	
 	public:
 
@@ -68,7 +67,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		Child<Slot,RootPanel>	child;
+		Child<Slot,ChildHolder>	child;
 
 		//.____ Identification __________________________________________
 	
@@ -158,7 +157,7 @@ namespace wg
 		Widget *		_prevChild( Slot * pSlot ) const;
 		Widget *		_nextChild( Slot * pSlot ) const;
 	
-
+		// ChildHolder methods
 
 		Object *		_object();
 		const Object *	_object() const;

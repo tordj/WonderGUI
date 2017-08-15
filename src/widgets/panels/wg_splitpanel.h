@@ -47,7 +47,6 @@ namespace wg
 
 	class SplitPanel : public Panel, protected ChildHolder
 	{
-		friend class Child<SplitPanelSlot,SplitPanel>;
 
 	public:
 		//.____ Creation __________________________________________
@@ -56,8 +55,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		Child<SplitPanelSlot,SplitPanel>	first;
-		Child<SplitPanelSlot,SplitPanel>	second;
+		Child<SplitPanelSlot,ChildHolder>	first;
+		Child<SplitPanelSlot,ChildHolder>	second;
 
 		//.____ Identification __________________________________________
 
@@ -138,6 +137,7 @@ namespace wg
 		// Overloaded from ChildHolder
 
 		void	_setWidget(Slot * pSlot, Widget * pNewWidget);
+		Object * _object() { return this; }
 
 		// Overloaded from WidgetHolder
 

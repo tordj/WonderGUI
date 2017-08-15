@@ -25,7 +25,6 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_slot.h>
 
 namespace wg 
 {
@@ -35,27 +34,8 @@ namespace wg
 	class Panel;
 	typedef	StrongPtr<Panel>	Panel_p;
 	typedef	WeakPtr<Panel>		Panel_wp;
-	
-	
 
-	//____ PanelSlot ____________________________________________________________
-
-	class PanelSlot : public Slot 	/** @private */
-	{
-	public:
-		PanelSlot() : bVisible(false) {}
-
-		Size		paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
-		Size		paddedMinSize() const { return pWidget->minSize() + padding; }
-		Size		paddedMaxSize() const { return pWidget->maxSize() + padding; }
-		int			paddedMatchingWidth( int paddedHeight ) const { return pWidget->matchingWidth( paddedHeight - padding.height() ) + padding.width(); }
-		int			paddedMatchingHeight( int paddedWidth ) const { return pWidget->matchingHeight( paddedWidth - padding.width() ) + padding.height(); }
-	
-		bool		bVisible;
-		Border		padding;
-	};
-	
-	
+		
 	/**
 	 * @brief	Base class for layout widgets.
 	 *

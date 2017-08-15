@@ -25,6 +25,7 @@
 
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
+#include <wg_paddedslot.h>
 #include <wg_paddedchildren.h>
 
 namespace wg 
@@ -37,7 +38,7 @@ namespace wg
 
 	//____ PackPanelSlot ____________________________________________________________
 
-	class PackPanelSlot : public PanelSlot		/** @private */
+	class PackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
 		PackPanelSlot() : weight(1.f) {}

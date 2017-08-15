@@ -41,7 +41,8 @@ namespace wg
 	class ChildHolder		/** @private */
 	{
 	public:
-		virtual void	_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
+		virtual void		_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
+		virtual Object *	_object() = 0;
 	};
 
 	
@@ -75,7 +76,7 @@ namespace wg
 		inline void clear() { m_pHolder->_setWidget( m_pSlot, nullptr); }
 
 	protected:
-		Object * _object() const {	return m_pHolder; }
+		Object * _object() const {	return m_pHolder->_object(); }
 
 		SlotType *	m_pSlot;
 		HolderType * m_pHolder;
