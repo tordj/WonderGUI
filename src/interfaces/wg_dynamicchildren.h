@@ -20,41 +20,41 @@
 
 =========================================================================*/
 
-#ifndef	WG_DYNAMICCHILDGROUP_DOT_H
-#define	WG_DYNAMICCHILDGROUP_DOT_H
+#ifndef	WG_DYNAMICCHILDREN_DOT_H
+#define	WG_DYNAMICCHILDREN_DOT_H
 #pragma once
 
-#include <wg_childgroup.h>
+#include <wg_children.h>
 
 namespace wg 
 {
 
-//	template<class SlotType, class HolderType> class ChildGroup;
-//	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
-//	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
+//	template<class SlotType, class HolderType> class Children;
+//	typedef	StrongInterfacePtr<Children<class SlotType,class HolderType>,Interface_p>		Children_p;
+//	typedef	WeakInterfacePtr<Children<class SlotType, class HolderType>,Interface_wp>		Children_wp;
 
-	//____ DynamicChildGroupHolder _________________________________________________________
+	//____ DynamicChildrenHolder _________________________________________________________
 
-	class DynamicChildGroupHolder		/** @private */
+	class DynamicChildrenHolder		/** @private */
 	{
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
 		virtual void	_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;
 	};
 
-	//____ DynamicChildGroup _________________________________________________________
+	//____ DynamicChildren _________________________________________________________
 
-	template<class SlotType, class HolderType> class DynamicChildGroup : public ChildGroup<SlotType,HolderType>
+	template<class SlotType, class HolderType> class DynamicChildren : public Children<SlotType,HolderType>
 	{		
 	public:
 
-		using		iterator = SlotIterator<SlotType>;
-		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
-		using		ChildGroup<SlotType,HolderType>::m_pHolder;
+		using		iterator = ChildIterator<SlotType>;
+		using		Children<SlotType,HolderType>::m_pSlotArray;
+		using		Children<SlotType,HolderType>::m_pHolder;
 		
 		/** @private */
 
-		DynamicChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : ChildGroup<SlotType,HolderType>(pSlotArray,pHolder) {}
+		DynamicChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : Children<SlotType,HolderType>(pSlotArray,pHolder) {}
 
 		//.____ Operators __________________________________________
 
@@ -92,4 +92,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_CHILDGROUP_DOT_H
+#endif //WG_CHILDREN_DOT_H

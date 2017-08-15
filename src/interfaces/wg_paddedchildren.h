@@ -42,9 +42,9 @@ namespace wg
 	template<class SlotType, class HolderType> class PaddedChildren : public HideableChildren<SlotType, HolderType>
 	{
 	public:
-		using		iterator = SlotIterator<SlotType>;
-		using		ChildGroup<SlotType, HolderType>::m_pSlotArray;
-		using		ChildGroup<SlotType, HolderType>::m_pHolder;
+		using		iterator = ChildIterator<SlotType>;
+		using		Children<SlotType, HolderType>::m_pSlotArray;
+		using		Children<SlotType, HolderType>::m_pHolder;
 
 		/** @private */
 

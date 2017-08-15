@@ -20,36 +20,36 @@
 
 =========================================================================*/
 
-#ifndef	WG_CHILDGROUP_DOT_H
-#define	WG_CHILDGROUP_DOT_H
+#ifndef	WG_CHILDREN_DOT_H
+#define	WG_CHILDREN_DOT_H
 #pragma once
 
 #include <wg_interface.h>
 #include <wg_pointers.h>
 #include <wg_container.h>
 #include <wg_slotarray.h>
-#include <wg_slotiterator.h>
+#include <wg_childiterator.h>
 
 
 namespace wg 
 {
 
-//	template<class SlotType, class HolderType> class ChildGroup;
-//	typedef	StrongInterfacePtr<ChildGroup<class SlotType,class HolderType>,Interface_p>		ChildGroup_p;
-//	typedef	WeakInterfacePtr<ChildGroup<class SlotType, class HolderType>,Interface_wp>		ChildGroup_wp;
+//	template<class SlotType, class HolderType> class Children;
+//	typedef	StrongInterfacePtr<Children<class SlotType,class HolderType>,Interface_p>		Children_p;
+//	typedef	WeakInterfacePtr<Children<class SlotType, class HolderType>,Interface_wp>		Children_wp;
 
 
-	//____ ChildGroup _________________________________________________________
+	//____ Children _________________________________________________________
 
-	template<class SlotType, class HolderType> class ChildGroup : public Interface
+	template<class SlotType, class HolderType> class Children : public Interface
 	{		
 	public:
 
-		using		iterator = SlotIterator<SlotType>;
+		using		iterator = ChildIterator<SlotType>;
 
 		/** @private */
 
-		ChildGroup( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
+		Children( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
 
 
 		//.____ Operators __________________________________________
@@ -83,7 +83,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline StrongInterfacePtr<ChildGroup<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<ChildGroup<SlotType, HolderType>>(this); }
+		inline StrongInterfacePtr<Children<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<Children<SlotType, HolderType>>(this); }
 
 		iterator	begin() const { return iterator(m_pSlotArray->begin()); }
 		iterator	end() const { return iterator(m_pSlotArray->end()); }
@@ -98,4 +98,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_CHILDGROUP_DOT_H
+#endif //WG_CHILDREN_DOT_H

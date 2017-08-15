@@ -380,12 +380,6 @@
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h">
       <Filter>slots</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_childentry.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_strongptr.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -397,12 +391,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h">
       <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_slotiterator.h">
-      <Filter>slots</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildgroup.h">
-      <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.h">
       <Filter>interfaces</Filter>
@@ -422,9 +410,6 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_paddedchildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.impl.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h">
       <Filter>slots</Filter>
     </ClInclude>
@@ -436,6 +421,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\panels\wg_splitpanel.h">
       <Filter>widgets\panels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_children.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_children.impl.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildren.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_childiterator.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_child.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -742,7 +742,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="..\..\..\src\interfaces\wg_dynamicchildgroup.impl.h">
+    <None Include="..\..\..\src\interfaces\wg_dynamicchildren.impl.h">
       <Filter>interfaces</Filter>
     </None>
   </ItemGroup>

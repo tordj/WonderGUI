@@ -88,7 +88,7 @@ namespace wg
 		
 	friend class Item;
 	friend class Slot;
-	template<class S, class H> friend class ChildGroup;
+	template<class S, class H> friend class Children;
 
 
 

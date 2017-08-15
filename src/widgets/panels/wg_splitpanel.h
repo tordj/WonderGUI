@@ -27,7 +27,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_childentry.h>
+#include <wg_child.h>
 
 
 namespace wg
@@ -45,9 +45,9 @@ namespace wg
 	};
 
 
-	class SplitPanel : public Panel, protected ChildEntryHolder
+	class SplitPanel : public Panel, protected ChildHolder
 	{
-		friend class ChildEntry<SplitPanelSlot,SplitPanel>;
+		friend class Child<SplitPanelSlot,SplitPanel>;
 
 	public:
 		//.____ Creation __________________________________________
@@ -56,8 +56,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ChildEntry<SplitPanelSlot,SplitPanel>	first;
-		ChildEntry<SplitPanelSlot,SplitPanel>	second;
+		Child<SplitPanelSlot,SplitPanel>	first;
+		Child<SplitPanelSlot,SplitPanel>	second;
 
 		//.____ Identification __________________________________________
 
@@ -135,7 +135,7 @@ namespace wg
 		void		_nextSlotWithGeo(SlotWithGeo& package) const;
 
 
-		// Overloaded from ChildEntryHolder
+		// Overloaded from ChildHolder
 
 		void	_setWidget(Slot * pSlot, Widget * pNewWidget);
 

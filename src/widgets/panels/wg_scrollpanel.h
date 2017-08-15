@@ -30,7 +30,7 @@
 #include <wg_panel.h>
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
-#include <wg_childentry.h>
+#include <wg_child.h>
 
 
 namespace wg 
@@ -91,12 +91,12 @@ namespace wg
 
 	//____ ViewEntry ______________________________________________________
 
-	class ViewEntry : public ChildEntry<ViewSlot, ScrollPanel>
+	class ViewEntry : public Child<ViewSlot, ScrollPanel>
 	{
 	public:
 		/** @private */
 
-		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : ChildEntry(pSlot, pPanel) {}
+		ViewEntry(ViewSlot * pSlot, ScrollPanel * pPanel) : Child(pSlot, pPanel) {}
 
 		//.____ Operators _____________________________________________________
 
@@ -189,7 +189,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 	
-	class ScrollPanel : public Panel, protected ChildEntryHolder
+	class ScrollPanel : public Panel, protected ChildHolder
 	{
 		friend class ViewEntry;
 		friend class ScrollbarEntry;
@@ -288,7 +288,7 @@ namespace wg
 
 		Rect		_childWindowSection(Slot * pSlot) const;
 
-		// Overloaded from ChildEntryHolder
+		// Overloaded from ChildHolder
 
 		void		_setWidget(Slot * pSlot, Widget * pWidget);
 

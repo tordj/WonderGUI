@@ -382,7 +382,7 @@ int main ( int argc, char** argv )
 	{
 		auto pSplit = SplitPanel::create();
 		pSplit->setSkin(ColorSkin::create(Color::Beige));
-		pSplit->setSplitFactor(0.2);
+		pSplit->setSplitFactor(0.2f);
 		pSplit->setHandleSkin(pPressablePlateSkin);
 //		pSplit->setHandleThickness(10);
 //		pSplit->setOrientation(Orientation::Horizontal);

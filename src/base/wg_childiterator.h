@@ -20,8 +20,8 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
 
-#ifndef WG_SLOTITERATOR_DOT_H
-#define WG_SLOTITERATOR_DOT_H
+#ifndef WG_CHILDITERATOR_DOT_H
+#define WG_CHILDITERATOR_DOT_H
 #pragma once
 
 
@@ -30,7 +30,7 @@ namespace wg
 
 	class Widget;
 
-	template<class SlotType> class SlotIterator
+	template<class SlotType> class ChildIterator
 	{
 	public:
 
@@ -43,8 +43,8 @@ namespace wg
 
 		//.____ Creation ___________________________________________________
 
-		SlotIterator() = default;
-		explicit SlotIterator(SlotType* pSlot)
+		ChildIterator() = default;
+		explicit ChildIterator(SlotType* pSlot)
 		{
 			this->pSlot = pSlot;
 		}
@@ -62,46 +62,46 @@ namespace wg
 		}
 
 
-		inline SlotIterator& operator++()
+		inline ChildIterator& operator++()
 		{
 			pSlot++;
 			return *this;
 		}
 
-		inline SlotIterator operator++(int)
+		inline ChildIterator operator++(int)
 		{
-			SlotIterator tmp = *this;
+			ChildIterator tmp = *this;
 			pSlot++;
 			return tmp;
 		}
 
-		inline SlotIterator& operator--()
+		inline ChildIterator& operator--()
 		{
 			pSlot--;
 			return *this;
 		}
 
-		inline SlotIterator operator--(int)
+		inline ChildIterator operator--(int)
 		{
-			SlotIterator tmp = *this;
+			ChildIterator tmp = *this;
 			pSlot--;
 			return tmp;
 		}
 
-		inline bool operator==(const SlotIterator& rhs)
+		inline bool operator==(const ChildIterator& rhs)
 		{
 			return pSlot == rhs.pSlot;
 		}
 
-		inline bool operator!=(const SlotIterator& rhs)
+		inline bool operator!=(const ChildIterator& rhs)
 		{
 			return pSlot != rhs.pSlot;
 		}
 
-		inline bool operator< (const SlotIterator& rhs) { return pSlot < rhs.pSlot; }
-		inline bool operator> (const SlotIterator& rhs) { return pSlot > rhs.pSlot; }
-		inline bool operator<=(const SlotIterator& rhs) { return pSlot <= rhs.pSlot; }
-		inline bool operator>=(const SlotIterator& rhs) { return pSlot >= rhs.pSlot; }
+		inline bool operator< (const ChildIterator& rhs) { return pSlot < rhs.pSlot; }
+		inline bool operator> (const ChildIterator& rhs) { return pSlot > rhs.pSlot; }
+		inline bool operator<=(const ChildIterator& rhs) { return pSlot <= rhs.pSlot; }
+		inline bool operator>=(const ChildIterator& rhs) { return pSlot >= rhs.pSlot; }
 
 
 		//.____ Internal _______________________________________________________
@@ -118,4 +118,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_SLOTITERATOR_DOT_H
+#endif //WG_CHILDITERATOR_DOT_H

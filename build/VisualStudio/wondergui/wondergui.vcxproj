@@ -101,7 +101,7 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
-    <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
+    <ClInclude Include="..\..\..\src\base\wg_childiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_itemholder.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
@@ -134,9 +134,9 @@
     <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.impl.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_children.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_columnheader.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildgroup.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_dynamicchildren.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_edittext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_editvalue.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.h" />
@@ -154,8 +154,8 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_span.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_text.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_value.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_childgroup.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_childentry.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_children.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_child.h" />
     <ClInclude Include="..\..\..\src\items\wg_columnheaderitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_edittextitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_editvalueitem.h" />
@@ -319,7 +319,7 @@
     <ClCompile Include="..\..\..\src\widgets\wg_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\interfaces\wg_dynamicchildgroup.impl.h" />
+    <None Include="..\..\..\src\interfaces\wg_dynamicchildren.impl.h" />
     <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

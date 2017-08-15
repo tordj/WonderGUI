@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_childentry.h>
+#include <wg_child.h>
 #include <wg_slot.h>
 
 
@@ -51,14 +51,14 @@ namespace wg
 	* such as size, tint and transparency.
 	*/
 
-	class Capsule : public Container, protected ChildEntryHolder
+	class Capsule : public Container, protected ChildHolder
 	{
-		friend class ChildEntry<Slot, Capsule>;
+		friend class Child<Slot, Capsule>;
 	public:
 
 		//.____ Interfaces _______________________________________
 
-		ChildEntry<Slot,Capsule> child;
+		Child<Slot,Capsule> child;
 
 		//.____ Identification __________________________________________
 
@@ -90,7 +90,7 @@ namespace wg
 		Widget *	_prevChild( Slot * pSlot ) const;
 		Widget *	_nextChild( Slot * pSlot ) const;
 
-		// Overloaded from ChildEntryHolder
+		// Overloaded from ChildHolder
 
 		Object *	_object();
 		const Object * _object() const;

@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_childentry.h>
+#include <wg_child.h>
 
 
 namespace wg 
@@ -67,14 +67,14 @@ namespace wg
 	 *
 	 **/
 	
-	class Layer : public Container, protected ChildEntryHolder
+	class Layer : public Container, protected ChildHolder
 	{
 	
 	public:
 
 		//.____ Interfaces _______________________________________
 
-		ChildEntry<Slot,Layer> base;
+		Child<Slot,Layer> base;
 
 
 		//.____ Identification __________________________________________
@@ -116,7 +116,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
 
-		// Overloaded from ChildEntryHolder
+		// Overloaded from ChildHolder
 
 		void		_setWidget( Slot * pSlot, Widget * pNewWidget );
 

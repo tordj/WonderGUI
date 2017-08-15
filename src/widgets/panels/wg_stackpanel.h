@@ -98,8 +98,8 @@ namespace wg
 		friend class StackPanelChildren;
 		friend class PaddedChildren<StackPanelSlot,StackPanel>;
 		friend class HideableChildren<StackPanelSlot,StackPanel>;
-		friend class DynamicChildGroup<StackPanelSlot,StackPanel>;
-		friend class ChildGroup<StackPanelSlot,StackPanel>;
+		friend class DynamicChildren<StackPanelSlot,StackPanel>;
+		friend class Children<StackPanelSlot,StackPanel>;
 
 	public:
 

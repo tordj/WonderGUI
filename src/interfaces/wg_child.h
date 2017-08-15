@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CHILDENTRY_DOT_H
-#define	WG_CHILDENTRY_DOT_H
+#ifndef	WG_CHILD_DOT_H
+#define	WG_CHILD_DOT_H
 #pragma once
 
 #include <wg_interface.h>
@@ -32,33 +32,33 @@
 namespace wg 
 {
 
-//	template<class SlotType, class HolderType> class ChildEntry;
-//	typedef	StrongInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_p>	ChildEntry_p;
-//	typedef	WeakInterfacePtr<ChildEntry<class SlotType, class HolderType>,Interface_wp>	ChildEntry_wp;
+//	template<class SlotType, class HolderType> class Child;
+//	typedef	StrongInterfacePtr<Child<class SlotType, class HolderType>,Interface_p>	Child_p;
+//	typedef	WeakInterfacePtr<Child<class SlotType, class HolderType>,Interface_wp>	Child_wp;
 
-	//____ ChildEntryHolder ____________________________________________________
+	//____ ChildHolder ____________________________________________________
 
-	class ChildEntryHolder		/** @private */
+	class ChildHolder		/** @private */
 	{
 	public:
 		virtual void	_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
 	};
 
 	
-	//____ ChildEntry __________________________________________________________
+	//____ Child __________________________________________________________
 	
-	template<class SlotType, class HolderType> class ChildEntry : public Interface
+	template<class SlotType, class HolderType> class Child : public Interface
 	{
 		
 	public:
 
 		/** @private */
 
-		ChildEntry( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+		Child( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 
 		//.____ Operators __________________________________________
 
-		inline ChildEntry<SlotType,HolderType> operator=(Widget * pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget); return *this; }
+		inline Child<SlotType,HolderType> operator=(Widget * pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
 		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }
@@ -84,4 +84,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_CHILDENTRY_DOT_H
+#endif //WG_CHILD_DOT_H

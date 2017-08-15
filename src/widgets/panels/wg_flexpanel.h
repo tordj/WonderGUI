@@ -257,8 +257,8 @@ namespace wg
 	{
 		friend class FlexPanelChildren;
 		friend class HideableChildren<FlexPanelSlot,FlexPanel>;
-		friend class DynamicChildGroup<FlexPanelSlot,FlexPanel>;
-		friend class ChildGroup<FlexPanelSlot,FlexPanel>;
+		friend class DynamicChildren<FlexPanelSlot,FlexPanel>;
+		friend class Children<FlexPanelSlot,FlexPanel>;
 	
 	public:
 

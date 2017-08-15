@@ -86,8 +86,8 @@ namespace wg
 		friend class PackPanelChildren;
 		friend class PaddedChildren<PackPanelSlot,PackPanel>;
 		friend class HideableChildren<PackPanelSlot,PackPanel>;
-		friend class DynamicChildGroup<PackPanelSlot,PackPanel>;
-		friend class ChildGroup<PackPanelSlot,PackPanel>;
+		friend class DynamicChildren<PackPanelSlot,PackPanel>;
+		friend class Children<PackPanelSlot,PackPanel>;
 	
 	public:
 

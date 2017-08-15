@@ -98,9 +98,9 @@ namespace wg
 		friend class PackListChildren;
 		friend class SelectableChildren<PackListSlot, PackList>;
 		friend class HideableChildren<PackListSlot,PackList>;
-		friend class DynamicChildGroup<PackListSlot,PackList>;
-		friend class ChildGroup<PackListSlot,PackList>;
-//		template<class T, class P> friend class ChildGroup;
+		friend class DynamicChildren<PackListSlot,PackList>;
+		friend class Children<PackListSlot,PackList>;
+//		template<class T, class P> friend class Children;
 	public:
 
 		//.____ Creation __________________________________________

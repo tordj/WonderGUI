@@ -20,23 +20,22 @@
 
 =========================================================================*/
 
-#ifndef	WG_DYNAMICCHILDGROUP_IMPL_DOT_H
-#define	WG_DYNAMICCHILDGROUP_IMPL_DOT_H
+#ifndef	WG_DYNAMICCHILDREN_IMPL_DOT_H
+#define	WG_DYNAMICCHILDREN_IMPL_DOT_H
 #pragma once
 
-#include <wg_childgroup.impl.h>
+#include <wg_children.h>
+#include <wg_children.impl.h>
 
-//#include <wg_dynamicchildgroup.h>
-
-#define INSTANTIATE_DYNAMICCHILDGROUP(SlotType,HolderType) \
-	INSTANTIATE_CHILDGROUP( ##SlotType, ##HolderType ) \
-	template class DynamicChildGroup< ##SlotType, ##HolderType >;
+#define INSTANTIATE_DYNAMICCHILDREN(SlotType,HolderType) \
+	INSTANTIATE_CHILDREN( ##SlotType, ##HolderType ) \
+	template class DynamicChildren< ##SlotType, ##HolderType >;
 
 namespace wg
 {
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::add(Widget * pWidget)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::add(Widget * pWidget)
 	{
 		SlotType * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder, pWidget);
@@ -45,7 +44,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::add(const Widget_p pWidgets[], int amount)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::add(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -58,7 +57,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::insert(int index, Widget * pWidget)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::insert(int index, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -69,7 +68,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::insert(iterator pos, Widget * pWidget)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::insert(iterator pos, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -80,7 +79,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::insert(int index, const Widget_p pWidgets[], int amount)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::insert(int index, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -93,7 +92,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::insert(iterator pos, const Widget_p pWidgets[], int amount)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::insert(iterator pos, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -106,7 +105,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::remove(int index)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::remove(int index)
 	{
 		//TODO: Add assert
 
@@ -116,7 +115,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::remove(iterator pos)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::remove(iterator pos)
 	{
 		//TODO: Add assert
 
@@ -125,7 +124,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::remove(int index, int amount)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::remove(int index, int amount)
 	{
 		//TODO: Add assert
 
@@ -135,7 +134,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::remove(iterator beg, iterator end)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::remove(iterator beg, iterator end)
 	{
 		//TODO: Add assert
 
@@ -144,7 +143,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	void DynamicChildGroup<SlotType, HolderType>::clear()
+	void DynamicChildren<SlotType, HolderType>::clear()
 	{
 		if (m_pSlotArray->isEmpty())
 			return;
@@ -153,7 +152,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	void DynamicChildGroup<SlotType, HolderType>::moveToBack(int index)
+	void DynamicChildren<SlotType, HolderType>::moveToBack(int index)
 	{
 		//TODO: Assert
 
@@ -165,7 +164,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::moveToBack(iterator it)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::moveToBack(iterator it)
 	{
 		//TODO: Assert
 
@@ -178,7 +177,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	void DynamicChildGroup<SlotType, HolderType>::moveToFront(int index)
+	void DynamicChildren<SlotType, HolderType>::moveToFront(int index)
 	{
 		//TODO: Assert
 
@@ -190,7 +189,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::moveToFront(iterator it)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::moveToFront(iterator it)
 	{
 		//TODO: Assert
 
@@ -203,7 +202,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	void DynamicChildGroup<SlotType, HolderType>::moveBefore(int index, int sibling)
+	void DynamicChildren<SlotType, HolderType>::moveBefore(int index, int sibling)
 	{
 		//TODO: Assert
 
@@ -221,7 +220,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	SlotIterator<SlotType> DynamicChildGroup<SlotType, HolderType>::moveBefore(iterator it, iterator sibling)
+	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::moveBefore(iterator it, iterator sibling)
 	{
 		//TODO: Assert
 
@@ -242,4 +241,4 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_DYNAMICCHILDGROUP_IMPL_DOT_H
+#endif //WG_DYNAMICCHILDREN_IMPL_DOT_H

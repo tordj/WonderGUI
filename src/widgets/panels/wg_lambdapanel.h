@@ -82,8 +82,8 @@ namespace wg
 	{
 		friend class LambdaPanelChildren;
 		friend class HideableChildren<LambdaPanelSlot,LambdaPanel>;
-		friend class DynamicChildGroup<LambdaPanelSlot,LambdaPanel>;
-		friend class ChildGroup<LambdaPanelSlot,LambdaPanel>;
+		friend class DynamicChildren<LambdaPanelSlot,LambdaPanel>;
+		friend class Children<LambdaPanelSlot,LambdaPanel>;
 	
 	public:
 

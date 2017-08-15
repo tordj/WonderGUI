@@ -20,17 +20,17 @@
 
 =========================================================================*/
 
-#ifndef	WG_CHILDGROUP_IMPL_DOT_H
-#define	WG_CHILDGROUP_IMPL_DOT_H
+#ifndef	WG_CHILDREN_IMPL_DOT_H
+#define	WG_CHILDREN_IMPL_DOT_H
 #pragma once
 
 
-#define INSTANTIATE_CHILDGROUP(SlotType,HolderType)		template class ChildGroup< ##SlotType, ##HolderType >;
+#define INSTANTIATE_CHILDREN(SlotType,HolderType)		template class Children< ##SlotType, ##HolderType >;
 
 namespace wg
 {
 
 } // namespace wg
 
-#endif //WG_CHILDGROUP_IMPL_DOT_H
+#endif //WG_CHILDREN_IMPL_DOT_H
 

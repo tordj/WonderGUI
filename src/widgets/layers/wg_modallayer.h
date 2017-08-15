@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_dynamicchildgroup.h>
+#include <wg_dynamicchildren.h>
 
 namespace wg 
 {
@@ -55,12 +55,12 @@ namespace wg
 	
 	//____ ModalChildren ________________________________________________________
 
-	class ModalChildren : public DynamicChildGroup<ModalSlot,ModalLayer>
+	class ModalChildren : public DynamicChildren<ModalSlot,ModalLayer>
 	{
 	public:
 		/** @private */
 
-		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildGroup<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
+		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildren<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -107,7 +107,7 @@ namespace wg
 	
 	//____ ModalLayer __________________________________________________________
 	
-	class ModalLayer : public Layer, protected DynamicChildGroupHolder
+	class ModalLayer : public Layer, protected DynamicChildrenHolder
 	{
 		friend class ModalChildren;
 	

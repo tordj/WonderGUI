@@ -25,14 +25,14 @@
 #pragma once
 
 #include <wg_slot.h>
-#include <wg_dynamicchildgroup.h>
+#include <wg_dynamicchildren.h>
 
 namespace wg
 {
 	
 	//____ HideableChildrenHolder ____________________________________________________________
 
-	class HideableChildrenHolder : public DynamicChildGroupHolder		/** @private */
+	class HideableChildrenHolder : public DynamicChildrenHolder		/** @private */
 	{
 		virtual void	_hideSlots(Slot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(Slot * pSlot, int nb) = 0;
@@ -41,16 +41,16 @@ namespace wg
 	
 	//____ HideableChildren ________________________________________________________
 
-	template<class SlotType, class HolderType> class HideableChildren : public DynamicChildGroup<SlotType,HolderType>
+	template<class SlotType, class HolderType> class HideableChildren : public DynamicChildren<SlotType,HolderType>
 	{
 	public:
-		using		iterator = SlotIterator<SlotType>;
-		using		ChildGroup<SlotType,HolderType>::m_pSlotArray;
-		using		ChildGroup<SlotType,HolderType>::m_pHolder;
+		using		iterator = ChildIterator<SlotType>;
+		using		Children<SlotType,HolderType>::m_pSlotArray;
+		using		Children<SlotType,HolderType>::m_pHolder;
 
 		/** @private */
 
-		HideableChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : DynamicChildGroup<SlotType,HolderType>(pSlotArray, pHolder) {}
+		HideableChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : DynamicChildren<SlotType,HolderType>(pSlotArray, pHolder) {}
 
 		//.____ Appearance ____________________________________________________
 

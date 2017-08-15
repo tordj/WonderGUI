@@ -34,9 +34,9 @@
 
 namespace wg
 {
-//	using		iterator = SlotIterator<SlotType>;
-//	using		ChildGroup<SlotType, HolderType>::m_pSlotArray;
-//	using		ChildGroup<SlotType, HolderType>::m_pHolder;
+//	using		iterator = ChildIterator<SlotType>;
+//	using		Children<SlotType, HolderType>::m_pSlotArray;
+//	using		Children<SlotType, HolderType>::m_pHolder;
 
 	template < class SlotType, class HolderType>
 	bool PaddedChildren<SlotType, HolderType>::setPadding(int index, Border padding)
