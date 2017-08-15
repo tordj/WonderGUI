@@ -31,7 +31,7 @@
 
 namespace wg
 {
-	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaPanel)
+	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaChildrenHolder)
 
 	template class SlotArray<LambdaPanelSlot>;
 
@@ -43,7 +43,7 @@ namespace wg
 		//TODO: Assert
 
 		LambdaPanelSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -54,7 +54,7 @@ namespace wg
 		//TODO: Assert
 
 		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -65,7 +65,7 @@ namespace wg
 		//TODO: Assert
 
 		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);

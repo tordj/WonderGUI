@@ -49,6 +49,13 @@ namespace wg
 		Rect			geo;				// Widgets geo relative parent	
 	};
 
+	//____ LambdaChildrenHolder _________________________________________________
+
+	class LambdaChildrenHolder : public HideableChildrenHolder		/** @private */
+	{
+	public:
+	};
+
 
 	class LambdaPanelChildren;
 	typedef	StrongInterfacePtr<LambdaPanelChildren>	LambdaPanelChildren_p;
@@ -56,12 +63,12 @@ namespace wg
 
 	//____ LambdaPanelChildren ________________________________________________________
 
-	class LambdaPanelChildren : public HideableChildren<LambdaPanelSlot,LambdaPanel>
+	class LambdaPanelChildren : public HideableChildren<LambdaPanelSlot,LambdaChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		LambdaPanelChildren( SlotArray<LambdaPanelSlot> * pSlotArray, LambdaPanel * pHolder ) : HideableChildren<LambdaPanelSlot,LambdaPanel>(pSlotArray,pHolder) {}
+		LambdaPanelChildren( SlotArray<LambdaPanelSlot> * pSlotArray, LambdaChildrenHolder * pHolder ) : HideableChildren<LambdaPanelSlot,LambdaChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Content _______________________________________________________
 
@@ -78,12 +85,8 @@ namespace wg
 
 	//____ LambdaPanel _________________________________________________________
 	
-	class LambdaPanel : public Panel
+	class LambdaPanel : public Panel, protected LambdaChildrenHolder
 	{
-		friend class LambdaPanelChildren;
-		friend class HideableChildren<LambdaPanelSlot,LambdaPanel>;
-		friend class DynamicChildren<LambdaPanelSlot,LambdaPanel>;
-		friend class Children<LambdaPanelSlot,LambdaPanel>;
 	
 	public:
 
@@ -133,6 +136,8 @@ namespace wg
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot * pSlot, int nb );
 		void		_unhideSlots( Slot * pSlot, int nb );
+		Object *	_object() { return this; }
+		WidgetHolder *	_widgetHolder() { return this; }
 
 		// Overloaded from WidgetHolder
 

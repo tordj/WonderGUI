@@ -172,7 +172,8 @@ namespace wg
 
 		void			_selectSlots(Slot * pSlot, int nb);
 		void			_unselectSlots(Slot * pSlot, int nb);
-
+		Object *		_object() { return this; }
+		WidgetHolder *	_widgetHolder() { return this; }
 
 		// Overloaded from List
 

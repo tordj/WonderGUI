@@ -39,6 +39,15 @@ namespace wg
 //	typedef	WeakInterfacePtr<Children<class SlotType, class HolderType>,Interface_wp>		Children_wp;
 
 
+	//____ ChildrenHolder ___________________________________________________
+
+	class ChildrenHolder /** @private */
+	{
+	public:
+		virtual Object * _object() = 0;
+	};
+
+
 	//____ Children _________________________________________________________
 
 	template<class SlotType, class HolderType> class Children : public Interface
@@ -74,7 +83,7 @@ namespace wg
 
 		inline int index(Widget * pChild) const
 		{
-			if( pChild->_holder() == m_pHolder )
+			if( pChild->_holder() && pChild->_holder()->_childParent() == m_pHolder->_object() )
 				return m_pSlotArray->index(static_cast<SlotType*>(pChild->_slot()));
 
 			return -1;
@@ -89,7 +98,7 @@ namespace wg
 		iterator	end() const { return iterator(m_pSlotArray->end()); }
 
 	protected:
-		Object *	_object() const {	return m_pHolder; }
+		Object *	_object() const {	return m_pHolder->_object(); }
 
 		SlotArray<SlotType> *	m_pSlotArray;
 		HolderType *			m_pHolder;

@@ -54,14 +54,23 @@ namespace wg
 	typedef	StrongInterfacePtr<StackPanelChildren>	StackPanelChildren_p;
 	typedef	WeakInterfacePtr<StackPanelChildren>	StackPanelChildren_wp;
 
+
+	//____ StackPanelChildrenHolder __________________________________________________
+
+	class StackPanelChildrenHolder : public PaddedSlotsHolder			/** @private */
+	{
+	public:
+		virtual void		_childRequestRender(Slot * pSlot) = 0;
+	};
+
 	//____ StackPanelChildren ________________________________________________________
 
-	class StackPanelChildren : public PaddedChildren<StackPanelSlot,StackPanel>
+	class StackPanelChildren : public PaddedChildren<StackPanelSlot,StackPanelChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanel * pHolder ) : PaddedChildren<StackPanelSlot,StackPanel>(pSlotArray,pHolder) {}
+		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanelChildrenHolder * pHolder ) : PaddedChildren<StackPanelSlot,StackPanelChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -94,13 +103,8 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected PaddedSlotsHolder
+	class StackPanel : public Panel, protected StackPanelChildrenHolder
 	{
-		friend class StackPanelChildren;
-		friend class PaddedChildren<StackPanelSlot,StackPanel>;
-		friend class HideableChildren<StackPanelSlot,StackPanel>;
-		friend class DynamicChildren<StackPanelSlot,StackPanel>;
-		friend class Children<StackPanelSlot,StackPanel>;
 
 	public:
 
@@ -153,6 +157,8 @@ namespace wg
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( Slot *, int nb, Border padding );
+		Object *	_object() { return this; }
+		WidgetHolder *	_widgetHolder() { return this; }
 
 
 		// Overloaded from WidgetHolder

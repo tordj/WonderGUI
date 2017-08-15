@@ -29,7 +29,7 @@
 
 namespace wg 
 {
-	INSTANTIATE_PADDEDCHILDREN(StackPanelSlot, StackPanel)
+	INSTANTIATE_PADDEDCHILDREN(StackPanelSlot, StackPanelChildrenHolder)
 
 	template class SlotArray<StackPanelSlot>;
 
@@ -38,15 +38,14 @@ namespace wg
 	
 	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return;
+		//TODO: Assert!
 
 		_setSizePolicy( m_pSlotArray->slot(index), policy );
 	}
 
 	void StackPanelChildren::setSizePolicy( iterator it, SizePolicy2D policy )
 	{
-		//TODO: Assert
+		//TODO: Assert!
 
 		_setSizePolicy( it._slot(), policy );
 	}
@@ -54,29 +53,29 @@ namespace wg
 	
 	SizePolicy2D StackPanelChildren::sizePolicy( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return SizePolicy2D::Default;
+		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->sizePolicy;
 	}
 
 	SizePolicy2D StackPanelChildren::sizePolicy( iterator it ) const
 	{
+		//TODO: Assert!
+
 		return it._slot()->sizePolicy;
 	}
 
 
 	void StackPanelChildren::setOrigo( int index, Origo origo )
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return;
+		//TODO: Assert!
 
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
 	void StackPanelChildren::setOrigo( iterator it, Origo origo )
 	{
-		//TODO: Assert
+		//TODO: Assert!
 
 		_setOrigo( it._slot(), origo );
 	}
@@ -84,15 +83,14 @@ namespace wg
 	
 	Origo StackPanelChildren::origo( int index ) const
 	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return Origo::Center;
+		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
 	Origo StackPanelChildren::origo( iterator it ) const
 	{
-		//TODO: Assert
+		//TODO: Assert!
 
 		return it._slot()->origo;		
 	}

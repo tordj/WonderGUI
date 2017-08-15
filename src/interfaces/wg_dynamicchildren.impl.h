@@ -38,7 +38,7 @@ namespace wg
 	ChildIterator<SlotType> DynamicChildren<SlotType, HolderType>::add(Widget * pWidget)
 	{
 		SlotType * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -51,7 +51,7 @@ namespace wg
 		SlotType * pSlot = m_pSlotArray->add(amount);
 
 		for (int i = 0; i < amount; i++)
-			pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
+			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
@@ -62,7 +62,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(index);
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -73,7 +73,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(pos._slot());
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -86,7 +86,7 @@ namespace wg
 		SlotType * pSlot = m_pSlotArray->insert(index, amount);
 
 		for (int i = 0; i < amount; i++)
-			pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
+			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
@@ -99,7 +99,7 @@ namespace wg
 		SlotType * pSlot = m_pSlotArray->insert(pos._slot(), amount);
 
 		for (int i = 0; i < amount; i++)
-			pSlot[i].replaceWidget(m_pHolder, pWidgets[i]);
+			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}

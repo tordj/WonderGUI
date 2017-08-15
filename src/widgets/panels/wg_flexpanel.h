@@ -309,6 +309,8 @@ namespace wg
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( FlexPanelSlot *, int nb );
 		void		_unhideSlots( FlexPanelSlot *, int nb );
+		Object *	_object() { return this; }
+		WidgetHolder *	_widgetHolder() { return this; }
 
 		// Overloaded from WidgetHolder
 

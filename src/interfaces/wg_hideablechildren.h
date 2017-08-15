@@ -34,6 +34,7 @@ namespace wg
 
 	class HideableChildrenHolder : public DynamicChildrenHolder		/** @private */
 	{
+	public:
 		virtual void	_hideSlots(Slot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(Slot * pSlot, int nb) = 0;
 	};

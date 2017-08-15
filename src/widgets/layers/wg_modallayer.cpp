@@ -27,8 +27,14 @@
 #include <wg_base.h>
 #include <wg_slotarray.impl.h>
 
+#include <wg_dynamicchildren.h>
+#include <wg_dynamicchildren.impl.h>
+
+
 namespace wg 
 {
+	INSTANTIATE_DYNAMICCHILDREN(ModalSlot, ModalChildrenHolder)
+
 	template class SlotArray<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
@@ -45,7 +51,7 @@ namespace wg
 		pSlot->geo = geometry;
 		pSlot->origo = origo;
 
-		pSlot->replaceWidget(m_pHolder, pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}

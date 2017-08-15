@@ -34,6 +34,7 @@ namespace wg
 
 	class PaddedSlotsHolder : public HideableChildrenHolder  /** @private */
 	{
+	public:
 		virtual void	_repadSlots(Slot * pSlot, int nb, Border padding) = 0;
 	};
 

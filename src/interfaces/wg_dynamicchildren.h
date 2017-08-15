@@ -35,8 +35,11 @@ namespace wg
 
 	//____ DynamicChildrenHolder _________________________________________________________
 
-	class DynamicChildrenHolder		/** @private */
+	class DynamicChildrenHolder	: public ChildrenHolder	/** @private */
 	{
+	public:
+		virtual WidgetHolder* _widgetHolder() = 0;
+
 		virtual void	_didAddSlots( Slot * pSlot, int nb ) = 0;
 		virtual void	_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) = 0;
 		virtual void	_willRemoveSlots( Slot * pSlot, int nb ) = 0;

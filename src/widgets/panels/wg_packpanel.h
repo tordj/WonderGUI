@@ -48,19 +48,28 @@ namespace wg
 		Size			preferredSize;	// Cached padded preferred size from the child.
 	};
 	
-	
+
+	//____ PackChildrenHolder _________________________________________________
+
+	class PackChildrenHolder : public PaddedSlotsHolder		/** @private */
+	{
+	public:
+		virtual void		_refreshChildGeo() = 0;
+	};
+
+
 	class PackPanelChildren;
 	typedef	StrongInterfacePtr<PackPanelChildren>	PackPanelChildren_p;
 	typedef	WeakInterfacePtr<PackPanelChildren>	PackPanelChildren_wp;
-	
+
 	//____ PackPanelChildren ________________________________________________________
 
-	class PackPanelChildren : public PaddedChildren<PackPanelSlot,PackPanel>
+	class PackPanelChildren : public PaddedChildren<PackPanelSlot,PackChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackPanel * pHolder ) : PaddedChildren<PackPanelSlot,PackPanel>(pSlotArray,pHolder) {}
+		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackChildrenHolder * pHolder ) : PaddedChildren<PackPanelSlot,PackChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -82,13 +91,8 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class PackPanel : public Panel, protected PaddedSlotsHolder
+	class PackPanel : public Panel, protected PackChildrenHolder
 	{
-		friend class PackPanelChildren;
-		friend class PaddedChildren<PackPanelSlot,PackPanel>;
-		friend class HideableChildren<PackPanelSlot,PackPanel>;
-		friend class DynamicChildren<PackPanelSlot,PackPanel>;
-		friend class Children<PackPanelSlot,PackPanel>;
 	
 	public:
 
@@ -150,6 +154,9 @@ namespace wg
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( Slot *, int nb, Border padding );
+		Object *	_object() { return this; }
+		WidgetHolder *	_widgetHolder() { return this; }
+		void		_refreshChildGeo();
 
 		// Overloaded from WidgetHolder
 
@@ -170,7 +177,6 @@ namespace wg
 		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
 		void		_refreshAllWidgets();
-		void		_refreshChildGeo();
 		void		_updatePreferredSize();
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;

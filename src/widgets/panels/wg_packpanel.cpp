@@ -29,7 +29,7 @@
 
 namespace wg 
 {
-	INSTANTIATE_PADDEDCHILDREN(PackPanelSlot, PackPanel)
+	INSTANTIATE_PADDEDCHILDREN(PackPanelSlot, PackChildrenHolder)
 
 	template class SlotArray<PackPanelSlot>;
 

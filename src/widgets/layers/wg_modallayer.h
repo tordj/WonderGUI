@@ -49,18 +49,27 @@ namespace wg
 	};
 	
 	
+	
+	//____ ModalChildrenHolder _________________________________________________
+
+	class ModalChildrenHolder : public DynamicChildrenHolder		/** @private */
+	{
+	public:
+		virtual void	_refreshRealGeo(ModalSlot * pSlot) = 0;
+	};
+
 	class ModalChildren;
 	typedef	StrongInterfacePtr<ModalChildren>	ModalChildren_p;
 	typedef	WeakInterfacePtr<ModalChildren>	ModalChildren_wp;
-	
+
 	//____ ModalChildren ________________________________________________________
 
-	class ModalChildren : public DynamicChildren<ModalSlot,ModalLayer>
+	class ModalChildren : public DynamicChildren<ModalSlot,ModalChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalLayer * pHolder ) : DynamicChildren<ModalSlot,ModalLayer>(pSlotArray,pHolder) {}
+		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalChildrenHolder * pHolder ) : DynamicChildren<ModalSlot,ModalChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -107,7 +116,7 @@ namespace wg
 	
 	//____ ModalLayer __________________________________________________________
 	
-	class ModalLayer : public Layer, protected DynamicChildrenHolder
+	class ModalLayer : public Layer, protected ModalChildrenHolder
 	{
 		friend class ModalChildren;
 	
@@ -162,7 +171,8 @@ namespace wg
 		void			_didAddSlots(Slot * pSlot, int nb);
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void			_willRemoveSlots(Slot * pSlot, int nb);
-
+		Object *		_object() { return this;  }
+		WidgetHolder *	_widgetHolder() { return this; }
 
 		// Overloaded from Layer
 	
