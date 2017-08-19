@@ -57,7 +57,7 @@ namespace wg
 
 	//____ StackPanelChildrenHolder __________________________________________________
 
-	class StackPanelChildrenHolder : public PaddedSlotsHolder			/** @private */
+	class StackPanelChildrenHolder : public PaddedChildrenHolder			/** @private */
 	{
 	public:
 		virtual void		_childRequestRender(Slot * pSlot) = 0;
@@ -149,7 +149,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
-		// Overloaded from PaddedSlotsHolder
+		// Overloaded from PaddedChildrenHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);

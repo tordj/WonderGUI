@@ -31,7 +31,7 @@
 
 namespace wg
 {
-	INSTANTIATE_HIDEABLECHILDREN(FlexPanelSlot, FlexPanel)
+	INSTANTIATE_HIDEABLECHILDREN(FlexPanelSlot, FlexChildrenHolder)
 
 	template class SlotArray<FlexPanelSlot>;
 
@@ -55,7 +55,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder,pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->bPinned = true;
 		pSlot->topLeftPin = topLeft;
@@ -72,7 +72,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder,pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->placementGeo = geometry;
 		pSlot->origo = origo;
@@ -89,7 +89,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
-		pSlot->replaceWidget(m_pHolder,pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->bPinned = true;
 		pSlot->topLeftPin = topLeft;
@@ -106,7 +106,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
-		pSlot->replaceWidget(m_pHolder,pWidget);
+		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->placementGeo = geometry;
 		pSlot->origo = origo;
@@ -496,7 +496,7 @@ namespace wg
 		{
 			p->bPinned = true;
 
-			Size sz = m_pHolder->size();
+			Size sz = m_pHolder->_size();
 
 			p->topLeftPin = FlexPos(p->realGeo.x / (float)sz.w, p->realGeo.y / (float)sz.h);
 			p->bottomRightPin = FlexPos(p->realGeo.right() / (float)sz.w, p->realGeo.bottom() / (float)sz.h);
@@ -523,7 +523,7 @@ namespace wg
 			p->bPinned = false;
 			p->origo = origo;
 			p->hotspot = hotspot;
-			p->placementGeo = p->realGeo - origo.pos(m_pHolder->size()) + hotspot.pos(p->realGeo);
+			p->placementGeo = p->realGeo - origo.pos(m_pHolder->_size()) + hotspot.pos(p->realGeo);
 
 			m_pHolder->_refreshRealGeo(p);
 		}
@@ -826,8 +826,10 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void FlexPanel::_hideSlots( FlexPanelSlot * pSlot, int nb )
+	void FlexPanel::_hideSlots( Slot * _pSlot, int nb )
 	{
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == true )
@@ -840,8 +842,10 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void FlexPanel::_unhideSlots( FlexPanelSlot * pSlot, int nb )
+	void FlexPanel::_unhideSlots( Slot * _pSlot, int nb )
 	{
+		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pSlot[i].bVisible == false )

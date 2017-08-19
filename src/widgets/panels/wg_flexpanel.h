@@ -108,6 +108,17 @@ namespace wg
 		
 	};
 	
+
+	//____ FlexChildrenHolder ____________________________________________________
+
+	class FlexChildrenHolder : public HideableChildrenHolder
+	{
+	public:
+		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot) = 0;
+		virtual Size	_size() const = 0;
+
+	};
+
 	
 	class FlexPanelChildren;
 	typedef	StrongInterfacePtr<FlexPanelChildren>	FlexPanelChildren_p;
@@ -115,12 +126,12 @@ namespace wg
 	
 	//____ FlexPanelChildren ________________________________________________________
 
-	class FlexPanelChildren : public HideableChildren<FlexPanelSlot,FlexPanel>
+	class FlexPanelChildren : public HideableChildren<FlexPanelSlot,FlexChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexPanel * pHolder ) : HideableChildren<FlexPanelSlot,FlexPanel>(pSlotArray,pHolder) {}
+		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexChildrenHolder * pHolder ) : HideableChildren<FlexPanelSlot,FlexChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -253,12 +264,8 @@ namespace wg
 	 */
 	
 	
-	class FlexPanel : public Panel
+	class FlexPanel : public Panel, protected FlexChildrenHolder
 	{
-		friend class FlexPanelChildren;
-		friend class HideableChildren<FlexPanelSlot,FlexPanel>;
-		friend class DynamicChildren<FlexPanelSlot,FlexPanel>;
-		friend class Children<FlexPanelSlot,FlexPanel>;
 	
 	public:
 
@@ -307,10 +314,12 @@ namespace wg
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( FlexPanelSlot *, int nb );
-		void		_unhideSlots( FlexPanelSlot *, int nb );
+		void		_hideSlots( Slot *, int nb );
+		void		_unhideSlots( Slot *, int nb );
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
+		void		_refreshRealGeo(FlexPanelSlot * pSlot);
+		Size		_size() const { return m_size; }
 
 		// Overloaded from WidgetHolder
 
@@ -332,7 +341,6 @@ namespace wg
 
 		void		_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot );
 
-		void		_refreshRealGeo( FlexPanelSlot * pSlot );
 		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 	
 	

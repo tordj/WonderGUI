@@ -51,7 +51,7 @@ namespace wg
 
 	//____ PackChildrenHolder _________________________________________________
 
-	class PackChildrenHolder : public PaddedSlotsHolder		/** @private */
+	class PackChildrenHolder : public PaddedChildrenHolder		/** @private */
 	{
 	public:
 		virtual void		_refreshChildGeo() = 0;

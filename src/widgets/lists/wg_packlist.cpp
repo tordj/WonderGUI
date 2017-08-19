@@ -31,7 +31,7 @@
 
 namespace wg 
 {
-	INSTANTIATE_SELECTABLECHILDREN(PackListSlot, PackList)
+	INSTANTIATE_SELECTABLECHILDREN(PackListSlot, PackListChildrenHolder)
 
 	template class SlotArray<PackListSlot>;
 
@@ -46,7 +46,7 @@ namespace wg
 //		if (!pWidget)
 //			return false;
 
-		if (m_pSlotArray->isEmpty() || !m_pHolder->m_sortFunc)
+		if (m_pSlotArray->isEmpty() || !m_pHolder->_hasSortFunction())
 			return add(pWidget);
 
 		int index = m_pHolder->_getInsertionPoint(pWidget);

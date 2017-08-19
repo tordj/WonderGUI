@@ -35,6 +35,7 @@ namespace wg
 
 	class SelectableChildrenHolder : public HideableChildrenHolder		/** @private */
 	{
+	public:
 		virtual void	_selectSlots(Slot * pSlot, int nb) = 0;
 		virtual void	_unselectSlots(Slot * pSlot, int nb) = 0;
 	};

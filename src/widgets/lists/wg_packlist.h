@@ -52,6 +52,16 @@ namespace wg
 		int				prefBreadth;		// Prefereed breadth of this widget.
 	};
 
+	//____ PackListChildrenHolder() ___________________________________________
+
+	class PackListChildrenHolder : public SelectableChildrenHolder
+	{
+	public:
+		virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
+		virtual bool	_sortEntries() = 0;
+		virtual bool	_hasSortFunction() const = 0;
+	};
+
 
 	class PackListChildren;
 	typedef	StrongInterfacePtr<PackListChildren>	PackListChildren_p;
@@ -59,13 +69,13 @@ namespace wg
 
 	//____ PackListChildren ______________________________________________________
 
-	class PackListChildren : public SelectableChildren<PackListSlot, PackList>
+	class PackListChildren : public SelectableChildren<PackListSlot, PackListChildrenHolder>
 	{
 	public:
 
 		/** @private */
 
-		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackList * pHolder) : SelectableChildren<PackListSlot, PackList>(pSlotArray, pHolder) {}
+		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackListChildrenHolder * pHolder) : SelectableChildren<PackListSlot, PackListChildrenHolder>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -93,7 +103,7 @@ namespace wg
 	 * 
 	 */
 
-	class PackList : public List
+	class PackList : public List, protected PackListChildrenHolder
 	{
 		friend class PackListChildren;
 		friend class SelectableChildren<PackListSlot, PackList>;
@@ -161,7 +171,7 @@ namespace wg
 		Size			_windowPadding() const;
 
 
-		// Overloaded from SelectableChildrenHolder
+		// Overloaded from PackListChildrenHolder
 
 		void			_didAddSlots(Slot * pSlot, int nb);
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
@@ -174,6 +184,10 @@ namespace wg
 		void			_unselectSlots(Slot * pSlot, int nb);
 		Object *		_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
+		int				_getInsertionPoint(const Widget * pWidget) const;
+		bool			_hasSortFunction() const { return m_sortFunc != nullptr; }
+		bool			_sortEntries();
+
 
 		// Overloaded from List
 
@@ -228,14 +242,12 @@ namespace wg
 		void			_updateChildOfsFrom( PackListSlot* pSlot );
 	
 	
-		int				_getInsertionPoint( const Widget * pWidget ) const;
 		void			_getChildGeo( Rect& geo, const PackListSlot * pSlot ) const;
 		int				_getEntryAt( int pixelofs ) const;
 		Rect			_headerGeo() const;
 	
 		void			_refreshHeader();
 		void			_refreshList();
-		bool			_sortEntries();
 	
 		Size			_paddedLimitedPreferredSize( Widget * pChild );
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
