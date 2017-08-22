@@ -187,7 +187,7 @@ namespace wg
 				break;
 			}
 	
-			case Origo::East:						// Centered left of launcherGeo.
+			case Origo::West:						// Centered left of launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.left() - geo.w;
 				geo.y = pSlot->launcherGeo.top() + pSlot->launcherGeo.h/2 - geo.h/2;
@@ -201,7 +201,7 @@ namespace wg
 				break;
 			}
 	
-			case Origo::West:						// Centered right of launcherGeo.
+			case Origo::East:						// Centered right of launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.right();
 				geo.y = pSlot->launcherGeo.top() + pSlot->launcherGeo.h/2 - geo.h/2;
