@@ -28,8 +28,8 @@
 #include <wg_hideablechildren.impl.h>
 
 #define INSTANTIATE_PADDEDCHILDREN(SlotType,HolderType) \
-	INSTANTIATE_HIDEABLECHILDREN( ##SlotType, ##HolderType ) \
-	template class PaddedChildren< ##SlotType, ##HolderType >;
+	INSTANTIATE_HIDEABLECHILDREN( SlotType, HolderType ) \
+	template class PaddedChildren< SlotType, HolderType >;
 
 
 namespace wg

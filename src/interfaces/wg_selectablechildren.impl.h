@@ -28,8 +28,8 @@
 #include <wg_hideablechildren.impl.h>
 
 #define INSTANTIATE_SELECTABLECHILDREN(SlotType,HolderType) \
-	INSTANTIATE_HIDEABLECHILDREN( ##SlotType, ##HolderType ) \
-	template class SelectableChildren< ##SlotType, ##HolderType >;
+	INSTANTIATE_HIDEABLECHILDREN( SlotType, HolderType ) \
+	template class SelectableChildren< SlotType, HolderType >;
 
 
 namespace wg
