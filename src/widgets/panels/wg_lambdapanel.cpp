@@ -71,6 +71,40 @@ namespace wg
 		return iterator(pSlot);
 	}
 
+	void LambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	{
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		pSlot->pFunc = func;
+	}
+
+	void LambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	{
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		pSlot->pFunc = func;
+	}
+
+	std::function<Rect(Widget * pWidget, Size parentSize)> LambdaPanelChildren::function(int index) const
+	{
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		return pSlot->pFunc;
+	}
+
+	std::function<Rect(Widget * pWidget, Size parentSize)> LambdaPanelChildren::function(iterator pos) const
+	{
+		//TODO: Assert
+
+		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		return pSlot->pFunc;
+	}
+
+
+
 	//____ Constructor ____________________________________________________________
 
 	LambdaPanel::LambdaPanel() : children(&m_children,this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(INT_MAX,INT_MAX)
@@ -291,6 +325,23 @@ namespace wg
 			}
 		}	
 	}
+
+
+	//____ _updateSlotGeo() ________________________________________________________
+
+	void LambdaPanel::_updateSlotGeo(Slot * _pSlot, int nb)
+	{
+		auto pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+
+		for (int i = 0; i < nb; i++)
+		{
+			_updateGeo(&pSlot[i]);
+			if (pSlot[i].bVisible == false)
+				_onRequestRender(pSlot[i].geo, pSlot);
+		}
+	}
+
+
 
 	//____ _didMoveSlots() ________________________________________________________
 

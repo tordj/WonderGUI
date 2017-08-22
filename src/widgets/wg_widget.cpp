@@ -35,8 +35,8 @@ namespace wg
 	//____ Constructor ____________________________________________________________
 	
 	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
-						m_markOpacity( 1 ), m_bOpaque(false),
-						m_bTabLock(false), m_bPressed(false), m_size(256,256)
+						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
+						 m_bPressed(false), m_bSelectable(true), m_size(256,256)
 	{
 	}
 	
@@ -138,7 +138,14 @@ namespace wg
 			_setState(s);
 		}
 	}
-	
+
+	//____ setSelectable() ____________________________________________________
+
+	void Widget::setSelectable(bool bSelectable)
+	{
+		m_bSelectable = bSelectable;
+	}
+
 	//____ markTest() _____________________________________________________________
 	/**
 	 * @brief Check if specified coordinate is inside or outside of widget.

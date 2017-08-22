@@ -67,7 +67,6 @@ namespace wg
 	
 		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
 
-//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
 		inline Widget* operator->() const { return m_pSlot->pWidget; }
 
 		//.____ Content _______________________________________________________

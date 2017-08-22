@@ -54,6 +54,7 @@ namespace wg
 	class LambdaChildrenHolder : public HideableChildrenHolder		/** @private */
 	{
 	public:
+		virtual void		_updateSlotGeo(Slot * pSlot, int nb) = 0;
 	};
 
 
@@ -76,6 +77,14 @@ namespace wg
 
 		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
+
+		//.____ Geometry ______________________________________________________
+
+		void		setFunction( int index, std::function<Rect(Widget * pWidget, Size parentSize)> func);
+		void		setFunction( iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func);
+
+		std::function<Rect(Widget * pWidget, Size parentSize)> function(int index) const;
+		std::function<Rect(Widget * pWidget, Size parentSize)> function(iterator pos) const;
 
 		//.____ Misc __________________________________________________________
 
@@ -136,6 +145,7 @@ namespace wg
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot * pSlot, int nb );
 		void		_unhideSlots( Slot * pSlot, int nb );
+		void		_updateSlotGeo(Slot * pSlot, int nb);
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
 

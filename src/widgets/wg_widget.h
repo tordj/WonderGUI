@@ -139,6 +139,9 @@ namespace wg
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const { return m_state.isEnabled(); }
 
+		void				setSelectable(bool bSelectable);
+		inline bool			isSelectable() const { return m_bSelectable; }
+
 		inline bool			grabFocus();
 		inline bool			releaseFocus();
 		inline bool			isFocused();
@@ -262,6 +265,7 @@ namespace wg
 	
 		bool			m_bOpaque;
 		bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
+		bool			m_bSelectable;	// Set if widget is allowed to be selected.
 	
 		State			m_state;
 		Size			m_size;
