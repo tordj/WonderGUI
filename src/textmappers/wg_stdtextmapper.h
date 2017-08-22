@@ -148,6 +148,7 @@ namespace wg
 		{
 			int nbLines;
 			Size preferredSize;
+			Size textSize;
 		};
 	
 		struct LineInfo
@@ -155,9 +156,9 @@ namespace wg
 			int offset;				// Line start as offset in characters from beginning of text.
 			int length;				// Length of line in characters, incl. line terminator,
 			int width;				// Width of line in pixels.
-			int height;				// Height of line in pixels.
-			int base;				// Offset for baseline from top of line in pixels.
-			int spacing;			// Offset from start of line to start of next line.
+			short height;			// Height of line in pixels.
+			short base;				// Offset for baseline from top of line in pixels.
+			short spacing;			// Offset from start of line to start of next line.
 		};
 	
 		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
@@ -166,16 +167,16 @@ namespace wg
 
 		int				_countFixedLines(const CharBuffer * pBuffer) const;
 		int				_countWrapLines(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
+		int				_calcMatchingHeight(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
 
 		void *			_reallocBlock( TextBaseItem * pItem, int lines );
 
 		void			_updateLineInfo(TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer );
 
-		void			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
-		void			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
+		Size			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
+		Size			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
 
 
-		bool   			_updatePreferredSize( TextBaseItem * pItem );
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
 		
 		inline BlockHeader *		_header( void * pBlock ) { return static_cast<BlockHeader*>(pBlock); }

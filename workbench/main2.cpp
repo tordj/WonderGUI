@@ -384,7 +384,7 @@ int main ( int argc, char** argv )
 	{
 		auto pSplit = SplitPanel::create();
 		pSplit->setSkin(ColorSkin::create(Color::Beige));
-		pSplit->setSplitFactor(0.2f);
+		pSplit->setSplitFactor(0.5f);
 		pSplit->setHandleSkin(pPressablePlateSkin);
 //		pSplit->setHandleThickness(10);
 //		pSplit->setOrientation(Orientation::Horizontal);
@@ -392,11 +392,11 @@ int main ( int argc, char** argv )
 
 		auto pMapper = StdTextMapper::create();
 		pMapper->setLineWrap(true);
-		pMapper->setAlignment(Origo::North);
+		pMapper->setAlignment(Origo::SouthEast);
 
 		TextEditor_p pText1 = TextEditor::create();
 		pText1->setSkin(ColorSkin::create(Color::SandyBrown));
-		pText1->text.set("Once upon a time in a land far, far away...");
+		pText1->text.set("Once upon a time in a land.");
 		pText1->text.setTextMapper(pMapper);
 
 		TextEditor_p pText2 = TextEditor::create();

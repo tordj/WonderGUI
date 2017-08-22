@@ -90,7 +90,6 @@ namespace wg
 		void * pBlock = _reallocBlock(pItem,nLines);
 		
 		_updateLineInfo( pItem, pBlock, pBuffer );
-		_updatePreferredSize( pItem );	
 	}
 	
 	//____ removeItem() _________________________________________________________
@@ -768,7 +767,6 @@ namespace wg
 		void * pBlock = _itemDataBlock(pItem);
 		
 		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
-		_updatePreferredSize( pItem );
 
 		_setItemDirty(pItem);
 	}
@@ -781,7 +779,6 @@ namespace wg
 		void * pBlock = _itemDataBlock(pItem);
 		
 		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
-		_updatePreferredSize( pItem );
 
 		_setItemDirty(pItem);
 	}
@@ -798,7 +795,6 @@ namespace wg
 			pBlock = _reallocBlock(pItem,nLines);
 		
 		_updateLineInfo( pItem, pBlock, pBuffer );
-		_updatePreferredSize( pItem );
 		_setItemDirty(pItem);
 	}
 	
@@ -1019,16 +1015,14 @@ namespace wg
 	
 	int StdTextMapper::matchingWidth( const TextBaseItem * pItem, int height ) const
 	{
-		return _header(_itemDataBlock(pItem))->preferredSize.w;
+		return	_header(_itemDataBlock(pItem))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
 	int StdTextMapper::matchingHeight( const TextBaseItem * pItem, int width ) const
 	{
-		//TODO: Implement correct calculation!
-		
-		return _header(_itemDataBlock(pItem))->preferredSize.h;
+		return _calcMatchingHeight(_charBuffer(pItem), _baseStyle(pItem), _state(pItem), width);
 	}
 	
 	//____ _countLines() ___________________________________________________________
@@ -1036,7 +1030,7 @@ namespace wg
 	int StdTextMapper::_countLines( TextBaseItem * pItem, const CharBuffer * pBuffer ) const
 	{
 		if (m_bLineWrap)
-		return _countWrapLines(pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+			return _countWrapLines(pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
 		else
 			return _countFixedLines(pBuffer);
 	}
@@ -1058,6 +1052,7 @@ namespace wg
 			pChars++;
 		}
 	}
+
 
 	//____ _countWrapLines() ________________________________________________
 
@@ -1156,6 +1151,7 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
+				pPrevGlyph = nullptr;
 			}
 			else
 			{
@@ -1172,6 +1168,7 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
+					pPrevGlyph = nullptr;
 
 				}
 				else
@@ -1190,38 +1187,9 @@ namespace wg
 		return nLines;
 	}
 
+	//____ _calcMatchingHeight() ________________________________________________
 
-
-
-	//____ _reallocBlock() _________________________________________________________
-	
-	void * StdTextMapper::_reallocBlock( TextBaseItem* pItem, int nLines )
-	{
-		void * pBlock = _itemDataBlock(pItem);
-		if( pBlock )
-			free( pBlock );
-			
-		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
-		_setItemDataBlock(pItem, pBlock);
-		((BlockHeader *)pBlock)->nbLines = nLines;
-		
-		return pBlock;
-	}
-	
-	
-	//____ _updateLineInfo() _______________________________________________________
-
-	void StdTextMapper::_updateLineInfo( TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer )
-	{
-		if (m_bLineWrap)
-			_updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
-		else
-			_updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
-	}
-
-	//____ _updateWrapLineInfo() ________________________________________________
-
-	void StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
+	int StdTextMapper::_calcMatchingHeight(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pChars = pBuffer->chars();
@@ -1229,6 +1197,7 @@ namespace wg
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
 
+		int totalHeight = 0;
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -1253,7 +1222,249 @@ namespace wg
 		int bpMaxDescend = 0;
 		int bpMaxDescendGap = 0;							// Including the line gap.
 
+															//
+		while (true)
+		{
+
+			if (pChars->styleHandle() != hCharStyle)
+			{
+
+				int oldFontSize = attr.size;
+
+				attr = baseAttr;
+				if (pChars->styleHandle() != 0)
+					pChars->stylePtr()->addToAttr(state, &attr);
+
+				if (pFont != attr.pFont || attr.size != oldFontSize)
+				{
+					pFont = attr.pFont;
+					pFont->setSize(attr.size);
+					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
+				}
+
+				int ascend = pFont->maxAscend();
+				if (ascend > maxAscend)
+					maxAscend = ascend;
+
+				int descend = pFont->maxDescend();
+				if (descend > maxDescend)
+					maxDescend = descend;
+
+				int descendGap = descend + pFont->lineGap();
+				if (descendGap > maxDescendGap)
+					maxDescendGap = descendGap;
+
+				spaceAdv = pFont->whitespaceAdvance();
+
+				if (pCaret)
+				{
+					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					eolCaretWidth = pCaret->eolWidth(eolCellSize);
+				}
+				else
+					eolCaretWidth = 0;
+
+				hCharStyle = pChars->styleHandle();
+			}
+
+			// TODO: Include handling of special characters
+			// TODO: Support sub/superscript.
+
+			pGlyph = _getGlyph(pFont.rawPtr(), pChars->code());
+
+			if (pGlyph)
+			{
+				if (pPrevGlyph)
+					width += pFont->kerning(pPrevGlyph, pGlyph);
+
+				potentialWidth += pGlyph->advance();
+				width = potentialWidth;
+			}
+			else if (pChars->code() == 32)
+				potentialWidth += spaceAdv;
+
+			pPrevGlyph = pGlyph;
+
+			// Handle end of line
+
+			if (pChars->isEndOfLine())
+			{
+				// Make sure we have space for eol caret
+
+				if (pCaret)
+				{
+					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					int w = pCaret->eolWidth(eolCellSize);
+					if (w > eolCellSize.w)
+						width += w - eolCellSize.w;
+				}
+
+				// Update totalHeight
+
+				totalHeight += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+
+				if (pChars->isEndOfText())
+					break;
+
+				// Prepare for next line
+
+				pChars++;			// Line terminator belongs to previous line.
+
+				width = 0;
+				potentialWidth = 0;
+				pBreakpoint = nullptr;
+				pPrevGlyph = nullptr;
+
+				if (pChars->styleHandle() == hCharStyle)
+				{
+					// Still need to reset these, don't include data from styles only on previous line.
+
+					maxAscend = pFont->maxAscend();
+					maxDescend = pFont->maxDescend();
+					maxDescendGap = maxDescend + pFont->lineGap();
+				}
+				else
+				{
+					maxAscend = 0;
+					maxDescend = 0;
+					maxDescendGap = 0;
+				}
+			}
+			else
+			{
+				if (width > maxLineWidth - eolCaretWidth && pBreakpoint != nullptr)
+				{
+					bpWidth += eolCaretWidth;
+
+					// Update totalHeight
+
+					totalHeight += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : bpMaxAscend + bpMaxDescendGap;
+
+					// Prepare for next line
+
+					pChars = pBreakpoint;
+
+					width = 0;
+					potentialWidth = 0;
+					pBreakpoint = nullptr;
+					pPrevGlyph = nullptr;
+
+					if (pChars->styleHandle() == hCharStyle)
+					{
+						// Still need to reset these, don't include data from styles only on previous line.
+
+						maxAscend = pFont->maxAscend();
+						maxDescend = pFont->maxDescend();
+						maxDescendGap = maxDescend + pFont->lineGap();
+					}
+					else
+					{
+						maxAscend = 0;
+						maxDescend = 0;
+						maxDescendGap = 0;
+					}
+				}
+				else
+				{
+					int code = pChars->code();
+					if (code == 32)
+					{
+						pBreakpoint = pChars + 1;
+						bpWidth = width;
+						bpMaxAscend = maxAscend;
+						bpMaxDescend = maxDescend;
+						bpMaxDescendGap = maxDescendGap;							// Including the line gap.
+					}
+
+					pChars++;
+				}
+			}
+		}
+		return totalHeight;
+	}
+
+
+
+	//____ _reallocBlock() _________________________________________________________
+	
+	void * StdTextMapper::_reallocBlock( TextBaseItem* pItem, int nLines )
+	{
+		void * pBlock = _itemDataBlock(pItem);
+		if( pBlock )
+			free( pBlock );
+			
+		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
+		_setItemDataBlock(pItem, pBlock);
+		((BlockHeader *)pBlock)->nbLines = nLines;
+		
+		return pBlock;
+	}
+	
+	
+	//____ _updateLineInfo() _______________________________________________________
+
+	void StdTextMapper::_updateLineInfo( TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer )
+	{
+		BlockHeader * pHeader = _header(_itemDataBlock(pItem));
+		Size preferredSize;
+
+
+		if (m_bLineWrap)
+		{
+			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
+
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
+			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+		}
+		else
+		{
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
+			pHeader->textSize = preferredSize;
+		}
+		
+
+		if (preferredSize != pHeader->preferredSize)
+		{
+			pHeader->preferredSize = preferredSize;
+			_requestItemResize(pItem);
+		}
+	}
+
+	//____ _updateWrapLineInfo() ________________________________________________
+
+	Size StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
+	{
+		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+		const Char * pChars = pBuffer->chars();
+
+		TextAttr		baseAttr;
+		pBaseStyle->exportAttr(state, &baseAttr);
+
+		Size size;
+
+		TextAttr		attr;
+		Font_p 			pFont;
+
+		TextStyle_h		hCharStyle = 0xFFFF;			// Force change on first character.
+
+		Glyph_p	pGlyph = nullptr;
+		Glyph_p	pPrevGlyph = nullptr;
+
+		int maxAscend = 0;
+		int maxDescend = 0;
+		int maxDescendGap = 0;							// Including the line gap.
+		int spaceAdv = 0;
+		int width = 0;
+		int potentialWidth = 0;
+		int eolCaretWidth = 0;
 		//
+
+		const Char * pBreakpoint = nullptr;
+		int bpWidth = 0;
+		int bpMaxAscend = 0;
+		int bpMaxDescend = 0;
+		int bpMaxDescendGap = 0;							// Including the line gap.
+
 
 		pLines->offset = pChars - pBuffer->chars();
 
@@ -1298,6 +1509,7 @@ namespace wg
 				else
 					eolCaretWidth = 0;
 
+				hCharStyle = pChars->styleHandle();
 			}
 
 			// TODO: Include handling of special characters
@@ -1342,6 +1554,13 @@ namespace wg
 				pLines->spacing = maxAscend + maxDescendGap;
 				pLines++;
 
+				// Update size
+
+				if (width > size.w)
+					size.w = width;
+
+				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+
 				if (pChars->isEndOfText())
 					break;
 
@@ -1353,8 +1572,17 @@ namespace wg
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
+				pPrevGlyph = nullptr;
 
-				if (pChars->styleHandle() != hCharStyle)
+				if (pChars->styleHandle() == hCharStyle)
+				{
+					// Still need to reset these, don't include data from styles only on previous line.
+
+					maxAscend = pFont->maxAscend();
+					maxDescend = pFont->maxDescend();
+					maxDescendGap = maxDescend + pFont->lineGap();
+				}
+				else
 				{
 					maxAscend = 0;
 					maxDescend = 0;
@@ -1377,6 +1605,13 @@ namespace wg
 					pLines->spacing = bpMaxAscend + bpMaxDescendGap;
 					pLines++;
 
+					// Update size
+
+					if (bpWidth > size.w)
+						size.w = bpWidth;
+
+					size.h += pChars->isEndOfText() ? bpMaxAscend + bpMaxDescend : bpMaxAscend + bpMaxDescendGap;
+
 					// Prepare for next line
 
 					pChars = pBreakpoint;
@@ -1385,8 +1620,17 @@ namespace wg
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
+					pPrevGlyph = nullptr;
 
-					if (pChars->styleHandle() != hCharStyle)
+					if (pChars->styleHandle() == hCharStyle)
+					{
+						// Still need to reset these, don't include data from styles only on previous line.
+
+						maxAscend = pFont->maxAscend();
+						maxDescend = pFont->maxDescend();
+						maxDescendGap = maxDescend + pFont->lineGap();
+					}
+					else
 					{
 						maxAscend = 0;
 						maxDescend = 0;
@@ -1409,22 +1653,24 @@ namespace wg
 				}
 			}
 		}
+		return size;
 	}
 
 
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	void StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+	Size StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pChars = pBuffer->chars();
-	
+
+		Size		size;
+
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr( state, &baseAttr );
-	
-	
+
 		TextAttr		attr;
 		Font_p 			pFont;
 	
@@ -1473,6 +1719,8 @@ namespace wg
 					maxDescendGap = descendGap;
 					
 				spaceAdv = pFont->whitespaceAdvance();
+
+				hCharStyle = pChars->styleHandle();
 			}
 
 
@@ -1516,7 +1764,16 @@ namespace wg
 				pLines->base = maxAscend;
 				pLines->spacing = maxAscend + maxDescendGap;
 				pLines++;			
-					
+
+				// Update size
+
+				if (width > size.w)
+					size.w = width;
+
+				size.h += pChars->isEndOfText() ? maxAscend + maxDescend : maxAscend + maxDescendGap;
+
+				//
+
 				if( pChars->isEndOfText() )
 					break;
 
@@ -1526,8 +1783,17 @@ namespace wg
 
 				pLines->offset = pChars - pBuffer->chars();
 				width = 0;
-				
-				if( pChars->styleHandle() != hCharStyle )
+				pPrevGlyph = nullptr;
+
+				if (pChars->styleHandle() == hCharStyle)
+				{
+					// Still need to reset these, don't include data from styles only on previous line.
+
+					maxAscend = pFont->maxAscend();
+					maxDescend = pFont->maxDescend();
+					maxDescendGap = maxDescend + pFont->lineGap();
+				}
+				else
 				{
 					maxAscend = 0;
 					maxDescend = 0;
@@ -1537,40 +1803,9 @@ namespace wg
 			else
 				pChars++;	
 		}
+		return size;
 	}
 		
-	//____ _updatePreferredSize() __________________________________________________	
-		
-	bool StdTextMapper::_updatePreferredSize( TextBaseItem * pItem )
-	{
-		Size size;
-		
-		void * pBlock = _itemDataBlock(pItem);
-		BlockHeader * pHeader = _header(pBlock);
-		LineInfo * pLines = _lineInfo(pBlock);	
-		
-		int i;
-		for( i = 0 ; i < pHeader->nbLines-1 ; i++ )
-		{
-			if( pLines[i].width > size.w )
-				size.w = pLines[i].width;
-			size.h += pLines[i].spacing;
-		}
-		
-		if( pLines[i].width > size.w )
-			size.w = pLines[i].width;
-		size.h += pLines[i].height;
-	
-		if( size != pHeader->preferredSize )
-		{
-			pHeader->preferredSize = size;
-			_requestItemResize( pItem );
-			
-			return true;
-		}
-	
-		return false;
-	}
 	
 	//____ _linePosX() _______________________________________________________________
 	
@@ -1621,11 +1856,11 @@ namespace wg
 			case Origo::West:
 			case Origo::Center:
 			case Origo::East:
-				return (itemHeight - pHeader->preferredSize.h) / 2;
+				return (itemHeight - pHeader->textSize.h) / 2;
 			case Origo::SouthWest:
 			case Origo::South:
 			case Origo::SouthEast:
-				return itemHeight - pHeader->preferredSize.h;
+				return itemHeight - pHeader->textSize.h;
 		}	
 	}
 
