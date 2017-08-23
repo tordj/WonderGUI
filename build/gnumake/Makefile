@@ -4,11 +4,12 @@
 #
 # EXTERNAL DEPENDENCIES:
 #
-# WonderGUI by default uses FreeType2 to render text and therefore has a
-# dependency on the FreeType2 development package _UNLESS_ you remove
-# the WG_USE_FREETYPE define from src/wg_userdefines.h.
+# The WonderGUI library itself has no dependencies.
 #
-# Most examples have a dependency on SDL2 and SDL2_Image, but wondergui itself does not.
+# The freetype support library naturally has a dependency on freetype2.
+# The opengl support library has a dependency on openGL.
+#
+# Most examples have a dependency on SDL2 and SDL2_Image.
 #
 #-------------------------------------------------------------------------------------------
 #
@@ -16,9 +17,11 @@
 #
 # default   Builds the wondergui library, the software gfxdevice and all example files
 #			that only depend on the software gfxdevice, FreeType2 and SDL2.
-# all  	    Builds the wondergui library, all gfxdevices and all examples.
+# all  	    Builds the wondergui library, all gfxdevices, fontsystems and all examples.
 # lib 		Just builds the wondergui library.
 # softgfx   Just builds the software gfxdevice library.
+# glgfx     Just builds the openGL gfxdevice library.
+# freetype  Just builds the freetype fontsystem library.
 # examples  Builds all the examples, which through dependencies probably builds everything.
 # clean		Removes all temporary files and output files.
 #
@@ -63,9 +66,9 @@ DEPDIR = deps
 CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/items/ -I../../src/interfaces/   \
   -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/textmappers/ -I../../src/valueformatters/ \
   -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
-  -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/
+  -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/fonts/freetype/
 
-VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/items:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/items:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
 
 BASE = wg_anim.o \
   wg_base.o \
@@ -87,13 +90,11 @@ BASE = wg_anim.o \
   wg_mempool.o \
   wg_memstack.o \
   wg_msg.o \
-  wg_msgfunc.o \
   wg_msglogger.o \
   wg_msgrouter.o \
   wg_nullgfxdevice.o \
   wg_object.o \
   wg_patches.o \
-  wg_pointers.o \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
@@ -105,10 +106,10 @@ BASE = wg_anim.o \
   wg_textstylemanager.o \
   wg_texttool.o \
   wg_togglegroup.o \
-  wg_util.o \
-  wg_vectorfont.o
+  wg_util.o
 
 INTERFACES = wg_columnheader.o \
+  wg_interface.o \
   wg_modvalue.o \
   wg_slidespan.o \
   wg_span.o \
@@ -174,10 +175,12 @@ LISTS = wg_list.o \
   wg_packlist.o 
 
 PANELS = wg_flexpanel.o \
+  wg_lambdapanel.o \
   wg_packpanel.o \
   wg_panel.o \
   wg_rootpanel.o \
   wg_scrollpanel.o \
+  wg_splitpanel.o \
   wg_stackpanel.o
 
 lib_files = $(BASE) $(INTERFACES) $(ITEMS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
@@ -186,25 +189,31 @@ softgfx_files = wg_softgfxdevice.o wg_softsurface.o wg_softsurfacefactory.o
 
 glgfx_files = wg_glgfxdevice.o wg_glsurface.o wg_glsurfacefactory.o
 
+freetype_files = wg_freetypefont.o
+
 default : lib softgfx example01
-all : lib softgfx examples
+all : lib softgfx glgfx freetype examples
 lib : libwondergui.a
-softgfx : libgfxdevice_software.a
-glgfx : libgfxdevice_opengl.a
+softgfx : libwg_gfx_software.a
+glgfx : libwg_gfx_opengl.a
+freetype : libwg_font_freetype.a
 examples : example01
 
 
 libwondergui.a : $(lib_files)
 	ar rcu $(OUTDIR)/libwondergui.a $(lib_files:%.o=$(OBJDIR)/%.o)
 			
-libgfxdevice_software.a : $(softgfx_files)
-	ar rcu $(OUTDIR)/libgfxdevice_software.a $(softgfx_files:%.o=$(OBJDIR)/%.o)
+libwg_gfx_software.a : $(softgfx_files)
+	ar rcu $(OUTDIR)/libwg_gfx_software.a $(softgfx_files:%.o=$(OBJDIR)/%.o)
 
-libgfxdevice_opengl.a : $(glgfx_files)
-	ar rcu $(OUTDIR)/libgfxdevice_opengl.a $(glgfx_files:%.o=$(OBJDIR)/%.o)
+libwg_gfx_opengl.a : $(glgfx_files)
+	ar rcu $(OUTDIR)/libwg_gfx_opengl.a $(glgfx_files:%.o=$(OBJDIR)/%.o)
 
-example01 : libwondergui.a libgfxdevice_software.a example01.o
-	$(CXX) -o $(OUTDIR)/example01 $(OBJDIR)/example01.o -L$(OUTDIR) -lSDL2 -lgfxdevice_software -lwondergui -lfreetype
+libwg_font_freetype.a : $(freetype_files)
+	ar rcu $(OUTDIR)/libwg_font_freetype.a $(freetype_files:%.o=$(OBJDIR)/%.o)
+
+example01 : libwondergui.a libwg_gfx_software.a example01.o
+	$(CXX) -o $(OUTDIR)/example01 $(OBJDIR)/example01.o -L$(OUTDIR) -lSDL2 -lwg_gfx_software -lwondergui -lfreetype
 
 .PHONY : clean init
 
