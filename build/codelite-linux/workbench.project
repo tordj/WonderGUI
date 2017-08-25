@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="workbench" InternalType="Console">
+<CodeLite_Project Name="workbench" InternalType="Console" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
       <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
@@ -42,6 +42,7 @@
     <Project Name="gfxdevice_software"/>
     <Project Name="wondergui"/>
     <Project Name="gfxdevice_opengl"/>
+    <Project Name="font_freetype"/>
   </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -72,6 +73,7 @@
         <IncludePath Value="../../bench/"/>
         <IncludePath Value="../../src/gfxdevices/software/"/>
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
+        <IncludePath Value="../../src/fonts/freetype/"/>
       </Compiler>
       <Linker Options="" Required="yes">
         <LibraryPath Value="./Debug/"/>
@@ -79,6 +81,7 @@
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
         <Library Value="gfxdevice_opengl"/>
+        <Library Value="font_freetype"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
         <Library Value="GL"/>
@@ -144,6 +147,7 @@
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
         <Library Value="gfxdevice_opengl"/>
+        <Library Value="font_freetype"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
         <Library Value="GL"/>

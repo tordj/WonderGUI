@@ -25,7 +25,7 @@
 #pragma once
 
 
-#define INSTANTIATE_CHILDREN(SlotType,HolderType)		template class Children< ##SlotType, ##HolderType >;
+#define INSTANTIATE_CHILDREN(SlotType,HolderType)		template class Children< SlotType, HolderType >;
 
 namespace wg
 {

@@ -83,6 +83,8 @@
       <File Name="../../src/widgets/panels/wg_stackpanel.h"/>
       <File Name="../../src/widgets/panels/wg_lambdapanel.h"/>
       <File Name="../../src/widgets/panels/wg_lambdapanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_splitpanel.cpp"/>
+      <File Name="../../src/widgets/panels/wg_splitpanel.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="lists">
       <File Name="../../src/widgets/lists/wg_list.cpp"/>
@@ -105,9 +107,6 @@
     <File Name="../../src/widgets/wg_lineeditor.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
-    <File Name="../../src/items/wg_item.h"/>
-    <File Name="../../src/items/wg_spanitem.cpp"/>
-    <File Name="../../src/items/wg_spanitem.h"/>
     <File Name="../../src/items/wg_columnheaderitem.cpp"/>
     <File Name="../../src/items/wg_columnheaderitem.h"/>
     <File Name="../../src/items/wg_edittextitem.cpp"/>
@@ -116,28 +115,41 @@
     <File Name="../../src/items/wg_editvalueitem.h"/>
     <File Name="../../src/items/wg_iconitem.cpp"/>
     <File Name="../../src/items/wg_iconitem.h"/>
+    <File Name="../../src/items/wg_item.h"/>
     <File Name="../../src/items/wg_modvalueitem.cpp"/>
     <File Name="../../src/items/wg_modvalueitem.h"/>
+    <File Name="../../src/items/wg_spanitem.cpp"/>
+    <File Name="../../src/items/wg_spanitem.h"/>
+    <File Name="../../src/items/wg_textbaseitem.cpp"/>
+    <File Name="../../src/items/wg_textbaseitem.h"/>
     <File Name="../../src/items/wg_textitem.cpp"/>
     <File Name="../../src/items/wg_textitem.h"/>
     <File Name="../../src/items/wg_valueitem.cpp"/>
     <File Name="../../src/items/wg_valueitem.h"/>
-    <File Name="../../src/items/wg_textbaseitem.h"/>
-    <File Name="../../src/items/wg_textbaseitem.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
-    <File Name="../../src/interfaces/wg_childentry.h"/>
-    <File Name="../../src/interfaces/wg_childgroup.h"/>
+    <File Name="../../src/interfaces/wg_child.h"/>
+    <File Name="../../src/interfaces/wg_children.h"/>
+    <File Name="../../src/interfaces/wg_children.impl.h"/>
     <File Name="../../src/interfaces/wg_columnheader.cpp"/>
     <File Name="../../src/interfaces/wg_columnheader.h"/>
+    <File Name="../../src/interfaces/wg_dynamicchildren.h"/>
+    <File Name="../../src/interfaces/wg_dynamicchildren.impl.h"/>
     <File Name="../../src/interfaces/wg_edittext.h"/>
     <File Name="../../src/interfaces/wg_editvalue.h"/>
+    <File Name="../../src/interfaces/wg_hideablechildren.h"/>
+    <File Name="../../src/interfaces/wg_hideablechildren.impl.h"/>
     <File Name="../../src/interfaces/wg_icon.h"/>
+    <File Name="../../src/interfaces/wg_interface.cpp"/>
     <File Name="../../src/interfaces/wg_interface.h"/>
     <File Name="../../src/interfaces/wg_modspan.h"/>
     <File Name="../../src/interfaces/wg_modtext.h"/>
     <File Name="../../src/interfaces/wg_modvalue.cpp"/>
     <File Name="../../src/interfaces/wg_modvalue.h"/>
+    <File Name="../../src/interfaces/wg_paddedchildren.h"/>
+    <File Name="../../src/interfaces/wg_paddedchildren.impl.h"/>
+    <File Name="../../src/interfaces/wg_selectablechildren.h"/>
+    <File Name="../../src/interfaces/wg_selectablechildren.impl.h"/>
     <File Name="../../src/interfaces/wg_slidespan.cpp"/>
     <File Name="../../src/interfaces/wg_slidespan.h"/>
     <File Name="../../src/interfaces/wg_span.cpp"/>
@@ -146,9 +158,6 @@
     <File Name="../../src/interfaces/wg_text.h"/>
     <File Name="../../src/interfaces/wg_value.cpp"/>
     <File Name="../../src/interfaces/wg_value.h"/>
-    <File Name="../../src/interfaces/wg_interface.cpp"/>
-    <File Name="../../src/interfaces/wg_hideablechildren.h"/>
-    <File Name="../../src/interfaces/wg_dynamicchildgroup.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
@@ -188,6 +197,7 @@
     <File Name="../../src/base/wg_charbuffer.h"/>
     <File Name="../../src/base/wg_charseq.cpp"/>
     <File Name="../../src/base/wg_charseq.h"/>
+    <File Name="../../src/base/wg_childiterator.h"/>
     <File Name="../../src/base/wg_codepages.cpp"/>
     <File Name="../../src/base/wg_codepages.h"/>
     <File Name="../../src/base/wg_color.cpp"/>
@@ -222,6 +232,7 @@
     <File Name="../../src/base/wg_nullgfxdevice.h"/>
     <File Name="../../src/base/wg_object.cpp"/>
     <File Name="../../src/base/wg_object.h"/>
+    <File Name="../../src/base/wg_paddedslot.h"/>
     <File Name="../../src/base/wg_patches.cpp"/>
     <File Name="../../src/base/wg_patches.h"/>
     <File Name="../../src/base/wg_pointers.h"/>
@@ -234,8 +245,11 @@
     <File Name="../../src/base/wg_scrollbartarget.h"/>
     <File Name="../../src/base/wg_slot.h"/>
     <File Name="../../src/base/wg_slotarray.h"/>
+    <File Name="../../src/base/wg_slotarray.impl.h"/>
     <File Name="../../src/base/wg_string.cpp"/>
     <File Name="../../src/base/wg_string.h"/>
+    <File Name="../../src/base/wg_stronginterfaceptr.h"/>
+    <File Name="../../src/base/wg_strongptr.h"/>
     <File Name="../../src/base/wg_surface.cpp"/>
     <File Name="../../src/base/wg_surface.h"/>
     <File Name="../../src/base/wg_surfacefactory.cpp"/>
@@ -253,14 +267,9 @@
     <File Name="../../src/base/wg_types.h"/>
     <File Name="../../src/base/wg_util.cpp"/>
     <File Name="../../src/base/wg_util.h"/>
-    <File Name="../../src/base/wg_vectorfont.cpp"/>
-    <File Name="../../src/base/wg_vectorfont.h"/>
-    <File Name="../../src/base/wg_widgetholder.h"/>
-    <File Name="../../src/base/wg_strongptr.h"/>
-    <File Name="../../src/base/wg_weakptr.h"/>
-    <File Name="../../src/base/wg_stronginterfaceptr.h"/>
     <File Name="../../src/base/wg_weakinterfaceptr.h"/>
-    <File Name="../../src/base/wg_slotiterator.h"/>
+    <File Name="../../src/base/wg_weakptr.h"/>
+    <File Name="../../src/base/wg_widgetholder.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
@@ -294,7 +303,6 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="/usr/include/freetype2/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -312,6 +320,7 @@
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Debug" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -345,7 +354,6 @@
     </Configuration>
     <Configuration Name="Release" CompilerType="" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="/usr/include/freetype2/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -363,6 +371,7 @@
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/lib$(ProjectName).a" IntermediateDirectory="./Release" Command="" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="yes" IsEnabled="yes"/>
+      <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>

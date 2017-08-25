@@ -28,8 +28,8 @@
 #include <wg_children.impl.h>
 
 #define INSTANTIATE_DYNAMICCHILDREN(SlotType,HolderType) \
-	INSTANTIATE_CHILDREN( ##SlotType, ##HolderType ) \
-	template class DynamicChildren< ##SlotType, ##HolderType >;
+	INSTANTIATE_CHILDREN( SlotType, HolderType ) \
+	template class DynamicChildren< SlotType, HolderType >;
 
 namespace wg
 {

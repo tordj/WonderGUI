@@ -7,7 +7,8 @@
   <Environment>
     <![CDATA[]]>
   </Environment>
-  <Project Name="gfxdevice_opengl" Path="gfxdevice_opengl.project"/>
+  <Project Name="gfxdevice_opengl" Path="gfxdevice_opengl.project" Active="No"/>
+  <Project Name="font_freetype" Path="font_freetype.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>
@@ -16,6 +17,7 @@
       <Project Name="gfxdevice_software" ConfigName="Debug"/>
       <Project Name="example_01" ConfigName="Debug"/>
       <Project Name="gfxdevice_opengl" ConfigName="Debug"/>
+      <Project Name="font_freetype" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
       <Environment/>
@@ -24,6 +26,7 @@
       <Project Name="gfxdevice_software" ConfigName="Release"/>
       <Project Name="example_01" ConfigName="Release"/>
       <Project Name="gfxdevice_opengl" ConfigName="Release"/>
+      <Project Name="font_freetype" ConfigName="Release"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>
