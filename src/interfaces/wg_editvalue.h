@@ -88,7 +88,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline EditValue_p		ptr() { return EditValue_p(_object(), this); }
+		inline EditValue_p		ptr() { return EditValue_p(this); }
 
 
 	private:

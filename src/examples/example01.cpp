@@ -132,9 +132,13 @@ int main ( int argc, char** argv )
 	// When adding it to the FlexPanel we specify its geometry in
 	// pixels and that it should be centered.
 
+	// Note: since WonderGUI orders widgets from front to back, we actually
+	// need to insert the button before the background, otherwise it is hidden behind.
+	// For best performance you should add widgets from front to back and avoid insert.
+
 	Button_p pButton = Button::create();
 	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) ) );
-	pFlexPanel->children.addMovable(pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
+	pFlexPanel->children.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
 	// Finally we add a callback to the click-event of the button.
 

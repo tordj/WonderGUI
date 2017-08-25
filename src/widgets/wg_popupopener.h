@@ -36,7 +36,7 @@ namespace wg
 	typedef	WeakPtr<PopupOpener>	PopupOpener_wp;
 
 
-	class PopupSlot	/** @private */			// Note, does not inherit from Slot
+	class PopupOpenerSlot	/** @private */			// Note, does not inherit from Slot
 	{
 	public:
 		Widget_p	pWidget;

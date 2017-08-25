@@ -55,7 +55,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		inline ModSpan_p		ptr() { return ModSpan_p(_object(), this); }
+		inline ModSpan_p		ptr() { return ModSpan_p(this); }
 
 	};
 	
