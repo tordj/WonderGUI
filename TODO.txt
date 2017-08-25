@@ -1,3 +1,25 @@
+
+PackList
+========
+
+* Highlight entries which moves in under pointer when using scroll wheel.
+* Auto scroll when lasso selecting and getting close to border.
+* Arrow up/down doesn't work.
+* Support scroll into view.
+
+StdTextMapper
+=============
+
+* Multiline begränsning.
+* Default selection colors.
+* Scroll on mouse select.
+* Hoppa till slut vid select all.
+* Arrow left/right on selection
+* Hide/show carret.
+
+
+
+
 MULTIREP FIXES
 ==============
 
@@ -16,9 +38,6 @@ MULTIREP FIXES
 
 IMPORTANT
 =========
-
-- The rule that "if there is a hook, there is a parent" breaks with RootPanel, what to do?
-	Do nothing, remember that the old rule doesn't apply anymore. Code checked and should be fine.
 
 - LayerModal doesn't block focus requests from children.
 
@@ -41,33 +60,6 @@ v MouseEnter/MouseLeave events should understand hierarchy.
 
 
 ﻿
-
-
-
-PRE0 - Release
-==============
-
-	Working/reliable Menubar/Combobox/Menu.
-	Implement TableList.
-	Lasso on Lists.
-	
-	Simple test of all widgets.
-
-	EventHandler in Base, not in Root? Or? Maybe just ticks from Base?
-
-
-PRE1 - Release
-==============
-
-*	Replace WgCheckbox and WgRadiobutton with WgStateButton + WgRadioGroup.
-
-*	Refactor cursor.
-*	Refactor fonts.
-*	Refactor TextProps.
-*	Refactor Eventfilters?
-
-*	Correctly working textfields.
-*	Correctly working valuefields.
 
 
 
