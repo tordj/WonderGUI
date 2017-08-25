@@ -91,7 +91,7 @@ namespace wg
 
 	//____ ViewEntryHolder _______________________________________________
 
-	class ViewEntryHolder : public ChildHolder
+	class ViewEntryHolder : public ChildHolder /** @private */
 	{
 	public:
 		virtual bool		_setWindowPos(Coord pos) = 0;

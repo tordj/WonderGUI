@@ -111,7 +111,7 @@ namespace wg
 
 	//____ FlexChildrenHolder ____________________________________________________
 
-	class FlexChildrenHolder : public HideableChildrenHolder
+	class FlexChildrenHolder : public HideableChildrenHolder /** @private */
 	{
 	public:
 		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot) = 0;

@@ -54,7 +54,7 @@ namespace wg
 
 	//____ PackListChildrenHolder() ___________________________________________
 
-	class PackListChildrenHolder : public SelectableChildrenHolder
+	class PackListChildrenHolder : public SelectableChildrenHolder /** @private */
 	{
 	public:
 		virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
