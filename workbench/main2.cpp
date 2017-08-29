@@ -18,6 +18,7 @@
 #include <wg_freetypefont.h>
 #include <wg_packlist.h>
 #include <testwidget.h>
+#include <wg_popupopener.h>
 
 using namespace wg;
 
@@ -273,10 +274,14 @@ int main ( int argc, char** argv )
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
+	PopupLayer_p pPopupLayer = PopupLayer::create();
+	pRoot->child = pPopupLayer;
+
+
+
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
 	pBasePanel->setSkin( pImgSkin /*ColorSkin::create(Color::Burlywood)*/ );
-	pRoot->child = pBasePanel;
-
+	pPopupLayer->base = pBasePanel;
 
 /*	Filler_p pBackground = Filler::create();
 	pBackground->setSkin( ColorSkin::create(Color::aqua) );
@@ -380,7 +385,25 @@ int main ( int argc, char** argv )
 	}
 	*/
 
+	{
+		auto pOpener = PopupOpener::create();
 
+		pOpener->setSkin(pPressablePlateSkin);
+		pOpener->label.set("OPEN");
+
+		pBasePanel->children.add(pOpener, [](Widget*pWidget, Size parentSize) {return Rect(30, 30, 100, 100); });
+
+
+		auto pMenu = Filler::create();
+		pMenu->setPreferredSize({ 80,200 });
+		pMenu->setSkin(pPressablePlateSkin);
+
+		pOpener->setPopup( pMenu );
+
+	}
+
+
+/*
 	{
 		auto pSplit = SplitPanel::create();
 		pSplit->setSkin(ColorSkin::create(Color::Beige));
@@ -422,7 +445,7 @@ int main ( int argc, char** argv )
 
 		pBasePanel->children.add(pOuterSplit, [](Widget*pWidget, Size parentSize) {return Rect(0, 0, 100, parentSize.h); });
 	}
-
+*/
 
 /*
 	{

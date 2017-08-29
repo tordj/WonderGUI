@@ -52,6 +52,7 @@ namespace wg
 		friend class Menu;
 		friend class Menubar;
 		friend class Combobox;
+		friend class PopupOpener;
 	
 		friend class RootPanel;
 		friend class FlexPanel;

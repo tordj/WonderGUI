@@ -36,14 +36,8 @@ namespace wg
 	typedef	WeakPtr<PopupOpener>	PopupOpener_wp;
 
 
-	class PopupOpenerSlot	/** @private */			// Note, does not inherit from Slot
-	{
-	public:
-		Widget_p	pWidget;
-	};
 
-
-	class PopupOpener : public Widget, protected ChildHolder
+	class PopupOpener : public Widget
 	{
 	public:
 
@@ -53,7 +47,6 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		Child<PopupSlot, ChildHolder>	popup;
 		ModText			label;
 		Icon			icon;
 
@@ -66,24 +59,39 @@ namespace wg
 
 		//.____ Behavior ____________________________________________
 
+		void		setPopup(Widget * pPopup);
+		Widget_p	popup() const { return m_pPopup;  }
+
 		void		setOpenOnHover(bool bOpen);
 		bool		openOnHover() const { return m_bOpenOnHover;  }
 
+		void		setAttachPoint(Origo attachPoint);
+		Origo		attachPoint() const { return m_attachPoint;  }
 
 	protected:
 		PopupOpener();
 		virtual ~PopupOpener();
 		virtual Widget* _newOfMyType() const { return new PopupOpener(); };
 
-		void		_setWidget(Slot * pSlot, Widget * pNewWidget);
-		Object *	_object();
+		void			_cloneContent(const Widget * _pOrg);
+		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip);
+		void			_setSize(const Size& size);
+		void			_refresh();
+		void			_receive(Msg * pMsg);
+		void			_setState(State state);
+		void			_setSkin(Skin * pSkin);
 
 
+		void			_open();
+		void			_close();
 
-		Widget *	m_pPopup;
-		Origo		m_attachPoint;
-		bool		m_bOpenOnHover;
 
+		Widget_p		m_pPopup;
+		TextItem		m_text;
+		IconItem		m_icon;
+
+		Origo			m_attachPoint;
+		bool			m_bOpenOnHover;
 	};
 
 

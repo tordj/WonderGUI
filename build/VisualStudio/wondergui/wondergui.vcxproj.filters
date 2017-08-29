@@ -440,6 +440,9 @@
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h">
       <Filter>slots</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_popupopener.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -741,6 +744,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\panels\wg_splitpanel.cpp">
       <Filter>widgets\panels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_popupopener.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

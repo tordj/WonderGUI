@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;C:\Program Files (x86)\GnuWin32\lib;..\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;..\..\..\..\freetype\lib;C:\Program Files (x86)\GnuWin32;..\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;C:\Program Files (x86)\GnuWin32;..\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;..\..\..\..\freetype\lib;C:\Program Files (x86)\GnuWin32;..\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

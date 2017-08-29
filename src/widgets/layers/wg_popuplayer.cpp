@@ -541,12 +541,10 @@ namespace wg
 		//
 	
 		if( m_popups.isEmpty() )
-			_parent()->_childRequestFocus( _slot(), m_pKeyFocus.rawPtr() );
+			_holder()->_childRequestFocus( _slot(), m_pKeyFocus.rawPtr() );
 		else
-			_parent()->_childRequestFocus( _slot(),  m_popups.last()->pKeyFocus.rawPtr() );
+			_holder()->_childRequestFocus( _slot(),  m_popups.last()->pKeyFocus.rawPtr() );
 	}
-
-
 
 	//____ _childRequestResize() _______________________________________________
 

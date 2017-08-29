@@ -214,6 +214,9 @@ namespace wg
 	
 	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
+		pSlot->replaceWidget(this, pNewWidget);
+		pNewWidget->_setSize(size());			//TODO: Should be content size here (and in all other _setWidget() methods?)
+
 		_onRequestRender( Rect(0,0,m_size), 0 );
 		_requestResize();
 	}

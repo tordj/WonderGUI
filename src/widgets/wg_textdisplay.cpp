@@ -194,9 +194,13 @@ namespace wg
 	
 	void TextDisplay::_setSkin( Skin * pSkin )
 	{
-		//TODO: Possibly notify text about new canvas size.
-		
+		Size oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
 		Widget::_setSkin(pSkin);
+
+		Size newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+
+		if (newTextCanvas != oldTextCanvas)
+			m_text.setSize(newTextCanvas);
 	}
 	
 	//____ _setSize() ________________________________________________

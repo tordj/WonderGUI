@@ -42,7 +42,7 @@ namespace wg
 		~SlotArray() { _killBlock( begin(), end() ); free(m_pArray); }
 
 		int			size() const { return m_size; }
-		bool		isEmpty() const { return m_size == 0; }
+		bool		isEmpty() const { return (m_size == 0); }
 		int			capacity() const { return m_capacity; }
 
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
