@@ -270,7 +270,7 @@ namespace wg
 		State			m_state;
 		Size			m_size;
 
-	private:
+//	private:
 		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
 	
 	};

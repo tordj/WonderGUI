@@ -292,7 +292,7 @@ int main ( int argc, char** argv )
 	pImage0->setSkin(pSimpleButtonSkin);
 	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2);});
 
-	Base::msgRouter()->addRoute(MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
+	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
 
 //	Image_p pImage = Image::create();
@@ -394,9 +394,42 @@ int main ( int argc, char** argv )
 		pBasePanel->children.add(pOpener, [](Widget*pWidget, Size parentSize) {return Rect(30, 30, 100, 100); });
 
 
-		auto pMenu = Filler::create();
-		pMenu->setPreferredSize({ 80,200 });
-		pMenu->setSkin(pPressablePlateSkin);
+		auto pMenu = PackPanel::create();
+//		pMenu->setOrientation(Orientation::Vertical);
+//		pMenu->setSelectable(false);
+
+		auto pSkin = BoxSkin::create(Color::Red, Border(0), Color::Red );
+		pSkin->setContentPadding(12);
+		pMenu->setSkin(pSkin);
+
+		auto pEntry1 = TextDisplay::create();
+		pEntry1->text.set("Entry One");
+		pEntry1->setSkin(pPressablePlateSkin);
+		pMenu->children << pEntry1;
+
+		auto pEntry2 = TextDisplay::create();
+		pEntry2->text.set("Entry Two");
+		pEntry2->setSkin(pPressablePlateSkin);
+		pMenu->children << pEntry2;
+
+		auto pEntry3 = TextDisplay::create();
+		pEntry3->text.set("Entry Three");
+		pEntry3->setSkin(pPressablePlateSkin);
+		pMenu->children << pEntry3;
+
+		auto pButtons = PackPanel::create();
+		
+		auto pBtn1 = Button::create();
+		pBtn1->setSkin(pPressablePlateSkin);
+		pBtn1->label.set("Button 1");
+		pButtons->children << pBtn1;
+
+		auto pBtn2 = Button::create();
+		pBtn2->setSkin(pPressablePlateSkin);
+		pBtn2->label.set("Button 2");
+		pButtons->children << pBtn2;
+
+		pMenu->children << pButtons;
 
 		pOpener->setPopup( pMenu );
 

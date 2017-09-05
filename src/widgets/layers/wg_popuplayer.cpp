@@ -446,14 +446,25 @@ namespace wg
 						break;
 				}
 						
-				_removeSlots(m_popups.size());
-				_pMsg->swallow();
+				// DON'T BREAK! Continuing down to case MousePress on purpose.
 			}
-			break;
-
 			case MsgType::MousePress:
 			{
-				_removeSlots(m_popups.size());
+				auto pMsg = MousePressMsg::cast(_pMsg);
+
+				auto pSource = Widget::cast(_pMsg->originalSource());
+				if (!pSource || pSource == this )
+					_removeSlots(m_popups.size());
+				else if (pSource->isSelectable())
+				{
+					MsgRouter * pRouter = Base::msgRouter().rawPtr();
+
+					if (pRouter)
+						pRouter->post(SelectMsg::create(pSource));
+
+					_removeSlots(m_popups.size());
+				}
+
 				_pMsg->swallow();
 			}
 			break;

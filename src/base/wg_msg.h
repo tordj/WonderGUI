@@ -244,6 +244,10 @@ namespace wg
 
 			//.____ Content ____________________________________________________
 
+			bool				reposted() const { return m_bReposted; }
+			Object *			originalSourceRawPtr() const { return m_bReposted? m_pOriginalSource.rawPtr() : m_pSource.rawPtr(); }
+			Object_wp			originalSource() const { return m_bReposted? m_pOriginalSource : m_pSource; }
+
 			bool				hasSource() const { return m_pSource; } 
 			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
 			Object_wp			source() const { return m_pSource.rawPtr(); } 
@@ -260,11 +264,13 @@ namespace wg
 			bool				doRepost();
 
 		protected:
-			Msg() : m_type(MsgType::Dummy) {}
+			Msg() : m_type(MsgType::Dummy), m_bReposted(false) {}
 			virtual ~Msg() {}
 			
 			MsgType				m_type;				// Type of message
 			Object_p			m_pSource;			// The source of this message, if any.
+			bool				m_bReposted;		// Set if this is a repost.
+			Object_p			m_pOriginalSource;	// If reposted, this is the original source.
 			Receiver_p			m_pCopyTo;			// Receiver to receive a copy of this message, if any.
 			Object_p			m_pRepostSource;	// Object to repost this message from, if any.
 			Receiver_p			m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.

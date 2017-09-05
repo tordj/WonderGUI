@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PopupOpener::PopupOpener() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon), m_attachPoint(Origo::SouthWest), m_bOpenOnHover(false)
+	PopupOpener::PopupOpener() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon), m_attachPoint(Origo::SouthWest), m_bOpenOnHover(false), m_bOpen(false)
 	{
 	}
 
@@ -139,6 +139,13 @@ namespace wg
 
 		switch (pMsg->type())
 		{
+			case MsgType::PopupClosed:
+			{
+				m_bOpen = false;
+				_setState(m_closeState);
+				break;
+			}
+
 			case MsgType::MouseEnter:
 			{
 				if (m_bOpenOnHover)
@@ -150,8 +157,16 @@ namespace wg
 			{
 				if (!m_bOpenOnHover && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left)
 				{
-					_open();
-					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, _parent()->_getPopupLayer() );
+					if (m_bOpen)
+					{
+						_close();
+					}
+					else
+					{
+						_open();
+						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, _parent()->_getPopupLayer());
+						m_bPressed = false;		// We have yielded our press...
+					}
 				}
 				break;
 			}
@@ -173,6 +188,11 @@ namespace wg
 
 	void PopupOpener::_setState(State state)
 	{
+		if (m_bOpen)
+		{
+			m_closeState = state;
+			state.setPressed(true);			// Force pressed state when popup is open.
+		}
 		Widget::_setState(state);
 		m_text.setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
@@ -190,11 +210,18 @@ namespace wg
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popups.push(m_pPopup, this, globalGeo(), m_attachPoint);
+			m_bOpen = true;
+			m_closeState = m_state;
 		}
 	}
 
 	void PopupOpener::_close()
 	{
+		auto pLayer = _parent()->_getPopupLayer();
+		if (pLayer && m_pPopup)
+		{
+			pLayer->popups.clear();
+		}
 	}
 
 

@@ -92,6 +92,8 @@ namespace wg
 
 		Origo			m_attachPoint;
 		bool			m_bOpenOnHover;
+		bool			m_bOpen;
+		State			m_closeState;
 	};
 
 

@@ -74,6 +74,12 @@ namespace wg
 	{
 		if( m_pRepostSource )
 		{
+			if (!m_bReposted)
+			{
+				m_pOriginalSource = m_pSource;
+				m_bReposted = true;
+			}
+
 			m_pSource = m_pRepostSource;
 			m_pCopyTo = m_pRepostCopyTo;
 			
