@@ -41,6 +41,8 @@ namespace wg
 	public:
 		ModalSlot() : origo(Origo::NorthWest) {}
 
+		const static bool safe_to_relocate = false;
+
 		Origo		origo;
 		Rect		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.	

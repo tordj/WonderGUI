@@ -578,6 +578,15 @@ namespace wg
 		Base::msgRouter()->post( pMsg );
 	}
 	
+	//____ _yieldButtonEvents() ______________________________________________
+
+	void InputHandler::_yieldButtonEvents(MouseButton button, Widget * pFrom, Widget * pTo)
+	{
+		if (m_bButtonPressed[(int)button] && m_latestPressWidgets[(int)button] == pFrom)
+			m_latestPressWidgets[(int)button] = pTo;
+	}
+
+
 	//____ setKey() ________________________________________________________________
 	
 	void InputHandler::setKey( int nativeKeyCode, bool bPressed, int64_t timestamp )

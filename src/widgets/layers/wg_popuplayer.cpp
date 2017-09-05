@@ -423,64 +423,38 @@ namespace wg
 	void PopupLayer::_receive( Msg * _pMsg )
 	{
 		Layer::_receive(_pMsg);
-	
-		Widget * pOpener = 0;
-	
-		// Try to find an opener
-	
-		Object * pSource = _pMsg->sourceRawPtr();
-		if( pSource && pSource != this )
-		{
-			PopupSlot * pSlot = m_popups.first();
-			while( pSlot < m_popups.end() && pSlot->pWidget != pSource )
-				pSlot++;
-				
-			if( pSlot < m_popups.end() && pSlot->pOpener )
-				pOpener = pSlot->pOpener.rawPtr();
-		}
 		
-		// First we try to repost message to opener (if any)
-	
-		if( pOpener )
-		{
-			_pMsg->setRepost( _pMsg->source().rawPtr(), pOpener );
-			return;
-		}	
-	
-		// Secondly we take care of message ourselves if it is addressed to one of our menus or us.
 	
 		switch( _pMsg->type() )
 		{
-	/*
-			case WG_MSG_MOUSE_POSITION:
-	
-				if( !m_popupHooks.isEmpty() )							// Process only if we have at least one open menu.
-				{
-					Coord ofs = _pMsg->pointerPos();
-					Widget * p = _findWidget( ofs, SearchMode::ActionTarget );
-					if( p != this )
-					{
-						while( p->parent() != this )
-							p = p->parent();
-							
-						if( p != m_popupHooks.	
-					}	
-				}
-			break;
-	*/		
 			case MsgType::MouseRelease:
+			{
+				if (m_popups.isEmpty())
+					break;					// Popup was removed already on the press.
+
+				// Allow us to release the mouse within opener without closing any popups
+
+				PopupSlot * pSlot = m_popups.last();
+				if (pSlot->pOpener)
+				{
+					Widget * pOpener = pSlot->pOpener.rawPtr();
+
+					Coord 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPos();
+					Rect	openerGeo = pOpener->globalGeo();
+
+					if (pOpener->markTest(absPos - openerGeo.pos()))
+						break;
+				}
+						
+				_removeSlots(m_popups.size());
+				_pMsg->swallow();
+			}
+			break;
+
 			case MsgType::MousePress:
 			{
-				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
-	
-				Coord ofs = pMsg->pointerPos() - globalPos();
-				Widget * p = _findWidget( ofs, SearchMode::ActionTarget );
-				if( p == this )
-				{
-					_removeSlots(m_popups.size());
-					_pMsg->swallow();
-					return;
-				}
+				_removeSlots(m_popups.size());
+				_pMsg->swallow();
 			}
 			break;
 	
@@ -495,7 +469,6 @@ namespace wg
 					{
 						_removeSlots(1);
 						_pMsg->swallow();
-						return;
 					}
 				}
 			}

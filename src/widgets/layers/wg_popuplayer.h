@@ -41,6 +41,8 @@ namespace wg
 	public:
 		PopupSlot() : attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
 
+		const static bool safe_to_relocate = false;
+
 		Rect		launcherGeo;		// Launcher geo relative sibling or parent.
 		Origo		attachPoint;
 		Size		maxSize;
