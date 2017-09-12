@@ -395,7 +395,7 @@ int main ( int argc, char** argv )
 
 
 		auto pMenu = PackPanel::create();
-//		pMenu->setOrientation(Orientation::Vertical);
+		pMenu->setOrientation(Orientation::Vertical);
 //		pMenu->setSelectable(false);
 
 		auto pSkin = BoxSkin::create(Color::Red, Border(0), Color::Red );
@@ -416,6 +416,32 @@ int main ( int argc, char** argv )
 		pEntry3->text.set("Entry Three");
 		pEntry3->setSkin(pPressablePlateSkin);
 		pMenu->children << pEntry3;
+
+		auto pSubMenuOpener = PopupOpener::create();
+		pSubMenuOpener->label.set("Sub Menu");
+		pSubMenuOpener->setSkin(pPressablePlateSkin);
+		pMenu->children << pSubMenuOpener;
+
+		auto pSubMenu = PackPanel::create();
+		pSubMenu->setOrientation(Orientation::Vertical);
+		pSubMenu->setSkin(pSkin);
+
+		auto pSubEntry1 = TextDisplay::create();
+		pSubEntry1->text.set("Subentry One");
+		pSubEntry1->setSkin(pPressablePlateSkin);
+		pSubMenu->children << pSubEntry1;
+
+		auto pSubEntry2 = TextDisplay::create();
+		pSubEntry2->text.set("Subentry Two");
+		pSubEntry2->setSkin(pPressablePlateSkin);
+		pSubMenu->children << pSubEntry2;
+
+		auto pSubEntry3 = TextDisplay::create();
+		pSubEntry3->text.set("Subentry Three");
+		pSubEntry3->setSkin(pPressablePlateSkin);
+		pSubMenu->children << pSubEntry3;
+
+		pSubMenuOpener->setPopup(pSubMenu);
 
 		auto pButtons = PackPanel::create();
 		

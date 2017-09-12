@@ -33,6 +33,7 @@ namespace wg
 
 	PopupOpener::PopupOpener() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon), m_attachPoint(Origo::SouthWest), m_bOpenOnHover(false), m_bOpen(false)
 	{
+		m_bSelectable = false;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -123,15 +124,34 @@ namespace wg
 			m_text.render(pDevice, textRect, _clip);
 	}
 
-	void PopupOpener::_setSize(const Size& size)
+
+	//____ _setSize() ____________________________________________________________
+
+	void PopupOpener::_setSize(const Size& _size)
 	{
-		Widget::_setSize(size);
+		Widget::_setSize(_size);
+
+		Rect	contentRect(0, 0, _size);
+
+		if (m_pSkin)
+			contentRect -= m_pSkin->contentPadding();
+
+		Rect textRect = m_icon.getTextRect(contentRect, m_icon.getIconRect(contentRect));
+
+		m_text.setSize(textRect);
 	}
+
+	//____ _refresh() _________________________________________________________
 
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
+		m_text.refresh();
+
+		//TODO: Handling of icon and text.
 	}
+
+	//____ _receive() _________________________________________________________
 
 	void PopupOpener::_receive(Msg * pMsg)
 	{
@@ -186,6 +206,52 @@ namespace wg
 
 	}
 
+	//____ matchingHeight() _______________________________________________________
+
+	int PopupOpener::matchingHeight(int width) const
+	{
+		int height = 0;
+
+		if (m_pSkin)
+			height = m_pSkin->preferredSize().h;
+
+		if (!m_text.isEmpty())
+		{
+			Size padding;
+
+			if (m_pSkin)
+				padding = m_pSkin->contentPadding();
+
+			int heightForText = m_text.matchingHeight(width - padding.w) + padding.h;
+			if (heightForText > height)
+				height = heightForText;
+		}
+
+		//TODO: Take icon into account.
+
+		return height;
+	}
+
+
+	//____ preferredSize() _____________________________________________________________
+
+	Size PopupOpener::preferredSize() const
+	{
+		Size preferred;
+
+		if (!m_text.isEmpty())
+			preferred = m_text.preferredSize();
+
+		if (m_pSkin)
+			preferred = m_pSkin->sizeForContent(preferred);
+
+		//TODO: Take icon into account.
+
+		return preferred;
+	}
+
+	//____ _setState() ________________________________________________________
+
 	void PopupOpener::_setState(State state)
 	{
 		if (m_bOpen)
@@ -198,11 +264,14 @@ namespace wg
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
 	}
 
+	//____ _setSkin() _________________________________________________________
+
 	void PopupOpener::_setSkin(Skin * pSkin)
 	{
 		Widget::_setSkin(pSkin);
 	}
 
+	//____ _open() ____________________________________________________________
 
 	void PopupOpener::_open()
 	{
@@ -215,6 +284,8 @@ namespace wg
 		}
 	}
 
+	//____ _close() ___________________________________________________________
+
 	void PopupOpener::_close()
 	{
 		auto pLayer = _parent()->_getPopupLayer();
@@ -222,6 +293,85 @@ namespace wg
 		{
 			pLayer->popups.clear();
 		}
+	}
+
+	//____ _renderRequested() _________________________________________________________
+
+	void PopupOpener::_renderRequested(Item * pItem)
+	{
+		_requestRender();		//TODO: Only requestRender on item
+	}
+
+	void PopupOpener::_renderRequested(Item * pItem, const Rect& rect)
+	{
+		_requestRender();		//TODO: Only requestRender on rect of item.
+	}
+
+	//____ _resizeRequested() ________________________________________________________
+
+	void PopupOpener::_resizeRequested(Item * pItem)
+	{
+		_requestResize();
+		_requestRender();
+	}
+
+	//____ _itemPos() ______________________________________________________________
+
+	Coord PopupOpener::_itemPos(const Item * pItem) const
+	{
+		Rect	contentRect = m_size;
+
+		if (m_pSkin)
+			contentRect = m_pSkin->contentRect(contentRect, m_state);
+
+		// Get icon and text rect from content rect
+
+		Rect iconRect = m_icon.getIconRect(contentRect);
+
+		if (pItem == &m_icon)
+			return iconRect.pos();
+
+		Rect textRect = m_icon.getTextRect(contentRect, iconRect);
+		return textRect.pos();
+	}
+
+	//____ _itemSize() ______________________________________________________________
+
+	Size PopupOpener::_itemSize(const Item * pItem) const
+	{
+		Size	sz = m_size;
+
+		if (m_pSkin)
+			sz -= m_pSkin->contentPadding();
+
+		Rect iconRect = m_icon.getIconRect(sz);
+
+		if (pItem == &m_icon)
+			return iconRect.size();
+
+		Rect textRect = m_icon.getTextRect(sz, iconRect);
+		return textRect.size();
+
+	}
+
+	//____ _itemGeo() ______________________________________________________________
+
+	Rect PopupOpener::_itemGeo(const Item * pItem) const
+	{
+		Rect	contentRect = m_size;
+
+		if (m_pSkin)
+			contentRect = m_pSkin->contentRect(contentRect, m_state);
+
+		// Get icon and text rect from content rect
+
+		Rect iconRect = m_icon.getIconRect(contentRect);
+
+		if (pItem == &m_icon)
+			return iconRect;
+
+		Rect textRect = m_icon.getTextRect(contentRect, iconRect);
+		return textRect;
 	}
 
 

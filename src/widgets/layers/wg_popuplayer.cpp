@@ -307,6 +307,10 @@ namespace wg
 			_onRequestRender(pSlot->geo,pSlot);
 			pSlot->geo = geo;
 			_onRequestRender(pSlot->geo,pSlot);	
+
+			if( pSlot->pWidget->size() != geo.size() )
+				pSlot->pWidget->_setSize(geo.size());
+
 			return true;
 		}
 		else

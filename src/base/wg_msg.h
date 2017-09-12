@@ -246,11 +246,11 @@ namespace wg
 
 			bool				reposted() const { return m_bReposted; }
 			Object *			originalSourceRawPtr() const { return m_bReposted? m_pOriginalSource.rawPtr() : m_pSource.rawPtr(); }
-			Object_wp			originalSource() const { return m_bReposted? m_pOriginalSource : m_pSource; }
+			Object_p			originalSource() const { return m_bReposted? m_pOriginalSource : m_pSource; }
 
 			bool				hasSource() const { return m_pSource; } 
 			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-			Object_wp			source() const { return m_pSource.rawPtr(); } 
+			Object_p			source() const { return m_pSource; } 
 				
 			bool				hasCopyTo() { return m_pCopyTo; }
 			Receiver_p			getCopyTo() { return m_pCopyTo; }

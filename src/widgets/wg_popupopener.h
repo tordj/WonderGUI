@@ -68,6 +68,14 @@ namespace wg
 		void		setAttachPoint(Origo attachPoint);
 		Origo		attachPoint() const { return m_attachPoint;  }
 
+		//.____ Geometry ____________________________________________
+
+		virtual int		matchingHeight(int width) const;
+		//	virtual int		matchingWidth( int height ) const;
+
+		Size			preferredSize() const;
+
+
 	protected:
 		PopupOpener();
 		virtual ~PopupOpener();
@@ -84,6 +92,15 @@ namespace wg
 
 		void			_open();
 		void			_close();
+
+		void			_renderRequested(Item * pItem);
+		void			_renderRequested(Item * pItem, const Rect& rect);
+		void 			_resizeRequested(Item * pItem);
+
+		Coord			_itemPos(const Item * pItem) const;
+		Size			_itemSize(const Item * pItem) const;
+		Rect			_itemGeo(const Item * pItem) const;
+
 
 
 		Widget_p		m_pPopup;

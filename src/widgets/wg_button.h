@@ -88,7 +88,6 @@ namespace wg
 		void			_setState( State state );
 	
 	
-		Object * 		_object() { return this; };
 		void			_renderRequested( Item * pItem );
 		void			_renderRequested( Item * pItem, const Rect& rect );
 		void 			_resizeRequested( Item * pItem );
