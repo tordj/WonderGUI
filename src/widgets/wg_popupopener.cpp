@@ -291,7 +291,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popups.clear();
+			pLayer->popups.pop(m_pPopup);
 		}
 	}
 

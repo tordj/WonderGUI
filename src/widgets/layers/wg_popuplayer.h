@@ -47,7 +47,7 @@ namespace wg
 		Origo		attachPoint;
 		Size		maxSize;
 		Widget_wp	pOpener;			// Widget that opened this popup.
-		Widget_wp	pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
+		Widget_wp	pKeyFocus;			// Pointer at widget that held focus when this popup was ontop.
 	};
 
 
@@ -77,6 +77,7 @@ namespace wg
 		int		size() const;
 		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
 		void	pop(int nb = 1);
+		void	pop(Widget * pPopup);
 		void	clear();
 		
 		Widget_p at(int index) const;
@@ -121,8 +122,8 @@ namespace wg
 
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
-		bool			_updateGeo(PopupSlot * pSlot);
-		void			_removeSlots(int nb);
+		bool			_updateGeo(PopupSlot * pSlot, bool bInitialUpdate = false );
+		void			_removeSlots(int ofs, int nb);
 
 		// Overloaded from Panel
 

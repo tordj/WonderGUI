@@ -84,6 +84,15 @@ namespace wg
 		free(pOld);
 	}
 
+	template < class SlotType>
+	SlotType *	SlotArray<SlotType>::find(const Widget* pWidget) const
+	{
+		for (auto p = begin(); p < end(); p++)
+			if (p->pWidget == pWidget)
+				return p;
+
+		return nullptr;
+	}
 
 	template < class SlotType>
 	void SlotArray<SlotType>::_reallocArray(int capacity)
@@ -124,19 +133,22 @@ namespace wg
 	SlotType* SlotArray<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		int blocksToMove = end() - pEnd;
-		if (blocksToMove > 0)
+		if (SlotType::safe_to_relocate)
 		{
-			if (SlotType::safe_to_relocate)
+			_killBlock(pBeg, pEnd);
+	
+			if (blocksToMove > 0)
 			{
-				_killBlock(pBeg, pEnd);
 				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
 				_reallocBlock(pBeg, pBeg + blocksToMove);
 			}
-			else
-			{
-				for (int i = 0; i < blocksToMove; i++)
-					pBeg[i] = std::move(pEnd[i]);
-			}
+		}
+		else
+		{
+			for (int i = 0; i < blocksToMove; i++)
+				pBeg[i] = std::move(pEnd[i]);
+
+			_killBlock(pBeg+blocksToMove, pEnd);
 		}
 		m_size -= pEnd - pBeg;
 		return pBeg;
@@ -148,27 +160,26 @@ namespace wg
 	{
 		if (entries <= m_capacity - m_size)
 		{
-			int nToCopy = (int)(end() - pPos);
-			if (nToCopy > 0)
+			int nToMove = (int)(end() - pPos);
+			if (nToMove > 0)
 			{
 				if (SlotType::safe_to_relocate)
 				{
-					memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToCopy);
-					_reallocBlock(&pPos[entries], &pPos[entries + nToCopy]);
+					memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToMove);
+					_reallocBlock(&pPos[entries], &pPos[entries + nToMove]);
 				}
 				else
 				{
 
-					int nCopyToNew = min(entries, nToCopy);
-					int nCopyToExisting = nToCopy - nCopyToNew;
-					int nDestroy = nCopyToNew;
+					int nMoveToNew = min(entries, nToMove);
+					int nMoveToExisting = nToMove - nMoveToNew;
 
 					SlotType * pFrom = end();
 					SlotType * pTo = pFrom + entries;
 
 					// Move first batch of entries to uninitialized objects
 
-					for (int i = 0; i < nCopyToNew; i++)
+					for (int i = 0; i < nMoveToNew; i++)
 					{
 						new (--pTo) SlotType(std::move(*(--pFrom)));
 						/*							new (--pTo) SlotType();
@@ -179,7 +190,7 @@ namespace wg
 
 					// Move the rest to existing objects
 
-					for (int i = 0; i < nCopyToNew; i++)
+					for (int i = 0; i < nMoveToExisting; i++)
 						*(--pTo) = std::move(*(--pFrom));
 
 				}

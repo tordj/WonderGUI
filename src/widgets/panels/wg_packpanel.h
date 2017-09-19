@@ -146,7 +146,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
 
-		// Overloaded from PanelSlotsHolder
+		// Overloaded from PackChildrenHolder
 
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
@@ -156,7 +156,8 @@ namespace wg
 		void		_repadSlots( Slot *, int nb, Border padding );
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
-		void		_refreshChildGeo();
+		void		_refreshChildGeo() { _refreshChildGeo(true); }
+		void		_refreshChildGeo(bool bRequestRender);
 
 		// Overloaded from WidgetHolder
 

@@ -177,7 +177,7 @@ int main ( int argc, char** argv )
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 
-//	pRoot->setDebugMode(true);
+	pRoot->setDebugMode(true);
 	
 	Base::inputHandler()->setFocusedWindow( pRoot );
 

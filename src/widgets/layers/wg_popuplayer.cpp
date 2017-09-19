@@ -71,7 +71,7 @@ namespace wg
 
 	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, Size _maxSize )
 	{
-		PopupSlot * pSlot = m_pHolder->m_popups.add();
+		PopupSlot * pSlot = m_pHolder->m_popups.insert(0);
 		pSlot->pOpener = _pOpener;
 		pSlot->launcherGeo = _launcherGeo;
 		pSlot->attachPoint = _attachPoint;
@@ -79,7 +79,7 @@ namespace wg
 		
 		pSlot->replaceWidget(m_pHolder, _pPopup);
 		
-		m_pHolder->_updateGeo(pSlot);
+		m_pHolder->_updateGeo(pSlot,true);
 		m_pHolder->_stealKeyboardFocus();
 	}
 
@@ -92,9 +92,21 @@ namespace wg
 		
 		nb = min(nb, m_pHolder->m_popups.size());
 		
-		m_pHolder->_removeSlots(nb); 
+		m_pHolder->_removeSlots(0,nb); 
 	}
-	
+
+	//____ pop() ________________________________________________
+
+	void PopupChildren::pop(Widget * pPopup)
+	{
+		auto p = m_pHolder->m_popups.find(pPopup);
+
+		if (p)
+			m_pHolder->_removeSlots(0,m_pHolder->m_popups.index(p)+1);
+	}
+
+
+
 	//____ clear() ________________________________________________
 	
 	void PopupChildren::clear()
@@ -102,7 +114,7 @@ namespace wg
 		if( m_pHolder->m_popups.isEmpty() ) 
 			return; 
 
-		m_pHolder->_removeSlots(m_pHolder->m_popups.size()); 
+		m_pHolder->_removeSlots(0,m_pHolder->m_popups.size()); 
 	}
 
 
@@ -148,7 +160,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 	
-	bool PopupLayer::_updateGeo(PopupSlot* pSlot)
+	bool PopupLayer::_updateGeo(PopupSlot* pSlot, bool bInitialUpdate )
 	{
 		// Get size of parent and correct launcherGeo
 	
@@ -304,7 +316,8 @@ namespace wg
 	
 		if( geo != pSlot->geo )
 		{
-			_onRequestRender(pSlot->geo,pSlot);
+			if( !bInitialUpdate )
+				_onRequestRender(pSlot->geo,pSlot);	
 			pSlot->geo = geo;
 			_onRequestRender(pSlot->geo,pSlot);	
 
@@ -329,10 +342,10 @@ namespace wg
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 	
-			PopupSlot * pSlot = m_popups.last();
+			PopupSlot * pSlot = m_popups.first();
 			Widget * pResult = 0;
 	
-			while( pSlot >= m_popups.begin() && !pResult )
+			while( pSlot < m_popups.end() && !pResult )
 			{
 				if( pSlot->geo.contains( ofs ) )
 				{
@@ -341,14 +354,14 @@ namespace wg
 					else if( pSlot->pWidget->markTest( ofs - pSlot->geo.pos() ) )
 						pResult = pSlot->pWidget;
 				}
-				pSlot--;
+				pSlot++;
 			}
 	
 			if( pResult == 0 )
 			{
-				// Check the first opener
+				// Check the root opener
 				
-				PopupSlot * pSlot = m_popups.first();
+				PopupSlot * pSlot = m_popups.last();
 				if( pSlot->pOpener )
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
@@ -386,22 +399,24 @@ namespace wg
 	
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
-	
-		PopupSlot * pCover;
-	
-		if( pSlot )
-			pCover = ((PopupSlot*)pSlot)+1;
-		else
-			pCover = m_popups.first();
-	
-		while( pCover < m_popups.end() )
+
+		if( !m_popups.isEmpty() )
 		{
-			if( pCover->geo.intersectsWith( rect ) )
-				pCover->pWidget->_maskPatches( patches, pCover->geo, Rect(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
-	
-			pCover++;
+			PopupSlot * pCover;
+
+			if (pSlot)
+				pCover = ((PopupSlot*)pSlot) - 1;
+			else
+				pCover = m_popups.last();
+
+			while (pCover >= m_popups.begin())
+			{
+				if (pCover->geo.intersectsWith(rect))
+					pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, INT_MAX, INT_MAX), _getBlendMode());
+
+				pCover--;
+			}
 		}
-	
 		// Make request render calls
 	
 		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
@@ -438,7 +453,7 @@ namespace wg
 
 				// Allow us to release the mouse within opener without closing any popups
 
-				PopupSlot * pSlot = m_popups.last();
+				PopupSlot * pSlot = m_popups.first();
 				if (pSlot->pOpener)
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
@@ -458,7 +473,7 @@ namespace wg
 
 				auto pSource = Widget::cast(_pMsg->originalSource());
 				if (!pSource || pSource == this )
-					_removeSlots(m_popups.size());
+					_removeSlots(0,m_popups.size());
 				else if (pSource->isSelectable())
 				{
 					MsgRouter * pRouter = Base::msgRouter().rawPtr();
@@ -466,7 +481,7 @@ namespace wg
 					if (pRouter)
 						pRouter->post(SelectMsg::create(pSource));
 
-					_removeSlots(m_popups.size());
+					_removeSlots(0,m_popups.size());
 				}
 
 				_pMsg->swallow();
@@ -482,7 +497,7 @@ namespace wg
 				{
 					if( !m_popups.isEmpty() )
 					{
-						_removeSlots(1);
+						_removeSlots(0,1);
 						_pMsg->swallow();
 					}
 				}
@@ -508,11 +523,11 @@ namespace wg
 		if( m_popups.size() < 2 )
 			m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 		else
-			m_popups[m_popups.size()-2].pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
+			m_popups[1].pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 	
 		// Steal keyboard focus to top menu
 	
-		Widget * pWidget = m_popups.last()->pWidget;
+		Widget * pWidget = m_popups.begin()->pWidget;
 
 		_childRequestFocus( pWidget->_slot(), pWidget );
 	}
@@ -531,7 +546,7 @@ namespace wg
 		if( m_popups.isEmpty() )
 			_holder()->_childRequestFocus( _slot(), m_pKeyFocus.rawPtr() );
 		else
-			_holder()->_childRequestFocus( _slot(),  m_popups.last()->pKeyFocus.rawPtr() );
+			_holder()->_childRequestFocus( _slot(),  m_popups.begin()->pKeyFocus.rawPtr() );
 	}
 
 	//____ _childRequestResize() _______________________________________________
@@ -546,11 +561,13 @@ namespace wg
 
 	//____ _removeSlots() __________________________________________________
 
-	void PopupLayer::_removeSlots(int nb)
+	void PopupLayer::_removeSlots(int ofs, int nb)
 	{
 		MsgRouter * pEH = Base::msgRouter().rawPtr();
 	
-		PopupSlot * pSlot = m_popups.end() - nb;
+		PopupSlot * pSlot = m_popups.slot(ofs);
+
+		nb = min(nb, m_popups.size());
 
 		for(int i = 0 ; i < nb ; i++ )
 		{
@@ -558,9 +575,8 @@ namespace wg
 				pEH->post( new PopupClosedMsg( pSlot[i].pWidget, pSlot[i].pOpener ) );
 			_requestRender(pSlot[i].geo);
 		}
-			
-			
-		m_popups.remove(m_popups.size()-nb, nb);
+						
+		m_popups.remove(ofs, nb);
 		_restoreKeyboardFocus();
 	}
 

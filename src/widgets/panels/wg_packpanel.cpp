@@ -529,7 +529,7 @@ namespace wg
 	void PackPanel::_setSize( const Size& size )
 	{
 		Panel::_setSize(size);
-	    _refreshChildGeo();
+	    _refreshChildGeo(false);
 	}
 	
 	
@@ -610,7 +610,7 @@ namespace wg
 	
 	//____ _refreshChildGeo() _________________________________________________________
 	
-	void PackPanel::_refreshChildGeo()
+	void PackPanel::_refreshChildGeo( bool bRequestRender )
 	{
 	    if( m_children.isEmpty() )
 	        return;
@@ -650,9 +650,12 @@ namespace wg
 	            
 					if( geo != p->geo )
 					{
-						_requestRender(geo);
-						_requestRender(p->geo);
-	        
+						if (bRequestRender)
+						{
+							_requestRender(geo);
+							_requestRender(p->geo);
+						}
+
 						int oldW = p->geo.w;
 						int oldH = p->geo.h;
 						p->geo = geo;
@@ -663,7 +666,7 @@ namespace wg
 				}
 				else
 				{
-					if( p->geo.w != 0 && p->geo.h != 0 )
+					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
 						_requestRender(p->geo);
 	
 					p->geo.x = pos.x;
@@ -719,10 +722,12 @@ namespace wg
 					geo -= pS->padding;
 				
 					if( geo != pS->geo )
-					{					
-						_requestRender(geo);
-						_requestRender(pS->geo);
-	
+					{	
+						if( bRequestRender )
+						{
+							_requestRender(geo);
+							_requestRender(pS->geo);
+						}
 						int oldW = pS->geo.w;
 						int oldH = pS->geo.h;
 						pS->geo = geo;
@@ -733,7 +738,7 @@ namespace wg
 				}
 				else
 				{
-					if( pS->geo.w != 0 && pS->geo.h != 0 )
+					if( bRequestRender && pS->geo.w != 0 && pS->geo.h != 0 )
 						_requestRender(pS->geo);
 	
 					pS->geo.x = pos.x;
