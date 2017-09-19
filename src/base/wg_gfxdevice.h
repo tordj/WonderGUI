@@ -69,6 +69,9 @@ namespace wg
 		
 		//.____ Geometry _________________________________________________
 
+		virtual bool		setCanvas(Surface * pCanvas) = 0;
+		Surface_p	canvas() const { return m_pCanvas; }
+
 		inline Size	canvasSize() const { return m_canvasSize; }
 
 		//.____ State _________________________________________________
@@ -155,6 +158,8 @@ namespace wg
 		GfxDevice( Size canvasSize );
 		virtual ~GfxDevice() {};
 		
+		Surface_p	m_pCanvas;
+
 		Color		m_tintColor;		// Current Tint color.
 		BlendMode	m_blendMode;		// Current BlendMode.
 		uint32_t	m_renderFlags;		// Current flags.

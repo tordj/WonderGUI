@@ -77,13 +77,21 @@ namespace wg
 		return nullptr;
 	}
 	
-	//____ surfaceClassName() _______________________________________________________
+	//____ surfaceFactory() _______________________________________________________
 
 	SurfaceFactory_p NullGfxDevice::surfaceFactory()
 	{
 		return SurfaceFactory_p();
 	}
 	
+	//____ setCanvas() ________________________________________________________
+
+	bool NullGfxDevice::setCanvas(Surface * pCanvas)
+	{
+		m_pCanvas = pCanvas;
+		return true;
+	}
+
 	
 	
 	void NullGfxDevice::fill( const Rect& rect, const Color& col )
