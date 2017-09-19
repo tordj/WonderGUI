@@ -56,7 +56,11 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory();
-	
+
+		//.____ Geometry _________________________________________________
+
+		bool		setCanvas(Surface * pCanvas);
+
 		//.____ Rendering ________________________________________________
 
 		void	fill( const Rect& rect, const Color& col ) override;

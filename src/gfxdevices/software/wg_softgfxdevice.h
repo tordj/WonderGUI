@@ -59,7 +59,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		bool	setCanvas( Surface * pCanvas );
-	
+
 		//.____ Rendering ________________________________________________
 
 		bool	beginRender();
@@ -159,7 +159,6 @@ namespace wg
 		void	_stretchBlitInvert(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
 	
-		Surface_p 		m_pCanvas;
 		SoftSurfaceFactory_p	m_pSurfaceFactory;
 		int				m_lineThicknessTable[17];
 		int *			m_pCurveTab;

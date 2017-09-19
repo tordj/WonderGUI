@@ -230,7 +230,7 @@ namespace wg
 	GlGfxDevice::GlGfxDevice( Size canvas ) : GfxDevice(canvas)
 	{
 		m_bRendering = false;
-
+		m_framebufferId = 0;
         _initTables();
         
         
@@ -272,6 +272,8 @@ namespace wg
         glGenBuffers(1, &m_texCoordBufferId);
         glBindVertexArray(0);
  
+		glGenFramebuffers(1, &m_framebufferId);
+
         setCanvas( canvas );
         setTintColor( Color::White );        
     }
@@ -328,35 +330,93 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	void GlGfxDevice::setCanvas( Size canvas )
+	bool GlGfxDevice::setCanvas( Size dimensions )
 	{
-		m_canvasSize 	= canvas;
-        
-        glUseProgram( m_fillProg );
-        GLint dimLoc = glGetUniformLocation( m_fillProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
-        
-        glUseProgram( m_aaFillProg );
-        dimLoc = glGetUniformLocation( m_aaFillProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
-        
-        glUseProgram( m_mildSlopeProg );
-        dimLoc = glGetUniformLocation( m_mildSlopeProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
-        
-        glUseProgram( m_steepSlopeProg );
-        dimLoc = glGetUniformLocation( m_steepSlopeProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
-        
-        glUseProgram( m_blitProg );
-        dimLoc = glGetUniformLocation( m_blitProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
-        glUniform1i( m_blitProgTexIdLoc, 0 );
-        
-        glUseProgram( m_plotProg );
-        dimLoc = glGetUniformLocation( m_plotProg, "dimensions");
-        glUniform2f(dimLoc, (GLfloat) canvas.w, (GLfloat) canvas.h);
+		m_pCanvas = nullptr;
+		m_canvasSize 	= dimensions; 
+		m_defaultFramebufferSize = dimensions;
+		_updateProgramDimensions();
+
+		if (m_bRendering)
+			return _setFramebuffer();
+
+		return true;
 	}
+
+	bool GlGfxDevice::setCanvas( Surface * _pSurface )
+	{
+		if (!_pSurface)
+			return setCanvas(m_defaultFramebufferSize);		// Revert back to default frame buffer.
+
+		GlSurface * pSurface = GlSurface::cast(_pSurface);
+		if (!pSurface)
+			return false;			// Surface must be of type GlSurface!
+
+		m_pCanvas = pSurface;
+		m_canvasSize = pSurface->size();
+		_updateProgramDimensions();
+
+		if (m_bRendering)
+			return _setFramebuffer();
+
+		return true;
+	}
+
+	//____ _setFramebuffer() ____________________________________________________
+
+	bool GlGfxDevice::_setFramebuffer()
+	{
+		if (m_pCanvas)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GlSurface::cast(m_pCanvas)->getTexture(), 0);
+
+			GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers(1, drawBuffers);
+
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				return false;
+			}
+		}
+		else
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		return true;
+	}
+
+
+	//____ _updateProgramDimensions() ____________________________________________
+
+	void GlGfxDevice::_updateProgramDimensions()
+	{
+		glUseProgram(m_fillProg);
+		GLint dimLoc = glGetUniformLocation(m_fillProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+
+		glUseProgram(m_aaFillProg);
+		dimLoc = glGetUniformLocation(m_aaFillProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+
+		glUseProgram(m_mildSlopeProg);
+		dimLoc = glGetUniformLocation(m_mildSlopeProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+
+		glUseProgram(m_steepSlopeProg);
+		dimLoc = glGetUniformLocation(m_steepSlopeProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+
+		glUseProgram(m_blitProg);
+		dimLoc = glGetUniformLocation(m_blitProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_blitProgTexIdLoc, 0);
+
+		glUseProgram(m_plotProg);
+		dimLoc = glGetUniformLocation(m_plotProg, "m_canvasSize");
+		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+	}
+
 
 	//____ setTintColor() __________________________________________________________
 
@@ -401,12 +461,26 @@ namespace wg
 		m_glBlendEnabled  	= glIsEnabled(GL_BLEND);
 		glGetIntegerv(GL_BLEND_SRC, &m_glBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &m_glBlendDst);
+		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_glReadFrameBuffer);
+		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_glDrawFrameBuffer);
+
+		//TODO: Get and set viewport!!!!
+
+		// Set correct framebuffer
+
+		_setFramebuffer();
+
+//		if( m_framebufferId != m_glReadFrameBuffer || m_framebufferId != m_glDrawFrameBuffer )
+//			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
+
 
 		//  Modify states
 
 		glDisable(GL_DEPTH_TEST);
         glEnable(GL_SCISSOR_TEST);
         glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
+		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+
 		// Set correct blend mode
 
 		_setBlendMode(m_blendMode);
@@ -438,7 +512,8 @@ namespace wg
 			glDisable(GL_BLEND);
 
 		glBlendFunc( m_glBlendSrc, m_glBlendDst );
-
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_glReadFrameBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_glDrawFrameBuffer);
 
 		m_bRendering = false;
 		return true;
