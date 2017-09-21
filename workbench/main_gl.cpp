@@ -221,14 +221,14 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	FlexPanel_p pFlexPanel = FlexPanel::create();
-	pFlexPanel->setSkin( pImgSkin  );
-	pRoot->setWidget(pFlexPanel);
+	pFlexPanel->setSkin( ColorSkin::create(Color::Beige)/*pImgSkin*/  );
+	pRoot->child = pFlexPanel;
 
 
 
 	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->addWidget( pImage, Rect(0,0,80,33), Origo::Center );
+	pFlexPanel->children.addMovable( pImage, Rect(0,0,80,33), Origo::Center );
 
 
 //	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -250,8 +250,8 @@ int main ( int argc, char** argv )
 		
 		pVert->setOrientation( Orientation::Vertical );
 		
-		pVert->addWidget( pHorr );
-		pVert->addWidget( pFillerSouth );
+		pVert->children << pHorr;
+		pVert->children << pFillerSouth;
 
 		TextEditor_p pText = TextEditor::create();
 		pText->setSkin( ColorSkin::create( Color::Black ) );
@@ -278,8 +278,8 @@ int main ( int argc, char** argv )
 		pText->text.setCharStyle( pLink, 29, 4 );
 
 
-		pHorr->addWidget( pText );
-		pHorr->addWidget( pFillerEast );
+		pHorr->children << pText;
+		pHorr->children << pFillerEast;
 
 		
 //		pFlexPanel->addWidget( pVert, Origo::NorthWest, Origo::SouthEast );
@@ -291,7 +291,7 @@ int main ( int argc, char** argv )
 	{
 		Image_p pImage = Image::create();
 		pImage->setImage( generateTestSurface() );
-        pFlexPanel->addWidget( pImage, Origo::NorthWest, Origo::SouthEast, Border(20) );
+		pFlexPanel->children.addPinned(pImage, { Origo::NorthWest,20,20 }, { Origo::SouthEast,-20,-20 } );
 	}
 
 
@@ -443,7 +443,7 @@ int main ( int argc, char** argv )
  //       glClearColor(0.1f, 0.3f, 0.3f, 1.0f );
  //       glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 //		glFlush();
-
+/*
          pGfxDevice->beginRender();
 
 //        pGfxDevice->setTintColor(Color::Red );
@@ -486,7 +486,7 @@ int main ( int argc, char** argv )
 //        pGfxDevice->fillSubPixel(RectF(21.8f, 21.5f, 0.4f, 0.4f ), Color::AntiqueWhite );
         
         pGfxDevice->endRender();
-        
+*/        
 		SDL_Delay(20);
         tick++;
     }
@@ -699,10 +699,7 @@ void cbInitDrag( const Msg_p& _pMsg, const Object_p& pObject )
 {
 	Widget_p pWidget = Widget::cast(pObject);
 
-	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
-
-
-	dragStartPos = pHook->floatOfs();
+	dragStartPos = pWidget->pos();
 	printf( "DRAG START!\n" );
 }
 
@@ -726,38 +723,45 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
 
-	FlexHook_p pHook = FlexHook::cast(pWidget->hook());
-	pHook->setOfs(dragStartPos+dragDistance);
+	FlexPanel_p pFlex = FlexPanel::cast(pWidget->parent());
+	int index = pFlex->children.index(pWidget);
+
+	pFlex->children.move(index, dragStartPos + dragDistance);
 }
 
 //____ cbMoveResize() _________________________________________________________
 
-void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
+void cbMoveResize( const Msg * _pMsg )
 {
 	static Coord posAtPress[MouseButton_Max];
 	
+//	Widget_p _pWidget = _pMsg->source();
+	Object_p _pWidget = _pMsg->source();
+
 	auto	pWidget = Widget::cast(_pWidget);
-	FlexHook_p 	pHook = FlexHook::cast(pWidget->hook());
+	auto	pParent = FlexPanel::cast(pWidget->parent());
+
+	int index = pParent->children.index(pWidget);
 
 	switch( _pMsg->type() )
 	{
 		case MsgType::MousePress:
 		{
-			auto pMsg = MousePressMsg::cast(_pMsg);
+			auto pMsg = static_cast<const MousePressMsg*>(_pMsg);
 			posAtPress[(int)pMsg->button()] = pWidget->pos();
-			
+			 
 		}
 		break;
 		case MsgType::MouseDrag:
 		{
-			auto pMsg = MouseDragMsg::cast(_pMsg);
+			auto pMsg = static_cast<const MouseDragMsg*>(_pMsg);
 			if( pMsg->button() == MouseButton::Right )
 			{
-				pHook->setSize( pHook->size() + pMsg->draggedNow().toSize() );
+				pParent->children.setSize( index, pWidget->size() + pMsg->draggedNow().toSize() );
 			}
 			else if( pMsg->button() == MouseButton::Middle )
 			{
-				pHook->setOfs( posAtPress[(int)MouseButton::Middle] + pMsg->draggedTotal() );
+				pParent->children.setOfs( index, posAtPress[(int)MouseButton::Middle] + pMsg->draggedTotal() );
 			}
 		}
 		break;
@@ -774,10 +778,11 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	FlexHook * pHook = pParent->addWidget( pChild );
-	pHook->setSizePolicy(SizePolicy::Bound, SizePolicy::Bound);
+	auto it = pParent->children.add(pChild);
 
-	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
+//	pHook->setSizePolicy(SizePolicy::Bound, SizePolicy::Bound);
+
+	pMsgRouter->addRoute( pChild, cbMoveResize );
 }
 
 //____ convertSDLFormat() ______________________________________________________
