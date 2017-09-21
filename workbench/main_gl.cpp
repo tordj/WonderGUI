@@ -432,11 +432,27 @@ int main ( int argc, char** argv )
 	glFlush();
 
 
+	auto pMyCanvas = GlSurface::create({ 400,400 }, PixelType::BGR_8);
+//	pMyCanvas->setScaleMode(ScaleMode::Interpolate);
+	pMyCanvas->setScaleMode(ScaleMode::Nearest);
+
+
 	while( !bQuit ) 
 	{
 		translateEvents( pInput, pRoot );
 
+		pGfxDevice->setCanvas(pMyCanvas);
+
 		pRoot->render();
+
+		pGfxDevice->setCanvas({ 400,400 });
+
+		pGfxDevice->beginRender();
+		pGfxDevice->stretchBlitSubPixelWithInvert(pMyCanvas, 0,0,400,400, 0,0, 200, 200 );
+//		pGfxDevice->blit(pMyCanvas, { 0,0,400,400 }, { 0,0 });
+//		pGfxDevice->stretchBlit(pMyCanvas, { 0,0,400,400 }, { 0,0,200,200 });
+		pGfxDevice->endRender();
+
 
 //		updateWindowRects( pRoot, pWin );
 

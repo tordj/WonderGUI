@@ -40,7 +40,7 @@
 
 namespace wg
 {
-
+	class GlSurface;
 	class GlGfxDevice;
 	typedef	StrongPtr<GlGfxDevice> GlGfxDevice_p;
 	typedef	WeakPtr<GlGfxDevice>	GlGfxDevice_wp;
@@ -67,7 +67,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void	setCanvas( Size canvas );
+		bool	setCanvas( Size dimensions );
+		bool	setCanvas( Surface * pCanvas );
 
 		//.____ State _________________________________________________
 
@@ -98,10 +99,10 @@ namespace wg
 		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 									 float dx, float dy, float dw, float dh ) override;
 
-
-
-
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
+
+		void	stretchBlitSubPixelWithInvert(Surface * pSrc, float sx, float sy, float sw, float sh,
+			float dx, float dy, float dw, float dh);
 
 	protected:
 		GlGfxDevice( Size canvas );
@@ -111,14 +112,22 @@ namespace wg
 		void	_setBlendMode( BlendMode blendMode );
 
         GLuint  _createGLProgram( const char * pVertexShader, const char * pFragmentShader );
+		void	_updateProgramDimensions();
+		bool	_setFramebuffer();
        
         SurfaceFactory_p	m_pSurfaceFactory;
-		    float	_scaleThickness( float thickeness, float slope );
+	    float	_scaleThickness( float thickeness, float slope );
         
-		    bool	m_bRendering;
+	    bool	m_bRendering;
 
         float	m_lineThicknessTable[17];
-        
+
+		GLuint		m_framebufferId;
+		bool		m_bFlipY;
+
+		Size		m_defaultFramebufferSize;
+
+
         // Device programs
         
         GLuint  m_fillProg;
@@ -165,6 +174,10 @@ namespace wg
         GLboolean	m_glBlendEnabled;
 		GLint		m_glBlendSrc;
 		GLint		m_glBlendDst;
+		GLint		m_glViewport[4];
+		GLint		m_glScissorBox[4];
+		GLint		m_glReadFrameBuffer;
+		GLint		m_glDrawFrameBuffer;
 		Size		m_size;
 
 	};
