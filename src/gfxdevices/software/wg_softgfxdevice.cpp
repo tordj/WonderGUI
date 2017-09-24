@@ -762,6 +762,137 @@ namespace wg
 		}
 	}
 	
+	//____ clipDrawHorrShape() _____________________________________________________
+
+	void SoftGfxDevice::clipDrawHorrShape(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color frontColor, Color backColor)
+	{
+		if (!m_pCanvas || !m_pCanvasPixels)
+			return;
+
+		if (topLine.length <= length || bottomLine.length <= length)
+			length = min(topLine.length, bottomLine.length) - 1;
+
+		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits/8);
+
+
+		int pos[2][4];
+
+		for (int i = 0; i <= length; i++)
+		{
+			Color	col[3];
+
+			const WaveLine * pTop = &topLine;
+			const WaveLine * pBottom = &bottomLine;
+
+			if (pTop->pWave[i] < pBottom->pWave[i])
+			{
+				col[1] = frontColor;
+			}
+			else
+			{
+				swap(pTop, pBottom);
+				col[1] = backColor;
+			}
+
+			col[0] = pTop->color;
+			col[2] = pBottom->color;
+
+			int topOfs = (int)((pTop->pWave[i]) * 65536);
+			int bottomOfs = (int)((pBottom->pWave[i]) * 65536);
+
+			int * pLeftPos = pos[i % 2];
+			int * pRightPos = pos[(i + 1) % 2];
+
+
+			pRightPos[0] = topOfs - (int) (pTop->thickness*32768);
+			pRightPos[1] = topOfs + (int)(pTop->thickness * 32768);
+
+			pRightPos[2] = bottomOfs - (int)(pBottom->thickness * 32768);
+			pRightPos[3] = bottomOfs + (int)(pBottom->thickness * 32768);
+
+			if (pRightPos[2] < pRightPos[1])
+			{
+				pRightPos[2] = pRightPos[1];
+				if (pRightPos[3] < pRightPos[2])
+					pRightPos[3] = pRightPos[2];
+			}
+
+			if (i > 0)
+			{
+				_drawShapeColumn(pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
+				pColumn += m_canvasPixelBits / 8;
+			}
+		}
+	}
+
+
+
+	void SoftGfxDevice::_drawShapeColumn(uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
+	{
+		// 16 binals on leftPos, rightPos and most calculations.
+
+		int i = 0;
+
+		int amount[4];
+		int inc[4];
+
+		int columnBeg = (min(leftPos[0], rightPos[0]) & 0xFFFF0000) + 32768;		// Column starts in middle of first pixel
+
+		for (int i = 0; i < 4; i++)
+		{
+			int yBeg;
+			int64_t xInc;
+
+			if (leftPos[i] < rightPos[i])
+			{
+				yBeg = leftPos[i];
+				xInc = (int64_t) 65536*65536 / (rightPos[i] - leftPos[i]+1);
+			}
+			else
+			{
+				yBeg = rightPos[i];
+				xInc = (int64_t) 65536*65536 / (leftPos[i] - rightPos[i]+1);
+			}
+
+			limit(xInc, (int64_t) 0, (int64_t) 65536);
+
+			inc[i] = (int) xInc;
+
+			int64_t startAmount = -((xInc * (yBeg-columnBeg)) >> 16);
+			amount[i] = (int)startAmount;
+		}
+
+		uint8_t * pDst = pColumn + linePitch * (columnBeg>>16);
+
+		while (amount[3] < 65536)
+		{
+			int fraction[3];
+			int backFraction = 65536;
+
+			for (int i = 0; i < 3; i++)
+			{
+				int a = amount[i];
+				int b = amount[i+1];
+				limit(a, 0, 65536);
+				limit(b, 0, 65536);
+				a = a - b;
+				fraction[i] = a;
+				backFraction -= a;
+			}
+
+			// Opaque only... for the moment...
+
+			pDst[0] = (pDst[0] * backFraction + col[0].b * fraction[0] + col[1].b * fraction[1] + col[2].b * fraction[2]) >> 16;
+			pDst[1] = (pDst[1] * backFraction + col[0].g * fraction[0] + col[1].g * fraction[1] + col[2].g * fraction[2]) >> 16;
+			pDst[2] = (pDst[2] * backFraction + col[0].r * fraction[0] + col[1].r * fraction[1] + col[2].r * fraction[2]) >> 16;
+			pDst += linePitch;
+
+			for (int i = 0; i < 4; i++)
+				amount[i] += inc[i];
+		}
+	}
+
+
 	
 	//____ clipDrawHorrLine() _____________________________________________________
 	

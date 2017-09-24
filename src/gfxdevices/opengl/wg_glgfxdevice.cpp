@@ -231,7 +231,6 @@ namespace wg
 	{
 		m_bRendering = false;
 		m_bFlipY = true;
-		m_framebufferId = 0;
         _initTables();
         
         

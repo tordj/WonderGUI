@@ -48,7 +48,16 @@ namespace wg
 	typedef	StrongPtr<GfxDevice>	GfxDevice_p;
 	typedef	WeakPtr<GfxDevice>	GfxDevice_wp;
 	
-	
+
+	//____ WaveLine ___________________________________________________________
+
+	struct WaveLine
+	{
+		int		length;
+		float	thickness;
+		Color	color;
+		float * pWave;
+	};
 	
 	
 	class GfxDevice : public Object

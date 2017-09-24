@@ -69,13 +69,13 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 640, height = 400;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+	int posX = 100, posY = 100, width = 1920, height = 1080;
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
 	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
-
+	 
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
@@ -787,15 +787,54 @@ int main ( int argc, char** argv )
 	// Program Main Loop
 	//------------------------------------------------------
 
+	float	topWave[2001];
+	float	bottomWave[2001];
+
+	WaveLine	topLine, bottomLine;
+
+	topLine.color = Color::White;
+	topLine.thickness = 5.f;
+	topLine.pWave = topWave;
+	topLine.length = 2001;
+
+	bottomLine.color = Color::Red;
+	bottomLine.thickness = 0.5f;
+	bottomLine.pWave = bottomWave;
+	bottomLine.length = 2001;
+
+	for (int i = 0; i < 2001; i++)
+	{
+		topWave[i] = 80+sin(i/10.0)*4;
+		bottomWave[i] = 160+sin(i/20.0)*6;
+	}
+
+
 	while( !bQuit ) 
 	{
 		translateEvents( pInput, pRoot );
 
 		SDL_LockSurface(pWinSurf);
-		pRoot->render();
+//		pRoot->render();
+
+		pGfxDevice->beginRender();
+
+		pGfxDevice->fill({ 0,0,400,400 }, Color::Black);
+
+		pGfxDevice->clipDrawHorrShape({ 10,10,380,380 }, { 10,150 }, 1900, topLine, bottomLine, Color::Blue, Color::Purple);
+
+		pGfxDevice->endRender();
+
 		SDL_UnlockSurface(pWinSurf);
 
-		updateWindowRects( pRoot, pWin );
+		SDL_Rect	r;
+		r.x = 0;
+		r.y = 0;
+		r.w = 400;
+		r.h = 400;
+		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
+
+
+//		updateWindowRects( pRoot, pWin );
 
 		SDL_Delay(20);
     }

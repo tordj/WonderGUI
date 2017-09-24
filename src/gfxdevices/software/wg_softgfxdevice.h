@@ -83,6 +83,7 @@ namespace wg
 		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 float dx, float dy, float dw, float dh ) override;
 
+		void	clipDrawHorrShape(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color front, Color back);
 
 		// Experimental stuff...
 
@@ -110,6 +111,8 @@ namespace wg
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 	
+		void	_drawShapeColumn(uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+
 	
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
