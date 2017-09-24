@@ -24,6 +24,7 @@
 #include <wg_util.h>
 #include <math.h>
 #include <algorithm>
+#include <wg_base.h>
 
 #include <assert.h>
 
@@ -761,7 +762,74 @@ namespace wg
 			pos += slope;
 		}
 	}
-	
+	 
+	//____ _traceLine() __________________________________________________________
+
+	void SoftGfxDevice::_traceLine(int * pDest, int * pSrc, int nPoints, float thickness)
+	{
+		static int brush[128];
+		static float prevThickness = -1.f;
+
+		int brushSteps = (int)(thickness / 2 + 0.99f);
+
+		// Generate brush
+
+		if (thickness != prevThickness)
+		{
+			int scaledThickness = (int)(thickness / 2 * 256);
+			for (int i = 0; i < brushSteps; i++)
+			{
+				brush[i] = (scaledThickness * m_pCurveTab[c_nCurveTabEntries-(i*c_nCurveTabEntries)/brushSteps-1]) >> 16;
+//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
+			}
+		}
+
+		// Trace...
+
+		for (int i = 0; i < nPoints; i++)
+		{
+			// Start with top and bottom for current point
+
+			int top = pSrc[i] - brush[0];
+			int bottom = pSrc[i] + brush[0];
+
+			// Check brush's coverage from previous points
+
+			int end = min(i + 1, brushSteps);
+
+			for (int j = 1; j < end ; j++)
+			{
+				int topCover = pSrc[i - j] - brush[j];
+				int bottomCover = pSrc[i - j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Check brush's coverage from following points
+
+			end = min(nPoints-i, brushSteps);
+
+			for (int j = 1; j < end ; j++)
+			{
+				int topCover = pSrc[i + j] - brush[j];
+				int bottomCover = pSrc[i + j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Save traced values
+
+			*pDest++ = top;
+			*pDest++ = bottom;
+		}
+	}
+
 	//____ clipDrawHorrShape() _____________________________________________________
 
 	void SoftGfxDevice::clipDrawHorrShape(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color frontColor, Color backColor)
@@ -772,12 +840,59 @@ namespace wg
 		if (topLine.length <= length || bottomLine.length <= length)
 			length = min(topLine.length, bottomLine.length) - 1;
 
-		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits/8);
+		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
 
+		int ofs = 0;
+		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
+		{
+			int margin = (int)(max(topLine.thickness, bottomLine.thickness) / 2 + 0.99);
 
+			if (clip.x > begin.x + margin )
+			{
+				ofs = clip.x - begin.x - margin;
+				begin.x += ofs;
+				length -= ofs;
+			}
+
+			if (begin.x + length - margin > clip.x + clip.w)
+				length = clip.x + clip.w - begin.x + margin;
+
+			if (length <= 0)
+				return;
+		}
+
+		// Generate line traces
+
+		int	bufferSize = (length+1) * 2 * sizeof(int) *2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+		char * pBuffer = Base::memStackAlloc(bufferSize);
+		int * pTopLineTrace = (int*)pBuffer;
+		int * pBottomLineTrace = (int*) (pBuffer + bufferSize/2);
+
+		_traceLine(pTopLineTrace, topLine.pWave+ofs, length+1, topLine.thickness);
+		_traceLine(pBottomLineTrace, bottomLine.pWave+ofs, length+1, bottomLine.thickness);
+
+		// Do proper X-clipping
+
+		int startColumn = 0;
+		if (begin.x < clip.x)
+		{
+			startColumn = clip.x - begin.x;
+			length -= startColumn;
+			begin.x += startColumn;
+		}
+
+		if (begin.x + length > clip.x + clip.w)
+			length = clip.x + clip.w - begin.x;
+
+		// Render columns
+
+		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits / 8);
 		int pos[2][4];
 
-		for (int i = 0; i <= length; i++)
+		int clipBeg = (begin.y - clip.y) << 16;
+		int clipLen = (clip.h) << 16;
+
+		for (int i = startColumn; i <= length; i++)
 		{
 			Color	col[3];
 
@@ -797,19 +912,16 @@ namespace wg
 			col[0] = pTop->color;
 			col[2] = pBottom->color;
 
-			int topOfs = (int)((pTop->pWave[i]) * 65536);
-			int bottomOfs = (int)((pBottom->pWave[i]) * 65536);
 
 			int * pLeftPos = pos[i % 2];
 			int * pRightPos = pos[(i + 1) % 2];
 
+			pRightPos[0] = pTopLineTrace[i * 2] << 8;
+			pRightPos[1] = pTopLineTrace[i * 2 + 1] << 8;
 
-			pRightPos[0] = topOfs - (int) (pTop->thickness*32768);
-			pRightPos[1] = topOfs + (int)(pTop->thickness * 32768);
-
-			pRightPos[2] = bottomOfs - (int)(pBottom->thickness * 32768);
-			pRightPos[3] = bottomOfs + (int)(pBottom->thickness * 32768);
-
+			pRightPos[2] = pBottomLineTrace[i * 2] << 8;
+			pRightPos[3] = pBottomLineTrace[i * 2+1] << 8;
+			
 			if (pRightPos[2] < pRightPos[1])
 			{
 				pRightPos[2] = pRightPos[1];
@@ -817,19 +929,22 @@ namespace wg
 					pRightPos[3] = pRightPos[2];
 			}
 
-			if (i > 0)
+			if (i > startColumn)
 			{
-				_drawShapeColumn(pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
+				_clipDrawShapeColumn(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
 				pColumn += m_canvasPixelBits / 8;
 			}
 		}
+
+		Base::memStackRelease(bufferSize);
 	}
 
 
+	//_____ _clipDrawShapeColumn() ________________________________________________
 
-	void SoftGfxDevice::_drawShapeColumn(uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
+	void SoftGfxDevice::_clipDrawShapeColumn(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
 	{
-		// 16 binals on leftPos, rightPos and most calculations.
+		// 16 binals on clipBeg, clipLen, leftPos, rightPos and most calculations.
 
 		int i = 0;
 
@@ -862,6 +977,15 @@ namespace wg
 			amount[i] = (int)startAmount;
 		}
 
+		// Do clipping
+
+		if (columnBeg < clipBeg)
+		{
+		}
+
+
+		//
+
 		uint8_t * pDst = pColumn + linePitch * (columnBeg>>16);
 
 		while (amount[3] < 65536)
@@ -875,12 +999,12 @@ namespace wg
 				int b = amount[i+1];
 				limit(a, 0, 65536);
 				limit(b, 0, 65536);
-				a = a - b;
+				a = ((a - b)*col[i].a)/255;
 				fraction[i] = a;
 				backFraction -= a;
 			}
 
-			// Opaque only... for the moment...
+			// Blend only... for the moment...
 
 			pDst[0] = (pDst[0] * backFraction + col[0].b * fraction[0] + col[1].b * fraction[1] + col[2].b * fraction[2]) >> 16;
 			pDst[1] = (pDst[1] * backFraction + col[0].g * fraction[0] + col[1].g * fraction[1] + col[2].g * fraction[2]) >> 16;

@@ -56,7 +56,7 @@ namespace wg
 		int		length;
 		float	thickness;
 		Color	color;
-		float * pWave;
+		int *	pWave;			// Pixel offset with 8 binals.
 	};
 	
 	

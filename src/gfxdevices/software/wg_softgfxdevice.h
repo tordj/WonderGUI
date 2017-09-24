@@ -111,7 +111,8 @@ namespace wg
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 	
-		void	_drawShapeColumn(uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+		void	_clipDrawShapeColumn( int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+		void	_traceLine(int * pDest, int * pSrc, int nPoints, float thickness);
 
 	
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );

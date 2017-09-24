@@ -787,27 +787,30 @@ int main ( int argc, char** argv )
 	// Program Main Loop
 	//------------------------------------------------------
 
-	float	topWave[2001];
-	float	bottomWave[2001];
+	int		topWave[2001];
+	int		bottomWave[2001];
 
 	WaveLine	topLine, bottomLine;
 
-	topLine.color = Color::White;
-	topLine.thickness = 5.f;
+	topLine.color = { 255,255,255,32 };
+	topLine.thickness = 10.f;
 	topLine.pWave = topWave;
 	topLine.length = 2001;
 
-	bottomLine.color = Color::Red;
-	bottomLine.thickness = 0.5f;
+	bottomLine.color = Color::White;
+	bottomLine.thickness = 0.2f;
 	bottomLine.pWave = bottomWave;
 	bottomLine.length = 2001;
 
 	for (int i = 0; i < 2001; i++)
 	{
-		topWave[i] = 80+sin(i/10.0)*4;
-		bottomWave[i] = 160+sin(i/20.0)*6;
+		topWave[i] = (int) ((100+sin(i/10.0)*80)*256);
+		bottomWave[i] = (int) ((300+sin(i/20.0)*6)*256);
 	}
 
+
+	printf("Sin(0): %f\n", cos(0));
+	printf("Sin(90): %f\n", cos(3.1415/2));
 
 	while( !bQuit ) 
 	{
@@ -818,9 +821,11 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->beginRender();
 
-		pGfxDevice->fill({ 0,0,400,400 }, Color::Black);
+//		pGfxDevice->fill({ 0,0,1920,1080 }, Color::Black);
 
-		pGfxDevice->clipDrawHorrShape({ 10,10,380,380 }, { 10,150 }, 1900, topLine, bottomLine, Color::Blue, Color::Purple);
+		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
+
+		pGfxDevice->clipDrawHorrShape({ 10,10,380,380 }, { 0,400 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 
