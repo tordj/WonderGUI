@@ -804,8 +804,8 @@ int main ( int argc, char** argv )
 
 	for (int i = 0; i < 2001; i++)
 	{
-		topWave[i] = (int) ((100+sin(i/10.0)*80)*256);
-		bottomWave[i] = (int) ((300+sin(i/20.0)*6)*256);
+		topWave[i] = (int) ((sin(i/10.0)*80)*256);
+		bottomWave[i] = (int) ((200+sin(i/20.0)*6)*256);
 	}
 
 
@@ -825,7 +825,7 @@ int main ( int argc, char** argv )
 
 		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
-		pGfxDevice->clipDrawHorrShape({ 10,10,380,380 }, { 0,400 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
+		pGfxDevice->clipDrawHorrShape({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 

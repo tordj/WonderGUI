@@ -887,41 +887,62 @@ namespace wg
 		// Render columns
 
 		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits / 8);
-		int pos[2][4];
+		int pos[2][4];						// Startpositions for the 4 fields of the column (topline, fill, bottomline, line end) for left and right edge of pixel column. 16 binals.
 
-		int clipBeg = (begin.y - clip.y) << 16;
-		int clipLen = (clip.h) << 16;
+		int clipBeg = clip.y - begin.y;
+		int clipLen = clip.h;
+
+		Color	col[4];
+		col[0] = topLine.color;
+		col[1] = frontColor;
+		col[2] = bottomLine.color;
+		col[3] = backColor;
+
 
 		for (int i = startColumn; i <= length; i++)
 		{
-			Color	col[3];
-
-			const WaveLine * pTop = &topLine;
-			const WaveLine * pBottom = &bottomLine;
-
-			if (pTop->pWave[i] < pBottom->pWave[i])
-			{
-				col[1] = frontColor;
-			}
-			else
-			{
-				swap(pTop, pBottom);
-				col[1] = backColor;
-			}
-
-			col[0] = pTop->color;
-			col[2] = pBottom->color;
-
+			// Old right pos becomes new left pos and old left pos will be reused for new right pos
 
 			int * pLeftPos = pos[i % 2];
 			int * pRightPos = pos[(i + 1) % 2];
+
+			// Check if lines have intersected and in that case swap top and bottom lines and colors
+
+			if (pTopLineTrace[i * 2] > pBottomLineTrace[i * 2])
+			{
+				swap(col[0], col[2]);
+				swap(col[1], col[3]);
+				swap(pTopLineTrace, pBottomLineTrace);
+
+				// We need to regenerate leftpos since we now have swapped top and bottom line.
+
+				if (i > startColumn)
+				{
+					int j = i - 1;
+					pLeftPos[0] = pTopLineTrace[j * 2] << 8;
+					pLeftPos[1] = pTopLineTrace[j * 2 + 1] << 8;
+
+					pLeftPos[2] = pBottomLineTrace[j * 2] << 8;
+					pLeftPos[3] = pBottomLineTrace[j * 2 + 1] << 8;
+
+					if (pLeftPos[2] < pLeftPos[1])
+					{
+						pLeftPos[2] = pLeftPos[1];
+						if (pLeftPos[3] < pLeftPos[2])
+							pLeftPos[3] = pLeftPos[2];
+					}
+				}
+			}
+
+			// Generate new rightpos table
 
 			pRightPos[0] = pTopLineTrace[i * 2] << 8;
 			pRightPos[1] = pTopLineTrace[i * 2 + 1] << 8;
 
 			pRightPos[2] = pBottomLineTrace[i * 2] << 8;
-			pRightPos[3] = pBottomLineTrace[i * 2+1] << 8;
-			
+			pRightPos[3] = pBottomLineTrace[i * 2 + 1] << 8;
+
+
 			if (pRightPos[2] < pRightPos[1])
 			{
 				pRightPos[2] = pRightPos[1];
@@ -929,12 +950,16 @@ namespace wg
 					pRightPos[3] = pRightPos[2];
 			}
 
+			// Render the column
+
 			if (i > startColumn)
 			{
 				_clipDrawShapeColumn(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
 				pColumn += m_canvasPixelBits / 8;
 			}
 		}
+
+		// Free temporary work memory
 
 		Base::memStackRelease(bufferSize);
 	}
@@ -944,7 +969,7 @@ namespace wg
 
 	void SoftGfxDevice::_clipDrawShapeColumn(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
 	{
-		// 16 binals on clipBeg, clipLen, leftPos, rightPos and most calculations.
+		// 16 binals on leftPos, rightPos and most calculations.
 
 		int i = 0;
 
@@ -952,6 +977,8 @@ namespace wg
 		int inc[4];
 
 		int columnBeg = (min(leftPos[0], rightPos[0]) & 0xFFFF0000) + 32768;		// Column starts in middle of first pixel
+
+		// Calculate start amount and increment for our 4 fields
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -979,40 +1006,140 @@ namespace wg
 
 		// Do clipping
 
-		if (columnBeg < clipBeg)
+		if (columnBeg < (clipBeg<<16))
 		{
+			int64_t forwardAmount = (clipBeg<<16) - columnBeg;
+
+			for (int i = 0; i < 4; i++)
+				amount[i] += (inc[i]*forwardAmount) >> 16;
+
+			columnBeg = (clipBeg<<16);
 		}
 
+		uint8_t * pDstClip = pColumn + (clipBeg + clipLen) * linePitch;
 
-		//
+		// Render the column
 
 		uint8_t * pDst = pColumn + linePitch * (columnBeg>>16);
 
-		while (amount[3] < 65536)
+		switch (m_blendMode)
 		{
-			int fraction[3];
-			int backFraction = 65536;
-
-			for (int i = 0; i < 3; i++)
+			case BlendMode::Blend:
 			{
-				int a = amount[i];
-				int b = amount[i+1];
-				limit(a, 0, 65536);
-				limit(b, 0, 65536);
-				a = ((a - b)*col[i].a)/255;
-				fraction[i] = a;
-				backFraction -= a;
+				// First render loop, run until we are fully into fill (or later section).
+				// This needs to cover all possibilities since topLine, fill and bottomLine might be less than 1 pixel combined
+				// in which case they should all be rendered.
+
+				while (amount[1] < 65536 && pDst < pDstClip)
+				{
+					int aFrac = amount[0];
+					int bFrac = amount[1];
+					int cFrac = amount[2];
+					int dFrac = amount[3];
+					limit(aFrac, 0, 65536);
+					limit(bFrac, 0, 65536);
+					limit(cFrac, 0, 65536);
+					limit(dFrac, 0, 65536);
+
+					aFrac = ((aFrac - bFrac)*col[0].a) / 255;
+					bFrac = ((bFrac - cFrac)*col[1].a) / 255;
+					cFrac = ((cFrac - dFrac)*col[2].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac;
+
+					pDst[0] = (pDst[0] * backFraction + col[0].b * aFrac + col[1].b * bFrac + col[2].b * cFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + col[0].g * aFrac + col[1].g * bFrac + col[2].g * cFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + col[0].r * aFrac + col[1].r * bFrac + col[2].r * cFrac) >> 16;
+					pDst += linePitch;
+
+					for (int i = 0; i < 4; i++)
+						amount[i] += inc[i];
+				}
+
+				// Second render loop, optimzed fill-section loop until bottomLine starts to fade in.
+
+				if(amount[2] <= 0 && pDst < pDstClip)
+				{
+					if (col[1].a == 255)
+					{
+						while (amount[2] <= 0 && pDst < pDstClip)
+						{
+							pDst[0] = col[1].b;
+							pDst[1] = col[1].g;
+							pDst[2] = col[1].r;
+							pDst += linePitch;
+
+							amount[2] += inc[2];
+							amount[3] += inc[3];
+						}
+					}
+					else
+					{
+						int fillFrac = (65536 * col[1].a) / 255;
+
+						int fillB = col[1].b * fillFrac;
+						int fillG = col[1].g * fillFrac;
+						int fillR = col[1].r * fillFrac;
+						int backFraction = 65536 - fillFrac;
+
+						while (amount[2] <= 0 && pDst < pDstClip)
+						{
+							pDst[0] = (pDst[0] * backFraction + fillB) >> 16;
+							pDst[1] = (pDst[1] * backFraction + fillG) >> 16;
+							pDst[2] = (pDst[2] * backFraction + fillR) >> 16;
+							pDst += linePitch;
+
+							amount[2] += inc[2];
+							amount[3] += inc[3];
+						}
+					}
+				}
+
+
+				// Third render loop, from when bottom line has started to fade in.
+				// We can safely ignore topLine (not visible anymore) and amount[2] is guaranteed to have reached 65536.
+
+				while (amount[3] < 65536 && pDst < pDstClip)
+				{
+					int cFrac = amount[2];
+					int dFrac = amount[3];
+					limit(cFrac, 0, 65536);
+					limit(dFrac, 0, 65536);
+
+					int bFrac = ((65536 - cFrac)*col[1].a) / 255;
+					cFrac = ((cFrac - dFrac)*col[2].a) / 255;
+
+					int backFraction = 65536 - bFrac - cFrac;
+
+					pDst[0] = (pDst[0] * backFraction + col[1].b * bFrac + col[2].b * cFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + col[1].g * bFrac + col[2].g * cFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + col[1].r * bFrac + col[2].r * cFrac) >> 16;
+					pDst += linePitch;
+
+					amount[2] += inc[2];
+					amount[3] += inc[3];
+				}
+				break;
 			}
 
-			// Blend only... for the moment...
+			case BlendMode::Add:
+				break;
 
-			pDst[0] = (pDst[0] * backFraction + col[0].b * fraction[0] + col[1].b * fraction[1] + col[2].b * fraction[2]) >> 16;
-			pDst[1] = (pDst[1] * backFraction + col[0].g * fraction[0] + col[1].g * fraction[1] + col[2].g * fraction[2]) >> 16;
-			pDst[2] = (pDst[2] * backFraction + col[0].r * fraction[0] + col[1].r * fraction[1] + col[2].r * fraction[2]) >> 16;
-			pDst += linePitch;
+			case BlendMode::Subtract:
+				break;
 
-			for (int i = 0; i < 4; i++)
-				amount[i] += inc[i];
+			case BlendMode::Invert:
+				break;
+
+			case BlendMode::Multiply:
+				break;
+
+			case BlendMode::Replace:
+				break;
+
+			default:
+				break;
+
 		}
 	}
 
