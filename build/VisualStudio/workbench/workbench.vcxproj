@@ -159,7 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\workbench\main2.cpp" />
+    <ClCompile Include="..\..\..\workbench\main_gl.cpp" />
     <ClCompile Include="..\..\..\workbench\testwidget.cpp" />
   </ItemGroup>
   <ItemGroup>

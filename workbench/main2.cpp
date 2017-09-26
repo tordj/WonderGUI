@@ -825,7 +825,7 @@ int main ( int argc, char** argv )
 
 		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
-		pGfxDevice->clipDrawHorrShape({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
+		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 

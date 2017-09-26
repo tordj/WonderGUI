@@ -58,7 +58,6 @@ namespace wg
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
-		_genCurveTab();
 	}
 	
 	SoftGfxDevice::SoftGfxDevice( SoftSurface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
@@ -67,7 +66,6 @@ namespace wg
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
-		_genCurveTab();
 	}
 	
 	//____ Destructor ______________________________________________________________
@@ -75,7 +73,6 @@ namespace wg
 	SoftGfxDevice::~SoftGfxDevice()
 	{
 		delete [] m_pDivTab;
-		delete [] m_pCurveTab;
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -763,89 +760,23 @@ namespace wg
 		}
 	}
 	 
-	//____ _traceLine() __________________________________________________________
 
-	void SoftGfxDevice::_traceLine(int * pDest, int * pSrc, int nPoints, float thickness)
-	{
-		static int brush[128];
-		static float prevThickness = -1.f;
+	//____ clipDrawHorrWave() _____________________________________________________
 
-		int brushSteps = (int)(thickness / 2 + 0.99f);
-
-		// Generate brush
-
-		if (thickness != prevThickness)
-		{
-			int scaledThickness = (int)(thickness / 2 * 256);
-			for (int i = 0; i < brushSteps; i++)
-			{
-				brush[i] = (scaledThickness * m_pCurveTab[c_nCurveTabEntries-(i*c_nCurveTabEntries)/brushSteps-1]) >> 16;
-//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
-			}
-		}
-
-		// Trace...
-
-		for (int i = 0; i < nPoints; i++)
-		{
-			// Start with top and bottom for current point
-
-			int top = pSrc[i] - brush[0];
-			int bottom = pSrc[i] + brush[0];
-
-			// Check brush's coverage from previous points
-
-			int end = min(i + 1, brushSteps);
-
-			for (int j = 1; j < end ; j++)
-			{
-				int topCover = pSrc[i - j] - brush[j];
-				int bottomCover = pSrc[i - j] + brush[j];
-
-				if (topCover < top)
-					top = topCover;
-				else if (bottomCover > bottom)
-					bottom = bottomCover;
-			}
-
-			// Check brush's coverage from following points
-
-			end = min(nPoints-i, brushSteps);
-
-			for (int j = 1; j < end ; j++)
-			{
-				int topCover = pSrc[i + j] - brush[j];
-				int bottomCover = pSrc[i + j] + brush[j];
-
-				if (topCover < top)
-					top = topCover;
-				else if (bottomCover > bottom)
-					bottom = bottomCover;
-			}
-
-			// Save traced values
-
-			*pDest++ = top;
-			*pDest++ = bottom;
-		}
-	}
-
-	//____ clipDrawHorrShape() _____________________________________________________
-
-	void SoftGfxDevice::clipDrawHorrShape(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color frontColor, Color backColor)
+	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
 
-		if (topLine.length <= length || bottomLine.length <= length)
-			length = min(topLine.length, bottomLine.length) - 1;
+		if (topBorder.length <= length || bottomBorder.length <= length)
+			length = min(topBorder.length, bottomBorder.length) - 1;
 
 		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
 
 		int ofs = 0;
 		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
 		{
-			int margin = (int)(max(topLine.thickness, bottomLine.thickness) / 2 + 0.99);
+			int margin = (int)(max(topBorder.thickness, bottomBorder.thickness) / 2 + 0.99);
 
 			if (clip.x > begin.x + margin )
 			{
@@ -865,11 +796,11 @@ namespace wg
 
 		int	bufferSize = (length+1) * 2 * sizeof(int) *2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
 		char * pBuffer = Base::memStackAlloc(bufferSize);
-		int * pTopLineTrace = (int*)pBuffer;
-		int * pBottomLineTrace = (int*) (pBuffer + bufferSize/2);
+		int * pTopBorderTrace = (int*)pBuffer;
+		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
-		_traceLine(pTopLineTrace, topLine.pWave+ofs, length+1, topLine.thickness);
-		_traceLine(pBottomLineTrace, bottomLine.pWave+ofs, length+1, bottomLine.thickness);
+		_traceLine(pTopBorderTrace, topBorder.pWave+ofs, length+1, topBorder.thickness);
+		_traceLine(pBottomBorderTrace, bottomBorder.pWave+ofs, length+1, bottomBorder.thickness);
 
 		// Do proper X-clipping
 
@@ -893,13 +824,13 @@ namespace wg
 		int clipLen = clip.h;
 
 		Color	col[4];
-		col[0] = topLine.color;
-		col[1] = frontColor;
-		col[2] = bottomLine.color;
-		col[3] = backColor;
+		col[0] = topBorder.color;
+		col[1] = frontFill;
+		col[2] = bottomBorder.color;
+		col[3] = backFill;
 
 
-		for (int i = startColumn; i <= length; i++)
+		for (int i = startColumn; i <= length+startColumn; i++)
 		{
 			// Old right pos becomes new left pos and old left pos will be reused for new right pos
 
@@ -908,22 +839,22 @@ namespace wg
 
 			// Check if lines have intersected and in that case swap top and bottom lines and colors
 
-			if (pTopLineTrace[i * 2] > pBottomLineTrace[i * 2])
+			if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
 			{
 				swap(col[0], col[2]);
 				swap(col[1], col[3]);
-				swap(pTopLineTrace, pBottomLineTrace);
+				swap(pTopBorderTrace, pBottomBorderTrace);
 
 				// We need to regenerate leftpos since we now have swapped top and bottom line.
 
 				if (i > startColumn)
 				{
 					int j = i - 1;
-					pLeftPos[0] = pTopLineTrace[j * 2] << 8;
-					pLeftPos[1] = pTopLineTrace[j * 2 + 1] << 8;
+					pLeftPos[0] = pTopBorderTrace[j * 2] << 8;
+					pLeftPos[1] = pTopBorderTrace[j * 2 + 1] << 8;
 
-					pLeftPos[2] = pBottomLineTrace[j * 2] << 8;
-					pLeftPos[3] = pBottomLineTrace[j * 2 + 1] << 8;
+					pLeftPos[2] = pBottomBorderTrace[j * 2] << 8;
+					pLeftPos[3] = pBottomBorderTrace[j * 2 + 1] << 8;
 
 					if (pLeftPos[2] < pLeftPos[1])
 					{
@@ -936,11 +867,11 @@ namespace wg
 
 			// Generate new rightpos table
 
-			pRightPos[0] = pTopLineTrace[i * 2] << 8;
-			pRightPos[1] = pTopLineTrace[i * 2 + 1] << 8;
+			pRightPos[0] = pTopBorderTrace[i * 2] << 8;
+			pRightPos[1] = pTopBorderTrace[i * 2 + 1] << 8;
 
-			pRightPos[2] = pBottomLineTrace[i * 2] << 8;
-			pRightPos[3] = pBottomLineTrace[i * 2 + 1] << 8;
+			pRightPos[2] = pBottomBorderTrace[i * 2] << 8;
+			pRightPos[3] = pBottomBorderTrace[i * 2 + 1] << 8;
 
 
 			if (pRightPos[2] < pRightPos[1])
@@ -954,7 +885,7 @@ namespace wg
 
 			if (i > startColumn)
 			{
-				_clipDrawShapeColumn(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
+				_clipDrawWaveColumn(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
 				pColumn += m_canvasPixelBits / 8;
 			}
 		}
@@ -965,9 +896,9 @@ namespace wg
 	}
 
 
-	//_____ _clipDrawShapeColumn() ________________________________________________
+	//_____ _clipDrawWaveColumn() ________________________________________________
 
-	void SoftGfxDevice::_clipDrawShapeColumn(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
+	void SoftGfxDevice::_clipDrawWaveColumn(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
 	{
 		// 16 binals on leftPos, rightPos and most calculations.
 
@@ -1606,22 +1537,6 @@ namespace wg
 	}
 	
 	
-	//____ _genCurveTab() ___________________________________________________________
-	
-	void SoftGfxDevice::_genCurveTab()
-	{
-		m_pCurveTab = new int[c_nCurveTabEntries];
-	
-//		double factor = 3.14159265 / (2.0 * c_nCurveTabEntries);
-	
-		for( int i = 0 ; i < c_nCurveTabEntries ; i++ )
-		{
-			double y = 1.f - i/(double)c_nCurveTabEntries;
-			m_pCurveTab[i] = (int) (sqrt(1.f - y*y)*65536.f);
-		}
-	}
-	
-	
 	//____ drawElipse() _______________________________________________________________
 	
 	void SoftGfxDevice::drawElipse( const Rect& rect, Color color )
@@ -1654,8 +1569,8 @@ namespace wg
 	
 		for( int i = 0 ; i < sectionHeight ; i++ )
 		{
-			peakOfs = ((m_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
-			endOfs = (m_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
+			peakOfs = ((s_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
+			endOfs = (s_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
 	
 			_drawHorrFadeLine( pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, fillColor );
 			_drawHorrFadeLine( pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, fillColor );
@@ -1844,8 +1759,8 @@ namespace wg
 	
 		for( int i = 0 ; i < sectionHeight ; i++ )
 		{
-			peakOfs = ((m_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
-			endOfs = (m_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
+			peakOfs = ((s_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
+			endOfs = (s_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
 	
 			if( rect.y + i >= clip.y && rect.y + i < clip.y + clip.h )
 			{
@@ -1880,7 +1795,7 @@ namespace wg
 		{
 			for( int i = 0 ; i < rect.h/2 ; i++ )
 			{
-				int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16)*pixelBytes;
+				int lineLen = ((s_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16)*pixelBytes;
 				uint8_t * pLineBeg = pLineCenter - lineLen;
 				uint8_t * pLineEnd = pLineCenter + lineLen;
 	
@@ -1922,7 +1837,7 @@ namespace wg
 			{
 				if( rect.y + j*(rect.h/2) + i >= clip.y && rect.y + j*(rect.h/2) + i < clip.y + clip.h )
 				{
-					int lineLen = ((m_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16);
+					int lineLen = ((s_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16);
 	
 					int beg = rect.x + rect.w/2 - lineLen;
 					int end = rect.x + rect.w/2 + lineLen;
@@ -1970,7 +1885,7 @@ namespace wg
 	
 		for( int i = 0 ; i < rect.h ; i++ )
 		{
-			uint8_t * pLineEnd = pLineBeg + ((m_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
+			uint8_t * pLineEnd = pLineBeg + ((s_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
 	
 			for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
 			{

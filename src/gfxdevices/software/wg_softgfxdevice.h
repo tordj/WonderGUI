@@ -83,7 +83,7 @@ namespace wg
 		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 float dx, float dy, float dw, float dh ) override;
 
-		void	clipDrawHorrShape(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color front, Color back);
+		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill);
 
 		// Experimental stuff...
 
@@ -100,20 +100,14 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice( SoftSurface * pCanvas );
 		~SoftGfxDevice();
-
-		const static int c_nCurveTabEntries = 1024;
-
 	
 		void	_initTables();
-		void	_genCurveTab();
 		int 	_scaleLineThickness( float thickness, int slope );
 	
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
 	
-		void	_clipDrawShapeColumn( int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
-		void	_traceLine(int * pDest, int * pSrc, int nPoints, float thickness);
-
+		void	_clipDrawWaveColumn( int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
 	
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
@@ -148,8 +142,8 @@ namespace wg
 											int dx, int dy, int dw, int dh );
 		void	_stretchBlitBlend32(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
-		void 	_stretchBlitBlend24(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
+//		void 	_stretchBlitBlend24(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,	// Not used, takes shortcut to _stretchBlitOpaque()
+//											int dx, int dy, int dw, int dh );
 		void	_stretchBlitAdd32(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
 		void	_stretchBlitAdd24(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
@@ -165,7 +159,6 @@ namespace wg
 	
 		SoftSurfaceFactory_p	m_pSurfaceFactory;
 		int				m_lineThicknessTable[17];
-		int *			m_pCurveTab;
 		uint8_t *		m_pDivTab;
 		
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 

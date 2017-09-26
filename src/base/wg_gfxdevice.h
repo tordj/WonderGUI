@@ -109,6 +109,9 @@ namespace wg
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 
+		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill) = 0;
+
+
 	
 		virtual void	blit( Surface * pSrc );
 		virtual void	blit( Surface * pSrc, Coord dest );
@@ -165,8 +168,20 @@ namespace wg
 		
 	protected:
 		GfxDevice( Size canvasSize );
-		virtual ~GfxDevice() {};
+		virtual ~GfxDevice();
 		
+		// Static, shared data
+
+		static	int		s_gfxDeviceCount;				// Number of existing gfxDevices. Ref count for shared data.
+
+		void	_genCurveTab();
+		void	_traceLine(int * pDest, int * pSrc, int nPoints, float thickness);
+
+		const static int c_nCurveTabEntries = 1024;
+		static int *	s_pCurveTab;
+
+		//
+
 		Surface_p	m_pCanvas;
 
 		Color		m_tintColor;		// Current Tint color.

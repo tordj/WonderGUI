@@ -58,7 +58,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 400, height = 400;
+	int posX = 100, posY = 100, width = 1920, height = 1080;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -431,6 +431,28 @@ int main ( int argc, char** argv )
 	glClear( GL_COLOR_BUFFER_BIT );
 	glFlush();
 
+	int		topWave[2001];
+	int		bottomWave[2001];
+
+	WaveLine	topLine, bottomLine;
+
+	topLine.color = { 255,255,255,32 };
+	topLine.thickness = 10.f;
+	topLine.pWave = topWave;
+	topLine.length = 2001;
+
+	bottomLine.color = Color::White;
+	bottomLine.thickness = 0.2f;
+	bottomLine.pWave = bottomWave;
+	bottomLine.length = 2001;
+
+	for (int i = 0; i < 2001; i++)
+	{
+		topWave[i] = (int)((sin(i / 10.0) * 80) * 256);
+		bottomWave[i] = (int)((0 + sin(i / 20.0) * 6) * 256);
+	}
+
+
 
 	auto pMyCanvas = GlSurface::create({ 400,400 }, PixelType::BGR_8);
 //	pMyCanvas->setScaleMode(ScaleMode::Interpolate);
@@ -441,14 +463,19 @@ int main ( int argc, char** argv )
 	{
 		translateEvents( pInput, pRoot );
 
-		pGfxDevice->setCanvas(pMyCanvas);
+//		pGfxDevice->setCanvas(pMyCanvas);
 
-		pRoot->render();
+//		pRoot->render();
 
-		pGfxDevice->setCanvas({ 400,400 });
+//		pGfxDevice->setCanvas({ 400,400 });
 
 		pGfxDevice->beginRender();
-		pGfxDevice->stretchBlitSubPixelWithInvert(pMyCanvas, 0,0,400,400, 0,0, 200, 200 );
+
+		pImgSkin->render(pGfxDevice, { 0,0,1920,1080 }, StateEnum::Normal, { 0,0,1920,1080 });
+
+		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Yellow);
+
+//		pGfxDevice->stretchBlitSubPixelWithInvert(pMyCanvas, 0,0,400,400, 0,0, 200, 200 );
 //		pGfxDevice->blit(pMyCanvas, { 0,0,400,400 }, { 0,0 });
 //		pGfxDevice->stretchBlit(pMyCanvas, { 0,0,400,400 }, { 0,0,200,200 });
 		pGfxDevice->endRender();
