@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_textitem.h>
+#include <wg_msg.h>
+#include <wg_msgrouter.h>
 
 namespace wg 
 {

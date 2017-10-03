@@ -23,6 +23,8 @@
 #include <algorithm>
 #include <wg_edittextitem.h>
 #include <wg_charseq.h>
+#include <wg_msg.h>
+#include <wg_inputhandler.h>
 
 // TODO: Go to next/previous word.
 // TODO: Correctly render selected text.

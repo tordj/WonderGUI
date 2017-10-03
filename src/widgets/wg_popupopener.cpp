@@ -23,6 +23,8 @@
 #include <wg_popupopener.h>
 #include <wg_container.h>
 #include <wg_popuplayer.h>
+#include <wg_msg.h>
+#include <wg_inputhandler.h>
 
 namespace wg
 {
@@ -291,7 +293,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popups.pop(m_pPopup);
+			pLayer->popups.pop(m_pPopup.rawPtr());
 		}
 	}
 

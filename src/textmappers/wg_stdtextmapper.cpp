@@ -25,6 +25,8 @@
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
+#include <wg_msgrouter.h>
+
 #include <stdlib.h>
 #include <algorithm>
 

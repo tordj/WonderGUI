@@ -24,6 +24,7 @@
 #pragma once
 
 #include <wg_modvalueitem.h>
+#include <wg_caret.h>
 
 namespace wg 
 {
@@ -43,7 +44,8 @@ namespace wg
 		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 	
 		void				setCaret( Caret * pCaret );
-		inline Caret_p		caret() const { return m_pCaret; }
+		inline Caret_p		caret() 
+		const { return m_pCaret; }
 	
 		int					insertAtCaret( const CharSeq& str );
 		bool				insertAtCaret( uint16_t c );

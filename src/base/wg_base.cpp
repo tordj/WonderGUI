@@ -30,6 +30,7 @@
 #include <wg_mempool.h>
 #include <wg_finalizer.h>
 #include <wg_standardformatter.h>
+#include <wg_inputhandler.h>
 
 
 namespace wg 
@@ -97,6 +98,22 @@ namespace wg
 		return 0;
 	}
 	
+	//____ msgRouter() _________________________________________________________
+	
+	MsgRouter_p	Base::msgRouter() 
+	{ 
+		return s_pData->pMsgRouter; 
+	}
+
+	//____ inputHandler() ______________________________________________________
+
+	InputHandler_p Base::inputHandler() 
+	{ 
+		return s_pData->pInputHandler; 
+	}
+
+	
+	
 	//____ _allocWeakPtrHub() ______________________________________________________
 	
 	WeakPtrHub * Base::_allocWeakPtrHub()
@@ -117,13 +134,46 @@ namespace wg
 		pHub->~WeakPtrHub();
 		s_pData->pPtrPool->freeEntry( pHub );
 	}
-		
+	
+	//____ defaultCaret() ______________________________________________________
+	
+	Caret_p Base::defaultCaret() 
+	{ 
+		assert(s_pData != 0); 
+		return s_pData->pDefaultCaret; 
+	}
+	
+	//____ setDefaultCaret() ___________________________________________________
+	
+	void Base::setDefaultCaret( Caret * pCaret )
+	{
+		assert( s_pData != 0 );
+		s_pData->pDefaultCaret = pCaret;	
+	}
+	
+	//_____ defaultTextMapper() ________________________________________________
+	
+	TextMapper_p Base::defaultTextMapper() 
+	{ 
+		assert(s_pData!=0); 
+		return s_pData->pDefaultTextMapper; 
+	}
+	
+	
 	//____ setDefaultTextMapper() ___________________________________________________
 	
 	void Base::setDefaultTextMapper( TextMapper * pTextMapper )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultTextMapper = pTextMapper;	
+	}
+
+	//____ defaultStyle() ______________________________________________________
+
+	TextStyle_p Base::defaultStyle() 
+	{ 
+		assert(s_pData!=0); 
+		return s_pData->pDefaultStyle; 
 	}
 	
 	//____ setDefaultStyle() _______________________________________________________
@@ -133,7 +183,16 @@ namespace wg
 		assert( s_pData != 0 );
 		s_pData->pDefaultStyle = pStyle;	
 	}
-		
+	
+	//____ defaultValueFormatter() _____________________________________________
+	
+	ValueFormatter_p Base::defaultValueFormatter() 
+	{ 
+		assert(s_pData != 0); 
+		return s_pData->pDefaultValueFormatter; 
+	}
+
+	
 	//____ setDefaultValueFormatter() _______________________________________________________
 
 	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)

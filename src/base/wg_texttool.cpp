@@ -33,6 +33,7 @@
 #include <wg_texttool.h>
 #include <wg_charseq.h>
 #include <wg_base.h>
+#include <wg_char.h>
 
 namespace wg 
 {
