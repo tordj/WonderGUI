@@ -140,6 +140,21 @@ namespace wg
 	}
 
 	//____ setSelectable() ____________________________________________________
+	/**
+	 * @brief Ḿake widget (un)selectable.
+	 *
+	 * Sets the selectable flag of the widget. Default is true, except for some
+	 * special widgets, like PopupOpener, which should perform an action instead
+	 * of being selected when clicked.
+	 *
+	 * Parent widgets such as List that allows selection/unselection of its 
+	 * children should take the selectable flag into account and ignore selection
+	 * of widgets that are not selectable.
+	 *
+	 * A typical use of this flag is to make widgets that should just be separators
+	 * in lists and menus unselectable.
+	 *
+	 */
 
 	void Widget::setSelectable(bool bSelectable)
 	{
@@ -185,12 +200,27 @@ namespace wg
 	}
 	
 	//____ setSkin() ______________________________________________________________
-	
+	/**
+	 * @brief Sets the skin of this widget.
+	 *
+	 * @param pSkin 	Pointer to the skin to be used.
+	 *
+	 * Specifies the skin to be used by this widget. The skin will cover the
+	 * whole widget and provide the background for any additional items placed
+	 * on the widget (if any).
+	 *
+	 * A skin typically has different looks depending on the widgets state (normal,
+	 * disabled, mouse inside, pressed, selected etc) and can also include padding.
+	 *
+	 * Some widgets have more than one skin, but this is always the background skin for
+	 * the whole widget.
+	 *
+	 */
+
 	void Widget::setSkin( Skin * pSkin )
 	{
 		_setSkin( pSkin );
 	}
-	
 	
 	
 	//____ clone() _________________________________________________________
