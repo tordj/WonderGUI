@@ -7,13 +7,12 @@
 #include <vector>
 #include <wg_geo.h>
 #include <wg_types.h>
-#include <wg_surface.h>
 
 namespace wg
 {
 
 	class Rect;
-
+	class Surface;
 
 	//____ Util _________________________________________________________________
 

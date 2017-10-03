@@ -2,8 +2,6 @@
 #include <wg_util.h>
 #include <wg_geo.h>
 #include <wg_surface.h>
-#include <wg_widget.h>
-#include <wg_panel.h>
 
 namespace wg
 {

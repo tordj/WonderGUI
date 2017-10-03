@@ -29,7 +29,6 @@
 */
 
 #include <assert.h>
-#include <map>
 
 #include <wg_userdefines.h>
 #include <wg_key.h>
