@@ -22,7 +22,7 @@
 
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
-#include <algorithm>
+#include <wg_util.h>
 
 namespace wg 
 {
@@ -399,6 +399,7 @@ namespace wg
 				blit( _pSrc, myRect, dest );
 	
 			dest.y += myRect.h;
+			dest.x = xStart;
 			myRect.y = _src.y;
 			myRect.h = _src.h;
 		}
@@ -614,7 +615,7 @@ namespace wg
 		for (int i = 0; i < c_nCurveTabEntries; i++)
 		{
 			double y = 1.f - i / (double)c_nCurveTabEntries;
-			s_pCurveTab[i] = (int)(sqrt(1.f - y*y)*65536.f);
+			s_pCurveTab[i] = (int)(Util::squareRoot(1.f - y*y)*65536.f);
 		}
 	}
 

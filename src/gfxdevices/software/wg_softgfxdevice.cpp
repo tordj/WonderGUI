@@ -23,7 +23,6 @@
 #include <wg_softgfxdevice.h>
 #include <wg_util.h>
 #include <math.h>
-#include <algorithm>
 #include <wg_base.h>
 
 #include <assert.h>
@@ -763,20 +762,20 @@ namespace wg
 
 	//____ clipDrawHorrWave() _____________________________________________________
 
-	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill)
+	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
 
-		if (topBorder.length <= length || bottomBorder.length <= length)
-			length = min(topBorder.length, bottomBorder.length) - 1;
+		if (pTopBorder->length <= length || pBottomBorder->length <= length)
+			length = min(pTopBorder->length, pBottomBorder->length) - 1;
 
 		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
 
 		int ofs = 0;
 		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
 		{
-			int margin = (int)(max(topBorder.thickness, bottomBorder.thickness) / 2 + 0.99);
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
 
 			if (clip.x > begin.x + margin )
 			{
@@ -799,8 +798,8 @@ namespace wg
 		int * pTopBorderTrace = (int*)pBuffer;
 		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
-		_traceLine(pTopBorderTrace, topBorder.pWave+ofs, length+1, topBorder.thickness);
-		_traceLine(pBottomBorderTrace, bottomBorder.pWave+ofs, length+1, bottomBorder.thickness);
+		_traceLine(pTopBorderTrace, pTopBorder->pWave+ofs, length+1, pTopBorder->thickness);
+		_traceLine(pBottomBorderTrace, pBottomBorder->pWave+ofs, length+1, pBottomBorder->thickness);
 
 		// Do proper X-clipping
 
@@ -824,9 +823,9 @@ namespace wg
 		int clipLen = clip.h;
 
 		Color	col[4];
-		col[0] = topBorder.color;
+		col[0] = pTopBorder->color;
 		col[1] = frontFill;
-		col[2] = bottomBorder.color;
+		col[2] = pBottomBorder->color;
 		col[3] = backFill;
 
 
@@ -2972,7 +2971,7 @@ namespace wg
 		for( int i = 0 ; i < 17 ; i++ )
 		{
 			double b = i/16.0;
-			m_lineThicknessTable[i] = (int) (sqrt( 1.0 + b*b ) * 65536);
+			m_lineThicknessTable[i] = (int) (Util::squareRoot( 1.0 + b*b ) * 65536);
 		}
 	}
 

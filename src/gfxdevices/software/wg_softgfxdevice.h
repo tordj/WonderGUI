@@ -83,7 +83,7 @@ namespace wg
 		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 float dx, float dy, float dw, float dh ) override;
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill);
+		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * PTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
 
 		// Experimental stuff...
 
