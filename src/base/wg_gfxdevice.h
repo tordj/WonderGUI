@@ -35,7 +35,7 @@
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
 
-namespace wg 
+namespace wg
 {
 	class	Rect;
 	class	Border;
@@ -43,11 +43,11 @@ namespace wg
 	class	LegacyTextItem;
 	class	CaretInstance;
 	class 	Pen;
-	
+
 	class GfxDevice;
 	typedef	StrongPtr<GfxDevice>	GfxDevice_p;
 	typedef	WeakPtr<GfxDevice>	GfxDevice_wp;
-	
+
 
 	//____ WaveLine ___________________________________________________________
 
@@ -56,9 +56,9 @@ namespace wg
 		int		length;
 		float	thickness;
 		Color	color;
-		int *	pWave;			// Pixel offset with 8 binals.
+		int *	pWave;      // Pixel offset in 24.8 format.
+		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
-	
 	
 	class GfxDevice : public Object
 	{
@@ -175,7 +175,7 @@ namespace wg
 		static	int		s_gfxDeviceCount;				// Number of existing gfxDevices. Ref count for shared data.
 
 		void	_genCurveTab();
-		void	_traceLine(int * pDest, int * pSrc, int nPoints, float thickness);
+		void	_traceLine(int * pDest, int nPoints, const WaveLine& wave, int offset);
 
 		const static int c_nCurveTabEntries = 1024;
 		static int *	s_pCurveTab;
@@ -190,8 +190,7 @@ namespace wg
 	
 		Size		m_canvasSize;
 	
-	};
-	
+	};	
 
 } // namespace wg
 #endif	// WG_GFXDEVICE_DOT_H

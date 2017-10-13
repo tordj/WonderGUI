@@ -52,6 +52,33 @@ InputHandler * pDebug;
 
 int main ( int argc, char** argv )
 { 
+
+	struct Test1
+	{
+		bool a;
+		int		i1;
+		bool b;
+		int		i2;
+		bool c;
+		bool d;
+	};
+
+	struct Test2
+	{
+		int		i1;
+		int		i2;
+		bool a;
+		bool b;
+		bool c;
+		bool d;
+	};
+
+	int big = sizeof(Test1);
+	int small = sizeof(Test2);
+
+	printf("Big: %d. Small: %d\n", big, small);
+
+
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------
@@ -436,21 +463,16 @@ int main ( int argc, char** argv )
 
 	WaveLine	topLine, bottomLine;
 
-	topLine.color = { 255,255,255,32 };
+	topLine.color = { 255,0,0,128 };
 	topLine.thickness = 10.f;
 	topLine.pWave = topWave;
 	topLine.length = 2001;
 
 	bottomLine.color = Color::White;
-	bottomLine.thickness = 0.2f;
+	bottomLine.thickness = 5.2f;
 	bottomLine.pWave = bottomWave;
 	bottomLine.length = 2001;
 
-	for (int i = 0; i < 2001; i++)
-	{
-		topWave[i] = (int)((sin(i / 10.0) * 80) * 256);
-		bottomWave[i] = (int)((0 + sin(i / 20.0) * 6) * 256);
-	}
 
 
 
@@ -461,6 +483,13 @@ int main ( int argc, char** argv )
 
 	while( !bQuit ) 
 	{
+		for (int i = 0; i < 2001; i++)
+		{
+			topWave[i] = (int)(((sin((i + tick) / 10.0) * 60) * 256)+ ((sin((i + tick/3) / 20.0) * 80) * 256));
+			bottomWave[i] = (int)(((400 - i/4 + sin((i - tick/2) / 20.0) * 6) * 256) + ((sin(i*2 / 20.0) * 34) * 256) + ((sin(tick / 18.0 + i/200.0) * 100) * 256));
+		}
+
+
 		translateEvents( pInput, pRoot );
 
 //		pGfxDevice->setCanvas(pMyCanvas);
@@ -473,7 +502,7 @@ int main ( int argc, char** argv )
 
 		pImgSkin->render(pGfxDevice, { 0,0,1920,1080 }, StateEnum::Normal, { 0,0,1920,1080 });
 
-		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Yellow);
+		pGfxDevice->clipDrawHorrWave({ 10,0,1900,1080 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Yellow);
 
 //		pGfxDevice->stretchBlitSubPixelWithInvert(pMyCanvas, 0,0,400,400, 0,0, 200, 200 );
 //		pGfxDevice->blit(pMyCanvas, { 0,0,400,400 }, { 0,0 });

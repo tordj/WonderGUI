@@ -768,9 +768,6 @@ namespace wg
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
 
-		if (topBorder.length <= length || bottomBorder.length <= length)
-			length = min(topBorder.length, bottomBorder.length) - 1;
-
 		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
 
 		int ofs = 0;
@@ -799,9 +796,8 @@ namespace wg
 		int * pTopBorderTrace = (int*)pBuffer;
 		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
-		_traceLine(pTopBorderTrace, topBorder.pWave+ofs, length+1, topBorder.thickness);
-		_traceLine(pBottomBorderTrace, bottomBorder.pWave+ofs, length+1, bottomBorder.thickness);
-
+		_traceLine(pTopBorderTrace, length + 1, topBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, bottomBorder, ofs);
 		// Do proper X-clipping
 
 		int startColumn = 0;
