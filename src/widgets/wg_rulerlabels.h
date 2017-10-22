@@ -65,8 +65,8 @@ namespace wg
 		public:
 			Label(Widget * pWidget) : textItem(pWidget), textInterface(&textItem) {}
 			LINK_METHODS(Label);
-			ModText	textInterface;
 			TextItem	textItem;
+			ModText		textInterface;
 			float		offset;
 		};
 		

@@ -40,7 +40,7 @@ namespace wg
 	class LambdaPanelSlot : public Slot		/** @private */
 	{
 	public:
-		LambdaPanelSlot() : bVisible(false), pFunc(nullptr) {}
+		LambdaPanelSlot() : pFunc(nullptr), bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
