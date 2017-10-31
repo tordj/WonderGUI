@@ -34,9 +34,11 @@ namespace wg
 	Surface::Surface()
 	{
 		m_accessMode	= AccessMode::None;
-		m_pPixels		= 0;
+		m_pPixels		= nullptr;
+		m_pClut			= nullptr;
 		m_scaleMode		= ScaleMode::Nearest;
-		
+		m_bWriteToAlpha = false;
+
 		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
 	}
 	
@@ -117,16 +119,42 @@ namespace wg
 	 *
 	 * The alpha channel of the color value is ignored if surface does not contain an alpha channel.
 	 *
+	 * Note: This call is very slow on indexed surfaces (PixelFormat::I8), since the whole clut
+	 * needs to be searched for the closest color with quite some math on every entry.
+	 *
 	 * @return Pixel value in surface's native format that closest resembles specified color.
 	 *
 	 **/
 	uint32_t Surface::colorToPixel( const Color& col ) const
 	{
-		uint32_t pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
-					 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
-					 ((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
-					 ((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
-	
+		uint32_t pix;
+
+		if (m_pixelFormat.bIndexed )
+		{
+			int closestValue = INT_MAX;
+			for (int i = 0; i < 255; i++)
+			{
+				int rDiff = m_pClut[i].r - col.r;
+				int gDiff = m_pClut[i].g - col.g;
+				int bDiff = m_pClut[i].b - col.b;
+				int aDiff = m_pClut[i].a - col.a;
+				int value = rDiff*rDiff + gDiff*gDiff + bDiff*bDiff + aDiff*aDiff;
+				if (value < closestValue)
+				{
+					closestValue = value;
+					pix = i;
+					if (closestValue == 0)
+						break;
+				}
+			}
+		}
+		else
+		{
+			pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
+				((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
+				((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
+				((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
+		}
 		return pix;
 	}
 	
@@ -147,12 +175,26 @@ namespace wg
 	 **/
 	Color Surface::pixelToColor( uint32_t pixel ) const
 	{
-		Color col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
-					 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
-					 (pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
-					 (pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift );
-	
-		return col;
+		if (m_pixelFormat.bIndexed)
+		{
+			return m_pClut[pixel];
+		}
+		else if (m_pixelFormat.A_bits == 0)
+		{
+			Color col((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
+				(pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
+				(pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
+				255);
+		}
+		else
+		{
+			Color col((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
+				(pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
+				(pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
+				(pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift);
+
+			return col;
+		}
 	}
 	
 	//____ _lockAndAdjustRegion() __________________________________________________

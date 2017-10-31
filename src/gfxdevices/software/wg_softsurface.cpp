@@ -86,7 +86,6 @@ namespace wg
 		m_size = size;
 		m_pBlob = Blob::create( m_pitch*size.h );
 		m_pData = (uint8_t*) m_pBlob->content();
-		m_fScaleAlpha = 1.f;
 	}
 	
 	SoftSurface::SoftSurface( Size size, PixelType type, Blob * pBlob, int pitch )
@@ -98,7 +97,6 @@ namespace wg
 		m_size = size;
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->content();
-		m_fScaleAlpha = 1.f;
 	}
 	
 	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat )
@@ -110,7 +108,6 @@ namespace wg
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->content();
-		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
         _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
@@ -135,7 +132,6 @@ namespace wg
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->content();
-		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
 		_copyFrom( &m_pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
@@ -205,7 +201,7 @@ namespace wg
 		if( m_pixelFormat.type == PixelType::BGRA_8 )
 		  {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
-		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
+		    return pPixel[3];
 		  }
 		else
 		  return 0xff;
@@ -255,12 +251,11 @@ namespace wg
 		m_lockRegion.clear();
 	}
 	
-	
-	//____ setScaleAlpha() _________________________________________________________
-	
-	void SoftSurface::setScaleAlpha(float fScaleAlpha)
+	//____setWriteToAlpha() ___________________________________________________
+
+	bool SoftSurface::setWriteToAlpha(bool bWrite)
 	{
-	        m_fScaleAlpha = fScaleAlpha;
+		return false;			// We don't support this yet.
 	}
 	
 	//____ putPixels() _____________________________________________________________

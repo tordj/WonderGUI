@@ -89,6 +89,7 @@ namespace wg
 		uint8_t *	lock(AccessMode mode);
 		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
 		void		unlock();
+		bool		setWriteToAlpha(bool bWrite);
 
 		//.____ Misc __________________________________________________________
 
@@ -103,7 +104,6 @@ namespace wg
 
 
 		void		_setPixelDetails( PixelType type );
-		void		_initBuffer();
 
         GLuint 		m_texture;			// GL texture handle.
         GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.

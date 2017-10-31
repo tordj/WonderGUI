@@ -585,8 +585,12 @@ namespace wg
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 		Custom,				///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
-		BGR_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
-		BGRA_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
+		BGR_8,				///< One byte of blue, green and red respectively in exactly that order in memory.
+		BGRA_8,				///< One byte of blue, green, red and alpha respectively in exactly that order in memory.
+		BGRA_4,				///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
+		BGR_565,			///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
+		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).
+		A8					///< 8 bits of alpha only.
 	};
 	
 	
@@ -649,7 +653,8 @@ namespace wg
 		
 		PixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-	
+		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
 		uint32_t	B_mask;			///< bitmask for getting the blue bits out of the pixel

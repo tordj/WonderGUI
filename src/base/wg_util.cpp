@@ -175,6 +175,7 @@ double Util::powerOfTen(int num){
 			case PixelType::BGR_8:
 				wFormat.type = type;
 				wFormat.bits = 24;
+				wFormat.bIndexed = false;
 
 				wFormat.R_bits = 8;
 				wFormat.G_bits = 8;
@@ -202,12 +203,12 @@ double Util::powerOfTen(int num){
 				wFormat.B_shift = 16;
 				wFormat.A_shift = 0;
 	#endif
-
 				return true;
 
 			case PixelType::BGRA_8:
 				wFormat.type = type;
 				wFormat.bits = 32;
+				wFormat.bIndexed = false;
 
 				wFormat.R_bits = 8;
 				wFormat.G_bits = 8;
@@ -235,12 +236,121 @@ double Util::powerOfTen(int num){
 				wFormat.G_shift = 16;
 				wFormat.B_shift = 24;
 	#endif
+				return true;
 
+			case PixelType::BGRA_4:
+				wFormat.type = type;
+				wFormat.bits = 16;
+				wFormat.bIndexed = false;
+
+				wFormat.R_bits = 4;
+				wFormat.G_bits = 4;
+				wFormat.B_bits = 4;
+				wFormat.A_bits = 4;
+
+#if IS_LITTLE_ENDIAN
+				wFormat.A_mask = 0xF000;
+				wFormat.R_mask = 0x0F00;
+				wFormat.G_mask = 0x00F0;
+				wFormat.B_mask = 0x000F;
+
+				wFormat.A_shift = 12;
+				wFormat.R_shift = 8;
+				wFormat.G_shift = 4;
+				wFormat.B_shift = 0;
+#else
+				wFormat.A_mask = 0x00F0;
+				wFormat.R_mask = 0x000F;
+				wFormat.G_mask = 0xF000;
+				wFormat.B_mask = 0x0F00;
+
+				wFormat.A_shift = 4;
+				wFormat.R_shift = 0;
+				wFormat.G_shift = 12;
+				wFormat.B_shift = 8;
+#endif
+				return true;
+
+			case PixelType::BGR_565:
+				wFormat.type = type;
+				wFormat.bits = 16;
+				wFormat.bIndexed = false;
+
+				wFormat.R_bits = 5;
+				wFormat.G_bits = 6;
+				wFormat.B_bits = 5;
+				wFormat.A_bits = 0;
+
+#if IS_LITTLE_ENDIAN
+				wFormat.A_mask = 0x0000;
+				wFormat.R_mask = 0xF800;
+				wFormat.G_mask = 0x07E0;
+				wFormat.B_mask = 0x001F;
+
+				wFormat.A_shift = 0;
+				wFormat.R_shift = 11;
+				wFormat.G_shift = 5;
+				wFormat.B_shift = 0;
+#else
+				wFormat.A_mask = 0x0000;
+				wFormat.R_mask = 0x00F8;
+				wFormat.G_mask = 0xE007;
+				wFormat.B_mask = 0x1F00;
+
+				wFormat.A_shift = 0;
+				wFormat.R_shift = 3;
+				wFormat.G_shift = 13;
+				wFormat.B_shift = 8;
+#endif
+				return true;
+
+
+			case PixelType::A8:
+				wFormat.type = type;
+				wFormat.bits = 8;
+				wFormat.bIndexed = false;
+
+				wFormat.R_bits = 0;
+				wFormat.G_bits = 0;
+				wFormat.B_bits = 0;
+				wFormat.A_bits = 8;
+
+				wFormat.R_mask = 0x00;
+				wFormat.G_mask = 0x00;
+				wFormat.B_mask = 0x00;
+				wFormat.A_mask = 0xFF;
+
+				wFormat.R_shift = 0;
+				wFormat.G_shift = 0;
+				wFormat.B_shift = 0;
+				wFormat.A_shift = 0;
+				return true;
+
+			case PixelType::I8:
+				wFormat.type = type;
+				wFormat.bits = 8;
+				wFormat.bIndexed = true;
+
+				wFormat.R_bits = 0;
+				wFormat.G_bits = 0;
+				wFormat.B_bits = 0;
+				wFormat.A_bits = 0;
+
+				wFormat.R_mask = 0x00;
+				wFormat.G_mask = 0x00;
+				wFormat.B_mask = 0x00;
+				wFormat.A_mask = 0x00;
+
+				wFormat.R_shift = 0;
+				wFormat.G_shift = 0;
+				wFormat.B_shift = 0;
+				wFormat.A_shift = 0;
 				return true;
 
 			default:
 				wFormat.type = PixelType::Unknown;
 				wFormat.bits = 0;
+				wFormat.bIndexed = false;
 
 				wFormat.R_mask = 0;
 				wFormat.G_mask = 0;

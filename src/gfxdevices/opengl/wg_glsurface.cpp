@@ -382,6 +382,13 @@ namespace wg
 		m_lockRegion.h = 0;
 	}
 
+	//____setWriteToAlpha() ___________________________________________________
+
+	bool GlSurface::setWriteToAlpha(bool bWrite)
+	{
+		return false;			// We don't support this yet.
+	}
+
 
 	//____ pixel() ______________________________________________________________
 
