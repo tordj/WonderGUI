@@ -222,11 +222,11 @@ namespace wg
 	
 	
 		uint32_t pixel = colorToPixel( col );
-		int w = width();
-		int h = height();
+		int w = rect.w;
+		int h = rect.h;
 		int p = pitch();
-		uint8_t * pDest = m_pPixels;
-	
+		uint8_t * pDest = m_pPixels + rect.y * p + rect.x*m_pixelFormat.bits / 8;
+
 		bool ret = true;
 		switch( m_pixelFormat.bits )
 		{
