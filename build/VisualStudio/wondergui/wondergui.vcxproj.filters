@@ -40,6 +40,9 @@
     <Filter Include="slots">
       <UniqueIdentifier>{a30bd6a2-d660-4c1e-941d-8c071c4d587e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gfxstream">
+      <UniqueIdentifier>{1c55caf0-4833-4683-adb6-664c74830f84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
@@ -443,6 +446,27 @@
     <ClInclude Include="..\..\..\src\widgets\wg_popupopener.h">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstream.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamplug.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxinstream.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxoutstream.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamreader.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamlogger.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -747,6 +771,24 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_popupopener.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamplug.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxinstream.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxoutstream.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamreader.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamwriter.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp">
+      <Filter>gfxstream</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

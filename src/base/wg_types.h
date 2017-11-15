@@ -80,7 +80,6 @@ namespace wg
 	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
 	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
-	template<typename T> inline T abs(T x)					{ return x >= 0 ? x : -x; }
 	
 	template<typename T> inline void limit(T& x, T min, T max) { if( x < min) x = min; if( x > max) x = max; }
 			
@@ -676,7 +675,37 @@ namespace wg
 		Mask = 2		///< Mask background against whole container.
 	};
 	
-	
+	//____ GfxChunkId ____________________________________________________
+
+	enum class GfxChunkId : uint16_t
+	{
+		OutOfData,
+
+		BeginRender,
+		EndRender,
+		SetCanvas,
+		SetTintColor,
+		SetBlendMode,
+		Fill,
+		ClipDrawHorrLine,
+		ClipDrawVertLine,
+		PlotPixels,
+		ClipPlotPixels,
+		DrawLine,
+		ClipDrawLine,
+		ClipDrawHorrWave,
+		Blit,
+		StretchBlitSubPixel,
+		FillSubPixel,
+
+		CreateSurface,
+		SetSurfaceScaleMode,
+		UpdateSurfaceRegion,
+		FillSurface,
+		CopySurface
+	};
+
+
 
 } // namespace wg
 #endif // WG_TYPES_DOT_H

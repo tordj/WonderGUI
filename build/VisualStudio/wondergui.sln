@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wondergui", "wondergui\wondergui.vcxproj", "{61381138-0C8C-4E62-A557-6ACC3D4D35BF}"
 EndProject
@@ -30,6 +30,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "font_freetype", "font_freet
 	ProjectSection(ProjectDependencies) = postProject
 		{61381138-0C8C-4E62-A557-6ACC3D4D35BF} = {61381138-0C8C-4E62-A557-6ACC3D4D35BF}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfxdevice_stream", "gfxdevice_stream\gfxdevice_stream.vcxproj", "{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,8 +83,19 @@ Global
 		{59C1D5EA-31CE-4FCD-9014-55B179C72C0B}.Release|Win32.Build.0 = Release|Win32
 		{59C1D5EA-31CE-4FCD-9014-55B179C72C0B}.Release|x64.ActiveCfg = Release|x64
 		{59C1D5EA-31CE-4FCD-9014-55B179C72C0B}.Release|x64.Build.0 = Release|x64
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Debug|Win32.Build.0 = Debug|Win32
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Debug|x64.ActiveCfg = Debug|x64
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Debug|x64.Build.0 = Debug|x64
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|Win32.ActiveCfg = Release|Win32
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|Win32.Build.0 = Release|Win32
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|x64.ActiveCfg = Release|x64
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {61EE5358-E33D-4826-812E-88412A083BAB}
 	EndGlobalSection
 EndGlobal
