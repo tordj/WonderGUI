@@ -25,8 +25,6 @@
 #include <wg_softsurface.h>
 #include <wg_surfacefactory.h>
 
-#include <vector>
-
 namespace wg 
 {
 	

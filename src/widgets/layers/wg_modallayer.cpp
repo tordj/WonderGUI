@@ -26,6 +26,7 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_slotarray.impl.h>
+#include <wg_inputhandler.h>
 
 #include <wg_dynamicchildren.h>
 #include <wg_dynamicchildren.impl.h>

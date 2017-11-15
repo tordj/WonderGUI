@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_columnheaderitem.h>
+#include <wg_msg.h>
+#include <wg_inputhandler.h>
 
 namespace wg 
 {

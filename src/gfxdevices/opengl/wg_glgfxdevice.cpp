@@ -24,9 +24,8 @@
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
 #include <wg_base.h>
+#include <wg_util.h>
 #include <assert.h>
-#include <math.h>
-#include <algorithm>
 
 using namespace std;
 
@@ -1371,14 +1370,14 @@ namespace wg
 
 	//____ clipDrawHorrWave() _____________________________________________________
 
-	void GlGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill)
+	void GlGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
 
 		int ofs = 0;
 		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
 		{
-			int margin = (int)(max(topBorder.thickness, bottomBorder.thickness) / 2 + 0.99);
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
 
 			if (clip.x > begin.x + margin)
 			{
@@ -1401,8 +1400,8 @@ namespace wg
 		int * pTopBorderTrace = (int*)pTraceBuffer;
 		int * pBottomBorderTrace = (int*)(pTraceBuffer + traceBufferSize / 2);
 
-		_traceLine(pTopBorderTrace, length + 1, topBorder, ofs);
-		_traceLine(pBottomBorderTrace, length + 1, bottomBorder, ofs);
+		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
 
 		// Do proper X-clipping
 
@@ -1562,9 +1561,9 @@ namespace wg
 		glBindTexture(GL_TEXTURE_BUFFER, m_horrWaveBufferTexture);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, m_horrWaveBufferTextureData);
 		glUniform1i(m_horrWaveProgTexIdLoc, 0);
-		glUniform2f(m_horrWaveProgWindowOfsLoc,(GLfloat) begin.x, (GLfloat) begin.y);
-		glUniform4f(m_horrWaveProgTopBorderColorLoc, topBorder.color.r / 255.f, topBorder.color.g / 255.f, topBorder.color.b / 255.f, topBorder.color.a / 255.f);
-		glUniform4f(m_horrWaveProgBottomBorderColorLoc, bottomBorder.color.r / 255.f, bottomBorder.color.g / 255.f, bottomBorder.color.b / 255.f, bottomBorder.color.a / 255.f);
+		glUniform2f(m_horrWaveProgWindowOfsLoc, (GLfloat)begin.x, (GLfloat)begin.y);
+		glUniform4f(m_horrWaveProgTopBorderColorLoc, pTopBorder->color.r / 255.f, pTopBorder->color.g / 255.f, pTopBorder->color.b / 255.f, pTopBorder->color.a / 255.f);
+		glUniform4f(m_horrWaveProgBottomBorderColorLoc, pBottomBorder->color.r / 255.f, pBottomBorder->color.g / 255.f, pBottomBorder->color.b / 255.f, pBottomBorder->color.a / 255.f);
 		glUniform4f(m_horrWaveProgFrontFillLoc, frontFill.r / 255.f, frontFill.g / 255.f, frontFill.b / 255.f, frontFill.a / 255.f);
 		glUniform4f(m_horrWaveProgBackFillLoc, backFill.r / 255.f, backFill.g / 255.f, backFill.b / 255.f, backFill.a / 255.f);
 
@@ -1601,7 +1600,7 @@ namespace wg
         for( int i = 0 ; i < 17 ; i++ )
         {
             double b = i/16.0;
-            m_lineThicknessTable[i] = (float) sqrt( 1.0 + b*b );
+            m_lineThicknessTable[i] = (float) Util::squareRoot( 1.0 + b*b );
         }
     }
 	

@@ -21,9 +21,10 @@
 =========================================================================*/
 
 #include <algorithm>
-#include <cstdlib>
 #include <wg_edittextitem.h>
 #include <wg_charseq.h>
+#include <wg_msg.h>
+#include <wg_inputhandler.h>
 
 // TODO: Go to next/previous word.
 // TODO: Correctly render selected text.
@@ -596,7 +597,7 @@ namespace wg
 
 	int EditTextItem::selectionSize() const
 	{
-		return std::abs(m_editState.caretOfs-m_editState.selectOfs);		
+		return abs(m_editState.caretOfs-m_editState.selectOfs);		
 	}
 
 	//____ eraseSelected() _____________________________________________________

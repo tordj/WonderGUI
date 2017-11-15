@@ -81,7 +81,7 @@ namespace wg
 	
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color front, Color back);
+		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back);
 
 	protected:
 		NullGfxDevice( Size size );

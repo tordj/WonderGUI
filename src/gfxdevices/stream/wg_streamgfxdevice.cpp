@@ -305,7 +305,7 @@ namespace wg
 
 	//____ clipDrawHorrWave() _____________________________________________________
 
-	void StreamGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill)
+	void StreamGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine* topBorder, const WaveLine* bottomBorder, Color frontFill, Color backFill)
 	{
 		// Need some smart optimizations here, so we don't send wave-values far outside clip or length.
 	}

@@ -25,6 +25,7 @@
 #include <wg_userdefines.h>
 #include <wg_msg.h>
 #include <wg_base.h>
+#include <wg_msgrouter.h>
 
 #include <math.h>
 

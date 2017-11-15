@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_object.h>
-#include <wg_mempool.h>
 #include <wg_pointers.h>
 #include <wg_base.h>
 #include <wg_finalizer.h>

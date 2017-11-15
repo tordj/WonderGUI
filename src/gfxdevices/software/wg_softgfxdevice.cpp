@@ -23,7 +23,6 @@
 #include <wg_softgfxdevice.h>
 #include <wg_util.h>
 #include <math.h>
-#include <algorithm>
 #include <wg_base.h>
 
 #include <assert.h>
@@ -53,19 +52,27 @@ namespace wg
 	
 	SoftGfxDevice::SoftGfxDevice() : GfxDevice(Size(0,0))
 	{
-		m_pCanvas = 0;
-		m_pCanvasPixels = 0;
+		m_bEnableCustomFunctions = false;
+		m_bUseCustomFunctions = false;
+		m_pCanvas = nullptr;
+		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
+		_clearCustomFunctionTable();
+		
 	}
 	
 	SoftGfxDevice::SoftGfxDevice( SoftSurface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
+		m_bEnableCustomFunctions = false;
+		m_bUseCustomFunctions = false;
 		m_pCanvas = pCanvas;
+		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
+		_clearCustomFunctionTable();
 	}
 	
 	//____ Destructor ______________________________________________________________
@@ -122,17 +129,48 @@ namespace wg
 	//____ setCanvas() _______________________________________________________________
 	
 	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
-	{
+	{		
 		if( (pCanvas->pixelFormat()->type != PixelType::BGRA_8) && (pCanvas->pixelFormat()->type != PixelType::BGR_8) )
 			return false;
-		
-		
+	
+		if( m_pCanvas == pCanvas )
+			return true;			// Not an error.
+	
+		if( m_pCanvasPixels )
+			m_pCanvas->unlock();
+
 		m_pCanvas = pCanvas;
 		if( pCanvas )
+		{
 			m_canvasSize = pCanvas->size();
+
+			// Update stuff if we are rendering
+
+			if( m_pCanvasPixels )
+			{
+				m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
+				m_canvasPixelBits = m_pCanvas->pixelFormat()->bits;
+				m_canvasPitch = m_pCanvas->pitch();
+
+				// Call custom function, let it decide if it can render or not.
+
+				if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
+				{
+					int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat()->type, m_canvasPitch );
+					m_bUseCustomFunctions = retVal != 0;
+				}
+			}
+		}
 		else
+		{
 			m_canvasSize = Size();
-		
+
+			// Make sure this also is cleared, in case we are rendering.
+
+			m_pCanvasPixels = 0;
+			m_canvasPixelBits = 0;
+			m_canvasPitch = 0;
+		}
 		return true;
 	}
 
@@ -142,14 +180,31 @@ namespace wg
 	{
 		if( !m_pCanvas)
 			return false;
-			
+
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
 		m_canvasPixelBits = m_pCanvas->pixelFormat()->bits;
 		m_canvasPitch = m_pCanvas->pitch();
 		
 		if( !m_pCanvasPixels )
 			return false;
-			
+
+		// Call custom functions
+		
+		if( m_bEnableCustomFunctions )
+		{
+			if( m_customFunctions.beginRender )
+				m_customFunctions.beginRender();
+
+			if( m_customFunctions.setCanvas )
+			{
+				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) m_pCanvas->pixelFormat()->type, m_canvasPitch );
+				m_bUseCustomFunctions = retVal != 0;
+			}			
+			else
+				m_bUseCustomFunctions = true;
+
+		}
+		
 		return true;	
 	}
 
@@ -160,6 +215,13 @@ namespace wg
 		if( !m_pCanvasPixels )
 			return false;
 
+		// Call custom function.
+		
+		if( m_bEnableCustomFunctions && m_customFunctions.endRender )
+			m_customFunctions.endRender();
+			
+		// Clean up.
+			
 		m_pCanvas->unlock();
 		m_pCanvasPixels = 0;
 		m_canvasPixelBits = 0;
@@ -198,7 +260,12 @@ namespace wg
 		{
 			case BlendMode::Replace:
 			{
-
+				if( m_bUseCustomFunctions && m_customFunctions.fillReplace )
+				{
+					m_customFunctions.fillReplace( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+				
                 int dstPixelBytes = m_canvasPixelBits/8;
 
                 if( dstPixelBytes == 4 )
@@ -231,6 +298,13 @@ namespace wg
             }
             case BlendMode::Blend:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.fillBlend )
+				{
+					m_customFunctions.fillBlend( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+
+
 				int storedRed = ((int)fillColor.r) * fillColor.a;
 				int storedGreen = ((int)fillColor.g) * fillColor.a;
 				int storedBlue = ((int)fillColor.b) * fillColor.a;
@@ -250,6 +324,12 @@ namespace wg
 			}
 			case BlendMode::Add:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.fillAdd )
+				{
+					m_customFunctions.fillAdd( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+
                 int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
 				int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
 				int storedBlue = (int) m_pDivTab[fillColor.b * fillColor.a];
@@ -271,6 +351,12 @@ namespace wg
 			}
 			case BlendMode::Subtract:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.fillSubtract )
+				{
+					m_customFunctions.fillSubtract( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+
 				int storedRed = (int) m_pDivTab[fillColor.r * fillColor.a];
 				int storedGreen = (int) m_pDivTab[fillColor.g * fillColor.a];
 				int storedBlue = (int) m_pDivTab[fillColor.b * fillColor.a];
@@ -292,6 +378,12 @@ namespace wg
 			}
 			case BlendMode::Multiply:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.fillMultiply )
+				{
+					m_customFunctions.fillMultiply( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+				
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
 				int storedBlue = (int)fillColor.b;
@@ -313,6 +405,12 @@ namespace wg
 			}
 			case BlendMode::Invert:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.fillInvert )
+				{
+					m_customFunctions.fillInvert( rect.x, rect.y, rect.w, rect.h, col.argb );
+					break;
+				}
+				
 				int storedRed = (int)fillColor.r;
 				int storedGreen = (int)fillColor.g;
 				int storedBlue = (int)fillColor.b;
@@ -763,7 +861,7 @@ namespace wg
 
 	//____ clipDrawHorrWave() _____________________________________________________
 
-	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill)
+	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
@@ -773,7 +871,7 @@ namespace wg
 		int ofs = 0;
 		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
 		{
-			int margin = (int)(max(topBorder.thickness, bottomBorder.thickness) / 2 + 0.99);
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
 
 			if (clip.x > begin.x + margin )
 			{
@@ -796,8 +894,8 @@ namespace wg
 		int * pTopBorderTrace = (int*)pBuffer;
 		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
-		_traceLine(pTopBorderTrace, length + 1, topBorder, ofs);
-		_traceLine(pBottomBorderTrace, length + 1, bottomBorder, ofs);
+		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
 		// Do proper X-clipping
 
 		int startColumn = 0;
@@ -820,9 +918,9 @@ namespace wg
 		int clipLen = clip.h;
 
 		Color	col[4];
-		col[0] = topBorder.color;
+		col[0] = pTopBorder->color;
 		col[1] = frontFill;
-		col[2] = bottomBorder.color;
+		col[2] = pBottomBorder->color;
 		col[3] = backFill;
 
 
@@ -1945,6 +2043,12 @@ namespace wg
 		{
 			case BlendMode::Replace:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitReplace )
+				{
+					m_customFunctions.blitReplace( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+				
 				if( srcPixelBytes == 4 && dstPixelBytes == 4 )
 				{
 					for( int y = 0 ; y < srcrect.h ; y++ )
@@ -1981,6 +2085,12 @@ namespace wg
 			}
 			case BlendMode::Blend:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitBlend )
+				{
+					m_customFunctions.blitBlend( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+
 				if( srcPixelBytes == 4 )
 				{
 					for( int y = 0 ; y < srcrect.h ; y++ )
@@ -2008,6 +2118,12 @@ namespace wg
 			}
 			case BlendMode::Add:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitAdd )
+				{
+					m_customFunctions.blitAdd( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+				
 				if( srcPixelBytes == 4 )
 				{
 					for( int y = 0 ; y < srcrect.h ; y++ )
@@ -2046,6 +2162,12 @@ namespace wg
 			}
 			case BlendMode::Subtract:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitSubtract )
+				{
+					m_customFunctions.blitSubtract( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+
 				if( srcPixelBytes == 4 )
 				{
 					for( int y = 0 ; y < srcrect.h ; y++ )
@@ -2085,6 +2207,12 @@ namespace wg
 
 			case BlendMode::Multiply:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitMultiply )
+				{
+					m_customFunctions.blitMultiply( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+								
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
@@ -2102,6 +2230,12 @@ namespace wg
 			}
 			case BlendMode::Invert:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.blitInvert )
+				{
+					m_customFunctions.blitInvert( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy );
+					break;
+				}
+				
 				for( int y = 0 ; y < srcrect.h ; y++ )
 				{
 					for( int x = 0 ; x < srcrect.w ; x++ )
@@ -2155,6 +2289,12 @@ namespace wg
 		{
 			case BlendMode::Replace:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitReplace )
+				{
+					m_customFunctions.tintBlitReplace( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+								
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
 				int tintBlue = (int) m_tintColor.b;
@@ -2179,6 +2319,13 @@ namespace wg
                 if( m_tintColor.a == 0 )
                     break;
                 
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitBlend )
+				{
+					m_customFunctions.tintBlitBlend( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+	
+				
                 if( srcPixelBytes == 4 )
 				{
 					int tintAlpha = (int) m_tintColor.a;
@@ -2234,6 +2381,12 @@ namespace wg
 			}
 			case BlendMode::Add:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitAdd )
+				{
+					m_customFunctions.tintBlitAdd( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+				
                 if( m_tintColor.a == 0 )
                     break;
                 
@@ -2289,6 +2442,12 @@ namespace wg
 			}
 			case BlendMode::Subtract:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitSubtract )
+				{
+					m_customFunctions.tintBlitSubtract( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+				
                 if( m_tintColor.a == 0 )
                     break;
                 
@@ -2344,6 +2503,12 @@ namespace wg
 			}
 			case BlendMode::Multiply:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitMultiply )
+				{
+					m_customFunctions.tintBlitMultiply( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
 				int tintBlue = (int) m_tintColor.b;
@@ -2370,6 +2535,12 @@ namespace wg
 			}
 			case BlendMode::Invert:
 			{
+				if( m_bUseCustomFunctions && m_customFunctions.tintBlitInvert )
+				{
+					m_customFunctions.tintBlitInvert( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					break;
+				}
+				
 				int tintRed = (int) m_tintColor.r;
 				int tintGreen = (int) m_tintColor.g;
 				int tintBlue = (int) m_tintColor.b;
@@ -2968,8 +3139,18 @@ namespace wg
 		for( int i = 0 ; i < 17 ; i++ )
 		{
 			double b = i/16.0;
-			m_lineThicknessTable[i] = (int) (sqrt( 1.0 + b*b ) * 65536);
+			m_lineThicknessTable[i] = (int) (Util::squareRoot( 1.0 + b*b ) * 65536);
 		}
+	}
+
+	//____ _clearCustomFunctionTable() ________________________________________
+
+	void SoftGfxDevice::_clearCustomFunctionTable()
+	{
+		int * p = reinterpret_cast<int*>(&m_customFunctions);
+		
+		for( int i = 0 ; i < sizeof(CustomFunctionTable)/4 ; i++ )
+			p[i] = 0;
 	}
 
 

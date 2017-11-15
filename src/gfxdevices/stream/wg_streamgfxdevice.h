@@ -81,7 +81,7 @@ namespace wg
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color front, Color back);
+		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine* topLine, const WaveLine* bottomLine, Color front, Color back);
 
 
 		void	blit( Surface * src, const Rect& srcrect, Coord dest  ) override;

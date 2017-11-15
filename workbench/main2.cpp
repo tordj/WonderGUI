@@ -224,12 +224,20 @@ int main ( int argc, char** argv )
 	// Init skins
 
 
+
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
 	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
+
+	pSDLSurf = IMG_Load( "../resources/splash.png" );
+	convertSDLFormat( &format, pSDLSurf->format );
+	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SDL_FreeSurface( pSDLSurf );
+	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
+
 
 	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -818,14 +826,21 @@ int main ( int argc, char** argv )
 
 		SDL_LockSurface(pWinSurf);
 //		pRoot->render();
-
+ 
 		pGfxDevice->beginRender();
 
 //		pGfxDevice->fill({ 0,0,1920,1080 }, Color::Black);
 
-		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
+//		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
-		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, topLine, bottomLine, { 0,0,255,128 }, Color::Purple);
+		Rect clip(50,50,400,300);
+
+		pGfxDevice->clipTileBlit(clip,pSplashSurface, {0,0,500,500} );
+
+		pGfxDevice->fill(clip, {0,255,0,128 } );
+
+
+		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 
@@ -834,8 +849,8 @@ int main ( int argc, char** argv )
 		SDL_Rect	r;
 		r.x = 0;
 		r.y = 0;
-		r.w = 400;
-		r.h = 400;
+		r.w = width;
+		r.h = height;
 		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
 
 

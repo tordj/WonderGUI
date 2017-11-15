@@ -27,6 +27,7 @@
 #include	<wg_char.h>
 #include	<wg_base.h>
 #include	<wg_stdtextmapper.h>
+#include	<wg_msgrouter.h>
 
 namespace wg 
 {

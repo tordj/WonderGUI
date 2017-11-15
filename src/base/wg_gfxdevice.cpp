@@ -23,6 +23,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <algorithm>
+#include <wg_util.h>
 
 namespace wg 
 {
@@ -399,6 +400,7 @@ namespace wg
 				blit( _pSrc, myRect, dest );
 	
 			dest.y += myRect.h;
+			dest.x = xStart;
 			myRect.y = _src.y;
 			myRect.h = _src.h;
 		}
@@ -614,18 +616,18 @@ namespace wg
 		for (int i = 0; i < c_nCurveTabEntries; i++)
 		{
 			double y = 1.f - i / (double)c_nCurveTabEntries;
-			s_pCurveTab[i] = (int)(sqrt(1.f - y*y)*65536.f);
+			s_pCurveTab[i] = (int)(Util::squareRoot(1.f - y*y)*65536.f);
 		}
 	}
 
 	//____ _traceLine() __________________________________________________________
 
-	void GfxDevice::_traceLine(int * pDest, int nPoints, const WaveLine& wave, int offset)
+	void GfxDevice::_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset)
 	{
 		static int brush[128];
 		static float prevThickness = -1.f;
 
-		float thickness = wave.thickness;		int brushSteps = (int)(thickness / 2 + 0.99f);
+		float thickness = pWave->thickness;		int brushSteps = (int)(thickness / 2 + 0.99f);
 
 		// Generate brush
 
@@ -642,11 +644,11 @@ namespace wg
 			prevThickness = thickness;
 		}
 
-		int nTracePoints = max(0, min(nPoints, wave.length - offset));
+		int nTracePoints = max(0, min(nPoints, pWave->length - offset));
 		int nFillPoints = nPoints - nTracePoints;
 		// Trace...
 
-		int * pSrc = wave.pWave + offset;		for (int i = 0; i < nTracePoints; i++)
+		int * pSrc = pWave->pWave + offset;		for (int i = 0; i < nTracePoints; i++)
 		{
 			// Start with top and bottom for current point
 
@@ -692,8 +694,8 @@ namespace wg
 		// Fill...
 		if (nFillPoints)
 		{
-			int top = wave.hold - brush[0];
-			int bottom = wave.hold + brush[0];
+			int top = pWave->hold - brush[0];
+			int bottom = pWave->hold + brush[0];
 
 			for (int i = 0; i < nFillPoints; i++)
 			{

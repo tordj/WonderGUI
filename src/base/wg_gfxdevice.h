@@ -109,8 +109,7 @@ namespace wg
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 
-		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill) = 0;
-
+		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
 
 	
 		virtual void	blit( Surface * pSrc );
@@ -126,19 +125,16 @@ namespace wg
 	
 		virtual void	clipFill( const Rect& clip, const Rect& rect, const Color& col );
 	
-		virtual void	clipBlit( const Rect& clip, Surface * src );
-		virtual void	clipBlit( const Rect& clip, Surface * src, Coord dest  );
-		virtual void	clipBlit( const Rect& clip, Surface * src,
-								  const Rect& srcrect, Coord dest  );
+		virtual void	clipBlit( const Rect& clip, Surface * pSrc );
+		virtual void	clipBlit( const Rect& clip, Surface * pSrc, Coord dest  );
+		virtual void	clipBlit( const Rect& clip, Surface * pSrc, const Rect& src, Coord dest  );
 	
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& src, const Rect& dest );
 	
-		virtual void	clipTileBlit( const Rect& clip, Surface * src,
-									  const Rect& dest );
-		virtual void	clipTileBlit( const Rect& clip, Surface * src,
-									  const Rect& srcrect, const Rect& dest );
+		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
+		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
 	
 	
 		// Mid-level draw methods
@@ -175,7 +171,7 @@ namespace wg
 		static	int		s_gfxDeviceCount;				// Number of existing gfxDevices. Ref count for shared data.
 
 		void	_genCurveTab();
-		void	_traceLine(int * pDest, int nPoints, const WaveLine& wave, int offset);
+		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
 		const static int c_nCurveTabEntries = 1024;
 		static int *	s_pCurveTab;

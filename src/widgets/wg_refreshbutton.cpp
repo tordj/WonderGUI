@@ -27,6 +27,7 @@
 #include <wg_util.h>
 #include <wg_key.h>
 #include <wg_msg.h>
+#include <wg_msgrouter.h>
 
 namespace wg 
 {

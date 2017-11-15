@@ -39,6 +39,36 @@ namespace wg
 	class SoftGfxDevice : public GfxDevice
 	{
 	public:
+	
+		struct CustomFunctionTable
+		{
+			int (*setCanvas)( void * pPixels, int pixelFormat, int pitch );
+			void (*beginRender)(void );
+			void (*endRender)( void );
+
+			void (*fillReplace)( int x, int y, int w, int h, uint32_t color );
+			void (*fillBlend)( int x, int y, int w, int h, uint32_t color );
+			void (*fillAdd)( int x, int y, int w, int h, uint32_t color );
+			void (*fillSubtract)( int x, int y, int w, int h, uint32_t color );
+			void (*fillMultiply)( int x, int y, int w, int h, uint32_t color );
+			void (*fillInvert)( int x, int y, int w, int h, uint32_t color );
+
+			void (*blitReplace)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitBlend)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitAdd)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitSubtract)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitMultiply)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitInvert)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+
+			void (*tintBlitReplace)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitBlend)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitAdd)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitSubtract)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitMultiply)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitInvert)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+		};	
+	
+	
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
@@ -55,6 +85,10 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory();
+		
+		inline CustomFunctionTable *	customFunctions() { return &m_customFunctions; }
+		inline void						enableCustomFunctions( bool enable ) { m_bEnableCustomFunctions = enable; };
+		inline bool						customFunctionsEnabled() const { return m_bEnableCustomFunctions; }
 		
 		//.____ Geometry _________________________________________________
 
@@ -83,7 +117,7 @@ namespace wg
 		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
 							   		 float dx, float dy, float dw, float dh ) override;
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topBorder, const WaveLine& bottomBorder, Color frontFill, Color backFill);
+		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * PTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
 
 		// Experimental stuff...
 
@@ -102,6 +136,7 @@ namespace wg
 		~SoftGfxDevice();
 	
 		void	_initTables();
+		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness( float thickness, int slope );
 	
 		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
@@ -164,6 +199,12 @@ namespace wg
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
 		int				m_canvasPitch;
+
+		bool			m_bEnableCustomFunctions;	// Externally set.
+		bool			m_bUseCustomFunctions;		// Internally set, based on m_bEnableCustomFunctions and return values from custom calls to beginRender and setCanvas.
+													//Use overrided drawing primitives if available. 
+		CustomFunctionTable m_customFunctions;
+
 	};
 	
 

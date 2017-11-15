@@ -134,13 +134,13 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		inline State		state() const { return m_state; }
+		inline State		state() const;
 
 		void				setEnabled(bool bEnabled);
-		inline bool			isEnabled() const { return m_state.isEnabled(); }
+		inline bool			isEnabled() const;
 
 		void				setSelectable(bool bSelectable);
-		inline bool			isSelectable() const { return m_bSelectable; }
+		inline bool			isSelectable() const;
 
 		inline bool			grabFocus();
 		inline bool			releaseFocus();
@@ -173,12 +173,12 @@ namespace wg
 		bool				markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg );
 
-		inline void			refresh() { _refresh(); }
+		inline void			refresh();
 	
-		inline Widget_p		clone() const { return Widget_p(_clone()); }
-		Widget_p			newOfMyType() const { return Widget_p(_newOfMyType() ); } ///< @brief Create and return a new widget of the same type.
+		inline Widget_p		clone() const;
+		Widget_p			newOfMyType() const; ///< @brief Create and return a new widget of the same type.
 
-		inline bool			isOpaque() const { return m_bOpaque;  }
+		inline bool			isOpaque() const;
 	
 	protected:	
 		Widget();
@@ -380,6 +380,51 @@ namespace wg
 		return Rect(0,0,m_size); 
 	}
 	
+	/**
+	 * @brief	Return the state of widget.
+	 *
+	 * Returns a copy of the widgets internal state object, containing basic state information
+	 * such as if it is disabled, has mouse pointer inside, is pressed or selected.
+	 *
+	 * This is just for information. WonderGUI doesn't allow the state to be manipulated except
+	 * as allowed by specific API:s like setEnabled().
+	 *
+	 * @return State object representing the current state of the widget.
+	 */
+
+	State Widget::state() const 
+	{ 
+		return m_state; 
+	}
+
+	/**
+	 * @brief	Get the enabled/disabled state of widget.
+	 *
+	 * @return 	True if widget is enabled, otherwise false.
+	 */ 
+
+	bool Widget::isEnabled() const 
+	{ 
+		return m_state.isEnabled(); 
+	}
+
+	/**
+	 * @brief	Get the selectable flag of widget.
+	 *
+	 * Get the selectable flag of widget, which determines if widget should be considered
+	 * selectable when placed in lists and such.
+	 *
+	 * @return 	True if widget is selectable, otherwise false.
+	 */ 
+
+
+	bool Widget::isSelectable() const 
+	{ 
+		return m_bSelectable; 
+	}
+
+
+
 	/** @brief Get keyboard focus.
 	*
 	* Attempt to get keyboard focus. This can be blocked by parent or further up the hierarchy.

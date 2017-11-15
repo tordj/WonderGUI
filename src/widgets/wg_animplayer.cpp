@@ -24,7 +24,10 @@
 #include <wg_animplayer.h>
 #include <wg_util.h>
 #include <wg_msgrouter.h>
+#include <wg_gfxdevice.h>
+
 #include <math.h>
+
 
 namespace wg 
 {

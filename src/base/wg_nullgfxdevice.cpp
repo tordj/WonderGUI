@@ -139,7 +139,7 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine& topLine, const WaveLine& bottomLine, Color front, Color back)
+	void NullGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
 	{
 	}
 

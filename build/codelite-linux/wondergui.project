@@ -105,6 +105,8 @@
     <File Name="../../src/widgets/wg_texteditor.h"/>
     <File Name="../../src/widgets/wg_lineeditor.cpp"/>
     <File Name="../../src/widgets/wg_lineeditor.h"/>
+    <File Name="../../src/widgets/wg_popupopener.cpp"/>
+    <File Name="../../src/widgets/wg_popupopener.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="items">
     <File Name="../../src/items/wg_columnheaderitem.cpp"/>
@@ -353,7 +355,7 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-O2; -std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
