@@ -430,7 +430,7 @@ namespace wg
 		int 	length, width;
 		int		pos, slope;
 
-		if( abs(beg.x-end.x) > abs(beg.y-end.y) )
+		if( std::abs(beg.x-end.x) > std::abs(beg.y-end.y) )
 		{
 			// Prepare mainly horizontal line segment
 			
@@ -493,7 +493,7 @@ namespace wg
 		int		pos, slope;
 		int		clipStart, clipEnd;
 
-		if( abs(beg.x-end.x) > abs(beg.y-end.y) )
+		if( std::abs(beg.x-end.x) > std::abs(beg.y-end.y) )
 		{
 			// Prepare mainly horizontal line segment
 			
@@ -2977,7 +2977,7 @@ namespace wg
 	
 	int SoftGfxDevice::_scaleLineThickness( float thickness, int slope )
 	{
-		slope = abs(slope);
+		slope = std::abs(slope);
 		
 		int scale = m_lineThicknessTable[slope>>12];
 		

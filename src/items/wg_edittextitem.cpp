@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <algorithm>
+#include <cstdlib>
 #include <wg_edittextitem.h>
 #include <wg_charseq.h>
 
@@ -595,7 +596,7 @@ namespace wg
 
 	int EditTextItem::selectionSize() const
 	{
-		return abs(m_editState.caretOfs-m_editState.selectOfs);		
+		return std::abs(m_editState.caretOfs-m_editState.selectOfs);		
 	}
 
 	//____ eraseSelected() _____________________________________________________

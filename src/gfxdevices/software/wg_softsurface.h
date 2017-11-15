@@ -45,7 +45,7 @@ namespace wg
 
 		 //.____ Creation __________________________________________
 		 
-		 static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
+		static SoftSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
         static SoftSurface_p	create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
         static SoftSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
 		static SoftSurface_p	create( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );

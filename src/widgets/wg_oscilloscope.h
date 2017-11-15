@@ -23,7 +23,7 @@
 #define WG_OSCILLOSCOPE_DOT_H
 #pragma once
 
-#include <math.h>
+#include <cmath>
 
 #include <wg_widget.h>
 #include <wg_skin.h>
@@ -108,7 +108,7 @@ namespace wg
 
 
 		static inline int ipart(double x) { return (int)floor(x); }
-		static inline float fpart(float x) { return fabsf(x) - ipart(x); }
+		static inline float fpart(float x) { return std::abs(x) - ipart(x); }
 		static inline float rfpart(float x) { return 1.0f - fpart(x); }
 		void plot(const int x, const int y, const float alpha);
 
