@@ -497,6 +497,9 @@ namespace wg
 		else
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+		glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
+		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+
 		return true;
 	}
 
@@ -573,6 +576,9 @@ namespace wg
         if( m_bRendering == true )
 			return false;
 
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return false;
+
 		// Remember GL states so we can restore in EndRender()
 
 		m_glDepthTest 		= glIsEnabled(GL_DEPTH_TEST);
@@ -585,16 +591,15 @@ namespace wg
 		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_glReadFrameBuffer);
 		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_glDrawFrameBuffer);
 
-		// Set correct framebuffer
-
-		_setFramebuffer();
 
 		//  Modify states
 
 		glDisable(GL_DEPTH_TEST);
         glEnable(GL_SCISSOR_TEST);
-        glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
-		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+
+		// Set correct framebuffer
+
+		_setFramebuffer();
 
 		// Set correct blend mode
 
@@ -1254,7 +1259,7 @@ namespace wg
         float   width;
         float	slope;
         
-        if( abs(beg.x-end.x) > abs(beg.y-end.y) )
+        if( std::abs(beg.x-end.x) > std::abs(beg.y-end.y) )
         {
             // Prepare mainly horizontal line segment
             
@@ -1557,7 +1562,7 @@ namespace wg
 		glBindTexture(GL_TEXTURE_BUFFER, m_horrWaveBufferTexture);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, m_horrWaveBufferTextureData);
 		glUniform1i(m_horrWaveProgTexIdLoc, 0);
-		glUniform2f(m_horrWaveProgWindowOfsLoc, begin.x, begin.y);
+		glUniform2f(m_horrWaveProgWindowOfsLoc,(GLfloat) begin.x, (GLfloat) begin.y);
 		glUniform4f(m_horrWaveProgTopBorderColorLoc, topBorder.color.r / 255.f, topBorder.color.g / 255.f, topBorder.color.b / 255.f, topBorder.color.a / 255.f);
 		glUniform4f(m_horrWaveProgBottomBorderColorLoc, bottomBorder.color.r / 255.f, bottomBorder.color.g / 255.f, bottomBorder.color.b / 255.f, bottomBorder.color.a / 255.f);
 		glUniform4f(m_horrWaveProgFrontFillLoc, frontFill.r / 255.f, frontFill.g / 255.f, frontFill.b / 255.f, frontFill.a / 255.f);
@@ -1605,7 +1610,7 @@ namespace wg
 	
 	float GlGfxDevice::_scaleThickness( float thickness, float slope )
 	{
-		slope = abs(slope);
+		slope = std::abs(slope);
 		
 		float scale = m_lineThicknessTable[(int)(slope*16)];
 		
