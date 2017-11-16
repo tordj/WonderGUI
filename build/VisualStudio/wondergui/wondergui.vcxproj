@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamlogger.h" />
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamplayer.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h" />
     <ClInclude Include="..\..\..\src\base\wg_anim.h" />
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
@@ -245,6 +246,7 @@
     <ClCompile Include="..\..\..\src\base\wg_gfxinstream.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxoutstream.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamplayer.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamplug.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamreader.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamwriter.cpp" />

@@ -45,6 +45,7 @@ namespace wg
 		m_pBuffer = new char[c_bufferSize+c_bufferMargin];
 		m_readOfs = 0;
 		m_writeOfs = 0;
+		m_bOpen = true;
 	}
 	
 	//____ Destructor _________________________________________________________
@@ -171,18 +172,37 @@ namespace wg
 		m_readOfs = (m_readOfs + nBytes) % c_bufferSize;
 	}
 
-	//____ _closeInStream() _____________________________________________________
+	//____ _isStreamOpen() ____________________________________________________
+
+	bool GfxStreamReader::_isStreamOpen()
+	{
+		return m_bOpen;
+	}
+	
+	//____ _openStream() ______________________________________________________
+
+	bool GfxStreamReader::_reopenStream()
+	{
+		m_bOpen = true;
+		return true;
+	}
+
+	//____ _closeStream() _____________________________________________________
 
 	void GfxStreamReader::_closeStream()
 	{
-		// Do nothing
-	}
+		// Will stop fetching data
 
+		m_bOpen = false;
+	}
 
 	//____ _fetchData() _______________________________________________________
 
 	void GfxStreamReader::_fetchData()
 	{
+		if (!m_bOpen)
+			return;
+
 		// Calcuate size of chunks to fill in the circular buffer
 
 		int size = c_bufferSize - ((m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize) -1;		// -1 since we may not catch up to readOfs

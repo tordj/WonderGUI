@@ -70,6 +70,9 @@ namespace wg
 		void		_flushStream() override;
 		void		_reserveStream(int bytes) override;
 		void		_closeStream() override;
+		bool		_reopenStream() override;
+		bool		_isStreamOpen() override;
+
 
 		void		_pushChar(char c) override;
 		void		_pushShort(short s) override;
@@ -82,9 +85,6 @@ namespace wg
 		char *		m_pBuffer;
 		int			m_capacity;
 		int			m_size;
-
-		char *		m_pChunkHead;
-
 	};
 
 

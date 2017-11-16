@@ -42,7 +42,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamLogger_p	create( GfxInStream& In, std::ostream& out );
+		static GfxStreamLogger_p	create( GfxInStream& in, std::ostream& out );
 
 		//.____ Identification __________________________________________
 

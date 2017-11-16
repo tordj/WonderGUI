@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\stream;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;..\..\..\..\freetype\lib;C:\Program Files (x86)\GnuWin32;..\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -81,7 +81,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\..\SDL2\include;..\..\..\..\SDL2_image\include;..\..\..\..\glew\include;..\..\..\src\gfxdevices\software;..\..\..\src\gfxdevices\stream;..\..\..\src\gfxdevices\opengl;..\..\..\src\fonts\freetype;..\..\..\workbench;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\tojan1\Workspace\freetype;..\..\..\..\SDL2\lib\x86;..\..\..\..\SDL2_image\lib\x86;..\..\..\..\glew\lib\Release\Win32;..\..\..\..\freetype\lib;C:\Program Files (x86)\GnuWin32;..\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -100,7 +100,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_opengl.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_stream.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -159,7 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\workbench\main_gl.cpp" />
+    <ClCompile Include="..\..\..\workbench\main_streamtest.cpp" />
     <ClCompile Include="..\..\..\workbench\testwidget.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -467,6 +467,9 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamlogger.h">
       <Filter>gfxstream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gfxstreamplayer.h">
+      <Filter>gfxstream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -788,6 +791,9 @@
       <Filter>gfxstream</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp">
+      <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gfxstreamplayer.cpp">
       <Filter>gfxstream</Filter>
     </ClCompile>
   </ItemGroup>

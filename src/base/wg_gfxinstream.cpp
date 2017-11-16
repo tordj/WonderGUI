@@ -60,6 +60,31 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (uint16_t& i)
+	{
+		i = m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (int32_t& i)
+	{
+		i = m_pHolder->_pullInt();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (float& f)
+	{
+		f = m_pHolder->_pullFloat();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (Coord& coord)
+	{
+		coord.x = m_pHolder->_pullInt();
+		coord.y = m_pHolder->_pullInt();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (Rect& rect)
 	{
 		rect.x = m_pHolder->_pullInt();
@@ -69,12 +94,26 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (RectF& rect)
+	{
+		rect.x = m_pHolder->_pullFloat();
+		rect.y = m_pHolder->_pullFloat();
+		rect.w = m_pHolder->_pullFloat();
+		rect.h = m_pHolder->_pullFloat();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (Color& color)
 	{
 		color.argb = m_pHolder->_pullInt();
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (BlendMode& blendMode)
+	{
+		blendMode = (BlendMode) m_pHolder->_pullShort();
+		return *this;
+	}
 
 
 } // namespace wg

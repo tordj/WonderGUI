@@ -74,6 +74,8 @@ namespace wg
 		float		_pullFloat() override;
 		void		_pullBytes(int nBytes, char * pBytes) override;
 
+		bool		_isStreamOpen() override;
+		bool		_reopenStream() override;
 		void		_closeStream() override;
 
 
@@ -87,6 +89,7 @@ namespace wg
 		char *		m_pBuffer;
 		int			m_readOfs;
 		int			m_writeOfs;
+		bool		m_bOpen;
 	};
 
 

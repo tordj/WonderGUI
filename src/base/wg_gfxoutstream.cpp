@@ -42,6 +42,24 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (int32_t int32)
+	{
+		m_pHolder->_pushInt(int32);
+		return *this;
+	}
+
+	GfxOutStream&  GfxOutStream::operator<< (float f)
+	{
+		m_pHolder->_pushFloat(f);
+		return *this;
+	}
+
+	GfxOutStream&  GfxOutStream::operator<< (const Coord& c)
+	{
+		m_pHolder->_pushInt(c.x);
+		m_pHolder->_pushInt(c.y);
+		return *this;
+	}
 
 	GfxOutStream&  GfxOutStream::operator<< (const Rect& rect)
 	{
@@ -52,7 +70,23 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const Color& color)
+	GfxOutStream&  GfxOutStream::operator<< (const RectF& rect)
+	{
+		m_pHolder->_pushFloat(rect.x);
+		m_pHolder->_pushFloat(rect.y);
+		m_pHolder->_pushFloat(rect.w);
+		m_pHolder->_pushFloat(rect.h);
+		return *this;
+	}
+
+	GfxOutStream&  GfxOutStream::operator<< (BlendMode b)
+	{
+		m_pHolder->_pushShort((short) b);
+		return *this;
+	}
+
+
+	GfxOutStream&  GfxOutStream::operator<< (Color color)
 	{
 		m_pHolder->_pushInt(color.argb);
 		return *this;

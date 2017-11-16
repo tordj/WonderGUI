@@ -23,6 +23,7 @@
 #include <wg_gfxstreamplug.h>
 
 #include <cstring>
+#include <cassert>
 
 namespace wg 
 {
@@ -41,7 +42,7 @@ namespace wg
 	GfxStreamPlug::GfxStreamPlug(int capacity) : input(this), output{ &m_outStream[0], &m_outStream[1], &m_outStream[2], &m_outStream[3] }
 	{
 		m_bufferSize = capacity+1;
-		m_pBuffer = new char[m_bufferSize];
+		m_pBuffer = new char[m_bufferSize+c_bufferMargin];
 		m_writeOfs = 0;
 
 		for (int i = 0; i < c_maxOutputs; i++)
@@ -55,7 +56,7 @@ namespace wg
 
 	GfxStreamPlug::~GfxStreamPlug()
 	{
-		delete[] m_pBuffer;
+		delete [] m_pBuffer;
 	}
 
 	//____ isInstanceOf() _____________________________________________________
@@ -85,9 +86,17 @@ namespace wg
 		return 0;
 	}
 
-	//____ size() _____________________________________________________________
+	//____ openOutput() _______________________________________________________
 
-	int GfxStreamPlug::size()
+	void GfxStreamPlug::openOutput(int index)
+	{
+		assert(index >= 0 && index < c_maxOutputs);
+		output[index].reopen();
+	}
+
+	//____ bufferSize() _____________________________________________________________
+
+	int GfxStreamPlug::bufferSize()
 	{
 		int maxSize = 0;
 
@@ -97,27 +106,27 @@ namespace wg
 		return maxSize;
 	}
 
-	//____ capacity() _________________________________________________________
+	//____ bufferCapacity() _________________________________________________________
 
-	int GfxStreamPlug::capacity()
+	int GfxStreamPlug::bufferCapacity()
 	{
 		return m_bufferSize-1;
 	}
 
-	//____ setCapacity() ______________________________________________________
+	//____ setBufferCapacity() ______________________________________________________
 
-	bool GfxStreamPlug::setCapacity(int capacity)
+	bool GfxStreamPlug::setBufferCapacity(int capacity)
 	{
-		if (capacity < size())
+		if (capacity < bufferSize())
 			return false;
 
 		_resize(capacity+1);			// Buffer always needs at least one empty byte to prevent write pointer to wrap read pointers.
 		return true;
 	}
 
-	//____ clear() ____________________________________________________________
+	//____ clearBuffer() ____________________________________________________________
 
-	void GfxStreamPlug::clear()
+	void GfxStreamPlug::clearBuffer()
 	{
 		m_writeOfs = 0;
 		for (int i = 0; i < c_maxOutputs; i++)
@@ -129,9 +138,9 @@ namespace wg
 
 	void GfxStreamPlug::_resize(int newSize)
 	{
-		char * pNew = new char[newSize];
+		char * pNew = new char[newSize+c_bufferMargin];
 
-		int bytesToCopy = size();
+		int bytesToCopy = bufferSize();
 
 		// Copy data that has not been read by all yet to beginning of new buffer
 
@@ -141,7 +150,7 @@ namespace wg
 			int copyFromEnd = bytesToCopy - copyFromOfs;
 
 			if (copyFromEnd > 0)
-				std::memcpy(pNew, &m_pBuffer[m_bufferSize - copyFromEnd], copyFromEnd);
+				std::memcpy(pNew, &m_pBuffer[m_bufferSize - copyFromEnd], copyFromEnd+c_bufferMargin);
 
 			std::memcpy(pNew + copyFromEnd, &m_pBuffer[m_writeOfs - copyFromOfs], copyFromOfs );
 		}
@@ -159,6 +168,7 @@ namespace wg
 
 		// Finalize
 
+		m_bufferSize = newSize;
 		m_writeOfs = bytesToCopy;
 		delete[] m_pBuffer;
 		m_pBuffer = pNew;
@@ -173,12 +183,12 @@ namespace wg
 		return this;
 	}
 
-	//____ _reserve() _________________________________________________________
+	//____ _reserveStream() _________________________________________________________
 
 	void GfxStreamPlug::_reserveStream(int bytes)
 	{
-		int contentSize = size();
-		int _capacity = capacity();
+		int contentSize = bufferSize();
+		int _capacity = bufferCapacity();
 
 		if (_capacity < contentSize + bytes)
 		{
@@ -188,18 +198,32 @@ namespace wg
 		}
 	}
 
-	//____ _flush() ___________________________________________________________
+	//____ _flushStream() ___________________________________________________________
 
 	void GfxStreamPlug::_flushStream()
 	{
 		// Do nothing
 	}
 
-	//____ _close() ___________________________________________________________
+	//____ _closeStream() ___________________________________________________________
 
 	void GfxStreamPlug::_closeStream()
 	{
 		// Do nothing
+	}
+
+	//____ _reopenStream() ___________________________________________________________
+
+	bool GfxStreamPlug::_reopenStream()
+	{
+		return true;
+	}
+
+	//____ _isStreamOpen() ___________________________________________________________
+
+	bool GfxStreamPlug::_isStreamOpen()
+	{
+		return true;
 	}
 
 	//____ _pushChar() ________________________________________________________
@@ -263,6 +287,22 @@ namespace wg
 	void GfxStreamPlug::OutStreamProxy::_closeStream()
 	{
 		readOfs = -1;
+	}
+
+	//____ OutStreamProxy::_reopentream() ______________________________________________________
+
+	bool GfxStreamPlug::OutStreamProxy::_reopenStream()
+	{
+		if( readOfs < 0 )
+			readOfs = pObj->m_writeOfs;
+		return true;
+	}
+
+	//____ OutStreamProxy::_isStreamOpen() ______________________________________________________
+
+	bool GfxStreamPlug::OutStreamProxy::_isStreamOpen()
+	{
+		return readOfs >= 0;
 	}
 
 	//____ OutStreamProxy::_hasChunk() ______________________________________________________
@@ -353,7 +393,7 @@ namespace wg
 		if (readOfs < 0)
 			return 0;						// Stream does not exist.
 
-		return readOfs < pObj->m_writeOfs ? pObj->m_writeOfs - readOfs : pObj->m_bufferSize - readOfs + pObj->m_writeOfs;
+		return readOfs <= pObj->m_writeOfs ? pObj->m_writeOfs - readOfs : pObj->m_bufferSize - readOfs + pObj->m_writeOfs;
 	}
 
 } // namespace wg

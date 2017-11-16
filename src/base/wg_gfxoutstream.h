@@ -50,6 +50,8 @@ namespace wg
 		virtual void	_flushStream() = 0;
 		virtual void	_reserveStream(int bytes) = 0;
 		virtual void	_closeStream() = 0;
+		virtual bool	_reopenStream() = 0;
+		virtual bool	_isStreamOpen() = 0;
 
 		virtual void	_pushChar(char c) = 0;
 		virtual void	_pushShort(short s) = 0;
@@ -75,12 +77,20 @@ namespace wg
 		inline void		flush() { m_pHolder->_flushStream(); }
 		inline void		reserve(int bytes) { m_pHolder->_reserveStream(bytes); }
 		inline void		close() { m_pHolder->_closeStream(); }
+		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
+		inline bool		reopen() { return m_pHolder->_reopenStream(); }
 
 		GfxOutStream&	operator<< (GfxStream::Header);
 		GfxOutStream&	operator<< (uint16_t);
+		GfxOutStream&	operator<< (int32_t);
+		GfxOutStream&	operator<< (float);
 
+		GfxOutStream&	operator<< (const Coord&);
 		GfxOutStream&	operator<< (const Rect&);
-		GfxOutStream&	operator<< (const Color&);
+		GfxOutStream&	operator<< (const RectF&);
+
+		GfxOutStream&	operator<< (BlendMode);
+		GfxOutStream&	operator<< (Color);
 
 		//.____ Misc __________________________________________________
 

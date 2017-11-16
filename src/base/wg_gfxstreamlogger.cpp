@@ -113,12 +113,12 @@ namespace wg
 
 		case GfxChunkId::BeginRender:
 
-			m_charStream << "BeginRender";
+			m_charStream << "BeginRender" << std::endl;
 			break;
 
 		case GfxChunkId::EndRender:
 
-			m_charStream << "EndRender";
+			m_charStream << "EndRender" << std::endl;
 			break;
 
 		case GfxChunkId::Fill:
@@ -129,32 +129,168 @@ namespace wg
 			*m_pGfxStream >> rect;
 			*m_pGfxStream >> col;
 
-			m_charStream << "Fill";
-			m_charStream << "    dest = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h;
-			m_charStream << "    color = " << col.a << ", " << col.r << ", " << col.g << ", " << col.b;
+			m_charStream << "Fill" << std::endl;
+			m_charStream << "    dest = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+			m_charStream << "    color = " << (int) col.a << ", " << (int) col.r << ", " << (int) col.g << ", " << (int) col.b << std::endl;
 			break;
 		}
-/*
-				SetCanvas,
-				SetTintColor,
-				SetBlendMode,
-				ClipDrawHorrLine,
-				ClipDrawVertLine,
-				PlotPixels,
-				ClipPlotPixels,
-				DrawLine,
-				ClipDrawLine,
-				ClipDrawHorrWave,
-				Blit,
-				StretchBlitSubPixel,
-				FillSubPixel,
 
-				CreateSurface,
-				SetSurfaceScaleMode,
-				UpdateSurfaceRegion,
-				FillSurface,
-				CopySurface
-*/
+		case GfxChunkId::SetCanvas:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::SetTintColor:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::SetBlendMode:
+		{
+			BlendMode	blendMode;
+			*m_pGfxStream >> blendMode;
+
+			m_charStream << "SetBlendMode" << std::endl;
+			m_charStream << "    mode = " << (int)blendMode << std::endl;
+			break;
+		}
+
+		case GfxChunkId::ClipDrawHorrLine:
+		{
+			Rect	clip;
+			Coord	begin;
+			int		length;
+			Color	color;
+
+			*m_pGfxStream >> clip;
+			*m_pGfxStream >> begin;
+			*m_pGfxStream >> length;
+			*m_pGfxStream >> color;
+
+			m_charStream << "ClipDrawHorrLine" << std::endl;
+			m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+			m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+			m_charStream << "    length = " << length << std::endl;
+			m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+			break;
+		}
+
+		case GfxChunkId::ClipDrawVertLine:
+		{
+			Rect	clip;
+			Coord	begin;
+			int		length;
+			Color	color;
+
+			*m_pGfxStream >> clip;
+			*m_pGfxStream >> begin;
+			*m_pGfxStream >> length;
+			*m_pGfxStream >> color;
+
+			m_charStream << "ClipDrawVertLine" << std::endl;
+			m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+			m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+			m_charStream << "    length = " << length << std::endl;
+			m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+			break;
+		}
+
+		case GfxChunkId::PlotPixels:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::ClipPlotPixels:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::DrawLine:
+		{
+			Coord	begin;
+			Coord	end;
+			Color	color;
+			float	thickness;
+
+			*m_pGfxStream >> begin;
+			*m_pGfxStream >> end;
+			*m_pGfxStream >> color;
+			*m_pGfxStream >> thickness;
+
+			m_charStream << "DrawLine" << std::endl;
+			m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+			m_charStream << "    end = " << end.x << ", " << end.y << std::endl;
+			m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+			m_charStream << "    thickness = " << thickness << std::endl;
+			break;
+		}
+
+		case GfxChunkId::ClipDrawLine:
+		{
+			Rect	clip;
+			Coord	begin;
+			Coord	end;
+			Color	color;
+			float	thickness;
+
+			*m_pGfxStream >> clip;
+			*m_pGfxStream >> begin;
+			*m_pGfxStream >> end;
+			*m_pGfxStream >> color;
+			*m_pGfxStream >> thickness;
+
+			m_charStream << "ClipDrawLine" << std::endl;
+			m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+			m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+			m_charStream << "    end = " << end.x << ", " << end.y << std::endl;
+			m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+			m_charStream << "    thickness = " << thickness << std::endl;
+			break;
+		}
+
+
+		case GfxChunkId::ClipDrawHorrWave:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::Blit:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::StretchBlitSubPixel:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::FillSubPixel:
+		{
+			RectF	rect;
+			Color	col;
+
+			*m_pGfxStream >> rect;
+			*m_pGfxStream >> col;
+
+			m_charStream << "Fill" << std::endl;
+			m_charStream << "    dest = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+			m_charStream << "    color = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
+			break;
+		}
+
+		case GfxChunkId::CreateSurface:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::SetSurfaceScaleMode:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::UpdateSurfaceRegion:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::FillSurface:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::CopySurface:
+			//TODO: Implement!
+			break;
+
 		default:
 			//TODO: Signal error somehow.
 			return false;

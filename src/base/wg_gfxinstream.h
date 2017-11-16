@@ -57,9 +57,9 @@ namespace wg
 		virtual float	_pullFloat() = 0;
 		virtual void	_pullBytes(int nBytes, char * pBytes) = 0;
 
+		virtual bool	_isStreamOpen() = 0;
 		virtual void	_closeStream() = 0;
-
-
+		virtual bool	_reopenStream() = 0;
 	};
 
 	//____ GfxInStream ________________________________________________________
@@ -71,13 +71,25 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
+		inline void		close() { m_pHolder->_closeStream(); }
+		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
+		inline bool		reopen() { return m_pHolder->_reopenStream(); }
+
 		bool				isEmpty();
 		GfxStream::Header	peek();
 
 		GfxInStream& operator>> (GfxStream::Header& header);
 
+		GfxInStream& operator>> (uint16_t&);
+		GfxInStream& operator>> (int32_t&);
+		GfxInStream& operator>> (float&);
+
+
+		GfxInStream& operator>> (Coord& coord);
 		GfxInStream& operator>> (Rect& rect);
+		GfxInStream& operator>> (RectF& rect);
 		GfxInStream& operator>> (Color& color);
+		GfxInStream& operator>> (BlendMode& blendMode);
 
 		//.____ Misc __________________________________________________
 

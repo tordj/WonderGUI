@@ -42,6 +42,13 @@
 #include <wg_geo.h>
 #include <wg_gfxanim.h>
 #include <wg_gfxdevice.h>
+#include <wg_gfxinstream.h>
+#include <wg_gfxoutstream.h>
+#include <wg_gfxstreamreader.h>
+#include <wg_gfxstreamwriter.h>
+#include <wg_gfxstreamplug.h>
+#include <wg_gfxstreamlogger.h>
+#include <wg_gfxstreamplayer.h>
 #include <wg_inputhandler.h>
 #include <wg_itemholder.h>
 #include <wg_key.h>

@@ -59,10 +59,12 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		int				size();
-		int				capacity();
-		bool			setCapacity(int capacity);
-		void			clear();
+		void			openOutput(int index);
+
+		int				bufferSize();
+		int				bufferCapacity();
+		bool			setBufferCapacity(int capacity);
+		void			clearBuffer();
 
 	protected:
 		GfxStreamPlug( int capacity );
@@ -74,6 +76,8 @@ namespace wg
 			Object *	_object() override;
 
 			void		_closeStream() override;
+			bool		_reopenStream() override;
+			bool		_isStreamOpen() override;
 
 			bool		_hasChunk() override;
 			GfxStream::Header	_peekChunk() override;
@@ -96,6 +100,8 @@ namespace wg
 		void			_reserveStream(int bytes) override;
 		void			_flushStream() override;
 		void			_closeStream() override;
+		bool			_reopenStream() override;
+		bool			_isStreamOpen() override;
 
 		void			_pushChar(char c) override;
 		void			_pushShort(short s) override;

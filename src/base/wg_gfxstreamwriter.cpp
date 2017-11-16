@@ -38,13 +38,12 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 	
-	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher, int packageSize) : stream(this)
+	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize) : stream(this)
 	{
 		m_dispatcher = dispatcher;
-		m_pBuffer	= new char[packageSize];
-		m_capacity	= packageSize;
+		m_pBuffer	= new char[maxPackageSize];
+		m_capacity	= maxPackageSize;
 		m_size		= 0;
-		m_pChunkHead = nullptr;
 	}
 	
 	//____ Destructor _________________________________________________________
@@ -92,17 +91,34 @@ namespace wg
 
 	void GfxStreamWriter::_flushStream()
 	{
-		assert(m_pChunkHead == nullptr);
-
 		m_dispatcher(m_size, m_pBuffer);
 		m_size = 0;
 	}
 
-	//____ _closeStream() ____________________________________________________________
+	//____ _closeStream() ____________________________________________________
 
 	void GfxStreamWriter::_closeStream()
 	{
-		_flushStream();
+		_flushStream();						// GfxStreamWriter is never closed, so we just flush.
+
+		delete[] m_pBuffer;
+		m_pBuffer = nullptr;
+	}
+
+	//____ _reopenStream() ______________________________________________________
+
+	bool GfxStreamWriter::_reopenStream()
+	{
+		if (!m_pBuffer)
+			m_pBuffer = new char[m_capacity];
+		return true;
+	}
+
+	//____ _isStreamOpen() ____________________________________________________
+
+	bool GfxStreamWriter::_isStreamOpen()
+	{
+		return m_pBuffer;
 	}
 
 	//____ _reserveStream() _________________________________________________________

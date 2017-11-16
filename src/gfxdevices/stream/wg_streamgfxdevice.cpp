@@ -226,7 +226,10 @@ namespace wg
         if( col.a  == 0 )
             return;
         
-        
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::FillSubPixel, 20 };
+		(*m_pStream) << rect;
+		(*m_pStream) << col;
+
         return;
 	}
 
@@ -246,29 +249,37 @@ namespace wg
 
 	void StreamGfxDevice::_setBlendMode( BlendMode blendMode )
 	{
-
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlendMode, 2 };
+		(*m_pStream) << blendMode;
 	}
-
-
-    
     
 	//____ clipDrawHorrLine() __________________________________________________
 	
-	void StreamGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& _start, int length, const Color& col )
+	void StreamGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& begin, int length, const Color& color )
 	{
-        if( col.a  == 0 || _start.y < clip.y || _start.y >= clip.y + clip.h )
+        if( color.a  == 0 || begin.y < clip.y || begin.y >= clip.y + clip.h )
             return;
-        
+
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawHorrLine, 32 };
+		(*m_pStream) << clip;
+		(*m_pStream) << begin;
+		(*m_pStream) << length;
+		(*m_pStream) << color;
 	}
 
 
 	//____ clipDrawVertLine() __________________________________________________
 	
-	void StreamGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& _start, int length, const Color& col )
+	void StreamGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& begin, int length, const Color& color )
 	{
-        if( col.a  == 0 || _start.x < clip.x || _start.x >= clip.x + clip.w )
+        if( color.a  == 0 || begin.x < clip.x || begin.x >= clip.x + clip.w )
             return;
         
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawVertLine, 32 };
+		(*m_pStream) << clip;
+		(*m_pStream) << begin;
+		(*m_pStream) << length;
+		(*m_pStream) << color;
 	}
 	
 	
@@ -293,14 +304,25 @@ namespace wg
 
 	//____ drawLine() __________________________________________________________
 
-	void StreamGfxDevice::drawLine( Coord beg, Coord end, Color color, float thickness )
+	void StreamGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
 	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLine, 24 };
+		(*m_pStream) << begin;
+		(*m_pStream) << end;
+		(*m_pStream) << color;
+		(*m_pStream) << thickness;
 	}
 	
 	//____ clipDrawLine() ______________________________________________________
 	
 	void StreamGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawLine, 40 };
+		(*m_pStream) << clip;
+		(*m_pStream) << begin;
+		(*m_pStream) << end;
+		(*m_pStream) << color;
+		(*m_pStream) << thickness;
 	}
 
 	//____ clipDrawHorrWave() _____________________________________________________
