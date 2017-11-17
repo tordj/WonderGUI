@@ -204,7 +204,7 @@ namespace wg
 		if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
 			return;
  
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::Fill, 20 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::Fill, 12 };
 		(*m_pStream) << _rect;
 		(*m_pStream) << _col;
   
@@ -260,7 +260,7 @@ namespace wg
         if( color.a  == 0 || begin.y < clip.y || begin.y >= clip.y + clip.h )
             return;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawHorrLine, 32 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawHorrLine, 20 };
 		(*m_pStream) << clip;
 		(*m_pStream) << begin;
 		(*m_pStream) << length;
@@ -275,7 +275,7 @@ namespace wg
         if( color.a  == 0 || begin.x < clip.x || begin.x >= clip.x + clip.w )
             return;
         
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawVertLine, 32 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawVertLine, 20 };
 		(*m_pStream) << clip;
 		(*m_pStream) << begin;
 		(*m_pStream) << length;
@@ -306,7 +306,7 @@ namespace wg
 
 	void StreamGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
 	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLine, 24 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLine, 16 };
 		(*m_pStream) << begin;
 		(*m_pStream) << end;
 		(*m_pStream) << color;
@@ -317,7 +317,7 @@ namespace wg
 	
 	void StreamGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawLine, 40 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawLine, 24 };
 		(*m_pStream) << clip;
 		(*m_pStream) << begin;
 		(*m_pStream) << end;

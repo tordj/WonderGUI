@@ -10,6 +10,8 @@
 #	include <SDL2/SDL_image.h>
 #endif
 
+#include <algorithm>
+
 #include <wondergui.h>
 
 #include <wg_softsurface.h>
@@ -250,21 +252,66 @@ int main ( int argc, char** argv )
 	// Setup streaming
 	//------------------------------------------------------
 
-	GfxStreamPlug_p pPlug = GfxStreamPlug::create(64);
-	StreamGfxDevice_p pStreamDevice = StreamGfxDevice::create({ width,height }, pPlug->input.ptr());
 
-	pPlug->openOutput(0);
-	GfxStreamLogger_p pGfxLogger = GfxStreamLogger::create(pPlug->output[0], std::cout);
+	char * pBigBuffer = new char[10000000];
 
-	pPlug->openOutput(1);
-	GfxStreamPlayer_p pGfxPlayer = GfxStreamPlayer::create(pPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
+	char * pWrite = pBigBuffer;
+	char * pRead = pBigBuffer;
+
+
+	GfxStreamWriter_p pWriter = GfxStreamWriter::create([&pWrite](int bytes, const void* pData) { std::memcpy(pWrite, pData, bytes); pWrite += bytes; });
+	GfxStreamReader_p pReader = GfxStreamReader::create([&pRead,&pWrite](int bytes, void * pDest) 
+	{ 
+		int nBytes = std::min(pWrite - pRead, bytes);
+		std::memcpy(pDest, pRead, nBytes); 
+		pRead += nBytes; 
+		return nBytes; });
+
+	StreamGfxDevice_p pStreamDevice = StreamGfxDevice::create({ width,height }, pWriter->stream.ptr());
+
+	GfxStreamPlayer_p pGfxPlayer = GfxStreamPlayer::create(pReader->stream, pGfxDevice, SoftSurfaceFactory::create());
 
 	int ticker = 0;
 	Size spriteSize(100, 100);
 	Size moveDim(width - spriteSize.w, height - spriteSize.h);
 
-//	GfxDevice_p pDevice = pGfxDevice;
+	//	GfxDevice_p pDevice = pGfxDevice;
 	GfxDevice_p pDevice = pStreamDevice;
+
+
+
+
+
+
+	while (pWrite - pBigBuffer < 10000)
+	{
+		pDevice->beginRender();
+
+		pDevice->fill({ 0,0,width,height }, Color::Black);
+		pDevice->fill({ positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
+		pDevice->fill({ positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
+		pDevice->fill({ positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
+
+		pDevice->setBlendMode(BlendMode::Invert);
+		pDevice->fill({ 0,0,width / 2,height / 2 }, Color::White);
+		pDevice->setBlendMode(BlendMode::Blend);
+
+		pDevice->drawLine({ 20,20 }, { width - 20,height - 20 }, Color::Beige, 5.f);
+		pDevice->clipDrawLine({ 20,128,100,100 }, { 20, 120 }, { width - 20,height - 20 + 100 }, Color::Purple, 20.f);
+
+		pDevice->clipDrawHorrLine({ 0,0,width,height }, { 400,400 }, 50, Color::LawnGreen);
+		pDevice->clipDrawVertLine({ 0,0,width,height }, { 400,410 }, 50, Color::LawnGreen);
+
+		pDevice->fillSubPixel({ 10.5f,500.3f,50.f,49.5f }, Color::CadetBlue);
+
+		pDevice->endRender();
+
+		ticker++;
+	}
+
+
+
+
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -276,7 +323,7 @@ int main ( int argc, char** argv )
 
 		SDL_LockSurface(pWinSurf);
 //		pRoot->render();
- 
+ /*
 		pDevice->beginRender();
 
 		pDevice->fill({ 0,0,width,height }, Color::Black);
@@ -296,11 +343,10 @@ int main ( int argc, char** argv )
 
 		pDevice->fillSubPixel({ 10.5f,500.3f,50.f,49.5f }, Color::CadetBlue);
 
-
 		pDevice->endRender();
+*/
 
-		pGfxLogger->logAll();
-		pGfxPlayer->playAll();
+		pGfxPlayer->playFrame();
 
 		SDL_UnlockSurface(pWinSurf);
 
@@ -335,8 +381,8 @@ Coord positionSprite(Size dimensions, int tick, int nb, int amount)
 	const float PI = 3.14159265f;
 
 	Coord c;
-	c.x = cos((tick + nb*360.f / amount)*PI/180)*dimensions.w/2 + dimensions.w/2;
-	c.y = sin((tick + nb*360.f / amount)*PI/180)*dimensions.h / 2 + dimensions.h / 2;
+	c.x = (int) (cos((tick + nb*360.f / amount)*PI/180)*dimensions.w/2 + dimensions.w/2);
+	c.y = (int) (sin((tick + nb*360.f / amount)*PI/180)*dimensions.h / 2 + dimensions.h / 2);
 	return c;
 }
 

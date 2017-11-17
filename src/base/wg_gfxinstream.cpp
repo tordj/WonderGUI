@@ -80,17 +80,17 @@ namespace wg
 
 	GfxInStream& GfxInStream::operator>> (Coord& coord)
 	{
-		coord.x = m_pHolder->_pullInt();
-		coord.y = m_pHolder->_pullInt();
+		coord.x = m_pHolder->_pullShort();
+		coord.y = m_pHolder->_pullShort();
 		return *this;
 	}
 
 	GfxInStream& GfxInStream::operator>> (Rect& rect)
 	{
-		rect.x = m_pHolder->_pullInt();
-		rect.y = m_pHolder->_pullInt();
-		rect.w = m_pHolder->_pullInt();
-		rect.h = m_pHolder->_pullInt();
+		rect.x = m_pHolder->_pullShort();
+		rect.y = m_pHolder->_pullShort();
+		rect.w = m_pHolder->_pullShort();
+		rect.h = m_pHolder->_pullShort();
 		return *this;
 	}
 

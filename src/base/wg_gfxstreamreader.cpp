@@ -97,13 +97,13 @@ namespace wg
 
 		int size = (m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize;
 
-		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs])
+		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs+2])
 		{
 			_fetchData();
 			size = (m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize;
 		}
 
-		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs])
+		if (size < 4 || size - 4 < *(uint16_t*)&m_pBuffer[m_readOfs+2])
 			return false;
 
 		return true;
@@ -213,28 +213,24 @@ namespace wg
 		// Fetch data to first chunk
 
 		int written = m_fetcher(chunk1, m_pBuffer + m_writeOfs);
+		if (written == 0)
+			return;
+
+		// Update bufferMargin if we have written to any of the first bytes of buffer
+
+		if (m_writeOfs < c_bufferMargin)
+		{
+			int copyEnd = min(c_bufferMargin, m_writeOfs + written);
+			for (int i = m_writeOfs; i < copyEnd; i++)
+				m_pBuffer[c_bufferSize + i] = m_pBuffer[i];
+		}
+
+		m_writeOfs = (m_writeOfs + written) % c_bufferSize;
 
 		// Handle case where we got less data than requested
 
 		if (written < chunk1)
-		{
-			if (written == 0)
-				return;
-
-			// Update bufferMargin if we have written to any of the first bytes of buffer
-
-			if (m_writeOfs < c_bufferMargin)
-			{
-				int copyEnd = min(c_bufferMargin, m_writeOfs + written);
-				for (int i = m_writeOfs; i < copyEnd; i++)
-					m_pBuffer[c_bufferSize + i] = m_pBuffer[i];
-			}
-
-			// Update writeOfs
-
-			m_writeOfs = (m_writeOfs + written) % c_bufferSize;
 			return;
-		}
 
 		// Fetch data to second chunk
 

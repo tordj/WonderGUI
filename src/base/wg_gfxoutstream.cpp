@@ -56,17 +56,17 @@ namespace wg
 
 	GfxOutStream&  GfxOutStream::operator<< (const Coord& c)
 	{
-		m_pHolder->_pushInt(c.x);
-		m_pHolder->_pushInt(c.y);
+		m_pHolder->_pushShort(c.x);
+		m_pHolder->_pushShort(c.y);
 		return *this;
 	}
 
 	GfxOutStream&  GfxOutStream::operator<< (const Rect& rect)
 	{
-		m_pHolder->_pushInt(rect.x);
-		m_pHolder->_pushInt(rect.y);
-		m_pHolder->_pushInt(rect.w);
-		m_pHolder->_pushInt(rect.h);
+		m_pHolder->_pushShort(rect.x);
+		m_pHolder->_pushShort(rect.y);
+		m_pHolder->_pushShort(rect.w);
+		m_pHolder->_pushShort(rect.h);
 		return *this;
 	}
 

@@ -287,6 +287,7 @@ namespace wg
 			playChunk();
 			if (header.type == GfxChunkId::EndRender)
 				return true;
+			header = peekChunk();
 		}
 		return false;
 	}
