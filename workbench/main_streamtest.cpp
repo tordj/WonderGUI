@@ -11,6 +11,7 @@
 #endif
 
 #include <algorithm>
+#include <cstring>
 
 #include <wondergui.h>
 
@@ -78,7 +79,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 800, height = 600;
+	int posX = 100, posY = 100, width = 640, height = 480;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -90,7 +91,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
-	FreeTypeFont::init( SoftSurfaceFactory::create() );
+//	FreeTypeFont::init( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -173,7 +174,7 @@ int main ( int argc, char** argv )
 	Base::msgRouter()->broadcastTo( pLogger );
 
 	// Init font
-
+/*
 	PixelFormat	format;
 
 	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
@@ -195,18 +196,18 @@ int main ( int argc, char** argv )
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
 	Base::setDefaultStyle(pStyle);
-
+*/
 /*
 	StdTextMapper_p pMapper = StdTextMapper::create();
 	pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
 	Base::setDefaultTextMapper(pMapper);
 */
 
-	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
+//	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
 
 	// Init skins
 
-
+/*
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -220,7 +221,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
-
+*/
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -262,7 +263,7 @@ int main ( int argc, char** argv )
 	GfxStreamWriter_p pWriter = GfxStreamWriter::create([&pWrite](int bytes, const void* pData) { std::memcpy(pWrite, pData, bytes); pWrite += bytes; });
 	GfxStreamReader_p pReader = GfxStreamReader::create([&pRead,&pWrite](int bytes, void * pDest) 
 	{ 
-		int nBytes = std::min(pWrite - pRead, bytes);
+		int nBytes = std::min((int)(pWrite - pRead), bytes);
 		std::memcpy(pDest, pRead, nBytes); 
 		pRead += nBytes; 
 		return nBytes; });
@@ -284,7 +285,7 @@ int main ( int argc, char** argv )
 
 
 //	while (pWrite - pBigBuffer < 10000)
-	while( ticker < 800 )
+	while( ticker < 600 )
 	{
 		pDevice->beginRender();
 
@@ -386,8 +387,8 @@ Coord positionSprite(Size dimensions, int tick, int nb, int amount)
 	if( tick < 90 )
 		radius *= sin(tick*PI / 180);
 
-	if( tick > 800-90 )
-		radius *= 1.f - sin((tick-(800-90))*PI / 180);
+	if( tick > 600-90 )
+		radius *= 1.f - sin((tick-(600-90))*PI / 180);
 
 
 	Coord c;

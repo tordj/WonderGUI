@@ -32,7 +32,8 @@
     <File Name="../../workbench/main_gl.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../workbench/testwidget.cpp"/>
     <File Name="../../workbench/testwidget.h"/>
-    <File Name="../../workbench/main2.cpp"/>
+    <File Name="../../workbench/main2.cpp" ExcludeProjConfig="Debug"/>
+    <File Name="../../workbench/main_streamtest.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="Release">
     <Project Name="gfxdevice_software"/>
@@ -43,6 +44,7 @@
     <Project Name="wondergui"/>
     <Project Name="gfxdevice_opengl"/>
     <Project Name="font_freetype"/>
+    <Project Name="gfxdevice_stream"/>
   </Dependencies>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -73,6 +75,7 @@
         <IncludePath Value="../../bench/"/>
         <IncludePath Value="../../src/gfxdevices/software/"/>
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
+        <IncludePath Value="../../src/gfxdevices/stream/"/>
         <IncludePath Value="../../src/fonts/freetype/"/>
       </Compiler>
       <Linker Options="" Required="yes">
@@ -81,13 +84,14 @@
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
         <Library Value="gfxdevice_opengl"/>
+        <Library Value="gfxdevice_stream"/>
         <Library Value="font_freetype"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
         <Library Value="GL"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
@@ -139,6 +143,7 @@
         <IncludePath Value="../../bench/"/>
         <IncludePath Value="../../src/gfxdevices/software/"/>
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
+        <IncludePath Value="../../src/gfxdevices/stream/"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="" Required="yes">
@@ -147,6 +152,7 @@
         <Library Value="SDL2_image"/>
         <Library Value="gfxdevice_software"/>
         <Library Value="gfxdevice_opengl"/>
+        <Library Value="gfxdevice_stream"/>
         <Library Value="font_freetype"/>
         <Library Value="wondergui"/>
         <Library Value="freetype"/>

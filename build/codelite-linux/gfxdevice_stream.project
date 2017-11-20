@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="gfxdevice_opengl" InternalType="Library" Version="10.0.0">
-  <Plugins>
-    <Plugin Name="qmake">
-      <![CDATA[00010001N0007Release000000000000]]>
-    </Plugin>
-  </Plugins>
+<CodeLite_Project Name="gfxdevice_stream" Version="10.0.0" InternalType="Library">
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="code">
-    <File Name="../../src/gfxdevices/opengl/wg_glgfxdevice.cpp"/>
-    <File Name="../../src/gfxdevices/opengl/wg_glgfxdevice.h"/>
-    <File Name="../../src/gfxdevices/opengl/wg_glsurface.cpp"/>
-    <File Name="../../src/gfxdevices/opengl/wg_glsurface.h"/>
-    <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.cpp"/>
-    <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.h"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamgfxdevice.cpp"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamgfxdevice.h"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamsurface.cpp"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamsurface.h"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamsurfacefactory.cpp"/>
+    <File Name="../../src/gfxdevices/stream/wg_streamsurfacefactory.h"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>
@@ -27,7 +22,7 @@
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g;-std=c++11" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="../../src/gfxdevices/opengl/"/>
+        <IncludePath Value="../../src/gfxdevices/stream/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>
@@ -39,7 +34,7 @@
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="yes">
         <DebuggerSearchPaths/>
         <PostConnectCommands/>
         <StartupCommands/>
@@ -68,8 +63,8 @@
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-O2; -std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="../../src/gfxdevices/opengl/"/>
+      <Compiler Options="-O2;-std=c++11" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="../../src/gfxdevices/stream/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
         <IncludePath Value="../../src/interfaces/"/>

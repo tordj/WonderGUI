@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <cstring>
+
 #include <wg_gfxstreamwriter.h>
 #include <assert.h>
 
