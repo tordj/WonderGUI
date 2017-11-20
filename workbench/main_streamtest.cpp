@@ -283,7 +283,8 @@ int main ( int argc, char** argv )
 
 
 
-	while (pWrite - pBigBuffer < 10000)
+//	while (pWrite - pBigBuffer < 10000)
+	while( ticker < 800 )
 	{
 		pDevice->beginRender();
 
@@ -291,7 +292,7 @@ int main ( int argc, char** argv )
 		pDevice->fill({ positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
 		pDevice->fill({ positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
 		pDevice->fill({ positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
-
+/*
 		pDevice->setBlendMode(BlendMode::Invert);
 		pDevice->fill({ 0,0,width / 2,height / 2 }, Color::White);
 		pDevice->setBlendMode(BlendMode::Blend);
@@ -303,7 +304,7 @@ int main ( int argc, char** argv )
 		pDevice->clipDrawVertLine({ 0,0,width,height }, { 400,410 }, 50, Color::LawnGreen);
 
 		pDevice->fillSubPixel({ 10.5f,500.3f,50.f,49.5f }, Color::CadetBlue);
-
+*/
 		pDevice->endRender();
 
 		ticker++;
@@ -380,9 +381,18 @@ Coord positionSprite(Size dimensions, int tick, int nb, int amount)
 {
 	const float PI = 3.14159265f;
 
+	Coord	radius = { dimensions.w / 2, dimensions.h / 2 };
+
+	if( tick < 90 )
+		radius *= sin(tick*PI / 180);
+
+	if( tick > 800-90 )
+		radius *= 1.f - sin((tick-(800-90))*PI / 180);
+
+
 	Coord c;
-	c.x = (int) (cos((tick + nb*360.f / amount)*PI/180)*dimensions.w/2 + dimensions.w/2);
-	c.y = (int) (sin((tick + nb*360.f / amount)*PI/180)*dimensions.h / 2 + dimensions.h / 2);
+	c.x = (int) (cos((tick + nb*360.f / amount)*PI/180)*radius.x + dimensions.w/2);
+	c.y = (int) (sin((tick + nb*360.f / amount)*PI/180)*radius.y + dimensions.h / 2);
 	return c;
 }
 
