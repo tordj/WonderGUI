@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 #include <wondergui.h>
 
@@ -93,7 +94,7 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
-	FreeTypeFont::init( SoftSurfaceFactory::create() );
+//	FreeTypeFont::init( SoftSurfaceFactory::create() );
 
 	InputHandler_p pInput = Base::inputHandler();
 	
@@ -176,7 +177,7 @@ int main ( int argc, char** argv )
 	Base::msgRouter()->broadcastTo( pLogger );
 
 	// Init font
-
+/*
 	PixelFormat	format;
 
 	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
@@ -198,18 +199,18 @@ int main ( int argc, char** argv )
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
 	Base::setDefaultStyle(pStyle);
-
+*/
 /*
 	StdTextMapper_p pMapper = StdTextMapper::create();
 	pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
 	Base::setDefaultTextMapper(pMapper);
 */
 
-	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
+//	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
 
 	// Init skins
 
-
+/*
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
@@ -223,7 +224,7 @@ int main ( int argc, char** argv )
 	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
-
+*/
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -265,7 +266,7 @@ int main ( int argc, char** argv )
 	GfxStreamWriter_p pWriter = GfxStreamWriter::create([&pWrite](int bytes, const void* pData) { std::memcpy(pWrite, pData, bytes); pWrite += bytes; });
 	GfxStreamReader_p pReader = GfxStreamReader::create([&pRead,&pWrite](int bytes, void * pDest) 
 	{ 
-		int nBytes = std::min(pWrite - pRead, bytes);
+		int nBytes = std::min((int)(pWrite - pRead), bytes);
 		std::memcpy(pDest, pRead, nBytes); 
 		pRead += nBytes; 
 		return nBytes; });

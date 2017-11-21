@@ -272,6 +272,21 @@
     <File Name="../../src/base/wg_weakinterfaceptr.h"/>
     <File Name="../../src/base/wg_weakptr.h"/>
     <File Name="../../src/base/wg_widgetholder.h"/>
+    <File Name="../../src/base/wg_gfxinstream.cpp"/>
+    <File Name="../../src/base/wg_gfxinstream.h"/>
+    <File Name="../../src/base/wg_gfxoutstream.cpp"/>
+    <File Name="../../src/base/wg_gfxoutstream.h"/>
+    <File Name="../../src/base/wg_gfxstream.h"/>
+    <File Name="../../src/base/wg_gfxstreamlogger.cpp"/>
+    <File Name="../../src/base/wg_gfxstreamlogger.h"/>
+    <File Name="../../src/base/wg_gfxstreamplayer.cpp"/>
+    <File Name="../../src/base/wg_gfxstreamplayer.h"/>
+    <File Name="../../src/base/wg_gfxstreamplug.cpp"/>
+    <File Name="../../src/base/wg_gfxstreamplug.h"/>
+    <File Name="../../src/base/wg_gfxstreamreader.cpp"/>
+    <File Name="../../src/base/wg_gfxstreamreader.h"/>
+    <File Name="../../src/base/wg_gfxstreamwriter.cpp"/>
+    <File Name="../../src/base/wg_gfxstreamwriter.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>

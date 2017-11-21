@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <cstring>
+
 #include <wg_gfxstreamreader.h>
 #include <assert.h>
 
@@ -28,6 +30,7 @@ namespace wg
 	
 	const char GfxStreamReader::CLASSNAME[] = {"GfxStreamReader"};
 	
+	const int GfxStreamReader::c_bufferMargin;
 
 	//____ create() ___________________________________________________________
 
@@ -241,7 +244,7 @@ namespace wg
 
 			// Update bufferMargin
 
-			int copyEnd = min(c_bufferMargin, written);
+			int copyEnd = min<int>(c_bufferMargin, written);
 			for (int i = 0; i < copyEnd; i++)
 				m_pBuffer[c_bufferSize + i] = m_pBuffer[i];
 		}

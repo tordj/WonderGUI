@@ -24,8 +24,6 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #define	WG_GFXSTREAMPLAYER_DOT_H
 #pragma once
 
-#include <iostream>
-
 #include <wg_object.h>
 #include <wg_gfxinstream.h>
 #include <wg_gfxdevice.h>

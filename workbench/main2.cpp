@@ -19,6 +19,7 @@
 #include <wg_packlist.h>
 #include <testwidget.h>
 #include <wg_popupopener.h>
+#include <wg_memheap.h>
 
 using namespace wg;
 
@@ -53,10 +54,10 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 int main ( int argc, char** argv )
 { 
-	printf( "SizeOf Finalizer: %d\n", sizeof(Finalizer) );
-	printf( "SizeOf Filler: %d\n", sizeof(Filler) );
-	printf("SizeOf Object: %d\n", sizeof(Object));
-	printf("SizeOf Receiver: %d\n", sizeof(Receiver));
+	printf( "SizeOf Finalizer: %d\n", (int) sizeof(Finalizer) );
+	printf( "SizeOf Filler: %d\n", (int) sizeof(Filler) );
+	printf("SizeOf Object: %d\n", (int) sizeof(Object));
+	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
 
 	printf( "Slot is safe to relocate: %d\n", Slot::safe_to_relocate );
 	printf( "PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
@@ -790,7 +791,17 @@ int main ( int argc, char** argv )
 	pFps->setSkin( pPressablePlateSkin );
 	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
 */	
+/*
+	char heap[100000];
 
+	MemHeap::init(heap, 100000);
+	
+	void * p1 = MemHeap::malloc(128);
+	void * p2 = MemHeap::malloc(1024);
+	void * p3 = MemHeap::malloc(768+128);
+	MemHeap::free(p2);
+	MemHeap::malloc(1024);
+*/
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------

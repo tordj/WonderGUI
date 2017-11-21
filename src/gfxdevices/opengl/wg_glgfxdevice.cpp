@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <cmath>
+
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
