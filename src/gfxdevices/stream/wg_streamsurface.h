@@ -26,6 +26,7 @@
 
 
 #include <wg_surface.h>
+#include <wg_gfxoutstream.h>
 
 namespace wg
 {
@@ -44,10 +45,10 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static StreamSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
-        static StreamSurface_p	create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
-        static StreamSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static );
-        static StreamSurface_p	create( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );
+        static StreamSurface_p	create( GfxOutStream * pStream, Size size, PixelType type = PixelType::BGRA_8, int hint = SurfaceHint::Static );
+        static StreamSurface_p	create( GfxOutStream * pStream, Size size, PixelType type, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
+        static StreamSurface_p	create( GfxOutStream * pStream, Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, int hint = SurfaceHint::Static );
+        static StreamSurface_p	create( GfxOutStream * pStream, Surface * pOther, int hint = SurfaceHint::Static );
        
 		//.____ Identification __________________________________________
 
@@ -81,17 +82,23 @@ namespace wg
 
 
 	private:
-        StreamSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static );
-        StreamSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static );
-        StreamSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint = SurfaceHint::Static );
-        StreamSurface( Surface * pOther, SurfaceHint hint = SurfaceHint::Static );
+        StreamSurface( GfxOutStream * pStream, Size size, PixelType type = PixelType::BGRA_8, int hint = SurfaceHint::Static );
+        StreamSurface( GfxOutStream * pStream, Size size, PixelType type, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
+        StreamSurface( GfxOutStream * pStream, Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint = SurfaceHint::Static );
+        StreamSurface( GfxOutStream * pStream, Surface * pOther, int hint = SurfaceHint::Static );
 		~StreamSurface();
 
+		int		_sendCreateSurface(Size size, PixelType type);
+
+		GfxOutStream_p	m_pStream;
+		int				m_handle;		// External handle, used in stream.
+
+        Blob_p			m_pBlob;			
+		char *			m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
+
+		Size			m_size;				// Width and height in pixels.
 
 
-        Blob_p      m_pBlob;
-		Size		m_size;				// Width and height in pixels.
-		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
 
 	};
 } // namespace wg

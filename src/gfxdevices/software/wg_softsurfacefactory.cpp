@@ -67,22 +67,22 @@ namespace wg
 	
 	//____ createSurface() __________________________________________________________
 	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, int hint ) const
 	{
         return SoftSurface::create(size,type,hint);
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, Blob * pBlob, int pitch, int hint ) const
 	{
 		return SoftSurface::create(size,type, pBlob, pitch, hint);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint ) const
 	{
 		return SoftSurface::create(size,type, pPixels, pitch, pPixelFormat, hint);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, SurfaceHint hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, int hint ) const
 	{
 		return SoftSurface::create( pOther, hint );
 	}

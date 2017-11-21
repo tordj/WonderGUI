@@ -101,7 +101,7 @@ namespace wg
 	SurfaceFactory_p StreamGfxDevice::surfaceFactory()
 	{
 		if( !m_pSurfaceFactory )
-			m_pSurfaceFactory = StreamSurfaceFactory::create();
+			m_pSurfaceFactory = StreamSurfaceFactory::create(m_pStream);
 	
 		return m_pSurfaceFactory;
 	}

@@ -66,11 +66,11 @@ namespace wg
 		}
 
 		int sz = pFontFile->size();
-		void * p = pFontFile->content();
+		void * p = pFontFile->data();
 		
 	
 		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
-											(const FT_Byte *)pFontFile->content(),
+											(const FT_Byte *)pFontFile->data(),
 											pFontFile->size(),
 											0,
 											&m_ftFace );

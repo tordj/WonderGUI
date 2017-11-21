@@ -569,12 +569,13 @@ namespace wg
 	};
 
 
-	//____ SurfaceHint ____________________________________________________________
+	//____ int ____________________________________________________________
 	
-	enum class SurfaceHint
+	namespace SurfaceHint
 	{
-		Static,
-		Dynamic,
+		const int Static = 0;		// No content access/modification expected
+		const int Dynamic = 0;		// Expect content to be accessed and/or modified
+		const int  WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 	};
 
 	

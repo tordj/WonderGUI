@@ -42,59 +42,76 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-    StreamSurface_p	StreamSurface::create( Size size, PixelType type, SurfaceHint hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelType type, int hint )
     {
         if( type != PixelType::BGRA_8 && type != PixelType::BGR_8)
             return StreamSurface_p();
         
-        return StreamSurface_p(new StreamSurface(size,type,hint));
+        return StreamSurface_p(new StreamSurface(pStream,size,type,hint));
     }
     
-    StreamSurface_p	StreamSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelType type, Blob * pBlob, int pitch, int hint )
     {
         if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
             return StreamSurface_p();
         
-        return StreamSurface_p(new StreamSurface(size,type,pBlob,pitch,hint));
+        return StreamSurface_p(new StreamSurface(pStream,size,type,pBlob,pitch,hint));
     }
     
-    StreamSurface_p	StreamSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream,Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
     {
         if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
             return StreamSurface_p();
         
-        return  StreamSurface_p(new StreamSurface(size,type,pPixels,pitch, pPixelFormat,hint));
+        return  StreamSurface_p(new StreamSurface(pStream,size,type,pPixels,pitch, pPixelFormat,hint));
     };
     
-    StreamSurface_p	StreamSurface::create( Surface * pOther, SurfaceHint hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Surface * pOther, int hint )
     {
-        return StreamSurface_p(new StreamSurface( pOther,hint ));
+        return StreamSurface_p(new StreamSurface( pStream,pOther,hint ));
     }
 
     
     
 	//____ Constructor _____________________________________________________________
 
-
-    StreamSurface::StreamSurface( Size size, PixelType type, SurfaceHint hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelType type, int hint )
     {
 		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		Util::pixelTypeToFormat(type, m_pixelFormat);
 
+		m_pStream = pStream;
+		m_size = size;
+		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelFormat.bits / 8;
+
+		m_handle = _sendCreateSurface(size, type);
+
+		if (hint & SurfaceHint::WriteOnly)
+		{
+			if (m_pixelFormat.A_bits == 0)
+				m_pAlphaLayer = nullptr;
+			else
+				m_pAlphaLayer = new char[size.w*size.h];
+		}
+		else
+		{
+			m_pBlob = Blob::create(m_pitch*size.h);
+			std::memset(m_pBlob->data(), 0, m_pitch*size.h);
+		}
     }
-    
-    
-	StreamSurface::StreamSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
+        
+	StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelType type, Blob * pBlob, int pitch, int hint )
 	{
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
 	}
    
-    StreamSurface::StreamSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
     {
 		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pPixels != 0 );		
     }
 
 
-    StreamSurface::StreamSurface( Surface * pOther, SurfaceHint hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream,Surface * pOther, int hint )
     {
 		assert( pOther );
 		
@@ -226,7 +243,7 @@ namespace wg
 */
 		m_lockRegion = region;
 		m_accessMode = mode;
-		return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
+		return m_pPixels += (m_size.w*region.y+region.x)*m_pixelFormat.bits / 8;
 	}
 
 
@@ -273,4 +290,20 @@ namespace wg
 	{
         return 255;
 	}
+
+	//____ _sendCreateSurface() _______________________________________________
+
+	int StreamSurface::_sendCreateSurface(Size size, PixelType type)
+	{
+		short surfaceId = 0;
+
+		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, 8 };
+		*m_pStream << surfaceId;
+		*m_pStream << (short)type;
+		*m_pStream << size;
+
+		return surfaceId;
+	}
+
+
 } // namespace wg

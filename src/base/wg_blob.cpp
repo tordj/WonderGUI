@@ -103,14 +103,14 @@ namespace wg
 	Blob::Blob( int size )
 	{
 		m_size = size;
-		m_pContent = ((char*)this) + sizeof(Blob);
+		m_pData = ((char*)this) + sizeof(Blob);
 		m_destructor = nullptr;
 	}
 	
 	Blob::Blob( void * pData, int size, std::function<void()> destructor )
 	{
 		m_size = size;
-		m_pContent = pData;
+		m_pData = pData;
 		m_destructor = destructor;
 	}
 	

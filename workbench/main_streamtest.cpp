@@ -11,6 +11,8 @@
 #endif
 
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 
 #include <wondergui.h>
 
@@ -27,6 +29,7 @@
 #include <wg_popupopener.h>
 
 using namespace wg;
+using namespace std;
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
 MouseButton 	translateMouseButton( Uint8 button );
@@ -78,7 +81,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 800, height = 600;
+	int posX = 100, posY = 100, width = 640, height = 480;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -284,7 +287,7 @@ int main ( int argc, char** argv )
 
 
 //	while (pWrite - pBigBuffer < 10000)
-	while( ticker < 800 )
+	while( ticker < 600 )
 	{
 		pDevice->beginRender();
 
@@ -311,7 +314,13 @@ int main ( int argc, char** argv )
 	}
 
 
+	//------------------------------------------------------
+	// Save stream to file
+	//------------------------------------------------------
 
+	ofstream save("rectcircle.wax", ios::out | ios::binary | ios::trunc);
+	save.write(pBigBuffer, pWrite - pBigBuffer);
+	save.close();
 
 
 	//------------------------------------------------------
@@ -386,8 +395,8 @@ Coord positionSprite(Size dimensions, int tick, int nb, int amount)
 	if( tick < 90 )
 		radius *= sin(tick*PI / 180);
 
-	if( tick > 800-90 )
-		radius *= 1.f - sin((tick-(800-90))*PI / 180);
+	if( tick > 600-90 )
+		radius *= 1.f - sin((tick-(600-90))*PI / 180);
 
 
 	Coord c;
@@ -546,7 +555,7 @@ Blob_p loadBlob( const char * pPath )
 
 	Blob_p pBlob = Blob::create( size );
 		
-	int nRead = fread( pBlob->content(), 1, size, fp );
+	int nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )

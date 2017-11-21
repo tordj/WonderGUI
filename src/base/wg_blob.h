@@ -65,16 +65,16 @@ namespace wg
 
 		//.____ Misc ___________________________________________________________
 	    
-		inline int		size() const { return m_size; }			///< @brief Get the size of the blobs content.
+		inline int		size() const { return m_size; }			///< @brief Get the size of the blobs data.
 																///<
-																///< Get the size of the blobs content.
+																///< Get the size of the blobs data.
 																///< The size of the content can only be retrieved if known by the blob.
-																///< @return Size of blob content or 0 if unknown.
-		void *			content() { return m_pContent; }		///< @brief Get pointer to the content of the blob.
+																///< @return Size of blob data or 0 if unknown.
+		void *			data() { return m_pData; }			///< @brief Get pointer to the data of the blob.
 																///<
-																///< Get a raw pointer to the content of the blob, which is either the object
+																///< Get a raw pointer to the data of the blob, which is either the object
 																///< wrapped or beginning of the reserved memory area.
-																///< @return Pointer to content of the blob.
+																///< @return Pointer to data of the blob.
 	
 	protected:
 		Blob( int bytes );
@@ -86,7 +86,7 @@ namespace wg
 		void operator delete(void * p)             { delete[] (char*) p; }
 	
 		int		m_size;
-		void *	m_pContent;
+		void *	m_pData;
 
 		std::function<void()> m_destructor;
 	};

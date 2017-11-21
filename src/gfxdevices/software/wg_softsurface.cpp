@@ -41,7 +41,7 @@ namespace wg
 
 	//____ Create ______________________________________________________________
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, int hint )
 	{ 
 		if(type != PixelType::BGRA_8 && type != PixelType::BGR_8) 
 			return SoftSurface_p(); 
@@ -49,7 +49,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,type));
 	}
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, int hint )
 	{ 
 		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
@@ -57,7 +57,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,type,pBlob,pitch));
 	}
 		
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
 	{ 
 		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
 			return SoftSurface_p();
@@ -65,7 +65,7 @@ namespace wg
 		return  SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pPixelFormat)); 
 	};
 
-	SoftSurface_p SoftSurface::create( Surface * pOther, SurfaceHint hint )
+	SoftSurface_p SoftSurface::create( Surface * pOther, int hint )
 	{
 		if( !pOther )
 			return SoftSurface_p();
@@ -85,7 +85,7 @@ namespace wg
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create( m_pitch*size.h );
-		m_pData = (uint8_t*) m_pBlob->content();
+		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 	}
 	
@@ -97,7 +97,7 @@ namespace wg
 		m_pitch = pitch;
 		m_size = size;
 		m_pBlob = pBlob;
-		m_pData = (uint8_t*) m_pBlob->content();
+		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 	}
 	
@@ -109,7 +109,7 @@ namespace wg
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
-		m_pData = (uint8_t*) m_pBlob->content();
+		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
@@ -134,7 +134,7 @@ namespace wg
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
-		m_pData = (uint8_t*) m_pBlob->content();
+		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock

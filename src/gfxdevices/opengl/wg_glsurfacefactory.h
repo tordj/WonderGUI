@@ -55,10 +55,10 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8, SurfaceHint hint = SurfaceHint::Static ) const;
-        Surface_p	createSurface( Size size, PixelType type, Blob * pBlob, int pitch, SurfaceHint hint = SurfaceHint::Static ) const;
-        Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, SurfaceHint hint = SurfaceHint::Static ) const ;
-        Surface_p	createSurface( Surface * pOther, SurfaceHint hint = SurfaceHint::Static ) const;
+		Surface_p	createSurface( Size size, PixelType type = PixelType::BGRA_8, int hint = SurfaceHint::Static ) const;
+        Surface_p	createSurface( Size size, PixelType type, Blob * pBlob, int pitch, int hint = SurfaceHint::Static ) const;
+        Surface_p	createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, int hint = SurfaceHint::Static ) const ;
+        Surface_p	createSurface( Surface * pOther, int hint = SurfaceHint::Static ) const;
 	};
 }
 
