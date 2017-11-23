@@ -200,7 +200,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
+		while(n < maxChars && * pSrc != 0 )
 			pDst[n++] = readChar(pSrc);
 	
 		if( n != maxChars )
@@ -219,7 +219,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
+		while(n < maxChars && * pSrc != 0 )
 		{
 			pDst[n++].setCode(readChar(pSrc));
 		}
@@ -238,7 +238,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
+		while(n < maxChars && * pSrc != 0 )
 			pDst[n++].setCode( * pSrc++);
 	
 		if( n != maxChars )
@@ -258,7 +258,7 @@ namespace wg
 		}
 	
 		uint32_t n = 0;
-		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
+		for( unsigned char * p = (unsigned char *) pDst ; n < maxChars && p[n] != 0 ; n++ )
 			pDst[n].setCode( pCP[p[n]] );
 	
 		if( n != maxChars )
@@ -277,7 +277,7 @@ namespace wg
 		}
 	
 		uint32_t n = 0;
-		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
+		for( unsigned char * p = (unsigned char *) pDst ; n < maxChars && p[n] != 0 ; n++ )
 			pDst[n] = pCP[p[n]];
 	
 		if( n != maxChars )
@@ -530,7 +530,7 @@ namespace wg
 		const char * pEnd = pStr + len;
 	
 		uint16_t ch = readChar(pStr);
-		while( ch != 0 && ch != 10 && ch != 13 && pStr < pEnd )
+		while(pStr < pEnd && ch != 0 && ch != 10 && ch != 13 )
 		{
 			n++;
 			ch = readChar(pStr);
@@ -551,7 +551,7 @@ namespace wg
 		uint32_t n = 0;
 	
 		uint16_t ch = * pStr++;
-		while( ch != 0 && ch != 10 && ch != 13 && n < len )
+		while(n < len && ch != 0 && ch != 10 && ch != 13 )
 		{
 			n++;
 			ch = * pStr++;
@@ -571,7 +571,7 @@ namespace wg
 	
 		uint32_t n = 0;
 	
-		while( !pStr->isEndOfLine() && n < len )
+		while(n < len && !pStr->isEndOfLine() )
 			n++;
 	
 		return n;
