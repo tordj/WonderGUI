@@ -67,6 +67,7 @@ namespace wg
 
 		GfxInStream_p	m_pGfxStream;
 		std::ostream&	m_charStream;
+		char *			m_pWorkArea;
 	};
 
 }

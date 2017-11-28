@@ -64,7 +64,7 @@ namespace wg
 
 	//____ GfxInStream ________________________________________________________
 
-	class GfxInStream : public Interface
+	class GfxInStream : public Interface, GfxStream
 	{
 	public:
 		GfxInStream(GfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
@@ -78,7 +78,7 @@ namespace wg
 		bool				isEmpty();
 		GfxStream::Header	peek();
 
-		GfxInStream& operator>> (GfxStream::Header& header);
+		GfxInStream& operator>> (Header& header);
 
 		GfxInStream& operator>> (uint16_t&);
 		GfxInStream& operator>> (int32_t&);
@@ -86,10 +86,13 @@ namespace wg
 
 
 		GfxInStream& operator>> (Coord& coord);
+		GfxInStream& operator>> (Size& coord);
 		GfxInStream& operator>> (Rect& rect);
 		GfxInStream& operator>> (RectF& rect);
 		GfxInStream& operator>> (Color& color);
 		GfxInStream& operator>> (BlendMode& blendMode);
+		GfxInStream& operator>> (DataChunk& data);
+
 
 		//.____ Misc __________________________________________________
 

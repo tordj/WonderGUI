@@ -41,7 +41,7 @@ namespace wg
 	
 	GfxStreamPlug::GfxStreamPlug(int capacity) : input(this), output{ &m_outStream[0], &m_outStream[1], &m_outStream[2], &m_outStream[3] }
 	{
-		m_bufferSize = capacity+1;
+		m_bufferSize = capacity+2;
 		m_pBuffer = new char[m_bufferSize+c_bufferMargin];
 		m_writeOfs = 0;
 
@@ -110,7 +110,7 @@ namespace wg
 
 	int GfxStreamPlug::bufferCapacity()
 	{
-		return m_bufferSize-1;
+		return m_bufferSize-2;
 	}
 
 	//____ setBufferCapacity() ______________________________________________________
@@ -120,7 +120,7 @@ namespace wg
 		if (capacity < bufferSize())
 			return false;
 
-		_resize(capacity+1);			// Buffer always needs at least one empty byte to prevent write pointer to wrap read pointers.
+		_resize(capacity+2);			// Buffer neds 2 extra bytes to keep byte alignment and prevent write pointer to wrap read pointers.
 		return true;
 	}
 
@@ -194,7 +194,7 @@ namespace wg
 		{
 			while (_capacity < contentSize + bytes)
 				_capacity *= 2;
-			_resize(_capacity + 1);
+			_resize(_capacity + 2);
 		}
 	}
 

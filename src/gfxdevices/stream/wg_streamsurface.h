@@ -88,13 +88,16 @@ namespace wg
         StreamSurface( GfxOutStream * pStream, Surface * pOther, int hint = SurfaceHint::Static );
 		~StreamSurface();
 
-		int		_sendCreateSurface(Size size, PixelType type);
+		short		_sendCreateSurface(Size size, PixelType type);
+		void		_sendPixels(Rect rect, const uint8_t * pSource, int pitch);
+		void		_sendDeleteSurface();
+		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);
 
 		GfxOutStream_p	m_pStream;
-		int				m_handle;		// External handle, used in stream.
+		short			m_inStreamId;		// Id of this surface in the stream.
 
         Blob_p			m_pBlob;			
-		char *			m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
+		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
 
 		Size			m_size;				// Width and height in pixels.
 

@@ -574,7 +574,7 @@ namespace wg
 	namespace SurfaceHint
 	{
 		const int Static = 0;		// No content access/modification expected
-		const int Dynamic = 0;		// Expect content to be accessed and/or modified
+		const int Dynamic = 1;		// Expect content to be accessed and/or modified
 		const int  WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 	};
 
@@ -701,9 +701,12 @@ namespace wg
 
 		CreateSurface,
 		SetSurfaceScaleMode,
-		UpdateSurfaceRegion,
+		BeginSurfaceUpdate,
+		SurfaceData,
+		EndSurfaceUpdate,
 		FillSurface,
-		CopySurface
+		CopySurface,
+		DeleteSurface
 	};
 
 

@@ -62,10 +62,10 @@ namespace wg
 
 	//____ GfxOutStream __________________________________________________________
 
-	class GfxOutStream : public Interface
+	class GfxOutStream : public Interface, public GfxStream
 	{
 	public:
-		GfxOutStream(GfxOutStreamHolder * pHolder) : m_pHolder(pHolder) {}
+		GfxOutStream(GfxOutStreamHolder * pHolder);
 
 		enum Command
 		{
@@ -80,24 +80,36 @@ namespace wg
 		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
 		inline bool		reopen() { return m_pHolder->_reopenStream(); }
 
-		GfxOutStream&	operator<< (GfxStream::Header);
+		GfxOutStream&	operator<< (Header);
 		GfxOutStream&	operator<< (uint16_t);
 		GfxOutStream&	operator<< (int32_t);
 		GfxOutStream&	operator<< (float);
 
 		GfxOutStream&	operator<< (const Coord&);
+		GfxOutStream&	operator<< (const Size&);
 		GfxOutStream&	operator<< (const Rect&);
 		GfxOutStream&	operator<< (const RectF&);
 
-		GfxOutStream&	operator<< (BlendMode);
 		GfxOutStream&	operator<< (Color);
+		GfxOutStream&	operator<< (BlendMode);
+		GfxOutStream&	operator<< (DataChunk&);
 
 		//.____ Misc __________________________________________________
 
 		inline GfxOutStream_p	ptr() { return GfxOutStream_p(this); }
 
+		short			allocObjectId();
+		void			freeObjectId(short id);
+
 	protected:
 		Object *				_object() const { return m_pHolder->_object(); }
+
+		short					m_idCounter;
+
+		short *					m_pFreeIdStack;
+		int						m_freeIdStackCapacity;
+		uint8_t					m_freeIdStackSize;
+
 
 		GfxOutStreamHolder * 	m_pHolder;
 	};

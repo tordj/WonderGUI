@@ -153,7 +153,7 @@ namespace wg
 		{
 			Rect	clip;
 			Coord	begin;
-			int		length;
+			int32_t	length;
 			Color	color;
 
 			*m_pStream >> clip;
@@ -169,7 +169,7 @@ namespace wg
 		{
 			Rect	clip;
 			Coord	begin;
-			int		length;
+			int32_t	length;
 			Color	color;
 
 			*m_pStream >> clip;
@@ -255,7 +255,15 @@ namespace wg
 			//TODO: Implement!
 			break;
 
-		case GfxChunkId::UpdateSurfaceRegion:
+		case GfxChunkId::BeginSurfaceUpdate:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::SurfaceData:
+			//TODO: Implement!
+			break;
+
+		case GfxChunkId::EndSurfaceUpdate:
 			//TODO: Implement!
 			break;
 
@@ -270,7 +278,6 @@ namespace wg
 		default:
 			//TODO: Signal error somehow.
 			return false;
-
 		}
 
 		return true;

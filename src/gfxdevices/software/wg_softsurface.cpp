@@ -140,6 +140,8 @@ namespace wg
 		m_pPixels = m_pData;	// Simulate a lock
 		_copyFrom( &m_pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
 		m_pPixels = 0;
+
+		pOther->unlock();
 	}
 	
 	//____ Destructor ______________________________________________________________

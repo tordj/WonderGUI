@@ -208,7 +208,7 @@ namespace wg
 
 		// Calcuate size of chunks to fill in the circular buffer
 
-		int size = c_bufferSize - ((m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize) -1;		// -1 since we may not catch up to readOfs
+		int size = c_bufferSize - ((m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize) -2;		// -2 since we may not catch up to readOfs
 
 		int chunk1 = min(size, c_bufferSize - m_writeOfs);		// Until readPos or end of buffer
 		int chunk2 = size - chunk1;								// From start of buffer

@@ -85,6 +85,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (Size& sz)
+	{
+		sz.w = m_pHolder->_pullShort();
+		sz.h = m_pHolder->_pullShort();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (Rect& rect)
 	{
 		rect.x = m_pHolder->_pullShort();
@@ -114,6 +121,13 @@ namespace wg
 		blendMode = (BlendMode) m_pHolder->_pullShort();
 		return *this;
 	}
+
+	GfxInStream& GfxInStream::operator>> (DataChunk& data)
+	{
+		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);
+		return *this;
+	}
+
 
 
 } // namespace wg

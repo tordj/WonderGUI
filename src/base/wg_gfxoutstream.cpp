@@ -26,6 +26,18 @@
 namespace wg 
 {
 
+	//____ Constructor ________________________________________________________
+
+	GfxOutStream::GfxOutStream(GfxOutStreamHolder * pHolder) : 
+		m_pHolder(pHolder), 
+		m_idCounter(1), 
+		m_pFreeIdStack(nullptr),
+		m_freeIdStackCapacity(0),
+		m_freeIdStackSize(0)
+	{
+	}
+
+
 	//____ operator<< _________________________________________________________
 
 	GfxOutStream&  GfxOutStream::operator<< (GfxStream::Header header)
@@ -61,6 +73,13 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (const Size& sz)
+	{
+		m_pHolder->_pushShort(sz.w);
+		m_pHolder->_pushShort(sz.h);
+		return *this;
+	}
+
 	GfxOutStream&  GfxOutStream::operator<< (const Rect& rect)
 	{
 		m_pHolder->_pushShort(rect.x);
@@ -92,6 +111,43 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream& GfxOutStream::operator<< (DataChunk& data)
+	{
+		m_pHolder->_pushBytes(data.bytes, (char*)data.pBuffer);
+		return *this;
+	}
+
+
+	//____ allocObjectId() ____________________________________________________
+
+	short GfxOutStream::allocObjectId()
+	{
+		if (m_freeIdStackSize > 0)
+			return m_pFreeIdStack[--m_freeIdStackSize];
+
+		return m_idCounter++;
+	}
+
+	//____ freeObjectId() _____________________________________________________
+
+	void GfxOutStream::freeObjectId(short id)
+	{
+		if (m_freeIdStackSize == m_freeIdStackCapacity)
+		{
+			int capacity = min(16, m_freeIdStackCapacity * 2);
+			short * pBuffer = new short[capacity];
+
+			for (int i = 0; i < m_freeIdStackSize; i++)
+				pBuffer[i] = m_pFreeIdStack[i];
+
+			delete[] m_pFreeIdStack;
+
+			m_pFreeIdStack = pBuffer;
+			m_freeIdStackCapacity = capacity;
+		}
+
+		m_pFreeIdStack[m_freeIdStackSize++] = id;
+	}
 
 
 
