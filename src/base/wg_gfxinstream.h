@@ -91,7 +91,7 @@ namespace wg
 		GfxInStream& operator>> (RectF& rect);
 		GfxInStream& operator>> (Color& color);
 		GfxInStream& operator>> (BlendMode& blendMode);
-		GfxInStream& operator>> (DataChunk& data);
+		GfxInStream& operator>> (const DataChunk& data);
 
 
 		//.____ Misc __________________________________________________

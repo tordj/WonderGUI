@@ -111,7 +111,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream& GfxOutStream::operator<< (DataChunk& data)
+	GfxOutStream& GfxOutStream::operator<< (const DataChunk& data)
 	{
 		m_pHolder->_pushBytes(data.bytes, (char*)data.pBuffer);
 		return *this;

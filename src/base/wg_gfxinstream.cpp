@@ -122,7 +122,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (DataChunk& data)
+	GfxInStream& GfxInStream::operator>> (const DataChunk& data)
 	{
 		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);
 		return *this;

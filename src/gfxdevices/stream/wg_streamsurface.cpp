@@ -27,6 +27,8 @@
 #include <wg_blob.h>
 #include <assert.h>
 
+#include <cstring>
+
 
 
 namespace wg

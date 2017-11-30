@@ -92,7 +92,7 @@ namespace wg
 
 		GfxOutStream&	operator<< (Color);
 		GfxOutStream&	operator<< (BlendMode);
-		GfxOutStream&	operator<< (DataChunk&);
+		GfxOutStream&	operator<< (const DataChunk&);
 
 		//.____ Misc __________________________________________________
 

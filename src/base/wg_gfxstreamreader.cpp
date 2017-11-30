@@ -144,7 +144,8 @@ namespace wg
 
 	int GfxStreamReader::_pullInt()
 	{ 
-		int x = *(int*)&m_pBuffer[m_readOfs]; 
+//		int x = *(int*)&m_pBuffer[m_readOfs]; 
+		int x = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
@@ -153,7 +154,9 @@ namespace wg
 
 	float GfxStreamReader::_pullFloat() 
 	{ 
-		float x = *(float*)&m_pBuffer[m_readOfs]; 
+//		float x = *(float*)&m_pBuffer[m_readOfs]; 
+		float x;
+		*((int*)&x) = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
