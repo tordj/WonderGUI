@@ -159,7 +159,10 @@ namespace wg
 
 	void GfxStreamWriter::_pushInt(int i) 
 	{ 
-		*(int*)(&m_pBuffer[m_size]) = i; 
+//		*(int*)(&m_pBuffer[m_size]) = i; 
+
+		*(short*)(&m_pBuffer[m_size]) = (short)i;
+		*(short*)(&m_pBuffer[m_size+2]) = (short)(i >> 16);
 		m_size += 4; 
 	}
 
@@ -167,7 +170,12 @@ namespace wg
 
 	void GfxStreamWriter::_pushFloat(float f) 
 	{ 
-		*(float*)(&m_pBuffer[m_size]) = f; 
+//		*(float*)(&m_pBuffer[m_size]) = f; 
+
+		int i = *((int*)&f);
+
+		*(short*)(&m_pBuffer[m_size]) = (short)i;
+		*(short*)(&m_pBuffer[m_size + 2]) = (short)(i >> 16);
 		m_size += 4; 
 	}
 

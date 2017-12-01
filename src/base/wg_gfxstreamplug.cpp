@@ -41,8 +41,9 @@ namespace wg
 	
 	GfxStreamPlug::GfxStreamPlug(int capacity) : input(this), output{ &m_outStream[0], &m_outStream[1], &m_outStream[2], &m_outStream[3] }
 	{
-		m_bufferSize = capacity+2;
-		m_pBuffer = new char[m_bufferSize+c_bufferMargin];
+		m_bufferSize = ((capacity+1)&0xFFFFFFFE)+2; // Enforce buffer size to even bytes, add 2-byte margin to prevent write pointer passing read pointer.
+
+		m_pBuffer = new char[m_bufferSize];
 		m_writeOfs = 0;
 
 		for (int i = 0; i < c_maxOutputs; i++)
@@ -120,6 +121,8 @@ namespace wg
 		if (capacity < bufferSize())
 			return false;
 
+		capacity = ((capacity + 1) & 0xFFFFFFFE);	// Enforce buffer size to even bytes.
+
 		_resize(capacity+2);			// Buffer neds 2 extra bytes to keep byte alignment and prevent write pointer to wrap read pointers.
 		return true;
 	}
@@ -138,7 +141,7 @@ namespace wg
 
 	void GfxStreamPlug::_resize(int newSize)
 	{
-		char * pNew = new char[newSize+c_bufferMargin];
+		char * pNew = new char[newSize];
 
 		int bytesToCopy = bufferSize();
 
@@ -150,7 +153,7 @@ namespace wg
 			int copyFromEnd = bytesToCopy - copyFromOfs;
 
 			if (copyFromEnd > 0)
-				std::memcpy(pNew, &m_pBuffer[m_bufferSize - copyFromEnd], copyFromEnd+c_bufferMargin);
+				std::memcpy(pNew, &m_pBuffer[m_bufferSize - copyFromEnd], copyFromEnd);
 
 			std::memcpy(pNew + copyFromEnd, &m_pBuffer[m_writeOfs - copyFromOfs], copyFromOfs );
 		}
@@ -246,16 +249,32 @@ namespace wg
 
 	void GfxStreamPlug::_pushInt(int i)
 	{
-		*(int*)(&m_pBuffer[m_writeOfs]) = i;
-		m_writeOfs = (m_writeOfs + 4) % m_bufferSize;
+		// Push two bytes at a time since:
+		// a) We need to take architectures that can only read/write ints at 4-byte alignment into acount.
+		// b) We don't want to accidentally write outside our buffer (which always has a size divisible by 2).
+
+//		*(int*)(&m_pBuffer[m_writeOfs]) = i;
+//		m_writeOfs = (m_writeOfs + 4) % m_bufferSize;
+
+		*(short*)(&m_pBuffer[m_writeOfs]) = (short) i;
+		m_writeOfs = (m_writeOfs + 2) % m_bufferSize;
+		*(short*)(&m_pBuffer[m_writeOfs]) = (short) (i>>16);
+		m_writeOfs = (m_writeOfs + 2) % m_bufferSize;
 	}
 
 	//____ _pushFloat() _______________________________________________________
 
 	void GfxStreamPlug::_pushFloat(float f)
 	{
-		*(float*)(&m_pBuffer[m_writeOfs]) = f;
-		m_writeOfs = (m_writeOfs + 4) % m_bufferSize;
+//		*(float*)(&m_pBuffer[m_writeOfs]) = f;
+//		m_writeOfs = (m_writeOfs + 4) % m_bufferSize;
+
+		int i = *((int*)&f);
+
+		*(short*)(&m_pBuffer[m_writeOfs]) = (short)i;
+		m_writeOfs = (m_writeOfs + 2) % m_bufferSize;
+		*(short*)(&m_pBuffer[m_writeOfs]) = (short)(i >> 16);
+		m_writeOfs = (m_writeOfs + 2) % m_bufferSize;
 	}
 
 	//____ _pushBytes() _______________________________________________________
@@ -353,8 +372,14 @@ namespace wg
 
 	int GfxStreamPlug::OutStreamProxy::_pullInt()
 	{
-		int x = *(int*)&pObj->m_pBuffer[readOfs];
-		readOfs = (readOfs + 4) % pObj->m_bufferSize;
+//		int x = *(int*)&pObj->m_pBuffer[readOfs];
+//		readOfs = (readOfs + 4) % pObj->m_bufferSize;
+
+		int x = *(uint16_t*)&pObj->m_pBuffer[readOfs];
+		readOfs = (readOfs + 2) % pObj->m_bufferSize;
+		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs + 2] << 16);
+		readOfs = (readOfs + 2) % pObj->m_bufferSize;
+
 		return x;
 	}
 
@@ -362,9 +387,15 @@ namespace wg
 
 	float GfxStreamPlug::OutStreamProxy::_pullFloat()
 	{
-		float x = *(float*)&pObj->m_pBuffer[readOfs];
-		readOfs = (readOfs + 4) % pObj->m_bufferSize;
-		return x;
+//		float x = *(float*)&pObj->m_pBuffer[readOfs];
+//		readOfs = (readOfs + 4) % pObj->m_bufferSize;
+
+		int x = *(uint16_t*)&pObj->m_pBuffer[readOfs];
+		readOfs = (readOfs + 2) % pObj->m_bufferSize;
+		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs + 2] << 16);
+		readOfs = (readOfs + 2) % pObj->m_bufferSize;
+
+		return * ((float*)&x);
 	}
 
 	//____ OutStreamProxy::_pullBytes() ______________________________________________________
