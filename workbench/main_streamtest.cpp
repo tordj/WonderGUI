@@ -49,7 +49,7 @@ void playRectangleDance(GfxDevice_p pDevice, Rect canvas);
 void playInitButtonRow(GfxDevice_p pDevice, Rect canvas);
 void playButtonPress(GfxDevice_p pDevice, int button);
 void playButtonRelease(GfxDevice_p pDevice, int button);
-
+void playSetSlider(GfxDevice_p pDevice, float percentage);
 
 
 Coord positionSprite(Size dimensions, int tick, int nb, int amount);
@@ -288,11 +288,22 @@ int main ( int argc, char** argv )
 	// Record stream
 	//------------------------------------------------------
 
-	char * pBeg = pWrite;
-	playInitButtonRow(pStreamDevice, { 0,0,width,height });
-
 	char * pWaxBeg = pWrite;
 
+	playInitButtonRow(pStreamDevice, { 0,0,width,height });
+	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
+	save.write(pWaxBeg, pWrite - pWaxBeg);
+	save.close();
+
+	{
+		char * pWaxBeg = pWrite;
+		playSetSlider(pStreamDevice, 1.f);
+		ofstream save("set_slider.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	
+	/*
 	playDelayFrames(pStreamDevice, 100);
 	{
 		char * pWaxBeg = pWrite;
@@ -357,11 +368,12 @@ int main ( int argc, char** argv )
 		save.write(pWaxBeg, pWrite - pWaxBeg);
 		save.close();
 	}
+*/
 	//------------------------------------------------------
 	// Save stream to file
 	//------------------------------------------------------
 /*
-	ofstream save("buttonrow_press_1.wax", ios::out | ios::binary | ios::trunc);
+	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
 	save.write(pWaxBeg, pWrite - pWaxBeg);
 	save.close();
 */
@@ -703,11 +715,13 @@ void playDelayFrames(GfxDevice_p pDevice, int nFrames)
 
 Rect	buttonRect;
 Coord	buttonPitch;
+Rect	sliderRect;
 
 void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
 {
+	// Init lamps
 
-	buttonRect = { canvas.w/32, canvas.h/32,canvas.size()/4 - canvas.size()/16 };
+	buttonRect = { canvas.w / 32, canvas.h / 32,canvas.size() / 4 - canvas.size() / 16 };
 	buttonPitch = { canvas.w / 4, 0 };
 
 	pDevice->beginRender();
@@ -718,9 +732,20 @@ void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
 	for (int i = 0; i < 4; i++)
 	{
 		pDevice->fill(r, Color::White);
-		pDevice->fill(r-Border(4), Color::DarkBlue);
+		pDevice->fill(r - Border(4), Color::DarkBlue);
 		r += buttonPitch;
 	}
+
+	// Init slider
+
+	sliderRect = { canvas.w / 32,canvas.h / 4, 263, canvas.h / 8 - canvas.h / 32 };
+
+	pDevice->fill({0, canvas.h / 4, canvas.w, canvas.h / 8}, Color::LightGray);
+
+	pDevice->fill( sliderRect, Color::White);
+	sliderRect -= Border(4);
+	pDevice->fill( sliderRect, Color::DarkBlue);
+
 	pDevice->endRender();
 }
 
@@ -737,3 +762,14 @@ void playButtonRelease(GfxDevice_p pDevice, int button)
 	pDevice->fill(buttonRect + buttonPitch*button - Border(4), Color::DarkBlue);
 	pDevice->endRender();
 }
+void playSetSlider(GfxDevice_p pDevice, float percentage)
+{
+	int w = sliderRect.w*percentage;
+
+	pDevice->beginRender();
+	pDevice->fill( sliderRect, Color::DarkBlue);
+	pDevice->fill({ sliderRect.x,sliderRect.y,w,sliderRect.h }, Color::Yellow);
+	pDevice->endRender();
+
+}
+

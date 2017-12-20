@@ -294,12 +294,13 @@ namespace wg
 		}
 		else
 		{
+			Rect	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
 			SlotWithGeo child;
 			_firstSlotWithGeo( child );
 	
 			while(child.pSlot)
 			{
-				child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}

@@ -85,13 +85,14 @@ namespace wg
 		GfxInStream& operator>> (float&);
 
 
-		GfxInStream& operator>> (Coord& coord);
-		GfxInStream& operator>> (Size& coord);
-		GfxInStream& operator>> (Rect& rect);
-		GfxInStream& operator>> (RectF& rect);
-		GfxInStream& operator>> (Color& color);
-		GfxInStream& operator>> (BlendMode& blendMode);
-		GfxInStream& operator>> (const DataChunk& data);
+		GfxInStream& operator>> (Coord&);
+		GfxInStream& operator>> (Size&);
+		GfxInStream& operator>> (Rect&);
+		GfxInStream& operator>> (RectF&);
+		GfxInStream& operator>> (Color&);
+		GfxInStream& operator>> (BlendMode&);
+		GfxInStream& operator>> (Orientation&);
+		GfxInStream& operator>> (const DataChunk&);
 
 
 		//.____ Misc __________________________________________________

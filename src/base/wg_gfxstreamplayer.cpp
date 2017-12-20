@@ -149,35 +149,19 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::ClipDrawHorrLine:
+		case GfxChunkId::DrawStraightLine:
 		{
-			Rect	clip;
-			Coord	begin;
-			int32_t	length;
-			Color	color;
+			Coord		begin;
+			Orientation	orientation;
+			uint16_t	length;
+			Color		color;
 
-			*m_pStream >> clip;
 			*m_pStream >> begin;
+			*m_pStream >> orientation;
 			*m_pStream >> length;
 			*m_pStream >> color;
 
-			m_pDevice->clipDrawHorrLine(clip, begin, length, color);
-			break;
-		}
-
-		case GfxChunkId::ClipDrawVertLine:
-		{
-			Rect	clip;
-			Coord	begin;
-			int32_t	length;
-			Color	color;
-
-			*m_pStream >> clip;
-			*m_pStream >> begin;
-			*m_pStream >> length;
-			*m_pStream >> color;
-
-			m_pDevice->clipDrawVertLine(clip, begin, length, color);
+			m_pDevice->_drawStraightLine(begin, orientation, length, color);
 			break;
 		}
 

@@ -107,9 +107,6 @@ namespace wg
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 	
-		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
-		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
-
         void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 	
@@ -134,7 +131,9 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice( SoftSurface * pCanvas );
 		~SoftGfxDevice();
-	
+
+		void	_drawStraightLine( Coord start, Orientation orientation, int _length, const Color& _col) override;
+
 		void	_initTables();
 		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness( float thickness, int slope );
@@ -148,8 +147,7 @@ namespace wg
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 	
 		void	_plotAA( int _x, int _y, const Color& _col, BlendMode blendMode, int _aa );
-		void	_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation );
-		void	_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, Orientation orientation );
+		void	_drawStraightLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation );
 	
 		void 	_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );
 		void 	_tintBlit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );

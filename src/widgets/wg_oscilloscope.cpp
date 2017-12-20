@@ -432,14 +432,14 @@ namespace wg
 		for( int i = 0; i < m_nHGridLines; i++ )
 		{
 			int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-			pDevice->clipDrawHorrLine( _clip, Coord(_canvas.x,ofsY), _canvas.w, m_gridColor );
+			pDevice->clipDrawLine( _clip, Coord(_canvas.x,ofsY), Direction::Right, _canvas.w, m_gridColor );
 		}
 
 		// Draw VGridLines
 		for( int i = 0; i < m_nVGridLines; i++ )
 		{
 			int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-			pDevice->clipDrawVertLine( _clip, Coord(ofsX,_canvas.y), _canvas.h, m_gridColor );
+			pDevice->clipDrawLine( _clip, Coord(ofsX,_canvas.y), Direction::Down, _canvas.h, m_gridColor );
 		}
 
 		// Nothing to draw (yet)

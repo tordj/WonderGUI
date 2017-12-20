@@ -122,6 +122,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (Orientation& o)
+	{
+		o = (Orientation)m_pHolder->_pullShort();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (const DataChunk& data)
 	{
 		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);

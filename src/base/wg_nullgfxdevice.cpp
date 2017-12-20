@@ -115,14 +115,6 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col )
-	{
-	}
-	
     void NullGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
 	{
 	}
@@ -143,5 +135,8 @@ namespace wg
 	{
 	}
 
+	void NullGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col)
+	{
+	}
 
 } // namespace wg

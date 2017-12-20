@@ -1094,112 +1094,6 @@ namespace wg
         
         return programID;
     }
-    
-    
-	//____ clipDrawHorrLine() __________________________________________________
-	
-	void GlGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& _start, int length, const Color& col )
-	{
-        if( col.a  == 0 || _start.y < clip.y || _start.y >= clip.y + clip.h )
-            return;
-        
-        Coord start = _start;
-        
-        if( start.x < clip.x )
-        {
-            length -= clip.x - start.x;
-            start.x = clip.x;
-        }
-        
-        if( start.x + length > clip.x + clip.w )
-            length = clip.x + clip.w - start.x;
-        
-        Color fillColor = col * m_tintColor;
-        
-        float	dx1 = start.x + 0.5f;
-        float	dy = m_canvasSize.h - (start.y +0.5f);
-        float   dx2 = start.x + length +0.5f;
-        
-        m_vertexBufferData[0] = dx1;
-        m_vertexBufferData[1] = dy;
-        m_vertexBufferData[2] = dx2;
-        m_vertexBufferData[3] = dy;
-        
-        glUseProgram( m_fillProg );
-        glUniform4f( m_fillProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );
-        
-        glBindVertexArray(m_vertexArrayId);
-        
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertexBufferData), m_vertexBufferData, GL_DYNAMIC_DRAW);
-        glVertexAttribPointer(
-                              0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-                              2,                  // size
-                              GL_FLOAT,           // type
-                              GL_FALSE,           // normalized?
-                              0,                  // stride
-                              (void*)0            // array buffer offset
-                              );
-        
-        glDrawArrays(GL_LINES, 0, 2); // Starting from vertex 0; 2 vertices total -> 1 line
-        glDisableVertexAttribArray(0);
-        return;
-		
-	}
-
-
-	//____ clipDrawVertLine() __________________________________________________
-	
-	void GlGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& _start, int length, const Color& col )
-	{
-        if( col.a  == 0 || _start.x < clip.x || _start.x >= clip.x + clip.w )
-            return;
-        
-        Coord start = _start;
-        
-        if( start.y < clip.y )
-        {
-            length -= clip.y - start.y;
-            start.y = clip.y;
-        }
-        
-        if( start.y + length > clip.y + clip.h )
-            length = clip.y + clip.h - start.y;
-        
-        Color fillColor = col * m_tintColor;
-        
-        float	dx = start.x + 0.5f;
-        float	dy1 = m_canvasSize.h - (start.y +0.5f);
-        float   dy2 = m_canvasSize.h - (start.y + length +0.5f);
-        
-        m_vertexBufferData[0] = dx;
-        m_vertexBufferData[1] = dy1;
-        m_vertexBufferData[2] = dx;
-        m_vertexBufferData[3] = dy2;
-        
-        glUseProgram( m_fillProg );
-        glUniform4f( m_fillProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );
-        
-        glBindVertexArray(m_vertexArrayId);
-        
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertexBufferData), m_vertexBufferData, GL_DYNAMIC_DRAW);
-        glVertexAttribPointer(
-                              0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-                              2,                  // size
-                              GL_FLOAT,           // type
-                              GL_FALSE,           // normalized?
-                              0,                  // stride
-                              (void*)0            // array buffer offset
-                              );
-        
-        glDrawArrays(GL_LINES, 0, 2); // Starting from vertex 0; 2 vertices total -> 1 line
-        glDisableVertexAttribArray(0);
-        return;
-	}
-	
 	
 	//____ clipPlotPixels() ________________________________________________________
 	
@@ -1592,6 +1486,64 @@ namespace wg
 		Base::memStackRelease(traceBufferSize);
 	}
 
+	//____ _drawStraightLine() ________________________________________________
+
+	void GlGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int length, const Color& col )
+	{
+		if (length <= 0)
+			return;
+
+		GLenum err;
+		assert(0 == (err = glGetError()));
+
+		Color fillColor = col * m_tintColor;
+
+		if (orientation == Orientation::Horizontal)
+		{
+			float	dx1 = start.x + 0.5f;
+			float	dy = m_canvasSize.h - (start.y + 0.5f);
+			float   dx2 = start.x + length + 0.5f;
+
+			m_vertexBufferData[0] = dx1;
+			m_vertexBufferData[1] = dy;
+			m_vertexBufferData[2] = dx2;
+			m_vertexBufferData[3] = dy;
+		}
+		else
+		{
+			float	dx = start.x + 0.5f;
+			float	dy1 = m_canvasSize.h - (start.y + 0.5f);
+			float   dy2 = m_canvasSize.h - (start.y + length + 0.5f);
+
+			m_vertexBufferData[0] = dx;
+			m_vertexBufferData[1] = dy1;
+			m_vertexBufferData[2] = dx;
+			m_vertexBufferData[3] = dy2;
+		}
+
+		glUseProgram(m_fillProg);
+		glUniform4f(m_fillProgColorLoc, fillColor.r / 255.f, fillColor.g / 255.f, fillColor.b / 255.f, fillColor.a / 255.f);
+
+		glBindVertexArray(m_vertexArrayId);
+
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertexBufferData), m_vertexBufferData, GL_DYNAMIC_DRAW);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		glDrawArrays(GL_LINES, 0, 2); // Starting from vertex 0; 2 vertices total -> 1 line
+		glDisableVertexAttribArray(0);
+
+		assert(0 == (err = glGetError()));
+		return;
+	}
 
     //____ _initTables() ___________________________________________________________
     

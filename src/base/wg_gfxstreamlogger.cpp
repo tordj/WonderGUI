@@ -155,41 +155,21 @@ namespace wg
 				break;
 			}
 
-			case GfxChunkId::ClipDrawHorrLine:
+			case GfxChunkId::DrawStraightLine:
 			{
-				Rect	clip;
-				Coord	begin;
-				int		length;
-				Color	color;
+				Coord		begin;
+				Orientation orientation;
+				uint16_t	length;
+				Color		color;
 
-				*m_pGfxStream >> clip;
 				*m_pGfxStream >> begin;
+				*m_pGfxStream >> orientation;
 				*m_pGfxStream >> length;
 				*m_pGfxStream >> color;
 
-				m_charStream << "ClipDrawHorrLine" << std::endl;
-				m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+				m_charStream << "DrawStraightLine" << std::endl;
 				m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    length = " << length << std::endl;
-				m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				break;
-			}
-
-			case GfxChunkId::ClipDrawVertLine:
-			{
-				Rect	clip;
-				Coord	begin;
-				int		length;
-				Color	color;
-
-				*m_pGfxStream >> clip;
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> length;
-				*m_pGfxStream >> color;
-
-				m_charStream << "ClipDrawVertLine" << std::endl;
-				m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
-				m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    orientation = " << (orientation == Orientation::Horizontal? "Horizontal" : "Vertical") << std::endl;
 				m_charStream << "    length = " << length << std::endl;
 				m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
 				break;

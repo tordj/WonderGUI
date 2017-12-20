@@ -104,6 +104,11 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (Orientation o)
+	{
+		m_pHolder->_pushShort((short)o);
+		return *this;
+	}
 
 	GfxOutStream&  GfxOutStream::operator<< (Color color)
 	{

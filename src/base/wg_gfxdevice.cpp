@@ -124,6 +124,140 @@ namespace wg
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 	
+	//____ ClipDrawLine() _________________________________________________________
+
+	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
+	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
+	// where the outer pixels are faded.
+
+	void GfxDevice::clipDrawLine(const Rect& clip, const Coord& _begin, Direction dir, int length, Color _col, float thickness)
+	{
+		if (thickness <= 0.f)
+			return;
+
+		Coord begin = _begin;
+
+		switch (dir)
+		{
+		case Direction::Left:
+			begin.x -= length;
+		case Direction::Right:
+		{
+			if (begin.x > clip.x + clip.w)
+				return;
+
+			if (begin.x < clip.x)
+			{
+				length -= clip.x - begin.x;
+				if (length <= 0)
+					return;
+				begin.x = clip.x;
+			}
+
+			if (begin.x + length > clip.x + clip.w)
+			{
+				length = clip.x + clip.w - begin.x;
+				if (length <= 0)
+					return;
+			}
+
+			if (thickness <= 1.f)
+			{
+				if (begin.y < clip.y || begin.y >= clip.y + clip.h)
+					return;
+
+				Color col = _col;
+				col.a = (uint8_t)(thickness * col.a);
+
+				_drawStraightLine(begin, Orientation::Horizontal, length, col);
+			}
+			else
+			{
+				int expanse = (int)1 + (thickness - 1) / 2;
+				Color edgeColor(_col.r, _col.g, _col.b, _col.a * ((thickness - 1) / 2 - (expanse - 1)));
+
+				if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
+					return;
+
+				int beginY = begin.y - expanse;
+				int endY = begin.y + expanse + 1;
+
+				if (beginY < clip.y)
+					beginY = clip.y - 1;
+				else
+					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
+
+				if (endY > clip.y + clip.h)
+					endY = clip.y + clip.h + 1;
+				else
+					_drawStraightLine({ begin.x, endY - 1 }, Orientation::Horizontal, length, edgeColor);
+
+				fill({ begin.x, beginY + 1, length, endY - beginY - 2 }, _col);
+			}
+
+			break;
+		}
+		case Direction::Up:
+			begin.y -= length;
+		case Direction::Down:
+			if (begin.y > clip.y + clip.h)
+				return;
+
+			if (begin.y < clip.y)
+			{
+				length -= clip.y - begin.y;
+				if (length <= 0)
+					return;
+				begin.y = clip.y;
+			}
+
+			if (begin.y + length > clip.y + clip.h)
+			{
+				length = clip.y + clip.h - begin.y;
+				if (length <= 0)
+					return;
+			}
+
+			if (thickness <= 1.f)
+			{
+				if (begin.x < clip.x || begin.x >= clip.x + clip.w)
+					return;
+
+				Color col = _col;
+				col.a = (uint8_t)(thickness * col.a);
+
+				_drawStraightLine(begin, Orientation::Vertical, length, col);
+			}
+			else
+			{
+				int expanse = (int)1 + (thickness - 1) / 2;
+				Color edgeColor(_col.r, _col.g, _col.b, _col.a * ((thickness - 1) / 2 - (expanse - 1)));
+
+				if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
+					return;
+
+				int beginX = begin.x - expanse;
+				int endX = begin.x + expanse + 1;
+
+				if (beginX < clip.x)
+					beginX = clip.x - 1;
+				else
+					_drawStraightLine({ beginX, begin.y }, Orientation::Vertical, length, edgeColor);
+
+				if (endX > clip.x + clip.w)
+					endX = clip.x + clip.w + 1;
+				else
+					_drawStraightLine({ endX - 1, begin.y }, Orientation::Vertical, length, edgeColor);
+
+				fill({ beginX + 1, begin.y, endX - beginX - 2, length }, _col);
+			}
+
+			break;
+		}
+	}
+
+
+
 	//____ blit() __________________________________________________________________
 	
 	void GfxDevice::blit( Surface * pSrc )

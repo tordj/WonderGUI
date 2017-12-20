@@ -200,7 +200,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
+		while(n < maxChars && * pSrc != 0 )
 			pDst[n++] = readChar(pSrc);
 	
 		if( n != maxChars )
@@ -219,7 +219,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
+		while(n < maxChars && * pSrc != 0 )
 		{
 			pDst[n++].setCode(readChar(pSrc));
 		}
@@ -238,8 +238,7 @@ namespace wg
 		}
 		uint32_t n = 0;
 	
-		while( * pSrc != 0 && n < maxChars )
-			pDst[n++].setCode( * pSrc++);
+		while (n < maxChars && * pSrc != 0)			pDst[n++].setCode( * pSrc++);
 	
 		if( n != maxChars )
 			pDst[n].setCode(0);
@@ -258,8 +257,7 @@ namespace wg
 		}
 	
 		uint32_t n = 0;
-		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
-			pDst[n].setCode( pCP[p[n]] );
+		for (unsigned char * p = (unsigned char *) pDst ; n < maxChars && p[n] != 0 ; n++)			pDst[n].setCode( pCP[p[n]] );
 	
 		if( n != maxChars )
 			pDst[n].setCode(0);
@@ -277,8 +275,7 @@ namespace wg
 		}
 	
 		uint32_t n = 0;
-		for( unsigned char * p = (unsigned char *) pDst ; p[n] != 0 && n < maxChars ; n++ )
-			pDst[n] = pCP[p[n]];
+		for (unsigned char * p = (unsigned char *)pDst; n < maxChars && p[n] != 0; n++)			pDst[n] = pCP[p[n]];
 	
 		if( n != maxChars )
 			pDst[n] = 0;

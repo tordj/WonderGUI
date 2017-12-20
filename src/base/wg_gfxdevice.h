@@ -63,6 +63,7 @@ namespace wg
 	class GfxDevice : public Object
 	{
 	public:
+		friend class GfxStreamPlayer;
 
 		//.____ Identification __________________________________________
 
@@ -100,14 +101,13 @@ namespace wg
 	
 		virtual void	fill( const Rect& rect, const Color& col ) = 0;
 	
-		virtual void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
-		virtual void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) = 0;
-
         virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
         virtual void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
 
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
+		virtual void	clipDrawLine(const Rect& clip, const Coord& begin, Direction dir, int length, Color col, float thickness = 1.f);
+
 
 		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
 
@@ -165,7 +165,10 @@ namespace wg
 	protected:
 		GfxDevice( Size canvasSize );
 		virtual ~GfxDevice();
-		
+
+		virtual void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col ) = 0;
+
+
 		// Static, shared data
 
 		static	int		s_gfxDeviceCount;				// Number of existing gfxDevices. Ref count for shared data.
