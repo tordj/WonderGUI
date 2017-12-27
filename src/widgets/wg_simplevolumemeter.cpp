@@ -152,8 +152,10 @@ namespace wg
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 		
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
-		int  iPeak = peak * length;
-		int iHold = _calcIHold(hold, canvas.size());
+		int  iPeak = peak * length;
+
+		int iHold = _calcIHold(hold, canvas.size());
+
 
 		if( m_bStereo )
 		{
@@ -207,7 +209,8 @@ namespace wg
 
 	}
 
-	//____ setDirection() _________________________________________________________
+	//____ setDirection() _________________________________________________________
+
 	void SimpleVolumeMeter::setDirection(Direction direction)
 	{
 		if (direction != m_direction)
@@ -219,7 +222,8 @@ namespace wg
 			_requestResize();
 			_requestRender();
 		}
-	}
+	}
+
 
 	//____ _requestRenderPartial() _________________________________________________
 
@@ -275,7 +279,16 @@ namespace wg
 			_requestRender(Rect(canvas.x, canvas.y + canvas.h - end, canvas.w, end - beg));
 			break;
 		case Direction::Down:
-			_requestRender(Rect(canvas.x, canvas.y + beg, canvas.w, end - beg));			break;		case Direction::Left:			_requestRender(Rect(canvas.x + canvas.w - end, canvas.y, end - beg, canvas.h));			break;		case Direction::Right:			_requestRender(Rect(canvas.x + beg, canvas.y, end - beg, canvas.h));			break;		}	}
+			_requestRender(Rect(canvas.x, canvas.y + beg, canvas.w, end - beg));
+			break;
+		case Direction::Left:
+			_requestRender(Rect(canvas.x + canvas.w - end, canvas.y, end - beg, canvas.h));
+			break;
+		case Direction::Right:
+			_requestRender(Rect(canvas.x + beg, canvas.y, end - beg, canvas.h));
+			break;
+		}
+	}
 
 
 	//____ _calcIHold() ____________________________________________________________
@@ -287,7 +300,9 @@ namespace wg
 
 		int height = m_iHoldHeight;
 		
-		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;		int ofs = (int)(holdValue * canvasLength);
+		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;
+		int ofs = (int)(holdValue * canvasLength);
+
 		if( ofs > m_iSectionHeight[0] )
 		{
 			if( ofs - height < m_iSectionHeight[0] )
@@ -363,13 +378,15 @@ namespace wg
 			{
 				r.h = (r.h - m_iGap) / 2 - m_iSidePadding;
 				r.y += m_iSidePadding;
-			}
+			}
+
 			_renderBar( pDevice, 0, r, _clip );
 
 			if (m_direction == Direction::Up || m_direction == Direction::Down)
 				r.x += r.w + m_iGap;
 			else
-				r.y += r.h + m_iGap;
+				r.y += r.h + m_iGap;
+
 			_renderBar( pDevice, 1, r, _clip );
 			
 		}
@@ -414,7 +431,26 @@ namespace wg
 					c = m_sectionColors[1];
 
 				Rect r = _rect;
-				switch (m_direction)				{				case Direction::Up:					r.y += _rect.h - holdOfs;					r.h = m_iHoldHeight;					break;				case Direction::Down:					r.y += holdOfs - m_iHoldHeight;					r.h = m_iHoldHeight;					break;				case Direction::Left:					r.x += _rect.w - holdOfs;					r.w = m_iHoldHeight;					break;				case Direction::Right:					r.x += holdOfs - m_iHoldHeight;					r.w = m_iHoldHeight;					break;				}
+				switch (m_direction)
+				{
+				case Direction::Up:
+					r.y += _rect.h - holdOfs;
+					r.h = m_iHoldHeight;
+					break;
+				case Direction::Down:
+					r.y += holdOfs - m_iHoldHeight;
+					r.h = m_iHoldHeight;
+					break;
+				case Direction::Left:
+					r.x += _rect.w - holdOfs;
+					r.w = m_iHoldHeight;
+					break;
+				case Direction::Right:
+					r.x += holdOfs - m_iHoldHeight;
+					r.w = m_iHoldHeight;
+					break;
+				}
+
 				pDevice->fill( Rect( r, _clip ), c );
 			}
 			else if( holdOfs > peakHeight )
@@ -434,26 +470,31 @@ namespace wg
 			if( sectionHeight > peakHeight )
 				sectionHeight = peakHeight;
 			
-			Rect r = _rect;
+			Rect r = _rect;
+
 			switch (m_direction)
 			{
 			case Direction::Up:
 				r.y += _rect.h - ofs - sectionHeight;
 				r.h = sectionHeight;
-				break;
+				break;
+
 			case Direction::Down:
 				r.y += ofs;
 				r.h = sectionHeight;
-				break;
+				break;
+
 			case Direction::Left:
 				r.x += _rect.w - ofs - sectionHeight;
 				r.w = sectionHeight;
-				break;
+				break;
+
 			case Direction::Right:
 				r.x += ofs;
 				r.w = sectionHeight;
 				break;
-			}
+			}
+
 			pDevice->fill( Rect( r, _clip ), m_sectionColors[i] );
 			
 			ofs += sectionHeight;
@@ -467,9 +508,11 @@ namespace wg
 	void SimpleVolumeMeter::_updateIValues( Size sz )
 	{
 		int length = sz.h;
-		int width = sz.w;
+		int width = sz.w;
+
 		if (m_direction == Direction::Left || m_direction == Direction::Right)
-			std::swap(length, width);
+			std::swap(length, width);
+
 		m_iGap = (int)(width * m_fGap);
 		if( m_iGap == 0 && m_fGap > 0.f )
 			m_iGap = 1;

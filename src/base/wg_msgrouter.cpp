@@ -26,6 +26,7 @@
 #include <wg_base.h>
 #include <wg_rootpanel.h>
 #include <wg_panel.h>
+#include <wg_enumextras.h>
 
 namespace wg 
 {
@@ -364,7 +365,7 @@ namespace wg
 	
 	RouteId MsgRouter::_addRoute( MsgType type, Route * pRoute )
 	{
-		if( type == MsgType::Dummy || type >= MsgType::Max )
+		if( type == MsgType::Dummy || type > MsgType_max )
 			return 0;
 	
 		Chain<Route>& chain = m_typeRoutes[type];

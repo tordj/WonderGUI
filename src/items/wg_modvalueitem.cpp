@@ -23,16 +23,24 @@
 #include <wg_widget.h>
 #include <wg_modvalueitem.h>
 
+#include <limits>
+
 namespace wg 
 {
-	
+
+	//____ constructor ________________________________________________________
+
+	ModValueItem::ModValueItem(ItemHolder * pHolder) : ValueItem(pHolder), m_minValue(std::numeric_limits<int64_t>::min()), m_maxValue(std::numeric_limits<int64_t>::max()) 
+	{
+	}
+
 	//____ clear() _________________________________________________________________
 	
 	void ModValueItem::clear()
 	{
 		ValueItem::clear();
-		m_minValue = INT64_MIN;
-		m_maxValue = INT64_MAX;
+		m_minValue = std::numeric_limits<int64_t>::min();
+		m_maxValue = std::numeric_limits<int64_t>::max();
 	}
 	
 	//____ set() ___________________________________________________________________

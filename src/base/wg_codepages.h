@@ -24,6 +24,7 @@
 #pragma once
 
 #include <wg_types.h>
+#include <wg_enumextras.h>
 
 namespace wg 
 {
@@ -48,7 +49,7 @@ namespace wg
 		static inline const uint16_t* getCodePage( CodePage codePage ) { return LookupTable[(int)codePage]; }
 			
 	private:		
-		static uint16_t* LookupTable[CodePage_Max];
+		static uint16_t* LookupTable[CodePage_size];
 	};
 	
 

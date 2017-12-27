@@ -414,8 +414,16 @@ namespace wg
 		}
 
 		std::memcpy(pBytes, &pObj->m_pBuffer[readOfs], nBytes);
+		readOfs = (readOfs + nBytes) % bufferSize;
+	}
+
+	//____ OutStreamProxy::_skipBytes() ______________________________________________________
+
+	void GfxStreamPlug::OutStreamProxy::_skipBytes(int nBytes)
+	{
 		readOfs = (readOfs + nBytes) % pObj->m_bufferSize;
 	}
+
 
 	//____ OutStreamProxy::size() ______________________________________________________
 

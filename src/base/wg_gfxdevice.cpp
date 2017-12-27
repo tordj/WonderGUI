@@ -761,7 +761,8 @@ namespace wg
 		static int brush[128];
 		static float prevThickness = -1.f;
 
-		float thickness = pWave->thickness;		int brushSteps = (int)(thickness / 2 + 0.99f);
+		float thickness = pWave->thickness;
+		int brushSteps = (int)(thickness / 2 + 0.99f);
 
 		// Generate brush
 
@@ -779,10 +780,12 @@ namespace wg
 		}
 
 		int nTracePoints = max(0, min(nPoints, pWave->length - offset));
-		int nFillPoints = nPoints - nTracePoints;
+		int nFillPoints = nPoints - nTracePoints;
+
 		// Trace...
 
-		int * pSrc = pWave->pWave + offset;		for (int i = 0; i < nTracePoints; i++)
+		int * pSrc = pWave->pWave + offset;
+		for (int i = 0; i < nTracePoints; i++)
 		{
 			// Start with top and bottom for current point
 
@@ -824,8 +827,10 @@ namespace wg
 			*pDest++ = top;
 			*pDest++ = bottom;
 		}
-
-		// Fill...
+
+
+		// Fill...
+
 		if (nFillPoints)
 		{
 			int top = pWave->hold - brush[0];

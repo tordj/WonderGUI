@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gfxstreamlogger.h>
+#include <wg_enumextras.h>
 #include <assert.h>
 
 namespace wg
@@ -41,14 +42,12 @@ namespace wg
 	GfxStreamLogger::GfxStreamLogger(GfxInStream& in, std::ostream& out) : m_charStream(out)
 	{
 		m_pGfxStream = in.ptr();
-		m_pWorkArea = new char[GfxStream::c_maxBlockSize];
 	}
 
 	//____ Destructor _________________________________________________________
 
 	GfxStreamLogger::~GfxStreamLogger()
 	{
-		delete[] m_pWorkArea;
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -107,20 +106,20 @@ namespace wg
 
 		*m_pGfxStream >> header;
 
+		if (header.type == GfxChunkId::OutOfData)
+			return false;
+
+		if (header.type <= GfxChunkId_max)
+			m_charStream << toString(header.type) << std::endl;
+		else
+			m_charStream << "Unknown Chunk Type: " << (int) header.type << std::endl;
+
 		switch (header.type)
 		{
-
-			case GfxChunkId::OutOfData:
-				return false;
-
 			case GfxChunkId::BeginRender:
-
-				m_charStream << "BeginRender" << std::endl;
 				break;
 
 			case GfxChunkId::EndRender:
-
-				m_charStream << "EndRender" << std::endl;
 				break;
 
 			case GfxChunkId::Fill:
@@ -131,8 +130,7 @@ namespace wg
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
 
-				m_charStream << "Fill" << std::endl;
-				m_charStream << "    dest = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    dest  = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 				m_charStream << "    color = " << (int) col.a << ", " << (int) col.r << ", " << (int) col.g << ", " << (int) col.b << std::endl;
 				break;
 			}
@@ -150,7 +148,6 @@ namespace wg
 				BlendMode	blendMode;
 				*m_pGfxStream >> blendMode;
 
-				m_charStream << "SetBlendMode" << std::endl;
 				m_charStream << "    mode = " << (int)blendMode << std::endl;
 				break;
 			}
@@ -167,11 +164,10 @@ namespace wg
 				*m_pGfxStream >> length;
 				*m_pGfxStream >> color;
 
-				m_charStream << "DrawStraightLine" << std::endl;
-				m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
 				m_charStream << "    orientation = " << (orientation == Orientation::Horizontal? "Horizontal" : "Vertical") << std::endl;
-				m_charStream << "    length = " << length << std::endl;
-				m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    length      = " << length << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
 				break;
 			}
 	/*
@@ -195,10 +191,9 @@ namespace wg
 				*m_pGfxStream >> color;
 				*m_pGfxStream >> thickness;
 
-				m_charStream << "DrawLine" << std::endl;
-				m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    begin     = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end       = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color     = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
 				m_charStream << "    thickness = " << thickness << std::endl;
 				break;
 			}
@@ -217,11 +212,10 @@ namespace wg
 				*m_pGfxStream >> color;
 				*m_pGfxStream >> thickness;
 
-				m_charStream << "ClipDrawLine" << std::endl;
-				m_charStream << "    clip = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
-				m_charStream << "    begin = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    clip      = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+				m_charStream << "    begin     = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end       = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color     = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
 				m_charStream << "    thickness = " << thickness << std::endl;
 				break;
 			}
@@ -247,32 +241,60 @@ namespace wg
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
 
-				m_charStream << "Fill" << std::endl;
-				m_charStream << "    dest = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    dest  = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 				m_charStream << "    color = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
 				break;
 			}
-	/*
+
 			case GfxChunkId::CreateSurface:
-				//TODO: Implement!
+			{
+				uint16_t	surfaceId;
+				PixelType	type;
+				Size		size;
+
+				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> type;
+				*m_pGfxStream >> size;
+
+				m_charStream << "    surfaceId = " << surfaceId << std::endl;
+				m_charStream << "    type      = " << toString(type) << std::endl;
+				m_charStream << "    size      = " << size.w << ", " << size.h << std::endl;
 				break;
+			}
+/*
 
 			case GfxChunkId::SetSurfaceScaleMode:
 				//TODO: Implement!
 				break;
+*/
 
 			case GfxChunkId::BeginSurfaceUpdate:
-				//TODO: Implement!
-				break;
+			{
+				uint16_t	surfaceId;
+				Rect		rect;
 
-				case GfxChunkId::SurfaceData:
-				//TODO: Implement!
+				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> rect;
+
+				m_charStream << "    surfaceId = " << surfaceId << std::endl;
+				m_charStream << "    rect      = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 				break;
+			}
+
+			case GfxChunkId::SurfaceData:
+			{
+				m_pGfxStream->skip(header.size);
+
+				m_charStream << "    size: " << header.size << " bytes." << std::endl;
+				break;
+			}
 	
 			case GfxChunkId::EndSurfaceUpdate:
-				//TODO: Implement!
+			{
+				m_charStream << "EndSurfaceUpdate" << std::endl;
 				break;
-
+			}
+/*
 			case GfxChunkId::FillSurface:
 				//TODO: Implement!
 				break;
@@ -283,11 +305,9 @@ namespace wg
 	*/
 			default:
 			{
-				m_charStream << "Unknown Chunk!!!!!!!!!!!!!!!!!" << std::endl;
-				m_charStream << "    type = " << (int)header.type << std::endl;
-				m_charStream << "    size = " << (int)header.size << std::endl;
+				m_pGfxStream->skip(header.size);
 
-				*m_pGfxStream >> GfxStream::DataChunk{ header.size, m_pWorkArea };
+				m_charStream << "    size = " << (int)header.size << std::endl;
 				break;
 			}
 		}

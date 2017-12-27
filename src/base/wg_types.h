@@ -24,20 +24,11 @@
 #define WG_TYPES_DOT_H
 #pragma once
 
-#include <stdint.h>			// Use the C99 official header
+#include <cstdint>
 
 namespace wg 
 {
 		
-	#ifndef INT64_MIN
-	#define INT64_MIN (-(9223372036854775807 ## L)-1)
-	#endif
-	
-	#ifndef INT64_MAX
-	#define INT64_MAX ((9223372036854775807 ## L))__
-	#endif
-
-
 #if defined(_WIN32) 	
 #	if defined(_M_X64) || defined(_M_IX86)
 #		define IS_BIG_ENDIAN 0
@@ -245,7 +236,7 @@ namespace wg
 	
 	//____ CodePage ______________________________________________________________
 	
-	enum class CodePage
+	enum class CodePage		//. autoExtras
 	{
 		Latin1,
 		_1250,		///< Windows Cental Europe
@@ -259,9 +250,7 @@ namespace wg
 		_1258,		///< Windows Vietnam
 		_874,		///< Windows Thai
 	};
-	
-	static const int CodePage_Max = 11;
-	
+		
 	//____ BreakRules ____________________________________________________________
 	
 	enum class BreakRules : uint8_t
@@ -276,7 +265,7 @@ namespace wg
 	
 	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.
 			
-	enum class BlendMode : uint8_t
+	enum class BlendMode : uint8_t	//. autoExtras
 	{
 		Undefined,			///< Blitting: Defaults to Blend
 							///< Color Blending: Defaults to ignore
@@ -300,7 +289,7 @@ namespace wg
 	
 	//____ PointerStyle __________________________________________________________
 	
-	enum class PointerStyle : uint8_t
+	enum class PointerStyle : uint8_t	//. autoExtras
 	{
 		Arrow,						// default arrow
 		Default = Arrow,	// default arrow
@@ -320,7 +309,7 @@ namespace wg
 	
 	//____ MouseButton _________________________________________________________
 	
-	enum class MouseButton : uint8_t
+	enum class MouseButton : uint8_t	//. autoExtras
 	{
 		None = 0,
 		Left,
@@ -330,12 +319,10 @@ namespace wg
 		X2,
 	};
 	
-	static const int MouseButton_Max = ((int)MouseButton::X2)+1;	
-	
 	
 	//____ AnimMode _____________________________________________________________
 	
-	enum class AnimMode : uint8_t
+	enum class AnimMode : uint8_t	//. autoExtras
 	{
 		Forward,
 		Backward,
@@ -348,7 +335,7 @@ namespace wg
 	
 	//____ SearchMode _____________________________________________________________
 	
-	enum class SearchMode
+	enum class SearchMode	//. autoExtras
 	{
 		MarkPolicy,			///< Perform a mark test on Widget.
 		Geometry,				///< Goes strictly on geometry, ignores alpha.
@@ -357,24 +344,24 @@ namespace wg
 	
 	//____ Origo _____________________________________________________________
 	
-	enum class Origo : uint8_t
+	enum class Origo : uint8_t	//. autoExtras
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
 	
-		NorthWest	= 0,
-		North		= 1,
-		NorthEast	= 2,
-		East		= 3,
-		SouthEast	= 4,
-		South		= 5,
-		SouthWest	= 6,
-		West		= 7,
-		Center		= 8
+		NorthWest,
+		North,
+		NorthEast,
+		East,
+		SouthEast,
+		South,
+		SouthWest,
+		West,
+		Center
 	};
 	
 	//____ Direction ____________________________________________________________
 	
-	enum class Direction : uint8_t
+	enum class Direction : uint8_t	//. autoExtras
 	{
 		Up,
 		Right,
@@ -384,7 +371,7 @@ namespace wg
 	
 	//____ Orientation __________________________________________________________
 	
-	enum class Orientation : uint8_t
+	enum class Orientation : uint8_t	//. autoExtras
 	{
 		Horizontal,
 		Vertical
@@ -400,7 +387,7 @@ namespace wg
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified for the child.
 	*/
-	enum class SizePolicy : uint8_t
+	enum class SizePolicy : uint8_t		//. autoExtras
 	{
 		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
 		Bound,				///< Child is bound to the exact size specified by parent.
@@ -411,7 +398,7 @@ namespace wg
 
 	//____ SizePolicy2D ___________________________________________________________
 
-	enum class SizePolicy2D : uint8_t
+	enum class SizePolicy2D : uint8_t	//. autoExtras
 	{
 		Default,
 		Stretch,
@@ -421,7 +408,7 @@ namespace wg
 
 	//____ MsgType ______________________________________________________________
 	
-	enum class MsgType
+	enum class MsgType	//. autoExtras
 	{
 		Dummy = 0,
 		Tick,
@@ -472,15 +459,13 @@ namespace wg
 	
 		ModalMoveOutside,
 		ModalBlockedPress,
-		ModalBlockedRelease,
-		
-		Max
+		ModalBlockedRelease,		
 	};
 	
 	
 	//____ SortOrder ____________________________________________________________
 	
-	enum class SortOrder
+	enum class SortOrder	//. autoExtras
 	{
 		None,
 		Ascending,
@@ -498,7 +483,7 @@ namespace wg
 	
 	//____ SelectMode ___________________________________________________________
 	
-	enum class SelectMode : uint8_t
+	enum class SelectMode : uint8_t	//. autoExtras
 	{
 		Unselectable,		///< Entries can not be selected.
 		SingleEntry,		///< Only a single entry can be selected at a time.
@@ -508,7 +493,7 @@ namespace wg
 	
 	//____ TextEditMode _________________________________________________________
 	
-	enum class TextEditMode : uint8_t
+	enum class TextEditMode : uint8_t	//. autoExtras
 	{
 		Static,
 		Selectable,
@@ -542,7 +527,8 @@ namespace wg
 
 	//____ ItemNotif ___________________________________________________________
 
-	enum class ItemNotif {
+	enum class ItemNotif 
+	{
 		SortOrderChanged,
 		ValueModified,
 		ValueEdited,
@@ -552,7 +538,7 @@ namespace wg
 	
 	//____ AccessMode ____________________________________________________________
 	
-	enum class AccessMode
+	enum class AccessMode	//. autoExtras
 	{
 		None,
 		ReadOnly,
@@ -562,7 +548,7 @@ namespace wg
 
 	//____ ScaleMode ____________________________________________________________
 	
-	enum class ScaleMode
+	enum class ScaleMode	//. autoExtras
 	{
 		Nearest,
 		Interpolate,
@@ -581,7 +567,7 @@ namespace wg
 	
 	//____ PixelType _____________________________________________________________
 	
-	enum class PixelType
+	enum class PixelType	//. autoExtras
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
 		Custom,				///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
@@ -669,16 +655,16 @@ namespace wg
 	
 	//____ MaskOp ____________________________________________________________
 	
-	enum class MaskOp
+	enum class MaskOp	//. autoExtras
 	{
-		Recurse = 0,	///< Recurse through children, let them mask background individually.
-		Skip = 1,		///< Do not mask background against container or children.
-		Mask = 2		///< Mask background against whole container.
+		Recurse,		///< Recurse through children, let them mask background individually.
+		Skip,			///< Do not mask background against container or children.
+		Mask			///< Mask background against whole container.
 	};
 	
 	//____ GfxChunkId ____________________________________________________
 
-	enum class GfxChunkId : uint16_t
+	enum class GfxChunkId : uint16_t	//. autoExtras
 	{
 		OutOfData,
 

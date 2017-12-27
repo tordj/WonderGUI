@@ -178,6 +178,14 @@ namespace wg
 		m_readOfs = (m_readOfs + nBytes) % c_bufferSize;
 	}
 
+	//____ _skipBytes() _______________________________________________________
+
+	void GfxStreamReader::_skipBytes(int nBytes)
+	{
+		m_readOfs = (m_readOfs + nBytes) % c_bufferSize;
+	}
+
+
 	//____ _isStreamOpen() ____________________________________________________
 
 	bool GfxStreamReader::_isStreamOpen()

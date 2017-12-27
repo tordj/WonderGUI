@@ -34,7 +34,7 @@ namespace wg
 	class ModValueItem : public ValueItem		/** @private */
 	{
 	public:
-		ModValueItem( ItemHolder * pHolder ) : ValueItem(pHolder), m_minValue(INT64_MIN), m_maxValue(INT64_MAX) {}
+		ModValueItem(ItemHolder * pHolder);
 		~ModValueItem() {}
 	
 		// ModValue methods

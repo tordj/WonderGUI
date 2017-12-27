@@ -138,6 +138,7 @@
     <ClInclude Include="..\..\..\src\base\wg_textstylemanager.h" />
     <ClInclude Include="..\..\..\src\base\wg_texttool.h" />
     <ClInclude Include="..\..\..\src\base\wg_togglegroup.h" />
+    <ClInclude Include="..\..\..\src\base\wg_enumextras.h" />
     <ClInclude Include="..\..\..\src\base\wg_types.h" />
     <ClInclude Include="..\..\..\src\base\wg_util.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
@@ -270,6 +271,7 @@
     <ClCompile Include="..\..\..\src\base\wg_textstylemanager.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_texttool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_togglegroup.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_enumextras.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />

@@ -51,7 +51,7 @@ namespace wg
 
 
 		
-		for( int i = 0 ; i < MouseButton_Max+1 ; i++ )
+		for( int i = 0 ; i < MouseButton_size ; i++ )
 		{
 			m_bButtonPressed[i] = false;
 			m_latestPressTimestamps[i] = 0;
@@ -269,7 +269,7 @@ namespace wg
 		// Mouse is only allowed to mark Widgets that were marked on press of that button.
 	
 		int button = 0;								// Button that has been pressed for longest, 0 = no button pressed
-		for( int i = 1 ; i <= MouseButton_Max ; i++ )
+		for( int i = 1 ; i < MouseButton_size ; i++ )
 		{
 			if( m_bButtonPressed[i] && (button == 0 || m_latestPressTimestamps[i] < m_latestPressTimestamps[button]) )
 				button = i;
@@ -299,7 +299,7 @@ namespace wg
 	
 		// Post events for button drag
 	
-		for (int i = 0; i <= MouseButton_Max; i++)
+		for (int i = 0; i < MouseButton_size; i++)
 		{
 			if (m_bButtonPressed[i])
 			{
@@ -502,7 +502,7 @@ namespace wg
 	
 	bool InputHandler::isAnyButtonPressed() const
 	{
-		for( int i = 0 ; i < MouseButton_Max ; i++ )
+		for( int i = 0 ; i < MouseButton_size ; i++ )
 			if( m_bButtonPressed[i] )
 				return true;
 	
@@ -750,7 +750,7 @@ namespace wg
 
 	void InputHandler::_handleButtonRepeats( int64_t timestamp )
 	{
-		for( int button = 0 ; button <= MouseButton_Max ; button++ )
+		for( int button = 0 ; button < MouseButton_size ; button++ )
 		{
 			if( m_bButtonPressed[button] )
 			{	

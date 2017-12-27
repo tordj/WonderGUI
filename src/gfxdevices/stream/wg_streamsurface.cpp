@@ -398,11 +398,11 @@ namespace wg
 
 	short StreamSurface::_sendCreateSurface(Size size, PixelType type)
 	{
-		short surfaceId = m_pStream->allocObjectId();
+		uint16_t surfaceId = m_pStream->allocObjectId();
 
 		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, 8 };
 		*m_pStream << surfaceId;
-		*m_pStream << (short)type;
+		*m_pStream << type;
 		*m_pStream << size;
 
 		return surfaceId;

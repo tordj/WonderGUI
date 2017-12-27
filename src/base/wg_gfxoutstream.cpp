@@ -110,6 +110,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (PixelType t)
+	{
+		m_pHolder->_pushShort((short)t);
+		return *this;
+	}
+
 	GfxOutStream&  GfxOutStream::operator<< (Color color)
 	{
 		m_pHolder->_pushInt(color.argb);

@@ -42,6 +42,8 @@ namespace wg
 		return { GfxChunkId::OutOfData, 0 };
 	}
 
+
+
 	//____ operator>> _________________________________________________________
 
 	GfxInStream& GfxInStream::operator>> (GfxStream::Header& header)
@@ -125,6 +127,12 @@ namespace wg
 	GfxInStream& GfxInStream::operator>> (Orientation& o)
 	{
 		o = (Orientation)m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (PixelType& t)
+	{
+		t = (PixelType)m_pHolder->_pullShort();
 		return *this;
 	}
 
