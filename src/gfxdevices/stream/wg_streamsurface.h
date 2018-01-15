@@ -40,6 +40,7 @@ namespace wg
 	class StreamSurface : public Surface
 	{
 		friend class StreamSurfaceFactory;
+		friend class StreamGfxDevice;
 
 	public:
 
@@ -77,6 +78,14 @@ namespace wg
 		uint8_t *	lock(AccessMode mode);
 		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
 		void		unlock();
+
+		//.____  Rendering ____________________________________________________
+
+		bool		fill(Color col);
+		bool		fill(Color col, const Rect& region);
+		bool		copyFrom(Surface * pSrcSurf, const Rect& srcRect, Coord dst);
+		bool		copyFrom(Surface * pSrcSurf, Coord dst);
+
 
 		//.____ Misc __________________________________________________________
 

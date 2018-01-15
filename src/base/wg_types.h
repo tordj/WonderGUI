@@ -681,7 +681,7 @@ namespace wg
 		ClipDrawLine,
 		ClipDrawHorrWave,
 		Blit,
-		StretchBlitSubPixel,
+		StretchBlit,
 		FillSubPixel,
 
 		CreateSurface,

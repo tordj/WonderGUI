@@ -150,8 +150,9 @@ namespace wg
 
 		Blob_p pBlob = Blob::create(m_pitch*m_size.h);
 
-		m_pPixels = (uint8_t*)m_pBlob->data();	// Simulate a lock
+		m_pPixels = (uint8_t*)pBlob->data();	// Simulate a lock
 		_copyFrom(pPixelFormat == 0 ? &m_pixelFormat : pPixelFormat, pPixels, pitch, size, size);
+		_sendPixels(size, m_pPixels, pitch);
 		m_pPixels = 0;
 
 
@@ -168,7 +169,6 @@ namespace wg
 			m_pAlphaLayer = nullptr;
 		}
 
-		_sendPixels(size, pPixels, pitch);
 	}
 
 
@@ -250,17 +250,14 @@ namespace wg
 
 	void StreamSurface::setScaleMode( ScaleMode mode )
 	{
-		switch( mode )
+		if (mode != m_scaleMode)
 		{
-			case ScaleMode::Interpolate:
-				break;
-				
-			case ScaleMode::Nearest:
-			default:
-				break;
-		}
-		
-		Surface::setScaleMode(mode);
+			*m_pStream << GfxStream::Header{ GfxChunkId::SetSurfaceScaleMode, 4 };
+			*m_pStream << m_inStreamId;
+			*m_pStream << mode;
+
+			Surface::setScaleMode(mode);
+		}		
 	}
 
 	//____ size() ______________________________________________________________
@@ -394,6 +391,146 @@ namespace wg
 		}
 	}
 
+	//____ fill() _____________________________________________________________
+
+	bool StreamSurface::fill(Color col)
+	{
+		return fill(col, Rect(0, 0, size()));
+	}
+
+	bool StreamSurface::fill(Color col, const Rect& region)
+	{
+		// Stream the call
+
+		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, 14 };
+		*m_pStream << m_inStreamId;
+		*m_pStream << region;
+		*m_pStream << col;
+
+		// Update local copy or alpha channel (if any)
+
+		if (m_pBlob)
+		{
+			uint32_t pixel = colorToPixel(col);
+			int w = region.w;
+			int h = region.h;
+			int p = m_pitch;
+			uint8_t * pDest = reinterpret_cast<uint8_t*>(m_pBlob->data()) + region.y * p + region.x*m_pixelFormat.bits / 8;
+
+			switch (m_pixelFormat.bits)
+			{
+			case 8:
+				for (int y = 0; y < h; y++)
+				{
+					for (int x = 0; x < w; x++)
+						pDest[x] = (uint8_t)pixel;
+					pDest += p;
+				}
+				break;
+			case 16:
+				for (int y = 0; y < h; y++)
+				{
+					for (int x = 0; x < w; x++)
+						((uint16_t*)pDest)[x] = (uint16_t)pixel;
+					pDest += p;
+				}
+				break;
+			case 24:
+			{
+				uint8_t one = (uint8_t)pixel;
+				uint8_t two = (uint8_t)(pixel >> 8);
+				uint8_t three = (uint8_t)(pixel >> 16);
+
+				for (int y = 0; y < h; y++)
+				{
+					for (int x = 0; x < w; x++)
+					{
+						pDest[x++] = one;
+						pDest[x++] = two;
+						pDest[x++] = three;
+					}
+					pDest += p - w * 3;
+				}
+				break;
+			}
+			case 32:
+				for (int y = 0; y < h; y++)
+				{
+					for (int x = 0; x < w; x++)
+						((uint32_t*)pDest)[x] = pixel;
+					pDest += p;
+				}
+				break;
+			default:
+				assert(false);
+			}
+		}
+		else if (m_pAlphaLayer)
+		{
+			for (int i = 0; i < m_size.w*m_size.h; i++)
+				m_pAlphaLayer[i] = col.a;
+		}
+
+		//
+		return true;
+	}
+
+	//____ _copyFrom() ________________________________________________________
+
+	bool StreamSurface::copyFrom(Surface * pSrcSurface, Coord dst)
+	{
+		if (!pSrcSurface)
+			return false;
+
+		return copyFrom(pSrcSurface, Rect(0, 0, pSrcSurface->size()), dst);
+	}
+
+	bool StreamSurface::copyFrom(Surface * pSrcSurf, const Rect& srcRect, Coord dst)
+	{
+		//TODO: Implement!!!
+
+		assert(false);
+		return true;
+/*
+		// First we update local data without streaming anything (no lock/unlock)
+
+		if (m_pBlob)
+		{
+			m_pPixels = (uint8_t*)m_pBlob->data();	// Simulate a lock
+			_copyFrom(pSrcSurf->pixelFormat(), pPixels, pitch, size, size);
+			_sendPixels(size, m_pPixels, pitch);
+			m_pPixels = 0;
+		}
+		else
+		{
+
+		}
+
+
+		// Stream command or modified content
+
+		if (pSrcSurf->className() == StreamSurface::CLASSNAME)
+		{
+			// Since they both are stream surfaces, we just need to order a copy.
+
+			*m_pStream << GfxStream::Header{ GfxChunkId::CopySurface, 16 };
+			*m_pStream << m_inStreamId;
+			*m_pStream << static_cast<StreamSurface*>(pSrcSurf)->m_inStreamId;
+			*m_pStream << srcRect;
+			*m_pStream << dst;
+		}
+		else
+		{
+			// Source is not a stream surface, so we need to stream modified content
+
+
+			_sendPixels(m_lockRegion, m_pPixels, m_pitch);
+
+		}
+*/
+
+	}
+
 	//____ _sendCreateSurface() _______________________________________________
 
 	short StreamSurface::_sendCreateSurface(Size size, PixelType type)
@@ -420,12 +557,12 @@ namespace wg
 		int pixelPitch = m_pixelFormat.bits / 8;
 		for (int y = 0; y < m_size.h; y++)
 		{
-			const char * pPixel = pSource + y*pitch;
+			const char * pPixelAlpha = pSource + y*pitch + pixelPitch -1;
 
 			for (int x = 0; x < m_size.w; x++)
 			{
-				*pDest++ = *pPixel;
-				pPixel += pixelPitch;
+				*pDest++ = *pPixelAlpha;
+				pPixelAlpha += pixelPitch;
 			}
 		}
 		return pAlphaLayer;
@@ -478,7 +615,7 @@ namespace wg
 
 	void StreamSurface::_sendDeleteSurface()
 	{
-		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, 2 };
+		*m_pStream << GfxStream::Header{ GfxChunkId::DeleteSurface, 2 };
 		*m_pStream << m_inStreamId;
 	}
 

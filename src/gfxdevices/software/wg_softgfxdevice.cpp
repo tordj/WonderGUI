@@ -898,7 +898,8 @@ namespace wg
 		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
 		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
-		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
 		// Do proper X-clipping
 
 		int startColumn = 0;
@@ -1039,7 +1040,7 @@ namespace wg
 			int64_t forwardAmount = (clipBeg<<16) - columnBeg;
 
 			for (int i = 0; i < 4; i++)
-				amount[i] += (inc[i]*forwardAmount) >> 16;
+				amount[i] += (int) ((inc[i]*forwardAmount) >> 16);
 
 			columnBeg = (clipBeg<<16);
 		}
@@ -2530,10 +2531,9 @@ namespace wg
 	}
 	
 	
-	//____ stretchBlitSubPixel() ___________________________________________________
+	//____ stretchBlit() ___________________________________________________
 	
-	void SoftGfxDevice::stretchBlitSubPixel( Surface * _pSrcSurf, float sx, float sy, float sw, float sh,
-							   		 float _dx, float _dy, float _dw, float _dh )
+	void SoftGfxDevice::stretchBlit( Surface * _pSrcSurf, const RectF& source, const Rect& dest )
 	{
 		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
@@ -2543,10 +2543,15 @@ namespace wg
 		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
-		int dx = (int) _dx;
-		int dy = (int) _dy;
-		int dw = (int) _dw;
-		int dh = (int) _dh;
+		int dx = dest.x;
+		int dy = dest.y;
+		int dw = dest.w;
+		int dh = dest.h;
+
+		float sx = source.x;
+		float sy = source.y;
+		float sw = source.w;
+		float sh = source.h;
 	
 		BlendMode		blendMode = m_blendMode;
 		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )

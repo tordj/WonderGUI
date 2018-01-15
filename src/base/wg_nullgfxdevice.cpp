@@ -110,8 +110,7 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::stretchBlitSubPixel( 	Surface * pSrc, float sx, float sy, float sw, float sh,
-							   		 			float dx, float dy, float dw, float dh )
+	void NullGfxDevice::stretchBlit(Surface * pSrc, const RectF& source, const Rect& dest )
 	{
 	}
 	

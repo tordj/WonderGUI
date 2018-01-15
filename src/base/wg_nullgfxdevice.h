@@ -68,8 +68,7 @@ namespace wg
 		void	tileBlit( Surface * src, const Rect& srcrect, const Rect& dest ) override;
 	
 		void	fillSubPixel( const RectF& rect, const Color& col )  override;
-		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
-							   		 float dx, float dy, float dw, float dh ) override;
+		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest ) override;
 	
         void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;

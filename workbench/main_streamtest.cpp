@@ -184,7 +184,7 @@ int main ( int argc, char** argv )
 	pLogger->logAllMsgs();
 	pLogger->ignoreMsg( MsgType::Tick );
 	
-	Base::msgRouter()->broadcastTo( pLogger );
+//	Base::msgRouter()->broadcastTo( pLogger );
 
 	// Init font
 /*
@@ -266,6 +266,22 @@ int main ( int argc, char** argv )
 	// Setup streaming
 	//------------------------------------------------------
 
+	auto pStreamPlug = GfxStreamPlug::create();
+
+	auto pStreamDevice = StreamGfxDevice::create({ width,height }, pStreamPlug->input.ptr());
+	auto pSurfaceFactory = StreamSurfaceFactory::create(pStreamPlug->input.ptr());
+
+	pStreamPlug->openOutput(0);
+	auto pStreamLogger = GfxStreamLogger::create(pStreamPlug->output[0], std::cout);
+
+	pStreamPlug->openOutput(1);
+	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
+
+
+	//------------------------------------------------------
+	// Setup streaming
+	//------------------------------------------------------
+/*
 	char * pBigBuffer = new char[10000000];
 
 	char * pWrite = pBigBuffer;
@@ -278,16 +294,17 @@ int main ( int argc, char** argv )
 		int nBytes = std::min((int)(pWrite - pRead), bytes);
 		std::memcpy(pDest, pRead, nBytes); 
 		pRead += nBytes; 
-		return nBytes; });
+		return nBytes; 
+	});
 
 	StreamGfxDevice_p pStreamDevice = StreamGfxDevice::create({ width,height }, pWriter->stream.ptr());
 
 	GfxStreamPlayer_p pGfxPlayer = GfxStreamPlayer::create(pReader->stream, pGfxDevice, SoftSurfaceFactory::create());
-
+*/
 	//------------------------------------------------------
 	// Record stream
 	//------------------------------------------------------
-
+/*
 	char * pWaxBeg = pWrite;
 
 	playInitButtonRow(pStreamDevice, { 0,0,width,height });
@@ -302,7 +319,7 @@ int main ( int argc, char** argv )
 		save.write(pWaxBeg, pWrite - pWaxBeg);
 		save.close();
 	}
-	
+*/	
 	/*
 	playDelayFrames(pStreamDevice, 100);
 	{
@@ -379,6 +396,29 @@ int main ( int argc, char** argv )
 */
 
 	//------------------------------------------------------
+	// Setup graphics
+	//------------------------------------------------------
+
+//	auto pSoftSurfaceFactory = SoftSurfaceFactory::create();
+
+
+	PixelFormat	format;
+
+	auto pSDLSurf = IMG_Load("../resources/splash.png");
+	convertSDLFormat(&format, pSDLSurf->format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelType::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+	SDL_FreeSurface(pSDLSurf);
+
+
+
+
+	pStreamDevice->beginRender();
+	pStreamDevice->fill({ 0,0,width,height }, Color::Black);
+	pStreamDevice->fill({ 10,10,100,100 }, Color::Red);
+	pStreamDevice->clipBlit({ 0,0,width,height }, pSplashSurface, pSplashSurface->size(), { 120,10 });
+	pStreamDevice->endRender();
+
+	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
 
@@ -411,7 +451,14 @@ int main ( int argc, char** argv )
 		pDevice->endRender();
 */
 
-		pGfxPlayer->playFrame();
+		pGfxPlayer->playAll();
+/*
+		pGfxDevice->beginRender();
+		pGfxDevice->fill({ 0,0,width,height }, Color::Black);
+		pGfxDevice->fill({ 10,10,100,100 }, Color::Red);
+		pGfxDevice->clipBlit({ 0,0,width,height }, pSplashSurface, pSplashSurface->size(), { 120,10 });
+		pGfxDevice->endRender();
+*/
 
 		SDL_UnlockSurface(pWinSurf);
 
@@ -424,6 +471,8 @@ int main ( int argc, char** argv )
 
 
 //		updateWindowRects( pRoot, pWin );
+
+		pStreamLogger->logAll();
 
 		SDL_Delay(10);
     }
@@ -628,11 +677,6 @@ void * loadFile( const char * pPath )
 
 }
 
-
-
-
-
-
 //____ convertSDLFormat() ______________________________________________________
 
 void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat )
@@ -654,7 +698,6 @@ void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLForm
 	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
 	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
-
 }
 
 //____ playRectangleDance() _________________________________________________
@@ -764,7 +807,7 @@ void playButtonRelease(GfxDevice_p pDevice, int button)
 }
 void playSetSlider(GfxDevice_p pDevice, float percentage)
 {
-	int w = sliderRect.w*percentage;
+	int w = (int) (sliderRect.w*percentage);
 
 	pDevice->beginRender();
 	pDevice->fill( sliderRect, Color::DarkBlue);

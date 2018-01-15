@@ -118,7 +118,8 @@ namespace wg
 	
 		virtual void	stretchBlit( Surface * pSrc, const Rect& dest );
 		virtual void	stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest );
-	
+		virtual void	stretchBlit(Surface * pSrc, const RectF& src, const Rect& dest) = 0;
+
 		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
 		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
 	
@@ -158,9 +159,10 @@ namespace wg
 		
 		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
 
-		virtual void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
-									   		 float dx, float dy, float dw, float dh ) = 0;
-	
+//		virtual void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
+//									   		 float dx, float dy, float dw, float dh ) = 0;
+
+
 		
 	protected:
 		GfxDevice( Size canvasSize );

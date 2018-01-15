@@ -173,8 +173,8 @@ namespace wg
 			}
 			else
 			{
-				int expanse = (int)1 + (thickness - 1) / 2;
-				Color edgeColor(_col.r, _col.g, _col.b, _col.a * ((thickness - 1) / 2 - (expanse - 1)));
+				int expanse = (int) (1 + (thickness - 1) / 2);
+				Color edgeColor(_col.r, _col.g, _col.b, (uint8_t) (_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 				if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
 					return;
@@ -230,8 +230,8 @@ namespace wg
 			}
 			else
 			{
-				int expanse = (int)1 + (thickness - 1) / 2;
-				Color edgeColor(_col.r, _col.g, _col.b, _col.a * ((thickness - 1) / 2 - (expanse - 1)));
+				int expanse = (int) (1 + (thickness - 1) / 2);
+				Color edgeColor(_col.r, _col.g, _col.b, (uint8_t) (_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 				if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
 					return;
@@ -281,20 +281,17 @@ namespace wg
 	{
 		float srcW = (float) src.w;
 		float srcH = (float) src.h;
-	
-		float destW = (float) dest.w;
-		float destH = (float) dest.h;
-	
+		
 		if( pSrc->scaleMode() == ScaleMode::Interpolate )
 		{
-			if( srcW < destW )
+			if( srcW < (float) dest.w )
 				srcW--;
 	
-			if( srcH < destH )
+			if( srcH < (float) dest.h )
 				srcH--;
 		}
 	
-		stretchBlitSubPixel( pSrc, (float) src.x, (float) src.y, srcW, srcH, (float) dest.x, (float) dest.y, destW, destH );
+		stretchBlit( pSrc, RectF( (float) src.x, (float) src.y, srcW, srcH), dest );
 	}
 	
 	//____ tileBlit() ______________________________________________________________
@@ -425,7 +422,7 @@ namespace wg
 	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& _src, const Rect& _dest)
 	{
 		RectF src = _src;
-		RectF  dest = _dest;
+		Rect  dest = _dest;
 		
 		// With interpolation we only 'touch' the edge pixels, we don't include their full size.
 
@@ -438,10 +435,10 @@ namespace wg
 				src.h--;
 		}
 	
-		float cx = std::max(float(clip.x), dest.x);
-		float cy = std::max(float(clip.y), dest.y);
-		float cw = std::min(float(clip.x + clip.w), dest.x + dest.w) - cx;
-		float ch = std::min(float(clip.y + clip.h), dest.y + dest.h) - cy;
+		int cx = std::max(clip.x, dest.x);
+		int cy = std::max(clip.y, dest.y);
+		int cw = std::min(clip.x + clip.w, dest.x + dest.w) - cx;
+		int ch = std::min(clip.y + clip.h, dest.y + dest.h) - cy;
 	
 		if(cw <= 0 || ch <= 0)
 			return;
@@ -466,7 +463,7 @@ namespace wg
 				src.y += sdyr * (cy - dest.y);
 		}
 	
-		stretchBlitSubPixel( pSrc, src.x, src.y, src.w, src.h, cx, cy, cw, ch );
+		stretchBlit(pSrc, src, { cx, cy, cw, ch });
 	}
 	
 	//____ clipTileBlit() __________________________________________________________

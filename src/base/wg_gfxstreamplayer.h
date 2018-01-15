@@ -28,6 +28,8 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #include <wg_gfxinstream.h>
 #include <wg_gfxdevice.h>
 
+#include <vector>
+
 namespace wg
 {
 
@@ -66,6 +68,12 @@ namespace wg
 		GfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
+
+		std::vector<Surface_p>	m_vSurfaces;
+
+		Surface_p			m_pUpdatingSurface;
+		uint8_t *			m_pWritePixels;
+
 	};
 
 }

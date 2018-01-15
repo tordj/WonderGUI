@@ -81,6 +81,7 @@ namespace wg
 		inline bool		reopen() { return m_pHolder->_reopenStream(); }
 
 		GfxOutStream&	operator<< (Header);
+		GfxOutStream&	operator<< (int16_t);
 		GfxOutStream&	operator<< (uint16_t);
 		GfxOutStream&	operator<< (int32_t);
 		GfxOutStream&	operator<< (float);
@@ -94,6 +95,7 @@ namespace wg
 		GfxOutStream&	operator<< (BlendMode);
 		GfxOutStream&	operator<< (Orientation);
 		GfxOutStream&	operator<< (PixelType);
+		GfxOutStream&	operator<< (ScaleMode);
 		GfxOutStream&	operator<< (const DataChunk&);
 
 		//.____ Misc __________________________________________________

@@ -130,8 +130,8 @@ namespace wg
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
 
-				m_charStream << "    dest  = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
-				m_charStream << "    color = " << (int) col.a << ", " << (int) col.r << ", " << (int) col.g << ", " << (int) col.b << std::endl;
+				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    color       = " << (int) col.a << ", " << (int) col.r << ", " << (int) col.g << ", " << (int) col.b << std::endl;
 				break;
 			}
 	/*
@@ -148,7 +148,7 @@ namespace wg
 				BlendMode	blendMode;
 				*m_pGfxStream >> blendMode;
 
-				m_charStream << "    mode = " << (int)blendMode << std::endl;
+				m_charStream << "    mode        = " << (int)blendMode << std::endl;
 				break;
 			}
 
@@ -191,10 +191,10 @@ namespace wg
 				*m_pGfxStream >> color;
 				*m_pGfxStream >> thickness;
 
-				m_charStream << "    begin     = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end       = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color     = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				m_charStream << "    thickness = " << thickness << std::endl;
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
 				break;
 			}
 
@@ -212,27 +212,39 @@ namespace wg
 				*m_pGfxStream >> color;
 				*m_pGfxStream >> thickness;
 
-				m_charStream << "    clip      = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
-				m_charStream << "    begin     = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end       = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color     = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				m_charStream << "    thickness = " << thickness << std::endl;
+				m_charStream << "    clip        = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
 				break;
 			}
 
-	/*
+/*
 			case GfxChunkId::ClipDrawHorrWave:
 				//TODO: Implement!
 				break;
-
+*/
 			case GfxChunkId::Blit:
-				//TODO: Implement!
-				break;
+			{
+				uint16_t	surfaceId;
+				Rect		source;
+				Coord		dest;
 
+				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> source;
+				*m_pGfxStream >> dest;
+
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    source      = " << source.x << ", " << source.y << ", " << source.w << ", " << source.h << std::endl;
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				break;
+			}
+/*
 			case GfxChunkId::StretchBlitSubPixel:
 				//TODO: Implement!
 				break;
-	*/
+*/
 			case GfxChunkId::FillSubPixel:
 			{
 				RectF	rect;
@@ -241,8 +253,8 @@ namespace wg
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
 
-				m_charStream << "    dest  = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
-				m_charStream << "    color = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
+				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
 				break;
 			}
 
@@ -256,28 +268,44 @@ namespace wg
 				*m_pGfxStream >> type;
 				*m_pGfxStream >> size;
 
-				m_charStream << "    surfaceId = " << surfaceId << std::endl;
-				m_charStream << "    type      = " << toString(type) << std::endl;
-				m_charStream << "    size      = " << size.w << ", " << size.h << std::endl;
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    type        = " << toString(type) << std::endl;
+				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
 				break;
 			}
-/*
+
+			case GfxChunkId::DeleteSurface:
+			{
+				uint16_t	surfaceId;
+				*m_pGfxStream >> surfaceId;
+
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				break;
+			}
 
 			case GfxChunkId::SetSurfaceScaleMode:
-				//TODO: Implement!
+			{
+				uint16_t	surfaceId;
+				ScaleMode	scaleMode;
+
+				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> scaleMode;
+
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    scaleMode   = " << toString(scaleMode) << std::endl;
 				break;
-*/
+			}
 
 			case GfxChunkId::BeginSurfaceUpdate:
 			{
 				uint16_t	surfaceId;
-				Rect		rect;
+				Rect		region;
 
 				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> rect;
+				*m_pGfxStream >> region;
 
-				m_charStream << "    surfaceId = " << surfaceId << std::endl;
-				m_charStream << "    rect      = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    region      = " << region.x << ", " << region.y << ", " << region.w << ", " << region.h << std::endl;
 				break;
 			}
 
@@ -291,23 +319,49 @@ namespace wg
 	
 			case GfxChunkId::EndSurfaceUpdate:
 			{
-				m_charStream << "EndSurfaceUpdate" << std::endl;
 				break;
 			}
-/*
+
 			case GfxChunkId::FillSurface:
-				//TODO: Implement!
+			{
+				uint16_t	surfaceId;
+				Rect		region;
+				Color		col;
+
+				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> region;
+				*m_pGfxStream >> col;
+
+				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    region      = " << region.x << ", " << region.y << ", " << region.w << ", " << region.h << std::endl;
+				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
 				break;
+			}
 
 			case GfxChunkId::CopySurface:
-				//TODO: Implement!
+			{
+				uint16_t	destSurfaceId;
+				uint16_t	sourceSurfaceId;
+				Rect		sourceRect;
+				Coord		dest;
+
+				*m_pGfxStream >> destSurfaceId;
+				*m_pGfxStream >> sourceSurfaceId;
+				*m_pGfxStream >> sourceRect;
+				*m_pGfxStream >> dest;
+
+				m_charStream << "    destSurface = " << destSurfaceId << std::endl;
+				m_charStream << "    srcSurface  = " << sourceSurfaceId << std::endl;
+				m_charStream << "    source      = " << sourceRect.x << ", " << sourceRect.y << ", " << sourceRect.w << ", " << sourceRect.h << std::endl;
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				break;
-	*/
+			}
+
 			default:
 			{
 				m_pGfxStream->skip(header.size);
 
-				m_charStream << "    size = " << (int)header.size << std::endl;
+				m_charStream << "    size: " << (int)header.size << std::endl;
 				break;
 			}
 		}

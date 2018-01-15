@@ -836,18 +836,21 @@ namespace wg
 	}
 
 
-	//____ stretchBlitSubPixel() ___________________________________________________
+	//____ stretchBlit() ___________________________________________________
 
-	void GlGfxDevice::stretchBlitSubPixel( Surface * pSrc, float sx, float sy,
-											 float sw, float sh,
-											 float dx, float dy, float dw, float dh )
+	void GlGfxDevice::stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest)
 	{
+		float sx = source.x;
+		float sy = source.y;
+		float sw = source.w;
+		float sh = source.h;
+
 		if( pSrc->scaleMode() == ScaleMode::Interpolate )
 		{
-			if( sw < dw )
+			if( sw < (float) dest.w )
 				sx += 0.5f;
 	
-			if( sh < dh )
+			if( sh < (float) dest.h )
 				sy += 0.5f;
 		}
 
@@ -863,10 +866,10 @@ namespace wg
 		float	sy1 = sy/th;
 		float	sy2 = (sy+sh)/th;
 
-		float	dx1 = dx;
-		float	dx2 = dx + dw;
-		float	dy1 = m_canvasSize.h - dy;
-		float	dy2 = dy1 - dh;
+		float	dx1 = (float) dest.x;
+		float	dx2 = (float) (dest.x + dest.w);
+		float	dy1 = (float) (m_canvasSize.h - dest.y);
+		float	dy2 = (float) (dy1 - dest.h);
 
         m_vertexBufferData[0] = dx1;
         m_vertexBufferData[1] = dy1;

@@ -215,8 +215,13 @@ namespace wg
 
 	void StreamGfxDevice::blit( Surface * _pSrc, const Rect& _src, Coord dest  )
 	{
-        if( !_pSrc )
-			return;       
+        if( !_pSrc || _src.w < 1 || _src.h < 1 )
+			return;
+
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::Blit, 14 };
+		(*m_pStream) << static_cast<StreamSurface*>(_pSrc)->m_inStreamId;
+		(*m_pStream) << _src;
+		(*m_pStream) << dest;
 	}
 
 	//____ fillSubPixel() ______________________________________________________
@@ -234,15 +239,17 @@ namespace wg
 	}
 
 
-	//____ stretchBlitSubPixel() ___________________________________________________
+	//____ stretchBlit() ___________________________________________________
 
-	void StreamGfxDevice::stretchBlitSubPixel( Surface * pSrc, float sx, float sy,
-											 float sw, float sh,
-											 float dx, float dy, float dw, float dh )
+	void StreamGfxDevice::stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest)
 	{
 		if( !pSrc )
 			return;
 
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlit, 26 };
+		(*m_pStream) << static_cast<StreamSurface*>(pSrc)->m_inStreamId;
+		(*m_pStream) << source;
+		(*m_pStream) << dest;
     }
 
 	//____ _setBlendMode() ____________________________________________________

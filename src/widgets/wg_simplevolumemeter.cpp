@@ -152,7 +152,7 @@ namespace wg
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 		
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
-		int  iPeak = peak * length;
+		int  iPeak = (int) (peak * length);
 
 		int iHold = _calcIHold(hold, canvas.size());
 

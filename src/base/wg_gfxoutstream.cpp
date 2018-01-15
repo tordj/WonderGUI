@@ -48,6 +48,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (int16_t int16)
+	{
+		m_pHolder->_pushShort(int16);
+		return *this;
+	}
+
 	GfxOutStream&  GfxOutStream::operator<< (uint16_t uint16)
 	{
 		m_pHolder->_pushShort(uint16);
@@ -113,6 +119,12 @@ namespace wg
 	GfxOutStream&  GfxOutStream::operator<< (PixelType t)
 	{
 		m_pHolder->_pushShort((short)t);
+		return *this;
+	}
+
+	GfxOutStream&  GfxOutStream::operator<< (ScaleMode m)
+	{
+		m_pHolder->_pushShort((short)m);
 		return *this;
 	}
 

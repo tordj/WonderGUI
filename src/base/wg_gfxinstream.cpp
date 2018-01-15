@@ -62,6 +62,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (int16_t& i)
+	{
+		i = m_pHolder->_pullShort();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (uint16_t& i)
 	{
 		i = m_pHolder->_pullShort();
@@ -133,6 +139,12 @@ namespace wg
 	GfxInStream& GfxInStream::operator>> (PixelType& t)
 	{
 		t = (PixelType)m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (ScaleMode& m)
+	{
+		m = (ScaleMode)m_pHolder->_pullShort();
 		return *this;
 	}
 

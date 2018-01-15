@@ -377,7 +377,7 @@ namespace wg
 
 		int x = *(uint16_t*)&pObj->m_pBuffer[readOfs];
 		readOfs = (readOfs + 2) % pObj->m_bufferSize;
-		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs + 2] << 16);
+		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs] << 16);
 		readOfs = (readOfs + 2) % pObj->m_bufferSize;
 
 		return x;
@@ -392,7 +392,7 @@ namespace wg
 
 		int x = *(uint16_t*)&pObj->m_pBuffer[readOfs];
 		readOfs = (readOfs + 2) % pObj->m_bufferSize;
-		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs + 2] << 16);
+		x += (*(uint16_t*)&pObj->m_pBuffer[readOfs] << 16);
 		readOfs = (readOfs + 2) % pObj->m_bufferSize;
 
 		return * ((float*)&x);

@@ -83,6 +83,7 @@ namespace wg
 
 		GfxInStream& operator>> (Header& header);
 
+		GfxInStream& operator>> (int16_t&);
 		GfxInStream& operator>> (uint16_t&);
 		GfxInStream& operator>> (int32_t&);
 		GfxInStream& operator>> (float&);
@@ -96,6 +97,7 @@ namespace wg
 		GfxInStream& operator>> (BlendMode&);
 		GfxInStream& operator>> (Orientation&);
 		GfxInStream& operator>> (PixelType&);
+		GfxInStream& operator>> (ScaleMode&);
 		GfxInStream& operator>> (const DataChunk&);
 
 
