@@ -23,6 +23,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <algorithm>
 
 namespace wg 
 {
@@ -57,7 +58,6 @@ namespace wg
 		{
 			delete [] s_pCurveTab;
 		}
-
 	}
 
 

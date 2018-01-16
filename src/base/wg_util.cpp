@@ -182,6 +182,11 @@ double Util::powerOfTen(int num){
 				wFormat.B_bits = 8;
 				wFormat.A_bits = 0;
 
+				wFormat.R_loss = 0;
+				wFormat.G_loss = 0;
+				wFormat.B_loss = 0;
+				wFormat.A_loss = 8;
+
 	#if IS_LITTLE_ENDIAN
 				wFormat.R_mask = 0xFF0000;
 				wFormat.G_mask = 0xFF00;
@@ -214,6 +219,11 @@ double Util::powerOfTen(int num){
 				wFormat.G_bits = 8;
 				wFormat.B_bits = 8;
 				wFormat.A_bits = 8;
+
+				wFormat.R_loss = 0;
+				wFormat.G_loss = 0;
+				wFormat.B_loss = 0;
+				wFormat.A_loss = 0;
 
 	#if IS_LITTLE_ENDIAN
 				wFormat.A_mask = 0xFF000000;
@@ -248,6 +258,11 @@ double Util::powerOfTen(int num){
 				wFormat.B_bits = 4;
 				wFormat.A_bits = 4;
 
+				wFormat.R_loss = 4;
+				wFormat.G_loss = 4;
+				wFormat.B_loss = 4;
+				wFormat.A_loss = 4;
+
 #if IS_LITTLE_ENDIAN
 				wFormat.A_mask = 0xF000;
 				wFormat.R_mask = 0x0F00;
@@ -280,6 +295,11 @@ double Util::powerOfTen(int num){
 				wFormat.G_bits = 6;
 				wFormat.B_bits = 5;
 				wFormat.A_bits = 0;
+
+				wFormat.R_loss = 3;
+				wFormat.G_loss = 2;
+				wFormat.B_loss = 3;
+				wFormat.A_loss = 8;
 
 #if IS_LITTLE_ENDIAN
 				wFormat.A_mask = 0x0000;
@@ -315,6 +335,11 @@ double Util::powerOfTen(int num){
 				wFormat.B_bits = 0;
 				wFormat.A_bits = 8;
 
+				wFormat.R_loss = 8;
+				wFormat.G_loss = 8;
+				wFormat.B_loss = 8;
+				wFormat.A_loss = 0;
+
 				wFormat.R_mask = 0x00;
 				wFormat.G_mask = 0x00;
 				wFormat.B_mask = 0x00;
@@ -331,10 +356,15 @@ double Util::powerOfTen(int num){
 				wFormat.bits = 8;
 				wFormat.bIndexed = true;
 
-				wFormat.R_bits = 0;
-				wFormat.G_bits = 0;
-				wFormat.B_bits = 0;
-				wFormat.A_bits = 0;
+				wFormat.R_bits = 8;
+				wFormat.G_bits = 8;
+				wFormat.B_bits = 8;
+				wFormat.A_bits = 8;
+
+				wFormat.R_loss = 0;
+				wFormat.G_loss = 0;
+				wFormat.B_loss = 0;
+				wFormat.A_loss = 0;
 
 				wFormat.R_mask = 0x00;
 				wFormat.G_mask = 0x00;

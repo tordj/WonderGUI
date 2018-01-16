@@ -27,7 +27,45 @@ namespace wg
 {
 	
 	const char Surface::CLASSNAME[] = {"Surface"};
-	
+
+	const uint8_t pixelConvTab_0[] = { 0 };
+	const uint8_t pixelConvTab_2[] = { 0, 0xff };
+	const uint8_t pixelConvTab_4[] = { 0, 0x55, 0xaa, 0xff };
+	const uint8_t pixelConvTab_8[] = { 0, 0x24, 0x48, 0x6d, 0x91, 0xb6, 0xda, 0xff };
+	const uint8_t pixelConvTab_16[] = { 0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff };
+	const uint8_t pixelConvTab_32[] = {	0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b, 
+												0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff };
+	const uint8_t pixelConvTab_64[] = {	0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c, 0x30, 0x34, 0x38, 0x3c,
+												0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
+												0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
+												0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff };
+	const uint8_t pixelConvTab_128[] = { 0x00, 0x02, 0x04, 0x06, 0x08, 0x0a, 0x0c, 0x0e, 0x10, 0x12, 0x14, 0x16, 0x18, 0x1a, 0x1c, 0x1e, 
+												0x20, 0x22, 0x24, 0x26, 0x28, 0x2a, 0x2c, 0x2e, 0x30, 0x32, 0x34, 0x36, 0x38, 0x3a, 0x3c, 0x3e, 
+												0x40, 0x42, 0x44, 0x46, 0x48, 0x4a, 0x4c, 0x4e, 0x50, 0x52, 0x54, 0x56, 0x58, 0x5a, 0x5c, 0x5e, 
+												0x60, 0x62, 0x64, 0x66, 0x68, 0x6a, 0x6c, 0x6e, 0x70, 0x72, 0x74, 0x76, 0x78, 0x7a, 0x7c, 0x7e, 
+												0x80, 0x82, 0x84, 0x86, 0x88, 0x8a, 0x8c, 0x8e, 0x90, 0x92, 0x94, 0x96, 0x98, 0x9a, 0x9c, 0x9e, 
+												0xa0, 0xa2, 0xa4, 0xa6, 0xa8, 0xaa, 0xac, 0xae, 0xb0, 0xb2, 0xb4, 0xb6, 0xb8, 0xba, 0xbc, 0xbe, 
+												0xc0, 0xc2, 0xc4, 0xc6, 0xc8, 0xca, 0xcc, 0xce, 0xd0, 0xd2, 0xd4, 0xd6, 0xd8, 0xda, 0xdc, 0xde, 
+												0xe0, 0xe2, 0xe4, 0xe6, 0xe8, 0xea, 0xec, 0xee, 0xf0, 0xf2, 0xf4, 0xf6, 0xf8, 0xfa, 0xfc, 0xff };
+	const uint8_t pixelConvTab_256[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+												0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 
+												0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 
+												0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 
+												0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 
+												0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 
+												0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 
+												0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f, 
+												0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 
+												0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d, 0x9e, 0x9f, 
+												0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 
+												0xb0, 0xb1, 0xb2, 0xb3, 0xb4, 0xb5, 0xb6, 0xb7, 0xb8, 0xb9, 0xba, 0xbb, 0xbc, 0xbd, 0xbe, 0xbf, 
+												0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf, 
+												0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf, 
+												0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef, 
+												0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
+
+	const uint8_t * pixelConvTabs[9] = { pixelConvTab_0, pixelConvTab_2, pixelConvTab_4, pixelConvTab_8, pixelConvTab_16, pixelConvTab_32, pixelConvTab_64,
+										pixelConvTab_128, pixelConvTab_256 };
 	
 	//____ Surface() ____________________________________________________________
 	
@@ -150,10 +188,10 @@ namespace wg
 		}
 		else
 		{
-			pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
-				((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
-				((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
-				((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
+			pix = ((col.r >> m_pixelFormat.R_loss) << m_pixelFormat.R_shift) |
+				((col.g >> m_pixelFormat.G_loss) << m_pixelFormat.G_shift) |
+				((col.b >> m_pixelFormat.B_loss) << m_pixelFormat.B_shift) |
+				((col.a >> m_pixelFormat.A_loss) << m_pixelFormat.A_shift);
 		}
 		return pix;
 	}
@@ -181,17 +219,17 @@ namespace wg
 		}
 		else if (m_pixelFormat.A_bits == 0)
 		{
-			Color col((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
-				(pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
-				(pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
+			Color col(((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift) << m_pixelFormat.R_loss,
+				((pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift) << m_pixelFormat.G_loss,
+				((pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift) << m_pixelFormat.B_loss,
 				255);
 		}
 		else
 		{
-			Color col((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
-				(pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
-				(pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
-				(pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift);
+			Color col(((pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift) << m_pixelFormat.R_loss,
+				((pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift) << m_pixelFormat.G_loss,
+				((pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift) << m_pixelFormat.B_loss,
+				((pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift) << m_pixelFormat.A_loss);
 
 			return col;
 		}
@@ -463,10 +501,10 @@ namespace wg
 			int		srcLineInc = srcPitch - srcInc * srcRect.w;
 			int		dstLineInc = dstPitch - dstInc * srcRect.w;
 
-			unsigned int	R_mask = (((0xFFFFFFFF & pSrcFormat->R_mask) >> pSrcFormat->R_shift) << pDstFormat->R_shift) & pDstFormat->R_mask;
-			unsigned int	G_mask = (((0xFFFFFFFF & pSrcFormat->G_mask) >> pSrcFormat->G_shift) << pDstFormat->G_shift) & pDstFormat->G_mask;
-			unsigned int	B_mask = (((0xFFFFFFFF & pSrcFormat->B_mask) >> pSrcFormat->B_shift) << pDstFormat->B_shift) & pDstFormat->B_mask;
-			unsigned int	A_mask = (((0xFFFFFFFF & pSrcFormat->A_mask) >> pSrcFormat->A_shift) << pDstFormat->A_shift) & pDstFormat->A_mask;
+			const uint8_t *	pConvTab_R = pixelConvTabs[pSrcFormat->R_bits];
+			const uint8_t *	pConvTab_G = pixelConvTabs[pSrcFormat->G_bits];
+			const uint8_t *	pConvTab_B = pixelConvTabs[pSrcFormat->B_bits];
+			const uint8_t *	pConvTab_A = pixelConvTabs[pSrcFormat->A_bits];
 
 
 			switch( (pSrcFormat->bits << 8) + pDstFormat->bits )
@@ -477,10 +515,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ( (((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													  (((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													  (((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													  (((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
 						}
 						pSrc += srcLineInc;
@@ -493,10 +531,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1])<<8) + (((unsigned int)pSrc[2])<<16); pSrc+=3;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
 						}
 						pSrc += srcLineInc;
@@ -509,10 +547,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned short*)pDst) = (unsigned short) dstpixel; pDst+=2;
 						}
 						pSrc += srcLineInc;
@@ -525,10 +563,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ( (((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													  (((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													  (((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													  (((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							pDst[0] = (unsigned char) dstpixel;
 							pDst[1] = (unsigned char) (dstpixel >> 8);
 							pDst[2] = (unsigned char) (dstpixel >> 16);
@@ -545,10 +583,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							pDst[0] = (unsigned char) dstpixel;
 							pDst[1] = (unsigned char) (dstpixel >> 8);
 							pDst[2] = (unsigned char) (dstpixel >> 16);
@@ -564,10 +602,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							pDst[0] = (unsigned char) dstpixel;
 							pDst[1] = (unsigned char) (dstpixel >> 8);
 							pDst[2] = (unsigned char) (dstpixel >> 16);
@@ -583,10 +621,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned short*)pSrc); pSrc+=2;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
 						}
 						pSrc += srcLineInc;
@@ -599,10 +637,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc+=3;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
 						}
 						pSrc += srcLineInc;
@@ -615,10 +653,10 @@ namespace wg
 						for( int x = 0 ; x < srcRect.w ; x++ )
 						{
 							unsigned int srcpixel = * ((unsigned int*)pSrc); pSrc+=4;
-							unsigned int dstpixel = (((srcpixel >> pSrcFormat->R_shift) << pDstFormat->R_shift) & R_mask) |
-													(((srcpixel >> pSrcFormat->G_shift) << pDstFormat->G_shift) & G_mask) |
-													(((srcpixel >> pSrcFormat->B_shift) << pDstFormat->B_shift) & B_mask) |
-													(((srcpixel >> pSrcFormat->A_shift) << pDstFormat->A_shift) & A_mask);
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+													(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+													(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+													(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
 							* ((unsigned int*)pDst) = dstpixel; pDst+=4;
 						}
 						pSrc += srcLineInc;
@@ -629,8 +667,7 @@ namespace wg
 				default:
 					return false;			// Failed to copy
 			}
-		}
-	
+		}	
 		return true;
 	}
 
