@@ -56,6 +56,7 @@ namespace wg
 		virtual int		_pullInt() = 0;
 		virtual float	_pullFloat() = 0;
 		virtual void	_pullBytes(int nBytes, char * pBytes) = 0;
+		virtual void	_skipBytes(int nBytes) = 0;
 
 		virtual bool	_isStreamOpen() = 0;
 		virtual void	_closeStream() = 0;
@@ -64,7 +65,7 @@ namespace wg
 
 	//____ GfxInStream ________________________________________________________
 
-	class GfxInStream : public Interface
+	class GfxInStream : public Interface, GfxStream
 	{
 	public:
 		GfxInStream(GfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
@@ -75,21 +76,30 @@ namespace wg
 		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
 		inline bool		reopen() { return m_pHolder->_reopenStream(); }
 
+		void			skip(int bytes) { m_pHolder->_skipBytes(bytes); }
+
 		bool				isEmpty();
 		GfxStream::Header	peek();
 
-		GfxInStream& operator>> (GfxStream::Header& header);
+		GfxInStream& operator>> (Header& header);
 
+		GfxInStream& operator>> (int16_t&);
 		GfxInStream& operator>> (uint16_t&);
 		GfxInStream& operator>> (int32_t&);
 		GfxInStream& operator>> (float&);
 
 
-		GfxInStream& operator>> (Coord& coord);
-		GfxInStream& operator>> (Rect& rect);
-		GfxInStream& operator>> (RectF& rect);
-		GfxInStream& operator>> (Color& color);
-		GfxInStream& operator>> (BlendMode& blendMode);
+		GfxInStream& operator>> (Coord&);
+		GfxInStream& operator>> (Size&);
+		GfxInStream& operator>> (Rect&);
+		GfxInStream& operator>> (RectF&);
+		GfxInStream& operator>> (Color&);
+		GfxInStream& operator>> (BlendMode&);
+		GfxInStream& operator>> (Orientation&);
+		GfxInStream& operator>> (PixelType&);
+		GfxInStream& operator>> (ScaleMode&);
+		GfxInStream& operator>> (const DataChunk&);
+
 
 		//.____ Misc __________________________________________________
 

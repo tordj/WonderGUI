@@ -42,6 +42,16 @@ void			convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFo
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 
+void playDelayFrames(GfxDevice_p pDevice, int nFrames);
+
+void playRectangleDance(GfxDevice_p pDevice, Rect canvas);
+
+void playInitButtonRow(GfxDevice_p pDevice, Rect canvas);
+void playButtonPress(GfxDevice_p pDevice, int button);
+void playButtonRelease(GfxDevice_p pDevice, int button);
+void playSetSlider(GfxDevice_p pDevice, float percentage);
+
+
 Coord positionSprite(Size dimensions, int tick, int nb, int amount);
 
 
@@ -174,7 +184,7 @@ int main ( int argc, char** argv )
 	pLogger->logAllMsgs();
 	pLogger->ignoreMsg( MsgType::Tick );
 	
-	Base::msgRouter()->broadcastTo( pLogger );
+//	Base::msgRouter()->broadcastTo( pLogger );
 
 	// Init font
 /*
@@ -256,7 +266,22 @@ int main ( int argc, char** argv )
 	// Setup streaming
 	//------------------------------------------------------
 
+	auto pStreamPlug = GfxStreamPlug::create();
 
+	auto pStreamDevice = StreamGfxDevice::create({ width,height }, pStreamPlug->input.ptr());
+	auto pSurfaceFactory = StreamSurfaceFactory::create(pStreamPlug->input.ptr());
+
+	pStreamPlug->openOutput(0);
+	auto pStreamLogger = GfxStreamLogger::create(pStreamPlug->output[0], std::cout);
+
+	pStreamPlug->openOutput(1);
+	auto pGfxPlayer = GfxStreamPlayer::create(pStreamPlug->output[1], pGfxDevice, SoftSurfaceFactory::create());
+
+
+	//------------------------------------------------------
+	// Setup streaming
+	//------------------------------------------------------
+/*
 	char * pBigBuffer = new char[10000000];
 
 	char * pWrite = pBigBuffer;
@@ -269,60 +294,129 @@ int main ( int argc, char** argv )
 		int nBytes = std::min((int)(pWrite - pRead), bytes);
 		std::memcpy(pDest, pRead, nBytes); 
 		pRead += nBytes; 
-		return nBytes; });
+		return nBytes; 
+	});
 
 	StreamGfxDevice_p pStreamDevice = StreamGfxDevice::create({ width,height }, pWriter->stream.ptr());
 
 	GfxStreamPlayer_p pGfxPlayer = GfxStreamPlayer::create(pReader->stream, pGfxDevice, SoftSurfaceFactory::create());
-
-	int ticker = 0;
-	Size spriteSize(100, 100);
-	Size moveDim(width - spriteSize.w, height - spriteSize.h);
-
-	//	GfxDevice_p pDevice = pGfxDevice;
-	GfxDevice_p pDevice = pStreamDevice;
-
-
-
-
-
-
-//	while (pWrite - pBigBuffer < 10000)
-	while( ticker < 600 )
-	{
-		pDevice->beginRender();
-
-		pDevice->fill({ 0,0,width,height }, Color::Black);
-		pDevice->fill({ positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
-		pDevice->fill({ positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
-		pDevice->fill({ positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
-/*
-		pDevice->setBlendMode(BlendMode::Invert);
-		pDevice->fill({ 0,0,width / 2,height / 2 }, Color::White);
-		pDevice->setBlendMode(BlendMode::Blend);
-
-		pDevice->drawLine({ 20,20 }, { width - 20,height - 20 }, Color::Beige, 5.f);
-		pDevice->clipDrawLine({ 20,128,100,100 }, { 20, 120 }, { width - 20,height - 20 + 100 }, Color::Purple, 20.f);
-
-		pDevice->clipDrawHorrLine({ 0,0,width,height }, { 400,400 }, 50, Color::LawnGreen);
-		pDevice->clipDrawVertLine({ 0,0,width,height }, { 400,410 }, 50, Color::LawnGreen);
-
-		pDevice->fillSubPixel({ 10.5f,500.3f,50.f,49.5f }, Color::CadetBlue);
 */
-		pDevice->endRender();
+	//------------------------------------------------------
+	// Record stream
+	//------------------------------------------------------
+/*
+	char * pWaxBeg = pWrite;
 
-		ticker++;
+	playInitButtonRow(pStreamDevice, { 0,0,width,height });
+	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
+	save.write(pWaxBeg, pWrite - pWaxBeg);
+	save.close();
+
+	{
+		char * pWaxBeg = pWrite;
+		playSetSlider(pStreamDevice, 1.f);
+		ofstream save("set_slider.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
 	}
-
-
+*/	
+	/*
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonPress(pStreamDevice, 0);
+		ofstream save("buttonrow_press_1.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonPress(pStreamDevice, 1);
+		ofstream save("buttonrow_press_2.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonPress(pStreamDevice, 2);
+		ofstream save("buttonrow_press_3.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonPress(pStreamDevice, 3);
+		ofstream save("buttonrow_press_4.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonRelease(pStreamDevice, 0);
+		ofstream save("buttonrow_release_1.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonRelease(pStreamDevice, 1);
+		ofstream save("buttonrow_release_2.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonRelease(pStreamDevice, 2);
+		ofstream save("buttonrow_release_3.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+	playDelayFrames(pStreamDevice, 100);
+	{
+		char * pWaxBeg = pWrite;
+		playButtonRelease(pStreamDevice, 3);
+		ofstream save("buttonrow_release_4.wax", ios::out | ios::binary | ios::trunc);
+		save.write(pWaxBeg, pWrite - pWaxBeg);
+		save.close();
+	}
+*/
 	//------------------------------------------------------
 	// Save stream to file
 	//------------------------------------------------------
-
-	ofstream save("rectcircle.wax", ios::out | ios::binary | ios::trunc);
-	save.write(pBigBuffer, pWrite - pBigBuffer);
+/*
+	ofstream save("indicators_init.wax", ios::out | ios::binary | ios::trunc);
+	save.write(pWaxBeg, pWrite - pWaxBeg);
 	save.close();
+*/
 
+	//------------------------------------------------------
+	// Setup graphics
+	//------------------------------------------------------
+
+//	auto pSoftSurfaceFactory = SoftSurfaceFactory::create();
+
+
+	PixelFormat	format;
+
+	auto pSDLSurf = IMG_Load("../resources/splash.png");
+	convertSDLFormat(&format, pSDLSurf->format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelType::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+	SDL_FreeSurface(pSDLSurf);
+
+
+
+
+	pStreamDevice->beginRender();
+	pStreamDevice->fill({ 0,0,width,height }, Color::Black);
+	pStreamDevice->fill({ 10,10,100,100 }, Color::Red);
+	pStreamDevice->clipBlit({ 0,0,width,height }, pSplashSurface, pSplashSurface->size(), { 120,10 });
+	pStreamDevice->endRender();
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -357,7 +451,14 @@ int main ( int argc, char** argv )
 		pDevice->endRender();
 */
 
-		pGfxPlayer->playFrame();
+		pGfxPlayer->playAll();
+/*
+		pGfxDevice->beginRender();
+		pGfxDevice->fill({ 0,0,width,height }, Color::Black);
+		pGfxDevice->fill({ 10,10,100,100 }, Color::Red);
+		pGfxDevice->clipBlit({ 0,0,width,height }, pSplashSurface, pSplashSurface->size(), { 120,10 });
+		pGfxDevice->endRender();
+*/
 
 		SDL_UnlockSurface(pWinSurf);
 
@@ -371,8 +472,9 @@ int main ( int argc, char** argv )
 
 //		updateWindowRects( pRoot, pWin );
 
+		pStreamLogger->logAll();
+
 		SDL_Delay(10);
-		ticker++;
     }
 
 	// Exit WonderGUI
@@ -385,25 +487,6 @@ int main ( int argc, char** argv )
 	SDL_Quit();
 
     return 0;
-}
-
-Coord positionSprite(Size dimensions, int tick, int nb, int amount)
-{
-	const float PI = 3.14159265f;
-
-	Coord	radius = { dimensions.w / 2, dimensions.h / 2 };
-
-	if( tick < 90 )
-		radius *= sin(tick*PI / 180);
-
-	if( tick > 600-90 )
-		radius *= 1.f - sin((tick-(600-90))*PI / 180);
-
-
-	Coord c;
-	c.x = (int) (cos((tick + nb*360.f / amount)*PI/180)*radius.x + dimensions.w/2);
-	c.y = (int) (sin((tick + nb*360.f / amount)*PI/180)*radius.y + dimensions.h / 2);
-	return c;
 }
 
 
@@ -594,11 +677,6 @@ void * loadFile( const char * pPath )
 
 }
 
-
-
-
-
-
 //____ convertSDLFormat() ______________________________________________________
 
 void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat )
@@ -620,5 +698,121 @@ void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLForm
 	pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
 	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
+}
+
+//____ playRectangleDance() _________________________________________________
+
+void playRectangleDance(GfxDevice_p pDevice, Rect canvas )
+{
+	int ticker = 0;
+	Size spriteSize(100, 100);
+	Size moveDim(canvas.w - spriteSize.w, canvas.h - spriteSize.h);
+
+	while (ticker < 600)
+	{
+		pDevice->beginRender();
+
+		pDevice->fill( canvas, Color::Black);
+		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 0, 3),spriteSize }, Color::Red);
+		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 1, 3),spriteSize }, Color::Green);
+		pDevice->fill({ canvas.pos() + positionSprite(moveDim, ticker, 2, 3),spriteSize }, Color::Blue);
+
+		pDevice->endRender();
+		ticker++;
+	}
+}
+
+Coord positionSprite(Size dimensions, int tick, int nb, int amount)
+{
+	const float PI = 3.14159265f;
+
+	Coord	radius = { dimensions.w / 2, dimensions.h / 2 };
+
+	if (tick < 90)
+		radius *= sin(tick*PI / 180);
+
+	if (tick > 600 - 90)
+		radius *= 1.f - sin((tick - (600 - 90))*PI / 180);
+
+
+	Coord c;
+	c.x = (int)(cos((tick + nb*360.f / amount)*PI / 180)*radius.x + dimensions.w / 2);
+	c.y = (int)(sin((tick + nb*360.f / amount)*PI / 180)*radius.y + dimensions.h / 2);
+	return c;
+}
+
+//____ play general stuff ________________________________________________
+
+void playDelayFrames(GfxDevice_p pDevice, int nFrames)
+{
+	for (int i = 0; i < nFrames; i++)
+	{
+		pDevice->beginRender();
+		pDevice->endRender();
+	}
+}
+
+
+//____ button row play functions ______________________________________________
+
+
+Rect	buttonRect;
+Coord	buttonPitch;
+Rect	sliderRect;
+
+void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
+{
+	// Init lamps
+
+	buttonRect = { canvas.w / 32, canvas.h / 32,canvas.size() / 4 - canvas.size() / 16 };
+	buttonPitch = { canvas.w / 4, 0 };
+
+	pDevice->beginRender();
+
+	pDevice->fill({ 0,0,canvas.w,canvas.h / 4 }, Color::LightGray);
+
+	Rect r = buttonRect;
+	for (int i = 0; i < 4; i++)
+	{
+		pDevice->fill(r, Color::White);
+		pDevice->fill(r - Border(4), Color::DarkBlue);
+		r += buttonPitch;
+	}
+
+	// Init slider
+
+	sliderRect = { canvas.w / 32,canvas.h / 4, 263, canvas.h / 8 - canvas.h / 32 };
+
+	pDevice->fill({0, canvas.h / 4, canvas.w, canvas.h / 8}, Color::LightGray);
+
+	pDevice->fill( sliderRect, Color::White);
+	sliderRect -= Border(4);
+	pDevice->fill( sliderRect, Color::DarkBlue);
+
+	pDevice->endRender();
+}
+
+void playButtonPress(GfxDevice_p pDevice, int button)
+{
+	pDevice->beginRender();
+	pDevice->fill(buttonRect + buttonPitch*button - Border(4), Color::LightBlue);
+	pDevice->endRender();
+}
+
+void playButtonRelease(GfxDevice_p pDevice, int button)
+{
+	pDevice->beginRender();
+	pDevice->fill(buttonRect + buttonPitch*button - Border(4), Color::DarkBlue);
+	pDevice->endRender();
+}
+void playSetSlider(GfxDevice_p pDevice, float percentage)
+{
+	int w = (int) (sliderRect.w*percentage);
+
+	pDevice->beginRender();
+	pDevice->fill( sliderRect, Color::DarkBlue);
+	pDevice->fill({ sliderRect.x,sliderRect.y,w,sliderRect.h }, Color::Yellow);
+	pDevice->endRender();
 
 }
+

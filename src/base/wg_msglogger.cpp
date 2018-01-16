@@ -194,14 +194,14 @@ namespace wg
 	
 	void MsgLogger::ignoreAllMsgs()
 	{
-		for( int i = 0 ; i < (int) MsgType::Max ; i++ )
+		for( int i = 0 ; i < (int) MsgType_size ; i++ )
 			m_msgFilter[i] = false;
 	}
 	
 	//____ LogAllMsgs ___________________________________________________________
 	void MsgLogger::logAllMsgs()
 	{
-		for( int i = 0 ; i < (int) MsgType::Max ; i++ )
+		for( int i = 0 ; i < (int) MsgType_size ; i++ )
 			m_msgFilter[i] = true;
 	}
 	

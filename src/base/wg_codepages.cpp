@@ -239,7 +239,7 @@ namespace wg
 											0x0E50, 0x0E51, 0x0E52, 0x0E53, 0x0E54, 0x0E55, 0x0E56, 0x0E57, 0x0E58, 0x0E59, 0x0E5A, 0x0E5B, 0xFFFD, 0xFFFD, 0xFFFD, 0xFFFD };
 	
 	
-	uint16_t * CodePages::LookupTable[CodePage_Max] = {
+	uint16_t * CodePages::LookupTable[CodePage_size] = {
 	
 		codepage_latin1,
 		codepage_win1250,

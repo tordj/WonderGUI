@@ -470,6 +470,9 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamplayer.h">
       <Filter>gfxstream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_enumextras.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -795,6 +798,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamplayer.cpp">
       <Filter>gfxstream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_enumextras.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

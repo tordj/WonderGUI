@@ -77,14 +77,10 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		bool	beginRender() override;;
-		bool	endRender() override;;
+		bool	beginRender() override;
+		bool	endRender() override;
 
-		void	fill( const Rect& rect, const Color& col ) override;
-
-		void	clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
-		void	clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col ) override;
- 
+		void	fill( const Rect& rect, const Color& col ) override; 
         
         void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
@@ -97,8 +93,7 @@ namespace wg
 
 		void	blit( Surface * src, const Rect& srcrect, Coord dest  ) override;
 
-		void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
-									 float dx, float dy, float dw, float dh ) override;
+		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest) override;
 
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
 
@@ -108,6 +103,8 @@ namespace wg
 	protected:
 		GlGfxDevice( Size canvas );
 		~GlGfxDevice();
+
+		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
 
         void	_initTables();
 		void	_setBlendMode( BlendMode blendMode );

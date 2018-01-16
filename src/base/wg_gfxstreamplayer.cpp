@@ -149,35 +149,19 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::ClipDrawHorrLine:
+		case GfxChunkId::DrawStraightLine:
 		{
-			Rect	clip;
-			Coord	begin;
-			int		length;
-			Color	color;
+			Coord		begin;
+			Orientation	orientation;
+			uint16_t	length;
+			Color		color;
 
-			*m_pStream >> clip;
 			*m_pStream >> begin;
+			*m_pStream >> orientation;
 			*m_pStream >> length;
 			*m_pStream >> color;
 
-			m_pDevice->clipDrawHorrLine(clip, begin, length, color);
-			break;
-		}
-
-		case GfxChunkId::ClipDrawVertLine:
-		{
-			Rect	clip;
-			Coord	begin;
-			int		length;
-			Color	color;
-
-			*m_pStream >> clip;
-			*m_pStream >> begin;
-			*m_pStream >> length;
-			*m_pStream >> color;
-
-			m_pDevice->clipDrawVertLine(clip, begin, length, color);
+			m_pDevice->_drawStraightLine(begin, orientation, length, color);
 			break;
 		}
 
@@ -228,12 +212,32 @@ namespace wg
 			break;
 
 		case GfxChunkId::Blit:
-			//TODO: Implement!
-			break;
+		{
+			uint16_t	surfaceId;
+			Rect		source;
+			Coord		dest;
 
-		case GfxChunkId::StretchBlitSubPixel:
-			//TODO: Implement!
+			*m_pStream >> surfaceId;
+			*m_pStream >> source;
+			*m_pStream >> dest;
+
+			m_pDevice->blit(m_vSurfaces[surfaceId], source, dest);
 			break;
+		}
+
+		case GfxChunkId::StretchBlit:
+		{
+			uint16_t	surfaceId;
+			RectF		source;
+			Rect		dest;
+
+			*m_pStream >> surfaceId;
+			*m_pStream >> source;
+			*m_pStream >> dest;
+
+			m_pDevice->stretchBlit(m_vSurfaces[surfaceId], source, dest);
+			break;
+		}
 
 		case GfxChunkId::FillSubPixel:
 		{
@@ -248,29 +252,109 @@ namespace wg
 		}
 
 		case GfxChunkId::CreateSurface:
-			//TODO: Implement!
+		{
+			uint16_t	surfaceId;
+			PixelType	type;
+			Size		size;
+
+			*m_pStream >> surfaceId;
+			*m_pStream >> type;
+			*m_pStream >> size;
+
+			if (m_vSurfaces.size() <= surfaceId)
+				m_vSurfaces.resize(surfaceId + 1, nullptr);
+
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type);
 			break;
+		}
+
+		case GfxChunkId::DeleteSurface:
+		{
+			uint16_t	surfaceId;
+
+			*m_pStream >> surfaceId;
+
+			m_vSurfaces[surfaceId] = nullptr;
+			break;
+		}
 
 		case GfxChunkId::SetSurfaceScaleMode:
-			//TODO: Implement!
-			break;
+		{
+			uint16_t	surfaceId;
+			ScaleMode	scaleMode;
 
-		case GfxChunkId::UpdateSurfaceRegion:
-			//TODO: Implement!
+			*m_pStream >> surfaceId;
+			*m_pStream >> scaleMode;
+
+			m_vSurfaces[surfaceId]->setScaleMode(scaleMode);
 			break;
+		}
+
+		case GfxChunkId::BeginSurfaceUpdate:
+		{
+			uint16_t	surfaceId;
+			Rect		rect;
+
+			*m_pStream >> surfaceId;
+			*m_pStream >> rect;
+
+			m_pUpdatingSurface = m_vSurfaces[surfaceId];
+			m_pWritePixels = m_pUpdatingSurface->lockRegion(AccessMode::WriteOnly, rect);
+			break;
+		}
+
+		case GfxChunkId::SurfaceData:
+		{
+			*m_pStream >> GfxStream::DataChunk{ header.size, m_pWritePixels };
+			m_pWritePixels += header.size;
+			break;
+		}
+
+		case GfxChunkId::EndSurfaceUpdate:
+		{
+			m_pUpdatingSurface->unlock();
+			m_pUpdatingSurface = nullptr;
+			break;
+		}
 
 		case GfxChunkId::FillSurface:
-			//TODO: Implement!
-			break;
+		{
+			uint16_t	surfaceId;
+			Rect		region;
+			Color		col;
 
-		case GfxChunkId::CopySurface:
-			//TODO: Implement!
+			*m_pStream >> surfaceId;
+			*m_pStream >> region;
+			*m_pStream >> col;
+
+			m_vSurfaces[surfaceId]->fill(col, region);
 			break;
+		}
+		
+		case GfxChunkId::CopySurface:
+		{
+			uint16_t	destSurfaceId;
+			uint16_t	sourceSurfaceId;
+			Rect		sourceRect;
+			Coord		dest;
+
+			*m_pStream >> destSurfaceId;
+			*m_pStream >> sourceSurfaceId;
+			*m_pStream >> sourceRect;
+			*m_pStream >> dest;
+
+			Surface * pDest	  = m_vSurfaces[destSurfaceId];
+			Surface * pSource = m_vSurfaces[sourceSurfaceId];
+
+			pDest->copyFrom(pSource, sourceRect, dest);
+			break;
+		}
 
 		default:
-			//TODO: Signal error somehow.
-			return false;
+			// We don't know how to handle this, so let's just skip it
 
+			m_pStream->skip(header.size);
+			break;
 		}
 
 		return true;

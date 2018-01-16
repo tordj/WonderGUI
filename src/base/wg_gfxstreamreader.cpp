@@ -144,7 +144,8 @@ namespace wg
 
 	int GfxStreamReader::_pullInt()
 	{ 
-		int x = *(int*)&m_pBuffer[m_readOfs]; 
+//		int x = *(int*)&m_pBuffer[m_readOfs]; 
+		int x = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
@@ -153,7 +154,9 @@ namespace wg
 
 	float GfxStreamReader::_pullFloat() 
 	{ 
-		float x = *(float*)&m_pBuffer[m_readOfs]; 
+//		float x = *(float*)&m_pBuffer[m_readOfs]; 
+		float x;
+		*((int*)&x) = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
@@ -174,6 +177,14 @@ namespace wg
 		std::memcpy(pBytes, &m_pBuffer[m_readOfs], nBytes);
 		m_readOfs = (m_readOfs + nBytes) % c_bufferSize;
 	}
+
+	//____ _skipBytes() _______________________________________________________
+
+	void GfxStreamReader::_skipBytes(int nBytes)
+	{
+		m_readOfs = (m_readOfs + nBytes) % c_bufferSize;
+	}
+
 
 	//____ _isStreamOpen() ____________________________________________________
 
@@ -208,7 +219,7 @@ namespace wg
 
 		// Calcuate size of chunks to fill in the circular buffer
 
-		int size = c_bufferSize - ((m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize) -1;		// -1 since we may not catch up to readOfs
+		int size = c_bufferSize - ((m_writeOfs - m_readOfs + c_bufferSize) % c_bufferSize) -2;		// -2 since we may not catch up to readOfs
 
 		int chunk1 = min(size, c_bufferSize - m_writeOfs);		// Until readPos or end of buffer
 		int chunk2 = size - chunk1;								// From start of buffer

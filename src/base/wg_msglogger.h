@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <wg_msgrouter.h>
+#include <wg_enumextras.h>
 
 namespace wg 
 {
@@ -94,7 +95,7 @@ namespace wg
 		std::string _formatMouseButton( MouseButton button ) const;
 		std::string _formatEditCommand( EditCmd command ) const;
 	
-		bool			m_msgFilter[(int)MsgType::Max];
+		bool			m_msgFilter[MsgType_size];
 	
 		std::ostream&	m_out;
 	

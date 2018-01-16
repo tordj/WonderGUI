@@ -110,16 +110,7 @@ namespace wg
 	{
 	}
 	
-	void NullGfxDevice::stretchBlitSubPixel( 	Surface * pSrc, float sx, float sy, float sw, float sh,
-							   		 			float dx, float dy, float dw, float dh )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col )
+	void NullGfxDevice::stretchBlit(Surface * pSrc, const RectF& source, const Rect& dest )
 	{
 	}
 	
@@ -143,5 +134,8 @@ namespace wg
 	{
 	}
 
+	void NullGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col)
+	{
+	}
 
 } // namespace wg

@@ -29,6 +29,7 @@
 #include <wg_key.h>
 #include <wg_msg.h>
 #include <wg_rootpanel.h>
+#include <wg_enumextras.h>
 
 
 /* LEFT TO DO:
@@ -172,12 +173,12 @@ namespace wg
 	
 		// Current button states
 	
-		bool			m_bButtonPressed[MouseButton_Max+1];
+		bool			m_bButtonPressed[MouseButton_size];
 	
-		Widget_wp		m_latestPressWidgets[MouseButton_Max+1];		// Widget that received the latest press, for each button.
-		int64_t			m_latestPressTimestamps[MouseButton_Max+1];	// Timestamp of the latest press, for each button.
-		Coord			m_latestPressPosition[MouseButton_Max+1];	// Coord of the latest press, for each button.
-		bool			m_latestPressDoubleClick[MouseButton_Max+1];	// Set if latest press resulted in a double-click.	
+		Widget_wp		m_latestPressWidgets[MouseButton_size];		// Widget that received the latest press, for each button.
+		int64_t			m_latestPressTimestamps[MouseButton_size];	// Timestamp of the latest press, for each button.
+		Coord			m_latestPressPosition[MouseButton_size];	// Coord of the latest press, for each button.
+		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.	
 
 		// Current key states
 

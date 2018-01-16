@@ -42,6 +42,8 @@ namespace wg
 		return { GfxChunkId::OutOfData, 0 };
 	}
 
+
+
 	//____ operator>> _________________________________________________________
 
 	GfxInStream& GfxInStream::operator>> (GfxStream::Header& header)
@@ -57,6 +59,12 @@ namespace wg
 			header.size = 0;
 		}
 
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (int16_t& i)
+	{
+		i = m_pHolder->_pullShort();
 		return *this;
 	}
 
@@ -82,6 +90,13 @@ namespace wg
 	{
 		coord.x = m_pHolder->_pullShort();
 		coord.y = m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (Size& sz)
+	{
+		sz.w = m_pHolder->_pullShort();
+		sz.h = m_pHolder->_pullShort();
 		return *this;
 	}
 
@@ -114,6 +129,31 @@ namespace wg
 		blendMode = (BlendMode) m_pHolder->_pullShort();
 		return *this;
 	}
+
+	GfxInStream& GfxInStream::operator>> (Orientation& o)
+	{
+		o = (Orientation)m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (PixelType& t)
+	{
+		t = (PixelType)m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (ScaleMode& m)
+	{
+		m = (ScaleMode)m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (const DataChunk& data)
+	{
+		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);
+		return *this;
+	}
+
 
 
 } // namespace wg

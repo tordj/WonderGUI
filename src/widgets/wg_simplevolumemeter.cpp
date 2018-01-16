@@ -32,6 +32,8 @@ namespace wg
 
 	SimpleVolumeMeter::SimpleVolumeMeter()
 	{
+		m_direction = Direction::Up;
+
 		m_sectionColors[0] = Color::Green;
 		m_sectionColors[1] = Color::Yellow;
 		m_sectionColors[2] = Color::Red;
@@ -130,7 +132,9 @@ namespace wg
 		if( m_fHoldHeight != fraction )
 		{
 			m_fHoldHeight = fraction;
-            _updateIValues( m_size );
+
+			Size size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+			_updateIValues( size );
 			_requestRender();
 		}
 	}
@@ -146,10 +150,13 @@ namespace wg
 		m_fHold[0] = hold;
 
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
-
-		int	iPeak = (int) peak * canvas.h;
-		int iHold = _calcIHold(hold, canvas.h);
 		
+		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
+		int  iPeak = (int) (peak * length);
+
+		int iHold = _calcIHold(hold, canvas.size());
+
+
 		if( m_bStereo )
 		{
 			m_bStereo = false;
@@ -178,10 +185,12 @@ namespace wg
 
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
 
-		int	iPeakL = (int) leftPeak * canvas.h;
-		int	iPeakR = (int) rightPeak * canvas.h;
-		int iHoldL = _calcIHold(leftHold, canvas.h);
-		int iHoldR = _calcIHold(rightHold, canvas.h);
+		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
+
+		int	iPeakL = (int) leftPeak * length;
+		int	iPeakR = (int) rightPeak * length;
+		int iHoldL = _calcIHold(leftHold, canvas);
+		int iHoldR = _calcIHold(rightHold, canvas);
 
 		if( !m_bStereo )
 		{
@@ -199,6 +208,22 @@ namespace wg
 		m_iHold[1] = iHoldR;
 
 	}
+
+	//____ setDirection() _________________________________________________________
+
+	void SimpleVolumeMeter::setDirection(Direction direction)
+	{
+		if (direction != m_direction)
+		{
+			m_direction = direction;
+
+			Size size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+			_updateIValues(size);
+			_requestResize();
+			_requestRender();
+		}
+	}
+
 
 	//____ _requestRenderPartial() _________________________________________________
 
@@ -248,20 +273,35 @@ namespace wg
 			}
 		}
 		
-		_requestRender( Rect( canvas.x, canvas.y + canvas.h - end, canvas.w, end-beg) );		
+		switch (m_direction)
+		{
+		case Direction::Up:
+			_requestRender(Rect(canvas.x, canvas.y + canvas.h - end, canvas.w, end - beg));
+			break;
+		case Direction::Down:
+			_requestRender(Rect(canvas.x, canvas.y + beg, canvas.w, end - beg));
+			break;
+		case Direction::Left:
+			_requestRender(Rect(canvas.x + canvas.w - end, canvas.y, end - beg, canvas.h));
+			break;
+		case Direction::Right:
+			_requestRender(Rect(canvas.x + beg, canvas.y, end - beg, canvas.h));
+			break;
+		}
 	}
 
 
 	//____ _calcIHold() ____________________________________________________________
 
-	int SimpleVolumeMeter::_calcIHold( float holdValue, int canvasHeight )
+	int SimpleVolumeMeter::_calcIHold( float holdValue, Size canvas )
 	{
 		if( m_iHoldHeight == 0 )
 			return 0;					// Should not be visible.
 
 		int height = m_iHoldHeight;
 		
-		int ofs = (int) (holdValue * canvasHeight);
+		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;
+		int ofs = (int)(holdValue * canvasLength);
 
 		if( ofs > m_iSectionHeight[0] )
 		{
@@ -281,7 +321,7 @@ namespace wg
 
 	Size SimpleVolumeMeter::preferredSize() const
 	{
-		return Size(9,20);
+		return m_direction == Direction::Up || m_direction == Direction::Down ? Size(9, 20) : Size(20, 9);
 	}
 
 	//____ _setSize() ____________________________________________________________________
@@ -328,19 +368,42 @@ namespace wg
 		if( m_bStereo )
 		{
 			Rect r = canvas;
-			r.w = (r.w - m_iGap) / 2 - m_iSidePadding;
-			r.x += m_iSidePadding;
+
+			if (m_direction == Direction::Up || m_direction == Direction::Down)
+			{
+				r.w = (r.w - m_iGap) / 2 - m_iSidePadding;
+				r.x += m_iSidePadding;
+			}
+			else
+			{
+				r.h = (r.h - m_iGap) / 2 - m_iSidePadding;
+				r.y += m_iSidePadding;
+			}
+
 			_renderBar( pDevice, 0, r, _clip );
 
-			r.x += r.w + m_iGap;
+			if (m_direction == Direction::Up || m_direction == Direction::Down)
+				r.x += r.w + m_iGap;
+			else
+				r.y += r.h + m_iGap;
+
 			_renderBar( pDevice, 1, r, _clip );
 			
 		}
 		else 
 		{
 			Rect r = canvas;
-			r.w = r.w - 2 * m_iSidePadding;
-			r.x += m_iSidePadding;
+
+			if (m_direction == Direction::Up || m_direction == Direction::Down)
+			{
+				r.w = r.w - 2 * m_iSidePadding;
+				r.x += m_iSidePadding;
+			}
+			else
+			{
+				r.h = r.h - 2 * m_iSidePadding;
+				r.y += m_iSidePadding;
+			}
 			_renderBar( pDevice, 0, r, _clip );
 		}
 	}
@@ -367,7 +430,27 @@ namespace wg
 				else 
 					c = m_sectionColors[1];
 
-				Rect r( _rect.x, _rect.y + _rect.h - holdOfs, _rect.w, m_iHoldHeight );
+				Rect r = _rect;
+				switch (m_direction)
+				{
+				case Direction::Up:
+					r.y += _rect.h - holdOfs;
+					r.h = m_iHoldHeight;
+					break;
+				case Direction::Down:
+					r.y += holdOfs - m_iHoldHeight;
+					r.h = m_iHoldHeight;
+					break;
+				case Direction::Left:
+					r.x += _rect.w - holdOfs;
+					r.w = m_iHoldHeight;
+					break;
+				case Direction::Right:
+					r.x += holdOfs - m_iHoldHeight;
+					r.w = m_iHoldHeight;
+					break;
+				}
+
 				pDevice->fill( Rect( r, _clip ), c );
 			}
 			else if( holdOfs > peakHeight )
@@ -387,7 +470,31 @@ namespace wg
 			if( sectionHeight > peakHeight )
 				sectionHeight = peakHeight;
 			
-			Rect r( _rect.x, _rect.y + _rect.h - ofs - sectionHeight, _rect.w, sectionHeight );
+			Rect r = _rect;
+
+			switch (m_direction)
+			{
+			case Direction::Up:
+				r.y += _rect.h - ofs - sectionHeight;
+				r.h = sectionHeight;
+				break;
+
+			case Direction::Down:
+				r.y += ofs;
+				r.h = sectionHeight;
+				break;
+
+			case Direction::Left:
+				r.x += _rect.w - ofs - sectionHeight;
+				r.w = sectionHeight;
+				break;
+
+			case Direction::Right:
+				r.x += ofs;
+				r.w = sectionHeight;
+				break;
+			}
+
 			pDevice->fill( Rect( r, _clip ), m_sectionColors[i] );
 			
 			ofs += sectionHeight;
@@ -400,27 +507,33 @@ namespace wg
 
 	void SimpleVolumeMeter::_updateIValues( Size sz )
 	{
-		m_iGap = (int) (sz.w * m_fGap);
+		int length = sz.h;
+		int width = sz.w;
+
+		if (m_direction == Direction::Left || m_direction == Direction::Right)
+			std::swap(length, width);
+
+		m_iGap = (int)(width * m_fGap);
 		if( m_iGap == 0 && m_fGap > 0.f )
 			m_iGap = 1;
 
-		m_iSidePadding = (int) (sz.w * m_fSidePadding);
+		m_iSidePadding = (int) (width * m_fSidePadding);
 		if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
 			m_iSidePadding = 1;
 					
-		m_iHoldHeight = (int) m_fHoldHeight * sz.h;
+		m_iHoldHeight = (int) m_fHoldHeight * length;
 		if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
 			m_iHoldHeight = 1;
 
-		m_iSectionHeight[0] = (int) (m_fSectionHeight[0] * sz.h + 0.5f);
-		m_iSectionHeight[1] =  ((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * sz.h + 0.5f)) - m_iSectionHeight[0];
-		m_iSectionHeight[2] = sz.h - m_iSectionHeight[1] - m_iSectionHeight[0];
+		m_iSectionHeight[0] = (int) (m_fSectionHeight[0] * length + 0.5f);
+		m_iSectionHeight[1] =  ((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * length + 0.5f)) - m_iSectionHeight[0];
+		m_iSectionHeight[2] = length - m_iSectionHeight[1] - m_iSectionHeight[0];
 
-		m_iPeak[0] = (int) m_fPeak[0] * sz.h;
-		m_iPeak[1] = (int) m_fPeak[1] * sz.h;
+		m_iPeak[0] = (int) m_fPeak[0] * length;
+		m_iPeak[1] = (int) m_fPeak[1] * length;
 
-		m_iHold[0] = _calcIHold( m_fHold[0], sz.h );
-		m_iHold[1] = _calcIHold( m_fHold[1], sz.h );
+		m_iHold[0] = _calcIHold(m_fHold[0], sz);
+		m_iHold[1] = _calcIHold(m_fHold[1], sz);
 	}
 
 	//____ _cloneContent() _________________________________________________________________ 
@@ -437,6 +550,7 @@ namespace wg
 			m_fSectionHeight[i] = pOrg->m_fSectionHeight[i];
 		}
 		
+		m_direction = pOrg->m_direction;
 		m_fHoldHeight = pOrg->m_fHoldHeight;
 		m_fGap = pOrg->m_fGap;
 		m_fSidePadding = pOrg->m_fSidePadding;
@@ -446,7 +560,7 @@ namespace wg
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
 		
-		Size canvasSize = m_pSkin ? Size() - m_pSkin->contentPadding() : Size();
+		Size canvasSize = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
 		_updateIValues( canvasSize );
 	}
 

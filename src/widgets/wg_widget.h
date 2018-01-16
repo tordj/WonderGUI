@@ -175,8 +175,8 @@ namespace wg
 
 		inline void			refresh();
 	
-		inline Widget_p		clone() const;
-		Widget_p			newOfMyType() const; ///< @brief Create and return a new widget of the same type.
+		inline Widget_p		clone() const { return _clone(); }
+		Widget_p			newOfMyType() const; 			///< @brief Create and return a new widget of the same type.
 
 		inline bool			isOpaque() const;
 	

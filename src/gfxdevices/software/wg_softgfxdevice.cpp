@@ -268,11 +268,14 @@ namespace wg
 				
                 int dstPixelBytes = m_canvasPixelBits/8;
 
-                if( dstPixelBytes == 4 )
+				// We may only replace alpha if this is a "true" replace, not optimzied blend-blit.
+				// Therefore we check m_blendMode.
+
+                if( dstPixelBytes == 4 && m_blendMode == BlendMode::Replace ) 
                 {
                     for( int y = 0 ; y < rect.h ; y++ )
                     {
-                        uint32_t fillValue = ((int)fillColor.b) | (((int)fillColor.g) << 8) | (((int)fillColor.r) << 16);
+                        uint32_t fillValue = ((int)fillColor.b) | (((int)fillColor.g) << 8) | (((int)fillColor.r) << 16) | (((int)fillColor.a) << 24);
                         
                         for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
                         {
@@ -477,16 +480,16 @@ namespace wg
 		int aaBottom = ((int)((rect.y + rect.h) * 256)) & 0xFF;
 	
 		if( aaTop != 0 )
-			_drawHorrVertLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, Orientation::Horizontal );
+			_drawStraightLineAA( x1, (int) rect.y, x2-x1, fillColor, blendMode, aaTop, Orientation::Horizontal );
 	
 		if( aaBottom != 0 )
-			_drawHorrVertLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, Orientation::Horizontal );
+			_drawStraightLineAA( x1, (int) y2, x2-x1, fillColor, blendMode, aaBottom, Orientation::Horizontal );
 	
 		if( aaLeft != 0 )
-			_drawHorrVertLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, Orientation::Vertical );
+			_drawStraightLineAA( (int) rect.x, y1, y2-y1, fillColor, blendMode, aaLeft, Orientation::Vertical );
 	
 		if( aaRight != 0 )
-			_drawHorrVertLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, Orientation::Vertical );
+			_drawStraightLineAA( (int) x2, y1, y2-y1, fillColor, blendMode, aaRight, Orientation::Vertical );
 	
 		// Draw corner pieces
 	
@@ -895,7 +898,8 @@ namespace wg
 		int * pBottomBorderTrace = (int*) (pBuffer + bufferSize/2);
 
 		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
-		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
 		// Do proper X-clipping
 
 		int startColumn = 0;
@@ -1036,7 +1040,7 @@ namespace wg
 			int64_t forwardAmount = (clipBeg<<16) - columnBeg;
 
 			for (int i = 0; i < 4; i++)
-				amount[i] += (inc[i]*forwardAmount) >> 16;
+				amount[i] += (int) ((inc[i]*forwardAmount) >> 16);
 
 			columnBeg = (clipBeg<<16);
 		}
@@ -1170,48 +1174,6 @@ namespace wg
 
 
 	
-	//____ clipDrawHorrLine() _____________________________________________________
-	
-	void SoftGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& start, int length, const Color& col )
-	{
-		if( start.y < clip.y || start.y >= clip.y + clip.h || start.x >= clip.x + clip.w || start.x + length <= clip.x )
-			return;
-	
-		int x = start.x;
-	
-		if( x < clip.x )
-		{
-			length = start.x + length - clip.x;
-			x = clip.x;
-		}
-	
-		if( x + length > clip.x + clip.w )
-			length = clip.x + clip.w - x;
-	
-		_drawHorrVertLine( x, start.y, length, col, Orientation::Horizontal );
-	}
-	
-	//____ clipDrawVertLine() _____________________________________________________
-	
-	void SoftGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& start, int length, const Color& col )
-	{
-		if( start.x < clip.x || start.x >= clip.x + clip.w || start.y >= clip.y + clip.h || start.y + length <= clip.y )
-			return;
-	
-		int y = start.y;
-	
-		if( y < clip.y )
-		{
-			length = start.y + length - clip.y;
-			y = clip.y;
-		}
-	
-		if( y + length > clip.y + clip.h )
-			length = clip.y + clip.h - y;
-	
-		_drawHorrVertLine( start.x, y, length, col, Orientation::Vertical );
-	}
-	
 	//____ clipPlotPixels() ____________________________________________________
 	
 	void SoftGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * colors)
@@ -1260,11 +1222,10 @@ namespace wg
             pDst[2] = (uint8_t) ((pDst[2]*invAlpha + (int)colors[i].r*alpha) >> 8);
         }
     }
+
+	//____ _drawStraightLine() ________________________________________________
 	
-	
-	//____ _drawHorrVertLine() ________________________________________________
-	
-	void SoftGfxDevice::_drawHorrVertLine( int _x, int _y, int _length, const Color& _col, Orientation orientation  )
+	void SoftGfxDevice::_drawStraightLine( Coord start, Orientation orientation, int _length, const Color& _col  )
 	{
 		if( !m_pCanvas || !m_pCanvasPixels || _length <= 0  )
 			return;
@@ -1286,7 +1247,7 @@ namespace wg
 	
 		int pitch =m_canvasPitch;
 		int pixelBytes = m_canvasPixelBits/8;
-		uint8_t * pDst = m_pCanvasPixels + _y *m_canvasPitch + _x * pixelBytes;
+		uint8_t * pDst = m_pCanvasPixels + start.y *m_canvasPitch + start.x * pixelBytes;
 	
 		int inc;
 	
@@ -1397,9 +1358,9 @@ namespace wg
 		}
 	}
 	
-	//____ _drawHorrVertLineAA() ________________________________________________
+	//____ _drawStraightLineAA() ________________________________________________
 	
-	void SoftGfxDevice::_drawHorrVertLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation )
+	void SoftGfxDevice::_drawStraightLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation )
 	{
 		int pitch =m_canvasPitch;
 		int pixelBytes = m_canvasPixelBits/8;
@@ -2570,10 +2531,9 @@ namespace wg
 	}
 	
 	
-	//____ stretchBlitSubPixel() ___________________________________________________
+	//____ stretchBlit() ___________________________________________________
 	
-	void SoftGfxDevice::stretchBlitSubPixel( Surface * _pSrcSurf, float sx, float sy, float sw, float sh,
-							   		 float _dx, float _dy, float _dw, float _dh )
+	void SoftGfxDevice::stretchBlit( Surface * _pSrcSurf, const RectF& source, const Rect& dest )
 	{
 		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
 			return;
@@ -2583,10 +2543,15 @@ namespace wg
 		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
-		int dx = (int) _dx;
-		int dy = (int) _dy;
-		int dw = (int) _dw;
-		int dh = (int) _dh;
+		int dx = dest.x;
+		int dy = dest.y;
+		int dw = dest.w;
+		int dh = dest.h;
+
+		float sx = source.x;
+		float sy = source.y;
+		float sw = source.w;
+		float sh = source.h;
 	
 		BlendMode		blendMode = m_blendMode;
 		if( pSrcSurf->m_pixelFormat.bits == 24 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )

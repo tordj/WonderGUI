@@ -73,6 +73,7 @@ namespace wg
 		int			_pullInt() override;
 		float		_pullFloat() override;
 		void		_pullBytes(int nBytes, char * pBytes) override;
+		void		_skipBytes(int nBytes) override;
 
 		bool		_isStreamOpen() override;
 		bool		_reopenStream() override;

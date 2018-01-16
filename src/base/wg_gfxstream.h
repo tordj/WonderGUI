@@ -31,13 +31,20 @@ namespace wg
 	class GfxStream
 	{
 	public:
-		static const int	c_maxBlockSize = 4096;
+		static const int	c_maxBlockSize = 4096;		// Includes the block headers!
 
 		struct Header
 		{
 			GfxChunkId	type;
 			int			size;
 		};
+
+		struct DataChunk
+		{
+			int		bytes;
+			void *	pBuffer;
+		};
+
 
 	};
 

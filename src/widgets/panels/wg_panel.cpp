@@ -101,6 +101,7 @@ namespace wg
 	void Panel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
+		//TODO: Should m_maskOp be moved to Container instead? Could remove many versions of _maskPatches()...
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
 			patches.sub( Rect(geo,clip) );
@@ -111,12 +112,13 @@ namespace wg
 		{
 			case MaskOp::Recurse:
 			{
+				Rect	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't (for panels where children can go outside parent).
 				SlotWithGeo child;
 				_firstSlotWithGeo( child );
-	
+
 				while(child.pSlot)
 				{
-					child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+					child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 					_nextSlotWithGeo( child );
 				}
 				break;

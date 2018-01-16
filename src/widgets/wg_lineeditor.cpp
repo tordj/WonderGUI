@@ -79,6 +79,8 @@ namespace wg
 	
 	Size LineEditor::preferredSize() const
 	{
+		//TODO: Use real text size as preferred size instead. They should use a SizeCapsule to limit the size if needed.
+
 		Size	contentSize;
 
 		TextStyle * pStyle = m_text._style();
@@ -164,7 +166,7 @@ namespace wg
 
 		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
 
-		Rect textClip(_clip, textCanvas);
+		Rect textClip(_clip, canvas);		// Text should not be rendered outside widgets contentRect.
 
 		m_text.render(pDevice, textCanvas, textClip );
 	}

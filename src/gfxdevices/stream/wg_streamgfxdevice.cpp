@@ -215,8 +215,13 @@ namespace wg
 
 	void StreamGfxDevice::blit( Surface * _pSrc, const Rect& _src, Coord dest  )
 	{
-        if( !_pSrc )
-			return;       
+        if( !_pSrc || _src.w < 1 || _src.h < 1 )
+			return;
+
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::Blit, 14 };
+		(*m_pStream) << static_cast<StreamSurface*>(_pSrc)->m_inStreamId;
+		(*m_pStream) << _src;
+		(*m_pStream) << dest;
 	}
 
 	//____ fillSubPixel() ______________________________________________________
@@ -234,54 +239,38 @@ namespace wg
 	}
 
 
-	//____ stretchBlitSubPixel() ___________________________________________________
+	//____ stretchBlit() ___________________________________________________
 
-	void StreamGfxDevice::stretchBlitSubPixel( Surface * pSrc, float sx, float sy,
-											 float sw, float sh,
-											 float dx, float dy, float dw, float dh )
+	void StreamGfxDevice::stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest)
 	{
 		if( !pSrc )
 			return;
 
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlit, 26 };
+		(*m_pStream) << static_cast<StreamSurface*>(pSrc)->m_inStreamId;
+		(*m_pStream) << source;
+		(*m_pStream) << dest;
     }
 
-	//____ _setBlendMode() _________________________________________________________
+	//____ _setBlendMode() ____________________________________________________
 
 	void StreamGfxDevice::_setBlendMode( BlendMode blendMode )
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlendMode, 2 };
 		(*m_pStream) << blendMode;
 	}
-    
-	//____ clipDrawHorrLine() __________________________________________________
-	
-	void StreamGfxDevice::clipDrawHorrLine( const Rect& clip, const Coord& begin, int length, const Color& color )
+
+	//____ _drawStraightLine() ________________________________________________
+
+	void StreamGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int length, const Color& color)
 	{
-        if( color.a  == 0 || begin.y < clip.y || begin.y >= clip.y + clip.h )
-            return;
-
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawHorrLine, 20 };
-		(*m_pStream) << clip;
-		(*m_pStream) << begin;
-		(*m_pStream) << length;
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawStraightLine, 12 };
+		(*m_pStream) << start;
+		(*m_pStream) << orientation;
+		(*m_pStream) << (uint16_t) length;
 		(*m_pStream) << color;
-	}
 
-
-	//____ clipDrawVertLine() __________________________________________________
-	
-	void StreamGfxDevice::clipDrawVertLine( const Rect& clip, const Coord& begin, int length, const Color& color )
-	{
-        if( color.a  == 0 || begin.x < clip.x || begin.x >= clip.x + clip.w )
-            return;
-        
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawVertLine, 20 };
-		(*m_pStream) << clip;
-		(*m_pStream) << begin;
-		(*m_pStream) << length;
-		(*m_pStream) << color;
 	}
-	
 	
 	//____ clipPlotPixels() ________________________________________________________
 	

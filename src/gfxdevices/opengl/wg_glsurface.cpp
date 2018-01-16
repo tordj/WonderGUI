@@ -37,7 +37,7 @@ namespace wg
 
 	Size GlSurface::maxSize()
 	{
-		GLint max;
+		GLint max = 0;
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max);
 		return Size(max,max);
 	}
