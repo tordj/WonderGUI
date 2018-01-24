@@ -92,6 +92,7 @@ namespace wg
 		GfxOutStream&	operator<< (const RectF&);
 
 		GfxOutStream&	operator<< (Color);
+		GfxOutStream&	operator<< (Direction);
 		GfxOutStream&	operator<< (BlendMode);
 		GfxOutStream&	operator<< (Orientation);
 		GfxOutStream&	operator<< (PixelType);

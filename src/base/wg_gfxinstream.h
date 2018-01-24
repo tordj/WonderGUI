@@ -94,6 +94,7 @@ namespace wg
 		GfxInStream& operator>> (Rect&);
 		GfxInStream& operator>> (RectF&);
 		GfxInStream& operator>> (Color&);
+		GfxInStream& operator>> (Direction&);
 		GfxInStream& operator>> (BlendMode&);
 		GfxInStream& operator>> (Orientation&);
 		GfxInStream& operator>> (PixelType&);

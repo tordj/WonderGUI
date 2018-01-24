@@ -41,8 +41,8 @@ namespace wg
 
 		struct DataChunk
 		{
-			int		bytes;
-			void *	pBuffer;
+			int				bytes;
+			const void *	pBuffer;
 		};
 
 

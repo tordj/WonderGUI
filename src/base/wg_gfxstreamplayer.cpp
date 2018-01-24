@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_gfxstreamplayer.h>
+#include <wg_base.h>
 #include <assert.h>
 
 namespace wg
@@ -134,12 +135,20 @@ namespace wg
 		}
 
 		case GfxChunkId::SetCanvas:
-			//TODO: Implement!
+		{
+			uint16_t	surfaceId;
+			*m_pStream >> surfaceId;
+			m_pDevice->setCanvas(m_vSurfaces[surfaceId]);
 			break;
+		}
 
 		case GfxChunkId::SetTintColor:
-			//TODO: Implement!
+		{
+			Color	col;
+			*m_pStream >> col;
+			m_pDevice->setTintColor(col);
 			break;
+		}
 
 		case GfxChunkId::SetBlendMode:
 		{
@@ -149,29 +158,35 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::DrawStraightLine:
+		case GfxChunkId::PlotPixels:
 		{
-			Coord		begin;
-			Orientation	orientation;
-			uint16_t	length;
-			Color		color;
+			int nPixels = header.size / 8;
 
-			*m_pStream >> begin;
-			*m_pStream >> orientation;
-			*m_pStream >> length;
-			*m_pStream >> color;
+			int bufferSize = header.size*3/2;			// Pixels needs to be expanded, but not colors
+			char * pBuffer = reinterpret_cast<char*>(Base::memStackAlloc(bufferSize));
 
-			m_pDevice->_drawStraightLine(begin, orientation, length, color);
+			// Load all data to end of buffer
+
+			*m_pStream >> GfxStream::DataChunk{ header.size, pBuffer + bufferSize - header.size };
+
+			// Unpack Coordinates
+
+			Coord * pDest = (Coord*)pBuffer;
+			int16_t * pSrc = (int16_t*) (pBuffer + bufferSize - header.size);
+
+			for (int i = 0; i < nPixels; i++)
+			{
+				pDest[i].x = *pSrc++;
+				pDest[i].y = *pSrc++;
+			}
+
+			//
+
+			m_pDevice->plotPixels(nPixels, (Coord*)pBuffer, (Color*)(pBuffer + header.size / 2));
+
+			Base::memStackRelease(bufferSize);
 			break;
 		}
-
-		case GfxChunkId::PlotPixels:
-			//TODO: Implement!
-			break;
-
-		case GfxChunkId::ClipPlotPixels:
-			//TODO: Implement!
-			break;
 
 		case GfxChunkId::DrawLine:
 		{
@@ -204,6 +219,26 @@ namespace wg
 			*m_pStream >> thickness;
 
 			m_pDevice->clipDrawLine(clip, begin, end, color, thickness);
+			break;
+		}
+
+		case GfxChunkId::ClipDrawLine2:
+		{
+			Rect		clip;
+			Coord		begin;
+			Direction	dir;
+			uint16_t	length;
+			Color		color;
+			float		thickness;
+
+			*m_pStream >> clip;
+			*m_pStream >> begin;
+			*m_pStream >> dir;
+			*m_pStream >> length;
+			*m_pStream >> color;
+			*m_pStream >> thickness;
+
+			m_pDevice->clipDrawLine(clip, begin, dir, length, color, thickness);
 			break;
 		}
 

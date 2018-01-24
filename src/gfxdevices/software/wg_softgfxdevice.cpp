@@ -1178,6 +1178,8 @@ namespace wg
 	
 	void SoftGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * colors)
 	{
+		//TODO: Support blend modes and tint
+
 		const int pitch =m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits/8;
 
@@ -1204,7 +1206,9 @@ namespace wg
     
     void SoftGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * colors)
     {
-        const int pitch =m_canvasPitch;
+		//TODO: Support blend modes and tint
+		
+		const int pitch =m_canvasPitch;
         const int pixelBytes = m_canvasPixelBits/8;
         
         for( int i = 0 ; i < nCoords ; i++ )

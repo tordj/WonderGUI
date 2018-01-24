@@ -76,6 +76,7 @@ namespace wg
 
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+		void	clipDrawLine(const Rect& clip, const Coord& begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
 		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine* topLine, const WaveLine* bottomLine, Color front, Color back);
 
@@ -91,10 +92,6 @@ namespace wg
 		~StreamGfxDevice();
 
 		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
-
-		void	_setBlendMode(BlendMode blendMode);
-		void	_setFramebuffer();
-
        
         SurfaceFactory_p	m_pSurfaceFactory;
 		GfxOutStream_p		m_pStream;

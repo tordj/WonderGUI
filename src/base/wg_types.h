@@ -674,11 +674,10 @@ namespace wg
 		SetTintColor,
 		SetBlendMode,
 		Fill,
-		DrawStraightLine,
 		PlotPixels,
-		ClipPlotPixels,
 		DrawLine,
-		ClipDrawLine,
+		ClipDrawLine,						// Draw line between begin- and end-points
+		ClipDrawLine2,						// Draw line using begin-point, direction and length.
 		ClipDrawHorrWave,
 		Blit,
 		StretchBlit,

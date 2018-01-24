@@ -124,6 +124,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (Direction& dir)
+	{
+		dir = (Direction)m_pHolder->_pullShort();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (BlendMode& blendMode)
 	{
 		blendMode = (BlendMode) m_pHolder->_pullShort();
