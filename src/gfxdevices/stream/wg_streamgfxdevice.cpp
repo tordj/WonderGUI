@@ -119,17 +119,10 @@ namespace wg
 
 		m_pCanvas		= _pSurface;
 
-		if (m_bRendering)
-			_setFramebuffer();
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 2 };
+		(*m_pStream) << static_cast<StreamSurface*>(m_pCanvas.rawPtr())->m_inStreamId;
 
 		return true;
-	}
-
-	//____ _setFramebuffer() ____________________________________________________
-
-	void StreamGfxDevice::_setFramebuffer()
-	{
-
 	}
 
 	//____ setTintColor() __________________________________________________________
@@ -138,6 +131,8 @@ namespace wg
 	{
 		GfxDevice::setTintColor(color);
 
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetTintColor, 2 };
+		(*m_pStream) << color;
     }
 
 	//____ setBlendMode() __________________________________________________________
@@ -150,8 +145,9 @@ namespace wg
 				return false;
 	 
 		GfxDevice::setBlendMode(blendMode);
-		if( m_bRendering )
-			_setBlendMode(blendMode);
+
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlendMode, 2 };
+		(*m_pStream) << blendMode;
 
 		return true;
 	}
@@ -165,17 +161,6 @@ namespace wg
 			return false;
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::BeginRender, 0 };
-
-		// Set correct framebuffer
-
-		_setFramebuffer();
-
-
-		// Set correct blend mode
-
-		_setBlendMode(m_blendMode);
-
-        //
 
 		m_bRendering = true;
 		return true;
@@ -252,24 +237,14 @@ namespace wg
 		(*m_pStream) << dest;
     }
 
-	//____ _setBlendMode() ____________________________________________________
-
-	void StreamGfxDevice::_setBlendMode( BlendMode blendMode )
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlendMode, 2 };
-		(*m_pStream) << blendMode;
-	}
-
 	//____ _drawStraightLine() ________________________________________________
 
 	void StreamGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int length, const Color& color)
 	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawStraightLine, 12 };
-		(*m_pStream) << start;
-		(*m_pStream) << orientation;
-		(*m_pStream) << (uint16_t) length;
-		(*m_pStream) << color;
+		// Should never get here!!!
 
+		assert(false);
+		while (true);
 	}
 	
 	//____ clipPlotPixels() ________________________________________________________
@@ -278,6 +253,9 @@ namespace wg
     {
 		if (nCoords == 0 || pCoords == nullptr || pColors == nullptr)
 			return;
+
+		//TODO: Implement!
+
 	}
     
 
@@ -285,9 +263,42 @@ namespace wg
     
     void StreamGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
     {
+		// Each pixel is packed down to 4 + 4 bytes: int16_t x, int16_t y, Color
+		// All coordinates comes first, then all colors.
+
         if( nCoords == 0 )
             return;
-        
+
+		int maxChunkCoords = (int)(GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / 8;
+
+		int chunkCoords = min(nCoords, maxChunkCoords);
+
+		int bufferSize = chunkCoords*(4);
+
+		int16_t * pBuffer = reinterpret_cast<short*>(Base::memStackAlloc(bufferSize));
+
+		while (nCoords > 0)
+		{
+			int16_t * p = pBuffer;
+
+			for (int i = 0; i < chunkCoords; i++)
+			{
+				*p++ = (int16_t)pCoords[i].x;
+				*p++ = (int16_t)pCoords[i].y;
+			}
+
+			*m_pStream << GfxStream::Header{ GfxChunkId::PlotPixels, chunkCoords*8 };
+			*m_pStream << GfxStream::DataChunk{ chunkCoords*4, pBuffer };
+			*m_pStream << GfxStream::DataChunk{ chunkCoords*4, pColors };
+
+
+			nCoords -= chunkCoords;
+			pCoords += chunkCoords;
+			pColors += chunkCoords;
+			chunkCoords = min(nCoords, maxChunkCoords);
+		}
+
+		Base::memStackRelease(bufferSize);
 	}
 
 
@@ -313,6 +324,18 @@ namespace wg
 		(*m_pStream) << color;
 		(*m_pStream) << thickness;
 	}
+
+	void StreamGfxDevice::clipDrawLine(const Rect& clip, const Coord& begin, Direction dir, int length, Color col, float thickness)
+	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawLine2, 24 };
+		(*m_pStream) << clip;
+		(*m_pStream) << begin;
+		(*m_pStream) << dir;
+		(*m_pStream) << (uint16_t) length;
+		(*m_pStream) << col;
+		(*m_pStream) << thickness;
+	}
+
 
 	//____ clipDrawHorrWave() _____________________________________________________
 

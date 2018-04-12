@@ -104,6 +104,12 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (Direction d)
+	{
+		m_pHolder->_pushShort((short)d);
+		return *this;
+	}
+
 	GfxOutStream&  GfxOutStream::operator<< (BlendMode b)
 	{
 		m_pHolder->_pushShort((short) b);
