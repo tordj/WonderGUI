@@ -601,7 +601,11 @@ namespace wg
 		//
 		
 		Size size = m_bHorizontal?Size(length,breadth):Size(breadth,length);
-		if( size != m_preferredSize )
+
+//TODO: This optimization was incorrect. Wrap-text might need a different MatchingHeight although preferred size remains the same.
+// This happens when a line, that isn't the longest line, needs to wrap. Find a better optimization.
+
+//		if( size != m_preferredSize )
 		{
 			m_preferredSize = size;
 			_requestResize();

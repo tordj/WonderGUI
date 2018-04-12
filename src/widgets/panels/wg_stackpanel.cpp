@@ -531,7 +531,8 @@ namespace wg
 			pSlot++;
 		}
 
-		if( m_preferredSize != preferredSize)
+//TODO: We can't trust that same preferredSize results in same matchingHeight. We need to find a more robust optimization.
+//		if( m_preferredSize != preferredSize)
 		{
 			m_preferredSize = preferredSize;
 			_requestResize();

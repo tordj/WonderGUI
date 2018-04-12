@@ -19,7 +19,7 @@
 #include <wg_packlist.h>
 #include <testwidget.h>
 #include <wg_popupopener.h>
-#include <wg_memheap.h>
+
 
 using namespace wg;
 
@@ -54,7 +54,6 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 int main ( int argc, char** argv )
 { 
-	printf( "SizeOf Finalizer: %d\n", (int) sizeof(Finalizer) );
 	printf( "SizeOf Filler: %d\n", (int) sizeof(Filler) );
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
@@ -70,7 +69,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1920, height = 1080;
+	int posX = 100, posY = 100, width = 512, height = 400;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -136,33 +135,6 @@ int main ( int argc, char** argv )
 	
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL, EditCmd::Undo );
 	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
-
-
-	Object_wp wpFin1;
-	Finalizer_wp wpFin2;
-
-	auto pButton = Button::create();
-	auto pFinalizer1 = Finalizer::create([](Object * pObj) { printf("Finalizing object %p of type %s\n", pObj, pObj->className()); });
-	auto pFinalizer2 = Finalizer::create([](Object * pObj) { printf("Finalizing object %p of type %s\n", pObj, pObj->className()); });
-	{
-
-
-		pFinalizer1->attach(pButton);
-
-		pFinalizer2->attach(pFinalizer1);
-
-		wpFin1 = pFinalizer1;
-		wpFin2 = pFinalizer2;
-	}
-
-	printf("Killing button\n");
-	pButton = nullptr;
-	pFinalizer1 = nullptr;
-
-	printf("Weak pointer manip\n");
-//	wpFin1 = wpFin2;
-	wpFin2 = nullptr;
-	wpFin1 = nullptr;
 
 	PixelType type = PixelType::Unknown;
 
@@ -811,13 +783,13 @@ int main ( int argc, char** argv )
 
 	WaveLine	topLine, bottomLine;
 
-	topLine.color = { 255,255,255,32 };
-	topLine.thickness = 10.f;
+	topLine.color = { 255,255,255,255 };
+	topLine.thickness = 1.f;
 	topLine.pWave = topWave;
 	topLine.length = 2001;
 
 	bottomLine.color = Color::White;
-	bottomLine.thickness = 0.2f;
+	bottomLine.thickness = 1.f;
 	bottomLine.pWave = bottomWave;
 	bottomLine.length = 2001;
 
@@ -840,18 +812,15 @@ int main ( int argc, char** argv )
  
 		pGfxDevice->beginRender();
 
-//		pGfxDevice->fill({ 0,0,1920,1080 }, Color::Black);
+		pGfxDevice->fill({ 0,0,width,height }, Color::Black);
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
-		Rect clip(50,50,400,300);
-
-		pGfxDevice->clipTileBlit(clip,pSplashSurface, {0,0,500,500} );
-
-		pGfxDevice->fill(clip, {0,255,0,128 } );
+//		Rect clip(50,50,400,300);
 
 
-		pGfxDevice->clipDrawHorrWave({ 10,100,380,800 }, { 0,500 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
+
+		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 
@@ -1031,7 +1000,7 @@ Blob_p loadBlob( const char * pPath )
 
 	Blob_p pBlob = Blob::create( size );
 		
-	int nRead = fread( pBlob->content(), 1, size, fp );
+	int nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )

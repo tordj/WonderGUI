@@ -23,7 +23,6 @@
 #include <wg_object.h>
 #include <wg_pointers.h>
 #include <wg_base.h>
-#include <wg_finalizer.h>
 
 namespace wg 
 {
@@ -71,7 +70,7 @@ namespace wg
 	{
 		if (pHub->pFinalizer)
 		{
-			pHub->pFinalizer->_objectWillBeDestroyed(pHub->pObj);
+			pHub->pFinalizer(pHub->pObj);
 			pHub->pObj = nullptr;
 			pHub->pFinalizer = nullptr;
 			if (pHub->refCnt == 0)
@@ -81,7 +80,7 @@ namespace wg
 			pHub->pObj = nullptr;
 	}
 
-	void WeakPtrHub::setFinalizer(Object * pObj, Finalizer * pFinalizer)
+	void WeakPtrHub::setFinalizer(Object * pObj, Finalizer_p pFinalizer)
 	{
 		WeakPtrHub * pHub;
 		if (!pObj->m_pWeakPtrHub)
@@ -99,7 +98,7 @@ namespace wg
 		pHub->pFinalizer = pFinalizer;
 	}
 
-	Finalizer * WeakPtrHub::getFinalizer(Object * pObj)
+	Finalizer_p WeakPtrHub::getFinalizer(Object * pObj)
 	{
 		if (pObj->m_pWeakPtrHub)
 			return pObj->m_pWeakPtrHub->pFinalizer;
@@ -174,5 +173,45 @@ namespace wg
 		return pObject;
 	}
 
+	/**
+	* @brief Set a callback for when object is destroyed.
+	*
+	* Set a callback that will be called when the object is destroyed.
+	*
+	* @param pFinalizer		Pointer to a function of format "void FunctionName(Object*)", where the Object pointer points to the object being destroyed.
+	*
+	* A WonderGUI Object will automatically be destroyed when there no longer is any reference to it (besides any weak pointer).
+	* Setting a Finalizer function allows us to be notified right before the objects destructor is called.
+	* 
+	* Each object can have only one finalizer, so setting a finalizer will remove any previous finalizer for that object.
+	*
+	* Finalizers comes with a cost. A small, extra memory allocation is performed for each object with a finalizer.
+	*
+	* @return Nothing, method always succeeds.
+	*/
+
+	void Object::setFinalizer(Finalizer_p pFinalizer)
+	{
+		WeakPtrHub::setFinalizer(this, pFinalizer);
+	}
+
+	/**
+	* @brief Get the Finalizer for this Object.
+	*
+	* Get the Finalizer (if any) set for this Object.
+	*
+	* A WonderGUI Object will automatically be destroyed when there no longer is any reference to it (besides any weak pointer).
+	* The finalizer is a function that is called right before the objects destructor, thus notifying us of its immediate demise.
+	*
+	* @return Pointer to the finalizer if one has been set, otherwise null.
+	*/
+
+	Finalizer_p Object::finalizer() const
+	{
+		if (m_pWeakPtrHub)
+			return m_pWeakPtrHub->pFinalizer;
+
+		return nullptr;
+	}
 
 } // namespace wg

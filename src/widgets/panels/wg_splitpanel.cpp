@@ -206,8 +206,9 @@ namespace wg
 			if (skinSz.h > sz.h)
 				sz.h = skinSz.h;
 		}
-		
-		if (sz != m_preferredSize)
+
+//TODO: We can't trust that same preferredSize results in same matchingHeight. We need to find a more robust optimization.
+//		if (sz != m_preferredSize)
 		{
 			m_preferredSize = sz;
 			_requestResize();

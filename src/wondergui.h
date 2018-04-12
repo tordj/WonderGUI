@@ -37,7 +37,6 @@
 #include <wg_codepages.h>
 #include <wg_color.h>
 #include <wg_dummyfont.h>
-#include <wg_finalizer.h>
 #include <wg_font.h>
 #include <wg_geo.h>
 #include <wg_gfxanim.h>
