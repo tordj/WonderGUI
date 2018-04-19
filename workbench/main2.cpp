@@ -32,6 +32,7 @@ Blob_p 			loadBlob( const char * pPath );
 void			convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
+void renderWaveThicknessTest(GfxDevice * pGfxDevice);
 
 
 bool	bQuit = false;
@@ -69,7 +70,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 512, height = 400;
+	int posX = 100, posY = 100, width = 512, height = 600;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -818,9 +819,9 @@ int main ( int argc, char** argv )
 
 //		Rect clip(50,50,400,300);
 
+		renderWaveThicknessTest(pGfxDevice);
 
-
-		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
+//		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
 
@@ -850,6 +851,67 @@ int main ( int argc, char** argv )
 
     return 0;
 }
+
+void renderWaveThicknessTest( GfxDevice * pGfxDevice )
+{
+	int		wave[2001];
+	int		wave2[2001];
+
+	WaveLine	line, bottom;
+
+	line.color = { 255,0,0,255 };
+	line.thickness = 0.1f;
+	line.pWave = wave;
+	line.length = 2001;
+
+	bottom.color = { 255,255,255,255 };
+	bottom.thickness = 0.1f;
+	bottom.pWave = wave2;
+	bottom.length = 2001;
+
+	float thickness[] = { 0.1f, 0.2f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.f, 2.25f, 2.5f, 2.75f, 3.f, 3.25f, 3.5f, 3.75f };
+
+
+	for (int ln = 0; ln < 16; ln++)
+	{
+		line.thickness = thickness[ln];
+		bottom.thickness = thickness[ln];
+
+
+		for (int i = 0; i < 200; i++)
+		{
+			wave[i] = (int)((sin(i / 20.0) * 60) * 256);
+//			wave2[i] = 0;
+			wave2[i] = wave[i];
+		}
+
+		for (int i = 200; i < 2001; i++)
+		{
+			wave[i] = wave[i-1];
+			//			wave2[i] = 0;
+			wave2[i] = wave[i];
+		}
+
+		for (int i = 480-ln*15; i < 2001; i++)
+		{
+			wave[i] = wave[i]+50*256;
+			//			wave2[i] = 0;
+			wave2[i] = wave[i];
+		}
+
+
+		int posX = 100, posY = 100, width = 512, height = 400;
+
+
+		pGfxDevice->clipDrawHorrWave({ 10,0,500,600 }, { 0,50 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
+
+	}
+
+
+
+
+}
+
 
 //____ translateEvents() ___________________________________________________________
 

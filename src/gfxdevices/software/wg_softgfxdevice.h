@@ -32,6 +32,15 @@ namespace wg
 {
 	
 	
+	struct SegmentEdge
+	{
+		int			begin;				// Pixeloffset, 24.8 format.
+		int			end;				// Pixeloffset, 24.8 format. First pixel after edge (segment after the edge has 100% coverage)
+		int			coverage;			// 0-65536
+		int			coverageInc;		// Increment of coverage for each full pixel we progress
+	};
+
+
 	class SoftGfxDevice;
 	typedef	StrongPtr<SoftGfxDevice>	SoftGfxDevice_p;
 	typedef	WeakPtr<SoftGfxDevice>	SoftGfxDevice_wp;
@@ -131,6 +140,9 @@ namespace wg
 		SoftGfxDevice( SoftSurface * pCanvas );
 		~SoftGfxDevice();
 
+		void	_traceLine2(int * pDest, int nPoints, const WaveLine * pWave, int offset);
+
+
 		void	_drawStraightLine( Coord start, Orientation orientation, int _length, const Color& _col) override;
 
 		void	_initTables();
@@ -142,6 +154,9 @@ namespace wg
 	
 		void	_clipDrawWaveColumn( int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
 	
+		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
+
+
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 	

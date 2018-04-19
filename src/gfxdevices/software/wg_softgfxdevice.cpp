@@ -23,6 +23,7 @@
 #include <wg_softgfxdevice.h>
 #include <wg_util.h>
 #include <math.h>
+#include <algorithm>
 #include <wg_base.h>
 
 #include <assert.h>
@@ -863,7 +864,7 @@ namespace wg
 	 
 
 	//____ clipDrawHorrWave() _____________________________________________________
-
+/*
 	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
@@ -992,7 +993,7 @@ namespace wg
 
 		Base::memStackRelease(bufferSize);
 	}
-
+*/
 
 	//_____ _clipDrawWaveColumn() ________________________________________________
 
@@ -1170,6 +1171,624 @@ namespace wg
 				break;
 
 		}
+	}
+
+
+	//____ clipDrawHorrWave() _____________________________________________________
+
+	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
+	{
+		if (!m_pCanvas || !m_pCanvasPixels)
+			return;
+
+		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
+
+		int ofs = 0;
+		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
+		{
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
+
+			if (clip.x > begin.x + margin)
+			{
+				ofs = clip.x - begin.x - margin;
+				begin.x += ofs;
+				length -= ofs;
+			}
+
+			if (begin.x + length - margin > clip.x + clip.w)
+				length = clip.x + clip.w - begin.x + margin;
+
+			if (length <= 0)
+				return;
+		}
+
+		// Generate line traces
+
+		int	bufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+		char * pBuffer = Base::memStackAlloc(bufferSize);
+		int * pTopBorderTrace = (int*)pBuffer;
+		int * pBottomBorderTrace = (int*)(pBuffer + bufferSize / 2);
+
+		_traceLine2(pTopBorderTrace, length + 1, pTopBorder, ofs);
+		_traceLine2(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
+		// Do proper X-clipping
+
+		int startColumn = 0;
+		if (begin.x < clip.x)
+		{
+			startColumn = clip.x - begin.x;
+			length -= startColumn;
+			begin.x += startColumn;
+		}
+
+		if (begin.x + length > clip.x + clip.w)
+			length = clip.x + clip.w - begin.x;
+
+		// Render columns
+
+		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits / 8);
+
+		int clipBeg = clip.y - begin.y;
+		int clipLen = clip.h;
+
+
+		Color	topBorderColor = pTopBorder->color;
+		Color	bottomBorderColor = pBottomBorder->color;
+
+		Color	fillColor = frontFill, otherFillColor = backFill;
+
+
+		SegmentEdge	edges[4];
+		Color	col[5];
+		col[0] = Color::Transparent;
+
+
+		for (int i = startColumn; i <= length + startColumn; i++)
+		{
+			int nEdges = 0;
+
+			// Check if lines have intersected and in that case swap top and bottom lines and colors
+
+			if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+			{
+				swap(topBorderColor, bottomBorderColor);
+				swap(fillColor, otherFillColor);
+				swap(pTopBorderTrace, pBottomBorderTrace);
+			}
+
+			// Generate new segment edges
+
+			{
+				int edgeBegin = pTopBorderTrace[i * 2];
+				int edgeEnd = pTopBorderTrace[i * 2 + 2];
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				edges[nEdges].begin = edgeBegin;
+				edges[nEdges].end = edgeEnd;
+				edges[nEdges].coverageInc = coverageInc;
+				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
+				nEdges++;
+				col[nEdges] = topBorderColor;
+			}
+
+			{
+				int edgeBegin = pTopBorderTrace[i * 2+1];
+				int edgeEnd = pTopBorderTrace[i * 2 + 2+1];
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				edges[nEdges].begin = edgeBegin;
+				edges[nEdges].end = edgeEnd;
+				edges[nEdges].coverageInc = coverageInc;
+				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
+				nEdges++;
+				col[nEdges] = fillColor;
+			}
+
+			{
+				int edgeBegin = pBottomBorderTrace[i * 2];
+				int edgeEnd = pBottomBorderTrace[i * 2 + 2];
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				if (edgeBegin < edges[1].begin)			// Check if lower line is partially covering upper line. If it is, we need to remove edge between upper line and fill area.
+					nEdges--;
+
+				edges[nEdges].begin = edgeBegin;
+				edges[nEdges].end = edgeEnd;
+				edges[nEdges].coverageInc = coverageInc;
+				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
+				nEdges++;
+				col[nEdges] = bottomBorderColor;
+			}
+
+			{
+				int edgeBegin = pBottomBorderTrace[i * 2 + 1];
+				int edgeEnd = pBottomBorderTrace[i * 2 + 2 + 1];
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				edges[nEdges].begin = edgeBegin;
+				edges[nEdges].end = edgeEnd;
+				edges[nEdges].coverageInc = coverageInc;
+				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
+				nEdges++;
+				col[nEdges] = Color::Transparent;
+			}
+
+			// Render the column
+
+			if (i >= startColumn)
+			{
+				_clipDrawSegmentColumn(clipBeg, clipBeg+clipLen, pColumn, m_canvasPitch, nEdges, edges, col);				
+				pColumn += m_canvasPixelBits / 8;
+			}
+		}
+
+		// Free temporary work memory
+
+		Base::memStackRelease(bufferSize);
+	}
+
+
+
+	//____ _traceLine() __________________________________________________________
+
+	void SoftGfxDevice::_lineToEdges(int * pDest, int nPoints, const WaveLine * pWave, int offset)
+	{
+		static int brush[128];
+		static float prevThickness = -1.f;
+
+		float thickness = pWave->thickness;
+		int brushSteps = (int)(thickness / 2 + 0.99f);
+
+		// Generate brush
+
+		if (thickness != prevThickness)
+		{
+			int scaledThickness = (int)(thickness / 2 * 256);
+
+			brush[0] = scaledThickness;
+			for (int i = 1; i < brushSteps; i++)
+			{
+				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps - 1]) >> 16;
+				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
+			}
+			prevThickness = thickness;
+		}
+
+		int nTracePoints = max(0, min(nPoints, pWave->length - offset));
+		int nFillPoints = nPoints - nTracePoints;
+
+		// Trace...
+
+		int * pSrc = pWave->pWave + offset;
+		for (int i = 0; i < nTracePoints; i++)
+		{
+			// Start with top and bottom for current point
+
+			int top = pSrc[i] - brush[0];
+			int bottom = pSrc[i] + brush[0];
+
+			// Check brush's coverage from previous points
+
+			int end = min(i + 1, brushSteps);
+
+			for (int j = 1; j < end; j++)
+			{
+				int topCover = pSrc[i - j] - brush[j];
+				int bottomCover = pSrc[i - j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Check brush's coverage from following points
+
+			end = min(nPoints - i, brushSteps);
+
+			for (int j = 1; j < end; j++)
+			{
+				int topCover = pSrc[i + j] - brush[j];
+				int bottomCover = pSrc[i + j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Save traced values
+
+			*pDest++ = top;
+			*pDest++ = bottom;
+		}
+
+
+		// Fill...
+
+		if (nFillPoints)
+		{
+			int top = pWave->hold - brush[0];
+			int bottom = pWave->hold + brush[0];
+
+			for (int i = 0; i < nFillPoints; i++)
+			{
+				*pDest++ = top;
+				*pDest++ = bottom;
+			}
+		}
+	}
+
+
+
+	//____ _clipDrawSegmentColumn() _______________________________________________
+
+	void SoftGfxDevice::_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors)
+	{
+		clipBeg <<= 8;
+		clipEnd <<= 8;
+		
+/*
+		for (int i = 0; i < nEdges; i++)
+		{
+			pEdges[i].begin >>= 8;
+			pEdges[i].end = (pEdges[i].end + 255) >> 8;
+
+		}
+*/
+
+		// Do clipping of edges, part 1 - completely remove segments that are fully clipped
+
+		while (nEdges > 0 && pEdges[nEdges - 1].begin >= clipEnd)
+		{
+			nEdges--;																	// Edge fully below clip rectangle, segment following edge will never be shown
+		}
+
+		while (nEdges > 0 && pEdges[0].end <= clipBeg)
+		{
+			pSegmentColors++;
+			pEdges++;																	// Edge fully above clip rectangel, segment preceeding edge will never be shown
+			nEdges--;
+		}
+
+		// Do clipping of edges, part 2 - adjust edges of partially clipped segments
+
+		for (int i = 0; i < nEdges; i++)
+		{
+			SegmentEdge * p = pEdges + i;
+
+			if (p->begin < clipBeg)
+			{
+				int cut = clipBeg - p->begin;
+				p->begin = clipBeg;
+				p->coverage += (p->coverageInc*cut) >> (8+8);
+			}
+
+			if (p->end > clipEnd)
+				p->begin = clipEnd;
+		}
+
+		// Render the column
+
+		uint8_t * pDst = pColumn;
+		int offset = clipBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
+
+		while (offset < clipEnd)
+		{
+/*
+			for (int i = 0; i < nEdges; i++)
+			{
+				if (pEdges[i].coverage > 65536)
+					pEdges[i].coverage = 65536;
+			}
+*/
+
+			if (nEdges == 0 || offset + 255 < pEdges[0].begin)
+			{
+				// We are fully inside a segment, no need to take any edge into account.
+
+				int end = nEdges == 0 ? clipEnd : std::min(clipEnd, pEdges[0].begin);
+				Color segmentColor = *pSegmentColors;
+
+				if (segmentColor.a == 0)
+				{
+					pDst = pColumn + (end >> 8) * linePitch;
+					offset = end & 0xFFFFFF00;												// Just skip segment since it is transparent
+				}
+				else
+				{
+					int storedRed = ((int)segmentColor.r) * segmentColor.a;
+					int storedGreen = ((int)segmentColor.g) * segmentColor.a;
+					int storedBlue = ((int)segmentColor.b) * segmentColor.a;
+					int invAlpha = 255 - segmentColor.a;
+
+					while (offset + 255 < end)
+					{
+						pDst[0] = m_pDivTab[pDst[0] * invAlpha + storedBlue];
+						pDst[1] = m_pDivTab[pDst[1] * invAlpha + storedGreen];
+						pDst[2] = m_pDivTab[pDst[2] * invAlpha + storedRed];
+						pDst += linePitch;
+						offset+=256;
+					}
+				}
+			}
+			else
+			{
+				Color	* pCol = pSegmentColors;
+
+				if (nEdges == 1 || offset + 255 < pEdges[1].begin)
+				{
+
+					int aFrac = 65536;
+					int bFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+								+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac) >> 16;
+
+				}
+				else if (nEdges == 2 || offset + 255 < pEdges[2].begin)
+				{
+
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac) >> 16;
+
+				}
+				else if (nEdges == 3 || offset + 255 < pEdges[3].begin)
+				{
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+					int dFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[2].end)
+					{
+						int bBeginHeight = 256 - (pEdges[2].begin & 0xFF);
+						int bCoverageInc = (pEdges[2].coverageInc * bBeginHeight) >> 8;
+
+						dFrac = ((pEdges[2].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[2].coverage += bCoverageInc;
+						pEdges[2].begin = offset + 256;
+					}
+					else
+					{
+						dFrac = ((((pEdges[2].coverage + 65536) / 2) * (pEdges[2].end - pEdges[2].begin)) >> 8)
+							+ (256 - pEdges[2].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+					cFrac -= dFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+					dFrac = (dFrac*pCol[3].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac - dFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac + pCol[3].b * dFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac + pCol[3].g * dFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac + pCol[3].r * dFrac) >> 16;
+				}
+				else if (nEdges == 4 || offset + 255 < pEdges[4].begin)
+				{
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+					int dFrac;
+					int eFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[2].end)
+					{
+						int bBeginHeight = 256 - (pEdges[2].begin & 0xFF);
+						int bCoverageInc = (pEdges[2].coverageInc * bBeginHeight) >> 8;
+
+						dFrac = ((pEdges[2].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[2].coverage += bCoverageInc;
+						pEdges[2].begin = offset + 256;
+					}
+					else
+					{
+						dFrac = ((((pEdges[2].coverage + 65536) / 2) * (pEdges[2].end - pEdges[2].begin)) >> 8)
+							+ (256 - pEdges[2].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[3].end)
+					{
+						int bBeginHeight = 256 - (pEdges[3].begin & 0xFF);
+						int bCoverageInc = (pEdges[3].coverageInc * bBeginHeight) >> 8;
+
+						eFrac = ((pEdges[3].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[3].coverage += bCoverageInc;
+						pEdges[3].begin = offset + 256;
+					}
+					else
+					{
+						eFrac = ((((pEdges[3].coverage + 65536) / 2) * (pEdges[3].end - pEdges[3].begin)) >> 8)
+							+ (256 - pEdges[3].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+					cFrac -= dFrac;
+					dFrac -= eFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+					dFrac = (dFrac*pCol[3].a) / 255;
+					eFrac = (eFrac*pCol[4].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac - dFrac - eFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac + pCol[3].b * dFrac + pCol[4].b * eFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac + pCol[3].g * dFrac + pCol[4].g * eFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac + pCol[3].r * dFrac + pCol[4].r * eFrac) >> 16;
+				}
+
+				pDst += linePitch;
+				offset += 256;
+			}
+
+			while (nEdges > 0 && offset >= pEdges[0].end)
+			{
+				pEdges++;
+				nEdges--;
+				pSegmentColors++;
+			}
+
+		}
+
 	}
 
 

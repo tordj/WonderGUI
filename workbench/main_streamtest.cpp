@@ -76,7 +76,6 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 int main ( int argc, char** argv )
 { 
-	printf( "SizeOf Finalizer: %d\n", sizeof(Finalizer) );
 	printf( "SizeOf Filler: %d\n", sizeof(Filler) );
 	printf("SizeOf Object: %d\n", sizeof(Object));
 	printf("SizeOf Receiver: %d\n", sizeof(Receiver));
