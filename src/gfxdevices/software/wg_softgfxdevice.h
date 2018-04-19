@@ -140,8 +140,7 @@ namespace wg
 		SoftGfxDevice( SoftSurface * pCanvas );
 		~SoftGfxDevice();
 
-		void	_traceLine2(int * pDest, int nPoints, const WaveLine * pWave, int offset);
-
+		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
 		void	_drawStraightLine( Coord start, Orientation orientation, int _length, const Color& _col) override;
 

@@ -903,7 +903,7 @@ void renderWaveThicknessTest( GfxDevice * pGfxDevice )
 		int posX = 100, posY = 100, width = 512, height = 400;
 
 
-		pGfxDevice->clipDrawHorrWave({ 10,0,500,600 }, { 0,50 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
+		pGfxDevice->clipDrawHorrWave({ 10,0,500,600 }, { 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
 
 	}
 

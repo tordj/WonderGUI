@@ -1202,8 +1202,19 @@ namespace wg
 				return;
 		}
 
-		// Generate line traces
+		// Trace lines and generate edges
 
+		int bufferSize = (length + 1) * sizeof(SegmentEdge)*4;
+		char * pBuffer = Base::memStackAlloc(bufferSize);
+
+		SegmentEdge * pEdges = (SegmentEdge *)pBuffer;
+
+		_lineToEdges(pTopBorder, ofs, length+1, pEdges, 4);
+		_lineToEdges(pBottomBorder, ofs, length + 1, &pEdges[2], 4);
+
+
+		// Generate line traces
+/*
 		int	bufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
 		char * pBuffer = Base::memStackAlloc(bufferSize);
 		int * pTopBorderTrace = (int*)pBuffer;
@@ -1211,7 +1222,7 @@ namespace wg
 
 		_traceLine2(pTopBorderTrace, length + 1, pTopBorder, ofs);
 		_traceLine2(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
-
+*/
 		// Do proper X-clipping
 
 		int startColumn = 0;
@@ -1246,92 +1257,43 @@ namespace wg
 
 		for (int i = startColumn; i <= length + startColumn; i++)
 		{
-			int nEdges = 0;
 
 			// Check if lines have intersected and in that case swap top and bottom lines and colors
 
-			if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+			if (pEdges[0].begin > pEdges[2].begin)
 			{
+				swap(pEdges[0], pEdges[2]);
+				swap(pEdges[1], pEdges[3]);
+
 				swap(topBorderColor, bottomBorderColor);
 				swap(fillColor, otherFillColor);
-				swap(pTopBorderTrace, pBottomBorderTrace);
 			}
 
 			// Generate new segment edges
 
+			int nEdges = 4;
+
+			col[1] = topBorderColor;
+			col[2] = fillColor;
+
+			if (pEdges[2].begin < pEdges[1].begin)			// Check if lower line is partially covering upper line. If it is, we need to remove edge between upper line and fill area.
 			{
-				int edgeBegin = pTopBorderTrace[i * 2];
-				int edgeEnd = pTopBorderTrace[i * 2 + 2];
-				if (edgeBegin > edgeEnd)
-					swap(edgeBegin, edgeEnd);
+				nEdges--;
 
-				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
-
-				edges[nEdges].begin = edgeBegin;
-				edges[nEdges].end = edgeEnd;
-				edges[nEdges].coverageInc = coverageInc;
-				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
-				nEdges++;
-				col[nEdges] = topBorderColor;
+				pEdges[1] = pEdges[2];
+				pEdges[2] = pEdges[3];
 			}
 
-			{
-				int edgeBegin = pTopBorderTrace[i * 2+1];
-				int edgeEnd = pTopBorderTrace[i * 2 + 2+1];
-				if (edgeBegin > edgeEnd)
-					swap(edgeBegin, edgeEnd);
-
-				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
-
-				edges[nEdges].begin = edgeBegin;
-				edges[nEdges].end = edgeEnd;
-				edges[nEdges].coverageInc = coverageInc;
-				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
-				nEdges++;
-				col[nEdges] = fillColor;
-			}
-
-			{
-				int edgeBegin = pBottomBorderTrace[i * 2];
-				int edgeEnd = pBottomBorderTrace[i * 2 + 2];
-				if (edgeBegin > edgeEnd)
-					swap(edgeBegin, edgeEnd);
-
-				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
-
-				if (edgeBegin < edges[1].begin)			// Check if lower line is partially covering upper line. If it is, we need to remove edge between upper line and fill area.
-					nEdges--;
-
-				edges[nEdges].begin = edgeBegin;
-				edges[nEdges].end = edgeEnd;
-				edges[nEdges].coverageInc = coverageInc;
-				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
-				nEdges++;
-				col[nEdges] = bottomBorderColor;
-			}
-
-			{
-				int edgeBegin = pBottomBorderTrace[i * 2 + 1];
-				int edgeEnd = pBottomBorderTrace[i * 2 + 2 + 1];
-				if (edgeBegin > edgeEnd)
-					swap(edgeBegin, edgeEnd);
-
-				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
-
-				edges[nEdges].begin = edgeBegin;
-				edges[nEdges].end = edgeEnd;
-				edges[nEdges].coverageInc = coverageInc;
-				edges[nEdges].coverage = 0; // coverageInc / 2 * (255 - (edgeBegin & 0xFF)) / 255;
-				nEdges++;
-				col[nEdges] = Color::Transparent;
-			}
+			col[nEdges-1] = bottomBorderColor;
+			col[nEdges] = Color::Transparent;
 
 			// Render the column
 
 			if (i >= startColumn)
 			{
-				_clipDrawSegmentColumn(clipBeg, clipBeg+clipLen, pColumn, m_canvasPitch, nEdges, edges, col);				
+				_clipDrawSegmentColumn(clipBeg, clipBeg+clipLen, pColumn, m_canvasPitch, nEdges, pEdges, col);				
 				pColumn += m_canvasPixelBits / 8;
+				pEdges += 4;
 			}
 		}
 
@@ -1342,9 +1304,9 @@ namespace wg
 
 
 
-	//____ _traceLine() __________________________________________________________
+	//____ _lineToEdges() __________________________________________________________
 
-	void SoftGfxDevice::_lineToEdges(int * pDest, int nPoints, const WaveLine * pWave, int offset)
+	void SoftGfxDevice::_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch )
 	{
 		static int brush[128];
 		static float prevThickness = -1.f;
@@ -1373,6 +1335,7 @@ namespace wg
 		// Trace...
 
 		int * pSrc = pWave->pWave + offset;
+		SegmentEdge * pWrite = pDest;
 		for (int i = 0; i < nTracePoints; i++)
 		{
 			// Start with top and bottom for current point
@@ -1412,12 +1375,15 @@ namespace wg
 
 			// Save traced values
 
-			*pDest++ = top;
-			*pDest++ = bottom;
+			pWrite[0].begin = top;
+			pWrite[1].begin = bottom;
+
+
+			pWrite += pitch;
+
 		}
 
-
-		// Fill...
+		// Fill out the edge specifications if we didn't have enough wave data
 
 		if (nFillPoints)
 		{
@@ -1426,9 +1392,61 @@ namespace wg
 
 			for (int i = 0; i < nFillPoints; i++)
 			{
-				*pDest++ = top;
-				*pDest++ = bottom;
+				pWrite[0].begin = top;
+				pWrite[0].end = top;
+				pWrite[0].coverage = 0;
+				pWrite[0].coverageInc = 0;
+
+				pWrite[1].begin = bottom;
+				pWrite[1].end = bottom;
+				pWrite[1].coverage = 0;
+				pWrite[1].coverageInc = 0;
+
+				pWrite += pitch;
 			}
+		}
+
+		// Calculate rest of the edge data for our traced points (not needed for the filled points)
+
+		int nEdges = nFillPoints > 0 ? nTracePoints : nTracePoints-1;
+
+		pWrite = pDest;
+		for (int i = 0; i < nEdges; i++)
+		{
+			{
+				int edgeBegin = pWrite[0].begin;
+				int edgeEnd = pWrite[pitch].begin;
+				int coverageStart = 0;
+
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+
+				pWrite[0].begin = edgeBegin;
+				pWrite[0].end = edgeEnd;
+				pWrite[0].coverage = coverageStart;
+				pWrite[0].coverageInc = coverageInc;
+			}
+
+			{
+				int edgeBegin = pWrite[1].begin;
+				int edgeEnd = pWrite[1+pitch].begin;
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				int coverageStart = 0;
+
+				pWrite[1].begin = edgeBegin;
+				pWrite[1].end = edgeEnd;
+				pWrite[1].coverage = coverageStart;
+				pWrite[1].coverageInc = coverageInc;
+			}
+
+			pWrite += pitch;
 		}
 	}
 
@@ -1441,15 +1459,6 @@ namespace wg
 		clipBeg <<= 8;
 		clipEnd <<= 8;
 		
-/*
-		for (int i = 0; i < nEdges; i++)
-		{
-			pEdges[i].begin >>= 8;
-			pEdges[i].end = (pEdges[i].end + 255) >> 8;
-
-		}
-*/
-
 		// Do clipping of edges, part 1 - completely remove segments that are fully clipped
 
 		while (nEdges > 0 && pEdges[nEdges - 1].begin >= clipEnd)
