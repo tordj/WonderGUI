@@ -95,10 +95,13 @@ namespace wg
 
 		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest) override;
 
+		void	clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest);	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
+
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
 
 		void	stretchBlitSubPixelWithInvert(Surface * pSrc, float sx, float sy, float sw, float sh,
 			float dx, float dy, float dw, float dh);
+
 
 	protected:
 		GlGfxDevice( Size canvas );

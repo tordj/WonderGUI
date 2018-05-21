@@ -864,7 +864,7 @@ namespace wg
 	 
 
 	//____ clipDrawHorrWave() _____________________________________________________
-/*
+
 	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
@@ -993,7 +993,7 @@ namespace wg
 
 		Base::memStackRelease(bufferSize);
 	}
-*/
+
 
 	//_____ _clipDrawWaveColumn() ________________________________________________
 
@@ -1175,7 +1175,7 @@ namespace wg
 
 
 	//____ clipDrawHorrWave() _____________________________________________________
-
+/*
 	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
@@ -1214,15 +1214,15 @@ namespace wg
 
 
 		// Generate line traces
-/*
-		int	bufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
-		char * pBuffer = Base::memStackAlloc(bufferSize);
-		int * pTopBorderTrace = (int*)pBuffer;
-		int * pBottomBorderTrace = (int*)(pBuffer + bufferSize / 2);
+//
+//		int	bufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+//		char * pBuffer = Base::memStackAlloc(bufferSize);
+//		int * pTopBorderTrace = (int*)pBuffer;
+//		int * pBottomBorderTrace = (int*)(pBuffer + bufferSize / 2);
 
-		_traceLine2(pTopBorderTrace, length + 1, pTopBorder, ofs);
-		_traceLine2(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
-*/
+//		_traceLine2(pTopBorderTrace, length + 1, pTopBorder, ofs);
+//		_traceLine2(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
 		// Do proper X-clipping
 
 		int startColumn = 0;
@@ -1301,7 +1301,7 @@ namespace wg
 
 		Base::memStackRelease(bufferSize);
 	}
-
+*/
 
 
 	//____ _lineToEdges() __________________________________________________________
