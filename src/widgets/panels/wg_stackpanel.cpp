@@ -100,9 +100,16 @@ namespace wg
 	{
 		if( policy != pSlot->sizePolicy )
 		{
-			m_pHolder->_childRequestRender( pSlot );
+			Rect oldGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
 			pSlot->sizePolicy = policy;
-			m_pHolder->_childRequestRender( pSlot );
+			Rect newGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
+
+			if (newGeo.size() != oldGeo.size())
+			{
+				((StackPanel*)m_pHolder)->_requestRender(oldGeo);
+				((StackPanel*)m_pHolder)->_requestRender(newGeo);
+				pSlot->pWidget->_setSize(newGeo.size());
+			}
 		};		
 	}
 		
@@ -531,7 +538,8 @@ namespace wg
 			pSlot++;
 		}
 
-		if( m_preferredSize != preferredSize)
+//TODO: We can't trust that same preferredSize results in same matchingHeight. We need to find a more robust optimization.
+//		if( m_preferredSize != preferredSize)
 		{
 			m_preferredSize = preferredSize;
 			_requestResize();

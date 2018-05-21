@@ -101,9 +101,6 @@
     <ClInclude Include="..\..\..\src\base\wg_color.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_finalizer.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_font.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -524,9 +521,6 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_color.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_finalizer.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_font.cpp">

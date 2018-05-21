@@ -21,6 +21,7 @@
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
 #include <wg_glgfxdevice.h>
+#include <wg_enumextras.h>
 #include <testwidget.h>
 
 
@@ -724,7 +725,7 @@ Blob_p loadBlob( const char * pPath )
 
 	Blob_p pBlob = Blob::create( size );
 		
-	int nRead = fread( pBlob->content(), 1, size, fp );
+	int nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )
@@ -805,7 +806,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 void cbMoveResize( const Msg * _pMsg )
 {
-	static Coord posAtPress[MouseButton_Max];
+	static Coord posAtPress[(int)MouseButton_max];
 	
 //	Widget_p _pWidget = _pMsg->source();
 	Object_p _pWidget = _pMsg->source();

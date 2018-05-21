@@ -105,6 +105,7 @@ namespace wg
 
 	class StackPanel : public Panel, protected StackPanelChildrenHolder
 	{
+		friend class StackPanelChildren;
 
 	public:
 

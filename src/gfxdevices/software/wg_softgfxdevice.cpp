@@ -23,6 +23,7 @@
 #include <wg_softgfxdevice.h>
 #include <wg_util.h>
 #include <math.h>
+#include <algorithm>
 #include <wg_base.h>
 
 #include <assert.h>
@@ -35,6 +36,8 @@ namespace wg
 	
 	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 	
+	int SoftGfxDevice::s_mulTab[256];
+
 	//____ create() _______________________________________________________________
 	
 	SoftGfxDevice_p SoftGfxDevice::create()
@@ -1173,6 +1176,633 @@ namespace wg
 	}
 
 
+	//____ clipDrawHorrWave() _____________________________________________________
+/*
+	void SoftGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
+	{
+		if (!m_pCanvas || !m_pCanvasPixels)
+			return;
+
+		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
+
+		int ofs = 0;
+		if (clip.x > begin.x || clip.x + clip.w < begin.x + length)
+		{
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
+
+			if (clip.x > begin.x + margin)
+			{
+				ofs = clip.x - begin.x - margin;
+				begin.x += ofs;
+				length -= ofs;
+			}
+
+			if (begin.x + length - margin > clip.x + clip.w)
+				length = clip.x + clip.w - begin.x + margin;
+
+			if (length <= 0)
+				return;
+		}
+
+		// Trace lines and generate edges
+
+		int bufferSize = (length + 1) * sizeof(SegmentEdge)*4;
+		char * pBuffer = Base::memStackAlloc(bufferSize);
+
+		SegmentEdge * pEdges = (SegmentEdge *)pBuffer;
+
+		_lineToEdges(pTopBorder, ofs, length+1, pEdges, 4);
+		_lineToEdges(pBottomBorder, ofs, length + 1, &pEdges[2], 4);
+
+
+		// Generate line traces
+//
+//		int	bufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+//		char * pBuffer = Base::memStackAlloc(bufferSize);
+//		int * pTopBorderTrace = (int*)pBuffer;
+//		int * pBottomBorderTrace = (int*)(pBuffer + bufferSize / 2);
+
+//		_traceLine2(pTopBorderTrace, length + 1, pTopBorder, ofs);
+//		_traceLine2(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
+		// Do proper X-clipping
+
+		int startColumn = 0;
+		if (begin.x < clip.x)
+		{
+			startColumn = clip.x - begin.x;
+			length -= startColumn;
+			begin.x += startColumn;
+		}
+
+		if (begin.x + length > clip.x + clip.w)
+			length = clip.x + clip.w - begin.x;
+
+		// Render columns
+
+		uint8_t * pColumn = m_pCanvasPixels + begin.y * m_canvasPitch + begin.x * (m_canvasPixelBits / 8);
+
+		int clipBeg = clip.y - begin.y;
+		int clipLen = clip.h;
+
+
+		Color	topBorderColor = pTopBorder->color;
+		Color	bottomBorderColor = pBottomBorder->color;
+
+		Color	fillColor = frontFill, otherFillColor = backFill;
+
+
+		SegmentEdge	edges[4];
+		Color	col[5];
+		col[0] = Color::Transparent;
+
+
+		for (int i = startColumn; i <= length + startColumn; i++)
+		{
+
+			// Check if lines have intersected and in that case swap top and bottom lines and colors
+
+			if (pEdges[0].begin > pEdges[2].begin)
+			{
+				swap(pEdges[0], pEdges[2]);
+				swap(pEdges[1], pEdges[3]);
+
+				swap(topBorderColor, bottomBorderColor);
+				swap(fillColor, otherFillColor);
+			}
+
+			// Generate new segment edges
+
+			int nEdges = 4;
+
+			col[1] = topBorderColor;
+			col[2] = fillColor;
+
+			if (pEdges[2].begin < pEdges[1].begin)			// Check if lower line is partially covering upper line. If it is, we need to remove edge between upper line and fill area.
+			{
+				nEdges--;
+
+				pEdges[1] = pEdges[2];
+				pEdges[2] = pEdges[3];
+			}
+
+			col[nEdges-1] = bottomBorderColor;
+			col[nEdges] = Color::Transparent;
+
+			// Render the column
+
+			if (i >= startColumn)
+			{
+				_clipDrawSegmentColumn(clipBeg, clipBeg+clipLen, pColumn, m_canvasPitch, nEdges, pEdges, col);				
+				pColumn += m_canvasPixelBits / 8;
+				pEdges += 4;
+			}
+		}
+
+		// Free temporary work memory
+
+		Base::memStackRelease(bufferSize);
+	}
+*/
+
+
+	//____ _lineToEdges() __________________________________________________________
+
+	void SoftGfxDevice::_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch )
+	{
+		static int brush[128];
+		static float prevThickness = -1.f;
+
+		float thickness = pWave->thickness;
+		int brushSteps = (int)(thickness / 2 + 0.99f);
+
+		// Generate brush
+
+		if (thickness != prevThickness)
+		{
+			int scaledThickness = (int)(thickness / 2 * 256);
+
+			brush[0] = scaledThickness;
+			for (int i = 1; i < brushSteps; i++)
+			{
+				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps - 1]) >> 16;
+				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
+			}
+			prevThickness = thickness;
+		}
+
+		int nTracePoints = max(0, min(nPoints, pWave->length - offset));
+		int nFillPoints = nPoints - nTracePoints;
+
+		// Trace...
+
+		int * pSrc = pWave->pWave + offset;
+		SegmentEdge * pWrite = pDest;
+		for (int i = 0; i < nTracePoints; i++)
+		{
+			// Start with top and bottom for current point
+
+			int top = pSrc[i] - brush[0];
+			int bottom = pSrc[i] + brush[0];
+
+			// Check brush's coverage from previous points
+
+			int end = min(i + 1, brushSteps);
+
+			for (int j = 1; j < end; j++)
+			{
+				int topCover = pSrc[i - j] - brush[j];
+				int bottomCover = pSrc[i - j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Check brush's coverage from following points
+
+			end = min(nPoints - i, brushSteps);
+
+			for (int j = 1; j < end; j++)
+			{
+				int topCover = pSrc[i + j] - brush[j];
+				int bottomCover = pSrc[i + j] + brush[j];
+
+				if (topCover < top)
+					top = topCover;
+				else if (bottomCover > bottom)
+					bottom = bottomCover;
+			}
+
+			// Save traced values
+
+			pWrite[0].begin = top;
+			pWrite[1].begin = bottom;
+
+
+			pWrite += pitch;
+
+		}
+
+		// Fill out the edge specifications if we didn't have enough wave data
+
+		if (nFillPoints)
+		{
+			int top = pWave->hold - brush[0];
+			int bottom = pWave->hold + brush[0];
+
+			for (int i = 0; i < nFillPoints; i++)
+			{
+				pWrite[0].begin = top;
+				pWrite[0].end = top;
+				pWrite[0].coverage = 0;
+				pWrite[0].coverageInc = 0;
+
+				pWrite[1].begin = bottom;
+				pWrite[1].end = bottom;
+				pWrite[1].coverage = 0;
+				pWrite[1].coverageInc = 0;
+
+				pWrite += pitch;
+			}
+		}
+
+		// Calculate rest of the edge data for our traced points (not needed for the filled points)
+
+		int nEdges = nFillPoints > 0 ? nTracePoints : nTracePoints-1;
+
+		pWrite = pDest;
+		for (int i = 0; i < nEdges; i++)
+		{
+			{
+				int edgeBegin = pWrite[0].begin;
+				int edgeEnd = pWrite[pitch].begin;
+				int coverageStart = 0;
+
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+
+				pWrite[0].begin = edgeBegin;
+				pWrite[0].end = edgeEnd;
+				pWrite[0].coverage = coverageStart;
+				pWrite[0].coverageInc = coverageInc;
+			}
+
+			{
+				int edgeBegin = pWrite[1].begin;
+				int edgeEnd = pWrite[1+pitch].begin;
+				if (edgeBegin > edgeEnd)
+					swap(edgeBegin, edgeEnd);
+
+				int coverageInc = (edgeEnd == edgeBegin) ? 0 : (65536 * 256) / (edgeEnd - edgeBegin);
+
+				int coverageStart = 0;
+
+				pWrite[1].begin = edgeBegin;
+				pWrite[1].end = edgeEnd;
+				pWrite[1].coverage = coverageStart;
+				pWrite[1].coverageInc = coverageInc;
+			}
+
+			pWrite += pitch;
+		}
+	}
+
+
+
+	//____ _clipDrawSegmentColumn() _______________________________________________
+
+	void SoftGfxDevice::_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors)
+	{
+		clipBeg <<= 8;
+		clipEnd <<= 8;
+		
+		// Do clipping of edges, part 1 - completely remove segments that are fully clipped
+
+		while (nEdges > 0 && pEdges[nEdges - 1].begin >= clipEnd)
+		{
+			nEdges--;																	// Edge fully below clip rectangle, segment following edge will never be shown
+		}
+
+		while (nEdges > 0 && pEdges[0].end <= clipBeg)
+		{
+			pSegmentColors++;
+			pEdges++;																	// Edge fully above clip rectangel, segment preceeding edge will never be shown
+			nEdges--;
+		}
+
+		// Do clipping of edges, part 2 - adjust edges of partially clipped segments
+
+		for (int i = 0; i < nEdges; i++)
+		{
+			SegmentEdge * p = pEdges + i;
+
+			if (p->begin < clipBeg)
+			{
+				int cut = clipBeg - p->begin;
+				p->begin = clipBeg;
+				p->coverage += (p->coverageInc*cut) >> (8+8);
+			}
+
+			if (p->end > clipEnd)
+				p->begin = clipEnd;
+		}
+
+		// Render the column
+
+		uint8_t * pDst = pColumn;
+		int offset = clipBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
+
+		while (offset < clipEnd)
+		{
+/*
+			for (int i = 0; i < nEdges; i++)
+			{
+				if (pEdges[i].coverage > 65536)
+					pEdges[i].coverage = 65536;
+			}
+*/
+
+			if (nEdges == 0 || offset + 255 < pEdges[0].begin)
+			{
+				// We are fully inside a segment, no need to take any edge into account.
+
+				int end = nEdges == 0 ? clipEnd : std::min(clipEnd, pEdges[0].begin);
+				Color segmentColor = *pSegmentColors;
+
+				if (segmentColor.a == 0)
+				{
+					pDst = pColumn + (end >> 8) * linePitch;
+					offset = end & 0xFFFFFF00;												// Just skip segment since it is transparent
+				}
+				else
+				{
+					int storedRed = ((int)segmentColor.r) * segmentColor.a;
+					int storedGreen = ((int)segmentColor.g) * segmentColor.a;
+					int storedBlue = ((int)segmentColor.b) * segmentColor.a;
+					int invAlpha = 255 - segmentColor.a;
+
+					while (offset + 255 < end)
+					{
+						pDst[0] = m_pDivTab[pDst[0] * invAlpha + storedBlue];
+						pDst[1] = m_pDivTab[pDst[1] * invAlpha + storedGreen];
+						pDst[2] = m_pDivTab[pDst[2] * invAlpha + storedRed];
+						pDst += linePitch;
+						offset+=256;
+					}
+				}
+			}
+			else
+			{
+				Color	* pCol = pSegmentColors;
+
+				if (nEdges == 1 || offset + 255 < pEdges[1].begin)
+				{
+
+					int aFrac = 65536;
+					int bFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+								+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac) >> 16;
+
+				}
+				else if (nEdges == 2 || offset + 255 < pEdges[2].begin)
+				{
+
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac) >> 16;
+
+				}
+				else if (nEdges == 3 || offset + 255 < pEdges[3].begin)
+				{
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+					int dFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[2].end)
+					{
+						int bBeginHeight = 256 - (pEdges[2].begin & 0xFF);
+						int bCoverageInc = (pEdges[2].coverageInc * bBeginHeight) >> 8;
+
+						dFrac = ((pEdges[2].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[2].coverage += bCoverageInc;
+						pEdges[2].begin = offset + 256;
+					}
+					else
+					{
+						dFrac = ((((pEdges[2].coverage + 65536) / 2) * (pEdges[2].end - pEdges[2].begin)) >> 8)
+							+ (256 - pEdges[2].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+					cFrac -= dFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+					dFrac = (dFrac*pCol[3].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac - dFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac + pCol[3].b * dFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac + pCol[3].g * dFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac + pCol[3].r * dFrac) >> 16;
+				}
+				else if (nEdges == 4 || offset + 255 < pEdges[4].begin)
+				{
+					int aFrac = 65536;
+					int bFrac;
+					int cFrac;
+					int dFrac;
+					int eFrac;
+
+					if (offset + 255 < pEdges[0].end)
+					{
+						int bBeginHeight = 256 - (pEdges[0].begin & 0xFF);
+						int bCoverageInc = (pEdges[0].coverageInc * bBeginHeight) >> 8;
+
+						bFrac = ((pEdges[0].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[0].coverage += bCoverageInc;
+						pEdges[0].begin = offset + 256;
+					}
+					else
+					{
+						bFrac = ((((pEdges[0].coverage + 65536) / 2) * (pEdges[0].end - pEdges[0].begin)) >> 8)
+							+ (256 - pEdges[0].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[1].end)
+					{
+						int bBeginHeight = 256 - (pEdges[1].begin & 0xFF);
+						int bCoverageInc = (pEdges[1].coverageInc * bBeginHeight) >> 8;
+
+						cFrac = ((pEdges[1].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[1].coverage += bCoverageInc;
+						pEdges[1].begin = offset + 256;
+					}
+					else
+					{
+						cFrac = ((((pEdges[1].coverage + 65536) / 2) * (pEdges[1].end - pEdges[1].begin)) >> 8)
+							+ (256 - pEdges[1].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[2].end)
+					{
+						int bBeginHeight = 256 - (pEdges[2].begin & 0xFF);
+						int bCoverageInc = (pEdges[2].coverageInc * bBeginHeight) >> 8;
+
+						dFrac = ((pEdges[2].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[2].coverage += bCoverageInc;
+						pEdges[2].begin = offset + 256;
+					}
+					else
+					{
+						dFrac = ((((pEdges[2].coverage + 65536) / 2) * (pEdges[2].end - pEdges[2].begin)) >> 8)
+							+ (256 - pEdges[2].end & 0xFF) * 65536 / 256;
+					}
+
+					if (offset + 255 < pEdges[3].end)
+					{
+						int bBeginHeight = 256 - (pEdges[3].begin & 0xFF);
+						int bCoverageInc = (pEdges[3].coverageInc * bBeginHeight) >> 8;
+
+						eFrac = ((pEdges[3].coverage + bCoverageInc / 2) * bBeginHeight) >> 8;
+
+						pEdges[3].coverage += bCoverageInc;
+						pEdges[3].begin = offset + 256;
+					}
+					else
+					{
+						eFrac = ((((pEdges[3].coverage + 65536) / 2) * (pEdges[3].end - pEdges[3].begin)) >> 8)
+							+ (256 - pEdges[3].end & 0xFF) * 65536 / 256;
+					}
+
+					aFrac -= bFrac;
+					bFrac -= cFrac;
+					cFrac -= dFrac;
+					dFrac -= eFrac;
+
+					aFrac = (aFrac*pCol[0].a) / 255;
+					bFrac = (bFrac*pCol[1].a) / 255;
+					cFrac = (cFrac*pCol[2].a) / 255;
+					dFrac = (dFrac*pCol[3].a) / 255;
+					eFrac = (eFrac*pCol[4].a) / 255;
+
+					int backFraction = 65536 - aFrac - bFrac - cFrac - dFrac - eFrac;
+
+					pDst[0] = (pDst[0] * backFraction + pCol[0].b * aFrac + pCol[1].b * bFrac + pCol[2].b * cFrac + pCol[3].b * dFrac + pCol[4].b * eFrac) >> 16;
+					pDst[1] = (pDst[1] * backFraction + pCol[0].g * aFrac + pCol[1].g * bFrac + pCol[2].g * cFrac + pCol[3].g * dFrac + pCol[4].g * eFrac) >> 16;
+					pDst[2] = (pDst[2] * backFraction + pCol[0].r * aFrac + pCol[1].r * bFrac + pCol[2].r * cFrac + pCol[3].r * dFrac + pCol[4].r * eFrac) >> 16;
+				}
+
+				pDst += linePitch;
+				offset += 256;
+			}
+
+			while (nEdges > 0 && offset >= pEdges[0].end)
+			{
+				pEdges++;
+				nEdges--;
+				pSegmentColors++;
+			}
+
+		}
+
+	}
+
+
 	
 	//____ clipPlotPixels() ____________________________________________________
 	
@@ -1966,19 +2596,970 @@ namespace wg
 		//TODO: Implement!!!
 	}
 	
+	//____ _move_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		_move_32A_to_32A(pSrc, srcPitch, pDst, dstPitch, nLines, lineLength);
+	}
+
+	//____ _tint_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength*4;
+		int dstPitchAdd = dstPitch - lineLength*4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+		int tintA = s_mulTab[tint.a];
+
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = (pSrc[3] * tintA) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcAlpha = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = srcBlue;
+				pDst[1] = srcGreen;
+				pDst[2] = srcRed;
+				pDst[3] = srcAlpha;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _scale_tint_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+		int tintA = s_mulTab[tint.a];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcAlpha = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = (srcBlue*tintB) >> 16;
+				pDst[1] = (srcGreen*tintG) >> 16;
+				pDst[2] = (srcRed*tintR) >> 16;
+				pDst[3] = (srcAlpha*tintA) >> 16;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _move_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pDst[3] = 255;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _tint_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = tint.a;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		_scale_24_to_32A(pSrcSurf, sx, sy, sw, sh, pDest, dstPitch, nLines, lineLength, dummy);
+	}																						\
+
+	//____ _scale_tint_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		_scale_tint_24_to_32A(pSrcSurf, sx, sy, sw, sh, pDest, dstPitch, nLines, lineLength, tint);
+	}																						\
+
+	//____ _move_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 3;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for( int x = 0 ; x < lineLength ; x++ )
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pDst[3] = 255;
+				pSrc += 3;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _tint_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 3;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = tint.a;
+				pSrc += 3;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = srcBlue;
+				pDst[1] = srcGreen;
+				pDst[2] = srcRed;
+				pDst[3] = 255;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _scale_tint_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = (srcBlue*tintB) >> 16;
+				pDst[1] = (srcGreen*tintG) >> 16;
+				pDst[2] = (srcRed*tintR) >> 16;
+				pDst[3] = tint.a;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+
+	//____ _move_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength;
+		int dstPitchAdd = dstPitch - lineLength;
+
+		uint32_t * pS = (uint32_t*)pSrc;
+		uint32_t * pD = (uint32_t*)pDst;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+				* pD++ = * pS++;
+
+			pS += srcPitchAdd;
+			pD += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pDst[3] = (pDst[3] * invAlpha + 255 * alpha) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd; 
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pDst[3] = limitUint8(pDst[3] + (int)pSrc[3]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pDst[3] = limitUint8(pDst[3] - (int)pSrc[3]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _mul_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pDst[3] = (s_mulTab[pDst[3]] * pSrc[3]) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+				int srcA = s_mulTab[pSrc[3]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+				pDst[3] = (srcA * (255 - pDst[3]) + pDst[3] * (65536 - srcA)) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _move_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _mul_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _move_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+
+	}
+
+	//____ _mul_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+
 	
 	//____ blit() __________________________________________________________________
 	
+	/*
 	void SoftGfxDevice::blit( Surface * pSrcSurf, const Rect& srcrect, Coord dest  )
 	{
-		Surface * pSrc = pSrcSurf;
-	
-		if( m_tintColor.argb == 0xFFFFFFFF )
-			_blit( pSrc, srcrect, dest.x, dest.y );
-		else
-			_tintBlit( pSrc, srcrect, dest.x, dest.y );
+	Surface * pSrc = pSrcSurf;
+
+	if( m_tintColor.argb == 0xFFFFFFFF )
+	_blit( pSrc, srcrect, dest.x, dest.y );
+	else
+	_tintBlit( pSrc, srcrect, dest.x, dest.y );
+	}
+	*/
+
+	void SoftGfxDevice::blit(Surface * _pSrcSurf, const Rect& srcrect, Coord dest)
+	{
+		if (!_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME))
+			return;
+
+		SoftSurface * pSrcSurf = (SoftSurface*)_pSrcSurf;
+
+		if (!m_pCanvasPixels || !pSrcSurf->m_pData)
+			return;
+
+		BlitReader_p	pReader = nullptr;
+		BlitWriter_p	pWriter = nullptr;
+		
+		switch (pSrcSurf->m_pixelFormat.type)
+		{
+			case PixelType::BGR_8:
+			{
+				if (m_tintColor == Color::White)
+					pReader = _move_24_to_32A;
+				else
+					pReader = _tint_24_to_32A;
+			}
+			break;
+
+			case PixelType::BGRA_8:
+			{
+				if (m_tintColor == Color::White)
+					pReader = _move_32A_to_32A;
+				else
+					pReader = _tint_32A_to_32A;
+			}
+			break;
+
+			default:
+				return;			// ERROR: Unsupported source pixel format!
+		}
+
+		switch (m_pCanvas->pixelFormat()->type)
+		{
+			case PixelType::BGR_8:
+			{
+				switch (m_blendMode)
+				{
+					case BlendMode::Replace:
+						pWriter = _move_32A_to_24;
+						break;
+					case BlendMode::Blend:
+						pWriter = _blend_32A_to_24;
+						break;
+					case BlendMode::Add:
+						pWriter = _add_32A_to_24;
+						break;
+					case BlendMode::Subtract:
+						pWriter = _sub_32A_to_24;
+						break;
+					case BlendMode::Multiply:
+						pWriter = _mul_32A_to_24;
+						break;
+					case BlendMode::Invert:
+						pWriter = _invert_32A_to_24;
+						break;
+					default:
+						return;			// BlendMode::Ignore should do nothing and we should never get BlendMode::Undefined here
+				}
+				break;
+			}
+			case PixelType::BGRA_8:
+			{
+				switch (m_blendMode)
+				{
+						case BlendMode::Replace:
+							pWriter = _move_32A_to_32A;
+							break;
+						case BlendMode::Blend:
+							pWriter = _blend_32A_to_32A;
+							break;
+						case BlendMode::Add:
+							pWriter = _add_32A_to_32A;
+							break;
+						case BlendMode::Subtract:
+							pWriter = _sub_32A_to_32A;
+							break;
+						case BlendMode::Multiply:
+							pWriter = _mul_32A_to_32A;
+							break;
+						case BlendMode::Invert:
+							pWriter = _invert_32A_to_32A;
+							break;
+						default:
+							return;			// BlendMode::Ignore should do nothing and we should never get BlendMode::Undefined here
+				}
+				break;
+
+			}
+			default:
+				return;		// ERROR: Unsupported destination pixel format!				
+		}
+
+		_twoPassStraightBlit(pReader, pWriter, static_cast<SoftSurface*>(_pSrcSurf), srcrect, dest);
 	}
 	
+	//____ _twoPassStraightBlit() _____________________________________________
+
+	void SoftGfxDevice::_twoPassStraightBlit(BlitReader_p pReader, BlitWriter_p pWriter, const SoftSurface * pSource, const Rect& srcrect, Coord dest)
+	{
+
+		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int dstPixelBytes = m_canvasPixelBits / 8;
+
+		int chunkLines;
+
+		if (srcrect.w >= 2048)
+			chunkLines = 1;
+		else if (srcrect.w*srcrect.h <= 2048)
+			chunkLines = srcrect.h;
+		else
+			chunkLines = 2048 / srcrect.w;
+
+		int memBufferSize = chunkLines * srcrect.w*4;
+
+		uint8_t * pChunkBuffer = (uint8_t*) Base::memStackAlloc(memBufferSize);
+
+		int line = 0;
+
+		while (line < srcrect.h)
+		{
+			int thisChunkLines = min(srcrect.h - line, chunkLines);
+
+			uint8_t * pDst = m_pCanvasPixels + (dest.y+line) * m_canvasPitch + dest.x * dstPixelBytes;
+			uint8_t * pSrc = pSource->m_pData + (srcrect.y+line) * pSource->m_pitch + srcrect.x * srcPixelBytes;
+
+			pReader(pSrc, pSource->m_pitch, pChunkBuffer, srcrect.w*4, thisChunkLines, srcrect.w, m_tintColor);
+			pWriter(pChunkBuffer, srcrect.w * 4, pDst, m_canvasPitch, thisChunkLines, srcrect.w);
+
+			line += thisChunkLines;
+		}
+
+		Base::memStackRelease(memBufferSize);
+	}
+
+	//____ _twoPassStretchBlit() ____________________________________________
+
+	void SoftGfxDevice::_twoPassStretchBlit(BlitReader_p, BlitWriter_p, const SoftSurface * pSource, const RectF& source, const Rect& dest)
+	{
+
+	}
+
+
 	//____ _blit() _____________________________________________________________
 	
 	void SoftGfxDevice::_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  )
@@ -2206,8 +3787,8 @@ namespace wg
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
 						pDst[0] = m_pDivTab[pSrc[0]*(255-pDst[0]) + pDst[0]*(255-pSrc[0])];
-						pDst[1] = m_pDivTab[pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[0])];
-						pDst[2] = m_pDivTab[pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[0])];
+						pDst[1] = m_pDivTab[pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[1])];
+						pDst[2] = m_pDivTab[pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[2])];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -3102,6 +4683,12 @@ namespace wg
 	
 		for( int i = 0 ; i < 65536 ; i++ )
 			m_pDivTab[i] = i / 255;
+
+		// Init mulTab
+
+		for (int i = 0; i < 256; i++)
+			s_mulTab[i] = i * 256 + i + 1;
+
 
 		// Init lineThicknessTable
 		

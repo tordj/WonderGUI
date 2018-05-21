@@ -28,7 +28,6 @@
 #include <wg_memstack.h>
 #include <wg_stdtextmapper.h>
 #include <wg_mempool.h>
-#include <wg_finalizer.h>
 #include <wg_standardformatter.h>
 #include <wg_inputhandler.h>
 

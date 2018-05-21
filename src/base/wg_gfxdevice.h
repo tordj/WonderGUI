@@ -136,7 +136,9 @@ namespace wg
 	
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
-	
+
+		virtual void	clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest);	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
+
 	
 		// Mid-level draw methods
 	

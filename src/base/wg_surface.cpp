@@ -364,8 +364,8 @@ namespace wg
 		const PixelFormat * pDstFormat 	= &m_pixelFormat;
 		int		dstPitch 				= m_pitch;
 
-		unsigned char *	pSrc = (unsigned char*) pSrcPixels;
-		unsigned char *	pDst = (unsigned char*) m_pPixels;
+		uint8_t *	pSrc = pSrcPixels;
+		uint8_t *	pDst = m_pPixels;
 
 		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
 		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
@@ -385,26 +385,41 @@ namespace wg
 				pDst += dstPitch;
 			}
 		}
-		else if( (pSrcFormat->type == PixelType::BGRA_8 || pSrcFormat->type == PixelType::BGR_8) &&
-				 (pDstFormat->type == PixelType::BGRA_8 || pDstFormat->type == PixelType::BGR_8) )
+		else if (pSrcFormat->type == PixelType::BGRA_8 && pDstFormat->type == PixelType::BGR_8)
 		{
-			// We are just switching between RGBA_8 and RGB_8, just copy RGB components and skip alpha
+			// Standard 8-bit RGB values, we just need to lose the alpha channel
 
-			int		srcInc = pSrcFormat->bits/8;
-			int		dstInc = pDstFormat->bits/8;
+			int		srcLineInc = srcPitch - 4 * srcRect.w;
+			int		dstLineInc = dstPitch - 3 * srcRect.w;
 
-			int		srcLineInc = srcPitch - srcInc * srcRect.w;
-			int		dstLineInc = dstPitch - dstInc * srcRect.w;
-
-			for( int y = 0 ; y < srcRect.h ; y++ )
+			for (int y = 0; y < srcRect.h; y++)
 			{
-				for( int x = 0 ; x < srcRect.w ; x++ )
+				for (int x = 0; x < srcRect.w; x++)
 				{
-					pDst[0] = pSrc[0];
-					pDst[1] = pSrc[1];
-					pDst[2] = pSrc[2];
-					pSrc += srcInc;
-					pDst += dstInc;
+					* pDst++ = * pSrc++;
+					* pDst++ = * pSrc++;
+					*pDst++ = *pSrc++;
+					pSrc++;
+				}
+				pSrc += srcLineInc;
+				pDst += dstLineInc;
+			}
+		}
+		else if(pSrcFormat->type == PixelType::BGR_8 && pDstFormat->type == PixelType::BGRA_8)
+		{
+			// Standard 8-bit RGB values, We just needs to add an alpha channel
+
+			int		srcLineInc = srcPitch - 3 * srcRect.w;
+			int		dstLineInc = dstPitch - 4 * srcRect.w;
+
+			for (int y = 0; y < srcRect.h; y++)
+			{
+				for (int x = 0; x < srcRect.w; x++)
+				{
+					*pDst++ = *pSrc++;
+					*pDst++ = *pSrc++;
+					*pDst++ = *pSrc++;
+					*pDst++ = 255;
 				}
 				pSrc += srcLineInc;
 				pDst += dstLineInc;

@@ -29,23 +29,24 @@ namespace wg
 {
 	
 	class Object;
-	class Finalizer;
 	
 	typedef StrongPtr<Object>	Object_p;
 	
+	typedef	void(*Finalizer_p)(Object*);
+
 	class WeakPtrHub		/** @private */
 	{
 	public:
 		int				refCnt;
 		Object *		pObj;
-		StrongPtr<Finalizer> pFinalizer;
+		Finalizer_p		pFinalizer;
 
 		static WeakPtrHub *	getHub(Object * pObj);
 		static void			releaseHub(WeakPtrHub * pHub);		
 
 		static void			objectWillDestroy(WeakPtrHub * pHub);
-		static void			setFinalizer(Object * pObj, Finalizer * pFinalizer);
-		static Finalizer*	getFinalizer(Object * pObj);
+		static void			setFinalizer(Object * pObj, Finalizer_p pFinalizer);
+		static Finalizer_p	getFinalizer(Object * pObj);
 	};
 	
 	
@@ -71,6 +72,9 @@ namespace wg
 		template<class T> friend class StrongInterfacePtr;
 		friend class Interface_wp;
 
+		template<class T> friend class StrongComponentPtr;
+		friend class Component_wp;
+
 		friend class WeakPtrHub;
 	public:
 
@@ -81,6 +85,11 @@ namespace wg
 		virtual const char *className( void ) const;
 		static const char	CLASSNAME[];
 	
+		//.____ Misc __________________________________________________________
+
+		void			setFinalizer(Finalizer_p pFinalizer);
+		Finalizer_p		finalizer() const;
+
 	protected:
 		Object() : m_pWeakPtrHub(0), m_refCount(0) {}
 		virtual ~Object() {};

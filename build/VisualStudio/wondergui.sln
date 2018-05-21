@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wondergui", "wondergui\wondergui.vcxproj", "{61381138-0C8C-4E62-A557-6ACC3D4D35BF}"
 EndProject
@@ -32,6 +32,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "font_freetype", "font_freet
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfxdevice_stream", "gfxdevice_stream\gfxdevice_stream.vcxproj", "{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfxdevice_testapp", "gfxdevice_testapp\gfxdevice_testapp.vcxproj", "{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61381138-0C8C-4E62-A557-6ACC3D4D35BF} = {61381138-0C8C-4E62-A557-6ACC3D4D35BF}
+		{C12CBB46-1B0C-4D8F-B85F-10E56096AF2E} = {C12CBB46-1B0C-4D8F-B85F-10E56096AF2E}
+		{B03F7354-7BD2-4A7C-8CA5-E367EED1B44A} = {B03F7354-7BD2-4A7C-8CA5-E367EED1B44A}
+		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7} = {00660AAE-098B-4EFC-BAEF-D571B94E6AF7}
+		{59C1D5EA-31CE-4FCD-9014-55B179C72C0B} = {59C1D5EA-31CE-4FCD-9014-55B179C72C0B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +100,14 @@ Global
 		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|Win32.Build.0 = Release|Win32
 		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|x64.ActiveCfg = Release|x64
 		{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}.Release|x64.Build.0 = Release|x64
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Debug|Win32.Build.0 = Debug|Win32
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Debug|x64.ActiveCfg = Debug|x64
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Debug|x64.Build.0 = Debug|x64
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Release|Win32.ActiveCfg = Release|Win32
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Release|Win32.Build.0 = Release|Win32
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Release|x64.ActiveCfg = Release|x64
+		{76A5791B-0BCD-4FD9-9C21-A23DA2C04FB2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

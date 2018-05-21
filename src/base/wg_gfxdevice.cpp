@@ -538,6 +538,15 @@ namespace wg
 		return;
 	}
 	
+
+	//_____ clipBlitFromCanvas() ______________________________________________________
+
+	void GfxDevice::clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest)
+	{
+		clipBlit(clip, pSrc, src, dest);		// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
+	}
+
+
 	
 	//____ clipBlitHorrBar() ______________________________________________________
 	
@@ -755,11 +764,13 @@ namespace wg
 
 	void GfxDevice::_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset)
 	{
-		static int brush[128];
+		static const int c_supersamples = 4;
+
+		static int brush[128 * c_supersamples];
 		static float prevThickness = -1.f;
 
 		float thickness = pWave->thickness;
-		int brushSteps = (int)(thickness / 2 + 0.99f);
+		int brushSteps = (int)(thickness * c_supersamples / 2);
 
 		// Generate brush
 
@@ -768,11 +779,8 @@ namespace wg
 			int scaledThickness = (int)(thickness / 2 * 256);
 
 			brush[0] = scaledThickness;
-			for (int i = 1; i < brushSteps; i++)
-			{
-				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps - 1]) >> 16;
-				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
-			}
+			for (int i = 1; i <= brushSteps; i++)
+				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps]) >> 16;
 			prevThickness = thickness;
 		}
 
@@ -791,12 +799,17 @@ namespace wg
 
 			// Check brush's coverage from previous points
 
-			int end = min(i + 1, brushSteps);
+			int end = min(i + 1, brushSteps + 1);
 
 			for (int j = 1; j < end; j++)
 			{
-				int topCover = pSrc[i - j] - brush[j];
-				int bottomCover = pSrc[i - j] + brush[j];
+				int from = pSrc[i - j / c_supersamples];
+				int to = pSrc[i - j / c_supersamples - 1];
+
+				int sample = (to - from) * (j%c_supersamples) / c_supersamples + from;
+
+				int topCover = sample - brush[j];
+				int bottomCover = sample + brush[j];
 
 				if (topCover < top)
 					top = topCover;
@@ -806,12 +819,17 @@ namespace wg
 
 			// Check brush's coverage from following points
 
-			end = min(nPoints - i, brushSteps);
+			end = min(nPoints - i, brushSteps + 1);
 
 			for (int j = 1; j < end; j++)
 			{
-				int topCover = pSrc[i + j] - brush[j];
-				int bottomCover = pSrc[i + j] + brush[j];
+				int from = pSrc[i + j / c_supersamples];
+				int to = pSrc[i + j / c_supersamples + 1];
+
+				int sample = (to - from) * (j%c_supersamples) / c_supersamples + from;
+
+				int topCover = sample - brush[j];
+				int bottomCover = sample + brush[j];
 
 				if (topCover < top)
 					top = topCover;
@@ -825,14 +843,12 @@ namespace wg
 			*pDest++ = bottom;
 		}
 
-
 		// Fill...
 
 		if (nFillPoints)
 		{
 			int top = pWave->hold - brush[0];
 			int bottom = pWave->hold + brush[0];
-
 			for (int i = 0; i < nFillPoints; i++)
 			{
 				*pDest++ = top;
@@ -840,7 +856,5 @@ namespace wg
 			}
 		}
 	}
-
-
 
 } // namespace wg

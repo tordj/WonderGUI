@@ -80,6 +80,7 @@ namespace wg
 	friend class Container;
 	friend class Panel;
 	friend class PackPanel;
+	friend class StackPanelChildren;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
 	friend class ViewSlot;

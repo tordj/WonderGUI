@@ -927,6 +927,49 @@ namespace wg
         glDisableVertexAttribArray(0);
     }
 
+	//____ clipBlitFromCanvas() _______________________________________________________
+
+	void GlGfxDevice::clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& srcRect, Coord dest )
+	{
+		if ((clip.x <= dest.x) && (clip.x + clip.w > dest.x + srcRect.w) &&
+			(clip.y <= dest.y) && (clip.y + clip.h > dest.y + srcRect.h))
+		{
+			stretchBlitSubPixelWithInvert(pSrc, srcRect.x, srcRect.y, srcRect.w, srcRect.h, dest.x, dest.y, srcRect.w, srcRect.h); // Totally inside clip-rect.
+			return;
+		}
+
+		if ((clip.x > dest.x + srcRect.w) || (clip.x + clip.w < dest.x) ||
+			(clip.y > dest.y + srcRect.h) || (clip.y + clip.h < dest.y))
+			return;																						// Totally outside clip-rect.
+
+																										// Do Clipping
+
+		Rect	newSrc = srcRect;
+
+		if (dest.x < clip.x)
+		{
+			newSrc.w -= clip.x - dest.x;
+			newSrc.x += clip.x - dest.x;
+			dest.x = clip.x;
+		}
+
+		if (dest.y < clip.y)
+		{
+			newSrc.h -= clip.y - dest.y;
+			newSrc.y += clip.y - dest.y;
+			dest.y = clip.y;
+		}
+
+		if (dest.x + newSrc.w > clip.x + clip.w)
+			newSrc.w = (clip.x + clip.w) - dest.x;
+
+		if (dest.y + newSrc.h > clip.y + clip.h)
+			newSrc.h = (clip.y + clip.h) - dest.y;
+
+		stretchBlitSubPixelWithInvert(pSrc, newSrc.x, newSrc.y, newSrc.w, newSrc.h, dest.x, dest.y, newSrc.w, newSrc.h);
+	}
+
+
 	//____ stretchBlitSubPixelWithInvert() ___________________________________________________
 
 	void GlGfxDevice::stretchBlitSubPixelWithInvert(Surface * pSrc, float sx, float sy,
@@ -950,7 +993,7 @@ namespace wg
 		float	sx1 = sx / tw;
 		float	sx2 = (sx + sw) / tw;
 		float	sy1 = 1.f - (sy / th);
-		float	sy2 = 1.f - ((sy + sh) / th);
+		float	sy2 = 1.f - (sy + sh) / th;
 
 		float	dx1 = dx;
 		float	dx2 = dx + dw;
