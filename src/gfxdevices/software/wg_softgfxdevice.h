@@ -203,9 +203,106 @@ namespace wg
 		void	_stretchBlitInvert(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
 											int dx, int dy, int dw, int dh );
 	
+
+		//
+
+		typedef	void(*BlitReader_p)(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		typedef	void(*BlitWriter_p)(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+
+		void	_twoPassStraightBlit(BlitReader_p, BlitWriter_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest);
+		void	_twoPassStretchBlit(BlitReader_p, BlitWriter_p, const SoftSurface * pSource, const RectF& source, const Rect& dest);
+
+
+		static void	_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		static void	_tint_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		static void	_scale_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		static void	_scale_tint_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+
+		static void	_move_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		static void	_tint_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		static void	_scale_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		static void	_scale_tint_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+
+		static void	_move_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		static void	_tint_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		static void	_scale_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		static void	_scale_tint_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+/*
+		void	_move_16_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		void	_tint_16_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		void	_scale_16_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		void	_scale_tint_16_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+
+		void	_move_16A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		void	_tint_16A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		void	_scale_16A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		void	_scale_tint_16A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+
+		void	_move_8I_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		void	_tint_8I_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		void	_scale_8I_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		void	_scale_tint_8I_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+
+		void	_move_8A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy);
+		void	_tint_8A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint);
+		void	_scale_8A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color dummy);
+		void	_scale_tint_8A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int nLines, int lineLength, int linePitch, Color tint);
+*/
+		//
+
+		static void	_move_32A_to_32A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_blend_32A_to_32A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_add_32A_to_32A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_sub_32A_to_32A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_mul_32A_to_32A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_invert_32A_to_32A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+
+		static void	_move_32A_to_32X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_blend_32A_to_32X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_add_32A_to_32X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_sub_32A_to_32X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_mul_32A_to_32X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_invert_32A_to_32X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+
+		static void	_move_32A_to_24		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_blend_32A_to_24	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_add_32A_to_24		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_sub_32A_to_24		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_mul_32A_to_24		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		static void	_invert_32A_to_24	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+/*
+		void	_move_32A_to_16		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_blend_32A_to_16	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_add_32A_to_16		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_sub_32A_to_16		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_mul_32A_to_16		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_invert_32A_to_16	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+
+		void	_move_32A_to_16A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_blend_32A_to_16A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_add_32A_to_16A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_sub_32A_to_16A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_mul_32A_to_16A		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_invert_32A_to_16A	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+
+		void	_move_32A_to_16X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_blend_32A_to_16X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_add_32A_to_16X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_sub_32A_to_16X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_mul_32A_to_16X		(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+		void	_invert_32A_to_16X	(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength);
+*/
+
+
+
+		//
+
 		SoftSurfaceFactory_p	m_pSurfaceFactory;
+
 		int				m_lineThicknessTable[17];
 		uint8_t *		m_pDivTab;
+
+		static int s_mulTab[256];
 		
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked

@@ -36,6 +36,8 @@ namespace wg
 	
 	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
 	
+	int SoftGfxDevice::s_mulTab[256];
+
 	//____ create() _______________________________________________________________
 	
 	SoftGfxDevice_p SoftGfxDevice::create()
@@ -2594,19 +2596,970 @@ namespace wg
 		//TODO: Implement!!!
 	}
 	
+	//____ _move_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		_move_32A_to_32A(pSrc, srcPitch, pDst, dstPitch, nLines, lineLength);
+	}
+
+	//____ _tint_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength*4;
+		int dstPitchAdd = dstPitch - lineLength*4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+		int tintA = s_mulTab[tint.a];
+
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = (pSrc[3] * tintA) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcAlpha = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = srcBlue;
+				pDst[1] = srcGreen;
+				pDst[2] = srcRed;
+				pDst[3] = srcAlpha;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _scale_tint_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_32A_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+		int tintA = s_mulTab[tint.a];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcAlpha = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = (srcBlue*tintB) >> 16;
+				pDst[1] = (srcGreen*tintG) >> 16;
+				pDst[2] = (srcRed*tintR) >> 16;
+				pDst[3] = (srcAlpha*tintA) >> 16;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _move_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pDst[3] = 255;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _tint_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_32X_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = tint.a;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		_scale_24_to_32A(pSrcSurf, sx, sy, sw, sh, pDest, dstPitch, nLines, lineLength, dummy);
+	}																						\
+
+	//____ _scale_tint_32X_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_32X_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		_scale_tint_24_to_32A(pSrcSurf, sx, sy, sw, sh, pDest, dstPitch, nLines, lineLength, tint);
+	}																						\
+
+	//____ _move_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 3;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for( int x = 0 ; x < lineLength ; x++ )
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pDst[3] = 255;
+				pSrc += 3;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _tint_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_tint_24_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 3;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (pSrc[0] * tintB) >> 16;
+				pDst[1] = (pSrc[1] * tintG) >> 16;
+				pDst[2] = (pSrc[2] * tintR) >> 16;
+				pDst[3] = tint.a;
+				pSrc += 3;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _scale_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color dummy)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = srcBlue;
+				pDst[1] = srcGreen;
+				pDst[2] = srcRed;
+				pDst[3] = 255;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+	//____ _scale_tint_24_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_scale_tint_24_to_32A(const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh, uint8_t * pDest, int dstPitch, int nLines, int lineLength, Color tint)
+	{
+		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int dstPixelBytes = 4;
+
+		int	srcPitch = pSrcSurf->m_pitch;
+
+		int ofsY = (int)(sy * 32768);		/* We use 15 binals for all calculations */
+		int incY = (int)(sh * 32768 / nLines);
+
+		int tintB = s_mulTab[tint.b];
+		int tintG = s_mulTab[tint.g];
+		int tintR = s_mulTab[tint.r];
+
+		for (int y = 0; y < nLines; y++)
+		{
+			int fracY2 = ofsY & 0x7FFF;
+			int fracY1 = 32768 - fracY2;
+
+			int ofsX = (int)(sx * 32768);
+			int incX = (int)(sw * 32768 / lineLength);
+
+			uint8_t * pDst = pDest + y * dstPitch;
+			uint8_t * pSrc = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch;
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				int fracX2 = ofsX & 0x7FFF;
+				int fracX1 = 32768 - fracX2;
+
+				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
+
+				int mul11 = fracX1 * fracY1 >> 15;
+				int mul12 = fracX2 * fracY1 >> 15;
+				int mul21 = fracX1 * fracY2 >> 15;
+				int mul22 = fracX2 * fracY2 >> 15;
+
+				int srcBlue = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcGreen = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+				p++;
+				int srcRed = (p[0] * mul11 + p[srcPixelBytes] * mul12 + p[srcPitch] * mul21 + p[srcPitch + srcPixelBytes] * mul22) >> 15;
+
+				pDst[0] = (srcBlue*tintB) >> 16;
+				pDst[1] = (srcGreen*tintG) >> 16;
+				pDst[2] = (srcRed*tintR) >> 16;
+				pDst[3] = tint.a;
+
+				ofsX += incX;
+				pDst += dstPixelBytes;
+			}
+			ofsY += incY;
+		}
+	}																						\
+
+
+	//____ _move_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength;
+		int dstPitchAdd = dstPitch - lineLength;
+
+		uint32_t * pS = (uint32_t*)pSrc;
+		uint32_t * pD = (uint32_t*)pDst;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+				* pD++ = * pS++;
+
+			pS += srcPitchAdd;
+			pD += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pDst[3] = (pDst[3] * invAlpha + 255 * alpha) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd; 
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pDst[3] = limitUint8(pDst[3] + (int)pSrc[3]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pDst[3] = limitUint8(pDst[3] - (int)pSrc[3]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _mul_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pDst[3] = (s_mulTab[pDst[3]] * pSrc[3]) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_32A() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+				int srcA = s_mulTab[pSrc[3]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+				pDst[3] = (srcA * (255 - pDst[3]) + pDst[3] * (65536 - srcA)) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _move_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _mul_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_32X() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_32X(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 4;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+
+				pSrc += 4;
+				pDst += 4;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _move_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_move_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = pSrc[0];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[2];
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _blend_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_blend_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int alpha = s_mulTab[pSrc[3]];
+				int invAlpha = 65536 - alpha;
+
+				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
+				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
+				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _add_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_add_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] + (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] + (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] + (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _sub_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_sub_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = limitUint8(pDst[0] - (int)pSrc[0]);
+				pDst[1] = limitUint8(pDst[1] - (int)pSrc[1]);
+				pDst[2] = limitUint8(pDst[2] - (int)pSrc[2]);
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+
+	}
+
+	//____ _mul_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_mul_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
+				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
+				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+	//____ _invert_32A_to_24() ____________________________________________________
+
+	void SoftGfxDevice::_invert_32A_to_24(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
+	{
+		int srcPitchAdd = srcPitch - lineLength * 4;
+		int dstPitchAdd = dstPitch - lineLength * 3;
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				int srcB = s_mulTab[pSrc[0]];
+				int srcG = s_mulTab[pSrc[1]];
+				int srcR = s_mulTab[pSrc[2]];
+
+				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
+				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
+				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
+
+				pSrc += 4;
+				pDst += 3;
+			}
+			pSrc += srcPitchAdd;
+			pDst += dstPitchAdd;
+		}
+	}
+
+
 	
 	//____ blit() __________________________________________________________________
 	
+	/*
 	void SoftGfxDevice::blit( Surface * pSrcSurf, const Rect& srcrect, Coord dest  )
 	{
-		Surface * pSrc = pSrcSurf;
-	
-		if( m_tintColor.argb == 0xFFFFFFFF )
-			_blit( pSrc, srcrect, dest.x, dest.y );
-		else
-			_tintBlit( pSrc, srcrect, dest.x, dest.y );
+	Surface * pSrc = pSrcSurf;
+
+	if( m_tintColor.argb == 0xFFFFFFFF )
+	_blit( pSrc, srcrect, dest.x, dest.y );
+	else
+	_tintBlit( pSrc, srcrect, dest.x, dest.y );
+	}
+	*/
+
+	void SoftGfxDevice::blit(Surface * _pSrcSurf, const Rect& srcrect, Coord dest)
+	{
+		if (!_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME))
+			return;
+
+		SoftSurface * pSrcSurf = (SoftSurface*)_pSrcSurf;
+
+		if (!m_pCanvasPixels || !pSrcSurf->m_pData)
+			return;
+
+		BlitReader_p	pReader = nullptr;
+		BlitWriter_p	pWriter = nullptr;
+		
+		switch (pSrcSurf->m_pixelFormat.type)
+		{
+			case PixelType::BGR_8:
+			{
+				if (m_tintColor == Color::White)
+					pReader = _move_24_to_32A;
+				else
+					pReader = _tint_24_to_32A;
+			}
+			break;
+
+			case PixelType::BGRA_8:
+			{
+				if (m_tintColor == Color::White)
+					pReader = _move_32A_to_32A;
+				else
+					pReader = _tint_32A_to_32A;
+			}
+			break;
+
+			default:
+				return;			// ERROR: Unsupported source pixel format!
+		}
+
+		switch (m_pCanvas->pixelFormat()->type)
+		{
+			case PixelType::BGR_8:
+			{
+				switch (m_blendMode)
+				{
+					case BlendMode::Replace:
+						pWriter = _move_32A_to_24;
+						break;
+					case BlendMode::Blend:
+						pWriter = _blend_32A_to_24;
+						break;
+					case BlendMode::Add:
+						pWriter = _add_32A_to_24;
+						break;
+					case BlendMode::Subtract:
+						pWriter = _sub_32A_to_24;
+						break;
+					case BlendMode::Multiply:
+						pWriter = _mul_32A_to_24;
+						break;
+					case BlendMode::Invert:
+						pWriter = _invert_32A_to_24;
+						break;
+					default:
+						return;			// BlendMode::Ignore should do nothing and we should never get BlendMode::Undefined here
+				}
+				break;
+			}
+			case PixelType::BGRA_8:
+			{
+				switch (m_blendMode)
+				{
+						case BlendMode::Replace:
+							pWriter = _move_32A_to_32A;
+							break;
+						case BlendMode::Blend:
+							pWriter = _blend_32A_to_32A;
+							break;
+						case BlendMode::Add:
+							pWriter = _add_32A_to_32A;
+							break;
+						case BlendMode::Subtract:
+							pWriter = _sub_32A_to_32A;
+							break;
+						case BlendMode::Multiply:
+							pWriter = _mul_32A_to_32A;
+							break;
+						case BlendMode::Invert:
+							pWriter = _invert_32A_to_32A;
+							break;
+						default:
+							return;			// BlendMode::Ignore should do nothing and we should never get BlendMode::Undefined here
+				}
+				break;
+
+			}
+			default:
+				return;		// ERROR: Unsupported destination pixel format!				
+		}
+
+		_twoPassStraightBlit(pReader, pWriter, static_cast<SoftSurface*>(_pSrcSurf), srcrect, dest);
 	}
 	
+	//____ _twoPassStraightBlit() _____________________________________________
+
+	void SoftGfxDevice::_twoPassStraightBlit(BlitReader_p pReader, BlitWriter_p pWriter, const SoftSurface * pSource, const Rect& srcrect, Coord dest)
+	{
+
+		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int dstPixelBytes = m_canvasPixelBits / 8;
+
+		int chunkLines;
+
+		if (srcrect.w >= 2048)
+			chunkLines = 1;
+		else if (srcrect.w*srcrect.h <= 2048)
+			chunkLines = srcrect.h;
+		else
+			chunkLines = 2048 / srcrect.w;
+
+		int memBufferSize = chunkLines * srcrect.w*4;
+
+		uint8_t * pChunkBuffer = (uint8_t*) Base::memStackAlloc(memBufferSize);
+
+		int line = 0;
+
+		while (line < srcrect.h)
+		{
+			int thisChunkLines = min(srcrect.h - line, chunkLines);
+
+			uint8_t * pDst = m_pCanvasPixels + (dest.y+line) * m_canvasPitch + dest.x * dstPixelBytes;
+			uint8_t * pSrc = pSource->m_pData + (srcrect.y+line) * pSource->m_pitch + srcrect.x * srcPixelBytes;
+
+			pReader(pSrc, pSource->m_pitch, pChunkBuffer, srcrect.w*4, thisChunkLines, srcrect.w, m_tintColor);
+			pWriter(pChunkBuffer, srcrect.w * 4, pDst, m_canvasPitch, thisChunkLines, srcrect.w);
+
+			line += thisChunkLines;
+		}
+
+		Base::memStackRelease(memBufferSize);
+	}
+
+	//____ _twoPassStretchBlit() ____________________________________________
+
+	void SoftGfxDevice::_twoPassStretchBlit(BlitReader_p, BlitWriter_p, const SoftSurface * pSource, const RectF& source, const Rect& dest)
+	{
+
+	}
+
+
 	//____ _blit() _____________________________________________________________
 	
 	void SoftGfxDevice::_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  )
@@ -2834,8 +3787,8 @@ namespace wg
 					for( int x = 0 ; x < srcrect.w ; x++ )
 					{
 						pDst[0] = m_pDivTab[pSrc[0]*(255-pDst[0]) + pDst[0]*(255-pSrc[0])];
-						pDst[1] = m_pDivTab[pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[0])];
-						pDst[2] = m_pDivTab[pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[0])];
+						pDst[1] = m_pDivTab[pSrc[1]*(255-pDst[1]) + pDst[1]*(255-pSrc[1])];
+						pDst[2] = m_pDivTab[pSrc[2]*(255-pDst[2]) + pDst[2]*(255-pSrc[2])];
 						pSrc += srcPixelBytes;
 						pDst += dstPixelBytes;
 					}
@@ -3730,6 +4683,12 @@ namespace wg
 	
 		for( int i = 0 ; i < 65536 ; i++ )
 			m_pDivTab[i] = i / 255;
+
+		// Init mulTab
+
+		for (int i = 0; i < 256; i++)
+			s_mulTab[i] = i * 256 + i + 1;
+
 
 		// Init lineThicknessTable
 		

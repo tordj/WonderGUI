@@ -33,7 +33,7 @@
     <ProjectGuid>{00660AAE-098B-4EFC-BAEF-D571B94E6AF7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gfxdevice_io</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>gfxdevice_stream</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
