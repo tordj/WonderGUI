@@ -44,8 +44,10 @@ namespace wg
 
 		bool		pixelTypeToFormat( PixelType type, PixelFormat& wFormat );
 
-		Coord 	origoToOfs( Origo origo, Size base );
+		Coord 		origoToOfs( Origo origo, Size base );
 		Rect		origoToRect( Origo origo, Size base, Size rect );
+
+		Size		scaleToFit(Size object, Size boundaries);
 
 		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 

@@ -152,6 +152,7 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icon.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_modbitmap.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modtext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="..\..\..\src\items\wg_editvalueitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_iconitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_item.h" />
+    <ClInclude Include="..\..\..\src\items\wg_modbitmapitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_modvalueitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_spanitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_textbaseitem.h" />
@@ -207,6 +209,7 @@
     <ClInclude Include="..\..\..\src\widgets\panels\wg_stackpanel.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_animplayer.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_button.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_canvas.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_container.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_filler.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_fpsdisplay.h" />
@@ -282,6 +285,7 @@
     <ClCompile Include="..\..\..\src\items\wg_edittextitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_editvalueitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_iconitem.cpp" />
+    <ClCompile Include="..\..\..\src\items\wg_modbitmapitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_modvalueitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_spanitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_textbaseitem.cpp" />
@@ -318,6 +322,7 @@
     <ClCompile Include="..\..\..\src\widgets\panels\wg_stackpanel.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_button.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_canvas.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_container.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_filler.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_fpsdisplay.cpp" />

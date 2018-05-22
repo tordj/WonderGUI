@@ -390,4 +390,17 @@ double Util::powerOfTen(int num){
 		}
 	}
 
+	//____ scaleToFit() _______________________________________________________
+
+	Size Util::scaleToFit(Size object, Size boundaries)
+	{
+		float wScale = object.w / (float)boundaries.w;
+		float hScale = object.h / (float)boundaries.h;
+
+		float useScale = max(wScale, hScale);
+
+		return object / useScale;
+	}
+
+
 } // namespace wg
