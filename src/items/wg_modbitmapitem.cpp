@@ -37,7 +37,7 @@ namespace wg
 	{
 		//TODO: Support bitmap being of different surface kind than destination.
 	
-		Rect canvas = calcPresentationArea();
+		Rect canvas = calcPresentationArea() + _canvas.pos();
 
 		pDevice->clipStretchBlit(Rect(canvas, _clip), m_pSurface, canvas);
 	}
@@ -66,7 +66,9 @@ namespace wg
 			sz = _size();
 
 		bool bSurfaceLost = m_pSurface;
-		m_pSurface = m_pDevice->surfaceFactory()->createSurface(sz, m_pixelType);
+
+		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
+		m_pSurface = pFactory->createSurface(sz, m_pixelType);
 		m_pSurface->fill(m_backColor);
 
 		m_pDevice->setCanvas(m_pSurface);
@@ -79,16 +81,16 @@ namespace wg
 
 	Rect ModBitmapItem::calcPresentationArea() const
 	{
-		Rect window = _geo();
+		Size window = _size();
 		Size bitmapSize = m_pSurface->size();
 
 		switch (m_presentationScaling)
 		{
 		case SizePolicy2D::Scale:
-			return Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window.size()));
+			return Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
 
 		case SizePolicy2D::Stretch:
-			return window;
+			return Rect(0,0,window);
 
 		default:
 			return Util::origoToRect(m_origo, window, bitmapSize);
@@ -100,10 +102,26 @@ namespace wg
 
 	bool ModBitmapItem::setDevice(GfxDevice * pDevice)
 	{
-		m_pDevice = pDevice;
-		regenSurface();
+		if (pDevice != m_pDevice)
+		{
+			m_pDevice = pDevice;
+			regenSurface();
+		}
 		return true;
 	}
+
+	//____ setSurfaceFactory() ________________________________________________
+
+	bool ModBitmapItem::setSurfaceFactory(SurfaceFactory * pFactory)
+	{
+		if (pFactory != m_pFactory)
+		{
+			m_pFactory = pFactory;
+			regenSurface();
+		}
+		return true;
+	}
+
 
 	//____ setLostCallback() ___________________________________________
 
@@ -131,7 +149,7 @@ namespace wg
 
 	bool ModBitmapItem::setBitmapSize(Size sz)
 	{
-		Size max = m_pDevice->surfaceFactory()->maxSize();
+		Size max = m_pDevice ? m_pDevice->surfaceFactory()->maxSize() : Size(65536,65536);
 
 		if (sz.w > max.w || sz.h > max.h)
 			return false;							// Requested size bigger than factory can create.
@@ -230,7 +248,11 @@ namespace wg
 		_requestRender(a2);
 	}
 
+	//____ preferredSize() ____________________________________________________
 
-
+	Size ModBitmapItem::preferredSize() const
+	{
+		return m_fixedSize;
+	}
 
 } //namespace wg

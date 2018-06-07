@@ -187,7 +187,7 @@ namespace wg
 		
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
-		Size			m_preferredSize;
+		Size			m_preferredContentSize;
 	
 	};
 	

@@ -155,7 +155,11 @@ namespace wg
 	
 	Size PackPanel::preferredSize() const
 	{
-		return m_preferredSize;
+		Size size = m_preferredContentSize;
+		if (m_pSkin)
+			size += m_pSkin->contentPadding();
+
+		return size;
 	}
 	
 	//____ matchingHeight() _______________________________________________________
@@ -233,6 +237,10 @@ namespace wg
 				}
 			}
 		}
+
+		if (m_pSkin)
+			height += m_pSkin->contentPadding().h;
+
 		return height;
 	}
 	
@@ -311,6 +319,10 @@ namespace wg
 				}
 			}
 		}
+
+		if (m_pSkin)
+			width += m_pSkin->contentPadding().w;
+
 		return width;
 	}
 	
@@ -602,12 +614,14 @@ namespace wg
 		
 		Size size = m_bHorizontal?Size(length,breadth):Size(breadth,length);
 
+
+
 //TODO: This optimization was incorrect. Wrap-text might need a different MatchingHeight although preferred size remains the same.
 // This happens when a line, that isn't the longest line, needs to wrap. Find a better optimization.
 
-//		if( size != m_preferredSize )
+//		if( size != m_preferredContentSize )
 		{
-			m_preferredSize = size;
+			m_preferredContentSize = size;
 			_requestResize();
 		}
 	}
@@ -620,8 +634,15 @@ namespace wg
 	        return;
 	    
 		Size sz = size();
+		Coord contentOfs;
+
+		if (m_pSkin)
+		{
+			sz -= m_pSkin->contentPadding();
+			contentOfs = m_pSkin->contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
+		}
 		
-		int wantedLength = m_bHorizontal?m_preferredSize.w:m_preferredSize.h;
+		int wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
 		int givenLength = m_bHorizontal?sz.w:sz.h;
 		int givenBreadth = m_bHorizontal?sz.h:sz.w;
 	
@@ -651,6 +672,7 @@ namespace wg
 						pos.y += p->preferredSize.h;
 					}
 					geo -= p->padding;
+					geo += contentOfs;
 	            
 					if( geo != p->geo )
 					{
@@ -673,8 +695,8 @@ namespace wg
 					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
 						_requestRender(p->geo);
 	
-					p->geo.x = pos.x;
-					p->geo.y = pos.y;
+					p->geo.x = pos.x + contentOfs.x;
+					p->geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -724,6 +746,7 @@ namespace wg
 						pos.y += pI->output;
 					}
 					geo -= pS->padding;
+					geo += contentOfs;
 				
 					if( geo != pS->geo )
 					{	
@@ -745,8 +768,8 @@ namespace wg
 					if( bRequestRender && pS->geo.w != 0 && pS->geo.h != 0 )
 						_requestRender(pS->geo);
 	
-					pS->geo.x = pos.x;
-					pS->geo.y = pos.y;
+					pS->geo.x = pos.x + contentOfs.x;
+					pS->geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;

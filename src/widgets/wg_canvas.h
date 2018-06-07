@@ -74,7 +74,14 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Canvas_p		cast( Object * pObject );
-	
+
+		//.____ Geometry ____________________________________________
+
+		virtual int		matchingHeight(int width) const;
+		virtual int		matchingWidth( int height ) const;
+
+		Size			preferredSize() const;
+
 	
 	protected:
 		Canvas();

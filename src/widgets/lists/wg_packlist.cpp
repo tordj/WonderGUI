@@ -725,15 +725,20 @@ namespace wg
 
 		for (int i = 0; i < nb; i++)
 		{
-			Widget * pChild = pSlot[i].pWidget;
-			Size pref = _paddedLimitedPreferredSize(pChild);
-			if (m_bHorizontal)
-				_subFromContentPreferredSize(pref.w, pref.h);
-			else
-				_subFromContentPreferredSize(pref.h, pref.w);
+			if (pSlot[i].bVisible)
+			{
+				pSlot[i].bVisible = false;
 
-			m_contentLength -= pSlot[i].length;
-			pSlot[i].length = 0;
+				Widget * pChild = pSlot[i].pWidget;
+				Size pref = _paddedLimitedPreferredSize(pChild);
+				if (m_bHorizontal)
+					_subFromContentPreferredSize(pref.w, pref.h);
+				else
+					_subFromContentPreferredSize(pref.h, pref.w);
+
+				m_contentLength -= pSlot[i].length;
+				pSlot[i].length = 0;
+			}
 		}
 
 		_updateChildOfsFrom(pSlot);
@@ -748,40 +753,45 @@ namespace wg
 
 		for (int i = 0; i < nb; i++)
 		{
-			Widget * pChild = pSlot[i].pWidget;
-			Size pref = _paddedLimitedPreferredSize(pChild);
-
-			if (m_bHorizontal)
+			if (!pSlot[i].bVisible)
 			{
-				_addToContentPreferredSize(pref.w, pref.h);
+				pSlot[i].bVisible = true;
 
-				// Get entry length and breadth
+				Widget * pChild = pSlot[i].pWidget;
+				Size pref = _paddedLimitedPreferredSize(pChild);
 
-				if (pref.h == m_contentBreadth)
-					pSlot[i].length = pref.w;
+				if (m_bHorizontal)
+				{
+					_addToContentPreferredSize(pref.w, pref.h);
+
+					// Get entry length and breadth
+
+					if (pref.h == m_contentBreadth)
+						pSlot[i].length = pref.w;
+					else
+						pSlot[i].length = _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
+					pSlot[i].prefBreadth = pref.h;
+				}
 				else
-					pSlot[i].length = _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
-				pSlot[i].prefBreadth = pref.h;
+				{
+					_addToContentPreferredSize(pref.h, pref.w);
+
+					// Get entry length and breadth
+
+					if (pref.w == m_contentBreadth)
+						pSlot[i].length = pref.h;
+					else
+						pSlot[i].length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
+					pSlot[i].prefBreadth = pref.w;
+
+				}
+
+				m_contentLength += pSlot[i].length;
+
+				Rect childGeo;
+				_getChildGeo(childGeo, pSlot + i);
+				pChild->_setSize(childGeo);
 			}
-			else
-			{
-				_addToContentPreferredSize(pref.h, pref.w);
-
-				// Get entry length and breadth
-
-				if (pref.w == m_contentBreadth)
-					pSlot[i].length = pref.h;
-				else
-					pSlot[i].length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
-				pSlot[i].prefBreadth = pref.w;
-
-			}
-
-			m_contentLength += pSlot[i].length;
-
-			Rect childGeo;
-			_getChildGeo(childGeo, pSlot+i);
-			pChild->_setSize(childGeo);
 		}
 
 		// Finish up

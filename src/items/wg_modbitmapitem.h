@@ -58,6 +58,7 @@ namespace wg
 
 
 		bool			setDevice(GfxDevice * pDevice);
+		bool			setSurfaceFactory(SurfaceFactory * pFactory);
 		void			setLostCallback(std::function<void(ModBitmap*)> func);
 		bool			setPixelType(PixelType format);
 		bool			setBitmapSize(Size sz);
@@ -68,15 +69,18 @@ namespace wg
 		void			setOrigo(Origo origo);
 		void			present();
 		void			present(Rect area);
+		Size			preferredSize() const;
+
 
 	protected:
 		GfxDevice_p		m_pDevice;
-		PixelType		m_pixelType;
-		Size			m_fixedSize;
-		SizePolicy2D	m_presentationScaling;
-		Origo			m_origo;
-		Color			m_backColor;
+		SurfaceFactory_p m_pFactory;
 		Surface_p		m_pSurface;
+		Size			m_fixedSize;
+		PixelType		m_pixelType				= PixelType::BGR_8;
+		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Default;
+		Origo			m_origo					= Origo::NorthWest;
+		Color			m_backColor				= Color::White;
 		ModBitmap *		m_pInterface;
 
 		std::function<void(ModBitmap*)>	m_bitmapLostCallback;

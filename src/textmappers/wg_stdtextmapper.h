@@ -55,7 +55,7 @@ namespace wg
 		Origo			alignment() const { return m_alignment; }
 
 		void			setLineWrap(bool wrap);
-		bool			lineWrapt() const { return m_bLineWrap; }
+		bool			lineWrap() const { return m_bLineWrap; }
 
 
 		//.____ Misc __________________________________________________

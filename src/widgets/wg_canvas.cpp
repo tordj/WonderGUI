@@ -69,6 +69,50 @@ namespace wg
 		return 0;
 	}
 	
+	//____ matchingHeight() ___________________________________________________
+
+	int Canvas::matchingHeight(int width) const
+	{
+		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
+		// ratio we simply stick to 16 pixels.
+
+		Size sz = m_canvas.preferredSize();
+
+		if (sz.h == 0 || sz.w == 0)
+			return 16;
+
+		return width * sz.h / sz.w;
+	}
+
+	//____ matchingWidth() ____________________________________________________
+
+	int Canvas::matchingWidth(int height) const
+	{
+		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
+		// ratio we simply stick to 16 pixels.
+
+		Size sz = m_canvas.preferredSize();
+
+		if (sz.h == 0 || sz.w == 0)
+			return 16;
+
+		return height * sz.w / sz.h;
+	}
+
+	//____ preferredSize() ____________________________________________________
+
+	Size Canvas::preferredSize() const
+	{
+		Size sz = m_canvas.preferredSize();
+		if (sz.w == sz.h == 0)
+			sz = { 16,16 };
+
+		if (m_pSkin)
+			sz += m_pSkin->contentPadding();
+
+		return sz;
+	}
+
 	//____ _cloneContent() ____________________________________________________
 	
 	void Canvas::_cloneContent( const Widget * _pOrg )
@@ -122,7 +166,7 @@ namespace wg
 
 		Coord itemOfs = ofs; 
 		if( m_pSkin )
-			itemOfs += m_pSkin->contentOfs(m_state);
+			itemOfs -= m_pSkin->contentOfs(m_state);
 
 		return m_canvas.alphaTest(itemOfs, m_markOpacity);
 	}

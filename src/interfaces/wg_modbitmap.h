@@ -41,8 +41,11 @@ namespace wg
 
 		ModBitmap(ModBitmapItem* pItem) : m_pItem(pItem) {}
 
-		bool			setDevice(GfxDevice_p pDevice) { return m_pItem->setDevice(pDevice); }
+		bool			setDevice(GfxDevice * pDevice) { return m_pItem->setDevice(pDevice); }
 		GfxDevice_p		device() const { return m_pItem->m_pDevice; }
+
+		bool			setSurfaceFactory(SurfaceFactory * pFactory) { return m_pItem->setSurfaceFactory(pFactory); }
+		SurfaceFactory_p	surfaceFactory() const { return m_pItem->m_pFactory; }
 
 		void			setBitmapLostCallback(std::function<void(ModBitmap*)> func) { m_pItem->setLostCallback(func); }
 		std::function<void(ModBitmap*)>	bitmapLostCallback() const { return m_pItem->m_bitmapLostCallback; }

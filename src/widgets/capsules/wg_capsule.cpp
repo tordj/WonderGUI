@@ -240,7 +240,9 @@ namespace wg
 	{
 		pSlot->replaceWidget( this, pWidget );
 
-		pWidget->_setSize(size());
+		if( pWidget )
+			pWidget->_setSize(size());
+
 		_requestRender();
 		_requestResize();
 	}

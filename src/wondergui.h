@@ -141,6 +141,7 @@
 #include <wg_stackpanel.h>
 #include <wg_animplayer.h>
 #include <wg_button.h>
+#include <wg_canvas.h>
 #include <wg_container.h>
 #include <wg_filler.h>
 #include <wg_fpsdisplay.h>
