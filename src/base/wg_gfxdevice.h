@@ -116,10 +116,12 @@ namespace wg
 		virtual void	blit( Surface * pSrc, Coord dest );
 		virtual void	blit( Surface * pSrc, const Rect& src, Coord dest ) = 0;
 	
+		virtual void	stretchBlit(Surface * pSrc);
 		virtual void	stretchBlit( Surface * pSrc, const Rect& dest );
 		virtual void	stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest );
 		virtual void	stretchBlit(Surface * pSrc, const RectF& src, const Rect& dest) = 0;
 
+		virtual void	tileBlit(Surface * pSrc);
 		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
 		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
 	
@@ -130,10 +132,12 @@ namespace wg
 		virtual void	clipBlit( const Rect& clip, Surface * pSrc, Coord dest  );
 		virtual void	clipBlit( const Rect& clip, Surface * pSrc, const Rect& src, Coord dest  );
 	
+		virtual void	clipStretchBlit(const Rect& clip, Surface * pSrc);
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
 		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& src, const Rect& dest );
 	
+		virtual void	clipTileBlit(const Rect& clip, Surface * pSrc);
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
 

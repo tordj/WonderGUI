@@ -21,9 +21,11 @@
 =========================================================================*/
 
 #include <wg_softgfxdevice.h>
+#include <wg_softsurfacefactory.h>
 #include <wg_util.h>
 #include <math.h>
 #include <algorithm>
+#include <cstdlib>
 #include <wg_base.h>
 
 #include <assert.h>
@@ -45,7 +47,7 @@ namespace wg
 		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
 	
-	SoftGfxDevice_p SoftGfxDevice::create( SoftSurface * pCanvas )
+	SoftGfxDevice_p SoftGfxDevice::create( Surface * pCanvas )
 	{
 		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
 	}
@@ -66,7 +68,7 @@ namespace wg
 		
 	}
 	
-	SoftGfxDevice::SoftGfxDevice( SoftSurface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
+	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
 		m_bEnableCustomFunctions = false;
 		m_bUseCustomFunctions = false;
@@ -289,16 +291,33 @@ namespace wg
                 }
                 else
                 {
-                    for( int y = 0 ; y < rect.h ; y++ )
-                    {
-                        for( int x = 0 ; x < rect.w*pixelBytes ; x+=pixelBytes )
-                        {
-                            pDst[x] = fillColor.b;
-                            pDst[x+1] = fillColor.g;
-                            pDst[x+2] = fillColor.r;
-                        }
-                        pDst +=m_canvasPitch;
-                    }
+					if (m_canvasPixelBits == 24)
+					{
+						for (int y = 0; y < rect.h; y++)
+						{
+							for (int x = 0; x < rect.w*pixelBytes; x += pixelBytes)
+							{
+								pDst[x] = fillColor.b;
+								pDst[x + 1] = fillColor.g;
+								pDst[x + 2] = fillColor.r;
+							}
+							pDst += m_canvasPitch;
+						}
+					}
+					else
+					{
+						for (int y = 0; y < rect.h; y++)
+						{
+							for (int x = 0; x < rect.w*pixelBytes; x += pixelBytes)
+							{
+								pDst[x] = fillColor.b;
+								pDst[x + 1] = fillColor.g;
+								pDst[x + 2] = fillColor.r;
+								pDst[x + 3] = fillColor.a;
+							}
+							pDst += m_canvasPitch;
+						}
+					}
                 }
                 break;
             }
@@ -315,17 +334,40 @@ namespace wg
 				int storedGreen = ((int)fillColor.g) * fillColor.a;
 				int storedBlue = ((int)fillColor.b) * fillColor.a;
 				int invAlpha = 255-fillColor.a;
-	
-				for( int y = 0 ; y < rect.h ; y++ )
+
+				if (m_canvasPixelBits == 24)
 				{
-					for( int x = 0 ; x < rect.w*pixelBytes ; x+= pixelBytes )
+					for (int y = 0; y < rect.h; y++)
 					{
-						pDst[x] = m_pDivTab[pDst[x]*invAlpha + storedBlue];
-						pDst[x+1] = m_pDivTab[pDst[x+1]*invAlpha + storedGreen];
-						pDst[x+2] = m_pDivTab[pDst[x+2]*invAlpha + storedRed];
+						for (int x = 0; x < rect.w*pixelBytes; x += pixelBytes)
+						{
+							pDst[x] = m_pDivTab[pDst[x] * invAlpha + storedBlue];
+							pDst[x + 1] = m_pDivTab[pDst[x + 1] * invAlpha + storedGreen];
+							pDst[x + 2] = m_pDivTab[pDst[x + 2] * invAlpha + storedRed];
+						}
+						pDst += m_canvasPitch;
 					}
-					pDst +=m_canvasPitch;
 				}
+				else
+				{
+					int storedAlpha = 255 * fillColor.a;
+
+					for (int y = 0; y < rect.h; y++)
+					{
+						for (int x = 0; x < rect.w*pixelBytes; x += pixelBytes)
+						{
+							pDst[x] = m_pDivTab[pDst[x] * invAlpha + storedBlue];
+							pDst[x + 1] = m_pDivTab[pDst[x + 1] * invAlpha + storedGreen];
+							pDst[x + 2] = m_pDivTab[pDst[x + 2] * invAlpha + storedRed];
+							pDst[x + 3] = m_pDivTab[pDst[x + 3] * invAlpha + storedAlpha];
+						}
+						pDst += m_canvasPitch;
+					}
+
+				}
+
+
+
 				break;
 			}
 			case BlendMode::Add:
@@ -2976,8 +3018,8 @@ namespace wg
 
 	void SoftGfxDevice::_move_32A_to_32A(const uint8_t * pSrc, int srcPitch, uint8_t * pDst, int dstPitch, int nLines, int lineLength)
 	{
-		int srcPitchAdd = srcPitch - lineLength;
-		int dstPitchAdd = dstPitch - lineLength;
+		int srcPitchAdd = srcPitch/4 - lineLength;
+		int dstPitchAdd = dstPitch/4 - lineLength;
 
 		uint32_t * pS = (uint32_t*)pSrc;
 		uint32_t * pD = (uint32_t*)pDst;

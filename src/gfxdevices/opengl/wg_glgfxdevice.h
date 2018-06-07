@@ -51,7 +51,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create( Size canvasSize );
+		static GlGfxDevice_p	create( const Rect& viewport );
+		static GlGfxDevice_p	create( GlSurface * pCanvas );
 
 		//.____ Identification __________________________________________
 
@@ -67,7 +68,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas( Size dimensions );
+		bool	setCanvas( const Rect& viewport );
 		bool	setCanvas( Surface * pCanvas );
 
 		//.____ State _________________________________________________
@@ -104,7 +105,9 @@ namespace wg
 
 
 	protected:
-		GlGfxDevice( Size canvas );
+		GlGfxDevice(Size viewportSize);
+		GlGfxDevice( const Rect& viewport );
+		GlGfxDevice(GlSurface * pCanvas);
 		~GlGfxDevice();
 
 		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
@@ -126,7 +129,8 @@ namespace wg
 		GLuint		m_framebufferId;
 		bool		m_bFlipY;
 
-		Size		m_defaultFramebufferSize;
+		Rect		m_defaultCanvasViewport;		// Viewport for the framebuffer outpout. Y-coord is inverted in GL fashion.
+		Rect		m_canvasViewport;				// Viewport for the current canvas. Y-coord is inverted in GL fashion.
 
 
         // Device programs
@@ -168,6 +172,8 @@ namespace wg
 		GLint	m_horrWaveProgFrontFillLoc;
 		GLint	m_horrWaveProgBackFillLoc;
 
+		GLuint  m_dummyBuffer;
+
         GLuint  m_vertexArrayId;
         GLuint  m_vertexBufferId;
         GLfloat m_vertexBufferData[8];         // Space to store a quad (through triangle strip)
@@ -189,6 +195,7 @@ namespace wg
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
 		Size		m_size;
+
 
 	};
 } // namespace wg

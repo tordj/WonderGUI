@@ -37,7 +37,7 @@ namespace wg
 
 	Size GlSurface::maxSize()
 	{
-		GLint max = 0;
+		GLint max = 1024;
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max);
 		return Size(max,max);
 	}
@@ -85,11 +85,8 @@ namespace wg
         _setPixelDetails(type);
         m_size	= size;
         m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
+    	m_pBlob = Blob::create(m_pitch*m_size.h);
 		
-        glGenBuffers( 1, &m_buffer );
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, 0, GL_STATIC_DRAW );
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
@@ -101,6 +98,8 @@ namespace wg
 
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
                      m_accessFormat, GL_UNSIGNED_BYTE, NULL );
+
+        assert( glGetError() == 0 );
     }
     
     
@@ -113,10 +112,7 @@ namespace wg
         _setPixelDetails(type);
         m_size	= size;
         m_pitch = pitch;
-		
-        glGenBuffers( 1, &m_buffer );
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, pBlob->data(), GL_STREAM_DRAW );
+		m_pBlob = pBlob;
 
 		glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
@@ -127,9 +123,9 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-			m_accessFormat, GL_UNSIGNED_BYTE, NULL );
+			m_accessFormat, GL_UNSIGNED_BYTE, m_pBlob->data() );
 
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+		assert( glGetError() == 0);
 	}
    
     GlSurface::GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
@@ -139,16 +135,12 @@ namespace wg
        _setPixelDetails(type);
         m_size	= size;
         m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
-        Blob_p pBlob = Blob::create(m_pitch*m_size.h);
+        m_pBlob = Blob::create(m_pitch*m_size.h);
         
-        m_pPixels = (uint8_t *) pBlob->data();
+        m_pPixels = (uint8_t *) m_pBlob->data();
         _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
         m_pPixels = 0;
-        
-        glGenBuffers( 1, &m_buffer );
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*size.h, pBlob->data(), GL_STREAM_DRAW );
-        
+       
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -158,9 +150,9 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 		
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-                     m_accessFormat, GL_UNSIGNED_BYTE, NULL );
+                     m_accessFormat, GL_UNSIGNED_BYTE, m_pBlob->data() );
         
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+ 		assert( glGetError() == 0);
     }
 
 
@@ -171,15 +163,11 @@ namespace wg
         _setPixelDetails(pOther->pixelFormat()->type);
         m_size	= pOther->size();
         m_pitch = m_size.w * m_pixelSize;
-        Blob_p pBlob = Blob::create(m_pitch*m_size.h);
+        m_pBlob = Blob::create(m_pitch*m_size.h);
         
-        m_pPixels = (uint8_t *) pBlob->data();
+        m_pPixels = (uint8_t *) m_pBlob->data();
         _copyFrom( pOther->pixelFormat(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
         m_pPixels = 0;
-        
-        glGenBuffers( 1, &m_buffer );
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-        glBufferData( GL_PIXEL_UNPACK_BUFFER, m_pitch*m_size.h, pBlob->data(), GL_STREAM_DRAW );
         
         glGenTextures( 1, &m_texture );
         glBindTexture( GL_TEXTURE_2D, m_texture );
@@ -190,9 +178,9 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 		
         glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-                     m_accessFormat, GL_UNSIGNED_BYTE, NULL );
+                     m_accessFormat, GL_UNSIGNED_BYTE, m_pBlob->data() );
         
-        glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+		assert( glGetError() == 0);
     }
     
     
@@ -220,9 +208,6 @@ namespace wg
 	GlSurface::~GlSurface()
 	{
 		// Free the stuff
-
-		if( m_buffer )
-			glDeleteBuffers ( 1, &m_buffer );
 
 		glDeleteTextures( 1, &m_texture );
 	}
@@ -258,6 +243,7 @@ namespace wg
 
 	void GlSurface::setScaleMode( ScaleMode mode )
 	{
+        assert( glGetError() == 0 );
 		switch( mode )
 		{
 			case ScaleMode::Interpolate:
@@ -275,6 +261,7 @@ namespace wg
 		}
 		
 		Surface::setScaleMode(mode);
+        assert( glGetError() == 0 );
 	}
 
 	//____ size() ______________________________________________________________
@@ -288,7 +275,7 @@ namespace wg
 
 	bool GlSurface::isOpaque() const
 	{
-		if( m_buffer && m_internalFormat == GL_RGB )
+		if( m_internalFormat == GL_RGB )
 			return true;
 
 		return false;
@@ -301,23 +288,10 @@ namespace wg
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
 
-		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
+		if (m_bBackingBufferStale)
+			_refreshBackingBuffer();
 
-		switch( mode )
-		{
-			case AccessMode::ReadOnly:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_ONLY );
-				break;
-			case AccessMode::WriteOnly:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY );
-				break;
-			case AccessMode::ReadWrite:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE );
-				break;
-			default:
-				break;	// Should never happen, just here to avoid compiler warnings...
-		}
-
+    	m_pPixels = (uint8_t*) m_pBlob->data();
 		m_lockRegion = Rect(0,0,m_size);
 		m_accessMode = mode;
 		return m_pPixels;
@@ -330,26 +304,13 @@ namespace wg
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
 
+		if (m_bBackingBufferStale)
+			_refreshBackingBuffer();
+
 		if( region.x + region.w > m_size.w || region.y + region.w > m_size.h || region.x < 0 || region.y < 0 )
 			return 0;
 
-		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-
-		switch( mode )
-		{
-			case AccessMode::ReadOnly:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_ONLY );
-				break;
-			case AccessMode::WriteOnly:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY );
-				break;
-			case AccessMode::ReadWrite:
-				m_pPixels = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_WRITE );
-				break;
-			default:
-				break;	// Should never happen, just here to avoid compiler warnings...
-		}
-
+    	m_pPixels = (uint8_t*) m_pBlob->data();
 		m_lockRegion = region;
 		m_accessMode = mode;
 		return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
@@ -360,26 +321,21 @@ namespace wg
 
 	void GlSurface::unlock()
 	{
-		AccessMode a = AccessMode::None;
-		
-
-		if(a == AccessMode::None )
+        assert( glGetError() == 0 );
+		if(m_accessMode == AccessMode::None )
 			return;
-
-		glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
 
 		if( m_accessMode != AccessMode::ReadOnly )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_texture );
-	//		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, m_accessFormat, GL_UNSIGNED_BYTE, 0 );
+        	glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, m_accessFormat, GL_UNSIGNED_BYTE, m_pBlob->data() );
 	//		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 		}
-		glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
 		m_lockRegion.w = 0;
 		m_lockRegion.h = 0;
+        assert( glGetError() == 0 );
 	}
 
 
@@ -387,20 +343,15 @@ namespace wg
 
 	uint32_t GlSurface::pixel( Coord coord ) const
 	{
+//		if (m_bBackingBufferStale)
+//			_refreshBackingBuffer();
+
 		if( m_accessMode != AccessMode::WriteOnly )
 		{
 			uint32_t val;
 
-			if( m_accessMode == AccessMode::None )
-			{
-				// Quick lock of surface
+				uint8_t * pPixel = (uint8_t*) m_pBlob->data();
 
-				glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-				uint8_t * pPixel = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_ONLY );
-
-				//
-
-				 pPixel += (m_size.w*coord.y+coord.x)*m_pixelSize;
 				switch( m_pixelSize )
 				{
 					case 1:
@@ -411,27 +362,6 @@ namespace wg
 						val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
 					default:
 						val = *((uint32_t*) pPixel);
-				}
-
-				// Quick unlock of surface
-
-				glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
-				glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
-			}
-			else
-			{
-				uint8_t * pPixel = m_pPixels + (m_size.w*coord.y+coord.x)*m_pixelSize;
-				switch( m_pixelSize )
-				{
-					case 1:
-						val = (uint32_t) *pPixel;
-					case 2:
-						val = (uint32_t) ((uint16_t*) pPixel)[0];
-					case 3:
-					   val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
-					default:
-						val = *((uint32_t*) pPixel);
-				}
 			}
 
 			return val;
@@ -446,36 +376,74 @@ namespace wg
 
 	uint8_t GlSurface::alpha( Coord coord ) const
 	{
-        if( m_accessFormat == GL_RGBA8 && m_accessMode != AccessMode::WriteOnly )
-        {
-            uint8_t a;
-            
-            if( m_accessMode == AccessMode::None )
-            {
-                // Quick lock of surface
-                
-                glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_buffer );
-                uint8_t * pPixel = (uint8_t*) glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_READ_ONLY );
-                
-                //
-                
-                a = pPixel[(m_size.w*coord.y+coord.x)*m_pixelSize+3];
-                
-                // Quick unlock of surface
-                
-                glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
-                glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
-                
-            }
-            else
-            {
-                a = m_pPixels[(m_size.w*coord.y+coord.x)*m_pixelSize+3];
-            }
-            
-            return a;
-        }
-        else
-            return 255;
+//		if (m_bBackingBufferStale)
+//			_refreshBackingBuffer();
 
+		if( m_pixelFormat.type == PixelType::BGRA_8 )
+        {
+			uint8_t * p = (uint8_t*) m_pBlob->data();
+			return p[coord.y*m_pitch+coord.x*4+3];            
+		}
+		else
+			return 255;            
 	}
+                
+	//____ unload() ___________________________________________________________
+
+	bool GlSurface::unload()
+	{
+		if( m_texture == 0 )
+			return true;
+                
+		glDeleteTextures( 1, &m_texture );
+		m_texture = 0;
+                
+		assert(glGetError() == 0);	
+		return true;
+	}
+
+	//____ isLoaded() _________________________________________________________
+
+	bool GlSurface::isLoaded()
+	{
+		return (m_texture == 0);
+	}
+
+	//____ reloaded() _________________________________________________________
+
+	void GlSurface::reload()
+	{
+		assert(glGetError() == 0);
+
+		glGenTextures( 1, &m_texture );
+		glBindTexture( GL_TEXTURE_2D, m_texture );
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+	
+		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
+					 m_accessFormat, GL_UNSIGNED_BYTE, m_pBlob->data() );
+    
+		assert( glGetError() == 0);	
+	}
+
+	//____ _refreshBackingBuffer() ____________________________________________
+
+	void GlSurface::_refreshBackingBuffer()
+	{
+		assert(glGetError() == 0);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, GL_UNSIGNED_INT_8_8_8_8_REV, m_pBlob->data());
+
+		GLenum err;
+		assert(0 == (err = glGetError()));
+
+		m_bBackingBufferStale = false;
+	}
+
+
+
+
 } // namespace wg

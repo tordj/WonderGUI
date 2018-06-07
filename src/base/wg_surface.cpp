@@ -254,13 +254,13 @@ namespace wg
 	
 				for( int y = 0 ; y < h ; y++ )
 				{
-					for( int x = 0 ; x < w ; x++ )
+					for( int x = 0 ; x < w*3 ;  )
 					{
 						pDest[x++] = one;
 						pDest[x++] = two;
 						pDest[x++] = three;
 					}
-					pDest += p - w*3;
+					pDest += p;
 				}
 				break;
 			}

@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <cmath>
+#include <cstdlib>
 
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
@@ -315,9 +316,9 @@ namespace wg
     
 	//____ create() _______________________________________________________________
 	
-	GlGfxDevice_p GlGfxDevice::create( Size canvasSize )
+	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport )
 	{
-		GlGfxDevice_p p(new GlGfxDevice( canvasSize ));
+		GlGfxDevice_p p(new GlGfxDevice( viewport ));
 		
 		GLenum err = glGetError();
 		if( err != 0 )
@@ -326,18 +327,39 @@ namespace wg
 		return p;
 	}
 
+	GlGfxDevice_p GlGfxDevice::create( GlSurface * pSurface )
+	{
+		GlGfxDevice_p p(new GlGfxDevice(pSurface));
 
+		GLenum err = glGetError();
+		if (err != 0)
+			return GlGfxDevice_p(nullptr);
+
+		return p;
+	}
 	//____ Constructor _____________________________________________________________
 
-	GlGfxDevice::GlGfxDevice( Size canvas ) : GfxDevice(canvas)
+	GlGfxDevice::GlGfxDevice(GlSurface * pSurface) : GlGfxDevice(pSurface->size())
+	{
+		setCanvas(pSurface);
+	}
+
+	GlGfxDevice::GlGfxDevice(const Rect& viewport) : GlGfxDevice(viewport.size())
+	{
+		setCanvas(viewport);
+	}
+
+	GlGfxDevice::GlGfxDevice( Size viewportSize ) : GfxDevice(viewportSize)
 	{
 		m_bRendering = false;
 		m_bFlipY = true;
         _initTables();
-        
-        
+          
         m_fillProg = _createGLProgram( fillVertexShader, fillFragmentShader );
         m_fillProgColorLoc = glGetUniformLocation( m_fillProg, "color");
+
+		GLint err = glGetError();
+		assert( err == 0 );
 
         m_aaFillProg = _createGLProgram( fillVertexShader, aaFillFragmentShader );
         m_aaFillProgColorLoc = glGetUniformLocation( m_aaFillProg, "color");
@@ -384,17 +406,33 @@ namespace wg
  
 		glGenFramebuffers(1, &m_framebufferId);
 
+    	// For some unknown reason this causes issues with techture bliting in the second open instance
+    	// For now only turn this on for products that needs it (i.e. Weiss plug-ins)
+		//   if(g_bSoftubeProductUseCodeInDevelopment)
+    	{
 		glGenTextures(1, &m_horrWaveBufferTexture);
 		glGenBuffers(1, &m_horrWaveBufferTextureData);
+        	glGenBuffers(1, &m_dummyBuffer);
 
-        setCanvas( canvas );
+        }
         setTintColor( Color::White );        
+
+		assert( glGetError() == 0 );      
     }
 
 	//____ Destructor ______________________________________________________________
 
 	GlGfxDevice::~GlGfxDevice()
 	{
+		assert( glGetError() == 0 );
+		glDeleteBuffers(1, &m_vertexBufferId);
+		glDeleteBuffers(1, &m_texCoordBufferId);
+		glDeleteBuffers(1, &m_dummyBuffer);
+		assert( glGetError() == 0 );
+		glDeleteVertexArrays(1, &m_vertexArrayId);
+		assert( glGetError() == 0 );
+		glDeleteVertexArrays(1, &m_texCoordArrayId);
+		assert( glGetError() == 0 );
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -443,24 +481,34 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool GlGfxDevice::setCanvas( Size dimensions )
+	bool GlGfxDevice::setCanvas( const Rect& viewport )
 	{
+		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
+		// This method can be called without us having our GL-context.
+        
 		m_pCanvas					= nullptr;
 		m_bFlipY					= true;
-		m_canvasSize 				= dimensions; 
-		m_defaultFramebufferSize	= dimensions;
-		_updateProgramDimensions();
+		m_defaultCanvasViewport		= viewport;
+
+		m_canvasViewport			= m_defaultCanvasViewport;
+		m_canvasViewport.y          = -m_defaultCanvasViewport.y;
+		m_canvasSize 				= m_defaultCanvasViewport.size(); 
 
 		if (m_bRendering)
+		{
+			_updateProgramDimensions();
 			return _setFramebuffer();
-
+		}
 		return true;
 	}
 
 	bool GlGfxDevice::setCanvas( Surface * _pSurface )
 	{
+		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
+		// This method can be called without us having our GL-context.
+
 		if (!_pSurface)
-			return setCanvas(m_defaultFramebufferSize);		// Revert back to default frame buffer.
+			return setCanvas(m_defaultCanvasViewport);		// Revert back to default frame buffer.
 
 		GlSurface * pSurface = GlSurface::cast(_pSurface);
 		if (!pSurface)
@@ -468,12 +516,14 @@ namespace wg
 
 		m_pCanvas		= pSurface;
 		m_bFlipY		= false;
-		m_canvasSize	= pSurface->size();
-		_updateProgramDimensions();
+		m_canvasViewport = { 0,0,pSurface->size() };
+		m_canvasSize = m_canvasViewport.size();
 
 		if (m_bRendering)
+		{
+			_updateProgramDimensions();
 			return _setFramebuffer();
-
+		}
 		return true;
 	}
 
@@ -481,10 +531,15 @@ namespace wg
 
 	bool GlGfxDevice::_setFramebuffer()
 	{
+		assert( glGetError() == 0 );
+
 		if (m_pCanvas)
 		{
+			auto pCanvas = GlSurface::cast(m_pCanvas);
+			pCanvas->m_bBackingBufferStale = true;
+
 			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
-			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GlSurface::cast(m_pCanvas)->getTexture(), 0);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
 
 			GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers(1, drawBuffers);
@@ -498,9 +553,10 @@ namespace wg
 		else
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
-		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+		glScissor(m_canvasViewport.x, m_canvasViewport.y, m_canvasViewport.w, m_canvasViewport.h);
+		glViewport(m_canvasViewport.x, m_canvasViewport.y, m_canvasViewport.w, m_canvasViewport.h);
 
+        assert( glGetError() == 0 );
 		return true;
 	}
 
@@ -509,6 +565,8 @@ namespace wg
 
 	void GlGfxDevice::_updateProgramDimensions()
 	{
+        assert( glGetError() == 0 );
+
 		glUseProgram(m_fillProg);
 		GLint dimLoc = glGetUniformLocation(m_fillProg, "dimensions");
 		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
@@ -538,6 +596,7 @@ namespace wg
 		dimLoc = glGetUniformLocation(m_horrWaveProg, "dimensions");
 		glUniform2f(dimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
 
+        assert( glGetError() == 0 );
 	}
 
 
@@ -557,6 +616,8 @@ namespace wg
 
 	bool GlGfxDevice::setBlendMode( BlendMode blendMode )
 	{
+        assert( glGetError() == 0 );
+
 		if( blendMode != BlendMode::Blend && blendMode != BlendMode::Replace && 
 			blendMode != BlendMode::Add && blendMode != BlendMode::Subtract && blendMode != BlendMode::Multiply &&
 			blendMode != BlendMode::Invert )
@@ -566,6 +627,7 @@ namespace wg
 		if( m_bRendering )
 			_setBlendMode(blendMode);
 
+        assert( glGetError() == 0 );
 		return true;
 	}
 
@@ -573,6 +635,7 @@ namespace wg
 
 	bool GlGfxDevice::beginRender()
 	{
+		assert( glGetError() == 0 );
 
         if( m_bRendering == true )
 			return false;
@@ -598,6 +661,10 @@ namespace wg
 		glDisable(GL_DEPTH_TEST);
         glEnable(GL_SCISSOR_TEST);
 
+		// Update program dimensions
+
+		_updateProgramDimensions();
+        
 		// Set correct framebuffer
 
 		_setFramebuffer();
@@ -608,6 +675,7 @@ namespace wg
 
         //
 
+		assert( glGetError() == 0 );
 		m_bRendering = true;
 		return true;
 	}
@@ -616,6 +684,7 @@ namespace wg
 
 	bool GlGfxDevice::endRender()
 	{
+    	assert( glGetError() == 0 );
 		if( m_bRendering == false )
 			return false;
 
@@ -637,6 +706,7 @@ namespace wg
 		glScissor(m_glScissorBox[0], m_glScissorBox[1], m_glScissorBox[2], m_glScissorBox[3]);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_glReadFrameBuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_glDrawFrameBuffer);
+    	assert( glGetError() == 0 );
 
 		m_bRendering = false;
 		return true;
@@ -792,7 +862,8 @@ namespace wg
 
         // Set frame coords in GL coordinate space
         
-        glUniform4f( m_aaFillProgFrameLoc, frameX1, m_canvasSize.h - frameY1, frameX2, m_canvasSize.h - frameY2 );
+        glUniform4f( m_aaFillProgFrameLoc, m_canvasViewport.x + frameX1, m_canvasViewport.y + m_canvasSize.h - frameY1, 
+			         m_canvasViewport.x + frameX2, m_canvasViewport.y + m_canvasSize.h - frameY2 );
        
         
         // Convert rect to topLeft and bottomRight coordinates in GL coordinate space
@@ -934,7 +1005,7 @@ namespace wg
 		if ((clip.x <= dest.x) && (clip.x + clip.w > dest.x + srcRect.w) &&
 			(clip.y <= dest.y) && (clip.y + clip.h > dest.y + srcRect.h))
 		{
-			stretchBlitSubPixelWithInvert(pSrc, srcRect.x, srcRect.y, srcRect.w, srcRect.h, dest.x, dest.y, srcRect.w, srcRect.h); // Totally inside clip-rect.
+			stretchBlitSubPixelWithInvert(pSrc, (float) srcRect.x, (float) srcRect.y, (float) srcRect.w, (float) srcRect.h, (float) dest.x, (float) dest.y, (float) srcRect.w, (float) srcRect.h); // Totally inside clip-rect.
 			return;
 		}
 
@@ -966,7 +1037,7 @@ namespace wg
 		if (dest.y + newSrc.h > clip.y + clip.h)
 			newSrc.h = (clip.y + clip.h) - dest.y;
 
-		stretchBlitSubPixelWithInvert(pSrc, newSrc.x, newSrc.y, newSrc.w, newSrc.h, dest.x, dest.y, newSrc.w, newSrc.h);
+		stretchBlitSubPixelWithInvert(pSrc, (float) newSrc.x, (float) newSrc.y, (float) newSrc.w, (float) newSrc.h, (float) dest.x, (float) dest.y, (float) newSrc.w, (float) newSrc.h);
 	}
 
 
@@ -1071,7 +1142,8 @@ namespace wg
 			case BlendMode::Blend:
                 glBlendEquation( GL_FUNC_ADD );
 				glEnable(GL_BLEND);
-				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+				glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 				break;
 
 			case BlendMode::Add:
@@ -1145,9 +1217,9 @@ namespace wg
 	
 	void GlGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
     {
-        glScissor( clip.x, m_canvasSize.h - clip.y - clip.h, clip.w, clip.h );
+        glScissor(m_canvasViewport.x + clip.x, m_canvasViewport.y + m_canvasSize.h - clip.y - clip.h, clip.w, clip.h );
         plotPixels( nCoords, pCoords, pColors );
-        glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
+        glScissor(m_canvasViewport.x, m_canvasViewport.y, m_canvasSize.w, m_canvasSize.h );
     }
     
 
@@ -1218,7 +1290,7 @@ namespace wg
             Color fillColor = color * m_tintColor;
             glUniform4f( m_mildSlopeProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );            
 //            glUniform2f( m_mildSlopeProgStartLoc, beg.x + 0.5, m_canvasSize.h - (beg.y + 0.5));
-            glUniform1f( m_mildSlopeProgSLoc, (beg.x + 0.5f)*slope + (m_canvasSize.h - (beg.y + 0.5f)));
+            glUniform1f( m_mildSlopeProgSLoc, (m_canvasViewport.x + beg.x + 0.5f)*slope + (m_canvasViewport.y + m_canvasSize.h - (beg.y + 0.5f)));
             glUniform1f( m_mildSlopeProgWLoc, width/2 + 0.5f );
             glUniform1f( m_mildSlopeProgSlopeLoc, slope );
             
@@ -1256,7 +1328,7 @@ namespace wg
             Color fillColor = color * m_tintColor;
             glUniform4f( m_steepSlopeProgColorLoc, fillColor.r/255.f, fillColor.g/255.f, fillColor.b/255.f, fillColor.a/255.f );
 //            glUniform2f( m_steepSlopeProgStartLoc, beg.x + 0.5, m_canvasSize.h - (beg.y + 0.5));
-            glUniform1f( m_steepSlopeProgSLoc, (beg.x + 0.5f) + (m_canvasSize.h - (beg.y + 0.5f))*slope );
+            glUniform1f( m_steepSlopeProgSLoc, (m_canvasViewport.x + beg.x + 0.5f) + (m_canvasViewport.y + m_canvasSize.h - (beg.y + 0.5f))*slope );
             glUniform1f( m_steepSlopeProgWLoc, width/2 + 0.5f );
             glUniform1f( m_steepSlopeProgSlopeLoc, slope );
             
@@ -1305,9 +1377,9 @@ namespace wg
 	
 	void GlGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
 	{
-        glScissor( clip.x, m_canvasSize.h - clip.y - clip.h, clip.w, clip.h );
+        glScissor(m_canvasViewport.x + clip.x, m_canvasViewport.y + m_canvasSize.h - clip.y - clip.h, clip.w, clip.h );
         drawLine( begin, end, color, thickness );
-        glScissor( 0, 0, m_canvasSize.w, m_canvasSize.h );
+        glScissor(m_canvasViewport.x, m_canvasViewport.y, m_canvasSize.w, m_canvasSize.h );
 	}
 
 	//____ clipDrawHorrWave() _____________________________________________________
@@ -1377,14 +1449,17 @@ namespace wg
 		}
 
 		top = begin.y + (top >> 8);
-		bottom = begin.y + ((bottom + 255) >> 8);
+        bottom = begin.y + ((bottom + 255) >> 8); // + 1;			//TODO: We should not need +1 here, but we do... What is wrong here?
 
 
 		box.y = top > clip.y ? top : clip.y;
 		box.h = bottom < (clip.y + clip.h) ? bottom - box.y : clip.y + clip.h - box.y;
 
 		if (box.w <= 0 || box.h <= 0)
+        {
+        	Base::memStackRelease(traceBufferSize);
 			return;
+        }
 
 		// Render columns
 
@@ -1503,7 +1578,7 @@ namespace wg
 		glBindTexture(GL_TEXTURE_BUFFER, m_horrWaveBufferTexture);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_R32I, m_horrWaveBufferTextureData);
 		glUniform1i(m_horrWaveProgTexIdLoc, 0);
-		glUniform2f(m_horrWaveProgWindowOfsLoc, (GLfloat)begin.x, (GLfloat)begin.y);
+		glUniform2f(m_horrWaveProgWindowOfsLoc, (GLfloat)(begin.x + m_canvasViewport.x), (GLfloat)(begin.y + m_canvasViewport.y));        // This fragment shader has top-left coordinate system.
 		glUniform4f(m_horrWaveProgTopBorderColorLoc, pTopBorder->color.r / 255.f, pTopBorder->color.g / 255.f, pTopBorder->color.b / 255.f, pTopBorder->color.a / 255.f);
 		glUniform4f(m_horrWaveProgBottomBorderColorLoc, pBottomBorder->color.r / 255.f, pBottomBorder->color.g / 255.f, pBottomBorder->color.b / 255.f, pBottomBorder->color.a / 255.f);
 		glUniform4f(m_horrWaveProgFrontFillLoc, frontFill.r / 255.f, frontFill.g / 255.f, frontFill.b / 255.f, frontFill.a / 255.f);

@@ -26,7 +26,6 @@
 #include <wg_geo.h>
 #include <wg_gfxdevice.h>
 #include <wg_softsurface.h>
-#include <wg_softsurfacefactory.h>
 
 namespace wg 
 {
@@ -81,7 +80,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
-		static SoftGfxDevice_p	create( SoftSurface * pCanvas );
+		static SoftGfxDevice_p	create( Surface * pCanvas );
 	
 		//.____ Identification __________________________________________
 
@@ -137,7 +136,7 @@ namespace wg
 		
 	protected:
 		SoftGfxDevice();
-		SoftGfxDevice( SoftSurface * pCanvas );
+		SoftGfxDevice( Surface * pCanvas );
 		~SoftGfxDevice();
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
@@ -297,7 +296,7 @@ namespace wg
 
 		//
 
-		SoftSurfaceFactory_p	m_pSurfaceFactory;
+		SurfaceFactory_p	m_pSurfaceFactory;
 
 		int				m_lineThicknessTable[17];
 		uint8_t *		m_pDivTab;

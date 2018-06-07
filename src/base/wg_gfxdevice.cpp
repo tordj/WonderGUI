@@ -272,9 +272,15 @@ namespace wg
 	
 	//____ stretchBlit() ___________________________________________________________
 	
+
+	void GfxDevice::stretchBlit(Surface * pSrc)
+	{
+		stretchBlit(pSrc, Rect(0, 0, pSrc->width(), pSrc->height()), Rect(0,0,m_pCanvas->size()));
+	}
+
 	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& dest )
 	{
-		stretchBlit( pSrc, Rect(0, 0, pSrc->width(),pSrc->height()), dest );
+		stretchBlit( pSrc, Rect(0, 0, pSrc->size()), dest );
 	}
 	
 	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest )
@@ -295,6 +301,11 @@ namespace wg
 	}
 	
 	//____ tileBlit() ______________________________________________________________
+
+	void GfxDevice::tileBlit(Surface * _pSrc)
+	{
+		tileBlit(_pSrc, Rect(0, 0, _pSrc->size()), Rect(0, 0, m_pCanvas->size()));
+	}
 	
 	void GfxDevice::tileBlit( Surface * _pSrc, const Rect& _dest )
 	{
@@ -409,6 +420,11 @@ namespace wg
 	
 	//____ clipStretchBlit() _______________________________________________________
 	
+	void GfxDevice::clipStretchBlit(const Rect& clip, Surface * pSrc)
+	{
+		clipStretchBlit(clip, pSrc, Rect(0, 0, pSrc->size()), Rect(0,0,m_pCanvas->size()));
+	}
+
 	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest )
 	{
 		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest );
@@ -468,10 +484,15 @@ namespace wg
 	
 	//____ clipTileBlit() __________________________________________________________
 	
-	void GfxDevice::clipTileBlit( const Rect& clip, Surface * pSrc,
-									  const Rect& dest )
+	void GfxDevice::clipTileBlit(const Rect& clip, Surface * pSrc )
 	{
-		clipTileBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dest );
+		clipTileBlit(clip, pSrc, Rect(0, 0, pSrc->size()), Rect(0,0, m_pCanvas->size() ));
+	}
+
+
+	void GfxDevice::clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest )
+	{
+		clipTileBlit( clip, pSrc, Rect(0,0,pSrc->size()), dest );
 	}
 	
 	
