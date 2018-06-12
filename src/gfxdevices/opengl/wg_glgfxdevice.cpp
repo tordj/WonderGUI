@@ -718,7 +718,7 @@ namespace wg
 
 	void GlGfxDevice::fill( const Rect& _rect, const Color& _col )
 	{
-		if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
+		if( (_col.a  == 0 && m_blendMode == BlendMode::Blend) || _rect.w < 1 || _rect.h < 1 )
 			return;
  
         Color fillColor = _col * m_tintColor;
