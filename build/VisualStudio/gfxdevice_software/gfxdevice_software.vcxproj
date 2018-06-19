@@ -14,7 +14,7 @@
     <ProjectGuid>{C12CBB46-1B0C-4D8F-B85F-10E56096AF2E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>gfxdevice_software</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
