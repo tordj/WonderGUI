@@ -26,7 +26,6 @@
 #include <wg_base.h>
 #include <wg_rootpanel.h>
 #include <wg_panel.h>
-#include <wg_enumextras.h>
 
 namespace wg 
 {

@@ -58,12 +58,12 @@ namespace wg
 		static const char * names[] = { 
 			"Undefined",
 			"Ignore",
-			"Blend",
-			"Invert",
 			"Replace",
+			"Blend",
 			"Add",
 			"Subtract",
-			"Multiply" };
+			"Multiply",
+			"Invert" };
 
 		return names[(int)i];
 	}
@@ -304,14 +304,13 @@ namespace wg
 			"SetTintColor",
 			"SetBlendMode",
 			"Fill",
-			"DrawStraightLine",
 			"PlotPixels",
-			"ClipPlotPixels",
 			"DrawLine",
 			"ClipDrawLine",
+			"ClipDrawLine2",
 			"ClipDrawHorrWave",
 			"Blit",
-			"StretchBlitSubPixel",
+			"StretchBlit",
 			"FillSubPixel",
 			"CreateSurface",
 			"SetSurfaceScaleMode",

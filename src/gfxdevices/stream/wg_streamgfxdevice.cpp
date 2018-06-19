@@ -325,7 +325,7 @@ namespace wg
 		(*m_pStream) << thickness;
 	}
 
-	void StreamGfxDevice::clipDrawLine(const Rect& clip, const Coord& begin, Direction dir, int length, Color col, float thickness)
+	void StreamGfxDevice::clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness)
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::ClipDrawLine2, 24 };
 		(*m_pStream) << clip;

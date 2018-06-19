@@ -116,5 +116,46 @@ namespace test
 
 	};
 
+	class StretchBlitBlends : public TestUnit
+	{
+	public:
+		const string	name() const { return "StretchBlitBlends"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelType::BGRA_8);
+
+			m_pBlitSource = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+			return(m_pMyCanvas != nullptr && m_pBlitSource != nullptr);
+		}
+
+		bool			run(GfxDevice * pDevice, const Rect& canvas)
+		{
+
+//			m_pMyCanvas->fill(Color::Transparent);
+
+//			pDevice->fill(canvas.size(), Color(0, 255, 0));
+//			Surface_p pOldCanvas = pDevice->canvas();
+
+//			pDevice->setCanvas(m_pMyCanvas);
+
+			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(50, 50,256,128));
+			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(0, 0, 128, 64));
+			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(0, 256, 400, 140));
+
+//			pDevice->setCanvas(pOldCanvas);
+//			pDevice->clipBlit(canvas, m_pMyCanvas);
+
+			return true;
+		}
+
+	protected:
+
+		Surface_p	m_pMyCanvas;
+		Surface_p	m_pBlitSource;
+
+
+	};
+
+
 
 }

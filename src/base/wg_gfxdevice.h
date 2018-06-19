@@ -101,17 +101,11 @@ namespace wg
 	
 		virtual void	fill( const Rect& rect, const Color& col ) = 0;
 	
-        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
-        virtual void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
 
-		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
-		virtual void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
-		virtual void	clipDrawLine(const Rect& clip, const Coord& begin, Direction dir, int length, Color col, float thickness = 1.f);
+		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
+		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
 
-
-		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
-
-	
 		virtual void	blit( Surface * pSrc );
 		virtual void	blit( Surface * pSrc, Coord dest );
 		virtual void	blit( Surface * pSrc, const Rect& src, Coord dest ) = 0;
@@ -124,8 +118,16 @@ namespace wg
 		virtual void	tileBlit(Surface * pSrc);
 		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
 		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
-	
-	
+
+		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
+
+		// Versions with clipping
+
+		virtual void    clipPlotPixels(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+
+		virtual void	clipDrawLine(const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f) = 0;
+		virtual void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
+
 		virtual void	clipFill( const Rect& clip, const Rect& rect, const Color& col );
 	
 		virtual void	clipBlit( const Rect& clip, Surface * pSrc );
@@ -140,6 +142,10 @@ namespace wg
 		virtual void	clipTileBlit(const Rect& clip, Surface * pSrc);
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
 		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
+
+		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
+
+		// Special draw methods
 
 		virtual void	clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest);	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
 
@@ -197,6 +203,7 @@ namespace wg
 	
 		Size		m_canvasSize;
 	
+		Rect		m_dummyClip;
 	};	
 
 } // namespace wg

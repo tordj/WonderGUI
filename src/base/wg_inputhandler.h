@@ -29,7 +29,6 @@
 #include <wg_key.h>
 #include <wg_msg.h>
 #include <wg_rootpanel.h>
-#include <wg_enumextras.h>
 
 
 /* LEFT TO DO:

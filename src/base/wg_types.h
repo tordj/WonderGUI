@@ -278,15 +278,13 @@ namespace wg
 							///< Color Blending: DstA = SrcA, DstRGB = SrcRGB + ((TintRGB-SrcRGB)*TintA/255)
 		Add,				///< Blitting: RGB Additive, alpha of source and tint-color is taken into account.
 							///< Color Blending: DstRGBA = SrcRGBA + TintRGBA
-		Subtract,			///< Blitting: RGB Subtractive, alpha of source and tint-color is taken into account.
+		Subtract,			///< Blitting: RGB Subtractive, alpha is ignored.
 							///< Color Blending: DstRGBA = SrcRGBA - TintRGBA
-		Multiply,			///< Blitting: RGB Multiply, alpha of source and tint-color is taken into account.
-							///< Color Blending: DstRGBA = SrcRGBA * TintRGBA/255
+		Multiply,			///< Blitting: RGB Multiply, alpha is ignored.
+							///< Color Blending: DstRGB = SrcRGBA * TintRGBA/255
 		Invert				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
 	};
-
-	static const int	BlendMode_Nb = 8;
 
 	//____ PointerStyle __________________________________________________________
 	
@@ -575,9 +573,6 @@ namespace wg
 		BGR_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
 		BGRA_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
 	};
-
-	static const int	PixelType_Nb = 4;
-
 	
 	//____ PixelFormat __________________________________________________________
 	/**
@@ -699,4 +694,7 @@ namespace wg
 
 
 } // namespace wg
+
+#include <wg_enumextras.h>
+
 #endif // WG_TYPES_DOT_H

@@ -113,8 +113,11 @@ namespace wg
 		void	blit( Surface * pSrc, const Rect& srcrect, Coord dest ) override;
 	
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
-	
+		void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+
         void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 	
@@ -133,11 +136,34 @@ namespace wg
 		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
 		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );
 
+		struct ColTrans
+		{
+			Color	baseTint;
+			Color * pTintX;
+			Color * pTintY;
+		};
+
+		static int		s_mulTab[256];
+
 		
 	protected:
 		SoftGfxDevice();
 		SoftGfxDevice( Surface * pCanvas );
 		~SoftGfxDevice();
+
+		template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+		template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+
+
+		inline static void _read_pixel( const uint8_t * pPixel, PixelType type, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
+		inline static void _write_pixel(uint8_t * pPixel, PixelType type, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
+
+		inline static void	_blend_pixels(	BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
+											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA, 
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
@@ -146,62 +172,59 @@ namespace wg
 		void	_initTables();
 		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness( float thickness, int slope );
-	
-		void 	_drawLineSegment( uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
-		void 	_clipDrawLineSegment( int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color );
-	
-		void	_clipDrawWaveColumn( int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
-	
-		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
+		
+
+//		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
 
 
 		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
 		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
+
+//
+
+		typedef	void(*WaveOp_p)(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+
+		static void	_clip_wave_blend_24(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+		static void	_clip_wave_blend_32(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+
+		//
+
+		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col);
+
+		static void _plot_move_32(uint8_t * pDst, Color col);
+		static void _plot_blend_32(uint8_t * pDst, Color col);
 	
-		void	_plotAA( int _x, int _y, const Color& _col, BlendMode blendMode, int _aa );
-		void	_drawStraightLineAA( int _x, int _y, int _length, const Color& _col, BlendMode blendMode, int _aa, Orientation orientation );
-	
-//		void 	_blit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );
-//		void 	_tintBlit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  );
-	
-		void	_stretchBlitTintedOpaque(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedBlend32(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void 	_stretchBlitTintedBlend24(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedAdd32(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedAdd24(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedSub32(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedSub24(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedMultiply(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitTintedInvert(	const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-	
-		void	_stretchBlitOpaque(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitBlend32(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-//		void 	_stretchBlitBlend24(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,	// Not used, takes shortcut to _stretchBlitOpaque()
-//											int dx, int dy, int dw, int dh );
-		void	_stretchBlitAdd32(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitAdd24(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitSub32(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitSub24(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitMultiply(		const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-		void	_stretchBlitInvert(			const SoftSurface * pSrcSurf, float sx, float sy, float sw, float sh,
-											int dx, int dy, int dw, int dh );
-	
+		static void _plot_move_24(uint8_t * pDst, Color col);
+		static void _plot_blend_24(uint8_t * pDst, Color col);
+		static void _plot_add_24(uint8_t * pDst, Color col);
+		static void _plot_sub_24(uint8_t * pDst, Color col);
+		static void _plot_mul_24(uint8_t * pDst, Color col);
+		static void _plot_invert_24(uint8_t * pDst, Color col);
+
+		//
+
+		typedef	void(*PlotListOp_p)(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+		typedef	void(*ClipPlotListOp_p)(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+
+		static void _plotlist_blend_32(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+		static void _plotlist_blend_24(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+
+		static void _clip_plotlist_blend_32(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+		static void _clip_plotlist_blend_24(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
+
+
+
+		//
+
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+
+		static void _drawLineSegment_blend_32(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+		static void _drawLineSegment_blend_24(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+
+		static void _clipDrawLineSegment_blend_32(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+		static void _clipDrawLineSegment_blend_24(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
+
 
 		//
 
@@ -210,10 +233,6 @@ namespace wg
 
 		static void	_fill_move_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
 		static void	_fill_blend_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_add_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_sub_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_mul_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_invert_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
 
 		static void	_fill_move_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
 		static void	_fill_blend_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
@@ -239,12 +258,6 @@ namespace wg
 
 		//
 
-		struct ColTrans
-		{
-			Color	baseTint;
-			Color * pTintX;
-			Color * pTintY;
-		};
 
 		struct Pitches
 		{
@@ -254,33 +267,29 @@ namespace wg
 			int dstY;
 		};
 
-		typedef	void(*StraightBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-		typedef	void(*TransformBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, float matrix[2][2], uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
+
+
+		typedef	void(*BlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		typedef	void(*TransformOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
 
 
-		void	_onePassStraightBlit(StraightBlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
-		void	_onePassTransformBlit(TransformBlitOp_p, const SoftSurface * pSource, CoordF pos, int matrix[2][2], const Rect& dest, const ColTrans& tint);
+		void	_onePassStraightBlit(BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
+		void	_onePassTransformBlit(TransformOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
 
 
-		void	_twoPassStraightBlit(StraightBlitOp_p, StraightBlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
-		void	_twoPassTransformBlit(TransformBlitOp_p, StraightBlitOp_p, const SoftSurface * pSource, CoordF pos, int matrix[2][2], const Rect& dest, const ColTrans& tint);
+		void	_twoPassStraightBlit(BlitOp_p, BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
+		void	_twoPassTransformBlit(TransformOp_p, BlitOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
 
 		// Base setup of blit operations to allow for all combinations in two passes.
 
+
 //		static void	_move_32_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
 		static void	_tint_32_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-		static void	_scale_32_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_scale_tint_32_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
-		static void	_transform_32_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
-		static void	_transform_tint_32_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
 		static void	_move_24_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
 		static void	_tint_24_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-		static void	_scale_24_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_scale_tint_24_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
-		static void	_transform_24_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_transform_tint_24_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
+
 		/*
 		void	_move_16_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& dummy);
 		void	_tint_16_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
@@ -306,10 +315,6 @@ namespace wg
 
 		static void	_move_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
 		static void	_blend_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_add_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_sub_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_mul_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_invert_32_to_32	(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
 
 		static void	_move_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
 		static void	_blend_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
@@ -339,14 +344,22 @@ namespace wg
 
 		//
 
-		static int		s_mulTab[256];
-		static FillOp_p s_fillOpTab[BlendMode_Nb][PixelType_Nb];
+
+		static FillOp_p			s_fillOpTab[BlendMode_size][PixelType_size];
+		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelType_size];
+		static LineOp_p			s_LineOpTab[BlendMode_size][PixelType_size];
+		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelType_size];
+		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelType_size];
+		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelType_size];
+
+
+		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelType_size];
+		static ClipPlotListOp_p	s_clipPlotListOpTab[BlendMode_size][PixelType_size];
+
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 
 		int				m_lineThicknessTable[17];
-		uint8_t *		m_pDivTab;
-
 		
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked

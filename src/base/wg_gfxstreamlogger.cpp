@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_gfxstreamlogger.h>
-#include <wg_enumextras.h>
 #include <assert.h>
 
 namespace wg

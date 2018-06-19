@@ -26,7 +26,6 @@
 
 #include <iostream>
 #include <wg_msgrouter.h>
-#include <wg_enumextras.h>
 
 namespace wg 
 {
