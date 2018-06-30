@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#include <wg_modbitmapitem.h>
+#include <wg_modsurfaceitem.h>
 #include <wg_util.h>
 
 namespace wg
 {
-	ModBitmapItem::ModBitmapItem(ItemHolder * pHolder, ModBitmap * pInterface) : Item(pHolder)
+	ModSurfaceItem::ModSurfaceItem(ItemHolder * pHolder, ModSurface * pInterface) : Item(pHolder)
 	{
 		m_pInterface = pInterface;
 	}
@@ -33,7 +33,7 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void ModBitmapItem::render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip)
+	void ModSurfaceItem::render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip)
 	{
 		//TODO: Support bitmap being of different surface kind than destination.
 	
@@ -44,7 +44,7 @@ namespace wg
 
 	//____ alphaTest() _______________________________________________________
 
-	bool ModBitmapItem::alphaTest(const Coord& ofs, int markOpacity)
+	bool ModSurfaceItem::alphaTest(const Coord& ofs, int markOpacity)
 	{
 		Rect canvas = calcPresentationArea();
 		Size bmpSize = m_pSurface->size();
@@ -55,7 +55,7 @@ namespace wg
 
 	//____ regenSurface() ______________________________________________
 
-	void ModBitmapItem::regenSurface()
+	void ModSurfaceItem::regenSurface()
 	{
 		if (!m_pDevice)
 			return;
@@ -73,13 +73,13 @@ namespace wg
 
 		m_pDevice->setCanvas(m_pSurface);
 
-		if (m_bitmapLostCallback != nullptr)
-			m_bitmapLostCallback(m_pInterface);
+		if (m_surfaceLostCallback != nullptr)
+			m_surfaceLostCallback(m_pInterface);
 	}
 
 	//____ calcPresentationArea() _______________________________________________
 
-	Rect ModBitmapItem::calcPresentationArea() const
+	Rect ModSurfaceItem::calcPresentationArea() const
 	{
 		Size window = _size();
 		Size bitmapSize = m_pSurface->size();
@@ -100,7 +100,7 @@ namespace wg
 
 	//____ setDevice() _________________________________________________
 
-	bool ModBitmapItem::setDevice(GfxDevice * pDevice)
+	bool ModSurfaceItem::setDevice(GfxDevice * pDevice)
 	{
 		if (pDevice != m_pDevice)
 		{
@@ -112,7 +112,7 @@ namespace wg
 
 	//____ setSurfaceFactory() ________________________________________________
 
-	bool ModBitmapItem::setSurfaceFactory(SurfaceFactory * pFactory)
+	bool ModSurfaceItem::setSurfaceFactory(SurfaceFactory * pFactory)
 	{
 		if (pFactory != m_pFactory)
 		{
@@ -125,14 +125,14 @@ namespace wg
 
 	//____ setLostCallback() ___________________________________________
 
-	void ModBitmapItem::setLostCallback(std::function<void(ModBitmap*)> func)
+	void ModSurfaceItem::setLostCallback(std::function<void(ModSurface*)> func)
 	{
-		m_bitmapLostCallback = func;
+		m_surfaceLostCallback = func;
 	}
 
-	//____ setPixelType() _________________________________________________
+	//____ setPixelFormat() _________________________________________________
 
-	bool ModBitmapItem::setPixelType(PixelType format)
+	bool ModSurfaceItem::setPixelFormat(PixelType format)
 	{
 		if (format != PixelType::BGRA_8 && format != PixelType::BGR_8)
 			return false;
@@ -145,9 +145,9 @@ namespace wg
 		return true;
 	}
 
-	//____ setBitmapSize() ___________________________________________________
+	//____ setSurfaceSize() ___________________________________________________
 
-	bool ModBitmapItem::setBitmapSize(Size sz)
+	bool ModSurfaceItem::setSurfaceSize(Size sz)
 	{
 		Size max = m_pDevice ? m_pDevice->surfaceFactory()->maxSize() : Size(65536,65536);
 
@@ -165,7 +165,7 @@ namespace wg
 
 	//____ setItemSize() ___________________________________________________
 
-	void ModBitmapItem::setItemSize(Size sz)
+	void ModSurfaceItem::setItemSize(Size sz)
 	{
 		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
 			regenSurface();
@@ -173,7 +173,7 @@ namespace wg
 
 	//____ setBackColor() ______________________________________________
 
-	void ModBitmapItem::setBackColor(Color color)
+	void ModSurfaceItem::setBackColor(Color color)
 	{
 		if (color != m_backColor)
 		{
@@ -184,7 +184,7 @@ namespace wg
 
 	//____ clear() _____________________________________________________
 
-	void ModBitmapItem::clear()
+	void ModSurfaceItem::clear()
 	{
 		if (m_pSurface)
 			m_pSurface->fill(m_backColor);
@@ -192,7 +192,7 @@ namespace wg
 
 	//____ setPresentationScaling() ____________________________________
 
-	void ModBitmapItem::setPresentationScaling(SizePolicy2D policy)
+	void ModSurfaceItem::setPresentationScaling(SizePolicy2D policy)
 	{
 		if (m_presentationScaling != policy)
 		{
@@ -210,7 +210,7 @@ namespace wg
 
 	//____ setOrigo() __________________________________________________
 
-	void ModBitmapItem::setOrigo(Origo origo)
+	void ModSurfaceItem::setOrigo(Origo origo)
 	{
 		if (m_origo != origo)
 		{
@@ -228,12 +228,12 @@ namespace wg
 
 	//____ present() ___________________________________________________
 
-	void ModBitmapItem::present()
+	void ModSurfaceItem::present()
 	{
 		_requestRender(calcPresentationArea());
 	}
 
-	void ModBitmapItem::present(Rect area)
+	void ModSurfaceItem::present(Rect area)
 	{
 		Rect dest = calcPresentationArea();
 		Size bitmapSize = m_pSurface->size();
@@ -250,7 +250,7 @@ namespace wg
 
 	//____ preferredSize() ____________________________________________________
 
-	Size ModBitmapItem::preferredSize() const
+	Size ModSurfaceItem::preferredSize() const
 	{
 		return m_fixedSize;
 	}

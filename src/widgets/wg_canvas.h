@@ -26,7 +26,7 @@
 
 #include <wg_widget.h>
 #include <wg_gfxdevice.h>
-#include <wg_modbitmap.h>
+#include <wg_modsurface.h>
 
 
 namespace wg 
@@ -42,20 +42,29 @@ namespace wg
 
 	//____ Canvas ____________________________________________________________
 	/**
-	 * @brief Simplest kind of widget.
+	 * @brief Widget displaying a surface on which rendering operations can be performed.
 	 *
-	 * Canvas is the simplest kind of widget that displays nothing but its skin
-	 * and does nothing but posting the normal mouse messages that every widget does.
+	 * The Canvas widget displays a surface onto which various rendering operations can be
+	 * performed using a GfxDevice.
 	 *
-	 * It is typically used as backgrounds and for filling out empty spaces in
-	 * organized layouts.
+	 * To setup a Canvas, you at least need to provide a GfxDevice of your choice, that
+	 * should be unique to this Canvas and not used for anything else. Optionally you
+	 * can also provide a SurfaceFactory and specify PixelType and size for the surface. Please see
+	 * the ModSurface interface documentation for details.
+	 *
+	 * Please note that "canvas" is not only the name of this widget, but used throughout 
+	 * WonderGUI for surfaces and rectangular areas that are destinations for drawing operations.
+	 * To make a clearer distinction we try to write Canvas with a capital C when
+	 * referring to the widget and a small c everywhere else, but through
+	 * CamelCasing we still end up writing canvas with a capital C when not referring to this widget
+	 * (like "setCanvas()" or "pCanvas").
 	 *
 	 **/
 	
 	
 	class Canvas : public Widget
 	{
-		friend class ModBitmap;
+		friend class ModSurface;
 
 	public:
 
@@ -65,7 +74,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModBitmap		canvas;
+		ModSurface		canvas;
 
 
 		//.____ Identification __________________________________________
@@ -95,7 +104,7 @@ namespace wg
 		virtual	bool	_alphaTest(const Coord& ofs);
 
 
-		ModBitmapItem	m_canvas;
+		ModSurfaceItem	m_canvas;
 	};
 	
 	

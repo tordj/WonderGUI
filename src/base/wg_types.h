@@ -399,9 +399,9 @@ namespace wg
 
 	enum class SizePolicy2D : uint8_t	//. autoExtras
 	{
-		Default,
-		Stretch,
-		Scale
+		Original,						///< Object maintains its original size.
+		Stretch,						///< Object is stretched to fill the space, ignoring aspect ratio.
+		Scale							///< Object is scaled to fill the space as much as possible, respecting original aspect ratio.
 	};
 
 

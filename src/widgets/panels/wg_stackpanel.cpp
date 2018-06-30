@@ -573,7 +573,7 @@ namespace wg
 		switch( pSlot->sizePolicy )
 		{
 			default:
-		case SizePolicy2D::Default:
+		case SizePolicy2D::Original:
 			{
 				Size	size = pSlot->pWidget->preferredSize();
 				Rect geo = Util::origoToRect( pSlot->origo, base, size );

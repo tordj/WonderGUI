@@ -43,7 +43,7 @@ namespace wg
 	class StackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Default) {}
+		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Original) {}
 	
 		Origo			origo;
 		SizePolicy2D	sizePolicy;		

@@ -473,10 +473,10 @@
     <ClInclude Include="..\..\..\src\widgets\wg_canvas.h">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_modbitmap.h">
+    <ClInclude Include="..\..\..\src\interfaces\wg_modsurface.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\items\wg_modbitmapitem.h">
+    <ClInclude Include="..\..\..\src\items\wg_modsurfaceitem.h">
       <Filter>items</Filter>
     </ClInclude>
   </ItemGroup>
@@ -808,8 +808,11 @@
     <ClCompile Include="..\..\..\src\widgets\wg_canvas.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\items\wg_modbitmapitem.cpp">
+    <ClCompile Include="..\..\..\src\items\wg_modsurfaceitem.cpp">
       <Filter>items</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_modsurface.cpp">
+      <Filter>interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

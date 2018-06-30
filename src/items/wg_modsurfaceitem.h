@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_MODBITMAPITEM_DOT_H
-#define WG_MODBITMAPITEM_DOT_H
+#ifndef WG_MODSURFACEITEM_DOT_H
+#define WG_MODSURFACEITEM_DOT_H
 #pragma once
 
 #include <functional>
@@ -36,18 +36,18 @@
 
 namespace wg
 {
-	class ModBitmap;
+	class ModSurface;
 
 
-	//____ ModBitmapItem _____________________________________________________________
+	//____ ModSurfaceItem _____________________________________________________________
 
-	class ModBitmapItem : public Item	/** @private */
+	class ModSurfaceItem : public Item	/** @private */
 	{
-		friend class ModBitmap;
+		friend class ModSurface;
 
 	public:
-		ModBitmapItem(ItemHolder * pHolder, ModBitmap * pInterface);
-		virtual ~ModBitmapItem() {};
+		ModSurfaceItem(ItemHolder * pHolder, ModSurface * pInterface);
+		virtual ~ModSurfaceItem() {};
 
 		void		render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip);
 		bool		alphaTest(const Coord& ofs, int markOpacity);
@@ -59,9 +59,9 @@ namespace wg
 
 		bool			setDevice(GfxDevice * pDevice);
 		bool			setSurfaceFactory(SurfaceFactory * pFactory);
-		void			setLostCallback(std::function<void(ModBitmap*)> func);
-		bool			setPixelType(PixelType format);
-		bool			setBitmapSize(Size sz);
+		void			setLostCallback(std::function<void(ModSurface*)> func);
+		bool			setPixelFormat(PixelType format);
+		bool			setSurfaceSize(Size sz);
 		void			setItemSize(Size sz);
 		void			setBackColor(Color color);
 		void			clear();
@@ -78,15 +78,15 @@ namespace wg
 		Surface_p		m_pSurface;
 		Size			m_fixedSize;
 		PixelType		m_pixelType				= PixelType::BGR_8;
-		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Default;
+		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
 		Color			m_backColor				= Color::White;
-		ModBitmap *		m_pInterface;
+		ModSurface *		m_pInterface;
 
-		std::function<void(ModBitmap*)>	m_bitmapLostCallback;
+		std::function<void(ModSurface*)>	m_surfaceLostCallback;
 
 	};
 }
 
-#endif //WG_MODBITMAPITEM_DOT_H
+#endif //WG_MODSURFACEITEM_DOT_H
 

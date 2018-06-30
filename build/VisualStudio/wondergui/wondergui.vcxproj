@@ -152,7 +152,7 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_hideablechildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icon.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_modbitmap.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_modsurface.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modspan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modtext.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_modvalue.h" />
@@ -171,7 +171,7 @@
     <ClInclude Include="..\..\..\src\items\wg_editvalueitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_iconitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_item.h" />
-    <ClInclude Include="..\..\..\src\items\wg_modbitmapitem.h" />
+    <ClInclude Include="..\..\..\src\items\wg_modsurfaceitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_modvalueitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_spanitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_textbaseitem.h" />
@@ -276,6 +276,7 @@
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_columnheader.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />
+    <ClCompile Include="..\..\..\src\interfaces\wg_modsurface.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_modvalue.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_slidespan.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_span.cpp" />
@@ -285,7 +286,7 @@
     <ClCompile Include="..\..\..\src\items\wg_edittextitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_editvalueitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_iconitem.cpp" />
-    <ClCompile Include="..\..\..\src\items\wg_modbitmapitem.cpp" />
+    <ClCompile Include="..\..\..\src\items\wg_modsurfaceitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_modvalueitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_spanitem.cpp" />
     <ClCompile Include="..\..\..\src\items\wg_textbaseitem.cpp" />
