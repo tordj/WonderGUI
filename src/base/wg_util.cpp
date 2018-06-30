@@ -187,14 +187,14 @@ double Util::powerOfTen(int num){
 
 
 
-	//____ pixelTypeToFormat() _____________________________________________________
+	//____ pixelFormatToDescription() _____________________________________________________
 
-	bool Util::pixelTypeToFormat( PixelType type, PixelFormat& wFormat )
+	bool Util::pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat )
 	{
-		switch( type )
+		switch( format )
 		{
-			case PixelType::BGR_8:
-				wFormat.type = type;
+			case PixelFormat::BGR_8:
+				wFormat.format = format;
 				wFormat.bits = 24;
 
 				wFormat.R_bits = 8;
@@ -226,8 +226,8 @@ double Util::powerOfTen(int num){
 
 				return true;
 
-			case PixelType::BGRA_8:
-				wFormat.type = type;
+			case PixelFormat::BGRA_8:
+				wFormat.format = format;
 				wFormat.bits = 32;
 
 				wFormat.R_bits = 8;
@@ -260,7 +260,7 @@ double Util::powerOfTen(int num){
 				return true;
 
 			default:
-				wFormat.type = PixelType::Unknown;
+				wFormat.format = PixelFormat::Unknown;
 				wFormat.bits = 0;
 
 				wFormat.R_mask = 0;

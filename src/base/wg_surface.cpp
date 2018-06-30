@@ -37,7 +37,7 @@ namespace wg
 		m_pPixels		= 0;
 		m_scaleMode		= ScaleMode::Nearest;
 		
-		memset( &m_pixelFormat, 0, sizeof(PixelFormat) );
+		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
 	}
 	
 	//____ ~Surface() ____________________________________________________________
@@ -122,10 +122,10 @@ namespace wg
 	 **/
 	uint32_t Surface::colorToPixel( const Color& col ) const
 	{
-		uint32_t pix = ((col.r << m_pixelFormat.R_shift) & m_pixelFormat.R_mask) |
-					 ((col.g << m_pixelFormat.G_shift) & m_pixelFormat.G_mask) |
-					 ((col.b << m_pixelFormat.B_shift) & m_pixelFormat.B_mask) |
-					 ((col.a << m_pixelFormat.A_shift) & m_pixelFormat.A_mask);
+		uint32_t pix = ((col.r << m_pixelDescription.R_shift) & m_pixelDescription.R_mask) |
+					 ((col.g << m_pixelDescription.G_shift) & m_pixelDescription.G_mask) |
+					 ((col.b << m_pixelDescription.B_shift) & m_pixelDescription.B_mask) |
+					 ((col.a << m_pixelDescription.A_shift) & m_pixelDescription.A_mask);
 	
 		return pix;
 	}
@@ -147,10 +147,10 @@ namespace wg
 	 **/
 	Color Surface::pixelToColor( uint32_t pixel ) const
 	{
-		Color col( (pixel & m_pixelFormat.R_mask) >> m_pixelFormat.R_shift,
-					 (pixel & m_pixelFormat.G_mask) >> m_pixelFormat.G_shift,
-					 (pixel & m_pixelFormat.B_mask) >> m_pixelFormat.B_shift,
-					 (pixel & m_pixelFormat.A_mask) >> m_pixelFormat.A_shift );
+		Color col( (pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift,
+					 (pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift,
+					 (pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift,
+					 (pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift );
 	
 		return col;
 	}
@@ -225,10 +225,10 @@ namespace wg
 		int w = rect.w;
 		int h = rect.h;
 		int p = pitch();
-		uint8_t * pDest = m_pPixels + rect.y * p + rect.x*m_pixelFormat.bits / 8;
+		uint8_t * pDest = m_pPixels + rect.y * p + rect.x*m_pixelDescription.bits / 8;
 
 		bool ret = true;
-		switch( m_pixelFormat.bits )
+		switch( m_pixelDescription.bits )
 		{
 			case 8:
 				for( int y = 0 ; y < h ; y++ )
@@ -326,7 +326,7 @@ namespace wg
 	 **/
 	bool Surface::copyFrom( Surface * pSrcSurface, const Rect& _srcRect, Coord _dst )
 	{
-		if( !pSrcSurface || pSrcSurface->m_pixelFormat.type == PixelType::Unknown || m_pixelFormat.type == PixelType::Unknown )
+		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Unknown || m_pixelDescription.format == PixelFormat::Unknown )
 			return false;
 	
 		// Save old locks and lock the way we want.
@@ -339,7 +339,7 @@ namespace wg
 	
 		// Do the copying
 
-		bool retVal = _copyFrom( pSrcSurface->pixelFormat(), (uint8_t*) pSrcSurface->pixels(), pSrcSurface->pitch(), srcRect, dstRect );
+		bool retVal = _copyFrom( pSrcSurface->pixelDescription(), (uint8_t*) pSrcSurface->pixels(), pSrcSurface->pitch(), srcRect, dstRect );
 	
 		// Release any temporary locks
 	
@@ -355,13 +355,13 @@ namespace wg
 
 	//____ _copyFrom() _________________________________________________________
 
-	bool Surface::_copyFrom( const PixelFormat * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect )
+	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect )
 	{
 			
 		if( srcRect.w <= 0 || dstRect.w <= 0 )
 			return false;
 
-		const PixelFormat * pDstFormat 	= &m_pixelFormat;
+		const PixelDescription * pDstFormat 	= &m_pixelDescription;
 		int		dstPitch 				= m_pitch;
 
 		uint8_t *	pSrc = pSrcPixels;
@@ -385,7 +385,7 @@ namespace wg
 				pDst += dstPitch;
 			}
 		}
-		else if (pSrcFormat->type == PixelType::BGRA_8 && pDstFormat->type == PixelType::BGR_8)
+		else if (pSrcFormat->format == PixelFormat::BGRA_8 && pDstFormat->format == PixelFormat::BGR_8)
 		{
 			// Standard 8-bit RGB values, we just need to lose the alpha channel
 
@@ -405,7 +405,7 @@ namespace wg
 				pDst += dstLineInc;
 			}
 		}
-		else if(pSrcFormat->type == PixelType::BGR_8 && pDstFormat->type == PixelType::BGRA_8)
+		else if(pSrcFormat->format == PixelFormat::BGR_8 && pDstFormat->format == PixelFormat::BGRA_8)
 		{
 			// Standard 8-bit RGB values, We just needs to add an alpha channel
 

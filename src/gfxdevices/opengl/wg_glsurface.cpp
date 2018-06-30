@@ -44,28 +44,28 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-    GlSurface_p	GlSurface::create( Size size, PixelType type, int hint )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, int hint )
     {
-        if( type != PixelType::BGRA_8 && type != PixelType::BGR_8)
+        if( format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8)
             return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,type,hint));
+        return GlSurface_p(new GlSurface(size,format,hint));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, int hint )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint )
     {
-        if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
+        if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || !pBlob || pitch % 4 != 0 )
             return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,type,pBlob,pitch,hint));
+        return GlSurface_p(new GlSurface(size,format,pBlob,pitch,hint));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint )
     {
-        if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
+        if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || pPixels == 0 )
             return GlSurface_p();
         
-        return  GlSurface_p(new GlSurface(size,type,pPixels,pitch, pPixelFormat,hint));
+        return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,hint));
     };
     
     GlSurface_p	GlSurface::create( Surface * pOther, int hint )
@@ -78,13 +78,13 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 
-    GlSurface::GlSurface( Size size, PixelType type, int hint )
+    GlSurface::GlSurface( Size size, PixelFormat format, int hint )
     {
-		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
+		assert( format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8 );
 
-        _setPixelDetails(type);
+        _setPixelDetails(format);
         m_size	= size;
-        m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
+        m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
     	m_pBlob = Blob::create(m_pitch*m_size.h);
 		
 
@@ -103,13 +103,13 @@ namespace wg
     }
     
     
-	GlSurface::GlSurface( Size size, PixelType type, Blob * pBlob, int pitch, int hint )
+	GlSurface::GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint )
 	{
-		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
+		assert( (format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8) && pBlob && pitch % 4 == 0 );
 
         // Set general information
         
-        _setPixelDetails(type);
+        _setPixelDetails(format);
         m_size	= size;
         m_pitch = pitch;
 		m_pBlob = pBlob;
@@ -128,17 +128,17 @@ namespace wg
 		assert( glGetError() == 0);
 	}
    
-    GlSurface::GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
+    GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint )
     {
-		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pPixels != 0 );
+		assert( (format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8) && pPixels != 0 );
 		
-       _setPixelDetails(type);
+       _setPixelDetails(format);
         m_size	= size;
-        m_pitch = ((size.w*m_pixelFormat.bits/8)+3)&0xFFFFFFFC;
+        m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
         m_pBlob = Blob::create(m_pitch*m_size.h);
         
         m_pPixels = (uint8_t *) m_pBlob->data();
-        _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
+        _copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
         m_pPixels = 0;
        
         glGenTextures( 1, &m_texture );
@@ -160,13 +160,13 @@ namespace wg
     {
 		assert( pOther );
 		
-        _setPixelDetails(pOther->pixelFormat()->type);
+        _setPixelDetails(pOther->pixelFormat());
         m_size	= pOther->size();
         m_pitch = m_size.w * m_pixelSize;
         m_pBlob = Blob::create(m_pitch*m_size.h);
         
         m_pPixels = (uint8_t *) m_pBlob->data();
-        _copyFrom( pOther->pixelFormat(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
+        _copyFrom( pOther->pixelDescription(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
         m_pPixels = 0;
         
         glGenTextures( 1, &m_texture );
@@ -185,9 +185,9 @@ namespace wg
     
     
 
-	void GlSurface::_setPixelDetails( PixelType type )
+	void GlSurface::_setPixelDetails( PixelFormat format )
 	{
-        if( type == PixelType::BGR_8 )
+        if( format == PixelFormat::BGR_8 )
         {
             m_internalFormat = GL_RGB8;
             m_accessFormat = GL_BGR;
@@ -200,7 +200,7 @@ namespace wg
             m_pixelSize = 4;
         }
         
-        Util::pixelTypeToFormat(type, m_pixelFormat);
+        Util::pixelFormatToDescription(format, m_pixelDescription);
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -379,7 +379,7 @@ namespace wg
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
 
-		if( m_pixelFormat.type == PixelType::BGRA_8 )
+		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
         {
 			uint8_t * p = (uint8_t*) m_pBlob->data();
 			return p[coord.y*m_pitch+coord.x*4+3];            

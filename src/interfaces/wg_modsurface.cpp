@@ -141,7 +141,7 @@ namespace wg
 	*	@return True if pixel format was accepted, otherwise false.
 	**/
 
-	bool ModSurface::setPixelFormat(PixelType format) 
+	bool ModSurface::setPixelFormat(PixelFormat format) 
 	{ 
 		return m_pItem->setPixelFormat(format); 
 	}
@@ -157,9 +157,9 @@ namespace wg
 	*	or BGRA_16.
 	**/
 
-	PixelType ModSurface::pixelFormat() const 
+	PixelFormat ModSurface::pixelFormat() const 
 	{ 
-		return m_pItem->m_pixelType; 
+		return m_pItem->m_pixelFormat; 
 	}
 
 	//____ setSize() __________________________________________________________

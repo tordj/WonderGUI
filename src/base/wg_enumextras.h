@@ -55,7 +55,7 @@ namespace wg
 	const static TextEditMode    TextEditMode_max    = TextEditMode::Editable;
 	const static AccessMode      AccessMode_max      = AccessMode::ReadWrite;
 	const static ScaleMode       ScaleMode_max       = ScaleMode::Interpolate;
-	const static PixelType       PixelType_max       = PixelType::BGRA_8;
+	const static PixelFormat       PixelFormat_max       = PixelFormat::BGRA_8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::DeleteSurface;
 
@@ -76,7 +76,7 @@ namespace wg
 	const static int             TextEditMode_size   = (int)TextEditMode::Editable + 1;
 	const static int             AccessMode_size     = (int)AccessMode::ReadWrite + 1;
 	const static int             ScaleMode_size      = (int)ScaleMode::Interpolate + 1;
-	const static int             PixelType_size      = (int)PixelType::BGRA_8 + 1;
+	const static int             PixelFormat_size      = (int)PixelFormat::BGRA_8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::DeleteSurface + 1;
 
@@ -97,7 +97,7 @@ namespace wg
 	const char * toString(TextEditMode);
 	const char * toString(AccessMode);
 	const char * toString(ScaleMode);
-	const char * toString(PixelType);
+	const char * toString(PixelFormat);
 	const char * toString(MaskOp);
 	const char * toString(GfxChunkId);
 

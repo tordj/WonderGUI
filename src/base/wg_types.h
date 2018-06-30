@@ -564,25 +564,25 @@ namespace wg
 	};
 
 	
-	//____ PixelType _____________________________________________________________
+	//____ PixelFormat _____________________________________________________________
 	
-	enum class PixelType	//. autoExtras
+	enum class PixelFormat	//. autoExtras
 	{
-		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelFormat struct.
-		Custom,				///< Pixelformat has no PixelType enum, but is fully specified through the PixelFormat struct.
+		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
+		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
 		BGRA_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
 	};
 	
-	//____ PixelFormat __________________________________________________________
+	//____ PixelDescription __________________________________________________________
 	/**
 	 * @brief Describes the format of a pixel.
 	 *
 	 * Describes the format of a pixel.
 	 *
-	 * The format of the pixel is described in three ways by a PixelFormat object:
+	 * The format of the pixel is described in three ways by a PixelDescription object:
 	 *
-	 * First a PixelType enum that contains predefined values for common pixel formats.
+	 * First a PixelFormat enum that contains predefined values for common pixel formats.
 	 * This allows for human readable information and quick lockups.
 	 *
 	 * Secondly a set of variables containing the number of bits for each pixel and the
@@ -593,7 +593,7 @@ namespace wg
 	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
 	 *
 	 * Not all pixel formats (like those of index/palette-based surfaces) can
-	 * be fully described by a PixelFormat object. In that case the member type is set to Unknown.
+	 * be fully described by a PixelDescription object. In that case the member type is set to Unknown.
 	 *
 	 * As long as the type member is not set to Unknown, you can extract the value of any channel of a
 	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
@@ -604,7 +604,7 @@ namespace wg
 	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
 	 *
 	 * uint32_t	pixel;
-	 * PixelFormat * pFormat;
+	 * PixelDescription * pFormat;
 	 *
 	 * 	Color col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
 	 *				 (pixel & pFormat->G_mask) >> pFormat->G_shift,
@@ -614,7 +614,7 @@ namespace wg
 	 * To convert a Color object to a pixel value you can use:
 	 *
 	 * Color color;
-	 * PixelFormat * pFormat;
+	 * PixelDescription * pFormat;
 	 *
 	 * 	uint32_t pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
 	 *				 ((color.g << pFormat->G_shift) & pFormat->G_mask) |
@@ -626,12 +626,12 @@ namespace wg
 	 **/
 	
 	
-	struct PixelFormat
+	struct PixelDescription
 	{
 	public:	
 		//.____ Properties _____________________________________________________
 		
-		PixelType	type;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
+		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 	
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel

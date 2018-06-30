@@ -50,7 +50,7 @@ namespace wg
 	
 		struct CustomFunctionTable
 		{
-			int (*setCanvas)( void * pPixels, int pixelFormat, int pitch );
+			int (*setCanvas)( void * pPixels, int pixelDescription, int pitch );
 			void (*beginRender)(void );
 			void (*endRender)( void );
 
@@ -61,19 +61,19 @@ namespace wg
 			void (*fillMultiply)( int x, int y, int w, int h, uint32_t color );
 			void (*fillInvert)( int x, int y, int w, int h, uint32_t color );
 
-			void (*blitReplace)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitBlend)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitAdd)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitSubtract)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitMultiply)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitInvert)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitReplace)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitBlend)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitAdd)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitSubtract)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitMultiply)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void (*blitInvert)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
 
-			void (*tintBlitReplace)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitBlend)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitAdd)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitSubtract)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitMultiply)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitInvert)( void * pSource, int pixelFormat, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitReplace)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitBlend)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitAdd)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitSubtract)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitMultiply)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
+			void (*tintBlitInvert)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
 		};	
 	
 	
@@ -151,14 +151,14 @@ namespace wg
 		SoftGfxDevice( Surface * pCanvas );
 		~SoftGfxDevice();
 
-		template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
-		template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 
-		inline static void _read_pixel( const uint8_t * pPixel, PixelType type, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
-		inline static void _write_pixel(uint8_t * pPixel, PixelType type, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
+		inline static void _read_pixel( const uint8_t * pPixel, PixelFormat format, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
+		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
 
 		inline static void	_blend_pixels(	BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
 											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA, 
@@ -345,16 +345,16 @@ namespace wg
 		//
 
 
-		static FillOp_p			s_fillOpTab[BlendMode_size][PixelType_size];
-		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelType_size];
-		static LineOp_p			s_LineOpTab[BlendMode_size][PixelType_size];
-		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelType_size];
-		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelType_size];
-		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelType_size];
+		static FillOp_p			s_fillOpTab[BlendMode_size][PixelFormat_size];
+		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
+		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
+		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
+		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
+		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
 
 
-		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelType_size];
-		static ClipPlotListOp_p	s_clipPlotListOpTab[BlendMode_size][PixelType_size];
+		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
+		static ClipPlotListOp_p	s_clipPlotListOpTab[BlendMode_size][PixelFormat_size];
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;

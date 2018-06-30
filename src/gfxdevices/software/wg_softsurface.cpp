@@ -41,28 +41,28 @@ namespace wg
 
 	//____ Create ______________________________________________________________
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, int hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, int hint )
 	{ 
-		if(type != PixelType::BGRA_8 && type != PixelType::BGR_8) 
+		if(format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) 
 			return SoftSurface_p(); 
 
-		return SoftSurface_p(new SoftSurface(size,type));
+		return SoftSurface_p(new SoftSurface(size,format));
 	}
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, Blob * pBlob, int pitch, int hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint )
 	{ 
-		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || !pBlob || pitch % 4 != 0 )
+		if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
 		
-		return SoftSurface_p(new SoftSurface(size,type,pBlob,pitch));
+		return SoftSurface_p(new SoftSurface(size,format,pBlob,pitch));
 	}
 		
-	SoftSurface_p SoftSurface::create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint )
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint )
 	{ 
-		if( (type != PixelType::BGRA_8 && type != PixelType::BGR_8) || pPixels == 0 )
+		if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || pPixels == 0 )
 			return SoftSurface_p();
 
-		return  SoftSurface_p(new SoftSurface(size,type,pPixels,pitch,pPixelFormat)); 
+		return  SoftSurface_p(new SoftSurface(size,format,pPixels,pitch,pPixelDescription)); 
 	};
 
 	SoftSurface_p SoftSurface::create( Surface * pOther, int hint )
@@ -77,22 +77,22 @@ namespace wg
 	
 	//____ Constructor ________________________________________________________________
 	
-	SoftSurface::SoftSurface( Size size, PixelType type )
+	SoftSurface::SoftSurface( Size size, PixelFormat format )
 	{
-		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
-		Util::pixelTypeToFormat(type, m_pixelFormat);
+		assert( type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8 );
+		Util::pixelFormatToDescription(format, m_pixelDescription);
 	
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create( m_pitch*size.h );
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, PixelType type, Blob * pBlob, int pitch )
+	SoftSurface::SoftSurface( Size size, PixelFormat format, Blob * pBlob, int pitch )
 	{
-		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pBlob && pitch % 4 == 0 );
-		Util::pixelTypeToFormat(type, m_pixelFormat);
+		assert( (type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8) && pBlob && pitch % 4 == 0 );
+		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pitch = pitch;
 		m_size = size;
@@ -101,19 +101,19 @@ namespace wg
 		m_fScaleAlpha = 1.f;
 	}
 	
-	SoftSurface::SoftSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat )
+	SoftSurface::SoftSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
 	{
-		assert( (type == PixelType::BGR_8 || type == PixelType::BGRA_8) && pPixels != 0 );
-		Util::pixelTypeToFormat(type, m_pixelFormat);
+		assert( (type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8) && pPixels != 0 );
+		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
-        _copyFrom( pPixelFormat==0 ? &m_pixelFormat:pPixelFormat, pPixels, pitch, size, size );
+        _copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
 		m_pPixels = 0;
 	}
 	
@@ -123,22 +123,22 @@ namespace wg
 	{
 		assert( pOther );
 
-		PixelType type = pOther->pixelFormat()->type;
+		PixelFormat format = pOther->pixelFormat();
 		uint8_t * pPixels = (uint8_t*) pOther->lock( AccessMode::ReadOnly );
 		int pitch = pOther->pitch();
 		Size size = pOther->size();
 		
-		assert( type == PixelType::BGR_8 || type == PixelType::BGRA_8 );
-		Util::pixelTypeToFormat(type, m_pixelFormat);
+		assert( type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8 );
+		Util::pixelFormatToDescription(format, m_pixelDescription);
 		
-		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelFormat.bits/8;
+		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
-		_copyFrom( &m_pixelFormat, pPixels, pitch, Rect(size), Rect(size) );
+		_copyFrom( &m_pixelDescription, pPixels, pitch, Rect(size), Rect(size) );
 		m_pPixels = 0;
 
 		pOther->unlock();
@@ -181,7 +181,7 @@ namespace wg
 	
 	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
-		if( m_pixelFormat.type == PixelType::BGRA_8 )
+		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
 	    {
 			uint32_t k = * ((uint32_t*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
 			return k;
@@ -204,7 +204,7 @@ namespace wg
 	
 	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
-		if( m_pixelFormat.type == PixelType::BGRA_8 )
+		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
 		  {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
 		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
@@ -225,7 +225,7 @@ namespace wg
 	
 	bool SoftSurface::isOpaque() const
 	{
-		return m_pixelFormat.A_bits==0?true:false;
+		return m_pixelDescription.A_bits==0?true:false;
 	}
 	
 	//____ lock() __________________________________________________________________
@@ -243,7 +243,7 @@ namespace wg
 	uint8_t * SoftSurface::lockRegion( AccessMode mode, const Rect& region )
 	{
 		m_accessMode = mode;
-		m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelFormat.bits/8;
+		m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelDescription.bits/8;
 		m_lockRegion = region;
 		return m_pPixels;
 	}
@@ -275,11 +275,11 @@ namespace wg
 		Color color2;
 		int ind;
 	
-		switch(m_pixelFormat.type)
+		switch(m_pixelDescription.format)
 		{
-			case PixelType::BGR_8:
+			case PixelFormat::BGR_8:
 				break;
-			case PixelType::BGRA_8:
+			case PixelFormat::BGRA_8:
 				for(int n=0; n<length; n++)
 				{
 				  ind = y[n]*m_pitch + x[n]*4;

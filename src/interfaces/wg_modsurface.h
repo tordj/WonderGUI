@@ -44,7 +44,7 @@ namespace wg
 	* copied to the screen.
 	*
 	* The surface is replaced and all its content lost if its properties such as size and 
-	* PixelType is changed. A callback can be set to alert you when this happens, in which case
+	* PixelFormat is changed. A callback can be set to alert you when this happens, in which case
 	* you should redraw the content.
 	*
 	* The size of the surface can be specified. If it is not specified, it will have the same size
@@ -69,8 +69,8 @@ namespace wg
 		void			setSurfaceLostCallback(std::function<void(ModSurface*)> func);
 		std::function<void(ModSurface*)>	surfaceLostCallback() const;
 
-		bool			setPixelFormat(PixelType format);
-		PixelType		pixelFormat() const;
+		bool			setPixelFormat(PixelFormat format);
+		PixelFormat		pixelFormat() const;
 
 		bool			setSize(Size sz);
 		bool			isSizeFixed() const;

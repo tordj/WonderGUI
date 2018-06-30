@@ -58,9 +58,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static GlSurface_p	create( Size size, PixelType type = PixelType::BGRA_8, int hint = SurfaceHint::Static );
-        static GlSurface_p	create( Size size, PixelType type, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
-        static GlSurface_p	create( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat = 0, int hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int hint = SurfaceHint::Static );
         static GlSurface_p	create( Surface * pOther, int hint = SurfaceHint::Static );
        
 		//.____ Identification __________________________________________
@@ -101,14 +101,14 @@ namespace wg
 		inline	GLuint	getTexture() const { return m_texture; }
 
 	private:
-        GlSurface( Size size, PixelType type = PixelType::BGRA_8, int hint = SurfaceHint::Static );
-        GlSurface( Size size, PixelType type, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
-        GlSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint = SurfaceHint::Static );
         GlSurface( Surface * pOther, int hint = SurfaceHint::Static );
 		~GlSurface();
 
 
-		void		_setPixelDetails( PixelType type );
+		void		_setPixelDetails( PixelFormat format );
 
 		bool		m_bBackingBufferStale = false;
 		void		_refreshBackingBuffer();

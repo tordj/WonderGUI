@@ -273,7 +273,7 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(PixelType i)
+	const char * toString(PixelFormat i)
 	{
 		static const char * names[] = { 
 			"Unknown",

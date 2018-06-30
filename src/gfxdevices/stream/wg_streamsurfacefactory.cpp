@@ -76,20 +76,20 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelType type, int hint ) const
+	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, int hint ) const
 	{
-        return StreamSurface::create(m_pStream,size,type,hint);
+        return StreamSurface::create(m_pStream,size,format,hint);
 	}
 
 
-	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelType type, Blob * pBlob, int pitch, int hint ) const
+	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint ) const
 	{
-		return StreamSurface::create(m_pStream,size,type, pBlob,pitch,hint);
+		return StreamSurface::create(m_pStream,size,format, pBlob,pitch,hint);
 	}
 	
-	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelType type, uint8_t * pPixels, int pitch, const PixelFormat * pPixelFormat, int hint ) const
+	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint ) const
 	{
-		return StreamSurface::create(m_pStream,size,type, pPixels, pitch, pPixelFormat,hint);
+		return StreamSurface::create(m_pStream,size,format, pPixels, pitch, pPixelDescription,hint);
 	}
 	
 	Surface_p StreamSurfaceFactory::createSurface( Surface * pOther, int hint ) const

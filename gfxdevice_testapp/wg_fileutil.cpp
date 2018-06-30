@@ -36,9 +36,9 @@ namespace wg
 {
 	//____ convertSDLFormat() ______________________________________________________
 
-	void convertSDLFormat(PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLFormat)
+	void convertSDLFormat(PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat)
 	{
-		pWGFormat->type = PixelType::Custom;
+		pWGFormat->format = PixelFormat::Custom;
 		pWGFormat->bits = pSDLFormat->BitsPerPixel;
 
 		pWGFormat->R_mask = pSDLFormat->Rmask;
@@ -87,12 +87,12 @@ namespace wg
 
 	Surface_p	FileUtil::loadSurface(const char * pPath, SurfaceFactory * pFactory )
 	{
-		PixelFormat format;
+		PixelDescription format;
 
 		auto pSDLSurf = IMG_Load(pPath);
 		convertSDLFormat(&format, pSDLSurf->format);
 
-		PixelType px = format.A_bits > 0 ? PixelType::BGRA_8 : PixelType::BGR_8;
+		PixelFormat px = format.A_bits > 0 ? PixelFormat::BGRA_8 : PixelFormat::BGR_8;
 
 		auto pSurface = pFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
 		SDL_FreeSurface(pSDLSurf);

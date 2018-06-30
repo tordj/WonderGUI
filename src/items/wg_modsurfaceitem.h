@@ -60,7 +60,7 @@ namespace wg
 		bool			setDevice(GfxDevice * pDevice);
 		bool			setSurfaceFactory(SurfaceFactory * pFactory);
 		void			setLostCallback(std::function<void(ModSurface*)> func);
-		bool			setPixelFormat(PixelType format);
+		bool			setPixelFormat(PixelFormat format);
 		bool			setSurfaceSize(Size sz);
 		void			setItemSize(Size sz);
 		void			setBackColor(Color color);
@@ -77,7 +77,7 @@ namespace wg
 		SurfaceFactory_p m_pFactory;
 		Surface_p		m_pSurface;
 		Size			m_fixedSize;
-		PixelType		m_pixelType				= PixelType::BGR_8;
+		PixelFormat		m_pixelFormat				= PixelFormat::BGR_8;
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
 		Color			m_backColor				= Color::White;

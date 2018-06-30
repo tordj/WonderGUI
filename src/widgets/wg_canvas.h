@@ -49,7 +49,7 @@ namespace wg
 	 *
 	 * To setup a Canvas, you at least need to provide a GfxDevice of your choice, that
 	 * should be unique to this Canvas and not used for anything else. Optionally you
-	 * can also provide a SurfaceFactory and specify PixelType and size for the surface. Please see
+	 * can also provide a SurfaceFactory and specify PixelFormat and size for the surface. Please see
 	 * the ModSurface interface documentation for details.
 	 *
 	 * Please note that "canvas" is not only the name of this widget, but used throughout 

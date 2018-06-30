@@ -95,7 +95,7 @@ namespace wg
 		GfxOutStream&	operator<< (Direction);
 		GfxOutStream&	operator<< (BlendMode);
 		GfxOutStream&	operator<< (Orientation);
-		GfxOutStream&	operator<< (PixelType);
+		GfxOutStream&	operator<< (PixelFormat);
 		GfxOutStream&	operator<< (ScaleMode);
 		GfxOutStream&	operator<< (const DataChunk&);
 

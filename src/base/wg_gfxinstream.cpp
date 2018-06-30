@@ -142,9 +142,9 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (PixelType& t)
+	GfxInStream& GfxInStream::operator>> (PixelFormat& t)
 	{
-		t = (PixelType)m_pHolder->_pullShort();
+		t = (PixelFormat)m_pHolder->_pullShort();
 		return *this;
 	}
 

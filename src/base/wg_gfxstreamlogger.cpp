@@ -291,7 +291,7 @@ namespace wg
 			case GfxChunkId::CreateSurface:
 			{
 				uint16_t	surfaceId;
-				PixelType	type;
+				PixelFormat	type;
 				Size		size;
 
 				*m_pGfxStream >> surfaceId;

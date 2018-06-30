@@ -68,7 +68,7 @@ namespace wg
 		bool bSurfaceLost = m_pSurface;
 
 		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
-		m_pSurface = pFactory->createSurface(sz, m_pixelType);
+		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
 		m_pSurface->fill(m_backColor);
 
 		m_pDevice->setCanvas(m_pSurface);
@@ -132,14 +132,14 @@ namespace wg
 
 	//____ setPixelFormat() _________________________________________________
 
-	bool ModSurfaceItem::setPixelFormat(PixelType format)
+	bool ModSurfaceItem::setPixelFormat(PixelFormat format)
 	{
-		if (format != PixelType::BGRA_8 && format != PixelType::BGR_8)
+		if (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8)
 			return false;
 
-		if (format != m_pixelType)
+		if (format != m_pixelFormat)
 		{
-			m_pixelType = format;
+			m_pixelFormat = format;
 			regenSurface();
 		}
 		return true;
@@ -252,7 +252,7 @@ namespace wg
 
 	Size ModSurfaceItem::preferredSize() const
 	{
-		return m_fixedSize;
+		return m_fixedSize == Size()? Size(16,16) : m_fixedSize;
 	}
 
 } //namespace wg

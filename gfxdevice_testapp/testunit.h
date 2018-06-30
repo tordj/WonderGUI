@@ -70,7 +70,7 @@ namespace test
 		const string	name() const { return "OffscreenBGRACanvas";  }
 		bool			init(GfxDevice * pDevice, const Rect& canvas )
 		{
-			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelType::BGRA_8);
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
 
 			m_pBlitSource = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 			return(m_pMyCanvas != nullptr && m_pBlitSource != nullptr);
@@ -122,7 +122,7 @@ namespace test
 		const string	name() const { return "StretchBlitBlends"; }
 		bool			init(GfxDevice * pDevice, const Rect& canvas)
 		{
-			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelType::BGRA_8);
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
 
 			m_pBlitSource = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 			return(m_pMyCanvas != nullptr && m_pBlitSource != nullptr);

@@ -122,7 +122,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (PixelType t)
+	GfxOutStream&  GfxOutStream::operator<< (PixelFormat t)
 	{
 		m_pHolder->_pushShort((short)t);
 		return *this;

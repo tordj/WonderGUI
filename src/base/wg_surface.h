@@ -196,7 +196,8 @@ namespace wg
 																			///< otherwise AccessMode::None.
 		inline  Rect		regionLocked() const;							///< @brief Get the locked region of the surface.
 		inline  int			pitch() const;									///< @brief Get the pitch of the locked region.
-		const PixelFormat *	pixelFormat() const { return &m_pixelFormat; }	///< @brief Get the pixel format of the surface.
+		const PixelDescription *	pixelDescription() const { return &m_pixelDescription; }	///< @brief Get the pixel format of the surface.
+		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
 		inline uint8_t *	pixels() const { return m_pPixels; }			///< @brief Get a pointer to the raw pixels of the locked region.
 																			///< Get a pointer to the first line of raw pixels of the locked region.
 																			///<
@@ -219,9 +220,9 @@ namespace wg
 		virtual ~Surface();
 	
 		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
-		bool 				_copyFrom( const PixelFormat * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect );
+		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect );
 	
-		PixelFormat			m_pixelFormat;
+		PixelDescription			m_pixelDescription;
 		int					m_pitch;
 
 		ScaleMode			m_scaleMode;

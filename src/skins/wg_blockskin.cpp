@@ -484,10 +484,10 @@ namespace wg
 	
 	void BlockSkin::_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea )
 	{
-		const PixelFormat * pFormat = m_pSurface->pixelFormat();
+		const PixelDescription * pFormat = m_pSurface->pixelDescription();
 		int pitch = m_pSurface->pitch();
 	
-		if( pFormat->type != PixelType::BGRA_8 )
+		if( pFormat->format != PixelFormat::BGRA_8 )
 			return;												// Only supports ARGB_8 for the moment.
 	
 		unsigned char * p = ((unsigned char*)m_pSurface->pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;

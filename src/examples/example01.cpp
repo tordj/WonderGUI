@@ -73,15 +73,15 @@ int main ( int argc, char** argv )
 	// The software renderer needs a SoftSurface as its canvas,
 	// so we wrap the SDL WindowSurface into a SoftSurface.
 
-	PixelType type = PixelType::Unknown;
+	PixelFormat format = PixelFormat::Unknown;
 
 	if( pWinSurf->format->BitsPerPixel == 32 )
-		type = PixelType::BGRA_8;
+		format = PixelFormat::BGRA_8;
 	else if( pWinSurf->format->BitsPerPixel == 24 )
-		type = PixelType::BGR_8;
+		format = PixelFormat::BGR_8;
 
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
+	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 		
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
@@ -104,7 +104,7 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel

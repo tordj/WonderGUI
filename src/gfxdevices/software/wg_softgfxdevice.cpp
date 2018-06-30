@@ -40,21 +40,21 @@ namespace wg
 	
 	int SoftGfxDevice::s_mulTab[256];
 
-	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::FillOp_p		SoftGfxDevice::s_fillOpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::BlitOp_p		SoftGfxDevice::s_pass2OpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::LineOp_p		SoftGfxDevice::s_LineOpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::PlotListOp_p SoftGfxDevice::s_plotListOpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::WaveOp_p		SoftGfxDevice::s_waveOpTab[BlendMode_size][PixelType_size];
+	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::FillOp_p		SoftGfxDevice::s_fillOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::BlitOp_p		SoftGfxDevice::s_pass2OpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::LineOp_p		SoftGfxDevice::s_LineOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::PlotListOp_p SoftGfxDevice::s_plotListOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::WaveOp_p		SoftGfxDevice::s_waveOpTab[BlendMode_size][PixelFormat_size];
 
-	SoftGfxDevice::ClipLineOp_p SoftGfxDevice::s_clipLineOpTab[BlendMode_size][PixelType_size];
-	SoftGfxDevice::ClipPlotListOp_p SoftGfxDevice::s_clipPlotListOpTab[BlendMode_size][PixelType_size];
+	SoftGfxDevice::ClipLineOp_p SoftGfxDevice::s_clipLineOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::ClipPlotListOp_p SoftGfxDevice::s_clipPlotListOpTab[BlendMode_size][PixelFormat_size];
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelType type, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
 	{
-		if (type == PixelType::BGRA_8)
+		if (format == PixelFormat::BGRA_8)
 		{
 			outB = pPixel[0];
 			outG = pPixel[1];
@@ -62,7 +62,7 @@ namespace wg
 			outA = pPixel[3];
 		}
 
-		if (type == PixelType::BGR_8)
+		if (format == PixelFormat::BGR_8)
 		{
 			outB = pPixel[0];
 			outG = pPixel[1];
@@ -73,9 +73,9 @@ namespace wg
 
 	//____ write_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_write_pixel(uint8_t * pPixel, PixelType type, uint8_t b, uint8_t g, uint8_t r, uint8_t a)
+	inline void SoftGfxDevice::_write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a)
 	{
-		if (type == PixelType::BGRA_8)
+		if (format == PixelFormat::BGRA_8)
 		{
 			pPixel[0] = b;
 			pPixel[1] = g;
@@ -83,7 +83,7 @@ namespace wg
 			pPixel[3] = a;
 		}
 
-		if (type == PixelType::BGR_8)
+		if (format == PixelFormat::BGR_8)
 		{
 			pPixel[0] = b;
 			pPixel[1] = g;
@@ -167,10 +167,10 @@ namespace wg
 
 	//____ _transform_blit __________________________________________
 
-	template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+	template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint)
 	{
-		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits / 8;
 		int	srcPitch = pSrcSurf->m_pitch;
 
 		int pixelIncX = (int)(matrix[0][0] * 32768);
@@ -269,10 +269,10 @@ namespace wg
 
 	//____ _stretch_blit __________________________________________
 
-	template<PixelType SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelType DSTFORMAT>
+	template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint)
 	{
-		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits / 8;
 		int	srcPitch = pSrcSurf->m_pitch;
 
 		int pixelIncX = (int)(matrix[0][0] * 32768);
@@ -372,32 +372,32 @@ namespace wg
 
 
 
-	template void SoftGfxDevice::_transform_blit<PixelType::BGRA_8, 0, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_transform_blit<PixelType::BGR_8, 0, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGR_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
-	template void SoftGfxDevice::_transform_blit<PixelType::BGRA_8, 1, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_transform_blit<PixelType::BGR_8, 1, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-
-
-	template void SoftGfxDevice::_transform_blit<PixelType::BGRA_8, 0, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_transform_blit<PixelType::BGR_8, 0, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-
-	template void SoftGfxDevice::_transform_blit<PixelType::BGRA_8, 1, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_transform_blit<PixelType::BGR_8, 1, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGRA_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGR_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
 
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGRA_8, 0, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGR_8, 0, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGRA_8, 0, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGR_8, 0, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGRA_8, 1, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGR_8, 1, BlendMode::Replace, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGRA_8, 1, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_transform_blit<PixelFormat::BGR_8, 1, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
 
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGRA_8, 0, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGR_8, 0, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGR_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGRA_8, 1, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
-	template void SoftGfxDevice::_stretch_blit<PixelType::BGR_8, 1, BlendMode::Blend, PixelType::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGRA_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGR_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+
+
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGRA_8, 0, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGR_8, 0, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGRA_8, 1, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
+	template void SoftGfxDevice::_stretch_blit<PixelFormat::BGR_8, 1, BlendMode::Blend, PixelFormat::BGRA_8>(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& dummy);
 
 
 
@@ -495,7 +495,7 @@ namespace wg
 	
 	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
 	{		
-		if( (pCanvas->pixelFormat()->type != PixelType::BGRA_8) && (pCanvas->pixelFormat()->type != PixelType::BGR_8) )
+		if( (pCanvas->pixelFormat() != PixelFormat::BGRA_8) && (pCanvas->pixelFormat() != PixelFormat::BGR_8) )
 			return false;
 	
 		if( m_pCanvas == pCanvas )
@@ -514,14 +514,14 @@ namespace wg
 			if( m_pCanvasPixels )
 			{
 				m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
-				m_canvasPixelBits = m_pCanvas->pixelFormat()->bits;
+				m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 				m_canvasPitch = m_pCanvas->pitch();
 
 				// Call custom function, let it decide if it can render or not.
 
 				if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
 				{
-					int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat()->type, m_canvasPitch );
+					int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat(), m_canvasPitch );
 					m_bUseCustomFunctions = retVal != 0;
 				}
 			}
@@ -547,7 +547,7 @@ namespace wg
 			return false;
 
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
-		m_canvasPixelBits = m_pCanvas->pixelFormat()->bits;
+		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 		m_canvasPitch = m_pCanvas->pitch();
 		
 		if( !m_pCanvasPixels )
@@ -562,7 +562,7 @@ namespace wg
 
 			if( m_customFunctions.setCanvas )
 			{
-				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) m_pCanvas->pixelFormat()->type, m_canvasPitch );
+				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) m_pCanvas->pixelFormat(), m_canvasPitch );
 				m_bUseCustomFunctions = retVal != 0;
 			}			
 			else
@@ -620,7 +620,7 @@ namespace wg
 		int pixelBytes = m_canvasPixelBits / 8;
 		uint8_t * pDst = m_pCanvasPixels + rect.y *m_canvasPitch + rect.x * pixelBytes;
 
-		FillOp_p pFunc = s_fillOpTab[(int)blendMode][(int)m_pCanvas->pixelFormat()->type];
+		FillOp_p pFunc = s_fillOpTab[(int)blendMode][(int)m_pCanvas->pixelFormat()];
 
 		if (pFunc)
 			pFunc(pDst, pixelBytes, m_canvasPitch - rect.w*pixelBytes, rect.h, rect.w, fillColor);
@@ -641,7 +641,7 @@ namespace wg
 			return;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		FillOp_p pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		// Fill all but anti-aliased edges
 
@@ -670,7 +670,7 @@ namespace wg
 
 		if (m_blendMode == BlendMode::Replace)
 		{
-			pOp = s_fillOpTab[(int)BlendMode::Blend][(int)m_pCanvas->pixelFormat()->type];		// Need to blend edges and corners anyway
+			pOp = s_fillOpTab[(int)BlendMode::Blend][(int)m_pCanvas->pixelFormat()];		// Need to blend edges and corners anyway
 		}
 		else
 		{
@@ -726,7 +726,7 @@ namespace wg
 
 		// Draw corner pieces
 
-		PlotOp_p pPlotOp = s_plotOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		PlotOp_p pPlotOp = s_plotOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		if (aaTopLeft != 0)
 		{
@@ -1099,7 +1099,7 @@ namespace wg
 			pRow = m_pCanvasPixels + beg.y * rowInc;		
 		}
 
-		LineOp_p pOp = s_LineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		LineOp_p pOp = s_LineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if( pOp )
 			pOp( pRow, rowInc, pixelInc, length, width, pos, slope, fillColor );
 	}
@@ -1114,7 +1114,7 @@ namespace wg
 			return;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		switch (dir)
 		{
@@ -1291,7 +1291,7 @@ namespace wg
 			clipEnd = (clip.x + clip.w) <<16;
 		}
 
-		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if( pOp )
 			pOp( clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor );
 	}
@@ -1308,7 +1308,7 @@ namespace wg
 			return;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		switch (dir)
 		{
@@ -1951,7 +1951,7 @@ namespace wg
 
 			if (i > startColumn)
 			{
-				WaveOp_p pOp = s_waveOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+				WaveOp_p pOp = s_waveOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 				pOp(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
 				pColumn += m_canvasPixelBits / 8;
 			}
@@ -2909,7 +2909,7 @@ namespace wg
 		const int pitch =m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits/8;
 
-		ClipPlotListOp_p pOp = s_clipPlotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		ClipPlotListOp_p pOp = s_clipPlotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		if (pOp)
 			pOp(clip, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch);
@@ -2924,7 +2924,7 @@ namespace wg
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
 
-		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
 		if (pOp)
 			pOp(nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch);
@@ -3657,9 +3657,9 @@ namespace wg
 		
 		ColTrans			colTrans{ m_tintColor, nullptr, nullptr };
 
-		switch (pSrcSurf->m_pixelFormat.type)
+		switch (pSrcSurf->m_pixelDescription.format)
 		{
-			case PixelType::BGR_8:
+			case PixelFormat::BGR_8:
 			{
 				if (m_tintColor == Color::White)
 					pReader = _move_24_to_32;
@@ -3668,7 +3668,7 @@ namespace wg
 			}
 			break;
 
-			case PixelType::BGRA_8:
+			case PixelFormat::BGRA_8:
 			{
 				if (m_tintColor == Color::White)
 					pReader = _move_32_to_32;
@@ -3681,7 +3681,7 @@ namespace wg
 				return;			// ERROR: Unsupported source pixel format!
 		}
 
-		pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pWriter == nullptr)
 			return;
 
@@ -3698,7 +3698,7 @@ namespace wg
 
 	void SoftGfxDevice::_onePassStraightBlit(BlitOp_p pOp, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint)
 	{
-		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitches;
@@ -3721,7 +3721,7 @@ namespace wg
 
 	void SoftGfxDevice::_twoPassStraightBlit(BlitOp_p pReader, BlitOp_p pWriter, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint)
 	{
-		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitchesPass1, pitchesPass2;
@@ -3771,7 +3771,7 @@ namespace wg
 
 	void SoftGfxDevice::_onePassTransformBlit(TransformOp_p pOp, const SoftSurface * pSource, CoordF pos, const float transformMatrix[2][2], const Rect& dest, const ColTrans& tint)
 	{
-		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		uint8_t * pDst = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * dstPixelBytes;
@@ -3784,7 +3784,7 @@ namespace wg
 
 	void SoftGfxDevice::_twoPassTransformBlit(TransformOp_p pReader, BlitOp_p pWriter, const SoftSurface * pSource, CoordF pos, const float transformMatrix[2][2], const Rect& dest, const ColTrans& tint)
 	{
-		int srcPixelBytes = pSource->m_pixelFormat.bits / 8;
+		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitchesPass2;
@@ -3841,7 +3841,7 @@ namespace wg
 		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
 			return;
 	
-		int srcPixelBytes = pSrcSurf->m_pixelFormat.bits/8;
+		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits/8;
 		int dstPixelBytes = m_canvasPixelBits/8;
 	
 		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
@@ -3862,7 +3862,7 @@ namespace wg
 			{
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitReplace )
 				{
-					m_customFunctions.tintBlitReplace( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitReplace( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 								
@@ -3892,7 +3892,7 @@ namespace wg
                 
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitBlend )
 				{
-					m_customFunctions.tintBlitBlend( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitBlend( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 	
@@ -3954,7 +3954,7 @@ namespace wg
 			{
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitAdd )
 				{
-					m_customFunctions.tintBlitAdd( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitAdd( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 				
@@ -4015,7 +4015,7 @@ namespace wg
 			{
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitSubtract )
 				{
-					m_customFunctions.tintBlitSubtract( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitSubtract( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 				
@@ -4076,7 +4076,7 @@ namespace wg
 			{
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitMultiply )
 				{
-					m_customFunctions.tintBlitMultiply( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitMultiply( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 
@@ -4108,7 +4108,7 @@ namespace wg
 			{
 				if( m_bUseCustomFunctions && m_customFunctions.tintBlitInvert )
 				{
-					m_customFunctions.tintBlitInvert( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat()->type, pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
+					m_customFunctions.tintBlitInvert( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
 					break;
 				}
 				
@@ -4158,23 +4158,23 @@ namespace wg
 
 		ColTrans			colTrans{ m_tintColor, nullptr, nullptr };
 
-		switch (pSrcSurf->m_pixelFormat.type)
+		switch (pSrcSurf->m_pixelDescription.format)
 		{
-		case PixelType::BGR_8:
+		case PixelFormat::BGR_8:
 		{
 			if (m_tintColor == Color::White)
-				pReader = _stretch_blit < PixelType::BGR_8, 0, BlendMode::Replace, PixelType::BGRA_8>;
+				pReader = _stretch_blit < PixelFormat::BGR_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>;
 			else
-				pReader = _stretch_blit < PixelType::BGR_8, 1, BlendMode::Replace, PixelType::BGRA_8>;
+				pReader = _stretch_blit < PixelFormat::BGR_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>;
 		}
 		break;
 
-		case PixelType::BGRA_8:
+		case PixelFormat::BGRA_8:
 		{
 			if (m_tintColor == Color::White)
-				pReader = _stretch_blit < PixelType::BGRA_8, 0, BlendMode::Replace, PixelType::BGRA_8>;
+				pReader = _stretch_blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>;
 			else
-				pReader = _stretch_blit < PixelType::BGRA_8, 1, BlendMode::Replace, PixelType::BGRA_8>;
+				pReader = _stretch_blit < PixelFormat::BGRA_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>;
 		}
 		break;
 
@@ -4182,7 +4182,7 @@ namespace wg
 			return;			// ERROR: Unsupported source pixel format!
 		}
 
-		pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()->type];
+		pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pWriter == nullptr)
 			return;
 
@@ -4218,7 +4218,7 @@ namespace wg
 
 		for (int i = 0; i < BlendMode_size; i++)
 		{
-			for (int j = 0; j < PixelType_size; j++)
+			for (int j = 0; j < PixelFormat_size; j++)
 			{
 				s_plotOpTab[i][j] = nullptr;
 				s_fillOpTab[i][j] = nullptr;
@@ -4234,88 +4234,88 @@ namespace wg
 
 		// Init Plot Operation Table
 
-		s_plotOpTab[(int)BlendMode::Replace][(int)PixelType::BGRA_8] = _plot_move_32;
-		s_plotOpTab[(int)BlendMode::Replace][(int)PixelType::BGR_8] = _plot_move_24;
+		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _plot_move_32;
+		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _plot_move_24;
 
-		s_plotOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _plot_blend_32;
-		s_plotOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _plot_blend_24;
+		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _plot_blend_32;
+		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _plot_blend_24;
 
-		s_plotOpTab[(int)BlendMode::Add][(int)PixelType::BGRA_8] = _plot_add_24;
-		s_plotOpTab[(int)BlendMode::Add][(int)PixelType::BGR_8] = _plot_add_24;
+		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _plot_add_24;
+		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _plot_add_24;
 
-		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelType::BGRA_8] = _plot_sub_24;
-		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelType::BGR_8] = _plot_sub_24;
+		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _plot_sub_24;
+		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _plot_sub_24;
 
-		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelType::BGRA_8] = _plot_mul_24;
-		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelType::BGR_8] = _plot_mul_24;
+		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _plot_mul_24;
+		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _plot_mul_24;
 
-		s_plotOpTab[(int)BlendMode::Invert][(int)PixelType::BGRA_8] = _plot_invert_24;
-		s_plotOpTab[(int)BlendMode::Invert][(int)PixelType::BGR_8] = _plot_invert_24;
+		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _plot_invert_24;
+		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _plot_invert_24;
 
 		// Init Fill Operation Table
 
-		s_fillOpTab[(int)BlendMode::Replace][(int)PixelType::BGRA_8] = _fill_move_32;
-		s_fillOpTab[(int)BlendMode::Replace][(int)PixelType::BGR_8] = _fill_move_24;
+		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _fill_move_32;
+		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _fill_move_24;
 
-		s_fillOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _fill_blend_32;
-		s_fillOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _fill_blend_24;
+		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _fill_blend_32;
+		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _fill_blend_24;
 
-		s_fillOpTab[(int) BlendMode::Add][(int) PixelType::BGRA_8] = _fill_add_24;
-		s_fillOpTab[(int)BlendMode::Add][(int)PixelType::BGR_8] = _fill_add_24;
+		s_fillOpTab[(int) BlendMode::Add][(int) PixelFormat::BGRA_8] = _fill_add_24;
+		s_fillOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _fill_add_24;
 
-		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelType::BGRA_8] = _fill_sub_24;
-		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelType::BGR_8] = _fill_sub_24;
+		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _fill_sub_24;
+		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _fill_sub_24;
 
-		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelType::BGRA_8] = _fill_mul_24;
-		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelType::BGR_8] = _fill_mul_24;
+		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _fill_mul_24;
+		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _fill_mul_24;
 
-		s_fillOpTab[(int)BlendMode::Invert][(int)PixelType::BGRA_8] = _fill_invert_24;
-		s_fillOpTab[(int)BlendMode::Invert][(int)PixelType::BGR_8] = _fill_invert_24;
+		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _fill_invert_24;
+		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _fill_invert_24;
 
 		// Init Straight Blit Pass 2 Operation Table
 
-		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelType::BGRA_8] = _move_32_to_32;
-		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelType::BGR_8] = _move_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _move_32_to_32;
+		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _move_32_to_24;
 
-		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _blend_32_to_32;
-		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _blend_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _blend_32_to_32;
+		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _blend_32_to_24;
 
-		s_pass2OpTab[(int)BlendMode::Add][(int)PixelType::BGRA_8] = _add_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Add][(int)PixelType::BGR_8] = _add_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _add_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _add_32_to_24;
 
-		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelType::BGRA_8] = _sub_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelType::BGR_8] = _sub_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _sub_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _sub_32_to_24;
 
-		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelType::BGRA_8] = _mul_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelType::BGR_8] = _mul_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _mul_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _mul_32_to_24;
 
-		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelType::BGRA_8] = _invert_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelType::BGR_8] = _invert_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _invert_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _invert_32_to_24;
 
 		// Init Line Operation Table
 
-		s_LineOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _drawLineSegment_blend_32;
-		s_LineOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _drawLineSegment_blend_24;
+		s_LineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _drawLineSegment_blend_32;
+		s_LineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _drawLineSegment_blend_24;
 
 		// Init ClipLine Operation Table
 
-		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _clipDrawLineSegment_blend_32;
-		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _clipDrawLineSegment_blend_24;		
+		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _clipDrawLineSegment_blend_32;
+		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _clipDrawLineSegment_blend_24;		
 
 		// Init PlotList Operation Table
 
-		s_plotListOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _plotlist_blend_32;
-		s_plotListOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _plotlist_blend_24;
+		s_plotListOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _plotlist_blend_32;
+		s_plotListOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _plotlist_blend_24;
 
 		// Init ClipPlotList Operation Table
 
-		s_clipPlotListOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _clip_plotlist_blend_32;
-		s_clipPlotListOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _clip_plotlist_blend_24;
+		s_clipPlotListOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _clip_plotlist_blend_32;
+		s_clipPlotListOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _clip_plotlist_blend_24;
 
 		// Init Wave Operation Table
 
-		s_waveOpTab[(int)BlendMode::Blend][(int)PixelType::BGRA_8] = _clip_wave_blend_32;
-		s_waveOpTab[(int)BlendMode::Blend][(int)PixelType::BGR_8] = _clip_wave_blend_24;
+		s_waveOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _clip_wave_blend_32;
+		s_waveOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _clip_wave_blend_24;
 
 	}
 
