@@ -509,7 +509,7 @@ namespace wg
 	
 		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( AccessMode::WriteOnly, pSlot->bitmap.rect );
 		assert( pDest != 0 );
-		assert( pSurf->pixelDescription()->type == PixelFormat::BGRA_8 );
+		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8 );
 	
 		int dest_pitch = pSurf->pitch();
 	

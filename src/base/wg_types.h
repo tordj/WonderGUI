@@ -570,8 +570,12 @@ namespace wg
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
 		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
-		BGR_8,				///< One byte of blue, green and red respectively in memory in exactly that order.
-		BGRA_8				///< One byte of blue, green, red and alpha respectively in memory in exactly that order.
+		BGR_8,				///< One byte of blue, green and red respectively in exactly that order in memory.
+		BGRA_8,				///< One byte of blue, green, red and alpha respectively in exactly that order in memory.
+		BGRA_4,				///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
+		BGR_565,			///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
+		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).
+		A8					///< 8 bits of alpha only.
 	};
 	
 	//____ PixelDescription __________________________________________________________
@@ -599,27 +603,27 @@ namespace wg
 	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel
 	 * as an 8-bit value in the range 0-255, you use the formula:
 	 *
-	 * redValue = (pixel & R_mask) >> R_shift
+	 * redValue = ((pixel & R_mask) >> R_shift) << R_loss
 	 *
 	 * Thus you can convert any specified pixel type to a Color structure using the following routine:
 	 *
 	 * uint32_t	pixel;
 	 * PixelDescription * pFormat;
 	 *
-	 * 	Color col( (pixel & pFormat->R_mask) >> pFormat->R_shift,
-	 *				 (pixel & pFormat->G_mask) >> pFormat->G_shift,
-	 *				 (pixel & pFormat->B_mask) >> pFormat->B_shift,
-	 *				 (pixel & pFormat->A_mask) >> pFormat->A_shift );
+	 * 	Color col( ((pixel & pFormat->R_mask) >> pFormat->R_shift) << pFormat->R_loss,
+	 *			   ((pixel & pFormat->G_mask) >> pFormat->G_shift) << pFormat->G_loss,
+	 *			   ((pixel & pFormat->B_mask) >> pFormat->B_shift) << pFormat->B_loss,
+	 *			   ((pixel & pFormat->A_mask) >> pFormat->A_shift) << pFormat->A_loss );
 	 *
 	 * To convert a Color object to a pixel value you can use:
 	 *
 	 * Color color;
 	 * PixelDescription * pFormat;
 	 *
-	 * 	uint32_t pix = ((color.r << pFormat->R_shift) & pFormat->R_mask) |
-	 *				 ((color.g << pFormat->G_shift) & pFormat->G_mask) |
-	 *				 ((color.b << pFormat->B_shift) & pFormat->B_mask) |
-	 *				 ((color.a << pFormat->A_shift) & pFormat->A_mask);
+	 * 	uint32_t pix = ((color.r >> pFormat->R_loss) << pFormat->R_shift) |
+	 *				   ((color.g >> pFormat->G_loss) << pFormat->G_shift) |
+	 *				   ((color.b >> pFormat->B_loss) << pFormat->B_shift) |
+	 *				   ((color.a >> pFormat->A_loss) << pFormat->A_shift);
 	 *
 	 * This is essentially what the default implementation for Surface::colorToPixel() and Surface::pixelToColor() does.
 	 *
@@ -633,17 +637,24 @@ namespace wg
 		
 		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
-	
+		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
 		uint32_t	B_mask;			///< bitmask for getting the blue bits out of the pixel
 		uint32_t	A_mask;			///< bitmask for getting the alpha bits out of the pixel
 	
-		int		R_shift;			///< amount to shift the red bits to get an 8-bit representation of red. This can be negative.
-		int		G_shift;			///< amount to shift the green bits to get an 8-bit representation of red. This can be negative.
-		int		B_shift;			///< amount to shift the blue bits to get an 8-bit representation of red. This can be negative.
-		int		A_shift;			///< amount to shift the alpha bits to get an 8-bit representation of red. This can be negative.
-	
+		uint8_t		R_shift;		///< amount to shift the red bits to the right to get the value.
+		uint8_t		G_shift;		///< amount to shift the green bits to the right to get the value.
+		uint8_t		B_shift;		///< amount to shift the blue bits to the right to get the value.
+		uint8_t		A_shift;		///< amount to shift the alpha bits to the right to get the value.
+
+		uint8_t		R_loss;			///< amount to shift the red bits to the right to get the value.
+		uint8_t		G_loss;			///< amount to shift the green bits to the right to get the value.
+		uint8_t		B_loss;			///< amount to shift the blue bits to the right to get the value.
+		uint8_t		A_loss;			///< amount to shift the alpha bits to the right to get the value.
+
+
 		uint8_t	R_bits;				///< number of bits for red in the pixel
 		uint8_t	G_bits;				///< number of bits for green in the pixel
 		uint8_t	B_bits;				///< number of bits for blue in the pixel

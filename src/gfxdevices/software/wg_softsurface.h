@@ -76,11 +76,6 @@ namespace wg
 		uint8_t *	lock( AccessMode mode );
 		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
 		void		unlock();
-
-		//.____ Misc __________________________________________________________
-
-		inline float scaleAlpha() { return m_fScaleAlpha; }
-		void		setScaleAlpha(float fScaleAlpha);
 	
 		//.____  Internal ____________________________________________________
 
@@ -97,7 +92,6 @@ namespace wg
 		
 		Blob_p		m_pBlob;
 		Size		m_size;
-		float    	m_fScaleAlpha;
 		uint8_t*	m_pData;
 	};
 	

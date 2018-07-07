@@ -23,12 +23,12 @@
 #include <wg_softgfxdevice.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_util.h>
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <cstdlib>
 #include <wg_base.h>
 
-#include <assert.h>
+#include <cassert>
 
 using namespace std;
 

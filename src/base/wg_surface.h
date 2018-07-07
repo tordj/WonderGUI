@@ -131,7 +131,9 @@ namespace wg
 	
 		virtual	uint32_t	colorToPixel( const Color& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
-	
+
+		inline const Color * clut() const { return m_pClut; }
+
 		//.____ Control _______________________________________________________
 	
 		virtual uint8_t *	lock( AccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
@@ -206,7 +208,6 @@ namespace wg
 																			///< @return Pointer to the raw pixels of the locked region or
 																			///<		 null if surface is not locked.
 	
-	
 		//.____  Rendering ____________________________________________________
 	
 		virtual bool		fill( Color col );						///< @brief Fill surface with specified color.
@@ -228,6 +229,7 @@ namespace wg
 		ScaleMode			m_scaleMode;
 	
 		AccessMode			m_accessMode;
+		Color *				m_pClut;			// Pointer at color lookup table. Always 256 entries long.
 		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.
 		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 

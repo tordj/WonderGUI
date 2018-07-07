@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <assert.h>
+#include <cassert>
 #include <memory.h>
 #include <wg_softsurface.h>
 #include <wg_util.h>
@@ -79,38 +79,34 @@ namespace wg
 	
 	SoftSurface::SoftSurface( Size size, PixelFormat format )
 	{
-		assert( type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8 );
+		assert( format != PixelFormat::Unknown && format != PixelFormat::Custom );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create( m_pitch*size.h );
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_fScaleAlpha = 1.f;
 	}
 	
 	SoftSurface::SoftSurface( Size size, PixelFormat format, Blob * pBlob, int pitch )
 	{
-		assert( (type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8) && pBlob && pitch % 4 == 0 );
+		assert(format != PixelFormat::Unknown && format != PixelFormat::Custom && pBlob );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pitch = pitch;
 		m_size = size;
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_fScaleAlpha = 1.f;
 	}
 	
 	SoftSurface::SoftSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription )
 	{
-		assert( (type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8) && pPixels != 0 );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
         _copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
@@ -128,14 +124,12 @@ namespace wg
 		int pitch = pOther->pitch();
 		Size size = pOther->size();
 		
-		assert( type == PixelFormat::BGR_8 || type == PixelFormat::BGRA_8 );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 		
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h);
 		m_pData = (uint8_t*) m_pBlob->data();
-		m_fScaleAlpha = 1.f;
 		
 		m_pPixels = m_pData;	// Simulate a lock
 		_copyFrom( &m_pixelDescription, pPixels, pitch, Rect(size), Rect(size) );
@@ -207,7 +201,7 @@ namespace wg
 		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
 		  {
 			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
-		    return (uint8_t)(m_fScaleAlpha * (float)pPixel[3]);
+		    return pPixel[3];
 		  }
 		else
 		  return 0xff;
@@ -256,15 +250,7 @@ namespace wg
 		m_pPixels = 0;
 		m_lockRegion.clear();
 	}
-	
-	
-	//____ setScaleAlpha() _________________________________________________________
-	
-	void SoftSurface::setScaleAlpha(float fScaleAlpha)
-	{
-	        m_fScaleAlpha = fScaleAlpha;
-	}
-	
+		
 	//____ putPixels() _____________________________________________________________
 	
 	#define PCLIP(x,y) (((x)>(y))?(y):(x))

@@ -338,7 +338,6 @@ namespace wg
         assert( glGetError() == 0 );
 	}
 
-
 	//____ pixel() ______________________________________________________________
 
 	uint32_t GlSurface::pixel( Coord coord ) const

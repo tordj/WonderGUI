@@ -90,6 +90,7 @@ namespace wg
 		uint8_t *	lock(AccessMode mode);
 		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
 		void		unlock();
+		bool		setWriteToAlpha(bool bWrite);
 
 		bool		unload();
 		bool		isLoaded();

@@ -24,6 +24,7 @@
 #include <wg_geo.h>
 #include <algorithm>
 #include <wg_util.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -62,7 +63,6 @@ namespace wg
 		{
 			delete [] s_pCurveTab;
 		}
-
 	}
 
 
