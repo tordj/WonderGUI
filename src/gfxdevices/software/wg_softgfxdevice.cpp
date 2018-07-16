@@ -225,11 +225,8 @@ namespace wg
 				int mul22 = fracX2 * fracY2 >> 15;
 
 				int srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22) >> 15;
-				p++;
 				int srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22) >> 15;
-				p++;
 				int srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22) >> 15;
-				p++;
 				int srcA = (src11_a * mul11 + src12_a * mul12 + src21_a * mul21 + src22_a * mul22) >> 15;
 
 				// Step 3.5: Apply any tinting
@@ -326,11 +323,8 @@ namespace wg
 				int mul22 = fracX2 * fracY2 >> 15;
 
 				int srcB = (src11_b * mul11 + src12_b * mul12 + src21_b * mul21 + src22_b * mul22) >> 15;
-				p++;
 				int srcG = (src11_g * mul11 + src12_g * mul12 + src21_g * mul21 + src22_g * mul22) >> 15;
-				p++;
 				int srcR = (src11_r * mul11 + src12_r * mul12 + src21_r * mul21 + src22_r * mul22) >> 15;
-				p++;
 				int srcA = (src11_a * mul11 + src12_a * mul12 + src21_a * mul21 + src22_a * mul22) >> 15;
 
 				// Step 3.5: Apply any tinting

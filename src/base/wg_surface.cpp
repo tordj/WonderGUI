@@ -213,25 +213,20 @@ namespace wg
 	Color Surface::pixelToColor( uint32_t pixel ) const
 	{
 		if (m_pixelDescription.bIndexed)
-		{
 			return m_pClut[pixel];
-		}
-		else if (m_pixelDescription.A_bits == 0)
-		{
-			Color col(((pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift) << m_pixelDescription.R_loss,
-				((pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift) << m_pixelDescription.G_loss,
-				((pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift) << m_pixelDescription.B_loss,
-				255);
-		}
-		else
-		{
-			Color col(((pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift) << m_pixelDescription.R_loss,
-				((pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift) << m_pixelDescription.G_loss,
-				((pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift) << m_pixelDescription.B_loss,
-				((pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift) << m_pixelDescription.A_loss);
 
-			return col;
-		}
+		Color col;
+		
+		col.r = ((pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift) << m_pixelDescription.R_loss;
+		col.g = ((pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift) << m_pixelDescription.G_loss;
+		col.b = ((pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift) << m_pixelDescription.B_loss;
+
+		if(m_pixelDescription.A_mask == 0)
+			col.a = 255;
+		else
+			col.a = ((pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift) << m_pixelDescription.A_loss;
+
+		return col;
 	}
 	
 	//____ _lockAndAdjustRegion() __________________________________________________
