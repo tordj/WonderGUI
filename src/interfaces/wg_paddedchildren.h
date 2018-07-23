@@ -26,6 +26,7 @@
 
 #include <wg_slot.h>
 #include <wg_hideablechildren.h>
+#include <wg_geo.h>
 
 namespace wg
 {
@@ -36,6 +37,7 @@ namespace wg
 	{
 	public:
 		virtual void	_repadSlots(Slot * pSlot, int nb, Border padding) = 0;
+		virtual void	_repadSlots(Slot * pSlot, int nb, const Border * pPadding) = 0;
 	};
 
 	//____ PaddedChildren ________________________________________________________
@@ -55,6 +57,12 @@ namespace wg
 
 		bool		setPadding(int index, Border padding);
 		bool		setPadding(iterator it, Border padding);
+		bool		setPadding(int index, int amount, Border padding);
+		bool		setPadding(iterator beg, iterator end, Border padding);
+		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
+		bool		setPadding(iterator beg, iterator end, const std::initializer_list<Border> padding);
+
+
 
 		inline Border	padding(int index) const { return m_pSlotArray->slot(index)->padding; }
 		inline Border	padding(iterator it) const { return it._slot()->padding; }

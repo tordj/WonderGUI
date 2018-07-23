@@ -20,68 +20,23 @@
 
 =========================================================================*/
 
+#include <initializer_list>
+
 #include <wg_packpanel.h>
 #include <wg_base.h>
 
 
 #include <wg_slotarray.impl.h>
-#include <wg_paddedchildren.impl.h>
+#include <wg_weightedchildren.impl.h>
 
 namespace wg 
 {
-	INSTANTIATE_PADDEDCHILDREN(PackPanelSlot, PackChildrenHolder)
+	INSTANTIATE_WEIGHTEDCHILDREN(PackPanelSlot, WeightedChildrenHolder)
 
 	template class SlotArray<PackPanelSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 	
-
-	bool PackPanelChildren::setWeight( int index, float weight )
-	{
-		if( index < 0 || index >= m_pSlotArray->size() || weight < 0.f )
-			return false;
-
-		auto pSlot = m_pSlotArray->slot(index);		
-
-		if( weight != pSlot->weight )
-		{
-			pSlot->weight = weight;
-			m_pHolder->_refreshChildGeo();
-		}
-		return true;
-	}
-
-	bool PackPanelChildren::setWeight( iterator it, float weight )
-	{
-		//TODO: Add assert
-
-		auto pSlot = it._slot();		
-
-		if( weight != pSlot->weight )
-		{
-			pSlot->weight = weight;
-			m_pHolder->_refreshChildGeo();
-		}
-		return true;
-	}
-
-	
-	float PackPanelChildren::weight( int index ) const
-	{
-		if( index < 0 || index >= m_pSlotArray->size() )
-			return 0.f;
-
-		return m_pSlotArray->slot(index)->weight;
-		
-	}
-
-	float PackPanelChildren::weight( iterator it ) const
-	{
-		//TODO: Add assert
-
-		return it._slot()->weight;		
-	}
-
 
 	//____ Constructor ____________________________________________________________
 	
@@ -425,8 +380,40 @@ namespace wg
 			((PackPanelSlot*)pSlot)[i].padding = padding;
 
 		_updatePreferredSize();
-		_requestRender();				// This is needed here since children might have repositioned.
-										//TODO: Optimize! Only render what really is needed due to changes.
+		_refreshChildGeo();
+	}
+
+	void PackPanel::_repadSlots(Slot * pSlot, int nb, const Border * pPaddings)
+	{
+		for (int i = 0; i < nb; i++)
+			((PackPanelSlot*)pSlot)[i].padding = * pPaddings++;
+
+		_updatePreferredSize();
+		_refreshChildGeo();
+	}
+
+	//____ _reweightSlots() ______________________________________________________
+
+	void PackPanel::_reweightSlots(Slot * pSlot, int nb, float weight)
+	{
+		for (int i = 0; i < nb; i++)
+			((PackPanelSlot*)pSlot)[i].weight = weight;
+
+		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+			_updatePreferredSize();
+
+		_refreshChildGeo();
+	}
+
+	void PackPanel::_reweightSlots(Slot * pSlot, int nb, const float * pWeights)
+	{
+		for (int i = 0; i < nb; i++)
+			((PackPanelSlot*)pSlot)[i].weight = * pWeights++;
+
+		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+			_updatePreferredSize();
+
+		_refreshChildGeo();
 	}
 
 	//____ _childPos() _______________________________________________________

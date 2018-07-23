@@ -322,6 +322,17 @@ namespace wg
 										//TODO: Optimize! Only render what really is needed due to changes.
 	}
 
+	void StackPanel::_repadSlots(Slot * pSlot, int nb, const Border * pPaddings)
+	{
+		for (int i = 0; i < nb; i++)
+			((StackPanelSlot*)pSlot)[i].padding = * pPaddings++;
+
+		_refreshPreferredSize();
+		_requestRender();				// This is needed here since children might have repositioned.
+										//TODO: Optimize! Only render what really is needed due to changes.
+	}
+
+
 	//____ _didMoveSlots() ________________________________________________________
 
 	void StackPanel::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb )

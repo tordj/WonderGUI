@@ -166,6 +166,8 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_value.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_children.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_child.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_weightedchildren.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_weightedchildren.impl.h" />
     <ClInclude Include="..\..\..\src\items\wg_columnheaderitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_edittextitem.h" />
     <ClInclude Include="..\..\..\src\items\wg_editvalueitem.h" />

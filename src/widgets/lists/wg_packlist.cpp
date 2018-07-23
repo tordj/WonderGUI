@@ -985,6 +985,9 @@ namespace wg
 				int highest = 0;
 				for( PackListSlot * p = m_children.begin() ; p < m_children.end() ; p++ )
 				{
+					if (p->prefBreadth == breadth)
+						continue;
+
 					if( p->prefBreadth == highest )
 						m_nbPreferredBreadthEntries++;
 					else if( p->prefBreadth > highest )

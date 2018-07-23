@@ -158,6 +158,7 @@ namespace wg
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( Slot *, int nb, Border padding );
+		void		_repadSlots(Slot *, int nb, const Border * pPaddings);
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
 

@@ -56,6 +56,47 @@ namespace wg
 		return true;
 	}
 
+	template < class SlotType, class HolderType>
+	bool PaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, Border padding)
+	{
+		//TODO: Assert
+
+		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, padding);
+		return true;
+	}
+
+	template < class SlotType, class HolderType>
+	bool PaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, Border padding)
+	{
+		//TODO: Assert
+
+		auto pBeg = beg._slot();
+		auto pEnd = end._slot();
+		m_pHolder->_repadSlots(pBeg, pEnd-pBeg, padding);
+		return true;
+	}
+
+	template < class SlotType, class HolderType>
+	bool PaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
+	{
+		//TODO: Assert
+
+		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, padding.begin());
+		return true;
+	}
+
+	template < class SlotType, class HolderType>
+	bool PaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, const std::initializer_list<Border> padding)
+	{
+		//TODO: Assert
+
+		auto pBeg = beg._slot();
+		auto pEnd = end._slot();
+		m_pHolder->_repadSlots(pBeg, pEnd - pBeg, padding.begin());
+		return true;
+	}
+
+
 } // namespace wg
 
 

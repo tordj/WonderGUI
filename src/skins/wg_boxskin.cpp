@@ -185,7 +185,7 @@ namespace wg
 		int i = _stateToIndex(state);
 		if( m_frame.width() + m_frame.height() == 0 )
 		{
-			pDevice->fill( _clip, m_color[i] );
+			pDevice->fill( Rect(_canvas, _clip), m_color[i] );
 		}
 		else
 		{

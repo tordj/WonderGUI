@@ -57,9 +57,16 @@ namespace wg
 
 		void	select(int index);
 		void	select(iterator it);
+		void	select(int index, int amount);
+		void	select(iterator beg, iterator end);
 
 		void	unselect(int index);
 		void	unselect(iterator it);
+		void	unselect(int index, int amount);
+		void	unselect(iterator beg, iterator end);
+
+		void	selectAll();
+		void	unselectAll();
 
 		bool	isSelected(int index);
 		bool	isSelected(iterator it);

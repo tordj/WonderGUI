@@ -39,9 +39,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pSlot = m_pSlotArray->slot(index);
-		if (pSlot->bVisible)
-			m_pHolder->_selectSlots(pSlot, 1);
+		m_pHolder->_selectSlots(m_pSlotArray->slot(index), 1);
 	}
 
 	template < class SlotType, class HolderType>
@@ -49,19 +47,38 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pSlot = it._slot();
-		if (pSlot->bVisible)
-			m_pHolder->_selectSlots(pSlot, 1);
+		m_pHolder->_selectSlots(it._slot(), 1);
 	}
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::select(int index, int amount)
+	{
+		//TODO: Assert
+
+		m_pHolder->_selectSlots(m_pSlotArray->slot(index), amount);
+	};
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::select(iterator beg, iterator end)
+	{
+		//TODO: Assert
+
+		m_pHolder->_selectSlots(beg._slot(), end._slot() - beg._slot());
+	};
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::selectAll()
+	{
+		m_pHolder->_selectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+	};
+
 
 	template < class SlotType, class HolderType>
 	void SelectableChildren<SlotType, HolderType>::unselect(int index)
 	{
 		//TODO: Assert
 
-		SlotType * pSlot = m_pSlotArray->slot(index);
-		if (pSlot->bVisible)
-			m_pHolder->_unselectSlots(pSlot, 1);
+		m_pHolder->_unselectSlots(m_pSlotArray->slot(index), 1);
 	}
 
 	template < class SlotType, class HolderType>
@@ -69,10 +86,31 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pSlot = it._slot();
-		if (pSlot->bVisible)
-			m_pHolder->_unselectSlots(pSlot, 1);
+		m_pHolder->_unselectSlots(it._slot(), 1);
 	}
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::unselect(int index, int amount)
+	{
+		//TODO: Assert
+
+		m_pHolder->_unselectSlots(m_pSlotArray->slot(index), amount);
+	};
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::unselect(iterator beg, iterator end)
+	{
+		//TODO: Assert
+
+		m_pHolder->_unselectSlots(beg._slot(), end._slot() - beg._slot());
+	};
+
+	template < class SlotType, class HolderType>
+	void SelectableChildren<SlotType, HolderType>::unselectAll()
+	{
+		m_pHolder->_unselectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+	};
+
 
 	template < class SlotType, class HolderType>
 	bool SelectableChildren<SlotType, HolderType>::isSelected(int index)

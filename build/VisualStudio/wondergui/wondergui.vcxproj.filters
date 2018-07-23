@@ -479,6 +479,12 @@
     <ClInclude Include="..\..\..\src\items\wg_modsurfaceitem.h">
       <Filter>items</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_weightedchildren.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_weightedchildren.impl.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

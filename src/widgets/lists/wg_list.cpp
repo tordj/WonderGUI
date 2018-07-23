@@ -380,7 +380,7 @@ namespace wg
 		int nbChanges = 0;
 		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if (bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false) )
+			if (p->bVisible && bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false) )
 				nbChanges++;
 		}
 
@@ -393,7 +393,7 @@ namespace wg
 		int nbItems = 0;
 		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if( bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false))
+			if( p->bVisible && bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false))
 			{
 				State	state = p->pWidget->state();
 				state.setSelected(bSelected);
@@ -452,10 +452,13 @@ namespace wg
 	
 			for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 			{
-				if( pSlot->pWidget->state().isSelected() )
-					nToDeselect++;
-				else if( pSlot->pWidget->isSelectable() )
-					nToSelect++;
+				if (pSlot->bVisible)
+				{
+					if( pSlot->pWidget->state().isSelected() )
+						nToDeselect++;
+					else if( pSlot->pWidget->isSelectable() )
+						nToSelect++;
+				}
 			}
 	
 			if( nToSelect > 0 )
@@ -470,7 +473,7 @@ namespace wg
 		{
 			State	state = pSlot->pWidget->state();
 	
-			if (pSlot->pWidget->isSelectable() || state.isSelected())
+			if (pSlot->bVisible && (pSlot->pWidget->isSelectable() || state.isSelected()))
 			{
 				state.setSelected(!state.isSelected());
 				pSlot->pWidget->_setState(state);

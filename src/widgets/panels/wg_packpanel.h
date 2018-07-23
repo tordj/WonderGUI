@@ -26,7 +26,7 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_paddedchildren.h>
+#include <wg_weightedchildren.h>
 
 namespace wg 
 {
@@ -49,40 +49,10 @@ namespace wg
 	};
 	
 
-	//____ PackChildrenHolder _________________________________________________
-
-	class PackChildrenHolder : public PaddedChildrenHolder		/** @private */
-	{
-	public:
-		virtual void		_refreshChildGeo() = 0;
-	};
-
 
 	class PackPanelChildren;
 	typedef	StrongInterfacePtr<PackPanelChildren>	PackPanelChildren_p;
 	typedef	WeakInterfacePtr<PackPanelChildren>	PackPanelChildren_wp;
-
-	//____ PackPanelChildren ________________________________________________________
-
-	class PackPanelChildren : public PaddedChildren<PackPanelSlot,PackChildrenHolder>
-	{
-	public:
-		/** @private */
-
-		PackPanelChildren( SlotArray<PackPanelSlot> * pSlotArray, PackChildrenHolder * pHolder ) : PaddedChildren<PackPanelSlot,PackChildrenHolder>(pSlotArray,pHolder) {}
-
-		//.____ Misc __________________________________________________________
-
-		inline PackPanelChildren_p	ptr() { return PackPanelChildren_p(this); }
-
-		//.____ Geometry _______________________________________________________
-
-		bool		setWeight( int index, float weight );
-		bool		setWeight( iterator it, float weight );
-		float		weight( int index ) const;
-		float		weight( iterator it ) const;
-	};
-
 	
 	
 	/**
@@ -91,7 +61,7 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 	
-	class PackPanel : public Panel, protected PackChildrenHolder
+	class PackPanel : public Panel, protected WeightedChildrenHolder
 	{
 	
 	public:
@@ -102,7 +72,7 @@ namespace wg
 		
 		//.____ Interfaces _______________________________________
 
-		PackPanelChildren	children;
+		WeightedChildren<PackPanelSlot,WeightedChildrenHolder>	children;
 
 		//.____ Identification __________________________________________
 
@@ -154,6 +124,9 @@ namespace wg
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
 		void		_repadSlots( Slot *, int nb, Border padding );
+		void		_repadSlots(Slot *, int nb, const Border * pPaddings);
+		void		_reweightSlots(Slot * pSlot, int nb, float weight);
+		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights);
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
 		void		_refreshChildGeo() { _refreshChildGeo(true); }
