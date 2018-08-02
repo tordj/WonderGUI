@@ -126,15 +126,6 @@ namespace wg
 
 		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * PTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
 
-		// Experimental stuff...
-
-		void	drawArcNE( const Rect& rect, Color color );
-		void	drawElipse( const Rect& rect, Color color );
-		void	drawFilledElipse( const Rect& rect, Color color );
-	
-		void	clipDrawArcNE( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawElipse( const Rect& clip, const Rect& rect, Color color );
-		void	clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color );
 
 		struct ColTrans
 		{
@@ -151,18 +142,52 @@ namespace wg
 		SoftGfxDevice( Surface * pCanvas );
 		~SoftGfxDevice();
 
+		struct Pitches
+		{
+			int srcX;
+			int srcY;
+			int dstX;
+			int dstY;
+		};
+
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
+
+		inline static void	_blend_pixels(BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
+			uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
+			uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void _draw_wave_column(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
+
+
+
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+		static void	_blit(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
+		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
-		inline static void _read_pixel( const uint8_t * pPixel, PixelFormat format, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
-		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
 
-		inline static void	_blend_pixels(	BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
-											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA, 
-											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
 
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
@@ -189,20 +214,6 @@ namespace wg
 
 		//
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col);
-
-		static void _plot_move_32(uint8_t * pDst, Color col);
-		static void _plot_blend_32(uint8_t * pDst, Color col);
-	
-		static void _plot_move_24(uint8_t * pDst, Color col);
-		static void _plot_blend_24(uint8_t * pDst, Color col);
-		static void _plot_add_24(uint8_t * pDst, Color col);
-		static void _plot_sub_24(uint8_t * pDst, Color col);
-		static void _plot_mul_24(uint8_t * pDst, Color col);
-		static void _plot_invert_24(uint8_t * pDst, Color col);
-
-		//
-
 		typedef	void(*PlotListOp_p)(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
 		typedef	void(*ClipPlotListOp_p)(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
 
@@ -216,6 +227,7 @@ namespace wg
 
 		//
 
+		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint);
 		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
 
@@ -228,47 +240,7 @@ namespace wg
 
 		//
 
-		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-
-
-		static void	_fill_move_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_blend_32( uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-
-		static void	_fill_move_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_blend_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_add_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_sub_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_mul_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_invert_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-/*
-		static void	_fill_move_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_blend_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_add_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_sub_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_mul_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_invert_16(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-
-		static void	_fill_move_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_blend_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_add_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_sub_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_mul_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-		static void	_fill_invert_16A(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col);
-*/
-
-		//
-
-
-		struct Pitches
-		{
-			int srcX;
-			int srcY;
-			int dstX;
-			int dstY;
-		};
-
-
-
+		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
 		typedef	void(*BlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 		typedef	void(*TransformOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
@@ -277,70 +249,8 @@ namespace wg
 		void	_onePassStraightBlit(BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
 		void	_onePassTransformBlit(TransformOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
 
-
 		void	_twoPassStraightBlit(BlitOp_p, BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
 		void	_twoPassTransformBlit(TransformOp_p, BlitOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
-
-		// Base setup of blit operations to allow for all combinations in two passes.
-
-
-//		static void	_move_32_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_tint_32_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-
-		static void	_move_24_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_tint_24_to_32(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-
-		/*
-		void	_move_16_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& dummy);
-		void	_tint_16_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
-		void	_scale_16_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& dummy);
-		void	_scale_tint_16_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& tint);
-
-		void	_move_16A_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& dummy);
-		void	_tint_16A_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
-		void	_scale_16A_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& dummy);
-		void	_scale_tint_16A_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& tint);
-
-		void	_move_8I_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& dummy);
-		void	_tint_8I_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
-		void	_scale_8I_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& dummy);
-		void	_scale_tint_8I_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& tint);
-
-		void	_move_8A_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& dummy);
-		void	_tint_8A_to_32(const uint8_t * pSrc,  uint8_t * pDst, int dstPitch, int nLines, int lineLength, const ColTrans& tint);
-		void	_scale_8A_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& dummy);
-		void	_scale_tint_8A_to_32(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDest, int nLines, int lineLength, int linePitch, const ColTrans& tint);
-*/
-		// 
-
-		static void	_move_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_blend_32_to_32		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-
-		static void	_move_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_blend_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_add_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_sub_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_mul_32_to_24		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		static void	_invert_32_to_24	(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-	
-/*
-		void	_move_32_to_16		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_blend_32_to_16		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_add_32_to_16		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_sub_32_to_16		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_mul_32_to_16		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_invert_32_to_16	(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-
-		void	_move_32_to_16A		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_blend_32_to_16A	(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_add_32_to_16A		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_sub_32_to_16A		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_mul_32_to_16A		(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-		void	_invert_32_to_16A	(const uint8_t * pSrc,  uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy);
-
-*/
-
-
 
 		//
 

@@ -171,7 +171,7 @@ namespace wg
 
 		//.____ Misc _________________________________________________________________
 
-		bool				markTest( const Coord& ofs );
+		virtual bool		markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg );
 
 		inline void			refresh();

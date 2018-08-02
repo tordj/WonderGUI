@@ -163,6 +163,643 @@ namespace wg
 		}
 	}
 
+	//____ _plot() ____________________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_plot(uint8_t * pDst, Color col, const ColTrans& tint)
+	{
+		int tintB, tintG, tintR, tintA;
+
+		if (TINTFLAGS & 0x1)
+		{
+			tintB = s_mulTab[tint.baseTint.b];
+			tintG = s_mulTab[tint.baseTint.g];
+			tintR = s_mulTab[tint.baseTint.r];
+			tintA = s_mulTab[tint.baseTint.a];
+		}
+
+		// Step 1: Read source pixels
+
+		uint8_t srcB, srcG, srcR, srcA;
+
+		srcB = col.b;
+		srcG = col.g;
+		srcR = col.r;
+		srcA = col.a;
+
+		// Step 1.5: Apply any tint to source
+
+		if (TINTFLAGS & 0x1)
+		{
+			srcB = (col.b*tintB) >> 16;
+			srcG = (col.g*tintG) >> 16;
+			srcR = (col.r*tintR) >> 16;
+			srcA = (col.a*tintA) >> 16;
+		}
+
+		// Step 2: Get color components of background pixel blending into backX
+
+		uint8_t backB, backG, backR, backA;
+
+		_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+		// Step 3: Blend srcX and backX into outX
+
+		uint8_t outB, outG, outR, outA;
+		_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+		// Step 4: Write resulting pixel to destination
+
+		_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+	}
+
+	//____ plot_list() ________________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+	{
+		int tintB, tintG, tintR, tintA;
+
+		if (TINTFLAGS & 0x1)
+		{
+			tintB = s_mulTab[tint.baseTint.b];
+			tintG = s_mulTab[tint.baseTint.g];
+			tintR = s_mulTab[tint.baseTint.r];
+			tintA = s_mulTab[tint.baseTint.a];
+		}
+
+		for (int i = 0; i < nCoords; i++)
+		{
+			const int x = pCoords[i].x;
+			const int y = pCoords[i].y;
+
+			if (y >= clip.y && y <= clip.y + clip.h - 1 && x >= clip.x && x <= clip.x + clip.w - 1)
+			{
+				uint8_t * pDst = pCanvas + y * pitchY + x * pitchX;
+
+				// Step 1: Read source pixels
+
+				uint8_t srcB, srcG, srcR, srcA;
+
+				srcB = pColors[i].b;
+				srcG = pColors[i].g;
+				srcR = pColors[i].r;
+				srcA = pColors[i].a;
+
+				// Step 1.5: Apply any tint to source
+
+				if (TINTFLAGS & 0x1)
+				{
+					srcB = (col.b*tintB) >> 16;
+					srcG = (col.g*tintG) >> 16;
+					srcR = (col.r*tintR) >> 16;
+					srcA = (col.a*tintA) >> 16;
+				}
+
+				// Step 2: Get color components of background pixel blending into backX
+
+				uint8_t backB, backG, backR, backA;
+
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				// Step 3: Blend srcX and backX into outX
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				// Step 4: Write resulting pixel to destination
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+			}
+		}
+	}
+
+	//____ _draw_line() _______________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
+	{
+		// Step 1: Read source pixels
+
+		uint8_t srcB, srcG, srcR, srcA;
+
+		srcB = pColors[i].b;
+		srcG = pColors[i].g;
+		srcR = pColors[i].r;
+		srcA = pColors[i].a;
+
+		// Step 1.5: Apply any baseTint
+
+		if (TINTFLAGS & 0x1)
+		{
+			srcB = (srcB * s_mulTab[tint.baseTint.b]) >> 16;
+			srcG = (srcG * s_mulTab[tint.baseTint.g]) >> 16;
+			srcR = (srcR * s_mulTab[tint.baseTint.r]) >> 16;
+			srcA = (srcA * s_mulTab[tint.baseTint.a]) >> 16;
+		}
+
+		for (int i = 0; i < length; i++)
+		{
+			int beg = pos >> 16;
+			int end = (pos + width) >> 16;
+			int ofs = beg;
+
+			uint8_t * pDst = pRow + ofs * pixelInc;
+
+			if (beg == end)
+			{
+				// Special case, one pixel wide row
+
+				int alpha = (color.a * width) >> 16;
+
+				uint8_t backB, backG, backR, backA;
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+			}
+			else
+			{
+				// First anti-aliased pixel of column
+
+				int alpha = (srcA * (65536 - (clippedPos & 0xFFFF))) >> 16;		// Special AA
+
+				uint8_t backB, backG, backR, backA;
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+				ofs++;
+
+				// All non-antialiased middle pixels of column
+
+				if (ofs < end)
+				{
+					do
+					{
+						// Step 2: Get color components of background pixel blending into backX
+
+						uint8_t backB, backG, backR, backA;
+						_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+						// Step 3: Blend srcX and backX into outX
+
+						uint8_t outB, outG, outR, outA;
+						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+						// Step 4: Write resulting pixel to destination
+
+						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+						ofs++;
+
+					} while (ofs < end);
+				}
+
+				// Last anti-aliased pixel of column
+
+				int overflow = (clippedPos + clippedWidth) & 0xFFFF;
+				if (overflow > 0)
+				{
+					int alpha = srcA * overflow >> 16;		// Special AA
+
+					uint8_t backB, backG, backR, backA;
+					_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+					uint8_t outB, outG, outR, outA;
+					_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+				}
+			}
+
+			pRow += rowInc;
+			pos += slope;
+		}
+	}
+
+	//____ _clip_draw_line() __________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
+	{
+		// Step 1: Read source pixels
+
+		uint8_t srcB, srcG, srcR, srcA;
+
+		srcB = pColors[i].b;
+		srcG = pColors[i].g;
+		srcR = pColors[i].r;
+		srcA = pColors[i].a;
+
+		// Step 1.5: Apply any baseTint
+
+		if (TINTFLAGS & 0x1)
+		{
+			srcB = (srcB * s_mulTab[tint.baseTint.b]) >> 16;
+			srcG = (srcG * s_mulTab[tint.baseTint.g]) >> 16;
+			srcR = (srcR * s_mulTab[tint.baseTint.r]) >> 16;
+			srcA = (srcA * s_mulTab[tint.baseTint.a]) >> 16;
+		}
+
+		for (int i = 0; i < length; i++)
+		{
+
+			if (pos >= clipEnd || pos + width <= clipStart)
+			{
+				pRow += rowInc;
+				pos += slope;
+				continue;
+			}
+
+			int clippedPos = pos;
+			int clippedWidth = width;
+
+			if (clippedPos < clipStart)
+			{
+				clippedWidth -= clipStart - clippedPos;
+				clippedPos = clipStart;
+			}
+
+			if (clippedPos + clippedWidth > clipEnd)
+				clippedWidth = clipEnd - clippedPos;
+
+
+			int beg = clippedPos >> 16;
+			int end = (clippedPos + clippedWidth) >> 16;
+			int ofs = beg;
+
+			uint8_t * pDst = pRow + ofs * pixelInc;
+
+			if (beg == end)
+			{
+				// Special case, one pixel wide row
+
+				int alpha = (color.a * width) >> 16;
+
+				uint8_t backB, backG, backR, backA;
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+			}
+			else
+			{
+				// First anti-aliased pixel of column
+
+				int alpha = (srcA * (65536 - (clippedPos & 0xFFFF))) >> 16;		// Special AA
+
+				uint8_t backB, backG, backR, backA;
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+				ofs++;
+
+				// All non-antialiased middle pixels of column
+
+				if (ofs < end)
+				{
+					do
+					{
+						// Step 2: Get color components of background pixel blending into backX
+
+						uint8_t backB, backG, backR, backA;
+						_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+						// Step 3: Blend srcX and backX into outX
+
+						uint8_t outB, outG, outR, outA;
+						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+						// Step 4: Write resulting pixel to destination
+
+						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+						ofs++;
+
+					} while (ofs < end);
+				}
+
+				// Last anti-aliased pixel of column
+
+				int overflow = (clippedPos + clippedWidth) & 0xFFFF;
+				if (overflow > 0)
+				{
+					int alpha = srcA * overflow >> 16;		// Special AA
+
+					uint8_t backB, backG, backR, backA;
+					_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+					uint8_t outB, outG, outR, outA;
+					_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+				}
+			}
+
+			pRow += rowInc;
+			pos += slope;
+		}
+	}
+
+
+	//____ _fill() ____________________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint)
+	{
+		// Step 1: Read source pixels
+
+		uint8_t srcB, srcG, srcR, srcA;
+		srcB = col.b;
+		srcG = col.g;
+		srcR = col.r;
+		srcA = col.a;
+
+		// Step 1.5: Apply any baseTint
+
+		if (TINTFLAGS & 0x1)
+		{
+			srcB = (srcB * s_mulTab[tint.baseTint.b]) >> 16;
+			srcG = (srcG * s_mulTab[tint.baseTint.g]) >> 16;
+			srcR = (srcR * s_mulTab[tint.baseTint.r]) >> 16;
+			srcA = (srcA * s_mulTab[tint.baseTint.a]) >> 16;
+		}
+
+		for (int y = 0; y < nLines; y++)
+		{
+			// Step 2: Apply any vertical tint-map
+
+			for (int x = 0; x < lineLength; x++)
+			{
+				// Step 3: Apply any horizontal tint-map
+
+				// Step 4: Get color components of background pixel blending into backX
+
+				uint8_t backB, backG, backR, backA;
+
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				// Step 5: Blend srcX and backX into outX
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				// Step 6: Write resulting pixel to destination
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+
+				// Step 7: Increment destination pointers
+
+				pDst += pitchX;
+			}
+			pDst += pitchY;
+		}
+
+	}
+
+	//____ draw_wave_column() _________________________________________________
+
+	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+	static void SoftGfxDevice::_draw_wave_column(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
+	{
+		// 16 binals on leftPos, rightPos and most calculations.
+
+		int i = 0;
+
+		int amount[4];
+		int inc[4];
+
+		int columnBeg = (min(leftPos[0], rightPos[0]) & 0xFFFF0000) + 32768;		// Column starts in middle of first pixel
+
+																					// Calculate start amount and increment for our 4 fields
+
+		for (int i = 0; i < 4; i++)
+		{
+			int yBeg;
+			int64_t xInc;
+
+			if (leftPos[i] < rightPos[i])
+			{
+				yBeg = leftPos[i];
+				xInc = (int64_t)65536 * 65536 / (rightPos[i] - leftPos[i] + 1);
+			}
+			else
+			{
+				yBeg = rightPos[i];
+				xInc = (int64_t)65536 * 65536 / (leftPos[i] - rightPos[i] + 1);
+			}
+
+			limit(xInc, (int64_t)0, (int64_t)65536);
+
+			inc[i] = (int)xInc;
+
+			int64_t startAmount = -((xInc * (yBeg - columnBeg)) >> 16);
+			amount[i] = (int)startAmount;
+		}
+
+		// Do clipping
+
+		if (columnBeg < (clipBeg << 16))
+		{
+			int64_t forwardAmount = (clipBeg << 16) - columnBeg;
+
+			for (int i = 0; i < 4; i++)
+				amount[i] += (int)((inc[i] * forwardAmount) >> 16);
+
+			columnBeg = (clipBeg << 16);
+		}
+
+		uint8_t * pDstClip = pColumn + (clipBeg + clipLen) * linePitch;
+
+		// Render the column
+
+		uint8_t * pDst = pColumn + linePitch * (columnBeg >> 16);
+
+		// First render loop, run until we are fully into fill (or later section).
+		// This needs to cover all possibilities since topLine, fill and bottomLine might be less than 1 pixel combined
+		// in which case they should all be rendered.
+
+		while (amount[1] < 65536 && pDst < pDstClip)
+		{
+			int aFrac = amount[0];
+			int bFrac = amount[1];
+			int cFrac = amount[2];
+			int dFrac = amount[3];
+			limit(aFrac, 0, 65536);
+			limit(bFrac, 0, 65536);
+			limit(cFrac, 0, 65536);
+			limit(dFrac, 0, 65536);
+
+			aFrac = ((aFrac - bFrac)*col[0].a) / 255;
+			bFrac = ((bFrac - cFrac)*col[1].a) / 255;
+			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
+
+			int backFraction = 65536 - aFrac - bFrac - cFrac;
+
+			pDst[0] = (pDst[0] * backFraction + col[0].b * aFrac + col[1].b * bFrac + col[2].b * cFrac) >> 16;
+			pDst[1] = (pDst[1] * backFraction + col[0].g * aFrac + col[1].g * bFrac + col[2].g * cFrac) >> 16;
+			pDst[2] = (pDst[2] * backFraction + col[0].r * aFrac + col[1].r * bFrac + col[2].r * cFrac) >> 16;
+			pDst[3] = (pDst[3] * backFraction + 255 * aFrac + 255 * bFrac + 255 * cFrac) >> 16;
+
+			// Step 4: Get color components of background pixel blending into backX
+
+			uint8_t backB, backG, backR, backA;
+
+			_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+			// Step 5: Blend srcX and backX into outX
+
+			uint8_t outB, outG, outR, outA;
+			_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+			// Step 6: Write resulting pixel to destination
+
+			_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+
+			pDst += linePitch;
+
+			for (int i = 0; i < 4; i++)
+				amount[i] += inc[i];
+		}
+
+		// Second render loop, optimzed fill-section loop until bottomLine starts to fade in.
+
+		if (amount[2] <= 0 && pDst < pDstClip)
+		{
+			if (col[1].a == 255)
+			{
+				while (amount[2] <= 0 && pDst < pDstClip)
+				{
+					pDst[0] = col[1].b;
+					pDst[1] = col[1].g;
+					pDst[2] = col[1].r;
+					pDst[3] = col[1].a;
+					pDst += linePitch;
+
+					amount[2] += inc[2];
+					amount[3] += inc[3];
+				}
+			}
+			else
+			{
+				int fillFrac = (65536 * col[1].a) / 255;
+
+				int fillB = col[1].b * fillFrac;
+				int fillG = col[1].g * fillFrac;
+				int fillR = col[1].r * fillFrac;
+				int fillA = 255 * fillFrac;
+				int backFraction = 65536 - fillFrac;
+
+				while (amount[2] <= 0 && pDst < pDstClip)
+				{
+					pDst[0] = (pDst[0] * backFraction + fillB) >> 16;
+					pDst[1] = (pDst[1] * backFraction + fillG) >> 16;
+					pDst[2] = (pDst[2] * backFraction + fillR) >> 16;
+					pDst[3] = (pDst[3] * backFraction + fillA) >> 16;
+					pDst += linePitch;
+
+					amount[2] += inc[2];
+					amount[3] += inc[3];
+				}
+			}
+		}
+
+
+		// Third render loop, from when bottom line has started to fade in.
+		// We can safely ignore topLine (not visible anymore) and amount[2] is guaranteed to have reached 65536.
+
+		while (amount[3] < 65536 && pDst < pDstClip)
+		{
+			int cFrac = amount[2];
+			int dFrac = amount[3];
+			limit(cFrac, 0, 65536);
+			limit(dFrac, 0, 65536);
+
+			int bFrac = ((65536 - cFrac)*col[1].a) / 255;
+			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
+
+			int backFraction = 65536 - bFrac - cFrac;
+
+			pDst[0] = (pDst[0] * backFraction + col[1].b * bFrac + col[2].b * cFrac) >> 16;
+			pDst[1] = (pDst[1] * backFraction + col[1].g * bFrac + col[2].g * cFrac) >> 16;
+			pDst[2] = (pDst[2] * backFraction + col[1].r * bFrac + col[2].r * cFrac) >> 16;
+			pDst[3] = (pDst[3] * backFraction + 255 * bFrac + 255 * cFrac) >> 16;
+			pDst += linePitch;
+
+			amount[2] += inc[2];
+			amount[3] += inc[3];
+		}
+	}
+
+
+
+
+	//____ _blit() ____________________________________________________________
+
+	template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+	static void	SoftGfxDevice::_blit(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint)
+	{
+		int tintB, tintG, tintR, tintA;
+
+		if (TINTFLAGS & 0x1)
+		{
+			tintB = s_mulTab[tint.baseTint.b];
+			tintG = s_mulTab[tint.baseTint.g];
+			tintR = s_mulTab[tint.baseTint.r];
+			tintA = s_mulTab[tint.baseTint.a];
+		}
+
+		for (int y = 0; y < nLines; y++)
+		{
+			for (int x = 0; x < lineLength; x++)
+			{
+				// Step 1: Read source pixels
+
+				uint8_t srcB, srcG, srcR, srcA;
+				_read_pixel(pSrc, SRCFORMAT, srcB, srcG, srcR, srcA);
+
+				// Step 1.5: Apply any tint
+
+				if (TINTFLAGS & 0x1)
+				{
+					srcB = (srcB*tintB) >> 16;
+					srcG = (srcG*tintG) >> 16;
+					srcR = (srcR*tintR) >> 16;
+					srcA = (srcA*tintA) >> 16;
+				}
+
+				// Step 2: Get color components of background pixel blending into backX
+
+				uint8_t backB, backG, backR, backA;
+
+				_read_pixel(pDst, DSTFORMAT, backB, backG, backR, backA);
+
+				// Step 3: Blend srcX and backX into outX
+
+				uint8_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+
+				// Step 4: Write resulting pixel to destination
+
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+
+				// Step 6: Increment source and destination pointers
+
+				pSrc += pitches.srcX;
+				pDst += pitches.dstX;
+			}
+			pSrc += pitches.srcY;
+			pDst += pitches.dstY;
+		}
+	}
 
 
 	//____ _transform_blit __________________________________________
@@ -362,6 +999,45 @@ namespace wg
 			pDst += dstPitchY;
 		}
 	}
+
+
+	template void SoftGfxDevice::_plot<BlendMode::Replace,	0, PixelFormat::BGRA_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Blend,	0, PixelFormat::BGRA_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+
+	template void SoftGfxDevice::_plot<BlendMode::Replace,	0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Blend,	0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Add,		0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Subtract,	0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Multiply,	0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_plot<BlendMode::Invert,	0, PixelFormat::BGR_8>(uint8_t * pDst, Color col, const ColTrans& tint);
+
+
+	template void SoftGfxDevice::_fill<BlendMode::Replace,	0, PixelFormat::BGRA_8>(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Blend,	0, PixelFormat::BGRA_8 > (uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+
+	template void SoftGfxDevice::_fill<BlendMode::Replace,	0, PixelFormat::BGR_8>(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Blend,	0, PixelFormat::BGR_8 >(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Add,		0, PixelFormat::BGR_8>(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Subtract, 0, PixelFormat::BGR_8 >(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Multiply, 0, PixelFormat::BGR_8>(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+	template void SoftGfxDevice::_fill<BlendMode::Invert,	0, PixelFormat::BGR_8 >(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+
+
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8,	1, BlendMode::Replace,	PixelFormat::BGRA_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+
+	template void SoftGfxDevice::_blit<PixelFormat::BGR_8,	0, BlendMode::Replace,	PixelFormat::BGRA_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGR_8,	1, BlendMode::Replace,	PixelFormat::BGRA_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Replace,	PixelFormat::BGRA_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Blend,	PixelFormat::BGRA_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Replace,	PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Blend,	PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Add,		PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Subtract, PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Multiply, PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+	template void SoftGfxDevice::_blit<PixelFormat::BGRA_8, 0, BlendMode::Invert,	PixelFormat::BGR_8>(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+
 
 
 
@@ -597,6 +1273,7 @@ namespace wg
 			return;
 
 		Color fillColor = col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
 
 		// Skip calls that won't affect destination
 
@@ -617,7 +1294,7 @@ namespace wg
 		FillOp_p pFunc = s_fillOpTab[(int)blendMode][(int)m_pCanvas->pixelFormat()];
 
 		if (pFunc)
-			pFunc(pDst, pixelBytes, m_canvasPitch - rect.w*pixelBytes, rect.h, rect.w, fillColor);
+			pFunc(pDst, pixelBytes, m_canvasPitch - rect.w*pixelBytes, rect.h, rect.w, fillColor, colTrans);
 	}
 
 	//____ fillSubPixel() ____________________________________________________________________
@@ -628,6 +1305,8 @@ namespace wg
 			return;
 
 		Color fillColor = col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
 
 		// Skip calls that won't affect destination
 
@@ -646,7 +1325,7 @@ namespace wg
 
 
 		uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x1 * pixelBytes;
-		pOp(pDst, pixelBytes, m_canvasPitch, y2 - y1, x2 - x1, col);
+		pOp(pDst, pixelBytes, m_canvasPitch, y2 - y1, x2 - x1, col, colTrans);
 		//		fill(Rect(x1, y1, x2 - x1, y2 - y1), col);
 
 		// Draw the sides
@@ -687,7 +1366,7 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + ((int)rect.y) * m_canvasPitch + x1 * pixelBytes;
 			int length = x2 - x1;
 			fillColor.a = aaTop;
-			pOp(pDst, pixelBytes, 0, 1, length, fillColor);
+			pOp(pDst, pixelBytes, 0, 1, length, fillColor,colTrans);
 //			_drawStraightLineAA(x1, (int)rect.y, x2 - x1, fillColor, blendMode, aaTop, Orientation::Horizontal);
 		}
 
@@ -696,7 +1375,7 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x1 * pixelBytes;
 			int length = x2 - x1;
 			fillColor.a = aaBottom;
-			pOp(pDst, pixelBytes, 0, 1, length, fillColor);
+			pOp(pDst, pixelBytes, 0, 1, length, fillColor, colTrans);
 //			_drawStraightLineAA(x1, (int)y2, x2 - x1, fillColor, blendMode, aaBottom, Orientation::Horizontal);
 		}
 
@@ -705,7 +1384,7 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + ((int)rect.x) * pixelBytes;
 			int length = y2 - y1;
 			fillColor.a = aaLeft;
-			pOp(pDst, m_canvasPitch, 0, 1, length, fillColor);
+			pOp(pDst, m_canvasPitch, 0, 1, length, fillColor, colTrans);
 //			_drawStraightLineAA((int)rect.x, y1, y2 - y1, fillColor, blendMode, aaLeft, Orientation::Vertical);
 		}
 
@@ -714,7 +1393,7 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x2 * pixelBytes;
 			int length = y2 - y1;
 			fillColor.a = aaRight;
-			pOp(pDst, m_canvasPitch, 0, 1, length, fillColor);
+			pOp(pDst, m_canvasPitch, 0, 1, length, fillColor, colTrans);
 //			_drawStraightLineAA((int)x2, y1, y2 - y1, fillColor, blendMode, aaRight, Orientation::Vertical);
 		}
 
@@ -726,7 +1405,7 @@ namespace wg
 		{
 			uint8_t * pDst = m_pCanvasPixels + ((int)rect.y) * m_canvasPitch + ((int)rect.x) * pixelBytes;
 			fillColor.a = aaTopLeft;
-			pPlotOp(pDst, fillColor);
+			pPlotOp(pDst, fillColor, colTrans);
 //			_plotAA((int)rect.x, (int)rect.y, fillColor, blendMode, aaTopLeft);
 		}
 
@@ -734,7 +1413,7 @@ namespace wg
 		{
 			uint8_t * pDst = m_pCanvasPixels + ((int)rect.y) * m_canvasPitch + x2 * pixelBytes;
 			fillColor.a = aaTopRight;
-			pPlotOp(pDst, fillColor);
+			pPlotOp(pDst, fillColor, colTrans);
 //			_plotAA(x2, (int)rect.y, fillColor, blendMode, aaTopRight);
 		}
 
@@ -742,7 +1421,7 @@ namespace wg
 		{
 			uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + ((int)rect.x) * pixelBytes;
 			fillColor.a = aaBottomLeft;
-			pPlotOp(pDst, fillColor);
+			pPlotOp(pDst, fillColor, colTrans);
 //			_plotAA((int)rect.x, y2, fillColor, blendMode, aaBottomLeft);
 		}
 
@@ -750,287 +1429,8 @@ namespace wg
 		{
 			uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x2 * pixelBytes;
 			fillColor.a = aaBottomRight;
-			pPlotOp(pDst, fillColor);
+			pPlotOp(pDst, fillColor, colTrans);
 //			_plotAA(x2, y2, fillColor, blendMode, aaBottomRight);
-		}
-	}
-
-	//____ _plot_move_32() ________________________________________________________
-
-	void SoftGfxDevice::_plot_move_32(uint8_t * pDst, Color col)
-	{
-		*((uint32_t*)(pDst)) = col.argb;
-	}
-
-	//____ _plot_blend_32() ________________________________________________________
-
-	void SoftGfxDevice::_plot_blend_32(uint8_t * pDst, Color col)
-	{
-		int a = s_mulTab[col.a];
-		int invAlpha = 65536 - a;
-
-		pDst[0] = (pDst[0] * invAlpha + col.b * a) >> 16;
-		pDst[1] = (pDst[1] * invAlpha + col.g * a) >> 16;
-		pDst[2] = (pDst[2] * invAlpha + col.r * a) >> 16;
-		pDst[3] = (pDst[3] * invAlpha + col.a * 65536) >> 16;
-	}
-
-	//____ _plot_move_24() ________________________________________________________
-
-	void SoftGfxDevice::_plot_move_24(uint8_t * pDst, Color col)
-	{
-		pDst[0] = col.b;
-		pDst[1] = col.g;
-		pDst[2] = col.r;
-	}
-
-	//____ _plot_blend_24() ________________________________________________________
-
-	void SoftGfxDevice::_plot_blend_24(uint8_t * pDst, Color col)
-	{
-		int a = s_mulTab[col.a];
-		int invAlpha = 65536 - a;
-
-		pDst[0] = (pDst[0] * invAlpha + col.b * a) >> 16;
-		pDst[1] = (pDst[1] * invAlpha + col.g * a) >> 16;
-		pDst[2] = (pDst[2] * invAlpha + col.r * a) >> 16;
-	}
-
-	//____ _plot_add_24() _________________________________________________________
-
-	void SoftGfxDevice::_plot_add_24(uint8_t * pDst, Color col)
-	{
-		pDst[0] = limitUint8(pDst[0] + col.b);
-		pDst[1] = limitUint8(pDst[1] + col.g);
-		pDst[2] = limitUint8(pDst[2] + col.r);
-	}
-
-	//____ _plot_sub_24() _________________________________________________________
-
-	void SoftGfxDevice::_plot_sub_24(uint8_t * pDst, Color col)
-	{
-		pDst[0] = limitUint8(pDst[0] - col.b);
-		pDst[1] = limitUint8(pDst[1] - col.g);
-		pDst[2] = limitUint8(pDst[2] - col.r);
-	}
-
-	//____ _plot_mul_24() _________________________________________________________
-
-	void SoftGfxDevice::_plot_mul_24(uint8_t * pDst, Color col)
-	{
-		pDst[0] = (pDst[0] * s_mulTab[col.b]) >> 16;
-		pDst[1] = (pDst[1] * s_mulTab[col.g]) >> 16;
-		pDst[2] = (pDst[2] * s_mulTab[col.r]) >> 16;
-	}
-
-	//____ _plot_invert_24() ______________________________________________________
-
-	void SoftGfxDevice::_plot_invert_24(uint8_t * pDst, Color col)
-	{
-		int storedRed = s_mulTab[col.r];
-		int storedGreen = s_mulTab[col.g];
-		int storedBlue = s_mulTab[col.b];
-
-		int invertRed = 65536 - storedRed;
-		int invertGreen = 65536 - storedGreen;
-		int invertBlue = 65536 - storedBlue;
-
-		pDst[0] = ((255 - pDst[0]) * storedBlue + pDst[0] * invertBlue) >> 16;
-		pDst[1] = ((255 - pDst[1]) * storedGreen + pDst[1] * invertGreen) >> 16;
-		pDst[2] = ((255 - pDst[2]) * storedRed + pDst[2] * invertRed) >> 16;
-
-	}
-
-	//____ _fill_move_32() ____________________________________________________
-
-	void SoftGfxDevice::_fill_move_32(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			uint32_t fillValue = ((int)col.b) | (((int)col.g) << 8) | (((int)col.r) << 16) | (((int)col.a) << 24);
-
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				*((uint32_t*)(pDst)) = fillValue;
-				pDst += 4;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_blend_32() ___________________________________________________
-
-	void SoftGfxDevice::_fill_blend_32(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int a = s_mulTab[col.a];
-
-		int storedRed = col.r * a;
-		int storedGreen = col.g * a;
-		int storedBlue = col.b * a;
-		int invAlpha = 65536 - a;
-
-		int storedAlpha = col.a * 65536;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = (pDst[0] * invAlpha + storedBlue) >> 16;
-				pDst[1] = (pDst[1] * invAlpha + storedGreen) >> 16;
-				pDst[2] = (pDst[2] * invAlpha + storedRed) >> 16;
-				pDst[3] = (pDst[3] * invAlpha + storedAlpha) >> 16;
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_move_24() __________________________________________________
-
-	void SoftGfxDevice::_fill_move_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = col.b;
-				pDst[1] = col.g;
-				pDst[2] = col.r;
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_blend_24() ___________________________________________________
-
-	void SoftGfxDevice::_fill_blend_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int a = s_mulTab[col.a];
-
-		int storedRed = col.r * a;
-		int storedGreen = col.g * a;
-		int storedBlue = col.b * a;
-		int invAlpha = 65536 - a;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = (pDst[0] * invAlpha + storedBlue) >> 16;
-				pDst[1] = (pDst[1] * invAlpha + storedGreen) >> 16;
-				pDst[2] = (pDst[2] * invAlpha + storedRed) >> 16;
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_add_24() _____________________________________________________
-
-	void SoftGfxDevice::_fill_add_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int storedRed = (int)col.r;
-		int storedGreen = (int)col.g;
-		int storedBlue = (int)col.b;
-
-		if (storedRed + storedGreen + storedBlue == 0)
-			return;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = limitUint8(pDst[0] + storedBlue);
-				pDst[1] = limitUint8(pDst[1] + storedGreen);
-				pDst[2] = limitUint8(pDst[2] + storedRed);
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_sub_24() _____________________________________________________
-
-	void SoftGfxDevice::_fill_sub_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int storedRed = (int)col.r;
-		int storedGreen = (int)col.g;
-		int storedBlue = (int)col.b;
-
-		if (storedRed + storedGreen + storedBlue == 0)
-			return;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = limitUint8(pDst[0] - storedBlue);
-				pDst[1] = limitUint8(pDst[1] - storedGreen);
-				pDst[2] = limitUint8(pDst[2] - storedRed);
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_mul_24() _____________________________________________________
-
-	void SoftGfxDevice::_fill_mul_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int storedRed = s_mulTab[col.r];
-		int storedGreen = s_mulTab[col.g];
-		int storedBlue = s_mulTab[col.b];
-
-		if (storedRed + storedGreen + storedBlue == 65536*3)
-			return;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while (pDst < pEnd)
-			{
-				pDst[0] = (pDst[0] * storedBlue) >> 16;
-				pDst[1] = (pDst[1] * storedGreen) >> 16;
-				pDst[2] = (pDst[2] * storedRed) >> 16;
-				pDst += pitchX;
-			}
-			pDst += pitchY;
-		}
-	}
-
-	//____ _fill_invert_24() __________________________________________________
-
-	void SoftGfxDevice::_fill_invert_24(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col)
-	{
-		int storedRed = s_mulTab[col.r];
-		int storedGreen = s_mulTab[col.g];
-		int storedBlue = s_mulTab[col.b];
-
-		if (storedRed + storedGreen + storedBlue <= 3)
-			return;
-
-		int invertRed = 65536 - storedRed;
-		int invertGreen = 65536 - storedGreen;
-		int invertBlue = 65536 - storedBlue;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			uint8_t * pEnd = pDst + pitchX * lineLength;
-			while(pDst < pEnd)
-			{
-				pDst[0] = ((255 - pDst[0]) * storedBlue + pDst[0] * invertBlue) >> 16;
-				pDst[1] = ((255 - pDst[1]) * storedGreen + pDst[1] * invertGreen) >> 16;
-				pDst[2] = ((255 - pDst[2]) * storedRed + pDst[2] * invertRed) >> 16;
-				pDst += pitchX;
-			}
-			pDst += pitchY;
 		}
 	}
 	
@@ -1107,6 +1507,10 @@ namespace wg
 		if (thickness <= 0.f)
 			return;
 
+		_col = _col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
+
 		int pixelBytes = m_canvasPixelBits / 8;
 		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
@@ -1121,7 +1525,7 @@ namespace wg
 				Color col = _col;
 				col.a = (uint8_t)(thickness * col.a);
 				uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, 0, 1, length, col);
+				pOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
 			}
 			else
 			{
@@ -1132,14 +1536,14 @@ namespace wg
 				int endY = begin.y + expanse + 1;
 
 				uint8_t * pBegin = m_pCanvasPixels + beginY * m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, 0, 1, length, edgeColor);
+				pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 
 				pBegin = m_pCanvasPixels + (endY-1) * m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, 0, 1, length, edgeColor);
+				pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 
 				int bodyThickness = endY - beginY - 2;
 				pBegin = m_pCanvasPixels + (beginY+1) * m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, m_canvasPitch-bodyThickness*pixelBytes, bodyThickness, length, _col);
+				pOp(pBegin, pixelBytes, m_canvasPitch-bodyThickness*pixelBytes, bodyThickness, length, _col, colTrans);
 
 //				_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
 //				_drawStraightLine({ begin.x, endY - 1 }, Orientation::Horizontal, length, edgeColor);
@@ -1157,7 +1561,7 @@ namespace wg
 				col.a = (uint8_t)(thickness * col.a);
 
 				uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, m_canvasPitch, 0, 1, length, col);
+				pOp(pBegin, m_canvasPitch, 0, 1, length, col, colTrans);
 			}
 			else
 			{
@@ -1168,14 +1572,14 @@ namespace wg
 				int endX = begin.x + expanse + 1;
 
 				uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + beginX * pixelBytes;
-				pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor);
+				pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 
 				pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (endX-1) * pixelBytes;
-				pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor);
+				pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 
 				int bodyThickness = endX - beginX - 2;
 				pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX+1) * pixelBytes;
-				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch-bodyThickness, bodyThickness, length, _col);
+				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch-bodyThickness, bodyThickness, length, _col, colTrans);
 
 //				_drawStraightLine({ beginX, begin.y }, Orientation::Vertical, length, edgeColor);
 //				_drawStraightLine({ endX - 1, begin.y }, Orientation::Vertical, length, edgeColor);
@@ -1301,6 +1705,9 @@ namespace wg
 		if (thickness <= 0.f)
 			return;
 
+		_col = _col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
 		int pixelBytes = m_canvasPixelBits / 8;
 		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
@@ -1337,7 +1744,7 @@ namespace wg
 				col.a = (uint8_t)(thickness * col.a);
 
 				uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, 0, 1, length, col);
+				pOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
 			}
 			else
 			{
@@ -1355,7 +1762,7 @@ namespace wg
 				else
 				{
 					uint8_t * pBegin = m_pCanvasPixels + beginY * m_canvasPitch + begin.x * pixelBytes;
-					pOp(pBegin, pixelBytes, 0, 1, length, edgeColor);
+					pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 //					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
 				}
 
@@ -1364,13 +1771,13 @@ namespace wg
 				else
 				{
 					uint8_t * pBegin = m_pCanvasPixels + (endY - 1) * m_canvasPitch + begin.x * pixelBytes;
-					pOp(pBegin, pixelBytes, 0, 1, length, edgeColor);
+					pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 //					_drawStraightLine({ begin.x, endY - 1 }, Orientation::Horizontal, length, edgeColor);
 				}
 
 				int bodyThickness = endY - beginY - 2;
 				uint8_t * pBegin = m_pCanvasPixels + (beginY + 1) * m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col);
+				pOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col, colTrans);
 //				fill({ begin.x, beginY + 1, length, endY - beginY - 2 }, _col);
 			}
 
@@ -1406,7 +1813,7 @@ namespace wg
 				col.a = (uint8_t)(thickness * col.a);
 
 				uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-				pOp(pBegin, m_canvasPitch, 0, 1, length, col);
+				pOp(pBegin, m_canvasPitch, 0, 1, length, col, colTrans);
 //				_drawStraightLine(begin, Orientation::Vertical, length, col);
 			}
 			else
@@ -1425,7 +1832,7 @@ namespace wg
 				else
 				{
 					uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + beginX * pixelBytes;
-					pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor);
+					pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 //					_drawStraightLine({ beginX, begin.y }, Orientation::Vertical, length, edgeColor);
 				}
 
@@ -1434,14 +1841,14 @@ namespace wg
 				else
 				{
 					uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (endX - 1) * pixelBytes;
-					pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor);
+					pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 //					_drawStraightLine({ endX - 1, begin.y }, Orientation::Vertical, length, edgeColor);
 				}
 
 
 				int bodyThickness = endX - beginX - 2;
 				uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX + 1) * pixelBytes;
-				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch - bodyThickness, bodyThickness, length, _col);
+				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch - bodyThickness, bodyThickness, length, _col, colTrans);
 //				fill({ beginX + 1, begin.y, endX - beginX - 2, length }, _col);
 			}
 
@@ -3021,52 +3428,6 @@ namespace wg
 	}
 	
 	
-	//____ drawElipse() _______________________________________________________________
-	
-	void SoftGfxDevice::drawElipse( const Rect& rect, Color color )
-	{
-		if( !m_pCanvas || !m_pCanvasPixels || rect.h < 2 || rect.w < 1 )
-			return;
-	
-		Color fillColor = color * m_tintColor;
-	
-		// Skip calls that won't affect destination
-	
-		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract) )
-			return;
-		
-			
-		int sectionHeight = rect.h/2;
-		int maxWidth = rect.w/2;
-	
-		uint8_t * pLineBeg = m_pCanvasPixels + rect.y *m_canvasPitch;
-		int pitch =m_canvasPitch;
-	
-		int center = (rect.x + rect.w/2) << 8;
-	
-		int sinOfsInc = (c_nCurveTabEntries << 16) / sectionHeight;
-		int sinOfs = 0;
-	
-		int begOfs = 0;
-		int peakOfs = 0;
-		int endOfs = 0;
-	
-		for( int i = 0 ; i < sectionHeight ; i++ )
-		{
-			peakOfs = ((s_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
-			endOfs = (s_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
-	
-			_drawHorrFadeLine( pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, fillColor );
-			_drawHorrFadeLine( pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, fillColor );
-	
-			_drawHorrFadeLine( pLineBeg + (sectionHeight*2-i-1)*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, fillColor );
-			_drawHorrFadeLine( pLineBeg + (sectionHeight*2-i-1)*pitch, center - endOfs, center - peakOfs, center - begOfs +256, fillColor );
-	
-			begOfs = peakOfs;
-			sinOfs += sinOfsInc;
-		}
-	}
-	
 	//____ _clipDrawHorrFadeLine() _______________________________________________________________
 	
 	void SoftGfxDevice::_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color )
@@ -3205,433 +3566,6 @@ namespace wg
 	
 	}
 	
-	//____ clipDrawElipse() _______________________________________________________________
-	
-	void SoftGfxDevice::clipDrawElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-		if( !m_pCanvas || !m_pCanvasPixels || rect.h < 2 || rect.w < 1 )
-			return;
-	
-		Color fillColor = color * m_tintColor;
-	
-		// Skip calls that won't affect destination
-	
-		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract) )
-			return;
-
-	
-		if( !rect.intersectsWith(clip) )
-			return;
-	
-		if( clip.contains(rect) )
-			return drawElipse(rect,color);
-	
-		int sectionHeight = rect.h/2;
-		int maxWidth = rect.w/2;
-	
-		uint8_t * pLineBeg = m_pCanvasPixels + rect.y*m_canvasPitch;
-		int pitch =m_canvasPitch;
-	
-		int center = (rect.x + rect.w/2) << 8;
-	
-		int sinOfsInc = (c_nCurveTabEntries << 16) / sectionHeight;
-		int sinOfs = 0;
-	
-		int begOfs = 0;
-		int peakOfs = 0;
-		int endOfs = 0;
-	
-		for( int i = 0 ; i < sectionHeight ; i++ )
-		{
-			peakOfs = ((s_pCurveTab[sinOfs>>16] * maxWidth) >> 8);
-			endOfs = (s_pCurveTab[(sinOfs+(sinOfsInc-1))>>16] * maxWidth) >> 8;
-	
-			if( rect.y + i >= clip.y && rect.y + i < clip.y + clip.h )
-			{
-				_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, fillColor );
-				_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + i*pitch, center - endOfs, center - peakOfs, center - begOfs +256, fillColor );
-			}
-	
-			int y2 = sectionHeight*2-i-1;
-			if( rect.y + y2 >= clip.y && rect.y + y2 < clip.y + clip.h )
-			{
-				_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center + begOfs -256, center + peakOfs -256, center + endOfs, fillColor );
-				_clipDrawHorrFadeLine( clip.x, clip.x+clip.w, pLineBeg + y2*pitch, center - endOfs, center - peakOfs, center - begOfs +256, fillColor );
-			}
-	
-			begOfs = peakOfs;
-			sinOfs += sinOfsInc;
-		}
-	}
-	
-	//____ drawFilledElipse() _____________________________________________________
-	
-	void SoftGfxDevice::drawFilledElipse( const Rect& rect, Color color )
-	{
-		int pixelBytes = m_canvasPixelBits/8;
-	
-		uint8_t * pLineCenter = m_pCanvasPixels + rect.y *m_canvasPitch + (rect.x+rect.w/2) * pixelBytes;
-	
-		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
-		int sinOfs = sinOfsInc >> 1;
-	
-		for( int j = 0 ; j < 2 ; j++ )
-		{
-			for( int i = 0 ; i < rect.h/2 ; i++ )
-			{
-				int lineLen = ((s_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16)*pixelBytes;
-				uint8_t * pLineBeg = pLineCenter - lineLen;
-				uint8_t * pLineEnd = pLineCenter + lineLen;
-	
-				for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
-				{
-					p[0] = color.b;
-					p[1] = color.g;
-					p[2] = color.r;
-				}
-	
-				sinOfs += sinOfsInc;
-				pLineCenter +=m_canvasPitch;
-			}
-			sinOfsInc = -sinOfsInc;
-			sinOfs = (c_nCurveTabEntries << 16) + (sinOfsInc >> 1);
-		}
-	}
-	
-	//____ clipDrawFilledElipse() _____________________________________________________
-	
-	void SoftGfxDevice::clipDrawFilledElipse( const Rect& clip, const Rect& rect, Color color )
-	{
-		if( !rect.intersectsWith(clip) )
-			return;
-	
-		if( clip.contains(rect) )
-			return drawFilledElipse(rect,color);
-	
-		int pixelBytes = m_canvasPixelBits/8;
-	
-		uint8_t * pLine = m_pCanvasPixels + rect.y *m_canvasPitch;
-	
-		int sinOfsInc = (c_nCurveTabEntries << 16) / (rect.h/2);
-		int sinOfs = sinOfsInc >> 1;
-	
-		for( int j = 0 ; j < 2 ; j++ )
-		{
-			for( int i = 0 ; i < rect.h/2 ; i++ )
-			{
-				if( rect.y + j*(rect.h/2) + i >= clip.y && rect.y + j*(rect.h/2) + i < clip.y + clip.h )
-				{
-					int lineLen = ((s_pCurveTab[sinOfs>>16] * rect.w/2 + 32768)>>16);
-	
-					int beg = rect.x + rect.w/2 - lineLen;
-					int end = rect.x + rect.w/2 + lineLen;
-	
-					if( beg < clip.x )
-						beg = clip.x;
-	
-					if( end > clip.x + clip.w )
-						end = clip.x + clip.w;
-	
-					if( beg < end )
-					{
-						uint8_t * pLineBeg = pLine + beg * pixelBytes;
-						uint8_t * pLineEnd = pLine + end * pixelBytes;
-	
-						for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
-						{
-							p[0] = color.b;
-							p[1] = color.g;
-							p[2] = color.r;
-						}
-					}
-				}
-	
-				sinOfs += sinOfsInc;
-				pLine +=m_canvasPitch;
-			}
-	
-			sinOfsInc = -sinOfsInc;
-			sinOfs = (c_nCurveTabEntries << 16) + (sinOfsInc >> 1);
-		}
-	}
-	
-	
-	//____ drawArcNE() ____________________________________________________________
-	
-	void SoftGfxDevice::drawArcNE( const Rect& rect, Color color )
-	{
-		int pixelBytes = m_canvasPixelBits/8;
-	
-		uint8_t * pLineBeg = m_pCanvasPixels + rect.y *m_canvasPitch + rect.x * pixelBytes;
-	
-		int sinOfsInc = (c_nCurveTabEntries << 16) / rect.h;
-		int sinOfs = sinOfsInc >> 1;
-	
-		for( int i = 0 ; i < rect.h ; i++ )
-		{
-			uint8_t * pLineEnd = pLineBeg + ((s_pCurveTab[sinOfs>>16] * rect.w + 32768)>>16)*pixelBytes;
-	
-			for( uint8_t * p = pLineBeg ; p < pLineEnd ; p += pixelBytes )
-			{
-				p[0] = color.b;
-				p[1] = color.g;
-				p[2] = color.r;
-			}
-	
-			sinOfs += sinOfsInc;
-			pLineBeg +=m_canvasPitch;
-		}
-	
-	}
-	
-	//____ clipDrawArcNE() _________________________________________________________
-	
-	void SoftGfxDevice::clipDrawArcNE( const Rect& clip, const Rect& rect, Color color )
-	{
-		//TODO: Implement!!!
-	}
-	
-	//____ _tint_32_to_32() ____________________________________________________
-
-	void SoftGfxDevice::_tint_32_to_32(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint)
-	{
-		int tintB = s_mulTab[tint.baseTint.b];
-		int tintG = s_mulTab[tint.baseTint.g];
-		int tintR = s_mulTab[tint.baseTint.r];
-		int tintA = s_mulTab[tint.baseTint.a];
-
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				pDst[0] = (pSrc[0] * tintB) >> 16;
-				pDst[1] = (pSrc[1] * tintG) >> 16;
-				pDst[2] = (pSrc[2] * tintR) >> 16;
-				pDst[3] = (pSrc[3] * tintA) >> 16;
-				pSrc += pitches.srcX; 
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _move_24_to_32() ____________________________________________________
-
-	void SoftGfxDevice::_move_24_to_32(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for( int x = 0 ; x < lineLength ; x++ )
-			{
-				pDst[0] = pSrc[0];
-				pDst[1] = pSrc[1];
-				pDst[2] = pSrc[2];
-				pDst[3] = 255;
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _tint_24_to_32() ____________________________________________________
-
-	void SoftGfxDevice::_tint_24_to_32(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint)
-	{
-		int tintB = s_mulTab[tint.baseTint.b];
-		int tintG = s_mulTab[tint.baseTint.g];
-		int tintR = s_mulTab[tint.baseTint.r];
-
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				pDst[0] = (pSrc[0] * tintB) >> 16;
-				pDst[1] = (pSrc[1] * tintG) >> 16;
-				pDst[2] = (pSrc[2] * tintR) >> 16;
-				pDst[3] = tint.baseTint.a;
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-
-
-	//____ _move_32_to_32() ____________________________________________________
-
-	void SoftGfxDevice::_move_32_to_32(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		uint32_t * pS = (uint32_t*)pSrc;
-		uint32_t * pD = (uint32_t*)pDst;
-
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				*pD = *pS;
-				pS += pitches.srcX / 4;
-				pD += pitches.dstX / 4;
-			}
-			pS += pitches.srcY/4;
-			pD += pitches.dstY/4;
-		}
-	}
-
-	//____ _blend_32_to_32() ____________________________________________________
-
-	void SoftGfxDevice::_blend_32_to_32(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				int alpha = s_mulTab[pSrc[3]];
-				int invAlpha = 65536 - alpha;
-
-				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
-				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
-				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
-				pDst[3] = (pDst[3] * invAlpha + 255 * alpha) >> 16;
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY; 
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _move_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_move_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				pDst[0] = pSrc[0];
-				pDst[1] = pSrc[1];
-				pDst[2] = pSrc[2];
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _blend_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_blend_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				int alpha = s_mulTab[pSrc[3]];
-				int invAlpha = 65536 - alpha;
-
-				pDst[0] = (pDst[0] * invAlpha + pSrc[0] * alpha) >> 16;
-				pDst[1] = (pDst[1] * invAlpha + pSrc[1] * alpha) >> 16;
-				pDst[2] = (pDst[2] * invAlpha + pSrc[2] * alpha) >> 16;
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _add_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_add_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				int alpha = s_mulTab[pSrc[3]];
-
-				pDst[0] = limitUint8(pDst[0] + (pSrc[0]*alpha << 16) );
-				pDst[1] = limitUint8(pDst[1] + (pSrc[1]*alpha << 16) );
-				pDst[2] = limitUint8(pDst[2] + (pSrc[2]*alpha << 16) );
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _sub_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_sub_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				int alpha = s_mulTab[pSrc[3]];
-
-				pDst[0] = limitUint8(pDst[0] - (pSrc[0] * alpha << 16));
-				pDst[1] = limitUint8(pDst[1] - (pSrc[1] * alpha << 16));
-				pDst[2] = limitUint8(pDst[2] - (pSrc[2] * alpha << 16));
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-
-	}
-
-	//____ _mul_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_mul_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				pDst[0] = (s_mulTab[pDst[0]] * pSrc[0]) >> 16;
-				pDst[1] = (s_mulTab[pDst[1]] * pSrc[1]) >> 16;
-				pDst[2] = (s_mulTab[pDst[2]] * pSrc[2]) >> 16;
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
-	//____ _invert_32_to_24() ____________________________________________________
-
-	void SoftGfxDevice::_invert_32_to_24(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& dummy)
-	{
-		for (int y = 0; y < nLines; y++)
-		{
-			for (int x = 0; x < lineLength; x++)
-			{
-				int srcB = s_mulTab[pSrc[0]];
-				int srcG = s_mulTab[pSrc[1]];
-				int srcR = s_mulTab[pSrc[2]];
-
-				pDst[0] = (srcB * (255 - pDst[0]) + pDst[0] * (65536 - srcB)) >> 16;
-				pDst[1] = (srcG * (255 - pDst[1]) + pDst[1] * (65536 - srcG)) >> 16;
-				pDst[2] = (srcR * (255 - pDst[2]) + pDst[2] * (65536 - srcR)) >> 16;
-
-				pSrc += pitches.srcX;
-				pDst += pitches.dstX;
-			}
-			pSrc += pitches.srcY;
-			pDst += pitches.dstY;
-		}
-	}
-
 
 	
 	//____ blit() __________________________________________________________________
@@ -3656,18 +3590,18 @@ namespace wg
 			case PixelFormat::BGR_8:
 			{
 				if (m_tintColor == Color::White)
-					pReader = _move_24_to_32;
+					pReader = _blit < PixelFormat::BGR_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>;
 				else
-					pReader = _tint_24_to_32;
+					pReader = _blit < PixelFormat::BGR_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>;
 			}
 			break;
 
 			case PixelFormat::BGRA_8:
 			{
 				if (m_tintColor == Color::White)
-					pReader = _move_32_to_32;
+					pReader = _blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>;
 				else
-					pReader = _tint_32_to_32;
+					pReader = _blit < PixelFormat::BGRA_8, 1, BlendMode::Replace, PixelFormat::BGRA_8>;
 			}
 			break;
 
@@ -3679,7 +3613,7 @@ namespace wg
 		if (pWriter == nullptr)
 			return;
 
-		if (pReader == _move_32_to_32)
+		if (pReader == _blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>)
 		{
 			_onePassStraightBlit(pWriter, static_cast<SoftSurface*>(_pSrcSurf), srcrect, dest, colTrans);
 			return;
@@ -3823,317 +3757,6 @@ namespace wg
 
 
 	
-	//____ _tintBlit() _____________________________________________________________
-	/*
-	void SoftGfxDevice::_tintBlit( const Surface* _pSrcSurf, const Rect& srcrect, int dx, int dy  )
-	{
-		if( !_pSrcSurf || !m_pCanvas || !_pSrcSurf->isInstanceOf(SoftSurface::CLASSNAME) )
-			return;
-	
-		SoftSurface * pSrcSurf = (SoftSurface*) _pSrcSurf;
-	
-		if( !m_pCanvasPixels || !pSrcSurf->m_pData )
-			return;
-	
-		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits/8;
-		int dstPixelBytes = m_canvasPixelBits/8;
-	
-		int	srcPitchAdd = pSrcSurf->m_pitch - srcrect.w*srcPixelBytes;
-		int	dstPitchAdd =m_canvasPitch - srcrect.w*dstPixelBytes;
-	
-		uint8_t * pDst = m_pCanvasPixels + dy *m_canvasPitch + dx * dstPixelBytes;
-		uint8_t * pSrc = pSrcSurf->m_pData + srcrect.y * pSrcSurf->m_pitch + srcrect.x * srcPixelBytes;
-	
-		BlendMode		blendMode = m_blendMode;
-		if( srcPixelBytes == 3 && blendMode == BlendMode::Blend && m_tintColor.a == 255 )
-			blendMode = BlendMode::Replace;
-
-        
-        
-		switch( blendMode )
-		{
-			case BlendMode::Replace:
-			{
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitReplace )
-				{
-					m_customFunctions.tintBlitReplace( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-								
-				int tintRed = (int) m_tintColor.r;
-				int tintGreen = (int) m_tintColor.g;
-				int tintBlue = (int) m_tintColor.b;
-	
-				for( int y = 0 ; y < srcrect.h ; y++ )
-				{
-					for( int x = 0 ; x < srcrect.w ; x++ )
-					{
-						pDst[0] = m_pDivTab[pSrc[0]*tintBlue];
-						pDst[1] = m_pDivTab[pSrc[1]*tintGreen];
-						pDst[2] = m_pDivTab[pSrc[2]*tintRed];
-						pSrc += srcPixelBytes;
-						pDst += dstPixelBytes;
-					}
-					pSrc += pitches.srcY;
-					pDst += pitches.dstY;
-				}
-				break;
-			}
-			case BlendMode::Blend:
-			{
-                if( m_tintColor.a == 0 )
-                    break;
-                
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitBlend )
-				{
-					m_customFunctions.tintBlitBlend( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-	
-				
-                if( srcPixelBytes == 4 )
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_tintColor.r;
-					int tintGreen = (int) m_tintColor.g;
-					int tintBlue = (int) m_tintColor.b;
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							int alpha = m_pDivTab[pSrc[3]*tintAlpha];
-							int invAlpha = 255-alpha;
-	
-							int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
-							int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
-							int srcRed		= m_pDivTab[pSrc[2] * tintRed];
-							
-	
-							pDst[0] = m_pDivTab[ pDst[0]*invAlpha + srcBlue*alpha ];
-							pDst[1] = m_pDivTab[ pDst[1]*invAlpha + srcGreen*alpha ];
-							pDst[2] = m_pDivTab[ pDst[2]*invAlpha + srcRed*alpha ];
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				else
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_pDivTab[ m_tintColor.r * tintAlpha ];
-					int tintGreen = (int) m_pDivTab[ m_tintColor.g * tintAlpha ];
-					int tintBlue = (int) m_pDivTab[ m_tintColor.b * tintAlpha ];
-					int invAlpha = 255-tintAlpha;
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							pDst[0] = m_pDivTab[ pDst[0]*invAlpha + pSrc[0]*tintBlue ];
-							pDst[1] = m_pDivTab[ pDst[1]*invAlpha + pSrc[1]*tintGreen ];
-							pDst[2] = m_pDivTab[ pDst[2]*invAlpha + pSrc[2]*tintRed ];
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				break;
-			}
-			case BlendMode::Add:
-			{
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitAdd )
-				{
-					m_customFunctions.tintBlitAdd( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-				
-                if( m_tintColor.a == 0 )
-                    break;
-                
-                if( srcPixelBytes == 4 )
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_tintColor.r;
-					int tintGreen = (int) m_tintColor.g;
-					int tintBlue = (int) m_tintColor.b;
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							int alpha = m_pDivTab[ pSrc[3]*tintAlpha ];
-	
-							int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
-							int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
-							int srcRed		= m_pDivTab[pSrc[2] * tintRed];
-	
-							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[srcBlue*alpha]);
-							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[srcGreen*alpha]);
-							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[ srcRed*alpha]);
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				else
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
-					int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
-					int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							pDst[0] = limitUint8(pDst[0] + (int) m_pDivTab[pSrc[0]*tintBlue]);
-							pDst[1] = limitUint8(pDst[1] + (int) m_pDivTab[pSrc[1]*tintGreen]);
-							pDst[2] = limitUint8(pDst[2] + (int) m_pDivTab[pSrc[2]*tintRed]);
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				break;
-			}
-			case BlendMode::Subtract:
-			{
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitSubtract )
-				{
-					m_customFunctions.tintBlitSubtract( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-				
-                if( m_tintColor.a == 0 )
-                    break;
-                
-                if( srcPixelBytes == 4 )
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_tintColor.r;
-					int tintGreen = (int) m_tintColor.g;
-					int tintBlue = (int) m_tintColor.b;
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							int alpha = m_pDivTab[ pSrc[3]*tintAlpha ];
-	
-							int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
-							int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
-							int srcRed		= m_pDivTab[pSrc[2] * tintRed];
-	
-							pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[srcBlue*alpha]);
-							pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[srcGreen*alpha]);
-							pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[ srcRed*alpha]);
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				else
-				{
-					int tintAlpha = (int) m_tintColor.a;
-					int tintRed = (int) m_pDivTab[m_tintColor.r * tintAlpha];
-					int tintGreen = (int) m_pDivTab[m_tintColor.g * tintAlpha];
-					int tintBlue = (int) m_pDivTab[m_tintColor.b * tintAlpha];
-	
-					for( int y = 0 ; y < srcrect.h ; y++ )
-					{
-						for( int x = 0 ; x < srcrect.w ; x++ )
-						{
-							pDst[0] = limitUint8(pDst[0] - (int) m_pDivTab[pSrc[0]*tintBlue]);
-							pDst[1] = limitUint8(pDst[1] - (int) m_pDivTab[pSrc[1]*tintGreen]);
-							pDst[2] = limitUint8(pDst[2] - (int) m_pDivTab[pSrc[2]*tintRed]);
-							pSrc += srcPixelBytes;
-							pDst += dstPixelBytes;
-						}
-						pSrc += pitches.srcY;
-						pDst += pitches.dstY;
-					}
-				}
-				break;
-			}
-			case BlendMode::Multiply:
-			{
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitMultiply )
-				{
-					m_customFunctions.tintBlitMultiply( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-
-				int tintRed = (int) m_tintColor.r;
-				int tintGreen = (int) m_tintColor.g;
-				int tintBlue = (int) m_tintColor.b;
-	
-				for( int y = 0 ; y < srcrect.h ; y++ )
-				{
-					for( int x = 0 ; x < srcrect.w ; x++ )
-					{
-						int srcBlue		= m_pDivTab[pSrc[0] * tintBlue];
-						int srcGreen	= m_pDivTab[pSrc[1] * tintGreen];
-						int srcRed		= m_pDivTab[pSrc[2] * tintRed];
-	
-	
-						pDst[0] = m_pDivTab[srcBlue*pDst[0]];
-						pDst[1] = m_pDivTab[srcGreen*pDst[1]];
-						pDst[2] = m_pDivTab[srcRed*pDst[2]];
-						pSrc += srcPixelBytes;
-						pDst += dstPixelBytes;
-					}
-					pSrc += pitches.srcY;
-					pDst += pitches.dstY;
-				}
-				break;
-			}
-			case BlendMode::Invert:
-			{
-				if( m_bUseCustomFunctions && m_customFunctions.tintBlitInvert )
-				{
-					m_customFunctions.tintBlitInvert( pSrcSurf->m_pData, (int) pSrcSurf->pixelFormat(), pSrcSurf->m_pitch, srcrect.x, srcrect.y, srcrect.w, srcrect.h, dx, dy, m_tintColor.argb );
-					break;
-				}
-				
-				int tintRed = (int) m_tintColor.r;
-				int tintGreen = (int) m_tintColor.g;
-				int tintBlue = (int) m_tintColor.b;
-	
-				for( int y = 0 ; y < srcrect.h ; y++ )
-				{
-					for( int x = 0 ; x < srcrect.w ; x++ )
-					{
-						int srcBlue = m_pDivTab[tintBlue*pSrc[0]];
-						int srcGreen = m_pDivTab[tintGreen*pSrc[1]];
-						int srcRed = m_pDivTab[tintRed*pSrc[2]];
-	
-						pDst[0] = m_pDivTab[srcBlue*(255-pDst[0]) + pDst[0]*(255-srcBlue)];
-						pDst[1] = m_pDivTab[srcGreen*(255-pDst[1]) + pDst[1]*(255-srcGreen)];
-						pDst[2] = m_pDivTab[srcRed*(255-pDst[2]) + pDst[2]*(255-srcRed)];
-						pSrc += srcPixelBytes;
-						pDst += dstPixelBytes;
-					}
-					pSrc += pitches.srcY;
-					pDst += pitches.dstY;
-				}
-				break;
-			}
-			default:
-				break;
-		}
-	}
-	*/
 	
 	//____ stretchBlit() ___________________________________________________
 
@@ -4182,13 +3805,13 @@ namespace wg
 
 		float transform[2][2] = { { source.w / dest.w, 0.f },{ 0.f, source.h / dest.h } };
 
-//		if (pWriter == _move_32_to_32)
+		if (pWriter == _blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8> )
 		{
 			_onePassTransformBlit(pReader, static_cast<SoftSurface*>(_pSrcSurf), source, transform, dest, colTrans);
 			return;
 		}
 
-//		_twoPassTransformBlit(pReader, pWriter, static_cast<SoftSurface*>(_pSrcSurf), source, transform, dest, colTrans);
+		_twoPassTransformBlit(pReader, pWriter, static_cast<SoftSurface*>(_pSrcSurf), source, transform, dest, colTrans);
 	}
 
 	//____ _initTables() ___________________________________________________________
@@ -4228,63 +3851,63 @@ namespace wg
 
 		// Init Plot Operation Table
 
-		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _plot_move_32;
-		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _plot_move_24;
+		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Replace, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _plot<BlendMode::Replace, 0, PixelFormat::BGR_8>;
 
-		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _plot_blend_32;
-		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _plot_blend_24;
+		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Blend, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _plot<BlendMode::Blend, 0, PixelFormat::BGR_8>;
 
-		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _plot_add_24;
-		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _plot_add_24;
+		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Add, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _plot<BlendMode::Add, 0, PixelFormat::BGR_8>;
 
-		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _plot_sub_24;
-		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _plot_sub_24;
+		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Subtract, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _plot<BlendMode::Subtract, 0, PixelFormat::BGR_8>;
 
-		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _plot_mul_24;
-		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _plot_mul_24;
+		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Multiply, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _plot<BlendMode::Multiply, 0, PixelFormat::BGR_8>;
 
-		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _plot_invert_24;
-		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _plot_invert_24;
+		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _plot<BlendMode::Invert, 0, PixelFormat::BGRA_8>;
+		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _plot<BlendMode::Invert, 0, PixelFormat::BGRA_8>;
 
 		// Init Fill Operation Table
 
-		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _fill_move_32;
-		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _fill_move_24;
+		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _fill <BlendMode::Replace, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _fill<BlendMode::Replace, 0, PixelFormat::BGR_8>;
 
-		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _fill_blend_32;
-		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _fill_blend_24;
+		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _fill <BlendMode::Blend, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _fill <BlendMode::Blend, 0, PixelFormat::BGR_8>;
 
-		s_fillOpTab[(int) BlendMode::Add][(int) PixelFormat::BGRA_8] = _fill_add_24;
-		s_fillOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _fill_add_24;
+		s_fillOpTab[(int) BlendMode::Add][(int) PixelFormat::BGRA_8] = _fill <BlendMode::Add, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _fill <BlendMode::Add, 0, PixelFormat::BGR_8>;
 
-		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _fill_sub_24;
-		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _fill_sub_24;
+		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _fill <BlendMode::Subtract, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _fill <BlendMode::Subtract, 0, PixelFormat::BGR_8>;
 
-		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _fill_mul_24;
-		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _fill_mul_24;
+		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _fill <BlendMode::Multiply, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _fill <BlendMode::Multiply, 0, PixelFormat::BGR_8>;
 
-		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _fill_invert_24;
-		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _fill_invert_24;
+		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _fill <BlendMode::Invert, 0, PixelFormat::BGRA_8>;
+		s_fillOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _fill <BlendMode::Invert, 0, PixelFormat::BGR_8>;
 
 		// Init Straight Blit Pass 2 Operation Table
 
-		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _move_32_to_32;
-		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _move_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGRA_8>;			
+		s_pass2OpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Replace, PixelFormat::BGR_8>;
 
-		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _blend_32_to_32;
-		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _blend_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Blend, PixelFormat::BGRA_8>;
+		s_pass2OpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Blend, PixelFormat::BGR_8>;
 
-		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _add_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _add_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Add, PixelFormat::BGR_8>;
+		s_pass2OpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Add, PixelFormat::BGR_8>;
 
-		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _sub_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _sub_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Subtract, PixelFormat::BGR_8>;
+		s_pass2OpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Subtract, PixelFormat::BGR_8>;
 
-		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _mul_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _mul_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Multiply, PixelFormat::BGR_8>;
+		s_pass2OpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Multiply, PixelFormat::BGR_8>;
 
-		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _invert_32_to_24;
-		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _invert_32_to_24;
+		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_8>;
 
 		// Init Line Operation Table
 

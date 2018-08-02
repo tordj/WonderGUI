@@ -181,7 +181,6 @@ int main ( int argc, char** argv )
 	
 	FreeTypeFont_p pFont = FreeTypeFont::create( pFontFile, 1 );
 
-
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
