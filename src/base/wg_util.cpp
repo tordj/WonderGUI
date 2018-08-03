@@ -269,6 +269,45 @@ double Util::powerOfTen(int num){
 	#endif
 				return true;
 
+			case PixelFormat::BGRX_8:
+				wFormat.format = format;
+				wFormat.bits = 32;
+				wFormat.bIndexed = false;
+
+				wFormat.R_bits = 8;
+				wFormat.G_bits = 8;
+				wFormat.B_bits = 8;
+				wFormat.A_bits = 0;
+
+				wFormat.R_loss = 0;
+				wFormat.G_loss = 0;
+				wFormat.B_loss = 0;
+				wFormat.A_loss = 0;
+
+#if IS_LITTLE_ENDIAN
+				wFormat.A_mask = 0x00000000;
+				wFormat.R_mask = 0xFF0000;
+				wFormat.G_mask = 0xFF00;
+				wFormat.B_mask = 0xFF;
+
+				wFormat.A_shift = 0;
+				wFormat.R_shift = 16;
+				wFormat.G_shift = 8;
+				wFormat.B_shift = 0;
+#else
+				wFormat.A_mask = 0x00;
+				wFormat.R_mask = 0xFF00;
+				wFormat.G_mask = 0xFF0000;
+				wFormat.B_mask = 0xFF000000;
+
+				wFormat.A_shift = 0;
+				wFormat.R_shift = 8;
+				wFormat.G_shift = 16;
+				wFormat.B_shift = 24;
+#endif
+				return true;
+
+
 			case PixelFormat::BGRA_4:
 				wFormat.format = format;
 				wFormat.bits = 16;

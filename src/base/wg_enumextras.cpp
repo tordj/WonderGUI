@@ -175,7 +175,7 @@ namespace wg
 	const char * toString(SizePolicy2D i)
 	{
 		static const char * names[] = { 
-			"Default",
+			"Original",
 			"Stretch",
 			"Scale" };
 
@@ -279,7 +279,12 @@ namespace wg
 			"Unknown",
 			"Custom",
 			"BGR_8",
-			"BGRA_8" };
+			"BGRX_8",
+			"BGRA_8",
+			"BGRA_4",
+			"BGR_565",
+			"I8",
+			"A8" };
 
 		return names[(int)i];
 	}

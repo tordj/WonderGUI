@@ -118,7 +118,6 @@ namespace wg
 		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
         void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
 	
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
@@ -150,7 +149,7 @@ namespace wg
 			int dstY;
 		};
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
 
 		inline static void	_blend_pixels(BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
@@ -178,7 +177,7 @@ namespace wg
 
 
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_blit(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		static void	_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
@@ -214,34 +213,12 @@ namespace wg
 
 		//
 
-		typedef	void(*PlotListOp_p)(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-		typedef	void(*ClipPlotListOp_p)(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-
-		static void _plotlist_blend_32(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-		static void _plotlist_blend_24(int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-
-		static void _clip_plotlist_blend_32(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-		static void _clip_plotlist_blend_24(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY);
-
-
-
-		//
-
 		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint);
-		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-
-		static void _drawLineSegment_blend_32(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-		static void _drawLineSegment_blend_24(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-
-		static void _clipDrawLineSegment_blend_32(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-		static void _clipDrawLineSegment_blend_24(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color);
-
-
-		//
-
+		typedef	void(*PlotListOp_p)(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
-		typedef	void(*BlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		typedef	void(*BlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 		typedef	void(*TransformOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
 
@@ -264,7 +241,6 @@ namespace wg
 
 
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
-		static ClipPlotListOp_p	s_clipPlotListOpTab[BlendMode_size][PixelFormat_size];
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;

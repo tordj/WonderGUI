@@ -570,8 +570,9 @@ namespace wg
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
 		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
-		BGR_8,				///< One byte of blue, green and red respectively in exactly that order in memory.
-		BGRA_8,				///< One byte of blue, green, red and alpha respectively in exactly that order in memory.
+		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
+		BGRX_8,				///< One byte of blue, green, red and padding in exactly that order in memory.
+		BGRA_8,				///< One byte of blue, green, red and alpha in exactly that order in memory.
 		BGRA_4,				///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
 		BGR_565,			///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
 		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).

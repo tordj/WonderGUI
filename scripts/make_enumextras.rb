@@ -1,5 +1,5 @@
 #!/usr/bin/ruby
-# Update wg_toString.h/cpp with functions for all enums in wg_types.h marked "autoToString".
+# Update wg_toString.h/cpp with functions for all enums in wg_types.h marked "autoExtras".
 
 
 	inputFiles = [ 'src\base\wg_types.h' ]
