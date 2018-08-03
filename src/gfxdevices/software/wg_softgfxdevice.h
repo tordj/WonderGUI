@@ -47,81 +47,81 @@ namespace wg
 	class SoftGfxDevice : public GfxDevice
 	{
 	public:
-	
+
 		struct CustomFunctionTable
 		{
-			int (*setCanvas)( void * pPixels, int pixelDescription, int pitch );
-			void (*beginRender)(void );
-			void (*endRender)( void );
+			int(*setCanvas)(void * pPixels, int pixelDescription, int pitch);
+			void(*beginRender)(void);
+			void(*endRender)(void);
 
-			void (*fillReplace)( int x, int y, int w, int h, uint32_t color );
-			void (*fillBlend)( int x, int y, int w, int h, uint32_t color );
-			void (*fillAdd)( int x, int y, int w, int h, uint32_t color );
-			void (*fillSubtract)( int x, int y, int w, int h, uint32_t color );
-			void (*fillMultiply)( int x, int y, int w, int h, uint32_t color );
-			void (*fillInvert)( int x, int y, int w, int h, uint32_t color );
+			void(*fillReplace)(int x, int y, int w, int h, uint32_t color);
+			void(*fillBlend)(int x, int y, int w, int h, uint32_t color);
+			void(*fillAdd)(int x, int y, int w, int h, uint32_t color);
+			void(*fillSubtract)(int x, int y, int w, int h, uint32_t color);
+			void(*fillMultiply)(int x, int y, int w, int h, uint32_t color);
+			void(*fillInvert)(int x, int y, int w, int h, uint32_t color);
 
-			void (*blitReplace)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitBlend)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitAdd)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitSubtract)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitMultiply)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
-			void (*blitInvert)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY );
+			void(*blitReplace)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
+			void(*blitBlend)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
+			void(*blitAdd)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
+			void(*blitSubtract)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
+			void(*blitMultiply)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
+			void(*blitInvert)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
 
-			void (*tintBlitReplace)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitBlend)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitAdd)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitSubtract)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitMultiply)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-			void (*tintBlitInvert)( void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color );
-		};	
-	
-	
+			void(*tintBlitReplace)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+			void(*tintBlitBlend)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+			void(*tintBlitAdd)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+			void(*tintBlitSubtract)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+			void(*tintBlitMultiply)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+			void(*tintBlitInvert)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
-		static SoftGfxDevice_p	create( Surface * pCanvas );
-	
+		static SoftGfxDevice_p	create(Surface * pCanvas);
+
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf(const char * pClassName) const;
+		const char *			className(void) const;
 		static const char		CLASSNAME[];
-		static SoftGfxDevice_p	cast( Object * pObject );
-		const char *			surfaceClassName( void ) const;
+		static SoftGfxDevice_p	cast(Object * pObject);
+		const char *			surfaceClassName(void) const;
 
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory();
-		
+
 		inline CustomFunctionTable *	customFunctions() { return &m_customFunctions; }
-		inline void						enableCustomFunctions( bool enable ) { m_bEnableCustomFunctions = enable; };
+		inline void						enableCustomFunctions(bool enable) { m_bEnableCustomFunctions = enable; };
 		inline bool						customFunctionsEnabled() const { return m_bEnableCustomFunctions; }
-		
+
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas( Surface * pCanvas );
+		bool	setCanvas(Surface * pCanvas);
 
 		//.____ Rendering ________________________________________________
 
 		bool	beginRender();
 		bool	endRender();
-		
+
 		//
-	
-		void	fill( const Rect& rect, const Color& col )  override;
-		void	blit( Surface * pSrc, const Rect& srcrect, Coord dest ) override;
-	
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+
+		void	fill(const Rect& rect, const Color& col)  override;
+		void	blit(Surface * pSrc, const Rect& srcrect, Coord dest) override;
+
+		void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
 		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+		void	clipDrawLine(const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f) override;
 		void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
-	
-		void	fillSubPixel( const RectF& rect, const Color& col ) override;
-		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest) override;
+		void    clipPlotPixels(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
+
+		void	fillSubPixel(const RectF& rect, const Color& col) override;
+		void	stretchBlit(Surface * pSrc, const RectF& source, const Rect& dest) override;
 
 		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * PTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
 
@@ -135,10 +135,10 @@ namespace wg
 
 		static int		s_mulTab[256];
 
-		
+
 	protected:
 		SoftGfxDevice();
-		SoftGfxDevice( Surface * pCanvas );
+		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
 
 		struct Pitches
@@ -191,20 +191,15 @@ namespace wg
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
-		void	_drawStraightLine( Coord start, Orientation orientation, int _length, const Color& _col) override;
+		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
 
 		void	_initTables();
 		void	_clearCustomFunctionTable();
-		int 	_scaleLineThickness( float thickness, int slope );
-		
-
-//		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
+		int 	_scaleLineThickness(float thickness, int slope);
 
 
-		void	_drawHorrFadeLine( uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
-		void	_clipDrawHorrFadeLine( int clipX1, int clipX2, uint8_t * pLineStart, int begOfs, int peakOfs, int endOfs, Color color );
+		//		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
 
-//
 
 		typedef	void(*WaveOp_p)(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
 
@@ -232,15 +227,26 @@ namespace wg
 		//
 
 
-		static FillOp_p			s_fillOpTab[BlendMode_size][PixelFormat_size];
-		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
-		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
 		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
+		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
+		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
+		static FillOp_p			s_fillOpTab[BlendMode_size][PixelFormat_size];
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
 		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
 
+		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
 
-		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
+		static BlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static BlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+
+		static BlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];		// [SourceFormat][TintMode]
+		static BlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+
+		static TransformOp_p	s_stretchTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static TransformOp_p	s_stretchTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+
+		static TransformOp_p	s_stretchBlendTo_BGRA_8_OpTab[PixelFormat_size][2];		// [SourceFormat][TintMode]
+		static TransformOp_p	s_stretchBlendTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;
