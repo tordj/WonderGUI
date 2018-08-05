@@ -221,7 +221,7 @@ namespace wg
 		virtual ~Surface();
 	
 		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
-		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect );
+		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT = nullptr );
 	
 		PixelDescription			m_pixelDescription;
 		int					m_pitch;

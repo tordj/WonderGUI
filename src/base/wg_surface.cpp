@@ -28,7 +28,7 @@ namespace wg
 	
 	const char Surface::CLASSNAME[] = {"Surface"};
 
-	const uint8_t pixelConvTab_0[] = { 0 };
+	const uint8_t pixelConvTab_0[] = { 0xff };				// If a channel is missing it is assumed to have full value (alpha in RGB_8 is 255, RGB in A8 are all 255)
 	const uint8_t pixelConvTab_2[] = { 0, 0xff };
 	const uint8_t pixelConvTab_4[] = { 0, 0x55, 0xaa, 0xff };
 	const uint8_t pixelConvTab_8[] = { 0, 0x24, 0x48, 0x6d, 0x91, 0xb6, 0xda, 0xff };
@@ -413,7 +413,7 @@ namespace wg
 	
 		// Do the copying
 
-		bool retVal = _copyFrom( pSrcSurface->pixelDescription(), (uint8_t*) pSrcSurface->pixels(), pSrcSurface->pitch(), srcRect, dstRect );
+		bool retVal = _copyFrom( pSrcSurface->pixelDescription(), (uint8_t*) pSrcSurface->pixels(), pSrcSurface->pitch(), srcRect, dstRect, pSrcSurface->m_pClut );
 	
 		// Release any temporary locks
 	
@@ -428,8 +428,14 @@ namespace wg
 
 
 	//____ _copyFrom() _________________________________________________________
+	
+	/* 
+		Copying to I8 is only allowed from other I8 content. No color conversion is then performed, CLUTs are assumed to be identical.
+		Copying from A8 to any other surface copies white pixels with alpha (if destination has alpha channel, otherwise just white pixels).
+	*/
 
-	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect )
+
+	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT )
 	{
 			
 		if( srcRect.w <= 0 || dstRect.w <= 0 )
@@ -500,6 +506,93 @@ namespace wg
 			}
 
 		}
+		else if (pDstFormat->format == PixelFormat::I8)
+		{
+			return false;								// Can't copy to CLUT-based surface unless source is of identical format!
+		}
+		else if (pSrcFormat->bIndexed)
+		{
+			// Convert pixels from CLUT-based to normal when copying
+
+			if (pSrcFormat->bits != 8)
+				return false;							// Only 8-bit CLUTS are supported for the momment.
+
+			int		srcInc = pSrcFormat->bits / 8;
+			int		dstInc = pDstFormat->bits / 8;
+
+			int		srcLineInc = srcPitch - srcInc * srcRect.w;
+			int		dstLineInc = dstPitch - dstInc * srcRect.w;
+
+			switch (pDstFormat->bits)
+			{
+				case 0x08:										// This can only be A8, so we simplify and optimize a bit....
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							Color srcpixel = pCLUT[*pSrc++];							
+							*pDst++ = srcpixel.a;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+			
+				case 0x10:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							Color srcpixel = pCLUT[*pSrc++];
+
+							unsigned int dstpixel = ((((uint32_t)srcpixel.r >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)srcpixel.g >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)srcpixel.b >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)srcpixel.a >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned short*)pDst) = (unsigned short)dstpixel; pDst += 2;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+
+				case 0x18:										// This can only be BGR_8, so we simplify and optimize a bit....
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							Color srcpixel = pCLUT[*pSrc++];
+							pDst[0] = srcpixel.b;
+							pDst[1] = srcpixel.g;
+							pDst[2] = srcpixel.r;
+							pDst += 3;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+
+				case 0x20:										// This can only be BGRA_8, so we simplify and optimize a bit....
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							Color srcpixel = pCLUT[*pSrc++];
+							pDst[0] = srcpixel.b;
+							pDst[1] = srcpixel.g;
+							pDst[2] = srcpixel.r;
+							pDst[3] = srcpixel.a;
+							pDst += 4;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+				default:
+					return false;								// Unsupported destination format!
+
+			}
+		}
 		else
 		{
 			// We need to fully convert pixels when copying
@@ -518,6 +611,123 @@ namespace wg
 
 			switch( (pSrcFormat->bits << 8) + pDstFormat->bits )
 			{
+				case 0x0808:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x1008:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned short*)pSrc); pSrc += 2;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x1808:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = pSrc[0] + (((unsigned int)pSrc[1]) << 8) + (((unsigned int)pSrc[2]) << 16); pSrc += 3;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x2008:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned int*)pSrc); pSrc += 4;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned char*)pDst) = (unsigned char)dstpixel; pDst += 1;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x0810:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned short*)pDst) = (unsigned char)dstpixel; pDst += 2;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+				break;
+				case 0x0818:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							pDst[0] = (unsigned char)dstpixel;
+							pDst[1] = (unsigned char)(dstpixel >> 8);
+							pDst[2] = (unsigned char)(dstpixel >> 16);
+							pDst += 3;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+
+				case 0x0820:
+					for (int y = 0; y < srcRect.h; y++)
+					{
+						for (int x = 0; x < srcRect.w; x++)
+						{
+							unsigned int srcpixel = *((unsigned char*)pSrc); pSrc += 1;
+							unsigned int dstpixel = ((((uint32_t)pConvTab_R[(srcpixel & pSrcFormat->R_mask) >> pSrcFormat->R_shift] >> pDstFormat->R_loss) << pDstFormat->R_shift) |
+								(((uint32_t)pConvTab_G[(srcpixel & pSrcFormat->G_mask) >> pSrcFormat->G_shift] >> pDstFormat->G_loss) << pDstFormat->G_shift) |
+								(((uint32_t)pConvTab_B[(srcpixel & pSrcFormat->B_mask) >> pSrcFormat->B_shift] >> pDstFormat->B_loss) << pDstFormat->B_shift) |
+								(((uint32_t)pConvTab_A[(srcpixel & pSrcFormat->A_mask) >> pSrcFormat->A_shift] >> pDstFormat->A_loss) << pDstFormat->A_shift));
+							*((unsigned int*)pDst) = (unsigned int)dstpixel; pDst += 4;
+						}
+						pSrc += srcLineInc;
+						pDst += dstLineInc;
+					}
+					break;
+
 				case 0x1010:
 					for( int y = 0 ; y < srcRect.h ; y++ )
 					{
