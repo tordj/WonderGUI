@@ -296,10 +296,22 @@ namespace wg
 			*m_pStream >> type;
 			*m_pStream >> size;
 
+			Color * pClut = nullptr;
+
+			if (header.size > 4096)
+			{
+				pClut = (Color*) Base::memStackAlloc(4096);
+				*m_pStream >> GfxStream::DataChunk{ 4096, pClut };
+			}
+
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 1, nullptr);
 
-			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type);
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, 0, pClut);
+
+			if (pClut)
+				Base::memStackRelease(4096);
+
 			break;
 		}
 

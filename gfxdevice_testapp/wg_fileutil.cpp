@@ -40,6 +40,7 @@ namespace wg
 	{
 		pWGFormat->format = PixelFormat::Custom;
 		pWGFormat->bits = pSDLFormat->BitsPerPixel;
+		pWGFormat->bIndexed = false;
 
 		pWGFormat->R_mask = pSDLFormat->Rmask;
 		pWGFormat->G_mask = pSDLFormat->Gmask;

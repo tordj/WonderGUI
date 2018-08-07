@@ -112,8 +112,6 @@ namespace test
 
 		Surface_p	m_pMyCanvas;
 		Surface_p	m_pBlitSource;
-
-
 	};
 
 	class StretchBlitBlends : public TestUnit
@@ -152,8 +150,111 @@ namespace test
 
 		Surface_p	m_pMyCanvas;
 		Surface_p	m_pBlitSource;
+	};
 
 
+
+
+	class DrawTest : public TestUnit
+	{
+	public:
+
+		bool			run(GfxDevice * pDevice, const Rect& canvas)
+		{
+
+			m_pMyCanvas->fill(Color::Transparent);
+
+			Surface_p pOldCanvas = pDevice->canvas();
+			pDevice->setCanvas(m_pMyCanvas);
+
+			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
+			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
+
+			Coord	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
+			Size	fillSize = { 50,50 };
+			Coord	stepping = { 60, 0 };
+
+			pDevice->clipFill(canvas, { fillOfs, fillSize }, Color::Red);
+			pDevice->clipFill(canvas, { fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
+			pDevice->clipFill(canvas, { fillOfs + stepping * 2, fillSize }, Color(0, 0, 255, 64));
+			pDevice->clipFill(canvas, { fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
+			pDevice->clipFill(canvas, { fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
+
+
+			pDevice->setCanvas(pOldCanvas);
+			pDevice->clipBlit(canvas, m_pMyCanvas);
+
+			return true;
+		}
+
+	protected:
+
+		Surface_p	m_pMyCanvas;
+	};
+
+
+
+
+	class DrawToBGR_8 : public DrawTest
+	{
+	public:
+		const string	name() const { return "DrawToBGR_8"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_8);
+
+			return(m_pMyCanvas != nullptr);
+		}
+	};
+
+	class DrawToBGRA_8 : public DrawTest
+	{
+	public:
+		const string	name() const { return "DrawToBGRA_8"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
+
+			return(m_pMyCanvas != nullptr);
+		}
+	};
+
+
+	class DrawToBGRX_8 : public DrawTest
+	{
+	public:
+		const string	name() const { return "DrawToBGRX_8"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRX_8);
+
+			return(m_pMyCanvas != nullptr);
+		}
+	};
+
+
+	class DrawToBGRA_4 : public DrawTest
+	{
+	public:
+		const string	name() const { return "DrawToBGRA_4"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_4);
+
+			return(m_pMyCanvas != nullptr);
+		}
+	};
+
+	class DrawToBGR_565 : public DrawTest
+	{
+	public:
+		const string	name() const { return "DrawToBGR_565"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pMyCanvas = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_565);
+
+			return(m_pMyCanvas != nullptr);
+		}
 	};
 
 

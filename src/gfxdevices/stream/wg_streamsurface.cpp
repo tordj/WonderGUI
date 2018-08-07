@@ -44,28 +44,29 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelFormat format, int hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelFormat format, int hint, const Color * pClut )
     {
-        if( format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8)
-            return StreamSurface_p();
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
+			return StreamSurface_p();
         
-        return StreamSurface_p(new StreamSurface(pStream,size,format,hint));
+        return StreamSurface_p(new StreamSurface(pStream,size,format,hint,pClut));
     }
     
-    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelFormat format, Blob * pBlob, int pitch, int hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut )
     {
-        if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || !pBlob || pitch % 4 != 0 )
-            return StreamSurface_p();
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
+			return StreamSurface_p();
         
-        return StreamSurface_p(new StreamSurface(pStream,size,format,pBlob,pitch,hint));
+        return StreamSurface_p(new StreamSurface(pStream,size,format,pBlob,pitch,hint,pClut));
     }
     
-    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream,Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint )
+    StreamSurface_p	StreamSurface::create( GfxOutStream * pStream,Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut )
     {
-        if( (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8) || pPixels == 0 )
-            return StreamSurface_p();
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
+			return StreamSurface_p();
         
-        return  StreamSurface_p(new StreamSurface(pStream,size,format,pPixels,pitch, pPixelDescription,hint));
+        return  StreamSurface_p(new StreamSurface(pStream,size,format,pPixels,pitch, pPixelDescription,hint,pClut));
     };
     
     StreamSurface_p	StreamSurface::create( GfxOutStream * pStream, Surface * pOther, int hint )
@@ -77,18 +78,17 @@ namespace wg
     
 	//____ Constructor _____________________________________________________________
 
-    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, int hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, int hint, const Color * pClut)
     {
-		assert( format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8 );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pStream = pStream;
 		m_size = size;
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 
-		m_inStreamId = _sendCreateSurface(size, format);
+		m_inStreamId = _sendCreateSurface(size, format, pClut);
 
-		if (hint & SurfaceHint::WriteOnly)
+		if (m_pixelDescription.bits > 8 && (hint & SurfaceHint::WriteOnly))
 		{
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
@@ -100,25 +100,32 @@ namespace wg
 		}
 		else
 		{
-			m_pBlob = Blob::create(m_pitch*size.h);
+			m_pBlob = Blob::create(m_pitch*size.h + (pClut ? 4096 : 0) );
 			std::memset(m_pBlob->data(), 0, m_pitch*size.h);
+
+			if (pClut)
+			{
+				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+				memcpy(m_pClut, pClut, 4096);
+			}
+			else
+				m_pClut = nullptr;
 
 			m_pAlphaLayer = nullptr;
 		}
     }
         
-	StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, Blob * pBlob, int pitch, int hint )
+	StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut)
 	{
-		assert( (format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8) && pBlob && pitch % 4 == 0 );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pStream = pStream;
 		m_size = size;
 		m_pitch = pitch;
 
-		m_inStreamId = _sendCreateSurface(size, format);
+		m_inStreamId = _sendCreateSurface(size, format, pClut);
 
-		if (hint & SurfaceHint::WriteOnly)
+		if (m_pixelDescription.bits > 8 && (hint & SurfaceHint::WriteOnly))
 		{
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
@@ -128,35 +135,36 @@ namespace wg
 		else
 		{
 			m_pBlob = pBlob;
+			m_pClut = const_cast<Color*>(pClut);
 			m_pAlphaLayer = nullptr;
 		}
 
 		_sendPixels(size, (uint8_t*) pBlob->data(), pitch);
 	}
    
-    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream,Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut)
     {
-		assert( (format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8) && pPixels != 0 );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
 		m_pStream = pStream;
 		m_size = size;
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 
-		m_inStreamId = _sendCreateSurface(size, format);
+		m_inStreamId = _sendCreateSurface(size, format, pClut);
 
 		// We always convert the data even if we throw it away, since we need to stream the converted data.
 		// (but we could optimize and skip conversion if format already is correct)
 
-		Blob_p pBlob = Blob::create(m_pitch*m_size.h);
+		Blob_p pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0) );
 
 		m_pPixels = (uint8_t*)pBlob->data();	// Simulate a lock
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+
 		_sendPixels(size, m_pPixels, pitch);
 		m_pPixels = 0;
 
 
-		if (hint & SurfaceHint::WriteOnly)
+		if (m_pixelDescription.bits > 8 && (hint & SurfaceHint::WriteOnly))
 		{
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
@@ -166,16 +174,23 @@ namespace wg
 		else
 		{
 			m_pBlob = pBlob;
+
+			if (pClut)
+			{
+				m_pClut = (Color*)((uint8_t)m_pBlob->data() + m_pitch * size.h);
+				memcpy(m_pClut, pClut, 4096);
+			}
+			else
+				m_pClut = nullptr;
+
 			m_pAlphaLayer = nullptr;
 		}
 
 	}
 
 
-    StreamSurface::StreamSurface( GfxOutStream * pStream,Surface * pOther, int hint )
+    StreamSurface::StreamSurface( GfxOutStream * pStream, Surface * pOther, int hint )
     {
-		assert( pOther );
-
 		PixelFormat format = pOther->pixelFormat();
 		uint8_t * pPixels = (uint8_t*)pOther->lock(AccessMode::ReadOnly);
 		int pitch = pOther->pitch();
@@ -185,10 +200,9 @@ namespace wg
 		m_size = size;
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 
-		assert(format == PixelFormat::BGR_8 || format == PixelFormat::BGRA_8);
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-		if (hint & SurfaceHint::WriteOnly)
+		if (m_pixelDescription.bits > 8 && (hint & SurfaceHint::WriteOnly) )
 		{
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
@@ -197,12 +211,22 @@ namespace wg
 		}
 		else
 		{
-			m_pBlob = Blob::create(m_pitch*m_size.h);
+			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0));
 
 			m_pPixels = (uint8_t*)m_pBlob->data();	// Simulate a lock
 			_copyFrom(&m_pixelDescription, pPixels, pitch, Rect(size), Rect(size));
 			m_pPixels = 0;
+
+			if (pOther->clut())
+			{
+				m_pClut = (Color*)((uint8_t)m_pBlob->data() + m_pitch * m_size.h);
+				memcpy(m_pClut, pOther->clut(), 4096);
+			}
+			else
+				m_pClut = nullptr;
 		}
+
+		m_inStreamId = _sendCreateSurface(size, format, pOther->clut());
 
 		_sendPixels(size, pPixels, pitch);
 		pOther->unlock();
@@ -533,14 +557,19 @@ namespace wg
 
 	//____ _sendCreateSurface() _______________________________________________
 
-	short StreamSurface::_sendCreateSurface(Size size, PixelFormat format)
+	short StreamSurface::_sendCreateSurface(Size size, PixelFormat format, const Color * pClut )
 	{
 		uint16_t surfaceId = m_pStream->allocObjectId();
 
-		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, 8 };
+		int blockSize = 8 + (pClut ? 4096 : 0);
+
+		*m_pStream << GfxStream::Header{ GfxChunkId::CreateSurface, blockSize };
 		*m_pStream << surfaceId;
 		*m_pStream << format;
 		*m_pStream << size;
+
+		if(pClut)
+			*m_pStream << GfxStream::DataChunk{ 4096, pClut };
 
 		return surfaceId;
 	}

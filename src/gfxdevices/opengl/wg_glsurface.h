@@ -58,9 +58,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static );
-        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
-        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
+        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
+        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
         static GlSurface_p	create( Surface * pOther, int hint = SurfaceHint::Static );
        
 		//.____ Identification __________________________________________
@@ -90,7 +90,6 @@ namespace wg
 		uint8_t *	lock(AccessMode mode);
 		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
 		void		unlock();
-		bool		setWriteToAlpha(bool bWrite);
 
 		bool		unload();
 		bool		isLoaded();
@@ -102,9 +101,9 @@ namespace wg
 		inline	GLuint	getTexture() const { return m_texture; }
 
 	private:
-        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static );
-        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static );
-        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
+        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
+        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
         GlSurface( Surface * pOther, int hint = SurfaceHint::Static );
 		~GlSurface();
 
@@ -121,6 +120,8 @@ namespace wg
 		
 		Size		m_size;				// Width and height in pixels.
 		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
+		GLenum		m_pixelDataType;
+		static Size	s_maxSize;
 
 	};
 } // namespace wg

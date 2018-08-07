@@ -31,7 +31,7 @@ namespace wg
 	class GfxStream
 	{
 	public:
-		static const int	c_maxBlockSize = 4096;		// Includes the block headers!
+		static const int	c_maxBlockSize = 8192;		// Includes the block headers!	Must be at least 4096+8+block_header_size due to CLUT possibly included in CreateSurface-chunks. 
 
 		struct Header
 		{

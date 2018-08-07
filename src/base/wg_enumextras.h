@@ -38,6 +38,27 @@ namespace wg
 
 =========================================================================*/
 
+	const static CodePage        CodePage_min        = CodePage::Latin1;
+	const static BlendMode       BlendMode_min       = BlendMode::Undefined;
+	const static PointerStyle    PointerStyle_min    = PointerStyle::Arrow;
+	const static MouseButton     MouseButton_min     = MouseButton::None;
+	const static AnimMode        AnimMode_min        = AnimMode::Forward;
+	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
+	const static Origo           Origo_min           = Origo::NorthWest;
+	const static Direction       Direction_min       = Direction::Up;
+	const static Orientation     Orientation_min     = Orientation::Horizontal;
+	const static SizePolicy      SizePolicy_min      = SizePolicy::Default;
+	const static SizePolicy2D    SizePolicy2D_min    = SizePolicy2D::Original;
+	const static MsgType         MsgType_min         = MsgType::Dummy;
+	const static SortOrder       SortOrder_min       = SortOrder::None;
+	const static SelectMode      SelectMode_min      = SelectMode::Unselectable;
+	const static TextEditMode    TextEditMode_min    = TextEditMode::Static;
+	const static AccessMode      AccessMode_min      = AccessMode::None;
+	const static ScaleMode       ScaleMode_min       = ScaleMode::Nearest;
+	const static PixelFormat     PixelFormat_min     = PixelFormat::Unknown;
+	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
+	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
+
 	const static CodePage        CodePage_max        = CodePage::_874;
 	const static BlendMode       BlendMode_max       = BlendMode::Invert;
 	const static PointerStyle    PointerStyle_max    = PointerStyle::ResizeWE;

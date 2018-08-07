@@ -214,7 +214,7 @@ namespace wg
 		if (format == PixelFormat::BGR_565)
 		{
 			pPixel[0] = (b >> 3) | ((g & 0xFC) << 3);
-			pPixel[1] = (g >> 5) | (a & 0xF8);
+			pPixel[1] = (g >> 5) | (r & 0xF8);
 
 		}
 
@@ -1233,49 +1233,54 @@ namespace wg
 	//____ setCanvas() _______________________________________________________________
 	
 	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
-	{		
-		if( (pCanvas->pixelFormat() != PixelFormat::BGRA_8) && (pCanvas->pixelFormat() != PixelFormat::BGR_8) )
-			return false;
-	
-		if( m_pCanvas == pCanvas )
+	{	
+		if (m_pCanvas == pCanvas)
 			return true;			// Not an error.
+
+		if( !pCanvas )
+		{
+			m_pCanvas = nullptr;
+			m_canvasSize = Size();
+
+			// Make sure this also is cleared, in case we are rendering.
+
+			m_pCanvasPixels = nullptr;
+			m_canvasPixelBits = 0;
+			m_canvasPitch = 0;
+			return true;
+		}
+
+
+		PixelFormat format = pCanvas->pixelFormat();
+		if( format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8 &&
+			format != PixelFormat::BGRX_8 && format != PixelFormat::BGRA_4 &&
+			format != PixelFormat::BGR_565 )
+			return false;
 	
 		if( m_pCanvasPixels )
 			m_pCanvas->unlock();
 
 		m_pCanvas = pCanvas;
-		if( pCanvas )
+		m_canvasSize = pCanvas->size();
+
+		// Update stuff if we are rendering
+
+		if( m_pCanvasPixels )
 		{
-			m_canvasSize = pCanvas->size();
+			m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
+			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
+			m_canvasPitch = m_pCanvas->pitch();
 
-			// Update stuff if we are rendering
+			// Call custom function, let it decide if it can render or not.
 
-			if( m_pCanvasPixels )
+			if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
 			{
-				m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
-				m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-				m_canvasPitch = m_pCanvas->pitch();
-
-				// Call custom function, let it decide if it can render or not.
-
-				if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
-				{
-					int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat(), m_canvasPitch );
-					m_bUseCustomFunctions = retVal != 0;
-				}
+				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat(), m_canvasPitch );
+				m_bUseCustomFunctions = retVal != 0;
 			}
 		}
-		else
-		{
-			m_canvasSize = Size();
-
-			// Make sure this also is cleared, in case we are rendering.
-
-			m_pCanvasPixels = 0;
-			m_canvasPixelBits = 0;
-			m_canvasPitch = 0;
-		}
-		return true;
+	
+	return true;
 	}
 
 	//____ beginRender() _______________________________________________________
