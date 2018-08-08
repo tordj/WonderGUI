@@ -168,7 +168,7 @@ namespace wg
 
 		if (m_pixelDescription.bIndexed )
 		{
-			int closestValue = INT_MAX;
+            int closestValue = std::numeric_limits<int>::max();
 			for (int i = 0; i < 255; i++)
 			{
 				int rDiff = m_pClut[i].r - col.r;

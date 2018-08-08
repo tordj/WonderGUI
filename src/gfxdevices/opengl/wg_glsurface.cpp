@@ -176,7 +176,7 @@ namespace wg
        
 		if (pClut)
 		{
-			m_pClut = (Color*)((uint8_t)m_pBlob->data() + m_pitch * size.h);
+			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
 			memcpy(m_pClut, pClut, 4096);
 		}
 		else
@@ -210,7 +210,7 @@ namespace wg
         
 		if (pOther->clut())
 		{
-			m_pClut = (Color*)((uint8_t)m_pBlob->data() + m_pitch * m_size.h);
+			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
 			memcpy(m_pClut, pOther->clut(), 4096);
 		}
 		else
@@ -284,7 +284,9 @@ namespace wg
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
-
+            default:
+                assert(false);           // Should never get here, just avoiding compiler warnings.
+                break;
 
 		}
 
@@ -547,6 +549,9 @@ namespace wg
 		case PixelFormat::I8:
 			type = GL_UNSIGNED_BYTE;
 			break;
+        default:
+            assert(false);   // Should never get here! This code is just to avoid compiler warnings.
+            break;
 		}
 
 

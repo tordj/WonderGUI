@@ -301,7 +301,7 @@ namespace wg
 	//____ _plot() ____________________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_plot(uint8_t * pDst, Color col, const ColTrans& tint)
+	void SoftGfxDevice::_plot(uint8_t * pDst, Color col, const ColTrans& tint)
 	{
 		int tintB, tintG, tintR, tintA;
 
@@ -351,7 +351,7 @@ namespace wg
 	//____ plot_list() ________________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+	void SoftGfxDevice::_plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
 	{
 		int tintB, tintG, tintR, tintA;
 
@@ -412,7 +412,7 @@ namespace wg
 	//____ _draw_line() _______________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
+	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
 	{
 		// Step 1: Read source pixels
 
@@ -521,7 +521,7 @@ namespace wg
 	//____ _clip_draw_line() __________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
+	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
 	{
 		// Step 1: Read source pixels
 
@@ -652,7 +652,7 @@ namespace wg
 	//____ _fill() ____________________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint)
+	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint)
 	{
 		// Step 1: Read source pixels
 
@@ -705,9 +705,9 @@ namespace wg
 	}
 
 	//____ draw_wave_column() _________________________________________________
-
+/*
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	static void SoftGfxDevice::_draw_wave_column(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
+	void SoftGfxDevice::_draw_wave_column(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
 	{
 		// 16 binals on leftPos, rightPos and most calculations.
 
@@ -877,14 +877,14 @@ namespace wg
 			amount[3] += inc[3];
 		}
 	}
-
+*/
 
 
 
 	//____ _blit() ____________________________________________________________
 
 	template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-	static void	SoftGfxDevice::_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint)
+	void SoftGfxDevice::_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint)
 	{
 		int tintB, tintG, tintR, tintA;
 

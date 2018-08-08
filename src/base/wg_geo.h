@@ -542,6 +542,11 @@ namespace wg
 
 		bool intersection( const RectF& r1, const RectF& r2 );
 			
+		//.____ Operators ___________________________________________
+
+		inline bool operator==(const RectF& rect) const;
+		inline bool operator!=(const RectF& rect) const;
+
 		//.____ Properties __________________________________________
 
 		float x, y, w, h;
@@ -1077,6 +1082,25 @@ namespace wg
 		h = 0;
 	}
 	
+
+	//_____________________________________________________________________________
+	/**
+	 * Standard comparison operator
+	 **/
+	inline bool RectF::operator==( const RectF& rect) const
+	{
+		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
+	}
+	
+	//_____________________________________________________________________________
+	/**
+	 * Standard comparison operator
+	 **/
+	inline bool RectF::operator!=( const RectF& rect) const
+	{
+		return !(*this == rect);
+	}
+
 	
 	//=======================================================================================
 
