@@ -133,13 +133,27 @@ namespace wg
 			Color * pTintY;
 		};
 
-		static int		s_mulTab[256];
-
 
 	protected:
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+
+		enum class TintMode
+		{
+			None = 0,
+			Color,
+			MapX,
+			MapY,
+			MapXY
+		};
+
+		const static TintMode      TintMode_min = TintMode::None;
+		const static TintMode      TintMode_max = TintMode::MapXY;
+		const static int           TintMode_size = (int)TintMode::MapXY + 1;
+
+
 
 		struct Pitches
 		{
@@ -153,8 +167,29 @@ namespace wg
 		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
 
 		inline static void	_blend_pixels(BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
-			uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
-			uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _init_tint_color(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, 
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _init_tint_color_line(int lineNb, TintMode tintMode, const ColTrans& tint, 
+											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _tint_color(int columnNb, TintMode tintMode, const ColTrans& tint, 
+											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, 
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _init_tint_texel(TintMode tintMode, const ColTrans& tint, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _init_tint_texel_line(int lineNb, TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+
+		inline static void _tint_texel(int columnNb, TintMode tintMode, const ColTrans& tint, uint8_t texB, uint8_t texG, uint8_t texR, uint8_t texA,
+											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
+
+
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
 		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint);
@@ -168,7 +203,7 @@ namespace wg
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
 		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		template<BlendMode BLEND, TintMode TINTMODE, PixelFormat DSTFORMAT>
 		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
@@ -179,10 +214,10 @@ namespace wg
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void	_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 
-		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
-		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 
@@ -230,24 +265,26 @@ namespace wg
 		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
 		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
-		static FillOp_p			s_fillOpTab[BlendMode_size][PixelFormat_size];
+		static FillOp_p			s_fillOpTab[BlendMode_size][TintMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
 		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
 
 		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
 
-		static BlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
-		static BlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static BlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static BlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+			
+		static BlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static BlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
-		static BlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];		// [SourceFormat][TintMode]
-		static BlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static TransformOp_p	s_stretchTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
+		static TransformOp_p	s_stretchTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
 
-		static TransformOp_p	s_stretchTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
-		static TransformOp_p	s_stretchTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static TransformOp_p	s_stretchBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
+		static TransformOp_p	s_stretchBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
 
-		static TransformOp_p	s_stretchBlendTo_BGRA_8_OpTab[PixelFormat_size][2];		// [SourceFormat][TintMode]
-		static TransformOp_p	s_stretchBlendTo_BGR_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
 
+		static int		s_mulTab[256];
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 

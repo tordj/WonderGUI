@@ -354,13 +354,13 @@ namespace wg
 		m_bRendering = false;
 		m_bFlipY = true;
         _initTables();
-          
+        
         m_fillProg = _createGLProgram( fillVertexShader, fillFragmentShader );
         m_fillProgColorLoc = glGetUniformLocation( m_fillProg, "color");
 
 		GLint err = glGetError();
 		assert( err == 0 );
-
+    
         m_aaFillProg = _createGLProgram( fillVertexShader, aaFillFragmentShader );
         m_aaFillProgColorLoc = glGetUniformLocation( m_aaFillProg, "color");
         m_aaFillProgFrameLoc = glGetUniformLocation( m_aaFillProg, "frame");
@@ -410,10 +410,10 @@ namespace wg
     	// For now only turn this on for products that needs it (i.e. Weiss plug-ins)
 		//   if(g_bSoftubeProductUseCodeInDevelopment)
     	{
-		glGenTextures(1, &m_horrWaveBufferTexture);
-		glGenBuffers(1, &m_horrWaveBufferTextureData);
+			glGenTextures(1, &m_horrWaveBufferTexture);
+			glGenBuffers(1, &m_horrWaveBufferTextureData);
         	glGenBuffers(1, &m_dummyBuffer);
-
+		
         }
         setTintColor( Color::White );        
 

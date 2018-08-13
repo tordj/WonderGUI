@@ -101,7 +101,7 @@ namespace wg
 		void	fillSubPixel( const RectF& rect, const Color& col ) override;
 
 		void	stretchBlitSubPixelWithInvert(Surface * pSrc, float sx, float sy, float sw, float sh,
-			float dx, float dy, float dw, float dh);
+                                              float dx, float dy, float dw, float dh);
 
 
 	protected:

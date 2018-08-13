@@ -549,7 +549,7 @@ namespace wg
 	
 	enum class ScaleMode	//. autoExtras
 	{
-		Nearest,
+		Nearest			= 0,
 		Interpolate,
 	};
 
