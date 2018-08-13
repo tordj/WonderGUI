@@ -62,12 +62,49 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }	
-
+		 
 		//.____ Content _______________________________________________________
 
 		iterator add(Widget * pWidget);
 		iterator add(const Widget_p pWidgets[], int amount);
-		
+
+		template<typename Iterator>
+		iterator add(const Iterator& begin, const Iterator& end)
+		{
+//			static_assert(std::is_same<typename std::iterator_traits<Iterator>::value_type, SomeType>::value, "");
+
+//			static_assert(sizeof(std::iterator_traits<Iterator>) > 1, "Not an iterator.");
+//			static_assert(sizeof(std::iterator_traits<Iterator>::value_type) == 1, "Not an iterator.");
+//			static_assert(std::is_object<std::iterator_traits<Iterator>>, "Not an iterator.");
+
+			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+
+/*
+			static_assert(std::is_same<std::random_access_iterator_tag, typename std::iterator_traits<Iterator>::iterator_category>::value &&
+				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+//				std::is_convertible<decltype(*begin),Widget* >::value,
+				"Begin and end parameters must be iterators or raw pointers to Widget shared pointers (Widget_p).");
+*/
+			Iterator it = begin;
+			while (it != end)
+			{
+				add(*it++);
+			}
+
+			return iterator(nullptr);
+		}
+
+
+/*		template<typename Container >
+		iterator add( typename Container::iterator begin, typename Container::iterator end)
+		{
+			return nullptr;
+		};
+*/
+
 		iterator insert(int index, Widget * pWidget);
 		iterator insert(iterator pos, Widget * pWidget);
 		iterator insert(int index, const Widget_p pWidgets[], int amount);
