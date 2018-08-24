@@ -70,12 +70,13 @@ namespace wg
 
 	//____ push() ________________________________________________
 
-	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, Size _maxSize )
+	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		PopupSlot * pSlot = m_pHolder->m_popups.insert(0);
 		pSlot->pOpener = _pOpener;
 		pSlot->launcherGeo = _launcherGeo;
 		pSlot->attachPoint = _attachPoint;
+		pSlot->bAutoClose = _bAutoClose;
 		pSlot->maxSize = _maxSize;
 		
 		pSlot->replaceWidget(m_pHolder, _pPopup);
@@ -124,12 +125,14 @@ namespace wg
 	
 	PopupLayer::PopupLayer() : popups(this)
 	{
+		m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
 	PopupLayer::~PopupLayer()
 	{
+		Base::msgRouter()->deleteRoute(m_tickRouteId);
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -447,6 +450,40 @@ namespace wg
 	
 		switch( _pMsg->type() )
 		{
+			case MsgType::Tick:
+
+
+			break;
+
+			case MsgType::MouseMove:
+			{
+/*				Coord 	pointerPos = MouseReleaseMsg::cast(_pMsg)->pointerPos() - globalPos();
+
+				PopupSlot * pSlot = m_popups.first();
+
+				if (pSlot->geo.contains(pointerPos) || pSlot->launcherGeo.contains(pointerPos))
+					m_autoCloseCountdown = 0;
+				else
+				{
+					
+				}
+*/
+			}				
+			break;
+
+			case MsgType::MouseEnter:
+			break;
+
+			case MsgType::MouseLeave:
+			{
+
+			
+
+			}
+			break;
+
+
+
 			case MsgType::MouseRelease:
 			{
 				if (m_popups.isEmpty())

@@ -170,7 +170,7 @@ namespace wg
 
 			case MsgType::MouseEnter:
 			{
-				if (m_bOpenOnHover)
+				if (m_bOpenOnHover && !m_bOpen)
 					_open();
 				break;
 			}

@@ -151,7 +151,7 @@ int main ( int argc, char** argv )
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 
-	pRoot->setDebugMode(true);
+//	pRoot->setDebugMode(true);
 	
 	Base::inputHandler()->setFocusedWindow( pRoot );
 
@@ -160,7 +160,10 @@ int main ( int argc, char** argv )
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
 	pLogger->logAllMsgs();
 	pLogger->ignoreMsg( MsgType::Tick );
-	
+	pLogger->ignoreMsg( MsgType::MouseMove);
+	pLogger->ignoreMsg(MsgType::MouseDrag);
+	pLogger->ignoreMsg(MsgType::MouseRepeat);
+
 	Base::msgRouter()->broadcastTo( pLogger );
 
 	// Init font
@@ -271,6 +274,8 @@ int main ( int argc, char** argv )
 
 	Button_p pImage0 = Button::create();
 	pImage0->setSkin(pSimpleButtonSkin);
+	pImage0->setPointerStyle(PointerStyle::Crosshair);
+
 	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2);});
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
@@ -371,6 +376,7 @@ int main ( int argc, char** argv )
 
 		pOpener->setSkin(pPressablePlateSkin);
 		pOpener->label.set("OPEN");
+		pOpener->setPointerStyle(PointerStyle::Crosshair);
 
 		pBasePanel->children.add(pOpener, [](Widget*pWidget, Size parentSize) {return Rect(30, 30, 100, 100); });
 
@@ -401,6 +407,7 @@ int main ( int argc, char** argv )
 		auto pSubMenuOpener = PopupOpener::create();
 		pSubMenuOpener->label.set("Sub Menu");
 		pSubMenuOpener->setSkin(pPressablePlateSkin);
+		pSubMenuOpener->setOpenOnHover(true);
 		pMenu->children << pSubMenuOpener;
 
 		auto pSubMenu = PackPanel::create();
@@ -441,7 +448,6 @@ int main ( int argc, char** argv )
 		pOpener->setPopup( pMenu );
 
 	}
-
 
 /*
 	{
@@ -808,8 +814,8 @@ int main ( int argc, char** argv )
 		translateEvents( pInput, pRoot );
 
 		SDL_LockSurface(pWinSurf);
-//		pRoot->render();
- 
+		pRoot->render();
+/*
 		pGfxDevice->beginRender();
 
 		pGfxDevice->fill({ 0,0,width,height }, Color::Black);
@@ -823,7 +829,7 @@ int main ( int argc, char** argv )
 //		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
-
+*/
 		SDL_UnlockSurface(pWinSurf);
 
 		SDL_Rect	r;

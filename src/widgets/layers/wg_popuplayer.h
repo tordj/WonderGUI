@@ -34,6 +34,8 @@ namespace wg
 	typedef	StrongPtr<PopupLayer>	PopupLayer_p;
 	typedef	WeakPtr<PopupLayer>	PopupLayer_wp;
 
+
+
 	//____ PopupSlot ___________________________________________________________
 
 	class PopupSlot : public LayerSlot		/** @private */
@@ -43,8 +45,21 @@ namespace wg
 
 		const static bool safe_to_relocate = false;
 
+		enum State
+		{
+			Delay,					// Popup is in "delayed opening" mode. Some ms before it starts to open.
+			Opening,				// Popup is opening (fading in).
+			PeekOpen,				// Popup is open until pointer leaves launcherGeo.
+			WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked.
+			FixedOpen,				// Popup is open until it is closed by a pop() call. 
+			Countdown,				// Popup is in countdown to closing mode.
+			Closing,				// Popup is closing (fading out).
+		};
+
 		Rect		launcherGeo;		// Launcher geo relative sibling or parent.
 		Origo		attachPoint;
+		bool		bAutoClose;			// Has been opened in auto-close mode.
+		State		state;
 		Size		maxSize;
 		Widget_wp	pOpener;			// Widget that opened this popup.
 		Widget_wp	pKeyFocus;			// Pointer at widget that held focus when this popup was ontop.
@@ -75,7 +90,7 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		int		size() const;
-		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, Size maxSize = Size(INT_MAX, INT_MAX));
+		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX, INT_MAX));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();
@@ -149,7 +164,12 @@ namespace wg
 	
 	
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.	
-		Widget_wp			m_pKeyFocus;		// Pointer at child that held focus before any menu was opened.
+		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
+
+		RouteId			m_tickRouteId;
+
+		int				m_autoCloseCountdown = 0;
+
 	};
 	
 
