@@ -309,13 +309,15 @@ namespace wg
 			}
 		}
 		// Update PointerStyle
-		
+
 		PointerStyle newStyle;
-		
-		if( pNowMarked && pNowMarked->isEnabled() )
+
+		Widget * p = m_latestPressWidgets[button].rawPtr();
+
+		if (button != 0 && p )
+			newStyle = p->pointerStyle();
+		else if( pNowMarked && pNowMarked->isEnabled() )
 			newStyle = pNowMarked->pointerStyle();
-		else if( button != 0 )
-			newStyle = m_pointerStyle;
 		else
 			newStyle = PointerStyle::Default;
 	

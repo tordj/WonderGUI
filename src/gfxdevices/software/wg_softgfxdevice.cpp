@@ -797,7 +797,7 @@ namespace wg
 
 	//____ _fill() ____________________________________________________________
 
-	template<BlendMode BLEND, TintMode TINTMODE, PixelFormat DSTFORMAT>
+	template<BlendMode BLEND, SoftGfxDevice::TintMode TINTMODE, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint)
 	{
 		// Step 1: Read source pixels and prepare tint
