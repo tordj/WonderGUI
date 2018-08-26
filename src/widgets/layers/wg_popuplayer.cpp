@@ -77,6 +77,7 @@ namespace wg
 		pSlot->launcherGeo = _launcherGeo;
 		pSlot->attachPoint = _attachPoint;
 		pSlot->bAutoClose = _bAutoClose;
+		pSlot->state = PopupSlot::State::Delay;
 		pSlot->maxSize = _maxSize;
 		
 		pSlot->replaceWidget(m_pHolder, _pPopup);
@@ -447,41 +448,142 @@ namespace wg
 	{
 		Layer::_receive(_pMsg);
 		
-	
+		int ms = static_cast<TickMsg*>(_pMsg)->timediff();
+
 		switch( _pMsg->type() )
 		{
 			case MsgType::Tick:
 
+				// Update state for all open popups
 
-			break;
-
-			case MsgType::MouseMove:
-			{
-/*				Coord 	pointerPos = MouseReleaseMsg::cast(_pMsg)->pointerPos() - globalPos();
-
-				PopupSlot * pSlot = m_popups.first();
-
-				if (pSlot->geo.contains(pointerPos) || pSlot->launcherGeo.contains(pointerPos))
-					m_autoCloseCountdown = 0;
-				else
+				for (auto& popup : m_popups)
 				{
+					switch (popup.state)
+					{
+					case PopupSlot::State::OpeningDelay:
+						if (popup.stateCounter + ms < m_openingDelayMs)
+						{
+							popup.stateCounter += ms;
+							break;
+						}
+						else
+						{
+							popup.state = PopupSlot::State::Opening;
+							popup.stateCounter -= m_openingDelayMs;
+							// No break here, let's continue down to opening...
+						}
+					case PopupSlot::State::Opening:
+						popup.stateCounter += ms;
+						_requestRender(popup.geo);
+						if (popup.stateCounter >= m_openingFadeMs)
+						{
+							popup.stateCounter = 0;
+							popup.state = popup.bAutoClose ? PopupSlot::State::PeekOpen : PopupSlot::State::FixedOpen;
+						}
+						break;
+
+					case PopupSlot::State::ClosingDelay:
+						if (popup.stateCounter + ms < m_closingDelayMs)
+						{
+							popup.stateCounter += ms;
+							break;
+						}
+						else
+						{
+							popup.state = PopupSlot::State::Closing;
+							popup.stateCounter -= m_closingDelayMs;
+							// No break here, let's continue down to closing...
+						}
+					case PopupSlot::State::Closing:
+						popup.stateCounter += ms;
+						_requestRender(popup.geo);
+						// Removing any closed popups is done in next loop
+						break;
+					default:
+						break;
+					}
 					
 				}
-*/
-			}				
+
+				// Close any popup that is due for closing.
+
+				while (!m_popups.isEmpty() && m_popups.first()->state == PopupSlot::State::Closing && m_popups.first()->stateCounter >= m_closingFadeMs);
+					_removeSlots(0, 1);
+
 			break;
 
 			case MsgType::MouseEnter:
+			case MsgType::MouseMove:
+			{
+				Coord 	pointerPos = InputMsg::cast(_pMsg)->pointerPos() - globalPos();
+
+				// Top popup can be in state PeekOpen, which needs special attention.
+
+				PopupSlot * pSlot = m_popups.first();
+				if (pSlot && pSlot->state == PopupSlot::State::PeekOpen)
+				{
+					// Promote popup to state WeakOpen if pointer has entered its geo,
+					// otherwise begin delayed closing if pointer has left launcherGeo.
+
+					if (pSlot->geo.contains(pointerPos))
+						pSlot->state = PopupSlot::State::WeakOpen;
+					else if (!pSlot->launcherGeo.contains(pointerPos))
+					{
+						pSlot->state = PopupSlot::State::ClosingDelay;
+						pSlot->stateCounter = 0;
+					}
+				}
+			
+				// A popup in state ClosingDelay should be promoted to
+				// state PeekOpen if pointer has entered its launcherGeo and
+				// to state WeakOpen if pointer has entered its geo.
+				// Promoting to WeakOpen Should also promote any ancestor also in state ClosingDelay.
+
+				for (auto& popup : m_popups)
+				{
+					if (popup.state == PopupSlot::State::ClosingDelay)
+					{
+						if (popup.launcherGeo.contains(pointerPos))
+						{
+							popup.state = PopupSlot::State::PeekOpen;
+							popup.stateCounter = 0;
+						}
+						else if (popup.geo.contains(pointerPos))
+						{
+							PopupSlot * p = &popup;
+							while (p != m_popups.end() && p->state == PopupSlot::State::ClosingDelay)
+							{
+								p->state = PopupSlot::State::WeakOpen;
+								p->stateCounter = 0;
+								p++;
+							}
+							break;		// Nothing more to do further down.
+						}
+					}
+				}
+
+				// If pointer has entered a selectable widget of a popup that isn't the top one
+				// and all widgets between them have bAutoClose=true, they should all enter
+				// state ClosingDelay (unless already in state Closing).
+
+				 
+			}				
 			break;
+
 
 			case MsgType::MouseLeave:
 			{
+				// Top popup can be in state PeekOpen, which should begin closing when
+				// pointer has left.
 
-			
-
+				PopupSlot * pSlot = m_popups.first();
+				if (pSlot && pSlot->state == PopupSlot::State::PeekOpen)
+				{
+					pSlot->state = PopupSlot::State::ClosingDelay;
+					pSlot->stateCounter = 0;
+				}
 			}
 			break;
-
 
 
 			case MsgType::MouseRelease:

@@ -45,14 +45,14 @@ namespace wg
 
 		const static bool safe_to_relocate = false;
 
-		enum State
+		enum class State
 		{
-			Delay,					// Popup is in "delayed opening" mode. Some ms before it starts to open.
+			OpeningDelay,			// Popup is in "delayed opening" mode. Some ms before it starts to open.
 			Opening,				// Popup is opening (fading in).
-			PeekOpen,				// Popup is open until pointer leaves launcherGeo.
-			WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked.
+			PeekOpen,				// Popup is open until pointer leaves launcherGeo (mode only allowed if bAutoClose is set).
+			WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked (mode only allowed if bAutoClose is set).
 			FixedOpen,				// Popup is open until it is closed by a pop() call. 
-			Countdown,				// Popup is in countdown to closing mode.
+			ClosingDelay,			// Popup is in countdown to closing mode (mode only allowed if bAutoClose is set).
 			Closing,				// Popup is closing (fading out).
 		};
 
@@ -60,6 +60,7 @@ namespace wg
 		Origo		attachPoint;
 		bool		bAutoClose;			// Has been opened in auto-close mode.
 		State		state;
+		int			stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
 		Size		maxSize;
 		Widget_wp	pOpener;			// Widget that opened this popup.
 		Widget_wp	pKeyFocus;			// Pointer at widget that held focus when this popup was ontop.
@@ -168,8 +169,10 @@ namespace wg
 
 		RouteId			m_tickRouteId;
 
-		int				m_autoCloseCountdown = 0;
-
+		int				m_openingDelayMs = 100;
+		int				m_openingFadeMs = 100;
+		int				m_closingDelayMs = 200;
+		int				m_closingFadeMs = 200;
 	};
 	
 
