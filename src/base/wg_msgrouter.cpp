@@ -451,8 +451,9 @@ namespace wg
 	
 		while( pRoute )
 		{
+			auto pNext = pRoute->next();
 			pRoute->dispatch( pMsg );
-			pRoute = pRoute->next();
+			pRoute = pNext;
 		}
 	}
 	
@@ -468,8 +469,9 @@ namespace wg
 	
 			while( pRoute )
 			{
+				auto pNext = pRoute->next();
 				pRoute->dispatch( pMsg );
-				pRoute = pRoute->next();
+				pRoute = pNext;
 			}
 		}	
 	}
@@ -488,9 +490,10 @@ namespace wg
 				Route * pRoute = it->second.first();
 				while( pRoute )
 				{
+					auto pNext = pRoute->next();
 					if( pRoute->m_filter == MsgType::Dummy || pRoute->m_filter == pMsg->type() )
 						pRoute->dispatch( pMsg );
-					pRoute = pRoute->next();
+					pRoute = pNext;
 				}
 			}
 		}

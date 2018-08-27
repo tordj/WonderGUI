@@ -72,6 +72,26 @@ namespace wg
 		return true;
 	}
 
+	//____ contains() _________________________________________________________
+
+	bool Container::contains(const Widget * pWidget ) const
+	{
+		if (!pWidget)
+			return false;
+
+		pWidget = pWidget->parent();
+		while (pWidget)
+		{
+			if (pWidget == this)
+				return true;
+			pWidget = pWidget->parent();
+		}
+
+		return false;
+	}
+
+
+
 	 Coord Container::_childGlobalPos( Slot * pSlot ) const
 	 {
 		 return _childPos(pSlot) + globalPos();
@@ -167,7 +187,8 @@ namespace wg
 			
 		return nullptr;
 	}
-	
+
+
 	
 	ModalLayer *  Container::_getModalLayer() const
 	{

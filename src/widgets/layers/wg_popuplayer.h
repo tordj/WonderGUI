@@ -140,6 +140,7 @@ namespace wg
 		void			_restoreKeyboardFocus();
 		bool			_updateGeo(PopupSlot * pSlot, bool bInitialUpdate = false );
 		void			_removeSlots(int ofs, int nb);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize);
 
 		// Overloaded from Panel
 
@@ -157,6 +158,13 @@ namespace wg
 
 		void			_onRequestRender(const Rect& rect, const LayerSlot * pSlot);	// rect is in our coordinate system.
 
+		// Overloaded from container
+
+		void			_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches);
+//		void			_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
+//		void			_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
+
+
 		// Overloaded from Widget
 	
 		void			_cloneContent( const Widget * _pOrg );
@@ -167,7 +175,7 @@ namespace wg
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.	
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
-		RouteId			m_tickRouteId;
+		RouteId			m_tickRouteId = 0;
 
 		int				m_openingDelayMs = 100;
 		int				m_openingFadeMs = 100;

@@ -72,18 +72,7 @@ namespace wg
 
 	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
-		PopupSlot * pSlot = m_pHolder->m_popups.insert(0);
-		pSlot->pOpener = _pOpener;
-		pSlot->launcherGeo = _launcherGeo;
-		pSlot->attachPoint = _attachPoint;
-		pSlot->bAutoClose = _bAutoClose;
-		pSlot->state = PopupSlot::State::Delay;
-		pSlot->maxSize = _maxSize;
-		
-		pSlot->replaceWidget(m_pHolder, _pPopup);
-		
-		m_pHolder->_updateGeo(pSlot,true);
-		m_pHolder->_stealKeyboardFocus();
+		m_pHolder->_addSlot( _pPopup, _pOpener, _launcherGeo, _attachPoint, _bAutoClose, _maxSize);
 	}
 
 	//____ pop() ________________________________________________
@@ -126,14 +115,12 @@ namespace wg
 	
 	PopupLayer::PopupLayer() : popups(this)
 	{
-		m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
 	}
 	
 	//____ Destructor _____________________________________________________________
 	
 	PopupLayer::~PopupLayer()
 	{
-		Base::msgRouter()->deleteRoute(m_tickRouteId);
 	}
 	
 	//____ isInstanceOf() _________________________________________________________
@@ -397,6 +384,11 @@ namespace wg
 	
 	void PopupLayer::_onRequestRender( const Rect& rect, const LayerSlot * pSlot )
 	{
+		// Don not render anything if not visible
+
+		if (pSlot && ((PopupSlot*)pSlot)->state == PopupSlot::State::OpeningDelay)
+			return;
+
 		// Clip our geometry and put it in a dirtyrect-list
 	
 		Patches patches;
@@ -416,7 +408,7 @@ namespace wg
 
 			while (pCover >= m_popups.begin())
 			{
-				if (pCover->geo.intersectsWith(rect))
+				if (pCover->geo.intersectsWith(rect) && pCover->state != PopupSlot::State::OpeningDelay && pCover->state != PopupSlot::State::Opening && pCover->state != PopupSlot::State::Closing)
 					pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 				pCover--;
@@ -427,7 +419,125 @@ namespace wg
 		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
-	
+
+	//____ _renderPatches() ___________________________________________________
+
+	class WidgetRenderContext
+	{
+	public:
+		WidgetRenderContext() : pSlot(0) {}
+		WidgetRenderContext(PopupSlot * pSlot, const Rect& geo) : pSlot(pSlot), geo(geo) {}
+
+		PopupSlot *	pSlot;
+		Rect		geo;
+		Patches	patches;
+	};
+
+	void PopupLayer::_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches)
+	{
+
+		// We start by eliminating dirt outside our geometry
+
+		Patches 	patches(_pPatches->size());								// TODO: Optimize by pre-allocating?
+
+		for (const Rect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
+		{
+			if (_canvas.intersectsWith(*pRect))
+				patches.push(Rect(*pRect, _canvas));
+		}
+
+
+		// Render container itself
+
+		for (const Rect * pRect = patches.begin(); pRect != patches.end(); pRect++)
+			_render(pDevice, _canvas, _window, *pRect);
+
+
+		// Render children
+
+		Rect	dirtBounds = patches.getUnion();
+
+		// Create WidgetRenderContext's for popups that might get dirty patches
+
+		std::vector<WidgetRenderContext> renderList;
+
+		auto pSlot = m_popups.begin();
+
+		while (pSlot != m_popups.end() )
+		{
+			Rect geo = pSlot->geo + _canvas.pos();
+
+			if (geo.intersectsWith(dirtBounds) && pSlot->state != PopupSlot::State::OpeningDelay)
+				renderList.push_back(WidgetRenderContext(pSlot, geo));
+
+			pSlot++;
+		}
+
+		// Go through WidgetRenderContexts, push and mask dirt
+
+		for (unsigned int i = 0; i < renderList.size(); i++)
+		{
+			WidgetRenderContext * p = &renderList[i];
+
+			p->patches.push(&patches);
+			if( p->pSlot->state != PopupSlot::State::Opening && p->pSlot->state != PopupSlot::State::Closing )
+				p->pSlot->pWidget->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+
+			if (patches.isEmpty())
+				break;
+		}
+
+		// Any dirt left in patches is for base child, lets render that first
+
+
+		if (!patches.isEmpty())
+			m_baseSlot.pWidget->_renderPatches(pDevice, _canvas, _window, &patches);
+
+
+		// Go through WidgetRenderContexts and render the patches in reverse order (topmost popup rendered last).
+
+		for (int i = renderList.size() - 1; i >= 0; i--)
+		{
+			WidgetRenderContext * p = &renderList[i];
+
+			Color tint = Color::White;
+
+			if (p->pSlot->state == PopupSlot::State::Opening)
+				tint.a = 255 * p->pSlot->stateCounter / m_openingFadeMs;
+
+			if (p->pSlot->state == PopupSlot::State::Closing)
+				tint.a = 255 - (255 * p->pSlot->stateCounter / m_closingFadeMs);
+
+			if (tint.a == 255)
+				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
+			else
+			{
+				Color oldTint = pDevice->tintColor();
+				pDevice->setTintColor(oldTint*tint);
+				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
+				pDevice->setTintColor(oldTint);
+			}
+		}
+	}
+
+
+	//____ _maskPatches() _____________________________________________________
+
+//	void PopupLayer::_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode)
+//	{
+//		Need to except children that are in states OpeningDelay, Opening and Closing.
+//	}
+
+	//____ _collectPatches() ___________________________________________________
+
+//	void PopupLayer::_collectPatches(Patches& container, const Rect& geo, const Rect& clip)
+//	{
+//		Need to make sure patches are not collected for children in mode "OpeningDelay"
+//		This might be handled by slotWithGeo() methods, depending on how what we choose.
+//	}
+
+
+
 	//____ _setSize() ___________________________________________________________
 	
 	void PopupLayer::_setSize( const Size& sz )
@@ -507,7 +617,7 @@ namespace wg
 
 				// Close any popup that is due for closing.
 
-				while (!m_popups.isEmpty() && m_popups.first()->state == PopupSlot::State::Closing && m_popups.first()->stateCounter >= m_closingFadeMs);
+				while (!m_popups.isEmpty() && m_popups.first()->state == PopupSlot::State::Closing && m_popups.first()->stateCounter >= m_closingFadeMs)
 					_removeSlots(0, 1);
 
 			break;
@@ -515,6 +625,9 @@ namespace wg
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{
+				if (m_popups.isEmpty())
+					break;
+
 				Coord 	pointerPos = InputMsg::cast(_pMsg)->pointerPos() - globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
@@ -566,11 +679,36 @@ namespace wg
 				// and all widgets between them have bAutoClose=true, they should all enter
 				// state ClosingDelay (unless already in state Closing).
 
-				 
+
+				Widget * pTop = m_popups.first()->pWidget;
+				Widget * pMarked = _findWidget(pointerPos, SearchMode::ActionTarget);
+
+				if (pMarked != this && pMarked->isSelectable() && m_popups.first()->bAutoClose)
+				{
+					// Trace hierarchy from marked to one of our children.
+
+					while (pMarked->_parent() != this)
+						pMarked = pMarked->_parent();
+
+					//
+
+					auto p = m_popups.first();
+					while (p->bAutoClose && p->pWidget != pMarked)
+					{
+						if (p->state != PopupSlot::State::Closing && p->state != PopupSlot::State::ClosingDelay)
+						{
+							p->state = PopupSlot::State::ClosingDelay;
+							p->stateCounter = 0;
+						}
+						p--;
+					}
+				}
+
+
 			}				
 			break;
 
-
+/*
 			case MsgType::MouseLeave:
 			{
 				// Top popup can be in state PeekOpen, which should begin closing when
@@ -584,7 +722,7 @@ namespace wg
 				}
 			}
 			break;
-
+*/
 
 			case MsgType::MouseRelease:
 			{
@@ -699,6 +837,29 @@ namespace wg
 			_updateGeo( (PopupSlot *) pSlot );
 	}
 
+	//____ _addSlot() ____________________________________________________________
+
+	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize)
+	{
+		PopupSlot * pSlot = m_popups.insert(0);
+		pSlot->pOpener = _pOpener;
+		pSlot->launcherGeo = _launcherGeo;
+		pSlot->attachPoint = _attachPoint;
+		pSlot->bAutoClose = _bAutoClose;
+		pSlot->state = PopupSlot::State::OpeningDelay;
+		pSlot->stateCounter = 0;
+		pSlot->maxSize = _maxSize;
+
+		pSlot->replaceWidget(this, _pPopup);
+
+		_updateGeo(pSlot, true);
+		_stealKeyboardFocus();
+
+		if (m_tickRouteId == 0)
+			m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
+	}
+
+
 	//____ _removeSlots() __________________________________________________
 
 	void PopupLayer::_removeSlots(int ofs, int nb)
@@ -718,6 +879,12 @@ namespace wg
 						
 		m_popups.remove(ofs, nb);
 		_restoreKeyboardFocus();
+
+		if (m_popups.isEmpty())
+		{
+			Base::msgRouter()->deleteRoute(m_tickRouteId);
+			m_tickRouteId = 0;
+		}
 	}
 
 	//____ _beginLayerSlots() __________________________________________________

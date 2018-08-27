@@ -280,7 +280,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popups.push(m_pPopup, this, globalGeo(), m_attachPoint);
+			pLayer->popups.push(m_pPopup, this, globalGeo(), m_attachPoint, m_bOpenOnHover );
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

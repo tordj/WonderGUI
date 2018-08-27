@@ -160,9 +160,9 @@ int main ( int argc, char** argv )
 	MsgLogger_p pLogger = MsgLogger::create( std::cout );
 	pLogger->logAllMsgs();
 	pLogger->ignoreMsg( MsgType::Tick );
-	pLogger->ignoreMsg( MsgType::MouseMove);
-	pLogger->ignoreMsg(MsgType::MouseDrag);
-	pLogger->ignoreMsg(MsgType::MouseRepeat);
+//	pLogger->ignoreMsg( MsgType::MouseMove);
+//	pLogger->ignoreMsg(MsgType::MouseDrag);
+//	pLogger->ignoreMsg(MsgType::MouseRepeat);
 
 	Base::msgRouter()->broadcastTo( pLogger );
 
