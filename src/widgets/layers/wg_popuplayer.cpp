@@ -700,7 +700,7 @@ namespace wg
 							p->state = PopupSlot::State::ClosingDelay;
 							p->stateCounter = 0;
 						}
-						p--;
+						p++;
 					}
 				}
 
