@@ -261,9 +261,9 @@ namespace wg
 		{
 			int alpha = s_mulTab[srcA];
 
-			outB = limitUint8(backB + (srcB * alpha << 16));
-			outG = limitUint8(backG + (srcG * alpha << 16));
-			outR = limitUint8(backR + (srcR * alpha << 16));
+			outB = limitUint8(backB + (srcB * alpha >> 16));
+			outG = limitUint8(backG + (srcG * alpha >> 16));
+			outR = limitUint8(backR + (srcR * alpha >> 16));
 			outA = backA;
 		}
 
@@ -271,9 +271,9 @@ namespace wg
 		{
 			int alpha = s_mulTab[srcA];
 
-			outB = limitUint8(backB + (srcB * alpha << 16));
-			outG = limitUint8(backG + (srcG * alpha << 16));
-			outR = limitUint8(backR + (srcR * alpha << 16));
+			outB = limitUint8(backB + (srcB * alpha >> 16));
+			outG = limitUint8(backG + (srcG * alpha >> 16));
+			outR = limitUint8(backR + (srcR * alpha >> 16));
 			outA = backA;
 		}
 
