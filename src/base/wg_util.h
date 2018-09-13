@@ -53,6 +53,23 @@ namespace wg
 
 	    inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 
+		StateEnum	fallbackState(StateEnum state, int pass = 0);
+
+		inline int _stateToIndex(StateEnum state)
+		{
+			static int	s_stateToIndexTable[StateEnum_MaxValue + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 13 };
+			return s_stateToIndexTable[(uint8_t)state];
+		}
+
+		inline StateEnum _indexToState(int index)
+		{
+			static StateEnum	s_indexToStateTable[StateEnum_Nb] = { StateEnum::Normal, StateEnum::Focused, StateEnum::Hovered, StateEnum::HoveredFocused, StateEnum::Pressed,
+				StateEnum::PressedFocused, StateEnum::Selected, StateEnum::SelectedFocused, StateEnum::SelectedHovered, StateEnum::SelectedHoveredFocused,
+				StateEnum::SelectedPressed, StateEnum::SelectedPressedFocused, StateEnum::Disabled, StateEnum::DisabledSelected };
+
+			return s_indexToStateTable[index];
+		}
+
 
 		// A simple checksum algorithm that just performs a long division
 		// with a standard CRC polynomial. Quicker and less complex than a standard
@@ -77,14 +94,6 @@ namespace wg
 			uint32_t	remainder;
 			const static int dividend = 0x107;
 		};
-
-
-		inline int _stateToIndex(StateEnum state)
-		{
-			static int	s_stateToIndexTable[StateEnum_MaxValue+1] = { 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 8, 9, 10, 11, 12, 13 };
-			return s_stateToIndexTable[(uint8_t)state];
-		}
-
 
 		extern uint8_t _limitUint8Table[768];
 

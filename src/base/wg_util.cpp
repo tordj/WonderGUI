@@ -489,6 +489,16 @@ double Util::powerOfTen(int num){
 		return defaultSize;
 	}
 
+	//____ fallbackState() ________________________________________________________
+
+	StateEnum Util::fallbackState(StateEnum state, int pass)
+	{
+		static int mask[12] = { 0x1E, 0xE, 0xD, 0xC, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x1, 0x0 };
+
+		return StateEnum((StateEnum)((int)state & mask[pass]));
+	}
+
+
 	//____ Checksum8::add() ________________________________________________________
 
 	void Util::Checksum8::add( const void * pData, uint32_t nBytes )

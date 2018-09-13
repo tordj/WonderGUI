@@ -77,23 +77,23 @@ namespace wg
 	enum class StateEnum : uint8_t
 	{
 		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
-		Selected				= 1,			///< Element is in a selected state, like a selected checkbox or item in a list. 
-		Focused					= 2,			///< Element has keyboard focus
-		FocusedSelected			= 2+1,
+		Focused					= 1,			///< Element has keyboard focus
 		Hovered					= 4,			///< Mouse pointer is hovering over element.
-		HoveredSelected			= 4+1,
-		HoveredFocused			= 4+2,
-		HoveredFocusedSelected	= 4+2+1,
-		Pressed					= 8+4,			///< Mouse button (usually left one) is pressed on element.
-		PressedSelected			= 8+4+1,
-		PressedFocused			= 8+4+2,
-		PressedFocusedSelected	= 8+4+2+1,
+		HoveredFocused			= 4+1,
+		Pressed					= 4+2,			///< Mouse button (usually left one) is pressed on element.
+		PressedFocused			= 4+2+1,
+		Selected				= 8,			///< Element is in a selected state, like a selected checkbox or item in a list. 
+		SelectedFocused			= 8+1,			
+		SelectedHovered			= 8+4,			
+		SelectedHoveredFocused	= 8+4+1,
+		SelectedPressed			= 8+4+2,
+		SelectedPressedFocused	= 8+4+2+1,
 		Disabled				= 16,			///< Element is disabled and can't be focused or pressed.
-		DisabledSelected		= 16+1,
+		DisabledSelected		= 16+8,
 	};
 	
 	static const int	StateEnum_Nb	= 14;			// Number of states
-	static const int	StateEnum_MaxValue	= 17;			// Highest value for StateEnum
+	static const int	StateEnum_MaxValue	= 24;		// Highest value for StateEnum
 	
 	class State 
 	{
@@ -702,8 +702,6 @@ namespace wg
 		CopySurface,
 		DeleteSurface
 	};
-
-
 
 } // namespace wg
 

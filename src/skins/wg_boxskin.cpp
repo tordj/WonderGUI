@@ -44,6 +44,25 @@ namespace wg
 		return BoxSkin_p(new BoxSkin(color, frame, frameColor));
 	}
 	
+	BoxSkin_p BoxSkin::create(std::initializer_list< std::pair<State, Color> >fillColors, Border frameThickness, std::initializer_list< std::pair<State, Color> > frameColors)
+	{
+		BoxSkin_p p = new BoxSkin();
+
+		// Default fill and frame to white
+
+		p->m_color[0] = Color::White;
+		p->m_frameColor[0] = Color::White;
+
+		//
+
+		p->setFrameThickness(frameThickness);
+		p->setFillColors(fillColors);
+		p->setFrameColors(frameColors);
+
+		return p;
+	}
+
+
 	//____ Constructor ____________________________________________________________
 	
 	BoxSkin::BoxSkin()
@@ -101,20 +120,36 @@ namespace wg
 		return 0;
 	}
 	
-	
+	//____ setBlendMode() _____________________________________________________
+
+	void BoxSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpaqueFlag();
+	}
+
+
 	//____ setColor() _____________________________________________________________
 	
 	void BoxSkin::setColor( Color color )
 	{
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			m_color[i] = color;
-	
-		if( m_frame.width() + m_frame.height() == 0 )
-			m_bOpaque = color.a == 255;
-		else if( (color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque) )
-			_updateOpaqueFlag();
+		setFillColor(color);
 	}
 	
+	//____ setFillColor() _____________________________________________________________
+
+	void BoxSkin::setFillColor(Color color)
+	{
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_color[i] = color;
+
+		if (m_frame.width() + m_frame.height() == 0)
+			m_bOpaque = color.a == 255;
+		else if ((color.a == 255 && !m_bOpaque) || (color.a < 255 && m_bOpaque))
+			_updateOpaqueFlag();
+	}
+
+
 	//____ setFrameColor() ________________________________________________________
 	
 	void BoxSkin::setFrameColor( Color color )
@@ -158,9 +193,12 @@ namespace wg
 	{
 		int i = _stateToIndex(state);
 	
-		uint8_t	oldAlpha = m_color[i].a;
+		int		oldCombAlpha = ((int)m_color[i].a) + ((int)m_frameColor[i].a);
+
 		m_color[i] = color;
-		if( (color.a < 255 && m_bOpaque) || (color.a == 255 && oldAlpha < 255 ) )
+		m_frameColor[i] = color;
+
+		if( (color.a < 255 && m_bOpaque) || (color.a == 255 && oldCombAlpha < 510 ) )
 			_updateOpaqueFlag();
 	}
 	
@@ -177,13 +215,103 @@ namespace wg
 		if( (newCombAlpha < 510 && m_bOpaque) || (newCombAlpha == 510 && oldCombAlpha < 510 ) )
 			_updateOpaqueFlag();
 	}
-	
+
+	//____ setFillColors() _______________________________________________________
+
+	void BoxSkin::setFillColors(std::initializer_list< std::pair<State, Color> >fillColors)
+	{
+		bool	bSlotUsed[StateEnum_Nb];
+
+		bSlotUsed[0] = true;						// StateColor doesn't need to be specified for normal state, will remain what it was
+
+		for (int i = 1; i < StateEnum_Nb; i++)
+			bSlotUsed[i] = false;
+
+		//
+
+		for (auto& stateColor : fillColors)
+		{
+			int index = _stateToIndex(stateColor.first);
+			m_color[index] = stateColor.second;
+			bSlotUsed[index] = true;
+		}
+
+		// Fill in fallback states and update opacity flag
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (!bSlotUsed[i])
+			{
+				State state = _indexToState(i);
+
+				int step = 0;
+				int fallbackIndex = _stateToIndex(fallbackState(state, step++));
+				while (!bSlotUsed[fallbackIndex])
+					fallbackIndex = _stateToIndex(fallbackState(state, step++));
+
+				m_color[i] = m_color[fallbackIndex];
+			}
+		}
+
+		//
+
+		_updateOpaqueFlag();
+	}
+
+	//____ setFrameColors() _______________________________________________________
+
+	void BoxSkin::setFrameColors(std::initializer_list< std::pair<State, Color> >fillColors)
+	{
+		bool	bSlotUsed[StateEnum_Nb];
+
+		bSlotUsed[0] = true;						// StateColor doesn't need to be specified for normal state, will remain what it was.
+
+		for (int i = 1; i < StateEnum_Nb; i++)
+			bSlotUsed[i] = false;
+
+		//
+
+		for (auto& stateColor : fillColors)
+		{
+			int index = _stateToIndex(stateColor.first);
+			m_frameColor[index] = stateColor.second;
+			bSlotUsed[index] = true;
+		}
+
+		// Fill in fallback states and update opacity flag
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (!bSlotUsed[i])
+			{
+				State state = _indexToState(i);
+
+				int step = 0;
+				int fallbackIndex = _stateToIndex(fallbackState(state, step++));
+				while (!bSlotUsed[fallbackIndex])
+					fallbackIndex = _stateToIndex(fallbackState(state, step++));
+
+				m_frameColor[i] = m_frameColor[fallbackIndex];
+			}
+		}
+
+		//
+
+		_updateOpaqueFlag();
+	}
+
+
 	//____ render() _______________________________________________________________
 		
 	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const
 	{
+		BlendMode	oldBlendMode = pDevice->blendMode();
+
+		if (m_blendMode != oldBlendMode )
+			pDevice->setBlendMode(m_blendMode);
+
 		int i = _stateToIndex(state);
-		if( m_frame.width() + m_frame.height() == 0 )
+		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_color[i] )
 		{
 			pDevice->fill( Rect(_canvas, _clip), m_color[i] );
 		}
@@ -203,6 +331,9 @@ namespace wg
 			if( center.w > 0 || center.h > 0 )
 				pDevice->fill( center, m_color[i] );
 		}
+
+		if (m_blendMode != oldBlendMode)
+			pDevice->setBlendMode(oldBlendMode);
 	}
 	
 	//____ minSize() ______________________________________________________________
@@ -309,21 +440,36 @@ namespace wg
 	
 	void BoxSkin::_updateOpaqueFlag()
 	{
-		int alpha = 0;
-		int frameAlpha = 0;
-	
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		switch (m_blendMode)
 		{
-			alpha += (int) m_color[i].a;
-			frameAlpha += (int) m_frameColor[i].a;
+			case BlendMode::Replace:
+				m_bOpaque = true;
+				break;
+
+			case BlendMode::Blend:
+			{
+				int alpha = 0;
+				int frameAlpha = 0;
+
+				for (int i = 0; i < StateEnum_Nb; i++)
+				{
+					alpha += (int)m_color[i].a;
+					frameAlpha += (int)m_frameColor[i].a;
+				}
+
+				bool hasFrame = (m_frame.width() + m_frame.height() > 0);
+
+				if (alpha == 255 * StateEnum_Nb && (!hasFrame || frameAlpha == 255 * StateEnum_Nb))
+					m_bOpaque = true;
+				else
+					m_bOpaque = false;
+
+				break;
+			}
+
+			default:
+				m_bOpaque = false;
 		}
-	
-		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
-		
-		if( alpha == 255*StateEnum_Nb && (!hasFrame || frameAlpha == 255*StateEnum_Nb) )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
 	}
 
 } // namespace wg

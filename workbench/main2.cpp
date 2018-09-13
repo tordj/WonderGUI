@@ -19,6 +19,7 @@
 #include <wg_packlist.h>
 #include <testwidget.h>
 #include <wg_popupopener.h>
+#include <wg_multiblockskin.h>
 
 
 using namespace wg;
@@ -208,6 +209,13 @@ int main ( int argc, char** argv )
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
+	pSDLSurf = IMG_Load("../resources/simple_icon.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	SoftSurface_p pBackgroundSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pBackgroundSkin = BlockSkin::createStaticFromSurface(pBackgroundSurface);
+
+
 	pSDLSurf = IMG_Load( "../resources/splash.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
 	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
@@ -235,11 +243,13 @@ int main ( int argc, char** argv )
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface( pListEntrySurface, 0, Border(2) );
 
-	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
+	pSDLSurf = IMG_Load( "../resources/splash.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
 	SoftSurface_p pImgSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
+	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface );
+	pImgSurface->setScaleMode(ScaleMode::Interpolate);
+
 
 	pSDLSurf = IMG_Load( "../resources/up_down_arrow.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
@@ -272,8 +282,20 @@ int main ( int argc, char** argv )
 	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
 */
 
+
+//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, Border(5), { {StateEnum::Hovered, Color::Green} });
+//	pTestSkin->setBlendMode(BlendMode::Add);
+
+	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+
+	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal );
+	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
+
+//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
+//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
+
 	Button_p pImage0 = Button::create();
-	pImage0->setSkin(pSimpleButtonSkin);
+	pImage0->setSkin(pTestSkin);
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
 	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2);});
@@ -370,7 +392,7 @@ int main ( int argc, char** argv )
 
 	}
 	*/
-
+/*
 	{
 		auto pOpener = PopupOpener::create();
 
@@ -448,7 +470,7 @@ int main ( int argc, char** argv )
 		pOpener->setPopup( pMenu );
 
 	}
-
+*/
 /*
 	{
 		auto pSplit = SplitPanel::create();

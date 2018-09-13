@@ -129,13 +129,13 @@ namespace wg
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
 		pSkin->setStateBlock( StateEnum::Selected, blockOfs );			// Selected, not hovered
-		pSkin->setStateBlock( StateEnum::FocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( StateEnum::HoveredSelected, blockOfs );	// Selected and hovered
-		pSkin->setStateBlock( StateEnum::HoveredFocusedSelected, blockOfs );
-		pSkin->setStateBlock( StateEnum::PressedSelected, blockOfs );
-		pSkin->setStateBlock( StateEnum::PressedFocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedHovered, blockOfs );	// Selected and hovered
+		pSkin->setStateBlock( StateEnum::SelectedHoveredFocused, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedPressed, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedPressedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
 		pSkin->setStateBlock( StateEnum::Disabled, blockOfs );			// Disabled
@@ -165,15 +165,15 @@ namespace wg
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
 		pSkin->setStateBlock( StateEnum::Selected, blockOfs );
-		pSkin->setStateBlock( StateEnum::FocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( StateEnum::HoveredSelected, blockOfs );
-		pSkin->setStateBlock( StateEnum::HoveredFocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedHovered, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedHoveredFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
-		pSkin->setStateBlock( StateEnum::PressedSelected, blockOfs );
-		pSkin->setStateBlock( StateEnum::PressedFocusedSelected, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedPressed, blockOfs );
+		pSkin->setStateBlock( StateEnum::SelectedPressedFocused, blockOfs );
 		blockOfs += Coord(blockPitch.w,blockPitch.h);
 	
 		pSkin->setStateBlock( StateEnum::Disabled, blockOfs );
@@ -322,9 +322,9 @@ namespace wg
 	void BlockSkin::setHoveredBlocks( const Coord& ofs )
 	{
 		m_state[_stateToIndex(StateEnum::Hovered)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::HoveredSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedHovered)].ofs = ofs;
 		m_state[_stateToIndex(StateEnum::HoveredFocused)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::HoveredFocusedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedHoveredFocused)].ofs = ofs;
 	
 		setPressedBlocks( ofs );
 	}
@@ -334,9 +334,9 @@ namespace wg
 	void BlockSkin::setPressedBlocks( const Coord& ofs )
 	{
 		m_state[_stateToIndex(StateEnum::Pressed)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::PressedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedPressed)].ofs = ofs;
 		m_state[_stateToIndex(StateEnum::PressedFocused)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::PressedFocusedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedPressedFocused)].ofs = ofs;
 	}
 	
 	//____ setSelectedBlocks() ____________________________________________________
@@ -344,11 +344,11 @@ namespace wg
 	void BlockSkin::setSelectedBlocks( const Coord& ofs )
 	{
 		m_state[_stateToIndex(StateEnum::Selected)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::FocusedSelected)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::HoveredSelected)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::HoveredFocusedSelected)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::PressedSelected)].ofs = ofs;
-		m_state[_stateToIndex(StateEnum::PressedFocusedSelected)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedFocused)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedHovered)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedHoveredFocused)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedPressed)].ofs = ofs;
+		m_state[_stateToIndex(StateEnum::SelectedPressedFocused)].ofs = ofs;
 	}
 	
 	//____ setTiled() _____________________________________________________________
@@ -541,7 +541,7 @@ namespace wg
 			return;
 		}
 	
-		if( borderSize.w == 0 && borderSize.h == 0 )
+		if( borderSize.w == 0 && borderSize.h  == 0 )
 		{
 			if( m_tiledSections & (1 << (int)Origo::Center) )
 				pDevice->clipTileBlit( _clip, m_pSurface, src, _canvas );

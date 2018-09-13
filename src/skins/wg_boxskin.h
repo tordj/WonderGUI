@@ -26,9 +26,12 @@
 #include <wg_extendedskin.h>
 #include <wg_color.h>
 
+#include <initializer_list>
+#include <utility>
+
 namespace wg 
 {
-	
+	 
 	class BoxSkin;
 	typedef	StrongPtr<BoxSkin>	BoxSkin_p;
 	
@@ -38,7 +41,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create( Color color, Border frame, Color frameColor );
+		static BoxSkin_p 	create( Color fillColor, Border frameThickness, Color frameColor );
+		static BoxSkin_p	create(std::initializer_list< std::pair<State,Color> >fillColors, Border frameThickness, std::initializer_list< std::pair<State, Color> > frameColors );
 
 		//.____ Identification __________________________________________
 	
@@ -49,34 +53,40 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
+		void		render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
 
 		//.____ Geometry _________________________________________________
 	
-		Size	minSize() const;
-		Size	preferredSize() const;
-		Size	sizeForContent( const Size contentSize ) const;
+		Size		minSize() const;
+		Size		preferredSize() const;
+		Size		sizeForContent( const Size contentSize ) const;
 
 		//.____ Appearance _________________________________________________
 
-		void	setColor( Color color );
-		void	setFrameColor( Color color );
-		void	setFrameThickness( Border frame );
-		void	setFrame( Border frame, Color color );
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+		void		setColor( Color color );			// DEPRECATED!!! Use setFillColor() instead.	
+		void		setFillColor(Color color);
+		void		setFrameColor( Color color );
+		void		setFrameThickness( Border frame );
+		void		setFrame( Border thickness, Color color );
 	
-		void	setStateColor( StateEnum state, Color color );
-		void	setStateColor( StateEnum state, Color color, Color frameColor );
+		void		setStateColor( StateEnum state, Color color );
+		void		setStateColor( StateEnum state, Color color, Color frameColor );
 	
+		void		setFillColors(std::initializer_list< std::pair<State, Color> >fillColors);
+		void		setFrameColors(std::initializer_list< std::pair<State, Color> >fillColors);
 		
 		//.____ Misc ____________________________________________________
 
-		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
+		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
 	
-		bool	isOpaque() const;
-		bool	isOpaque( State state ) const;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		bool		isOpaque() const;
+		bool		isOpaque( State state ) const;
+		bool		isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 	
-		bool	isStateIdentical( State state, State comparedTo ) const;
+		bool		isStateIdentical( State state, State comparedTo ) const;
 	
 	private:
 		BoxSkin();
@@ -88,7 +98,8 @@ namespace wg
 		bool		m_bOpaque;
 		Color		m_color[StateEnum_Nb];
 		Color		m_frameColor[StateEnum_Nb];
-	    Border   m_frame;
+	    Border		m_frame;
+		BlendMode	m_blendMode = BlendMode::Blend;
 	};
 	
 
