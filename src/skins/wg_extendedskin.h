@@ -25,6 +25,9 @@
 
 #include <wg_skin.h>
 
+#include <initializer_list>
+#include <utility>
+
 namespace wg 
 {
 	
@@ -54,12 +57,10 @@ namespace wg
 
 		//.____ Behavior _______________________________________________________
 
-		virtual void	setContentShift( StateEnum state, Coord shift );
-	
-		virtual void	setHoveredContentShift( Coord shift );
-		virtual void	setPressedContentShift( Coord shift );
-		virtual void	setSelectedContentShift( Coord shift );
-		virtual void	setFocusedContentShift( Coord shift );
+		virtual void	clearContentShift();
+		virtual void	setContentShift(State state, Coord shift);
+		virtual void	setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
+		virtual Coord	contentShift(State state) const;
 
 		//.____ Misc ____________________________________________________
 	
@@ -67,8 +68,11 @@ namespace wg
 	
 	
 	protected:
-		Border		m_contentPadding;
-		Coord		m_contentShift[StateEnum_Nb];	
+		void _refreshUnsetStates();
+
+		Border				m_contentPadding;
+		Coord				m_contentShift[StateEnum_Nb];	
+		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 	
 	

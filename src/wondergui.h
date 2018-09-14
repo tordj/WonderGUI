@@ -115,7 +115,7 @@
 #include <wg_uniform_sizebroker.h>
 #include <wg_blockskin.h>
 #include <wg_boxskin.h>
-#include <wg_colorskin.h>
+#include <wg_staticcolorskin.h>
 #include <wg_extendedskin.h>
 #include <wg_skin.h>
 #include <wg_stdtextmapper.h>

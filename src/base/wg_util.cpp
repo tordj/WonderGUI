@@ -499,6 +499,34 @@ double Util::powerOfTen(int num){
 	}
 
 
+
+	//____ bestStateIndexMatch() ___________________________________________________
+
+	int Util::bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices)
+	{
+		static uint32_t mask[StateEnum_Nb] = {	0,
+											1,
+											2,
+											4 + 2 + 1,
+											8 + 2,
+											16 + 8 + 4 + 2 + 1,
+											32,
+											64 + 32 + 1,
+											128 + 32 + 2,
+											256 + 128 + 64 + 32 + 4 + 2 + 1,
+											512 + 128 + 32 + 8 + 2,
+											1024 + 512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1,
+											2048,
+											4096 + 2048 + 32
+										};
+
+		int candidates = uint32_t(availableStateIndices) & mask[wantedStateIndex];
+
+		return mostSignificantBit(candidates);
+	}
+
+
+
 	//____ Checksum8::add() ________________________________________________________
 
 	void Util::Checksum8::add( const void * pData, uint32_t nBytes )
@@ -596,6 +624,27 @@ double Util::powerOfTen(int num){
 		float useScale = max(wScale, hScale);
 
 		return object / useScale;
+	}
+
+	//____ mostSignificantBit() _______________________________________________
+
+	// Uses the de Bruijn algorithm for finding the most significant bit in an integer.
+
+	uint32_t Util::mostSignificantBit(uint32_t value)
+	{
+		static const int MultiplyDeBruijnBitPosition[32] =
+		{
+			0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+			8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+		};
+
+		value |= value >> 1; // first round down to one less than a power of 2
+		value |= value >> 2;
+		value |= value >> 4;
+		value |= value >> 8;
+		value |= value >> 16;
+
+		return MultiplyDeBruijnBitPosition[(uint32_t)(value * 0x07C4ACDDU) >> 27];
 	}
 
 

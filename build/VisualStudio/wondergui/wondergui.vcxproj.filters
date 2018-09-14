@@ -53,9 +53,6 @@
     <ClInclude Include="..\..\..\src\skins\wg_boxskin.h">
       <Filter>skins</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_colorskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h">
       <Filter>skins</Filter>
     </ClInclude>
@@ -485,15 +482,18 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_weightedchildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_multiblockskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_staticcolorskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp">
@@ -819,6 +819,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_modsurface.cpp">
       <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_multiblockskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_staticcolorskin.cpp">
+      <Filter>skins</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

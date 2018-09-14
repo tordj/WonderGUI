@@ -30,6 +30,7 @@ namespace wg
 	
 	const char ExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
 	
+
 	//____ isInstanceOf() _________________________________________________________
 	
 	bool ExtendedSkin::isInstanceOf( const char * pClassName ) const
@@ -64,64 +65,50 @@ namespace wg
 	{
 		m_contentPadding = padding;
 	}
-	
+
+	//____ clearContentShift() ________________________________________________
+
+	void ExtendedSkin::clearContentShift()
+	{
+		m_contentShiftStateMask = 1;			// Mode normal is set by default
+
+		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+			m_contentShift[i] = { 0,0 };
+	}
+
 	//____ setContentShift() ______________________________________________________
-	
-	void ExtendedSkin::setContentShift( StateEnum state, Coord shift )
+
+	void ExtendedSkin::setContentShift(State state, Coord shift)
 	{
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
+		m_contentShiftStateMask.setBit(index);
+		
+		_refreshUnsetStates();
 	}
-	
-	//____ setHoveredContentShift() _______________________________________________
-	
-	void ExtendedSkin::setHoveredContentShift( Coord shift )
+
+	//____ setContentShift() _____________________________________________________
+
+	void ExtendedSkin::setContentShift(std::initializer_list< std::pair<State, Coord> > stateShifts)
 	{
-		m_contentShift[_stateToIndex(StateEnum::Hovered)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedHovered)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::HoveredFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedHoveredFocused)] = shift;
-	
-		m_contentShift[_stateToIndex(StateEnum::Pressed)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressed)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressedFocused)] = shift;
+		for (auto& shift : stateShifts)
+		{
+			int index = _stateToIndex(shift.first);
+			m_contentShift[index] = shift.second;
+			m_contentShiftStateMask.setBit(index);
+		}
+
+		_refreshUnsetStates();
 	}
-	
-	//____ setPressedContentShift() _______________________________________________
-	
-	void ExtendedSkin::setPressedContentShift( Coord shift )
+
+	//____ contentShift() ________________________________________________________
+
+	Coord ExtendedSkin::contentShift(State state) const
 	{
-		m_contentShift[_stateToIndex(StateEnum::Pressed)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressed)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressedFocused)] = shift;
+		int index = _stateToIndex(state);
+		return m_contentShift[index];
 	}
-	
-	//____ setSelectedContentShift() ______________________________________________
-	
-	void ExtendedSkin::setSelectedContentShift( Coord shift )
-	{
-		m_contentShift[_stateToIndex(StateEnum::Selected)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedHovered)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedHoveredFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressed)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressedFocused)] = shift;
-	}
-	
-	//____ setFocusedContentShift() _______________________________________________
-	
-	void ExtendedSkin::setFocusedContentShift( Coord shift )
-	{
-		m_contentShift[_stateToIndex(StateEnum::Focused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::HoveredFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedHoveredFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::PressedFocused)] = shift;
-		m_contentShift[_stateToIndex(StateEnum::SelectedPressedFocused)] = shift;
-	}
-	
+		
 	//____ minSize() ______________________________________________________________
 	
 	Size ExtendedSkin::minSize() const
@@ -171,6 +158,20 @@ namespace wg
 	bool ExtendedSkin::isStateIdentical( State state, State comparedTo ) const
 	{
 		return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
+	}
+
+	//____ _refreshUnsetStates() _________________________________________________
+
+	void ExtendedSkin::_refreshUnsetStates()
+	{
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if ( !m_contentShiftStateMask.bit(i) )
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_contentShiftStateMask);
+				m_contentShift[i] = m_contentShift[bestAlternative];
+			}
+		}
 	}
 
 } // namespace wg

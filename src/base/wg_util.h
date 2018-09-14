@@ -55,6 +55,8 @@ namespace wg
 
 		StateEnum	fallbackState(StateEnum state, int pass = 0);
 
+		int			bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices);
+
 		inline int _stateToIndex(StateEnum state)
 		{
 			static int	s_stateToIndexTable[StateEnum_MaxValue + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 13 };
@@ -69,6 +71,9 @@ namespace wg
 
 			return s_indexToStateTable[index];
 		}
+
+		uint32_t mostSignificantBit(uint32_t value);
+
 
 
 		// A simple checksum algorithm that just performs a long division

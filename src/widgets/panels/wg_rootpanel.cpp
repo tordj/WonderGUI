@@ -46,8 +46,8 @@ namespace wg
 
 		m_bDebugMode = false;
 
-		BoxSkin_p pDebugOverlay = BoxSkin::create( Color(255,0,0,128), 1, Color(255,0,0,128) );
-		pDebugOverlay->setStateColor( StateEnum::Focused, Color(255,0,0,128), Color(255,0,0,255) );
+		BoxSkin_p pDebugOverlay = BoxSkin::create( 1, Color(255,0,0,128), Color(255,0,0,128) );
+		pDebugOverlay->setColors( StateEnum::Focused, Color(255,0,0,128), Color(255,0,0,255) );
 		m_pDebugOverlay = pDebugOverlay;
 		m_afterglowFrames = 4;	
 	}

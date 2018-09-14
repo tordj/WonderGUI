@@ -184,8 +184,9 @@
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
     <ClInclude Include="..\..\..\src\skins\wg_blockskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_boxskin.h" />
-    <ClInclude Include="..\..\..\src\skins\wg_colorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_staticcolorskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_multiblockskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_stdtextmapper.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_textmapper.h" />
@@ -299,8 +300,9 @@
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp" />
-    <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_staticcolorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_multiblockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp" />
     <ClCompile Include="..\..\..\src\textmappers\wg_stdtextmapper.cpp" />
     <ClCompile Include="..\..\..\src\textmappers\wg_textmapper.cpp" />

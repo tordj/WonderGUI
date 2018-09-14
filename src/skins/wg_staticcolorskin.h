@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_COLORSKIN_DOT_H
-#define WG_COLORSKIN_DOT_H
+#ifndef WG_STATICStaticColorSkin_DOT_H
+#define WG_STATICStaticColorSkin_DOT_H
 #pragma once
 
 #include <wg_skin.h>
@@ -29,24 +29,24 @@
 namespace wg 
 {
 	
-	class ColorSkin;
+	class StaticColorSkin;
 	
-	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
+	typedef	StrongPtr<StaticColorSkin>	StaticColorSkin_p;
 	
 	
-	class ColorSkin : public Skin
+	class StaticColorSkin : public Skin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static ColorSkin_p create( Color col );
+		static StaticColorSkin_p create( Color col );
 	
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static ColorSkin_p	cast( Object * pObject );
+		static StaticColorSkin_p	cast( Object * pObject );
 	
 		//.____ Rendering ________________________________________________
 		
@@ -74,8 +74,8 @@ namespace wg
 		bool	isStateIdentical( State state, State comparedTo ) const;
 	
 	private:
-		ColorSkin( Color col );
-		~ColorSkin() {};
+		StaticColorSkin( Color col );
+		~StaticColorSkin() {};
 	
 		Color		m_color;
 		
@@ -83,4 +83,4 @@ namespace wg
 	
 
 } // namespace wg
-#endif //WG_COLORSKIN_DOT_H
+#endif //WG_STATICCOLORSKIN_DOT_H

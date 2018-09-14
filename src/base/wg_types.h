@@ -124,7 +124,7 @@ namespace wg
 		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
 		inline bool operator!=(StateEnum state) const { return m_state != ((uint8_t)state); }
 	
-		inline void operator=(StateEnum state) { m_state = ((uint8_t)state); }
+		inline StateEnum operator=(StateEnum state) { m_state = ((uint8_t)state); return *this; }
 	
 		operator StateEnum() const { return (StateEnum) m_state; }
 	
@@ -132,6 +132,30 @@ namespace wg
 		uint8_t		m_state;
 	};
 	
+
+	template<typename T> class Bitmask
+	{
+	public:
+		Bitmask<T>() { m_mask = 0; }
+		Bitmask<T>(T v) { m_mask = v; }
+
+		inline void setBit(int index) { m_mask |= (T(1) << index); }
+		inline void setBit(int index, bool value) { m_mask &= ~(T(1) << index); m_mask |= (T(value) << index); }
+		inline bool bit(int index) const { return ((m_mask & (T(1) << index)) != 0); }
+		inline void clearBit(int index) { m_mask &= ~(T(1) << index); }
+
+		inline Bitmask<T> operator=(const Bitmask<T>& r) { m_mask = r.m_mask; return *this; }
+		inline Bitmask<T> operator=(T r) { m_mask = r; return *this; }
+
+		inline operator T() const { return m_mask; }
+
+		T	 mask() const { return m_mask; }
+
+	private:
+		T	m_mask;
+	};
+
+
 	
 	typedef unsigned int	RouteId;
 	

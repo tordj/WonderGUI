@@ -41,8 +41,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create( Color fillColor, Border frameThickness, Color frameColor );
-		static BoxSkin_p	create(std::initializer_list< std::pair<State,Color> >fillColors, Border frameThickness, std::initializer_list< std::pair<State, Color> > frameColors );
+		static BoxSkin_p 	create(Border frame, Color fillColor, Color frameColor );
+		static BoxSkin_p	create(Border frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
 
 		//.____ Identification __________________________________________
 	
@@ -66,18 +66,14 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setColor( Color color );			// DEPRECATED!!! Use setFillColor() instead.	
-		void		setFillColor(Color color);
-		void		setFrameColor( Color color );
-		void		setFrameThickness( Border frame );
-		void		setFrame( Border thickness, Color color );
+		void		setFrame( Border frame );
 	
-		void		setStateColor( StateEnum state, Color color );
-		void		setStateColor( StateEnum state, Color color, Color frameColor );
-	
-		void		setFillColors(std::initializer_list< std::pair<State, Color> >fillColors);
-		void		setFrameColors(std::initializer_list< std::pair<State, Color> >fillColors);
-		
+		void						setColors(Color fill, Color frame);	
+		void						setColors(State state, Color fill, Color frame);
+		void						setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors);
+		std::tuple<Color, Color>	colors(State state) const;
+
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
@@ -90,16 +86,20 @@ namespace wg
 	
 	private:
 		BoxSkin();
-		BoxSkin( Color color, Border frame, Color frameColor );
+		BoxSkin(Border frame, Color fillColor, Color frameColor  );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
-	
+		void	_updateUnsetColors();
+
 		bool		m_bOpaque;
-		Color		m_color[StateEnum_Nb];
-		Color		m_frameColor[StateEnum_Nb];
 	    Border		m_frame;
 		BlendMode	m_blendMode = BlendMode::Blend;
+
+		Bitmask<uint32_t>	m_stateColorMask = 1;
+
+		Color		m_fillColor[StateEnum_Nb];
+		Color		m_frameColor[StateEnum_Nb];
 	};
 	
 
