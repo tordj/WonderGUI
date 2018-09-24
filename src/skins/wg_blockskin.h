@@ -43,19 +43,13 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static BlockSkin_p create();
-		static BlockSkin_p createStatic( Surface * pSurface, Rect block, Border frame = Border(0) );
-		static BlockSkin_p createEnable( Surface * pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame = Border(0) );
-		static BlockSkin_p createClickable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
-		static BlockSkin_p createSelectable( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
-		static BlockSkin_p createClickSelectable(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
-		static BlockSkin_p createClickSelectableWidget( Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0) );
-	
-		static BlockSkin_p createStaticFromSurface( Surface * pSurface, Border frame = Border(0) );
-		static BlockSkin_p createEnableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame = Border(0) );
-		static BlockSkin_p createClickableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame = Border(0) );
-		static BlockSkin_p createSelectableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame = Border(0) );
-		static BlockSkin_p createClickSelectableFromSurface( Surface * pSurface, int blockSpacing, Border blockFrame = Border(0) );
+		static BlockSkin_p	create();
+		static BlockSkin_p 	create(Surface * pSurface, Border frame = { 0 } );
+		static BlockSkin_p	create(Surface * pSurface, Rect block, Border frame = { 0 } );
+		static BlockSkin_p	create(Surface * pSurface, Rect firstBlock, const std::initializer_list<State>& stateBlocks, Border frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
+
+		// DEPRECATED CREATE METHODS!
+
 	
 		//.____ Identification __________________________________________
 	
@@ -77,23 +71,22 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void	setSurface( Surface * pSurf );
-		bool	setBlockGeo( Size size, Border frame = Border(0) );
-		void	setStateBlock( StateEnum state, const Coord& ofs );
-	
-		void	setAllBlocks( const Coord& ofs );
-		void	setDisabledBlock( const Coord& ofs );
-		void	setHoveredBlocks( const Coord& ofs );
-		void	setPressedBlocks( const Coord& ofs );
-		void	setSelectedBlocks( const Coord& ofs );
-	
-		void	setTiled( bool bTiled );
-		void	setTiledTopBorder( bool bTiled );
-		void	setTiledBottomBorder( bool bTiled );
-		void	setTiledLeftBorder( bool bTiled );
-		void	setTiledRightBorder( bool bTiled );
-		void	setTiledCenter( bool bTiled );
+		virtual void	setBlock(Coord ofs);
+		virtual void	setBlock(State state, Coord ofs);
+		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, Coord blockStartOfs = { 0,0 });
+		virtual Rect	block(State state) const;
 
+		void			setBlendMode(BlendMode mode);
+		BlendMode		blendMode() const { return m_blendMode; }
+
+		void			setSurface( Surface * pSurf );
+		Surface_p		surface() const { return m_pSurface; }
+
+		void			setBlockSize(Size size);
+		Size			blockSize() const { return m_dimensions; }
+
+		void			setFrame(Border frame);
+		Border			frame() const { return m_frame; }
 
 		//.____ Misc ____________________________________________________	
 	
@@ -105,32 +98,51 @@ namespace wg
 	
 		bool	isStateIdentical( State state, State comparedTo ) const;
 	
-		void	optimizeRenderMethods();
+		//.____ Deprecated ____________________________________________________
+
+		static BlockSkin_p createStatic(Surface * pSurface, Rect block, Border frame = Border(0));
+		static BlockSkin_p createEnable(Surface * pSurface, Size blockSize, Coord ofsEnabled, Coord ofsDisabled, Border frame = Border(0));
+		static BlockSkin_p createClickable(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0));
+		static BlockSkin_p createSelectable(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0));
+		static BlockSkin_p createClickSelectable(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0));
+		static BlockSkin_p createClickSelectableWidget(Surface * pSurface, Size blockGeo, Coord blockStartOfs, Size blockPitch, Border blockFrame = Border(0));
+
+		static BlockSkin_p createStaticFromSurface(Surface * pSurface, Border frame = Border(0));
+		static BlockSkin_p createEnableFromSurface(Surface * pSurface, int blockSpacing, Border blockFrame = Border(0));
+		static BlockSkin_p createClickableFromSurface(Surface * pSurface, int blockSpacing, Border blockFrame = Border(0));
+		static BlockSkin_p createSelectableFromSurface(Surface * pSurface, int blockSpacing, Border blockFrame = Border(0));
+		static BlockSkin_p createClickSelectableFromSurface(Surface * pSurface, int blockSpacing, Border blockFrame = Border(0));
+
+
+		void	setStateBlock(StateEnum state, const Coord& ofs);
+		bool	setBlockGeo(Size size, Border frame = Border(0));
+
+		void	setAllBlocks(const Coord& ofs);
+		void	setDisabledBlock(const Coord& ofs);
+		void	setHoveredBlocks(const Coord& ofs);
+		void	setPressedBlocks(const Coord& ofs);
+		void	setSelectedBlocks(const Coord& ofs);
 
 	private:
-		struct StateData
-		{
-			Coord	ofs;
-			int		opaqueSections;
-			int		invisibleSections;
-		};
 	
 		BlockSkin();
+		BlockSkin(Surface * pSurface, Rect block, Border frame);
 		~BlockSkin() {};
 
-		void	_setBitFlag( int& bitmask, int bit, bool bSet );
-		void	_renderNoClip( GfxDevice * pDevice, const StateData * pState, const Rect& _canvas ) const;
-		void	_scanStateBlockSectionArea( StateData * pState, Origo section, const Rect& sectionArea );
-	
-		static const int ALL_SECTIONS = 0x1FF;
+		void		_updateOpaqueFlag();
+		void		_updateUnsetStates();
 	
 		Surface_p	m_pSurface;
-		Size			m_dimensions;
+		Size		m_dimensions;
 		Border		m_frame;
-		int				m_tiledSections;
-		bool			m_bIsOpaque;
-	
-		StateData		m_state[StateEnum_Nb];
+
+
+		bool		m_bOpaque;
+		BlendMode	m_blendMode = BlendMode::Blend;
+
+		Bitmask<uint32_t>	m_stateBlockMask = 1;
+
+		Coord	m_stateBlocks[StateEnum_Nb];
 	};
 	
 
