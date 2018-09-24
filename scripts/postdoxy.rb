@@ -22,7 +22,7 @@ $prioTable = {
   'Operators' => 150,
   'Definitions' => 160,
   'Internal' => 170,
-
+  'Deprecated' => 180,
 }
 
 $unknownHeaders = Hash.new(0)
