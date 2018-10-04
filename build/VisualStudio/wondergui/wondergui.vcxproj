@@ -82,9 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\base\wg_gfxstreamlogger.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxstreamplayer.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h" />
     <ClInclude Include="..\..\..\src\base\wg_anim.h" />
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
     <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h" />
@@ -101,11 +98,6 @@
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxanim.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxinstream.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxoutstream.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxstream.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxstreamplug.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxstreamreader.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
@@ -249,13 +241,6 @@
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxanim.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxdevice.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxinstream.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxoutstream.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxstreamplayer.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxstreamplug.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxstreamreader.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxstreamwriter.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_inputhandler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mempool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_memstack.cpp" />

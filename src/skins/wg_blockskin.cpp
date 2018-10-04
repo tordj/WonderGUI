@@ -414,7 +414,7 @@ namespace wg
 			return;
 	
 		Coord blockOfs = m_stateBlocks[_stateToIndex(state)];
-		pDevice->clipBlitNinePatch(_clip, m_pSurface, { blockOfs,m_dimensions }, m_frame, _canvas, m_frame);
+		pDevice->blitNinePatch(_canvas, m_frame, m_pSurface, { blockOfs,m_dimensions }, m_frame );
 	}
 	
 	//____ minSize() ______________________________________________________________

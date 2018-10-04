@@ -159,7 +159,7 @@ namespace wg
 			else
 				dest = _canvas;
 	
-			pDevice->clipStretchBlit( _clip, m_pSurface, m_rect, dest );
+			pDevice->stretchBlit( dest, m_pSurface, m_rect );
 		}
 	}
 	

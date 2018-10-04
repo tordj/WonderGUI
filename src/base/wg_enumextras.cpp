@@ -267,7 +267,7 @@ namespace wg
 	const char * toString(ScaleMode i)
 	{
 		static const char * names[] = { 
-			"Nearest",
+			"Nearest			= 0",
 			"Interpolate" };
 
 		return names[(int)i];
@@ -325,6 +325,25 @@ namespace wg
 			"FillSurface",
 			"CopySurface",
 			"DeleteSurface" };
+
+		return names[(int)i];
+	}
+
+	const char * toString(GfxFlip i)
+	{
+		static const char * names[] = { 
+			"Normal = 0",
+			"FlipX",
+			"FlipY",
+			"Rot90",
+			"Rot90FlipX",
+			"Rot90FlipY",
+			"Rot180",
+			"Rot180FlipX",
+			"Rot180FlipY",
+			"Rot270",
+			"Rot270FlipX",
+			"Rot270FlipY" };
 
 		return names[(int)i];
 	}

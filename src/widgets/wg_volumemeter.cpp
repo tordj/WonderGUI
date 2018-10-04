@@ -434,7 +434,7 @@ namespace wg
 						
 				Color color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
-				pDevice->fillSubPixel( rect, color);
+				pDevice->fill( rect, color);
 			}
 
 			ledRect.x += stepX;

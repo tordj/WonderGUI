@@ -109,28 +109,25 @@ namespace wg
 
 		//
 
-		void	fill(const Rect& rect, const Color& col)  override;
-		void	blit(Surface * pSrc, const Rect& srcrect, Coord dest) override;
+		virtual void	fill(const Rect& rect, const Color& col) override;
+		virtual void	fill(const RectF& rect, const Color& col) override;
 
-		void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
-		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		virtual void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
 
-		void	clipDrawLine(const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f) override;
-		void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
+		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-		void    clipPlotPixels(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2]) override;
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2]) override;
 
-		void	fillSubPixel(const RectF& rect, const Color& col) override;
-		void	stretchBlit(Surface * pSrc, const RectF& source, const Rect& dest) override;
-
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * PTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
+		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
 
 
 		struct ColTrans
 		{
 			Color	baseTint;
 			Color * pTintX;
-			Color * pTintY;
+			Color * pTintY;  
 		};
 
 
@@ -138,6 +135,9 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+		virtual void	_transformBlit(const Rect& dest, SoftSurface * pSrc, Coord src, const int simpleTransform[2][2]);
+		virtual void	_transformBlit(const Rect& dest, SoftSurface * pSrc, CoordF src, const float complexTransform[2][2]);
 
 
 		enum class TintMode
@@ -212,21 +212,19 @@ namespace wg
 
 
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _transform_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 
 
 
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
-
-		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
 
 		void	_initTables();
 		void	_clearCustomFunctionTable();
@@ -248,16 +246,15 @@ namespace wg
 		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
-		typedef	void(*BlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-		typedef	void(*TransformOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
+		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
 
+		void	_onePassSimpleBlit(SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, Coord src, const int simpleTransform[2][2], const ColTrans& tint);
+		void	_twoPassSimpleBlit(SimpleBlitOp_p, SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, Coord src, const int simpleTransform[2][2], const ColTrans& tint);
 
-		void	_onePassStraightBlit(BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
-		void	_onePassTransformBlit(TransformOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
-
-		void	_twoPassStraightBlit(BlitOp_p, BlitOp_p, const SoftSurface * pSource, const Rect& srcrect, Coord dest, const ColTrans& tint);
-		void	_twoPassTransformBlit(TransformOp_p, BlitOp_p, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const Rect& dest, const ColTrans& tint);
+		void	_onePassComplexBlit(ComplexBlitOp_p, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const ColTrans& tint);
+		void	_twoPassComplexBlit(ComplexBlitOp_p, SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const ColTrans& tint);
 
 		//
 
@@ -269,19 +266,19 @@ namespace wg
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
 		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
 
-		static BlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
+		static SimpleBlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
 
-		static BlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
-		static BlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 			
-		static BlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
-		static BlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static SimpleBlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
-		static TransformOp_p	s_stretchTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
-		static TransformOp_p	s_stretchTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
 
-		static TransformOp_p	s_stretchBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
-		static TransformOp_p	s_stretchBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
 
 
 		static int		s_mulTab[256];

@@ -432,14 +432,14 @@ namespace wg
 		for( int i = 0; i < m_nHGridLines; i++ )
 		{
 			int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-			pDevice->clipDrawLine( _clip, Coord(_canvas.x,ofsY), Direction::Right, _canvas.w, m_gridColor );
+			pDevice->drawLine( Coord(_canvas.x,ofsY), Direction::Right, _canvas.w, m_gridColor );
 		}
 
 		// Draw VGridLines
 		for( int i = 0; i < m_nVGridLines; i++ )
 		{
 			int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-			pDevice->clipDrawLine( _clip, Coord(ofsX,_canvas.y), Direction::Down, _canvas.h, m_gridColor );
+			pDevice->drawLine( Coord(ofsX,_canvas.y), Direction::Down, _canvas.h, m_gridColor );
 		}
 
 		// Nothing to draw (yet)
@@ -457,7 +457,7 @@ namespace wg
 		else
 			_antiAlias(_clip.w, m_pDisplayPoints + _clip.x - _canvas.x, Coord( _clip.x, _canvas.y ) );
 
-		pDevice->clipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
+		pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 
 		// Blit markers
 

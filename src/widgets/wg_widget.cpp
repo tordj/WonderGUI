@@ -459,7 +459,10 @@ namespace wg
 		{
 			Rect clip( _window, *pRect );
 			if( clip.w > 0 && clip.h > 0 )
+			{
+				pDevice->setClip(clip);
 				_render( pDevice, _canvas, _window, clip );
+			}
 		}
 	}
 	

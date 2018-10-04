@@ -1118,6 +1118,7 @@ namespace wg
 			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 			{
 				Rect clip(*pRect,skinWindow);
+				pDevice->setClip(clip);
 				m_pSkin->render( pDevice, skinCanvas, m_state, clip );
 			}
 		}
@@ -1151,7 +1152,10 @@ namespace wg
 			{
 				Rect clip( canvas, *pRect );
 				if( clip.w > 0 || clip.h > 0 )
+				{
+					pDevice->setClip(clip);
 					m_pCornerSkin->render( pDevice, canvas, m_state, clip );
+				}
 			}
 	
 		}

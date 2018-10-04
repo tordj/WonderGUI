@@ -35,6 +35,10 @@ void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * p
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
 void renderWaveThicknessTest(GfxDevice * pGfxDevice);
 
+void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
+void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
+void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
+
 
 bool	bQuit = false;
 
@@ -71,7 +75,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 512, height = 600;
+	int posX = 100, posY = 100, width = 1024, height = 600;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
@@ -199,8 +203,6 @@ int main ( int argc, char** argv )
 	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
 
 	// Init skins
-
-
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
@@ -828,6 +830,13 @@ int main ( int argc, char** argv )
 	}
 
 
+	pSDLSurf = IMG_Load("../resources/flipping.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	SoftSurface_p pFlippingSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	pFlippingSurface->setScaleMode(ScaleMode::Interpolate);
+
+
 	printf("Sin(0): %f\n", cos(0));
 	printf("Sin(90): %f\n", cos(3.1415/2));
 
@@ -836,22 +845,26 @@ int main ( int argc, char** argv )
 		translateEvents( pInput, pRoot );
 
 		SDL_LockSurface(pWinSurf);
-		pRoot->render();
-/*
+//		pRoot->render();
+
 		pGfxDevice->beginRender();
 
-		pGfxDevice->fill({ 0,0,width,height }, Color::Black);
+		pGfxDevice->fill( Rect{ 0,0,width,height }, Color::Black);
+
+//		flipBlitTest(pGfxDevice, pFlippingSurface);
+//		stretchBlitTest(pGfxDevice, pFlippingSurface);
+		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
 //		Rect clip(50,50,400,300);
 
-		renderWaveThicknessTest(pGfxDevice);
+//		renderWaveThicknessTest(pGfxDevice);
 
 //		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
 
 		pGfxDevice->endRender();
-*/
+
 		SDL_UnlockSurface(pWinSurf);
 
 		SDL_Rect	r;
@@ -878,6 +891,66 @@ int main ( int argc, char** argv )
 
     return 0;
 }
+
+
+//____ flipBlitTest() _________________________________________________________
+
+void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf )
+{
+	Size sz = pSurf->size();
+
+//	pGfxDevice->setClip({ 15, 15, 150, 150 } );
+//	pGfxDevice->fill({ 0, 0, 300, 300 }, Color::Green);
+
+	for (int i = 0; i < GfxFlip_size; i++)
+	{
+		pGfxDevice->flipBlit({ 10 + 90 * (i % 4),10 + 90 * (i / 4) }, pSurf, (GfxFlip)i);
+	}
+}
+
+// ____ stretchFlipBlitTest() _________________________________________________________
+
+void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
+{
+	float stretch = 2.f;
+
+	Size sz = pSurf->size();
+
+	//	pGfxDevice->setClip({ 15, 15, 150, 150 } );
+	//	pGfxDevice->fill({ 0, 0, 300, 300 }, Color::Green);
+
+	int inc = (int) (90 * stretch);
+	int size = (int) (86 * stretch);
+
+	for (int i = 0; i < GfxFlip_size; i++)
+	{
+		pGfxDevice->stretchFlipBlit({ 10 + inc * (i % 4),10 + inc * (i / 4), size, size }, pSurf, (GfxFlip)i);
+	}
+}
+
+
+//____ stretchBlitTest() _________________________________________________________
+
+void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
+{
+	Size sz = pSurf->size();
+
+	static int x = 0;
+
+	pGfxDevice->fill( Rect{ 0, 0, 1300, 1300 }, Color::Black);
+
+	pGfxDevice->stretchBlit({ 10,10,x,x / 2 }, pSurf);
+
+	x++;
+
+	if (x > 1000)
+		x = 0;
+
+}
+
+
+
+//____ renderWaveThicknessTest() ______________________________________________
 
 void renderWaveThicknessTest( GfxDevice * pGfxDevice )
 {
@@ -929,13 +1002,11 @@ void renderWaveThicknessTest( GfxDevice * pGfxDevice )
 
 		int posX = 100, posY = 100, width = 512, height = 400;
 
-
-		pGfxDevice->clipDrawHorrWave({ 10,0,500,600 }, { 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
-
+		Rect oldClip = pGfxDevice->clip();
+		pGfxDevice->setClip({ 10,0,500,600 });
+		pGfxDevice->drawHorrWave({ 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
+		pGfxDevice->setClip(oldClip);
 	}
-
-
-
 
 }
 

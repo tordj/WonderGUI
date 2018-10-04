@@ -527,7 +527,7 @@ namespace wg
 							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
 
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
-						pDevice->clipBlit( clip, pBitmap->pSurface, pBitmap->rect, Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY)  );
+						pDevice->blit( Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->pSurface, pBitmap->rect  );
 	
 						pos.x += pGlyph->advance();
 					}
@@ -619,7 +619,7 @@ namespace wg
 			area.w = endPos.x - begPos.x; 
 			area.h = pBegLine->height;
 			
-			pDevice->clipFill( clip, area, color );			
+			pDevice->fill( area, color );			
 		}
 		else
 		{
@@ -631,7 +631,7 @@ namespace wg
 			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w)); 
 			area.h = pLine->height;
 			
-			pDevice->clipFill( clip, area, color );
+			pDevice->fill( area, color );
 			
 			area.y += pLine->spacing;
 			pLine++;
@@ -642,7 +642,7 @@ namespace wg
 				area.w = pLine->width;
 				area.h = pLine->height;
 
-				pDevice->clipFill( clip, area, color );
+				pDevice->fill( area, color );
 				
 				area.y += pLine->spacing;
 				pLine++;
@@ -653,7 +653,7 @@ namespace wg
 			area.w = endPos.x - area.x;
 			area.h = pLine->height;
 
-			pDevice->clipFill( clip, area, color );						
+			pDevice->fill( area, color );						
 		}
 		
 	}

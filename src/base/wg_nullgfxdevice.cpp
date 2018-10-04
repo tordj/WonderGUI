@@ -94,48 +94,35 @@ namespace wg
 
 	
 	
-	void NullGfxDevice::fill( const Rect& rect, const Color& col )
-	{
-	}
 	
-	void NullGfxDevice::blit( Surface * src, const Rect& srcrect, Coord dest  )
-	{
-	}
 	
-	void NullGfxDevice::tileBlit( Surface * src, const Rect& srcrect, const Rect& dest )
-	{
-	}
-	
-	void NullGfxDevice::fillSubPixel( const RectF& rect, const Color& col )
-	{
-	}
-	
-	void NullGfxDevice::stretchBlit(Surface * pSrc, const RectF& source, const Rect& dest )
-	{
-	}
-	
-    void NullGfxDevice::clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors)
+     void NullGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
+    {
+    }
+
+	void NullGfxDevice::fill(const RectF& rect, const Color& col)
 	{
 	}
 
-    void NullGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
-    {
-    }
-    
 	void NullGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
 	{
 	}
 	
-	void NullGfxDevice::clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness )
-	{
-	}
-	
-	void NullGfxDevice::clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
+	void NullGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
 	{
 	}
 
-	void NullGfxDevice::_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col)
+	void NullGfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
 	{
 	}
+
+	void NullGfxDevice::transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2])
+	{
+	}
+
+	void NullGfxDevice::transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2])
+	{
+	}
+
 
 } // namespace wg

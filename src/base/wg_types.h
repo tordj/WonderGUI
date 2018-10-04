@@ -727,6 +727,26 @@ namespace wg
 		DeleteSurface
 	};
 
+	//____ GfxFlip ____________________________________________________________
+
+	enum class GfxFlip : uint8_t	//. autoExtras
+	{
+		Normal = 0,
+		FlipX,
+		FlipY,
+		Rot90,
+		Rot90FlipX,
+		Rot90FlipY,
+		Rot180,
+		Rot180FlipX,
+		Rot180FlipY,
+		Rot270,
+		Rot270FlipX,
+		Rot270FlipY,
+	};
+
+
+
 } // namespace wg
 
 #include <wg_enumextras.h>

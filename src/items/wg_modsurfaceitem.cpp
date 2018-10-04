@@ -39,7 +39,7 @@ namespace wg
 	
 		Rect canvas = calcPresentationArea() + _canvas.pos();
 
-		pDevice->clipStretchBlit(Rect(canvas, _clip), m_pSurface, canvas);
+		pDevice->stretchBlit(canvas, m_pSurface);
 	}
 
 	//____ alphaTest() _______________________________________________________

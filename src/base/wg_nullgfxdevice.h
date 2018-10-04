@@ -63,27 +63,21 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void	fill( const Rect& rect, const Color& col ) override;
-		void	blit( Surface * src, const Rect& srcrect, Coord dest  ) override;
-		void	tileBlit( Surface * src, const Rect& srcrect, const Rect& dest ) override;
-	
-		void	fillSubPixel( const RectF& rect, const Color& col )  override;
-		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest ) override;
-	
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
-        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
-	
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
-	
-		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f );
+		virtual void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back);
+		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
+		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+
+		virtual void	fill(const RectF& rect, const Color& col) override;
+
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2]) override;
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2]) override;
+
+		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
 
 	protected:
 		NullGfxDevice( Size size );
 		~NullGfxDevice();
-
-		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
 
 	};
 	

@@ -293,7 +293,11 @@ namespace wg
 	
 		if( !m_bVisible )
 			return true;						// Not an error, just hidden.
-	
+
+		// Set clipping rectangle
+
+		m_pGfxDevice->setClip(_clip);
+
 		// Copy and clip our dirty patches
 	
 		Patches dirtyPatches( m_dirtyPatches.size() );

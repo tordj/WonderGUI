@@ -36,6 +36,32 @@ namespace wg
 	int GfxDevice::s_gfxDeviceCount = 0;
 	int *	GfxDevice::s_pCurveTab = nullptr;
 
+	static const int flipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
+															{ -1,0,0,1 },			// FlipX
+															{ 1,0,0,-1 },			// FlipY
+															{ 0,-1,1,0 },			// Rot90
+															{ 0,1,1,0 },			// Rot90FlipX
+															{ 0,-1,-1,0 },			// Rot90FlipY
+															{ -1,0,0,-1 },			// Rot180
+															{ 1,0,0,-1 },			// Rot180FlipX
+															{ -1,0,0,1 },			// Rot180FlipY
+															{ 0,1,-1,0 },			// Rot270
+															{ 0,-1,-1,0 },			// Rot270FlipX
+															{ 0,1,1,0 } };			// Rot270FlipY
+
+	static const int flipOffsets[GfxFlip_size][2] = {	{ 0,0 },				// Normal
+														{ 1,0 },				// FlipX
+														{ 0,1 },				// FlipY
+														{ 0,1 },				// Rot90
+														{ 0,0 },				// Rot90FlipX
+														{ 1,1 },				// Rot90FlipY
+														{ 1,1 },				// Rot180
+														{ 0,1 },				// Rot180FlipX
+														{ 1,0 },				// Rot180FlipY
+														{ 1,0 },				// Rot270
+														{ 1,1 },				// Rot270FlipX
+														{ 0,0 } };				// Rot270FlipY
+
 
 	//____ Constructor _____________________________________________________________
 	
@@ -44,8 +70,7 @@ namespace wg
 		m_tintColor 		= Color(255,255,255);
 		m_blendMode 		= BlendMode::Blend;
 		m_canvasSize		= canvasSize;
-
-		m_dummyClip = { numeric_limits<int>::min() >> 1,numeric_limits<int>::min() >> 1,numeric_limits<int>::max(),numeric_limits<int>::max() };
+		m_clip				= canvasSize;
 
 		if (s_gfxDeviceCount == 0)
 		{
@@ -92,7 +117,19 @@ namespace wg
 	
 		return 0;
 	}
-	
+
+	//____ setClip() __________________________________________________________
+
+	void GfxDevice::setClip(const Rect& clip)
+	{
+		m_clip = clip;
+
+		limit(m_clip.x, 0, m_canvasSize.w);
+		limit(m_clip.y, 0, m_canvasSize.h);
+		limit(m_clip.w, 0, m_canvasSize.w-m_clip.x);
+		limit(m_clip.h, 0, m_canvasSize.h - m_clip.y);
+	}
+
 	
 	//____ setTintColor() __________________________________________________________
 	
@@ -128,548 +165,268 @@ namespace wg
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 
-	//____ plotPixels() _______________________________________________________
+	//____ fill() _____________________________________________________________
 
-	void GfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
+	void GfxDevice::fill(const Rect& rect, const Color& col)
 	{
-		clipPlotPixels(m_dummyClip, nCoords, pCoords, pColors);
+		fill(RectF((float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h), col);
 	}
-
 
 	//____ drawLine() _________________________________________________________
 
-	void GfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
+	void GfxDevice::drawLine(Coord begin, Direction dir, int length, Color color, float thickness)
 	{
-		clipDrawLine(m_dummyClip, begin, end, color, thickness);
-	}
-
-	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
-	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
-	// where the outer pixels are faded.
-
-	void GfxDevice::drawLine(Coord begin, Direction dir, int length, Color _col, float thickness)
-	{
-		if (thickness <= 0.f)
-			return;
+		Coord end;
 
 		switch (dir)
 		{
-			case Direction::Left:
-				begin.x -= length;
-			case Direction::Right:
-			{
-				if (thickness <= 1.f)
-				{
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
-
-					_drawStraightLine(begin, Orientation::Horizontal, length, col);
-				}
-				else
-				{
-					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
-
-					int beginY = begin.y - expanse;
-					int endY = begin.y + expanse + 1;
-
-					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
-					_drawStraightLine({ begin.x, endY - 1 }, Orientation::Horizontal, length, edgeColor);
-					fill({ begin.x, beginY + 1, length, endY - beginY - 2 }, _col);
-				}
-				break;
-			}
 			case Direction::Up:
-				begin.y -= length;
-			case Direction::Down:
-			{
-				if (thickness <= 1.f)
-				{
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
-
-					_drawStraightLine(begin, Orientation::Vertical, length, col);
-				}
-				else
-				{
-					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
-
-					int beginX = begin.x - expanse;
-					int endX = begin.x + expanse + 1;
-
-					_drawStraightLine({ beginX, begin.y }, Orientation::Vertical, length, edgeColor);
-					_drawStraightLine({ endX - 1, begin.y }, Orientation::Vertical, length, edgeColor);
-					fill({ beginX + 1, begin.y, endX - beginX - 2, length }, _col);
-				}
+				end.x = begin.x;
+				end.y = begin.y - length;
 				break;
-			}
+			case Direction::Down:
+				end.x = begin.x;
+				end.y = begin.y + length;
+				break;
+			case Direction::Left:
+				end.x = begin.x - length;
+				end.y = begin.y;
+				break;
+			case Direction::Right:
+				end.x = begin.x + length;
+				end.y = begin.y;
+				break;
 		}
+
+		drawLine(begin, end, color, thickness);
 	}
-
-
-	//____ clipDrawLine() _________________________________________________________
-
-	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
-	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
-	// where the outer pixels are faded.
-
-	void GfxDevice::clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color _col, float thickness)
-	{
-		if (thickness <= 0.f)
-			return;
-
-		switch (dir)
-		{
-		case Direction::Left:
-			begin.x -= length;
-		case Direction::Right:
-		{
-			if (begin.x > clip.x + clip.w)
-				return;
-
-			if (begin.x < clip.x)
-			{
-				length -= clip.x - begin.x;
-				if (length <= 0)
-					return;
-				begin.x = clip.x;
-			}
-
-			if (begin.x + length > clip.x + clip.w)
-			{
-				length = clip.x + clip.w - begin.x;
-				if (length <= 0)
-					return;
-			}
-
-			if (thickness <= 1.f)
-			{
-				if (begin.y < clip.y || begin.y >= clip.y + clip.h)
-					return;
-
-				Color col = _col;
-				col.a = (uint8_t)(thickness * col.a);
-
-				_drawStraightLine(begin, Orientation::Horizontal, length, col);
-			}
-			else
-			{
-				int expanse = (int) (1 + (thickness - 1) / 2);
-				Color edgeColor(_col.r, _col.g, _col.b, (uint8_t) (_col.a * ((thickness - 1) / 2 - (expanse - 1))));
-
-				if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
-					return;
-
-				int beginY = begin.y - expanse;
-				int endY = begin.y + expanse + 1;
-
-				if (beginY < clip.y)
-					beginY = clip.y - 1;
-				else
-					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
-
-				if (endY > clip.y + clip.h)
-					endY = clip.y + clip.h + 1;
-				else
-					_drawStraightLine({ begin.x, endY - 1 }, Orientation::Horizontal, length, edgeColor);
-
-				fill({ begin.x, beginY + 1, length, endY - beginY - 2 }, _col);
-			}
-
-			break;
-		}
-		case Direction::Up:
-			begin.y -= length;
-		case Direction::Down:
-			if (begin.y > clip.y + clip.h)
-				return;
-
-			if (begin.y < clip.y)
-			{
-				length -= clip.y - begin.y;
-				if (length <= 0)
-					return;
-				begin.y = clip.y;
-			}
-
-			if (begin.y + length > clip.y + clip.h)
-			{
-				length = clip.y + clip.h - begin.y;
-				if (length <= 0)
-					return;
-			}
-
-			if (thickness <= 1.f)
-			{
-				if (begin.x < clip.x || begin.x >= clip.x + clip.w)
-					return;
-
-				Color col = _col;
-				col.a = (uint8_t)(thickness * col.a);
-
-				_drawStraightLine(begin, Orientation::Vertical, length, col);
-			}
-			else
-			{
-				int expanse = (int) (1 + (thickness - 1) / 2);
-				Color edgeColor(_col.r, _col.g, _col.b, (uint8_t) (_col.a * ((thickness - 1) / 2 - (expanse - 1))));
-
-				if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
-					return;
-
-				int beginX = begin.x - expanse;
-				int endX = begin.x + expanse + 1;
-
-				if (beginX < clip.x)
-					beginX = clip.x - 1;
-				else
-					_drawStraightLine({ beginX, begin.y }, Orientation::Vertical, length, edgeColor);
-
-				if (endX > clip.x + clip.w)
-					endX = clip.x + clip.w + 1;
-				else
-					_drawStraightLine({ endX - 1, begin.y }, Orientation::Vertical, length, edgeColor);
-
-				fill({ beginX + 1, begin.y, endX - beginX - 2, length }, _col);
-			}
-
-			break;
-		}
-	}
-
 
 
 	//____ blit() __________________________________________________________________
 	
-	void GfxDevice::blit( Surface * pSrc )
+	void GfxDevice::blit(Coord dest, Surface * pSrc)
 	{
-		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), Coord(0,0) );
+
+		transformBlit({ dest, pSrc->size() }, pSrc, { 0,0 }, flipTransforms[0]);
 	}
-	
-	void GfxDevice::blit( Surface * pSrc, Coord dest )
+
+	void GfxDevice::blit(Coord dest, Surface * pSrc, const Rect& src)
 	{
-		blit( pSrc, Rect( 0, 0, pSrc->width(), pSrc->height() ), dest );
+		transformBlit({ dest, src.size() }, pSrc, src.pos(), flipTransforms[0]);
 	}
-	
+
+	//____ flipBlit() _________________________________________________________
+
+	void GfxDevice::flipBlit(Coord dest, Surface * pSrc, GfxFlip flip)
+	{
+		Size srcSize  = pSrc->size();
+
+		int ofsX = (srcSize.w - 1) * flipOffsets[(int)flip][0];
+		int ofsY = (srcSize.h - 1) * flipOffsets[(int)flip][1];
+
+		Size dstSize = srcSize;
+		if (flipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+		transformBlit({ dest, dstSize }, pSrc, { ofsX, ofsY }, flipTransforms[(int)flip]);
+	}
+
+	void GfxDevice::flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip)
+	{
+		int ofsX = src.x + (src.w-1) * flipOffsets[(int)flip][0];
+		int ofsY = src.y + (src.h-1) * flipOffsets[(int)flip][1];
+
+		Size dstSize = pSrc->size();
+		if (flipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+
+		transformBlit({ dest, dstSize }, pSrc, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip]);
+	}
+
+
 	//____ stretchBlit() ___________________________________________________________
 	
-
-	void GfxDevice::stretchBlit(Surface * pSrc)
+	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc )
 	{
-		stretchBlit(pSrc, Rect(0, 0, pSrc->width(), pSrc->height()), Rect(0,0,m_pCanvas->size()));
-	}
-
-	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& dest )
-	{
-		stretchBlit( pSrc, Rect(0, 0, pSrc->size()), dest );
+		stretchBlit(dest, pSrc, Rect(0, 0, pSrc->size()) );
 	}
 	
-	void GfxDevice::stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest )
+	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc, const Rect& _src )
 	{
-		float srcW = (float) src.w;
-		float srcH = (float) src.h;
-		
-		if( pSrc->scaleMode() == ScaleMode::Interpolate )
+		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
+
+		float	mtx[2][2];
+
+		if (pSrc->scaleMode() == ScaleMode::Interpolate)
 		{
-			if( srcW < (float) dest.w )
-				srcW--;
+			src.x += 0.5f;
+			src.y += 0.5f;
+
+			mtx[0][0] = (src.w-1) / (dest.w-1);
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = (src.h-1) / (dest.h-1);
+		}
+		else
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+
+
+		transformBlit(dest, pSrc, { src.x, src.y }, mtx);
+	}
 	
-			if( srcH < (float) dest.h )
+	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc, const RectF& src)
+	{
+		float	mtx[2][2];
+
+		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		{
+			mtx[0][0] = src.w / (dest.w - 1);
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / (dest.h - 1);
+		}
+		else
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+
+		transformBlit(dest, pSrc, { src.x,src.y }, mtx );
+	}
+
+	//____ stretchFlipBlit() _____________________________________________________
+	
+	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, GfxFlip flip)
+	{
+		stretchFlipBlit(dest, pSrc, Rect(0, 0, pSrc->size()), flip);
+	}
+
+	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, const Rect& src, GfxFlip flip)
+	{
+		float scaleX, scaleY;
+		float ofsX, ofsY;
+
+		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		{
+			float srcW = (float)(src.w - 1);
+			float srcH = (float)(src.h - 1);
+
+			scaleX = srcW / (dest.w-1);
+			scaleY = srcH / (dest.h-1);
+
+			ofsX = src.x + 0.5f + srcW * flipOffsets[(int)flip][0];
+			ofsY = src.y + 0.5f + srcH * flipOffsets[(int)flip][1];
+		}
+		else
+		{
+			float srcW = (float)src.w;
+			float srcH = (float)src.h;
+
+			scaleX = srcW / dest.w;
+			scaleY = srcH / dest.h;
+
+			ofsX = src.x + (srcW - scaleX) * flipOffsets[(int)flip][0];
+			ofsY = src.y + (srcH - scaleY) * flipOffsets[(int)flip][1];
+		}
+
+		float	mtx[2][2];
+
+		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+
+		transformBlit(dest, pSrc, { ofsX, ofsY }, mtx);
+
+
+/*
+		float srcW = (float)src.w;
+		float srcH = (float)src.h;
+		float flipSub = 1.f;
+
+		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		{
+			flipSub = 1.0078125f;							// Need to subtract a tiny fraction extra (1/128 seems good).
+
+			if (srcW < (float)dest.w)
+				srcW--;
+
+			if (srcH < (float)dest.h)
 				srcH--;
 		}
-	
-		stretchBlit( pSrc, RectF( (float) src.x, (float) src.y, srcW, srcH), dest );
-	}
-	
-	//____ tileBlit() ______________________________________________________________
 
-	void GfxDevice::tileBlit(Surface * _pSrc)
-	{
-		tileBlit(_pSrc, Rect(0, 0, _pSrc->size()), Rect(0, 0, m_pCanvas->size()));
-	}
-	
-	void GfxDevice::tileBlit( Surface * _pSrc, const Rect& _dest )
-	{
-		tileBlit( _pSrc, Rect( 0, 0, _pSrc->width(), _pSrc->height() ), _dest );
-	}
-	
-	void GfxDevice::tileBlit( Surface * _pSrc, const Rect& _src, const Rect& _dest )
-	{
-		if( !_pSrc || _dest.h == 0 || _dest.w == 0 )
-			return;
-	
-		Rect	r = _src;
-		Rect	r2 = _src;
-	
-		int nCol = _dest.w / _src.w;
-		r2.w = _dest.w % _src.w;
-	
-		int nRow = (_dest.h+(_src.h-1))/ _src.h;	// Including any cut row....
-	
-		int		destX = _dest.x;
-		int		destY = _dest.y;
-	
-		for( int row = 1 ; row <= nRow ; row++ )
-		{
-			// Possibly cut the height if this is the last row...
-	
-			if( row == nRow )
-			{
-				r.h = _dest.y + _dest.h - destY;
-				r2.h = r.h;
-			}
-	
-			// Blit a row.
-	
-			for( int col = 0 ; col < nCol ; col++ )
-			{
-				blit( _pSrc, r, Coord(destX, destY) );
-				destX += r.w;
-			}
-	
-			// Blit any left over part at end of row.
-	
-			if( r2.w > 0 )
-				blit( _pSrc, r2, Coord(destX, destY) );
-	
-			destX = _dest.x;
-			destY += _src.h;
-		}
-		return;
-	}
-	
-	
-	//____ clipFill() ______________________________________________________________
-	
-	void GfxDevice::clipFill( const Rect& _clip, const Rect& _rect, const Color& _col )
-	{
-		fill( Rect( _clip, _rect ), _col );
-	}
-	
-	//____ clipBlit() ______________________________________________________________
-	
-	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc )
-	{
-		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), Coord(0,0) );
-	}
-	
-	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc, Coord dest )
-	{
-		clipBlit( clip, pSrc, Rect(0,0,pSrc->width(),pSrc->height()), dest );
-	}
-	
-	void GfxDevice::clipBlit( const Rect& clip, Surface * pSrc, const Rect& srcRect, Coord dest  )
-	{
-		if( (clip.x <= dest.x) && (clip.x + clip.w > dest.x + srcRect.w) &&
-	      (clip.y <= dest.y) && (clip.y + clip.h > dest.y + srcRect.h) )
-		{
-			blit( pSrc, srcRect, dest );														// Totally inside clip-rect.
-			return;
-		}
-	
-		if( (clip.x > dest.x + srcRect.w) || (clip.x + clip.w < dest.x) ||
-	      (clip.y > dest.y + srcRect.h) || (clip.y + clip.h < dest.y) )
-			return;																						// Totally outside clip-rect.
-	
-		// Do Clipping
-	
-		Rect	newSrc = srcRect;
-	
-		if( dest.x < clip.x )
-		{
-			newSrc.w -= clip.x - dest.x;
-			newSrc.x += clip.x - dest.x;
-			dest.x = clip.x;
-		}
-	
-		if( dest.y < clip.y )
-		{
-			newSrc.h -= clip.y - dest.y;
-			newSrc.y += clip.y - dest.y;
-			dest.y = clip.y;
-		}
-	
-		if( dest.x + newSrc.w > clip.x + clip.w )
-			newSrc.w = (clip.x + clip.w) - dest.x;
-	
-		if( dest.y + newSrc.h > clip.y + clip.h )
-			newSrc.h = (clip.y + clip.h) - dest.y;
-	
-	
-		blit( pSrc, newSrc, dest );
-	}
-	
-	//____ clipStretchBlit() _______________________________________________________
-	
-	void GfxDevice::clipStretchBlit(const Rect& clip, Surface * pSrc)
-	{
-		clipStretchBlit(clip, pSrc, Rect(0, 0, pSrc->size()), Rect(0,0,m_pCanvas->size()));
-	}
-
-	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest )
-	{
-		clipStretchBlit( clip, pSrc, Rect(0,0,pSrc->width(), pSrc->height()), dest );
-	}
-	
-	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest )
-	{
-		clipStretchBlit( clip, pSrc, RectF(src), Rect(dest) );
-	}
-	
-	void GfxDevice::clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& _src, const Rect& _dest)
-	{
-		RectF src = _src;
-		Rect  dest = _dest;
-		
-		// With interpolation we only 'touch' the edge pixels, we don't include their full size.
-
-		if( pSrc->scaleMode() == ScaleMode::Interpolate )
-		{
-			if( src.w < dest.w )
-				src.w--;
-	
-			if( src.h < dest.h )
-				src.h--;
-		}
-	
-		int cx = std::max(clip.x, dest.x);
-		int cy = std::max(clip.y, dest.y);
-		int cw = std::min(clip.x + clip.w, dest.x + dest.w) - cx;
-		int ch = std::min(clip.y + clip.h, dest.y + dest.h) - cy;
-	
-		if(cw <= 0 || ch <= 0)
-			return;
-	
-		if( dest.w > cw )
-		{
-			float	sdxr = src.w / dest.w;			// Source/Destination X Ratio.
-	
-			src.w = sdxr * cw;
-	
-			if( dest.x < cx )
-				src.x += sdxr * (cx - dest.x);
-		}
-	
-		if( dest.h > ch )
-		{
-			float	sdyr = src.h / dest.h;			// Source/Destination Y Ratio.
-	
-			src.h = sdyr * ch;
-	
-			if( dest.y < cy )
-				src.y += sdyr * (cy - dest.y);
-		}
-	
-		stretchBlit(pSrc, src, { cx, cy, cw, ch });
-	}
-	
-	//____ clipTileBlit() __________________________________________________________
-	
-	void GfxDevice::clipTileBlit(const Rect& clip, Surface * pSrc )
-	{
-		clipTileBlit(clip, pSrc, Rect(0, 0, pSrc->size()), Rect(0,0, m_pCanvas->size() ));
-	}
+		float ofsX = src.x + (src.w - flipSub) * flipOffsets[(int)flip][0];
+		float ofsY = src.y + (src.h - flipSub) * flipOffsets[(int)flip][1];
 
 
-	void GfxDevice::clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest )
-	{
-		clipTileBlit( clip, pSrc, Rect(0,0,pSrc->size()), dest );
-	}
-	
-	
-	void GfxDevice::clipTileBlit( const Rect& _clip, Surface * _pSrc, const Rect& _src, const Rect& _dest )
-	{
-		if( !_pSrc )
-			return;
-	
-		Rect	myRect;
-	
-		Rect	clip;
-		if( !clip.intersection( _dest, _clip ) )
-			return;
-	
-		// Take care of start-offset change caused by clipping.
-	
-		int		xStart = (clip.x - _dest.x) % _src.w;
-		if( xStart < 0 )
-			xStart += _src.w;
-		xStart += _src.x;
-	
-		int		yStart = (clip.y - _dest.y) % _src.h;
-		if( yStart < 0 )
-			yStart += _src.h;
-		yStart += _src.y;
-	
-		Coord dest = clip.pos();
-	
-		myRect.y = yStart;
-		myRect.h =_src.y + _src.h - yStart;
-	
-		while( dest.y < clip.y + clip.h )
-		{
-			if( myRect.h > clip.y + clip.h - dest.y )
-				myRect.h = clip.y + clip.h - dest.y;
-	
-			myRect.x = xStart;
-			myRect.w = _src.x + _src.w - xStart;
-			if( myRect.w > clip.w )
-				myRect.w = clip.w;
-	
-	
-			// Blit a row.
-	
-			blit( _pSrc, myRect, dest );
-			dest.x += myRect.w;
-			myRect.x = _src.x;
-			myRect.w = _src.w;
-	
-			while( dest.x <= clip.x + clip.w - _src.w )
-			{
-				blit( _pSrc, myRect, dest );
-				dest.x += myRect.w;
-			}
-			myRect.w = clip.x + clip.w - dest.x;
-			if( myRect.w > 0 )
-				blit( _pSrc, myRect, dest );
-	
-			dest.y += myRect.h;
-			dest.x = xStart;
-			myRect.y = _src.y;
-			myRect.h = _src.h;
-		}
-		return;
+		float	scaleX = srcW / dest.w;
+		float	scaleY = srcH / dest.h;
+
+		float	mtx[2][2];
+
+		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+
+		transformBlit(dest, pSrc, { ofsX, ofsY }, mtx);
+*/
 	}
 
-	//____ drawHorrWave() _____________________________________________________
-
-	void GfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
+	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip)
 	{
-		clipDrawHorrWave(m_dummyClip, begin, length, pTopBorder, pBottomBorder, frontFill, backFill);
+		float	scaleX = src.w / dest.w;
+		float	scaleY = src.h / dest.h;
+
+		float ofsX = src.x + (src.w-scaleX) * flipOffsets[(int)flip][0];
+		float ofsY = src.y + (src.h-scaleY) * flipOffsets[(int)flip][1];
+
+		float	mtx[2][2];
+
+		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+
+		transformBlit(dest, pSrc, { src.x,src.y }, mtx);
 	}
 
-	//_____ clipBlitFromCanvas() ______________________________________________
+	//____ rotScaleBlit() _____________________________________________________
 
-	void GfxDevice::clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest)
+	void GfxDevice::rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale)
 	{
-		clipBlit(clip, pSrc, src, dest);		// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
+
+	}
+
+	//_____ blitFromCanvas() ______________________________________________
+
+	void GfxDevice::blitFromCanvas(Coord dest, Surface* pSrc, const Rect& src)
+	{
+		blit(dest, pSrc, src);				// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
 	}
 	
-	//____ clipBlitNinePatch() ________________________________________________
+	//____ blitNinePatch() ________________________________________________
 
-	void GfxDevice::clipBlitNinePatch(const Rect& clip, Surface* pSrc, const Rect& srcRect, const Border& srcFrame, const Rect& dstRect, const Border& dstFrame)
+	void GfxDevice::blitNinePatch(const Rect& dstRect, const Border& dstFrame, Surface* pSrc, const Rect& srcRect, const Border& srcFrame)
 	{
 		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame )
 		{
-			clipBlit(clip, pSrc, srcRect, dstRect.pos());
+			blit(dstRect.pos(), pSrc, srcRect);
 			return;
 		}
 
 		if (srcFrame.isEmpty() || dstFrame.isEmpty())
 		{
-			clipStretchBlit(clip, pSrc, srcRect, dstRect.pos());
+			stretchBlit(dstRect.pos(), pSrc, srcRect);
 			return;
-
 		}
 
 		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
@@ -688,13 +445,13 @@ namespace wg
 			Rect	dstNE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y, dstFrame.right, dstFrame.top);
 
 			if (srcNW.w + dstNW.w > 0)
-				clipStretchBlit(clip, pSrc, srcNW, dstNW);
+				stretchBlit(dstNW, pSrc, srcNW);
 
 			if (srcN.w + dstN.w > 0)
-				clipStretchBlit(clip, pSrc, srcN, dstN);
+				stretchBlit(dstN, pSrc, srcN);
 
 			if (srcNE.w + dstNE.w > 0)
-				clipStretchBlit(clip, pSrc, srcNE, dstNE);
+				stretchBlit(dstNE, pSrc, srcNE);
 		}
 
 
@@ -709,13 +466,13 @@ namespace wg
 			Rect	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
 
 			if (srcW.w + dstW.w > 0)
-				clipStretchBlit(clip, pSrc, srcW, dstW);
+				stretchBlit(dstW, pSrc, srcW);
 
 			if (srcC.w + dstC.w > 0)
-				clipStretchBlit(clip, pSrc, srcC, dstC);
+				stretchBlit(dstC, pSrc, srcC);
 
 			if (srcE.w + dstE.w > 0)
-				clipStretchBlit(clip, pSrc, srcE, dstE);
+				stretchBlit(dstE, pSrc, srcE);
 		}
 
 		if (srcFrame.bottom + dstFrame.bottom > 0)
@@ -729,20 +486,20 @@ namespace wg
 			Rect	dstSE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.right, dstFrame.bottom);
 
 			if (srcSW.w + dstSW.w > 0)
-				clipStretchBlit(clip, pSrc, srcSW, dstSW);
+				stretchBlit(dstSW, pSrc, srcSW);
 
 			if (srcS.w + dstS.w > 0)
-				clipStretchBlit(clip, pSrc, srcS, dstS);
+				stretchBlit(dstS, pSrc, srcS);
 
 			if (srcSE.w + dstSE.w > 0)
-				clipStretchBlit(clip, pSrc, srcSE, dstSE);
+				stretchBlit(dstSE, pSrc, srcSE);
 		}
 
 	}
 
-	//____ clipBlitHorrBar() ______________________________________________________
+	//____ blitHorrBar() ______________________________________________________
 	
-	void GfxDevice::clipBlitHorrBar(	const Rect& _clip, Surface * _pSurf,
+	void GfxDevice::blitHorrBar( Surface * _pSurf,
 									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
@@ -753,7 +510,7 @@ namespace wg
 		// Blit left edge
 	
 		Rect	r( _src.x, _src.y, _borders.left, _src.h );
-		clipBlit( _clip, _pSurf, r, dest );
+		blit( dest, _pSurf, r );
 	
 		_len -= _borders.width();			// Remove left and right edges from len.
 		dest.x += _borders.left;
@@ -767,20 +524,20 @@ namespace wg
 		{
 			while( _len > r.w )
 			{
-				clipBlit( _clip, _pSurf, r, dest );
+				blit( dest, _pSurf, r );
 				_len -= r.w;
 				dest.x += r.w;
 			}
 			if( _len != 0 )
 			{
 				r.w = _len;
-				clipBlit( _clip, _pSurf, r, dest );
+				blit( dest, _pSurf, r );
 				dest.x += _len;
 			}
 		}
 		else
 		{
-			clipStretchBlit( _clip, _pSurf, r, Rect( dest, _len, r.h ) );
+			stretchBlit( Rect(dest, _len, r.h), _pSurf, r );
 			dest.x += _len;
 		}
 	
@@ -788,12 +545,12 @@ namespace wg
 	
 		r.x = _src.x + _src.w - _borders.right;
 		r.w = _borders.right;
-		clipBlit( _clip, _pSurf, r, dest );
+		blit( dest, _pSurf, r );
 	}
 	
-	//____ clipBlitVertBar() ______________________________________________________
+	//____ blitVertBar() ______________________________________________________
 	
-	void GfxDevice::clipBlitVertBar(	const Rect& _clip, Surface * _pSurf,
+	void GfxDevice::blitVertBar(	Surface * _pSurf,
 									  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
@@ -804,7 +561,7 @@ namespace wg
 		// Blit top edge
 	
 		Rect	r( _src.x, _src.y, _src.w, _borders.top );
-		clipBlit( _clip, _pSurf, r, dest );
+		blit( dest, _pSurf, r );
 	
 		_len -= _borders.height();			// Remove top and bottom edges from len.
 		dest.y += _borders.top;
@@ -818,20 +575,20 @@ namespace wg
 		{
 			while( _len > r.h )
 			{
-				clipBlit( _clip, _pSurf, r, dest );
+				blit( dest, _pSurf, r );
 				_len -= r.h;
 				dest.y += r.h;
 			}
 			if( _len != 0 )
 			{
 				r.h = _len;
-				clipBlit( _clip, _pSurf, r, dest );
+				blit( dest, _pSurf, r );
 				dest.y += _len;
 			}
 		}
 		else
 		{
-			clipStretchBlit( _clip, _pSurf, r, Rect( dest, r.w, _len ) );
+			stretchBlit( Rect(dest, r.w, _len), _pSurf, r );
 			dest.y += _len;
 		}
 	
@@ -839,104 +596,9 @@ namespace wg
 	
 		r.y = _src.y + _src.h - _borders.bottom;
 		r.h = _borders.bottom;
-		clipBlit( _clip, _pSurf, r, dest );
+		blit( dest, _pSurf, r );
 	}
 	
-	
-	//____ blitHorrBar() __________________________________________________________
-	
-	void GfxDevice::blitHorrBar(	Surface * _pSurf, const Rect& _src,
-									const Border& _borders, bool _bTile,
-									Coord dest, int _len )
-	{
-		// Blit left edge
-	
-		Rect	r( _src.x, _src.y, _borders.left, _src.h );
-		blit( _pSurf, r, dest );
-	
-		_len -= _borders.width();			// Remove left and right edges from len.
-		dest.x += _borders.left;
-	
-		// Blit tiling part
-	
-		r.x += _borders.left;
-		r.w = _src.w - _borders.width();
-	
-		if( _bTile )
-		{
-			while( _len > r.w )
-			{
-				blit( _pSurf, r, dest );
-				_len -= r.w;
-				dest.x += r.w;
-			}
-			if( _len != 0 )
-			{
-				r.w = _len;
-				blit( _pSurf, r, dest );
-				dest.x += _len;
-			}
-		}
-		else
-		{
-			stretchBlit( _pSurf, r, Rect( dest, _len, r.h ) );
-			dest.x += _len;
-		}
-	
-		// Blit right edge
-	
-		r.x = _src.x + _src.w - _borders.right;
-		r.w = _borders.right;
-		blit( _pSurf, r, dest );
-	}
-	
-	//____ blitVertBar() __________________________________________________________
-	
-	void GfxDevice::blitVertBar(	Surface * _pSurf, const Rect& _src,
-									const Border& _borders, bool _bTile,
-									Coord dest, int _len )
-	{
-		// Blit top edge
-	
-		Rect	r( _src.x, _src.y, _src.w, _borders.top );
-		blit( _pSurf, r, dest );
-	
-		_len -= _borders.height();			// Remove top and bottom borders from len.
-		dest.y += _borders.top;
-	
-		// Blit tiling part
-	
-		r.y += _borders.top;
-		r.h = _src.h - _borders.height();
-	
-		if( _bTile )
-		{
-			while( _len > r.h )
-			{
-				blit( _pSurf, r, dest );
-				_len -= r.h;
-				dest.y += r.h;
-			}
-			if( _len != 0 )
-			{
-				r.h = _len;
-				blit( _pSurf, r, dest );
-				dest.y += _len;
-			}
-		}
-		else
-		{
-			stretchBlit( _pSurf, r, Rect( dest, r.w, _len ) );
-			dest.y += _len;
-		}
-	
-		// Blit bottom edge
-	
-		r.y = _src.y + _src.h - _borders.bottom;
-		r.h = _borders.bottom;
-		blit( _pSurf, r, dest );
-	}
-
 	//____ _genCurveTab() ___________________________________________________________
 
 	void GfxDevice::_genCurveTab()

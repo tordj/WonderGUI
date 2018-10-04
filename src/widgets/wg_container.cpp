@@ -274,8 +274,10 @@ namespace wg
 		// Render container itself
 		
 		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+		{
+			pDevice->setClip(*pRect);
 			_render(pDevice, _canvas, _window, *pRect );
-			
+		}
 		
 		// Render children
 	

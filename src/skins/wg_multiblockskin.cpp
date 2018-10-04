@@ -330,13 +330,13 @@ namespace wg
 
 			if (src.w == _canvas.w && src.h == _canvas.h /*&& scale == m_scale */)
 			{ 
-				pDevice->clipBlit(_clip, layer.pSurface, src, _canvas.pos() );
+				pDevice->blit( _canvas.pos(), layer.pSurface, src );
 				continue;
 			}
 
 			if (m_frame.left + m_frame.top + m_frame.right + m_frame.bottom == 0)
 			{
-				pDevice->clipStretchBlit(_clip, layer.pSurface, src, _canvas);
+				pDevice->stretchBlit( _canvas, layer.pSurface, src );
 				continue;
 			}
 
@@ -345,7 +345,7 @@ namespace wg
 			const Border&    sourceBorders = m_frame;
 			const Border     canvasBorders = m_frame;
 
-			pDevice->clipBlitNinePatch(_clip, layer.pSurface, src, sourceBorders, _canvas, canvasBorders);
+			pDevice->blitNinePatch( _canvas, canvasBorders, layer.pSurface, src, sourceBorders );
 		}
 
 		if (mixedTint != orgTintColor)

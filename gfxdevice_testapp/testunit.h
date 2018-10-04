@@ -86,24 +86,24 @@ namespace test
 
 			pDevice->setCanvas(m_pMyCanvas);
 
-			pDevice->clipBlit(canvas, m_pBlitSource, Coord(50, 50));
+			pDevice->blit(canvas, m_pBlitSource, Coord(50, 50));
 
-			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
-			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0,0,255,128), 3.f);
+			pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
+			pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0,0,255,128), 3.f);
 
 			Coord	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 			Size	fillSize = { 50,50 };
 			Coord	stepping = { 60, 0 };
 
-			pDevice->clipFill(canvas, { fillOfs, fillSize }, Color::Red);
-			pDevice->clipFill(canvas, { fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
-			pDevice->clipFill(canvas, { fillOfs + stepping*2, fillSize }, Color(0, 0, 255, 64));
-			pDevice->clipFill(canvas, { fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
-			pDevice->clipFill(canvas, { fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
+			pDevice->fill({ fillOfs, fillSize }, Color::Red);
+			pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
+			pDevice->fill({ fillOfs + stepping*2, fillSize }, Color(0, 0, 255, 64));
+			pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
+			pDevice->fill({ fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
 
 
 			pDevice->setCanvas(pOldCanvas);
-			pDevice->clipBlit(canvas, m_pMyCanvas);
+			pDevice->blit({ 0,0 }, m_pMyCanvas);
 
 			return true;
 		}
@@ -136,9 +136,9 @@ namespace test
 
 //			pDevice->setCanvas(m_pMyCanvas);
 
-			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(50, 50,256,128));
-			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(0, 0, 128, 64));
-			pDevice->clipStretchBlit(canvas, m_pBlitSource, Rect(0, 256, 400, 140));
+			pDevice->stretchBlit(Rect(50, 50, 256, 128), m_pBlitSource);
+			pDevice->stretchBlit(Rect(0, 0, 128, 64), m_pBlitSource);
+			pDevice->stretchBlit(Rect(0, 256, 400, 140), m_pBlitSource);
 
 //			pDevice->setCanvas(pOldCanvas);
 //			pDevice->clipBlit(canvas, m_pMyCanvas);
@@ -167,22 +167,22 @@ namespace test
 			Surface_p pOldCanvas = pDevice->canvas();
 			pDevice->setCanvas(m_pMyCanvas);
 
-			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
-			pDevice->clipDrawLine(canvas, canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
+			pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
+			pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
 
 			Coord	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 			Size	fillSize = { 50,50 };
 			Coord	stepping = { 60, 0 };
 
-			pDevice->clipFill(canvas, { fillOfs, fillSize }, Color::Red);
-			pDevice->clipFill(canvas, { fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
-			pDevice->clipFill(canvas, { fillOfs + stepping * 2, fillSize }, Color(0, 0, 255, 64));
-			pDevice->clipFill(canvas, { fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
-			pDevice->clipFill(canvas, { fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
+			pDevice->fill({ fillOfs, fillSize }, Color::Red);
+			pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
+			pDevice->fill({ fillOfs + stepping * 2, fillSize }, Color(0, 0, 255, 64));
+			pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
+			pDevice->fill({ fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
 
 
 			pDevice->setCanvas(pOldCanvas);
-			pDevice->clipBlit(canvas, m_pMyCanvas);
+			pDevice->blit({ 0,0 }, m_pMyCanvas);
 
 			return true;
 		}

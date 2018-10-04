@@ -25,6 +25,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
+#include <wg_gfxdevice.h>
 
 #include <wg_slotarray.impl.h>
 #include <wg_selectablechildren.impl.h>
@@ -333,8 +334,10 @@ namespace wg
 		// Render container itself
 		
 		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+		{
+			pDevice->setClip(*pRect);
 			_render(pDevice, _canvas, _window, *pRect );
-			
+		}
 		
 		// Render children
 	
@@ -361,7 +364,10 @@ namespace wg
 			Rect canvas = _headerGeo() + _canvas.pos();
 	
 			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+			{
+				pDevice->setClip(*pRect);
 				m_header.render( pDevice, canvas, *pRect );
+			}
 		}
 	
 		// Render Lasso
@@ -372,8 +378,11 @@ namespace wg
 			lasso += _canvas.pos();
 	
 	
-			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-				m_pLassoSkin->render( pDevice, lasso, m_state, Rect( lasso, *pRect ) );
+			for (const Rect * pRect = patches.begin(); pRect != patches.end(); pRect++)
+			{
+				pDevice->setClip(*pRect);
+				m_pLassoSkin->render(pDevice, lasso, m_state, Rect(lasso, *pRect));
+			}
 		}
 	}
 	

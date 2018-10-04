@@ -86,12 +86,16 @@ namespace wg
 
 		//.____ State _________________________________________________
 
+		virtual void		setClip(const Rect& clip);
+		inline Rect			clip() const { return m_clip; }
+		
 		virtual void		setTintColor( Color color );
-		virtual bool		setBlendMode( BlendMode blendMode );
-	
 		inline const Color&	tintColor() const { return m_tintColor; }
+
+		virtual bool		setBlendMode( BlendMode blendMode );
 		inline BlendMode 	blendMode() const { return m_blendMode; }
 		
+
 		//.____ Rendering ________________________________________________
 	
 		virtual bool	beginRender();
@@ -99,13 +103,14 @@ namespace wg
 		
 		// Low level draw methods.
 	
-		virtual void	fill( const Rect& rect, const Color& col ) = 0;
-	
-        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
+		virtual void	fill( const Rect& rect, const Color& col );
+		virtual void	fill(const RectF& rect, const Color& col) = 0;
 
-		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
+        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+
+		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
-
+/*
 		virtual void	blit( Surface * pSrc );
 		virtual void	blit( Surface * pSrc, Coord dest );
 		virtual void	blit( Surface * pSrc, const Rect& src, Coord dest ) = 0;
@@ -118,50 +123,45 @@ namespace wg
 		virtual void	tileBlit(Surface * pSrc);
 		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
 		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
+*/
 
-		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
+		virtual void	blit(Coord dest, Surface * pSrc);
+		virtual void	blit(Coord dest, Surface * pSrc, const Rect& src);
 
-		// Versions with clipping
+		virtual void	flipBlit(Coord dest, Surface * pSrc, GfxFlip flip );
+		virtual void	flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip );
 
-		virtual void    clipPlotPixels(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+//		virtual void	tileBlit(const Rect& dest, Surface * pSrc );
+//		virtual void	tileBlit(const Rect& dest, Surface * pSrc, const Rect& src );
 
-		virtual void	clipDrawLine(const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f) = 0;
-		virtual void	clipDrawLine(const Rect& clip, Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
+		virtual void	stretchBlit(const Rect& dest, Surface * pSrc);
+		virtual void	stretchBlit(const Rect& dest, Surface * pSrc, const Rect& src);
+		virtual void	stretchBlit(const Rect& dest, Surface * pSrc, const RectF& src);
 
-		virtual void	clipFill( const Rect& clip, const Rect& rect, const Color& col );
-	
-		virtual void	clipBlit( const Rect& clip, Surface * pSrc );
-		virtual void	clipBlit( const Rect& clip, Surface * pSrc, Coord dest  );
-		virtual void	clipBlit( const Rect& clip, Surface * pSrc, const Rect& src, Coord dest  );
-	
-		virtual void	clipStretchBlit(const Rect& clip, Surface * pSrc);
-		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
-		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
-		virtual void	clipStretchBlit( const Rect& clip, Surface * pSrc, const RectF& src, const Rect& dest );
-	
-		virtual void	clipTileBlit(const Rect& clip, Surface * pSrc);
-		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& dest );
-		virtual void	clipTileBlit( const Rect& clip, Surface * pSrc, const Rect& src, const Rect& dest );
+		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, GfxFlip flip);
+		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const Rect& src, GfxFlip flip);
+		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip);
 
-		virtual void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
+//		virtual void	stretchTileBlit(const Rect& dest, Size stretchedSize, Surface * pSrc);
+//		virtual void	stretchTileBlit(const Rect& dest, Size stretchedSize, Surface * pSrc, const Rect& src);
+
+		virtual void	rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale);
+
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2] ) = 0;
+		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2] ) = 0;
+
 
 		// Special draw methods
 
-		virtual void	clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest);	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
+		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
 
-		virtual void	clipBlitNinePatch(const Rect& clip, Surface* pSrc, const Rect& srcRect, const Border& srcFrame, const Rect& dstRect, const Border& dstFrame);
+		virtual void	blitFromCanvas(Coord dest, Surface* pSrc, const Rect& src );	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
 
-		// Mid-level draw methods
-	
-		virtual void	clipBlitHorrBar(	const Rect& _clip, Surface * _pSurf, const Rect& _src,
-											const Border& _borders, bool _bTile,
-											Coord dest, int _len );
-	
-		virtual void	clipBlitVertBar(	const Rect& _clip, Surface * _pSurf, const Rect& _src,
-											const Border& _borders, bool _bTile,
-											Coord dest, int _len );
-	
-	
+		virtual void	blitNinePatch(const Rect& dstRect, const Border& dstFrame, Surface* pSrc, const Rect& srcRect, const Border& srcFrame);
+
+
+		//.____ Deprecated ________________________________________________
+
 		virtual void	blitHorrBar(		Surface * _pSurf, const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
@@ -170,19 +170,10 @@ namespace wg
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 		
-		virtual void	fillSubPixel( const RectF& rect, const Color& col ) = 0;
-
-//		virtual void	stretchBlitSubPixel( Surface * pSrc, float sx, float sy, float sw, float sh,
-//									   		 float dx, float dy, float dw, float dh ) = 0;
-
-
 		
 	protected:
 		GfxDevice( Size canvasSize );
 		virtual ~GfxDevice();
-
-		virtual void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col ) = 0;
-
 
 		// Static, shared data
 
@@ -198,13 +189,12 @@ namespace wg
 
 		Surface_p	m_pCanvas;
 
+		Rect		m_clip;				// Clipping rectangle.
 		Color		m_tintColor;		// Current Tint color.
 		BlendMode	m_blendMode;		// Current BlendMode.
 		uint32_t	m_renderFlags;		// Current flags.
 	
-		Size		m_canvasSize;
-	
-		Rect		m_dummyClip;
+		Size		m_canvasSize;	
 	};	
 
 } // namespace wg

@@ -58,6 +58,7 @@ namespace wg
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Unknown;
 	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
+	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
 
 	const static CodePage        CodePage_max        = CodePage::_874;
 	const static BlendMode       BlendMode_max       = BlendMode::Invert;
@@ -79,6 +80,7 @@ namespace wg
 	const static PixelFormat     PixelFormat_max     = PixelFormat::A8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::DeleteSurface;
+	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
 	const static int             BlendMode_size      = (int)BlendMode::Invert + 1;
@@ -100,6 +102,7 @@ namespace wg
 	const static int             PixelFormat_size    = (int)PixelFormat::A8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::DeleteSurface + 1;
+	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;
 
 	const char * toString(CodePage);
 	const char * toString(BlendMode);
@@ -121,6 +124,7 @@ namespace wg
 	const char * toString(PixelFormat);
 	const char * toString(MaskOp);
 	const char * toString(GfxChunkId);
+	const char * toString(GfxFlip);
 
 //=========================================================================
 //. endAutoSection
