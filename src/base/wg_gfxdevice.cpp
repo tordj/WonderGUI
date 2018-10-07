@@ -403,7 +403,30 @@ namespace wg
 
 	void GfxDevice::rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale)
 	{
+		if (scale <= 0.f)
+			return;
 
+		CoordF	src;
+		float	mtx[2][2];
+
+		float	sz = (float)sin(-rotationDegrees*3.14159265/180);
+		float	cz = (float)cos(-rotationDegrees*3.14159265 / 180);
+
+		scale = 1.f / scale;
+
+		mtx[0][0] = cz * scale;
+		mtx[0][1] = sz * scale;
+
+		mtx[1][0] = -sz * scale;
+		mtx[1][1] = cz * scale;
+
+		src = srcCenter;
+
+		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
+		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+
+
+		transformBlit(dest, pSrc, { src.x,src.y }, mtx);
 	}
 
 	//_____ blitFromCanvas() ______________________________________________

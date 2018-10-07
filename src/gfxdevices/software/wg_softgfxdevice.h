@@ -121,6 +121,7 @@ namespace wg
 		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2]) override;
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
+		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) override;
 
 
 		struct ColTrans

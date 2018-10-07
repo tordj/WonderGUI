@@ -116,6 +116,10 @@ namespace wg
 	{
 	}
 
+	void NullGfxDevice::drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness, Color outlineColor)
+	{
+	}
+
 	void NullGfxDevice::transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2])
 	{
 	}

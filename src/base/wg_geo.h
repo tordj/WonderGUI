@@ -478,6 +478,10 @@ namespace wg
 	
 		inline bool intersectsWith( const Rect& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 	
+		bool	intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
+		bool	clipLine(Coord * p1, Coord * p2, int precision = 14) const;
+
+
 		inline int width() const;								///< @brief Get the width of the rectangle.
 		inline int height() const;								///< @brief Get the height of the rectangle.
 		inline Size size() const;								///< @brief Get the size of the rectangle.

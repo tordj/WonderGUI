@@ -38,6 +38,7 @@ void renderWaveThicknessTest(GfxDevice * pGfxDevice);
 void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
 void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
 void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
+void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf);
 
 
 bool	bQuit = false;
@@ -836,6 +837,12 @@ int main ( int argc, char** argv )
 	SDL_FreeSurface(pSDLSurf);
 	pFlippingSurface->setScaleMode(ScaleMode::Interpolate);
 
+	pSDLSurf = IMG_Load("../resources/clockface_2500.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	SoftSurface_p pClockSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	pClockSurface->setScaleMode(ScaleMode::Interpolate);
+
 
 	printf("Sin(0): %f\n", cos(0));
 	printf("Sin(90): %f\n", cos(3.1415/2));
@@ -849,11 +856,12 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->beginRender();
 
-		pGfxDevice->fill( Rect{ 0,0,width,height }, Color::Black);
+		pGfxDevice->fill( Rect{ 10,10,512,512 }, Color::Black);
 
 //		flipBlitTest(pGfxDevice, pFlippingSurface);
 //		stretchBlitTest(pGfxDevice, pFlippingSurface);
-		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
+//		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
+		rotScaleTest(pGfxDevice, pClockSurface);
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
@@ -877,7 +885,7 @@ int main ( int argc, char** argv )
 
 //		updateWindowRects( pRoot, pWin );
 
-		SDL_Delay(20);
+		SDL_Delay(5);
     }
 
 	// Exit WonderGUI
@@ -945,6 +953,34 @@ void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
 
 	if (x > 1000)
 		x = 0;
+
+}
+
+
+//____ rotScaleTest() _________________________________________________________
+
+void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf)
+{
+	Size sz = pSurf->size();
+
+	static float rot = 45;
+	static float scale = 1.f;
+	static float scaleInc = 0.001f;
+
+	pGfxDevice->fill(Rect{ 0, 0, 1300, 1300 }, Color::White);
+
+	CoordF center = { pSurf->size().w / 2.f, pSurf->size().h / 2.f };
+
+
+//	pGfxDevice->blit({ 10,10 }, pSurf, { ((int)center.x) - 256, (int)(center.y) - 256,512,512 });
+
+	pGfxDevice->rotScaleBlit({ 10,10,512,512 }, pSurf, center, rot, scale);
+
+	rot+=0.1;
+	scale += scaleInc;
+
+	if (scale > 2 || scale < 0.3 )
+		scaleInc = -scaleInc;
 
 }
 

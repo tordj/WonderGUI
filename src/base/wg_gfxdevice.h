@@ -154,6 +154,8 @@ namespace wg
 		// Special draw methods
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
+		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) = 0;
+
 
 		virtual void	blitFromCanvas(Coord dest, Surface* pSrc, const Rect& src );	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
 

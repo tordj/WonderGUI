@@ -23,6 +23,8 @@
 
 #include <wg_geo.h>
 
+#include <utility>
+
 namespace wg 
 {
 	
@@ -361,14 +363,129 @@ namespace wg
 		}
 	}
 	
-	
+
+
+	//____ intersectsWithOrContains() _______________________________________________________
+
+	bool Rect::intersectsWithOrContains(Coord p1, Coord p2, int precision) const
+	{
+		// NOTE: This needs to be kept in sync with ClipLine() so they always return same result for same input.
+
+		int x1 = x;
+		int x2 = x + w;
+
+		// We go from left to right when working with the X coordinates
+
+		if (p2.x < p1.x)
+			std::swap(p1, p2);
+
+		// Verify that x-coordinates are within range
+
+		if (p1.x >= x2 || p2.x <= x1)
+			return false;
+
+		// Calculate angles now before we destroy any values
+
+		int angleX = ((p2.y - p1.y) << precision) / (1 + p2.x - p1.x);		// Change in Y for each increase of X.
+
+																			// Clip line so no coord is outside rectangles x-dimensions
+
+		if (p1.x < x1)
+			p1.y = p1.y + ((x1 - p1.x)*angleX >> precision);
+
+		if (p2.x > x2)
+			p2.y = p2.y - ((p2.x - x2)*angleX >> precision);
+
+		// We go from top to bottom when working with the Y coordinates
+
+		if (p2.y < p1.y)
+			std::swap(p1.y, p2.y);
+
+		// Verify that clipped line intersects in y-dimension.
+
+		if (p1.y >= y + h || p2.y <= y)
+			return false;
+
+		return true;
+	}
+
+	//____ clipLine() _____________________________________________________________
+
+	bool Rect::clipLine(Coord * p1, Coord* p2, int precision) const
+	{
+		// NOTE: This needs to be kept in sync with IntersectsOrContains() so they always return same result for same input.
+
+		int x1 = x;
+		int x2 = x + w;
+		int y1 = y;
+		int y2 = y + h;
+
+		// We go from left to right when working with the X coordinates
+
+		if (p2->x < p1->x)
+			std::swap(p1, p2);
+
+		// Verify that x-coordinates are within range
+
+		if (p1->x >= x2 || p2->x <= x1)
+			return false;
+
+		// Calculate both angles now before we destroy precision
+
+		int angleX = ((p2->y - p1->y) << precision) / (1 + p2->x - p1->x);		// Change in Y for each increase of X.
+		int angleY = ((p2->x - p1->x) << precision) / (1 + abs(p2->y - p1->y));		// Change in X for each increase of Y.
+
+																					// Clip line so no coord is outside rectangles x-dimensions
+
+		if (p1->x < x1)
+		{
+			p1->y = p1->y + ((x1 - p1->x)*angleX >> precision);
+			p1->x = x2;
+		}
+
+		if (p2->x > x2)
+		{
+			p2->y = p2->y - ((p2->x - x2)*angleX >> precision);
+			p2->x = x2;
+		}
+
+		// We go from top to bottom when working with the Y coordinates
+
+		if (p2->y < p1->y)
+		{
+			std::swap(p1, p2);
+			angleY = -angleY;
+		}
+
+		// Verify that clipped line intersects in y-dimension.
+
+		if (p1->y >= y2 || p2->y <= y1)
+			return false;
+
+		// Clip line so no coord is outside rectangles y-dimensions
+
+		if (p1->y < y1)
+		{
+			p1->x = p1->x + ((y1 - p1->y)*angleY >> precision);
+			p1->y = y1;
+		}
+
+		if (p2->y > y2)
+		{
+			p2->x = p2->x - ((p2->y - y2)*angleY >> precision);
+			p2->y = y2;
+		}
+
+		return true;
+	}
+
+	//____ intersection() ________________________________________________________________
+
 	RectF::RectF( const RectF& r1, const RectF& r2 )
 	{
 		intersection( r1, r2 );
 	}
-	
-	//____ intersection() ________________________________________________________________
-	
+		
 	bool RectF::intersection( const RectF& _r1, const RectF& _r2 )
 	{
 		float	x1, y1;						// So we can use ourself as inparameter.
