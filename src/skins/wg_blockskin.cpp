@@ -237,6 +237,9 @@ namespace wg
 	{
 		m_pSurface = nullptr;
 		m_bOpaque = false;
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_stateColors[i] = Color::White;
 	}
 
 	BlockSkin::BlockSkin(Surface * pSurface, Rect block, Border frame)
@@ -247,7 +250,10 @@ namespace wg
 		m_bOpaque			= pSurface->isOpaque();
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			m_stateBlocks[i] = block.size();
+		{
+			m_stateBlocks[i] = block.pos();
+			m_stateColors[i] = Color::White;
+		}
 	}
 
 
@@ -340,7 +346,7 @@ namespace wg
 		m_stateBlocks[0] = ofs;
 		m_stateBlockMask = 1;
 
-		_updateUnsetStates();
+		_updateUnsetStateBlocks();
 	}
 
 	void BlockSkin::setBlock(State state, Coord ofs)
@@ -349,7 +355,7 @@ namespace wg
 
 		m_stateBlocks[i] = ofs;
 		m_stateBlockMask.setBit(i);
-		_updateUnsetStates();
+		_updateUnsetStateBlocks();
 	}
 
 	//____ setBlocks() ________________________________________________________
@@ -366,7 +372,7 @@ namespace wg
 			m_stateBlocks[index] = blockStartOfs + pitch * ofs;
 			ofs++;
 		}
-		_updateUnsetStates();
+		_updateUnsetStateBlocks();
 	}
 
 	//____ block() ____________________________________________________________
@@ -376,12 +382,55 @@ namespace wg
 		return { m_stateBlocks[_stateToIndex(state)], m_dimensions };
 	}
 
+	//____ setTint() __________________________________________________________
+
+	void BlockSkin::setTint(Color tint)
+	{
+		m_stateColors[0] = tint;
+		m_stateColorMask = 1;
+
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
+	}
+
+	void BlockSkin::setTint(State state, Color tint)
+	{
+		int i = _stateToIndex(state);
+
+		m_stateColors[i] = tint;
+		m_stateColorMask.setBit(i);
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
+	}
+
+	void BlockSkin::setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints)
+	{
+		for (auto& state : stateTints)
+		{
+			int i = _stateToIndex(std::get<0>(state));
+			m_stateColorMask.setBit(i);
+			m_stateColors[i] = std::get<1>(state);
+		}
+
+		_updateUnsetStateColors();
+		_updateOpaqueFlags();
+	}
+
+	//____ tint() _____________________________________________________________
+
+	Color BlockSkin::tint(State state) const
+	{
+		return m_stateColors[_stateToIndex(state)];
+	}
+
+
+
 	//____ setBlendMode() _____________________________________________________
 
 	void BlockSkin::setBlendMode(BlendMode mode)
 	{
 		m_blendMode = mode;
-		_updateOpaqueFlag();
+		_updateOpaqueFlags();
 	}
 
 	//____ setSurface() _______________________________________________________
@@ -389,7 +438,7 @@ namespace wg
 	void BlockSkin::setSurface(Surface * pSurf)
 	{
 		m_pSurface = pSurf;
-		_updateOpaqueFlag();
+		_updateOpaqueFlags();
 	}
 
 	//____ setBlockSize() _____________________________________________________
@@ -413,8 +462,18 @@ namespace wg
 		if( !m_pSurface )
 			return;
 	
+		BlendMode savedBlendMode;
+		if (m_blendMode != BlendMode::Ignore)
+		{
+			savedBlendMode = pDevice->blendMode();
+			pDevice->setBlendMode(m_blendMode);
+		}
+
 		Coord blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->blitNinePatch(_canvas, m_frame, m_pSurface, { blockOfs,m_dimensions }, m_frame );
+
+		if (m_blendMode != BlendMode::Ignore)
+			pDevice->setBlendMode(savedBlendMode);
 	}
 	
 	//____ minSize() ______________________________________________________________
@@ -519,12 +578,12 @@ namespace wg
 	
 	bool BlockSkin::isOpaque( State state ) const
 	{
-		return m_bOpaque;	
+		return m_bStateOpaque[_stateToIndex(state)];
 	}
 	
 	bool BlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
-		return m_bOpaque;
+		return m_bStateOpaque[_stateToIndex(state)];
 	}
 	
 	//____ isStateIdentical() _____________________________________________________
@@ -537,23 +596,39 @@ namespace wg
 		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && ExtendedSkin::isStateIdentical(state,comparedTo) );
 	}
 	
-	//____ _updateOpaqueFlag() ________________________________________________
+	//____ _updateOpaqueFlags() ________________________________________________
 
-	void BlockSkin::_updateOpaqueFlag()
+	void BlockSkin::_updateOpaqueFlags()
 	{
+		bool bTintDecides = false;
+
 		if (!m_pSurface)
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend)
+		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		{
 			m_bOpaque = m_pSurface->isOpaque();
+			bTintDecides = m_bOpaque;
+		}
 		else
 			m_bOpaque = false;
+
+		if (bTintDecides)
+		{
+			for (int i = 0; i < StateEnum_Nb; i++)
+				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+		}
+		else
+		{
+			for (int i = 0; i < StateEnum_Nb; i++)
+				m_bStateOpaque[i] = m_bOpaque;
+		}
 	}
 
-	//____ _updateUnsetStates() _______________________________________________
+	//____ _updateUnsetStateBlocks() _______________________________________________
 
-	void BlockSkin::_updateUnsetStates()
+	void BlockSkin::_updateUnsetStateBlocks()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
@@ -565,6 +640,19 @@ namespace wg
 		}
 	}
 
+	//____ _updateUnsetStateColors() _______________________________________________
+
+	void BlockSkin::_updateUnsetStateColors()
+	{
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (!m_stateColorMask.bit(i))
+			{
+				int bestAlternative = bestStateIndexMatch(i, m_stateColorMask);
+				m_stateColors[i] = m_stateColors[bestAlternative];
+			}
+		}
+	}
 
 
 } // namespace wg

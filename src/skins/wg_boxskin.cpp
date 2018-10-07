@@ -152,8 +152,8 @@ namespace wg
 		m_fillColor[i] = fill;
 		m_frameColor[i] = frame;
 
-		_updateOpaqueFlag();
 		_updateUnsetColors();
+		_updateOpaqueFlag();
 	}
 
 	void BoxSkin::setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors)
@@ -166,9 +166,8 @@ namespace wg
 			m_frameColor[i] = std::get<2>(state);
 		}
 
-		_updateOpaqueFlag();
 		_updateUnsetColors();
-
+		_updateOpaqueFlag();
 	}
 
 	//____ colors() ______________________________________________________

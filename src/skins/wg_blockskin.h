@@ -76,6 +76,11 @@ namespace wg
 		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, Coord blockStartOfs = { 0,0 });
 		virtual Rect	block(State state) const;
 
+		virtual void	setTint(Color tint);
+		virtual void	setTint(State state, Color tint);
+		virtual void	setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints);
+		virtual Color	tint(State state) const;
+
 		void			setBlendMode(BlendMode mode);
 		BlendMode		blendMode() const { return m_blendMode; }
 
@@ -129,20 +134,24 @@ namespace wg
 		BlockSkin(Surface * pSurface, Rect block, Border frame);
 		~BlockSkin() {};
 
-		void		_updateOpaqueFlag();
-		void		_updateUnsetStates();
-	
+		void		_updateOpaqueFlags();
+		void		_updateUnsetStateBlocks();
+		void		_updateUnsetStateColors();
+
 		Surface_p	m_pSurface;
 		Size		m_dimensions;
 		Border		m_frame;
 
-
 		bool		m_bOpaque;
-		BlendMode	m_blendMode = BlendMode::Blend;
+
+		BlendMode	m_blendMode = BlendMode::Undefined;
 
 		Bitmask<uint32_t>	m_stateBlockMask = 1;
+		Bitmask<uint32_t>	m_stateColorMask = 1;
 
 		Coord	m_stateBlocks[StateEnum_Nb];
+		Color	m_stateColors[StateEnum_Nb];
+		bool	m_bStateOpaque[StateEnum_Nb];
 	};
 	
 
