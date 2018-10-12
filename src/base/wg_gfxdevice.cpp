@@ -216,23 +216,21 @@ namespace wg
 
 	//____ blit() __________________________________________________________________
 	
-	void GfxDevice::blit(Coord dest, Surface * pSrc)
+	void GfxDevice::blit(Coord dest)
 	{
-		setBlitSource(pSrc);
-		transformBlit({ dest, pSrc->size() }, { 0,0 }, flipTransforms[0]);
+		transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, flipTransforms[0]);
 	}
 
-	void GfxDevice::blit(Coord dest, Surface * pSrc, const Rect& src)
+	void GfxDevice::blit(Coord dest, const Rect& src)
 	{
-		setBlitSource(pSrc);
 		transformBlit({ dest, src.size() }, src.pos(), flipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
 
-	void GfxDevice::flipBlit(Coord dest, Surface * pSrc, GfxFlip flip)
+	void GfxDevice::flipBlit(Coord dest, GfxFlip flip)
 	{
-		Size srcSize  = pSrc->size();
+		Size srcSize  = m_pBlitSource->size();
 
 		int ofsX = (srcSize.w - 1) * flipOffsets[(int)flip][0];
 		int ofsY = (srcSize.h - 1) * flipOffsets[(int)flip][1];
@@ -241,21 +239,19 @@ namespace wg
 		if (flipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		setBlitSource(pSrc);
 		transformBlit({ dest, dstSize }, { ofsX, ofsY }, flipTransforms[(int)flip]);
 	}
 
-	void GfxDevice::flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip)
+	void GfxDevice::flipBlit(Coord dest, const Rect& src, GfxFlip flip)
 	{
 		int ofsX = src.x + (src.w-1) * flipOffsets[(int)flip][0];
 		int ofsY = src.y + (src.h-1) * flipOffsets[(int)flip][1];
 
-		Size dstSize = pSrc->size();
+		Size dstSize = m_pBlitSource->size();
 		if (flipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
 
-		setBlitSource(pSrc);
 		transformBlit({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip]);
 	}
 
@@ -263,18 +259,18 @@ namespace wg
 
 	//____ stretchBlit() ___________________________________________________________
 	
-	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc )
+	void GfxDevice::stretchBlit(const Rect& dest )
 	{
-		stretchBlit(dest, pSrc, Rect(0, 0, pSrc->size()) );
+		stretchBlit(dest, Rect(0, 0, m_pBlitSource->size()) );
 	}
 	
-	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc, const Rect& _src )
+	void GfxDevice::stretchBlit(const Rect& dest, const Rect& _src )
 	{
 		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
 
 		float	mtx[2][2];
 
-		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
 			src.x += 0.5f;
 			src.y += 0.5f;
@@ -292,15 +288,14 @@ namespace wg
 			mtx[1][1] = src.h / dest.h;
 		}
 
-		setBlitSource(pSrc);
 		transformBlit(dest, { src.x, src.y }, mtx);
 	}
 	
-	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc, const RectF& src)
+	void GfxDevice::stretchBlit(const Rect& dest, const RectF& src)
 	{
 		float	mtx[2][2];
 
-		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
 			mtx[0][0] = src.w / (dest.w - 1);
 			mtx[0][1] = 0;
@@ -315,23 +310,22 @@ namespace wg
 			mtx[1][1] = src.h / dest.h;
 		}
 
-		setBlitSource(pSrc);
 		transformBlit(dest, { src.x,src.y }, mtx );
 	}
 
 	//____ stretchFlipBlit() _____________________________________________________
 	
-	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, GfxFlip flip)
+	void GfxDevice::stretchFlipBlit(const Rect& dest, GfxFlip flip)
 	{
-		stretchFlipBlit(dest, pSrc, Rect(0, 0, pSrc->size()), flip);
+		stretchFlipBlit(dest, Rect(0, 0, m_pBlitSource->size()), flip);
 	}
 
-	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, const Rect& src, GfxFlip flip)
+	void GfxDevice::stretchFlipBlit(const Rect& dest, const Rect& src, GfxFlip flip)
 	{
 		float scaleX, scaleY;
 		float ofsX, ofsY;
 
-		if (pSrc->scaleMode() == ScaleMode::Interpolate)
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
 			float srcW = (float)(src.w - 1);
 			float srcH = (float)(src.h - 1);
@@ -361,11 +355,10 @@ namespace wg
 		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
 
-		setBlitSource(pSrc);
 		transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
-	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip)
+	void GfxDevice::stretchFlipBlit(const Rect& dest, const RectF& src, GfxFlip flip)
 	{
 		float	scaleX = src.w / dest.w;
 		float	scaleY = src.h / dest.h;
@@ -380,13 +373,12 @@ namespace wg
 		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
 
-		setBlitSource(pSrc);
 		transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
 
-	void GfxDevice::rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale)
+	void GfxDevice::rotScaleBlit(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale)
 	{
 		if (scale <= 0.f)
 			return;
@@ -410,7 +402,6 @@ namespace wg
 		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
-		setBlitSource(pSrc);
 		transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
@@ -605,27 +596,28 @@ namespace wg
 
 	//_____ blitFromCanvas() ______________________________________________
 
-	void GfxDevice::blitFromCanvas(Coord dest, Surface* pSrc, const Rect& src)
+	void GfxDevice::blitFromCanvas(Coord dest, const Rect& src)
 	{
-		blit(dest, pSrc, src);				// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
+		blit(dest, src);				// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
 	}
 	
 	//____ blitNinePatch() ________________________________________________
 
-	void GfxDevice::blitNinePatch(const Rect& dstRect, const Border& dstFrame, Surface* pSrc, const Rect& srcRect, const Border& srcFrame)
+	void GfxDevice::blitNinePatch(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame)
 	{
 		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame )
 		{
-			blit(dstRect.pos(), pSrc, srcRect);
+			blit(dstRect.pos(), srcRect);
 			return;
 		}
 
 		if (srcFrame.isEmpty() || dstFrame.isEmpty())
 		{
-			stretchBlit(dstRect.pos(), pSrc, srcRect);
+			stretchBlit(dstRect.pos(), srcRect);
 			return;
 		}
 
+		//TODO: Optimize! Call transformBlit directly instead of going through stretchBlit(), reuse transforms where possible.
 		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
 
 		Size srcMidSize(srcRect.w - srcFrame.left - srcFrame.right, srcRect.h - srcFrame.top - srcFrame.bottom);
@@ -642,13 +634,13 @@ namespace wg
 			Rect	dstNE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y, dstFrame.right, dstFrame.top);
 
 			if (srcNW.w + dstNW.w > 0)
-				stretchBlit(dstNW, pSrc, srcNW);
+				stretchBlit(dstNW, srcNW);
 
 			if (srcN.w + dstN.w > 0)
-				stretchBlit(dstN, pSrc, srcN);
+				stretchBlit(dstN, srcN);
 
 			if (srcNE.w + dstNE.w > 0)
-				stretchBlit(dstNE, pSrc, srcNE);
+				stretchBlit(dstNE, srcNE);
 		}
 
 
@@ -663,13 +655,13 @@ namespace wg
 			Rect	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
 
 			if (srcW.w + dstW.w > 0)
-				stretchBlit(dstW, pSrc, srcW);
+				stretchBlit(dstW, srcW);
 
 			if (srcC.w + dstC.w > 0)
-				stretchBlit(dstC, pSrc, srcC);
+				stretchBlit(dstC, srcC);
 
 			if (srcE.w + dstE.w > 0)
-				stretchBlit(dstE, pSrc, srcE);
+				stretchBlit(dstE, srcE);
 		}
 
 		if (srcFrame.bottom + dstFrame.bottom > 0)
@@ -683,21 +675,20 @@ namespace wg
 			Rect	dstSE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.right, dstFrame.bottom);
 
 			if (srcSW.w + dstSW.w > 0)
-				stretchBlit(dstSW, pSrc, srcSW);
+				stretchBlit(dstSW, srcSW);
 
 			if (srcS.w + dstS.w > 0)
-				stretchBlit(dstS, pSrc, srcS);
+				stretchBlit(dstS, srcS);
 
 			if (srcSE.w + dstSE.w > 0)
-				stretchBlit(dstSE, pSrc, srcSE);
+				stretchBlit(dstSE, srcSE);
 		}
 
 	}
 
 	//____ blitHorrBar() ______________________________________________________
 	
-	void GfxDevice::blitHorrBar( Surface * _pSurf,
-									  	const Rect& _src, const Border& _borders,
+	void GfxDevice::blitHorrBar( 	  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
 		/*
@@ -707,7 +698,7 @@ namespace wg
 		// Blit left edge
 	
 		Rect	r( _src.x, _src.y, _borders.left, _src.h );
-		blit( dest, _pSurf, r );
+		blit( dest, r );
 	
 		_len -= _borders.width();			// Remove left and right edges from len.
 		dest.x += _borders.left;
@@ -721,20 +712,20 @@ namespace wg
 		{
 			while( _len > r.w )
 			{
-				blit( dest, _pSurf, r );
+				blit( dest, r );
 				_len -= r.w;
 				dest.x += r.w;
 			}
 			if( _len != 0 )
 			{
 				r.w = _len;
-				blit( dest, _pSurf, r );
+				blit( dest, r );
 				dest.x += _len;
 			}
 		}
 		else
 		{
-			stretchBlit( Rect(dest, _len, r.h), _pSurf, r );
+			stretchBlit( Rect(dest, _len, r.h), r );
 			dest.x += _len;
 		}
 	
@@ -742,13 +733,12 @@ namespace wg
 	
 		r.x = _src.x + _src.w - _borders.right;
 		r.w = _borders.right;
-		blit( dest, _pSurf, r );
+		blit( dest, r );
 	}
 	
 	//____ blitVertBar() ______________________________________________________
 	
-	void GfxDevice::blitVertBar(	Surface * _pSurf,
-									  	const Rect& _src, const Border& _borders,
+	void GfxDevice::blitVertBar(	  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
 		/*
@@ -758,7 +748,7 @@ namespace wg
 		// Blit top edge
 	
 		Rect	r( _src.x, _src.y, _src.w, _borders.top );
-		blit( dest, _pSurf, r );
+		blit( dest, r );
 	
 		_len -= _borders.height();			// Remove top and bottom edges from len.
 		dest.y += _borders.top;
@@ -772,20 +762,20 @@ namespace wg
 		{
 			while( _len > r.h )
 			{
-				blit( dest, _pSurf, r );
+				blit( dest, r );
 				_len -= r.h;
 				dest.y += r.h;
 			}
 			if( _len != 0 )
 			{
 				r.h = _len;
-				blit( dest, _pSurf, r );
+				blit( dest, r );
 				dest.y += _len;
 			}
 		}
 		else
 		{
-			stretchBlit( Rect(dest, r.w, _len), _pSurf, r );
+			stretchBlit( Rect(dest, r.w, _len), r );
 			dest.y += _len;
 		}
 	
@@ -793,7 +783,7 @@ namespace wg
 	
 		r.y = _src.y + _src.h - _borders.bottom;
 		r.h = _borders.bottom;
-		blit( dest, _pSurf, r );
+		blit( dest, r );
 	}
 	
 	//____ _genCurveTab() ___________________________________________________________

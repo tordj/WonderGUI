@@ -274,13 +274,15 @@ namespace wg
 									_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
 									pAnimFrame->rect.size() );
 	
-					pDevice->stretchBlit( dest, pAnimFrame->pSurf, pAnimFrame->rect );
+					pDevice->setBlitSource(pAnimFrame->pSurf);
+					pDevice->stretchBlit( dest, pAnimFrame->rect );
 				}
 				break;
 	
 				case BUTTON_STRETCHED:
 				{
-					pDevice->stretchBlit( _canvas, pAnimFrame->pSurf, pAnimFrame->rect );
+					pDevice->setBlitSource(pAnimFrame->pSurf);
+					pDevice->stretchBlit( _canvas, pAnimFrame->rect );
 				}
 				break;
 	
@@ -318,8 +320,8 @@ namespace wg
 			// Render animation
 	
 			GfxFrame * pAnimFrame = m_pRefreshAnim->getFrame( m_animTimer );
-	
-			pDevice->stretchBlit( iconRect, pAnimFrame->pSurf, pAnimFrame->rect );
+			pDevice->setBlitSource(pAnimFrame->pSurf);
+			pDevice->stretchBlit( iconRect, pAnimFrame->rect );
 		}
 		else if( !m_icon.isEmpty() )
 			m_icon.skin()->render( pDevice, iconRect, m_state, _clip );

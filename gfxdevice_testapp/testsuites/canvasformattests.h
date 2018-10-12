@@ -78,7 +78,8 @@ public:
 	bool	exit_drawToSurface(GfxDevice * pDevice, const Rect& canvas)
 	{
 		pDevice->setCanvas(m_pSavedCanvas);
-		pDevice->blit({ 0,0 }, m_pActiveCanvas);
+		pDevice->setBlitSource(m_pActiveCanvas);
+		pDevice->blit({ 0,0 });
 		m_pActiveCanvas = nullptr;
 		return true;
 	}

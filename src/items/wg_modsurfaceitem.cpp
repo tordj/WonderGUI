@@ -35,11 +35,12 @@ namespace wg
 
 	void ModSurfaceItem::render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip)
 	{
-		//TODO: Support bitmap being of different surface kind than destination.
+		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 	
 		Rect canvas = calcPresentationArea() + _canvas.pos();
 
-		pDevice->stretchBlit(canvas, m_pSurface);
+		pDevice->setBlitSource(m_pSurface);
+		pDevice->stretchBlit(canvas);
 	}
 
 	//____ alphaTest() _______________________________________________________

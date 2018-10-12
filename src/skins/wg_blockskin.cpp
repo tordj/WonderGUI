@@ -470,7 +470,8 @@ namespace wg
 		}
 
 		Coord blockOfs = m_stateBlocks[_stateToIndex(state)];
-		pDevice->blitNinePatch(_canvas, m_frame, m_pSurface, { blockOfs,m_dimensions }, m_frame );
+		pDevice->setBlitSource(m_pSurface);
+		pDevice->blitNinePatch(_canvas, m_frame, { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Ignore)
 			pDevice->setBlendMode(savedBlendMode);

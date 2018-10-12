@@ -7,16 +7,16 @@ public:
 	{
 		name = "PatchBlitTests";
 
-		addTest("Blit", &PatchBlitTests::blit);
+		addTest("Blit", &PatchBlitTests::setSplash, &PatchBlitTests::blit, &PatchBlitTests::dummy);
 		addTest("BlitPatches", &PatchBlitTests::setSplash, &PatchBlitTests::blitPatches, &PatchBlitTests::dummy );
 
-		addTest("FlipBlit", &PatchBlitTests::flipBlit);
+		addTest("FlipBlit", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit, &PatchBlitTests::dummy);
 		addTest("FlipBlitPatches", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlitPatches, &PatchBlitTests::dummy );
 
-		addTest("StretchBlit", &PatchBlitTests::stretchBlit);
+		addTest("StretchBlit", &PatchBlitTests::setSplash, &PatchBlitTests::stretchBlit, &PatchBlitTests::dummy);
 		addTest("StretchBlitPatches", &PatchBlitTests::setSplash, &PatchBlitTests::stretchBlitPatches, &PatchBlitTests::dummy );
 
-		addTest("RotScaleBlit", &PatchBlitTests::rotScaleBlit);
+		addTest("RotScaleBlit", &PatchBlitTests::setClockFace, &PatchBlitTests::rotScaleBlit, &PatchBlitTests::dummy);
 		addTest("RotScaleBlitPatches", &PatchBlitTests::setClockFace, &PatchBlitTests::rotScaleBlitPatches, &PatchBlitTests::dummy);
 	}
 
@@ -72,13 +72,13 @@ public:
 
 	bool	blit(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->blit(canvas, m_pSplash);
+		pDevice->blit(canvas);
 		return true;
 	}
 
 	bool	flipBlit(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->flipBlit(canvas, m_pSplash, GfxFlip::Rot270);
+		pDevice->flipBlit(canvas, GfxFlip::Rot270);
 		return true;
 	}
 
@@ -99,7 +99,7 @@ public:
 	bool	rotScaleBlit(GfxDevice * pDevice, const Rect& canvas)
 	{
 		CoordF center = { m_pClockFace->size().w / 2.f, m_pClockFace->size().h / 2.f };
-		pDevice->rotScaleBlit(canvas, m_pClockFace, center, rot, scale);
+		pDevice->rotScaleBlit(canvas, center, rot, scale);
 		return true;
 	}
 
@@ -113,7 +113,7 @@ public:
 
 	bool	stretchBlit(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->stretchBlit(canvas, m_pSplash, Rect( 0,0, m_pSplash->size() ) );
+		pDevice->stretchBlit(canvas, Rect( 0,0, m_pSplash->size() ) );
 		return true;
 	}
 

@@ -323,6 +323,7 @@ namespace wg
 				pDevice->setTintColor(mixedTint);
 			}
 
+			pDevice->setBlitSource(layer.pSurface);
 
 			const Rect&	src = Rect(layer.blockOfs[stateIndex], m_blockSize);
 
@@ -330,13 +331,13 @@ namespace wg
 
 			if (src.w == _canvas.w && src.h == _canvas.h /*&& scale == m_scale */)
 			{ 
-				pDevice->blit( _canvas.pos(), layer.pSurface, src );
+				pDevice->blit( _canvas.pos(), src );
 				continue;
 			}
 
 			if (m_frame.left + m_frame.top + m_frame.right + m_frame.bottom == 0)
 			{
-				pDevice->stretchBlit( _canvas, layer.pSurface, src );
+				pDevice->stretchBlit( _canvas, src );
 				continue;
 			}
 
@@ -345,7 +346,7 @@ namespace wg
 			const Border&    sourceBorders = m_frame;
 			const Border     canvasBorders = m_frame;
 
-			pDevice->blitNinePatch( _canvas, canvasBorders, layer.pSurface, src, sourceBorders );
+			pDevice->blitNinePatch( _canvas, canvasBorders, src, sourceBorders );
 		}
 
 		if (mixedTint != orgTintColor)

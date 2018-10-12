@@ -119,21 +119,21 @@ namespace wg
 
 		// Blit methods
 
-		virtual void	blit(Coord dest, Surface * pSrc);
-		virtual void	blit(Coord dest, Surface * pSrc, const Rect& src);
+		virtual void	blit(Coord dest);
+		virtual void	blit(Coord dest, const Rect& src);
 
-		virtual void	flipBlit(Coord dest, Surface * pSrc, GfxFlip flip );
-		virtual void	flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip );
+		virtual void	flipBlit(Coord dest, GfxFlip flip );
+		virtual void	flipBlit(Coord dest, const Rect& src, GfxFlip flip );
 
-		virtual void	stretchBlit(const Rect& dest, Surface * pSrc);
-		virtual void	stretchBlit(const Rect& dest, Surface * pSrc, const Rect& src);
-		virtual void	stretchBlit(const Rect& dest, Surface * pSrc, const RectF& src);
+		virtual void	stretchBlit(const Rect& dest);
+		virtual void	stretchBlit(const Rect& dest, const Rect& src);
+		virtual void	stretchBlit(const Rect& dest, const RectF& src);
 
-		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, GfxFlip flip);
-		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const Rect& src, GfxFlip flip);
-		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip);
+		virtual void	stretchFlipBlit(const Rect& dest, GfxFlip flip);
+		virtual void	stretchFlipBlit(const Rect& dest, const Rect& src, GfxFlip flip);
+		virtual void	stretchFlipBlit(const Rect& dest, const RectF& src, GfxFlip flip);
 
-		virtual void	rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale);
+		virtual void	rotScaleBlit(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale);
 
 		// Patch blit methods
 
@@ -162,24 +162,24 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 
 		 
-		// Special draw methods
+		// Special draw/blit methods
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
 		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) = 0;
 
 
-		virtual void	blitFromCanvas(Coord dest, Surface* pSrc, const Rect& src );	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
+		virtual void	blitFromCanvas(Coord dest, const Rect& src );			// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
 
-		virtual void	blitNinePatch(const Rect& dstRect, const Border& dstFrame, Surface* pSrc, const Rect& srcRect, const Border& srcFrame);
+		virtual void	blitNinePatch(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame);
 
 		 
 		//.____ Deprecated ________________________________________________
 
-		virtual void	blitHorrBar(		Surface * _pSurf, const Rect& _src,
+		virtual void	blitHorrBar(		const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 	
-		virtual void	blitVertBar(		Surface * _pSurf, const Rect& _src,
+		virtual void	blitVertBar(		const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 		

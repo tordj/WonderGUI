@@ -292,8 +292,11 @@ namespace wg
 	{
 		Widget::_render( pDevice, _canvas, _window, _clip );
 	
-		if( m_pAnim && m_state.isEnabled() )
-			pDevice->stretchBlit(_canvas, m_pAnimFrame->pSurf, m_pAnimFrame->rect );
+		if (m_pAnim && m_state.isEnabled())
+		{
+			pDevice->setBlitSource(m_pAnimFrame->pSurf);
+			pDevice->stretchBlit(_canvas, m_pAnimFrame->rect );
+		}
 	}
 	
 	//____ _refresh() _______________________________________________________

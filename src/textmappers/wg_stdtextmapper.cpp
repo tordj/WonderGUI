@@ -527,7 +527,8 @@ namespace wg
 							pos.x += pFont->kerning(pPrevGlyph, pGlyph);
 
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
-						pDevice->blit( Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->pSurface, pBitmap->rect  );
+						pDevice->setBlitSource(pBitmap->pSurface);
+						pDevice->blit( Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
 	
 						pos.x += pGlyph->advance();
 					}
