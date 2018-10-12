@@ -92,7 +92,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory();
+		SurfaceFactory_p		surfaceFactory() override;
 
 		inline CustomFunctionTable *	customFunctions() { return &m_customFunctions; }
 		inline void						enableCustomFunctions(bool enable) { m_bEnableCustomFunctions = enable; };
@@ -100,12 +100,17 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(Surface * pCanvas);
+		bool	setCanvas(Surface * pCanvas) override;
+
+		//.____ State _________________________________________________
+
+		void		setTintColor(Color color) override;
+		bool		setBlendMode(BlendMode blendMode) override;
 
 		//.____ Rendering ________________________________________________
 
-		bool	beginRender();
-		bool	endRender();
+		bool	beginRender() override;
+		bool	endRender() override;
 
 		//
 
@@ -117,8 +122,13 @@ namespace wg
 		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
 		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2]) override;
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2]) override;
+		virtual bool	setBlitSource(Surface * pSource) override;
+
+		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
+		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
+
+		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
 		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) override;
@@ -136,10 +146,6 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
-
-		virtual void	_transformBlit(const Rect& dest, SoftSurface * pSrc, Coord src, const int simpleTransform[2][2]);
-		virtual void	_transformBlit(const Rect& dest, SoftSurface * pSrc, CoordF src, const float complexTransform[2][2]);
-
 
 		enum class TintMode
 		{
@@ -228,6 +234,7 @@ namespace wg
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
 		void	_initTables();
+		void	_updateBlitFunctions();
 		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness(float thickness, int slope);
 
@@ -251,11 +258,18 @@ namespace wg
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
 
 
-		void	_onePassSimpleBlit(SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, Coord src, const int simpleTransform[2][2], const ColTrans& tint);
-		void	_twoPassSimpleBlit(SimpleBlitOp_p, SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, Coord src, const int simpleTransform[2][2], const ColTrans& tint);
+		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const Rect& dest, Coord src, const int simpleTransform[2][2]);
+		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const Rect& dest, CoordF pos, const float matrix[2][2]);
 
-		void	_onePassComplexBlit(ComplexBlitOp_p, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const ColTrans& tint);
-		void	_twoPassComplexBlit(ComplexBlitOp_p, SimpleBlitOp_p, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float matrix[2][2], const ColTrans& tint);
+
+		void	_onePassSimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
+		void	_twoPassSimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
+
+		void	_onePassComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
+		void	_twoPassComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
+
+		void	_dummySimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
+		void	_dummyComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
 
 		//
 
@@ -267,13 +281,13 @@ namespace wg
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
 		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p			s_pass2OpTab[BlendMode_size][PixelFormat_size];
+		static SimpleBlitOp_p	s_pass2OpTab[BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p			s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
-		static SimpleBlitOp_p			s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 			
-		static SimpleBlitOp_p			s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
-		static SimpleBlitOp_p			s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
 		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
 		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
@@ -282,9 +296,29 @@ namespace wg
 		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
 
 
-		static int		s_mulTab[256];
+		static int			s_mulTab[256];
 
 		SurfaceFactory_p	m_pSurfaceFactory;
+
+
+		// Members controlling render states
+
+		ColTrans			m_colTrans = { Color::White, nullptr, nullptr };	// Color transformation data
+
+		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
+
+		SimpleBlitProxy_Op	m_pSimpleBlitOp				= nullptr;		// Function called to perform a simple blit.
+		ComplexBlitProxy_Op m_pComplexBlitOp			= nullptr;		// Function called to perform a complex blit.
+
+		// These are called by SimpleBlitProxy_Op and ComplexBlitProxy_Op.
+		
+		SimpleBlitOp_p		m_pSimpleBlitOnePassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitOnePassOp		= nullptr;
+		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp	= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitFirstPassOp	= nullptr;
+		SimpleBlitOp_p		m_pBlitSecondPassOp			= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
+
+		//
 
 		int				m_lineThicknessTable[17];
 		

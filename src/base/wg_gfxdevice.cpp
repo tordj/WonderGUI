@@ -142,15 +142,22 @@ namespace wg
 	
 	bool GfxDevice::setBlendMode( BlendMode blendMode )
 	{
-		if( blendMode == BlendMode::Undefined )
+		if (blendMode == BlendMode::Undefined)
 			m_blendMode = BlendMode::Blend;
 		else
 			m_blendMode = blendMode;
 			
-		return false;				// Not implemented.
+		return true;
 	}
 	
-	
+	//____ setBlitSource() ____________________________________________________
+
+	bool GfxDevice::setBlitSource(Surface * pSource)
+	{
+		m_pBlitSource = pSource;
+		return true;
+	}
+
 	//____ beginRender() ___________________________________________________________
 	
 	bool GfxDevice::beginRender()
@@ -166,6 +173,11 @@ namespace wg
 	}
 
 	//____ fill() _____________________________________________________________
+
+	void GfxDevice::fill(const Color& col)
+	{
+		fill(Rect( 0.f, 0.f, m_pCanvas->size()), col);
+	}
 
 	void GfxDevice::fill(const Rect& rect, const Color& col)
 	{
@@ -206,13 +218,14 @@ namespace wg
 	
 	void GfxDevice::blit(Coord dest, Surface * pSrc)
 	{
-
-		transformBlit({ dest, pSrc->size() }, pSrc, { 0,0 }, flipTransforms[0]);
+		setBlitSource(pSrc);
+		transformBlit({ dest, pSrc->size() }, { 0,0 }, flipTransforms[0]);
 	}
 
 	void GfxDevice::blit(Coord dest, Surface * pSrc, const Rect& src)
 	{
-		transformBlit({ dest, src.size() }, pSrc, src.pos(), flipTransforms[0]);
+		setBlitSource(pSrc);
+		transformBlit({ dest, src.size() }, src.pos(), flipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -228,7 +241,8 @@ namespace wg
 		if (flipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		transformBlit({ dest, dstSize }, pSrc, { ofsX, ofsY }, flipTransforms[(int)flip]);
+		setBlitSource(pSrc);
+		transformBlit({ dest, dstSize }, { ofsX, ofsY }, flipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip)
@@ -241,8 +255,10 @@ namespace wg
 			swap(dstSize.w, dstSize.h);
 
 
-		transformBlit({ dest, dstSize }, pSrc, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip]);
+		setBlitSource(pSrc);
+		transformBlit({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip]);
 	}
+
 
 
 	//____ stretchBlit() ___________________________________________________________
@@ -276,8 +292,8 @@ namespace wg
 			mtx[1][1] = src.h / dest.h;
 		}
 
-
-		transformBlit(dest, pSrc, { src.x, src.y }, mtx);
+		setBlitSource(pSrc);
+		transformBlit(dest, { src.x, src.y }, mtx);
 	}
 	
 	void GfxDevice::stretchBlit(const Rect& dest, Surface * pSrc, const RectF& src)
@@ -299,7 +315,8 @@ namespace wg
 			mtx[1][1] = src.h / dest.h;
 		}
 
-		transformBlit(dest, pSrc, { src.x,src.y }, mtx );
+		setBlitSource(pSrc);
+		transformBlit(dest, { src.x,src.y }, mtx );
 	}
 
 	//____ stretchFlipBlit() _____________________________________________________
@@ -344,41 +361,8 @@ namespace wg
 		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, pSrc, { ofsX, ofsY }, mtx);
-
-
-/*
-		float srcW = (float)src.w;
-		float srcH = (float)src.h;
-		float flipSub = 1.f;
-
-		if (pSrc->scaleMode() == ScaleMode::Interpolate)
-		{
-			flipSub = 1.0078125f;							// Need to subtract a tiny fraction extra (1/128 seems good).
-
-			if (srcW < (float)dest.w)
-				srcW--;
-
-			if (srcH < (float)dest.h)
-				srcH--;
-		}
-
-		float ofsX = src.x + (src.w - flipSub) * flipOffsets[(int)flip][0];
-		float ofsY = src.y + (src.h - flipSub) * flipOffsets[(int)flip][1];
-
-
-		float	scaleX = srcW / dest.w;
-		float	scaleY = srcH / dest.h;
-
-		float	mtx[2][2];
-
-		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
-
-		transformBlit(dest, pSrc, { ofsX, ofsY }, mtx);
-*/
+		setBlitSource(pSrc);
+		transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
 	void GfxDevice::stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip)
@@ -396,7 +380,8 @@ namespace wg
 		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, pSrc, { src.x,src.y }, mtx);
+		setBlitSource(pSrc);
+		transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -425,9 +410,198 @@ namespace wg
 		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
-
-		transformBlit(dest, pSrc, { src.x,src.y }, mtx);
+		setBlitSource(pSrc);
+		transformBlit(dest, { src.x,src.y }, mtx);
 	}
+
+	//____ blitPatches() _________________________________________________________
+
+	void GfxDevice::blitPatches(Coord dest, int nPatches, const Rect * pPatches)
+	{
+		transformBlitPatches({ dest, m_pBlitSource->size() }, { 0,0 }, flipTransforms[0], nPatches, pPatches);
+	}
+
+	void GfxDevice::blitPatches(Coord dest, const Rect& src, int nPatches, const Rect * pPatches)
+	{
+		transformBlitPatches({ dest, src.size() }, src.pos(), flipTransforms[0], nPatches, pPatches);
+	}
+
+	//____ flipBlitPatches() _________________________________________________________
+
+	void GfxDevice::flipBlitPatches(Coord dest, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		Size srcSize = m_pBlitSource->size();
+
+		int ofsX = (srcSize.w - 1) * flipOffsets[(int)flip][0];
+		int ofsY = (srcSize.h - 1) * flipOffsets[(int)flip][1];
+
+		Size dstSize = srcSize;
+		if (flipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+		transformBlitPatches({ dest, dstSize }, { ofsX, ofsY }, flipTransforms[(int)flip], nPatches, pPatches );
+	}
+
+	void GfxDevice::flipBlitPatches(Coord dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		int ofsX = src.x + (src.w - 1) * flipOffsets[(int)flip][0];
+		int ofsY = src.y + (src.h - 1) * flipOffsets[(int)flip][1];
+
+		Size dstSize = m_pBlitSource->size();
+		if (flipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+		transformBlitPatches({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip], nPatches, pPatches);
+	}
+
+	//____ stretchBlitPatches() _______________________________________________
+
+	void GfxDevice::stretchBlitPatches(const Rect& dest, int nPatches, const Rect * pPatches)
+	{
+		stretchBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), nPatches, pPatches);
+	}
+
+	void GfxDevice::stretchBlitPatches(const Rect& dest, const Rect& _src, int nPatches, const Rect * pPatches)
+	{
+		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
+
+		float	mtx[2][2];
+
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		{
+			src.x += 0.5f;
+			src.y += 0.5f;
+
+			mtx[0][0] = (src.w - 1) / (dest.w - 1);
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = (src.h - 1) / (dest.h - 1);
+		}
+		else
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+
+		transformBlitPatches(dest, { src.x, src.y }, mtx, nPatches, pPatches);
+	}
+
+	void GfxDevice::stretchBlitPatches(const Rect& dest, const RectF& src, int nPatches, const Rect * pPatches)
+	{
+		float	mtx[2][2];
+
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		{
+			mtx[0][0] = src.w / (dest.w - 1);
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / (dest.h - 1);
+		}
+		else
+		{
+			mtx[0][0] = src.w / dest.w;
+			mtx[0][1] = 0;
+			mtx[1][0] = 0;
+			mtx[1][1] = src.h / dest.h;
+		}
+
+		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
+	}
+
+	//____ stretchFlipBlitPatches() _____________________________________________________
+
+	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		stretchFlipBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), flip, nPatches, pPatches);
+	}
+
+	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		float scaleX, scaleY;
+		float ofsX, ofsY;
+
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		{
+			float srcW = (float)(src.w - 1);
+			float srcH = (float)(src.h - 1);
+
+			scaleX = srcW / (dest.w - 1);
+			scaleY = srcH / (dest.h - 1);
+
+			ofsX = src.x + 0.5f + srcW * flipOffsets[(int)flip][0];
+			ofsY = src.y + 0.5f + srcH * flipOffsets[(int)flip][1];
+		}
+		else
+		{
+			float srcW = (float)src.w;
+			float srcH = (float)src.h;
+
+			scaleX = srcW / dest.w;
+			scaleY = srcH / dest.h;
+
+			ofsX = src.x + (srcW - scaleX) * flipOffsets[(int)flip][0];
+			ofsY = src.y + (srcH - scaleY) * flipOffsets[(int)flip][1];
+		}
+
+		float	mtx[2][2];
+
+		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+
+		transformBlitPatches(dest, { ofsX, ofsY }, mtx, nPatches, pPatches);
+	}
+
+	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const RectF& src, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		float	scaleX = src.w / dest.w;
+		float	scaleY = src.h / dest.h;
+
+		float ofsX = src.x + (src.w - scaleX) * flipOffsets[(int)flip][0];
+		float ofsY = src.y + (src.h - scaleY) * flipOffsets[(int)flip][1];
+
+		float	mtx[2][2];
+
+		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+
+		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
+	}
+
+	//____ rotScaleBlitPatches() _____________________________________________________
+
+	void GfxDevice::rotScaleBlitPatches(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale, int nPatches, const Rect * pPatches)
+	{
+		if (scale <= 0.f)
+			return;
+
+		CoordF	src;
+		float	mtx[2][2];
+
+		float	sz = (float)sin(-rotationDegrees * 3.14159265 / 180);
+		float	cz = (float)cos(-rotationDegrees * 3.14159265 / 180);
+
+		scale = 1.f / scale;
+
+		mtx[0][0] = cz * scale;
+		mtx[0][1] = sz * scale;
+
+		mtx[1][0] = -sz * scale;
+		mtx[1][1] = cz * scale;
+
+		src = srcCenter;
+
+		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
+		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+
+		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
+	}
+
 
 	//_____ blitFromCanvas() ______________________________________________
 

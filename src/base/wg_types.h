@@ -746,7 +746,6 @@ namespace wg
 	};
 
 
-
 } // namespace wg
 
 #include <wg_enumextras.h>

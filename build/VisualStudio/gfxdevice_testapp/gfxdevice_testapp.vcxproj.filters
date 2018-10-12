@@ -5,6 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
+    <Filter Include="testsuites">
+      <UniqueIdentifier>{41805ed1-abed-4417-b846-6f36cab7b80c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\gfxdevice_testapp\main.cpp">
@@ -20,6 +23,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\gfxdevice_testapp\wg_fileutil.h">
       <Filter>code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\testsuite.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\filltests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\canvasformattests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\patchblittests.h">
+      <Filter>testsuites</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

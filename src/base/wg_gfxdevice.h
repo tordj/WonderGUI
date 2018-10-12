@@ -60,6 +60,8 @@ namespace wg
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
 	
+	//____ GfxDevice __________________________________________________________
+
 	class GfxDevice : public Object
 	{
 	public:
@@ -94,7 +96,10 @@ namespace wg
 
 		virtual bool		setBlendMode( BlendMode blendMode );
 		inline BlendMode 	blendMode() const { return m_blendMode; }
-		
+
+		virtual bool		setBlitSource(Surface * pSource);
+		inline Surface_p 	blitSource() const { return m_pBlitSource; }
+
 
 		//.____ Rendering ________________________________________________
 	
@@ -103,6 +108,7 @@ namespace wg
 		
 		// Low level draw methods.
 	
+		virtual void	fill(const Color& col);
 		virtual void	fill( const Rect& rect, const Color& col );
 		virtual void	fill(const RectF& rect, const Color& col) = 0;
 
@@ -110,29 +116,14 @@ namespace wg
 
 		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
-/*
-		virtual void	blit( Surface * pSrc );
-		virtual void	blit( Surface * pSrc, Coord dest );
-		virtual void	blit( Surface * pSrc, const Rect& src, Coord dest ) = 0;
-	
-		virtual void	stretchBlit(Surface * pSrc);
-		virtual void	stretchBlit( Surface * pSrc, const Rect& dest );
-		virtual void	stretchBlit( Surface * pSrc, const Rect& src, const Rect& dest );
-		virtual void	stretchBlit(Surface * pSrc, const RectF& src, const Rect& dest) = 0;
 
-		virtual void	tileBlit(Surface * pSrc);
-		virtual void	tileBlit( Surface * pSrc, const Rect& dest );
-		virtual void	tileBlit( Surface * pSrc, const Rect& src, const Rect& dest );
-*/
+		// Blit methods
 
 		virtual void	blit(Coord dest, Surface * pSrc);
 		virtual void	blit(Coord dest, Surface * pSrc, const Rect& src);
 
 		virtual void	flipBlit(Coord dest, Surface * pSrc, GfxFlip flip );
 		virtual void	flipBlit(Coord dest, Surface * pSrc, const Rect& src, GfxFlip flip );
-
-//		virtual void	tileBlit(const Rect& dest, Surface * pSrc );
-//		virtual void	tileBlit(const Rect& dest, Surface * pSrc, const Rect& src );
 
 		virtual void	stretchBlit(const Rect& dest, Surface * pSrc);
 		virtual void	stretchBlit(const Rect& dest, Surface * pSrc, const Rect& src);
@@ -142,15 +133,35 @@ namespace wg
 		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const Rect& src, GfxFlip flip);
 		virtual void	stretchFlipBlit(const Rect& dest, Surface * pSrc, const RectF& src, GfxFlip flip);
 
-//		virtual void	stretchTileBlit(const Rect& dest, Size stretchedSize, Surface * pSrc);
-//		virtual void	stretchTileBlit(const Rect& dest, Size stretchedSize, Surface * pSrc, const Rect& src);
-
 		virtual void	rotScaleBlit(const Rect& dest, Surface * pSrc, CoordF srcCenter, float rotationDegrees, float scale);
 
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2] ) = 0;
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2] ) = 0;
+		// Patch blit methods
 
+		virtual void	blitPatches(Coord dest, int nPatches, const Rect * pPatches);
+		virtual void	blitPatches(Coord dest, const Rect& src, int nPatches, const Rect * pPatches);
 
+		virtual void	flipBlitPatches(Coord dest, GfxFlip flip, int nPatches, const Rect * pPatches);
+		virtual void	flipBlitPatches(Coord dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches);
+
+		virtual void	stretchBlitPatches(const Rect& dest, int nPatches, const Rect * pPatches);
+		virtual void	stretchBlitPatches(const Rect& dest, const Rect& src, int nPatches, const Rect * pPatches);
+		virtual void	stretchBlitPatches(const Rect& dest, const RectF& src, int nPatches, const Rect * pPatches);
+
+		virtual void	stretchFlipBlitPatches(const Rect& dest, GfxFlip flip, int nPatches, const Rect * pPatches);
+		virtual void	stretchFlipBlitPatches(const Rect& dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches);
+		virtual void	stretchFlipBlitPatches(const Rect& dest, const RectF& src, GfxFlip flip, int nPatches, const Rect * pPatches);
+
+		virtual void	rotScaleBlitPatches(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale, int nPatches, const Rect * pPatches);
+
+		// Low level blit methods
+
+		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2] ) = 0;
+		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2] ) = 0;
+
+		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
+		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
+
+		 
 		// Special draw methods
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
@@ -161,7 +172,7 @@ namespace wg
 
 		virtual void	blitNinePatch(const Rect& dstRect, const Border& dstFrame, Surface* pSrc, const Rect& srcRect, const Border& srcFrame);
 
-
+		 
 		//.____ Deprecated ________________________________________________
 
 		virtual void	blitHorrBar(		Surface * _pSurf, const Rect& _src,
@@ -190,6 +201,7 @@ namespace wg
 		//
 
 		Surface_p	m_pCanvas;
+		Surface_p	m_pBlitSource;
 
 		Rect		m_clip;				// Clipping rectangle.
 		Color		m_tintColor;		// Current Tint color.

@@ -63,18 +63,22 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		virtual void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
 
-		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
-		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
+		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-		virtual void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectF& rect, const Color& col) override;
 
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2]) override;
-		virtual void	transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2]) override;
+		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
+		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
-		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
+		void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
+
+
+		void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
+		void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
 
 	protected:
 		NullGfxDevice( Size size );

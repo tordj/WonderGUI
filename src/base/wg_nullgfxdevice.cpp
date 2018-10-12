@@ -112,19 +112,27 @@ namespace wg
 	{
 	}
 
+	void NullGfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	{
+	}
+
+	void NullGfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
+	{
+	}
+
+	void NullGfxDevice::transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+	}
+
+	void NullGfxDevice::transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+	}
+
 	void NullGfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
 	{
 	}
 
 	void NullGfxDevice::drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness, Color outlineColor)
-	{
-	}
-
-	void NullGfxDevice::transformBlit(const Rect& dest, Surface * pSrc, Coord src, const int simpleTransform[2][2])
-	{
-	}
-
-	void NullGfxDevice::transformBlit(const Rect& dest, Surface * pSrc, CoordF src, const float complexTransform[2][2])
 	{
 	}
 

@@ -7,6 +7,8 @@ using namespace wg;
 using namespace std;
 
 
+
+
 class TestUnit
 {
 public:
@@ -258,5 +260,46 @@ namespace test
 	};
 
 
+	class RotScaleBlend : public TestUnit
+	{
+	public:
+		const string	name() const { return "RotScaleBlend"; }
+		bool			init(GfxDevice * pDevice, const Rect& canvas)
+		{
+			m_pSource = FileUtil::loadSurface("../resources/clockface_2500.png", pDevice->surfaceFactory());
+
+			if (m_pSource)
+			{
+				m_pSource->setScaleMode(ScaleMode::Interpolate);
+				return true;
+			}
+
+			return false;
+		}
+
+		bool			run(GfxDevice * pDevice, const Rect& canvas)
+		{
+			CoordF center = { m_pSource->size().w / 2.f, m_pSource->size().h / 2.f };
+
+			pDevice->rotScaleBlit(canvas, m_pSource, center, rot, scale);
+
+/*
+			rot += 0.1;
+			scale += scaleInc;
+
+			if (scale > 2 || scale < 0.3)
+				scaleInc = -scaleInc;
+*/
+			return true;
+		}
+
+	protected:
+
+		float rot = 45;
+		float scale = 1.f;
+		float scaleInc = 0.001f;
+
+		Surface_p	m_pSource;
+	};
 
 }

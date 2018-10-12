@@ -1438,6 +1438,8 @@ namespace wg
 			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 			m_canvasPitch = m_pCanvas->pitch();
 
+			_updateBlitFunctions();
+
 			// Call custom function, let it decide if it can render or not.
 
 			if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
@@ -1450,6 +1452,35 @@ namespace wg
 	return true;
 	}
 
+	//____ setTintColor() _____________________________________________________
+
+	void SoftGfxDevice::setTintColor(Color color)
+	{
+		if (color == m_tintColor)
+			return;
+
+		bool bUpdateNeeded = (color.a != m_tintColor.a) && (color.a == 255 || m_tintColor.a == 255);
+		GfxDevice::setTintColor(color);
+		m_colTrans.baseTint = color;
+
+		if(bUpdateNeeded )
+			_updateBlitFunctions();
+	}
+
+	//____ setBlendMode() _____________________________________________________
+
+	bool SoftGfxDevice::setBlendMode(BlendMode blendMode)
+	{
+		if (blendMode == m_blendMode)
+			return true;
+
+		bool retVal = GfxDevice::setBlendMode(blendMode);
+		if (retVal)
+			_updateBlitFunctions();
+		return retVal;
+	}
+
+
 	//____ beginRender() _______________________________________________________
 
 	bool SoftGfxDevice::beginRender()
@@ -1461,6 +1492,8 @@ namespace wg
 		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 		m_canvasPitch = m_pCanvas->pitch();
 		
+		_updateBlitFunctions();
+
 		if( !m_pCanvasPixels )
 			return false;
 
@@ -1502,6 +1535,8 @@ namespace wg
 		m_pCanvasPixels = 0;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
+
+		_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
 		return true;
 	}
 
@@ -3360,126 +3395,266 @@ namespace wg
 			pOp(m_clip, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, colTrans);
 	}
 
-	//____ transformBlit() ____________________________________________________
+	//____ setBlitSource() ____________________________________________________
 
-	void SoftGfxDevice::transformBlit(const Rect& dest, Surface * _pSrc, Coord src, const int simpleTransform[2][2])
+	bool SoftGfxDevice::setBlitSource(Surface * pSource)
+	{
+		if (pSource == m_pBlitSource)
+			return true;
+
+		if (!pSource || !pSource->isInstanceOf(SoftSurface::CLASSNAME))
+		{
+			m_pBlitSource = nullptr;
+			GfxDevice::m_pBlitSource = nullptr;
+			return false;
+		}
+
+		SoftSurface * pSrcSurf = (SoftSurface*)pSource;
+
+		if (!pSrcSurf->m_pData)
+		{
+			m_pBlitSource = nullptr;
+			GfxDevice::m_pBlitSource = nullptr;
+			return false;
+		}
+
+		m_pBlitSource = pSrcSurf;
+		GfxDevice::m_pBlitSource = pSource;
+
+		_updateBlitFunctions();
+	}
+
+
+	//____ transformBlit() [simple] ____________________________________________________
+
+	void SoftGfxDevice::transformBlit(const Rect& _dest, Coord _src, const int simpleTransform[2][2])
+	{
+		Rect	dest = _dest;
+		Coord	src = _src;
+
+		// Do Clipping
+
+		if ((m_clip.x > dest.x) || (m_clip.x + m_clip.w < dest.x + dest.w) ||
+			(m_clip.y > dest.y) || (m_clip.y + m_clip.h < dest.y + dest.h))
+		{
+
+			if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
+				(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
+				return;																					// Totally outside clip-rect.
+
+			if (dest.x < m_clip.x)
+			{
+				int xDiff = m_clip.x - dest.x;
+				dest.w -= xDiff;
+				dest.x = m_clip.x;
+
+				src.x += xDiff * simpleTransform[0][0];
+				src.y += xDiff * simpleTransform[1][0];
+			}
+
+			if (dest.y < m_clip.y)
+			{
+				int yDiff = m_clip.y - dest.y;
+				dest.h -= yDiff;
+				dest.y = m_clip.y;
+
+				src.x += yDiff * simpleTransform[0][1];
+				src.y += yDiff * simpleTransform[1][1];
+			}
+
+			if (dest.x + dest.w > m_clip.x + m_clip.w)
+				dest.w = (m_clip.x + m_clip.w) - dest.x;
+
+			if (dest.y + dest.h > m_clip.y + m_clip.h)
+				dest.h = (m_clip.y + m_clip.h) - dest.y;
+		}
+
+		// Render
+
+		(this->*m_pSimpleBlitOp)(dest, src, simpleTransform);
+	}
+
+	//____ transformBlit() [complex] ____________________________________________________
+
+	void SoftGfxDevice::transformBlit(const Rect& _dest, CoordF _src, const float complexTransform[2][2])
+	{
+		Rect	dest = _dest;
+		CoordF	src = _src;
+
+		// Do Clipping
+
+		if ((m_clip.x > dest.x) || (m_clip.x + m_clip.w < dest.x + dest.w) ||
+			(m_clip.y > dest.y) || (m_clip.y + m_clip.h < dest.y + dest.h))
+		{
+
+			if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
+				(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
+				return;																					// Totally outside clip-rect.
+
+			if (dest.x < m_clip.x)
+			{
+				int xDiff = m_clip.x - dest.x;
+				dest.w -= xDiff;
+				dest.x = m_clip.x;
+
+				src.x += xDiff * complexTransform[0][0];
+				src.y += xDiff * complexTransform[1][0];
+			}
+
+			if (dest.y < m_clip.y)
+			{
+				int yDiff = m_clip.y - dest.y;
+				dest.h -= yDiff;
+				dest.y = m_clip.y;
+
+				src.x += yDiff * complexTransform[0][1];
+				src.y += yDiff * complexTransform[1][1];
+			}
+
+			if (dest.x + dest.w > m_clip.x + m_clip.w)
+				dest.w = (m_clip.x + m_clip.w) - dest.x;
+
+			if (dest.y + dest.h > m_clip.y + m_clip.h)
+				dest.h = (m_clip.y + m_clip.h) - dest.y;
+		}
+
+		// Render
+
+		(this->*m_pComplexBlitOp)(dest, src, complexTransform);
+	}
+
+	//____ transformBlitPatches() [simple] ____________________________________
+
+	void SoftGfxDevice::transformBlitPatches(const Rect& _dest, Coord _src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+		// Clip and render the patches
+
+		Rect clip(_dest, m_clip);
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect  dest = pPatches[i];
+
+			Coord src = _src;
+
+			Coord	patchOfs = dest.pos() - _dest.pos();
+
+
+			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
+				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+			{
+
+				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
+					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
+					continue;																					// Totally outside clip-rect.
+
+				if (dest.x < clip.x)
+				{
+					int xDiff = clip.x - dest.x;
+					dest.w -= xDiff;
+					dest.x = clip.x;
+					patchOfs.x += xDiff;
+				}
+
+				if (dest.y < clip.y)
+				{
+					int yDiff = clip.y - dest.y;
+					dest.h -= yDiff;
+					dest.y = clip.y;
+					patchOfs.y += yDiff;
+				}
+
+				if (dest.x + dest.w > clip.x + clip.w)
+					dest.w = (clip.x + clip.w) - dest.x;
+
+				if (dest.y + dest.h > clip.y + clip.h)
+					dest.h = (clip.y + clip.h) - dest.y;
+			}
+
+			//
+
+			src.x += patchOfs.x * simpleTransform[0][0] + patchOfs.y * simpleTransform[1][0];
+			src.y += patchOfs.x * simpleTransform[0][1] + patchOfs.y * simpleTransform[1][1];
+
+			(this->*m_pSimpleBlitOp)(dest, src, simpleTransform);
+		}
+	}
+
+	//____ transformBlitPatches() [complex] ____________________________________
+
+	void SoftGfxDevice::transformBlitPatches(const Rect& _dest, CoordF _src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+		// Clip and render the patches
+
+		Rect clip(_dest, m_clip);
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect	dest = pPatches[i];
+			CoordF	src = _src;
+
+			Coord	patchOfs = dest.pos() - _dest.pos();
+
+			// Do Clipping
+
+			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
+				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+			{
+
+				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
+					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
+					return;																					// Totally outside clip-rect.
+
+				if (dest.x < clip.x)
+				{
+					int xDiff = clip.x - dest.x;
+					dest.w -= xDiff;
+					dest.x = clip.x;
+					patchOfs.x += xDiff;
+				}
+
+				if (dest.y < clip.y)
+				{
+					int yDiff = clip.y - dest.y;
+					dest.h -= yDiff;
+					dest.y = clip.y;
+					patchOfs.y += yDiff;
+				}
+
+				if (dest.x + dest.w > clip.x + clip.w)
+					dest.w = (clip.x + clip.w) - dest.x;
+
+				if (dest.y + dest.h > clip.y + clip.h)
+					dest.h = (clip.y + clip.h) - dest.y;
+			}
+
+			//
+
+			src.x += patchOfs.x * complexTransform[0][0] + patchOfs.y * complexTransform[1][0];
+			src.y += patchOfs.x * complexTransform[0][1] + patchOfs.y * complexTransform[1][1];
+
+			// Do render
+
+			(this->*m_pComplexBlitOp)(dest, src, complexTransform);
+		}
+	}
+
+/*
+	//____ transformBlitMulti() [simple] ____________________________________
+
+	void SoftGfxDevice::transformBlitMulti(Surface * _pSrc, const int simpleTransform[2][2], int nBlits, const SimpleBlit * pBlits)
 	{
 		if (!_pSrc || !m_pCanvas || !_pSrc->isInstanceOf(SoftSurface::CLASSNAME))
 			return;
 
-		SoftSurface * pSrc = (SoftSurface*)_pSrc;
+		SoftSurface * pSrcSurf = (SoftSurface*)_pSrc;
 
-		if (!m_pCanvasPixels || !pSrc->m_pData)
+		if (!m_pCanvasPixels || !pSrcSurf->m_pData)
 			return;
 
+		//
 
-		if ((m_clip.x <= dest.x) && (m_clip.x + m_clip.w > dest.x + dest.w) &&
-			(m_clip.y <= dest.y) && (m_clip.y + m_clip.h > dest.y + dest.h))
-		{
-			_transformBlit(dest, pSrc, src, simpleTransform);										// Totally inside clip-rect.
-			return;
-		}
-
-		if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
-			(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
-			return;																					// Totally outside clip-rect.
-
-		// Do Clipping
-
-		Rect	newDest = dest;
-		Coord	newSrc = src;
-
-		if (dest.x < m_clip.x)
-		{
-			int xDiff = m_clip.x - dest.x;
-			newDest.w -= xDiff;
-			newDest.x = m_clip.x;
-
-			newSrc.x += xDiff * simpleTransform[0][0];
-			newSrc.y += xDiff * simpleTransform[1][0];
-		}
-
-		if (dest.y < m_clip.y)
-		{
-			int yDiff = m_clip.y - dest.y;
-			newDest.h -= yDiff;
-			newDest.y = m_clip.y;
-
-			newSrc.x += yDiff * simpleTransform[0][1];
-			newSrc.y += yDiff * simpleTransform[1][1];
-		}
-
-		if (newDest.x + newDest.w > m_clip.x + m_clip.w)
-			newDest.w = (m_clip.x + m_clip.w) - newDest.x;
-
-		if (newDest.y + newDest.h > m_clip.y + m_clip.h)
-			newDest.h = (m_clip.y + m_clip.h) - newDest.y;
-
-		_transformBlit(newDest, pSrc, newSrc, simpleTransform);										// Totally inside clip-rect.
-	}
-
-	void SoftGfxDevice::transformBlit(const Rect& dest, Surface * _pSrc, CoordF src, const float complexTransform[2][2])
-	{
-		if (!_pSrc || !m_pCanvas || !_pSrc->isInstanceOf(SoftSurface::CLASSNAME))
-			return;
-
-		SoftSurface * pSrc = (SoftSurface*)_pSrc;
-
-		if (!m_pCanvasPixels || !pSrc->m_pData)
-			return;
-
-		if ((m_clip.x <= dest.x) && (m_clip.x + m_clip.w > dest.x + dest.w) &&
-			(m_clip.y <= dest.y) && (m_clip.y + m_clip.h > dest.y + dest.h))
-		{
-			_transformBlit(dest, pSrc, src, complexTransform);										// Totally inside clip-rect.
-			return;
-		}
-
-		if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
-			(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
-			return;																					// Totally outside clip-rect.
-
-		// Do Clipping
-
-		Rect	newDest = dest;
-		CoordF	newSrc = src;
-
-		if (dest.x < m_clip.x)
-		{
-			int xDiff = m_clip.x - dest.x;
-			newDest.w -= xDiff;
-			newDest.x = m_clip.x;
-
-			newSrc.x += xDiff * complexTransform[0][0];
-			newSrc.y += xDiff * complexTransform[1][0];
-		}
-
-		if (dest.y < m_clip.y)
-		{
-			int yDiff = m_clip.y - dest.y;
-			newDest.h -= yDiff;
-			newDest.y = m_clip.y;
-
-			newSrc.x += yDiff * complexTransform[0][1];
-			newSrc.y += yDiff * complexTransform[1][1];
-		}
-
-		if (newDest.x + newDest.w > m_clip.x + m_clip.w)
-			newDest.w = (m_clip.x + m_clip.w) - newDest.x;
-
-		if (newDest.y + newDest.h > m_clip.y + m_clip.h)
-			newDest.h = (m_clip.y + m_clip.h) - newDest.y;
-
-		_transformBlit(newDest, pSrc, newSrc, complexTransform);
-	}
-
-
-
-	//____ _transformBlit() [simple] __________________________________________________________________
-
-	void SoftGfxDevice::_transformBlit(const Rect& dest, SoftSurface * pSrcSurf, Coord src, const int simpleTransform[2][2])
-	{
-		ColTrans			colTrans{ m_tintColor, nullptr, nullptr };
+		ColTrans		colTrans{ m_tintColor, nullptr, nullptr };
 
 		int				tintMode = m_tintColor == Color::White ? 0 : 1;
 		PixelFormat		srcFormat = pSrcSurf->m_pixelDescription.format;
@@ -3488,10 +3663,12 @@ namespace wg
 		// Try to find a suitable one-pass operation
 
 		SimpleBlitOp_p	pOnePassOp = nullptr;
+		SimpleBlitOp_p	pReader = nullptr;
+		SimpleBlitOp_p	pWriter = nullptr;
 
 		if (m_blendMode == BlendMode::Blend)
 		{
-			if(dstFormat == PixelFormat::BGRA_8)
+			if (dstFormat == PixelFormat::BGRA_8)
 				pOnePassOp = s_blendTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
 			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
 				pOnePassOp = s_blendTo_BGR_8_OpTab[(int)srcFormat][tintMode];
@@ -3504,28 +3681,190 @@ namespace wg
 				pOnePassOp = s_moveTo_BGR_8_OpTab[(int)srcFormat][tintMode];
 		}
 
-		if(pOnePassOp)
+		// Fall back to two-pass rendering.
+
+		if (pOnePassOp == nullptr)
 		{
-			_onePassSimpleBlit(pOnePassOp, dest, pSrcSurf, src, simpleTransform, colTrans);
+			pReader = s_moveTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
+			pWriter = s_pass2OpTab[(int)m_blendMode][(int)dstFormat];
+
+			if (pReader == nullptr || pWriter == nullptr)
+				return;
+		}
+
+		// Clip and render the patches
+
+		Rect& clip = m_clip;
+
+		for (int i = 0; i < nBlits; i++)
+		{
+			Rect  dest = pBlits[i].dest;
+			Coord src = pBlits[i].src;
+
+			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
+				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+			{
+
+				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
+					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
+					continue;																					// Totally outside clip-rect.
+
+				if (dest.x < clip.x)
+				{
+					int xDiff = clip.x - dest.x;
+					dest.w -= xDiff;
+					dest.x = clip.x;
+					src.x += xDiff * simpleTransform[0][0];
+					src.y += xDiff * simpleTransform[0][1];
+				}
+
+				if (dest.y < clip.y)
+				{
+					int yDiff = clip.y - dest.y;
+					dest.h -= yDiff;
+					dest.y = clip.y;
+					src.x += yDiff * simpleTransform[1][0];
+					src.y += yDiff * simpleTransform[1][1];
+				}
+
+				if (dest.x + dest.w > clip.x + clip.w)
+					dest.w = (clip.x + clip.w) - dest.x;
+
+				if (dest.y + dest.h > clip.y + clip.h)
+					dest.h = (clip.y + clip.h) - dest.y;
+			}
+
+			//
+
+			if (pOnePassOp)
+				_onePassSimpleBlit(pOnePassOp, dest, pSrcSurf, src, simpleTransform, colTrans);
+			else
+				_twoPassSimpleBlit(pReader, pWriter, dest, pSrcSurf, src, simpleTransform, colTrans);
+		}
+
+	}
+
+	//____ transformBlitMulti() [complex] ____________________________________
+
+	void SoftGfxDevice::transformBlitMulti(Surface * _pSrc, const float complexTransform[][2][2], int nBlits, const ComplexBlit * pBlits)
+	{
+		if (!_pSrc || !m_pCanvas || !_pSrc->isInstanceOf(SoftSurface::CLASSNAME))
 			return;
+
+		SoftSurface * pSrcSurf = (SoftSurface*)_pSrc;
+
+		if (!m_pCanvasPixels || !pSrcSurf->m_pData)
+			return;
+
+		// 
+
+
+		int				tintMode = m_tintColor == Color::White ? 0 : 1;
+		ScaleMode		scaleMode = pSrcSurf->scaleMode();
+		PixelFormat		srcFormat = pSrcSurf->m_pixelDescription.format;
+		PixelFormat		dstFormat = m_pCanvas->pixelFormat();
+
+		// Try to find a suitable one-pass operation
+
+		ComplexBlitOp_p	pOnePassOp = nullptr;
+		ComplexBlitOp_p pReader = nullptr;
+		SimpleBlitOp_p	pWriter = nullptr;
+
+		if (m_blendMode == BlendMode::Blend)
+		{
+			if (dstFormat == PixelFormat::BGRA_8)
+				pOnePassOp = s_transformBlendTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
+				pOnePassOp = s_transformBlendTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+		}
+		else if (m_blendMode == BlendMode::Replace)
+		{
+			if (dstFormat == PixelFormat::BGRA_8)
+				pOnePassOp = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
+				pOnePassOp = s_transformTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
 		}
 
 		// Fall back to two-pass rendering.
 
-		SimpleBlitOp_p pReader = s_moveTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
-		SimpleBlitOp_p pWriter = s_pass2OpTab[(int)m_blendMode][(int)dstFormat];
+		if (pOnePassOp == nullptr)
+		{
+			pReader = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
-		if (pReader == nullptr || pWriter == nullptr)
-			return;
+			if (pReader == nullptr || pWriter == nullptr)
+				return;
+		}
 
-		_twoPassSimpleBlit(pReader, pWriter, dest, pSrcSurf, src, simpleTransform, colTrans);
+		// Clip and render the patches
+
+		Rect& clip = m_clip;
+
+		for (int i = 0; i < nBlits; i++)
+		{
+			Rect	dest = pBlits[i].dest;
+			CoordF	src = pBlits[i].src;
+			int		mtxIdx = pBlits[i].transformIdx;
+
+			// Do Clipping
+
+			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
+				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+			{
+
+				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
+					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
+					return;																					// Totally outside clip-rect.
+
+				if (dest.x < clip.x)
+				{
+					int xDiff = clip.x - dest.x;
+					dest.w -= xDiff;
+					dest.x = clip.x;
+
+					src.x += xDiff * complexTransform[mtxIdx][0][0];
+					src.y += xDiff * complexTransform[mtxIdx][0][1];
+				}
+
+				if (dest.y < clip.y)
+				{
+					int yDiff = clip.y - dest.y;
+					dest.h -= yDiff;
+					dest.y = clip.y;
+
+					src.x += yDiff * complexTransform[mtxIdx][1][0];
+					src.y += yDiff * complexTransform[mtxIdx][1][1];
+				}
+
+				if (dest.x + dest.w > clip.x + clip.w)
+					dest.w = (clip.x + clip.w) - dest.x;
+
+				if (dest.y + dest.h > clip.y + clip.h)
+					dest.h = (clip.y + clip.h) - dest.y;
+			}
+
+			// We use 0,0 as pixel center in software renderer, not 0.5,0.5.
+
+			if (scaleMode == ScaleMode::Interpolate)
+			{
+				src.x -= 0.5f;
+				src.y -= 0.5f;
+			}
+
+			// Do render
+
+			(this->*m_pComplexBlitOp)(dest, src, complexTransform[mtxIdx]);
+		}
 	}
+|*/
 
 
 	//____ _onePassSimpleBlit() _____________________________________________
 
-	void SoftGfxDevice::_onePassSimpleBlit(SimpleBlitOp_p pOp, const Rect& dest, const SoftSurface * pSource, Coord src, const int simpleTransform[2][2], const ColTrans& tint)
+	void SoftGfxDevice::_onePassSimpleBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
 	{
+		const SoftSurface * pSource = m_pBlitSource;
+
 		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
@@ -3539,15 +3878,15 @@ namespace wg
 		uint8_t * pDst = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * dstPixelBytes;
 		uint8_t * pSrc = pSource->m_pData + src.y * pSource->m_pitch + src.x * srcPixelBytes;
 
-		pOp(pSrc, pDst, pSource->m_pClut, pitches, dest.h, dest.w, tint);
+		m_pSimpleBlitOnePassOp(pSrc, pDst, pSource->m_pClut, pitches, dest.h, dest.w, m_colTrans);
 	}
-
-
 
 	//____ _twoPassSimpleBlit() _____________________________________________
 
-	void SoftGfxDevice::_twoPassSimpleBlit(SimpleBlitOp_p pReader, SimpleBlitOp_p pWriter, const Rect& dest, const SoftSurface * pSource,  Coord src, const int simpleTransform[2][2], const ColTrans& tint)
+	void SoftGfxDevice::_twoPassSimpleBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
 	{
+		SoftSurface * pSource = m_pBlitSource;
+
 		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
@@ -3585,8 +3924,8 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + (dest.y+line) * m_canvasPitch + dest.x * dstPixelBytes;
 			uint8_t * pSrc = pSource->m_pData + (src.y+line) * pSource->m_pitch + src.x * srcPixelBytes;
 
-			pReader(pSrc, pChunkBuffer, pSource->m_pClut, pitchesPass1, thisChunkLines, dest.w, tint);
-			pWriter(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, tint);
+			m_pSimpleBlitFirstPassOp(pSrc, pChunkBuffer, pSource->m_pClut, pitchesPass1, thisChunkLines, dest.w, m_colTrans);
+			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans);
 
 			line += thisChunkLines;
 		}
@@ -3594,79 +3933,44 @@ namespace wg
 		Base::memStackRelease(memBufferSize);
 	}
 
-	//____ _transformBlit() [complex] ___________________________________________________
+	//____ _onePassComplexBlit() ____________________________________________
 
-	void SoftGfxDevice::_transformBlit(const Rect& dest, SoftSurface * pSrcSurf, CoordF src, const float complexTransform[2][2])
+	void SoftGfxDevice::_onePassComplexBlit(const Rect& dest, CoordF pos, const float transformMatrix[2][2])
 	{
-		ColTrans			colTrans{ m_tintColor, nullptr, nullptr };
-
-		int				tintMode = m_tintColor == Color::White ? 0 : 1;
-		ScaleMode		scaleMode = pSrcSurf->scaleMode();
-		PixelFormat		srcFormat = pSrcSurf->m_pixelDescription.format;
-		PixelFormat		dstFormat = m_pCanvas->pixelFormat();
+		const SoftSurface * pSource = m_pBlitSource;
 
 		// We use 0,0 as pixel center in software renderer, not 0.5,0.5.
 
-		if (scaleMode == ScaleMode::Interpolate)
+		if (pSource->m_scaleMode == ScaleMode::Interpolate)
 		{
-			src.x -= 0.5f;
-			src.y -= 0.5f;
+			pos.x -= 0.5f;
+			pos.y -= 0.5f;
 		}
 
-		// Try to find a suitable one-pass operation
-
-		ComplexBlitOp_p	pOnePassOp = nullptr;
-
-		if (m_blendMode == BlendMode::Blend)
-		{
-			if (dstFormat == PixelFormat::BGRA_8)
-				pOnePassOp = s_transformBlendTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
-			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
-				pOnePassOp = s_transformBlendTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
-		}
-		else if (m_blendMode == BlendMode::Replace)
-		{
-			if (dstFormat == PixelFormat::BGRA_8)
-				pOnePassOp = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
-			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
-				pOnePassOp = s_transformTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
-		}
-
-		if (pOnePassOp)
-		{
-			_onePassComplexBlit(pOnePassOp, dest, pSrcSurf, src, complexTransform, colTrans);
-			return;
-		}
-
-		// Fall back to two-pass rendering.
-
-		ComplexBlitOp_p pReader = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
-		SimpleBlitOp_p pWriter = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-
-		if (pReader == nullptr || pWriter == nullptr)
-			return;
-
-		_twoPassComplexBlit(pReader, pWriter, dest, pSrcSurf, src, complexTransform, colTrans);
-	}
-
-
-	//____ _onePassComplexBlit() ____________________________________________
-
-	void SoftGfxDevice::_onePassComplexBlit(ComplexBlitOp_p pOp, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float transformMatrix[2][2], const ColTrans& tint)
-	{
 		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		uint8_t * pDst = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * dstPixelBytes;
 
-		pOp(pSource, pos, transformMatrix, pDst, dstPixelBytes, m_canvasPitch - dstPixelBytes * dest.w, dest.h, dest.w, tint);
+		m_pComplexBlitOnePassOp(pSource, pos, transformMatrix, pDst, dstPixelBytes, m_canvasPitch - dstPixelBytes * dest.w, dest.h, dest.w, m_colTrans);
 	}
 
 
 	//____ _twoPassComplexBlit() ____________________________________________
 
-	void SoftGfxDevice::_twoPassComplexBlit(ComplexBlitOp_p pReader, SimpleBlitOp_p pWriter, const Rect& dest, const SoftSurface * pSource, CoordF pos, const float transformMatrix[2][2], const ColTrans& tint)
+	void SoftGfxDevice::_twoPassComplexBlit(const Rect& dest, CoordF pos, const float transformMatrix[2][2])
 	{
+		const SoftSurface * pSource = m_pBlitSource;
+
+		// We use 0,0 as pixel center in software renderer, not 0.5,0.5.
+
+		if (pSource->m_scaleMode == ScaleMode::Interpolate)
+		{
+			pos.x -= 0.5f;
+			pos.y -= 0.5f;
+		}
+
+
 		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
@@ -3698,8 +4002,8 @@ namespace wg
 
 			uint8_t * pDst = m_pCanvasPixels + (dest.y + line) * m_canvasPitch + dest.x * dstPixelBytes;
 
-			pReader(pSource, pos, transformMatrix, pChunkBuffer, 4, 0, thisChunkLines, dest.w, tint);
-			pWriter(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, tint);
+			m_pComplexBlitFirstPassOp(pSource, pos, transformMatrix, pChunkBuffer, 4, 0, thisChunkLines, dest.w, m_colTrans);
+			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans);
 
 			pos.x += transformMatrix[1][0] * thisChunkLines;
 			pos.y += transformMatrix[1][1] * thisChunkLines;
@@ -3710,7 +4014,95 @@ namespace wg
 		Base::memStackRelease(memBufferSize);
 	}
 
-	
+	//____ _dummySimpleBlit() _________________________________________________
+
+	void SoftGfxDevice::_dummySimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2])
+	{
+		// Do nothing but prevent crashing or need to check for nullpointer ;)
+	}
+
+	//____ _dummyComplexBlit() ________________________________________________
+
+	void SoftGfxDevice::_dummyComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2])
+	{
+		// Do nothing but prevent crashing or need to check for nullpointer ;)
+	}
+
+
+	//____ _updateBlitFunctions() _____________________________________________
+
+	void SoftGfxDevice::_updateBlitFunctions()
+	{
+		// Sanity checking...
+
+		if (!m_pCanvas || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
+		{
+			m_pSimpleBlitOp = &SoftGfxDevice::_dummySimpleBlit;
+			m_pComplexBlitOp = &SoftGfxDevice::_dummyComplexBlit;
+			return;
+		}
+
+		// 
+
+		int				tintMode = m_colTrans.baseTint == Color::White ? 0 : 1;
+		ScaleMode		scaleMode = m_pBlitSource->scaleMode();
+		PixelFormat		srcFormat = m_pBlitSource->m_pixelDescription.format;
+		PixelFormat		dstFormat = m_pCanvas->pixelFormat();
+
+		// Add fallback back to two-pass rendering.
+
+		m_pSimpleBlitOnePassOp = nullptr;
+		m_pComplexBlitOnePassOp = nullptr;
+
+		m_pSimpleBlitFirstPassOp = s_moveTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
+		m_pComplexBlitFirstPassOp = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+		m_pBlitSecondPassOp = s_pass2OpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+
+		// Try to find a suitable one-pass operation
+
+		if (m_blendMode == BlendMode::Blend)
+		{
+			if (dstFormat == PixelFormat::BGRA_8)
+			{
+				m_pSimpleBlitOnePassOp = s_blendTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
+				m_pComplexBlitOnePassOp = s_transformBlendTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			}
+			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
+			{
+				m_pSimpleBlitOnePassOp = s_blendTo_BGR_8_OpTab[(int)srcFormat][tintMode];
+				m_pComplexBlitOnePassOp = s_transformBlendTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			}
+		}
+		else if (m_blendMode == BlendMode::Replace)
+		{
+			if (dstFormat == PixelFormat::BGRA_8)
+			{
+				m_pSimpleBlitOnePassOp = s_moveTo_BGRA_8_OpTab[(int)srcFormat][tintMode];
+				m_pComplexBlitOnePassOp = s_transformTo_BGRA_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			}
+			else if (dstFormat == PixelFormat::BGR_8 || dstFormat == PixelFormat::BGRX_8)
+			{
+				m_pSimpleBlitOnePassOp = s_moveTo_BGR_8_OpTab[(int)srcFormat][tintMode];
+				m_pComplexBlitOnePassOp = s_transformTo_BGR_8_OpTab[(int)srcFormat][(int)scaleMode][tintMode];
+			}
+		}
+
+		// Decide on Proxy function depending on what blit operations we got.
+
+		if (m_pSimpleBlitOnePassOp)
+			m_pSimpleBlitOp = &SoftGfxDevice::_onePassSimpleBlit;
+		else if (m_pSimpleBlitFirstPassOp && m_pBlitSecondPassOp)
+			m_pSimpleBlitOp = &SoftGfxDevice::_twoPassSimpleBlit;
+		else
+			m_pSimpleBlitOp = &SoftGfxDevice::_dummySimpleBlit;
+
+		if (m_pComplexBlitOnePassOp)
+			m_pComplexBlitOp = &SoftGfxDevice::_onePassComplexBlit;
+		else if (m_pComplexBlitFirstPassOp && m_pBlitSecondPassOp)
+			m_pComplexBlitOp = &SoftGfxDevice::_twoPassComplexBlit;
+		else
+			m_pComplexBlitOp = &SoftGfxDevice::_dummyComplexBlit;
+	}
 
 	//____ _initTables() ___________________________________________________________
 	
