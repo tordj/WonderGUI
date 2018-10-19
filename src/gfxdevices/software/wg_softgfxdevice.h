@@ -130,8 +130,9 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
 
+		virtual void	drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int * pEdges, int edgeStripPitch) override;
+
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
-		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) override;
 
 
 		struct ColTrans
@@ -239,7 +240,7 @@ namespace wg
 		int 	_scaleLineThickness(float thickness, int slope);
 
 
-		//		void	_clipDrawSegmentColumn(int clipBeg, int clipEnd, uint8_t * pColumn, int linePitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
+		void	_clipDrawSegmentStrip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
 
 
 		typedef	void(*WaveOp_p)(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);

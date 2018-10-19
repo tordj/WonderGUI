@@ -128,6 +128,10 @@ namespace wg
 	{
 	}
 
+	void NullGfxDevice::drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int * pEdges, int edgeStripPitch)
+	{
+	}
+
 	void NullGfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
 	{
 	}

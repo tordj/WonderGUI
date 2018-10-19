@@ -114,7 +114,7 @@ namespace wg
 
         virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
 
-		virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
+	 	virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
 
 		// Blit methods
@@ -161,11 +161,12 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 
-		 
+		virtual void	drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int * pEdges, int edgeStripPitch) = 0;
+
 		// Special draw/blit methods
 
 		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) = 0;
-		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) = 0;
+		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
 
 
 		virtual void	blitFromCanvas(Coord dest, const Rect& src );			// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
