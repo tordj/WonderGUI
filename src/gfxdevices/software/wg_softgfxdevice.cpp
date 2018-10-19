@@ -1617,7 +1617,7 @@ namespace wg
 
 
 		uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x1 * pixelBytes;
-		pOp(pDst, pixelBytes, m_canvasPitch, y2 - y1, x2 - x1, col, colTrans);
+		pOp(pDst, pixelBytes, m_canvasPitch - (x2-x1)*pixelBytes, y2 - y1, x2 - x1, col, colTrans);
 		//		fill(Rect(x1, y1, x2 - x1, y2 - y1), col);
 
 		// Draw the sides
@@ -2065,7 +2065,7 @@ namespace wg
 
 				int bodyThickness = endX - beginX - 2;
 				uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX + 1) * pixelBytes;
-				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch - bodyThickness, bodyThickness, length, _col, colTrans);
+				pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch * bodyThickness, bodyThickness, length, _col, colTrans);
 			}
 
 			break;
