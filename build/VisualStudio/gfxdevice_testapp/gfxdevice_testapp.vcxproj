@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\canvasformattests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\filltests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\patchblittests.h" />
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\segmenttests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\testsuite.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testunit.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\wg_fileutil.h" />

@@ -384,6 +384,9 @@ namespace wg
 				nbChanges++;
 		}
 
+		if (nbChanges == 0)
+			return 0;
+
 		ItemInfo * pItemInfo = 0;
 		if( bPostMsg )
 			pItemInfo = new ItemInfo[nbChanges];
@@ -482,9 +485,9 @@ namespace wg
 				{
 					ItemInfo * p;
 					if (!state.isSelected())
-						p = &pDeselectedItemsInfo[nSelected++];
+						p = &pDeselectedItemsInfo[nDeselected++];
 					else
-						p = &pSelectedItemsInfo[nDeselected++];
+						p = &pSelectedItemsInfo[nSelected++];
 
 					p->pObject = pSlot->pWidget;
 					p->id = pSlot->pWidget->id();
@@ -497,10 +500,10 @@ namespace wg
 		if( bPostMsg )
 		{
 			if( nSelected > 0 )
-				Base::msgRouter()->post( ItemsSelectMsg::create(this, 1, pSelectedItemsInfo) );
+				Base::msgRouter()->post( ItemsSelectMsg::create(this, nSelected, pSelectedItemsInfo) );
 	
 			if( nDeselected > 0 )
-				Base::msgRouter()->post( ItemsUnselectMsg::create(this, 1, pDeselectedItemsInfo) );
+				Base::msgRouter()->post( ItemsUnselectMsg::create(this, nDeselected, pDeselectedItemsInfo) );
 		}
 	
 		return nSelected + nDeselected;

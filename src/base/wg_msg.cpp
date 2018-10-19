@@ -1183,6 +1183,9 @@ namespace wg
 		m_pSource 	= pSource;
 		m_nbItems	= nbItems;
 		m_pItems	= pItems;
+
+		assert(pItems != nullptr);
+
 	}
 	
 	ItemListMsg::~ItemListMsg()
