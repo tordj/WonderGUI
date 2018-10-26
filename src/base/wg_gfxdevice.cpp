@@ -37,31 +37,53 @@ namespace wg
 	int GfxDevice::s_gfxDeviceCount = 0;
 	int *	GfxDevice::s_pCurveTab = nullptr;
 
-	static const int flipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
+	// Transforms for flipping movement over SOURCE when blitting
+
+	static const int blitFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },			// Normal
+																{ -1,0,0,1 },			// FlipX
+																{ 1,0,0,-1 },			// FlipY
+																{ 0,-1,1,0 },			// Rot90
+																{ 0,1,1,0 },			// Rot90FlipX
+																{ 0,-1,-1,0 },			// Rot90FlipY
+																{ -1,0,0,-1 },			// Rot180
+																{ 1,0,0,-1 },			// Rot180FlipX
+																{ -1,0,0,1 },			// Rot180FlipY
+																{ 0,1,-1,0 },			// Rot270
+																{ 0,-1,-1,0 },			// Rot270FlipX
+																{ 0,1,1,0 } };			// Rot270FlipY
+
+	static const int blitFlipOffsets[GfxFlip_size][2] = {	{ 0,0 },				// Normal
+															{ 1,0 },				// FlipX
+															{ 0,1 },				// FlipY
+															{ 0,1 },				// Rot90
+															{ 0,0 },				// Rot90FlipX
+															{ 1,1 },				// Rot90FlipY
+															{ 1,1 },				// Rot180
+															{ 0,1 },				// Rot180FlipX
+															{ 1,0 },				// Rot180FlipY
+															{ 1,0 },				// Rot270
+															{ 1,1 },				// Rot270FlipX
+															{ 0,0 } };				// Rot270FlipY
+
+	// Transforms for flipping movement over CANVAS when drawing
+
+	static const int drawFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },		// Normal
 															{ -1,0,0,1 },			// FlipX
 															{ 1,0,0,-1 },			// FlipY
-															{ 0,-1,1,0 },			// Rot90
+															{ 0,1,-1,0 },			// Rot90
 															{ 0,1,1,0 },			// Rot90FlipX
 															{ 0,-1,-1,0 },			// Rot90FlipY
 															{ -1,0,0,-1 },			// Rot180
 															{ 1,0,0,-1 },			// Rot180FlipX
 															{ -1,0,0,1 },			// Rot180FlipY
-															{ 0,1,-1,0 },			// Rot270
+															{ 0,-1,1,0 },			// Rot270
 															{ 0,-1,-1,0 },			// Rot270FlipX
 															{ 0,1,1,0 } };			// Rot270FlipY
 
-	static const int flipOffsets[GfxFlip_size][2] = {	{ 0,0 },				// Normal
-														{ 1,0 },				// FlipX
-														{ 0,1 },				// FlipY
-														{ 0,1 },				// Rot90
-														{ 0,0 },				// Rot90FlipX
-														{ 1,1 },				// Rot90FlipY
-														{ 1,1 },				// Rot180
-														{ 0,1 },				// Rot180FlipX
-														{ 1,0 },				// Rot180FlipY
-														{ 1,0 },				// Rot270
-														{ 1,1 },				// Rot270FlipX
-														{ 0,0 } };				// Rot270FlipY
+
+	
+
+
 
 
 	//____ Constructor _____________________________________________________________
@@ -219,12 +241,12 @@ namespace wg
 	
 	void GfxDevice::blit(Coord dest)
 	{
-		transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, flipTransforms[0]);
+		transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(Coord dest, const Rect& src)
 	{
-		transformBlit({ dest, src.size() }, src.pos(), flipTransforms[0]);
+		transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -233,27 +255,27 @@ namespace wg
 	{
 		Size srcSize  = m_pBlitSource->size();
 
-		int ofsX = (srcSize.w - 1) * flipOffsets[(int)flip][0];
-		int ofsY = (srcSize.h - 1) * flipOffsets[(int)flip][1];
+		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
+		int ofsY = (srcSize.h - 1) * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = srcSize;
-		if (flipTransforms[(int)flip][0][0] == 0)
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		transformBlit({ dest, dstSize }, { ofsX, ofsY }, flipTransforms[(int)flip]);
+		transformBlit({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(Coord dest, const Rect& src, GfxFlip flip)
 	{
-		int ofsX = src.x + (src.w-1) * flipOffsets[(int)flip][0];
-		int ofsY = src.y + (src.h-1) * flipOffsets[(int)flip][1];
+		int ofsX = src.x + (src.w-1) * blitFlipOffsets[(int)flip][0];
+		int ofsY = src.y + (src.h-1) * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = m_pBlitSource->size();
-		if (flipTransforms[(int)flip][0][0] == 0)
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
 
-		transformBlit({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip]);
+		transformBlit({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), blitFlipTransforms[(int)flip]);
 	}
 
 
@@ -334,8 +356,8 @@ namespace wg
 			scaleX = srcW / (dest.w-1);
 			scaleY = srcH / (dest.h-1);
 
-			ofsX = src.x + 0.5f + srcW * flipOffsets[(int)flip][0];
-			ofsY = src.y + 0.5f + srcH * flipOffsets[(int)flip][1];
+			ofsX = src.x + 0.5f + srcW * blitFlipOffsets[(int)flip][0];
+			ofsY = src.y + 0.5f + srcH * blitFlipOffsets[(int)flip][1];
 		}
 		else
 		{
@@ -345,16 +367,16 @@ namespace wg
 			scaleX = srcW / dest.w;
 			scaleY = srcH / dest.h;
 
-			ofsX = src.x + (srcW - scaleX) * flipOffsets[(int)flip][0];
-			ofsY = src.y + (srcH - scaleY) * flipOffsets[(int)flip][1];
+			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
+			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
 		}
 
 		float	mtx[2][2];
 
-		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
 		transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
@@ -364,15 +386,15 @@ namespace wg
 		float	scaleX = src.w / dest.w;
 		float	scaleY = src.h / dest.h;
 
-		float ofsX = src.x + (src.w-scaleX) * flipOffsets[(int)flip][0];
-		float ofsY = src.y + (src.h-scaleY) * flipOffsets[(int)flip][1];
+		float ofsX = src.x + (src.w-scaleX) * blitFlipOffsets[(int)flip][0];
+		float ofsY = src.y + (src.h-scaleY) * blitFlipOffsets[(int)flip][1];
 
 		float	mtx[2][2];
 
-		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
 		transformBlit(dest, { src.x,src.y }, mtx);
 	}
@@ -410,12 +432,12 @@ namespace wg
 
 	void GfxDevice::blitPatches(Coord dest, int nPatches, const Rect * pPatches)
 	{
-		transformBlitPatches({ dest, m_pBlitSource->size() }, { 0,0 }, flipTransforms[0], nPatches, pPatches);
+		transformBlitPatches({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0], nPatches, pPatches);
 	}
 
 	void GfxDevice::blitPatches(Coord dest, const Rect& src, int nPatches, const Rect * pPatches)
 	{
-		transformBlitPatches({ dest, src.size() }, src.pos(), flipTransforms[0], nPatches, pPatches);
+		transformBlitPatches({ dest, src.size() }, src.pos(), blitFlipTransforms[0], nPatches, pPatches);
 	}
 
 	//____ flipBlitPatches() _________________________________________________________
@@ -424,26 +446,26 @@ namespace wg
 	{
 		Size srcSize = m_pBlitSource->size();
 
-		int ofsX = (srcSize.w - 1) * flipOffsets[(int)flip][0];
-		int ofsY = (srcSize.h - 1) * flipOffsets[(int)flip][1];
+		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
+		int ofsY = (srcSize.h - 1) * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = srcSize;
-		if (flipTransforms[(int)flip][0][0] == 0)
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		transformBlitPatches({ dest, dstSize }, { ofsX, ofsY }, flipTransforms[(int)flip], nPatches, pPatches );
+		transformBlitPatches({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip], nPatches, pPatches );
 	}
 
 	void GfxDevice::flipBlitPatches(Coord dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
-		int ofsX = src.x + (src.w - 1) * flipOffsets[(int)flip][0];
-		int ofsY = src.y + (src.h - 1) * flipOffsets[(int)flip][1];
+		int ofsX = src.x + (src.w - 1) * blitFlipOffsets[(int)flip][0];
+		int ofsY = src.y + (src.h - 1) * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = m_pBlitSource->size();
-		if (flipTransforms[(int)flip][0][0] == 0)
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		transformBlitPatches({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), flipTransforms[(int)flip], nPatches, pPatches);
+		transformBlitPatches({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), blitFlipTransforms[(int)flip], nPatches, pPatches);
 	}
 
 	//____ stretchBlitPatches() _______________________________________________
@@ -522,8 +544,8 @@ namespace wg
 			scaleX = srcW / (dest.w - 1);
 			scaleY = srcH / (dest.h - 1);
 
-			ofsX = src.x + 0.5f + srcW * flipOffsets[(int)flip][0];
-			ofsY = src.y + 0.5f + srcH * flipOffsets[(int)flip][1];
+			ofsX = src.x + 0.5f + srcW * blitFlipOffsets[(int)flip][0];
+			ofsY = src.y + 0.5f + srcH * blitFlipOffsets[(int)flip][1];
 		}
 		else
 		{
@@ -533,16 +555,16 @@ namespace wg
 			scaleX = srcW / dest.w;
 			scaleY = srcH / dest.h;
 
-			ofsX = src.x + (srcW - scaleX) * flipOffsets[(int)flip][0];
-			ofsY = src.y + (srcH - scaleY) * flipOffsets[(int)flip][1];
+			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
+			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
 		}
 
 		float	mtx[2][2];
 
-		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
 		transformBlitPatches(dest, { ofsX, ofsY }, mtx, nPatches, pPatches);
 	}
@@ -552,15 +574,15 @@ namespace wg
 		float	scaleX = src.w / dest.w;
 		float	scaleY = src.h / dest.h;
 
-		float ofsX = src.x + (src.w - scaleX) * flipOffsets[(int)flip][0];
-		float ofsY = src.y + (src.h - scaleY) * flipOffsets[(int)flip][1];
+		float ofsX = src.x + (src.w - scaleX) * blitFlipOffsets[(int)flip][0];
+		float ofsY = src.y + (src.h - scaleY) * blitFlipOffsets[(int)flip][1];
 
 		float	mtx[2][2];
 
-		mtx[0][0] = scaleX * flipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * flipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * flipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * flipTransforms[(int)flip][1][1];
+		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
+		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
+		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
+		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
 		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
 	}
@@ -687,9 +709,160 @@ namespace wg
 
 	}
 
+	//____ drawWave() ___________________________________________________
+
+	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
+	{
+		drawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, 1, &m_clip);
+	}
+
+	//____ flipDrawWave() ___________________________________________________
+
+	void GfxDevice::flipDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip)
+	{
+		flipDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, flip, 1, &m_clip);
+	}
+
 	//____ drawElipse() ___________________________________________________
 
 	void GfxDevice::drawElipse(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor)
+	{
+		Rect patch((int)canvas.x, (int)canvas.y, (int)canvas.w + 1, (int)canvas.h + 1);
+
+		drawElipsePatches(canvas, thickness, fillColor, outlineThickness, outlineColor, 1, &patch);
+	}
+
+	//____ drawSegments() ______________________________________________________
+
+	void GfxDevice::drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch)
+	{
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], 1, &dest );
+	}
+
+	//____ flipDrawSegments() ______________________________________________________
+
+	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip)
+	{
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)flip], 1, &dest );
+	}
+
+	//____ drawWavePatches() ______________________________________________________
+
+	void GfxDevice::drawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, int nPatches, const Rect * pPatches)
+	{
+		flipDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, GfxFlip::Normal, nPatches, pPatches);
+	}
+
+	//____ flipDrawWavePatches() ______________________________________________________
+
+	void GfxDevice::flipDrawWavePatches(const Rect& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		//TODO: Support flipping
+		//TODO: Smarter clipping, use bounding box of patches before tracing lines.
+
+		Rect dest = _dest;
+
+		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
+
+		int ofs = 0;
+		if (m_clip.x > dest.x || m_clip.x + m_clip.w < dest.x + dest.w)
+		{
+			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
+
+			if (m_clip.x > dest.x + margin)
+			{
+				ofs = m_clip.x - dest.x - margin;
+				dest.x += ofs;
+				dest.w -= ofs;
+			}
+
+			if (dest.x + dest.w - margin > m_clip.x + m_clip.w)
+				dest.w = m_clip.x + m_clip.w - dest.x + margin;
+
+			if (dest.w <= 0)
+				return;
+		}
+
+		int length = dest.w;
+
+		// Generate line traces
+
+		int	lineBufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+		char * pBuffer = Base::memStackAlloc(lineBufferSize);
+		int * pTopBorderTrace = (int*)pBuffer;
+		int * pBottomBorderTrace = (int*)(pBuffer + lineBufferSize / 2);
+
+		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
+		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+
+		// Do proper X-clipping
+
+		int startColumn = 0;
+		if (dest.x < m_clip.x)
+		{
+			startColumn = m_clip.x - dest.x;
+			dest.w -= startColumn;
+			dest.x += startColumn;
+		}
+
+		if (dest.x + dest.w > m_clip.x + m_clip.w)
+			dest.w = m_clip.x + m_clip.w - dest.x;
+
+		// Generate edges
+
+		int		edgeBufferSize = (length + 1) * 4 * sizeof(int);
+		int *	pEdgeBuffer = (int*)Base::memStackAlloc(edgeBufferSize);
+		int *	pEdges = pEdgeBuffer;
+		int		nFlips = 0;
+
+		for (int i = startColumn; i <= length + startColumn; i++)
+		{
+			pEdges[0] = pTopBorderTrace[i * 2] << 8;
+			pEdges[1] = pTopBorderTrace[i * 2 + 1] << 8;
+
+			pEdges[2] = pBottomBorderTrace[i * 2] << 8;
+			pEdges[3] = pBottomBorderTrace[i * 2 + 1] << 8;
+
+			if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+			{
+				swap(pTopBorderTrace, pBottomBorderTrace);
+				nFlips++;
+			}
+
+			if (pEdges[2] < pEdges[1])
+			{
+				pEdges[2] = pEdges[1];
+				if (pEdges[3] < pEdges[2])
+					pEdges[3] = pEdges[2];
+			}
+
+			pEdges += 4;
+		}
+
+		// Render the segments 
+
+		//TODO: Support backfacing segments by dividing flipped sections into patches and render in two turns.
+
+		Color	col[5];
+
+		col[0] = Color::Transparent;
+		col[1] = pTopBorder->color;
+		col[2] = frontFill;
+		col[3] = pBottomBorder->color;
+		col[4] = Color::Transparent;
+
+		flipDrawSegmentPatches(dest, 4, col, length + 1, pEdges, 4, flip, nPatches, pPatches);
+
+
+		// Free temporary work memory
+
+		Base::memStackRelease(edgeBufferSize);
+		Base::memStackRelease(lineBufferSize);
+	}
+
+	//____ drawElipsePatches() ______________________________________________________
+
+	void GfxDevice::drawElipsePatches(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor, int nPatches, const Rect * pPatches)
 	{
 		// Center and corners in 24.8 format.
 
@@ -843,20 +1016,40 @@ namespace wg
 			}
 		}
 
+		// Split patches into upper and lower half, so we clip at the middle.
 
-		//
+		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 8));
 
+		int patchBufferSize = sizeof(Rect)*nPatches * 2;
+		Rect * pTopPatches = (Rect*)Base::memStackAlloc(patchBufferSize);
+		Rect * pBottomPatches = pTopPatches + nPatches;
+		int nTopPatches = 0;
+		int nBottomPatches = 0;
 
-		//
+		for (int i = 0; i < nPatches; i++)
+		{
+			const Rect& patch = pPatches[i];
 
-//		int clipY1 = clip.y - outerRect.y;
-//		int clipY2 = min(clip.y + clip.h - outerRect.y, (yMid >> 8));
-//		int clipY3 = clip.y + clip.h - outerRect.y;
+			if (patch.y < split)
+			{
+				pTopPatches[nTopPatches] = patch;
+				if (patch.bottom() > split)
+					pTopPatches[nTopPatches].h = split - patch.y;
+				nTopPatches++;
+			}
+			if (patch.bottom() > split)
+			{
+				pBottomPatches[nBottomPatches] = patch;
+				if (patch.y < split)
+				{
+					pBottomPatches[nBottomPatches].h -= split - patch.y;
+					pBottomPatches[nBottomPatches].y = split;
+				}
+				nBottomPatches++;
+			}
+		}
 
-
-		int clipY1 = clip.y;
-		int clipY2 = min(clip.y + clip.h, outerRect.y + (yMid >> 8) );
-		int clipY3 = clip.y + clip.h;
+		// Render columns
 
 		Color	col[5];
 		col[0] = Color::Transparent;
@@ -865,102 +1058,29 @@ namespace wg
 		col[3] = outlineColor;
 		col[4] = Color::Transparent;
 
-		Rect oldClip = this->clip();
+		drawSegmentPatches(outerRect, 5, col, samplePoints, pBuffer, 4, nTopPatches, pTopPatches);
+		drawSegmentPatches(outerRect, 5, col, samplePoints, pBuffer + samplePoints * 4, 4, nBottomPatches, pBottomPatches);
 
-		setClip({ outerRect.x,clipY1,outerRect.w,clipY2 - clipY1 });
-		drawSegments(outerRect, 5, col, pBuffer, 4);
-		setClip({ outerRect.x,clipY2,outerRect.w,clipY3 - clipY2 });
-		drawSegments(outerRect, 5, col, pBuffer+samplePoints*4, 4);
-		setClip(oldClip);
-
-
-		// Render columns
-/*
-
-		int pos[2][4];						// Startpositions for the 4 fields of the column (topline, fill, bottomline, line end) for left and right edge of pixel column. 16 binals.
-
-		int yMid = (center.y & 0xFFFFFF00) - outerRect.y * 256;
-
-
-		int clipY1 = clip.y - outerRect.y;
-		int clipY2 = min(clip.y + clip.h - outerRect.y, yMid >> 8);
-		int clipY3 = clip.y + clip.h - outerRect.y;
-
-		Color	col[3];
-		col[0] = outlineColor;
-		col[1] = fillColor;
-		col[2] = outlineColor;
-
-		// Render upper half
-
-		int clipBeg = clipY1;
-		int clipLen = clipY2 - clipY1;
-
-		uint8_t * pColumn = m_pCanvasPixels + outerRect.y * m_canvasPitch + clip.x * (m_canvasPixelBits / 8);
-
-		for (int i = 0; i < samplePoints; i++)
-		{
-			// Old right pos becomes new left pos and old left pos will be reused for new right pos
-
-			int * pLeftPos = pos[i % 2];
-			int * pRightPos = pos[(i + 1) % 2];
-
-			// Generate new rightpos table
-
-			pRightPos[0] = (yMid - pBuffer[i]) << 8;
-			pRightPos[1] = (yMid - pBuffer[i + samplePoints]) << 8;
-
-			pRightPos[2] = (yMid - pBuffer[i + samplePoints * 2]) << 8;
-			pRightPos[3] = (yMid - pBuffer[i + samplePoints * 3]) << 8;
-
-			// Render the column
-
-			if (i > 0)
-			{
-				WaveOp_p pOp = s_waveOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-				pOp(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
-				pColumn += m_canvasPixelBits / 8;
-			}
-		}
-
-		// Render lower half
-
-		clipBeg = clipY2;
-		clipLen = clipY3 - clipY2;
-
-		pColumn = m_pCanvasPixels + outerRect.y * m_canvasPitch + clip.x * (m_canvasPixelBits / 8);
-
-		for (int i = 0; i < samplePoints; i++)
-		{
-			// Old right pos becomes new left pos and old left pos will be reused for new right pos
-
-			int * pLeftPos = pos[i % 2];
-			int * pRightPos = pos[(i + 1) % 2];
-
-			// Generate new rightpos table
-
-			pRightPos[3] = (yMid + pBuffer[i + samplePoints * 4]) << 8;
-			pRightPos[2] = (yMid + pBuffer[i + samplePoints * 4 + samplePoints]) << 8;
-
-			pRightPos[1] = (yMid + pBuffer[i + samplePoints * 4 + samplePoints * 2]) << 8;
-			pRightPos[0] = (yMid + pBuffer[i + samplePoints * 4 + samplePoints * 3]) << 8;
-
-			// Render the column
-
-			if (i > 0)
-			{
-				WaveOp_p pOp = s_waveOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-				pOp(clipBeg, clipLen, pColumn, pLeftPos, pRightPos, col, m_canvasPitch);
-				pColumn += m_canvasPixelBits / 8;
-			}
-		}
-*/
 		// Free temporary work memory
 
+		Base::memStackRelease(patchBufferSize);
 		Base::memStackRelease(bufferSize);
+
 	}
 
+	//____ drawSegmentPatches() ______________________________________________________
 
+	void GfxDevice::drawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, int nPatches, const Rect * pPatches)
+	{
+		transformDrawSegmentPatches( dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
+	}
+
+	//____ flipDrawSegmentPatches() ______________________________________________________
+
+	void GfxDevice::flipDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches)
+	{
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)flip], nPatches, pPatches);
+	}
 
 	//____ blitHorrBar() ______________________________________________________
 	

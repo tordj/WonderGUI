@@ -8,6 +8,7 @@ public:
 		name = "SegmentTests";
 
 		addTest("RainbowSpread", &SegmentTests::rainbowSpread );
+		addTest("RainbowPatches", &SegmentTests::rainbowPatches);
 		addTest("WildRainbow", &SegmentTests::wildRainbow);
 		addTest("Circles", &SegmentTests::circles);
 		addTest("Elipses", &SegmentTests::elipses);
@@ -16,24 +17,38 @@ public:
 	}
 
 
-	bool rainbowSpread(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const Rect& canvas)
 	{
-		Color colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
-
-		int edges[512+1][7];
+		// Generate rainbow segments
 
 		for (int i = 0; i <= canvas.w; i++)
 		{
-			edges[i][0] = i * 32;
-			edges[i][1] = i * 64;
-			edges[i][2] = i * 96;
-			edges[i][3] = i * 128;
-			edges[i][4] = i * 160;
-			edges[i][5] = i * 192;
-			edges[i][6] = i * 224;
+			m_rainbowEdges[i][0] = i * 32;
+			m_rainbowEdges[i][1] = i * 64;
+			m_rainbowEdges[i][2] = i * 96;
+			m_rainbowEdges[i][3] = i * 128;
+			m_rainbowEdges[i][4] = i * 160;
+			m_rainbowEdges[i][5] = i * 192;
+			m_rainbowEdges[i][6] = i * 224;
 		}
 
-		pDevice->drawSegments(canvas, 8, colors, &edges[0][0], 7);
+		// Generate standard patch pattern
+
+		m_patches[0] = { canvas.x,canvas.y, canvas.w / 4, canvas.h / 4 };
+		m_patches[1] = { canvas.x + canvas.w / 2,canvas.y, canvas.w / 2, canvas.h / 4 };
+		m_patches[2] = { canvas.x + canvas.w / 4, canvas.y + canvas.h / 4, canvas.w / 2, canvas.h / 2 };
+		m_patches[3] = { canvas.x,canvas.y + canvas.h * 3 / 4, canvas.w / 4, canvas.h / 4 };
+		m_patches[4] = { canvas.x + canvas.w * 3 / 4,canvas.y + canvas.h * 3 / 4, canvas.w, canvas.h };
+
+		return true;
+	}
+
+
+
+	bool rainbowSpread(GfxDevice * pDevice, const Rect& canvas)
+	{
+
+		pDevice->drawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, &m_rainbowEdges[0][0], 7);
 
 		return true;
 	}
@@ -43,7 +58,6 @@ public:
 		Color colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 0,0,0,255 } };
 
 		int edges[512 + 1][7];
-
 		for (int i = 0; i <= canvas.w; i++)
 		{
 
@@ -59,7 +73,7 @@ public:
 			}
 		}
 
-		pDevice->drawSegments(canvas, 8, colors, &edges[0][0], 7);
+		pDevice->drawSegments(canvas, 8, colors, m_nRainbowEdges, &edges[0][0], 7);
 
 		return true;
 	}
@@ -102,6 +116,24 @@ public:
 		return true;
 	}
 
+
+	bool rainbowPatches(GfxDevice * pDevice, const Rect& canvas)
+	{
+		int transform[2][2] = { 1,0,0,1 };
+
+		pDevice->transformDrawSegmentPatches(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, transform, 5, m_patches);
+		return true;
+	}
+
+
+private:
+
+	Color	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
+
+	int		m_nRainbowEdges = 512 + 1;
+	int		m_rainbowEdges[512 + 1][7];
+
+	Rect	m_patches[5];
 
 };
  

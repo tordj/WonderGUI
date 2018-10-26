@@ -2072,7 +2072,7 @@ namespace wg
 		}
 	}
 
-
+/*
 	//____ drawHorrWave() _____________________________________________________
 
 	void SoftGfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
@@ -2204,6 +2204,7 @@ namespace wg
 
 		Base::memStackRelease(bufferSize);
 	}
+*/
 
 	//_____ _clip_wave_blend_24() ________________________________________________
 
@@ -2514,13 +2515,167 @@ namespace wg
 		}
 	}
 
+	//____ transformDrawSegmentPatches() _________________________________________
+
+	void SoftGfxDevice::transformDrawSegmentPatches(const Rect& _dest, int nSegments, Color * pSegmentColors, int nEdges, int * _pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+		Rect dest = _dest;
+
+		SegmentEdge edges[c_maxSegments];
+
+		int xPitch = m_canvasPixelBits / 8;
+		int yPitch = m_canvasPitch;
+
+		// Calculate pitches
+
+		int colPitch = simpleTransform[0][0] * xPitch + simpleTransform[0][1] * yPitch;
+		int rowPitch = simpleTransform[1][0] * xPitch + simpleTransform[1][1] * yPitch;
+
+		// Calculate start coordinate
+
+		Coord start = dest.pos();
+
+		if (simpleTransform[0][0] + simpleTransform[1][0] < 0)
+			start.x += dest.w - 1;
+
+		if (simpleTransform[0][1] + simpleTransform[1][1] < 0)
+			start.y += dest.h - 1;
+
+		// Detect if strip columns are lined horizontally or verically
+
+		bool bHorizontalColumns = (abs(colPitch) == xPitch);
+
+		// Limit size of destination rect by number of edges.
+
+		if ( bHorizontalColumns )
+		{
+			if (dest.w > nEdges - 1)
+			{
+				if (colPitch < 0)
+					dest.x += dest.w - nEdges - 1;
+
+				dest.w = nEdges - 1;
+			}
+		}
+		else
+		{
+			if (dest.h > nEdges - 1)
+			{
+				if (colPitch < 0)
+					dest.y += dest.h - nEdges - 1;
+
+				dest.h = nEdges - 1;
+			}
+		}
+
+		// Set start position and clip dest
+
+		uint8_t * pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
+
+		Rect clip(dest, m_clip);
+
+		// Loop through patches
+
+		for (int patchIdx = 0; patchIdx < nPatches; patchIdx++)
+		{
+			// Clip patch
+
+			Rect patch(clip, pPatches[patchIdx] );
+			if (patch.w == 0 || patch.h == 0)
+				continue;
+
+			// Calculate stripstart, clipBeg/clipEnd and first edge for patch
+
+
+			int columnOfs;
+			int rowOfs;
+
+			int columns;
+			int rows;
+
+			if (bHorizontalColumns)
+			{
+				columnOfs = colPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
+				rowOfs = rowPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
+
+				columns = patch.w;
+				rows = patch.h;
+			}
+			else
+			{
+				columnOfs = colPitch > 0 ? patch.y - dest.y : dest.bottom() - patch.bottom();
+				rowOfs = rowPitch > 0 ? patch.x - dest.x : dest.right() - patch.right();
+
+				columns = patch.h;
+				rows = patch.w;
+			}
+
+			int *		pEdges		= _pEdges + columnOfs * edgeStripPitch;
+			uint8_t *	pStripStart = pOrigo + columnOfs * colPitch;
+
+			int clipBeg = rowOfs * 256;
+			int clipEnd  = clipBeg + (rows * 256);
+			 
+			for (int x = 0; x < columns; x++)
+			{
+				int nEdges = 0;
+				Color * pColors = pSegmentColors;
+
+				for (int y = 0; y < nSegments - 1; y++)
+				{
+					int beg = pEdges[y];
+					int end = pEdges[y + edgeStripPitch];
+
+					if (beg > end)
+						swap(beg, end);
+
+					if (beg >= clipEnd)
+						break;
+
+					if (end > clipBeg)
+					{
+						int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
+						int coverage = 0;
+
+						if (beg < clipBeg)
+						{
+							int cut = clipBeg - beg;
+							beg = clipBeg;
+							coverage += (coverageInc*cut) >> 8;
+						}
+
+						if (end > clipEnd)
+							end = clipEnd;
+
+
+						edges[nEdges].begin = beg;
+						edges[nEdges].end = end;
+						edges[nEdges].coverage = coverage;
+						edges[nEdges].coverageInc = coverageInc;
+						nEdges++;
+					}
+					else
+						pColors++;
+				}
+
+				_clipDrawSegmentStrip(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors);
+				pEdges += edgeStripPitch;
+				pStripStart += colPitch;
+			}
+		}
+
+	}
+
+
 	//____ drawSegments() ______________________________________________________
 
-	const static int c_maxSegments = 16;
-
-	void SoftGfxDevice::drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int * pEdges, int edgeStripPitch)
+	void SoftGfxDevice::drawSegments(const Rect& _dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch)
 	{
 		SegmentEdge edges[c_maxSegments];
+
+		Rect dest = _dest;
+		if (dest.w >= nEdges)
+			dest.w = nEdges - 1;
 
 		Rect clipped(m_clip, dest);
 
@@ -2534,6 +2689,9 @@ namespace wg
 
 		for (int x = 0; x < clipped.w; x++)
 		{
+			int nEdges = 0;
+			Color * pColors = pSegmentColors;
+
 			for ( int y = 0; y < nSegments - 1; y++)
 			{
 				int beg = pEdges[y];
@@ -2542,15 +2700,36 @@ namespace wg
 				if (beg > end)
 					swap(beg, end);
 
-				int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
+				if (beg >= clipEnd)
+					break;
 
-				edges[y].begin = beg;
-				edges[y].end = end;
-				edges[y].coverage = 0;
-				edges[y].coverageInc = coverageInc;
+				if (end > clipBeg)
+				{
+					int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
+					int coverage = 0;
+
+					if (beg < clipBeg)
+					{
+						int cut = clipBeg - beg;
+						beg = clipBeg;
+						coverage += (coverageInc*cut) >> 8;
+					}
+
+					if (end > clipEnd)
+						end = clipEnd;
+
+
+					edges[nEdges].begin = beg;
+					edges[nEdges].end = end;
+					edges[nEdges].coverage = coverage;
+					edges[nEdges].coverageInc = coverageInc;
+					nEdges++;
+				}
+				else
+					pColors++;
 			}
 
-			_clipDrawSegmentStrip(clipBeg, clipEnd, pStripStart, m_canvasPitch, nSegments-1, edges, pSegmentColors);
+			_clipDrawSegmentStrip(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors);
 			pEdges += edgeStripPitch;
 			pStripStart += (m_canvasPixelBits / 8);
 		}
@@ -2558,45 +2737,14 @@ namespace wg
 
 	//____ _clipDrawSegmentStrip() _______________________________________________
 
-	void SoftGfxDevice::_clipDrawSegmentStrip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors)
+	void SoftGfxDevice::_clipDrawSegmentStrip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors)
 	{
-		// Do clipping of edges, part 1 - completely remove segments that are fully clipped
-
-		while (nEdges > 0 && pEdges[nEdges - 1].begin >= clipEnd)
-		{
-			nEdges--;																	// Edge fully below clip rectangle, segment following edge will never be shown
-		}
-
-		while (nEdges > 0 && pEdges[0].end <= clipBeg)
-		{
-			pSegmentColors++;
-			pEdges++;																	// Edge fully above clip rectangel, segment preceeding edge will never be shown
-			nEdges--;
-		}
-
-		// Do clipping of edges, part 2 - adjust edges of partially clipped segments
-
-		for (int i = 0; i < nEdges; i++)
-		{
-			SegmentEdge * p = pEdges + i;
-
-			if (p->begin < clipBeg)
-			{
-				int cut = clipBeg - p->begin;
-				p->begin = clipBeg;
-				p->coverage += (p->coverageInc*cut) >> 8;
-			}
-
-			if (p->end > clipEnd)
-				p->end = clipEnd;
-		}
-
 		// Render the column
 
-		int offset = clipBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
+		int offset = colBeg;				// 24.8 format, but binals cleared (always pointing at beginning of full pixel).
 		uint8_t * pDst = pStripStart + (offset>>8)*pixelPitch;
 
-		while (offset < clipEnd)
+		while (offset < colEnd)
 		{
 
 			//			for (int i = 0; i < nEdges; i++)
@@ -2610,7 +2758,7 @@ namespace wg
 			{
 				// We are fully inside a segment, no need to take any edge into account.
 
-				int end = nEdges == 0 ? clipEnd : std::min(clipEnd, pEdges[0].begin);
+				int end = nEdges == 0 ? colEnd : pEdges[0].begin;
 				Color segmentColor = *pSegmentColors;
 
 				if (segmentColor.a == 0)

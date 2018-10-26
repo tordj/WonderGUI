@@ -128,15 +128,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int * pEdges, int edgeStripPitch)
-	{
-	}
-
-	void NullGfxDevice::drawHorrWave(Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back)
-	{
-	}
-
-	void NullGfxDevice::drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness, Color outlineColor)
+	void NullGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
 	{
 	}
 
