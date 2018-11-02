@@ -106,16 +106,28 @@ namespace wg
 		virtual bool	beginRender();
 		virtual bool	endRender();
 		
-		// Low level draw methods.
+		// Draw methods.
 	
 		virtual void	fill(const Color& col);
 		virtual void	fill( const Rect& rect, const Color& col );
-		virtual void	fill(const RectF& rect, const Color& col) = 0;
+		virtual void	fill(const RectF& rect, const Color& col);
 
-        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors);
 
-	 	virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
+	 	virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f );
 		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
+
+		// Draw patch methods
+
+		virtual void	fillPatches(const Color& col, int nPatches, const Rect * pPatches );
+		virtual void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) = 0;
+		virtual void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) = 0;
+
+		virtual void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) = 0;
+
+		virtual void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) = 0;
+		virtual void	drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches);
+
 
 		// Blit methods
 
@@ -164,7 +176,7 @@ namespace wg
 		virtual void	flipDrawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip);
 
 
-		// Draw segmented patches methods
+		// Draw segment patches methods
 
 		virtual void	drawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, int nPatches, const Rect * pPatches);
 		virtual void	flipDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip, int nPatches, const Rect * pPatches);
@@ -175,7 +187,7 @@ namespace wg
 		virtual void	flipDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches);
 
 
-		// Low level blit methods
+		// Low level methods
 
 		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2] ) = 0;
 		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2] ) = 0;
@@ -183,6 +195,7 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 
+		virtual void	transformDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2], int nPatches, const Rect * pPatches);
 		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) = 0;
 
 		// Special draw/blit methods

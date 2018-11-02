@@ -39,5 +39,8 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\segmenttests.h">
       <Filter>testsuites</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\wavetests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -92,23 +92,20 @@ namespace wg
 		return true;
 	}
 
-	
-	
-	
-	
-     void NullGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
-    {
-    }
-
-	void NullGfxDevice::fill(const RectF& rect, const Color& col)
+		
+	void NullGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
 	{
 	}
 
-	void NullGfxDevice::drawLine( Coord begin, Coord end, Color color, float thickness )
+	void NullGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
 	{
 	}
-	
-	void NullGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
+
+	void NullGfxDevice::plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
+	{
+	}
+
+	void NullGfxDevice::drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
 	{
 	}
 

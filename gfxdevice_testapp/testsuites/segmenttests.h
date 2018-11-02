@@ -9,11 +9,16 @@ public:
 
 		addTest("RainbowSpread", &SegmentTests::rainbowSpread );
 		addTest("RainbowPatches", &SegmentTests::rainbowPatches);
+		addTest("Flip90RainbowPatches", &SegmentTests::flip90RainbowPatches);
+		addTest("Flip180RainbowPatches", &SegmentTests::flip180RainbowPatches);
+		addTest("Flip270RainbowPatches", &SegmentTests::flip270RainbowPatches);
 		addTest("WildRainbow", &SegmentTests::wildRainbow);
 		addTest("Circles", &SegmentTests::circles);
 		addTest("Elipses", &SegmentTests::elipses);
 		addTest("LargeCircle", &SegmentTests::largeCircle);
 		addTest("BrokenElipse", &SegmentTests::brokenElipse);
+
+
 	}
 
 
@@ -122,6 +127,25 @@ public:
 		int transform[2][2] = { 1,0,0,1 };
 
 		pDevice->transformDrawSegmentPatches(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, transform, 5, m_patches);
+		return true;
+	}
+
+
+	bool flip90RainbowPatches(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->flipDrawSegmentPatches(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot90, 5, m_patches);
+		return true;
+	}
+
+	bool flip180RainbowPatches(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->flipDrawSegmentPatches(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot180, 5, m_patches);
+		return true;
+	}
+
+	bool flip270RainbowPatches(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->flipDrawSegmentPatches(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot270, 5, m_patches);
 		return true;
 	}
 

@@ -114,6 +114,15 @@ namespace wg
 
 		//
 
+		virtual void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) override;
+		virtual void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) override;
+
+		virtual void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) override;
+
+		virtual void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) override;
+		virtual void	drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches) override;
+
+/*
 		virtual void	fill(const Rect& rect, const Color& col) override;
 		virtual void	fill(const RectF& rect, const Color& col) override;
 
@@ -121,6 +130,7 @@ namespace wg
 
 		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
 		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+*/
 
 		virtual bool	setBlitSource(Surface * pSource) override;
 

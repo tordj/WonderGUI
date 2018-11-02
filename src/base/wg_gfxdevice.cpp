@@ -188,7 +188,7 @@ namespace wg
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 	
-	//____ endRender() _____________________________________________________________
+	//____ endRender() ________________________________________________________
 	
 	bool GfxDevice::endRender()
 	{
@@ -199,41 +199,72 @@ namespace wg
 
 	void GfxDevice::fill(const Color& col)
 	{
-		fill(Rect( 0.f, 0.f, m_pCanvas->size()), col);
+		fillPatches(m_clip, col, 1, &m_clip);
 	}
 
 	void GfxDevice::fill(const Rect& rect, const Color& col)
 	{
-		fill(RectF((float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h), col);
+		fillPatches(rect, col, 1, &m_clip );
+	}
+
+	void GfxDevice::fill(const RectF& rect, const Color& col)
+	{
+		fillPatches(rect, col, 1, &m_clip);
+	}
+
+	//____ plotPixels() _______________________________________________________
+
+	void GfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
+	{
+		plotPixelPatches(nCoords, pCoords, pColors, 1, &m_clip);
 	}
 
 	//____ drawLine() _________________________________________________________
 
+	void GfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
+	{
+		drawLinePatches(begin, end, color, thickness, 1, &m_clip);
+	}
+
 	void GfxDevice::drawLine(Coord begin, Direction dir, int length, Color color, float thickness)
+	{
+		drawLinePatches(begin, dir, length, color, thickness, 1, &m_clip);
+	}
+
+	//____ fillPatches() ______________________________________________________
+
+	void GfxDevice::fillPatches(const Color& col, int nPatches, const Rect * pPatches)
+	{
+		fillPatches(m_clip, col, nPatches, pPatches);
+	}
+
+	//____ drawLinePatches() __________________________________________________
+
+	void GfxDevice::drawLinePatches(Coord begin, Direction dir, int length, Color color, float thickness, int nPatches, const Rect * pPatches)
 	{
 		Coord end;
 
 		switch (dir)
 		{
-			case Direction::Up:
-				end.x = begin.x;
-				end.y = begin.y - length;
-				break;
-			case Direction::Down:
-				end.x = begin.x;
-				end.y = begin.y + length;
-				break;
-			case Direction::Left:
-				end.x = begin.x - length;
-				end.y = begin.y;
-				break;
-			case Direction::Right:
-				end.x = begin.x + length;
-				end.y = begin.y;
-				break;
+		case Direction::Up:
+			end.x = begin.x;
+			end.y = begin.y - length;
+			break;
+		case Direction::Down:
+			end.x = begin.x;
+			end.y = begin.y + length;
+			break;
+		case Direction::Left:
+			end.x = begin.x - length;
+			end.y = begin.y;
+			break;
+		case Direction::Right:
+			end.x = begin.x + length;
+			end.y = begin.y;
+			break;
 		}
 
-		drawLine(begin, end, color, thickness);
+		drawLinePatches(begin, end, color, thickness, nPatches, pPatches);
 	}
 
 
@@ -713,7 +744,7 @@ namespace wg
 
 	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
 	{
-		drawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, 1, &m_clip);
+		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal], 1, &m_clip);
 	}
 
 	//____ flipDrawWave() ___________________________________________________
@@ -750,108 +781,192 @@ namespace wg
 
 	void GfxDevice::drawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, int nPatches, const Rect * pPatches)
 	{
-		flipDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, GfxFlip::Normal, nPatches, pPatches);
+		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
 	}
 
 	//____ flipDrawWavePatches() ______________________________________________________
 
-	void GfxDevice::flipDrawWavePatches(const Rect& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip, int nPatches, const Rect * pPatches)
+	void GfxDevice::flipDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
-		//TODO: Support flipping
-		//TODO: Smarter clipping, use bounding box of patches before tracing lines.
+		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)flip], nPatches, pPatches);
+	}
 
-		Rect dest = _dest;
+	//____ transformDrawWavePatches() ______________________________________________________
 
-		// Do early rough X-clipping with margin (need to trace lines with margin of thickest line).
+	void GfxDevice::transformDrawWavePatches(const Rect& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	{
+		//TODO: If borders have different colors and cross, colors are not swapped.
 
-		int ofs = 0;
-		if (m_clip.x > dest.x || m_clip.x + m_clip.w < dest.x + dest.w)
+		// Make a bounding box around all patches (after clipping the patches)
+
+		Rect bounds;
+		int patch = 0;
+		while( (bounds.w == 0 ||bounds.h == 0) && patch < nPatches )
+			bounds = Rect(pPatches[patch++], m_clip);
+
+		while (patch < nPatches)
 		{
-			int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
-
-			if (m_clip.x > dest.x + margin)
-			{
-				ofs = m_clip.x - dest.x - margin;
-				dest.x += ofs;
-				dest.w -= ofs;
-			}
-
-			if (dest.x + dest.w - margin > m_clip.x + m_clip.w)
-				dest.w = m_clip.x + m_clip.w - dest.x + margin;
-
-			if (dest.w <= 0)
-				return;
+			Rect clipped(m_clip, pPatches[patch++]);
+			if (clipped.w != 0 && clipped.h != 0)
+				bounds.growToContain(clipped);
 		}
 
-		int length = dest.w;
+		if (bounds.w == 0 || bounds.h == 0)
+			return;
+
+		// Generate new destination rect and get waveLength, traceLength and clipping info.
+
+		Rect	dest;
+		int		clipBeg, clipEnd;
+		int		length;
+		int		traceLength;
+
+		if (simpleTransform[0][0] != 0)								// Wave is horizontal
+		{
+			traceLength = _dest.w;
+			dest = { bounds.x, _dest.y, bounds.w, _dest.h };
+			clipBeg = bounds.x - _dest.x;
+			clipEnd = (_dest.x + _dest.w) - (bounds.x + bounds.w);
+
+			if (simpleTransform[0][0] < 0)							// Wave goes from right to left
+				swap(clipBeg, clipEnd);
+
+			length = bounds.w;
+		}
+		else														// Wave is vertical
+		{
+			traceLength = _dest.h;
+			dest = { _dest.x, bounds.y, _dest.w, bounds.h };
+			clipBeg = bounds.y - _dest.y;
+			clipEnd = (_dest.y + _dest.h) - (bounds.y + bounds.h);
+
+			if (simpleTransform[0][1] < 0)							// Wave goes from bottom to top
+				swap(clipBeg, clipEnd);
+
+			length = bounds.h;
+		}
+
+		// Do clipping of our trace
+
+		int traceOfs = 0;
+		int startColumn = clipBeg;										// Column of traced lines we start to generate edges from.
+
+		int margin = (int)(max(pTopBorder->thickness, pBottomBorder->thickness) / 2 + 0.99);
+
+		if (clipBeg > margin)
+		{
+			traceOfs = clipBeg - margin;
+			traceLength -= traceOfs;
+			startColumn -= traceOfs;
+		}
+
+		if (clipEnd > margin)
+			traceLength -= clipEnd - margin;
 
 		// Generate line traces
 
-		int	lineBufferSize = (length + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
+		int	lineBufferSize = (traceLength + 1) * 2 * sizeof(int) * 2;	// length+1 * values per point * sizeof(int) * 2 separate traces.
 		char * pBuffer = Base::memStackAlloc(lineBufferSize);
 		int * pTopBorderTrace = (int*)pBuffer;
 		int * pBottomBorderTrace = (int*)(pBuffer + lineBufferSize / 2);
 
-		_traceLine(pTopBorderTrace, length + 1, pTopBorder, ofs);
-		_traceLine(pBottomBorderTrace, length + 1, pBottomBorder, ofs);
+		_traceLine(pTopBorderTrace, traceLength + 1, pTopBorder, traceOfs);
+		_traceLine(pBottomBorderTrace, traceLength + 1, pBottomBorder, traceOfs);
 
-		// Do proper X-clipping
 
-		int startColumn = 0;
-		if (dest.x < m_clip.x)
-		{
-			startColumn = m_clip.x - dest.x;
-			dest.w -= startColumn;
-			dest.x += startColumn;
-		}
 
-		if (dest.x + dest.w > m_clip.x + m_clip.w)
-			dest.w = m_clip.x + m_clip.w - dest.x;
 
 		// Generate edges
 
-		int		edgeBufferSize = (length + 1) * 4 * sizeof(int);
-		int *	pEdgeBuffer = (int*)Base::memStackAlloc(edgeBufferSize);
-		int *	pEdges = pEdgeBuffer;
-		int		nFlips = 0;
+		int edgeBufferSize;
 
-		for (int i = startColumn; i <= length + startColumn; i++)
+		if (frontFill == backFill)
 		{
-			pEdges[0] = pTopBorderTrace[i * 2] << 8;
-			pEdges[1] = pTopBorderTrace[i * 2 + 1] << 8;
+			// Generate edges
 
-			pEdges[2] = pBottomBorderTrace[i * 2] << 8;
-			pEdges[3] = pBottomBorderTrace[i * 2 + 1] << 8;
+			edgeBufferSize = (length + 1) * 4 * sizeof(int);
+			int *	pEdgeBuffer = (int*)Base::memStackAlloc(edgeBufferSize);
+			int *	pEdges = pEdgeBuffer;
 
-			if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+			for (int i = startColumn; i <= length + startColumn; i++)
 			{
-				swap(pTopBorderTrace, pBottomBorderTrace);
-				nFlips++;
+				pEdges[0] = pTopBorderTrace[i * 2];
+				pEdges[1] = pTopBorderTrace[i * 2 + 1];
+
+				pEdges[2] = pBottomBorderTrace[i * 2];
+				pEdges[3] = pBottomBorderTrace[i * 2 + 1];
+
+				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+					swap(pTopBorderTrace, pBottomBorderTrace);
+
+				if (pEdges[2] < pEdges[1])
+				{
+					pEdges[2] = pEdges[1];
+					if (pEdges[3] < pEdges[2])
+						pEdges[3] = pEdges[2];
+				}
+
+				pEdges += 4;
 			}
 
-			if (pEdges[2] < pEdges[1])
-			{
-				pEdges[2] = pEdges[1];
-				if (pEdges[3] < pEdges[2])
-					pEdges[3] = pEdges[2];
-			}
+			// Render the segments 
 
-			pEdges += 4;
+			Color	col[5];
+
+			col[0] = Color::Transparent;
+			col[1] = pTopBorder->color;
+			col[2] = frontFill;
+			col[3] = pBottomBorder->color;
+			col[4] = Color::Transparent;
+
+			transformDrawSegmentPatches(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform, nPatches, pPatches);
+
 		}
+		else
+		{
+			edgeBufferSize = (length + 1) * 5 * sizeof(int);
+			int *	pEdgeBuffer = (int*)Base::memStackAlloc(edgeBufferSize);
+			int *	pEdges = pEdgeBuffer;
+			int		midEdgeFollows = 3;
 
-		// Render the segments 
+			for (int i = startColumn; i <= length + startColumn; i++)
+			{
+				pEdges[0] = pTopBorderTrace[i * 2];
+				pEdges[1] = pTopBorderTrace[i * 2 + 1];
 
-		//TODO: Support backfacing segments by dividing flipped sections into patches and render in two turns.
+				pEdges[3] = pBottomBorderTrace[i * 2];
+				pEdges[4] = pBottomBorderTrace[i * 2 + 1];
 
-		Color	col[5];
+				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+				{
+					swap(pTopBorderTrace, pBottomBorderTrace);
+					midEdgeFollows ^= 0x2;												// Swap between 1 and 3.
+				}
 
-		col[0] = Color::Transparent;
-		col[1] = pTopBorder->color;
-		col[2] = frontFill;
-		col[3] = pBottomBorder->color;
-		col[4] = Color::Transparent;
+				if (pEdges[3] < pEdges[1])
+				{
+					pEdges[3] = pEdges[1];
+					if (pEdges[4] < pEdges[3])
+						pEdges[4] = pEdges[3];
+				}
 
-		flipDrawSegmentPatches(dest, 4, col, length + 1, pEdges, 4, flip, nPatches, pPatches);
+				pEdges[2] = pEdges[midEdgeFollows];
+				pEdges += 5;
+			}
+
+			// Render the segments 
+
+			Color	col[6];
+
+			col[0] = Color::Transparent;
+			col[1] = pTopBorder->color;
+			col[2] = frontFill;
+			col[3] = backFill;
+			col[4] = pBottomBorder->color;
+			col[5] = Color::Transparent;
+
+			transformDrawSegmentPatches(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform, nPatches, pPatches);
+		}
 
 
 		// Free temporary work memory

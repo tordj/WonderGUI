@@ -63,12 +63,12 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) override;
+		void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) override;
 
-		void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
-		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) override;
 
-		void	fill(const RectF& rect, const Color& col) override;
+		void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) override;
 
 		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
 		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;

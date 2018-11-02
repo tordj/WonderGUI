@@ -1540,18 +1540,17 @@ namespace wg
 		return true;
 	}
 
+	//____ fillPatches() ______________________________________________________
 
-	//____ fill() ____________________________________________________________________
-
-	void SoftGfxDevice::fill(const Rect& _rect, const Color& col)
+	void SoftGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
 
 		// Clipping
 
-		Rect rect(_rect, m_clip);
-		if (rect.w == 0 || rect.h == 0)
+		Rect clip(rect, m_clip);
+		if (clip.w == 0 || clip.h == 0)
 			return;
 
 		// Prepare colors
@@ -1573,16 +1572,161 @@ namespace wg
 		//
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		uint8_t * pDst = m_pCanvasPixels + rect.y *m_canvasPitch + rect.x * pixelBytes;
-
 		FillOp_p pFunc = s_fillOpTab[(int)blendMode][0][(int)m_pCanvas->pixelFormat()];
+		if (pFunc == nullptr)
+			return;
 
-		if (pFunc)
-			pFunc(pDst, pixelBytes, m_canvasPitch - rect.w*pixelBytes, rect.h, rect.w, fillColor, colTrans);
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+
+			uint8_t * pDst = m_pCanvasPixels + patch.y *m_canvasPitch + patch.x * pixelBytes;
+			pFunc(pDst, pixelBytes, m_canvasPitch - patch.w*pixelBytes, patch.h, patch.w, fillColor, colTrans);
+		}
+	}
+
+	void SoftGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
+	{
+		if (!m_pCanvas || !m_pCanvasPixels)
+			return;
+
+		// Clipping
+
+		RectF clip(rect, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		// Prepare colors
+
+		Color fillColor = col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
+
+		// Skip calls that won't affect destination
+
+		if (fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract))
+			return;
+
+		BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
+
+		int pixelBytes = m_canvasPixelBits / 8;
+		FillOp_p pFillOp = s_fillOpTab[(int)m_blendMode][0][(int)m_pCanvas->pixelFormat()];
+		FillOp_p pEdgeOp = s_fillOpTab[(int)edgeBlendMode][0][(int)m_pCanvas->pixelFormat()];
+		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Color color = fillColor;
+
+			RectF  patch(clip, pPatches[i]);
+
+			// Fill all but anti-aliased edges
+
+			int x1 = (int)(patch.x + 0.999f);
+			int y1 = (int)(patch.y + 0.999f);
+			int x2 = (int)(patch.x + patch.w);
+			int y2 = (int)(patch.y + patch.h);
+
+
+			uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x1 * pixelBytes;
+			pFillOp(pDst, pixelBytes, m_canvasPitch - (x2 - x1)*pixelBytes, y2 - y1, x2 - x1, color, colTrans);
+
+			// Draw the sides
+
+			int aaLeft = (256 - (int)(patch.x * 256)) & 0xFF;
+			int aaTop = (256 - (int)(patch.y * 256)) & 0xFF;
+			int aaRight = ((int)((patch.x + patch.w) * 256)) & 0xFF;
+			int aaBottom = ((int)((patch.y + patch.h) * 256)) & 0xFF;
+
+			int aaTopLeft = aaTop * aaLeft / 256;
+			int aaTopRight = aaTop * aaRight / 256;
+			int aaBottomLeft = aaBottom * aaLeft / 256;
+			int aaBottomRight = aaBottom * aaRight / 256;
+
+
+			if (m_blendMode != BlendMode::Replace)
+			{
+				int alpha = s_mulTab[color.a];
+
+				aaLeft = aaLeft * alpha >> 16;
+				aaTop = aaTop * alpha >> 16;
+				aaRight = aaRight * alpha >> 16;
+				aaBottom = aaBottom * alpha >> 16;
+
+				aaTopLeft = aaTopLeft * alpha >> 16;
+				aaTopRight = aaTopRight * alpha >> 16;
+				aaBottomLeft = aaBottomLeft * alpha >> 16;
+				aaBottomRight = aaBottomRight * alpha >> 16;
+			}
+
+
+			if (aaTop != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + x1 * pixelBytes;
+				int length = x2 - x1;
+				color.a = aaTop;
+				pEdgeOp(pDst, pixelBytes, 0, 1, length, color, colTrans);
+			}
+
+			if (aaBottom != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x1 * pixelBytes;
+				int length = x2 - x1;
+				color.a = aaBottom;
+				pEdgeOp(pDst, pixelBytes, 0, 1, length, color, colTrans);
+			}
+
+			if (aaLeft != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + ((int)patch.x) * pixelBytes;
+				int length = y2 - y1;
+				color.a = aaLeft;
+				pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, colTrans);
+			}
+
+			if (aaRight != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + y1 * m_canvasPitch + x2 * pixelBytes;
+				int length = y2 - y1;
+				color.a = aaRight;
+				pEdgeOp(pDst, m_canvasPitch, 0, 1, length, color, colTrans);
+			}
+
+			// Draw corner pieces
+
+
+			if (aaTopLeft != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + ((int)patch.x) * pixelBytes;
+				color.a = aaTopLeft;
+				pPlotOp(pDst, color, colTrans);
+			}
+
+			if (aaTopRight != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + ((int)patch.y) * m_canvasPitch + x2 * pixelBytes;
+				color.a = aaTopRight;
+				pPlotOp(pDst, color, colTrans);
+			}
+
+			if (aaBottomLeft != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + ((int)patch.x) * pixelBytes;
+				color.a = aaBottomLeft;
+				pPlotOp(pDst, color, colTrans);
+			}
+
+			if (aaBottomRight != 0)
+			{
+				uint8_t * pDst = m_pCanvasPixels + y2 * m_canvasPitch + x2 * pixelBytes;
+				color.a = aaBottomRight;
+				pPlotOp(pDst, color, colTrans);
+			}
+		}
 	}
 
 	//____ fill() ____________________________________________________________________
-
+/*
 	void SoftGfxDevice::fill(const RectF& _rect, const Color& col)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
@@ -1717,7 +1861,7 @@ namespace wg
 			pPlotOp(pDst, fillColor, colTrans);
 		}
 	}
-	
+*/
 
 	//____ drawLine() ____ [start/direction] __________________________________
 /*
@@ -1812,8 +1956,301 @@ namespace wg
 	}
 */
 
-	//____ drawLine() ____ [from/to] ______________________________________
+	//____ drawLinePatches() ____ [from/to] ___________________________________
 
+	void SoftGfxDevice::drawLinePatches(Coord beg, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
+	{
+		if (!m_pCanvas || !m_pCanvasPixels)
+			return;
+
+		Color fillColor = color * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
+		// Skip calls that won't affect destination
+
+		if (fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract))
+			return;
+
+		//
+
+		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		if (pOp == nullptr)
+			return;
+
+		uint8_t *	pRow;
+		int		rowInc, pixelInc;
+		int 	length, width;
+		int		pos, slope;
+		int		clipStart, clipEnd;
+
+		if (std::abs(beg.x - end.x) > std::abs(beg.y - end.y))
+		{
+			// Prepare mainly horizontal line segment
+
+			if (beg.x > end.x)
+				swap(beg, end);
+
+			length = end.x - beg.x;
+			slope = ((end.y - beg.y) << 16) / length;
+
+			width = _scaleLineThickness(thickness, slope);
+			pos = (beg.y << 16) - width / 2;
+
+			rowInc = m_canvasPixelBits / 8;
+			pixelInc = m_canvasPitch;
+
+			pRow = m_pCanvasPixels + beg.x * rowInc;
+
+			// Loop through patches
+
+			for( int i = 0 ; i < nPatches ; i++ )
+			{
+				// Do clipping
+
+				Rect clip(m_clip, pPatches[i]);
+				if (clip.w == 0 || clip.h == 0 || beg.x > clip.x + clip.w || end.x < clip.x)
+					continue;																	// Segement not visible.
+
+				if (beg.x < clip.x)
+				{
+					int cut = clip.x - beg.x;
+					length -= cut;
+					pRow += rowInc * cut;
+					pos += slope * cut;
+				}
+
+				if (end.x > clip.x + clip.w)
+					length -= end.x - (clip.x + clip.w);
+
+				clipStart = clip.y << 16;
+				clipEnd = (clip.y + clip.h) << 16;
+
+				//  Draw
+
+				pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor, colTrans);
+			}
+		}
+		else
+		{
+			// Prepare mainly vertical line segment
+
+			if (beg.y > end.y)
+				swap(beg, end);
+
+			length = end.y - beg.y;
+			if (length == 0)
+				return;											// TODO: Should stil draw the caps!
+
+			slope = ((end.x - beg.x) << 16) / length;
+			width = _scaleLineThickness(thickness, slope);
+			pos = (beg.x << 16) - width / 2;
+
+			rowInc = m_canvasPitch;
+			pixelInc = m_canvasPixelBits / 8;
+
+			pRow = m_pCanvasPixels + beg.y * rowInc;
+
+			// Loop through patches
+
+			for (int i = 0; i < nPatches; i++)
+			{
+				// Do clipping
+
+				Rect clip(m_clip, pPatches[i]);
+				if (clip.w == 0 || clip.h == 0 || beg.y > m_clip.y + m_clip.h || end.y < m_clip.y)
+					continue;										// Segement not visible.
+
+				if (beg.y < m_clip.y)
+				{
+					int cut = m_clip.y - beg.y;
+					length -= cut;
+					pRow += rowInc * cut;
+					pos += slope * cut;
+				}
+
+				if (end.y > m_clip.y + m_clip.h)
+					length -= end.y - (m_clip.y + m_clip.h);
+
+				clipStart = m_clip.x << 16;
+				clipEnd = (m_clip.x + m_clip.w) << 16;
+
+				//  Draw
+
+				pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor, colTrans);
+			}
+		}
+	}
+
+	//____ drawLinePatches() ____ [start/direction] ___________________________
+
+	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
+	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
+	// where the outer pixels are faded.
+
+	void SoftGfxDevice::drawLinePatches(Coord _begin, Direction dir, int _length, Color _col, float thickness, int nPatches, const Rect * pPatches)
+	{
+		//TODO: Optimize!
+
+		if (thickness <= 0.f)
+			return;
+
+		_col = _col * m_tintColor;
+		ColTrans	colTrans{ Color::White, nullptr, nullptr };
+
+		int pixelBytes = m_canvasPixelBits / 8;
+		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][0][(int)m_pCanvas->pixelFormat()];
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect clip(m_clip, pPatches[i]);
+			if (clip.w == 0 || clip.h == 0)
+				continue;
+
+			Coord begin = _begin;
+			int length = _length;
+
+			switch (dir)
+			{
+			case Direction::Left:
+				begin.x -= length;
+			case Direction::Right:
+			{
+				if (begin.x > clip.x + clip.w)
+					continue;
+
+				if (begin.x < clip.x)
+				{
+					length -= clip.x - begin.x;
+					if (length <= 0)
+						continue;
+					begin.x = clip.x;
+				}
+
+				if (begin.x + length > clip.x + clip.w)
+				{
+					length = clip.x + clip.w - begin.x;
+					if (length <= 0)
+						continue;
+				}
+
+				if (thickness <= 1.f)
+				{
+					if (begin.y < clip.y || begin.y >= clip.y + clip.h)
+						continue;
+
+					Color col = _col;
+					col.a = (uint8_t)(thickness * col.a);
+
+					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
+					pOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
+				} 
+				{
+					int expanse = (int)(1 + (thickness - 1) / 2);
+					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+
+					if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
+						continue;
+
+					int beginY = begin.y - expanse;
+					int endY = begin.y + expanse + 1;
+
+					if (beginY < clip.y)
+						beginY = clip.y - 1;
+					else
+					{
+						uint8_t * pBegin = m_pCanvasPixels + beginY * m_canvasPitch + begin.x * pixelBytes;
+						pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
+						//					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
+					}
+
+					if (endY > clip.y + clip.h)
+						endY = clip.y + clip.h + 1;
+					else
+					{
+						uint8_t * pBegin = m_pCanvasPixels + (endY - 1) * m_canvasPitch + begin.x * pixelBytes;
+						pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
+					}
+
+					int bodyThickness = endY - beginY - 2;
+					uint8_t * pBegin = m_pCanvasPixels + (beginY + 1) * m_canvasPitch + begin.x * pixelBytes;
+					pOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col, colTrans);
+				}
+
+				break;
+			}
+			case Direction::Up:
+				begin.y -= length;
+			case Direction::Down:
+				if (begin.y > clip.y + clip.h)
+					continue;
+
+				if (begin.y < clip.y)
+				{
+					length -= clip.y - begin.y;
+					if (length <= 0)
+						continue;
+					begin.y = clip.y;
+				}
+
+				if (begin.y + length > clip.y + clip.h)
+				{
+					length = clip.y + clip.h - begin.y;
+					if (length <= 0)
+						continue;
+				}
+
+				if (thickness <= 1.f)
+				{
+					if (begin.x < clip.x || begin.x >= clip.x + clip.w)
+						continue;
+
+					Color col = _col;
+					col.a = (uint8_t)(thickness * col.a);
+
+					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
+					pOp(pBegin, m_canvasPitch, 0, 1, length, col, colTrans);
+				}
+				else
+				{
+					int expanse = (int)(1 + (thickness - 1) / 2);
+					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+
+					if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
+						continue;
+
+					int beginX = begin.x - expanse;
+					int endX = begin.x + expanse + 1;
+
+					if (beginX < clip.x)
+						beginX = clip.x - 1;
+					else
+					{
+						uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + beginX * pixelBytes;
+						pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
+					}
+
+					if (endX > clip.x + clip.w)
+						endX = clip.x + clip.w + 1;
+					else
+					{
+						uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (endX - 1) * pixelBytes;
+						pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
+					}
+
+
+					int bodyThickness = endX - beginX - 2;
+					uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX + 1) * pixelBytes;
+					pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch * bodyThickness, bodyThickness, length, _col, colTrans);
+				}
+
+				break;
+			}
+		}
+	}
+
+
+	//____ drawLine() ____ [from/to] ______________________________________
+/*
 	void SoftGfxDevice::drawLine( Coord beg, Coord end, Color color, float thickness )
 	{
 		if( !m_pCanvas || !m_pCanvasPixels )
@@ -1825,7 +2262,7 @@ namespace wg
 		// Skip calls that won't affect destination
 	
 		if( fillColor.a == 0 && (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Add || m_blendMode == BlendMode::Subtract) )
-			return;
+			return ;
 		
 		
 		uint8_t *	pRow;
@@ -1915,13 +2352,14 @@ namespace wg
 		if( pOp )
 			pOp( clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor, colTrans );
 	}
+*/
 
 	//____ drawLine() ____ [start/direction] ______________________________
 
 	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
-
+/*
 	void SoftGfxDevice::drawLine(Coord begin, Direction dir, int length, Color _col, float thickness)
 	{
 		if (thickness <= 0.f)
@@ -2071,6 +2509,7 @@ namespace wg
 			break;
 		}
 	}
+*/
 
 /*
 	//____ drawHorrWave() _____________________________________________________
@@ -2746,14 +3185,6 @@ namespace wg
 
 		while (offset < colEnd)
 		{
-
-			//			for (int i = 0; i < nEdges; i++)
-			//			{
-			//				if (pEdges[i].coverage > 65536)
-			//					pEdges[i].coverage = 65536;
-			//			}
-
-
 			if (nEdges == 0 || offset + 255 < pEdges[0].begin)
 			{
 				// We are fully inside a segment, no need to take any edge into account.
@@ -3142,23 +3573,25 @@ namespace wg
 		}
 	}
 
+	//____ plotPixelPatches() _________________________________________________
 
-
-	
-
-	//____ plotPixels() ____________________________________________________
-
-	void SoftGfxDevice::plotPixels( int nCoords, const Coord * pCoords, const Color * pColors)
+	void SoftGfxDevice::plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
 	{
-		const int pitch =m_canvasPitch;
-		const int pixelBytes = m_canvasPixelBits/8;
+		const int pitch = m_canvasPitch;
+		const int pixelBytes = m_canvasPixelBits / 8;
 
 		ColTrans	colTrans{ Color::White, nullptr, nullptr };
 
 		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 
-		if (pOp)
-			pOp(m_clip, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, colTrans);
+		if (pOp == nullptr )
+			return;
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(m_clip, pPatches[i]);
+			pOp(patch, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, colTrans);
+		}
 	}
 
 	//____ setBlitSource() ____________________________________________________
@@ -3370,7 +3803,7 @@ namespace wg
 
 				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
 					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
-					return;																					// Totally outside clip-rect.
+					continue;																						// Totally outside clip-rect.
 
 				if (dest.x < clip.x)
 				{
