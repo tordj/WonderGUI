@@ -121,18 +121,6 @@ namespace wg
 			case GfxChunkId::EndRender:
 				break;
 
-			case GfxChunkId::Fill:
-			{
-				Rect	rect;
-				Color	col;
-
-				*m_pGfxStream >> rect;
-				*m_pGfxStream >> col;
-
-				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
-				m_charStream << "    color       = " << (int) col.a << ", " << (int) col.r << ", " << (int) col.g << ", " << (int) col.b << std::endl;
-				break;
-			}
 
 			case GfxChunkId::SetCanvas:
 			{
@@ -142,6 +130,16 @@ namespace wg
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				break;
 			}
+
+			case GfxChunkId::SetClip:
+			{
+				Rect	rect;
+				*m_pGfxStream >> rect;
+
+				m_charStream << "    clip        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				break;
+			}
+
 
 			case GfxChunkId::SetTintColor:
 			{
@@ -161,121 +159,29 @@ namespace wg
 				break;
 			}
 
-	
-			case GfxChunkId::PlotPixels:
-			{
-				m_pGfxStream->skip(header.size);
-
-				m_charStream << "    number of pixels: " << header.size/8 << std::endl;
-				break;
-			}
-
-			case GfxChunkId::DrawLine:
-			{
-				Coord	begin;
-				Coord	end;
-				Color	color;
-				float	thickness;
-
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> end;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> thickness;
-
-				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				m_charStream << "    thickness   = " << thickness << std::endl;
-				break;
-			}
-
-
-			case GfxChunkId::ClipDrawLine:
-			{
-				Rect	clip;
-				Coord	begin;
-				Coord	end;
-				Color	color;
-				float	thickness;
-
-				*m_pGfxStream >> clip;
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> end;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> thickness;
-
-				m_charStream << "    clip        = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
-				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
-				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				m_charStream << "    thickness   = " << thickness << std::endl;
-				break;
-			}
-
-			case GfxChunkId::ClipDrawLine2:
-			{
-				Rect		clip;
-				Coord		begin;
-				Direction	dir;
-				uint16_t	length;
-				Color		color;
-				float		thickness;
-
-				*m_pGfxStream >> clip;
-				*m_pGfxStream >> begin;
-				*m_pGfxStream >> dir;
-				*m_pGfxStream >> length;
-				*m_pGfxStream >> color;
-				*m_pGfxStream >> thickness;
-
-				m_charStream << "    clip        = " << clip.x << ", " << clip.y << ", " << clip.w << ", " << clip.h << std::endl;
-				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
-				m_charStream << "    direction   = " << toString(dir) << std::endl;
-				m_charStream << "    length      = " << length << std::endl;
-				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
-				m_charStream << "    thickness   = " << thickness << std::endl;
-				break;
-			}
-
-
-/*
-			case GfxChunkId::ClipDrawHorrWave:
-				//TODO: Implement!
-				break;
-*/
-			case GfxChunkId::Blit:
+			case GfxChunkId::SetBlitSource:
 			{
 				uint16_t	surfaceId;
-				Rect		source;
-				Coord		dest;
-
 				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> source;
-				*m_pGfxStream >> dest;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
-				m_charStream << "    source      = " << source.x << ", " << source.y << ", " << source.w << ", " << source.h << std::endl;
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
 				break;
 			}
 
-			case GfxChunkId::StretchBlit:
+			case GfxChunkId::Fill:
 			{
-				uint16_t	surfaceId;
-				RectF		source;
-				Coord		dest;
+				Rect	rect;
+				Color	col;
 
-				*m_pGfxStream >> surfaceId;
-				*m_pGfxStream >> source;
-				*m_pGfxStream >> dest;
+				*m_pGfxStream >> rect;
+				*m_pGfxStream >> col;
 
-				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
-				m_charStream << "    source      = " << source.x << ", " << source.y << ", " << source.w << ", " << source.h << std::endl;
-				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
 				break;
 			}
-			
-			case GfxChunkId::FillSubPixel:
+
+			case GfxChunkId::FillSubpixel:
 			{
 				RectF	rect;
 				Color	col;
@@ -285,6 +191,217 @@ namespace wg
 
 				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
 				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
+				break;
+			}
+
+			case GfxChunkId::PlotPixels:
+			{
+				m_pGfxStream->skip(header.size);
+
+				m_charStream << "    number of pixels: " << header.size/8 << std::endl;
+				break;
+			}
+
+			case GfxChunkId::DrawLineFromTo:
+			{
+				Coord	begin;
+				Coord	end;
+				Color	color;
+				float	thickness;
+
+				*m_pGfxStream >> begin;
+				*m_pGfxStream >> end;
+				*m_pGfxStream >> color;
+				*m_pGfxStream >> thickness;
+
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
+				break;
+			}
+
+
+			case GfxChunkId::DrawLineStraight:
+			{
+				Coord		begin;
+				Direction	dir;
+				uint16_t	length;
+				Color		color;
+				float		thickness;
+
+				*m_pGfxStream >> begin;
+				*m_pGfxStream >> dir;
+				*m_pGfxStream >> length;
+				*m_pGfxStream >> color;
+				*m_pGfxStream >> thickness;
+
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    direction   = " << toString(dir) << std::endl;
+				m_charStream << "    length      = " << length << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
+				break;
+			}
+
+
+			case GfxChunkId::FillPatches:
+			{
+				Rect	rect;
+				Color	col;
+
+				*m_pGfxStream >> rect;
+				*m_pGfxStream >> col;
+				
+				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
+
+				_readPrintPatches();
+				break;
+			}
+
+			case GfxChunkId::FillSubpixelPatches:
+			{
+				RectF	rect;
+				Color	col;
+
+				*m_pGfxStream >> rect;
+				*m_pGfxStream >> col;
+
+				m_charStream << "    dest        = " << rect.x << ", " << rect.y << ", " << rect.w << ", " << rect.h << std::endl;
+				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
+
+				break;
+			}
+
+			case GfxChunkId::PlotPixelPatches:
+			{
+				int nPatches = _readPrintPatches();
+				int chunkDataLeft = header.size - 2 - nPatches * 8;
+
+				m_pGfxStream->skip(chunkDataLeft);
+				m_charStream << "    number of pixels: " << chunkDataLeft / 8 << std::endl;
+				break;
+			}
+
+			case GfxChunkId::DrawLineFromToPatches:
+			{
+				Coord	begin;
+				Coord	end;
+				Color	color;
+				float	thickness;
+
+				*m_pGfxStream >> begin;
+				*m_pGfxStream >> end;
+				*m_pGfxStream >> color;
+				*m_pGfxStream >> thickness;
+
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    end         = " << end.x << ", " << end.y << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
+
+				_readPrintPatches();
+				break;
+			}
+
+			case GfxChunkId::DrawLineStraightPatches:
+			{
+				Coord		begin;
+				Direction	dir;
+				uint16_t	length;
+				Color		color;
+				float		thickness;
+
+				*m_pGfxStream >> begin;
+				*m_pGfxStream >> dir;
+				*m_pGfxStream >> length;
+				*m_pGfxStream >> color;
+				*m_pGfxStream >> thickness;
+
+				m_charStream << "    begin       = " << begin.x << ", " << begin.y << std::endl;
+				m_charStream << "    direction   = " << toString(dir) << std::endl;
+				m_charStream << "    length      = " << length << std::endl;
+				m_charStream << "    color       = " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << std::endl;
+				m_charStream << "    thickness   = " << thickness << std::endl;
+
+				_readPrintPatches();
+ 				break;
+			}
+
+
+			case GfxChunkId::Blit:
+			{
+				Coord		dest;
+				Rect		source;
+
+				*m_pGfxStream >> dest;
+				*m_pGfxStream >> source;
+
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				m_charStream << "    source      = " << source.x << ", " << source.y << ", " << source.w << ", " << source.h << std::endl;
+				break;
+			}
+
+			case GfxChunkId::StretchBlit:
+			{
+				Coord		dest;
+				RectF		source;
+
+				*m_pGfxStream >> dest;
+				*m_pGfxStream >> source;
+
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << std::endl;
+				m_charStream << "    source      = " << source.x << ", " << source.y << ", " << source.w << ", " << source.h << std::endl;
+				break;
+			}
+
+			case GfxChunkId::SimpleTransformBlitPatches:
+			{
+				Rect dest;
+				Coord src;
+				int transform[2][2];
+				int nPatches;
+
+				*m_pGfxStream >> dest;
+				*m_pGfxStream >> src;
+				*m_pGfxStream >> transform;
+				*m_pGfxStream >> nPatches;
+
+
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
+				m_charStream << "    src         = " << src.x << ", " << src.y << std::endl;
+				m_charStream << "    transform   = [ " << transform[0][0] << ", " << transform[0][1] << " ]" << std::endl;
+				m_charStream << "                  [ " << transform[1][0] << ", " << transform[1][1] << " ]" << std::endl;
+
+				_readPrintPatches();
+				break;
+			}
+
+			case GfxChunkId::ComplexTransformBlitPatches:
+			{
+				Rect dest;
+				CoordF src;
+				float transform[2][2];
+				int nPatches;
+
+				*m_pGfxStream >> dest;
+				*m_pGfxStream >> src;
+				*m_pGfxStream >> transform;
+				*m_pGfxStream >> nPatches;
+
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
+				m_charStream << "    src         = " << src.x << ", " << src.y << std::endl;
+				m_charStream << "    transform   = [ " << transform[0][0] << ", " << transform[0][1] << " ]" << std::endl;
+				m_charStream << "                  [ " << transform[1][0] << ", " << transform[1][1] << " ]" << std::endl;
+
+				_readPrintPatches();
+				break;
+			}
+
+			case GfxChunkId::TransformDrawSegmentPatches:
+			{
+				//TODO: Implement!
 				break;
 			}
 
@@ -413,6 +530,34 @@ namespace wg
 		}
 		return false;
 	}
+
+	//____ readPrintPatches() _________________________________________________
+
+	int GfxStreamLogger::_readPrintPatches()
+	{
+		uint16_t	nPatches;
+		Rect		patch;
+
+		*m_pGfxStream >> nPatches;
+
+		if (nPatches == 0)
+		{
+			m_charStream << "    zero patches!" << std::endl;
+			return 0;
+		}
+
+		*m_pGfxStream >> patch;
+		m_charStream << "    patches     = " << patch.x << ", " << patch.y << ", " << patch.w << ", " << patch.h << std::endl;
+
+		for (int i = 1; i < nPatches; i++)
+		{
+			*m_pGfxStream >> patch;
+			m_charStream << "                  " << patch.x << ", " << patch.y << ", " << patch.w << ", " << patch.h << std::endl;
+		}
+
+		return nPatches;
+	}
+
 
 
 } //namespace wg

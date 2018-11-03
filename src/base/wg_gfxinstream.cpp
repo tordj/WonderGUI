@@ -93,10 +93,24 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (CoordF& coord)
+	{
+		coord.x = m_pHolder->_pullFloat();
+		coord.y = m_pHolder->_pullFloat();
+		return *this;
+	}
+
 	GfxInStream& GfxInStream::operator>> (Size& sz)
 	{
 		sz.w = m_pHolder->_pullShort();
 		sz.h = m_pHolder->_pullShort();
+		return *this;
+	}
+
+	GfxInStream& GfxInStream::operator>> (SizeF& sz)
+	{
+		sz.w = m_pHolder->_pullFloat();
+		sz.h = m_pHolder->_pullFloat();
 		return *this;
 	}
 
@@ -160,6 +174,21 @@ namespace wg
 		return *this;
 	}
 
+	GfxInStream& GfxInStream::operator>> (int mtx[2][2])
+	{
+		mtx[0][0] = m_pHolder->_pullChar();
+		mtx[0][1] = m_pHolder->_pullChar();
+		mtx[1][0] = m_pHolder->_pullChar();
+		mtx[1][1] = m_pHolder->_pullChar();
+	}
+
+	GfxInStream& GfxInStream::operator>> (float mtx[2][2])
+	{
+		mtx[0][0] = m_pHolder->_pullFloat();
+		mtx[0][1] = m_pHolder->_pullFloat();
+		mtx[1][0] = m_pHolder->_pullFloat();
+		mtx[1][1] = m_pHolder->_pullFloat();
+	}
 
 
 } // namespace wg

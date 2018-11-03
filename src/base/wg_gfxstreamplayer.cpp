@@ -122,23 +122,20 @@ namespace wg
 			m_pDevice->endRender();
 			break;
 
-		case GfxChunkId::Fill:
-		{
-			Rect	rect;
-			Color	col;
-
-			*m_pStream >> rect;
-			*m_pStream >> col;
-
-			m_pDevice->fill(rect, col);
-			break;
-		}
-
 		case GfxChunkId::SetCanvas:
 		{
 			uint16_t	surfaceId;
 			*m_pStream >> surfaceId;
 			m_pDevice->setCanvas(m_vSurfaces[surfaceId]);
+			break;
+		}
+
+		case GfxChunkId::SetClip:
+		{
+			Rect	rect;
+			*m_pStream >> rect;
+
+			m_pDevice->setClip(rect);
 			break;
 		}
 
@@ -155,6 +152,39 @@ namespace wg
 			BlendMode	blendMode;
 			*m_pStream >> blendMode;
 			m_pDevice->setBlendMode(blendMode);
+			break;
+		}
+
+		case GfxChunkId::SetBlitSource:
+		{
+			uint16_t	surfaceId;
+			*m_pStream >> surfaceId;
+
+			m_pDevice->setBlitSource(m_vSurfaces[surfaceId]);
+			break;
+		}
+
+		case GfxChunkId::Fill:
+		{
+			Rect	rect;
+			Color	col;
+
+			*m_pStream >> rect;
+			*m_pStream >> col;
+
+			m_pDevice->fill(rect, col);
+			break;
+		}
+
+		case GfxChunkId::FillSubpixel:
+		{
+			RectF	rect;
+			Color	col;
+
+			*m_pStream >> rect;
+			*m_pStream >> col;
+
+			m_pDevice->fill(rect, col);
 			break;
 		}
 
@@ -188,7 +218,7 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::DrawLine:
+		case GfxChunkId::DrawLineFromTo:
 		{
 			Coord	begin;
 			Coord	end;
@@ -204,85 +234,181 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::ClipDrawLine:
+		case GfxChunkId::DrawLineStraight:
 		{
-			Rect	clip;
-			Coord	begin;
-			Coord	end;
-			Color	color;
-			float	thickness;
-
-			*m_pStream >> clip;
-			*m_pStream >> begin;
-			*m_pStream >> end;
-			*m_pStream >> color;
-			*m_pStream >> thickness;
-
-			m_pDevice->clipDrawLine(clip, begin, end, color, thickness);
-			break;
-		}
-
-		case GfxChunkId::ClipDrawLine2:
-		{
-			Rect		clip;
 			Coord		begin;
 			Direction	dir;
 			uint16_t	length;
 			Color		color;
 			float		thickness;
 
-			*m_pStream >> clip;
 			*m_pStream >> begin;
 			*m_pStream >> dir;
 			*m_pStream >> length;
 			*m_pStream >> color;
 			*m_pStream >> thickness;
 
-			m_pDevice->clipDrawLine(clip, begin, dir, length, color, thickness);
+			m_pDevice->drawLine(begin, dir, length, color, thickness);
 			break;
 		}
 
-		case GfxChunkId::ClipDrawHorrWave:
-			//TODO: Implement!
-			break;
-
-		case GfxChunkId::Blit:
+		case GfxChunkId::FillPatches:
 		{
-			uint16_t	surfaceId;
-			Rect		source;
-			Coord		dest;
+			Rect	rect;
+			Color	col;
 
-			*m_pStream >> surfaceId;
-			*m_pStream >> source;
-			*m_pStream >> dest;
+			*m_pStream >> rect;
+			*m_pStream >> col;
+			int nPatches = _unpackPatches();
 
-			m_pDevice->blit(m_vSurfaces[surfaceId], source, dest);
+			m_pDevice->fillPatches(rect, col, nPatches, m_patches);
 			break;
 		}
 
-		case GfxChunkId::StretchBlit:
-		{
-			uint16_t	surfaceId;
-			RectF		source;
-			Rect		dest;
-
-			*m_pStream >> surfaceId;
-			*m_pStream >> source;
-			*m_pStream >> dest;
-
-			m_pDevice->stretchBlit(m_vSurfaces[surfaceId], source, dest);
-			break;
-		}
-
-		case GfxChunkId::FillSubPixel:
+		case GfxChunkId::FillSubpixelPatches:
 		{
 			RectF	rect;
 			Color	col;
 
 			*m_pStream >> rect;
 			*m_pStream >> col;
+			int nPatches = _unpackPatches();
 
-			m_pDevice->fillSubPixel(rect, col);
+			m_pDevice->fillPatches(rect, col, nPatches, m_patches);
+			break;
+		}
+
+		case GfxChunkId::PlotPixelPatches:
+		{
+			int nPatches = _unpackPatches();
+
+			int nPixels = (header.size - 2 - nPatches*8) / 8;
+
+			int bufferSize = header.size * 3 / 2;			// Pixels needs to be expanded, but not colors
+			char * pBuffer = reinterpret_cast<char*>(Base::memStackAlloc(bufferSize));
+
+			// Load all data to end of buffer
+
+			*m_pStream >> GfxStream::DataChunk{ header.size, pBuffer + bufferSize - header.size };
+
+			// Unpack Coordinates
+
+			Coord * pDest = (Coord*)pBuffer;
+			int16_t * pSrc = (int16_t*)(pBuffer + bufferSize - header.size);
+
+			for (int i = 0; i < nPixels; i++)
+			{
+				pDest[i].x = *pSrc++;
+				pDest[i].y = *pSrc++;
+			}
+
+			//
+
+			m_pDevice->plotPixelPatches(nPixels, (Coord*)pBuffer, (Color*)(pBuffer + header.size / 2), nPatches, m_patches);
+
+			Base::memStackRelease(bufferSize);
+			break;
+		}
+
+		case GfxChunkId::DrawLineFromToPatches:
+		{
+			Coord	begin;
+			Coord	end;
+			Color	color;
+			float	thickness;
+			int		nPatches;
+
+			*m_pStream >> begin;
+			*m_pStream >> end;
+			*m_pStream >> color;
+			*m_pStream >> thickness;
+
+			nPatches = _unpackPatches();
+			m_pDevice->drawLinePatches(begin, end, color, thickness, nPatches, m_patches);
+			break;
+		}
+
+		case GfxChunkId::DrawLineStraightPatches:
+		{
+			Coord		begin;
+			Direction	dir;
+			uint16_t	length;
+			Color		color;
+			float		thickness;
+			int			nPatches;
+
+			*m_pStream >> begin;
+			*m_pStream >> dir;
+			*m_pStream >> length;
+			*m_pStream >> color;
+			*m_pStream >> thickness;
+
+			nPatches = _unpackPatches();
+			m_pDevice->drawLinePatches(begin, dir, length, color, thickness, nPatches, m_patches);
+			break;
+		}
+
+		case GfxChunkId::Blit:
+		{
+			Coord		dest;
+			Rect		source;
+
+			*m_pStream >> dest;
+			*m_pStream >> source;
+
+			m_pDevice->blit(dest,source);
+			break;
+		}
+
+		case GfxChunkId::StretchBlit:
+		{
+			Rect		dest;
+			RectF		source;
+
+			*m_pStream >> dest;
+			*m_pStream >> source;
+
+			m_pDevice->stretchBlit(dest, source);
+			break;
+		}
+
+		case GfxChunkId::SimpleTransformBlitPatches:
+		{
+			Rect dest;
+			Coord src;
+			int transform[2][2];
+			int nPatches;
+
+			*m_pStream >> dest;
+			*m_pStream >> src;
+			*m_pStream >> transform;
+			*m_pStream >> nPatches;
+
+			nPatches = _unpackPatches();
+			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
+			break;
+		}
+
+		case GfxChunkId::ComplexTransformBlitPatches:
+		{
+			Rect dest;
+			CoordF src;
+			float transform[2][2];
+			int nPatches;
+
+			*m_pStream >> dest;
+			*m_pStream >> src;
+			*m_pStream >> transform;
+			*m_pStream >> nPatches;
+
+			nPatches = _unpackPatches();
+			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
+			break;
+		}
+
+		case GfxChunkId::TransformDrawSegmentPatches:
+		{
+			//TODO: Implement!
 			break;
 		}
 
@@ -422,6 +548,21 @@ namespace wg
 		}
 		return false;
 	}
+
+	//____ _unpackPatches() ___________________________________________________
+
+	int GfxStreamPlayer::_unpackPatches()
+	{
+		uint16_t	nPatches;
+
+		*m_pStream >> nPatches;
+
+		for (int i = 0; i < nPatches; i++)
+			*m_pStream >> m_patches[i];
+ 
+		return nPatches;
+	}
+
 
 
 } //namespace wg

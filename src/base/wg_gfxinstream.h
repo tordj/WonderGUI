@@ -90,7 +90,9 @@ namespace wg
 
 
 		GfxInStream& operator>> (Coord&);
+		GfxInStream& operator>> (CoordF&);
 		GfxInStream& operator>> (Size&);
+		GfxInStream& operator>> (SizeF&);
 		GfxInStream& operator>> (Rect&);
 		GfxInStream& operator>> (RectF&);
 		GfxInStream& operator>> (Color&);
@@ -101,6 +103,8 @@ namespace wg
 		GfxInStream& operator>> (ScaleMode&);
 		GfxInStream& operator>> (const DataChunk&);
 
+		GfxInStream& operator>> (int[2][2]);
+		GfxInStream& operator>> (float[2][2]);
 
 		//.____ Misc __________________________________________________
 

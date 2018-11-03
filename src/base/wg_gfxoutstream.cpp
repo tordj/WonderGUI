@@ -79,10 +79,24 @@ namespace wg
 		return *this;
 	}
 
+	GfxOutStream&  GfxOutStream::operator<< (const CoordF& c)
+	{
+		m_pHolder->_pushFloat(c.x);
+		m_pHolder->_pushFloat(c.y);
+		return *this;
+	}
+
 	GfxOutStream&  GfxOutStream::operator<< (const Size& sz)
 	{
 		m_pHolder->_pushShort(sz.w);
 		m_pHolder->_pushShort(sz.h);
+		return *this;
+	}
+
+	GfxOutStream&  GfxOutStream::operator<< (const SizeF& sz)
+	{
+		m_pHolder->_pushFloat(sz.w);
+		m_pHolder->_pushFloat(sz.h);
 		return *this;
 	}
 
@@ -144,6 +158,22 @@ namespace wg
 	{
 		m_pHolder->_pushBytes(data.bytes, (char*)data.pBuffer);
 		return *this;
+	}
+
+	GfxOutStream& GfxOutStream::operator<< (const int mtx[2][2])
+	{
+		m_pHolder->_pushChar((char)(mtx[0][0]));
+		m_pHolder->_pushChar((char)(mtx[0][1]));
+		m_pHolder->_pushChar((char)(mtx[1][0]));
+		m_pHolder->_pushChar((char)(mtx[1][1]));
+	}
+
+	GfxOutStream& GfxOutStream::operator<< (const float mtx[2][2])
+	{
+		m_pHolder->_pushFloat(mtx[0][0]);
+		m_pHolder->_pushFloat(mtx[0][1]);
+		m_pHolder->_pushFloat(mtx[1][0]);
+		m_pHolder->_pushFloat(mtx[1][1]);
 	}
 
 

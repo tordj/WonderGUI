@@ -87,7 +87,9 @@ namespace wg
 		GfxOutStream&	operator<< (float);
 
 		GfxOutStream&	operator<< (const Coord&);
+		GfxOutStream&	operator<< (const CoordF&);
 		GfxOutStream&	operator<< (const Size&);
+		GfxOutStream&	operator<< (const SizeF&);
 		GfxOutStream&	operator<< (const Rect&);
 		GfxOutStream&	operator<< (const RectF&);
 
@@ -98,6 +100,11 @@ namespace wg
 		GfxOutStream&	operator<< (PixelFormat);
 		GfxOutStream&	operator<< (ScaleMode);
 		GfxOutStream&	operator<< (const DataChunk&);
+
+		GfxOutStream&	operator<< (const int[2][2]);
+		GfxOutStream&	operator<< (const float[2][2]);
+
+
 
 		//.____ Misc __________________________________________________
 

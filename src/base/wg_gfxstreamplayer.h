@@ -65,6 +65,10 @@ namespace wg
 		GfxStreamPlayer(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
+		int _unpackPatches();
+
+		Rect				m_patches[GfxStream::c_maxPatches];
+
 		GfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;

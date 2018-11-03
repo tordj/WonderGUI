@@ -705,17 +705,68 @@ namespace wg
 		BeginRender,
 		EndRender,
 		SetCanvas,
+		SetClip,
 		SetTintColor,
 		SetBlendMode,
+		SetBlitSource,
+
 		Fill,
+		FillSubpixel,
 		PlotPixels,
-		DrawLine,
-		ClipDrawLine,						// Draw line between begin- and end-points
-		ClipDrawLine2,						// Draw line using begin-point, direction and length.
-		ClipDrawHorrWave,
+		DrawLineFromTo,
+		DrawLineStraight,
+
+		FillPatches,
+		FillSubpixelPatches,
+		PlotPixelPatches,
+
+		DrawLineFromToPatches,
+		DrawLineStraightPatches,
+
 		Blit,
+//		FlipBlit,
 		StretchBlit,
-		FillSubPixel,
+//		StretchBlitSubpixel,
+
+//		StretchFlipBlit,
+//		StretchFlipBlitSubpixel,
+
+//		RotScaleBlit,
+
+//		BlitPatches,
+//		FlipBlitPatches,
+//		StretchBlitPatches,
+//		StretchBlitSubpixelPatches,
+
+//		DrawWave,
+//		FlipDrawWave,
+
+//		DrawElipse,
+
+//		DrawSegments,
+//		FlipDrawSegments,
+
+//		DrawWavePatches,
+//		FlipDrawWavePatches,
+
+//		DrawElipsePatches,
+//		DrawSegmentPatches,
+//		FlipDrawSegmentPatches,
+
+//		SimpleTransformBlit,
+//		ComplexTransformBlit,
+
+		SimpleTransformBlitPatches,
+		ComplexTransformBlitPatches,
+
+//		TransformDrawWavePatches,
+		TransformDrawSegmentPatches, 
+		BeginSegments,
+		SegmentData,
+		EndSegments,
+
+//		BlitNinePatch,
+
 
 		CreateSurface,
 		SetSurfaceScaleMode,

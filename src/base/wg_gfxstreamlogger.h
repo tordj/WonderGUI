@@ -64,6 +64,7 @@ namespace wg
 		GfxStreamLogger( GfxInStream& in, std::ostream& out );
 		~GfxStreamLogger();
 
+		int		_readPrintPatches();
 
 		GfxInStream_p	m_pGfxStream;
 		std::ostream&	m_charStream;

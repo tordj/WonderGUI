@@ -1197,6 +1197,20 @@ namespace wg
 		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)flip], nPatches, pPatches);
 	}
 
+	//____ transformBlit() ______________________________________________________
+
+	void GfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	{
+		transformBlitPatches(dest, src, simpleTransform, 1, &dest);
+	}
+
+	void GfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
+	{
+		transformBlitPatches(dest, src, complexTransform, 1, &dest);
+	}
+
+
+
 	//____ blitHorrBar() ______________________________________________________
 	
 	void GfxDevice::blitHorrBar( 	  	const Rect& _src, const Border& _borders,

@@ -189,8 +189,8 @@ namespace wg
 
 		// Low level methods
 
-		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2] ) = 0;
-		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2] ) = 0;
+		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2] );
+		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2] );
 
 		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
