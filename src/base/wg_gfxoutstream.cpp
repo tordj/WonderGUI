@@ -166,6 +166,7 @@ namespace wg
 		m_pHolder->_pushChar((char)(mtx[0][1]));
 		m_pHolder->_pushChar((char)(mtx[1][0]));
 		m_pHolder->_pushChar((char)(mtx[1][1]));
+		return *this;
 	}
 
 	GfxOutStream& GfxOutStream::operator<< (const float mtx[2][2])
@@ -174,6 +175,7 @@ namespace wg
 		m_pHolder->_pushFloat(mtx[0][1]);
 		m_pHolder->_pushFloat(mtx[1][0]);
 		m_pHolder->_pushFloat(mtx[1][1]);
+		return *this;
 	}
 
 

@@ -765,16 +765,16 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch)
+	void GfxDevice::drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch)
 	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], 1, &dest );
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], 1, &dest );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip)
+	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip)
 	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)flip], 1, &dest );
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip], 1, &dest );
 	}
 
 	//____ drawWavePatches() ______________________________________________________
@@ -999,6 +999,8 @@ namespace wg
 		// Adjusted clip
 
 		Rect clip(m_clip, outerRect);
+		if (clip.w == 0 || clip.h == 0)
+			return;
 
 		int clipLeft = clip.x - outerRect.x;
 
@@ -1063,8 +1065,17 @@ namespace wg
 						curvePos += (-xStart) * curveInc;
 				}
 
+				// Clip xStart, xMid and xEnd
+
 				if (xEnd >= samplePoints)
+				{
 					xEnd = samplePoints - 1;
+
+					xStart = min(xStart, xEnd);
+					xMid = min(xMid, xEnd);
+				}
+
+				//
 
 				int sample = 0;
 				while (sample < xStart)
@@ -1185,16 +1196,16 @@ namespace wg
 
 	//____ drawSegmentPatches() ______________________________________________________
 
-	void GfxDevice::drawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, int nPatches, const Rect * pPatches)
+	void GfxDevice::drawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, int nPatches, const Rect * pPatches)
 	{
-		transformDrawSegmentPatches( dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
+		transformDrawSegmentPatches( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
 	}
 
 	//____ flipDrawSegmentPatches() ______________________________________________________
 
-	void GfxDevice::flipDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches)
+	void GfxDevice::flipDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdges, pEdges, edgeStripPitch, drawFlipTransforms[(int)flip], nPatches, pPatches);
+		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip], nPatches, pPatches);
 	}
 
 	//____ transformBlit() ______________________________________________________

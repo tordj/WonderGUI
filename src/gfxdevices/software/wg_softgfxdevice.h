@@ -141,9 +141,9 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
 
 
-		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
 
-		virtual void	drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch) override;
+		virtual void	drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
 		//		virtual void	drawHorrWave(Coord begin, int length, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
 
@@ -172,9 +172,6 @@ namespace wg
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::MapXY;
 		const static int           TintMode_size = (int)TintMode::MapXY + 1;
-
-		const static int			c_maxSegments = 16;
-
 
 		struct Pitches
 		{
@@ -253,7 +250,7 @@ namespace wg
 		int 	_scaleLineThickness(float thickness, int slope);
 
 
-		void	_clipDrawSegmentStrip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, Color * pSegmentColors);
+		void	_clipDrawSegmentStrip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
 		typedef	void(*WaveOp_p)(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);

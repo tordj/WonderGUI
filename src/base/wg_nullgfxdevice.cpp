@@ -125,7 +125,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void NullGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
 	{
 	}
 

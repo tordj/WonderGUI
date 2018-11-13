@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( Size canvas, GfxOutStream * pStream );
+		static StreamGfxDevice_p	create( Size canvas, GfxOutStream& stream );
 
 		//.____ Identification __________________________________________
 
@@ -155,12 +155,12 @@ namespace wg
 		void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
 
 //		void	transformDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
-		void	transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
 
 
 
 	protected:
-		StreamGfxDevice( Size canvas, GfxOutStream * pStream );
+		StreamGfxDevice( Size canvas, GfxOutStream& stream );
 		~StreamGfxDevice();
 
 		void _addPatches(int nPatches, const Rect * pPatches);

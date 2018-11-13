@@ -35,7 +35,7 @@ namespace wg
 
 	//____ Constructor ________________________________________________________
 
-	StreamSurfaceFactory::StreamSurfaceFactory(GfxOutStream * pStream) : m_pStream(pStream)
+	StreamSurfaceFactory::StreamSurfaceFactory(GfxOutStream& stream) : m_pStream(&stream)
 	{
 		
 	}
@@ -78,23 +78,23 @@ namespace wg
 
 	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, int hint, const Color * pClut ) const
 	{
-        return StreamSurface::create(m_pStream,size,format,hint,pClut);
+        return StreamSurface::create(*m_pStream,size,format,hint,pClut);
 	}
 
 
 	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut ) const
 	{
-		return StreamSurface::create(m_pStream,size,format, pBlob,pitch,hint,pClut);
+		return StreamSurface::create(*m_pStream,size,format, pBlob,pitch,hint,pClut);
 	}
 	
 	Surface_p StreamSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut ) const
 	{
-		return StreamSurface::create(m_pStream,size,format, pPixels, pitch, pPixelDescription,hint,pClut);
+		return StreamSurface::create(*m_pStream,size,format, pPixels, pitch, pPixelDescription,hint,pClut);
 	}
 	
 	Surface_p StreamSurfaceFactory::createSurface( Surface * pOther, int hint ) const
 	{
-		return StreamSurface::create(m_pStream,pOther,hint );
+		return StreamSurface::create(*m_pStream,pOther,hint );
 	}
 
 

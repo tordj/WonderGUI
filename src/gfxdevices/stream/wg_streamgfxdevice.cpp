@@ -34,25 +34,22 @@ namespace wg
 {
 	const char StreamGfxDevice::CLASSNAME[] = { "StreamGfxDevice" };
 
-
-
-    
     
     
 	//____ create() _______________________________________________________________
 	
-	StreamGfxDevice_p StreamGfxDevice::create( Size canvas, GfxOutStream * pStream )
+	StreamGfxDevice_p StreamGfxDevice::create( Size canvas, GfxOutStream& stream )
 	{
-		StreamGfxDevice_p p(new StreamGfxDevice( canvas, pStream ));		
+		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));		
 		return p;
 	}
 
 
 	//____ Constructor _____________________________________________________________
 
-	StreamGfxDevice::StreamGfxDevice( Size canvas, GfxOutStream * pStream ) : GfxDevice(canvas)
+	StreamGfxDevice::StreamGfxDevice( Size canvas, GfxOutStream& stream ) : GfxDevice(canvas)
 	{
-		m_pStream = pStream;
+		m_pStream = &stream;
 		m_bRendering = false;
     }
 
@@ -101,7 +98,7 @@ namespace wg
 	SurfaceFactory_p StreamGfxDevice::surfaceFactory()
 	{
 		if( !m_pSurfaceFactory )
-			m_pSurfaceFactory = StreamSurfaceFactory::create(m_pStream);
+			m_pSurfaceFactory = StreamSurfaceFactory::create(*m_pStream);
 	
 		return m_pSurfaceFactory;
 	}
@@ -129,7 +126,12 @@ namespace wg
 		m_pCanvas		= _pSurface;
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 2 };
-		(*m_pStream) << static_cast<StreamSurface*>(m_pCanvas.rawPtr())->m_inStreamId;
+
+		if( _pSurface )
+			(*m_pStream) << static_cast<StreamSurface*>(_pSurface)->m_inStreamId;
+		else
+			(*m_pStream) << (short) 0;
+
 
 		return true;
 	}
@@ -165,11 +167,13 @@ namespace wg
 
 	bool StreamGfxDevice::setBlitSource(Surface * pSource)
 	{
-		if (!pSource)
+		if (!pSource || !pSource->isInstanceOf(StreamSurface::CLASSNAME) )
 			return false;
 
+		m_pBlitSource = pSource;
+
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlitSource, 2 };
-		(*m_pStream) << static_cast<StreamSurface*>(m_pCanvas.rawPtr())->m_inStreamId;
+		(*m_pStream) << static_cast<StreamSurface*>(pSource)->m_inStreamId;
 		return true;
 	}
 
@@ -434,7 +438,7 @@ namespace wg
 		if (nPatches == 0)
 			return;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SimpleTransformBlitPatches, 34 + nPatches * 8 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::ComplexTransformBlitPatches, 34 + nPatches * 8 };
 		(*m_pStream) << dest;
 		(*m_pStream) << src;
 		(*m_pStream) << complexTransform;
@@ -443,9 +447,57 @@ namespace wg
 
 	//____ transformDrawSegmentPatches() ______________________________________
 
-	void StreamGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void StreamGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
 	{
-		//TODO: Implement!
+		//NOTE: Precision of edge data is scaled down to 4 binals and there is a limitation of 4095 pixels height of the segment waveform to keep data compact.
+
+		// Generate the TransformDrawSegmentPatches chunk.
+
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::TransformDrawSegmentPatches, 18 + nSegments * 4 + nPatches * 8 };
+		(*m_pStream) << dest;
+		(*m_pStream) << (uint16_t) nSegments;
+		(*m_pStream) << (uint16_t) nEdgeStrips;
+		(*m_pStream) << simpleTransform;
+
+		for( int i = 0 ; i < nSegments; i++ )
+			(*m_pStream) << pSegmentColors[i];
+
+		_addPatches(nPatches, pPatches);
+
+		// Compress our edge data
+
+		int nEdges = nSegments - 1;
+		int nEdgeEntries = nEdgeStrips * nEdges;
+		int allocSize = nEdgeEntries * 2;
+
+		int16_t * pPackedEdges = (int16_t*) Base::memStackAlloc(allocSize);
+		int16_t * wp = pPackedEdges;
+
+		for (int strip = 0; strip < nEdgeStrips; strip++)
+		{
+			for (int i = 0; i < nEdges; i++)
+				*wp++ = (int16_t) (pEdgeStrips[i] >> 4);
+			pEdgeStrips += edgeStripPitch;
+		}
+
+		// Write the chunks of edge samples
+
+		int maxEntriesPerChunk = (GfxStream::c_maxBlockSize - sizeof(GfxStream::Header)) / 2;
+
+		while (nEdgeEntries > 0)
+		{
+			int chunkEntries = min(nEdgeEntries, maxEntriesPerChunk);
+
+			(*m_pStream) << GfxStream::Header{ GfxChunkId::EdgeSamples, chunkEntries*2 };
+			(*m_pStream) << GfxStream::DataChunk{ chunkEntries*2, pPackedEdges };
+
+			pPackedEdges += chunkEntries;
+			nEdgeEntries -= chunkEntries;
+		}
+
+		// Clean up
+
+		Base::memStackRelease(allocSize);
 	}
 
 	//____ _addPatches() ______________________________________________________

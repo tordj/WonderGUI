@@ -16,6 +16,9 @@
     <ClCompile Include="..\..\..\gfxdevice_testapp\wg_fileutil.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\gfxdevice_testapp\device.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\gfxdevice_testapp\testunit.h">
@@ -41,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\wavetests.h">
       <Filter>testsuites</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\device.h">
+      <Filter>code</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

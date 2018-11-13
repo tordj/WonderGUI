@@ -58,7 +58,7 @@ namespace wg
 
 	void ModSurfaceItem::regenSurface()
 	{
-		if (!m_pDevice)
+		if (!m_pDevice && !m_pFactory)
 			return;
 
 		Size sz = m_fixedSize;
@@ -72,7 +72,8 @@ namespace wg
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
 		m_pSurface->fill(m_backColor);
 
-		m_pDevice->setCanvas(m_pSurface);
+		if( m_pDevice )
+			m_pDevice->setCanvas(m_pSurface);
 
 		if (m_surfaceLostCallback != nullptr)
 			m_surfaceLostCallback(m_pInterface);

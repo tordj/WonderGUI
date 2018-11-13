@@ -761,9 +761,7 @@ namespace wg
 
 //		TransformDrawWavePatches,
 		TransformDrawSegmentPatches, 
-		BeginSegments,
-		SegmentData,
-		EndSegments,
+		EdgeSamples,
 
 //		BlitNinePatch,
 

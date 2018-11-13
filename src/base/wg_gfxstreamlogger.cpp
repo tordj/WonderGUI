@@ -358,10 +358,10 @@ namespace wg
 
 			case GfxChunkId::SimpleTransformBlitPatches:
 			{
-				Rect dest;
-				Coord src;
-				int transform[2][2];
-				int nPatches;
+				Rect		dest;
+				Coord		src;
+				int			transform[2][2];
+				int			nPatches;
 
 				*m_pGfxStream >> dest;
 				*m_pGfxStream >> src;
@@ -380,10 +380,10 @@ namespace wg
 
 			case GfxChunkId::ComplexTransformBlitPatches:
 			{
-				Rect dest;
-				CoordF src;
-				float transform[2][2];
-				int nPatches;
+				Rect		dest;
+				CoordF		src;
+				float		transform[2][2];
+				int			nPatches;
 
 				*m_pGfxStream >> dest;
 				*m_pGfxStream >> src;
@@ -401,7 +401,43 @@ namespace wg
 
 			case GfxChunkId::TransformDrawSegmentPatches:
 			{
-				//TODO: Implement!
+				Rect		dest;
+				uint16_t	nSegments;
+				uint16_t	nEdgeStrips;
+				int			transform[2][2];
+
+
+				(*m_pGfxStream) >> dest;
+				(*m_pGfxStream) >> nSegments;
+				(*m_pGfxStream) >> nEdgeStrips;
+				(*m_pGfxStream) >> transform;
+
+				m_charStream << "    dest        = " << dest.x << ", " << dest.y << ", " << dest.w << ", " << dest.h << std::endl;
+				m_charStream << "    nSegments   = " << nSegments << std::endl;
+				m_charStream << "    nEdgeStrips = " << nEdgeStrips << std::endl;
+				m_charStream << "    transform   = [ " << transform[0][0] << ", " << transform[0][1] << " ]" << std::endl;
+				m_charStream << "                  [ " << transform[1][0] << ", " << transform[1][1] << " ]" << std::endl;
+
+
+				m_charStream << "    seg colors  = ";
+				for (int i = 0; i < nSegments; i++)
+				{
+					Color color;
+					(*m_pGfxStream) >> color;
+
+					m_charStream << "{ " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << " } ";
+
+				}
+				m_charStream << std::endl;
+
+				_readPrintPatches();
+				break;
+			}
+
+			case GfxChunkId::EdgeSamples:
+			{
+				m_pGfxStream->skip(header.size);
+				m_charStream << "    nSamples    = " << (int)header.size/2 << std::endl;
 				break;
 			}
 

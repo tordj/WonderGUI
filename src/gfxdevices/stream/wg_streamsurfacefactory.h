@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StreamSurfaceFactory_p	create( GfxOutStream * pStream ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(pStream)); }
+		static StreamSurfaceFactory_p	create( GfxOutStream& stream ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(stream)); }
 
 		//.____ Identification __________________________________________
 
@@ -61,7 +61,7 @@ namespace wg
         Surface_p	createSurface( Surface * pOther, int hint = SurfaceHint::Static ) const override;
 
 	protected:
-		StreamSurfaceFactory( GfxOutStream * pStream);
+		StreamSurfaceFactory( GfxOutStream& stream);
 
 
 		GfxOutStream_p	m_pStream;

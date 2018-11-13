@@ -172,8 +172,8 @@ namespace wg
 
 		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
 
-		virtual void	drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch);
-		virtual void	flipDrawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip);
+		virtual void	drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch);
+		virtual void	flipDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip);
 
 
 		// Draw segment patches methods
@@ -183,8 +183,8 @@ namespace wg
 
 		virtual void	drawElipsePatches(const RectF& canvas, float thickness, Color color, float outlineThickness, Color outlineColor, int nPatches, const Rect * pPatches);
 
-		virtual void	drawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, int nPatches, const Rect * pPatches);
-		virtual void	flipDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches);
+		virtual void	drawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, int nPatches, const Rect * pPatches);
+		virtual void	flipDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches);
 
 
 		// Low level methods
@@ -196,7 +196,7 @@ namespace wg
 		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches ) = 0;
 
 		virtual void	transformDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2], int nPatches, const Rect * pPatches);
-		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) = 0;
+		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) = 0;
 
 		// Special draw/blit methods
 
@@ -217,7 +217,10 @@ namespace wg
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
 		
-		
+		//
+
+		const static int	c_maxSegments = 16;
+
 	protected:
 		GfxDevice( Size canvasSize );
 		virtual ~GfxDevice();
@@ -231,6 +234,8 @@ namespace wg
 
 		const static int c_nCurveTabEntries = 1024;
 		static int *	s_pCurveTab;
+
+
 
 		//
 

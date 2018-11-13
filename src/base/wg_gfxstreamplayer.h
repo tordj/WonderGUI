@@ -78,6 +78,24 @@ namespace wg
 		Surface_p			m_pUpdatingSurface;
 		uint8_t *			m_pWritePixels;
 
+
+		// Temporary storage for incoming segment
+
+		struct SegmentInfo
+		{
+			Rect	dest;
+			int		nSegments;
+			Color	colors[GfxDevice::c_maxSegments];
+			int		nEdgeStrips;
+			int *	pEdgeStrips;
+			int		transform[2][2];
+			int		nPatches;
+
+			int		nLoadedSamples;
+			int		nTotalSamples;
+		};
+
+		SegmentInfo		m_seg;
 	};
 
 }

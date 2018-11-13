@@ -180,6 +180,7 @@ namespace wg
 		mtx[0][1] = m_pHolder->_pullChar();
 		mtx[1][0] = m_pHolder->_pullChar();
 		mtx[1][1] = m_pHolder->_pullChar();
+		return *this;
 	}
 
 	GfxInStream& GfxInStream::operator>> (float mtx[2][2])
@@ -188,6 +189,7 @@ namespace wg
 		mtx[0][1] = m_pHolder->_pullFloat();
 		mtx[1][0] = m_pHolder->_pullFloat();
 		mtx[1][1] = m_pHolder->_pullFloat();
+		return *this;
 	}
 
 

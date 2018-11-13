@@ -126,7 +126,12 @@ namespace wg
 		{
 			uint16_t	surfaceId;
 			*m_pStream >> surfaceId;
-			m_pDevice->setCanvas(m_vSurfaces[surfaceId]);
+
+			if( surfaceId > 0 )
+				m_pDevice->setCanvas(m_vSurfaces[surfaceId]);
+			else
+				m_pDevice->setCanvas(nullptr);
+
 			break;
 		}
 
@@ -382,7 +387,6 @@ namespace wg
 			*m_pStream >> dest;
 			*m_pStream >> src;
 			*m_pStream >> transform;
-			*m_pStream >> nPatches;
 
 			nPatches = _unpackPatches();
 			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
@@ -399,7 +403,6 @@ namespace wg
 			*m_pStream >> dest;
 			*m_pStream >> src;
 			*m_pStream >> transform;
-			*m_pStream >> nPatches;
 
 			nPatches = _unpackPatches();
 			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
@@ -408,7 +411,58 @@ namespace wg
 
 		case GfxChunkId::TransformDrawSegmentPatches:
 		{
-			//TODO: Implement!
+			Rect		dest;
+			uint16_t	nSegments;
+			uint16_t	nEdgeStrips;
+			int			nPatches;
+
+			*m_pStream >> dest;
+			*m_pStream >> nSegments;
+			*m_pStream >> nEdgeStrips;
+			*m_pStream >> m_seg.transform;
+
+			for (int i = 0; i < nSegments; i++)
+				* m_pStream >> m_seg.colors[i];
+
+			nPatches = _unpackPatches();
+
+			int nTotalSamples = (nSegments - 1)*nEdgeStrips;
+
+			m_seg.dest = dest;
+			m_seg.nSegments = nSegments;
+			m_seg.nEdgeStrips = nEdgeStrips;
+			m_seg.pEdgeStrips = new int[nTotalSamples];
+			m_seg.nPatches = nPatches;
+			m_seg.nLoadedSamples = 0;
+			m_seg.nTotalSamples = nTotalSamples;
+
+			break;
+		}
+
+		case GfxChunkId::EdgeSamples:
+		{
+			int nSamples = header.size/2;
+
+			assert(nSamples <= m_seg.nTotalSamples - m_seg.nLoadedSamples);
+
+			// Stream the compressed samples to end of destination and unpack them.
+
+			*m_pStream >> GfxStream::DataChunk{ header.size, ((char*)(&m_seg.pEdgeStrips[m_seg.nLoadedSamples])) + nSamples*2 };
+
+			int * wp = &m_seg.pEdgeStrips[m_seg.nLoadedSamples];
+			int16_t * rp = ((int16_t*)&m_seg.pEdgeStrips[m_seg.nLoadedSamples]) + nSamples;
+
+			for (int i = 0; i < nSamples; i++)
+				* wp++ = ((int)(*rp++)) << 4;
+
+			// Increase counter and possibly render the segment
+
+			m_seg.nLoadedSamples += nSamples;
+			if (m_seg.nLoadedSamples == m_seg.nTotalSamples)
+			{
+				m_pDevice->transformDrawSegmentPatches(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform, m_seg.nPatches, m_patches);
+				delete [] m_seg.pEdgeStrips;
+			}
 			break;
 		}
 
