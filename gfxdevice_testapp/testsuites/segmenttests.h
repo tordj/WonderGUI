@@ -18,6 +18,11 @@ public:
 		addTest("LargeCircle", &SegmentTests::largeCircle);
 		addTest("BrokenElipse", &SegmentTests::brokenElipse);
 
+		addTest("SegBlendReplace", &SegmentTests::setBlendModeReplace, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
+		addTest("SegBlendAdd", &SegmentTests::setBlendModeAdd, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
+		addTest("SegBlendSubtract", &SegmentTests::setBlendModeSubtract, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
+		addTest("SegBlendMultiply", &SegmentTests::setBlendModeMultiply, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
+		addTest("SegBlendInvert", &SegmentTests::setBlendModeInvert, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
 
 	}
 
@@ -49,6 +54,35 @@ public:
 	}
 
 
+	bool	resetBlendMode(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Blend);
+	}
+
+	bool	setBlendModeReplace(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Replace);
+	}
+
+	bool	setBlendModeAdd(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Add);
+	}
+
+	bool	setBlendModeSubtract(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Subtract);
+	}
+
+	bool	setBlendModeMultiply(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Multiply);
+	}
+
+	bool	setBlendModeInvert(GfxDevice * pDevice, const Rect& canvas)
+	{
+		return pDevice->setBlendMode(BlendMode::Invert);
+	}
 
 	bool rainbowSpread(GfxDevice * pDevice, const Rect& canvas)
 	{

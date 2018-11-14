@@ -224,11 +224,6 @@ namespace wg
 		template<BlendMode BLEND, TintMode TINTMODE, PixelFormat DSTFORMAT>
 		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
 
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-		static void _draw_wave_column(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
-
-
-
 		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 
@@ -238,6 +233,8 @@ namespace wg
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
+		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
 
@@ -250,10 +247,6 @@ namespace wg
 		int 	_scaleLineThickness(float thickness, int slope);
 
 
-		void	_clipDrawSegmentStrip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
-
-
-		typedef	void(*WaveOp_p)(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
 
 		static void	_clip_wave_blend_24(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
 		static void	_clip_wave_blend_32(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
@@ -267,6 +260,7 @@ namespace wg
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
 		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
+		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
 		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const Rect& dest, Coord src, const int simpleTransform[2][2]);
@@ -290,7 +284,7 @@ namespace wg
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
 		static FillOp_p			s_fillOpTab[BlendMode_size][TintMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
-		static WaveOp_p			s_waveOpTab[BlendMode_size][PixelFormat_size];
+		static SegmentOp_p		s_segmentOpTab[BlendMode_size][PixelFormat_size];
 
 		static SimpleBlitOp_p	s_pass2OpTab[BlendMode_size][PixelFormat_size];
 
