@@ -203,6 +203,7 @@ namespace wg
 		virtual void	blitFromCanvas(Coord dest, const Rect& src );			// Blit fr om surface that has been used as canvas. Will flip Y on OpenGL.
 
 		virtual void	blitNinePatch(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame);
+		virtual void	blitNinePatchPatches(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame, int nPatches, const Rect * pPatches );
 
 
 

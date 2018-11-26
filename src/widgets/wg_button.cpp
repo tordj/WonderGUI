@@ -168,7 +168,7 @@ namespace wg
 		// Render icon
 	
 		if( m_icon.skin() )
-			m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
+			m_icon.skin()->render( pDevice, iconRect, m_state );
 	
 		// Print text
 	

@@ -246,11 +246,6 @@ namespace wg
 		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness(float thickness, int slope);
 
-
-
-		static void	_clip_wave_blend_24(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
-		static void	_clip_wave_blend_32(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch);
-
 		//
 
 		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint);

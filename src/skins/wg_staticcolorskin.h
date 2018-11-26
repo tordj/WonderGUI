@@ -43,35 +43,35 @@ namespace wg
 	
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static StaticColorSkin_p	cast( Object * pObject );
 	
 		//.____ Rendering ________________________________________________
 		
-		void	render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const;
+		void	renderPatches( GfxDevice * pDevice, const Rect& canvas, State state, int nPatches, const Rect * pPatches ) const override;
 
 		//.____ Geometry _________________________________________________
 	
-		Size	minSize() const;
-		Size	preferredSize() const;
-		Size	sizeForContent( const Size contentSize ) const;
+		Size	minSize() const override;
+		Size	preferredSize() const override;
+		Size	sizeForContent( const Size contentSize ) const override;
 	
-		Size	contentPadding() const;
-		Coord	contentOfs( State state ) const;
-		Rect	contentRect( const Rect& canvas, State state ) const;
+		Size	contentPadding() const override;
+		Coord	contentOfs( State state ) const override;
+		Rect	contentRect( const Rect& canvas, State state ) const override;
 	
 
 		//.____ Misc ____________________________________________________
 
-		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
+		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
 
-		bool	isOpaque() const;
-		bool	isOpaque(State state) const;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		bool	isOpaque() const override;
+		bool	isOpaque(State state) const override;
+		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
 	
-		bool	isStateIdentical( State state, State comparedTo ) const;
+		bool	isStateIdentical( State state, State comparedTo ) const override;
 	
 	private:
 		StaticColorSkin( Color col );

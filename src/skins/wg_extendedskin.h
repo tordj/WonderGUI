@@ -39,21 +39,21 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static ExtendedSkin_p	cast( Object * pObject );
 	
 		//.____ Geometry _________________________________________________
 		
-		virtual Size	minSize() const;
-		virtual Size	preferredSize() const;
-		virtual Size	sizeForContent( const Size contentSize ) const;
+		virtual Size	minSize() const override;
+		virtual Size	preferredSize() const override;
+		virtual Size	sizeForContent( const Size contentSize ) const override;
 
 		virtual void	setContentPadding( Border padding );
-		virtual Size	contentPadding() const;
-		virtual Coord	contentOfs( State state ) const;
-		virtual Rect	contentRect( const Rect& canvas, State state ) const;
+		virtual Size	contentPadding() const override;
+		virtual Coord	contentOfs( State state ) const override;
+		virtual Rect	contentRect( const Rect& canvas, State state ) const override;
 
 		//.____ Behavior _______________________________________________________
 
@@ -64,7 +64,7 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 	
-		virtual	bool	isStateIdentical( State state, State comparedTo ) const;
+		virtual	bool	isStateIdentical( State state, State comparedTo ) const override;
 	
 	
 	protected:

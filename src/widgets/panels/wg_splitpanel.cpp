@@ -463,7 +463,7 @@ namespace wg
 		Panel::_render(pDevice, _canvas, _window, _clip);
 
 		if (m_pHandleSkin)
-			m_pHandleSkin->render(pDevice, m_handleGeo, m_handleState, _clip);
+			m_pHandleSkin->render(pDevice, m_handleGeo, m_handleState);
 	}
 
 

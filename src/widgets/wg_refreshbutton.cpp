@@ -292,7 +292,7 @@ namespace wg
 		}
 		else if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, _canvas, m_state, _clip );
+			m_pSkin->render( pDevice, _canvas, m_state );
 		}
 	
 		// Get content rect with displacement.
@@ -324,7 +324,7 @@ namespace wg
 			pDevice->stretchBlit( iconRect, pAnimFrame->rect );
 		}
 		else if( !m_icon.isEmpty() )
-			m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
+			m_icon.skin()->render( pDevice, iconRect, m_state );
 	
 		// Print text
 	

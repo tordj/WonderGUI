@@ -560,6 +560,11 @@ namespace wg
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
 	{
+		const BlendMode EdgeBlendMode = BLEND == BlendMode::Replace ? BlendMode::Blend : BLEND;
+
+		if (BLEND == BlendMode::Replace)
+			color.a = 255;						// Needed since we still blend the edges.
+
 		// Step 1: Read source pixels
 
 		uint8_t srcB, srcG, srcR, srcA;
@@ -597,6 +602,8 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				uint8_t outB, outG, outR, outA;
+				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+
 				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -611,7 +618,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				uint8_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				ofs++;
@@ -653,7 +660,7 @@ namespace wg
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 					uint8_t outB, outG, outR, outA;
-					_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
@@ -669,6 +676,11 @@ namespace wg
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint)
 	{
+		const BlendMode EdgeBlendMode = (BLEND == BlendMode::Replace) ? BlendMode::Blend : BLEND;
+
+		if (BLEND == BlendMode::Replace)
+			color.a = 255;						// Needed since we still blend the edges.
+
 		// Step 1: Read source pixels
 
 		uint8_t srcB, srcG, srcR, srcA;
@@ -727,7 +739,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				uint8_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
@@ -741,7 +753,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				uint8_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				ofs++;
@@ -783,7 +795,7 @@ namespace wg
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 					uint8_t outB, outG, outR, outA;
-					_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
@@ -1504,6 +1516,10 @@ namespace wg
 			return;
 
 		bool bUpdateNeeded = (color.a != m_tintColor.a) && (color.a == 255 || m_tintColor.a == 255);
+
+		if ((color == Color::White) != (m_tintColor == Color::White))
+			bUpdateNeeded = true;
+
 		GfxDevice::setTintColor(color);
 		m_colTrans.baseTint = color;
 
@@ -1907,11 +1923,19 @@ namespace wg
 		if (thickness <= 0.f)
 			return;
 
+		BlendMode edgeBlendMode = m_blendMode;
+		if (m_blendMode == BlendMode::Replace)
+		{
+			_col.a = 255;						// Needed since we still blend the edges.
+			edgeBlendMode = BlendMode::Blend;
+		}
+
 		_col = _col * m_tintColor;
 		ColTrans	colTrans{ Color::White, nullptr, nullptr };
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pOp = s_fillOpTab[(int)m_blendMode][0][(int)m_pCanvas->pixelFormat()];
+		FillOp_p	pCenterOp = s_fillOpTab[(int)m_blendMode][0][(int)m_pCanvas->pixelFormat()];
+		FillOp_p	pEdgeOp = s_fillOpTab[(int)edgeBlendMode][0][(int)m_pCanvas->pixelFormat()];
 
 		for (int i = 0; i < nPatches; i++)
 		{
@@ -1955,7 +1979,7 @@ namespace wg
 					col.a = (uint8_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-					pOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
+					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
 				} 
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
@@ -1972,7 +1996,7 @@ namespace wg
 					else
 					{
 						uint8_t * pBegin = m_pCanvasPixels + beginY * m_canvasPitch + begin.x * pixelBytes;
-						pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
+						pEdgeOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 						//					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
 					}
 
@@ -1981,12 +2005,12 @@ namespace wg
 					else
 					{
 						uint8_t * pBegin = m_pCanvasPixels + (endY - 1) * m_canvasPitch + begin.x * pixelBytes;
-						pOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
+						pEdgeOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
 					}
 
 					int bodyThickness = endY - beginY - 2;
 					uint8_t * pBegin = m_pCanvasPixels + (beginY + 1) * m_canvasPitch + begin.x * pixelBytes;
-					pOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col, colTrans);
+					pCenterOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col, colTrans);
 				}
 
 				break;
@@ -2021,7 +2045,7 @@ namespace wg
 					col.a = (uint8_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
-					pOp(pBegin, m_canvasPitch, 0, 1, length, col, colTrans);
+					pEdgeOp(pBegin, m_canvasPitch, 0, 1, length, col, colTrans);
 				}
 				else
 				{
@@ -2039,7 +2063,7 @@ namespace wg
 					else
 					{
 						uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + beginX * pixelBytes;
-						pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
+						pEdgeOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 					}
 
 					if (endX > clip.x + clip.w)
@@ -2047,326 +2071,17 @@ namespace wg
 					else
 					{
 						uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (endX - 1) * pixelBytes;
-						pOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
+						pEdgeOp(pBegin, m_canvasPitch, 0, 1, length, edgeColor, colTrans);
 					}
 
 
 					int bodyThickness = endX - beginX - 2;
 					uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX + 1) * pixelBytes;
-					pOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch * bodyThickness, bodyThickness, length, _col, colTrans);
+					pEdgeOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch * bodyThickness, bodyThickness, length, _col, colTrans);
 				}
 
 				break;
 			}
-		}
-	}
-
-	//_____ _clip_wave_blend_24() ________________________________________________
-
-	void SoftGfxDevice::_clip_wave_blend_24(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
-	{
-		// 16 binals on leftPos, rightPos and most calculations.
-
-		int i = 0;
-
-		int amount[4];
-		int inc[4];
-
-		int columnBeg = (min(leftPos[0], rightPos[0]) & 0xFFFF0000); // +32768;	Column does NOT starts in middle of first pixel anymore
-
-		// Calculate start amount and increment for our 4 fields
-
-		for (int i = 0; i < 4; i++)
-		{
-			int yBeg;
-			int64_t xInc;
-
-			if (leftPos[i] < rightPos[i])
-			{
-				yBeg = leftPos[i];
-				xInc = (int64_t) 65536*65536 / (rightPos[i] - leftPos[i]+1);
-			}
-			else
-			{
-				yBeg = rightPos[i];
-				xInc = (int64_t) 65536*65536 / (leftPos[i] - rightPos[i]+1);
-			}
-
-			limit(xInc, (int64_t) 0, (int64_t) 65536);
-
-			inc[i] = (int) xInc;
-
-			int64_t startAmount = xInc - ((xInc * (yBeg-columnBeg)) >> 16);
-			amount[i] = (int)startAmount;
-		}
-
-		// Do clipping
-
-		if (columnBeg < (clipBeg<<16))
-		{
-			int64_t forwardAmount = (clipBeg<<16) - columnBeg;
-
-			for (int i = 0; i < 4; i++)
-				amount[i] += (int) ((inc[i]*forwardAmount) >> 16);
-
-			columnBeg = (clipBeg<<16);
-		}
-
-		uint8_t * pDstClip = pColumn + (clipBeg + clipLen) * linePitch;
-
-		// Render the column
-
-		uint8_t * pDst = pColumn + linePitch * (columnBeg>>16);
-
-		// First render loop, run until we are fully into fill (or later section).
-		// This needs to cover all possibilities since topLine, fill and bottomLine might be less than 1 pixel combined
-		// in which case they should all be rendered.
-
-		while (amount[1] < 65536 && pDst < pDstClip)
-		{
-			int aFrac = amount[0];
-			int bFrac = amount[1];
-			int cFrac = amount[2];
-			int dFrac = amount[3];
-			limit(aFrac, 0, 65536);
-			limit(bFrac, 0, 65536);
-			limit(cFrac, 0, 65536);
-			limit(dFrac, 0, 65536);
-
-			aFrac = ((aFrac - bFrac)*col[0].a) / 255;
-			bFrac = ((bFrac - cFrac)*col[1].a) / 255;
-			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
-
-			int backFraction = 65536 - aFrac - bFrac - cFrac;
-
-			pDst[0] = (pDst[0] * backFraction + col[0].b * aFrac + col[1].b * bFrac + col[2].b * cFrac) >> 16;
-			pDst[1] = (pDst[1] * backFraction + col[0].g * aFrac + col[1].g * bFrac + col[2].g * cFrac) >> 16;
-			pDst[2] = (pDst[2] * backFraction + col[0].r * aFrac + col[1].r * bFrac + col[2].r * cFrac) >> 16;
-			pDst += linePitch;
-
-			for (int i = 0; i < 4; i++)
-				amount[i] += inc[i];
-		}
-
-		// Second render loop, optimzed fill-section loop until bottomLine starts to fade in.
-
-		if(amount[2] <= 0 && pDst < pDstClip)
-		{
-			if (col[1].a == 255)
-			{
-				while (amount[2] <= 0 && pDst < pDstClip)
-				{
-					pDst[0] = col[1].b;
-					pDst[1] = col[1].g;
-					pDst[2] = col[1].r;
-					pDst += linePitch;
-
-					amount[2] += inc[2];
-					amount[3] += inc[3];
-				}
-			}
-			else
-			{
-				int fillFrac = (65536 * col[1].a) / 255;
-
-				int fillB = col[1].b * fillFrac;
-				int fillG = col[1].g * fillFrac;
-				int fillR = col[1].r * fillFrac;
-				int backFraction = 65536 - fillFrac;
-
-				while (amount[2] <= 0 && pDst < pDstClip)
-				{
-					pDst[0] = (pDst[0] * backFraction + fillB) >> 16;
-					pDst[1] = (pDst[1] * backFraction + fillG) >> 16;
-					pDst[2] = (pDst[2] * backFraction + fillR) >> 16;
-					pDst += linePitch;
-
-					amount[2] += inc[2];
-					amount[3] += inc[3];
-				}
-			}
-		}
-
-
-		// Third render loop, from when bottom line has started to fade in.
-		// We can safely ignore topLine (not visible anymore) and amount[2] is guaranteed to have reached 65536.
-
-		while (amount[3] < 65536 && pDst < pDstClip)
-		{
-			int cFrac = amount[2];
-			int dFrac = amount[3];
-			limit(cFrac, 0, 65536);
-			limit(dFrac, 0, 65536);
-
-			int bFrac = ((65536 - cFrac)*col[1].a) / 255;
-			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
-
-			int backFraction = 65536 - bFrac - cFrac;
-
-			pDst[0] = (pDst[0] * backFraction + col[1].b * bFrac + col[2].b * cFrac) >> 16;
-			pDst[1] = (pDst[1] * backFraction + col[1].g * bFrac + col[2].g * cFrac) >> 16;
-			pDst[2] = (pDst[2] * backFraction + col[1].r * bFrac + col[2].r * cFrac) >> 16;
-			pDst += linePitch;
-
-			amount[2] += inc[2];
-			amount[3] += inc[3];
-		}
-	}
-
-	//_____ _clip_wave_blend_32() ________________________________________________
-
-	void SoftGfxDevice::_clip_wave_blend_32(int clipBeg, int clipLen, uint8_t * pColumn, int leftPos[4], int rightPos[4], Color col[3], int linePitch)
-	{
-		// 16 binals on leftPos, rightPos and most calculations.
-
-		int i = 0;
-
-		int amount[4];
-		int inc[4];
-
-		int columnBeg = (min(leftPos[0], rightPos[0]) & 0xFFFF0000); // +32768;	 Column does NOT start in middle of first pixel anymore.
-
-																					// Calculate start amount and increment for our 4 fields
-
-		for (int i = 0; i < 4; i++)
-		{
-			int yBeg;
-			int64_t xInc;
-
-			if (leftPos[i] < rightPos[i])
-			{
-				yBeg = leftPos[i];
-				xInc = (int64_t)65536 * 65536 / (rightPos[i] - leftPos[i] + 1);
-			}
-			else
-			{
-				yBeg = rightPos[i];
-				xInc = (int64_t)65536 * 65536 / (leftPos[i] - rightPos[i] + 1);
-			}
-
-			limit(xInc, (int64_t)0, (int64_t)65536);
-
-			inc[i] = (int)xInc;
-
-			int64_t startAmount = xInc - ((xInc * (yBeg - columnBeg)) >> 16);
-			amount[i] = (int)startAmount;
-		}
-
-		// Do clipping
-
-		if (columnBeg < (clipBeg << 16))
-		{
-			int64_t forwardAmount = (clipBeg << 16) - columnBeg;
-
-			for (int i = 0; i < 4; i++)
-				amount[i] += (int)((inc[i] * forwardAmount) >> 16);
-
-			columnBeg = (clipBeg << 16);
-		}
-
-		uint8_t * pDstClip = pColumn + (clipBeg + clipLen) * linePitch;
-
-		// Render the column
-
-		uint8_t * pDst = pColumn + linePitch * (columnBeg >> 16);
-
-		// First render loop, run until we are fully into fill (or later section).
-		// This needs to cover all possibilities since topLine, fill and bottomLine might be less than 1 pixel combined
-		// in which case they should all be rendered.
-
-		while (amount[1] < 65536 && pDst < pDstClip)
-		{
-			int aFrac = amount[0];
-			int bFrac = amount[1];
-			int cFrac = amount[2];
-			int dFrac = amount[3];
-			limit(aFrac, 0, 65536);
-			limit(bFrac, 0, 65536);
-			limit(cFrac, 0, 65536);
-			limit(dFrac, 0, 65536);
-
-			aFrac = ((aFrac - bFrac)*col[0].a) / 255;
-			bFrac = ((bFrac - cFrac)*col[1].a) / 255;
-			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
-
-			int backFraction = 65536 - aFrac - bFrac - cFrac;
-
-			pDst[0] = (pDst[0] * backFraction + col[0].b * aFrac + col[1].b * bFrac + col[2].b * cFrac) >> 16;
-			pDst[1] = (pDst[1] * backFraction + col[0].g * aFrac + col[1].g * bFrac + col[2].g * cFrac) >> 16;
-			pDst[2] = (pDst[2] * backFraction + col[0].r * aFrac + col[1].r * bFrac + col[2].r * cFrac) >> 16;
-			pDst[3] = (pDst[3] * backFraction + 255 * aFrac + 255 * bFrac + 255 * cFrac) >> 16;
-			pDst += linePitch;
-
-			for (int i = 0; i < 4; i++)
-				amount[i] += inc[i];
-		}
-
-		// Second render loop, optimzed fill-section loop until bottomLine starts to fade in.
-
-		if (amount[2] <= 0 && pDst < pDstClip)
-		{
-			if (col[1].a == 255)
-			{
-				while (amount[2] <= 0 && pDst < pDstClip)
-				{
-					pDst[0] = col[1].b;
-					pDst[1] = col[1].g;
-					pDst[2] = col[1].r;
-					pDst[3] = col[1].a;
-					pDst += linePitch;
-
-					amount[2] += inc[2];
-					amount[3] += inc[3];
-				}
-			}
-			else
-			{
-				int fillFrac = (65536 * col[1].a) / 255;
-
-				int fillB = col[1].b * fillFrac;
-				int fillG = col[1].g * fillFrac;
-				int fillR = col[1].r * fillFrac;
-				int fillA = 255 * fillFrac;
-				int backFraction = 65536 - fillFrac;
-
-				while (amount[2] <= 0 && pDst < pDstClip)
-				{
-					pDst[0] = (pDst[0] * backFraction + fillB) >> 16;
-					pDst[1] = (pDst[1] * backFraction + fillG) >> 16;
-					pDst[2] = (pDst[2] * backFraction + fillR) >> 16;
-					pDst[3] = (pDst[3] * backFraction + fillA) >> 16;
-					pDst += linePitch;
-
-					amount[2] += inc[2];
-					amount[3] += inc[3];
-				}
-			}
-		}
-
-
-		// Third render loop, from when bottom line has started to fade in.
-		// We can safely ignore topLine (not visible anymore) and amount[2] is guaranteed to have reached 65536.
-
-		while (amount[3] < 65536 && pDst < pDstClip)
-		{
-			int cFrac = amount[2];
-			int dFrac = amount[3];
-			limit(cFrac, 0, 65536);
-			limit(dFrac, 0, 65536);
-
-			int bFrac = ((65536 - cFrac)*col[1].a) / 255;
-			cFrac = ((cFrac - dFrac)*col[2].a) / 255;
-
-			int backFraction = 65536 - bFrac - cFrac;
-
-			pDst[0] = (pDst[0] * backFraction + col[1].b * bFrac + col[2].b * cFrac) >> 16;
-			pDst[1] = (pDst[1] * backFraction + col[1].g * bFrac + col[2].g * cFrac) >> 16;
-			pDst[2] = (pDst[2] * backFraction + col[1].r * bFrac + col[2].r * cFrac) >> 16;
-			pDst[3] = (pDst[3] * backFraction + 255 * bFrac + 255 * cFrac) >> 16;
-			pDst += linePitch;
-
-			amount[2] += inc[2];
-			amount[3] += inc[3];
 		}
 	}
 
@@ -3557,11 +3272,11 @@ namespace wg
 
 		// Init Line Operation Table
 
-		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_8>;
-		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;
-		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;
-		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGR_565>;
-		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_4>;
+		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _draw_line <BlendMode::Replace, 0, PixelFormat::BGRA_8>;
+		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _draw_line <BlendMode::Replace, 0, PixelFormat::BGR_8>;
+		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _draw_line <BlendMode::Replace, 0, PixelFormat::BGR_8>;
+		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _draw_line <BlendMode::Replace, 0, PixelFormat::BGR_565>;
+		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _draw_line <BlendMode::Replace, 0, PixelFormat::BGRA_4>;
 
 		s_LineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_8>;
 		s_LineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRX_8] = _draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;
@@ -3595,11 +3310,11 @@ namespace wg
 
 		// Init ClipLine Operation Table
 
-		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_8>;
-		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;
-		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;
-		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGR_565>;
-		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_4>;
+		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _clip_draw_line <BlendMode::Replace, 0, PixelFormat::BGRA_8>;
+		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _clip_draw_line <BlendMode::Replace, 0, PixelFormat::BGR_8>;
+		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _clip_draw_line <BlendMode::Replace, 0, PixelFormat::BGR_8>;
+		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _clip_draw_line <BlendMode::Replace, 0, PixelFormat::BGR_565>;
+		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _clip_draw_line <BlendMode::Replace, 0, PixelFormat::BGRA_4>;
 
 		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGRA_8>;
 		s_clipLineOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRX_8] = _clip_draw_line <BlendMode::Blend, 0, PixelFormat::BGR_8>;

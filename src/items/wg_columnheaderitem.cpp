@@ -230,7 +230,7 @@ namespace wg
 	
 		if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, canvas, m_state, _clip );
+			m_pSkin->render( pDevice, canvas, m_state );
 			canvas = m_pSkin->contentRect( canvas, m_state );
 		}
 	
@@ -243,11 +243,11 @@ namespace wg
 		{
 			State iconState = m_state;
 			iconState.setSelected( m_sortOrder == SortOrder::Descending );
-			arrow.skin()->render( pDevice, sortRect, iconState, _clip );
+			arrow.skin()->render( pDevice, sortRect, iconState );
 		}
 	
 		if( !icon.isEmpty() )
-			icon.skin()->render( pDevice, iconRect, m_state, _clip );
+			icon.skin()->render( pDevice, iconRect, m_state );
 	
 		if( !label.isEmpty() )
 			label.render( pDevice, labelRect, _clip );	

@@ -14,20 +14,8 @@ public:
 		addTest("DrawToBGR_565", &CanvasFormatTests::init_BGR_565, &CanvasFormatTests::drawPrimitives, &CanvasFormatTests::exit_drawToSurface);
 	}
 
-
-/*
-	void addTest(string name, bool (CanvasFormatTests::*initMethod)(GfxDevice * pDevice, const Rect& canvas),
-							  bool (CanvasFormatTests::*testMethod)(GfxDevice * pDevice, const Rect& canvas),
-							  bool (CanvasFormatTests::*exitMethod)(GfxDevice * pDevice, const Rect& canvas))
-	{
-		tests.push_back({ name, [this,initMethod](GfxDevice * pDevice, const Rect& canvas) { return (this->*initMethod)(pDevice,canvas); },
-								[this,testMethod](GfxDevice * pDevice, const Rect& canvas) { return (this->*testMethod)(pDevice,canvas); },
-								[this,exitMethod](GfxDevice * pDevice, const Rect& canvas) { return (this->*exitMethod)(pDevice,canvas); } });
-	}
-*/
 	bool init(GfxDevice * pDevice, const Rect& canvas)
 	{
-
 		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_8);
 		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
 		m_pCanvasBGRX_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRX_8);

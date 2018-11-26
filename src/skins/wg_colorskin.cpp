@@ -150,9 +150,9 @@ namespace wg
 		return m_color[i];
 	}
 
-	//____ render() _______________________________________________________________
+	//____ renderPatches() _______________________________________________________________
 		
-	void ColorSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const
+	void ColorSkin::renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -161,7 +161,7 @@ namespace wg
 
 		int i = _stateToIndex(state);
 
-		pDevice->fill( Rect(_canvas, _clip), m_color[i] );
+		pDevice->fillPatches( _canvas, m_color[i], nPatches, pPatches );
 
 		if (m_blendMode != oldBlendMode)
 			pDevice->setBlendMode(oldBlendMode);

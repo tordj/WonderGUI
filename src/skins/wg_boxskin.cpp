@@ -178,10 +178,12 @@ namespace wg
 		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
 	}
 
-	//____ render() _______________________________________________________________
+	//____ renderPatches() _______________________________________________________________
 		
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, const Rect& _clip ) const
+	void BoxSkin::renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const
 	{
+		//TODO: Optimize! Clip patches against canvas first.
+
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
 		if (m_blendMode != oldBlendMode )
@@ -190,23 +192,23 @@ namespace wg
 		int i = _stateToIndex(state);
 		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{
-			pDevice->fill( Rect(_canvas, _clip), m_fillColor[i] );
+			pDevice->fillPatches( _canvas, m_fillColor[i], nPatches, pPatches );
 		}
 		else
 		{
-			Rect top( Rect(_canvas.x, _canvas.y, _canvas.w, m_frame.top), _clip );
-			Rect left( Rect(_canvas.x, _canvas.y+m_frame.top, m_frame.left, _canvas.h - m_frame.height()), _clip );
-			Rect right( Rect(_canvas.x + _canvas.w - m_frame.right, _canvas.y+m_frame.top, m_frame.right, _canvas.h - m_frame.height()), _clip );
-			Rect bottom( Rect(_canvas.x, _canvas.y + _canvas.h - m_frame.bottom, _canvas.w, m_frame.bottom), _clip );
-			Rect center( _canvas - m_frame, _clip );
+			Rect top( _canvas.x, _canvas.y, _canvas.w, m_frame.top );
+			Rect left( _canvas.x, _canvas.y+m_frame.top, m_frame.left, _canvas.h - m_frame.height() );
+			Rect right( _canvas.x + _canvas.w - m_frame.right, _canvas.y+m_frame.top, m_frame.right, _canvas.h - m_frame.height() );
+			Rect bottom( _canvas.x, _canvas.y + _canvas.h - m_frame.bottom, _canvas.w, m_frame.bottom );
+			Rect center( _canvas - m_frame );
 	
-			pDevice->fill( top, m_frameColor[i] );
-			pDevice->fill( left, m_frameColor[i] );
-			pDevice->fill( right, m_frameColor[i] );
-			pDevice->fill( bottom, m_frameColor[i] );
+			pDevice->fillPatches( top, m_frameColor[i], nPatches, pPatches );
+			pDevice->fillPatches( left, m_frameColor[i], nPatches, pPatches );
+			pDevice->fillPatches( right, m_frameColor[i], nPatches, pPatches );
+			pDevice->fillPatches( bottom, m_frameColor[i], nPatches, pPatches );
 	
 			if( center.w > 0 || center.h > 0 )
-				pDevice->fill( center, m_fillColor[i] );
+				pDevice->fillPatches( center, m_fillColor[i], nPatches, pPatches );
 		}
 
 		if (m_blendMode != oldBlendMode)

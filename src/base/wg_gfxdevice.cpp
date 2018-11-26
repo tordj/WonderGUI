@@ -740,6 +740,93 @@ namespace wg
 
 	}
 
+	//____ blitNinePatchPatches() ________________________________________________
+
+	void GfxDevice::blitNinePatchPatches(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame, int nPatches, const Rect * pPatches )
+	{
+		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame)
+		{
+			blitPatches(dstRect.pos(), srcRect, nPatches, pPatches);
+			return;
+		}
+
+		if (srcFrame.isEmpty() || dstFrame.isEmpty())
+		{
+			stretchBlitPatches(dstRect.pos(), srcRect, nPatches, pPatches);
+			return;
+		}
+
+		//TODO: Optimize! Clip patches against our geometry first.
+		//TODO: Optimize! Call transformBlit directly instead of going through stretchBlit(), reuse transforms where possible.
+		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
+
+		Size srcMidSize(srcRect.w - srcFrame.left - srcFrame.right, srcRect.h - srcFrame.top - srcFrame.bottom);
+		Size dstMidSize(dstRect.w - dstFrame.left - dstFrame.right, dstRect.h - dstFrame.top - dstFrame.bottom);
+
+		if (srcFrame.top + dstFrame.top > 0)
+		{
+			Rect	srcNW(srcRect.x, srcRect.y, srcFrame.left, srcFrame.top);
+			Rect	srcN(srcRect.x + srcFrame.left, srcRect.y, srcMidSize.w, srcFrame.top);
+			Rect	srcNE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
+
+			Rect	dstNW(dstRect.x, dstRect.y, dstFrame.left, dstFrame.top);
+			Rect	dstN(dstRect.x + dstFrame.left, dstRect.y, dstMidSize.w, dstFrame.top);
+			Rect	dstNE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y, dstFrame.right, dstFrame.top);
+
+			if (srcNW.w + dstNW.w > 0)
+				stretchBlitPatches(dstNW, srcNW, nPatches, pPatches);
+
+			if (srcN.w + dstN.w > 0)
+				stretchBlitPatches(dstN, srcN, nPatches, pPatches);
+
+			if (srcNE.w + dstNE.w > 0)
+				stretchBlitPatches(dstNE, srcNE, nPatches, pPatches);
+		}
+
+
+		if (srcMidSize.h > 0 && dstMidSize.h > 0)
+		{
+			Rect	srcW(srcRect.x, srcRect.y + srcFrame.top, srcFrame.left, srcMidSize.h);
+			Rect	srcC(srcRect.x + srcFrame.left, srcRect.y + srcFrame.top, srcMidSize.w, srcMidSize.h);
+			Rect	srcE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y + srcFrame.top, srcFrame.right, srcMidSize.h);
+
+			Rect	dstW(dstRect.x, dstRect.y + dstFrame.top, dstFrame.left, dstMidSize.h);
+			Rect	dstC(dstRect.x + dstFrame.left, dstRect.y + dstFrame.top, dstMidSize.w, dstMidSize.h);
+			Rect	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
+
+			if (srcW.w + dstW.w > 0)
+				stretchBlitPatches(dstW, srcW, nPatches, pPatches);
+
+			if (srcC.w + dstC.w > 0)
+				stretchBlitPatches(dstC, srcC, nPatches, pPatches);
+
+			if (srcE.w + dstE.w > 0)
+				stretchBlitPatches(dstE, srcE, nPatches, pPatches);
+		}
+
+		if (srcFrame.bottom + dstFrame.bottom > 0)
+		{
+			Rect	srcSW(srcRect.x, srcRect.y + srcRect.h - srcFrame.bottom, srcFrame.left, srcFrame.bottom);
+			Rect	srcS(srcRect.x + srcFrame.left, srcRect.y + srcRect.h - srcFrame.bottom, srcMidSize.w, srcFrame.bottom);
+			Rect	srcSE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y + srcRect.h - srcFrame.bottom, srcFrame.right, srcFrame.bottom);
+
+			Rect	dstSW(dstRect.x, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.left, dstFrame.bottom);
+			Rect	dstS(dstRect.x + dstFrame.left, dstRect.y + dstRect.h - dstFrame.bottom, dstMidSize.w, dstFrame.bottom);
+			Rect	dstSE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.right, dstFrame.bottom);
+
+			if (srcSW.w + dstSW.w > 0)
+				stretchBlitPatches(dstSW, srcSW, nPatches, pPatches);
+
+			if (srcS.w + dstS.w > 0)
+				stretchBlitPatches(dstS, srcS, nPatches, pPatches);
+
+			if (srcSE.w + dstSE.w > 0)
+				stretchBlitPatches(dstSE, srcSE, nPatches, pPatches);
+		}
+
+	}
+
+
 	//____ drawWave() ___________________________________________________
 
 	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)

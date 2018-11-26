@@ -91,12 +91,12 @@ namespace wg
 		//.____ Rendering ________________________________________________
 
 
-		bool		render();
-		bool		render( const Rect& clip );
+		bool				render();
+		bool				render( const Rect& clip );
 	
-		bool		beginRender();
-		bool		renderSection( const Rect& clip );
-		bool		endRender();
+		bool				beginRender();
+		bool				renderSection( const Rect& clip );
+		bool				endRender();
 
 
 		//.____ Debug __________________________________________________________

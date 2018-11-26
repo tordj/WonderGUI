@@ -284,7 +284,7 @@ namespace wg
 		// Blit icon
 	
 		if( m_icon.isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-			m_icon.skin()->render( pDevice, iconRect, m_state, _clip );
+			m_icon.skin()->render( pDevice, iconRect, m_state );
 	
 		// Print text
 	

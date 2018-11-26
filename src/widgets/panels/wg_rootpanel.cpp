@@ -262,7 +262,7 @@ namespace wg
 			}
 			
 			// Re-render graphics behind overlays that go from state FOCUSED to NORMAL
-
+			  
 			if( m_afterglowRects.size() > 1 )
 			{
 				m_dirtyPatches.add( &m_afterglowRects[1] );
@@ -317,11 +317,15 @@ namespace wg
 		
 		if( m_bDebugMode && m_pDebugOverlay )
 		{
+			// Set clipping rectangle again, in case a widget has changed it.
+
+			m_pGfxDevice->setClip(_clip);
+
 			// Render our new overlays
 			
 			for( const Rect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 			{
-				m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused, clip );
+				m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused );
 			}		
 
 			// Render overlays that have turned into afterglow
@@ -330,7 +334,7 @@ namespace wg
 			{
 				for( const Rect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 				{
-					m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal, clip );
+					m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal );
 				}		
 			}
 		}

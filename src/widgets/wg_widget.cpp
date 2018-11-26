@@ -488,7 +488,7 @@ namespace wg
 	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
 	{
 		if( m_pSkin )
-			m_pSkin->render( pDevice, _canvas, m_state, _clip );
+			m_pSkin->render( pDevice, _canvas, m_state );
 	}
 	
 	//____ _setSize() ___________________________________________________________

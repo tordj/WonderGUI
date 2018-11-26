@@ -377,12 +377,7 @@ namespace wg
 			Rect lasso( m_lassoBegin, m_lassoEnd );
 			lasso += _canvas.pos();
 	
-	
-			for (const Rect * pRect = patches.begin(); pRect != patches.end(); pRect++)
-			{
-				pDevice->setClip(*pRect);
-				m_pLassoSkin->render(pDevice, lasso, m_state, Rect(lasso, *pRect));
-			}
+			m_pLassoSkin->renderPatches(pDevice, lasso, m_state, patches.size(), patches.begin() );
 		}
 	}
 	
@@ -395,7 +390,7 @@ namespace wg
 	
 		if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, contentRect, m_state, _clip );
+			m_pSkin->render( pDevice, contentRect, m_state );
 			contentRect = m_pSkin->contentRect( contentRect, m_state );
 		}
 	
@@ -436,7 +431,7 @@ namespace wg
 	
 			if( pEntrySkin )
 			{
-				pEntrySkin->render( pDevice, entryGeo, state, _clip );
+				pEntrySkin->render( pDevice, entryGeo, state );
 	//			childGeo = pEntrySkin->contentRect( entryGeo, state );
 			}
 	

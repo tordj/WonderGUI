@@ -670,7 +670,7 @@ namespace wg
 			else
 				_dest.h = pSkin->preferredSize().h;
 	
-			pSkin->render( pDevice, _dest, state, _clip );
+			pSkin->render( pDevice, _dest, state );
 	
 			if( m_bHorizontal )
 				_dest.x += _dest.w;
@@ -704,7 +704,7 @@ namespace wg
 			dest.h = size().h - m_headerLen - m_footerLen;
 	
 		if( m_pBgSkin )
-			m_pBgSkin->render( pDevice, dest, m_states[C_BG], _clip );
+			m_pBgSkin->render( pDevice, dest, m_states[C_BG] );
 	
 		// Render the handle
 	
@@ -720,7 +720,7 @@ namespace wg
 			else
 				handleDest = Rect( dest.x, dest.y + handlePos, dest.w, handleLen );
 	
-			m_pHandleSkin->render( pDevice, handleDest, m_states[C_HANDLE], _clip );
+			m_pHandleSkin->render( pDevice, handleDest, m_states[C_HANDLE] );
 		}
 	
 		// Render footer buttons

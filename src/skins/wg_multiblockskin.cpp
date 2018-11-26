@@ -292,9 +292,9 @@ namespace wg
 
 
 
-	//____ render() _______________________________________________________________
+	//____ renderPatches() _______________________________________________________________
 
-	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state,  const Rect& _clip ) const
+	void MultiBlockSkin::renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
@@ -346,7 +346,7 @@ namespace wg
 			const Border&    sourceBorders = m_frame;
 			const Border     canvasBorders = m_frame;
 
-			pDevice->blitNinePatch( _canvas, canvasBorders, src, sourceBorders );
+			pDevice->blitNinePatchPatches( _canvas, canvasBorders, src, sourceBorders, nPatches, pPatches );
 		}
 
 		if (mixedTint != orgTintColor)
