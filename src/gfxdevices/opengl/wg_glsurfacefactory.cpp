@@ -69,25 +69,25 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, int hint, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, int flags, const Color * pClut ) const
 	{
-        return GlSurface::create(size,format,hint,pClut);
+        return GlSurface::create(size,format,flags,pClut);
 	}
 
 
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) const
 	{
-		return GlSurface::create(size, format, pBlob, pitch, hint, pClut);
+		return GlSurface::create(size, format, pBlob, pitch, flags, pClut);
 	}
 	
-	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
 	{
-		return GlSurface::create(size,format, pPixels, pitch, pPixelDescription, hint, pClut);
+		return GlSurface::create(size,format, pPixels, pitch, pPixelDescription, flags, pClut);
 	}
 	
-	Surface_p GlSurfaceFactory::createSurface( Surface * pOther, int hint ) const
+	Surface_p GlSurfaceFactory::createSurface( Surface * pOther, int flags ) const
 	{
-		return GlSurface::create( pOther,hint );
+		return GlSurface::create( pOther,flags );
 	}
 
 

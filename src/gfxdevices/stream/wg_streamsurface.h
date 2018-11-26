@@ -46,10 +46,10 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int hint = SurfaceHint::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Surface * pOther, int hint = SurfaceHint::Static );
+        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+        static StreamSurface_p	create( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
        
 		//.____ Identification __________________________________________
 
@@ -91,13 +91,13 @@ namespace wg
 
 
 	private:
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, int hint, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Surface * pOther, int hint = SurfaceHint::Static );
+        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, int flags, const Color * pClut );
+        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
+        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+        StreamSurface( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 		~StreamSurface();
 
-		short		_sendCreateSurface(Size size, PixelFormat format, const Color * pClut);
+		short		_sendCreateSurface(Size size, PixelFormat format, int flags, const Color * pClut);
 		void		_sendPixels(Rect rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);

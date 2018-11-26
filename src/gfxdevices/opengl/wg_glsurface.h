@@ -58,10 +58,10 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Surface * pOther, int hint = SurfaceHint::Static );
+        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        static GlSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
        
 		//.____ Identification __________________________________________
 
@@ -101,10 +101,10 @@ namespace wg
 		inline	GLuint	getTexture() const { return m_texture; }
 
 	private:
-        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-        GlSurface( Surface * pOther, int hint = SurfaceHint::Static );
+        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+        GlSurface( Surface * pOther, int flags = SurfaceFlag::Static );
 		~GlSurface();
 
 

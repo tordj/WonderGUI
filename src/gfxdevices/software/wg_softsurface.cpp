@@ -41,7 +41,7 @@ namespace wg
 
 	//____ Create ______________________________________________________________
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, int hint, const Color * pClut )
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
 	{ 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) )
 			return SoftSurface_p(); 
@@ -49,7 +49,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,format,pClut));
 	}
 	
-	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut)
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut)
 	{ 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
@@ -57,7 +57,7 @@ namespace wg
 		return SoftSurface_p(new SoftSurface(size,format,pBlob,pitch,pClut));
 	}
 		
-	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut )
+	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{ 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || 
 		     (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr) 
@@ -66,7 +66,7 @@ namespace wg
 		return  SoftSurface_p(new SoftSurface(size,format,pPixels,pitch,pPixelDescription,pClut)); 
 	};
 
-	SoftSurface_p SoftSurface::create( Surface * pOther, int hint )
+	SoftSurface_p SoftSurface::create( Surface * pOther, int flags )
 	{
 		if( !pOther )
 			return SoftSurface_p();
@@ -200,38 +200,75 @@ namespace wg
 	
 	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
-		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
-	    {
-			uint32_t k = * ((uint32_t*) &m_pData[ m_pitch*coord.y+coord.x*4 ]);
-			return k;
-	    }
-		else
-	    {
-			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*3;
+		//TODO: Take endianess into account.
 
-#if WG_IS_BIG_ENDIAN
-			uint32_t k = pPixel[2] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[0]) << 16);
-#else
-			uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
-#endif
-			return k;
-	    }
-	
+		switch (m_pixelDescription.bits)
+		{
+			case 8:
+			{
+				uint32_t k = (uint32_t)m_pData[m_pitch*coord.y + coord.x];
+				return k;
+			}
+			case 16:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 2;
+				uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8);
+				return k;
+			}
+			case 24:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 3;
+				uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
+				return k;
+			}
+			case 32:
+			{
+				uint32_t k = *((uint32_t*)&m_pData[m_pitch*coord.y + coord.x * 4]);
+				return k;
+			}
+			default:
+				return 0;
+		}
 	}
 	
 	//____ alpha() _______________________________________________________________
 	
 	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
-		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
-		  {
-			uint8_t * pPixel = m_pData + m_pitch*coord.y + coord.x*4;
-		    return pPixel[3];
-		  }
-		else
-		  return 0xff;
+		//TODO: Take endianess into account.
+
+		switch (m_pixelDescription.format)
+		{
+			case PixelFormat::I8:
+			{
+				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
+				return m_pClut[index].a;
+			}
+			case PixelFormat::A8:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
+				return pPixel[0];
+			}
+			case PixelFormat::BGRA_4:
+			{
+				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x);
+				const uint8_t * pConvTab = s_pixelConvTabs[4];
+
+				return ((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
+			}
+			case PixelFormat::BGRA_8:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
+				return pPixel[3];
+			}
+			case PixelFormat::Custom:
+			{
+				//TODO: Implement!
+			}
+			default:
+				return 0xFF;
+		}
 	}
-	
 	
 	//____ size() __________________________________________________________________
 	

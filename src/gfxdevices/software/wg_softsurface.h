@@ -45,10 +45,10 @@ namespace wg
 
 		 //.____ Creation __________________________________________
 		 
-		static SoftSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int hint = SurfaceHint::Static, const Color * pClut = nullptr );
-        static SoftSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint = SurfaceHint::Static, const Color * pClut = nullptr );
-        static SoftSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int hint = SurfaceHint::Static, const Color * pClut = nullptr);
-		static SoftSurface_p	create( Surface * pOther, int hint = SurfaceHint::Static );
+		static SoftSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+        static SoftSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+        static SoftSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static SoftSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
 	
 		//.____ Identification __________________________________________
 

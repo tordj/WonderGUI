@@ -64,8 +64,8 @@ namespace wg
 												0xe0, 0xe1, 0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea, 0xeb, 0xec, 0xed, 0xee, 0xef, 
 												0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff };
 
-	const uint8_t * pixelConvTabs[9] = { pixelConvTab_0, pixelConvTab_2, pixelConvTab_4, pixelConvTab_8, pixelConvTab_16, pixelConvTab_32, pixelConvTab_64,
-										pixelConvTab_128, pixelConvTab_256 };
+	const uint8_t * Surface::s_pixelConvTabs[9] = { pixelConvTab_0, pixelConvTab_2, pixelConvTab_4, pixelConvTab_8, pixelConvTab_16, pixelConvTab_32, pixelConvTab_64,
+													pixelConvTab_128, pixelConvTab_256 };
 	
 	//____ Surface() ____________________________________________________________
 	
@@ -603,10 +603,10 @@ namespace wg
 			int		srcLineInc = srcPitch - srcInc * srcRect.w;
 			int		dstLineInc = dstPitch - dstInc * srcRect.w;
 
-			const uint8_t *	pConvTab_R = pixelConvTabs[pSrcFormat->R_bits];
-			const uint8_t *	pConvTab_G = pixelConvTabs[pSrcFormat->G_bits];
-			const uint8_t *	pConvTab_B = pixelConvTabs[pSrcFormat->B_bits];
-			const uint8_t *	pConvTab_A = pixelConvTabs[pSrcFormat->A_bits];
+			const uint8_t *	pConvTab_R = s_pixelConvTabs[pSrcFormat->R_bits];
+			const uint8_t *	pConvTab_G = s_pixelConvTabs[pSrcFormat->G_bits];
+			const uint8_t *	pConvTab_B = s_pixelConvTabs[pSrcFormat->B_bits];
+			const uint8_t *	pConvTab_A = s_pixelConvTabs[pSrcFormat->A_bits];
 
 
 			switch( (pSrcFormat->bits << 8) + pDstFormat->bits )

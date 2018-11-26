@@ -67,24 +67,24 @@ namespace wg
 	
 	//____ createSurface() __________________________________________________________
 	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, int hint, const Color * pClut ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, int flags, const Color * pClut ) const
 	{
-        return SoftSurface::create(size,format,hint,pClut);
+        return SoftSurface::create(size,format,flags,pClut);
 	}
 
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) const
 	{
-		return SoftSurface::create(size,format, pBlob, pitch, hint, pClut);
+		return SoftSurface::create(size,format, pBlob, pitch, flags, pClut);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut ) const
+	Surface_p SoftSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
 	{
-		return SoftSurface::create(size,format, pPixels, pitch, pPixelDescription, hint, pClut);
+		return SoftSurface::create(size,format, pPixels, pitch, pPixelDescription, flags, pClut);
 	}
 	
-	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, int hint ) const
+	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, int flags ) const
 	{
-		return SoftSurface::create( pOther, hint );
+		return SoftSurface::create( pOther, flags );
 	}
 	
 } // namespace wg

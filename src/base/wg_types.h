@@ -578,13 +578,13 @@ namespace wg
 	};
 
 
-	//____ int ____________________________________________________________
+	//____ SurfaceFlag ____________________________________________________________
 	
-	namespace SurfaceHint
+	namespace SurfaceFlag
 	{
 		const int Static = 0;		// No content access/modification expected
 		const int Dynamic = 1;		// Expect content to be accessed and/or modified
-		const int  WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
+		const int WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 	};
 
 	
@@ -618,11 +618,10 @@ namespace wg
 	 * individual red, green, blue and alpha channels. This allows for quickly and easily
 	 * checking the size of a pixel and the color depths and presence and depth of the alpha channel.
 	 *
-	 * Thirdly a pair of mask and shift variables for each individual channel, specifies the position
+	 * Thirdly a set of mask, shift and loss variables for each individual channel, specifies the position
 	 * of each channel and allows for quick conversion to and from the default 32-bit RGBA format used by Color.
 	 *
-	 * Not all pixel formats (like those of index/palette-based surfaces) can
-	 * be fully described by a PixelDescription object. In that case the member type is set to Unknown.
+	 * If a pixel format can not be fully described by a PixelDescription object, the member type is set to Unknown.
 	 *
 	 * As long as the type member is not set to Unknown, you can extract the value of any channel of a
 	 * pixel by applying the mask and shift variables. I.e. to extract the value of red from a pixel

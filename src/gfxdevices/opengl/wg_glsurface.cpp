@@ -53,7 +53,7 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, int hint, const Color * pClut )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
     {
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -62,10 +62,10 @@ namespace wg
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
             return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,format,hint,pClut));
+        return GlSurface_p(new GlSurface(size,format,flags,pClut));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
     {
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -74,10 +74,10 @@ namespace wg
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return GlSurface_p();
         
-        return GlSurface_p(new GlSurface(size,format,pBlob,pitch,hint,pClut));
+        return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
     }
     
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut )
+    GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
     {
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -87,10 +87,10 @@ namespace wg
 			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return GlSurface_p();
         
-        return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,hint,pClut));
+        return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
     };
     
-    GlSurface_p	GlSurface::create( Surface * pOther, int hint )
+    GlSurface_p	GlSurface::create( Surface * pOther, int flags )
     {
 		if (!pOther)
 			return GlSurface_p();
@@ -100,7 +100,7 @@ namespace wg
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 		
-		return GlSurface_p(new GlSurface( pOther,hint ));
+		return GlSurface_p(new GlSurface( pOther,flags ));
     }
 
     
@@ -108,7 +108,7 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 
-    GlSurface::GlSurface( Size size, PixelFormat format, int hint, const Color * pClut )
+    GlSurface::GlSurface( Size size, PixelFormat format, int flags, const Color * pClut )
     {
 		assert(glGetError() == 0);
 		_setPixelDetails(format);
@@ -139,7 +139,7 @@ namespace wg
     }
     
     
-	GlSurface::GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int hint, const Color * pClut )
+	GlSurface::GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
         // Set general information
         
@@ -163,7 +163,7 @@ namespace wg
 		assert( glGetError() == 0);
 	}
    
-    GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int hint, const Color * pClut )
+    GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
     {
        _setPixelDetails(format);
         m_size	= size;
@@ -197,7 +197,7 @@ namespace wg
     }
 
 
-    GlSurface::GlSurface( Surface * pOther, int hint )
+    GlSurface::GlSurface( Surface * pOther, int flags )
     {
         _setPixelDetails(pOther->pixelFormat());
         m_size	= pOther->size();

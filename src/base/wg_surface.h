@@ -129,7 +129,7 @@ namespace wg
 	
 		inline uint8_t		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
 	
-		virtual	uint32_t	colorToPixel( const Color& col ) const;///< @brief Convert specified color to a pixel in surface's native format.
+		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
 		inline const Color * clut() const { return m_pClut; }
@@ -183,7 +183,8 @@ namespace wg
 																///< performance gains depending on Surface implementation and hardware architecture in use.
 																///<
 																///< @return Pointer to start of pixel data for specified region or null if failed.
-		virtual void		unlock() = 0;					///< @brief Unlock a locked surface.
+
+		virtual void		unlock() = 0;						///< @brief Unlock a locked surface.
 																///<
 																///< Unlocks a surface that has previously been locked by a call to lock() or lockRegion().
 	
@@ -191,14 +192,16 @@ namespace wg
 																							///<
 																							///< Check if surface is locked.
 																							///< @return True if surface is locked, otherwise false.
-		inline	AccessMode 	lockStatus() const { return m_accessMode; }		///< @brief Check if surface is locked and in what way.
-																			///<
-																			///< Check if surface is locked and if so, what kind of access is allowed.
-																			///< @return AccessMode::ReadOnly, AccessMode::WriteOnly or AccessMode::ReadWrite if the surface is locked,
-																			///< otherwise AccessMode::None.
-		inline  Rect		regionLocked() const;							///< @brief Get the locked region of the surface.
-		inline  int			pitch() const;									///< @brief Get the pitch of the locked region.
-		const PixelDescription *	pixelDescription() const { return &m_pixelDescription; }	///< @brief Get the pixel format of the surface.
+
+		inline	AccessMode 	lockStatus() const { return m_accessMode; }						///< @brief Check if surface is locked and in what way.
+																							///<
+																							///< Check if surface is locked and if so, what kind of access is allowed.
+																							///< @return AccessMode::ReadOnly, AccessMode::WriteOnly or AccessMode::ReadWrite if the surface is locked,
+																							///< otherwise AccessMode::None.
+
+		inline  Rect		regionLocked() const;											///< @brief Get the locked region of the surface.
+		inline  int			pitch() const;													///< @brief Get the pitch of the locked region.
+		const PixelDescription *	pixelDescription() const { return &m_pixelDescription; }///< @brief Get the pixel description for the surface.
 		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
 		inline uint8_t *	pixels() const { return m_pPixels; }			///< @brief Get a pointer to the raw pixels of the locked region.
 																			///< Get a pointer to the first line of raw pixels of the locked region.
@@ -220,10 +223,12 @@ namespace wg
 		Surface();
 		virtual ~Surface();
 	
+		static const uint8_t *	s_pixelConvTabs[9];
+
 		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT = nullptr );
 	
-		PixelDescription			m_pixelDescription;
+		PixelDescription	m_pixelDescription;
 		int					m_pitch;
 
 		ScaleMode			m_scaleMode;

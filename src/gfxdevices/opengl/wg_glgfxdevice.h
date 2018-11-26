@@ -62,6 +62,7 @@ namespace wg
 		static GlGfxDevice_p	cast( Object * pObject );
 		const char *			surfaceClassName( void ) const;
 
+
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory();
@@ -73,35 +74,30 @@ namespace wg
 
 		//.____ State _________________________________________________
 
+		void	setClip(const Rect& clip) override;
 		void	setTintColor( Color color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
+		bool	setBlitSource(Surface * pSource) override;
 
 		//.____ Rendering ________________________________________________
 
 		bool	beginRender() override;
 		bool	endRender() override;
 
-		void	fill( const Rect& rect, const Color& col ) override; 
-        
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
-        void    clipPlotPixels( const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) override;
+		void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) override;
 
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
-		void	clipDrawLine( const Rect& clip, Coord begin, Coord end, Color color, float thickness = 1.f ) override;
+		void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) override;
 
-		void	clipDrawHorrWave(const Rect&clip, Coord begin, int length, const WaveLine * pTopLine, const WaveLine * pBottomLine, Color front, Color back);
+		void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) override;
+		void	drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches) override;
 
+		void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
 
-		void	blit( Surface * src, const Rect& srcrect, Coord dest  ) override;
+		void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
 
-		void	stretchBlit( Surface * pSrc, const RectF& source, const Rect& dest) override;
-
-		void	clipBlitFromCanvas(const Rect& clip, Surface* pSrc, const Rect& src, Coord dest);	// Blit from surface that has been used as canvas. Will flip Y on OpenGL.
-
-		void	fillSubPixel( const RectF& rect, const Color& col ) override;
-
-		void	stretchBlitSubPixelWithInvert(Surface * pSrc, float sx, float sy, float sw, float sh,
-                                              float dx, float dy, float dw, float dh);
+//		void	blitFromCanvas(Coord dest, const Rect& src) override;
 
 
 	protected:
@@ -110,93 +106,10 @@ namespace wg
 		GlGfxDevice(GlSurface * pCanvas);
 		~GlGfxDevice();
 
-		void	_drawStraightLine(Coord start, Orientation orientation, int _length, const Color& _col) override;
-
-        void	_initTables();
-		void	_setBlendMode( BlendMode blendMode );
-
-        GLuint  _createGLProgram( const char * pVertexShader, const char * pFragmentShader );
-		void	_updateProgramDimensions();
-		bool	_setFramebuffer();
-       
-        SurfaceFactory_p	m_pSurfaceFactory;
-	    float	_scaleThickness( float thickeness, float slope );
-        
-	    bool	m_bRendering;
-
-        float	m_lineThicknessTable[17];
-
-		GLuint		m_framebufferId;
-		bool		m_bFlipY;
-
-		Rect		m_defaultCanvasViewport;		// Viewport for the framebuffer outpout. Y-coord is inverted in GL fashion.
-		Rect		m_canvasViewport;				// Viewport for the current canvas. Y-coord is inverted in GL fashion.
-
-
-        // Device programs
-        
-        GLuint  m_fillProg;
-        GLint   m_fillProgColorLoc;
-
-        GLuint  m_aaFillProg;
-        GLint   m_aaFillProgColorLoc;
-        GLint   m_aaFillProgFrameLoc;
-        GLint   m_aaFillProgOutsideAALoc;
-
-        GLuint  m_blitProg;
-        GLint   m_blitProgTintLoc;
-        GLint   m_blitProgTexIdLoc;
-        
-        GLuint  m_plotProg;
-        GLint   m_plotProgTintLoc;
-
-        GLuint  m_mildSlopeProg;
-        GLint   m_mildSlopeProgColorLoc;
-        GLint   m_mildSlopeProgSLoc;
-        GLint   m_mildSlopeProgWLoc;
-        GLint   m_mildSlopeProgSlopeLoc;
-
-        GLuint  m_steepSlopeProg;
-        GLint   m_steepSlopeProgColorLoc;
-        GLint   m_steepSlopeProgSLoc;
-        GLint   m_steepSlopeProgWLoc;
-        GLint   m_steepSlopeProgSlopeLoc;
-
-		GLuint  m_horrWaveProg;
-		GLuint	m_horrWaveBufferTexture;
-		GLuint	m_horrWaveBufferTextureData;
-		GLint	m_horrWaveProgTexIdLoc;
-		GLint	m_horrWaveProgWindowOfsLoc;
-		GLint	m_horrWaveProgTopBorderColorLoc;
-		GLint	m_horrWaveProgBottomBorderColorLoc;
-		GLint	m_horrWaveProgFrontFillLoc;
-		GLint	m_horrWaveProgBackFillLoc;
-
-		GLuint  m_dummyBuffer;
-
-        GLuint  m_vertexArrayId;
-        GLuint  m_vertexBufferId;
-        GLfloat m_vertexBufferData[8];         // Space to store a quad (through triangle strip)
-        
-        GLuint  m_texCoordArrayId;
-        GLuint  m_texCoordBufferId;
-        GLfloat m_texCoordBufferData[8];         // Space to store UV for a quad
-        
-        
-		// GL states saved between BeginRender() and EndRender().
-
-		GLboolean	m_glDepthTest;
-        GLboolean   m_glScissorTest;
-        GLboolean	m_glBlendEnabled;
-		GLint		m_glBlendSrc;
-		GLint		m_glBlendDst;
-		GLint		m_glViewport[4];
-		GLint		m_glScissorBox[4];
-		GLint		m_glReadFrameBuffer;
-		GLint		m_glDrawFrameBuffer;
-		Size		m_size;
-
-
+		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
+		bool				m_bRendering = false;
+  
+  
 	};
 } // namespace wg
 #endif //WG_GLGFXDEVICE_DOT_H

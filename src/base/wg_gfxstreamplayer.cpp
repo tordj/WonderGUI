@@ -471,10 +471,13 @@ namespace wg
 			uint16_t	surfaceId;
 			PixelFormat	type;
 			Size		size;
+			uint16_t	flags;
 
 			*m_pStream >> surfaceId;
 			*m_pStream >> type;
 			*m_pStream >> size;
+			*m_pStream >> flags;
+
 
 			Color * pClut = nullptr;
 
@@ -487,7 +490,7 @@ namespace wg
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 1, nullptr);
 
-			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, 0, pClut);
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, flags | SurfaceFlag::WriteOnly, pClut);
 
 			if (pClut)
 				Base::memStackRelease(4096);

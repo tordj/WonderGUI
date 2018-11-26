@@ -446,14 +446,18 @@ namespace wg
 				uint16_t	surfaceId;
 				PixelFormat	type;
 				Size		size;
+				uint16_t	flags;
 
 				*m_pGfxStream >> surfaceId;
 				*m_pGfxStream >> type;
 				*m_pGfxStream >> size;
+				*m_pGfxStream >> flags;
+
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
 				m_charStream << "    type        = " << toString(type) << std::endl;
 				m_charStream << "    size        = " << size.w << ", " << size.h << std::endl;
+				m_charStream << "    flags       = " << flags << std::endl;
 				break;
 			}
 
