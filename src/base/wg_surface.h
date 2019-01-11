@@ -73,8 +73,6 @@ namespace wg
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 	
-
-
 		//.____ Appearance ____________________________________________________
 
 		virtual void		setScaleMode( ScaleMode mode );
@@ -246,7 +244,10 @@ namespace wg
 	 *
 	 * The pitch is the distance in bytes from the start of one line of raw pixels to the start of the next one.
 	 * This value must per definition be at least (bytes per raw pixel * width of locked region), but might be
-	 * higher if not the whole surface is locked or if the pixel lines are padded.
+	 * higher if not the whole surface is locked or if the pixel lines are padded. 
+	 *
+	 * Please note that pitch can be negative. This allows us to handle surfaces that for technical reasons are 
+	 * upside-down internally in a way that is transparent to the user.
 	 *
 	 * @return Pitch of a pixel line of the locked region, measured in bytes, or 0 if the surface is not locked.
 	 *

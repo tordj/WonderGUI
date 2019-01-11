@@ -272,11 +272,15 @@ namespace wg
 	
 	void GfxDevice::blit(Coord dest)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(Coord dest, const Rect& src)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
 	}
 
@@ -284,6 +288,8 @@ namespace wg
 
 	void GfxDevice::flipBlit(Coord dest, GfxFlip flip)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		Size srcSize  = m_pBlitSource->size();
 
 		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
@@ -298,6 +304,8 @@ namespace wg
 
 	void GfxDevice::flipBlit(Coord dest, const Rect& src, GfxFlip flip)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		int ofsX = src.x + (src.w-1) * blitFlipOffsets[(int)flip][0];
 		int ofsY = src.y + (src.h-1) * blitFlipOffsets[(int)flip][1];
 
@@ -315,11 +323,15 @@ namespace wg
 	
 	void GfxDevice::stretchBlit(const Rect& dest )
 	{
+		assert(m_pBlitSource != nullptr);
+
 		stretchBlit(dest, Rect(0, 0, m_pBlitSource->size()) );
 	}
 	
 	void GfxDevice::stretchBlit(const Rect& dest, const Rect& _src )
 	{
+		assert(m_pBlitSource != nullptr);
+
 		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
 
 		float	mtx[2][2];
@@ -347,6 +359,8 @@ namespace wg
 	
 	void GfxDevice::stretchBlit(const Rect& dest, const RectF& src)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float	mtx[2][2];
 
 		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
@@ -371,11 +385,15 @@ namespace wg
 	
 	void GfxDevice::stretchFlipBlit(const Rect& dest, GfxFlip flip)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		stretchFlipBlit(dest, Rect(0, 0, m_pBlitSource->size()), flip);
 	}
 
 	void GfxDevice::stretchFlipBlit(const Rect& dest, const Rect& src, GfxFlip flip)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float scaleX, scaleY;
 		float ofsX, ofsY;
 
@@ -414,6 +432,8 @@ namespace wg
 
 	void GfxDevice::stretchFlipBlit(const Rect& dest, const RectF& src, GfxFlip flip)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float	scaleX = src.w / dest.w;
 		float	scaleY = src.h / dest.h;
 
@@ -434,6 +454,8 @@ namespace wg
 
 	void GfxDevice::rotScaleBlit(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		if (scale <= 0.f)
 			return;
 
@@ -463,11 +485,15 @@ namespace wg
 
 	void GfxDevice::blitPatches(Coord dest, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		transformBlitPatches({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0], nPatches, pPatches);
 	}
 
 	void GfxDevice::blitPatches(Coord dest, const Rect& src, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		transformBlitPatches({ dest, src.size() }, src.pos(), blitFlipTransforms[0], nPatches, pPatches);
 	}
 
@@ -475,6 +501,8 @@ namespace wg
 
 	void GfxDevice::flipBlitPatches(Coord dest, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		Size srcSize = m_pBlitSource->size();
 
 		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
@@ -489,6 +517,8 @@ namespace wg
 
 	void GfxDevice::flipBlitPatches(Coord dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		int ofsX = src.x + (src.w - 1) * blitFlipOffsets[(int)flip][0];
 		int ofsY = src.y + (src.h - 1) * blitFlipOffsets[(int)flip][1];
 
@@ -503,11 +533,15 @@ namespace wg
 
 	void GfxDevice::stretchBlitPatches(const Rect& dest, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		stretchBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), nPatches, pPatches);
 	}
 
 	void GfxDevice::stretchBlitPatches(const Rect& dest, const Rect& _src, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
 
 		float	mtx[2][2];
@@ -535,6 +569,8 @@ namespace wg
 
 	void GfxDevice::stretchBlitPatches(const Rect& dest, const RectF& src, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float	mtx[2][2];
 
 		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
@@ -559,11 +595,15 @@ namespace wg
 
 	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		stretchFlipBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), flip, nPatches, pPatches);
 	}
 
 	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float scaleX, scaleY;
 		float ofsX, ofsY;
 
@@ -602,6 +642,8 @@ namespace wg
 
 	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const RectF& src, GfxFlip flip, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		float	scaleX = src.w / dest.w;
 		float	scaleY = src.h / dest.h;
 
@@ -622,6 +664,8 @@ namespace wg
 
 	void GfxDevice::rotScaleBlitPatches(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale, int nPatches, const Rect * pPatches)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		if (scale <= 0.f)
 			return;
 
@@ -646,19 +690,13 @@ namespace wg
 
 		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
 	}
-
-
-	//_____ blitFromCanvas() ______________________________________________
-
-	void GfxDevice::blitFromCanvas(Coord dest, const Rect& src)
-	{
-		blit(dest, src);				// Default is a normal blit, only OpenGL needs to flip (until that has been fixed)
-	}
 	
 	//____ blitNinePatch() ________________________________________________
 
 	void GfxDevice::blitNinePatch(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame)
 	{
+		assert(m_pBlitSource != nullptr);
+
 		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame )
 		{
 			blit(dstRect.pos(), srcRect);
@@ -744,6 +782,8 @@ namespace wg
 
 	void GfxDevice::blitNinePatchPatches(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame, int nPatches, const Rect * pPatches )
 	{
+		assert(m_pBlitSource != nullptr);
+
 		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame)
 		{
 			blitPatches(dstRect.pos(), srcRect, nPatches, pPatches);

@@ -15,11 +15,19 @@
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
 #include <wg_softgfxdevice.h>
+
+#include <wg_glsurface.h>
+#include <wg_glsurfacefactory.h>
+#include <wg_glgfxdevice.h>
+
+
 #include <wg_freetypefont.h>
 #include <wg_packlist.h>
 #include <testwidget.h>
 #include <wg_popupopener.h>
 #include <wg_multiblockskin.h>
+
+#	include <GL/glew.h>
 
 
 using namespace wg;
@@ -39,6 +47,8 @@ void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
 void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
 void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
 void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf);
+void subPixelFillTest(GfxDevice * pGfxDevice);
+void lineTest(GfxDevice * pGfxDevice, Rect canvas );
 
 
 bool	bQuit = false;
@@ -77,12 +87,31 @@ int main ( int argc, char** argv )
 	SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 1024, height = 600;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
-	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
+//	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
 	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
-	 
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+
+	SDL_GLContext context = SDL_GL_CreateContext(pWin);
+
+
+#ifdef WIN32  
+	glewExperimental = GL_TRUE;
+	GLenum err = glewInit();
+#endif
+
+	glDrawBuffer(GL_FRONT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glFlush();
+
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
@@ -145,15 +174,19 @@ int main ( int argc, char** argv )
 
 	PixelFormat format = PixelFormat::Unknown;
 
-	if( pWinSurf->format->BitsPerPixel == 32 )
-		format = PixelFormat::BGRA_8;
-	else if( pWinSurf->format->BitsPerPixel == 24 )
-		format = PixelFormat::BGR_8;
+//	if( pWinSurf->format->BitsPerPixel == 32 )
+//		format = PixelFormat::BGRA_8;
+//	else if( pWinSurf->format->BitsPerPixel == 24 )
+//		format = PixelFormat::BGR_8;
 		
-	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+//	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
-	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+	
+	GlGfxDevice_p pGfxDevice = GlGfxDevice::create( Size(width, height) );
+
+	SurfaceFactory_p pSurfaceFactory = pGfxDevice->surfaceFactory();
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 
@@ -180,7 +213,7 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
 //	convertSDLFormat( &pixelDesc, pFontSurf->format );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
+	Surface_p pFontImg = pSurfaceFactory->createSurface( Size(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
 	SDL_FreeSurface( pFontSurf );
 		
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
@@ -207,48 +240,48 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pButtonSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
 	pSimpleButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	SoftSurface_p pBackgroundSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pBackgroundSkin = BlockSkin::createStaticFromSurface(pBackgroundSurface);
 
 
 	pSDLSurf = IMG_Load( "../resources/splash.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
 
 
 	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pStateButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
 	pStateButtonSkin->setContentPadding( Border(5) );
 
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pPressablePlateSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
 	pPressablePlateSkin->setContentPadding( Border(3) );
 	
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pListEntrySurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pListEntrySurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface( pListEntrySurface, 0, Border(2) );
 
 	pSDLSurf = IMG_Load( "../resources/splash.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pImgSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pImgSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface );
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
@@ -256,13 +289,13 @@ int main ( int argc, char** argv )
 
 	pSDLSurf = IMG_Load( "../resources/up_down_arrow.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pUpDownArrowSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface( pUpDownArrowSurface, 0, Border(0) );
 
 	pSDLSurf = IMG_Load( "../resources/simple_icon.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	SoftSurface_p pSimpleIconSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
 	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface( pSimpleIconSurface, Border(0) );
 
@@ -833,13 +866,13 @@ int main ( int argc, char** argv )
 
 	pSDLSurf = IMG_Load("../resources/flipping.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	SoftSurface_p pFlippingSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pFlippingSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	pFlippingSurface->setScaleMode(ScaleMode::Interpolate);
 
 	pSDLSurf = IMG_Load("../resources/clockface_2500.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	SoftSurface_p pClockSurface = SoftSurface::create(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pClockSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	pClockSurface->setScaleMode(ScaleMode::Interpolate);
 
@@ -851,7 +884,7 @@ int main ( int argc, char** argv )
 	{
 		translateEvents( pInput, pRoot );
 
-		SDL_LockSurface(pWinSurf);
+//		SDL_LockSurface(pWinSurf);
 //		pRoot->render();
 
 		pGfxDevice->beginRender();
@@ -861,7 +894,9 @@ int main ( int argc, char** argv )
 //		flipBlitTest(pGfxDevice, pFlippingSurface);
 //		stretchBlitTest(pGfxDevice, pFlippingSurface);
 //		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
-		rotScaleTest(pGfxDevice, pClockSurface);
+//		rotScaleTest(pGfxDevice, pClockSurface);
+//		subPixelFillTest(pGfxDevice );
+		lineTest(pGfxDevice, Rect(0,0,width,height) );
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
@@ -873,14 +908,16 @@ int main ( int argc, char** argv )
 
 		pGfxDevice->endRender();
 
-		SDL_UnlockSurface(pWinSurf);
+//		SDL_UnlockSurface(pWinSurf);
 
-		SDL_Rect	r;
-		r.x = 0;
-		r.y = 0;
-		r.w = width;
-		r.h = height;
-		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
+		SDL_UpdateWindowSurface(pWin);
+
+//		SDL_Rect	r;
+//		r.x = 0;
+//		r.y = 0;
+//		r.w = width;
+//		r.h = height;
+//		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
 
 
 //		updateWindowRects( pRoot, pWin );
@@ -910,9 +947,11 @@ void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf )
 //	pGfxDevice->setClip({ 15, 15, 150, 150 } );
 //	pGfxDevice->fill({ 0, 0, 300, 300 }, Color::Green);
 
+	pGfxDevice->setBlitSource(pSurf);
+
 	for (int i = 0; i < GfxFlip_size; i++)
 	{
-		pGfxDevice->flipBlit({ 10 + 90 * (i % 4),10 + 90 * (i / 4) }, pSurf, (GfxFlip)i);
+		pGfxDevice->flipBlit({ 10 + 90 * (i % 4),10 + 90 * (i / 4) }, (GfxFlip)i);
 	}
 }
 
@@ -930,9 +969,11 @@ void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
 	int inc = (int) (90 * stretch);
 	int size = (int) (86 * stretch);
 
+	pGfxDevice->setBlitSource(pSurf);
+
 	for (int i = 0; i < GfxFlip_size; i++)
 	{
-		pGfxDevice->stretchFlipBlit({ 10 + inc * (i % 4),10 + inc * (i / 4), size, size }, pSurf, (GfxFlip)i);
+		pGfxDevice->stretchFlipBlit({ 10 + inc * (i % 4),10 + inc * (i / 4), size, size }, (GfxFlip)i);
 	}
 }
 
@@ -947,7 +988,8 @@ void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
 
 	pGfxDevice->fill( Rect{ 0, 0, 1300, 1300 }, Color::Black);
 
-	pGfxDevice->stretchBlit({ 10,10,x,x / 2 }, pSurf);
+	pGfxDevice->setBlitSource(pSurf);
+	pGfxDevice->stretchBlit({ 10,10,x,x / 2 });
 
 	x++;
 
@@ -974,7 +1016,8 @@ void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf)
 
 //	pGfxDevice->blit({ 10,10 }, pSurf, { ((int)center.x) - 256, (int)(center.y) - 256,512,512 });
 
-	pGfxDevice->rotScaleBlit({ 10,10,512,512 }, pSurf, center, rot, scale);
+	pGfxDevice->setBlitSource(pSurf);
+	pGfxDevice->rotScaleBlit({ 10,10,512,512 }, center, rot, scale);
 
 	rot+=0.1;
 	scale += scaleInc;
@@ -984,6 +1027,37 @@ void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf)
 
 }
 
+//____ subPixelFillTest() ______________________________________________________
+
+void subPixelFillTest(GfxDevice * pGfxDevice)
+{
+	pGfxDevice->fill(Rect{ 0, 0, 1300, 1300 }, Color::Black);
+
+	for (int i = 0; i < 5; i++)
+	{
+		RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
+
+		for (int j = 0; j < 5; j++)
+		{
+			pGfxDevice->fill(rect, Color::White);
+			rect.y += 12.f;
+			rect.x += 0.25f;
+		}
+	}
+}
+
+//____ lineTest() ___________________________________________________________
+
+void lineTest(GfxDevice * pDevice, Rect canvas)
+{
+	pDevice->fill(canvas, Color::Black);
+
+	pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
+	pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
+
+	pDevice->drawLine(canvas.pos() + Coord(5, 100), canvas.pos() + Coord(40, 101), Color::Green, 3.f);
+	pDevice->drawLine(canvas.pos() + Coord(5, 105), canvas.pos() + Coord(6, 145), Color::Green, 3.f);
+}
 
 
 //____ renderWaveThicknessTest() ______________________________________________
@@ -1040,7 +1114,10 @@ void renderWaveThicknessTest( GfxDevice * pGfxDevice )
 
 		Rect oldClip = pGfxDevice->clip();
 		pGfxDevice->setClip({ 10,0,500,600 });
-		pGfxDevice->drawHorrWave({ 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
+		pGfxDevice->drawWave({ 0,70 + ln * (15 + ln), 1900, 1000 }, &line, &bottom, Color::Red, Color::Green);
+
+
+//		pGfxDevice->drawHorrWave({ 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
 		pGfxDevice->setClip(oldClip);
 	}
 

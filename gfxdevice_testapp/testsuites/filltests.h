@@ -9,6 +9,7 @@ public:
 
 		addTest("StraightFill", &FillTests::straightFill );
 		addTest("BlendFill", &FillTests::blendFill );
+		addTest("SubpixelFill", &FillTests::subPixelFill);
 	}
 
 
@@ -31,6 +32,24 @@ public:
 
 		return true;
 	}
+
+	bool subPixelFill(GfxDevice * pDevice, const Rect& canvas)
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
+
+			for (int j = 0; j < 5; j++)
+			{
+				pDevice->fill(rect, Color::White);
+				rect.y += 12.f;
+				rect.x += 0.25f;
+			}
+		}
+
+		return true;
+	}
+
 
 
 };

@@ -36,9 +36,202 @@ namespace wg
 {
 	const char GlGfxDevice::CLASSNAME[] = { "GlGfxDevice" };
 
+	//____ Vertex and Fragment shaders ____________________________________________
 
-       
-    
+
+	const char fillVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                                  "
+		"uniform int yOfs;										   "
+		"uniform int yMul;										   "
+		"layout(location = 0) in ivec2 pos;                        "
+		"layout(location = 1) in vec4 color;                       "
+		"out vec4 fragColor;                                       "
+		"void main()                                               "
+		"{                                                         "
+		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
+		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;    "
+		"   gl_Position.z = 0.0;                                   "
+		"   gl_Position.w = 1.0;                                   "
+		"   fragColor = color;						"
+		"}                                                         ";
+
+
+	const char fillFragmentShader[] =
+
+		"#version 330 core\n"
+		"out vec4 outColor;                     "
+		"in vec4 fragColor;                         "
+		"void main()                            "
+		"{                                      "
+		"   outColor = fragColor;                   "
+		"}                                      ";
+
+	const char blitVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                                  "
+		"uniform int yOfs;										   "
+		"uniform int yMul;										   "
+		"layout(location = 0) in ivec2 pos;                        "
+		"layout(location = 1) in vec4 color;                       "
+		"layout(location = 2) in vec2 texPos;                      "
+		"out vec2 texUV;                                           "
+		"out vec4 fragColor;                                       "
+		"void main()                                               "
+		"{                                                         "
+		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
+		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
+		"   gl_Position.z = 0.0;                                   "
+		"   gl_Position.w = 1.0;                                   "
+		"   texUV = texPos;                                        "
+		"   fragColor = color;						               "
+		"}                                                         ";
+
+	const char blitFragmentShader[] =
+
+		"#version 330 core\n"
+
+		"uniform sampler2D texId;               "
+		"in vec2 texUV;                         "
+		"in vec4 fragColor;                         "
+		"out vec4 color;                        "
+		"void main()                            "
+		"{                                      "
+		"   color = texture(texId, texUV) * fragColor;     "
+		"}                                      ";
+
+	const char plotVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                               "
+		"uniform int yOfs;                                "
+		"uniform int yMul;                                "
+		"layout(location = 0) in ivec2 pos;                     "
+		"in vec4 inColor;                                       "
+		"out vec4 color;										"
+		"void main()                                            "
+		"{                                                      "
+		"   gl_Position.x = (pos.x+0.5)*2.0/dimensions.x - 1.0; "
+		"   gl_Position.y = ((yOfs + yMul*pos.y)+0.5)*2.0/dimensions.y - 1,0;	"
+		"   gl_Position.z = 0.0;                                "
+		"   gl_Position.w = 1.0;                                "
+		"   color = inColor;									"
+		"}                                                      ";
+
+
+	const char plotFragmentShader[] =
+
+		"#version 330 core\n"
+		"in vec4 color;                         "
+		"out vec4 outColor;                     "
+		"void main()                            "
+		"{                                      "
+		"   outColor = color;					"
+		"}                                      ";
+
+
+
+	const char lineFromToVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                                   "
+		"uniform int yOfs;                                    "
+		"uniform int yMul;                                    "
+		"uniform samplerBuffer texId;								"
+		"layout(location = 0) in ivec2 pos;                         "
+		"layout(location = 1) in vec4 color;                        "
+		"layout(location = 2) in vec2 texPos;                       "
+		"out vec4 fragColor;                                        "
+		"out float s;												"
+		"out float w;												"
+		"out float slope;											"
+		"out float ifSteep;											"
+		"out float ifMild;											"
+		"void main()                                                "
+		"{                                                          "
+		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
+		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
+		"   gl_Position.z = 0.0;                                    "
+		"   gl_Position.w = 1.0;                                    "
+		"   fragColor = color;										"
+		"   int ofs = int(texPos.x);								"
+		"   vec4 x = texelFetch(texId, ofs);						"
+		"   s = x.x;												"
+		"   w = x.y;												"
+		"   slope = yMul*x.z;										"
+		"   ifSteep = x.w;											"
+		"   ifMild = 1.0 - ifSteep;									"
+		"}                                                          ";
+	
+
+	const char lineFromToFragmentShader[] =
+
+		"#version 330 core\n"
+		"in vec4 fragColor;                     "
+		"in float s;							"
+		"in float w;							"
+		"in float slope;						"
+		"in float ifSteep;						"
+		"in float ifMild;						"
+		"out vec4 outColor;                     "
+		"void main()                            "
+		"{										"
+		"   outColor.rgb = fragColor.rgb;		"
+		"   outColor.a = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
+		"}                                      ";
+
+	const char aaFillVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                                   "
+		"uniform int yOfs;                                    "
+		"uniform int yMul;                                    "
+		"uniform samplerBuffer texId;								"
+		"layout(location = 0) in ivec2 pos;                         "
+		"layout(location = 1) in vec4 color;                        "
+		"layout(location = 2) in vec2 texPos;                       "
+		"out vec4 fragColor;                                        "
+		"out vec4 frame;											"
+		"out vec4 outsideAA;										"
+		"void main()                                                "
+		"{                                                          "
+		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
+		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
+		"   gl_Position.z = 0.0;                                    "
+		"   gl_Position.w = 1.0;                                    "
+		"   fragColor = color;										"
+		"   int ofs = int(texPos.x);								"
+		"   frame = texelFetch(texId, ofs);							"
+		"   outsideAA = texelFetch(texId, ofs+1);					"
+		"}                                                          ";
+
+
+	const char aaFillFragmentShader[] =
+
+		"#version 330 core\n"
+		"layout(pixel_center_integer) in vec4 gl_FragCoord;"
+		"in vec4 fragColor;						"
+		"in vec4 frame;							"
+		"in vec4 outsideAA;						"
+		"out vec4 outColor;                     "
+		"void main()                            "
+		"{                                      "
+		"   vec4 col = fragColor;               "
+		"   if( gl_FragCoord.x < frame.x )      "
+		"        col.a *= outsideAA.x;			"
+		"   if( gl_FragCoord.y < frame.y )      "
+		"        col.a *= outsideAA.y;			"
+		"   if( gl_FragCoord.x >= frame.z )      "
+		"        col.a *= outsideAA.z;			"
+		"   if( gl_FragCoord.y >= frame.w )      "
+		"        col.a *= outsideAA.w;			"
+		"   outColor = col;                     "
+		"}                                      ";
+
+
+
 	//____ create() _______________________________________________________________
 	
 	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport )
@@ -76,12 +269,115 @@ namespace wg
 
 	GlGfxDevice::GlGfxDevice( Size viewportSize ) : GfxDevice(viewportSize)
 	{
-    }
+		m_canvasYstart = viewportSize.h;
+		m_canvasYmul = -1;
+
+		_initTables();
+
+		// Create and init our shader programs
+
+		m_fillProg			= _createGLProgram(fillVertexShader, fillFragmentShader);
+		m_fillProgDimLoc	= glGetUniformLocation(m_fillProg, "dimensions");
+		m_fillProgYofsLoc   = glGetUniformLocation(m_fillProg, "yOfs");
+		m_fillProgYmulLoc   = glGetUniformLocation(m_fillProg, "yMul");
+
+		m_aaFillProg = _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
+		m_aaFillProgDimLoc = glGetUniformLocation(m_aaFillProg, "dimensions");
+		m_aaFillProgYofsLoc = glGetUniformLocation(m_aaFillProg, "yOfs");
+		m_aaFillProgYmulLoc = glGetUniformLocation(m_aaFillProg, "yMul");
+		GLint texIdLoc = glGetUniformLocation(m_aaFillProg, "texId");
+
+		glUseProgram(m_aaFillProg);
+		glUniform1i(texIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras.
+
+		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
+		m_blitProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
+		m_blitProgYofsLoc = glGetUniformLocation(m_blitProg, "yOfs");
+		m_blitProgYmulLoc = glGetUniformLocation(m_blitProg, "yMul");
+		texIdLoc			= glGetUniformLocation(m_blitProg, "texId");
+
+		glUseProgram(m_blitProg);
+		glUniform1i(texIdLoc, 0);		// Needs to be set. Texture unit 0 is used for textures.
+
+		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
+		m_plotProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
+		m_plotProgYofsLoc = glGetUniformLocation(m_plotProg, "yOfs");
+		m_plotProgYmulLoc = glGetUniformLocation(m_plotProg, "yMul");
+
+		m_lineFromToProg = _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
+		m_lineFromToProgDimLoc = glGetUniformLocation(m_lineFromToProg, "dimensions");
+		m_lineFromToProgYofsLoc = glGetUniformLocation(m_lineFromToProg, "yOfs");
+		m_lineFromToProgYmulLoc = glGetUniformLocation(m_lineFromToProg, "yMul");
+		texIdLoc = glGetUniformLocation(m_lineFromToProg, "texId");
+
+		glUseProgram(m_lineFromToProg);
+		glUniform1i(texIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras.
+
+		// Create the buffers we need for FrameBuffer and Vertices
+
+		glGenFramebuffers(1, &m_framebufferId);
+
+		glGenBuffers(1, &m_vertexBufferId);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);
+
+		// Create and initialize our VertexArra
+
+		glGenVertexArrays(1, &m_vertexArrayId);
+		glBindVertexArray(m_vertexArrayId);
+
+		glVertexAttribIPointer(
+			0,						// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,						// size
+			GL_INT,					// type
+			sizeof(Vertex),			// stride
+			(void*)0				// array buffer offset
+		);
+
+		glVertexAttribPointer(
+			1,						// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			GL_BGRA,				// size
+			GL_UNSIGNED_BYTE,		// type
+			GL_TRUE,				// normalized?
+			sizeof(Vertex),			// stride
+			(void*)sizeof(Coord)	// array buffer offset
+		);
+
+		glVertexAttribPointer(
+			2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			sizeof(Vertex),		// stride
+			(void*)(sizeof(Coord)+sizeof(Color))  // array buffer offset
+		);
+
+		// Create a TextureBufferObject for providing extra data to our shaders
+
+		glGenBuffers(1, &m_extrasBufferId);
+		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
+		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+
+		glGenTextures(1, &m_extrasBufferTex);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, m_extrasBufferId);
+
+		assert(glGetError() == 0);
+	}
 
 	//____ Destructor ______________________________________________________________
 
 	GlGfxDevice::~GlGfxDevice()
 	{
+		glDeleteProgram(m_fillProg);
+		glDeleteProgram(m_blitProg);
+
+		glDeleteFramebuffers(1, &m_framebufferId);
+
+		glDeleteBuffers(1, &m_vertexBufferId);
+
+		glDeleteVertexArrays(1, &m_vertexArrayId);
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -130,18 +426,51 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool GlGfxDevice::setCanvas( const Rect& viewport )
+	bool GlGfxDevice::setCanvas( Size canvasSize )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
 
+		if (canvasSize.w < 1 || canvasSize.h < 1)
+			return false;
+
+		m_pCanvas = nullptr;
+		m_canvasSize = canvasSize;
+		m_clip = m_canvasSize;
+
+		m_canvasYstart = canvasSize.h;
+		m_canvasYmul = -1;
+
+
+		if (m_bRendering)
+		{
+			_setCanvas();
+			_setClip();
+		}
+	
 		return true;
 	}
 
-	bool GlGfxDevice::setCanvas( Surface * _pSurface )
+	bool GlGfxDevice::setCanvas( Surface * pSurface )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
+
+		if (!pSurface || pSurface->className() != GlSurface::CLASSNAME)
+			return false;
+
+		m_pCanvas = pSurface;
+		m_canvasSize = pSurface->size();
+		m_clip = m_canvasSize;
+
+		m_canvasYstart = 0;
+		m_canvasYmul = 1;
+
+		if (m_bRendering)
+		{
+			_setCanvas();
+			_setClip();
+		}
 
 		return true;
 	}
@@ -150,28 +479,47 @@ namespace wg
 
 	void GlGfxDevice::setClip(const Rect& clip)
 	{
+		GfxDevice::setClip(clip);
 
+		if( m_bRendering )
+			_setClip();
 	}
 
 	//____ setTintColor() __________________________________________________________________
 
 	void GlGfxDevice::setTintColor(Color color)
 	{
-
+		GfxDevice::setTintColor(color);
 	}
 
 	//____ setBlendMode() __________________________________________________________________
 
 	bool GlGfxDevice::setBlendMode(BlendMode blendMode)
 	{
+		if (blendMode == m_blendMode)
+			return true;
 
+		GfxDevice::setBlendMode(blendMode);
+
+		if( m_bRendering )
+			_setBlendMode();
+
+		return true;
 	}
 
 	//____ setBlitSource() __________________________________________________________________
 
 	bool GlGfxDevice::setBlitSource(Surface * pSource)
 	{
+		if (!pSource || pSource->className() != GlSurface::CLASSNAME)
+			return false;
 
+		m_pBlitSource = pSource;
+
+		if (m_bRendering)
+			_setBlitSource();
+
+		return true;
 	}
 
 
@@ -188,7 +536,7 @@ namespace wg
 			return false;
 
 		// Remember GL states so we can restore in EndRender()
-/*
+
 		m_glDepthTest 		= glIsEnabled(GL_DEPTH_TEST);
         m_glScissorTest 	= glIsEnabled(GL_SCISSOR_TEST);
 		m_glBlendEnabled  	= glIsEnabled(GL_BLEND);
@@ -205,22 +553,27 @@ namespace wg
 		glDisable(GL_DEPTH_TEST);
         glEnable(GL_SCISSOR_TEST);
 
-		// Update program dimensions
+		//
 
-		_updateProgramDimensions();
-        
-		// Set correct framebuffer
+		m_bRendering = true;
+		m_op = BaseOperation::None;
+		m_pFlushOp = &GlGfxDevice::_flushNone;
+		m_vertexOfs = 0;
+		m_extrasOfs = 0;
 
-		_setFramebuffer();
+		_setCanvas();
+		_setClip();
+		_setBlendMode();
+		_setBlitSource();
 
-		// Set correct blend mode
+        // Prepare for rendering
 
-		_setBlendMode(m_blendMode);
-*/
-        //
+		glBindVertexArray(m_vertexArrayId);
+
+
+		//
 
 		assert( glGetError() == 0 );
-		m_bRendering = true;
 		return true;
 	}
 
@@ -232,8 +585,16 @@ namespace wg
 		if( m_bRendering == false )
 			return false;
 
+		// Finalize any ongoing operation
+
+		(this->*m_pFlushOp)();
+
+		//
+
         glFlush();
-/*
+
+		// Restore render states from before beginRender()
+
 		if( m_glDepthTest )
 			glEnable(GL_DEPTH_TEST);
 
@@ -250,7 +611,11 @@ namespace wg
 		glScissor(m_glScissorBox[0], m_glScissorBox[1], m_glScissorBox[2], m_glScissorBox[3]);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_glReadFrameBuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_glDrawFrameBuffer);
-*/
+
+		glBindVertexArray(NULL);
+
+
+		//
 
 		assert(glGetError() == 0);
 		m_bRendering = false;
@@ -261,27 +626,401 @@ namespace wg
 
 	void GlGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
+
+		// Skip calls that won't affect destination
+
+		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+			return;
+
+		// Clip our rectangle
+
+		Rect clip(rect, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		//
+
+		Color fillColor = col * m_tintColor;
+
+		if (m_op != BaseOperation::Fill)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::Fill;
+			m_pFlushOp = &GlGfxDevice::_flushTriangles;
+
+			glUseProgram(m_fillProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glDisableVertexAttribArray(2);
+
+			assert(glGetError() == 0);
+		}
+		else if( m_vertexOfs >= c_vertexBufferSize - 6*nPatches )
+		{
+			_flushTriangles();
+			assert(glGetError() == 0);
+		}
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				int	dx1 = patch.x;
+				int	dy1 = patch.y;
+				int dx2 = patch.x + patch.w;
+				int dy2 = patch.y + patch.h;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexOfs++;
+			}
+		}
+		assert(glGetError() == 0);
 	}
 
 	//____ fillPatches() ____ [subpixel] __________________________________________________
 
 	void GlGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
 
+		// Skip calls that won't affect destination
+
+		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+			return;
+
+		// Create our outer rectangle
+
+		Rect outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
+
+		// Clip our rectangle
+
+		Rect clip(outerRect, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		//
+
+		Color fillColor = col * m_tintColor;
+		if (m_op != BaseOperation::FillSubPixel)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::FillSubPixel;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
+
+			glUseProgram(m_aaFillProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+		}
+		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		{
+			_flushTrianglesWithExtras();
+			assert(glGetError() == 0);
+		}
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				int	dx1 = patch.x;
+				int	dy1 = patch.y;
+				int dx2 = patch.x + patch.w;
+				int dy2 = patch.y + patch.h;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexOfs++;
+			}
+		}
+
+		// Calc frame coordinates and outside frame AA
+
+		float frameX1 = (float) int(rect.x + 0.999f);
+		float frameY1 = (float) int(rect.y + 0.999f);
+		float frameX2 = (float) int(rect.x + rect.w);
+		float frameY2 = (float) int(rect.y + rect.h);
+
+		if (m_canvasYstart > 0)
+		{
+			m_extrasBufferData[m_extrasOfs++] = frameX1;
+			m_extrasBufferData[m_extrasOfs++] = m_canvasYstart + m_canvasYmul * frameY2;
+			m_extrasBufferData[m_extrasOfs++] = frameX2;
+			m_extrasBufferData[m_extrasOfs++] = m_canvasYstart + m_canvasYmul * frameY1;
+
+			m_extrasBufferData[m_extrasOfs++] = frameX1 - rect.x;
+			m_extrasBufferData[m_extrasOfs++] = rect.y + rect.h - frameY2; 
+			m_extrasBufferData[m_extrasOfs++] = rect.x + rect.w - frameX2;
+			m_extrasBufferData[m_extrasOfs++] = frameY1 - rect.y;
+		}
+		else
+		{
+			m_extrasBufferData[m_extrasOfs++] = frameX1;
+			m_extrasBufferData[m_extrasOfs++] = frameY1;
+			m_extrasBufferData[m_extrasOfs++] = frameX2;
+			m_extrasBufferData[m_extrasOfs++] = frameY2;
+
+			m_extrasBufferData[m_extrasOfs++] = frameX1 - rect.x;
+			m_extrasBufferData[m_extrasOfs++] = frameY1 - rect.y;
+			m_extrasBufferData[m_extrasOfs++] = rect.x + rect.w - frameX2;
+			m_extrasBufferData[m_extrasOfs++] = rect.y + rect.h - frameY2;
+		}
+
+		assert(glGetError() == 0);
 	}
 
 	//____ plotPixelPatches() ______________________________________________________
 
-	void GlGfxDevice::plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::plotPixelPatches(int nPixels, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
 
+		if (nPixels == 0)
+			return;
+
+		if (m_op != BaseOperation::Plot)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::Plot;
+			m_pFlushOp = &GlGfxDevice::_flushPoints;
+
+			glUseProgram(m_plotProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glDisableVertexAttribArray(2);
+		}
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], m_clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				for (int pixel = 0; pixel < nPixels; pixel++)
+				{
+					if (patch.contains(pCoords[pixel]))
+					{
+						m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
+						m_vertexBufferData[m_vertexOfs].color = pColors[pixel] * m_tintColor;
+						m_vertexOfs++;
+
+						if (m_vertexOfs == c_vertexBufferSize)
+							_flushPoints();
+					}
+				}
+			}
+		}
+
+		assert(glGetError() == 0);
 	}
 
 	//____ drawLinePatches() ____ [from/to] __________________________________________________
 
 	void GlGfxDevice::drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
 
+		if (m_op != BaseOperation::LineFromTo)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::LineFromTo;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
+
+			glUseProgram(m_lineFromToProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+		}
+
+
+		int 	length;
+		float   width;
+
+		float	slope;
+		float	s, w;
+		bool	bSteep;
+
+		Color fillColor = color * m_tintColor;
+
+		Coord	c1, c2, c3, c4;
+
+		if (std::abs(begin.x - end.x) > std::abs(begin.y - end.y))
+		{
+			// Prepare mainly horizontal line segment
+
+			if (begin.x > end.x)
+				swap(begin, end);
+
+			length = end.x - begin.x;
+			if (length == 0)
+				return;											// TODO: Should stil draw the caps!
+
+			slope = ((float)(end.y - begin.y)) / length;
+			width = _scaleThickness(thickness, slope);
+			bSteep = false;
+
+			s = m_canvasYstart + m_canvasYmul * ((begin.y + 0.5f) - (begin.x + 0.5f)*slope);
+			w =  width / 2 + 0.5f;
+
+			float   x1 = (float)begin.x;
+			float   y1 = begin.y - width / 2;
+			float   x2 = (float)end.x;
+			float   y2 = end.y - width / 2;
+
+			c1.x = x1;
+			c1.y = y1 - 1;
+			c2.x = x2;
+			c2.y = y2 - 1;
+			c3.x = x2;
+			c3.y = y2 + width + 2;
+			c4.x = x1;
+			c4.y = y1 + width + 2;
+
+		}
+		else
+		{
+			// Prepare mainly vertical line segment
+
+			if (begin.y > end.y)
+				swap(begin, end);
+
+			length = end.y - begin.y;
+			if (length == 0)
+				return;											// TODO: Should stil draw the caps!
+
+			slope = ((float)(end.x - begin.x)) / length;
+			width = _scaleThickness(thickness, slope);
+			bSteep = true;
+
+//			s = (begin.x + 0.5f) - (m_canvasYstart + m_canvasYmul * (begin.y + 0.5f))*slope*m_canvasYmul;
+			s = (begin.x + 0.5f) - (m_canvasYstart*m_canvasYmul + (begin.y + 0.5f))*slope;
+			w = width / 2 + 0.5f;
+
+			float   x1 = begin.x - width / 2;
+			float   y1 = (float)begin.y;
+			float   x2 = end.x - width / 2;
+			float   y2 = (float)end.y;
+
+			c1.x = x1 - 1;
+			c1.y = y1;
+			c2.x = x1 + width + 2;
+			c2.y = y1;
+			c3.x = x2 + width + 2;
+			c3.y = y2;
+			c4.x = x2 - 1;
+			c4.y = y2;
+		}
+
+		// TODO: Flush the buffer if it gets full!
+		// TODO: Add clipping!
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], m_clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				m_vertexBufferData[m_vertexOfs].coord = c1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord = c2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord = c3;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord = c1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord = c3;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord = c4;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexOfs++;
+			}
+		}
+
+		m_extrasBufferData[m_extrasOfs++] = s;
+		m_extrasBufferData[m_extrasOfs++] = w;
+		m_extrasBufferData[m_extrasOfs++] = slope;
+		m_extrasBufferData[m_extrasOfs++] = bSteep;
+
+		assert(glGetError() == 0);
 	}
 
 	//____ drawLinePatches() ____ [start/direction] __________________________________________________
@@ -295,13 +1034,218 @@ namespace wg
 
 	void GlGfxDevice::transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
 
+		if ( m_pBlitSource == nullptr )
+			return;
+
+		// Clip our rectangle
+
+		Rect clip(dest, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		if (m_op != BaseOperation::Blit)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::Blit;
+			m_pFlushOp = &GlGfxDevice::_flushTriangles;
+
+			glUseProgram(m_blitProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+		}
+		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		{
+			_flushTriangles();
+		}
+
+		float sw = (float)m_pBlitSource->width();
+		float sh = (float)m_pBlitSource->height();
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
+
+				int		dx1 = patch.x;
+				int		dx2 = patch.x + patch.w;
+				int		dy1 = patch.y;
+				int		dy2 = patch.y + patch.h;
+
+				float	sx1 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]) / sw;
+				float	sy1 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]) / sh;
+
+				float	sx2 = (src.x + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]) / sw;
+				float	sy2 = (src.y + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]) / sh;
+
+				float	sx3 = (src.x + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]) / sw;
+				float	sy3 = (src.y + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]) / sh;
+
+				float	sx4 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]) / sw;
+				float	sy4 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]) / sh;
+
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx1;
+				pVertex->uv[1] = sy1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx2;
+				pVertex->uv[1] = sy2;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx3;
+				pVertex->uv[1] = sy3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx1;
+				pVertex->uv[1] = sy1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx3;
+				pVertex->uv[1] = sy3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx4;
+				pVertex->uv[1] = sy4;
+				pVertex++;
+
+				m_vertexOfs += 6;
+			}
+		}
+
+		assert(glGetError() == 0);
 	}
 
 	//____ transformBlitPatches() ____ [complex] __________________________________________________
 
 	void GlGfxDevice::transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
+
+		if (m_pBlitSource == nullptr)
+			return;
+
+		// Clip our rectangle
+
+		Rect clip(dest, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		if (m_op != BaseOperation::Blit)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::Blit;
+			m_pFlushOp = &GlGfxDevice::_flushTriangles;
+
+			glUseProgram(m_blitProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+		}
+		else if (m_vertexOfs >= c_vertexBufferSize - 12 * nPatches)
+		{
+			_flushTriangles();
+		}
+
+		float sw = (float)m_pBlitSource->width();
+		float sh = (float)m_pBlitSource->height();
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
+
+				int		dx1 = patch.x;
+				int		dx2 = patch.x + patch.w;
+				int		dy1 = patch.y;
+				int		dy2 = patch.y + patch.h;
+
+				float	sx1 = (src.x + (patch.x - dest.x) * complexTransform[0][0] + (patch.y - dest.y) * complexTransform[1][0]) / sw;
+				float	sy1 = (src.y + (patch.x - dest.x) * complexTransform[0][1] + (patch.y - dest.y) * complexTransform[1][1]) / sh;
+
+				float	sx2 = (src.x + (patch.x + patch.w - dest.x) * complexTransform[0][0] + (patch.y - dest.y) * complexTransform[1][0]) / sw;
+				float	sy2 = (src.y + (patch.x + patch.w - dest.x) * complexTransform[0][1] + (patch.y - dest.y) * complexTransform[1][1]) / sh;
+
+				float	sx3 = (src.x + (patch.x + patch.w - dest.x) * complexTransform[0][0] + (patch.y + patch.h - dest.y) * complexTransform[1][0]) / sw;
+				float	sy3 = (src.y + (patch.x + patch.w - dest.x) * complexTransform[0][1] + (patch.y + patch.h - dest.y) * complexTransform[1][1]) / sh;
+
+				float	sx4 = (src.x + (patch.x - dest.x) * complexTransform[0][0] + (patch.y + patch.h - dest.y) * complexTransform[1][0]) / sw;
+				float	sy4 = (src.y + (patch.x - dest.x) * complexTransform[0][1] + (patch.y + patch.h - dest.y) * complexTransform[1][1]) / sh;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx1;
+				pVertex->uv[1] = sy1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx2;
+				pVertex->uv[1] = sy2;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx3;
+				pVertex->uv[1] = sy3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx1;
+				pVertex->uv[1] = sy1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx3;
+				pVertex->uv[1] = sy3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->uv[0] = sx4;
+				pVertex->uv[1] = sy4;
+				pVertex++;
+
+				m_vertexOfs += 6;
+			}
+		}
+
+		assert(glGetError() == 0);
+
 
 	}
 
@@ -312,9 +1256,279 @@ namespace wg
 
 	}
 
+	//____ _flushNone() __________________________________________________________
+
+	void GlGfxDevice::_flushNone()
+	{
+	}
+
+	//____ _flushTriangles() __________________________________________________________
+
+	void GlGfxDevice::_flushTriangles()
+	{
+		assert(glGetError() == 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs*sizeof(Vertex), m_vertexBufferData);
+
+		glDrawArrays(GL_TRIANGLES, 0, m_vertexOfs);
+		m_vertexOfs = 0;
+
+		assert(glGetError() == 0);
+
+	}
+
+	//____ _flushPoints() __________________________________________________________
+
+	void GlGfxDevice::_flushPoints()
+	{
+		assert(glGetError() == 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);
+
+		glDrawArrays(GL_POINTS, 0, m_vertexOfs);
+		m_vertexOfs = 0;
+
+		assert(glGetError() == 0);
+	}
+
+	//____ _flushTrianglesWithExtras() __________________________________________________________
+
+	void GlGfxDevice::_flushTrianglesWithExtras()
+	{
+		assert(glGetError() == 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);
+
+		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
+		glBufferSubData(GL_TEXTURE_BUFFER, 0, m_extrasOfs * sizeof(GLfloat), m_extrasBufferData);
+
+		glDrawArrays(GL_TRIANGLES, 0, m_vertexOfs);
+		m_vertexOfs = 0;
+		m_extrasOfs = 0;
+
+		assert(glGetError() == 0);
+	}
 
 
+	//____ _setCanvas() _______________________________________________________
+
+	void GlGfxDevice::_setCanvas()
+	{
+		assert(glGetError() == 0);
+
+		(this->*m_pFlushOp)();
+		m_op = BaseOperation::None;							// We will loose our program so we need to reset these...
+		m_pFlushOp = &GlGfxDevice::_flushNone;
+
+		if (m_pCanvas)
+		{
+			auto pCanvas = GlSurface::cast(m_pCanvas);
+			pCanvas->m_bBackingBufferStale = true;
+
+			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
+
+			GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers(1, drawBuffers);
+
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+				//TODO: Signal error that we could not set the specified canvas.
+
+				return;
+			}
+		}
+		else
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+
+		glUseProgram(m_fillProg);
+		glUniform2f(m_fillProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_fillProgYofsLoc, m_canvasYstart);
+		glUniform1i(m_fillProgYmulLoc, m_canvasYmul);
+
+		glUseProgram(m_aaFillProg);
+		glUniform2f(m_aaFillProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_aaFillProgYofsLoc, m_canvasYstart);
+		glUniform1i(m_aaFillProgYmulLoc, m_canvasYmul);
+
+		glUseProgram(m_blitProg);
+		glUniform2f(m_blitProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_blitProgYofsLoc, m_canvasYstart);
+		glUniform1i(m_blitProgYmulLoc, m_canvasYmul);
+
+		glUseProgram(m_plotProg);
+		glUniform2f(m_plotProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_plotProgYofsLoc, m_canvasYstart);
+		glUniform1i(m_plotProgYmulLoc, m_canvasYmul);
+
+		glUseProgram(m_lineFromToProg);
+		glUniform2f(m_lineFromToProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
+		glUniform1i(m_lineFromToProgYofsLoc, m_canvasYstart);
+		glUniform1i(m_lineFromToProgYmulLoc, m_canvasYmul);
+
+		assert(glGetError() == 0);
+	}
+
+	//____ _setClip() _______________________________________________________
+
+	void GlGfxDevice::_setClip()
+	{
+		assert(glGetError() == 0);
+
+		(this->*m_pFlushOp)();
+		glScissor(m_clip.x, m_clip.y, m_clip.w, m_clip.h);
+
+		assert(glGetError() == 0);
+	}
+
+	//____ _setBlendMode() _______________________________________________________
+
+	void GlGfxDevice::_setBlendMode()
+	{
+		assert(glGetError() == 0);
+
+		(this->*m_pFlushOp)();
+		switch (m_blendMode)
+		{
+		case BlendMode::Replace:
+			glBlendEquation(GL_FUNC_ADD);
+			glDisable(GL_BLEND);
+			break;
+
+		case BlendMode::Blend:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			//				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case BlendMode::Add:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+
+		case BlendMode::Subtract:
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+
+		case BlendMode::Multiply:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			break;
+
+		case BlendMode::Invert:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
+			break;
+
+		case BlendMode::Ignore:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ZERO, GL_ONE);
+			break;
+
+		default:
+			break;
+		}
+		assert(glGetError() == 0);
+	}
+
+	//____ _setBlitSource() _______________________________________________________
+
+	void GlGfxDevice::_setBlitSource()
+	{
+		assert(glGetError() == 0);
+
+		(this->*m_pFlushOp)();
+		glActiveTexture(GL_TEXTURE0);
+
+		if( m_pBlitSource.rawPtr() )
+			glBindTexture(GL_TEXTURE_2D, ((GlSurface*)m_pBlitSource.rawPtr())->getTexture());
+		else
+			glBindTexture(GL_TEXTURE_2D, 0 );
+
+		assert(glGetError() == 0);
+	}
+
+	//____ _createGlProgram() ___________________________________________________
+
+	GLuint GlGfxDevice::_createGLProgram(const char * pVertexShader, const char * pFragmentShader)
+	{
+		char log[1024];
+		GLsizei logLen;
+
+		GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+		glShaderSource(vertexShaderID, 1, &pVertexShader, NULL);
+		glCompileShader(vertexShaderID);
+
+		glShaderSource(fragmentShaderID, 1, &pFragmentShader, NULL);
+		glCompileShader(fragmentShaderID);
+
+		glGetShaderInfoLog(fragmentShaderID, 1023, &logLen, log);
+
+		GLuint  programID = glCreateProgram();
+		glAttachShader(programID, vertexShaderID);
+		glAttachShader(programID, fragmentShaderID);
+		glLinkProgram(programID);
+
+		// glLinkProgram doesn't use glGetError
+		int mess = 0;
+		glGetProgramiv(programID, GL_LINK_STATUS, &mess);
+		//		assert(mess == GL_TRUE);
+
+		glDetachShader(programID, vertexShaderID);
+		glDetachShader(programID, fragmentShaderID);
+
+		glDeleteShader(vertexShaderID);
+		glDeleteShader(fragmentShaderID);
+
+		return programID;
+	}
 	
+	//____ _initTables() ___________________________________________________________
+
+	void GlGfxDevice::_initTables()
+	{
+		// Init lineThicknessTable
+
+		for (int i = 0; i < 17; i++)
+		{
+			double b = i / 16.0;
+			m_lineThicknessTable[i] = (float)Util::squareRoot(1.0 + b * b);
+		}
+	}
+
+
+	//____ _scaleThickness() ___________________________________________________
+
+	float GlGfxDevice::_scaleThickness(float thickness, float slope)
+	{
+		slope = std::abs(slope);
+
+		float scale = m_lineThicknessTable[(int)(slope * 16)];
+
+		if (slope < 1.f)
+		{
+			float scale2 = m_lineThicknessTable[(int)(slope * 16) + 1];
+			scale += (scale2 - scale)*((slope * 16) - ((int)(slope * 16)));
+		}
+
+		return thickness * scale;
+	}
 	
 } // namespace wg
 

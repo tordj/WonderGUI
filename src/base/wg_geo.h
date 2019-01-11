@@ -691,9 +691,16 @@ namespace wg
 	 **/
 	inline bool Rect::contains( const Coord& _coord ) const
 	{
-		if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
-			return true;
-		return false;
+		int a = _coord.x - x;
+		int b = _coord.y - y;
+		int c = (x + w) - (_coord.x);
+		int d = (y + h) - (_coord.y);
+
+		return (a | b | c | d) >= 0;
+
+//		if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
+//			return true;
+//		return false;
 	}
 	
 	//_____________________________________________________________________________
@@ -706,9 +713,16 @@ namespace wg
 	 **/
 	inline bool Rect::contains( const Rect& _rect ) const
 	{
-		if( _rect.x >= x && _rect.y >= y && _rect.x + _rect.w <= x + w &&  _rect.y + _rect.h <= y + h )
-			return true;
-		return false;
+		int a = _rect.x - x;
+		int b = _rect.y - y;
+		int c = (x + w) - (_rect.x + _rect.w);
+		int d = (y + h) - (_rect.y + _rect.h);
+
+		return (a | b | c | d) >= 0;
+
+//		if( _rect.x >= x && _rect.y >= y && _rect.x + _rect.w <= x + w &&  _rect.y + _rect.h <= y + h )
+//			return true;
+//		return false;
 	}
 	
 	//_____________________________________________________________________________

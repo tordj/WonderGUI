@@ -78,6 +78,10 @@ public:
 		pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
 		pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
 
+		pDevice->drawLine(canvas.pos() + Coord(5, 100), canvas.pos() + Coord(40,101), Color::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + Coord(5, 105), canvas.pos() + Coord(6, 145), Color::Green, 3.f);
+
+
 		Coord	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 		Size	fillSize = { 50,50 };
 		Coord	stepping = { 60, 0 };

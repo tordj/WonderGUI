@@ -69,13 +69,12 @@ namespace wg
 	
 	//____ Surface() ____________________________________________________________
 	
-	Surface::Surface()
+	Surface::Surface() :
+		m_accessMode( AccessMode::None ),
+		m_pPixels( nullptr ),
+		m_pClut( nullptr ),
+		m_scaleMode( ScaleMode::Nearest )
 	{
-		m_accessMode	= AccessMode::None;
-		m_pPixels		= nullptr;
-		m_pClut			= nullptr;
-		m_scaleMode		= ScaleMode::Nearest;
-		
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
 	}
 	

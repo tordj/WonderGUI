@@ -28,6 +28,7 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\canvasformattests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\filltests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\patchblittests.h" />
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\plottests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\segmenttests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\testsuite.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\wavetests.h" />
@@ -118,7 +119,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_stream.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_opengl.lib;gfxdevice_stream.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
@@ -154,7 +155,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_stream.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glew32.lib;freetype.lib;wondergui.lib;gfxdevice_software.lib;gfxdevice_opengl.lib;gfxdevice_stream.lib;font_freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableDpiAwareness>true</EnableDpiAwareness>
