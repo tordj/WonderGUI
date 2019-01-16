@@ -895,8 +895,8 @@ int main ( int argc, char** argv )
 //		stretchBlitTest(pGfxDevice, pFlippingSurface);
 //		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
 //		rotScaleTest(pGfxDevice, pClockSurface);
-		subPixelFillTest(pGfxDevice );
-//		lineTest(pGfxDevice, Rect(0,0,width,height) );
+//		subPixelFillTest(pGfxDevice );
+		lineTest(pGfxDevice, Rect(0,0,width,height) );
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
@@ -1035,7 +1035,7 @@ void subPixelFillTest(GfxDevice * pGfxDevice)
 
 	for (int i = 0; i < 5; i++)
 	{
-		RectF rect = { 1.f + i * 25.f, 1.f + i * 0.25f, 2.f, 2.f };
+		RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
 
 		for (int j = 0; j < 5; j++)
 		{

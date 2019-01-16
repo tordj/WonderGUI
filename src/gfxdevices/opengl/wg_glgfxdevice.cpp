@@ -462,11 +462,19 @@ namespace wg
 		m_canvasYstart = canvasSize.h;
 		m_canvasYmul = -1;
 
-
 		if (m_bRendering)
 		{
-			_setCanvas();
-			_setClip();
+			_endCommand();
+			_beginStateCommand(Command::SetClip, 2);
+			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
+			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
+
+			_beginStateCommand(Command::SetClip, 4);
+			m_commandBuffer[m_commandOfs++] = m_clip.x;
+			m_commandBuffer[m_commandOfs++] = m_clip.y;
+			m_commandBuffer[m_commandOfs++] = m_clip.w;
+			m_commandBuffer[m_commandOfs++] = m_clip.h;
 		}
 	
 		return true;
@@ -489,8 +497,17 @@ namespace wg
 
 		if (m_bRendering)
 		{
-			_setCanvas();
-			_setClip();
+			_endCommand();
+			_beginStateCommand(Command::SetClip, 2);
+			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
+			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
+
+			_beginStateCommand(Command::SetClip, 4);
+			m_commandBuffer[m_commandOfs++] = m_clip.x;
+			m_commandBuffer[m_commandOfs++] = m_clip.y;
+			m_commandBuffer[m_commandOfs++] = m_clip.w;
+			m_commandBuffer[m_commandOfs++] = m_clip.h;
 		}
 
 		return true;
@@ -503,7 +520,14 @@ namespace wg
 		GfxDevice::setClip(clip);
 
 		if( m_bRendering )
-			_setClip();
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetClip, 4);
+			m_commandBuffer[m_commandOfs++] = m_clip.x;
+			m_commandBuffer[m_commandOfs++] = m_clip.y;
+			m_commandBuffer[m_commandOfs++] = m_clip.w;
+			m_commandBuffer[m_commandOfs++] = m_clip.h;
+		}
 	}
 
 	//____ setTintColor() __________________________________________________________________
@@ -523,8 +547,12 @@ namespace wg
 		GfxDevice::setBlendMode(blendMode);
 
 		if( m_bRendering )
-			_setBlendMode();
-
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetBlendMode, 1);
+			m_commandBuffer[m_commandOfs++] = (int) blendMode;
+		}
+		
 		return true;
 	}
 
@@ -538,7 +566,11 @@ namespace wg
 		m_pBlitSource = pSource;
 
 		if (m_bRendering)
-			_setBlitSource();
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetBlitSource, 0);
+			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSource);
+		}
 
 		return true;
 	}
@@ -577,15 +609,17 @@ namespace wg
 		//
 
 		m_bRendering = true;
-		m_op = BaseOperation::None;
-		m_pFlushOp = &GlGfxDevice::_flushNone;
+		m_cmd = Command::None;
+		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
 		m_vertexOfs = 0;
 		m_extrasOfs = 0;
+		m_commandOfs = 0;
+		m_surfaceOfs = 0;
 
-		_setCanvas();
-		_setClip();
-		_setBlendMode();
-		_setBlitSource();
+		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
+		_setClip(m_clip);
+		_setBlendMode(m_blendMode);
+		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
         // Prepare for rendering
 
@@ -608,7 +642,8 @@ namespace wg
 
 		// Finalize any ongoing operation
 
-		(this->*m_pFlushOp)();
+		_endCommand();
+		_executeBuffer();
 
 		//
 
@@ -664,24 +699,16 @@ namespace wg
 
 		Color fillColor = col * m_tintColor;
 
-		if (m_op != BaseOperation::Fill)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches )
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::Fill;
-			m_pFlushOp = &GlGfxDevice::_flushTriangles;
-
-			glUseProgram(m_fillProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glDisableVertexAttribArray(2);
-
-			assert(glGetError() == 0);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::Fill);
 		}
-		else if( m_vertexOfs >= c_vertexBufferSize - 6*nPatches )
+		else if (m_cmd != Command::Fill)
 		{
-			_flushTriangles();
-			assert(glGetError() == 0);
+			_endCommand();
+			_beginDrawCommand(Command::Fill);
 		}
 
 		for (int i = 0; i < nPatches; i++)
@@ -752,22 +779,16 @@ namespace wg
 		//
 
 		Color fillColor = col * m_tintColor;
-		if (m_op != BaseOperation::FillSubPixel)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::FillSubPixel;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
-
-			glUseProgram(m_aaFillProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::FillSubPixel);
 		}
-		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		else if (m_cmd != Command::FillSubPixel)
 		{
-			_flushTrianglesWithExtras();
-			assert(glGetError() == 0);
+			_endCommand();
+			_beginDrawCommand(Command::FillSubPixel);
 		}
 
 		for (int i = 0; i < nPatches; i++)
@@ -840,17 +861,16 @@ namespace wg
 		if (nPixels == 0)
 			return;
 
-		if (m_op != BaseOperation::Plot)
+		if (m_vertexOfs > c_vertexBufferSize - 1 )
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::Plot;
-			m_pFlushOp = &GlGfxDevice::_flushPoints;
-
-			glUseProgram(m_plotProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glDisableVertexAttribArray(2);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::Plot);
+		}
+		if (m_cmd != Command::Plot)
+		{
+			_endCommand();
+			_beginDrawCommand(Command::Plot);
 		}
 
 		for (int i = 0; i < nPatches; i++)
@@ -867,7 +887,11 @@ namespace wg
 						m_vertexOfs++;
 
 						if (m_vertexOfs == c_vertexBufferSize)
-							_flushPoints();
+						{
+							_endCommand();
+							_executeBuffer();
+							_beginDrawCommand(Command::Plot);
+						}
 					}
 				}
 			}
@@ -882,19 +906,17 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
-		if (m_op != BaseOperation::LineFromTo)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::LineFromTo;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
-
-			glUseProgram(m_lineFromToProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::LineFromTo);
 		}
-
+		else if (m_cmd != Command::LineFromTo)
+		{
+			_endCommand();
+			_beginDrawCommand(Command::LineFromTo);
+		}
 
 		int 	length;
 		float   width;
@@ -925,19 +947,17 @@ namespace wg
 			s = m_canvasYstart + m_canvasYmul * ((begin.y + 0.5f) - (begin.x + 0.5f)*slope);
 			w =  width / 2 + 0.5f;
 
-			float   x1 = (float)begin.x;
 			float   y1 = begin.y - width / 2;
-			float   x2 = (float)end.x;
 			float   y2 = end.y - width / 2;
 
-			c1.x = x1;
-			c1.y = y1 - 1;
-			c2.x = x2;
-			c2.y = y2 - 1;
-			c3.x = x2;
-			c3.y = y2 + width + 2;
-			c4.x = x1;
-			c4.y = y1 + width + 2;
+			c1.x = begin.x;
+			c1.y = int(y1) - 1;
+			c2.x = end.x;
+			c2.y = int(y2) - 1;
+			c3.x = end.x;
+			c3.y = int (y2 + width) + 2;
+			c4.x = begin.x;
+			c4.y = int (y1 + width) + 2;
 
 		}
 		else
@@ -960,18 +980,16 @@ namespace wg
 			w = width / 2 + 0.5f;
 
 			float   x1 = begin.x - width / 2;
-			float   y1 = (float)begin.y;
 			float   x2 = end.x - width / 2;
-			float   y2 = (float)end.y;
 
-			c1.x = x1 - 1;
-			c1.y = y1;
-			c2.x = x1 + width + 2;
-			c2.y = y1;
-			c3.x = x2 + width + 2;
-			c3.y = y2;
-			c4.x = x2 - 1;
-			c4.y = y2;
+			c1.x = int(x1) - 1;
+			c1.y = begin.y;
+			c2.x = int(x1 + width) + 2;
+			c2.y = begin.y;
+			c3.x = int(x2 + width) + 2;
+			c3.y = end.y;
+			c4.x = int(x2) - 1;
+			c4.y = end.y;
 		}
 
 		// TODO: Flush the buffer if it gets full!
@@ -1041,29 +1059,29 @@ namespace wg
 		{
 			case Direction::Up:
 				rect.x = begin.x + 0.5f - thickness/2;
-				rect.y = begin.y - length;
+				rect.y = float(begin.y - length);
 				rect.w = thickness;
-				rect.h = length;
+				rect.h = float(length);
 				break;
 
 			case Direction::Down:
 				rect.x = begin.x + 0.5f - thickness/2;
-				rect.y = begin.y;
+				rect.y = float(begin.y);
 				rect.w = thickness;
-				rect.h = length;
+				rect.h = float(length);
 				break;
 
 			case Direction::Left:
-				rect.x = begin.x - length;
+				rect.x = float(begin.x - length);
 				rect.y = begin.y + 0.5f - thickness/2;
-				rect.w = length;
+				rect.w = float(length);
 				rect.h = thickness;
 				break;
 
 			case Direction::Right:
-				rect.x = begin.x;
+				rect.x = float(begin.x);
 				rect.y = begin.y + 0.5f - thickness/2;
-				rect.w = length;
+				rect.w = float(length);
 				rect.h = thickness;
 				break;
 		}
@@ -1082,23 +1100,19 @@ namespace wg
 		//
 
 		Color fillColor = col * m_tintColor;
-		if (m_op != BaseOperation::FillSubPixel)
-		{
-			(this->*m_pFlushOp)();
 
-			m_op = BaseOperation::FillSubPixel;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
-
-			glUseProgram(m_aaFillProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
-		}
-		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
 		{
-			_flushTrianglesWithExtras();
-			assert(glGetError() == 0);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::FillSubPixel);
 		}
+		else if (m_cmd != Command::FillSubPixel)
+		{
+			_endCommand();
+			_beginDrawCommand(Command::FillSubPixel);
+		}
+
 
 		// Provide the patches
 
@@ -1169,7 +1183,7 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
-		if ( m_pBlitSource == nullptr )
+		if (m_pBlitSource == nullptr)
 			return;
 
 		// Clip our rectangle
@@ -1178,21 +1192,16 @@ namespace wg
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
-		if (m_op != BaseOperation::Blit)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 8 )
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::Blit;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
-
-			glUseProgram(m_blitProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::Blit);
 		}
-		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		else if (m_cmd != Command::Blit)
 		{
-			_flushTrianglesWithExtras();
+			_endCommand();
+			_beginDrawCommand(Command::Blit);
 		}
 
 		float sw = (float)m_pBlitSource->width();
@@ -1263,15 +1272,15 @@ namespace wg
 			}
 		}
 
-		m_extrasBufferData[m_extrasOfs++] = src.x;
-		m_extrasBufferData[m_extrasOfs++] = src.y;
-		m_extrasBufferData[m_extrasOfs++] = dest.x;
-		m_extrasBufferData[m_extrasOfs++] = dest.y;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) src.x;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) src.y;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.x;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.y;
 
-		m_extrasBufferData[m_extrasOfs++] = simpleTransform[0][0];
-		m_extrasBufferData[m_extrasOfs++] = simpleTransform[0][1];
-		m_extrasBufferData[m_extrasOfs++] = simpleTransform[1][0];
-		m_extrasBufferData[m_extrasOfs++] = simpleTransform[1][1];
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[0][0];
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[0][1];
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][0];
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][1];
 
 		assert(glGetError() == 0);
 	}
@@ -1291,21 +1300,16 @@ namespace wg
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
-		if (m_op != BaseOperation::Blit)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 8)
 		{
-			(this->*m_pFlushOp)();
-
-			m_op = BaseOperation::Blit;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
-
-			glUseProgram(m_blitProg);
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::Blit);
 		}
-		else if (m_vertexOfs >= c_vertexBufferSize - 12 * nPatches)
+		else if (m_cmd != Command::Blit)
 		{
-			_flushTrianglesWithExtras();
+			_endCommand();
+			_beginDrawCommand(Command::Blit);
 		}
 
 		float sw = (float)m_pBlitSource->width();
@@ -1365,18 +1369,15 @@ namespace wg
 
 		m_extrasBufferData[m_extrasOfs++] = src.x;
 		m_extrasBufferData[m_extrasOfs++] = src.y;
-		m_extrasBufferData[m_extrasOfs++] = dest.x;
-		m_extrasBufferData[m_extrasOfs++] = dest.y;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.x;
+		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.y;
 
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
 
-
 		assert(glGetError() == 0);
-
-
 	}
 
 	//____ transformDrawSegmentPatches() ______________________________________________________
@@ -1386,58 +1387,133 @@ namespace wg
 
 	}
 
-	//____ _flushNone() __________________________________________________________
+	//____ _dummyFinalizer() __________________________________________________________
 
-	void GlGfxDevice::_flushNone()
+	void GlGfxDevice::_dummyFinalizer()
 	{
 	}
 
-	//____ _flushTriangles() __________________________________________________________
+	//____ _drawCmdFinalizer() __________________________________________________________
 
-	void GlGfxDevice::_flushTriangles()
+	void GlGfxDevice::_drawCmdFinalizer()
+	{
+		m_commandBuffer[m_commandOfs++] = m_vertexOfs - m_cmdBeginVertexOfs;
+	}
+
+	//____ _executeBuffer() ___________________________________________________
+
+	void GlGfxDevice::_executeBuffer()
 	{
 		assert(glGetError() == 0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs*sizeof(Vertex), m_vertexBufferData);
-
-		glDrawArrays(GL_TRIANGLES, 0, m_vertexOfs);
-		m_vertexOfs = 0;
-
-		assert(glGetError() == 0);
-
-	}
-
-	//____ _flushPoints() __________________________________________________________
-
-	void GlGfxDevice::_flushPoints()
-	{
-		assert(glGetError() == 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);
-
-		glDrawArrays(GL_POINTS, 0, m_vertexOfs);
-		m_vertexOfs = 0;
-
-		assert(glGetError() == 0);
-	}
-
-	//____ _flushTrianglesWithExtras() __________________________________________________________
-
-	void GlGfxDevice::_flushTrianglesWithExtras()
-	{
-		assert(glGetError() == 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);
+		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);		// Orphan current buffer if still in use.
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);			// Fill new buffer with as much data as needed.
 
 		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
+		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_TEXTURE_BUFFER, 0, m_extrasOfs * sizeof(GLfloat), m_extrasBufferData);
 
-		glDrawArrays(GL_TRIANGLES, 0, m_vertexOfs);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		int * pCmd = m_commandBuffer;
+		int * pCmdEnd = &m_commandBuffer[m_commandOfs];
+
+		int vertexOfs = 0;
+		int surfaceOfs = 0;
+
+		while (pCmd < pCmdEnd)
+		{
+			Command cmd = (Command) * pCmd++;
+
+			switch (cmd)
+			{
+				case Command::SetCanvas:
+				{
+					_setCanvas(m_surfaceBuffer[surfaceOfs], *pCmd++, *pCmd++);
+					m_surfaceBuffer[surfaceOfs++] = nullptr;
+					break;
+				}
+				case Command::SetClip:
+				{
+					_setClip( Rect(* pCmd++, * pCmd++, * pCmd++, * pCmd++) );
+					break;
+				}
+				case Command::SetBlendMode:
+				{
+					_setBlendMode((BlendMode)* pCmd++);
+					break;
+				}
+				case Command::SetBlitSource:
+				{
+					_setBlitSource(m_surfaceBuffer[surfaceOfs]);
+					m_surfaceBuffer[surfaceOfs++] = nullptr;
+					break;
+				}
+				case Command::Blit:
+				{
+					glUseProgram(m_blitProg);
+					glEnableVertexAttribArray(2);
+
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+					break;
+				}
+				case Command::Fill:
+				{
+					glUseProgram(m_fillProg);
+					glDisableVertexAttribArray(2);
+
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+					break;
+				}
+				case Command::FillSubPixel:
+				{
+					glUseProgram(m_aaFillProg);
+					glEnableVertexAttribArray(2);
+
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+					break;
+				}
+				case Command::LineFromTo:
+				{
+					glUseProgram(m_lineFromToProg);
+					glEnableVertexAttribArray(2);
+
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+					break;
+				}
+				case Command::Plot:
+				{
+
+					glUseProgram(m_plotProg);
+					glDisableVertexAttribArray(2);
+
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_POINTS, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+					break;
+				}
+				case Command::Segments:
+					break;
+
+				default:
+					assert(false);
+			}
+		}
+
 		m_vertexOfs = 0;
 		m_extrasOfs = 0;
+		m_commandOfs = 0;
+		m_surfaceOfs = 0;
 
 		assert(glGetError() == 0);
 	}
@@ -1445,17 +1521,12 @@ namespace wg
 
 	//____ _setCanvas() _______________________________________________________
 
-	void GlGfxDevice::_setCanvas()
+	void GlGfxDevice::_setCanvas( GlSurface * pCanvas, int width, int height )
 	{
 		assert(glGetError() == 0);
 
-		(this->*m_pFlushOp)();
-		m_op = BaseOperation::None;							// We will loose our program so we need to reset these...
-		m_pFlushOp = &GlGfxDevice::_flushNone;
-
 		if (m_pCanvas)
 		{
-			auto pCanvas = GlSurface::cast(m_pCanvas);
 			pCanvas->m_bBackingBufferStale = true;
 
 			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
@@ -1476,56 +1547,57 @@ namespace wg
 		else
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		glViewport(0, 0, m_canvasSize.w, m_canvasSize.h);
+		int canvasYstart	= pCanvas ? 0 : height;
+		int canvasYmul		= pCanvas ? 1 : -1;
+
+		glViewport(0, 0, width, height);
 
 		glUseProgram(m_fillProg);
-		glUniform2f(m_fillProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
-		glUniform1i(m_fillProgYofsLoc, m_canvasYstart);
-		glUniform1i(m_fillProgYmulLoc, m_canvasYmul);
+		glUniform2f(m_fillProgDimLoc, (GLfloat) width, (GLfloat) height);
+		glUniform1i(m_fillProgYofsLoc, canvasYstart);
+		glUniform1i(m_fillProgYmulLoc, canvasYmul);
 
 		glUseProgram(m_aaFillProg);
-		glUniform2f(m_aaFillProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
-		glUniform1i(m_aaFillProgYofsLoc, m_canvasYstart);
-		glUniform1i(m_aaFillProgYmulLoc, m_canvasYmul);
+		glUniform2f(m_aaFillProgDimLoc, (GLfloat) width, (GLfloat) height);
+		glUniform1i(m_aaFillProgYofsLoc, canvasYstart);
+		glUniform1i(m_aaFillProgYmulLoc, canvasYmul);
 
 		glUseProgram(m_blitProg);
-		glUniform2f(m_blitProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
-		glUniform1i(m_blitProgYofsLoc, m_canvasYstart);
-		glUniform1i(m_blitProgYmulLoc, m_canvasYmul);
+		glUniform2f(m_blitProgDimLoc, (GLfloat) width, (GLfloat) height);
+		glUniform1i(m_blitProgYofsLoc, canvasYstart);
+		glUniform1i(m_blitProgYmulLoc, canvasYmul);
 
 		glUseProgram(m_plotProg);
-		glUniform2f(m_plotProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
-		glUniform1i(m_plotProgYofsLoc, m_canvasYstart);
-		glUniform1i(m_plotProgYmulLoc, m_canvasYmul);
+		glUniform2f(m_plotProgDimLoc, (GLfloat) width, (GLfloat) height);
+		glUniform1i(m_plotProgYofsLoc, canvasYstart);
+		glUniform1i(m_plotProgYmulLoc, canvasYmul);
 
 		glUseProgram(m_lineFromToProg);
-		glUniform2f(m_lineFromToProgDimLoc, (GLfloat)m_canvasSize.w, (GLfloat)m_canvasSize.h);
-		glUniform1i(m_lineFromToProgYofsLoc, m_canvasYstart);
-		glUniform1i(m_lineFromToProgYmulLoc, m_canvasYmul);
+		glUniform2f(m_lineFromToProgDimLoc, (GLfloat) width, (GLfloat) height);
+		glUniform1i(m_lineFromToProgYofsLoc, canvasYstart);
+		glUniform1i(m_lineFromToProgYmulLoc, canvasYmul);
 
 		assert(glGetError() == 0);
 	}
 
 	//____ _setClip() _______________________________________________________
 
-	void GlGfxDevice::_setClip()
+	void GlGfxDevice::_setClip( Rect clip )
 	{
 		assert(glGetError() == 0);
 
-		(this->*m_pFlushOp)();
-		glScissor(m_clip.x, m_clip.y, m_clip.w, m_clip.h);
+		glScissor(clip.x, clip.y, clip.w, clip.h);
 
 		assert(glGetError() == 0);
 	}
 
 	//____ _setBlendMode() _______________________________________________________
 
-	void GlGfxDevice::_setBlendMode()
+	void GlGfxDevice::_setBlendMode( BlendMode mode )
 	{
 		assert(glGetError() == 0);
 
-		(this->*m_pFlushOp)();
-		switch (m_blendMode)
+		switch (mode)
 		{
 		case BlendMode::Replace:
 			glBlendEquation(GL_FUNC_ADD);
@@ -1570,6 +1642,7 @@ namespace wg
 			break;
 
 		default:
+			assert(false);
 			break;
 		}
 		assert(glGetError() == 0);
@@ -1577,26 +1650,18 @@ namespace wg
 
 	//____ _setBlitSource() _______________________________________________________
 
-	void GlGfxDevice::_setBlitSource()
+	void GlGfxDevice::_setBlitSource( GlSurface * pSurf )
 	{
 		assert(glGetError() == 0);
 
-		(this->*m_pFlushOp)();
 		glActiveTexture(GL_TEXTURE0);
 
-		if( m_pBlitSource.rawPtr() )
+		if( pSurf )
 		{
-			glBindTexture(GL_TEXTURE_2D, ((GlSurface*)m_pBlitSource.rawPtr())->getTexture());
+			glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
 
-			m_op = BaseOperation::Blit;
-			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
 			glUseProgram(m_blitProg);
-
-			glEnableVertexAttribArray(0);
-			glEnableVertexAttribArray(1);
-			glEnableVertexAttribArray(2);
-
-			glUniform2i(m_blitProgTexSizeLoc, m_pBlitSource->size().w, m_pBlitSource->size().h);
+			glUniform2i(m_blitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
 		}
 		else
 			glBindTexture(GL_TEXTURE_2D, 0 );

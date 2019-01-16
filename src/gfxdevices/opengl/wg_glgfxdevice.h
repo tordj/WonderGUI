@@ -36,7 +36,7 @@
 #endif
 
 #include <wg_gfxdevice.h>
-
+#include <wg_glsurface.h>
 
 namespace wg
 {
@@ -51,16 +51,16 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create( const Rect& viewport );
-		static GlGfxDevice_p	create( GlSurface * pCanvas );
+		static GlGfxDevice_p	create(const Rect& viewport);
+		static GlGfxDevice_p	create(GlSurface * pCanvas);
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf(const char * pClassName) const;
+		const char *			className(void) const;
 		static const char		CLASSNAME[];
-		static GlGfxDevice_p	cast( Object * pObject );
-		const char *			surfaceClassName( void ) const;
+		static GlGfxDevice_p	cast(Object * pObject);
+		const char *			surfaceClassName(void) const;
 
 
 		//.____ Misc _______________________________________________________
@@ -69,14 +69,14 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas( Size canvasSize );
-		bool	setCanvas( Surface * pCanvas );
+		bool	setCanvas(Size canvasSize);
+		bool	setCanvas(Surface * pCanvas);
 
 		//.____ State _________________________________________________
 
 		void	setClip(const Rect& clip) override;
-		void	setTintColor( Color color ) override;
-		bool	setBlendMode( BlendMode blendMode ) override;
+		void	setTintColor(Color color) override;
+		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
 
 		//.____ Rendering ________________________________________________
@@ -100,25 +100,50 @@ namespace wg
 
 	protected:
 		GlGfxDevice(Size viewportSize);
-		GlGfxDevice( const Rect& viewport );
+		GlGfxDevice(const Rect& viewport);
 		GlGfxDevice(GlSurface * pCanvas);
 		~GlGfxDevice();
 
-		void	_setCanvas();
-		void	_setClip();
-		void	_setBlendMode();
-		void	_setBlitSource();
+		enum Command
+		{
+			None,
+			SetCanvas,
+			SetClip,
+			SetBlendMode,
+			SetBlitSource,
+			Fill,
+			FillSubPixel,				// Includes start/direction lines.
+			Plot,
+			LineFromTo,
+			Blit,
+			Segments,
+
+		};
+
+		void	_setCanvas( GlSurface * pCanvas, int width, int height );
+		void	_setClip(Rect clip);
+		void	_setBlendMode(BlendMode mode);
+		void	_setBlitSource(GlSurface * pSurf);
+
+		inline void	_beginDrawCommand(Command cmd);
+		inline void	_beginStateCommand(Command cmd, int dataSize);
+		inline void	_endCommand();
+
+
+
+		typedef void(GlGfxDevice::*CmdFinalizer_p)();
+
+		void	_dummyFinalizer();
+		void	_drawCmdFinalizer();
+
+
 
 		GLuint  _createGLProgram(const char * pVertexShader, const char * pFragmentShader);
 
 		void	_initTables();
 		float	_scaleThickness(float thickeness, float slope);
 
-		void	_flushNone();
-		void	_flushPoints();
-		void	_flushTriangles();
-		void	_flushTrianglesWithExtras();
-
+		void	_executeBuffer();
 
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
 		bool				m_bRendering = false;
@@ -127,24 +152,15 @@ namespace wg
 
 		//
 
-		enum BaseOperation
-		{
-			None,
-			Fill,							
-			FillSubPixel,				// Includes start/direction lines.
-			Plot,
-			LineFromTo,
-			Blit,
-			Segments
-		};
 
-		typedef	void(GlGfxDevice::*FlushOp_p)();
+		static const int c_commandBufferSize = 256;
+		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
+		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats. 
+		static const int c_surfaceBufferSize = 1024;				// SIze of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 
-		static const int c_vertexBufferSize = 256*6;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = c_vertexBufferSize*2;	// Size of extras buffer, in GLfloats. 
-
-		BaseOperation	m_op;
-		FlushOp_p		m_pFlushOp;
+		Command			m_cmd;
+		CmdFinalizer_p	m_pCmdFinalizer;
+		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
 
 		GLuint			m_framebufferId;
 
@@ -188,10 +204,13 @@ namespace wg
 			int		extrasOfs;						// Offset into extras buffer.
 		};
 
+
 		// Buffers
 
 		int		m_vertexOfs;						// Write offset in m_vertexBufferData
 		int		m_extrasOfs;						// Write offset in m_extrasBufferData
+		int		m_commandOfs;						// Write offset in m_commandBuffer
+		int		m_surfaceOfs;						// Write offset in m_surfaceBuffer
 
 		GLuint  m_vertexArrayId;
 		GLuint  m_vertexBufferId;
@@ -199,7 +218,11 @@ namespace wg
 
 		GLuint	m_extrasBufferTex;
 		GLuint	m_extrasBufferId;
-		GLfloat m_extrasBufferData[c_extrasBufferSize];									// Space to store additional primitive data for shaders
+		GLfloat m_extrasBufferData[c_extrasBufferSize];								// Space to store additional primitive data for shaders
+
+		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
+
+		GlSurface_p m_surfaceBuffer[c_surfaceBufferSize];
 
 		// GL states saved between BeginRender() and EndRender().
 
@@ -215,6 +238,43 @@ namespace wg
 
   
 	};
+
+	//____ _beginDrawCommand() ________________________________________________
+
+	inline void GlGfxDevice::_beginDrawCommand(Command cmd)
+	{
+		if (m_commandOfs > c_commandBufferSize - 2)
+			_executeBuffer();
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
+		m_cmdBeginVertexOfs = m_vertexOfs;
+		m_commandBuffer[m_commandOfs++] = cmd;
+	}
+
+	//____ _beginStateCommand() ________________________________________________
+
+	inline void GlGfxDevice::_beginStateCommand(Command cmd, int dataSize)
+	{
+		if (m_commandOfs > c_commandBufferSize - dataSize - 1 || m_surfaceOfs == c_surfaceBufferSize )
+			_executeBuffer();
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
+
+		m_commandBuffer[m_commandOfs++] = cmd;
+	}
+
+
+	//____ _endCommand() ______________________________________________________
+
+	inline void GlGfxDevice::_endCommand()
+	{
+		(this->*m_pCmdFinalizer)();
+		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
+	}
+
+
 } // namespace wg
 #endif //WG_GLGFXDEVICE_DOT_H
 
