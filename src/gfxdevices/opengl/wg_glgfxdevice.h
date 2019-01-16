@@ -167,6 +167,7 @@ namespace wg
 		GLint	m_blitProgDimLoc;
 		GLint	m_blitProgYofsLoc;
 		GLint	m_blitProgYmulLoc;
+		GLint	m_blitProgTexSizeLoc;
 
 		GLuint  m_plotProg;
 		GLint   m_plotProgDimLoc;
@@ -184,7 +185,7 @@ namespace wg
 		{
 			Coord	coord;
 			Color	color;
-			GLfloat	uv[2];
+			int		extrasOfs;						// Offset into extras buffer.
 		};
 
 		// Buffers

@@ -895,8 +895,8 @@ int main ( int argc, char** argv )
 //		stretchBlitTest(pGfxDevice, pFlippingSurface);
 //		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
 //		rotScaleTest(pGfxDevice, pClockSurface);
-//		subPixelFillTest(pGfxDevice );
-		lineTest(pGfxDevice, Rect(0,0,width,height) );
+		subPixelFillTest(pGfxDevice );
+//		lineTest(pGfxDevice, Rect(0,0,width,height) );
 
 //		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
 
@@ -922,7 +922,7 @@ int main ( int argc, char** argv )
 
 //		updateWindowRects( pRoot, pWin );
 
-		SDL_Delay(5);
+		SDL_Delay(16);
     }
 
 	// Exit WonderGUI
@@ -1035,7 +1035,7 @@ void subPixelFillTest(GfxDevice * pGfxDevice)
 
 	for (int i = 0; i < 5; i++)
 	{
-		RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
+		RectF rect = { 1.f + i * 25.f, 1.f + i * 0.25f, 2.f, 2.f };
 
 		for (int j = 0; j < 5; j++)
 		{
@@ -1057,6 +1057,13 @@ void lineTest(GfxDevice * pDevice, Rect canvas)
 
 	pDevice->drawLine(canvas.pos() + Coord(5, 100), canvas.pos() + Coord(40, 101), Color::Green, 3.f);
 	pDevice->drawLine(canvas.pos() + Coord(5, 105), canvas.pos() + Coord(6, 145), Color::Green, 3.f);
+
+	pDevice->drawLine(canvas.pos() + Coord(1, 150), Direction::Right, 30 , Color::Blue, 1.f);
+	pDevice->drawLine(canvas.pos() + Coord(1 + 30, 155), Direction::Left, 30, Color::Blue, 2.f);
+
+	pDevice->drawLine(canvas.pos() + Coord(1, 160), Direction::Down, 30, Color::Blue, 1.5f);
+	pDevice->drawLine(canvas.pos() + Coord(10, 160 + 30 ), Direction::Up, 30, Color::Blue, 3.f);
+
 }
 
 

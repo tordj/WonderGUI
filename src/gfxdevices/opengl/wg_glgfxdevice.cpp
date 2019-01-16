@@ -74,9 +74,11 @@ namespace wg
 		"uniform vec2 dimensions;                                  "
 		"uniform int yOfs;										   "
 		"uniform int yMul;										   "
+		"uniform ivec2 texSize;									   "
+		"uniform samplerBuffer extrasId;						   "
 		"layout(location = 0) in ivec2 pos;                        "
 		"layout(location = 1) in vec4 color;                       "
-		"layout(location = 2) in vec2 texPos;                      "
+		"layout(location = 2) in int extrasOfs;                    "
 		"out vec2 texUV;                                           "
 		"out vec4 fragColor;                                       "
 		"void main()                                               "
@@ -85,7 +87,12 @@ namespace wg
 		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 		"   gl_Position.z = 0.0;                                   "
 		"   gl_Position.w = 1.0;                                   "
-		"   texUV = texPos;                                        "
+		"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+		"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+		"   vec2 src = srcDst.xy;                                  "
+		"   vec2 dst = srcDst.zw;                                  "
+		"   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
+		"   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
 		"   fragColor = color;						               "
 		"}                                                         ";
 
@@ -93,14 +100,14 @@ namespace wg
 
 		"#version 330 core\n"
 
-		"uniform sampler2D texId;               "
-		"in vec2 texUV;                         "
-		"in vec4 fragColor;                         "
-		"out vec4 color;                        "
-		"void main()                            "
-		"{                                      "
-		"   color = texture(texId, texUV) * fragColor;     "
-		"}                                      ";
+		"uniform sampler2D texId;						"
+		"in vec2 texUV;									"
+		"in vec4 fragColor;								"
+		"out vec4 color;								"
+		"void main()									"
+		"{												"
+		"   color = texture(texId, texUV) * fragColor;  "
+		"}												";
 
 	const char plotVertexShader[] =
 
@@ -109,26 +116,26 @@ namespace wg
 		"uniform int yOfs;                                "
 		"uniform int yMul;                                "
 		"layout(location = 0) in ivec2 pos;                     "
-		"in vec4 inColor;                                       "
-		"out vec4 color;										"
+		"layout(location = 1) in vec4 color;                       "
+		"out vec4 fragColor;										"
 		"void main()                                            "
 		"{                                                      "
 		"   gl_Position.x = (pos.x+0.5)*2.0/dimensions.x - 1.0; "
 		"   gl_Position.y = ((yOfs + yMul*pos.y)+0.5)*2.0/dimensions.y - 1,0;	"
 		"   gl_Position.z = 0.0;                                "
 		"   gl_Position.w = 1.0;                                "
-		"   color = inColor;									"
+		"   fragColor = color;									"
 		"}                                                      ";
 
 
 	const char plotFragmentShader[] =
 
 		"#version 330 core\n"
-		"in vec4 color;                         "
+		"in vec4 fragColor;                     "
 		"out vec4 outColor;                     "
 		"void main()                            "
 		"{                                      "
-		"   outColor = color;					"
+		"   outColor = fragColor;				"
 		"}                                      ";
 
 
@@ -139,16 +146,16 @@ namespace wg
 		"uniform vec2 dimensions;                                   "
 		"uniform int yOfs;                                    "
 		"uniform int yMul;                                    "
-		"uniform samplerBuffer texId;								"
+		"uniform samplerBuffer extrasId;								"
 		"layout(location = 0) in ivec2 pos;                         "
 		"layout(location = 1) in vec4 color;                        "
-		"layout(location = 2) in vec2 texPos;                       "
+		"layout(location = 2) in int extrasOfs;                       "
 		"out vec4 fragColor;                                        "
-		"out float s;												"
-		"out float w;												"
-		"out float slope;											"
-		"out float ifSteep;											"
-		"out float ifMild;											"
+		"flat out float s;												"
+		"flat out float w;												"
+		"flat out float slope;											"
+		"flat out float ifSteep;											"
+		"flat out float ifMild;											"
 		"void main()                                                "
 		"{                                                          "
 		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
@@ -156,8 +163,8 @@ namespace wg
 		"   gl_Position.z = 0.0;                                    "
 		"   gl_Position.w = 1.0;                                    "
 		"   fragColor = color;										"
-		"   int ofs = int(texPos.x);								"
-		"   vec4 x = texelFetch(texId, ofs);						"
+		"   int ofs = extrasOfs;									"
+		"   vec4 x = texelFetch(extrasId, ofs);						"
 		"   s = x.x;												"
 		"   w = x.y;												"
 		"   slope = yMul*x.z;										"
@@ -170,11 +177,11 @@ namespace wg
 
 		"#version 330 core\n"
 		"in vec4 fragColor;                     "
-		"in float s;							"
-		"in float w;							"
-		"in float slope;						"
-		"in float ifSteep;						"
-		"in float ifMild;						"
+		"flat in float s;							"
+		"flat in float w;							"
+		"flat in float slope;						"
+		"flat in float ifSteep;						"
+		"flat in float ifMild;						"
 		"out vec4 outColor;                     "
 		"void main()                            "
 		"{										"
@@ -188,13 +195,12 @@ namespace wg
 		"uniform vec2 dimensions;                                   "
 		"uniform int yOfs;                                    "
 		"uniform int yMul;                                    "
-		"uniform samplerBuffer texId;								"
+		"uniform samplerBuffer extrasId;								"
 		"layout(location = 0) in ivec2 pos;                         "
 		"layout(location = 1) in vec4 color;                        "
-		"layout(location = 2) in vec2 texPos;                       "
+		"layout(location = 2) in int extrasOfs;                       "
 		"out vec4 fragColor;                                        "
-		"out vec4 frame;											"
-		"out vec4 outsideAA;										"
+		"flat out vec4 rect;										"
 		"void main()                                                "
 		"{                                                          "
 		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
@@ -202,34 +208,28 @@ namespace wg
 		"   gl_Position.z = 0.0;                                    "
 		"   gl_Position.w = 1.0;                                    "
 		"   fragColor = color;										"
-		"   int ofs = int(texPos.x);								"
-		"   frame = texelFetch(texId, ofs);							"
-		"   outsideAA = texelFetch(texId, ofs+1);					"
+		"   rect = texelFetch(extrasId, extrasOfs);					"
+		"   rect.y = yOfs + yMul*rect.y;							"
+		"   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
 		"}                                                          ";
 
 
 	const char aaFillFragmentShader[] =
 
 		"#version 330 core\n"
-		"layout(pixel_center_integer) in vec4 gl_FragCoord;"
+//		"layout(pixel_center_integer) in vec4 gl_FragCoord;"
 		"in vec4 fragColor;						"
-		"in vec4 frame;							"
-		"in vec4 outsideAA;						"
+		"flat in vec4 rect;						"
 		"out vec4 outColor;                     "
 		"void main()                            "
-		"{                                      "
-		"   vec4 col = fragColor;               "
-		"   if( gl_FragCoord.x < frame.x )      "
-		"        col.a *= outsideAA.x;			"
-		"   if( gl_FragCoord.y < frame.y )      "
-		"        col.a *= outsideAA.y;			"
-		"   if( gl_FragCoord.x >= frame.z )      "
-		"        col.a *= outsideAA.z;			"
-		"   if( gl_FragCoord.y >= frame.w )      "
-		"        col.a *= outsideAA.w;			"
-		"   outColor = col;                     "
+		"{										"
+		"   outColor.rgb = fragColor.rgb;             "
+		"	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
+		"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+		"	outColor.a = fragColor.a * alphas.x * alphas.y;  "
 		"}                                      ";
 
+	
 
 
 	//____ create() _______________________________________________________________
@@ -274,6 +274,8 @@ namespace wg
 
 		_initTables();
 
+		GLint	texIdLoc, extrasIdLoc;
+
 		// Create and init our shader programs
 
 		m_fillProg			= _createGLProgram(fillVertexShader, fillFragmentShader);
@@ -281,37 +283,51 @@ namespace wg
 		m_fillProgYofsLoc   = glGetUniformLocation(m_fillProg, "yOfs");
 		m_fillProgYmulLoc   = glGetUniformLocation(m_fillProg, "yMul");
 
+		assert(glGetError() == 0);
+
 		m_aaFillProg = _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
 		m_aaFillProgDimLoc = glGetUniformLocation(m_aaFillProg, "dimensions");
 		m_aaFillProgYofsLoc = glGetUniformLocation(m_aaFillProg, "yOfs");
 		m_aaFillProgYmulLoc = glGetUniformLocation(m_aaFillProg, "yMul");
-		GLint texIdLoc = glGetUniformLocation(m_aaFillProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_aaFillProg, "extrasId");
 
 		glUseProgram(m_aaFillProg);
-		glUniform1i(texIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		assert(glGetError() == 0);
 
 		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
 		m_blitProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
-		m_blitProgYofsLoc = glGetUniformLocation(m_blitProg, "yOfs");
-		m_blitProgYmulLoc = glGetUniformLocation(m_blitProg, "yMul");
+		m_blitProgYofsLoc	= glGetUniformLocation(m_blitProg, "yOfs");
+		m_blitProgYmulLoc	= glGetUniformLocation(m_blitProg, "yMul");
+		m_blitProgTexSizeLoc = glGetUniformLocation(m_blitProg, "texSize");
 		texIdLoc			= glGetUniformLocation(m_blitProg, "texId");
+		extrasIdLoc			= glGetUniformLocation(m_blitProg, "extrasId");
 
 		glUseProgram(m_blitProg);
-		glUniform1i(texIdLoc, 0);		// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		assert(glGetError() == 0);
 
 		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
 		m_plotProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
 		m_plotProgYofsLoc = glGetUniformLocation(m_plotProg, "yOfs");
 		m_plotProgYmulLoc = glGetUniformLocation(m_plotProg, "yMul");
 
+		assert(glGetError() == 0);
+
 		m_lineFromToProg = _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
 		m_lineFromToProgDimLoc = glGetUniformLocation(m_lineFromToProg, "dimensions");
 		m_lineFromToProgYofsLoc = glGetUniformLocation(m_lineFromToProg, "yOfs");
 		m_lineFromToProgYmulLoc = glGetUniformLocation(m_lineFromToProg, "yMul");
-		texIdLoc = glGetUniformLocation(m_lineFromToProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_lineFromToProg, "extrasId");
 
 		glUseProgram(m_lineFromToProg);
-		glUniform1i(texIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		assert(glGetError() == 0);
+
 
 		// Create the buffers we need for FrameBuffer and Vertices
 
@@ -343,20 +359,25 @@ namespace wg
 			(void*)sizeof(Coord)	// array buffer offset
 		);
 
-		glVertexAttribPointer(
+		assert(glGetError() == 0);
+
+		glVertexAttribIPointer(
 			2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			2,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
+			1,                  // size
+			GL_INT,           // type
 			sizeof(Vertex),		// stride
 			(void*)(sizeof(Coord)+sizeof(Color))  // array buffer offset
 		);
+
+		assert(glGetError() == 0);
 
 		// Create a TextureBufferObject for providing extra data to our shaders
 
 		glGenBuffers(1, &m_extrasBufferId);
 		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
 		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+
+		assert(glGetError() == 0);
 
 		glGenTextures(1, &m_extrasBufferTex);
 		glActiveTexture(GL_TEXTURE1);
@@ -762,72 +783,50 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs / 4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
 
-		// Calc frame coordinates and outside frame AA
+		// Provide rectangle center and radius
 
-		float frameX1 = (float) int(rect.x + 0.999f);
-		float frameY1 = (float) int(rect.y + 0.999f);
-		float frameX2 = (float) int(rect.x + rect.w);
-		float frameY2 = (float) int(rect.y + rect.h);
+		SizeF	radius(rect.w / 2, rect.h / 2);
+		CoordF	center(rect.x + radius.w, rect.y + radius.h);
 
-		if (m_canvasYstart > 0)
-		{
-			m_extrasBufferData[m_extrasOfs++] = frameX1;
-			m_extrasBufferData[m_extrasOfs++] = m_canvasYstart + m_canvasYmul * frameY2;
-			m_extrasBufferData[m_extrasOfs++] = frameX2;
-			m_extrasBufferData[m_extrasOfs++] = m_canvasYstart + m_canvasYmul * frameY1;
-
-			m_extrasBufferData[m_extrasOfs++] = frameX1 - rect.x;
-			m_extrasBufferData[m_extrasOfs++] = rect.y + rect.h - frameY2; 
-			m_extrasBufferData[m_extrasOfs++] = rect.x + rect.w - frameX2;
-			m_extrasBufferData[m_extrasOfs++] = frameY1 - rect.y;
-		}
-		else
-		{
-			m_extrasBufferData[m_extrasOfs++] = frameX1;
-			m_extrasBufferData[m_extrasOfs++] = frameY1;
-			m_extrasBufferData[m_extrasOfs++] = frameX2;
-			m_extrasBufferData[m_extrasOfs++] = frameY2;
-
-			m_extrasBufferData[m_extrasOfs++] = frameX1 - rect.x;
-			m_extrasBufferData[m_extrasOfs++] = frameY1 - rect.y;
-			m_extrasBufferData[m_extrasOfs++] = rect.x + rect.w - frameX2;
-			m_extrasBufferData[m_extrasOfs++] = rect.y + rect.h - frameY2;
-		}
+		m_extrasBufferData[m_extrasOfs++] = center.x;
+		m_extrasBufferData[m_extrasOfs++] = center.y;
+		m_extrasBufferData[m_extrasOfs++] = radius.w;
+		m_extrasBufferData[m_extrasOfs++] = radius.h;
 
 		assert(glGetError() == 0);
 	}
@@ -985,32 +984,32 @@ namespace wg
 			{
 				m_vertexBufferData[m_vertexOfs].coord = c1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord = c2;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord = c3;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord = c1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord = c3;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord = c4;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
-				m_vertexBufferData[m_vertexOfs].uv[0] = m_extrasOfs/4;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
 			}
 		}
@@ -1027,6 +1026,140 @@ namespace wg
 
 	void GlGfxDevice::drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
+
+		// Skip calls that won't affect destination
+
+		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+			return;
+
+		// Create a rectangle from the line
+
+		RectF rect;
+
+		switch (dir)
+		{
+			case Direction::Up:
+				rect.x = begin.x + 0.5f - thickness/2;
+				rect.y = begin.y - length;
+				rect.w = thickness;
+				rect.h = length;
+				break;
+
+			case Direction::Down:
+				rect.x = begin.x + 0.5f - thickness/2;
+				rect.y = begin.y;
+				rect.w = thickness;
+				rect.h = length;
+				break;
+
+			case Direction::Left:
+				rect.x = begin.x - length;
+				rect.y = begin.y + 0.5f - thickness/2;
+				rect.w = length;
+				rect.h = thickness;
+				break;
+
+			case Direction::Right:
+				rect.x = begin.x;
+				rect.y = begin.y + 0.5f - thickness/2;
+				rect.w = length;
+				rect.h = thickness;
+				break;
+		}
+
+
+		// Create our outer rectangle
+
+		Rect outerRect((int)rect.x, (int)rect.y, ((int)(rect.x + rect.w + 0.999f)) - (int)rect.x, ((int)(rect.y + rect.h + 0.999f)) - (int)rect.y);
+
+		// Clip our rectangle
+
+		Rect clip(outerRect, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		//
+
+		Color fillColor = col * m_tintColor;
+		if (m_op != BaseOperation::FillSubPixel)
+		{
+			(this->*m_pFlushOp)();
+
+			m_op = BaseOperation::FillSubPixel;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
+
+			glUseProgram(m_aaFillProg);
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+		}
+		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
+		{
+			_flushTrianglesWithExtras();
+			assert(glGetError() == 0);
+		}
+
+		// Provide the patches
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				int	dx1 = patch.x;
+				int	dy1 = patch.y;
+				int dx2 = patch.x + patch.w;
+				int dy2 = patch.y + patch.h;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+
+				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
+				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
+				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+				m_vertexOfs++;
+			}
+		}
+
+		// Provide rectangle center and raidus.
+
+		SizeF	radius(rect.w / 2, rect.h / 2);
+		CoordF	center(rect.x + radius.w, rect.y + radius.h);
+
+		m_extrasBufferData[m_extrasOfs++] = center.x;
+		m_extrasBufferData[m_extrasOfs++] = center.y;
+		m_extrasBufferData[m_extrasOfs++] = radius.w;
+		m_extrasBufferData[m_extrasOfs++] = radius.h;
+
 
 	}
 
@@ -1050,7 +1183,7 @@ namespace wg
 			(this->*m_pFlushOp)();
 
 			m_op = BaseOperation::Blit;
-			m_pFlushOp = &GlGfxDevice::_flushTriangles;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
 
 			glUseProgram(m_blitProg);
 			glEnableVertexAttribArray(0);
@@ -1059,7 +1192,7 @@ namespace wg
 		}
 		else if (m_vertexOfs >= c_vertexBufferSize - 6 * nPatches)
 		{
-			_flushTriangles();
+			_flushTrianglesWithExtras();
 		}
 
 		float sw = (float)m_pBlitSource->width();
@@ -1076,7 +1209,7 @@ namespace wg
 				int		dx2 = patch.x + patch.w;
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
-
+/*
 				float	sx1 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]) / sw;
 				float	sy1 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]) / sh;
 
@@ -1088,53 +1221,57 @@ namespace wg
 
 				float	sx4 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]) / sw;
 				float	sy4 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]) / sh;
-
+*/
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx1;
-				pVertex->uv[1] = sy1;
+				pVertex->extrasOfs = m_extrasOfs/4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx2;
-				pVertex->uv[1] = sy2;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx3;
-				pVertex->uv[1] = sy3;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx1;
-				pVertex->uv[1] = sy1;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx3;
-				pVertex->uv[1] = sy3;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx4;
-				pVertex->uv[1] = sy4;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				m_vertexOfs += 6;
 			}
 		}
+
+		m_extrasBufferData[m_extrasOfs++] = src.x;
+		m_extrasBufferData[m_extrasOfs++] = src.y;
+		m_extrasBufferData[m_extrasOfs++] = dest.x;
+		m_extrasBufferData[m_extrasOfs++] = dest.y;
+
+		m_extrasBufferData[m_extrasOfs++] = simpleTransform[0][0];
+		m_extrasBufferData[m_extrasOfs++] = simpleTransform[0][1];
+		m_extrasBufferData[m_extrasOfs++] = simpleTransform[1][0];
+		m_extrasBufferData[m_extrasOfs++] = simpleTransform[1][1];
 
 		assert(glGetError() == 0);
 	}
@@ -1159,7 +1296,7 @@ namespace wg
 			(this->*m_pFlushOp)();
 
 			m_op = BaseOperation::Blit;
-			m_pFlushOp = &GlGfxDevice::_flushTriangles;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
 
 			glUseProgram(m_blitProg);
 			glEnableVertexAttribArray(0);
@@ -1168,7 +1305,7 @@ namespace wg
 		}
 		else if (m_vertexOfs >= c_vertexBufferSize - 12 * nPatches)
 		{
-			_flushTriangles();
+			_flushTrianglesWithExtras();
 		}
 
 		float sw = (float)m_pBlitSource->width();
@@ -1186,63 +1323,56 @@ namespace wg
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
 
-				float	sx1 = (src.x + (patch.x - dest.x) * complexTransform[0][0] + (patch.y - dest.y) * complexTransform[1][0]) / sw;
-				float	sy1 = (src.y + (patch.x - dest.x) * complexTransform[0][1] + (patch.y - dest.y) * complexTransform[1][1]) / sh;
-
-				float	sx2 = (src.x + (patch.x + patch.w - dest.x) * complexTransform[0][0] + (patch.y - dest.y) * complexTransform[1][0]) / sw;
-				float	sy2 = (src.y + (patch.x + patch.w - dest.x) * complexTransform[0][1] + (patch.y - dest.y) * complexTransform[1][1]) / sh;
-
-				float	sx3 = (src.x + (patch.x + patch.w - dest.x) * complexTransform[0][0] + (patch.y + patch.h - dest.y) * complexTransform[1][0]) / sw;
-				float	sy3 = (src.y + (patch.x + patch.w - dest.x) * complexTransform[0][1] + (patch.y + patch.h - dest.y) * complexTransform[1][1]) / sh;
-
-				float	sx4 = (src.x + (patch.x - dest.x) * complexTransform[0][0] + (patch.y + patch.h - dest.y) * complexTransform[1][0]) / sw;
-				float	sy4 = (src.y + (patch.x - dest.x) * complexTransform[0][1] + (patch.y + patch.h - dest.y) * complexTransform[1][1]) / sh;
-
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx1;
-				pVertex->uv[1] = sy1;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx2;
-				pVertex->uv[1] = sy2;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx3;
-				pVertex->uv[1] = sy3;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx1;
-				pVertex->uv[1] = sy1;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx3;
-				pVertex->uv[1] = sy3;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
 				pVertex->color = m_tintColor;
-				pVertex->uv[0] = sx4;
-				pVertex->uv[1] = sy4;
+				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				m_vertexOfs += 6;
 			}
 		}
+
+		m_extrasBufferData[m_extrasOfs++] = src.x;
+		m_extrasBufferData[m_extrasOfs++] = src.y;
+		m_extrasBufferData[m_extrasOfs++] = dest.x;
+		m_extrasBufferData[m_extrasOfs++] = dest.y;
+
+		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
+		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
+		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
+		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
+
 
 		assert(glGetError() == 0);
 
@@ -1455,7 +1585,19 @@ namespace wg
 		glActiveTexture(GL_TEXTURE0);
 
 		if( m_pBlitSource.rawPtr() )
+		{
 			glBindTexture(GL_TEXTURE_2D, ((GlSurface*)m_pBlitSource.rawPtr())->getTexture());
+
+			m_op = BaseOperation::Blit;
+			m_pFlushOp = &GlGfxDevice::_flushTrianglesWithExtras;
+			glUseProgram(m_blitProg);
+
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glEnableVertexAttribArray(2);
+
+			glUniform2i(m_blitProgTexSizeLoc, m_pBlitSource->size().w, m_pBlitSource->size().h);
+		}
 		else
 			glBindTexture(GL_TEXTURE_2D, 0 );
 
