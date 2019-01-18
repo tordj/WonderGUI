@@ -229,7 +229,81 @@ namespace wg
 		"	outColor.a = fragColor.a * alphas.x * alphas.y;  "
 		"}                                      ";
 
-	
+	const char segmentsVertexShader[] =
+
+		"#version 330 core\n"
+		"uniform vec2 dimensions;                               "
+		"uniform int yOfs;										"
+		"uniform int yMul;										"
+		"uniform samplerBuffer extrasId;						"
+		"layout(location = 0) in ivec2 pos;                     "
+		"layout(location = 1) in vec4 color;					"
+		"layout(location = 2) in int extrasOfs;					"
+		"layout(location = 3) in vec2 uv;						"
+		"out vec4 fragColor;									"
+		"out vec2 texUV;										"
+		"flat out int segments;									"
+		"flat out int colorsOfs;								"
+		"flat out int stripesOfs;								"
+		"void main()											"
+		"{                                                      "
+		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
+		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
+		"   gl_Position.z = 0.0;                                "
+		"   gl_Position.w = 1.0;                                "
+		"   fragColor = color;						            "
+		"   vec4 extras = texelFetch(extrasId, extrasOfs);		"
+		"   segments = int(extras.x);							"
+		"   stripesOfs = int(extras.y);							"
+		"	colorsOfs = extrasOfs+1;							"
+		"   texUV = uv;											"
+		"}                                                      ";
+
+	const char segmentsFragmentShader[] =
+
+		"#version 330 core\n"
+		"uniform samplerBuffer colorsId;					"
+		"uniform samplerBuffer stripesId;				"
+		"in vec2 texUV;									"
+		"in vec4 fragColor;								"
+		"flat in int segments;							"
+		"flat in int colorsOfs;							"
+		"flat in int stripesOfs;						"
+		"out vec4 color;								"
+		"void main()									"
+		"{												"
+		"	vec4 col1 = texelFetch(colorsId, colorsOfs ); "
+		"	vec4 col2 = texelFetch(colorsId, colorsOfs+1 ); "
+		"	vec4 col3 = texelFetch(colorsId, colorsOfs+2 ); "
+		"	vec2 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) ).xy; "
+		"	vec2 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 ).xy; "
+		"	float factor1 = 1.f; "
+		"   float factor2 = clamp( (texUV.y - edge1.x) * edge1.y, 0.f, 1.f );"
+		"   float factor3 = clamp( (texUV.y - edge2.x) * edge2.y, 0.f, 1.f );"
+		"   color = col1 * (factor1-factor2) + col2 * (factor2-factor3) + col3 * factor3;"
+
+//		"   float colIndex = clamp( texUV.y, 0, segments-1 );    "
+//		"   color = fragColor * texelFetch(colorsId, colorsOfs + int(colIndex) );		"
+		"}												";
+
+
+/*
+	clamp( clamp( texUV.y - startOfs + 1.f, 0.f, 1.f ) * startCoverage + (texUV.y - startOfs) * coverageInc, 0.f, 1.f )
+
+	// Under förutsättning att coverageInc alltid är större än startCoverage.
+
+	float factor2 = clamp( edge1.y + (texUV.y - edge1.x) * edge1.z, 0.f, 1.f )
+
+
+
+
+
+
+	clamp( clamp( texUV.y - startOfs + 1.f, 0.f, 1.f ) * startCoverage + (texUV.y - startOfs) * coverageInc, 0.f, 1.f )
+
+
+*/
+
 
 
 	//____ create() _______________________________________________________________
@@ -326,6 +400,20 @@ namespace wg
 		glUseProgram(m_lineFromToProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
+		m_segmentsProg = _createGLProgram(segmentsVertexShader, segmentsFragmentShader);
+		m_segmentsProgDimLoc = glGetUniformLocation(m_segmentsProg, "dimensions");
+		m_segmentsProgYofsLoc = glGetUniformLocation(m_segmentsProg, "yOfs");
+		m_segmentsProgYmulLoc = glGetUniformLocation(m_segmentsProg, "yMul");
+		extrasIdLoc = glGetUniformLocation(m_segmentsProg, "extrasId");
+		GLint colorsIdLoc = glGetUniformLocation(m_segmentsProg, "colorsId");
+		GLint stripesIdLoc = glGetUniformLocation(m_segmentsProg, "stripesId");
+
+		glUseProgram(m_segmentsProg);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
+		glUniform1i(stripesIdLoc, 2);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+
+
 		assert(glGetError() == 0);
 
 
@@ -343,7 +431,7 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 		glVertexAttribIPointer(
-			0,						// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			0,						// attribute number, must match the layout in the shader.
 			2,						// size
 			GL_INT,					// type
 			sizeof(Vertex),			// stride
@@ -351,7 +439,7 @@ namespace wg
 		);
 
 		glVertexAttribPointer(
-			1,						// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			1,						// attribute number, must match the layout in the shader.
 			GL_BGRA,				// size
 			GL_UNSIGNED_BYTE,		// type
 			GL_TRUE,				// normalized?
@@ -362,12 +450,22 @@ namespace wg
 		assert(glGetError() == 0);
 
 		glVertexAttribIPointer(
-			2,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // attribute number, must match the layout in the shader.
 			1,                  // size
 			GL_INT,           // type
 			sizeof(Vertex),		// stride
 			(void*)(sizeof(Coord)+sizeof(Color))  // array buffer offset
 		);
+
+		glVertexAttribPointer(
+			3,						// attribute number, must match the layout in the shader.
+			2,						// size
+			GL_FLOAT,				// type
+			GL_TRUE,				// normalized?
+			sizeof(Vertex),			// stride
+			(void*)(sizeof(Coord) + sizeof(Color) + sizeof(int) )  // array buffer offset
+		);
+
 
 		assert(glGetError() == 0);
 
@@ -384,6 +482,23 @@ namespace wg
 		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, m_extrasBufferId);
 
+		// Create a TextureBufferObject for providing stripes to segment fragment shader.
+
+//		glGenBuffers(1, &m_stripesBufferId);
+//		glBindBuffer(GL_TEXTURE_BUFFER, m_stripesBufferId);
+//		glBufferData(GL_TEXTURE_BUFFER, c_stripesBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
+
+		assert(glGetError() == 0);
+
+		// Generating stripesBufferTexture, but let it be backed by the extrasBuffer. No need for a separate buffer as long as we keep things nice and tidy...
+
+		glGenTextures(1, &m_stripesBufferTex);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_BUFFER, m_stripesBufferTex);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32F, m_extrasBufferId);
+
+
+
 		assert(glGetError() == 0);
 	}
 
@@ -392,11 +507,18 @@ namespace wg
 	GlGfxDevice::~GlGfxDevice()
 	{
 		glDeleteProgram(m_fillProg);
+		glDeleteProgram(m_aaFillProg);
 		glDeleteProgram(m_blitProg);
+		glDeleteProgram(m_plotProg);
+		glDeleteProgram(m_lineFromToProg);
+		glDeleteProgram(m_segmentsProg);
 
 		glDeleteFramebuffers(1, &m_framebufferId);
+		glDeleteTextures(1, &m_extrasBufferTex);
+		glDeleteTextures(1, &m_stripesBufferTex);
 
 		glDeleteBuffers(1, &m_vertexBufferId);
+		glDeleteBuffers(1, &m_extrasBufferId);
 
 		glDeleteVertexArrays(1, &m_vertexArrayId);
 	}
@@ -465,7 +587,7 @@ namespace wg
 		if (m_bRendering)
 		{
 			_endCommand();
-			_beginStateCommand(Command::SetClip, 2);
+			_beginStateCommand(Command::SetCanvas, 2);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
@@ -498,7 +620,7 @@ namespace wg
 		if (m_bRendering)
 		{
 			_endCommand();
-			_beginStateCommand(Command::SetClip, 2);
+			_beginStateCommand(Command::SetCanvas, 2);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
@@ -647,7 +769,8 @@ namespace wg
 
 		//
 
-        glFlush();
+//        glFlush();
+		glFinish();
 
 		// Restore render states from before beginRender()
 
@@ -906,7 +1029,7 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4 || m_commandOfs > c_commandBufferSize - 10 * nPatches )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -955,10 +1078,9 @@ namespace wg
 			c2.x = end.x;
 			c2.y = int(y2) - 1;
 			c3.x = end.x;
-			c3.y = int (y2 + width) + 2;
+			c3.y = int(y2 + width) + 2;
 			c4.x = begin.x;
-			c4.y = int (y1 + width) + 2;
-
+			c4.y = int(y1 + width) + 2;
 		}
 		else
 		{
@@ -990,16 +1112,34 @@ namespace wg
 			c3.y = end.y;
 			c4.x = int(x2) - 1;
 			c4.y = end.y;
-		}
 
-		// TODO: Flush the buffer if it gets full!
-		// TODO: Add clipping!
+
+		}
 
 		for (int i = 0; i < nPatches; i++)
 		{
 			Rect patch(pPatches[i], m_clip);
 			if (patch.w > 0 && patch.h > 0)
 			{
+				bool bScissor = false;
+
+				// Handle clipping against patch
+				 
+				bScissor = true;
+
+				if (bScissor)
+				{
+					_endCommand();
+					_beginStateCommand(Command::SetClip, 4);
+					m_commandBuffer[m_commandOfs++] = patch.x;
+					m_commandBuffer[m_commandOfs++] = patch.y;
+					m_commandBuffer[m_commandOfs++] = patch.w;
+					m_commandBuffer[m_commandOfs++] = patch.h;
+					_beginDrawCommand(Command::LineFromTo);
+				}
+
+				// 
+
 				m_vertexBufferData[m_vertexOfs].coord = c1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
@@ -1029,6 +1169,17 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
+/*
+				if( bScissor )
+				{
+					_endCommand();
+					_beginStateCommand(Command::SetClip, 4);
+					m_commandBuffer[m_commandOfs++] = m_clip.x;
+					m_commandBuffer[m_commandOfs++] = m_clip.y;
+					m_commandBuffer[m_commandOfs++] = m_clip.w;
+					m_commandBuffer[m_commandOfs++] = m_clip.h;
+				}
+*/
 			}
 		}
 
@@ -1036,6 +1187,13 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = w;
 		m_extrasBufferData[m_extrasOfs++] = slope;
 		m_extrasBufferData[m_extrasOfs++] = bSteep;
+
+			_endCommand();
+			_beginStateCommand(Command::SetClip, 4);
+			m_commandBuffer[m_commandOfs++] = m_clip.x;
+			m_commandBuffer[m_commandOfs++] = m_clip.y;
+			m_commandBuffer[m_commandOfs++] = m_clip.w;
+			m_commandBuffer[m_commandOfs++] = m_clip.h;
 
 		assert(glGetError() == 0);
 	}
@@ -1204,9 +1362,6 @@ namespace wg
 			_beginDrawCommand(Command::Blit);
 		}
 
-		float sw = (float)m_pBlitSource->width();
-		float sh = (float)m_pBlitSource->height();
-
 		for (int i = 0; i < nPatches; i++)
 		{
 			Rect patch(pPatches[i], clip);
@@ -1312,8 +1467,7 @@ namespace wg
 			_beginDrawCommand(Command::Blit);
 		}
 
-		float sw = (float)m_pBlitSource->width();
-		float sh = (float)m_pBlitSource->height();
+		//
 
 		for (int i = 0; i < nPatches; i++)
 		{
@@ -1384,6 +1538,141 @@ namespace wg
 
 	void GlGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
 	{
+		assert(glGetError() == 0);
+
+		// Clip our rectangle
+
+		Rect clip(dest, m_clip);
+		if (clip.w == 0 || clip.h == 0)
+			return;
+
+		//
+
+		int extrasSpaceNeeded = (4 + 4 * nSegments + (nEdgeStrips - 1)*(nSegments - 1)*2 + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment
+
+		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
+		{
+			_endCommand();
+			_executeBuffer();
+			_beginDrawCommand(Command::Segments);
+		}
+		else if (m_cmd != Command::Segments)
+		{
+			_endCommand();
+			_beginDrawCommand(Command::Segments);
+		}
+
+		// Setup vertices
+
+		for (int i = 0; i < nPatches; i++)
+		{
+			Rect patch(pPatches[i], clip);
+			if (patch.w > 0 && patch.h > 0)
+			{
+				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
+
+				int		dx1 = patch.x;
+				int		dx2 = patch.x + patch.w;
+				int		dy1 = patch.y;
+				int		dy2 = patch.y + patch.h;
+
+				CoordF	uv1 = { 0, (float) patch.y };
+				CoordF	uv2 = { (float) nEdgeStrips, (float) patch.y };
+				CoordF	uv3 = { (float) nEdgeStrips, (float) patch.y + patch.h };
+				CoordF	uv4 = { 0, (float) patch.y + patch.h };
+
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv2;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy1;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv1;
+				pVertex++;
+
+				pVertex->coord.x = dx2;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv3;
+				pVertex++;
+
+				pVertex->coord.x = dx1;
+				pVertex->coord.y = dy2;
+				pVertex->color = m_tintColor;
+				pVertex->extrasOfs = m_extrasOfs / 4;
+				pVertex->uv = uv4;
+				pVertex++;
+
+				m_vertexOfs += 6;
+			}
+		}
+
+		// Setup extras data
+
+		GLfloat * pExtras = m_extrasBufferData + m_extrasOfs;
+
+		// Add various data to extras
+
+		pExtras[0] = (GLfloat) nSegments;
+		pExtras[1] = (GLfloat) ((m_extrasOfs + 4 + nSegments * 4) / 2);			// Offset for edgestrips in buffer.
+		pExtras += 4;												// Alignment for vec4 reads.
+
+		// Add segment colors to extras
+
+		for (int i = 0; i < nSegments; i++)
+		{
+			*pExtras++ = pSegmentColors[i].r/256.f;
+			*pExtras++ = pSegmentColors[i].g/256.f;
+			*pExtras++ = pSegmentColors[i].b/256.f;
+			*pExtras++ = pSegmentColors[i].a/256.f;
+		}
+
+		// Add edgestrips to extras
+
+		const int * pEdges = pEdgeStrips;
+
+		for (int i = 0; i < nEdgeStrips-1; i++)
+		{
+			for (int j = 0; j < nSegments - 1; j++)
+			{
+				int edgeIn = pEdges[j];
+				int edgeOut = pEdges[edgeStripPitch+j];
+
+				if (edgeIn > edgeOut)
+					std::swap(edgeIn, edgeOut);
+
+				*pExtras++ = edgeIn / 256.f;
+				*pExtras++ = 256.f / (edgeOut - edgeIn);
+			}
+
+			pEdges += edgeStripPitch;
+		}
+
+		m_extrasOfs += extrasSpaceNeeded;
+
+		assert(glGetError() == 0);
+
 
 	}
 
@@ -1431,13 +1720,15 @@ namespace wg
 			{
 				case Command::SetCanvas:
 				{
-					_setCanvas(m_surfaceBuffer[surfaceOfs], *pCmd++, *pCmd++);
+					_setCanvas(m_surfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
 					m_surfaceBuffer[surfaceOfs++] = nullptr;
+					pCmd += 2;
 					break;
 				}
 				case Command::SetClip:
 				{
-					_setClip( Rect(* pCmd++, * pCmd++, * pCmd++, * pCmd++) );
+					_setClip( Rect( pCmd[0], pCmd[1], pCmd[2], pCmd[3] ) );
+					pCmd += 4;
 					break;
 				}
 				case Command::SetBlendMode:
@@ -1503,8 +1794,18 @@ namespace wg
 					break;
 				}
 				case Command::Segments:
-					break;
+				{
+					glUseProgram(m_segmentsProg);
+					glEnableVertexAttribArray(2);
+					glEnableVertexAttribArray(3);
 
+					int nVertices = *pCmd++;
+					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					vertexOfs += nVertices;
+
+					glDisableVertexAttribArray(3);
+					break;
+				}
 				default:
 					assert(false);
 			}
@@ -1576,6 +1877,11 @@ namespace wg
 		glUniform2f(m_lineFromToProgDimLoc, (GLfloat) width, (GLfloat) height);
 		glUniform1i(m_lineFromToProgYofsLoc, canvasYstart);
 		glUniform1i(m_lineFromToProgYmulLoc, canvasYmul);
+
+		glUseProgram(m_segmentsProg);
+		glUniform2f(m_segmentsProgDimLoc, (GLfloat)width, (GLfloat)height);
+		glUniform1i(m_segmentsProgYofsLoc, canvasYstart);
+		glUniform1i(m_segmentsProgYmulLoc, canvasYmul);
 
 		assert(glGetError() == 0);
 	}

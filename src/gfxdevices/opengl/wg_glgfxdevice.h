@@ -195,6 +195,12 @@ namespace wg
 		GLint	m_lineFromToProgYofsLoc;
 		GLint	m_lineFromToProgYmulLoc;
 
+		GLuint	m_segmentsProg;
+		GLint	m_segmentsProgDimLoc;
+		GLint	m_segmentsProgYofsLoc;
+		GLint	m_segmentsProgYmulLoc;
+
+
 		//
 
 		struct Vertex
@@ -202,6 +208,7 @@ namespace wg
 			Coord	coord;
 			Color	color;
 			int		extrasOfs;						// Offset into extras buffer.
+			CoordF	uv;
 		};
 
 
@@ -219,6 +226,8 @@ namespace wg
 		GLuint	m_extrasBufferTex;
 		GLuint	m_extrasBufferId;
 		GLfloat m_extrasBufferData[c_extrasBufferSize];								// Space to store additional primitive data for shaders
+
+		GLuint	m_stripesBufferTex;
 
 		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
 

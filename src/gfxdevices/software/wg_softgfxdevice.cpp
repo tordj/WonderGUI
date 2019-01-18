@@ -1823,7 +1823,7 @@ namespace wg
 			slope = ((end.y - beg.y) << 16) / length;
 
 			width = _scaleLineThickness(thickness, slope);
-			pos = (beg.y << 16) - width / 2;
+			pos = (beg.y << 16) - width / 2 + 32768;
 
 			rowInc = m_canvasPixelBits / 8;
 			pixelInc = m_canvasPitch;
@@ -1837,26 +1837,30 @@ namespace wg
 				// Do clipping
 
 				Rect clip(m_clip, pPatches[i]);
-				if (clip.w == 0 || clip.h == 0 || beg.x > clip.x + clip.w || end.x < clip.x)
+				if (clip.w == 0 || clip.h == 0 || beg.x >= clip.x + clip.w || end.x <= clip.x)
 					continue;																	// Segement not visible.
+
+				int _length = length;
+				int _pos = pos;
+				uint8_t * _pRow = pRow;
 
 				if (beg.x < clip.x)
 				{
 					int cut = clip.x - beg.x;
-					length -= cut;
-					pRow += rowInc * cut;
-					pos += slope * cut;
+					_length -= cut;
+					_pRow += rowInc * cut;
+					_pos += slope * cut;
 				}
 
 				if (end.x > clip.x + clip.w)
-					length -= end.x - (clip.x + clip.w);
+					_length -= end.x - (clip.x + clip.w);
 
 				clipStart = clip.y << 16;
 				clipEnd = (clip.y + clip.h) << 16;
 
 				//  Draw
 
-				pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor, colTrans);
+				pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, colTrans);
 			}
 		}
 		else
@@ -1872,7 +1876,7 @@ namespace wg
 
 			slope = ((end.x - beg.x) << 16) / length;
 			width = _scaleLineThickness(thickness, slope);
-			pos = (beg.x << 16) - width / 2;
+			pos = (beg.x << 16) - width / 2 + 32768;
 
 			rowInc = m_canvasPitch;
 			pixelInc = m_canvasPixelBits / 8;
@@ -1886,26 +1890,30 @@ namespace wg
 				// Do clipping
 
 				Rect clip(m_clip, pPatches[i]);
-				if (clip.w == 0 || clip.h == 0 || beg.y > m_clip.y + m_clip.h || end.y < m_clip.y)
+				if (clip.w == 0 || clip.h == 0 || beg.y >= clip.y + clip.h || end.y <= clip.y)
 					continue;										// Segement not visible.
 
-				if (beg.y < m_clip.y)
+				int _length = length;
+				int _pos = pos;
+				uint8_t * _pRow = pRow;
+
+				if (beg.y < clip.y)
 				{
-					int cut = m_clip.y - beg.y;
-					length -= cut;
-					pRow += rowInc * cut;
-					pos += slope * cut;
+					int cut = clip.y - beg.y;
+					_length -= cut;
+					_pRow += rowInc * cut;
+					_pos += slope * cut;
 				}
 
-				if (end.y > m_clip.y + m_clip.h)
-					length -= end.y - (m_clip.y + m_clip.h);
+				if (end.y > clip.y + clip.h)
+					_length -= end.y - (clip.y + clip.h);
 
-				clipStart = m_clip.x << 16;
-				clipEnd = (m_clip.x + m_clip.w) << 16;
+				clipStart = clip.x << 16;
+				clipEnd = (clip.x + clip.w) << 16;
 
 				//  Draw
 
-				pOp(clipStart, clipEnd, pRow, rowInc, pixelInc, length, width, pos, slope, fillColor, colTrans);
+				pOp(clipStart, clipEnd, _pRow, rowInc, pixelInc, _length, width, _pos, slope, fillColor, colTrans);
 			}
 		}
 	}
