@@ -269,9 +269,9 @@ namespace wg
 	
 	//____ _render() ________________________________________________________
 	
-	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		// Get the content rect and icon rect
 	
@@ -291,7 +291,7 @@ namespace wg
 	 	if( !m_label.isEmpty() )
 		{
 			Rect	textRect = m_icon.getTextRect( contentRect, iconRect );
-			m_label.render( pDevice, textRect, _clip );
+			m_label.render( pDevice, textRect );
 		}
 	}
 	

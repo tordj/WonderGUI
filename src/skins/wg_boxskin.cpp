@@ -178,9 +178,9 @@ namespace wg
 		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
 	}
 
-	//____ renderPatches() _______________________________________________________________
+	//____ render() _______________________________________________________________
 		
-	void BoxSkin::renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const
+	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
@@ -192,7 +192,7 @@ namespace wg
 		int i = _stateToIndex(state);
 		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{
-			pDevice->fillPatches( _canvas, m_fillColor[i], nPatches, pPatches );
+			pDevice->fill( _canvas, m_fillColor[i] );
 		}
 		else
 		{
@@ -202,13 +202,13 @@ namespace wg
 			Rect bottom( _canvas.x, _canvas.y + _canvas.h - m_frame.bottom, _canvas.w, m_frame.bottom );
 			Rect center( _canvas - m_frame );
 	
-			pDevice->fillPatches( top, m_frameColor[i], nPatches, pPatches );
-			pDevice->fillPatches( left, m_frameColor[i], nPatches, pPatches );
-			pDevice->fillPatches( right, m_frameColor[i], nPatches, pPatches );
-			pDevice->fillPatches( bottom, m_frameColor[i], nPatches, pPatches );
+			pDevice->fill( top, m_frameColor[i] );
+			pDevice->fill( left, m_frameColor[i] );
+			pDevice->fill( right, m_frameColor[i] );
+			pDevice->fill( bottom, m_frameColor[i] );
 	
 			if( center.w > 0 || center.h > 0 )
-				pDevice->fillPatches( center, m_fillColor[i], nPatches, pPatches );
+				pDevice->fill( center, m_fillColor[i] );
 		}
 
 		if (m_blendMode != oldBlendMode)

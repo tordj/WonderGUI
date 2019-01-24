@@ -88,7 +88,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new AnimPlayer(); };
 	
 		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		void			_refresh();
 		void			_receive( Msg * pMsg );
 		bool			_alphaTest( const Coord& ofs );

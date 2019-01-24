@@ -147,9 +147,9 @@ namespace wg
 	
 	//____ _render() _____________________________________________________________
 	
-	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		if( m_pSurface && !m_rect.isEmpty() )
 		{

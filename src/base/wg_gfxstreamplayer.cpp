@@ -137,10 +137,12 @@ namespace wg
 
 		case GfxChunkId::SetClip:
 		{
-			Rect	rect;
-			*m_pStream >> rect;
+			int nRectangles = header.size / 8;
 
-			m_pDevice->setClip(rect);
+			for (int i = 0; i < nRectangles; i++)
+				*m_pStream >> m_clipRects[i];
+
+			m_pDevice->setClipList(nRectangles, m_clipRects);
 			break;
 		}
 
@@ -257,102 +259,6 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::FillPatches:
-		{
-			Rect	rect;
-			Color	col;
-
-			*m_pStream >> rect;
-			*m_pStream >> col;
-			int nPatches = _unpackPatches();
-
-			m_pDevice->fillPatches(rect, col, nPatches, m_patches);
-			break;
-		}
-
-		case GfxChunkId::FillSubpixelPatches:
-		{
-			RectF	rect;
-			Color	col;
-
-			*m_pStream >> rect;
-			*m_pStream >> col;
-			int nPatches = _unpackPatches();
-
-			m_pDevice->fillPatches(rect, col, nPatches, m_patches);
-			break;
-		}
-
-		case GfxChunkId::PlotPixelPatches:
-		{
-			int nPatches = _unpackPatches();
-
-			int nPixels = (header.size - 2 - nPatches*8) / 8;
-
-			int bufferSize = header.size * 3 / 2;			// Pixels needs to be expanded, but not colors
-			char * pBuffer = reinterpret_cast<char*>(Base::memStackAlloc(bufferSize));
-
-			// Load all data to end of buffer
-
-			*m_pStream >> GfxStream::DataChunk{ header.size, pBuffer + bufferSize - header.size };
-
-			// Unpack Coordinates
-
-			Coord * pDest = (Coord*)pBuffer;
-			int16_t * pSrc = (int16_t*)(pBuffer + bufferSize - header.size);
-
-			for (int i = 0; i < nPixels; i++)
-			{
-				pDest[i].x = *pSrc++;
-				pDest[i].y = *pSrc++;
-			}
-
-			//
-
-			m_pDevice->plotPixelPatches(nPixels, (Coord*)pBuffer, (Color*)(pBuffer + header.size / 2), nPatches, m_patches);
-
-			Base::memStackRelease(bufferSize);
-			break;
-		}
-
-		case GfxChunkId::DrawLineFromToPatches:
-		{
-			Coord	begin;
-			Coord	end;
-			Color	color;
-			float	thickness;
-			int		nPatches;
-
-			*m_pStream >> begin;
-			*m_pStream >> end;
-			*m_pStream >> color;
-			*m_pStream >> thickness;
-
-			nPatches = _unpackPatches();
-			m_pDevice->drawLinePatches(begin, end, color, thickness, nPatches, m_patches);
-			break;
-		}
-
-		case GfxChunkId::DrawLineStraightPatches:
-		{
-			Coord		begin;
-			Direction	dir;
-			uint16_t	length;
-			Color		color;
-			float		thickness;
-			int			nPatches;
-
-			*m_pStream >> begin;
-			*m_pStream >> dir;
-			*m_pStream >> length;
-			*m_pStream >> color;
-			*m_pStream >> thickness;
-
-			nPatches = _unpackPatches();
-			m_pDevice->drawLinePatches(begin, dir, length, color, thickness, nPatches, m_patches);
-			break;
-		}
-
 		case GfxChunkId::Blit:
 		{
 			Coord		dest;
@@ -377,44 +283,39 @@ namespace wg
 			break;
 		}
 
-		case GfxChunkId::SimpleTransformBlitPatches:
+		case GfxChunkId::SimpleTransformBlit:
 		{
 			Rect dest;
 			Coord src;
 			int transform[2][2];
-			int nPatches;
 
 			*m_pStream >> dest;
 			*m_pStream >> src;
 			*m_pStream >> transform;
 
-			nPatches = _unpackPatches();
-			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
+			m_pDevice->transformBlit(dest, src, transform);
 			break;
 		}
 
-		case GfxChunkId::ComplexTransformBlitPatches:
+		case GfxChunkId::ComplexTransformBlit:
 		{
 			Rect dest;
 			CoordF src;
 			float transform[2][2];
-			int nPatches;
 
 			*m_pStream >> dest;
 			*m_pStream >> src;
 			*m_pStream >> transform;
 
-			nPatches = _unpackPatches();
-			m_pDevice->transformBlitPatches(dest, src, transform, nPatches, m_patches);
+			m_pDevice->transformBlit(dest, src, transform);
 			break;
 		}
 
-		case GfxChunkId::TransformDrawSegmentPatches:
+		case GfxChunkId::TransformDrawSegments:
 		{
 			Rect		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
-			int			nPatches;
 
 			*m_pStream >> dest;
 			*m_pStream >> nSegments;
@@ -424,15 +325,12 @@ namespace wg
 			for (int i = 0; i < nSegments; i++)
 				* m_pStream >> m_seg.colors[i];
 
-			nPatches = _unpackPatches();
-
 			int nTotalSamples = (nSegments - 1)*nEdgeStrips;
 
 			m_seg.dest = dest;
 			m_seg.nSegments = nSegments;
 			m_seg.nEdgeStrips = nEdgeStrips;
 			m_seg.pEdgeStrips = new int[nTotalSamples];
-			m_seg.nPatches = nPatches;
 			m_seg.nLoadedSamples = 0;
 			m_seg.nTotalSamples = nTotalSamples;
 
@@ -460,7 +358,7 @@ namespace wg
 			m_seg.nLoadedSamples += nSamples;
 			if (m_seg.nLoadedSamples == m_seg.nTotalSamples)
 			{
-				m_pDevice->transformDrawSegmentPatches(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform, m_seg.nPatches, m_patches);
+				m_pDevice->transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform);
 				delete [] m_seg.pEdgeStrips;
 			}
 			break;
@@ -605,21 +503,6 @@ namespace wg
 		}
 		return false;
 	}
-
-	//____ _unpackPatches() ___________________________________________________
-
-	int GfxStreamPlayer::_unpackPatches()
-	{
-		uint16_t	nPatches;
-
-		*m_pStream >> nPatches;
-
-		for (int i = 0; i < nPatches; i++)
-			*m_pStream >> m_patches[i];
- 
-		return nPatches;
-	}
-
 
 
 } //namespace wg

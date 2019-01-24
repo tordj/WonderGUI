@@ -100,7 +100,7 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize(const Size& size);
 		virtual void	_setSkin(Skin * pSkin);
-		virtual void	_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip);
+		virtual void	_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
 		virtual	bool	_alphaTest(const Coord& ofs);
 
 

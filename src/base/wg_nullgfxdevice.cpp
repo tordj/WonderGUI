@@ -93,19 +93,19 @@ namespace wg
 	}
 
 		
-	void NullGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void NullGfxDevice::fill(const Rect& rect, const Color& col)
 	{
 	}
 
-	void NullGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void NullGfxDevice::fill(const RectF& rect, const Color& col)
 	{
 	}
 
-	void NullGfxDevice::plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
+	void NullGfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
 	{
 	}
 
-	void NullGfxDevice::drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
+	void NullGfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
 	{
 	}
 
@@ -117,15 +117,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
-	{
-	}
-
-	void NullGfxDevice::transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
-	{
-	}
-
-	void NullGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void NullGfxDevice::transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 	}
 

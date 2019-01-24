@@ -50,7 +50,36 @@ namespace wg
 		m_capacity	= capacity;
 		m_bOwnsArray = false;
 	}
-	
+
+	Patches::Patches(const Patches& source)
+	{
+		m_pFirst = new Rect[source.m_capacity];
+		m_size = source.m_size;
+		m_capacity = source.m_capacity;
+		m_bOwnsArray = true;
+
+		for (int i = 0; i < source.m_size; i++)
+				m_pFirst[i] = source.m_pFirst[i];
+	}
+
+
+	Patches::Patches(const Patches& source, const Rect& trim)
+	{
+		m_pFirst = new Rect[source.m_capacity];
+		m_size = 0;
+		m_capacity = source.m_capacity;
+		m_bOwnsArray = true;
+
+		for (int i = 0; i < source.m_size; i++)
+		{
+			const Rect& rect = source.m_pFirst[i];
+			if (rect.intersectsWith(trim))
+				m_pFirst[m_size++].intersection(rect, trim);
+		}
+	}
+
+
+
 	//____ Destructor ______________________________________________________________
 	
 	Patches::~Patches()
@@ -360,6 +389,24 @@ namespace wg
 		m_size += len;
 		return len;
 	}
+
+	//____ trimPush() _________________________________________________________
+
+	void Patches::trimPush(const Patches& source, const Rect& trim)
+	{
+		for (int i = 0; i < source.m_size; i++)
+		{
+			const Rect& rect = source.m_pFirst[i];
+			if (rect.intersectsWith(trim))
+			{
+				if (m_size == m_capacity)
+					_expandMem(1);
+				m_pFirst[m_size++].intersection(rect, trim);
+			}
+		}
+	}
+
+
 	
 	//____ remove() ________________________________________________________________
 	

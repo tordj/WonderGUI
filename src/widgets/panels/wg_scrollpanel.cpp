@@ -1090,22 +1090,15 @@ namespace wg
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void ScrollPanel::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
+	void ScrollPanel::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
 	{
-		// We start by eliminating dirt outside our geometry
+		// Set clipping
 	
-		Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
+		pDevice->setClipList(patches.size(), patches.begin());
+		Rect	dirtBounds = pDevice->clipBounds();
 	
-		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
-		{
-			if( _window.intersectsWith( *pRect ) )
-				patches.push( Rect(*pRect,_window) );
-		}
-	
-		//
-	
-		Rect	dirtBounds = patches.getUnion();
-	
+
+
 		// Render Window background skin
 	
 		if( m_pSkin )
@@ -1115,50 +1108,45 @@ namespace wg
 			Size skinSize = Size::max(m_viewSlot.contentSize, m_viewSlot.windowGeo);
 			Rect skinCanvas = Rect( skinWindow.pos() - m_viewSlot.viewPixOfs, skinSize );
 	
-			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-			{
-				Rect clip(*pRect,skinWindow);
-				pDevice->setClip(clip);
-				m_pSkin->render( pDevice, skinCanvas, m_state );
-			}
+			m_pSkin->render( pDevice, skinCanvas, m_state );
 		}
-	
-		//
+
+		// Render corner piece
+
+		if (m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
+		{
+			Rect canvas = m_cornerGeo + _canvas.pos();
+			m_pCornerSkin->render(pDevice, canvas, m_state);
+		}
+
+		// Render view recursively
 	
 		if( m_viewSlot.pWidget )
 		{
 			Rect canvas = m_viewSlot.canvasGeo + _canvas.pos();
 			Rect window( canvas, m_viewSlot.windowGeo + _canvas.pos() );	// Use intersection in case canvas is smaller than window.
 	
-			if( window.intersectsWith(dirtBounds) )
-				m_viewSlot.pWidget->_renderPatches( pDevice, canvas, window, &patches );
+			if (window.intersectsWith(dirtBounds))
+			{
+				Patches childPatches(patches, window);
+				m_viewSlot.pWidget->_renderPatches(pDevice, canvas, window, childPatches);
+			}
 		}
 	
+		// Render scrollbars
+
 		for (int i = 0; i < 2; i++)
 		{
 			if (m_scrollbarSlots[i].bVisible)
 			{
 				Rect canvas = m_scrollbarSlots[i].geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
-					m_scrollbarSlots[i].pWidget->_renderPatches(pDevice, canvas, canvas, &patches);
-			}
-		}
-	
-		if( m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0 )
-		{
-			Rect canvas = m_cornerGeo + _canvas.pos();
-	
-			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-			{
-				Rect clip( canvas, *pRect );
-				if( clip.w > 0 || clip.h > 0 )
 				{
-					pDevice->setClip(clip);
-					m_pCornerSkin->render( pDevice, canvas, m_state );
+					Patches childPatches(patches, canvas);
+					m_scrollbarSlots[i].pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
 				}
 			}
-	
-		}
+		}	
 	}
 	
 	

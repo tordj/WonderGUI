@@ -294,32 +294,24 @@ namespace wg
 		if( !m_bVisible )
 			return true;						// Not an error, just hidden.
 
-		// Set clipping rectangle
-
-		m_pGfxDevice->setClip(_clip);
-
 		// Copy and clip our dirty patches
 	
-		Patches dirtyPatches( m_dirtyPatches.size() );
-	
-		Rect clipped;
-		for( const Rect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
-		{
-			if( clipped.intersection( *pRect, clip ) )
-				dirtyPatches.push( clipped );
-		}
+		Patches dirtyPatches( m_dirtyPatches, clip );
 	
 		// Render the dirty patches recursively
-	
-		m_child.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, &dirtyPatches );
+
+		if( dirtyPatches.size() > 0 )
+		{
+			m_child.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, dirtyPatches );
+		}
 
 		// Handle updated rect overlays
 		
 		if( m_bDebugMode && m_pDebugOverlay )
 		{
-			// Set clipping rectangle again, in case a widget has changed it.
+			// Set clipping rectangle.
 
-			m_pGfxDevice->setClip(_clip);
+			m_pGfxDevice->setClipList(1, &_clip);
 
 			// Render our new overlays
 			

@@ -65,9 +65,7 @@ namespace wg
 		GfxStreamPlayer(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
-		int _unpackPatches();
-
-		Rect				m_patches[GfxStream::c_maxPatches];
+		Rect				m_clipRects[GfxStream::c_maxClipRects];
 
 		GfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
@@ -89,7 +87,6 @@ namespace wg
 			int		nEdgeStrips;
 			int *	pEdgeStrips;
 			int		transform[2][2];
-			int		nPatches;
 
 			int		nLoadedSamples;
 			int		nTotalSamples;

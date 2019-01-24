@@ -90,7 +90,7 @@ namespace wg
 		virtual Rect		dirtyRect( Rect cell ) const;
 		virtual bool		tick( int millisec );
 		inline bool			needToRender() const { return m_bNeedToRender; }
-		virtual void		render( GfxDevice * pDevice, Rect cell, const Rect& clip );
+		virtual void		render( GfxDevice * pDevice, Rect cell );
 
 	
 	protected:

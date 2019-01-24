@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void		renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const;
+		void		render( GfxDevice * pDevice, const Rect& _canvas, State state ) const;
 
 		//.____ Geometry _________________________________________________
 	

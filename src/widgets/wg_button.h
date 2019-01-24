@@ -80,7 +80,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new Button(); };
 	
 		virtual void	_receive( Msg * pMsg );
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
 		void			_refresh();
 		virtual void	_cloneContent( const Widget * _pOrg );
 		bool			_alphaTest( const Coord& ofs );

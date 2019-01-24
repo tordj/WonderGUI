@@ -212,13 +212,13 @@ namespace wg
 	
 		// To be overloaded by Widget
 	
-		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
+		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches );
 		virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 
 		Widget *		_clone() const;
 		virtual void	_cloneContent( const Widget * _pOrg );
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 	
 		virtual void	_refresh();
 		virtual void	_setSize( const Size& size );

@@ -223,10 +223,9 @@ namespace wg
 
 	//____ render() ____________________________________________________________
 
-	void ColumnHeaderItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void ColumnHeaderItem::render( GfxDevice * pDevice, const Rect& _canvas )
 	{
 		Rect canvas( _canvas );
-		Rect clip( _canvas, _clip );
 	
 		if( m_pSkin )
 		{
@@ -250,7 +249,7 @@ namespace wg
 			icon.skin()->render( pDevice, iconRect, m_state );
 	
 		if( !label.isEmpty() )
-			label.render( pDevice, labelRect, _clip );	
+			label.render( pDevice, labelRect );	
 	}
 
 

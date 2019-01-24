@@ -419,9 +419,9 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void Oscilloscope::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Oscilloscope::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 				
 		float centerX = _canvas.x + _canvas.w/2.f;
 		float centerY = _canvas.y + _canvas.h/2.f;
@@ -452,10 +452,12 @@ namespace wg
 			
 	//	antiAlias(_clip.w, _clip.x, m_pDisplayPoints + _clip.x - _canvas.x);
 
-		if( _clip.x > _canvas.x )
-			_antiAlias(_clip.w+1, m_pDisplayPoints + _clip.x - _canvas.x-1, Coord( _clip.x-1, _canvas.y ) );
+		Rect clip = pDevice->clipBounds();
+
+		if( clip.x > _canvas.x )
+			_antiAlias(clip.w+1, m_pDisplayPoints + clip.x - _canvas.x-1, Coord( clip.x-1, _canvas.y ) );
 		else
-			_antiAlias(_clip.w, m_pDisplayPoints + _clip.x - _canvas.x, Coord( _clip.x, _canvas.y ) );
+			_antiAlias(clip.w, m_pDisplayPoints + clip.x - _canvas.x, Coord( clip.x, _canvas.y ) );
 
 		pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 

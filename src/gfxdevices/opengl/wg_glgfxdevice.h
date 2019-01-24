@@ -74,7 +74,8 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		void	setClip(const Rect& clip) override;
+		bool	setClipList(int nRectangles, const Rect * pRectangles);
+		void	clearClipList();
 		void	setTintColor(Color color) override;
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
@@ -84,18 +85,18 @@ namespace wg
 		bool	beginRender() override;
 		bool	endRender() override;
 
-		void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) override;
-		void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) override;
+		void	fill(const Rect& rect, const Color& col) override;
+		void	fill(const RectF& rect, const Color& col) override;
 
-		void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) override;
+		void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
 
-		void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) override;
-		void	drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches) override;
+		void	drawLine(Coord begin, Coord end, Color color, float thickness) override;
+		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness) override;
 
-		void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
-		void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
+		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
+		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 
 	protected:
@@ -108,7 +109,7 @@ namespace wg
 		{
 			None,
 			SetCanvas,
-			SetClip,
+//			SetClip,
 			SetBlendMode,
 			SetBlitSource,
 			Fill,
@@ -121,11 +122,11 @@ namespace wg
 		};
 
 		void	_setCanvas( GlSurface * pCanvas, int width, int height );
-		void	_setClip(Rect clip);
 		void	_setBlendMode(BlendMode mode);
 		void	_setBlitSource(GlSurface * pSurf);
 
 		inline void	_beginDrawCommand(Command cmd);
+		inline void	_beginClippedDrawCommand(Command cmd );
 		inline void	_beginStateCommand(Command cmd, int dataSize);
 		inline void	_endCommand();
 
@@ -156,7 +157,8 @@ namespace wg
 		static const int c_commandBufferSize = 256;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
 		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats. 
-		static const int c_surfaceBufferSize = 1024;				// SIze of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -218,6 +220,8 @@ namespace wg
 		int		m_extrasOfs;						// Write offset in m_extrasBufferData
 		int		m_commandOfs;						// Write offset in m_commandBuffer
 		int		m_surfaceOfs;						// Write offset in m_surfaceBuffer
+		int		m_clipWriteOfs;						// Write offset in m_clipListBuffer
+		int		m_clipCurrOfs;						// Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
 
 		GLuint  m_vertexArrayId;
 		GLuint  m_vertexBufferId;
@@ -232,6 +236,8 @@ namespace wg
 		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
 
 		GlSurface_p m_surfaceBuffer[c_surfaceBufferSize];
+
+		Rect	m_clipListBuffer[c_clipListBufferSize];
 
 		// GL states saved between BeginRender() and EndRender().
 
@@ -250,9 +256,9 @@ namespace wg
 
 	//____ _beginDrawCommand() ________________________________________________
 
-	inline void GlGfxDevice::_beginDrawCommand(Command cmd)
+	inline void GlGfxDevice::_beginDrawCommand(Command cmd )
 	{
-		if (m_commandOfs > c_commandBufferSize - 2)
+		if (m_commandOfs > c_commandBufferSize - 2 )
 			_executeBuffer();
 
 		m_cmd = cmd;
@@ -260,6 +266,28 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 	}
+
+	inline void GlGfxDevice::_beginClippedDrawCommand(Command cmd)
+	{
+		if (m_commandOfs > c_commandBufferSize - 4 || (m_clipCurrOfs == -1 && m_clipWriteOfs > c_clipListBufferSize - m_nClipRects) )
+			_executeBuffer();
+
+		if (m_clipCurrOfs == -1)
+		{
+			m_clipCurrOfs = m_clipWriteOfs;
+
+			for (int i = 0; i < m_nClipRects; i++)
+				m_clipListBuffer[m_clipWriteOfs++] = m_pClipRects[i];
+		}
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
+		m_cmdBeginVertexOfs = m_vertexOfs;
+		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
+		m_commandBuffer[m_commandOfs++] = m_nClipRects;
+	}
+
 
 	//____ _beginStateCommand() ________________________________________________
 

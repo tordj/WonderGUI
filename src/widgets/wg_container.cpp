@@ -257,31 +257,18 @@ namespace wg
 		Patches	patches;
 	};
 	
-	void Container::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
+	void Container::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches )
 	{
-	
-		// We start by eliminating dirt outside our geometry
-	
-		Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
-	
-		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
-		{
-			if( _canvas.intersectsWith( *pRect ) )
-				patches.push( Rect(*pRect,_canvas) );
-		}
-	
-	
+		Patches patches( _patches );
+
 		// Render container itself
 		
-		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-		{
-			pDevice->setClip(*pRect);
-			_render(pDevice, _canvas, _window, *pRect );
-		}
+		pDevice->setClipList(patches.size(), patches.begin());
+		_render(pDevice, _canvas, _window );
 		
 		// Render children
 	
-		Rect	dirtBounds = patches.getUnion();
+		Rect	dirtBounds = pDevice->clipBounds();
 		
 		if( m_bSiblingsOverlap )
 		{
@@ -308,8 +295,7 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 	
-				p->patches.push( &patches );
-	
+				p->patches.trimPush( patches, p->geo );
 				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 	
 				if( patches.isEmpty() )
@@ -321,9 +307,8 @@ namespace wg
 			for (int i = renderList.size() - 1; i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
-				p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches );
+				p->pWidget->_renderPatches( pDevice, p->geo, p->geo, p->patches );
 			}
-	
 		}
 		else
 		{
@@ -333,8 +318,12 @@ namespace wg
 			while(child.pSlot)
 			{
 				Rect canvas = child.geo + _canvas.pos();
-				if( canvas.intersectsWith( dirtBounds ) )
-					child.pSlot->pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
+				if (canvas.intersectsWith(dirtBounds))
+				{
+					Patches childPatches(patches, canvas);
+					if( !childPatches.isEmpty() )
+						child.pSlot->pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
+				}
 				_nextSlotWithGeo( child );
 			}
 	

@@ -117,7 +117,7 @@ namespace wg
 		void		_refresh();
 		void		_receive(Msg * pMsg);
 
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip);
+		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
 
 		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);

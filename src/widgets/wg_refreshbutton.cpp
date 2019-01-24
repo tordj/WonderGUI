@@ -258,7 +258,7 @@ namespace wg
 	
 	//____ _render() _____________________________________________________________
 	
-	void RefreshButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void RefreshButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		// Render background or animation
 	
@@ -337,10 +337,8 @@ namespace wg
 	
 	 	if( !pText->isEmpty() )
 		{
-			pText->setState(m_state);		//TODO: Should be done when state actually is set.
-	
-			Rect clip(textRect,_clip);
-			pText->render(pDevice, textRect, clip );
+			pText->setState(m_state);		//TODO: Should be done when state actually is set.	
+			pText->render(pDevice, textRect );
 		}
 	}
 	

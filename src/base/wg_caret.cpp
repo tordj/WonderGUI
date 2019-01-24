@@ -153,14 +153,14 @@ namespace wg
 	
 	//____ render() ________________________________________________________________
 	
-	void Caret::render( GfxDevice * pDevice, Rect cell, const Rect& clip )
+	void Caret::render( GfxDevice * pDevice, Rect cell )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{
 			Rect r = dirtyRect(cell);
 			BlendMode oldMode = pDevice->blendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
-			pDevice->fill( Rect(r,clip), Color::White );
+			pDevice->fill( r, Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
 		

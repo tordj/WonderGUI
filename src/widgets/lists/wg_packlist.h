@@ -162,8 +162,8 @@ namespace wg
 		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void			_cloneContent( const Widget * _pOrg );
-		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		void			_setSize( const Size& size );
 		void			_refresh();
 	

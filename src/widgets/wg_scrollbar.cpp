@@ -663,7 +663,7 @@ namespace wg
 	
 	//____ _renderButton() _________________________________________________________
 	
-	void Scrollbar::_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, Skin * pSkin, State state )
+	void Scrollbar::_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
 				_dest.w = pSkin->preferredSize().w;
@@ -680,9 +680,9 @@ namespace wg
 	
 	//____ _render() ________________________________________________________
 	
-	void Scrollbar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Scrollbar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect	dest = _canvas;
 		if( m_pSkin )
@@ -691,10 +691,10 @@ namespace wg
 		// Render header buttons
 	
 		if( m_pBtnBwdSkin && (m_btnLayout & HEADER_BWD) )
-			_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD] );
+			_renderButton( pDevice, dest, m_pBtnBwdSkin, m_states[C_HEADER_BWD] );
 	
 		if( m_pBtnFwdSkin && (m_btnLayout & HEADER_FWD) )
-			_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD] );
+			_renderButton( pDevice, dest, m_pBtnFwdSkin, m_states[C_HEADER_FWD] );
 	
 		// Render background (if any).
 	
@@ -731,10 +731,10 @@ namespace wg
 			dest.y += dest.h;
 	
 		if( m_pBtnBwdSkin && (m_btnLayout & FOOTER_BWD) )
-			_renderButton( pDevice, _clip, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD] );
+			_renderButton( pDevice, dest, m_pBtnBwdSkin, m_states[C_FOOTER_BWD] );
 	
 		if( m_pBtnFwdSkin && (m_btnLayout & FOOTER_FWD) )
-			_renderButton( pDevice, _clip, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD] );
+			_renderButton( pDevice, dest, m_pBtnFwdSkin, m_states[C_FOOTER_FWD] );
 	}
 	
 	//____ _alphaTest() ______________________________________________________

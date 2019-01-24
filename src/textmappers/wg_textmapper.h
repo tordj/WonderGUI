@@ -70,7 +70,7 @@ namespace wg
 		virtual int		wordEnd( const TextBaseItem * pItem, int charOfs ) const = 0;		
 
 	
-		virtual void 	renderItem( TextBaseItem * pText, GfxDevice * pDevice, const Rect& canvas, const Rect& clip ) = 0;
+		virtual void 	renderItem( TextBaseItem * pText, GfxDevice * pDevice, const Rect& canvas ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
 		// A selection change implies a caret move.

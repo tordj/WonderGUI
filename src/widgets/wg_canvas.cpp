@@ -146,15 +146,15 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void Canvas::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip)
+	void Canvas::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
 	{
 		//TODO: Support bitmap being of different surface kind than destination.
 
-		Widget::_render(pDevice, _canvas, _window, _clip);
+		Widget::_render(pDevice, _canvas, _window);
 
 		Rect itemCanvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
-		m_canvas.render(pDevice, itemCanvas, Rect(_clip,itemCanvas));
+		m_canvas.render(pDevice, itemCanvas); // , Rect(_clip, itemCanvas)); //TODO: Needs to clip against itemCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________

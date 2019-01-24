@@ -319,26 +319,18 @@ namespace wg
 	
 	//____ _renderPatches() _______________________________________________________
 	
-	void PackList::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
+	void PackList::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
 	{
-		// We start by eliminating dirt outside our geometry
-	
-		Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
-	
-		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
-		{
-			if( _canvas.intersectsWith( *pRect ) )
-				patches.push( Rect(*pRect,_canvas) );
-		}
-	
+		// Set clipping
+
+		pDevice->setClipList(patches.size(), patches.begin());
+
 		// Render container itself
-		
-		for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
+
+		if( m_pSkin )
 		{
-			pDevice->setClip(*pRect);
-			_render(pDevice, _canvas, _window, *pRect );
+			_render(pDevice, _canvas, _window);
 		}
-		
 		// Render children
 	
 		Rect	dirtBounds = patches.getUnion();
@@ -350,12 +342,18 @@ namespace wg
 			while(child.pSlot)
 			{
 				Rect canvas = child.geo + _canvas.pos();
-				if( canvas.intersectsWith( dirtBounds ) )
-					child.pSlot->pWidget->_renderPatches( pDevice, canvas, canvas, &patches );
+				if (canvas.intersectsWith(dirtBounds))
+				{
+					Patches childPatches(patches, canvas);
+					if( !childPatches.isEmpty())
+						child.pSlot->pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
+				}
 				_nextSlotWithGeo( child );
 			}
 		}
-	
+
+		pDevice->setClipList(patches.size(), patches.begin());
+
 		// Render header
 	
 		if( m_header.size().h != 0 )
@@ -363,11 +361,7 @@ namespace wg
 			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			Rect canvas = _headerGeo() + _canvas.pos();
 	
-			for( const Rect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
-			{
-				pDevice->setClip(*pRect);
-				m_header.render( pDevice, canvas, *pRect );
-			}
+			m_header.render( pDevice, canvas );
 		}
 	
 		// Render Lasso
@@ -377,24 +371,26 @@ namespace wg
 			Rect lasso( m_lassoBegin, m_lassoEnd );
 			lasso += _canvas.pos();
 	
-			m_pLassoSkin->renderPatches(pDevice, lasso, m_state, patches.size(), patches.begin() );
+			m_pLassoSkin->render(pDevice, lasso, m_state );
 		}
 	}
 	
 	
 	//____ _render() ____________________________________________________________
 	
-	void PackList::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void PackList::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Rect contentRect = _listCanvas() + _canvas.pos();
 	
+		Rect clip = pDevice->clipBounds();
+
 		if( m_pSkin )
 		{
 			m_pSkin->render( pDevice, contentRect, m_state );
 			contentRect = m_pSkin->contentRect( contentRect, m_state );
 		}
 	
-		int startOfs = m_bHorizontal ? _clip.x-contentRect.x : _clip.y-contentRect.y;
+		int startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
 		if( startOfs < 0 )
 			startOfs = 0;
 	

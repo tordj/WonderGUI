@@ -433,27 +433,17 @@ namespace wg
 		Patches	patches;
 	};
 
-	void PopupLayer::_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches)
+	void PopupLayer::_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches)
 	{
+		Patches patches( _patches );
 
-		// We start by eliminating dirt outside our geometry
+		// Set clipping
 
-		Patches 	patches(_pPatches->size());								// TODO: Optimize by pre-allocating?
-
-		for (const Rect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
-		{
-			if (_canvas.intersectsWith(*pRect))
-				patches.push(Rect(*pRect, _canvas));
-		}
-
+		pDevice->setClipList(patches.size(), patches.begin() );
 
 		// Render container itself
 
-		for (const Rect * pRect = patches.begin(); pRect != patches.end(); pRect++)
-		{
-			pDevice->setClip(*pRect);
-			_render(pDevice, _canvas, _window, *pRect);
-		}
+		_render(pDevice, _canvas, _window);
 
 		// Render children
 
@@ -481,7 +471,7 @@ namespace wg
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			p->patches.push(&patches);
+			p->patches.trimPush(patches, p->geo);
 			if( p->pSlot->state != PopupSlot::State::Opening && p->pSlot->state != PopupSlot::State::Closing )
 				p->pSlot->pWidget->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
@@ -491,9 +481,8 @@ namespace wg
 
 		// Any dirt left in patches is for base child, lets render that first
 
-
 		if (!patches.isEmpty())
-			m_baseSlot.pWidget->_renderPatches(pDevice, _canvas, _window, &patches);
+			m_baseSlot.pWidget->_renderPatches(pDevice, _canvas, _window, patches);
 
 
 		// Go through WidgetRenderContexts and render the patches in reverse order (topmost popup rendered last).
@@ -511,12 +500,12 @@ namespace wg
 				tint.a = 255 - (255 * p->pSlot->stateCounter / m_closingFadeMs);
 
 			if (tint.a == 255)
-				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
+				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, p->patches);
 			else
 			{
 				Color oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
-				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
+				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, p->patches);
 				pDevice->setTintColor(oldTint);
 			}
 		}

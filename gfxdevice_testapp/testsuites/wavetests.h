@@ -8,16 +8,11 @@ public:
 		name = "WaveTests";
 
 		addTest("SimpleWave", &WaveTests::simpleWave );
-		addTest("SimpleWavePatches", &WaveTests::simpleWavePatches);
-		addTest("SimpleWaveRot90Patches", &WaveTests::simpleWaveRot90Patches);
-		addTest("SimpleWaveRot180Patches", &WaveTests::simpleWaveRot180Patches);
-		addTest("SimpleWaveRot270Patches", &WaveTests::simpleWaveRot270Patches);
-		addTest("SimpleWaveFlipXPatches", &WaveTests::simpleWaveFlipXPatches);
-		addTest("SimpleWaveFlipYPatches", &WaveTests::simpleWaveFlipYPatches);
-		addTest("SimpleWaveClipPatches", &WaveTests::simpleWaveClipPatches);
-		addTest("SimpleWaveClipRot90Patches", &WaveTests::simpleWaveClipRot90Patches);
-		addTest("SimpleWaveClipRot180Patches", &WaveTests::simpleWaveClipRot180Patches);
-		addTest("SimpleWaveClipRot270Patches", &WaveTests::simpleWaveClipRot270Patches);
+		addTest("SimpleWaveRot90", &WaveTests::simpleWaveRot90);
+		addTest("SimpleWaveRot180", &WaveTests::simpleWaveRot180);
+		addTest("SimpleWaveRot270", &WaveTests::simpleWaveRot270);
+		addTest("SimpleWaveFlipX", &WaveTests::simpleWaveFlipX);
+		addTest("SimpleWaveFlipY", &WaveTests::simpleWaveFlipY);
 		addTest("BackfaceWave", &WaveTests::backfaceWave);
 		addTest("BackfaceWaveSameColor", &WaveTests::backfaceWaveSameColor);
 
@@ -26,15 +21,6 @@ public:
 
 	bool init(GfxDevice * pDevice, const Rect& canvas)
 	{
-
-		// Generate standard patch pattern
-
-		m_patches[0] = { canvas.x,canvas.y, canvas.w / 4, canvas.h / 4 };
-		m_patches[1] = { canvas.x + canvas.w / 2,canvas.y, canvas.w / 2, canvas.h / 4 };
-		m_patches[2] = { canvas.x + canvas.w / 4, canvas.y + canvas.h / 4, canvas.w / 2, canvas.h / 2 };
-		m_patches[3] = { canvas.x,canvas.y + canvas.h * 3 / 4, canvas.w / 4, canvas.h / 4 };
-		m_patches[4] = { canvas.x + canvas.w * 3 / 4,canvas.y + canvas.h * 3 / 4, canvas.w, canvas.h };
-
 		// Generate simple wave
 
 		m_simpleWaveTopLine.color = Color::White;
@@ -87,78 +73,33 @@ public:
 		return true;
 	}
 
-	bool simpleWavePatches(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot90(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->drawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, 5, m_patches);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot90);
 		return true;
 	}
 
-	bool simpleWaveRot90Patches(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot180(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot90, 5, m_patches);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot180);
 		return true;
 	}
 
-	bool simpleWaveRot180Patches(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot270(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot180, 5, m_patches);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot270);
 		return true;
 	}
 
-	bool simpleWaveRot270Patches(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveFlipX(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot270, 5, m_patches);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipX);
 		return true;
 	}
 
-	bool simpleWaveFlipXPatches(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveFlipY(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipX, 5, m_patches);
-		return true;
-	}
-
-	bool simpleWaveFlipYPatches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		Rect clip = pDevice->clip();
-		pDevice->setClip(clip - Border(10, 20, 30, 1));
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipY, 5, m_patches);
-		pDevice->setClip(clip);
-		return true;
-	}
-
-	bool simpleWaveClipPatches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		Rect clip = pDevice->clip();
-		pDevice->setClip(clip - Border(10, 20, 30, 1));
-		pDevice->drawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, 5, m_patches);
-		pDevice->setClip(clip);
-		return true;
-	}
-
-	bool simpleWaveClipRot90Patches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		Rect clip = pDevice->clip();
-		pDevice->setClip(clip - Border(10, 20, 30, 1));
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot90, 5, m_patches);
-		pDevice->setClip(clip);
-		return true;
-	}
-
-	bool simpleWaveClipRot180Patches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		Rect clip = pDevice->clip();
-		pDevice->setClip(clip - Border(10, 20, 30, 1));
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot180, 5, m_patches);
-		pDevice->setClip(clip);
-		return true;
-	}
-
-	bool simpleWaveClipRot270Patches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		Rect clip = pDevice->clip();
-		pDevice->setClip(clip - Border(10, 20, 30, 1));
-		pDevice->flipDrawWavePatches(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot270, 5, m_patches);
-		pDevice->setClip(clip);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipY);
 		return true;
 	}
 
@@ -192,8 +133,5 @@ private:
 
 
 	Color	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
-
-	Rect	m_patches[5];
-
 };
  

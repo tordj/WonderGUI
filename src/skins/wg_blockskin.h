@@ -60,14 +60,14 @@ namespace wg
 	
 		//.____ Rendering ________________________________________________
 
-		void	renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const;
+		void	render( GfxDevice * pDevice, const Rect& _canvas, State state ) const override;
 	
 		//.____ Geometry _________________________________________________
 
-		Size	minSize() const;
-		Size	preferredSize() const;
+		Size	minSize() const override;
+		Size	preferredSize() const override;
 	
-		Size	sizeForContent( const Size contentSize ) const;
+		Size	sizeForContent( const Size contentSize ) const override;
 
 		//.____ Appearance _________________________________________________
 
@@ -95,13 +95,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________	
 	
-		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
+		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
 	
-		bool	isOpaque() const;
-		bool	isOpaque( State state ) const;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		bool	isOpaque() const override;
+		bool	isOpaque( State state ) const override;
+		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
 	
-		bool	isStateIdentical( State state, State comparedTo ) const;
+		bool	isStateIdentical( State state, State comparedTo ) const override;
 	
 		//.____ Deprecated ____________________________________________________
 

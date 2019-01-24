@@ -22,6 +22,7 @@
 
 #include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
+#include <wg_patches.h>
 
 namespace wg 
 {
@@ -101,12 +102,19 @@ namespace wg
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
+	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches )
 	{
 		// Render our skin
 
 		if( m_pSkin )
-			Capsule::_renderPatches( pDevice, _canvas, _window, _pPatches );
+			Capsule::_renderPatches( pDevice, _canvas, _window, _patches );
+
+		if (!m_child.pWidget)
+			return;
+
+		// 
+
+
 
 		// Set our tint color and blend mode.
 	
@@ -121,11 +129,16 @@ namespace wg
 		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );
 	
 		// Render children recursively
-	
-		Rect canvas = m_pSkin ? m_pSkin->contentRect( _canvas, m_state ) : _canvas;
 
-		if( m_child.pWidget )
-			m_child.pWidget->_renderPatches( pDevice, canvas, canvas, _pPatches );
+		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+
+		if (canvas != _canvas)
+		{
+			Patches trimmedPatches( _patches, canvas );
+			m_child.pWidget->_renderPatches(pDevice, canvas, canvas, trimmedPatches );
+		}
+		else
+			m_child.pWidget->_renderPatches( pDevice, canvas, canvas, _patches );
 	
 		// Reset old blend mode and tint color
 	

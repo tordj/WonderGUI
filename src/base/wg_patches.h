@@ -39,6 +39,8 @@ namespace wg
 		Patches();
 		Patches( int startCapacity );
 		Patches( Rect * pArray, int capacity );
+		Patches(const Patches& source);
+		Patches(const Patches& source, const Rect& trim);
 		~Patches();
 	
 		//.____ Control ________________________________________________________
@@ -56,7 +58,9 @@ namespace wg
 		inline void		push( const Rect& rect );											// Adds the rect (no optimizations, overlap may occur).
 		int				push( const Patches * pSource, int ofs = 0, int len = INT_MAX );
 		inline Rect		pop();																// Pops last rect from the patches.
-	
+
+		void			trimPush(const Patches& source, const Rect& trim);					// Adds the rect (no optimizations, overlap may occur).
+
 		void			remove( int ofs );													// Deletes specific rect from the patches.
 		int				remove( int ofs, int len );											// Deletes range of rects from the patches.
 	

@@ -93,10 +93,10 @@ namespace wg
 	
 	//____ _render() _____________________________________________________________
 	
-	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
-		m_item.render(pDevice, _canvas, _clip);
+		Widget::_render(pDevice,_canvas,_window);
+		m_item.render(pDevice, _canvas);
 	}
 	
 	//____ _cloneContent() _______________________________________________________

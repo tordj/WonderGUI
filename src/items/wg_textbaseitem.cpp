@@ -157,9 +157,9 @@ namespace wg
 	
 	//_____ render() _____________________________________________________________
 	
-	void  TextBaseItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void  TextBaseItem::render( GfxDevice * pDevice, const Rect& _canvas )
 	{
-		_textMapper()->renderItem(this, pDevice, _canvas, _clip);
+		_textMapper()->renderItem(this, pDevice, _canvas);
 	}
 	
 	//____ rectForRange() __________________________________________________________

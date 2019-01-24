@@ -46,6 +46,9 @@ protected:
 	{
 		tests.push_back({ name, nullptr, [this,testMethod](GfxDevice * pDevice, const Rect& canvas) { return (static_cast<T*>(this)->*testMethod)(pDevice,canvas); }, nullptr });
 	}
+
+
+
 };
 
 

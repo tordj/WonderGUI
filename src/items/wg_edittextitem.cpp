@@ -505,9 +505,9 @@ namespace wg
 	
 	//____ render() ______________________________________________________________
 	
-	void EditTextItem::render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip )
+	void EditTextItem::render( GfxDevice * pDevice, const Rect& _canvas )
 	{
-		_textMapper()->renderItem(this, pDevice, _canvas, _clip);		
+		_textMapper()->renderItem(this, pDevice, _canvas );		
 	}
 	
 	//____ setEditMode() _______________________________________________________

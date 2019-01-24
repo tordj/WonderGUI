@@ -458,9 +458,9 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void SplitPanel::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip)
+	void SplitPanel::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
 	{
-		Panel::_render(pDevice, _canvas, _window, _clip);
+		Panel::_render(pDevice, _canvas, _window);
 
 		if (m_pHandleSkin)
 			m_pHandleSkin->render(pDevice, m_handleGeo, m_handleState);

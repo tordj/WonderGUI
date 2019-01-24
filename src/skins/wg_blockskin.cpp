@@ -455,9 +455,9 @@ namespace wg
 		m_frame = frame;
 	}
 
-	//____ renderPatches() _______________________________________________________________
+	//____ render() _______________________________________________________________
 	
-	void BlockSkin::renderPatches( GfxDevice * pDevice, const Rect& _canvas, State state, int nPatches, const Rect * pPatches ) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -471,7 +471,7 @@ namespace wg
 
 		Coord blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatchPatches(_canvas, m_frame, { blockOfs,m_dimensions }, m_frame, nPatches, pPatches );
+		pDevice->blitNinePatch(_canvas, m_frame, { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Ignore)
 			pDevice->setBlendMode(savedBlendMode);

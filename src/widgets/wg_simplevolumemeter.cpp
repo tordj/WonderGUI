@@ -352,9 +352,9 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void SimpleVolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void SimpleVolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice, _canvas, _window, _clip);
+		Widget::_render(pDevice, _canvas, _window);
 		
 		if( !m_state.isEnabled() )
 			return;
@@ -380,14 +380,14 @@ namespace wg
 				r.y += m_iSidePadding;
 			}
 
-			_renderBar( pDevice, 0, r, _clip );
+			_renderBar( pDevice, 0, r );
 
 			if (m_direction == Direction::Up || m_direction == Direction::Down)
 				r.x += r.w + m_iGap;
 			else
 				r.y += r.h + m_iGap;
 
-			_renderBar( pDevice, 1, r, _clip );
+			_renderBar( pDevice, 1, r );
 			
 		}
 		else 
@@ -404,13 +404,13 @@ namespace wg
 				r.h = r.h - 2 * m_iSidePadding;
 				r.y += m_iSidePadding;
 			}
-			_renderBar( pDevice, 0, r, _clip );
+			_renderBar( pDevice, 0, r );
 		}
 	}
 
 	//____ _renderBar()_____________________________________________________________
 
-	void SimpleVolumeMeter::_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect, const Rect& _clip )
+	void SimpleVolumeMeter::_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect )
 	{
 		int peakHeight 	= m_iPeak[nb];
 		int holdOfs 	= m_iHold[nb];
@@ -451,7 +451,7 @@ namespace wg
 					break;
 				}
 
-				pDevice->fill( Rect( r, _clip ), c );
+				pDevice->fill( r, c );
 			}
 			else if( holdOfs > peakHeight )
 				peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
@@ -495,7 +495,7 @@ namespace wg
 				break;
 			}
 
-			pDevice->fill( Rect( r, _clip ), m_sectionColors[i] );
+			pDevice->fill( r, m_sectionColors[i] );
 			
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;

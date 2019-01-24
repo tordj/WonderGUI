@@ -57,7 +57,7 @@ namespace wg
 		int				erase( int ofs, int len );
 	
 		void			setState( State state );
-		void			render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
+		void			render( GfxDevice * pDevice, const Rect& _canvas );
 	
 	
 		void			setEditMode( TextEditMode mode );

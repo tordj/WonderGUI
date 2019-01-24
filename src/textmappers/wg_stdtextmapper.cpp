@@ -386,7 +386,7 @@ namespace wg
 	
 	//____ _renderItem()___________________________________________________________
 	
-	void StdTextMapper::renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
+	void StdTextMapper::renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas )
 	{	
 	
 		void * pBlock = _itemDataBlock(pItem);
@@ -411,7 +411,7 @@ namespace wg
 
 		// Render back colors
 		
-		_renderBack( pItem, pDevice, canvas, clip );
+		_renderBack( pItem, pDevice, canvas );
 		
 
 		const EditState * pEditState = _editState( pItem );
@@ -435,7 +435,7 @@ namespace wg
 			{
 				if( m_selectionBackRenderMode != BlendMode::Undefined )
 					pDevice->setBlendMode( m_selectionBackRenderMode );
-				_renderBackSection( pItem, pDevice, canvas, clip, selBeg, selEnd, m_selectionBackColor );
+				_renderBackSection( pItem, pDevice, canvas, selBeg, selEnd, m_selectionBackColor );
 				pDevice->setBlendMode( renderMode );
 			}
 			
@@ -446,6 +446,8 @@ namespace wg
 
 		//
 		
+		const Rect& clip = pDevice->clipBounds();
+
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
 			if( lineStart.y < clip.y + clip.h && lineStart.y + pLineInfo->height > clip.y )
@@ -552,7 +554,7 @@ namespace wg
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( pEditState && pEditState->bCaret && pCaret )
 		{
-			pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos(), clip );
+			pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos() );
 		}
 	}
 	
@@ -561,7 +563,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 	
-	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip )
+	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas )
 	{	
 		const Char * pCharArray = _charBuffer(pItem)->chars();
 		const Char * pBeg = pCharArray;
@@ -586,7 +588,7 @@ namespace wg
 				if( newColor != color )
 				{
 					if( color.a != 0 )
-						_renderBackSection( pItem, pDevice, canvas, clip, pBeg - pCharArray, pChar - pCharArray, color );
+						_renderBackSection( pItem, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
 					color = newColor;
 					pBeg = pChar;
 				}
@@ -596,12 +598,12 @@ namespace wg
 		}
 		
 		if( color.a != 0 )
-			_renderBackSection( pItem, pDevice, canvas, clip, pBeg - pCharArray, pChar - pCharArray, color );
+			_renderBackSection( pItem, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
 	}
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, 
+	void StdTextMapper::_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, 
 											int begChar, int endChar, Color color )
 	{
 		

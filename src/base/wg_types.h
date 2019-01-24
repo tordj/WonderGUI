@@ -715,12 +715,6 @@ namespace wg
 		DrawLineFromTo,
 		DrawLineStraight,
 
-		FillPatches,
-		FillSubpixelPatches,
-		PlotPixelPatches,
-
-		DrawLineFromToPatches,
-		DrawLineStraightPatches,
 
 		Blit,
 //		FlipBlit,
@@ -755,11 +749,11 @@ namespace wg
 //		SimpleTransformBlit,
 //		ComplexTransformBlit,
 
-		SimpleTransformBlitPatches,
-		ComplexTransformBlitPatches,
+		SimpleTransformBlit,
+		ComplexTransformBlit,
 
 //		TransformDrawWavePatches,
-		TransformDrawSegmentPatches, 
+		TransformDrawSegments, 
 		EdgeSamples,
 
 //		BlitNinePatch,

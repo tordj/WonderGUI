@@ -50,7 +50,7 @@ namespace wg
 	
 		//.____ Rendering ________________________________________________
 		
-		void	renderPatches( GfxDevice * pDevice, const Rect& canvas, State state, int nPatches, const Rect * pPatches ) const override;
+		void	render( GfxDevice * pDevice, const Rect& canvas, State state ) const override;
 
 		//.____ Geometry _________________________________________________
 	

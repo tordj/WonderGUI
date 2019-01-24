@@ -1462,7 +1462,10 @@ namespace wg
 		{
 			m_pCanvas		= nullptr;
 			m_canvasSize	= Size();
-			m_clip			= Rect();
+			m_clipCanvas	= Rect();
+			m_clipBounds	= Rect();
+			m_pClipRects	= &m_clipCanvas;
+			m_nClipRects	= 1;
 
 			// Make sure this also is cleared, in case we are rendering.
 
@@ -1484,7 +1487,10 @@ namespace wg
 
 		m_pCanvas		= pCanvas;
 		m_canvasSize	= pCanvas->size();
-		m_clip			= { 0,0,m_canvasSize };
+		m_clipCanvas	= { 0,0,m_canvasSize };
+		m_clipBounds	= { 0,0,m_canvasSize };
+		m_pClipRects = &m_clipCanvas;
+		m_nClipRects = 1;
 
 		// Update stuff if we are rendering
 
@@ -1600,17 +1606,16 @@ namespace wg
 		return true;
 	}
 
-	//____ fillPatches() ______________________________________________________
+	//____ fill() ______________________________________________________
 
-	void SoftGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::fill(const Rect& rect, const Color& col)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels)
+		if (!m_pCanvas || !m_pCanvasPixels )
 			return;
 
 		// Clipping
 
-		Rect clip(rect, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if( !m_clipBounds.intersectsWith(rect) )
 			return;
 
 		// Prepare colors
@@ -1636,23 +1641,25 @@ namespace wg
 		if (pFunc == nullptr)
 			return;
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], rect);
+			if (patch.w == 0 || patch.h == 0)
+				continue;
 
 			uint8_t * pDst = m_pCanvasPixels + patch.y *m_canvasPitch + patch.x * pixelBytes;
 			pFunc(pDst, pixelBytes, m_canvasPitch - patch.w*pixelBytes, patch.h, patch.w, fillColor, colTrans);
 		}
 	}
 
-	void SoftGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::fill(const RectF& rect, const Color& col)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
 
 		// Clipping
 
-		RectF clip(rect, m_clip);
+		RectF clip(rect, m_clipBounds);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -1674,11 +1681,13 @@ namespace wg
 		FillOp_p pEdgeOp = s_fillOpTab[(int)edgeBlendMode][0][(int)m_pCanvas->pixelFormat()];
 		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
 			Color color = fillColor;
 
-			RectF  patch(clip, pPatches[i]);
+			RectF  patch(rect, m_pClipRects[i]);
+			if (patch.w == 0.f || patch.h == 0.f)
+				continue;
 
 			// Fill all but anti-aliased edges
 
@@ -1785,9 +1794,9 @@ namespace wg
 		}
 	}
 
-	//____ drawLinePatches() ____ [from/to] ___________________________________
+	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLinePatches(Coord beg, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::drawLine(Coord beg, Coord end, Color color, float thickness)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
@@ -1832,13 +1841,11 @@ namespace wg
 
 			// Loop through patches
 
-			for( int i = 0 ; i < nPatches ; i++ )
+			for( int i = 0 ; i < m_nClipRects ; i++ )
 			{
 				// Do clipping
 
-				Rect clip(m_clip, pPatches[i]);
-				if (clip.w == 0 || clip.h == 0 || beg.x >= clip.x + clip.w || end.x <= clip.x)
-					continue;																	// Segement not visible.
+				const Rect& clip = m_pClipRects[i];
 
 				int _length = length;
 				int _pos = pos;
@@ -1885,13 +1892,11 @@ namespace wg
 
 			// Loop through patches
 
-			for (int i = 0; i < nPatches; i++)
+			for (int i = 0; i < m_nClipRects; i++)
 			{
 				// Do clipping
 
-				Rect clip(m_clip, pPatches[i]);
-				if (clip.w == 0 || clip.h == 0 || beg.y >= clip.y + clip.h || end.y <= clip.y)
-					continue;										// Segement not visible.
+				const Rect& clip = m_pClipRects[i];
 
 				int _length = length;
 				int _pos = pos;
@@ -1918,13 +1923,13 @@ namespace wg
 		}
 	}
 
-	//____ drawLinePatches() ____ [start/direction] ___________________________
+	//____ drawLine() ____ [start/direction] ________________________________
 
 	// Coordinates for start are considered to be + 0.5 in the width dimension, so they start in the middle of a line/column.
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLinePatches(Coord _begin, Direction dir, int _length, Color _col, float thickness, int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::drawLine(Coord _begin, Direction dir, int _length, Color _col, float thickness)
 	{
 		//TODO: Optimize!
 
@@ -1945,11 +1950,9 @@ namespace wg
 		FillOp_p	pCenterOp = s_fillOpTab[(int)m_blendMode][0][(int)m_pCanvas->pixelFormat()];
 		FillOp_p	pEdgeOp = s_fillOpTab[(int)edgeBlendMode][0][(int)m_pCanvas->pixelFormat()];
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect clip(m_clip, pPatches[i]);
-			if (clip.w == 0 || clip.h == 0)
-				continue;
+			const Rect& clip = m_pClipRects[i];
 
 			Coord begin = _begin;
 			int length = _length;
@@ -2093,9 +2096,9 @@ namespace wg
 		}
 	}
 
-	//____ transformDrawSegmentPatches() _________________________________________
+	//____ transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::transformDrawSegmentPatches(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::transformDrawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 		Rect dest = _dest;
 
@@ -2161,7 +2164,8 @@ namespace wg
 
 		uint8_t * pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
 
-		Rect clip(dest, m_clip);
+		if (!dest.intersectsWith(m_clipBounds))
+			return;
 
 		SegmentOp_p	pOp = s_segmentOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pOp == nullptr)
@@ -2169,11 +2173,11 @@ namespace wg
 
 		// Loop through patches
 
-		for (int patchIdx = 0; patchIdx < nPatches; patchIdx++)
+		for (int patchIdx = 0; patchIdx < m_nClipRects; patchIdx++)
 		{
 			// Clip patch
 
-			Rect patch(clip, pPatches[patchIdx] );
+			Rect patch(dest, m_pClipRects[patchIdx] );
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -2267,77 +2271,112 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void SoftGfxDevice::drawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch)
+	void SoftGfxDevice::drawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch)
 	{
+		Rect dest = _dest;
+
+		SegmentEdge edges[c_maxSegments - 1];
+
+		// Limit size of destination rect by number of edgestrips.
+
+			if (dest.w > nEdgeStrips - 1)
+				dest.w = nEdgeStrips - 1;
+
+		// Apply simple tinting
+
+		Color colors[c_maxSegments];
+
+		if (m_tintColor != Color::White)
+		{
+			for (int i = 0; i < nSegments; i++)
+				colors[i] = pSegmentColors[i] * m_tintColor;
+			pSegmentColors = colors;
+		}
+
+		// Set start position and clip dest
+
+		uint8_t * pOrigo = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * (m_canvasPixelBits / 8);
+
+		if (!dest.intersectsWith(m_clipBounds))
+			return;
+
 		SegmentOp_p	pOp = s_segmentOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
-		SegmentEdge edges[c_maxSegments];
+		// Loop through patches
 
-		Rect dest = _dest;
-		if (dest.w >= nEdgeStrips)
-			dest.w = nEdgeStrips - 1;
-
-		Rect clipped(m_clip, dest);
-
-		int clipBeg = (clipped.y - dest.y) * 256;
-		int clipEnd = clipBeg + (clipped.h * 256);
-
-		uint8_t * pStripStart = m_pCanvasPixels + dest.y * m_canvasPitch + clipped.x * (m_canvasPixelBits / 8);
-
-		int clippedX = clipped.x - dest.x;
-		pEdgeStrips += clippedX * edgeStripPitch;
-
-		for (int x = 0; x < clipped.w; x++)
+		for (int patchIdx = 0; patchIdx < m_nClipRects; patchIdx++)
 		{
-			int nEdges = 0;
-			const Color * pColors = pSegmentColors;
+			// Clip patch
 
-			for ( int y = 0; y < nSegments - 1; y++)
+			Rect patch(dest, m_pClipRects[patchIdx]);
+			if (patch.w == 0 || patch.h == 0)
+				continue;
+
+			// Calculate stripstart, clipBeg/clipEnd and first edge for patch
+
+
+			int columnOfs = patch.x - dest.x;
+			int rowOfs = patch.y - dest.y;
+
+			const int *		pEdgeStrips = _pEdgeStrips + columnOfs * edgeStripPitch;
+			uint8_t *		pStripStart = pOrigo + columnOfs * (m_canvasPixelBits / 8);
+
+			int clipBeg = rowOfs * 256;
+			int clipEnd = clipBeg + (patch.h * 256);
+
+			for (int x = 0; x < patch.w; x++)
 			{
-				int beg = pEdgeStrips[y];
-				int end = pEdgeStrips[y + edgeStripPitch];
+				int nEdges = 0;
+				const Color * pColors = pSegmentColors;
 
-				if (beg > end)
-					swap(beg, end);
-
-				if (beg >= clipEnd)
-					break;
-
-				if (end > clipBeg)
+				for (int y = 0; y < nSegments - 1; y++)
 				{
-					int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
-					int coverage = 0;
+					int beg = pEdgeStrips[y];
+					int end = pEdgeStrips[y + edgeStripPitch];
 
-					if (beg < clipBeg)
+					if (beg > end)
+						swap(beg, end);
+
+					if (beg >= clipEnd)
+						break;
+
+					if (end > clipBeg)
 					{
-						int cut = clipBeg - beg;
-						beg = clipBeg;
-						coverage += (coverageInc*cut) >> 8;
+						int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
+						int coverage = 0;
+
+						if (beg < clipBeg)
+						{
+							int cut = clipBeg - beg;
+							beg = clipBeg;
+							coverage += (coverageInc*cut) >> 8;
+						}
+
+						if (end > clipEnd)
+							end = clipEnd;
+
+
+						edges[nEdges].begin = beg;
+						edges[nEdges].end = end;
+						edges[nEdges].coverage = coverage;
+						edges[nEdges].coverageInc = coverageInc;
+						nEdges++;
 					}
-
-					if (end > clipEnd)
-						end = clipEnd;
-
-
-					edges[nEdges].begin = beg;
-					edges[nEdges].end = end;
-					edges[nEdges].coverage = coverage;
-					edges[nEdges].coverageInc = coverageInc;
-					nEdges++;
+					else
+						pColors++;
 				}
-				else
-					pColors++;
+
+
+
+				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors);
+				pEdgeStrips += edgeStripPitch;
+				pStripStart += (m_canvasPixelBits / 8);
 			}
-
-			pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors);
-			pEdgeStrips += edgeStripPitch;
-			pStripStart += (m_canvasPixelBits / 8);
 		}
+
 	}
-
-
 
 	//____ _lineToEdges() __________________________________________________________
 
@@ -2485,9 +2524,9 @@ namespace wg
 		}
 	}
 
-	//____ plotPixelPatches() _________________________________________________
+	//____ plotPixels() _________________________________________________
 
-	void SoftGfxDevice::plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
 	{
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
@@ -2499,11 +2538,8 @@ namespace wg
 		if (pOp == nullptr )
 			return;
 
-		for (int i = 0; i < nPatches; i++)
-		{
-			Rect patch(m_clip, pPatches[i]);
-			pOp(patch, nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, colTrans);
-		}
+		for (int i = 0; i < m_nClipRects; i++)
+			pOp(m_pClipRects[i], nCoords, pCoords, pColors, m_pCanvasPixels, pixelBytes, pitch, colTrans);
 	}
 
 	//____ setBlitSource() ____________________________________________________
@@ -2537,150 +2573,56 @@ namespace wg
 	}
 
 
-	//____ transformBlit() [simple] ____________________________________________________
 
-	void SoftGfxDevice::transformBlit(const Rect& _dest, Coord _src, const int simpleTransform[2][2])
-	{
-		Rect	dest = _dest;
-		Coord	src = _src;
+	//____ transformBlit() [simple] ____________________________________
 
-		// Do Clipping
-
-		if ((m_clip.x > dest.x) || (m_clip.x + m_clip.w < dest.x + dest.w) ||
-			(m_clip.y > dest.y) || (m_clip.y + m_clip.h < dest.y + dest.h))
-		{
-
-			if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
-				(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
-				return;																					// Totally outside clip-rect.
-
-			if (dest.x < m_clip.x)
-			{
-				int xDiff = m_clip.x - dest.x;
-				dest.w -= xDiff;
-				dest.x = m_clip.x;
-
-				src.x += xDiff * simpleTransform[0][0];
-				src.y += xDiff * simpleTransform[1][0];
-			}
-
-			if (dest.y < m_clip.y)
-			{
-				int yDiff = m_clip.y - dest.y;
-				dest.h -= yDiff;
-				dest.y = m_clip.y;
-
-				src.x += yDiff * simpleTransform[0][1];
-				src.y += yDiff * simpleTransform[1][1];
-			}
-
-			if (dest.x + dest.w > m_clip.x + m_clip.w)
-				dest.w = (m_clip.x + m_clip.w) - dest.x;
-
-			if (dest.y + dest.h > m_clip.y + m_clip.h)
-				dest.h = (m_clip.y + m_clip.h) - dest.y;
-		}
-
-		// Render
-
-		(this->*m_pSimpleBlitOp)(dest, src, simpleTransform);
-	}
-
-	//____ transformBlit() [complex] ____________________________________________________
-
-	void SoftGfxDevice::transformBlit(const Rect& _dest, CoordF _src, const float complexTransform[2][2])
-	{
-		Rect	dest = _dest;
-		CoordF	src = _src;
-
-		// Do Clipping
-
-		if ((m_clip.x > dest.x) || (m_clip.x + m_clip.w < dest.x + dest.w) ||
-			(m_clip.y > dest.y) || (m_clip.y + m_clip.h < dest.y + dest.h))
-		{
-
-			if ((m_clip.x > dest.x + dest.w) || (m_clip.x + m_clip.w < dest.x) ||
-				(m_clip.y > dest.y + dest.h) || (m_clip.y + m_clip.h < dest.y))
-				return;																					// Totally outside clip-rect.
-
-			if (dest.x < m_clip.x)
-			{
-				int xDiff = m_clip.x - dest.x;
-				dest.w -= xDiff;
-				dest.x = m_clip.x;
-
-				src.x += xDiff * complexTransform[0][0];
-				src.y += xDiff * complexTransform[1][0];
-			}
-
-			if (dest.y < m_clip.y)
-			{
-				int yDiff = m_clip.y - dest.y;
-				dest.h -= yDiff;
-				dest.y = m_clip.y;
-
-				src.x += yDiff * complexTransform[0][1];
-				src.y += yDiff * complexTransform[1][1];
-			}
-
-			if (dest.x + dest.w > m_clip.x + m_clip.w)
-				dest.w = (m_clip.x + m_clip.w) - dest.x;
-
-			if (dest.y + dest.h > m_clip.y + m_clip.h)
-				dest.h = (m_clip.y + m_clip.h) - dest.y;
-		}
-
-		// Render
-
-		(this->*m_pComplexBlitOp)(dest, src, complexTransform);
-	}
-
-	//____ transformBlitPatches() [simple] ____________________________________
-
-	void SoftGfxDevice::transformBlitPatches(const Rect& _dest, Coord _src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::transformBlit(const Rect& dest, Coord _src, const int simpleTransform[2][2])
 	{
 		// Clip and render the patches
 
-		Rect clip(_dest, m_clip);
+		if (!dest.intersectsWith(m_clipBounds))
+			return;
 
-		for (int i = 0; i < nPatches; i++)
+		const Rect& clip = dest;
+
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect  dest = pPatches[i];
+			Rect  patch = m_pClipRects[i];
 
 			Coord src = _src;
 
-			Coord	patchOfs = dest.pos() - _dest.pos();
+			Coord	patchOfs = patch.pos() - dest.pos();
 
 
-			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
-				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+			if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
+				(clip.y > patch.y) || (clip.y + clip.h < patch.y + patch.h))
 			{
 
-				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
-					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
+				if ((clip.x > patch.x + patch.w) || (clip.x + clip.w < patch.x) ||
+					(clip.y > patch.y + patch.h) || (clip.y + clip.h < patch.y))
 					continue;																					// Totally outside clip-rect.
 
-				if (dest.x < clip.x)
+				if (patch.x < clip.x)
 				{
-					int xDiff = clip.x - dest.x;
-					dest.w -= xDiff;
-					dest.x = clip.x;
+					int xDiff = clip.x - patch.x;
+					patch.w -= xDiff;
+					patch.x = clip.x;
 					patchOfs.x += xDiff;
 				}
 
-				if (dest.y < clip.y)
+				if (patch.y < clip.y)
 				{
-					int yDiff = clip.y - dest.y;
-					dest.h -= yDiff;
-					dest.y = clip.y;
+					int yDiff = clip.y - patch.y;
+					patch.h -= yDiff;
+					patch.y = clip.y;
 					patchOfs.y += yDiff;
 				}
 
-				if (dest.x + dest.w > clip.x + clip.w)
-					dest.w = (clip.x + clip.w) - dest.x;
+				if (patch.x + patch.w > clip.x + clip.w)
+					patch.w = (clip.x + clip.w) - patch.x;
 
-				if (dest.y + dest.h > clip.y + clip.h)
-					dest.h = (clip.y + clip.h) - dest.y;
+				if (patch.y + patch.h > clip.y + clip.h)
+					patch.h = (clip.y + clip.h) - patch.y;
 			}
 
 			//
@@ -2688,56 +2630,59 @@ namespace wg
 			src.x += patchOfs.x * simpleTransform[0][0] + patchOfs.y * simpleTransform[1][0];
 			src.y += patchOfs.x * simpleTransform[0][1] + patchOfs.y * simpleTransform[1][1];
 
-			(this->*m_pSimpleBlitOp)(dest, src, simpleTransform);
+			(this->*m_pSimpleBlitOp)(patch, src, simpleTransform);
 		}
 	}
 
-	//____ transformBlitPatches() [complex] ____________________________________
+	//____ transformBlit() [complex] ____________________________________
 
-	void SoftGfxDevice::transformBlitPatches(const Rect& _dest, CoordF _src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
+	void SoftGfxDevice::transformBlit(const Rect& dest, CoordF _src, const float complexTransform[2][2])
 	{
 		// Clip and render the patches
 
-		Rect clip(_dest, m_clip);
+		if (!dest.intersectsWith(m_clipBounds))
+			return;
 
-		for (int i = 0; i < nPatches; i++)
+		const Rect& clip = dest;
+
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect	dest = pPatches[i];
-			CoordF	src = _src;
+			Rect  patch = m_pClipRects[i];
 
-			Coord	patchOfs = dest.pos() - _dest.pos();
+			CoordF src = _src;
 
-			// Do Clipping
+			Coord	patchOfs = patch.pos() - dest.pos();
 
-			if ((clip.x > dest.x) || (clip.x + clip.w < dest.x + dest.w) ||
-				(clip.y > dest.y) || (clip.y + clip.h < dest.y + dest.h))
+
+			if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
+				(clip.y > patch.y) || (clip.y + clip.h < patch.y + patch.h))
 			{
 
-				if ((clip.x > dest.x + dest.w) || (clip.x + clip.w < dest.x) ||
-					(clip.y > dest.y + dest.h) || (clip.y + clip.h < dest.y))
-					continue;																						// Totally outside clip-rect.
+				if ((clip.x > patch.x + patch.w) || (clip.x + clip.w < patch.x) ||
+					(clip.y > patch.y + patch.h) || (clip.y + clip.h < patch.y))
+					continue;																					// Totally outside clip-rect.
 
-				if (dest.x < clip.x)
+				if (patch.x < clip.x)
 				{
-					int xDiff = clip.x - dest.x;
-					dest.w -= xDiff;
-					dest.x = clip.x;
+					int xDiff = clip.x - patch.x;
+					patch.w -= xDiff;
+					patch.x = clip.x;
 					patchOfs.x += xDiff;
 				}
 
-				if (dest.y < clip.y)
+				if (patch.y < clip.y)
 				{
-					int yDiff = clip.y - dest.y;
-					dest.h -= yDiff;
-					dest.y = clip.y;
+					int yDiff = clip.y - patch.y;
+					patch.h -= yDiff;
+					patch.y = clip.y;
 					patchOfs.y += yDiff;
 				}
 
-				if (dest.x + dest.w > clip.x + clip.w)
-					dest.w = (clip.x + clip.w) - dest.x;
+				if (patch.x + patch.w > clip.x + clip.w)
+					patch.w = (clip.x + clip.w) - patch.x;
 
-				if (dest.y + dest.h > clip.y + clip.h)
-					dest.h = (clip.y + clip.h) - dest.y;
+				if (patch.y + patch.h > clip.y + clip.h)
+					patch.h = (clip.y + clip.h) - patch.y;
 			}
 
 			//
@@ -2745,11 +2690,10 @@ namespace wg
 			src.x += patchOfs.x * complexTransform[0][0] + patchOfs.y * complexTransform[1][0];
 			src.y += patchOfs.x * complexTransform[0][1] + patchOfs.y * complexTransform[1][1];
 
-			// Do render
-
-			(this->*m_pComplexBlitOp)(dest, src, complexTransform);
+			(this->*m_pComplexBlitOp)(patch, src, complexTransform);
 		}
 	}
+
 
 	//____ _onePassSimpleBlit() _____________________________________________
 

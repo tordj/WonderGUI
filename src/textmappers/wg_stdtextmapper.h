@@ -102,7 +102,7 @@ namespace wg
 
 
 		virtual void 	receive( Msg * pMsg );
-		virtual void 	renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
+		virtual void 	renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas );
 
 		virtual void	caretMove( TextBaseItem * pText, int newOfs );
 		virtual void	selectionChange( TextBaseItem * pText, int newSelectOfs, int newCaretOfs );
@@ -189,8 +189,8 @@ namespace wg
 		int				_textPosY( const BlockHeader * pHeader, int itemHeight ) const;
 		int				_charPosX( const TextBaseItem * pItem, int charOfs ) const;
 		
-		void 			_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip );
-		void 			_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, const Rect& clip, 
+		void 			_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas );
+		void 			_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, 
 											int begChar, int endChar, Color color );
 
 		

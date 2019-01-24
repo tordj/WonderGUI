@@ -158,7 +158,7 @@ namespace wg
 		virtual	~Scrollbar();
 
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		void	_receive( Msg * pMsg );
 		void	_refresh();
 		bool	_alphaTest( const Coord& ofs );
@@ -216,7 +216,7 @@ namespace wg
 
 
 		Component	_findMarkedComponent( Coord ofs );								// -1 = None.
-		void		_renderButton( GfxDevice * pDevice, const Rect& _clip, Rect& _dest, Skin * pSkin, State state );
+		void		_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state );
 		bool		_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state );
 		bool		_markTestHandle( Coord ofs );
 		void		_headerFooterChanged();

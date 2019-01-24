@@ -49,7 +49,7 @@ namespace wg
 		ModSurfaceItem(ItemHolder * pHolder, ModSurface * pInterface);
 		virtual ~ModSurfaceItem() {};
 
-		void		render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip);
+		void		render(GfxDevice * pDevice, const Rect& _canvas);
 		bool		alphaTest(const Coord& ofs, int markOpacity);
 
 

@@ -281,7 +281,7 @@ namespace wg
 		virtual void _setSize(const Size& size);
 
 		void		_receive(Msg * pMsg);
-		void		_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches);
+		void		_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches);
 		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
 

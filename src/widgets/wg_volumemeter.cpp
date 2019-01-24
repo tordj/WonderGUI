@@ -371,9 +371,9 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice, _canvas, _window, _clip);
+		Widget::_render(pDevice, _canvas, _window);
 		
 		Rect canvas;
 		if( m_pSkin )
@@ -414,14 +414,9 @@ namespace wg
 				break;
 		}
 		
-		RectF	clip( _clip );
-		
 		for( int i = 0 ; i < m_nLEDs ; i++ )
 		{
-	   
-			RectF rect(ledRect, clip);
-			
-			if( rect.w > 0.f && rect.h > 0.f )
+			if( ledRect.w > 0.f && ledRect.h > 0.f )
 			{
 				int section;
 
@@ -434,7 +429,7 @@ namespace wg
 						
 				Color color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
-				pDevice->fill( rect, color);
+				pDevice->fill( ledRect, color);
 			}
 
 			ledRect.x += stepX;

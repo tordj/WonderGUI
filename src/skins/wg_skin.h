@@ -50,8 +50,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const { renderPatches(pDevice, canvas, state, 1, &canvas); }
-		virtual void 	renderPatches( GfxDevice * pDevice, const Rect& canvas, State state, int nPatches, const Rect * pPatches ) const = 0;
+		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const = 0;
 
 		//.____ Geometry _________________________________________________
 

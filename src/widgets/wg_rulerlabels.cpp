@@ -129,9 +129,9 @@ namespace wg
 	
 	//____ _render() _____________________________________________________________________
 	
-	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/			
-				pLabel->textItem.render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ), _clip );
+				pLabel->textItem.render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->textItem.render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ), _clip );
+				pLabel->textItem.render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}

@@ -68,7 +68,7 @@ namespace wg
 	
 		virtual String		tooltip() const;
 	
-		virtual void		render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip );
+		virtual void		render( GfxDevice * pDevice, const Rect& _canvas );
 	
 		virtual Rect		rectForRange( int ofs, int length ) const;
 		

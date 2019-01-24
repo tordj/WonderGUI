@@ -1019,7 +1019,7 @@ void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf)
 	pGfxDevice->setBlitSource(pSurf);
 	pGfxDevice->rotScaleBlit({ 10,10,512,512 }, center, rot, scale);
 
-	rot+=0.1;
+	rot+=0.1f;
 	scale += scaleInc;
 
 	if (scale > 2 || scale < 0.3 )
@@ -1119,13 +1119,14 @@ void renderWaveThicknessTest( GfxDevice * pGfxDevice )
 
 		int posX = 100, posY = 100, width = 512, height = 400;
 
-		Rect oldClip = pGfxDevice->clip();
-		pGfxDevice->setClip({ 10,0,500,600 });
+		const Rect * oldClipList = pGfxDevice->clipList();
+		int oldClipListSize = pGfxDevice->clipListSize();
+
+		Rect clipList = { 10,0,500,600 };
+
+		pGfxDevice->setClipList(1, &clipList);
 		pGfxDevice->drawWave({ 0,70 + ln * (15 + ln), 1900, 1000 }, &line, &bottom, Color::Red, Color::Green);
-
-
-//		pGfxDevice->drawHorrWave({ 0,70 + ln * (15+ln) }, 1900, &line, &bottom, Color::Red, Color::Green );
-		pGfxDevice->setClip(oldClip);
+		pGfxDevice->setClipList(oldClipListSize, oldClipList);
 	}
 
 }
@@ -1146,7 +1147,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 
 	if( oldTicks == 0 )
 		tickDiff = 0;
-	else
+	else 
 		tickDiff = (int) (ticks - oldTicks);		
 	oldTicks = ticks;
 

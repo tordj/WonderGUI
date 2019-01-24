@@ -104,7 +104,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new RefreshButton(); };
 	
 		void			_receive( Msg * pMsg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		void			_cloneContent( const Widget * _pOrg );
 		virtual void 	_setSize( const Size& size );
 	

@@ -132,9 +132,9 @@ namespace wg
 	
 	//____ _render() ________________________________________________________
 	
-	void TextDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void TextDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -142,7 +142,7 @@ namespace wg
 		else
 			canvas = _canvas;
 	
-		m_text.render(pDevice, canvas, _clip);
+		m_text.render(pDevice, canvas);
 	}
 	
 	//____ _refresh() _______________________________________________________

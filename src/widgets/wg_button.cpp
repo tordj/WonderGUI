@@ -151,9 +151,9 @@ namespace wg
 	
 	//____ _render() _____________________________________________________________
 	
-	void Button::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Button::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect	contentRect = _canvas;
 	
@@ -173,7 +173,7 @@ namespace wg
 		// Print text
 	
 	 	if( !m_text.isEmpty() )
-			m_text.render( pDevice, textRect, _clip );
+			m_text.render( pDevice, textRect );
 	}
 	
 	//____ _receive() ______________________________________________________________

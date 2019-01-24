@@ -33,7 +33,7 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void ModSurfaceItem::render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _clip)
+	void ModSurfaceItem::render(GfxDevice * pDevice, const Rect& _canvas)
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 	

@@ -71,11 +71,11 @@ namespace wg
 		return 0;
 	}
 	
-	//____ renderPatches() ______________________________________________________________
+	//____ render() ______________________________________________________________
 		
-	void StaticColorSkin::renderPatches( GfxDevice * pDevice, const Rect& canvas, State state, int nPatches, const Rect * pPatches ) const
+	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
 	{
-		pDevice->fillPatches( canvas, m_color, nPatches, pPatches );
+		pDevice->fill( canvas, m_color );
 	}
 
 	//____ isOpaque() ______________________________________________________________

@@ -74,7 +74,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new Image(); };
 	
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		bool	_alphaTest( const Coord& ofs );
 	
 	private:

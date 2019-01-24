@@ -114,15 +114,6 @@ namespace wg
 
 		//
 
-		virtual void	fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches) override;
-		virtual void	fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches) override;
-
-		virtual void    plotPixelPatches(int nCoords, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches) override;
-
-		virtual void	drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches) override;
-		virtual void	drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches) override;
-
-/*
 		virtual void	fill(const Rect& rect, const Color& col) override;
 		virtual void	fill(const RectF& rect, const Color& col) override;
 
@@ -130,18 +121,14 @@ namespace wg
 
 		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
 		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
-*/
+
 
 		virtual bool	setBlitSource(Surface * pSource) override;
 
 		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
 		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		virtual void	transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
-		virtual void	transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches) override;
-
-
-		virtual void	transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches) override;
+		virtual void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 		virtual void	drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 

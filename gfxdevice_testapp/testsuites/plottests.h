@@ -8,7 +8,6 @@ public:
 		name = "PlotTests";
 
 		addTest("Plot", &PlotTests::plot );
-		addTest("PlotPatches", &PlotTests::plotPatches );
 	}
 
 	bool init(GfxDevice * pDevice, const Rect& canvas)
@@ -49,18 +48,9 @@ public:
 		return true;
 	}
 
-	bool plotPatches(GfxDevice * pDevice, const Rect& canvas)
-	{
-		pDevice->plotPixelPatches(c_nbCoords, m_coords, m_colors, 5, m_patches );
-		return true;
-	}
-
-
-
 	const static int c_nbCoords = 1000;
 
 	Coord	m_coords[c_nbCoords];
 	Color	m_colors[c_nbCoords];
-	Rect	m_patches[5] = { {0,0,64,64}, {128,0,64,64}, {64,64,64,64}, {0,128,64,64}, {128,128,64,64} };
 
 };

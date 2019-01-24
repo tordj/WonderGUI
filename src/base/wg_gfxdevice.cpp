@@ -93,7 +93,10 @@ namespace wg
 		m_tintColor 		= Color(255,255,255);
 		m_blendMode 		= BlendMode::Blend;
 		m_canvasSize		= canvasSize;
-		m_clip				= canvasSize;
+		m_clipCanvas		= canvasSize;
+		m_clipBounds		= canvasSize;
+		m_pClipRects		= &m_clipCanvas;
+		m_nClipRects		= 1;
 
 		if (s_gfxDeviceCount == 0)
 		{
@@ -141,19 +144,42 @@ namespace wg
 		return 0;
 	}
 
-	//____ setClip() __________________________________________________________
+	//____ setClipList() __________________________________________________________
 
-	void GfxDevice::setClip(const Rect& clip)
+	bool GfxDevice::setClipList(int nRectangles, const Rect * pRectangles)
 	{
-		m_clip = clip;
+		if (nRectangles == 0)
+		{
+			m_clipCanvas = m_canvasSize;
+			m_clipBounds = m_canvasSize;
+			m_pClipRects = &m_clipCanvas;
+			m_nClipRects = 1;
+			return true;
+		}
 
-		limit(m_clip.x, 0, m_canvasSize.w);
-		limit(m_clip.y, 0, m_canvasSize.h);
-		limit(m_clip.w, 0, m_canvasSize.w-m_clip.x);
-		limit(m_clip.h, 0, m_canvasSize.h - m_clip.y);
+		Rect bounds = *pRectangles;
+		for (int i = 1; i < nRectangles; i++)
+			bounds.growToContain(pRectangles[i]);
+
+		if (bounds.x < 0 || bounds.y < 0 || bounds.w > m_canvasSize.w || bounds.h > m_canvasSize.h)
+			return false;
+
+		m_pClipRects = pRectangles;
+		m_nClipRects = nRectangles;
+		m_clipBounds = bounds;
+		return true;
+	}
+	
+	//____ clearClipList() __________________________________________________________
+
+	void GfxDevice::clearClipList()
+	{
+		m_clipBounds = m_canvasSize;
+		m_clipCanvas = m_canvasSize;
+		m_pClipRects = &m_clipCanvas;
+		m_nClipRects = 1;
 	}
 
-	
 	//____ setTintColor() __________________________________________________________
 	
 	void GfxDevice::setTintColor( Color color )
@@ -195,52 +221,16 @@ namespace wg
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 
-	//____ fill() _____________________________________________________________
+	//____ fill() ______________________________________________________
 
 	void GfxDevice::fill(const Color& col)
 	{
-		fillPatches(m_clip, col, 1, &m_clip);
+		fill(m_canvasSize, col);
 	}
 
-	void GfxDevice::fill(const Rect& rect, const Color& col)
-	{
-		fillPatches(rect, col, 1, &m_clip );
-	}
-
-	void GfxDevice::fill(const RectF& rect, const Color& col)
-	{
-		fillPatches(rect, col, 1, &m_clip);
-	}
-
-	//____ plotPixels() _______________________________________________________
-
-	void GfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
-	{
-		plotPixelPatches(nCoords, pCoords, pColors, 1, &m_clip);
-	}
-
-	//____ drawLine() _________________________________________________________
-
-	void GfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
-	{
-		drawLinePatches(begin, end, color, thickness, 1, &m_clip);
-	}
+	//____ drawLine() __________________________________________________
 
 	void GfxDevice::drawLine(Coord begin, Direction dir, int length, Color color, float thickness)
-	{
-		drawLinePatches(begin, dir, length, color, thickness, 1, &m_clip);
-	}
-
-	//____ fillPatches() ______________________________________________________
-
-	void GfxDevice::fillPatches(const Color& col, int nPatches, const Rect * pPatches)
-	{
-		fillPatches(m_clip, col, nPatches, pPatches);
-	}
-
-	//____ drawLinePatches() __________________________________________________
-
-	void GfxDevice::drawLinePatches(Coord begin, Direction dir, int length, Color color, float thickness, int nPatches, const Rect * pPatches)
 	{
 		Coord end;
 
@@ -264,7 +254,7 @@ namespace wg
 			break;
 		}
 
-		drawLinePatches(begin, end, color, thickness, nPatches, pPatches);
+		drawLine(begin, end, color, thickness);
 	}
 
 
@@ -481,215 +471,6 @@ namespace wg
 		transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
-	//____ blitPatches() _________________________________________________________
-
-	void GfxDevice::blitPatches(Coord dest, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		transformBlitPatches({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0], nPatches, pPatches);
-	}
-
-	void GfxDevice::blitPatches(Coord dest, const Rect& src, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		transformBlitPatches({ dest, src.size() }, src.pos(), blitFlipTransforms[0], nPatches, pPatches);
-	}
-
-	//____ flipBlitPatches() _________________________________________________________
-
-	void GfxDevice::flipBlitPatches(Coord dest, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		Size srcSize = m_pBlitSource->size();
-
-		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
-		int ofsY = (srcSize.h - 1) * blitFlipOffsets[(int)flip][1];
-
-		Size dstSize = srcSize;
-		if (blitFlipTransforms[(int)flip][0][0] == 0)
-			swap(dstSize.w, dstSize.h);
-
-		transformBlitPatches({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip], nPatches, pPatches );
-	}
-
-	void GfxDevice::flipBlitPatches(Coord dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		int ofsX = src.x + (src.w - 1) * blitFlipOffsets[(int)flip][0];
-		int ofsY = src.y + (src.h - 1) * blitFlipOffsets[(int)flip][1];
-
-		Size dstSize = m_pBlitSource->size();
-		if (blitFlipTransforms[(int)flip][0][0] == 0)
-			swap(dstSize.w, dstSize.h);
-
-		transformBlitPatches({ dest, dstSize }, src.pos() + Coord(ofsX, ofsY), blitFlipTransforms[(int)flip], nPatches, pPatches);
-	}
-
-	//____ stretchBlitPatches() _______________________________________________
-
-	void GfxDevice::stretchBlitPatches(const Rect& dest, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		stretchBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), nPatches, pPatches);
-	}
-
-	void GfxDevice::stretchBlitPatches(const Rect& dest, const Rect& _src, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
-
-		float	mtx[2][2];
-
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
-		{
-			src.x += 0.5f;
-			src.y += 0.5f;
-
-			mtx[0][0] = (src.w - 1) / (dest.w - 1);
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = (src.h - 1) / (dest.h - 1);
-		}
-		else
-		{
-			mtx[0][0] = src.w / dest.w;
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
-		}
-
-		transformBlitPatches(dest, { src.x, src.y }, mtx, nPatches, pPatches);
-	}
-
-	void GfxDevice::stretchBlitPatches(const Rect& dest, const RectF& src, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		float	mtx[2][2];
-
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
-		{
-			mtx[0][0] = src.w / (dest.w - 1);
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h / (dest.h - 1);
-		}
-		else
-		{
-			mtx[0][0] = src.w / dest.w;
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
-		}
-
-		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
-	}
-
-	//____ stretchFlipBlitPatches() _____________________________________________________
-
-	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		stretchFlipBlitPatches(dest, Rect(0, 0, m_pBlitSource->size()), flip, nPatches, pPatches);
-	}
-
-	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const Rect& src, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		float scaleX, scaleY;
-		float ofsX, ofsY;
-
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
-		{
-			float srcW = (float)(src.w - 1);
-			float srcH = (float)(src.h - 1);
-
-			scaleX = srcW / (dest.w - 1);
-			scaleY = srcH / (dest.h - 1);
-
-			ofsX = src.x + 0.5f + srcW * blitFlipOffsets[(int)flip][0];
-			ofsY = src.y + 0.5f + srcH * blitFlipOffsets[(int)flip][1];
-		}
-		else
-		{
-			float srcW = (float)src.w;
-			float srcH = (float)src.h;
-
-			scaleX = srcW / dest.w;
-			scaleY = srcH / dest.h;
-
-			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
-			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];
-		}
-
-		float	mtx[2][2];
-
-		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
-
-		transformBlitPatches(dest, { ofsX, ofsY }, mtx, nPatches, pPatches);
-	}
-
-	void GfxDevice::stretchFlipBlitPatches(const Rect& dest, const RectF& src, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		float	scaleX = src.w / dest.w;
-		float	scaleY = src.h / dest.h;
-
-		float ofsX = src.x + (src.w - scaleX) * blitFlipOffsets[(int)flip][0];
-		float ofsY = src.y + (src.h - scaleY) * blitFlipOffsets[(int)flip][1];
-
-		float	mtx[2][2];
-
-		mtx[0][0] = scaleX * blitFlipTransforms[(int)flip][0][0];
-		mtx[0][1] = scaleY * blitFlipTransforms[(int)flip][0][1];
-		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
-		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
-
-		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
-	}
-
-	//____ rotScaleBlitPatches() _____________________________________________________
-
-	void GfxDevice::rotScaleBlitPatches(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale, int nPatches, const Rect * pPatches)
-	{
-		assert(m_pBlitSource != nullptr);
-
-		if (scale <= 0.f)
-			return;
-
-		CoordF	src;
-		float	mtx[2][2];
-
-		float	sz = (float)sin(-rotationDegrees * 3.14159265 / 180);
-		float	cz = (float)cos(-rotationDegrees * 3.14159265 / 180);
-
-		scale = 1.f / scale;
-
-		mtx[0][0] = cz * scale;
-		mtx[0][1] = sz * scale;
-
-		mtx[1][0] = -sz * scale;
-		mtx[1][1] = cz * scale;
-
-		src = srcCenter;
-
-		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
-		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
-
-		transformBlitPatches(dest, { src.x,src.y }, mtx, nPatches, pPatches);
-	}
 	
 	//____ blitNinePatch() ________________________________________________
 
@@ -778,165 +559,29 @@ namespace wg
 
 	}
 
-	//____ blitNinePatchPatches() ________________________________________________
+	//____ drawWave() ______________________________________________________
 
-	void GfxDevice::blitNinePatchPatches(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame, int nPatches, const Rect * pPatches )
+	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill )
 	{
-		assert(m_pBlitSource != nullptr);
-
-		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame)
-		{
-			blitPatches(dstRect.pos(), srcRect, nPatches, pPatches);
-			return;
-		}
-
-		if (srcFrame.isEmpty() || dstFrame.isEmpty())
-		{
-			stretchBlitPatches(dstRect.pos(), srcRect, nPatches, pPatches);
-			return;
-		}
-
-		//TODO: Optimize! Clip patches against our geometry first.
-		//TODO: Optimize! Call transformBlit directly instead of going through stretchBlit(), reuse transforms where possible.
-		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
-
-		Size srcMidSize(srcRect.w - srcFrame.left - srcFrame.right, srcRect.h - srcFrame.top - srcFrame.bottom);
-		Size dstMidSize(dstRect.w - dstFrame.left - dstFrame.right, dstRect.h - dstFrame.top - dstFrame.bottom);
-
-		if (srcFrame.top + dstFrame.top > 0)
-		{
-			Rect	srcNW(srcRect.x, srcRect.y, srcFrame.left, srcFrame.top);
-			Rect	srcN(srcRect.x + srcFrame.left, srcRect.y, srcMidSize.w, srcFrame.top);
-			Rect	srcNE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
-
-			Rect	dstNW(dstRect.x, dstRect.y, dstFrame.left, dstFrame.top);
-			Rect	dstN(dstRect.x + dstFrame.left, dstRect.y, dstMidSize.w, dstFrame.top);
-			Rect	dstNE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y, dstFrame.right, dstFrame.top);
-
-			if (srcNW.w + dstNW.w > 0)
-				stretchBlitPatches(dstNW, srcNW, nPatches, pPatches);
-
-			if (srcN.w + dstN.w > 0)
-				stretchBlitPatches(dstN, srcN, nPatches, pPatches);
-
-			if (srcNE.w + dstNE.w > 0)
-				stretchBlitPatches(dstNE, srcNE, nPatches, pPatches);
-		}
-
-
-		if (srcMidSize.h > 0 && dstMidSize.h > 0)
-		{
-			Rect	srcW(srcRect.x, srcRect.y + srcFrame.top, srcFrame.left, srcMidSize.h);
-			Rect	srcC(srcRect.x + srcFrame.left, srcRect.y + srcFrame.top, srcMidSize.w, srcMidSize.h);
-			Rect	srcE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y + srcFrame.top, srcFrame.right, srcMidSize.h);
-
-			Rect	dstW(dstRect.x, dstRect.y + dstFrame.top, dstFrame.left, dstMidSize.h);
-			Rect	dstC(dstRect.x + dstFrame.left, dstRect.y + dstFrame.top, dstMidSize.w, dstMidSize.h);
-			Rect	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
-
-			if (srcW.w + dstW.w > 0)
-				stretchBlitPatches(dstW, srcW, nPatches, pPatches);
-
-			if (srcC.w + dstC.w > 0)
-				stretchBlitPatches(dstC, srcC, nPatches, pPatches);
-
-			if (srcE.w + dstE.w > 0)
-				stretchBlitPatches(dstE, srcE, nPatches, pPatches);
-		}
-
-		if (srcFrame.bottom + dstFrame.bottom > 0)
-		{
-			Rect	srcSW(srcRect.x, srcRect.y + srcRect.h - srcFrame.bottom, srcFrame.left, srcFrame.bottom);
-			Rect	srcS(srcRect.x + srcFrame.left, srcRect.y + srcRect.h - srcFrame.bottom, srcMidSize.w, srcFrame.bottom);
-			Rect	srcSE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y + srcRect.h - srcFrame.bottom, srcFrame.right, srcFrame.bottom);
-
-			Rect	dstSW(dstRect.x, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.left, dstFrame.bottom);
-			Rect	dstS(dstRect.x + dstFrame.left, dstRect.y + dstRect.h - dstFrame.bottom, dstMidSize.w, dstFrame.bottom);
-			Rect	dstSE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstRect.h - dstFrame.bottom, dstFrame.right, dstFrame.bottom);
-
-			if (srcSW.w + dstSW.w > 0)
-				stretchBlitPatches(dstSW, srcSW, nPatches, pPatches);
-
-			if (srcS.w + dstS.w > 0)
-				stretchBlitPatches(dstS, srcS, nPatches, pPatches);
-
-			if (srcSE.w + dstSE.w > 0)
-				stretchBlitPatches(dstSE, srcSE, nPatches, pPatches);
-		}
-
+		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
+	//____ flipDrawWave() ______________________________________________________
 
-	//____ drawWave() ___________________________________________________
-
-	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill)
+	void GfxDevice::flipDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip )
 	{
-		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal], 1, &m_clip);
+		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)flip] );
 	}
 
-	//____ flipDrawWave() ___________________________________________________
+	//____ transformDrawWave() ______________________________________________________
 
-	void GfxDevice::flipDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip)
-	{
-		flipDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, flip, 1, &m_clip);
-	}
-
-	//____ drawElipse() ___________________________________________________
-
-	void GfxDevice::drawElipse(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor)
-	{
-		Rect patch((int)canvas.x, (int)canvas.y, (int)canvas.w + 1, (int)canvas.h + 1);
-
-		drawElipsePatches(canvas, thickness, fillColor, outlineThickness, outlineColor, 1, &patch);
-	}
-
-	//____ drawSegments() ______________________________________________________
-
-	void GfxDevice::drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch)
-	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], 1, &dest );
-	}
-
-	//____ flipDrawSegments() ______________________________________________________
-
-	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip)
-	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip], 1, &dest );
-	}
-
-	//____ drawWavePatches() ______________________________________________________
-
-	void GfxDevice::drawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, int nPatches, const Rect * pPatches)
-	{
-		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
-	}
-
-	//____ flipDrawWavePatches() ______________________________________________________
-
-	void GfxDevice::flipDrawWavePatches(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip, int nPatches, const Rect * pPatches)
-	{
-		transformDrawWavePatches(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)flip], nPatches, pPatches);
-	}
-
-	//____ transformDrawWavePatches() ______________________________________________________
-
-	void GfxDevice::transformDrawWavePatches(const Rect& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void GfxDevice::transformDrawWave(const Rect& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2] )
 	{
 		//TODO: If borders have different colors and cross, colors are not swapped.
 
-		// Make a bounding box around all patches (after clipping the patches)
+		// Make a bounding box around all clip rectangles
 
-		Rect bounds;
-		int patch = 0;
-		while( (bounds.w == 0 ||bounds.h == 0) && patch < nPatches )
-			bounds = Rect(pPatches[patch++], m_clip);
-
-		while (patch < nPatches)
-		{
-			Rect clipped(m_clip, pPatches[patch++]);
-			if (clipped.w != 0 && clipped.h != 0)
-				bounds.growToContain(clipped);
-		}
+		Rect bounds( m_clipBounds, _dest );
 
 		if (bounds.w == 0 || bounds.h == 0)
 			return;
@@ -1046,7 +691,7 @@ namespace wg
 			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
-			transformDrawSegmentPatches(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform, nPatches, pPatches);
+			transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
 
 		}
 		else
@@ -1092,7 +737,7 @@ namespace wg
 			col[4] = pBottomBorder->color;
 			col[5] = Color::Transparent;
 
-			transformDrawSegmentPatches(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform, nPatches, pPatches);
+			transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform);
 		}
 
 
@@ -1102,9 +747,9 @@ namespace wg
 		Base::memStackRelease(lineBufferSize);
 	}
 
-	//____ drawElipsePatches() ______________________________________________________
+	//____ drawElipse() ______________________________________________________
 
-	void GfxDevice::drawElipsePatches(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor, int nPatches, const Rect * pPatches)
+	void GfxDevice::drawElipse(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor )
 	{
 		// Center and corners in 24.8 format.
 
@@ -1125,7 +770,7 @@ namespace wg
 
 		// Adjusted clip
 
-		Rect clip(m_clip, outerRect);
+		Rect clip(m_clipBounds, outerRect);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -1269,36 +914,36 @@ namespace wg
 			}
 		}
 
-		// Split patches into upper and lower half, so we clip at the middle.
+		// Split clip rectangles into upper and lower half, so we clip at the middle.
 
 		int split = min(clip.y + clip.h, outerRect.y + (yMid >> 8));
 
-		int patchBufferSize = sizeof(Rect)*nPatches * 2;
-		Rect * pTopPatches = (Rect*)Base::memStackAlloc(patchBufferSize);
-		Rect * pBottomPatches = pTopPatches + nPatches;
-		int nTopPatches = 0;
-		int nBottomPatches = 0;
+		int clipBufferSize = sizeof(Rect)*m_nClipRects * 2;
+		Rect * pTopClips = (Rect*)Base::memStackAlloc(clipBufferSize);
+		Rect * pBottomClips = pTopClips + m_nClipRects;
+		int nTopClips = 0;
+		int nBottomClips = 0;
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const Rect& patch = pPatches[i];
+			const Rect& clip = m_pClipRects[i];
 
-			if (patch.y < split)
+			if (clip.y < split)
 			{
-				pTopPatches[nTopPatches] = patch;
-				if (patch.bottom() > split)
-					pTopPatches[nTopPatches].h = split - patch.y;
-				nTopPatches++;
+				pTopClips[nTopClips] = clip;
+				if (clip.bottom() > split)
+					pTopClips[nTopClips].h = split - clip.y;
+				nTopClips++;
 			}
-			if (patch.bottom() > split)
+			if (clip.bottom() > split)
 			{
-				pBottomPatches[nBottomPatches] = patch;
-				if (patch.y < split)
+				pBottomClips[nBottomClips] = clip;
+				if (clip.y < split)
 				{
-					pBottomPatches[nBottomPatches].h -= split - patch.y;
-					pBottomPatches[nBottomPatches].y = split;
+					pBottomClips[nBottomClips].h -= split - clip.y;
+					pBottomClips[nBottomClips].y = split;
 				}
-				nBottomPatches++;
+				nBottomClips++;
 			}
 		}
 
@@ -1311,42 +956,35 @@ namespace wg
 		col[3] = outlineColor;
 		col[4] = Color::Transparent;
 
-		drawSegmentPatches(outerRect, 5, col, samplePoints, pBuffer, 4, nTopPatches, pTopPatches);
-		drawSegmentPatches(outerRect, 5, col, samplePoints, pBuffer + samplePoints * 4, 4, nBottomPatches, pBottomPatches);
+		const Rect * pOldClipRects = m_pClipRects;
+		int nOldClipRects = m_nClipRects;
+
+		setClipList(nTopClips, pTopClips);
+		drawSegments(outerRect, 5, col, samplePoints, pBuffer, 4);
+		setClipList(nBottomClips, pBottomClips);
+		drawSegments(outerRect, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
+		setClipList(nOldClipRects, pOldClipRects);
 
 		// Free temporary work memory
 
-		Base::memStackRelease(patchBufferSize);
+		Base::memStackRelease(clipBufferSize);
 		Base::memStackRelease(bufferSize);
 
 	}
 
-	//____ drawSegmentPatches() ______________________________________________________
+	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, int nPatches, const Rect * pPatches)
+	void GfxDevice::drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )
 	{
-		transformDrawSegmentPatches( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal], nPatches, pPatches);
+		transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
-	//____ flipDrawSegmentPatches() ______________________________________________________
+	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, int nPatches, const Rect * pPatches)
+	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip )
 	{
-		transformDrawSegmentPatches(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip], nPatches, pPatches);
+		transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip] );
 	}
-
-	//____ transformBlit() ______________________________________________________
-
-	void GfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
-	{
-		transformBlitPatches(dest, src, simpleTransform, 1, &dest);
-	}
-
-	void GfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
-	{
-		transformBlitPatches(dest, src, complexTransform, 1, &dest);
-	}
-
 
 
 	//____ blitHorrBar() ______________________________________________________

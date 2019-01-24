@@ -107,9 +107,9 @@ namespace wg
 	
 	//____ _render() ________________________________________________________
 	
-	void LineEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void LineEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect canvas;
 		if( m_pSkin )
@@ -166,9 +166,9 @@ namespace wg
 
 		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
 
-		Rect textClip(_clip, canvas);		// Text should not be rendered outside widgets contentRect.
+//		Rect textClip(_clip, canvas);		//TODO: Text should not be rendered outside widgets contentRect. Maybe do this inside m_text.render?
 
-		m_text.render(pDevice, textCanvas, textClip );
+		m_text.render(pDevice, textCanvas );
 	}
 	
 	//____ _refresh() _______________________________________________________

@@ -453,17 +453,10 @@ namespace wg
 	
 	//____ _renderPatches() ________________________________________________________
 	
-	void Widget::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, Patches * _pPatches )
+	void Widget::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
 	{
-		for( const Rect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
-		{
-			Rect clip( _window, *pRect );
-			if( clip.w > 0 && clip.h > 0 )
-			{
-				pDevice->setClip(clip);
-				_render( pDevice, _canvas, _window, clip );
-			}
-		}
+		pDevice->setClipList(patches.size(), patches.begin());
+		_render( pDevice, _canvas, _window );
 	}
 	
 	//____ onCollectPatches()  ____________________________________________________
@@ -485,7 +478,7 @@ namespace wg
 	
 	//____ _render() ____________________________________________________________
 	
-	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		if( m_pSkin )
 			m_pSkin->render( pDevice, _canvas, m_state );

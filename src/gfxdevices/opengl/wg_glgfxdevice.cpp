@@ -579,7 +579,10 @@ namespace wg
 
 		m_pCanvas = nullptr;
 		m_canvasSize = canvasSize;
-		m_clip = m_canvasSize;
+		m_clipCanvas = m_canvasSize;
+		m_clipBounds = m_canvasSize;
+		m_pClipRects = &m_clipCanvas;
+		m_nClipRects = 1;
 
 		m_canvasYstart = canvasSize.h;
 		m_canvasYmul = -1;
@@ -591,12 +594,6 @@ namespace wg
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
-
-			_beginStateCommand(Command::SetClip, 4);
-			m_commandBuffer[m_commandOfs++] = m_clip.x;
-			m_commandBuffer[m_commandOfs++] = m_clip.y;
-			m_commandBuffer[m_commandOfs++] = m_clip.w;
-			m_commandBuffer[m_commandOfs++] = m_clip.h;
 		}
 	
 		return true;
@@ -612,7 +609,10 @@ namespace wg
 
 		m_pCanvas = pSurface;
 		m_canvasSize = pSurface->size();
-		m_clip = m_canvasSize;
+		m_clipCanvas = m_canvasSize;
+		m_clipBounds = m_canvasSize;
+		m_pClipRects = &m_clipCanvas;
+		m_nClipRects = 1;
 
 		m_canvasYstart = 0;
 		m_canvasYmul = 1;
@@ -624,32 +624,29 @@ namespace wg
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
-
-			_beginStateCommand(Command::SetClip, 4);
-			m_commandBuffer[m_commandOfs++] = m_clip.x;
-			m_commandBuffer[m_commandOfs++] = m_clip.y;
-			m_commandBuffer[m_commandOfs++] = m_clip.w;
-			m_commandBuffer[m_commandOfs++] = m_clip.h;
 		}
 
 		return true;
 	}
 
-	//____ setClip() __________________________________________________________________
+	//____ setClipList() ______________________________________________________
 
-	void GlGfxDevice::setClip(const Rect& clip)
+	bool GlGfxDevice::setClipList(int nRectangles, const Rect * pRectangles)
 	{
-		GfxDevice::setClip(clip);
-
-		if( m_bRendering )
+		if (GfxDevice::setClipList(nRectangles, pRectangles))
 		{
-			_endCommand();
-			_beginStateCommand(Command::SetClip, 4);
-			m_commandBuffer[m_commandOfs++] = m_clip.x;
-			m_commandBuffer[m_commandOfs++] = m_clip.y;
-			m_commandBuffer[m_commandOfs++] = m_clip.w;
-			m_commandBuffer[m_commandOfs++] = m_clip.h;
+			m_clipCurrOfs = -1;
+			return true;
 		}
+		return false;
+	}
+
+	//____ clearClipList() ____________________________________________________
+
+	void GlGfxDevice::clearClipList()
+	{
+		GfxDevice::clearClipList();
+		m_clipCurrOfs = -1;
 	}
 
 	//____ setTintColor() __________________________________________________________________
@@ -737,9 +734,10 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_clipWriteOfs = 0;
+		m_clipCurrOfs = -1;
 
 		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
-		_setClip(m_clip);
 		_setBlendMode(m_blendMode);
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
@@ -801,9 +799,9 @@ namespace wg
 		return true;
 	}
 
-	//____ fillPatches() ____ [standard] __________________________________________________
+	//____ fill() ____ [standard] __________________________________________________
 
-	void GlGfxDevice::fillPatches(const Rect& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::fill(const Rect& rect, const Color& col)
 	{
 		assert(glGetError() == 0);
 
@@ -812,17 +810,14 @@ namespace wg
 		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
 			return;
 
-		// Clip our rectangle
-
-		Rect clip(rect, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if (!rect.intersectsWith(m_clipBounds))
 			return;
 
 		//
 
 		Color fillColor = col * m_tintColor;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -834,9 +829,9 @@ namespace wg
 			_beginDrawCommand(Command::Fill);
 		}
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], rect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -878,9 +873,9 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ fillPatches() ____ [subpixel] __________________________________________________
+	//____ fill() ____ [subpixel] __________________________________________________
 
-	void GlGfxDevice::fillPatches(const RectF& rect, const Color& col, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::fill(const RectF& rect, const Color& col)
 	{
 		assert(glGetError() == 0);
 
@@ -893,16 +888,15 @@ namespace wg
 
 		Rect outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
 
-		// Clip our rectangle
 
-		Rect clip(outerRect, m_clip);
+		Rect clip(outerRect, m_clipBounds);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
 		//
 
 		Color fillColor = col * m_tintColor;
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -914,9 +908,9 @@ namespace wg
 			_beginDrawCommand(Command::FillSubPixel);
 		}
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -975,9 +969,9 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ plotPixelPatches() ______________________________________________________
+	//____ plotPixels() ______________________________________________________
 
-	void GlGfxDevice::plotPixelPatches(int nPixels, const Coord * pCoords, const Color * pColors, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::plotPixels(int nPixels, const Coord * pCoords, const Color * pColors)
 	{
 		assert(glGetError() == 0);
 
@@ -996,25 +990,22 @@ namespace wg
 			_beginDrawCommand(Command::Plot);
 		}
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], m_clip);
-			if (patch.w > 0 && patch.h > 0)
+			const Rect& clip = m_pClipRects[i];
+			for (int pixel = 0; pixel < nPixels; pixel++)
 			{
-				for (int pixel = 0; pixel < nPixels; pixel++)
+				if (clip.contains(pCoords[pixel]))
 				{
-					if (patch.contains(pCoords[pixel]))
-					{
-						m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
-						m_vertexBufferData[m_vertexOfs].color = pColors[pixel] * m_tintColor;
-						m_vertexOfs++;
+					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
+					m_vertexBufferData[m_vertexOfs].color = pColors[pixel] * m_tintColor;
+					m_vertexOfs++;
 
-						if (m_vertexOfs == c_vertexBufferSize)
-						{
-							_endCommand();
-							_executeBuffer();
-							_beginDrawCommand(Command::Plot);
-						}
+					if (m_vertexOfs == c_vertexBufferSize)
+					{
+						_endCommand();
+						_executeBuffer();
+						_beginDrawCommand(Command::Plot);
 					}
 				}
 			}
@@ -1023,22 +1014,22 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ drawLinePatches() ____ [from/to] __________________________________________________
+	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLinePatches(Coord begin, Coord end, Color color, float thickness, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
 	{
 		assert(glGetError() == 0);
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4 || m_commandOfs > c_commandBufferSize - 10 * nPatches )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4 || m_clipCurrOfs == -1 )
 		{
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommand(Command::LineFromTo);
+			_beginClippedDrawCommand(Command::LineFromTo);
 		}
 		else if (m_cmd != Command::LineFromTo)
 		{
 			_endCommand();
-			_beginDrawCommand(Command::LineFromTo);
+			_beginClippedDrawCommand(Command::LineFromTo);
 		}
 
 		int 	length;
@@ -1116,30 +1107,11 @@ namespace wg
 
 		}
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], m_clip);
+			const Rect& patch = m_pClipRects[i];
 			if (patch.w > 0 && patch.h > 0)
 			{
-				bool bScissor = false;
-
-				// Handle clipping against patch
-				 
-				bScissor = true;
-
-				if (bScissor)
-				{
-					_endCommand();
-					_beginStateCommand(Command::SetClip, 4);
-					m_commandBuffer[m_commandOfs++] = patch.x;
-					m_commandBuffer[m_commandOfs++] = patch.y;
-					m_commandBuffer[m_commandOfs++] = patch.w;
-					m_commandBuffer[m_commandOfs++] = patch.h;
-					_beginDrawCommand(Command::LineFromTo);
-				}
-
-				// 
-
 				m_vertexBufferData[m_vertexOfs].coord = c1;
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
@@ -1169,17 +1141,6 @@ namespace wg
 				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 				m_vertexOfs++;
-/*
-				if( bScissor )
-				{
-					_endCommand();
-					_beginStateCommand(Command::SetClip, 4);
-					m_commandBuffer[m_commandOfs++] = m_clip.x;
-					m_commandBuffer[m_commandOfs++] = m_clip.y;
-					m_commandBuffer[m_commandOfs++] = m_clip.w;
-					m_commandBuffer[m_commandOfs++] = m_clip.h;
-				}
-*/
 			}
 		}
 
@@ -1188,19 +1149,12 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = slope;
 		m_extrasBufferData[m_extrasOfs++] = bSteep;
 
-			_endCommand();
-			_beginStateCommand(Command::SetClip, 4);
-			m_commandBuffer[m_commandOfs++] = m_clip.x;
-			m_commandBuffer[m_commandOfs++] = m_clip.y;
-			m_commandBuffer[m_commandOfs++] = m_clip.w;
-			m_commandBuffer[m_commandOfs++] = m_clip.h;
-
 		assert(glGetError() == 0);
 	}
 
-	//____ drawLinePatches() ____ [start/direction] __________________________________________________
+	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLinePatches(Coord begin, Direction dir, int length, Color col, float thickness, int nPatches, const Rect * pPatches)
+	void GlGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
 	{
 		assert(glGetError() == 0);
 
@@ -1251,15 +1205,14 @@ namespace wg
 
 		// Clip our rectangle
 
-		Rect clip(outerRect, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if (!outerRect.intersectsWith(m_clipBounds))
 			return;
 
 		//
 
 		Color fillColor = col * m_tintColor;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1274,9 +1227,9 @@ namespace wg
 
 		// Provide the patches
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -1335,22 +1288,19 @@ namespace wg
 
 	}
 
-	//____ transformBlitPatches() ____ [simple] __________________________________________________
+	//____ transformBlit() ____ [simple] __________________________________________________
 
-	void GlGfxDevice::transformBlitPatches(const Rect& dest, Coord src, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void GlGfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
 		if (m_pBlitSource == nullptr)
 			return;
 
-		// Clip our rectangle
-
-		Rect clip(dest, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 8 )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8 )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1362,9 +1312,9 @@ namespace wg
 			_beginDrawCommand(Command::Blit);
 		}
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1440,22 +1390,19 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ transformBlitPatches() ____ [complex] __________________________________________________
+	//____ transformBlit() ____ [complex] __________________________________________________
 
-	void GlGfxDevice::transformBlitPatches(const Rect& dest, CoordF src, const float complexTransform[2][2], int nPatches, const Rect * pPatches)
+	void GlGfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
 		if (m_pBlitSource == nullptr)
 			return;
 
-		// Clip our rectangle
-
-		Rect clip(dest, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - 8)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1469,9 +1416,9 @@ namespace wg
 
 		//
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1534,23 +1481,20 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ transformDrawSegmentPatches() ______________________________________________________
+	//____ transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::transformDrawSegmentPatches(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2], int nPatches, const Rect * pPatches)
+	void GlGfxDevice::transformDrawSegments( const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
 	{
 		assert(glGetError() == 0);
 
-		// Clip our rectangle
-
-		Rect clip(dest, m_clip);
-		if (clip.w == 0 || clip.h == 0)
+		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
 		//
 
 		int extrasSpaceNeeded = (4 + 4 * nSegments + (nEdgeStrips - 1)*(nSegments - 1)*2 + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * nPatches || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1564,9 +1508,9 @@ namespace wg
 
 		// Setup vertices
 
-		for (int i = 0; i < nPatches; i++)
+		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(pPatches[i], clip);
+			Rect patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1725,12 +1669,6 @@ namespace wg
 					pCmd += 2;
 					break;
 				}
-				case Command::SetClip:
-				{
-					_setClip( Rect( pCmd[0], pCmd[1], pCmd[2], pCmd[3] ) );
-					pCmd += 4;
-					break;
-				}
 				case Command::SetBlendMode:
 				{
 					_setBlendMode((BlendMode)* pCmd++);
@@ -1777,8 +1715,18 @@ namespace wg
 					glUseProgram(m_lineFromToProg);
 					glEnableVertexAttribArray(2);
 
+					int clipListOfs = *pCmd++;
+					int clipListLen = *pCmd++;
 					int nVertices = *pCmd++;
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+
+					for (int i = 0; i < clipListLen; i++)
+					{
+						Rect& clip = m_clipListBuffer[clipListOfs++];
+						glScissor(clip.x, clip.y, clip.w, clip.h);
+						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+					}
+
+					glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
 					vertexOfs += nVertices;
 					break;
 				}
@@ -1815,6 +1763,8 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_clipWriteOfs = 0;
+		m_clipCurrOfs = -1;
 
 		assert(glGetError() == 0);
 	}
@@ -1852,6 +1802,8 @@ namespace wg
 		int canvasYmul		= pCanvas ? 1 : -1;
 
 		glViewport(0, 0, width, height);
+		glScissor(0, 0, width, height);
+
 
 		glUseProgram(m_fillProg);
 		glUniform2f(m_fillProgDimLoc, (GLfloat) width, (GLfloat) height);
@@ -1882,17 +1834,6 @@ namespace wg
 		glUniform2f(m_segmentsProgDimLoc, (GLfloat)width, (GLfloat)height);
 		glUniform1i(m_segmentsProgYofsLoc, canvasYstart);
 		glUniform1i(m_segmentsProgYmulLoc, canvasYmul);
-
-		assert(glGetError() == 0);
-	}
-
-	//____ _setClip() _______________________________________________________
-
-	void GlGfxDevice::_setClip( Rect clip )
-	{
-		assert(glGetError() == 0);
-
-		glScissor(clip.x, clip.y, clip.w, clip.h);
 
 		assert(glGetError() == 0);
 	}

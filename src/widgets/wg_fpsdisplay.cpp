@@ -131,9 +131,9 @@ namespace wg
 	
 	//____ _render() ________________________________________________________
 	
-	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		Widget::_render(pDevice,_canvas,_window,_clip);
+		Widget::_render(pDevice,_canvas,_window);
 	
 		Rect content;
 		if( m_pSkin )
@@ -141,8 +141,8 @@ namespace wg
 		else
 			content = _canvas;
 
-		m_labelsText.render( pDevice, content, _clip );
-		m_valuesText.render( pDevice, content, _clip );	
+		m_labelsText.render( pDevice, content );
+		m_valuesText.render( pDevice, content );	
 	}
 	
 	

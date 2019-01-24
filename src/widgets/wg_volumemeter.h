@@ -83,7 +83,7 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
 		
 		void			_receive( Msg * pMsg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 		void			_cloneContent( const Widget * _pOrg );
 		bool			_alphaTest( const Coord& ofs );
 		void			_setSize( const Size& size );
