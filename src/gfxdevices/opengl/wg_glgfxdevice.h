@@ -231,7 +231,6 @@ namespace wg
 		GLuint	m_extrasBufferId;
 		GLfloat m_extrasBufferData[c_extrasBufferSize];								// Space to store additional primitive data for shaders
 
-		GLuint	m_stripesBufferTex;
 
 		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
 

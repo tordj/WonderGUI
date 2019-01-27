@@ -976,7 +976,7 @@ namespace wg
 
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[edge].a) / 255);
+							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
 							backFraction -= blendFraction;
 
 							accB += pCol[i].b * blendFraction;
@@ -994,7 +994,7 @@ namespace wg
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[edge].a) / 255);
+							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
 
 							accB += pCol[i].b * blendFraction;
 							accG += pCol[i].g * blendFraction;
@@ -1011,7 +1011,7 @@ namespace wg
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[edge].a) / 255);
+							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
 
 							accB += pCol[i].b * blendFraction;
 							accG += pCol[i].g * blendFraction;
@@ -2215,9 +2215,6 @@ namespace wg
 			 
 			for (int x = 0; x < columns; x++)
 			{
-				if (x == columns - 1)
-					int err = 0;
-
 				int nEdges = 0;
 				const Color * pColors = pSegmentColors;
 
@@ -2315,7 +2312,6 @@ namespace wg
 				continue;
 
 			// Calculate stripstart, clipBeg/clipEnd and first edge for patch
-
 
 			int columnOfs = patch.x - dest.x;
 			int rowOfs = patch.y - dest.y;

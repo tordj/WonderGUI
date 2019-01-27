@@ -23,6 +23,8 @@ public:
 		addTest("SegBlendMultiply", &SegmentTests::setBlendModeMultiply, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
 		addTest("SegBlendInvert", &SegmentTests::setBlendModeInvert, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
 
+		addTest("SegPrecision", &SegmentTests::precisionTest);
+
 	}
 
 
@@ -174,6 +176,19 @@ public:
 		return true;
 	}
 
+	bool precisionTest(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->plotPixels(4, m_precisionPlotCoords, m_precisionPlotColors);
+
+//		pDevice->drawSegments({ 2,1,1,4 }, 5, m_precisionColors, 2, &m_precisionEdges[0][0], 4);
+//		pDevice->drawSegments({ canvas.w-1,1,1,4 }, 5, m_precisionColors, 2, &m_precisionEdges[0][0], 4);
+
+		pDevice->drawSegments({ 0,50,1,340 }, 5, m_precisionColors, 2, &m_precisionEdges2[0][0], 4);
+		pDevice->drawSegments({ canvas.w-2,50,1,340 }, 5, m_precisionColors, 2, &m_precisionEdges2[0][0], 4);
+
+		return true;
+	}
+
 
 private:
 
@@ -182,5 +197,14 @@ private:
 	int		m_nRainbowEdges = 512 + 1;
 	int		m_rainbowEdges[512 + 1][7];
 
+	Coord	m_precisionPlotCoords[4] = { {1,1}, {1,2}, {1,3}, {1,4} };
+	Color	m_precisionPlotColors[4] = { {42,42,42,255}, {128,128,128,255}, {213,213,213,255}, {255,255,255,255} };
+
+	int		m_precisionEdges[2][4] = { {0 * 256+128, 6 * 256, 6 * 256, 6 * 256}, {3 * 256+128, 6 * 256, 6 * 256, 6 * 256} };
+	Color	m_precisionColors[5] = { {0,0,0,0}, {255,255,255,255}, {255,0,0,255}, {255,0,0,255}, {255,0,0,255} };
+
+	int		m_precisionEdges2[2][4] = { {200 * 256 + 240, 219 * 256 + 89, 260 * 256, 260 * 256}, {206 * 256+170, 240 * 256, 260 * 256, 260 * 256} };
+
+
 };
- 
+

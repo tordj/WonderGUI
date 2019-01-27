@@ -236,6 +236,7 @@ namespace wg
 		"uniform int yOfs;										"
 		"uniform int yMul;										"
 		"uniform samplerBuffer extrasId;						"
+		"uniform samplerBuffer colorsId;					"
 		"layout(location = 0) in ivec2 pos;                     "
 		"layout(location = 1) in vec4 color;					"
 		"layout(location = 2) in int extrasOfs;					"
@@ -243,8 +244,13 @@ namespace wg
 		"out vec4 fragColor;									"
 		"out vec2 texUV;										"
 		"flat out int segments;									"
-		"flat out int colorsOfs;								"
 		"flat out int stripesOfs;								"
+		"flat out vec4 col1; "
+		"flat out vec4 col2; "
+		"flat out vec4 col3; "
+		"flat out vec4 col4; "
+		"flat out vec4 col5; "
+
 		"void main()											"
 		"{                                                      "
 		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
@@ -255,56 +261,102 @@ namespace wg
 		"   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 		"   segments = int(extras.x);							"
 		"   stripesOfs = int(extras.y);							"
-		"	colorsOfs = extrasOfs+1;							"
+		"	int colorsOfs = extrasOfs+1;						"
 		"   texUV = uv;											"
+
+		"	col1 = texelFetch(colorsId, colorsOfs ); "
+		"	col2 = texelFetch(colorsId, colorsOfs+1 ); "
+		"	col3 = texelFetch(colorsId, colorsOfs+2 ); "
+		"	col4 = texelFetch(colorsId, colorsOfs+3 ); "
+		"	col5 = texelFetch(colorsId, colorsOfs+4 ); "
+
 		"}                                                      ";
+
 
 	const char segmentsFragmentShader[] =
 
 		"#version 330 core\n"
-		"uniform samplerBuffer colorsId;					"
 		"uniform samplerBuffer stripesId;				"
 		"in vec2 texUV;									"
 		"in vec4 fragColor;								"
 		"flat in int segments;							"
-		"flat in int colorsOfs;							"
 		"flat in int stripesOfs;						"
+		"flat in vec4 col1; "
+		"flat in vec4 col2; "
+		"flat in vec4 col3; "
+		"flat in vec4 col4; "
+		"flat in vec4 col5; "
+
 		"out vec4 color;								"
 		"void main()									"
 		"{												"
-		"	vec4 col1 = texelFetch(colorsId, colorsOfs ); "
-		"	vec4 col2 = texelFetch(colorsId, colorsOfs+1 ); "
-		"	vec4 col3 = texelFetch(colorsId, colorsOfs+2 ); "
-		"	vec2 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) ).xy; "
-		"	vec2 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 ).xy; "
-		"	float factor1 = 1.f; "
-		"   float factor2 = clamp( (texUV.y - edge1.x) * edge1.y, 0.f, 1.f );"
-		"   float factor3 = clamp( (texUV.y - edge2.x) * edge2.y, 0.f, 1.f );"
-		"   color = col1 * (factor1-factor2) + col2 * (factor2-factor3) + col3 * factor3;"
+		"	vec4 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) ); "
+		"	vec4 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 ); "
+		"	vec4 edge3 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+2 ); "
+		"	vec4 edge4 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+3 ); "
 
-//		"   float colIndex = clamp( texUV.y, 0, segments-1 );    "
-//		"   color = fragColor * texelFetch(colorsId, colorsOfs + int(colIndex) );		"
+		"	float factor1 = 1.f; "
+
+		"	float x1 = (texUV.y - edge1.r) * edge1.g;"
+		"	float adder1 = edge1.g / 2.f;"
+		"	if (x1 < 0.f)"
+		"		adder1 = edge1.b;"
+		"	else if (x1 + edge1.g > 1.f)"
+		"		adder1 = edge1.a;"
+		"	float factor2 = clamp(x1 + adder1, 0.f, 1.f);"
+
+		"	float x2 = (texUV.y - edge2.r) * edge2.g;"
+		"	float adder2 = edge2.g / 2.f;"
+		"	if (x2 < 0.f)"
+		"		adder2 = edge2.b;"
+		"	else if (x2 + edge2.g > 1.f)"
+		"		adder2 = edge2.a;"
+		"	float factor3 = clamp(x2 + adder2, 0.f, 1.f);"
+
+		"	float x3 = (texUV.y - edge3.r) * edge3.g;"
+		"	float adder3 = edge3.g / 2.f;"
+		"	if (x3 < 0.f)"
+		"		adder3 = edge3.b;"
+		"	else if (x3 + edge3.g > 1.f)"
+		"		adder3 = edge3.a;"
+		"	float factor4 = clamp(x3 + adder3, 0.f, 1.f);"
+
+		"	float x4 = (texUV.y - edge4.r) * edge4.g;"
+		"	float adder4 = edge4.g / 2.f;"
+		"	if (x4 < 0.f)"
+		"		adder4 = edge4.b;"
+		"	else if (x4 + edge4.g > 1.f)"
+		"		adder4 = edge4.a;"
+		"	float factor5 = clamp(x4 + adder4, 0.f, 1.f);"
+
+
+		"   factor1 = (factor1 -factor2)*col1.a;"
+		"   factor2 = (factor2 -factor3)*col2.a;"
+		"   factor3 = (factor3 - factor4)*col3.a;"
+		"   factor4 = (factor4 - factor5)*col4.a;"
+		"   factor5 = (factor5)*col5.a;"
+
+		"   float totalAlpha = factor1 + factor2 + factor3 + factor4 + factor5;"
+
+
+		"   color.a = totalAlpha; "
+		"   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5)/totalAlpha;"
+		"   color *= fragColor;"
 		"}												";
 
-
 /*
-	clamp( clamp( texUV.y - startOfs + 1.f, 0.f, 1.f ) * startCoverage + (texUV.y - startOfs) * coverageInc, 0.f, 1.f )
-
-	// Under förutsättning att coverageInc alltid är större än startCoverage.
-
-	float factor2 = clamp( edge1.y + (texUV.y - edge1.x) * edge1.z, 0.f, 1.f )
-
-
-
-
-
-
-	clamp( clamp( texUV.y - startOfs + 1.f, 0.f, 1.f ) * startCoverage + (texUV.y - startOfs) * coverageInc, 0.f, 1.f )
-
-
+	"	float xQ = (texUV.y - edgeQ.r) * edgeQ.g;"
+		"	float adderQ = edgeQ.g / 2.f;"
+		"	if (xQ < 0.f)"
+		"		adderQ = edgeQ.b;"
+		"	if (xQ + edgeQ.g > 1.f)"
+		"		adderQ = edgeQ.a;"
+		"	float factor5 = clamp(xQ + adderQ, 0.f, 1.f);"
 */
 
 
+
+	
 
 	//____ create() _______________________________________________________________
 	
@@ -411,7 +463,7 @@ namespace wg
 		glUseProgram(m_segmentsProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 		glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
-		glUniform1i(stripesIdLoc, 2);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+		glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
 
 
 		assert(glGetError() == 0);
@@ -482,23 +534,6 @@ namespace wg
 		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, m_extrasBufferId);
 
-		// Create a TextureBufferObject for providing stripes to segment fragment shader.
-
-//		glGenBuffers(1, &m_stripesBufferId);
-//		glBindBuffer(GL_TEXTURE_BUFFER, m_stripesBufferId);
-//		glBufferData(GL_TEXTURE_BUFFER, c_stripesBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
-
-		assert(glGetError() == 0);
-
-		// Generating stripesBufferTexture, but let it be backed by the extrasBuffer. No need for a separate buffer as long as we keep things nice and tidy...
-
-		glGenTextures(1, &m_stripesBufferTex);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_BUFFER, m_stripesBufferTex);
-		glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32F, m_extrasBufferId);
-
-
-
 		assert(glGetError() == 0);
 	}
 
@@ -515,7 +550,6 @@ namespace wg
 
 		glDeleteFramebuffers(1, &m_framebufferId);
 		glDeleteTextures(1, &m_extrasBufferTex);
-		glDeleteTextures(1, &m_stripesBufferTex);
 
 		glDeleteBuffers(1, &m_vertexBufferId);
 		glDeleteBuffers(1, &m_extrasBufferId);
@@ -744,6 +778,9 @@ namespace wg
         // Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
+
+
+		glFinish();
 
 
 		//
@@ -1492,7 +1529,7 @@ namespace wg
 
 		//
 
-		int extrasSpaceNeeded = (4 + 4 * nSegments + (nEdgeStrips - 1)*(nSegments - 1)*2 + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment
+		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
@@ -1520,10 +1557,14 @@ namespace wg
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
 
-				CoordF	uv1 = { 0, (float) patch.y };
-				CoordF	uv2 = { (float) nEdgeStrips, (float) patch.y };
-				CoordF	uv3 = { (float) nEdgeStrips, (float) patch.y + patch.h };
-				CoordF	uv4 = { 0, (float) patch.y + patch.h };
+				float vBeg = patch.y - dest.y - 0.5f;
+				float vEnd = vBeg + patch.h;
+
+
+				CoordF	uv1 = { (float) (patch.x - dest.x), vBeg };
+				CoordF	uv2 = { (float) (nEdgeStrips-1 - (dest.right() - patch.right())), vBeg };
+				CoordF	uv3 = { (float) (nEdgeStrips-1 - (dest.right() - patch.right())), vEnd };
+				CoordF	uv4 = { (float) (patch.x - dest.x), vEnd };
 
 
 				pVertex->coord.x = dx1;
@@ -1578,8 +1619,10 @@ namespace wg
 
 		// Add various data to extras
 
+		int edgeStripOfs = (m_extrasOfs + 4 + nSegments * 4);	// Offset for edgestrips in buffer.
+
 		pExtras[0] = (GLfloat) nSegments;
-		pExtras[1] = (GLfloat) ((m_extrasOfs + 4 + nSegments * 4) / 2);			// Offset for edgestrips in buffer.
+		pExtras[1] = (GLfloat) edgeStripOfs/4;
 		pExtras += 4;												// Alignment for vec4 reads.
 
 		// Add segment colors to extras
@@ -1594,6 +1637,8 @@ namespace wg
 
 		// Add edgestrips to extras
 
+		pExtras = m_extrasBufferData + edgeStripOfs;
+
 		const int * pEdges = pEdgeStrips;
 
 		for (int i = 0; i < nEdgeStrips-1; i++)
@@ -1606,15 +1651,40 @@ namespace wg
 				if (edgeIn > edgeOut)
 					std::swap(edgeIn, edgeOut);
 
-				*pExtras++ = edgeIn / 256.f;
-				*pExtras++ = 256.f / (edgeOut - edgeIn);
+				float increment = edgeOut == edgeIn ? 100.f : 256.f / (edgeOut - edgeIn);
+				float beginAdder;
+				float endAdder;
+
+				if ((edgeOut & 0xFFFFFF00) <= edgeIn)
+				{
+					float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
+
+					beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
+					endAdder = 1.f;
+				}
+				else
+				{
+					int height = 256 - (edgeIn & 0xFF);
+					int width = (int)(increment * height);
+					float firstPixelCoverage = (height * width) / (2 * 65536.f);
+					float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
+
+					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
+//					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
+				}
+				
+				*pExtras++ = edgeIn/256.f;					// Segment begin pixel
+				*pExtras++ = increment;						// Segment increment
+				*pExtras++ = beginAdder;					// Segment begin adder
+				*pExtras++ = endAdder;						// Segment end adder
 			}
 
 			pEdges += edgeStripPitch;
 		}
 
 		m_extrasOfs += extrasSpaceNeeded;
-
+		  
 		assert(glGetError() == 0);
 
 
