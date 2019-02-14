@@ -51,8 +51,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create(const Rect& viewport);
-		static GlGfxDevice_p	create(GlSurface * pCanvas);
+		static GlGfxDevice_p	create(const Rect& viewport, int uboBindingPoint = 0);
+		static GlGfxDevice_p	create(GlSurface * pCanvas, int uboBindingPoint = 0);
 
 		//.____ Identification __________________________________________
 
@@ -100,9 +100,9 @@ namespace wg
 
 
 	protected:
-		GlGfxDevice(Size viewportSize);
-		GlGfxDevice(const Rect& viewport);
-		GlGfxDevice(GlSurface * pCanvas);
+		GlGfxDevice(Size viewportSize, int uboBindingPoint);
+		GlGfxDevice(const Rect& viewport, int uboBindingPoint);
+		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
 		~GlGfxDevice();
 
 		enum Command
@@ -174,36 +174,28 @@ namespace wg
 		// Device programs
 
 		GLuint  m_fillProg;
-		GLint	m_fillProgDimLoc;
-		GLint	m_fillProgYofsLoc;
-		GLint	m_fillProgYmulLoc;
-
 		GLuint  m_aaFillProg;
-		GLint	m_aaFillProgDimLoc;
-		GLint	m_aaFillProgYofsLoc;
-		GLint	m_aaFillProgYmulLoc;
-
 		GLuint  m_blitProg;
-		GLint	m_blitProgDimLoc;
-		GLint	m_blitProgYofsLoc;
-		GLint	m_blitProgYmulLoc;
 		GLint	m_blitProgTexSizeLoc;
 
 		GLuint  m_plotProg;
-		GLint   m_plotProgDimLoc;
-		GLint	m_plotProgYofsLoc;
-		GLint	m_plotProgYmulLoc;
-
 		GLuint  m_lineFromToProg;
-		GLint   m_lineFromToProgDimLoc;
-		GLint	m_lineFromToProgYofsLoc;
-		GLint	m_lineFromToProgYmulLoc;
 
 		GLuint	m_segmentsProg[c_maxSegments];
-		GLint	m_segmentsProgDimLoc[c_maxSegments];
-		GLint	m_segmentsProgYofsLoc[c_maxSegments];
-		GLint	m_segmentsProgYmulLoc[c_maxSegments];
 
+		//
+
+		struct canvasUBO			// Uniform buffer object for canvas information.
+		{
+			GLfloat	dimX;
+			GLfloat	dimY;
+			int		yOfs;
+			int		yMul;
+		};
+
+
+		GLuint	m_canvasUBOId;
+		canvasUBO	m_canvasUBOBuffer;
 
 		//
 
@@ -251,6 +243,10 @@ namespace wg
 		GLint		m_glScissorBox[4];
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
+
+		//
+
+		static int s_bindingPointCanvasUBO;
 
   
 		// 

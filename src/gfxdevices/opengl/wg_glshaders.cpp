@@ -33,9 +33,13 @@ namespace wg {
 const char GlGfxDevice::fillVertexShader[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                                  "
-"uniform int yOfs;										   "
-"uniform int yMul;										   "
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 1) in vec4 color;                       "
 "out vec4 fragColor;                                       "
@@ -62,9 +66,14 @@ const char GlGfxDevice::fillFragmentShader[] =
 const char GlGfxDevice::blitVertexShader[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                                  "
-"uniform int yOfs;										   "
-"uniform int yMul;										   "
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
@@ -103,9 +112,14 @@ const char GlGfxDevice::blitFragmentShader[] =
 const char GlGfxDevice::plotVertexShader[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;                                "
-"uniform int yMul;                                "
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "layout(location = 0) in ivec2 pos;                     "
 "layout(location = 1) in vec4 color;                       "
 "out vec4 fragColor;										"
@@ -134,9 +148,14 @@ const char GlGfxDevice::plotFragmentShader[] =
 const char GlGfxDevice::lineFromToVertexShader[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                                   "
-"uniform int yOfs;                                    "
-"uniform int yMul;                                    "
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                         "
 "layout(location = 1) in vec4 color;                        "
@@ -183,9 +202,14 @@ const char GlGfxDevice::lineFromToFragmentShader[] =
 const char GlGfxDevice::aaFillVertexShader[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                                   "
-"uniform int yOfs;                                    "
-"uniform int yMul;                                    "
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                         "
 "layout(location = 1) in vec4 color;                        "
@@ -222,9 +246,14 @@ const char GlGfxDevice::aaFillFragmentShader[] =
 static const char segmentsVertexShader1[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -299,9 +328,12 @@ static const char segmentsFragmentShader1[] =
 static const char segmentsVertexShader2[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -387,9 +419,12 @@ static const char segmentsFragmentShader2[] =
 static const char segmentsVertexShader3[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -489,9 +524,12 @@ static const char segmentsFragmentShader3[] =
 static const char segmentsVertexShader4[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -605,9 +643,12 @@ static const char segmentsVertexShader5[] =
 
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -735,9 +776,12 @@ static const char segmentsVertexShader6[] =
 
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -877,9 +921,12 @@ static const char segmentsVertexShader7[] =
 
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1031,9 +1078,12 @@ static const char segmentsFragmentShader7[] =
 static const char segmentsVertexShader8[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1202,9 +1252,12 @@ static const char segmentsFragmentShader8[] =
 static const char segmentsVertexShader9[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1386,9 +1439,12 @@ static const char segmentsFragmentShader9[] =
 static const char segmentsVertexShader10[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1582,9 +1638,12 @@ static const char segmentsFragmentShader10[] =
 static const char segmentsVertexShader11[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -1790,9 +1849,12 @@ static const char segmentsFragmentShader11[] =
 static const char segmentsVertexShader12[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -2013,9 +2075,12 @@ static const char segmentsFragmentShader12[] =
 static const char segmentsVertexShader13[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -2250,9 +2315,12 @@ static const char segmentsFragmentShader13[] =
 static const char segmentsVertexShader14[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
@@ -2500,9 +2568,12 @@ static const char segmentsFragmentShader14[] =
 static const char segmentsVertexShader15[] =
 
 "#version 330 core\n"
-"uniform vec2 dimensions;                               "
-"uniform int yOfs;										"
-"uniform int yMul;										"
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "

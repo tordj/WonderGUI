@@ -38,9 +38,9 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 	
-	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport )
+	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport, int uboBindingPoint)
 	{
-		GlGfxDevice_p p(new GlGfxDevice( viewport ));
+		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
 		
 		GLenum err = glGetError();
 		if( err != 0 )
@@ -49,9 +49,9 @@ namespace wg
 		return p;
 	}
 
-	GlGfxDevice_p GlGfxDevice::create( GlSurface * pSurface )
+	GlGfxDevice_p GlGfxDevice::create( GlSurface * pSurface, int uboBindingPoint)
 	{
-		GlGfxDevice_p p(new GlGfxDevice(pSurface));
+		GlGfxDevice_p p(new GlGfxDevice(pSurface, uboBindingPoint ));
 
 		GLenum err = glGetError();
 		if (err != 0)
@@ -61,17 +61,17 @@ namespace wg
 	}
 	//____ Constructor _____________________________________________________________
 
-	GlGfxDevice::GlGfxDevice(GlSurface * pSurface) : GlGfxDevice(pSurface->size())
+	GlGfxDevice::GlGfxDevice(GlSurface * pSurface, int uboBindingPoint) : GlGfxDevice(pSurface->size(), uboBindingPoint)
 	{
 		setCanvas(pSurface);
 	}
 
-	GlGfxDevice::GlGfxDevice(const Rect& viewport) : GlGfxDevice(viewport.size())
+	GlGfxDevice::GlGfxDevice(const Rect& viewport, int uboBindingPoint) : GlGfxDevice(viewport.size(), uboBindingPoint)
 	{
 		setCanvas(viewport);
 	}
 
-	GlGfxDevice::GlGfxDevice( Size viewportSize ) : GfxDevice(viewportSize)
+	GlGfxDevice::GlGfxDevice( Size viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{
 		m_canvasYstart = viewportSize.h;
 		m_canvasYmul = -1;
@@ -83,31 +83,31 @@ namespace wg
 		// Create and init our shader programs
 
 		m_fillProg			= _createGLProgram(fillVertexShader, fillFragmentShader);
-		m_fillProgDimLoc	= glGetUniformLocation(m_fillProg, "dimensions");
-		m_fillProgYofsLoc   = glGetUniformLocation(m_fillProg, "yOfs");
-		m_fillProgYmulLoc   = glGetUniformLocation(m_fillProg, "yMul");
+
+		unsigned int canvasIndex = glGetUniformBlockIndex(m_fillProg, "Canvas");
+		glUniformBlockBinding(m_fillProg, canvasIndex, uboBindingPoint);
+
+
 
 		assert(glGetError() == 0);
 
-		m_aaFillProg = _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
-		m_aaFillProgDimLoc = glGetUniformLocation(m_aaFillProg, "dimensions");
-		m_aaFillProgYofsLoc = glGetUniformLocation(m_aaFillProg, "yOfs");
-		m_aaFillProgYmulLoc = glGetUniformLocation(m_aaFillProg, "yMul");
-		extrasIdLoc = glGetUniformLocation(m_aaFillProg, "extrasId");
+		m_aaFillProg		= _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
+		canvasIndex			= glGetUniformBlockIndex(m_aaFillProg, "Canvas");
+		glUniformBlockBinding(m_aaFillProg, canvasIndex, uboBindingPoint);
 
+		extrasIdLoc			= glGetUniformLocation(m_aaFillProg, "extrasId");
 		glUseProgram(m_aaFillProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
 		assert(glGetError() == 0);
 
 		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
-		m_blitProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
-		m_blitProgYofsLoc	= glGetUniformLocation(m_blitProg, "yOfs");
-		m_blitProgYmulLoc	= glGetUniformLocation(m_blitProg, "yMul");
+		canvasIndex			= glGetUniformBlockIndex(m_blitProg, "Canvas");
+		glUniformBlockBinding(m_blitProg, canvasIndex, uboBindingPoint);
 		m_blitProgTexSizeLoc = glGetUniformLocation(m_blitProg, "texSize");
+
 		texIdLoc			= glGetUniformLocation(m_blitProg, "texId");
 		extrasIdLoc			= glGetUniformLocation(m_blitProg, "extrasId");
-
 		glUseProgram(m_blitProg);
 		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
@@ -115,18 +115,16 @@ namespace wg
 		assert(glGetError() == 0);
 
 		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
-		m_plotProgDimLoc	= glGetUniformLocation(m_blitProg, "dimensions");
-		m_plotProgYofsLoc = glGetUniformLocation(m_plotProg, "yOfs");
-		m_plotProgYmulLoc = glGetUniformLocation(m_plotProg, "yMul");
+		canvasIndex			= glGetUniformBlockIndex(m_plotProg, "Canvas");
+		glUniformBlockBinding(m_plotProg, canvasIndex, uboBindingPoint);
 
 		assert(glGetError() == 0);
 
-		m_lineFromToProg = _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
-		m_lineFromToProgDimLoc = glGetUniformLocation(m_lineFromToProg, "dimensions");
-		m_lineFromToProgYofsLoc = glGetUniformLocation(m_lineFromToProg, "yOfs");
-		m_lineFromToProgYmulLoc = glGetUniformLocation(m_lineFromToProg, "yMul");
-		extrasIdLoc = glGetUniformLocation(m_lineFromToProg, "extrasId");
+		m_lineFromToProg	= _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
+		canvasIndex			= glGetUniformBlockIndex(m_lineFromToProg, "Canvas");
+		glUniformBlockBinding(m_lineFromToProg, canvasIndex, uboBindingPoint);
 
+		extrasIdLoc = glGetUniformLocation(m_lineFromToProg, "extrasId");
 		glUseProgram(m_lineFromToProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
@@ -135,9 +133,8 @@ namespace wg
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
 			m_segmentsProg[i] = prog;
-			m_segmentsProgDimLoc[i] = glGetUniformLocation(prog, "dimensions");
-			m_segmentsProgYofsLoc[i] = glGetUniformLocation(prog, "yOfs");
-			m_segmentsProgYmulLoc[i] = glGetUniformLocation(prog, "yMul");
+			unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
+			glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
 
 			extrasIdLoc = glGetUniformLocation(prog, "extrasId");
 			GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
@@ -152,6 +149,13 @@ namespace wg
 
 		assert(glGetError() == 0);
 
+		// Create our Uniform Buffer
+
+		glGenBuffers(1, &m_canvasUBOId);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(canvasUBO), NULL, GL_STATIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, uboBindingPoint, m_canvasUBOId);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		// Create the buffers we need for FrameBuffer and Vertices
 
@@ -161,7 +165,7 @@ namespace wg
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);
 
-		// Create and initialize our VertexArra
+		// Create and initialize our VertexArray
 
 		glGenVertexArrays(1, &m_vertexArrayId);
 		glBindVertexArray(m_vertexArrayId);
@@ -1351,7 +1355,7 @@ namespace wg
 				float beginAdder;
 				float endAdder;
 
-				if ((edgeOut & 0xFFFFFF00) <= edgeIn)
+				if ((edgeOut & 0xFFFFFF00) <= (unsigned int) edgeIn)
 				{
 					float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
 
@@ -1366,7 +1370,6 @@ namespace wg
 					float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
 
 					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
-//					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
 					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
 // 					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
 				}
@@ -1572,39 +1575,15 @@ namespace wg
 		glViewport(0, 0, width, height);
 		glScissor(0, 0, width, height);
 
+		// Updating canvas info for our shaders
 
-		glUseProgram(m_fillProg);
-		glUniform2f(m_fillProgDimLoc, (GLfloat) width, (GLfloat) height);
-		glUniform1i(m_fillProgYofsLoc, canvasYstart);
-		glUniform1i(m_fillProgYmulLoc, canvasYmul);
+		m_canvasUBOBuffer.dimX = (GLfloat) width;
+		m_canvasUBOBuffer.dimY = (GLfloat) height;
+		m_canvasUBOBuffer.yOfs = canvasYstart;
+		m_canvasUBOBuffer.yMul = canvasYmul;
 
-		glUseProgram(m_aaFillProg);
-		glUniform2f(m_aaFillProgDimLoc, (GLfloat) width, (GLfloat) height);
-		glUniform1i(m_aaFillProgYofsLoc, canvasYstart);
-		glUniform1i(m_aaFillProgYmulLoc, canvasYmul);
-
-		glUseProgram(m_blitProg);
-		glUniform2f(m_blitProgDimLoc, (GLfloat) width, (GLfloat) height);
-		glUniform1i(m_blitProgYofsLoc, canvasYstart);
-		glUniform1i(m_blitProgYmulLoc, canvasYmul);
-
-		glUseProgram(m_plotProg);
-		glUniform2f(m_plotProgDimLoc, (GLfloat) width, (GLfloat) height);
-		glUniform1i(m_plotProgYofsLoc, canvasYstart);
-		glUniform1i(m_plotProgYmulLoc, canvasYmul);
-
-		glUseProgram(m_lineFromToProg);
-		glUniform2f(m_lineFromToProgDimLoc, (GLfloat) width, (GLfloat) height);
-		glUniform1i(m_lineFromToProgYofsLoc, canvasYstart);
-		glUniform1i(m_lineFromToProgYmulLoc, canvasYmul);
-
-		for (int i = 1; i < c_maxSegments; i++)
-		{
-			glUseProgram(m_segmentsProg[i]);
-			glUniform2f(m_segmentsProgDimLoc[i], (GLfloat)width, (GLfloat)height);
-			glUniform1i(m_segmentsProgYofsLoc[i], canvasYstart);
-			glUniform1i(m_segmentsProgYmulLoc[i], canvasYmul);
-		}
+		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(canvasUBO), &m_canvasUBOBuffer);
 
 		assert(glGetError() == 0);
 	}
