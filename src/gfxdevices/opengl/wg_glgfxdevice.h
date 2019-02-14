@@ -126,6 +126,7 @@ namespace wg
 		void	_setBlitSource(GlSurface * pSurf);
 
 		inline void	_beginDrawCommand(Command cmd);
+		inline void	_beginDrawCommandWithInt(Command cmd, int data);
 		inline void	_beginClippedDrawCommand(Command cmd );
 		inline void	_beginStateCommand(Command cmd, int dataSize);
 		inline void	_endCommand();
@@ -165,6 +166,7 @@ namespace wg
 		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
 
 		GLuint			m_framebufferId;
+		int				m_nSegments;								// Number of segments for current segment command.
 
 		int				m_canvasYstart;
 		int				m_canvasYmul;
@@ -197,10 +199,10 @@ namespace wg
 		GLint	m_lineFromToProgYofsLoc;
 		GLint	m_lineFromToProgYmulLoc;
 
-		GLuint	m_segmentsProg;
-		GLint	m_segmentsProgDimLoc;
-		GLint	m_segmentsProgYofsLoc;
-		GLint	m_segmentsProgYmulLoc;
+		GLuint	m_segmentsProg[c_maxSegments];
+		GLint	m_segmentsProgDimLoc[c_maxSegments];
+		GLint	m_segmentsProgYofsLoc[c_maxSegments];
+		GLint	m_segmentsProgYmulLoc[c_maxSegments];
 
 
 		//
@@ -251,6 +253,24 @@ namespace wg
 		GLint		m_glDrawFrameBuffer;
 
   
+		// 
+
+		static const char fillVertexShader[];
+		static const char fillFragmentShader[];
+		static const char blitVertexShader[];
+		static const char blitFragmentShader[];
+		static const char plotVertexShader[];
+		static const char plotFragmentShader[];
+		static const char lineFromToVertexShader[];
+		static const char lineFromToFragmentShader[];
+		static const char aaFillVertexShader[];
+		static const char aaFillFragmentShader[];
+
+		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
+		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
+
+
+
 	};
 
 	//____ _beginDrawCommand() ________________________________________________
@@ -265,6 +285,19 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 	}
+
+	inline void GlGfxDevice::_beginDrawCommandWithInt(Command cmd, int data)
+	{
+		if (m_commandOfs > c_commandBufferSize - 3)
+			_executeBuffer();
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
+		m_cmdBeginVertexOfs = m_vertexOfs;
+		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = data;
+	}
+
 
 	inline void GlGfxDevice::_beginClippedDrawCommand(Command cmd)
 	{

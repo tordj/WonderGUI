@@ -36,328 +36,6 @@ namespace wg
 {
 	const char GlGfxDevice::CLASSNAME[] = { "GlGfxDevice" };
 
-	//____ Vertex and Fragment shaders ____________________________________________
-
-
-	const char fillVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                                  "
-		"uniform int yOfs;										   "
-		"uniform int yMul;										   "
-		"layout(location = 0) in ivec2 pos;                        "
-		"layout(location = 1) in vec4 color;                       "
-		"out vec4 fragColor;                                       "
-		"void main()                                               "
-		"{                                                         "
-		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
-		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;    "
-		"   gl_Position.z = 0.0;                                   "
-		"   gl_Position.w = 1.0;                                   "
-		"   fragColor = color;						"
-		"}                                                         ";
-
-
-	const char fillFragmentShader[] =
-
-		"#version 330 core\n"
-		"out vec4 outColor;                     "
-		"in vec4 fragColor;                         "
-		"void main()                            "
-		"{                                      "
-		"   outColor = fragColor;                   "
-		"}                                      ";
-
-	const char blitVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                                  "
-		"uniform int yOfs;										   "
-		"uniform int yMul;										   "
-		"uniform ivec2 texSize;									   "
-		"uniform samplerBuffer extrasId;						   "
-		"layout(location = 0) in ivec2 pos;                        "
-		"layout(location = 1) in vec4 color;                       "
-		"layout(location = 2) in int extrasOfs;                    "
-		"out vec2 texUV;                                           "
-		"out vec4 fragColor;                                       "
-		"void main()                                               "
-		"{                                                         "
-		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
-		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
-		"   gl_Position.z = 0.0;                                   "
-		"   gl_Position.w = 1.0;                                   "
-		"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
-		"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
-		"   vec2 src = srcDst.xy;                                  "
-		"   vec2 dst = srcDst.zw;                                  "
-		"   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
-		"   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
-		"   fragColor = color;						               "
-		"}                                                         ";
-
-	const char blitFragmentShader[] =
-
-		"#version 330 core\n"
-
-		"uniform sampler2D texId;						"
-		"in vec2 texUV;									"
-		"in vec4 fragColor;								"
-		"out vec4 color;								"
-		"void main()									"
-		"{												"
-		"   color = texture(texId, texUV) * fragColor;  "
-		"}												";
-
-	const char plotVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                               "
-		"uniform int yOfs;                                "
-		"uniform int yMul;                                "
-		"layout(location = 0) in ivec2 pos;                     "
-		"layout(location = 1) in vec4 color;                       "
-		"out vec4 fragColor;										"
-		"void main()                                            "
-		"{                                                      "
-		"   gl_Position.x = (pos.x+0.5)*2.0/dimensions.x - 1.0; "
-		"   gl_Position.y = ((yOfs + yMul*pos.y)+0.5)*2.0/dimensions.y - 1,0;	"
-		"   gl_Position.z = 0.0;                                "
-		"   gl_Position.w = 1.0;                                "
-		"   fragColor = color;									"
-		"}                                                      ";
-
-
-	const char plotFragmentShader[] =
-
-		"#version 330 core\n"
-		"in vec4 fragColor;                     "
-		"out vec4 outColor;                     "
-		"void main()                            "
-		"{                                      "
-		"   outColor = fragColor;				"
-		"}                                      ";
-
-
-
-	const char lineFromToVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                                   "
-		"uniform int yOfs;                                    "
-		"uniform int yMul;                                    "
-		"uniform samplerBuffer extrasId;								"
-		"layout(location = 0) in ivec2 pos;                         "
-		"layout(location = 1) in vec4 color;                        "
-		"layout(location = 2) in int extrasOfs;                       "
-		"out vec4 fragColor;                                        "
-		"flat out float s;												"
-		"flat out float w;												"
-		"flat out float slope;											"
-		"flat out float ifSteep;											"
-		"flat out float ifMild;											"
-		"void main()                                                "
-		"{                                                          "
-		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
-		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
-		"   gl_Position.z = 0.0;                                    "
-		"   gl_Position.w = 1.0;                                    "
-		"   fragColor = color;										"
-		"   int ofs = extrasOfs;									"
-		"   vec4 x = texelFetch(extrasId, ofs);						"
-		"   s = x.x;												"
-		"   w = x.y;												"
-		"   slope = yMul*x.z;										"
-		"   ifSteep = x.w;											"
-		"   ifMild = 1.0 - ifSteep;									"
-		"}                                                          ";
-	
-
-	const char lineFromToFragmentShader[] =
-
-		"#version 330 core\n"
-		"in vec4 fragColor;                     "
-		"flat in float s;							"
-		"flat in float w;							"
-		"flat in float slope;						"
-		"flat in float ifSteep;						"
-		"flat in float ifMild;						"
-		"out vec4 outColor;                     "
-		"void main()                            "
-		"{										"
-		"   outColor.rgb = fragColor.rgb;		"
-		"   outColor.a = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
-		"}                                      ";
-
-	const char aaFillVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                                   "
-		"uniform int yOfs;                                    "
-		"uniform int yMul;                                    "
-		"uniform samplerBuffer extrasId;								"
-		"layout(location = 0) in ivec2 pos;                         "
-		"layout(location = 1) in vec4 color;                        "
-		"layout(location = 2) in int extrasOfs;                       "
-		"out vec4 fragColor;                                        "
-		"flat out vec4 rect;										"
-		"void main()                                                "
-		"{                                                          "
-		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;             "
-		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
-		"   gl_Position.z = 0.0;                                    "
-		"   gl_Position.w = 1.0;                                    "
-		"   fragColor = color;										"
-		"   rect = texelFetch(extrasId, extrasOfs);					"
-		"   rect.y = yOfs + yMul*rect.y;							"
-		"   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
-		"}                                                          ";
-
-
-	const char aaFillFragmentShader[] =
-
-		"#version 330 core\n"
-//		"layout(pixel_center_integer) in vec4 gl_FragCoord;"
-		"in vec4 fragColor;						"
-		"flat in vec4 rect;						"
-		"out vec4 outColor;                     "
-		"void main()                            "
-		"{										"
-		"   outColor.rgb = fragColor.rgb;             "
-		"	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
-		"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
-		"	outColor.a = fragColor.a * alphas.x * alphas.y;  "
-		"}                                      ";
-
-	const char segmentsVertexShader[] =
-
-		"#version 330 core\n"
-		"uniform vec2 dimensions;                               "
-		"uniform int yOfs;										"
-		"uniform int yMul;										"
-		"uniform samplerBuffer extrasId;						"
-		"uniform samplerBuffer colorsId;					"
-		"layout(location = 0) in ivec2 pos;                     "
-		"layout(location = 1) in vec4 color;					"
-		"layout(location = 2) in int extrasOfs;					"
-		"layout(location = 3) in vec2 uv;						"
-		"out vec4 fragColor;									"
-		"out vec2 texUV;										"
-		"flat out int segments;									"
-		"flat out int stripesOfs;								"
-		"flat out vec4 col1; "
-		"flat out vec4 col2; "
-		"flat out vec4 col3; "
-		"flat out vec4 col4; "
-		"flat out vec4 col5; "
-
-		"void main()											"
-		"{                                                      "
-		"   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
-		"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
-		"   gl_Position.z = 0.0;                                "
-		"   gl_Position.w = 1.0;                                "
-		"   fragColor = color;						            "
-		"   vec4 extras = texelFetch(extrasId, extrasOfs);		"
-		"   segments = int(extras.x);							"
-		"   stripesOfs = int(extras.y);							"
-		"	int colorsOfs = extrasOfs+1;						"
-		"   texUV = uv;											"
-
-		"	col1 = texelFetch(colorsId, colorsOfs ); "
-		"	col2 = texelFetch(colorsId, colorsOfs+1 ); "
-		"	col3 = texelFetch(colorsId, colorsOfs+2 ); "
-		"	col4 = texelFetch(colorsId, colorsOfs+3 ); "
-		"	col5 = texelFetch(colorsId, colorsOfs+4 ); "
-
-		"}                                                      ";
-
-
-	const char segmentsFragmentShader[] =
-
-		"#version 330 core\n"
-		"uniform samplerBuffer stripesId;				"
-		"in vec2 texUV;									"
-		"in vec4 fragColor;								"
-		"flat in int segments;							"
-		"flat in int stripesOfs;						"
-		"flat in vec4 col1; "
-		"flat in vec4 col2; "
-		"flat in vec4 col3; "
-		"flat in vec4 col4; "
-		"flat in vec4 col5; "
-
-		"out vec4 color;								"
-		"void main()									"
-		"{												"
-		"	vec4 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) ); "
-		"	vec4 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 ); "
-		"	vec4 edge3 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+2 ); "
-		"	vec4 edge4 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+3 ); "
-
-		"	float factor1 = 1.f; "
-
-		"	float x1 = (texUV.y - edge1.r) * edge1.g;"
-		"	float adder1 = edge1.g / 2.f;"
-		"	if (x1 < 0.f)"
-		"		adder1 = edge1.b;"
-		"	else if (x1 + edge1.g > 1.f)"
-		"		adder1 = edge1.a;"
-		"	float factor2 = clamp(x1 + adder1, 0.f, 1.f);"
-
-		"	float x2 = (texUV.y - edge2.r) * edge2.g;"
-		"	float adder2 = edge2.g / 2.f;"
-		"	if (x2 < 0.f)"
-		"		adder2 = edge2.b;"
-		"	else if (x2 + edge2.g > 1.f)"
-		"		adder2 = edge2.a;"
-		"	float factor3 = clamp(x2 + adder2, 0.f, 1.f);"
-
-		"	float x3 = (texUV.y - edge3.r) * edge3.g;"
-		"	float adder3 = edge3.g / 2.f;"
-		"	if (x3 < 0.f)"
-		"		adder3 = edge3.b;"
-		"	else if (x3 + edge3.g > 1.f)"
-		"		adder3 = edge3.a;"
-		"	float factor4 = clamp(x3 + adder3, 0.f, 1.f);"
-
-		"	float x4 = (texUV.y - edge4.r) * edge4.g;"
-		"	float adder4 = edge4.g / 2.f;"
-		"	if (x4 < 0.f)"
-		"		adder4 = edge4.b;"
-		"	else if (x4 + edge4.g > 1.f)"
-		"		adder4 = edge4.a;"
-		"	float factor5 = clamp(x4 + adder4, 0.f, 1.f);"
-
-
-		"   factor1 = (factor1 -factor2)*col1.a;"
-		"   factor2 = (factor2 -factor3)*col2.a;"
-		"   factor3 = (factor3 - factor4)*col3.a;"
-		"   factor4 = (factor4 - factor5)*col4.a;"
-		"   factor5 = (factor5)*col5.a;"
-
-		"   float totalAlpha = factor1 + factor2 + factor3 + factor4 + factor5;"
-
-
-		"   color.a = totalAlpha; "
-		"   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5)/totalAlpha;"
-		"   color *= fragColor;"
-		"}												";
-
-/*
-	"	float xQ = (texUV.y - edgeQ.r) * edgeQ.g;"
-		"	float adderQ = edgeQ.g / 2.f;"
-		"	if (xQ < 0.f)"
-		"		adderQ = edgeQ.b;"
-		"	if (xQ + edgeQ.g > 1.f)"
-		"		adderQ = edgeQ.a;"
-		"	float factor5 = clamp(xQ + adderQ, 0.f, 1.f);"
-*/
-
-
-
-	
-
 	//____ create() _______________________________________________________________
 	
 	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport )
@@ -452,18 +130,24 @@ namespace wg
 		glUseProgram(m_lineFromToProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		m_segmentsProg = _createGLProgram(segmentsVertexShader, segmentsFragmentShader);
-		m_segmentsProgDimLoc = glGetUniformLocation(m_segmentsProg, "dimensions");
-		m_segmentsProgYofsLoc = glGetUniformLocation(m_segmentsProg, "yOfs");
-		m_segmentsProgYmulLoc = glGetUniformLocation(m_segmentsProg, "yMul");
-		extrasIdLoc = glGetUniformLocation(m_segmentsProg, "extrasId");
-		GLint colorsIdLoc = glGetUniformLocation(m_segmentsProg, "colorsId");
-		GLint stripesIdLoc = glGetUniformLocation(m_segmentsProg, "stripesId");
+		
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
+			m_segmentsProg[i] = prog;
+			m_segmentsProgDimLoc[i] = glGetUniformLocation(prog, "dimensions");
+			m_segmentsProgYofsLoc[i] = glGetUniformLocation(prog, "yOfs");
+			m_segmentsProgYmulLoc[i] = glGetUniformLocation(prog, "yMul");
 
-		glUseProgram(m_segmentsProg);
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-		glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
-		glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+			extrasIdLoc = glGetUniformLocation(prog, "extrasId");
+			GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
+			GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+
+			glUseProgram(prog);
+			glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+			glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
+			glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+		}
 
 
 		assert(glGetError() == 0);
@@ -546,7 +230,9 @@ namespace wg
 		glDeleteProgram(m_blitProg);
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
-		glDeleteProgram(m_segmentsProg);
+
+		for( int i = 1 ; i < c_maxSegments ; i++ )
+			glDeleteProgram(m_segmentsProg[i]);
 
 		glDeleteFramebuffers(1, &m_framebufferId);
 		glDeleteTextures(1, &m_extrasBufferTex);
@@ -1529,18 +1215,22 @@ namespace wg
 
 		//
 
-		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment
+		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for 
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
+			m_nSegments = nSegments;
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommand(Command::Segments);
+			_beginDrawCommandWithInt(Command::Segments, m_nSegments);
+
 		}
-		else if (m_cmd != Command::Segments)
+		else if (m_cmd != Command::Segments || m_nSegments != nSegments )
 		{
+			m_nSegments = nSegments;
+
 			_endCommand();
-			_beginDrawCommand(Command::Segments);
+			_beginDrawCommandWithInt(Command::Segments, m_nSegments);
 		}
 
 		// Setup vertices
@@ -1557,6 +1247,10 @@ namespace wg
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
 
+				// Calc UV-coordinates. U is edge offset, V is pixel offset from begin in column.
+
+
+
 				float vBeg = patch.y - dest.y - 0.5f;
 				float vEnd = vBeg + patch.h;
 
@@ -1566,6 +1260,8 @@ namespace wg
 				CoordF	uv3 = { (float) (nEdgeStrips-1 - (dest.right() - patch.right())), vEnd };
 				CoordF	uv4 = { (float) (patch.x - dest.x), vEnd };
 
+
+				//
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
@@ -1660,7 +1356,7 @@ namespace wg
 					float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
 
 					beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
-					endAdder = 1.f;
+					endAdder = beginAdder;
 				}
 				else
 				{
@@ -1670,8 +1366,9 @@ namespace wg
 					float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
 
 					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
-//					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
-					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
+//					beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
+					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+// 					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
 				}
 				
 				*pExtras++ = edgeIn/256.f;					// Segment begin pixel
@@ -1813,7 +1510,8 @@ namespace wg
 				}
 				case Command::Segments:
 				{
-					glUseProgram(m_segmentsProg);
+					int nEdges = (*pCmd++)-1;
+					glUseProgram(m_segmentsProg[nEdges]);
 					glEnableVertexAttribArray(2);
 					glEnableVertexAttribArray(3);
 
@@ -1900,10 +1598,13 @@ namespace wg
 		glUniform1i(m_lineFromToProgYofsLoc, canvasYstart);
 		glUniform1i(m_lineFromToProgYmulLoc, canvasYmul);
 
-		glUseProgram(m_segmentsProg);
-		glUniform2f(m_segmentsProgDimLoc, (GLfloat)width, (GLfloat)height);
-		glUniform1i(m_segmentsProgYofsLoc, canvasYstart);
-		glUniform1i(m_segmentsProgYmulLoc, canvasYmul);
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			glUseProgram(m_segmentsProg[i]);
+			glUniform2f(m_segmentsProgDimLoc[i], (GLfloat)width, (GLfloat)height);
+			glUniform1i(m_segmentsProgYofsLoc[i], canvasYstart);
+			glUniform1i(m_segmentsProgYmulLoc[i], canvasYmul);
+		}
 
 		assert(glGetError() == 0);
 	}

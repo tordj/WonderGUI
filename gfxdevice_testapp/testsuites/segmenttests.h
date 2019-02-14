@@ -7,7 +7,8 @@ public:
 	{
 		name = "SegmentTests";
 
-		addTest("RainbowSpread", &SegmentTests::rainbowSpread );
+		addTest("RainbowSpread7", &SegmentTests::rainbowSpread7);
+		addTest("RainbowSpread8", &SegmentTests::rainbowSpread8 );
 		addTest("Flip90Rainbow", &SegmentTests::flip90Rainbow);
 		addTest("Flip180Rainbow", &SegmentTests::flip180Rainbow);
 		addTest("Flip270Rainbow", &SegmentTests::flip270Rainbow);
@@ -17,11 +18,11 @@ public:
 		addTest("LargeCircle", &SegmentTests::largeCircle);
 		addTest("BrokenElipse", &SegmentTests::brokenElipse);
 
-		addTest("SegBlendReplace", &SegmentTests::setBlendModeReplace, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
-		addTest("SegBlendAdd", &SegmentTests::setBlendModeAdd, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
-		addTest("SegBlendSubtract", &SegmentTests::setBlendModeSubtract, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
-		addTest("SegBlendMultiply", &SegmentTests::setBlendModeMultiply, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
-		addTest("SegBlendInvert", &SegmentTests::setBlendModeInvert, &SegmentTests::rainbowSpread, &SegmentTests::resetBlendMode);
+		addTest("SegBlendReplace", &SegmentTests::setBlendModeReplace, &SegmentTests::rainbowSpread8, &SegmentTests::resetBlendMode);
+		addTest("SegBlendAdd", &SegmentTests::setBlendModeAdd, &SegmentTests::rainbowSpread8, &SegmentTests::resetBlendMode);
+		addTest("SegBlendSubtract", &SegmentTests::setBlendModeSubtract, &SegmentTests::rainbowSpread8, &SegmentTests::resetBlendMode);
+		addTest("SegBlendMultiply", &SegmentTests::setBlendModeMultiply, &SegmentTests::rainbowSpread8, &SegmentTests::resetBlendMode);
+		addTest("SegBlendInvert", &SegmentTests::setBlendModeInvert, &SegmentTests::rainbowSpread8, &SegmentTests::resetBlendMode);
 
 		addTest("SegPrecision", &SegmentTests::precisionTest);
 
@@ -77,13 +78,22 @@ public:
 		return pDevice->setBlendMode(BlendMode::Invert);
 	}
 
-	bool rainbowSpread(GfxDevice * pDevice, const Rect& canvas)
+	bool rainbowSpread7(GfxDevice * pDevice, const Rect& canvas)
+	{
+
+		pDevice->drawSegments(canvas, 7, m_rainbowColors, m_nRainbowEdges, &m_rainbowEdges[0][0], 7);
+
+		return true;
+	}
+
+	bool rainbowSpread8(GfxDevice * pDevice, const Rect& canvas)
 	{
 
 		pDevice->drawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, &m_rainbowEdges[0][0], 7);
 
 		return true;
 	}
+
 
 	bool wildRainbow(GfxDevice * pDevice, const Rect& canvas)
 	{

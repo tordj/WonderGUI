@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glgfxdevice.cpp" />
+    <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glshaders.cpp" />
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glsurface.cpp" />
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glsurfacefactory.cpp" />
   </ItemGroup>

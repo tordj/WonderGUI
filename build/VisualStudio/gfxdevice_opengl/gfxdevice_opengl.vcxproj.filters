@@ -15,6 +15,9 @@
     <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glsurfacefactory.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\gfxdevices\opengl\wg_glshaders.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\gfxdevices\opengl\wg_glgfxdevice.h">
