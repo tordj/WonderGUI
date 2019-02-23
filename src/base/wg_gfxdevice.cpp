@@ -66,7 +66,7 @@ namespace wg
 															{ 0,0 } };				// Rot270FlipY
 
 	// Transforms for flipping movement over CANVAS when drawing
-
+/*
 	static const int drawFlipTransforms[GfxFlip_size][2][2] = { { 1,0,0,1 },		// Normal
 															{ -1,0,0,1 },			// FlipX
 															{ 1,0,0,-1 },			// FlipY
@@ -79,7 +79,7 @@ namespace wg
 															{ 0,-1,1,0 },			// Rot270
 															{ 0,-1,-1,0 },			// Rot270FlipX
 															{ 0,1,1,0 } };			// Rot270FlipY
-
+*/
 
 	
 
@@ -299,7 +299,7 @@ namespace wg
 		int ofsX = src.x + (src.w-1) * blitFlipOffsets[(int)flip][0];
 		int ofsY = src.y + (src.h-1) * blitFlipOffsets[(int)flip][1];
 
-		Size dstSize = m_pBlitSource->size();
+		Size dstSize = src.size();
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
@@ -563,14 +563,14 @@ namespace wg
 
 	void GfxDevice::drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill )
 	{
-		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)GfxFlip::Normal] );
+		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
 
 	void GfxDevice::flipDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip )
 	{
-		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, drawFlipTransforms[(int)flip] );
+		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
 	}
 
 	//____ transformDrawWave() ______________________________________________________
@@ -612,7 +612,7 @@ namespace wg
 			clipBeg = bounds.y - _dest.y;
 			clipEnd = (_dest.y + _dest.h) - (bounds.y + bounds.h);
 
-			if (simpleTransform[0][1] < 0)							// Wave goes from bottom to top
+			if (simpleTransform[1][0] < 0)							// Wave goes from bottom to top
 				swap(clipBeg, clipEnd);
 
 			length = bounds.h;
@@ -976,14 +976,14 @@ namespace wg
 
 	void GfxDevice::drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )
 	{
-		transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)GfxFlip::Normal] );
+		transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
 	void GfxDevice::flipDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip )
 	{
-		transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, drawFlipTransforms[(int)flip] );
+		transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)flip] );
 	}
 
 

@@ -1210,11 +1210,11 @@ namespace wg
 
 	//____ transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::transformDrawSegments( const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
+	void GlGfxDevice::transformDrawSegments( const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
 	{
 		assert(glGetError() == 0);
 
-		if (!dest.intersectsWith(m_clipBounds))
+		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
 		//
@@ -1237,6 +1237,50 @@ namespace wg
 			_beginDrawCommandWithInt(Command::Segments, m_nSegments);
 		}
 
+		// Do transformations
+
+		Rect dest = _dest;
+
+		int uIncX = simpleTransform[0][0];
+		int vIncX = simpleTransform[0][1];
+		int uIncY = simpleTransform[1][0];
+		int vIncY = simpleTransform[1][1];
+
+		// Possibly clip the destination rectangle if we have space for more columns than we have
+
+		int maxCol = (nEdgeStrips - 1);
+		if (uIncX != 0)								// Columns are aligned horizontally
+		{
+			if (dest.w > maxCol)
+			{
+				if (uIncX < 0)
+					dest.x += dest.w - maxCol;
+				dest.w = maxCol;
+			}
+		}
+		else										// Columns are aligned vertically
+		{
+			if (dest.h > maxCol)
+			{
+				if (uIncY < 0)
+					dest.y += dest.h - maxCol;
+				dest.h = maxCol;
+			}
+		}
+
+		// Calc topLeft UV values
+
+		int uTopLeft = 0;
+		int vTopLeft = 0;
+
+		if (uIncX + uIncY < 0)
+			uTopLeft = maxCol - 1;
+
+		if (vIncX < 0)
+			vTopLeft = dest.w - 1;
+		else if (vIncY < 0)
+			vTopLeft = dest.h - 1;
+
 		// Setup vertices
 
 		for (int i = 0; i < m_nClipRects; i++)
@@ -1253,16 +1297,22 @@ namespace wg
 
 				// Calc UV-coordinates. U is edge offset, V is pixel offset from begin in column.
 
+				float	u1 = (uTopLeft + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]);
+				float	v1 = (vTopLeft + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]);
 
+				float	u2 = (uTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]);
+				float	v2 = (vTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]);
 
-				float vBeg = patch.y - dest.y - 0.5f;
-				float vEnd = vBeg + patch.h;
+				float	u3 = (uTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]);
+				float	v3 = (vTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]);
 
+				float	u4 = (uTopLeft + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]);
+				float	v4 = (vTopLeft + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]);
 
-				CoordF	uv1 = { (float) (patch.x - dest.x), vBeg };
-				CoordF	uv2 = { (float) (nEdgeStrips-1 - (dest.right() - patch.right())), vBeg };
-				CoordF	uv3 = { (float) (nEdgeStrips-1 - (dest.right() - patch.right())), vEnd };
-				CoordF	uv4 = { (float) (patch.x - dest.x), vEnd };
+				CoordF	uv1 = { u1, v1 - 0.5f };
+				CoordF	uv2 = { u2, v2 - 0.5f };
+				CoordF	uv3 = { u3, v3 - 0.5f };
+				CoordF	uv4 = { u4, v4 - 0.5f };
 
 
 				//

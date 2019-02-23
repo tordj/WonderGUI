@@ -2098,7 +2098,7 @@ namespace wg
 
 	//____ transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::transformDrawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
+	void SoftGfxDevice::transformDrawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int _simpleTransform[2][2])
 	{
 		Rect dest = _dest;
 
@@ -2106,6 +2106,24 @@ namespace wg
 
 		int xPitch = m_canvasPixelBits / 8;
 		int yPitch = m_canvasPitch;
+
+		// We need to modify our transform since we are moving the destination pointer, not the source pointer, according to the transform.
+
+		int simpleTransform[2][2];
+
+		simpleTransform[0][0] = _simpleTransform[0][0];
+		simpleTransform[1][1] = _simpleTransform[1][1];
+
+		if ((_simpleTransform[0][0] | _simpleTransform[1][1]) == 0)
+		{
+			simpleTransform[0][1] = _simpleTransform[1][0];
+			simpleTransform[1][0] = _simpleTransform[0][1];
+		}
+		else
+		{
+			simpleTransform[0][1] = _simpleTransform[0][1];
+			simpleTransform[1][0] = _simpleTransform[1][0];
+		}
 
 		// Calculate pitches
 
