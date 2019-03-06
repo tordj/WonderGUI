@@ -9,7 +9,9 @@ public:
 
 		addTest("Blit", &PatchBlitTests::setSplash, &PatchBlitTests::blit, &PatchBlitTests::dummy);
 
-		addTest("FlipBlit", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit, &PatchBlitTests::dummy);
+		addTest("FlipBlit90", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit90, &PatchBlitTests::dummy);
+		addTest("FlipBlit180", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit180, &PatchBlitTests::dummy);
+		addTest("FlipBlit270", &PatchBlitTests::setSplash, &PatchBlitTests::flipBlit270, &PatchBlitTests::dummy);
 
 		addTest("StretchBlit", &PatchBlitTests::setSplash, &PatchBlitTests::stretchBlit, &PatchBlitTests::dummy);
 
@@ -23,7 +25,7 @@ public:
 			return false;
 		m_pClockFace->setScaleMode(ScaleMode::Interpolate);
 
-		m_pSplash = FileUtil::loadSurface("../resources/splash_opaque.png", pDevice->surfaceFactory());
+		m_pSplash = FileUtil::loadSurface("../resources/simple_button.bmp", pDevice->surfaceFactory());
 		if (!m_pSplash)
 			return false;
 
@@ -62,12 +64,23 @@ public:
 		return true;
 	}
 
-	bool	flipBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	flipBlit90(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->flipBlit(canvas, GfxFlip::Rot90);
+		return true;
+	}
+
+	bool	flipBlit180(GfxDevice * pDevice, const Rect& canvas)
+	{
+		pDevice->flipBlit(canvas, GfxFlip::Rot180);
+		return true;
+	}
+
+	bool	flipBlit270(GfxDevice * pDevice, const Rect& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot270);
 		return true;
 	}
-
 
 
 	bool	rotScaleBlit(GfxDevice * pDevice, const Rect& canvas)

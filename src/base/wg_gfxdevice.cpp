@@ -282,8 +282,8 @@ namespace wg
 
 		Size srcSize  = m_pBlitSource->size();
 
-		int ofsX = (srcSize.w - 1) * blitFlipOffsets[(int)flip][0];
-		int ofsY = (srcSize.h - 1) * blitFlipOffsets[(int)flip][1];
+		int ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
+		int ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = srcSize;
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
@@ -296,8 +296,8 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		int ofsX = src.x + (src.w-1) * blitFlipOffsets[(int)flip][0];
-		int ofsY = src.y + (src.h-1) * blitFlipOffsets[(int)flip][1];
+		int ofsX = src.x + src.w * blitFlipOffsets[(int)flip][0];
+		int ofsY = src.y + src.h * blitFlipOffsets[(int)flip][1];
 
 		Size dstSize = src.size();
 		if (blitFlipTransforms[(int)flip][0][0] == 0)

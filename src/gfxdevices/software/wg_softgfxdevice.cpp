@@ -2599,6 +2599,13 @@ namespace wg
 
 		const Rect& clip = dest;
 
+		// Step forward _src by half a pixel, so we start from correct pixel.
+
+		_src.x = (_src.x * 2 + simpleTransform[0][0] + simpleTransform[1][0]) / 2;
+		_src.y = (_src.y * 2 + simpleTransform[0][1] + simpleTransform[1][1]) / 2;
+
+		//
+
 		for (int i = 0; i < m_nClipRects; i++)
 		{
 			Rect  patch = m_pClipRects[i];
@@ -2656,6 +2663,11 @@ namespace wg
 
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
+
+		// We should sample at middle of destination pixel, not topleft.
+
+		_src.x += 0.5f * complexTransform[0][0] + 0.5f * complexTransform[1][0];
+		_src.y += 0.5f * complexTransform[1][1] + 0.5f * complexTransform[0][1];
 
 		const Rect& clip = dest;
 

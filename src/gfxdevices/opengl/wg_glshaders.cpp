@@ -194,6 +194,7 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 //"   float texV = src.y + (pos.y - dst.y) * transform.w + (pos.x - dst.x) * transform.y; "
 
 "   vec2 texUV = src + (pos-dst) * transform.xw + (pos.yx - dst.yx) * transform.zy;"
+"   texUV -= 0.5f;"
 
 "   uvFrac = texUV;"
 "   texUV00 = texUV/texSize;				"
