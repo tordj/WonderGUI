@@ -85,13 +85,13 @@ namespace wg
 	
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
-		m_pBlob = Blob::create( m_pitch*size.h + (pClut ? 4096 : 0) );
+		m_pBlob = Blob::create( m_pitch*size.h + (pClut ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
 		if (pClut)
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 4096);
+			memcpy(m_pClut, pClut, 1024);
 		}
 		else
 			m_pClut = nullptr;
@@ -115,7 +115,7 @@ namespace wg
 
 		m_pitch = ((size.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
 		m_size = size;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
 		m_pPixels = m_pData;	// Simulate a lock
@@ -125,7 +125,7 @@ namespace wg
 		if (pClut)
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 4096);
+			memcpy(m_pClut, pClut, 1024);
 		}
 		else
 			m_pClut = nullptr;
@@ -145,7 +145,7 @@ namespace wg
 		
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0) );
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 		
 		m_pPixels = m_pData;	// Simulate a lock
@@ -155,7 +155,7 @@ namespace wg
 		if ( pOther->clut() )
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
-			memcpy(m_pClut, pOther->clut(), 4096);
+			memcpy(m_pClut, pOther->clut(), 1024);
 		}
 		else
 			m_pClut = nullptr;

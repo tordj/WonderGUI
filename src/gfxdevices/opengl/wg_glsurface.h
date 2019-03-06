@@ -99,6 +99,7 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline	GLuint	getTexture() const { return m_texture; }
+		inline	GLuint	getClutTexture() const { return m_clutTexture; }
 
 	private:
         GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
@@ -109,12 +110,17 @@ namespace wg
 
 
 		void		_setPixelDetails( PixelFormat format );
+		void		_setupGlTexture( void * pPixelsToUpload);
 
 		bool		m_bBackingBufferStale = false;
 		void		_refreshBackingBuffer();
 
+		GLuint 		m_clutTexture = 0;	// GL clut texture handle.
+		GLuint		m_clutBufferId = 0;
+
+
         GLuint 		m_texture;			// GL texture handle.
-        GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
+		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
         GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
         Blob_p      m_pBlob;
 		

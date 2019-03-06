@@ -78,18 +78,18 @@ namespace wg
 
 		_initTables();
 
-		GLint	texIdLoc, extrasIdLoc;
+		GLint	texIdLoc, extrasIdLoc, clutIdLoc;
 
-		// Create and init our shader programs
+		// Create and init Fill shader
 
 		m_fillProg			= _createGLProgram(fillVertexShader, fillFragmentShader);
 
 		unsigned int canvasIndex = glGetUniformBlockIndex(m_fillProg, "Canvas");
 		glUniformBlockBinding(m_fillProg, canvasIndex, uboBindingPoint);
 
-
-
 		assert(glGetError() == 0);
+
+		// Create and init AA-Fill shader
 
 		m_aaFillProg		= _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
 		canvasIndex			= glGetUniformBlockIndex(m_aaFillProg, "Canvas");
@@ -100,6 +100,8 @@ namespace wg
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
 		assert(glGetError() == 0);
+
+		// Create and init Blit shader
 
 		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
 		canvasIndex			= glGetUniformBlockIndex(m_blitProg, "Canvas");
@@ -114,11 +116,52 @@ namespace wg
 
 		assert(glGetError() == 0);
 
+		// Create and init Clut Blit shaders
+
+		m_clutBlitNearestProg = _createGLProgram(clutBlitNearestVertexShader, clutBlitNearestFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_clutBlitNearestProg, "Canvas");
+		glUniformBlockBinding(m_clutBlitNearestProg, canvasIndex, uboBindingPoint);
+		m_clutBlitNearestProgTexSizeLoc = glGetUniformLocation(m_clutBlitNearestProg, "texSize");
+
+		texIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "extrasId");
+		clutIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "clutId");
+
+		glUseProgram(m_clutBlitNearestProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+
+		assert(glGetError() == 0);
+
+		m_clutBlitInterpolateProg = _createGLProgram(clutBlitInterpolateVertexShader, clutBlitInterpolateFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_clutBlitInterpolateProg, "Canvas");
+		glUniformBlockBinding(m_clutBlitInterpolateProg, canvasIndex, uboBindingPoint);
+		m_clutBlitInterpolateProgTexSizeLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texSize");
+
+		texIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "extrasId");
+		clutIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "clutId");
+
+		glUseProgram(m_clutBlitInterpolateProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+
+		assert(glGetError() == 0);
+
+
+
+
+		// Create and init Plot shader
+
 		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
 		canvasIndex			= glGetUniformBlockIndex(m_plotProg, "Canvas");
 		glUniformBlockBinding(m_plotProg, canvasIndex, uboBindingPoint);
 
 		assert(glGetError() == 0);
+
+		// Create and init Line shader
 
 		m_lineFromToProg	= _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
 		canvasIndex			= glGetUniformBlockIndex(m_lineFromToProg, "Canvas");
@@ -128,7 +171,10 @@ namespace wg
 		glUseProgram(m_lineFromToProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		
+		assert(glGetError() == 0);
+
+		// Create and init Segment shaders
+
 		for (int i = 1; i < c_maxSegments; i++)
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
@@ -145,7 +191,6 @@ namespace wg
 			glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
 			glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
 		}
-
 
 		assert(glGetError() == 0);
 
@@ -1502,7 +1547,7 @@ namespace wg
 				}
 				case Command::Blit:
 				{
-					glUseProgram(m_blitProg);
+					glUseProgram(m_cmdBlitProgram);
 					glEnableVertexAttribArray(2);
 
 					int nVertices = *pCmd++;
@@ -1707,8 +1752,36 @@ namespace wg
 		{
 			glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
 
-			glUseProgram(m_blitProg);
-			glUniform2i(m_blitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
+			if (pSurf->m_pClut)
+			{
+				if (pSurf->scaleMode() == ScaleMode::Interpolate)
+				{
+					glUseProgram(m_clutBlitInterpolateProg);
+					glUniform2i(m_clutBlitInterpolateProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
+
+					m_cmdBlitProgram = m_clutBlitInterpolateProg;
+				}
+				else
+				{
+					glUseProgram(m_clutBlitNearestProg);
+					glUniform2i(m_clutBlitNearestProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
+
+					m_cmdBlitProgram = m_clutBlitNearestProg;
+				}
+
+				glActiveTexture(GL_TEXTURE2);
+				GLuint clutTex = pSurf->getClutTexture();
+				glBindTexture(GL_TEXTURE_BUFFER, clutTex);
+
+				assert(glGetError() == 0);
+			}
+			else
+			{
+				glUseProgram(m_blitProg);
+				glUniform2i(m_blitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
+
+				m_cmdBlitProgram = m_blitProg;
+			}
 		}
 		else
 			glBindTexture(GL_TEXTURE_2D, 0 );
@@ -1732,8 +1805,6 @@ namespace wg
 		glShaderSource(fragmentShaderID, 1, &pFragmentShader, NULL);
 		glCompileShader(fragmentShaderID);
 
-		glGetShaderInfoLog(fragmentShaderID, 1023, &logLen, log);
-
 		GLuint  programID = glCreateProgram();
 		glAttachShader(programID, vertexShaderID);
 		glAttachShader(programID, fragmentShaderID);
@@ -1742,7 +1813,18 @@ namespace wg
 		// glLinkProgram doesn't use glGetError
 		int mess = 0;
 		glGetProgramiv(programID, GL_LINK_STATUS, &mess);
-		//		assert(mess == GL_TRUE);
+		if (mess != GL_TRUE)
+		{
+			GLchar	vertexShaderLog[1024];
+			GLchar	fragmentShaderLog[1024];
+			GLsizei vertexShaderLogLength;
+			GLsizei fragmentShaderLogLength;
+
+			glGetShaderInfoLog(vertexShaderID, 1024, &vertexShaderLogLength, vertexShaderLog );
+			glGetShaderInfoLog(fragmentShaderID, 1024, &fragmentShaderLogLength, fragmentShaderLog);
+
+			assert(false);
+		}
 
 		glDetachShader(programID, vertexShaderID);
 		glDetachShader(programID, fragmentShaderID);

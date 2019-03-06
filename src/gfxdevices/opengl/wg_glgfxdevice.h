@@ -164,6 +164,7 @@ namespace wg
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
 		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
+		int				m_cmdBlitProgram;							// Blit program to be used by CmdFinalizer. Determined by surface type.
 
 		GLuint			m_framebufferId;
 		int				m_nSegments;								// Number of segments for current segment command.
@@ -178,10 +179,18 @@ namespace wg
 		GLuint  m_blitProg;
 		GLint	m_blitProgTexSizeLoc;
 
+		GLuint  m_clutBlitNearestProg;
+		GLint	m_clutBlitNearestProgTexSizeLoc;
+
+		GLuint  m_clutBlitInterpolateProg;
+		GLint	m_clutBlitInterpolateProgTexSizeLoc;
+
 		GLuint  m_plotProg;
 		GLuint  m_lineFromToProg;
 
 		GLuint	m_segmentsProg[c_maxSegments];
+
+
 
 		//
 
@@ -265,6 +274,10 @@ namespace wg
 		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
 		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
 
+		static const char clutBlitNearestVertexShader[];
+		static const char clutBlitNearestFragmentShader[];
+		static const char clutBlitInterpolateVertexShader[];
+		static const char clutBlitInterpolateFragmentShader[];
 
 
 	};

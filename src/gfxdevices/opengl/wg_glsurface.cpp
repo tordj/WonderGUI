@@ -124,16 +124,7 @@ namespace wg
 		else
 			m_pClut = nullptr;
 
-        glGenTextures( 1, &m_texture );
-        glBindTexture( GL_TEXTURE_2D, m_texture );
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-
-        glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-                     m_accessFormat, m_pixelDataType, NULL );
+		_setupGlTexture(nullptr);
 
         assert( glGetError() == 0 );
     }
@@ -149,18 +140,7 @@ namespace wg
 		m_pBlob = pBlob;
 		m_pClut = const_cast<Color*>(pClut);
 
-		glGenTextures( 1, &m_texture );
-        glBindTexture( GL_TEXTURE_2D, m_texture );
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-
-		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-			m_accessFormat, m_pixelDataType, m_pBlob->data() );
-
-		assert( glGetError() == 0);
+		_setupGlTexture(m_pBlob->data());
 	}
    
     GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
@@ -168,7 +148,7 @@ namespace wg
        _setPixelDetails(format);
         m_size	= size;
         m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-        m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0));
+        m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0));
         
         m_pPixels = (uint8_t *) m_pBlob->data();
         _copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
@@ -177,23 +157,12 @@ namespace wg
 		if (pClut)
 		{
 			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 4096);
+			memcpy(m_pClut, pClut, 1024);
 		}
 		else
 			m_pClut = nullptr;
 
-        glGenTextures( 1, &m_texture );
-        glBindTexture( GL_TEXTURE_2D, m_texture );
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-		
-        glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-                     m_accessFormat, m_pixelDataType, m_pBlob->data() );
-        
- 		assert( glGetError() == 0);
+		_setupGlTexture(m_pBlob->data());
     }
 
 
@@ -202,7 +171,7 @@ namespace wg
         _setPixelDetails(pOther->pixelFormat());
         m_size	= pOther->size();
         m_pitch = m_size.w * m_pixelSize;
-        m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0) );
+        m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
         
         m_pPixels = (uint8_t *) m_pBlob->data();
         _copyFrom( pOther->pixelDescription(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
@@ -211,25 +180,61 @@ namespace wg
 		if (pOther->clut())
 		{
 			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-			memcpy(m_pClut, pOther->clut(), 4096);
+			memcpy(m_pClut, pOther->clut(), 1024);
 		}
 		else
 			m_pClut = nullptr;
 
-        glGenTextures( 1, &m_texture );
-        glBindTexture( GL_TEXTURE_2D, m_texture );
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-		
-        glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-                     m_accessFormat, m_pixelDataType, m_pBlob->data() );
-        
-		assert( glGetError() == 0);
+		_setupGlTexture(m_pBlob->data());
     }
     
+	void GlSurface::_setupGlTexture(void * pPixelsToUpload)
+	{
+		glGenTextures(1, &m_texture);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+		assert(glGetError() == 0);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
+			m_accessFormat, m_pixelDataType, pPixelsToUpload);
+		assert(glGetError() == 0);
+
+		if (m_pClut)
+		{
+			uint8_t clut[1024];
+
+			for (int i = 0; i < 256; i++)
+			{
+				clut[i * 4] = m_pClut[i].r;
+				clut[i * 4 + 1] = m_pClut[i].g;
+				clut[i * 4 + 2] = m_pClut[i].b;
+				clut[i * 4 + 3] = m_pClut[i].a;
+			}
+
+			// Create a TextureBufferObject for providing extra data to our shaders
+
+			glGenBuffers(1, &m_clutBufferId);
+			glBindBuffer(GL_TEXTURE_BUFFER, m_clutBufferId);
+			glBufferData(GL_TEXTURE_BUFFER, 256*sizeof(GLuint), clut, GL_STATIC_DRAW);
+
+			assert(glGetError() == 0);
+
+			glGenTextures(1, &m_clutTexture);
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
+			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, m_clutBufferId);
+
+			assert(glGetError() == 0);
+		}
+
+		assert(glGetError() == 0);
+	}
+
     
 
 	void GlSurface::_setPixelDetails( PixelFormat format )
@@ -279,7 +284,7 @@ namespace wg
 				break;
 
 			case PixelFormat::I8:
-				m_internalFormat = GL_R8UI;
+				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
@@ -289,8 +294,6 @@ namespace wg
                 break;
 
 		}
-
-
         
         Util::pixelFormatToDescription(format, m_pixelDescription);
 	}
@@ -302,6 +305,13 @@ namespace wg
 		// Free the stuff
 
 		glDeleteTextures( 1, &m_texture );
+
+		if (m_pClut)
+		{
+			glDeleteTextures(1, &m_clutTexture);
+			glDeleteBuffers(1, &m_clutBufferId);
+		}
+
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -336,20 +346,24 @@ namespace wg
 	void GlSurface::setScaleMode( ScaleMode mode )
 	{
         assert( glGetError() == 0 );
-		switch( mode )
+
+		if (m_pClut == nullptr)
 		{
+			switch (mode)
+			{
 			case ScaleMode::Interpolate:
-				glBindTexture( GL_TEXTURE_2D, m_texture );
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+				glBindTexture(GL_TEXTURE_2D, m_texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
-				
+
 			case ScaleMode::Nearest:
 			default:
-				glBindTexture( GL_TEXTURE_2D, m_texture );
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+				glBindTexture(GL_TEXTURE_2D, m_texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				break;
+			}
 		}
 		
 		Surface::setScaleMode(mode);

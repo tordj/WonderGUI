@@ -109,6 +109,127 @@ const char GlGfxDevice::blitFragmentShader[] =
 "   color = texture(texId, texUV) * fragColor;  "
 "}												";
 
+const char GlGfxDevice::clutBlitNearestVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
+"uniform ivec2 texSize;									   "
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in vec4 color;                       "
+"layout(location = 2) in int extrasOfs;                    "
+"out vec2 texUV;                                           "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
+"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+"   vec2 src = srcDst.xy;                                  "
+"   vec2 dst = srcDst.zw;                                  "
+"   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
+"   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
+"   fragColor = color;						               "
+"}                                                         ";
+
+const char GlGfxDevice::clutBlitNearestFragmentShader[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"uniform samplerBuffer clutId;					"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   int index = int(texture(texId, texUV).r*256);		"
+"   color = texelFetch(clutId, index) * fragColor;	"
+"}												";
+
+const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2 dimensions;"
+"	int yOfs;"
+"	int yMul;"
+"};"
+
+"uniform ivec2 texSize;									   "
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in vec4 color;                       "
+"layout(location = 2) in int extrasOfs;                    "
+"out vec2 texUV00;                                         "
+"out vec2 texUV11;                                         "
+"out vec2 uvFrac;                                         "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/dimensions.x - 1.0;            "
+"   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+"   vec2 src = srcDst.xy;                                  "
+"   vec2 dst = srcDst.zw;                                  "
+//"   float texU = src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z; "
+//"   float texV = src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w; "
+
+//"   float texU = src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z; "
+//"   float texV = src.y + (pos.y - dst.y) * transform.w + (pos.x - dst.x) * transform.y; "
+
+"   vec2 texUV = src + (pos-dst) * transform.xw + (pos.yx - dst.yx) * transform.zy;"
+
+"   uvFrac = texUV;"
+"   texUV00 = texUV/texSize;				"
+"   texUV11 = (texUV+1)/texSize;			"
+"   fragColor = color;						               "
+"}                                                         ";
+
+const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"uniform samplerBuffer clutId;					"
+"in vec2 texUV00;								"
+"in vec2 texUV11;								"
+"in vec2 uvFrac;								"
+"in vec4 fragColor;								" 
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   int index00 = int(texture(texId, texUV00).r*256);		"
+"   int index01 = int(texture(texId, vec2(texUV11.x,texUV00.y) ).r*256);		"
+"   int index10 = int(texture(texId, vec2(texUV00.x,texUV11.y) ).r*256);		"
+"   int index11 = int(texture(texId, texUV11).r*256);		"
+"   vec4 color00 = texelFetch(clutId, index00);	"
+"   vec4 color01 = texelFetch(clutId, index01);	"
+"   vec4 color10 = texelFetch(clutId, index10);	"
+"   vec4 color11 = texelFetch(clutId, index11);	"
+
+"   vec4 out0 = color00 * (1-fract(uvFrac.x)) + color01 * fract(uvFrac.x);	"
+"   vec4 out1 = color10 * (1-fract(uvFrac.x)) + color11 * fract(uvFrac.x);	"
+"   color = (out0 * (1-fract(uvFrac.y)) + out1 * fract(uvFrac.y)) * fragColor;	"
+
+"}												";
+
+
 const char GlGfxDevice::plotVertexShader[] =
 
 "#version 330 core\n"

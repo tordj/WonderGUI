@@ -40,7 +40,7 @@ namespace wg
 	{
 		pWGFormat->format = PixelFormat::Custom;
 		pWGFormat->bits = pSDLFormat->BitsPerPixel;
-		pWGFormat->bIndexed = false;
+		pWGFormat->bIndexed = (pSDLFormat->palette != nullptr);
 
 		pWGFormat->R_mask = pSDLFormat->Rmask;
 		pWGFormat->G_mask = pSDLFormat->Gmask;
@@ -51,6 +51,11 @@ namespace wg
 		pWGFormat->G_shift = pSDLFormat->Gshift;
 		pWGFormat->B_shift = pSDLFormat->Bshift;
 		pWGFormat->A_shift = pSDLFormat->Ashift;
+
+		pWGFormat->R_loss = pSDLFormat->Rloss;
+		pWGFormat->G_loss = pSDLFormat->Gloss;
+		pWGFormat->B_loss = pSDLFormat->Bloss;
+		pWGFormat->A_loss = pSDLFormat->Aloss;
 
 		pWGFormat->R_bits = 8 - pSDLFormat->Rloss;
 		pWGFormat->G_bits = 8 - pSDLFormat->Gloss;
@@ -93,9 +98,35 @@ namespace wg
 		auto pSDLSurf = IMG_Load(pPath);
 		convertSDLFormat(&format, pSDLSurf->format);
 
-		PixelFormat px = format.A_bits > 0 ? PixelFormat::BGRA_8 : PixelFormat::BGR_8;
+		PixelFormat px;
+		Color * pClut = nullptr;
 
-		auto pSurface = pFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+		Color clut[256];
+
+
+
+		if (format.bIndexed)
+		{
+			px = PixelFormat::I8;
+
+			for (int i = 0; i < 256; i++)
+			{
+				clut[i].r = pSDLSurf->format->palette->colors[i].r;
+				clut[i].g = pSDLSurf->format->palette->colors[i].g;
+				clut[i].b = pSDLSurf->format->palette->colors[i].b;
+				clut[i].a = pSDLSurf->format->palette->colors[i].a;
+			}
+			pClut = clut;
+		}
+
+
+		else if (format.A_bits > 0)
+			px = PixelFormat::BGRA_8;
+		else
+			px = PixelFormat::BGR_8;
+
+
+		auto pSurface = pFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, 0, pClut);
 		SDL_FreeSurface(pSDLSurf);
 		return pSurface;
 	}

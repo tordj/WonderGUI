@@ -26,6 +26,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\gfxdevice_testapp\device.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\canvasformattests.h" />
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\clutblittests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\filltests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\linetests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\patchblittests.h" />
