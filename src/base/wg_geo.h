@@ -224,7 +224,7 @@ namespace wg
 		inline void		set( short all ) { left = right = top = bottom = all; }
 		inline void		set( short topBottom, short leftRight ) { top = bottom = topBottom; left = right = leftRight; }
 		inline void		set( short top, short leftRight, short bottom ) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
-		inline void		set( short top, short left, short bottom, short right ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
+		inline void		set( short top, short right, short bottom, short left ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
 	
 		inline Size		size() const;
 		inline int		width() const { return ((int)left)+right; }
@@ -232,6 +232,8 @@ namespace wg
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
 		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
 	
+		inline Border	scale(int scale) const { return Border( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
+
 		//.____ Operators ___________________________________________
 
 		bool			operator==(const Border& borders) const { return left == borders.left &&
@@ -475,11 +477,12 @@ namespace wg
 		inline bool contains( const Rect& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
 	
 		inline Coord limit( const Coord& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
+    	inline Coord center() const { return {x+w/2,y+h/2}; }
 	
 		inline bool intersectsWith( const Rect& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 	
-		bool	intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
-		bool	clipLine(Coord * p1, Coord * p2, int precision = 14) const;
+		bool		intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
+		bool		clipLine(Coord * p1, Coord * p2, int precision = 14) const;
 
 
 		inline int width() const;								///< @brief Get the width of the rectangle.

@@ -413,7 +413,7 @@ namespace wg
 		if (m_bBackingBufferStale)
 			_refreshBackingBuffer();
 
-		if( region.x + region.w > m_size.w || region.y + region.w > m_size.h || region.x < 0 || region.y < 0 )
+		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
 			return 0;
 
     	m_pPixels = (uint8_t*) m_pBlob->data();

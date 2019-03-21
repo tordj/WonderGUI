@@ -267,7 +267,7 @@ namespace wg
 	const char * toString(ScaleMode i)
 	{
 		static const char * names[] = { 
-			"Nearest			= 0",
+			"Nearest",
 			"Interpolate" };
 
 		return names[(int)i];
