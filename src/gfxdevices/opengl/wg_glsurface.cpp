@@ -23,6 +23,7 @@
 #include <memory.h>
 
 #include <wg_glsurface.h>
+#include <wg_glgfxdevice.h>
 #include <wg_util.h>
 #include <wg_blob.h>
 #include <assert.h>
@@ -394,8 +395,15 @@ namespace wg
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
 
+		// Refresh backingBuffer if it is stale.
+		// Flush active device if we have pending reads and might write.
+
 		if (m_bBackingBufferStale)
 			_refreshBackingBuffer();
+		else if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
+			GlGfxDevice::s_pActiveDevice->flush();
+
+		//
 
     	m_pPixels = (uint8_t*) m_pBlob->data();
 		m_lockRegion = Rect(0,0,m_size);
@@ -410,8 +418,15 @@ namespace wg
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
 
+		// Refresh backingBuffer if it is stale.
+		// Flush active device if we have pending reads and might write.
+
 		if (m_bBackingBufferStale)
 			_refreshBackingBuffer();
+		else if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
+			GlGfxDevice::s_pActiveDevice->flush();
+
+		//
 
 		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
 			return 0;
@@ -538,6 +553,13 @@ namespace wg
 
 	void GlSurface::_refreshBackingBuffer()
 	{
+		// Flush any active device to make sure our texture is up-to-date
+
+		if (GlGfxDevice::s_pActiveDevice)
+			GlGfxDevice::s_pActiveDevice->flush();
+
+		//
+
 		assert(glGetError() == 0);
 
 		GLenum	type;

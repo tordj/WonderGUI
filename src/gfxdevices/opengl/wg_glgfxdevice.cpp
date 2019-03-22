@@ -36,6 +36,9 @@ namespace wg
 {
 	const char GlGfxDevice::CLASSNAME[] = { "GlGfxDevice" };
 
+	GlGfxDevice *	GlGfxDevice::s_pActiveDevice = nullptr;
+
+
 	//____ create() _______________________________________________________________
 	
 	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport, int uboBindingPoint)
@@ -510,6 +513,16 @@ namespace wg
 		glDisable(GL_DEPTH_TEST);
         glEnable(GL_SCISSOR_TEST);
 
+
+		// If there already is an active device, that needs to be flushed before we 
+		// take over the role as the active device.
+
+		if (s_pActiveDevice)
+			s_pActiveDevice->flush();
+
+		m_pPrevActiveDevice = s_pActiveDevice;
+		s_pActiveDevice = this;
+
 		//
 
 		m_bRendering = true;
@@ -584,8 +597,28 @@ namespace wg
 
 		assert(glGetError() == 0);
 		m_bRendering = false;
+
+		// Restore previously active device and exit
+
+		s_pActiveDevice = m_pPrevActiveDevice;
 		return true;
 	}
+
+	//____ flush() _______________________________________________________________
+
+	void GlGfxDevice::flush()
+	{
+		// Finalize any ongoing operation
+
+		_endCommand();
+		_executeBuffer();
+
+		//
+
+        glFlush();
+	}
+
+
 
 	//____ fill() ____ [standard] __________________________________________________
 
@@ -1092,12 +1125,12 @@ namespace wg
 		{
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommand(Command::Blit);
+			_beginDrawCommandWithSource(Command::Blit);
 		}
 		else if (m_cmd != Command::Blit)
 		{
 			_endCommand();
-			_beginDrawCommand(Command::Blit);
+			_beginDrawCommandWithSource(Command::Blit);
 		}
 
 		for (int i = 0; i < m_nClipRects; i++)
@@ -1194,12 +1227,12 @@ namespace wg
 		{
 			_endCommand();
 			_executeBuffer();
-			_beginDrawCommand(Command::Blit);
+			_beginDrawCommandWithSource(Command::Blit);
 		}
 		else if (m_cmd != Command::Blit)
 		{
 			_endCommand();
-			_beginDrawCommand(Command::Blit);
+			_beginDrawCommandWithSource(Command::Blit);
 		}
 
 		//
@@ -1537,6 +1570,11 @@ namespace wg
 		int vertexOfs = 0;
 		int surfaceOfs = 0;
 
+		// Clear pending flags of active BlitSource and Canvas.
+
+		if (m_pActiveBlitSource)
+			m_pActiveBlitSource->m_bPendingReads = false;		
+
 		while (pCmd < pCmdEnd)
 		{
 			Command cmd = (Command) * pCmd++;
@@ -1567,6 +1605,8 @@ namespace wg
 					glEnableVertexAttribArray(2);
 
 					int nVertices = *pCmd++;
+
+
 					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 					vertexOfs += nVertices;
 					break;
@@ -1658,10 +1698,8 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
-		if (m_pCanvas)
+		if (pCanvas)
 		{
-			pCanvas->m_bBackingBufferStale = true;
-
 			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
 
@@ -1767,6 +1805,9 @@ namespace wg
 		if( pSurf )
 		{
 			glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
+
+			m_pActiveBlitSource = pSurf;
+			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
 			if (pSurf->m_pClut)
 			{

@@ -47,6 +47,8 @@ namespace wg
 
 	class GlGfxDevice : public GfxDevice
 	{
+		friend class GlSurface;
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -84,6 +86,7 @@ namespace wg
 
 		bool	beginRender() override;
 		bool	endRender() override;
+		void	flush();
 
 		void	fill(const Rect& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -126,6 +129,7 @@ namespace wg
 		void	_setBlitSource(GlSurface * pSurf);
 
 		inline void	_beginDrawCommand(Command cmd);
+		inline void	_beginDrawCommandWithSource(Command cmd);
 		inline void	_beginDrawCommandWithInt(Command cmd, int data);
 		inline void	_beginClippedDrawCommand(Command cmd );
 		inline void	_beginStateCommand(Command cmd, int dataSize);
@@ -244,6 +248,8 @@ namespace wg
 
 		Rect	m_clipListBuffer[c_clipListBufferSize];
 
+		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
+
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;
@@ -260,7 +266,10 @@ namespace wg
 
 		static int s_bindingPointCanvasUBO;
 
-  
+		GlGfxDevice *			m_pPrevActiveDevice; // Storage for previous active device when we become active.
+
+		static GlGfxDevice *	s_pActiveDevice;	// Pointer at GL device currently in rendering state.
+
 		// 
 
 		static const char fillVertexShader[];
@@ -284,6 +293,8 @@ namespace wg
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
 
+		//
+
 	};
 
 	//____ _beginDrawCommand() ________________________________________________
@@ -297,6 +308,25 @@ namespace wg
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+	}
+
+	inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
+	{
+		if (m_commandOfs > c_commandBufferSize - 2)
+			_executeBuffer();
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
+		m_cmdBeginVertexOfs = m_vertexOfs;
+		m_commandBuffer[m_commandOfs++] = cmd;
+
+		static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
+
+		if( m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 	inline void GlGfxDevice::_beginDrawCommandWithInt(Command cmd, int data)
@@ -309,6 +339,9 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 		m_commandBuffer[m_commandOfs++] = data;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 
@@ -331,6 +364,9 @@ namespace wg
 		m_commandBuffer[m_commandOfs++] = cmd;
 		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
 		m_commandBuffer[m_commandOfs++] = m_nClipRects;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 
