@@ -109,6 +109,21 @@ const char GlGfxDevice::blitFragmentShader[] =
 "   color = texture(texId, texUV) * fragColor;  "
 "}												";
 
+const char GlGfxDevice::alphaBlitFragmentShader[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   color = fragColor;							"
+"   color.a *= texture(texId, texUV).r;         "	
+"}												";
+
+
 const char GlGfxDevice::clutBlitNearestVertexShader[] =
 
 "#version 330 core\n"

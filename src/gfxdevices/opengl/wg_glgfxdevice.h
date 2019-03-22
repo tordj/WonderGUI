@@ -179,6 +179,9 @@ namespace wg
 		GLuint  m_blitProg;
 		GLint	m_blitProgTexSizeLoc;
 
+		GLuint  m_alphaBlitProg;
+		GLint	m_alphaBlitProgTexSizeLoc;
+
 		GLuint  m_clutBlitNearestProg;
 		GLint	m_clutBlitNearestProgTexSizeLoc;
 
@@ -274,11 +277,12 @@ namespace wg
 		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
 		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
 
+		static const char alphaBlitFragmentShader[];
+
 		static const char clutBlitNearestVertexShader[];
 		static const char clutBlitNearestFragmentShader[];
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
-
 
 	};
 

@@ -116,6 +116,22 @@ namespace wg
 
 		assert(glGetError() == 0);
 
+		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
+
+		m_alphaBlitProg = _createGLProgram(blitVertexShader, alphaBlitFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_alphaBlitProg, "Canvas");
+		glUniformBlockBinding(m_alphaBlitProg, canvasIndex, uboBindingPoint);
+		m_alphaBlitProgTexSizeLoc = glGetUniformLocation(m_alphaBlitProg, "texSize");
+
+		texIdLoc = glGetUniformLocation(m_alphaBlitProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_alphaBlitProg, "extrasId");
+		glUseProgram(m_alphaBlitProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		assert(glGetError() == 0);
+
+
 		// Create and init Clut Blit shaders
 
 		m_clutBlitNearestProg = _createGLProgram(clutBlitNearestVertexShader, clutBlitNearestFragmentShader);
@@ -1774,6 +1790,13 @@ namespace wg
 				glBindTexture(GL_TEXTURE_BUFFER, clutTex);
 
 				assert(glGetError() == 0);
+			}
+			else if (pSurf->m_pixelDescription.format == PixelFormat::A8)
+			{
+				glUseProgram(m_alphaBlitProg);
+				glUniform2i(m_alphaBlitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
+
+				m_cmdBlitProgram = m_alphaBlitProg;
 			}
 			else
 			{

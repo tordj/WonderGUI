@@ -478,7 +478,8 @@ namespace wg
 	
 		inline Coord limit( const Coord& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
     	inline Coord center() const { return {x+w/2,y+h/2}; }
-	
+		inline Rect center(Size sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
+
 		inline bool intersectsWith( const Rect& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 	
 		bool		intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
