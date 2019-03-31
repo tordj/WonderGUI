@@ -46,20 +46,20 @@ namespace wg
 	class ModalLayer;
 
 
-	class Text;
-	class ModText;
-	class EditText;
+	class IROTextDisplay;
+	class ITextDisplay;
+	class IROTextDisplayEditor;
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongInterfacePtr<Text>	Text_p;
-	typedef	WeakInterfacePtr<Text> 	Text_wp;
+	typedef	StrongInterfacePtr<IROTextDisplay>	IROTextDisplay_p;
+	typedef	WeakInterfacePtr<IROTextDisplay> 	IROTextDisplay_wp;
 
-	typedef	StrongInterfacePtr<ModText>		ModText_p;
-	typedef	WeakInterfacePtr<ModText>		ModText_wp;
+	typedef	StrongInterfacePtr<ITextDisplay>		ITextDisplay_p;
+	typedef	WeakInterfacePtr<ITextDisplay>		ITextDisplay_wp;
 
-	typedef	StrongInterfacePtr<EditText>	EditText_p;
-	typedef	WeakInterfacePtr<EditText>	EditText_wp;
+	typedef	StrongInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_p;
+	typedef	WeakInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_wp;
 
 
 	typedef WeakPtr<Widget> Widget_wp;
@@ -789,7 +789,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( EditText * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( IROTextDisplayEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -800,13 +800,13 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		EditText_p			text() const;
+		IROTextDisplayEditor_p			text() const;
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( EditText * pText, bool bFinal );
+		TextEditMsg( IROTextDisplayEditor * pText, bool bFinal );
 
-		EditText_p			m_pText;
+		IROTextDisplayEditor_p			m_pText;
 		bool				m_bFinal;
 	};
 

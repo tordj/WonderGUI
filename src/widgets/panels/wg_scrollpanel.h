@@ -30,7 +30,7 @@
 #include <wg_panel.h>
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
-#include <wg_child.h>
+#include <wg_ichild.h>
 #include <wg_paddedslot.h>
 
 
@@ -105,12 +105,12 @@ namespace wg
 
 	//____ ViewEntry ______________________________________________________
 
-	class ViewEntry : public Child<ViewSlot, ViewEntryHolder>
+	class ViewEntry : public IChild<ViewSlot, ViewEntryHolder>
 	{
 	public:
 		/** @private */
 
-		ViewEntry(ViewSlot * pSlot, ViewEntryHolder * pHolder) : Child(pSlot, pHolder) {}
+		ViewEntry(ViewSlot * pSlot, ViewEntryHolder * pHolder) : IChild(pSlot, pHolder) {}
 
 		//.____ Operators _____________________________________________________
 

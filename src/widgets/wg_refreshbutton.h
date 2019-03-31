@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_button.h>
-#include <wg_modtext.h>
+#include <wg_itextdisplay.h>
 #include <wg_gfxanim.h>
 
 namespace wg 
@@ -61,7 +61,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 	
-		ModText	refreshText;
+		ITextDisplay	refreshText;
 
 		//.____ Identification __________________________________________
 		
@@ -108,14 +108,12 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg );
 		virtual void 	_setSize( const Size& size );
 	
-		State			_getRenderState();
-	
 	
 		RouteId			m_tickRouteId;
 		GfxAnim_p		m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-		TextItem		m_refreshText;
+		CTextDisplay		m_refreshText;
 		bool			m_bRestartable;
 	
 		bool			m_bRefreshing;

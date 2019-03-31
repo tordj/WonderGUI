@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_edittext.h>
+#include <wg_itexteditor.h>
 
 namespace wg 
 {
@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		EditText		text;
+		IROTextDisplayEditor		text;
 
 		//.____ Identification __________________________________________
 
@@ -76,7 +76,7 @@ namespace wg
 	
 	private:
 		
-		EditTextItem	m_text;
+		CTextEditor	m_text;
 	};
 	
 	

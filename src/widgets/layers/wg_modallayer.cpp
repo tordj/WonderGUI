@@ -28,8 +28,8 @@
 #include <wg_slotarray.impl.h>
 #include <wg_inputhandler.h>
 
-#include <wg_dynamicchildren.h>
-#include <wg_dynamicchildren.impl.h>
+#include <wg_idynamicchildren.h>
+#include <wg_idynamicchildren.impl.h>
 
 
 namespace wg 
@@ -44,7 +44,7 @@ namespace wg
 
 	//____ add() _________________________________________________________________
 
-	ModalChildren::iterator ModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
+	IModalChildren::iterator IModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 		
@@ -59,14 +59,14 @@ namespace wg
 
 	//____ setOrigo() ______________________________________________________________
 
-	void ModalChildren::setOrigo(int index, const Origo origo)
+	void IModalChildren::setOrigo(int index, const Origo origo)
 	{
 		//TODO: Assert
 		
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
-	void ModalChildren::setOrigo(iterator it, const Origo origo)
+	void IModalChildren::setOrigo(iterator it, const Origo origo)
 	{
 		//TODO: Assert
 		
@@ -75,14 +75,14 @@ namespace wg
 
 	//____ origo() ______________________________________________________________
 
-	Origo ModalChildren::origo(int index) const
+	Origo IModalChildren::origo(int index) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
-	Origo ModalChildren::origo(iterator it) const
+	Origo IModalChildren::origo(iterator it) const
 	{
 		//TODO: Assert
 
@@ -91,14 +91,14 @@ namespace wg
 
 	//____ setGeo() ______________________________________________________________
 
-	void ModalChildren::setGeo(int index, const Rect& geometry)
+	void IModalChildren::setGeo(int index, const Rect& geometry)
 	{
 		//TODO: Assert
 
 		_setGeo(m_pSlotArray->slot(index), geometry);
 	}
 
-	void ModalChildren::setGeo(iterator it, const Rect& geometry)
+	void IModalChildren::setGeo(iterator it, const Rect& geometry)
 	{
 		//TODO: Assert
 
@@ -107,14 +107,14 @@ namespace wg
 
 	//____ geo() _________________________________________________________________
 
-	Rect ModalChildren::geo(int index) const
+	Rect IModalChildren::geo(int index) const
 	{
 		//TODO: Assert
 		
 		return m_pSlotArray->slot(index)->geo;
 	}
 
-	Rect ModalChildren::geo(iterator it) const
+	Rect IModalChildren::geo(iterator it) const
 	{
 		//TODO: Assert
 		
@@ -123,14 +123,14 @@ namespace wg
 
 	//____ setOfs() ______________________________________________________________
 
-	void ModalChildren::setOfs(int index, const Coord& ofs)
+	void IModalChildren::setOfs(int index, const Coord& ofs)
 	{
 		//TODO: Assert
 
 		_setOfs(m_pSlotArray->slot(index), ofs);
 	}
 
-	void ModalChildren::setOfs(iterator it, const Coord& ofs)
+	void IModalChildren::setOfs(iterator it, const Coord& ofs)
 	{
 		//TODO: Assert
 
@@ -139,14 +139,14 @@ namespace wg
 
 	//____ ofs() _________________________________________________________________
 
-	Coord ModalChildren::ofs(int index) const
+	Coord IModalChildren::ofs(int index) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->geo.pos();
 	}
 
-	Coord ModalChildren::ofs(iterator it) const
+	Coord IModalChildren::ofs(iterator it) const
 	{
 		//TODO: Assert
 
@@ -155,14 +155,14 @@ namespace wg
 
 	//____ setSize() __________________________________________________________
 
-	void ModalChildren::setSize(int index, const Size& size)
+	void IModalChildren::setSize(int index, const Size& size)
 	{
 		//TODO: Assert
 
 		_setSize(m_pSlotArray->slot(index), size);
 	}
 
-	void ModalChildren::setSize(iterator it, const Size& size)
+	void IModalChildren::setSize(iterator it, const Size& size)
 	{
 		//TODO: Assert
 
@@ -171,14 +171,14 @@ namespace wg
 
 	//____ size() ______________________________________________________________
 
-	Size ModalChildren::size( int index ) const
+	Size IModalChildren::size( int index ) const
 	{
 		//TODO: Assert
 		
 		return m_pSlotArray->slot(index)->geo.size();			
 	}
 
-	Size ModalChildren::size( iterator it ) const
+	Size IModalChildren::size( iterator it ) const
 	{
 		//TODO: Assert
 		
@@ -187,14 +187,14 @@ namespace wg
 
 	//____ move() ______________________________________________________________
 
-	void ModalChildren::move( int index, const Coord& ofs )
+	void IModalChildren::move( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 		
 		_move(m_pSlotArray->slot(index), ofs);		
 	}
 
-	void ModalChildren::move( iterator it, const Coord& ofs )
+	void IModalChildren::move( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 		
@@ -203,7 +203,7 @@ namespace wg
 
 	//____ _setOrigo() ______________________________________________________________
 
-	void ModalChildren::_setOrigo(ModalSlot * p, const Origo origo)
+	void IModalChildren::_setOrigo(ModalSlot * p, const Origo origo)
 	{
 		p->origo = origo;
 		m_pHolder->_refreshRealGeo(p);
@@ -211,7 +211,7 @@ namespace wg
 
 	//____ _setGeo() ______________________________________________________________
 
-	void ModalChildren::_setGeo(ModalSlot * p, const Rect& geometry)
+	void IModalChildren::_setGeo(ModalSlot * p, const Rect& geometry)
 	{
 		p->placementGeo = geometry;
 		m_pHolder->_refreshRealGeo(p);
@@ -219,14 +219,14 @@ namespace wg
 
 	//____ _setOfs() ______________________________________________________________
 
-	void ModalChildren::_setOfs(ModalSlot * p, const Coord& ofs)
+	void IModalChildren::_setOfs(ModalSlot * p, const Coord& ofs)
 	{
 		p->placementGeo.setPos(ofs);
 		m_pHolder->_refreshRealGeo(p);
 	}
 	//____ _setSize() __________________________________________________________
 
-	void ModalChildren::_setSize(ModalSlot * p, const Size& size)
+	void IModalChildren::_setSize(ModalSlot * p, const Size& size)
 	{
 		p->placementGeo.setSize(size);
 		m_pHolder->_refreshRealGeo(p);
@@ -234,7 +234,7 @@ namespace wg
 
 	//____ _move() ______________________________________________________________
 
-	void ModalChildren::_move( ModalSlot * p, const Coord& ofs )
+	void IModalChildren::_move( ModalSlot * p, const Coord& ofs )
 	{
 		p->placementGeo += ofs;
 		m_pHolder->_refreshRealGeo(p);		

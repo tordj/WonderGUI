@@ -26,8 +26,8 @@
 #include <functional>
 
 #include <wg_list.h>
-#include <wg_columnheader.h>
-#include <wg_selectablechildren.h>
+#include <wg_icolumnheader.h>
+#include <wg_iselectablechildren.h>
 
 
 
@@ -63,23 +63,23 @@ namespace wg
 	};
 
 
-	class PackListChildren;
-	typedef	StrongInterfacePtr<PackListChildren>	PackListChildren_p;
-	typedef	WeakInterfacePtr<PackListChildren>	PackListChildren_wp;
+	class IPackListChildren;
+	typedef	StrongInterfacePtr<IPackListChildren>	IPackListChildren_p;
+	typedef	WeakInterfacePtr<IPackListChildren>		IPackListChildren_wp;
 
-	//____ PackListChildren ______________________________________________________
+	//____ IPackListChildren ______________________________________________________
 
-	class PackListChildren : public SelectableChildren<PackListSlot, PackListChildrenHolder>
+	class IPackListChildren : public ISelectableChildren<PackListSlot, PackListChildrenHolder>
 	{
 	public:
 
 		/** @private */
 
-		PackListChildren(SlotArray<PackListSlot> * pSlotArray, PackListChildrenHolder * pHolder) : SelectableChildren<PackListSlot, PackListChildrenHolder>(pSlotArray, pHolder) {}
+		IPackListChildren(SlotArray<PackListSlot> * pSlotArray, PackListChildrenHolder * pHolder) : ISelectableChildren<PackListSlot, PackListChildrenHolder>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline PackListChildren_p	ptr() { return PackListChildren_p(this); }
+		inline IPackListChildren_p	ptr() { return IPackListChildren_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -105,11 +105,11 @@ namespace wg
 
 	class PackList : public List, protected PackListChildrenHolder
 	{
-		friend class PackListChildren;
-		friend class SelectableChildren<PackListSlot, PackList>;
-		friend class HideableChildren<PackListSlot,PackList>;
-		friend class DynamicChildren<PackListSlot,PackList>;
-		friend class Children<PackListSlot,PackList>;
+		friend class IPackListChildren;
+		friend class ISelectableChildren<PackListSlot, PackList>;
+		friend class IHideableChildren<PackListSlot,PackList>;
+		friend class IDynamicChildren<PackListSlot,PackList>;
+		friend class IChildren<PackListSlot,PackList>;
 //		template<class T, class P> friend class Children;
 	public:
 
@@ -119,8 +119,8 @@ namespace wg
 	
 		//.____ Interfaces _______________________________________
 
-		ColumnHeader		header;
-		PackListChildren	children;
+		IColumnHeader		header;
+		IPackListChildren	children;
 
 		//.____ Identification __________________________________________
 	
@@ -183,6 +183,8 @@ namespace wg
 		void			_selectSlots(Slot * pSlot, int nb);
 		void			_unselectSlots(Slot * pSlot, int nb);
 		Object *		_object() { return this; }
+		const Object *	_object() const { return this; }
+
 		WidgetHolder *	_widgetHolder() { return this; }
 		int				_getInsertionPoint(const Widget * pWidget) const;
 		bool			_hasSortFunction() const { return m_sortFunc != nullptr; }
@@ -226,13 +228,13 @@ namespace wg
 		Widget *	_nextChild(Slot * pSlot) const;
 
 
-		// Overloaded from ItemHolder
+		// Overloaded from ComponentHolder
 
-		Coord	_itemPos(const Item * pItem) const;
-		Size	_itemSize(const Item * pItem) const;
-		Rect	_itemGeo(const Item * pItem) const;
+		Coord	_componentPos(const Component * pComponent) const override;
+		Size	_componentSize(const Component * pComponent) const override;
+		Rect	_componentGeo(const Component * pComponent) const override;
 
-		void	_itemNotified(Item * pItem, ItemNotif notification, void * pData);
+		void	_receiveComponentNotif(Component * pComponent, ComponentNotif notification, void * pData) override;
 
 
 		// Internal
@@ -256,7 +258,7 @@ namespace wg
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);
 
-		ColumnHeaderItem	m_header;
+		CColumnHeader		m_header;
 		SlotArray<PackListSlot>	m_children;
 
 		bool				m_bHorizontal;

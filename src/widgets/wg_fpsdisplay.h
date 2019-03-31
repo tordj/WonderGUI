@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_widget.h>
-#include	<wg_modtext.h>
+#include	<wg_itextdisplay.h>
 
 namespace wg 
 {
@@ -48,8 +48,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModText		labels;
-		Text		values;
+		ITextDisplay		labels;
+		IROTextDisplay		values;
 
 
 		//.____ Identification __________________________________________
@@ -79,11 +79,11 @@ namespace wg
 	const static int c_tickBuffer = 64;
 	
 	
-		TextItem	m_labelsText;
-		TextItem	m_valuesText;
-		int *		m_pTickBuffer;
-		int			m_tickBufferOfs;
-		RouteId		m_tickRouteId;
+		CTextDisplay	m_labelsText;
+		CTextDisplay	m_valuesText;
+		int *			m_pTickBuffer;
+		int				m_tickBufferOfs;
+		RouteId			m_tickRouteId;
 	};
 	
 	

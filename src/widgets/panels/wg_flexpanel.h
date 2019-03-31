@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_hideablechildren.h>
+#include <wg_ihideablechildren.h>
 
 namespace wg 
 {
@@ -120,22 +120,22 @@ namespace wg
 	};
 
 	
-	class FlexPanelChildren;
-	typedef	StrongInterfacePtr<FlexPanelChildren>	FlexPanelChildren_p;
-	typedef	WeakInterfacePtr<FlexPanelChildren>	FlexPanelChildren_wp;
+	class IFlexPanelChildren;
+	typedef	StrongInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_p;
+	typedef	WeakInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_wp;
 	
-	//____ FlexPanelChildren ________________________________________________________
+	//____ IFlexPanelChildren ________________________________________________________
 
-	class FlexPanelChildren : public HideableChildren<FlexPanelSlot,FlexChildrenHolder>
+	class IFlexPanelChildren : public IHideableChildren<FlexPanelSlot,FlexChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		FlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexChildrenHolder * pHolder ) : HideableChildren<FlexPanelSlot,FlexChildrenHolder>(pSlotArray,pHolder) {}
+		IFlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexChildrenHolder * pHolder ) : IHideableChildren<FlexPanelSlot,FlexChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline FlexPanelChildren_p	ptr() { return FlexPanelChildren_p(this); }
+		inline IFlexPanelChildren_p	ptr() { return IFlexPanelChildren_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -275,7 +275,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		FlexPanelChildren	children;
+		IFlexPanelChildren	children;
 
 		//.____ Identification __________________________________________
 	

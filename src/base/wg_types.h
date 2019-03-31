@@ -464,9 +464,9 @@ namespace wg
 	};
 	
 
-	//____ ItemNotif ___________________________________________________________
+	//____ ComponentNotif ___________________________________________________________
 
-	enum class ItemNotif 
+	enum class ComponentNotif 
 	{
 		SortOrderChanged,
 		ValueModified,

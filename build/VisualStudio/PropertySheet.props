@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>..\..\..\src;..\..\..\src\base;..\..\..\src\interfaces;..\..\..\src\items;..\..\..\src\sizebrokers;..\..\..\src\skins;..\..\..\src\textmappers;..\..\..\src\valueformatters;..\..\..\src\widgets;..\..\..\src\widgets\capsules;..\..\..\src\widgets\layers;..\..\..\src\widgets\lists;..\..\..\src\widgets\panels;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\src;..\..\..\src\base;..\..\..\src\interfaces;..\..\..\src\components;..\..\..\src\sizebrokers;..\..\..\src\skins;..\..\..\src\textmappers;..\..\..\src\valueformatters;..\..\..\src\widgets;..\..\..\src\widgets\capsules;..\..\..\src\widgets\layers;..\..\..\src\widgets\lists;..\..\..\src\widgets\panels;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup />

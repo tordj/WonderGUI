@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_child.h>
+#include <wg_ichild.h>
 
 namespace wg 
 {
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		Child<Slot,ChildHolder>	child;
+		IChild<Slot,ChildHolder>	child;
 
 		//.____ Identification __________________________________________
 	

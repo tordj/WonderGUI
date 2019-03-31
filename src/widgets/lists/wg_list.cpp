@@ -22,8 +22,8 @@
 
 #include <wg_list.h>
 #include <wg_msgrouter.h>
-#include <wg_iconitem.h>
-#include <wg_textitem.h>
+#include <wg_cicondisplay.h>
+#include <wg_ctextdisplay.h>
 #include <wg_gfxdevice.h>
 
 namespace wg 

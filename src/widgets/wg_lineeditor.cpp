@@ -235,9 +235,9 @@ namespace wg
 			m_text.setSize( Size( m_text.preferredSize().w, size.h ) );
 	}
 
-	//____ _itemPos() __________________________________________________________
+	//____ _componentPos() __________________________________________________________
 	
-	Coord LineEditor::_itemPos( const Item * pItem ) const
+	Coord LineEditor::_componentPos( const Component * pComponent ) const
 	{
 		Coord c(-m_textScrollOfs, 0);
 		
@@ -247,9 +247,9 @@ namespace wg
 			return c;
 	}
 
-	//____ _itemSize() _________________________________________________________
+	//____ _componentSize() _________________________________________________________
 	
-	Size LineEditor::_itemSize( const Item * pItem ) const
+	Size LineEditor::_componentSize( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return Size( m_text.preferredSize().w, m_size.h - m_pSkin->contentPadding().h );
@@ -257,9 +257,9 @@ namespace wg
 			return Size( m_text.preferredSize().w, m_size.h );
 	}
 
-	//____ _itemGeo() __________________________________________________________
+	//____ _componentGeo() __________________________________________________________
 	
-	Rect LineEditor::_itemGeo( const Item * pItem ) const
+	Rect LineEditor::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 		{
@@ -272,9 +272,9 @@ namespace wg
 			return Rect( -m_textScrollOfs, 0, m_text.preferredSize().w, m_size.h );
 	}
 
-	//____ _itemRenderRequested() ______________________________________________
+	//____ _componentRequestRender() ______________________________________________
 
-	void LineEditor::_itemRenderRequested(const Item * pItem)
+	void LineEditor::_componentRequestRender(const Component * pComponent)
 	{
 		Rect visible(0, 0, m_size);
 
@@ -284,7 +284,7 @@ namespace wg
 		_requestRender(visible);
 	}
 
-	void LineEditor::_itemRenderRequested( const Item * pItem, const Rect& rect )
+	void LineEditor::_componentRequestRender( const Component * pComponent, const Rect& rect )
 	{
 		if (rect.w > 1)
 			int x = 0;
@@ -305,9 +305,9 @@ namespace wg
 			_requestRender( dirt );		
 	}
 
-	//____ _itemResizeRequested() ______________________________________________
+	//____ _componentRequestResize() ______________________________________________
 	
-	void LineEditor::_itemResizeRequested( const Item * pItem )
+	void LineEditor::_componentRequestResize( const Component * pComponent )
 	{
 		Size preferred = m_text.preferredSize();
 
@@ -318,15 +318,15 @@ namespace wg
 		if( preferred.h != height )
 			_requestResize();
 
-		m_text.setSize( Size(preferred.w, height ));	// Item gets the preferred width right away.
+		m_text.setSize( Size(preferred.w, height ));	// Component gets the preferred width right away.
 	}
 
-	//____ _itemVisibilityRequested() ____________________________________________
+	//____ _componentRequestInView() ____________________________________________
 
-	void LineEditor::_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio)
+	void LineEditor::_componentRequestInView(const Component * pComponent, const Rect& preferred, const Rect& prio)
 	{
 		int scrollOfs = m_textScrollOfs;
-		Size canvas = pItem->_size();
+		Size canvas = pComponent->_size();
 
 		Size window = size();
 		if( m_pSkin )

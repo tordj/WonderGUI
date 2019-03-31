@@ -23,7 +23,7 @@
 #include <wg_msg.h>
 #include <wg_key.h>
 #include <wg_widget.h>
-#include <wg_edittext.h>
+#include <wg_itexteditor.h>
 
 namespace wg 
 {
@@ -1028,7 +1028,7 @@ namespace wg
 		return m_pText;
 	}
 	
-	TextEditMsg::TextEditMsg( EditText * pText, bool bFinal )
+	TextEditMsg::TextEditMsg( IROTextDisplayEditor * pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->object();

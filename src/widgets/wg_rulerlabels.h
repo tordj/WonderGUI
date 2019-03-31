@@ -4,7 +4,7 @@
 
 #include <wg_widget.h>
 #include <wg_chain.h>
-#include <wg_modtext.h>
+#include <wg_itextdisplay.h>
 
 namespace wg 
 {
@@ -40,7 +40,7 @@ namespace wg
 		//.____ Control ____________________________________________
 		
 		void		addLabel( const CharSeq& text, TextStyle * pStyle, float offset );
-		ModText_p	getLabel(int index);
+		ITextDisplay_p	getLabel(int index);
 
 		
 	protected:
@@ -53,21 +53,21 @@ namespace wg
 		void			_setState( State state );
 		bool			_alphaTest( const Coord& ofs );
 	
-		Coord			_itemPos( const Item * pItem ) const;
-		Size			_itemSize( const Item * pItem ) const;
-		Rect			_itemGeo( const Item * pItem ) const;
+		Coord			_componentPos( const Component * pComponent ) const override;
+		Size			_componentSize( const Component * pComponent ) const override;
+		Rect			_componentGeo( const Component * pComponent ) const override;
 
-		void			_resizeRequested( const Item * pItem );
+		void			_componentRequestResize( const Component * pComponent ) override;
 
 	
 		class Label : public Link
 		{
 		public:
-			Label(Widget * pWidget) : textItem(pWidget), textInterface(&textItem) {}
+			Label(Widget * pWidget) : text(pWidget), interface(&text) {}
 			LINK_METHODS(Label);
-			TextItem	textItem;
-			ModText		textInterface;
-			float		offset;
+			CTextDisplay	text;
+			ITextDisplay	interface;
+			float			offset;
 		};
 		
 		Chain<Label>	m_labels;

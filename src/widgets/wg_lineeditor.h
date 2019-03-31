@@ -26,14 +26,14 @@
 
 
 #include <wg_widget.h>
-#include <wg_edittext.h>
+#include <wg_itexteditor.h>
 
 namespace wg 
 {
 	
 	class LineEditor;
-	typedef	StrongPtr<LineEditor>		LineEditor_p;
-	typedef	WeakPtr<LineEditor>	LineEditor_wp;
+	typedef	StrongPtr<LineEditor>	LineEditor_p;
+	typedef	WeakPtr<LineEditor>		LineEditor_wp;
 	
 	class LineEditor:public Widget
 	{
@@ -44,7 +44,7 @@ namespace wg
 	
 		//.____ Interfaces _______________________________________
 	
-		EditText		text;
+		IROTextDisplayEditor		text;
 
 		//.____ Identification __________________________________________
 
@@ -71,18 +71,18 @@ namespace wg
 		void			_setState( State state );
 		void			_setSkin( Skin * pSkin );
 
-		Coord			_itemPos( const Item * pItem ) const;
-		Size			_itemSize( const Item * pItem ) const;
-		Rect			_itemGeo( const Item * pItem ) const;
+		Coord			_componentPos( const Component * pComponent ) const override;
+		Size			_componentSize( const Component * pComponent ) const override;
+		Rect			_componentGeo( const Component * pComponent ) const override;
 
-		void			_itemRenderRequested(const Item * pItem);
-		void			_itemRenderRequested( const Item * pItem, const Rect& rect );
-		void			_itemResizeRequested( const Item * pItem );
-		void			_itemVisibilityRequested(const Item * pItem, const Rect& preferred, const Rect& prio);
+		void			_componentRequestRender(const Component * pComponent) override;
+		void			_componentRequestRender( const Component * pComponent, const Rect& rect ) override;
+		void			_componentRequestResize( const Component * pComponent ) override;
+		void			_componentRequestInView(const Component * pComponent, const Rect& preferred, const Rect& prio) override;
 
 	private:
 		
-		EditTextItem	m_text;
+		CTextEditor	m_text;
 		int				m_textScrollOfs;
 	};
 	

@@ -328,7 +328,7 @@ namespace wg
 	
 		// Print text
 	
-		TextItem * pText;
+		CTextDisplay * pText;
 	
 		if( m_bRefreshing )
 			pText = &m_refreshText;

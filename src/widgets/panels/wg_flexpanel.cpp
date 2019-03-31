@@ -25,7 +25,7 @@
 #include <wg_util.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_hideablechildren.impl.h>
+#include <wg_ihideablechildren.impl.h>
 
 #include <assert.h>
 
@@ -50,7 +50,7 @@ namespace wg
 
 	//____ addPinned() _________________________________________________________
 
-	FlexPanelChildren::iterator FlexPanelChildren::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	IFlexPanelChildren::iterator IFlexPanelChildren::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
@@ -67,7 +67,7 @@ namespace wg
 
 	//____ addMovable() ________________________________________________________
 
-	FlexPanelChildren::iterator FlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -84,7 +84,7 @@ namespace wg
 
 	//____ insertPinned() ________________________________________________________
 
-	FlexPanelChildren::iterator FlexPanelChildren::insertPinned( int index, Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	IFlexPanelChildren::iterator IFlexPanelChildren::insertPinned( int index, Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
@@ -101,7 +101,7 @@ namespace wg
 
 	//____ insertMovable() ________________________________________________________
 
-	FlexPanelChildren::iterator FlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -118,28 +118,28 @@ namespace wg
 
 	//____ setPinned() ________________________________________________________
 
-	void FlexPanelChildren::setPinned( int index )
+	void IFlexPanelChildren::setPinned( int index )
 	{
 		//TODO: Assert
 
 		_setPinned(m_pSlotArray->slot(index));
 	}
 
-	void FlexPanelChildren::setPinned(iterator it)
+	void IFlexPanelChildren::setPinned(iterator it)
 	{
 		//TODO: Assert
 
 		_setPinned(it._slot());
 	}
 
-	void FlexPanelChildren::setPinned(int index, const FlexPos& topLeft, const FlexPos& bottomRight)
+	void IFlexPanelChildren::setPinned(int index, const FlexPos& topLeft, const FlexPos& bottomRight)
 	{
 		//TODO: Assert
 
 		_setPinned(m_pSlotArray->slot(index), topLeft, bottomRight);
 	}
 
-	void FlexPanelChildren::setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight )
+	void IFlexPanelChildren::setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
@@ -148,28 +148,28 @@ namespace wg
 
 	//____ setMovable() ________________________________________________________
 
-	void FlexPanelChildren::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
+	void IFlexPanelChildren::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
 		_setMovable(m_pSlotArray->slot(index), origo, hotspot);
 	}
 
-	void FlexPanelChildren::setMovable(iterator it, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::setMovable(iterator it, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		//TODO: Assert
 
 		_setMovable(it._slot(), origo, hotspot);
 	}
 
-	void FlexPanelChildren::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		//TODO: Assert
 
 		_setMovable(m_pSlotArray->slot(index), geometry, origo, hotspot);
 	}
 
-	void FlexPanelChildren::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	void IFlexPanelChildren::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -178,14 +178,14 @@ namespace wg
 /*
 	//____ moveToBack() ________________________________________________________
 
-	void FlexPanelChildren::moveToBack( int index )
+	void IFlexPanelChildren::moveToBack( int index )
 	{
 		//TODO: Assert
 
 		_moveBelow( m_pSlotArray->slot(index),m_pSlotArray->first() );
 	}
 
-	FlexPanelChildren::iterator FlexPanelChildren::moveToBack(iterator it)
+	IFlexPanelChildren::iterator IFlexPanelChildren::moveToBack(iterator it)
 	{
 		//TODO: Assert
 
@@ -194,14 +194,14 @@ namespace wg
 
 	//____ moveToFront() ________________________________________________________
 
-	void FlexPanelChildren::moveToFront( int index )
+	void IFlexPanelChildren::moveToFront( int index )
 	{
 		//TODO: Assert
 
 		_moveAbove( m_pSlotArray->slot(index), m_pSlotArray->last() );
 	}
 
-	FlexPanelChildren::iterator FlexPanelChildren::moveToFront(iterator it)
+	IFlexPanelChildren::iterator IFlexPanelChildren::moveToFront(iterator it)
 	{
 		//TODO: Assert
 
@@ -210,14 +210,14 @@ namespace wg
 
 	//____ moveAbove() ________________________________________________________
 
-	void FlexPanelChildren::moveAbove( int index, int sibling )
+	void IFlexPanelChildren::moveAbove( int index, int sibling )
 	{
 		//TODO: Assert
 
 		_moveAbove(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
 	}
 
-	FlexPanelChildren::iterator FlexPanelChildren::moveAbove(iterator it, iterator sibling)
+	IFlexPanelChildren::iterator IFlexPanelChildren::moveAbove(iterator it, iterator sibling)
 	{
 		//TODO: Assert
 
@@ -227,14 +227,14 @@ namespace wg
 
 	//____ moveBelow() ________________________________________________________
 
-	void FlexPanelChildren::moveBelow(int index, int sibling)
+	void IFlexPanelChildren::moveBelow(int index, int sibling)
 	{
 		//TODO: Assert!
 
 		_moveBelow(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
 	}
 
-	FlexPanelChildren::iterator FlexPanelChildren::moveBelow(iterator it, iterator sibling)
+	IFlexPanelChildren::iterator IFlexPanelChildren::moveBelow(iterator it, iterator sibling)
 	{
 		//TODO: Assert
 
@@ -245,14 +245,14 @@ namespace wg
 
 	//____ isMovable() ________________________________________________________
 
-	bool FlexPanelChildren::isMovable( int index ) const
+	bool IFlexPanelChildren::isMovable( int index ) const
 	{
 		//TODO: Assert!
 
 		return !m_pSlotArray->slot(index)->bPinned;
 	}
 
-	bool FlexPanelChildren::isMovable(iterator it) const
+	bool IFlexPanelChildren::isMovable(iterator it) const
 	{
 		//TODO: Assert!
 
@@ -262,14 +262,14 @@ namespace wg
 
 	//____ isPinned() ________________________________________________________
 
-	bool FlexPanelChildren::isPinned(int index) const
+	bool IFlexPanelChildren::isPinned(int index) const
 	{
 		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->bPinned;
 	}
 
-	bool FlexPanelChildren::isPinned( iterator it ) const
+	bool IFlexPanelChildren::isPinned( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -278,14 +278,14 @@ namespace wg
 
 	//____ setOrigo() ________________________________________________________
 
-	bool FlexPanelChildren::setOrigo( int index, const FlexPos& origo )
+	bool IFlexPanelChildren::setOrigo( int index, const FlexPos& origo )
 	{
 		//TODO: Assert!
 
 		return _setOrigo(m_pSlotArray->slot(index), origo);
 	}
 
-	bool FlexPanelChildren::setOrigo( iterator it, const FlexPos& origo)
+	bool IFlexPanelChildren::setOrigo( iterator it, const FlexPos& origo)
 	{
 		//TODO: Assert!
 
@@ -295,14 +295,14 @@ namespace wg
 
 	//____ origo() ________________________________________________________
 
-	FlexPos FlexPanelChildren::origo( int index ) const
+	FlexPos IFlexPanelChildren::origo( int index ) const
 	{
 		//TODO: Assert!
 
 		return _origo(m_pSlotArray->slot(index));
 	}
 
-	FlexPos FlexPanelChildren::origo( iterator it ) const
+	FlexPos IFlexPanelChildren::origo( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -312,14 +312,14 @@ namespace wg
 
 	//____ setHotspot() ________________________________________________________
 
-	bool FlexPanelChildren::setHotspot( int index, const FlexPos& hotspot )
+	bool IFlexPanelChildren::setHotspot( int index, const FlexPos& hotspot )
 	{
 		//TODO: Assert!
 
 		return _setHotspot(m_pSlotArray->slot(index), hotspot);
 	}
 
-	bool FlexPanelChildren::setHotspot(iterator it, const FlexPos& hotspot)
+	bool IFlexPanelChildren::setHotspot(iterator it, const FlexPos& hotspot)
 	{
 		//TODO: Assert!
 
@@ -328,14 +328,14 @@ namespace wg
 
 	//____ hotspot() ________________________________________________________
 
-	FlexPos FlexPanelChildren::hotspot( int index ) const
+	FlexPos IFlexPanelChildren::hotspot( int index ) const
 	{
 		//TODO: Assert!
 
 		return _hotspot( m_pSlotArray->slot(index) );
 	}
 
-	FlexPos FlexPanelChildren::hotspot(iterator it) const
+	FlexPos IFlexPanelChildren::hotspot(iterator it) const
 	{
 		//TODO: Assert!
 
@@ -345,14 +345,14 @@ namespace wg
 
 	//____ setGeo() ________________________________________________________
 
-	bool FlexPanelChildren::setGeo( int index, const Rect& geometry )
+	bool IFlexPanelChildren::setGeo( int index, const Rect& geometry )
 	{
 		//TODO: Assert!
 
 		return _setGeo(m_pSlotArray->slot(index), geometry);
 	}
 
-	bool FlexPanelChildren::setGeo(iterator it, const Rect& geometry)
+	bool IFlexPanelChildren::setGeo(iterator it, const Rect& geometry)
 	{
 		//TODO: Assert!
 
@@ -361,14 +361,14 @@ namespace wg
 
 	//____ geo() ________________________________________________________
 
-	Rect FlexPanelChildren::geo( int index ) const
+	Rect IFlexPanelChildren::geo( int index ) const
 	{
 		//TODO: Assert
 
 		return _geo(m_pSlotArray->slot(index));
 	}
 
-	Rect FlexPanelChildren::geo( iterator it ) const
+	Rect IFlexPanelChildren::geo( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -378,14 +378,14 @@ namespace wg
 
 	//____ setOfs() ________________________________________________________
 
-	bool FlexPanelChildren::setOfs( int index, const Coord& ofs )
+	bool IFlexPanelChildren::setOfs( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 
 		return _setOfs(m_pSlotArray->slot(index), ofs);
 	}
 
-	bool FlexPanelChildren::setOfs( iterator it, const Coord& ofs )
+	bool IFlexPanelChildren::setOfs( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 
@@ -394,14 +394,14 @@ namespace wg
 
 	//____ ofs() ________________________________________________________
 
-	Coord FlexPanelChildren::ofs( int index ) const
+	Coord IFlexPanelChildren::ofs( int index ) const
 	{
 		//TODO: Assert
 
 		return _ofs(m_pSlotArray->slot(index));
 	}
 
-	Coord FlexPanelChildren::ofs( iterator it ) const
+	Coord IFlexPanelChildren::ofs( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -410,14 +410,14 @@ namespace wg
 
 	//____ setSize() ________________________________________________________
 
-	bool FlexPanelChildren::setSize( int index, const Size& size )
+	bool IFlexPanelChildren::setSize( int index, const Size& size )
 	{
 		//TODO: Assert
 		
 		return _setSize(m_pSlotArray->slot(index), size );
 	}
 
-	bool FlexPanelChildren::setSize( iterator it, const Size& size )
+	bool IFlexPanelChildren::setSize( iterator it, const Size& size )
 	{
 		//TODO: Assert
 		
@@ -426,14 +426,14 @@ namespace wg
 
 	//____ size() ________________________________________________________
 
-	Rect FlexPanelChildren::size( int index ) const
+	Rect IFlexPanelChildren::size( int index ) const
 	{
 		//TODO: Assert
 
 		return _size(m_pSlotArray->slot(index));
 	}
 
-	Rect FlexPanelChildren::size( iterator it ) const
+	Rect IFlexPanelChildren::size( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -442,14 +442,14 @@ namespace wg
 
 	//____ move() ________________________________________________________
 
-	bool FlexPanelChildren::move( int index, const Coord& ofs )
+	bool IFlexPanelChildren::move( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 
 		return _move(m_pSlotArray->slot(index), ofs);
 	}
 
-	bool FlexPanelChildren::move( iterator it, const Coord& ofs )
+	bool IFlexPanelChildren::move( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 
@@ -458,14 +458,14 @@ namespace wg
 
 	//____ topLeftCorner() ________________________________________________________
 
-	FlexPos FlexPanelChildren::topLeftCorner( int index ) const
+	FlexPos IFlexPanelChildren::topLeftCorner( int index ) const
 	{
 		//TODO: Assert
 
 		return _topLeftCorner(m_pSlotArray->slot(index));
 	}
 
-	FlexPos FlexPanelChildren::topLeftCorner( iterator it ) const
+	FlexPos IFlexPanelChildren::topLeftCorner( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -474,14 +474,14 @@ namespace wg
 
 	//____ bottomRightCorner() ________________________________________________________
 
-	FlexPos FlexPanelChildren::bottomRightCorner( int index ) const
+	FlexPos IFlexPanelChildren::bottomRightCorner( int index ) const
 	{
 		//TODO: Assert
 
 		return _bottomRightCorner(m_pSlotArray->slot(index));
 	}
 
-	FlexPos FlexPanelChildren::bottomRightCorner( iterator it ) const
+	FlexPos IFlexPanelChildren::bottomRightCorner( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -490,7 +490,7 @@ namespace wg
 
 	//____ _setPinned() ________________________________________________________
 
-	void FlexPanelChildren::_setPinned(FlexPanelSlot * p)
+	void IFlexPanelChildren::_setPinned(FlexPanelSlot * p)
 	{
 		if (!p->bPinned)
 		{
@@ -505,7 +505,7 @@ namespace wg
 		}
 	}
 
-	void FlexPanelChildren::_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight)
+	void IFlexPanelChildren::_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight)
 	{
 		p->bPinned = true;
 		p->topLeftPin = topLeft;
@@ -516,7 +516,7 @@ namespace wg
 
 	//____ _setMovable() ________________________________________________________
 
-	void FlexPanelChildren::_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		if (p->bPinned)
 		{
@@ -529,7 +529,7 @@ namespace wg
 		}
 	}
 
-	void FlexPanelChildren::_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		p->bPinned = false;
 		p->origo = origo;
@@ -541,7 +541,7 @@ namespace wg
 
 	//____ _setOrigo() ________________________________________________________
 
-	bool FlexPanelChildren::_setOrigo(FlexPanelSlot * p, const FlexPos& origo)
+	bool IFlexPanelChildren::_setOrigo(FlexPanelSlot * p, const FlexPos& origo)
 	{
 		if (p->bPinned)
 			return false;
@@ -554,7 +554,7 @@ namespace wg
 
 	//____ _origo() ________________________________________________________
 
-	FlexPos FlexPanelChildren::_origo(FlexPanelSlot * p) const
+	FlexPos IFlexPanelChildren::_origo(FlexPanelSlot * p) const
 	{
 		if (p->bPinned)
 			return FlexPos();
@@ -564,7 +564,7 @@ namespace wg
 
 	//____ _setHotspot() ________________________________________________________
 
-	bool FlexPanelChildren::_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot)
+	bool IFlexPanelChildren::_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot)
 	{
 		if (p->bPinned)
 			return false;
@@ -577,7 +577,7 @@ namespace wg
 
 	//____ _hotspot() ________________________________________________________
 
-	FlexPos FlexPanelChildren::_hotspot(FlexPanelSlot * p) const
+	FlexPos IFlexPanelChildren::_hotspot(FlexPanelSlot * p) const
 	{
 		if (p->bPinned)
 			return FlexPos();
@@ -587,7 +587,7 @@ namespace wg
 
 	//____ _setGeo() ________________________________________________________
 
-	bool FlexPanelChildren::_setGeo(FlexPanelSlot * p, const Rect& geometry)
+	bool IFlexPanelChildren::_setGeo(FlexPanelSlot * p, const Rect& geometry)
 	{
 		if (p->bPinned)
 			return false;
@@ -600,7 +600,7 @@ namespace wg
 
 	//____ _geo() ________________________________________________________
 
-	Rect FlexPanelChildren::_geo(FlexPanelSlot * p) const
+	Rect IFlexPanelChildren::_geo(FlexPanelSlot * p) const
 	{
 		if (p->bPinned)
 			return Rect();
@@ -610,7 +610,7 @@ namespace wg
 
 	//____ _setOfs() ________________________________________________________
 
-	bool FlexPanelChildren::_setOfs( FlexPanelSlot * p, const Coord& ofs )
+	bool IFlexPanelChildren::_setOfs( FlexPanelSlot * p, const Coord& ofs )
 	{
 		if( p->bPinned )
 			return false;
@@ -623,7 +623,7 @@ namespace wg
 
 	//____ _ofs() ________________________________________________________
 
-	Coord FlexPanelChildren::_ofs( FlexPanelSlot * p ) const
+	Coord IFlexPanelChildren::_ofs( FlexPanelSlot * p ) const
 	{
 		if( p->bPinned )
 			return Coord();
@@ -633,7 +633,7 @@ namespace wg
 
 	//____ _setSize() ________________________________________________________
 
-	bool FlexPanelChildren::_setSize( FlexPanelSlot * p, const Size& size )
+	bool IFlexPanelChildren::_setSize( FlexPanelSlot * p, const Size& size )
 	{
 		if( p->bPinned )
 			return false;
@@ -646,7 +646,7 @@ namespace wg
 
 	//____ _size() ________________________________________________________
 
-	Rect FlexPanelChildren::_size( FlexPanelSlot * p ) const
+	Rect IFlexPanelChildren::_size( FlexPanelSlot * p ) const
 	{
 		if( p->bPinned )
 			return Size();
@@ -656,7 +656,7 @@ namespace wg
 
 	//____ _move() ________________________________________________________
 
-	bool FlexPanelChildren::_move( FlexPanelSlot * p, const Coord& ofs )
+	bool IFlexPanelChildren::_move( FlexPanelSlot * p, const Coord& ofs )
 	{
 		if( p->bPinned )
 			return false;
@@ -669,7 +669,7 @@ namespace wg
 
 	//____ _topLeftCorner() ________________________________________________________
 
-	FlexPos FlexPanelChildren::_topLeftCorner( FlexPanelSlot * p ) const
+	FlexPos IFlexPanelChildren::_topLeftCorner( FlexPanelSlot * p ) const
 	{
 		if( !p->bPinned )
 			return FlexPos();
@@ -679,7 +679,7 @@ namespace wg
 
 	//____ _bottomRightCorner() ________________________________________________________
 
-	FlexPos FlexPanelChildren::_bottomRightCorner( FlexPanelSlot * p ) const
+	FlexPos IFlexPanelChildren::_bottomRightCorner( FlexPanelSlot * p ) const
 	{
 		if( !p->bPinned )
 			return FlexPos();

@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_dynamicchildren.h>
+#include <wg_idynamicchildren.h>
 
 namespace wg 
 {
@@ -60,22 +60,22 @@ namespace wg
 		virtual void	_refreshRealGeo(ModalSlot * pSlot) = 0;
 	};
 
-	class ModalChildren;
-	typedef	StrongInterfacePtr<ModalChildren>	ModalChildren_p;
-	typedef	WeakInterfacePtr<ModalChildren>	ModalChildren_wp;
+	class IModalChildren;
+	typedef	StrongInterfacePtr<IModalChildren>	IModalChildren_p;
+	typedef	WeakInterfacePtr<IModalChildren>	IModalChildren_wp;
 
-	//____ ModalChildren ________________________________________________________
+	//____ IModalChildren ________________________________________________________
 
-	class ModalChildren : public DynamicChildren<ModalSlot,ModalChildrenHolder>
+	class IModalChildren : public IDynamicChildren<ModalSlot,ModalChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		ModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalChildrenHolder * pHolder ) : DynamicChildren<ModalSlot,ModalChildrenHolder>(pSlotArray,pHolder) {}
+		IModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalChildrenHolder * pHolder ) : IDynamicChildren<ModalSlot,ModalChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline ModalChildren_p	ptr() { return ModalChildren_p(this); }
+		inline IModalChildren_p	ptr() { return IModalChildren_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -120,7 +120,7 @@ namespace wg
 	
 	class ModalLayer : public Layer, protected ModalChildrenHolder
 	{
-		friend class ModalChildren;
+		friend class IModalChildren;
 	
 	public:
 
@@ -130,7 +130,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModalChildren	modals;
+		IModalChildren	modals;
 
 		//.____ Identification __________________________________________
 	

@@ -160,7 +160,6 @@ namespace wg
 		bool				addDataSet( const std::string& id, MetaData * pMetaData );
 	
 		bool				removeSurface( const std::string& id );
-		bool				removeGlyphset( const std::string& id );
 		bool				removeFont( const std::string& id );
 		bool				removeGfxAnim( const std::string& id );
 		bool				removeCaret( const std::string& id );
@@ -168,8 +167,6 @@ namespace wg
 		bool				removeColor( const std::string& id );
 		bool				removeLegoSource( const std::string& id );
 		bool				removeSkin( const std::string& id );
-		bool				removeMenuitem( const std::string& id );
-		bool				removeTab( const std::string& id );
 		bool				removeConnect( const std::string& id );
 		bool				removeResDb( const std::string& id );
 		bool				removeWidget( const std::string& id );

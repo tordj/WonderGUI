@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_modtext.h>
-#include <wg_icon.h>
+#include <wg_itextdisplay.h>
+#include <wg_iicondisplay.h>
 
 namespace wg 
 {
@@ -76,8 +76,8 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		ModText		label;
-		Icon		icon;
+		ITextDisplay		label;
+		IIconDisplay		icon;
 
 		//.____ Identification __________________________________________
 
@@ -124,9 +124,9 @@ namespace wg
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 
-		Coord	_itemPos( const Item * pItem ) const;
-		Size	_itemSize( const Item * pItem ) const;
-		Rect	_itemGeo( const Item * pItem ) const;
+		Coord	_componentPos( const Component * pComponent ) const override;
+		Size	_componentSize( const Component * pComponent ) const override;
+		Rect	_componentGeo( const Component * pComponent ) const override;
 	
 	
 	
@@ -139,8 +139,8 @@ namespace wg
 		bool			m_bReturnPressed;
 		bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 	
-		TextItem		m_label;
-		IconItem		m_icon;
+		CTextDisplay		m_label;
+		CIconDisplay		m_icon;
 		ToggleGroup_p	m_pToggleGroup;
 	
 		ClickArea		m_clickArea;

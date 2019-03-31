@@ -25,7 +25,7 @@
 #pragma once
 
 #	include <wg_widget.h>
-#	include <wg_modvalue.h>
+#	include <wg_ivaluedisplay.h>
 
 namespace wg 
 {
@@ -33,7 +33,7 @@ namespace wg
 	
 	class ValueDisplay;
 	typedef	StrongPtr<ValueDisplay>		ValueDisplay_p;
-	typedef	WeakPtr<ValueDisplay>	ValueDisplay_wp;
+	typedef	WeakPtr<ValueDisplay>		ValueDisplay_wp;
 
 	/**
 	* @brief Widget that displays a formatted value.
@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModValue		value;
+		IValueDisplay		value;
 
 		//.____ Identification __________________________________________
 
@@ -73,7 +73,7 @@ namespace wg
 	
 	private:
 	
-		ModValueItem		m_item;
+		CValueDisplay		m_value;
 	};
 
 } // namespace wg

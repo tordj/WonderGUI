@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_modtext.h>
+#include <wg_itextdisplay.h>
 
 namespace wg 
 {
@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		ModText			text;
+		ITextDisplay			text;
 	
 		//.____ Identification __________________________________________
 
@@ -82,7 +82,7 @@ namespace wg
 	
 	private:
 	
-		TextItem		m_text;
+		CTextDisplay		m_text;
 	};
 	
 	

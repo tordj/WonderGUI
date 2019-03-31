@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_stdtextmapper.h>
-#include <wg_textbaseitem.h>
+#include <wg_ctext.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
@@ -38,7 +38,7 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 	
 	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
-		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedItem(nullptr), m_tickRouteId(0)
+		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedComponent(nullptr), m_tickRouteId(0)
 	{
 	}
 	
@@ -81,29 +81,29 @@ namespace wg
 		return 0;
 	}
 	
-	//____ addItem() _________________________________________________________
+	//____ addComponent() _________________________________________________________
 	
-	void StdTextMapper::addItem( TextBaseItem * pItem )
+	void StdTextMapper::addComponent( CText * pText )
 	{
-		CharBuffer * pBuffer = _charBuffer(pItem);
-		int nLines = _countLines( pItem, pBuffer );
+		CharBuffer * pBuffer = _charBuffer(pText);
+		int nLines = _countLines( pText, pBuffer );
 	
-		_setItemDataBlock(pItem,0);					// Make sure pointer is null for the realloc call.
-		void * pBlock = _reallocBlock(pItem,nLines);
+		_setComponentDataBlock(pText,0);					// Make sure pointer is null for the realloc call.
+		void * pBlock = _reallocBlock(pText,nLines);
 		
-		_updateLineInfo( pItem, pBlock, pBuffer );
+		_updateLineInfo( pText, pBlock, pBuffer );
 	}
 	
-	//____ removeItem() _________________________________________________________
+	//____ removeComponent() _________________________________________________________
 	
-	void StdTextMapper::removeItem( TextBaseItem * pItem )
+	void StdTextMapper::removeComponent( CText * pText )
 	{
-		free( _itemDataBlock(pItem) );
-		_setItemDataBlock(pItem, 0);
+		free( _dataBlock(pText) );
+		_setComponentDataBlock(pText, 0);
 		
-		if( pItem == m_pFocusedItem )
+		if( pText == m_pFocusedComponent )
 		{
-			m_pFocusedItem = 0;
+			m_pFocusedComponent = 0;
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;			
 		}	
@@ -117,7 +117,7 @@ namespace wg
 		{
 			m_alignment = alignment;
 			
-			//TODO: Make all items dirty
+			//TODO: Make all components dirty
 		}
 	}
 
@@ -129,7 +129,7 @@ namespace wg
 		{
 			m_bLineWrap = bWrap;
 
-			//TODO: Make all items dirty
+			//TODO: Make all components dirty
 		}
 	}
 
@@ -164,25 +164,25 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 	
-	int StdTextMapper::charAtPos( const TextBaseItem * pItem, Coord pos ) const
+	int StdTextMapper::charAtPos( const CText * pText, Coord pos ) const
 	{
-		int line = _lineAtPosY(pItem, pos.y, SelectMode::Marked );
+		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
 			return -1;
 			
-		return  _charAtPosX(pItem, line, pos.x, SelectMode::Marked );
+		return  _charAtPosX(pText, line, pos.x, SelectMode::Marked );
 	}
 	
 	//_____ charPos() ______________________________________________________
 	
-	Coord StdTextMapper::charPos( const TextBaseItem * pItem, int charOfs ) const
+	Coord StdTextMapper::charPos( const CText * pText, int charOfs ) const
 	{
-		int line = charLine(pItem, charOfs);
+		int line = charLine(pText, charOfs);
 		
-		int ofsX = _charPosX(pItem, charOfs);
-		int ofsY = _linePosY(_itemDataBlock(pItem), line, pItem->size().h );
+		int ofsX = _charPosX(pText, charOfs);
+		int ofsY = _linePosY(_dataBlock(pText), line, pText->size().h );
 		
-		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;		
+		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;		
 		ofsY += pLine->base;
 		
 		return Coord(ofsX,ofsY);
@@ -190,15 +190,15 @@ namespace wg
 	
 	//____ charRect() ________________________________________________________
 	
-	Rect StdTextMapper::charRect( const TextBaseItem * pItem, int charOfs ) const
+	Rect StdTextMapper::charRect( const CText * pText, int charOfs ) const
 	{
-		const void * pBlock = _itemDataBlock(pItem);
+		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 		
 		// Find correct line and determine yOfs
 		
-		int yOfs = _textPosY( pHeader, pItem->size().h );		
+		int yOfs = _textPosY( pHeader, pText->size().h );		
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -208,15 +208,15 @@ namespace wg
 		
 		// Determine xOfs by parsing line until character
 		
-		int xOfs = _linePosX( pLineInfo, pItem->size().w );
+		int xOfs = _linePosX( pLineInfo, pText->size().w );
 		
 		TextAttr		baseAttr;
-		_baseStyle(pItem)->exportAttr( _state(pItem), &baseAttr );
+		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
 
-		const Char * pFirst = _charBuffer(pItem)->chars() + pLineInfo->offset;
+		const Char * pFirst = _charBuffer(pText)->chars() + pLineInfo->offset;
 		const Char * pLast = pFirst + charOfs;
 		
-		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pItem) );
+		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pText) );
 
 		// Get cell width
 
@@ -225,7 +225,7 @@ namespace wg
 		TextAttr	attr = baseAttr;
 
 		if( pLast->styleHandle() != 0 )
-			pLast->stylePtr()->addToAttr( _state(pItem), &attr );
+			pLast->stylePtr()->addToAttr( _state(pText), &attr );
 		
 		Font * pFont = attr.pFont.rawPtr();
 		pFont->setSize(attr.size);
@@ -241,12 +241,12 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int StdTextMapper::charLine( const TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::charLine( const CText * pText, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
 		
-		const void * pBlock = _itemDataBlock(pItem);
+		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -261,9 +261,9 @@ namespace wg
 	
 	//____ lineBegin() ________________________________________________________
 
-	int StdTextMapper::lineBegin( const TextBaseItem * pItem, int lineNb ) const
+	int StdTextMapper::lineBegin( const CText * pText, int lineNb ) const
 	{
-		const void * pBlock = _itemDataBlock(pItem);
+		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -275,9 +275,9 @@ namespace wg
 	
 	//____ lineEnd() ___________________________________________________________
 	
-	int StdTextMapper::lineEnd( const TextBaseItem * pItem, int lineNb ) const
+	int StdTextMapper::lineEnd( const CText * pText, int lineNb ) const
 	{
-		const void * pBlock = _itemDataBlock(pItem);
+		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
 		const LineInfo * pLineInfo = _lineInfo(pBlock);
 
@@ -289,7 +289,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int StdTextMapper::wordBegin( const TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::wordBegin( const CText * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -297,7 +297,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 	
-	int StdTextMapper::wordEnd( const TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::wordEnd( const CText * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -366,9 +366,9 @@ namespace wg
 
 	void StdTextMapper::receive( Msg * pMsg )
 	{
-		if( pMsg->type() == MsgType::Tick && m_pFocusedItem )
+		if( pMsg->type() == MsgType::Tick && m_pFocusedComponent )
 		{
-			const EditState * pEditState = m_pFocusedItem->_editState();
+			const EditState * pEditState = m_pFocusedComponent->_editState();
 			
 			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 			if( pEditState && pEditState->bCaret && pCaret )
@@ -378,27 +378,27 @@ namespace wg
 				bool bDirty = pCaret->tick( ms );					
 				if( bDirty )
 				{
-					_setItemDirty( m_pFocusedItem, pCaret->dirtyRect(charRect(m_pFocusedItem, pEditState->caretOfs)) );
+					_setComponentDirty( m_pFocusedComponent, pCaret->dirtyRect(charRect(m_pFocusedComponent, pEditState->caretOfs)) );
 				}
 			}		
 		}
 	}
 	
-	//____ _renderItem()___________________________________________________________
+	//____ _render()___________________________________________________________
 	
-	void StdTextMapper::renderItem( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::render( CText * pText, GfxDevice * pDevice, const Rect& canvas )
 	{	
 	
-		void * pBlock = _itemDataBlock(pItem);
+		void * pBlock = _dataBlock(pText);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
-		const Char * pCharArray = _charBuffer(pItem)->chars();
+		const Char * pCharArray = _charBuffer(pText)->chars();
 		
 		Coord lineStart = canvas.pos();
 		lineStart.y += _textPosY( pHeader, canvas.h );
 	
 		TextAttr		baseAttr;
-		_baseStyle(pItem)->exportAttr( _state(pItem), &baseAttr );
+		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
 	
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -411,10 +411,10 @@ namespace wg
 
 		// Render back colors
 		
-		_renderBack( pItem, pDevice, canvas );
+		_renderBack( pText, pDevice, canvas );
 		
 
-		const EditState * pEditState = _editState( pItem );
+		const EditState * pEditState = _editState( pText );
 
 		// Get selection start and end
 
@@ -435,7 +435,7 @@ namespace wg
 			{
 				if( m_selectionBackRenderMode != BlendMode::Undefined )
 					pDevice->setBlendMode( m_selectionBackRenderMode );
-				_renderBackSection( pItem, pDevice, canvas, selBeg, selEnd, m_selectionBackColor );
+				_renderBackSection( pText, pDevice, canvas, selBeg, selEnd, m_selectionBackColor );
 				pDevice->setBlendMode( renderMode );
 			}
 			
@@ -476,7 +476,7 @@ namespace wg
 						attr = baseAttr;
 
 						if( pChar->styleHandle() != 0 )
-							pChar->stylePtr()->addToAttr( _state(pItem), &attr );
+							pChar->stylePtr()->addToAttr( _state(pText), &attr );
 						
 						if( pFont != attr.pFont || attr.size != oldFontSize )
 						{
@@ -554,7 +554,7 @@ namespace wg
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( pEditState && pEditState->bCaret && pCaret )
 		{
-			pCaret->render( pDevice, charRect(pItem, pEditState->caretOfs) + canvas.pos() );
+			pCaret->render( pDevice, charRect(pText, pEditState->caretOfs) + canvas.pos() );
 		}
 	}
 	
@@ -563,9 +563,9 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 	
-	void StdTextMapper::_renderBack( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::_renderBack( CText * pText, GfxDevice * pDevice, const Rect& canvas )
 	{	
-		const Char * pCharArray = _charBuffer(pItem)->chars();
+		const Char * pCharArray = _charBuffer(pText)->chars();
 		const Char * pBeg = pCharArray;
 		const Char * pChar;
 
@@ -579,16 +579,16 @@ namespace wg
 		{
 			if( pChar->styleHandle() != hStyle )
 			{
-				Color newColor = _baseStyle(pItem)->combBgColor( _state(pItem) );
+				Color newColor = _baseStyle(pText)->combBgColor( _state(pText) );
 				
 				TextStyle_p p = pChar->stylePtr();
 				if( p )
-					newColor = Color::blend( newColor, p->combBgColor(_state(pItem)), p->bgColorBlendMode(_state(pItem)) );
+					newColor = Color::blend( newColor, p->combBgColor(_state(pText)), p->bgColorBlendMode(_state(pText)) );
 								
 				if( newColor != color )
 				{
 					if( color.a != 0 )
-						_renderBackSection( pItem, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
+						_renderBackSection( pText, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
 					color = newColor;
 					pBeg = pChar;
 				}
@@ -598,20 +598,20 @@ namespace wg
 		}
 		
 		if( color.a != 0 )
-			_renderBackSection( pItem, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
+			_renderBackSection( pText, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
 	}
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( TextBaseItem * pItem, GfxDevice * pDevice, const Rect& canvas, 
+	void StdTextMapper::_renderBackSection( CText * pText, GfxDevice * pDevice, const Rect& canvas, 
 											int begChar, int endChar, Color color )
 	{
 		
-		Coord begPos = charPos( pItem, begChar );
-		LineInfo * pBegLine = _lineInfo( _itemDataBlock(pItem) ) + charLine( pItem, begChar );
+		Coord begPos = charPos( pText, begChar );
+		LineInfo * pBegLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, begChar );
 		
-		Coord endPos = charPos( pItem, endChar );
-		LineInfo * pEndLine = _lineInfo( _itemDataBlock(pItem) ) + charLine( pItem, endChar );
+		Coord endPos = charPos( pText, endChar );
+		LineInfo * pEndLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, endChar );
 
 		
 		if( pBegLine == pEndLine )
@@ -663,7 +663,7 @@ namespace wg
 	
 	//____ caretMove() ________________________________________________________
 
-	void StdTextMapper::caretMove( TextBaseItem * pText, int ofs )
+	void StdTextMapper::caretMove( CText * pText, int ofs )
 	{
 		const EditState * pEditState = pText->_editState();
 
@@ -674,17 +674,17 @@ namespace wg
 
 			if( bDirty || pEditState->caretOfs != ofs )
 			{
-				_setItemDirty( pText, pCaret->dirtyRect( charRect(pText, ofs) ));
+				_setComponentDirty( pText, pCaret->dirtyRect( charRect(pText, ofs) ));
 
 				if( pEditState->caretOfs != ofs )
-					_setItemDirty( pText, pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
+					_setComponentDirty( pText, pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
 			}
 		}
 	}
 
 	//____ selectionChange() __________________________________________________
 	
-	void StdTextMapper::selectionChange( TextBaseItem * pText, int selectOfs, int caretOfs )
+	void StdTextMapper::selectionChange( CText * pText, int selectOfs, int caretOfs )
 	{
 		Rect dirt;
 
@@ -716,23 +716,23 @@ namespace wg
 			}
 		}
 
-		_setItemDirty( pText, dirt );
+		_setComponentDirty( pText, dirt );
 	}
 
 
 	//____ onTextModified() ____________________________________________________
 	
-	void StdTextMapper::onTextModified( TextBaseItem * pItem, int ofs, int charsRemoved, int charsAdded )
+	void StdTextMapper::onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded )
 	{
-		onRefresh(pItem);
+		onRefresh(pText);
 	}
 	
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( TextBaseItem * pItem, Size newSize, Size oldSize )
+	void StdTextMapper::onResized( CText * pText, Size newSize, Size oldSize )
 	{
 		if (m_bLineWrap)
-			onRefresh(pItem);
+			onRefresh(pText);
 
 
 		///TODO: Implement!
@@ -740,21 +740,21 @@ namespace wg
 
 	//____ onStateChanged() ______________________________________________________
 
-	void StdTextMapper::onStateChanged( TextBaseItem * pItem, State newState, State oldState )
+	void StdTextMapper::onStateChanged( CText * pText, State newState, State oldState )
 	{
-		// TODO: Support for more than one input device, focusing different (or same) items.
-		
+		// TODO: Support for more than one input device, focusing different (or same) components.
+
 		if( newState.isFocused() != oldState.isFocused() )
 		{
 			if( newState.isFocused() )
 			{
-				m_pFocusedItem = pItem;
+				m_pFocusedComponent = pText;
 				if( !m_tickRouteId )
 					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );					
 			}
 			else
 			{
-				m_pFocusedItem = 0;
+				m_pFocusedComponent = 0;
 				if( m_tickRouteId )
 				{
 					Base::msgRouter()->deleteRoute( m_tickRouteId );
@@ -766,58 +766,58 @@ namespace wg
 
 	//____ onStyleChanged() ______________________________________________________
 
-	void StdTextMapper::onStyleChanged( TextBaseItem * pItem, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void StdTextMapper::onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		State state = _state(pItem);
-		void * pBlock = _itemDataBlock(pItem);
+		State state = _state(pText);
+		void * pBlock = _dataBlock(pText);
 		
-		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
+		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
 
-		_setItemDirty(pItem);
+		_setComponentDirty(pText);
 	}
 	
 	//____ onCharStyleChanged() __________________________________________________
 
-	void StdTextMapper::onCharStyleChanged( TextBaseItem * pItem, int ofs, int len )
+	void StdTextMapper::onCharStyleChanged( CText * pText, int ofs, int len )
 	{
-		State state = _state(pItem);
-		void * pBlock = _itemDataBlock(pItem);
+		State state = _state(pText);
+		void * pBlock = _dataBlock(pText);
 		
-		_updateLineInfo( pItem, pBlock, _charBuffer(pItem) );
+		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
 
-		_setItemDirty(pItem);
+		_setComponentDirty(pText);
 	}
 
 	//____ onRefresh() ___________________________________________________________
 	
-	void StdTextMapper::onRefresh( TextBaseItem * pItem )
+	void StdTextMapper::onRefresh( CText * pText )
 	{
-		CharBuffer * pBuffer = _charBuffer(pItem);
-		int nLines = _countLines( pItem, pBuffer );
+		CharBuffer * pBuffer = _charBuffer(pText);
+		int nLines = _countLines( pText, pBuffer );
 	
-		void * pBlock = _itemDataBlock(pItem);
+		void * pBlock = _dataBlock(pText);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
-			pBlock = _reallocBlock(pItem,nLines);
+			pBlock = _reallocBlock(pText,nLines);
 		
-		_updateLineInfo( pItem, pBlock, pBuffer );
-		_setItemDirty(pItem);
+		_updateLineInfo( pText, pBlock, pBuffer );
+		_setComponentDirty(pText);
 	}
 	
 	//___ rectForRange() _________________________________________________________
 
-	Rect StdTextMapper::rectForRange( const TextBaseItem * pItem, int ofs, int length ) const
+	Rect StdTextMapper::rectForRange( const CText * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
 
-		Size canvas = pItem->size();
+		Size canvas = pText->size();
 
 
-		Coord begPos = charPos(pItem, begChar);
-		const LineInfo * pBegLine = _lineInfo(_itemDataBlock(pItem)) + charLine(pItem, begChar);
+		Coord begPos = charPos(pText, begChar);
+		const LineInfo * pBegLine = _lineInfo(_dataBlock(pText)) + charLine(pText, begChar);
 
-		Coord endPos = charPos(pItem, endChar);
-		const LineInfo * pEndLine = _lineInfo(_itemDataBlock(pItem)) + charLine(pItem, endChar);
+		Coord endPos = charPos(pText, endChar);
+		const LineInfo * pEndLine = _lineInfo(_dataBlock(pText)) + charLine(pText, endChar);
 	
 		int x1, x2, y1, y2;
 
@@ -871,7 +871,7 @@ namespace wg
 
 	// Includes left/right margin where applicable.
 	
-	Rect StdTextMapper::rectForCaret( const TextBaseItem * pText ) const
+	Rect StdTextMapper::rectForCaret( const CText * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( !pText->_editState()->bCaret || !pCaret )
@@ -883,56 +883,56 @@ namespace wg
 	
 	//____ textDirection() ____________________________________________________
 
-	Direction StdTextMapper::textDirection( TextBaseItem * pItem, int charOfs ) const
+	Direction StdTextMapper::textDirection( CText * pText, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 	
-	int StdTextMapper::caretToPos( TextBaseItem * pItem, Coord pos, int& wantedLineOfs ) const
+	int StdTextMapper::caretToPos( CText * pText, Coord pos, int& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
-		int line = _lineAtPosY(pItem, pos.y, SelectMode::Closest );
-		return  _charAtPosX(pItem, line, pos.x, SelectMode::ClosestBegin );		
+		int line = _lineAtPosY(pText, pos.y, SelectMode::Closest );
+		return  _charAtPosX(pText, line, pos.x, SelectMode::ClosestBegin );		
 	}
 
 	//____ caretUp() ___________________________________________________________
 	
-	int StdTextMapper::caretUp( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine(pItem, charOfs );
+		int line = charLine(pText, charOfs );
 
 		if( line > 0 )
 		{
 			if( wantedLineOfs == -1 )
-				wantedLineOfs = _charPosX( pItem, charOfs );
+				wantedLineOfs = _charPosX( pText, charOfs );
 
-			charOfs = _charAtPosX(pItem, line-1, wantedLineOfs, SelectMode::ClosestBegin );
+			charOfs = _charAtPosX(pText, line-1, wantedLineOfs, SelectMode::ClosestBegin );
 		}
 		return charOfs;
 	}
 
 	//____ caretDown() _________________________________________________________
 	
-	int StdTextMapper::caretDown( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine(pItem, charOfs );
+		int line = charLine(pText, charOfs );
 
-		if( line >= 0 && line < _header(_itemDataBlock(pItem))->nbLines-1 )
+		if( line >= 0 && line < _header(_dataBlock(pText))->nbLines-1 )
 		{
 			if( wantedLineOfs == -1 )
-				wantedLineOfs = _charPosX( pItem, charOfs );
+				wantedLineOfs = _charPosX( pText, charOfs );
 
-			charOfs = _charAtPosX(pItem, line+1, wantedLineOfs, SelectMode::ClosestBegin );
+			charOfs = _charAtPosX(pText, line+1, wantedLineOfs, SelectMode::ClosestBegin );
 		}
 		return charOfs;
 	}
 
 	//____ caretLeft() _________________________________________________________
 	
-	int StdTextMapper::caretLeft( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -943,9 +943,9 @@ namespace wg
 	
 	//____ caretRight() ________________________________________________________
 	
-	int StdTextMapper::caretRight( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretRight( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		if( charOfs < _charBuffer(pItem)->length() )
+		if( charOfs < _charBuffer(pText)->length() )
 			charOfs++;
 			
 		wantedLineOfs = -1;
@@ -954,13 +954,13 @@ namespace wg
 	
 	//____ caretHome() ________________________________________________________
 
-	int StdTextMapper::caretHome( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretHome( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine( pItem, charOfs );
+		int line = charLine( pText, charOfs );
 
 		if( line >= 0 )
 		{
-			const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;
+			const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 			charOfs = pLine->offset;
 		}
 		wantedLineOfs = -1;
@@ -969,13 +969,13 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 	
-	int StdTextMapper::caretEnd( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretEnd( CText * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		int line = charLine( pItem, charOfs );
+		int line = charLine( pText, charOfs );
 
 		if( line >= 0 )
 		{
-			const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;
+			const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 			charOfs = pLine->offset+ pLine->length-1;
 		}
 		wantedLineOfs = -1;
@@ -984,7 +984,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int StdTextMapper::caretPrevWord( TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::caretPrevWord( CText * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -992,7 +992,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 	
-	int StdTextMapper::caretNextWord( TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::caretNextWord( CText * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;		
@@ -1001,9 +1001,9 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 	
-	String StdTextMapper::tooltip( const TextBaseItem * pItem ) const
+	String StdTextMapper::tooltip( const CText * pText ) const
 	{
-		//TODO: Return the text if it overflows the item.
+		//TODO: Return the text if it overflows the component.
 		
 		return String();
 	}
@@ -1011,31 +1011,31 @@ namespace wg
 	
 	//____ preferredSize() _________________________________________________________
 	
-	Size StdTextMapper::preferredSize( const TextBaseItem * pItem ) const
+	Size StdTextMapper::preferredSize( const CText * pText ) const
 	{
-		return _header(_itemDataBlock(pItem))->preferredSize;
+		return _header(_dataBlock(pText))->preferredSize;
 	}
 	
 	//____ matchingWidth() _________________________________________________________
 	
-	int StdTextMapper::matchingWidth( const TextBaseItem * pItem, int height ) const
+	int StdTextMapper::matchingWidth( const CText * pText, int height ) const
 	{
-		return	_header(_itemDataBlock(pItem))->preferredSize.w;
+		return	_header(_dataBlock(pText))->preferredSize.w;
 	}
 	
 	//____ matchingHeight() ________________________________________________________
 	
-	int StdTextMapper::matchingHeight( const TextBaseItem * pItem, int width ) const
+	int StdTextMapper::matchingHeight( const CText * pText, int width ) const
 	{
-		return _calcMatchingHeight(_charBuffer(pItem), _baseStyle(pItem), _state(pItem), width);
+		return _calcMatchingHeight(_charBuffer(pText), _baseStyle(pText), _state(pText), width);
 	}
 	
 	//____ _countLines() ___________________________________________________________
 	
-	int StdTextMapper::_countLines( TextBaseItem * pItem, const CharBuffer * pBuffer ) const
+	int StdTextMapper::_countLines( CText * pText, const CharBuffer * pBuffer ) const
 	{
 		if (m_bLineWrap)
-			return _countWrapLines(pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+			return _countWrapLines(pBuffer, _baseStyle(pText), _state(pText), pText->size().w);
 		else
 			return _countFixedLines(pBuffer);
 	}
@@ -1392,14 +1392,14 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 	
-	void * StdTextMapper::_reallocBlock( TextBaseItem* pItem, int nLines )
+	void * StdTextMapper::_reallocBlock( CText* pText, int nLines )
 	{
-		void * pBlock = _itemDataBlock(pItem);
+		void * pBlock = _dataBlock(pText);
 		if( pBlock )
 			free( pBlock );
 			
 		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
-		_setItemDataBlock(pItem, pBlock);
+		_setComponentDataBlock(pText, pBlock);
 		((BlockHeader *)pBlock)->nbLines = nLines;
 		
 		return pBlock;
@@ -1408,9 +1408,9 @@ namespace wg
 	
 	//____ _updateLineInfo() _______________________________________________________
 
-	void StdTextMapper::_updateLineInfo( TextBaseItem * pItem, void * pBlock, const CharBuffer * pBuffer )
+	void StdTextMapper::_updateLineInfo( CText * pText, void * pBlock, const CharBuffer * pBuffer )
 	{
-		BlockHeader * pHeader = _header(_itemDataBlock(pItem));
+		BlockHeader * pHeader = _header(_dataBlock(pText));
 		Size preferredSize;
 
 
@@ -1418,12 +1418,12 @@ namespace wg
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
-			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem), pItem->size().w);
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText));
+			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText), pText->size().w);
 		}
 		else
 		{
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pItem), _state(pItem));
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText));
 			pHeader->textSize = preferredSize;
 		}
 		
@@ -1431,7 +1431,7 @@ namespace wg
 		if (preferredSize != pHeader->preferredSize)
 		{
 			pHeader->preferredSize = preferredSize;
-			_requestItemResize(pItem);
+			_requestComponentResize(pText);
 		}
 	}
 
@@ -1814,7 +1814,7 @@ namespace wg
 	
 	//____ _linePosX() _______________________________________________________________
 	
-	int StdTextMapper::_linePosX( const LineInfo * pLine, int itemWidth ) const
+	int StdTextMapper::_linePosX( const LineInfo * pLine, int canvasWidth ) const
 	{
 		switch( m_alignment )
 		{
@@ -1826,19 +1826,19 @@ namespace wg
 			case Origo::North:
 			case Origo::Center:
 			case Origo::South:
-				return (itemWidth - pLine->width) / 2;
+				return (canvasWidth - pLine->width) / 2;
 			case Origo::NorthEast:
 			case Origo::East:
 			case Origo::SouthEast:
-				return itemWidth - pLine->width;
+				return canvasWidth - pLine->width;
 		}	
 	}
 
 	//____ _linePosY() _______________________________________________________________
 	
-	int StdTextMapper::_linePosY( const void * pBlock, int line, int itemHeight ) const
+	int StdTextMapper::_linePosY( const void * pBlock, int line, int canvasHeight ) const
 	{
-		int ofsY = _textPosY( _header(pBlock), itemHeight );
+		int ofsY = _textPosY( _header(pBlock), canvasHeight );
 	
 		const LineInfo * pL = _lineInfo(pBlock);
 		for( int i = 0 ; i < line ; i++ )
@@ -1849,7 +1849,7 @@ namespace wg
 	
 	//____ _textPosY() _____________________________________________________________
 	
-	int	StdTextMapper::_textPosY( const BlockHeader * pHeader, int itemHeight ) const
+	int	StdTextMapper::_textPosY( const BlockHeader * pHeader, int canvasHeight ) const
 	{
 		switch( m_alignment )
 		{
@@ -1861,35 +1861,35 @@ namespace wg
 			case Origo::West:
 			case Origo::Center:
 			case Origo::East:
-				return (itemHeight - pHeader->textSize.h) / 2;
+				return (canvasHeight - pHeader->textSize.h) / 2;
 			case Origo::SouthWest:
 			case Origo::South:
 			case Origo::SouthEast:
-				return itemHeight - pHeader->textSize.h;
+				return canvasHeight - pHeader->textSize.h;
 		}	
 	}
 
 	//____ _charPosX() _________________________________________________________
 
-	int StdTextMapper::_charPosX( const TextBaseItem * pItem, int charOfs ) const
+	int StdTextMapper::_charPosX( const CText * pText, int charOfs ) const
 	{
-		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + charLine(pItem, charOfs);		
-		const Char * pBufferStart = _charBuffer(pItem)->chars();
+		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + charLine(pText, charOfs);		
+		const Char * pBufferStart = _charBuffer(pText)->chars();
 		
 		TextAttr attr;
-		_baseStyle(pItem)->exportAttr( _state(pItem), &attr );
+		_baseStyle(pText)->exportAttr( _state(pText), &attr );
 		
-		return _linePosX( pLine, pItem->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pItem) );
+		return _linePosX( pLine, pText->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pText) );
 	}
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StdTextMapper::_lineAtPosY( const TextBaseItem * pItem, int posY, SelectMode mode ) const
+	int StdTextMapper::_lineAtPosY( const CText * pText, int posY, SelectMode mode ) const
 	{
-		const void * pBlock = _itemDataBlock(pItem);
+		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
-		int linePosY = _textPosY( pHead, pItem->size().h );
-		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) );		
+		int linePosY = _textPosY( pHead, pText->size().h );
+		const LineInfo * pLine = _lineInfo( _dataBlock(pText) );		
 		
 		if( posY < linePosY )
 		{
@@ -1965,12 +1965,12 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StdTextMapper::_charAtPosX( const TextBaseItem * pItem, int line, int posX, SelectMode mode ) const
+	int StdTextMapper::_charAtPosX( const CText * pText, int line, int posX, SelectMode mode ) const
 	{
-		const LineInfo * pLine = _lineInfo( _itemDataBlock(pItem) ) + line;		
+		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;		
 
 
-		int distance = _linePosX( pLine, pItem->size().w );
+		int distance = _linePosX( pLine, pText->size().w );
 
 		// Handle special case when we are left of line.
 		
@@ -1994,11 +1994,11 @@ namespace wg
 
 		// We are somewhere inside the line, lets loop through characters
 
-		const Char * pTextBegin = _charBuffer(pItem)->chars();
-		State state = _state(pItem);
+		const Char * pTextBegin = _charBuffer(pText)->chars();
+		State state = _state(pText);
 		
 		TextAttr baseAttr;
-		_baseStyle(pItem)->exportAttr( state, &baseAttr );
+		_baseStyle(pText)->exportAttr( state, &baseAttr );
 		
 
 		TextAttr		attr;

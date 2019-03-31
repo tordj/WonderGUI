@@ -299,27 +299,27 @@ namespace wg
 
 	//____ _renderRequested() _________________________________________________________
 
-	void PopupOpener::_renderRequested(Item * pItem)
+	void PopupOpener::_renderRequested(Component * pComponent)
 	{
-		_requestRender();		//TODO: Only requestRender on item
+		_requestRender();		//TODO: Only requestRender on component
 	}
 
-	void PopupOpener::_renderRequested(Item * pItem, const Rect& rect)
+	void PopupOpener::_renderRequested(Component * pComponent, const Rect& rect)
 	{
-		_requestRender();		//TODO: Only requestRender on rect of item.
+		_requestRender();		//TODO: Only requestRender on rect of component.
 	}
 
 	//____ _resizeRequested() ________________________________________________________
 
-	void PopupOpener::_resizeRequested(Item * pItem)
+	void PopupOpener::_resizeRequested(Component * pComponent)
 	{
 		_requestResize();
 		_requestRender();
 	}
 
-	//____ _itemPos() ______________________________________________________________
+	//____ _componentPos() ______________________________________________________________
 
-	Coord PopupOpener::_itemPos(const Item * pItem) const
+	Coord PopupOpener::_componentPos(const Component * pComponent) const
 	{
 		Rect	contentRect = m_size;
 
@@ -330,16 +330,16 @@ namespace wg
 
 		Rect iconRect = m_icon.getIconRect(contentRect);
 
-		if (pItem == &m_icon)
+		if (pComponent == &m_icon)
 			return iconRect.pos();
 
 		Rect textRect = m_icon.getTextRect(contentRect, iconRect);
 		return textRect.pos();
 	}
 
-	//____ _itemSize() ______________________________________________________________
+	//____ _componentSize() ______________________________________________________________
 
-	Size PopupOpener::_itemSize(const Item * pItem) const
+	Size PopupOpener::_componentSize(const Component * pComponent) const
 	{
 		Size	sz = m_size;
 
@@ -348,7 +348,7 @@ namespace wg
 
 		Rect iconRect = m_icon.getIconRect(sz);
 
-		if (pItem == &m_icon)
+		if (pComponent == &m_icon)
 			return iconRect.size();
 
 		Rect textRect = m_icon.getTextRect(sz, iconRect);
@@ -356,9 +356,9 @@ namespace wg
 
 	}
 
-	//____ _itemGeo() ______________________________________________________________
+	//____ _componentGeo() ______________________________________________________________
 
-	Rect PopupOpener::_itemGeo(const Item * pItem) const
+	Rect PopupOpener::_componentGeo(const Component * pComponent) const
 	{
 		Rect	contentRect = m_size;
 
@@ -369,7 +369,7 @@ namespace wg
 
 		Rect iconRect = m_icon.getIconRect(contentRect);
 
-		if (pItem == &m_icon)
+		if (pComponent == &m_icon)
 			return iconRect;
 
 		Rect textRect = m_icon.getTextRect(contentRect, iconRect);

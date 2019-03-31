@@ -26,7 +26,7 @@
 
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_paddedchildren.h>
+#include <wg_ipaddedchildren.h>
 
 
 namespace wg 
@@ -34,7 +34,7 @@ namespace wg
 	
 	class StackPanel;
 	typedef	StrongPtr<StackPanel>	StackPanel_p;
-	typedef	WeakPtr<StackPanel>	StackPanel_wp;
+	typedef	WeakPtr<StackPanel>		StackPanel_wp;
 	
 
 
@@ -50,9 +50,9 @@ namespace wg
 	};
 
 
-	class StackPanelChildren;
-	typedef	StrongInterfacePtr<StackPanelChildren>	StackPanelChildren_p;
-	typedef	WeakInterfacePtr<StackPanelChildren>	StackPanelChildren_wp;
+	class IStackPanelChildren;
+	typedef	StrongInterfacePtr<IStackPanelChildren>	IStackPanelChildren_p;
+	typedef	WeakInterfacePtr<IStackPanelChildren>	IStackPanelChildren_wp;
 
 
 	//____ StackPanelChildrenHolder __________________________________________________
@@ -63,18 +63,18 @@ namespace wg
 		virtual void		_childRequestRender(Slot * pSlot) = 0;
 	};
 
-	//____ StackPanelChildren ________________________________________________________
+	//____ IStackPanelChildren ________________________________________________________
 
-	class StackPanelChildren : public PaddedChildren<StackPanelSlot,StackPanelChildrenHolder>
+	class IStackPanelChildren : public IPaddedChildren<StackPanelSlot,StackPanelChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		StackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanelChildrenHolder * pHolder ) : PaddedChildren<StackPanelSlot,StackPanelChildrenHolder>(pSlotArray,pHolder) {}
+		IStackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanelChildrenHolder * pHolder ) : IPaddedChildren<StackPanelSlot,StackPanelChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline StackPanelChildren_p	ptr() { return StackPanelChildren_p(this); }
+		inline IStackPanelChildren_p	ptr() { return IStackPanelChildren_p(this); }
 
 		//.____ Geometry ______________________________________________________
 
@@ -105,7 +105,7 @@ namespace wg
 
 	class StackPanel : public Panel, protected StackPanelChildrenHolder
 	{
-		friend class StackPanelChildren;
+		friend class IStackPanelChildren;
 
 	public:
 
@@ -115,7 +115,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		StackPanelChildren	children;
+		IStackPanelChildren	children;
 
 		//.____ Identification __________________________________________
 

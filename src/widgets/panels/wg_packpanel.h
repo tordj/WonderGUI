@@ -26,7 +26,7 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_weightedchildren.h>
+#include <wg_iweightedchildren.h>
 
 namespace wg 
 {
@@ -50,9 +50,9 @@ namespace wg
 	
 
 
-	class PackPanelChildren;
-	typedef	StrongInterfacePtr<PackPanelChildren>	PackPanelChildren_p;
-	typedef	WeakInterfacePtr<PackPanelChildren>	PackPanelChildren_wp;
+	class IPackPanelChildren;
+	typedef	StrongInterfacePtr<IPackPanelChildren>	IPackPanelChildren_p;
+	typedef	WeakInterfacePtr<IPackPanelChildren>	IPackPanelChildren_wp;
 	
 	
 	/**
@@ -72,7 +72,7 @@ namespace wg
 		
 		//.____ Interfaces _______________________________________
 
-		WeightedChildren<PackPanelSlot,WeightedChildrenHolder>	children;
+		IWeightedChildren<PackPanelSlot,WeightedChildrenHolder>	children;
 
 		//.____ Identification __________________________________________
 

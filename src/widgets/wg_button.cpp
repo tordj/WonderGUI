@@ -313,7 +313,7 @@ namespace wg
 	
 		m_icon.onCloneContent( &pOrg->m_icon );
 	
-		//TODO: Support cloning for text items.
+		//TODO: Support cloning for text components.
 	//	m_text.clone(&pOrg->m_text);
 		
 		m_bDownOutside	= pOrg->m_bDownOutside;
@@ -333,27 +333,27 @@ namespace wg
 	
 	//____ _renderRequested() _________________________________________________________
 	
-	void Button::_renderRequested( Item * pItem )
+	void Button::_renderRequested( Component * pComponent )
 	{
-		_requestRender();		//TODO: Only requestRender on item
+		_requestRender();		//TODO: Only requestRender on component
 	}
 
-	void Button::_renderRequested( Item * pItem, const Rect& rect )
+	void Button::_renderRequested( Component * pComponent, const Rect& rect )
 	{
-		_requestRender();		//TODO: Only requestRender on rect of item.
+		_requestRender();		//TODO: Only requestRender on rect of component.
 	}
 	
 	//____ _resizeRequested() ________________________________________________________
 	
-	void Button::_resizeRequested( Item * pItem )
+	void Button::_resizeRequested( Component * pComponent )
 	{
 		_requestResize();
 		_requestRender();
 	}
 
-	//____ _itemPos() ______________________________________________________________
+	//____ _componentPos() ______________________________________________________________
 
-	Coord Button::_itemPos( const Item * pItem ) const
+	Coord Button::_componentPos( const Component * pComponent ) const
 	{
 		Rect	contentRect = m_size;
 	
@@ -364,16 +364,16 @@ namespace wg
 	
 		Rect iconRect = m_icon.getIconRect( contentRect );
 		
-		if( pItem == &m_icon )
+		if( pComponent == &m_icon )
 			return iconRect.pos();
 		
 		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
 		return textRect.pos();
 	}
 	
-	//____ _itemSize() ______________________________________________________________
+	//____ _componentSize() ______________________________________________________________
 	
-	Size Button::_itemSize( const Item * pItem ) const
+	Size Button::_componentSize( const Component * pComponent ) const
 	{
 		Size	sz = m_size;
 
@@ -382,7 +382,7 @@ namespace wg
 
 		Rect iconRect = m_icon.getIconRect( sz );
 
-		if( pItem == &m_icon )
+		if( pComponent == &m_icon )
 			return iconRect.size();
 		
 		Rect textRect = m_icon.getTextRect( sz, iconRect );
@@ -390,9 +390,9 @@ namespace wg
 
 	}
 	
-	//____ _itemGeo() ______________________________________________________________
+	//____ _componentGeo() ______________________________________________________________
 	
-	Rect Button::_itemGeo( const Item * pItem ) const
+	Rect Button::_componentGeo( const Component * pComponent ) const
 	{
 		Rect	contentRect = m_size;
 	
@@ -403,7 +403,7 @@ namespace wg
 	
 		Rect iconRect = m_icon.getIconRect( contentRect );
 		
-		if( pItem == &m_icon )
+		if( pComponent == &m_icon )
 			return iconRect;
 		
 		Rect textRect = m_icon.getTextRect( contentRect, iconRect );

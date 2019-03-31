@@ -25,7 +25,7 @@
 #include <wg_util.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_hideablechildren.impl.h>
+#include <wg_ihideablechildren.impl.h>
 #include <assert.h>
 
 
@@ -38,7 +38,7 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	LambdaPanelChildren::iterator LambdaPanelChildren::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -49,7 +49,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	LambdaPanelChildren::iterator LambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -60,7 +60,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 	
-	LambdaPanelChildren::iterator LambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -71,7 +71,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	void LambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void ILambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -79,7 +79,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	void LambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void ILambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -87,7 +87,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> LambdaPanelChildren::function(int index) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(int index) const
 	{
 		//TODO: Assert
 
@@ -95,7 +95,7 @@ namespace wg
 		return pSlot->pFunc;
 	}
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> LambdaPanelChildren::function(iterator pos) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(iterator pos) const
 	{
 		//TODO: Assert
 

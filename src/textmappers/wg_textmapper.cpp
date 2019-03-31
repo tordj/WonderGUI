@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_textmapper.h>
-#include <wg_textbaseitem.h>
+#include <wg_ctext.h>
 
 namespace wg 
 {
@@ -59,48 +59,48 @@ namespace wg
 	
 	//____ tooltip() _______________________________________________________________
 	
-	String TextMapper::tooltip( const TextBaseItem * pItem ) const
+	String TextMapper::tooltip( const CText * pText ) const
 	{
 		return String();
 	}
 		
 	//____ _charBuffer() ___________________________________________________________
 	
-	CharBuffer * TextMapper::_charBuffer( TextBaseItem * pItem ) const
+	CharBuffer * TextMapper::_charBuffer( CText * pText ) const
 	{
-		return &(pItem->m_charBuffer);
+		return &(pText->m_charBuffer);
 	}
 	
-	const CharBuffer * TextMapper::_charBuffer( const TextBaseItem * pItem ) const
+	const CharBuffer * TextMapper::_charBuffer( const CText * pText ) const
 	{
-		return &(pItem->m_charBuffer);
+		return &(pText->m_charBuffer);
 	}
 	
-	//____ _itemDataBlock() _______________________________________________________
+	//____ _dataBlock() _______________________________________________________
 	
-	void * TextMapper::_itemDataBlock( TextBaseItem * pItem) const
+	void * TextMapper::_dataBlock( CText * pText) const
 	{
-		return pItem->m_pTextMapperData;
+		return pText->m_pTextMapperData;
 	}
 	
-	const void * TextMapper::_itemDataBlock( const TextBaseItem * pItem) const
+	const void * TextMapper::_dataBlock( const CText * pText) const
 	{
-		return pItem->m_pTextMapperData;
+		return pText->m_pTextMapperData;
 	}
 	
 	
-	//____ _itemDataInt() _________________________________________________________
+	//____ _dataInt() _________________________________________________________
 	
-	int TextMapper::_itemDataInt( const TextBaseItem * pItem ) const
+	int TextMapper::_dataInt( const CText * pText ) const
 	{
-		return pItem->m_textMapperData;
+		return pText->m_textMapperData;
 	}
 	
 	//____ _baseStyle() _________________________________________________________
 	
-	const TextStyle * TextMapper::_baseStyle( const TextBaseItem * pItem ) const
+	const TextStyle * TextMapper::_baseStyle( const CText * pText ) const
 	{
-		TextStyle * pStyle = pItem->m_pStyle.rawPtr();
+		TextStyle * pStyle = pText->m_pStyle.rawPtr();
 		if( pStyle == 0 )
 			pStyle = Base::defaultStyle().rawPtr();
 		
@@ -109,50 +109,50 @@ namespace wg
 	
 	//____ _state() _________________________________________________________
 	
-	State TextMapper::_state( const TextBaseItem * pItem ) const
+	State TextMapper::_state( const CText * pText ) const
 	{
-		return pItem->m_state;
+		return pText->m_state;
 	}
 
 	//____ _editState() _________________________________________________________
 	
-	const EditState * TextMapper::_editState( const TextBaseItem * pItem ) const
+	const EditState * TextMapper::_editState( const CText * pText ) const
 	{
-		return pItem->_editState();
+		return pText->_editState();
 	}
 
 	
-	//____ _setItemDataBlock() ____________________________________________________
+	//____ _setComponentDataBlock() ____________________________________________________
 	
-	void  TextMapper::_setItemDataBlock( TextBaseItem * pItem, void * pBlock )
+	void  TextMapper::_setComponentDataBlock( CText * pText, void * pBlock )
 	{
-		pItem->m_pTextMapperData = pBlock;
+		pText->m_pTextMapperData = pBlock;
 	}
 	
-	//____ _setItemDataInt() ______________________________________________________
+	//____ _setComponentDataInt() ______________________________________________________
 	
-	void  TextMapper::_setItemDataInt( TextBaseItem * pItem, int data )
+	void  TextMapper::_setComponentDataInt( CText * pText, int data )
 	{
-		pItem->m_textMapperData = data;
+		pText->m_textMapperData = data;
 	}
 
-	//____ _setItemDirty() ____________________________________________________
+	//____ _setComponentDirty() ____________________________________________________
 
-	void  TextMapper::_setItemDirty( TextBaseItem * pItem )
+	void  TextMapper::_setComponentDirty( CText * pText )
 	{
-		pItem->_requestRender();
+		pText->_requestRender();
 	}
 	
-	void  TextMapper::_setItemDirty( TextBaseItem * pItem, const Rect& rect )
+	void  TextMapper::_setComponentDirty( CText * pText, const Rect& rect )
 	{
-		pItem->_requestRender( rect );
+		pText->_requestRender( rect );
 	}
 
-	//____ _requestItemResize() _______________________________________________
+	//____ _requestComponentResize() _______________________________________________
 
-	void TextMapper::_requestItemResize( TextBaseItem * pItem )
+	void TextMapper::_requestComponentResize( CText * pText )
 	{
-		pItem->_requestResize();
+		pText->_requestResize();
 	}
 	
 

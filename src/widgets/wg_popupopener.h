@@ -24,10 +24,10 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_child.h>
-#include <wg_textitem.h>
-#include <wg_modtext.h>
-#include <wg_icon.h>
+#include <wg_ichild.h>
+#include <wg_ctextdisplay.h>
+#include <wg_itextdisplay.h>
+#include <wg_iicondisplay.h>
 
 namespace wg
 {
@@ -47,8 +47,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModText			label;
-		Icon			icon;
+		ITextDisplay			label;
+		IIconDisplay			icon;
 
 		//.____ Identification __________________________________________
 
@@ -93,19 +93,19 @@ namespace wg
 		void			_open();
 		void			_close();
 
-		void			_renderRequested(Item * pItem);
-		void			_renderRequested(Item * pItem, const Rect& rect);
-		void 			_resizeRequested(Item * pItem);
+		void			_renderRequested(Component * pComponent);
+		void			_renderRequested(Component * pComponent, const Rect& rect);
+		void 			_resizeRequested(Component * pComponent);
 
-		Coord			_itemPos(const Item * pItem) const;
-		Size			_itemSize(const Item * pItem) const;
-		Rect			_itemGeo(const Item * pItem) const;
+		Coord			_componentPos(const Component * pComponent) const override;
+		Size			_componentSize(const Component * pComponent) const override;
+		Rect			_componentGeo(const Component * pComponent) const override;
 
 
 
 		Widget_p		m_pPopup;
-		TextItem		m_text;
-		IconItem		m_icon;
+		CTextDisplay		m_text;
+		CIconDisplay		m_icon;
 
 		Origo			m_attachPoint;
 		bool			m_bOpenOnHover;

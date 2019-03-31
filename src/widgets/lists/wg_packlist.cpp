@@ -28,7 +28,7 @@
 #include <wg_gfxdevice.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_selectablechildren.impl.h>
+#include <wg_iselectablechildren.impl.h>
 
 namespace wg 
 {
@@ -41,7 +41,7 @@ namespace wg
 
 	//____ insertSorted() ___________________________________________________
 
-	PackListChildren::iterator PackListChildren::insertSorted(Widget * pWidget)
+	IPackListChildren::iterator IPackListChildren::insertSorted(Widget * pWidget)
 	{
 		//TODO: Replace with assert
 //		if (!pWidget)
@@ -56,7 +56,7 @@ namespace wg
 
 	//____ sort() __________________________________________________________
 
-	void PackListChildren::sort()
+	void IPackListChildren::sort()
 	{
 		m_pHolder->_sortEntries();
 	}
@@ -1486,33 +1486,33 @@ namespace wg
 		return true;
 	}
 
-	//____ _itemPos() ____________________________________________________________
+	//____ _componentPos() ____________________________________________________________
 
-	Coord PackList::_itemPos( const Item * pItem ) const
+	Coord PackList::_componentPos( const Component * pComponent ) const
 	{
 		Coord c = m_bHorizontal ? Coord(_windowSection().x, 0 ) : Coord(0, _windowSection().y );
 		return c;
 	}
 
-	//____ _itemSize() _________________________________________________________
+	//____ _componentSize() _________________________________________________________
 
-	Size PackList::_itemSize( const Item * pItem ) const
+	Size PackList::_componentSize( const Component * pComponent ) const
 	{
 		return m_header.size();		// We store size internally in the header.
 	}
 
-	//____ _itemGeo() __________________________________________________________
+	//____ _componentGeo() __________________________________________________________
 
-	Rect PackList::_itemGeo( const Item * pItem ) const
+	Rect PackList::_componentGeo( const Component * pComponent ) const
 	{
-		return Rect( _itemPos(pItem), m_header.size() );
+		return Rect( _componentPos(pComponent), m_header.size() );
 	}
 
-	//____ _itemNotified() _____________________________________________________
+	//____ _receiveComponentNotif() _____________________________________________________
 
-	void PackList::_itemNotified( Item * pItem, ItemNotif notification, void * pData )
+	void PackList::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData )
 	{
-		if( notification == ItemNotif::SortOrderChanged )
+		if( notification == ComponentNotif::SortOrderChanged )
 		{
 			m_sortOrder = m_header.sortOrder();
 			_sortEntries();

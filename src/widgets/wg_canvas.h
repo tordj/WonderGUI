@@ -26,7 +26,7 @@
 
 #include <wg_widget.h>
 #include <wg_gfxdevice.h>
-#include <wg_modsurface.h>
+#include <wg_icanvas.h>
 
 
 namespace wg 
@@ -50,7 +50,7 @@ namespace wg
 	 * To setup a Canvas, you at least need to provide a GfxDevice of your choice, that
 	 * should be unique to this Canvas and not used for anything else. Optionally you
 	 * can also provide a SurfaceFactory and specify PixelFormat and size for the surface. Please see
-	 * the ModSurface interface documentation for details.
+	 * the CCanvas interface documentation for details.
 	 *
 	 * Please note that "canvas" is not only the name of this widget, but used throughout 
 	 * WonderGUI for surfaces and rectangular areas that are destinations for drawing operations.
@@ -64,7 +64,7 @@ namespace wg
 	
 	class Canvas : public Widget
 	{
-		friend class ModSurface;
+		friend class ICanvas;
 
 	public:
 
@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ModSurface		canvas;
+		ICanvas		canvas;
 
 
 		//.____ Identification __________________________________________
@@ -104,7 +104,7 @@ namespace wg
 		virtual	bool	_alphaTest(const Coord& ofs);
 
 
-		ModSurfaceItem	m_canvas;
+		CCanvas	m_canvas;
 	};
 	
 	

@@ -27,7 +27,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_child.h>
+#include <wg_ichild.h>
 
 
 namespace wg
@@ -55,8 +55,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		Child<SplitPanelSlot,ChildHolder>	first;
-		Child<SplitPanelSlot,ChildHolder>	second;
+		IChild<SplitPanelSlot,ChildHolder>	first;
+		IChild<SplitPanelSlot,ChildHolder>	second;
 
 		//.____ Identification __________________________________________
 

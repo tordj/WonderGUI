@@ -34,7 +34,7 @@
 namespace wg 
 {
 	class EditState;
-	class TextBaseItem;
+	class CText;
 	
 	class GfxDevice;
 	class CharBuffer;
@@ -56,61 +56,61 @@ namespace wg
 
 		//.____ Internal __________________________________________
 	
-		virtual void	addItem( TextBaseItem * pItem ) = 0;
-		virtual void	removeItem( TextBaseItem * pItem ) = 0;
+		virtual void	addComponent( CText * pText ) = 0;
+		virtual void	removeComponent( CText * pText ) = 0;
 	
-		virtual int		charAtPos( const TextBaseItem * pItem, Coord pos ) const = 0;
-		virtual Coord	charPos( const TextBaseItem * pItem, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charRect( const TextBaseItem * pItem, int charOfs ) const = 0;
-		virtual int		charLine( const TextBaseItem * pItem, int charOfs ) const = 0;
-		virtual int		lineBegin( const TextBaseItem * pItem, int lineNb ) const = 0;
-		virtual int		lineEnd( const TextBaseItem * pItem, int lineNb ) const = 0;		
+		virtual int		charAtPos( const CText * pText, Coord pos ) const = 0;
+		virtual Coord	charPos( const CText * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charRect( const CText * pText, int charOfs ) const = 0;
+		virtual int		charLine( const CText * pText, int charOfs ) const = 0;
+		virtual int		lineBegin( const CText * pText, int lineNb ) const = 0;
+		virtual int		lineEnd( const CText * pText, int lineNb ) const = 0;		
 
-		virtual int		wordBegin( const TextBaseItem * pItem, int charOfs ) const = 0;
-		virtual int		wordEnd( const TextBaseItem * pItem, int charOfs ) const = 0;		
+		virtual int		wordBegin( const CText * pText, int charOfs ) const = 0;
+		virtual int		wordEnd( const CText * pText, int charOfs ) const = 0;		
 
 	
-		virtual void 	renderItem( TextBaseItem * pText, GfxDevice * pDevice, const Rect& canvas ) = 0;
+		virtual void 	render( CText * pText, GfxDevice * pDevice, const Rect& canvas ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
 		// A selection change implies a caret move.
 
-		virtual void	caretMove( TextBaseItem * pText, int newOfs ) = 0;
-		virtual void	selectionChange( TextBaseItem * pText, int newSelectOfs, int newCaretOfs ) = 0;
+		virtual void	caretMove( CText * pText, int newOfs ) = 0;
+		virtual void	selectionChange( CText * pText, int newSelectOfs, int newCaretOfs ) = 0;
 	
 		//
 	
-		virtual void	onTextModified( TextBaseItem * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onResized( TextBaseItem * pText, Size newSize, Size oldSize ) = 0;
-		virtual void	onStateChanged( TextBaseItem * pText, State newState, State oldState ) = 0;
-		virtual void	onStyleChanged( TextBaseItem * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
-		virtual void	onCharStyleChanged( TextBaseItem * pText, int ofs = 0, int len = INT_MAX ) = 0;
-		virtual void	onRefresh( TextBaseItem * pText ) = 0;
+		virtual void	onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
+		virtual void	onResized( CText * pText, Size newSize, Size oldSize ) = 0;
+		virtual void	onStateChanged( CText * pText, State newState, State oldState ) = 0;
+		virtual void	onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
+		virtual void	onCharStyleChanged( CText * pText, int ofs = 0, int len = INT_MAX ) = 0;
+		virtual void	onRefresh( CText * pText ) = 0;
 	
 	
-		virtual Size	preferredSize( const TextBaseItem * pText ) const = 0;
-		virtual int		matchingWidth( const TextBaseItem * pText, int height ) const = 0;
-		virtual int		matchingHeight( const TextBaseItem * pText, int width ) const = 0;
+		virtual Size	preferredSize( const CText * pText ) const = 0;
+		virtual int		matchingWidth( const CText * pText, int height ) const = 0;
+		virtual int		matchingHeight( const CText * pText, int width ) const = 0;
 	
-		virtual Rect	rectForRange( const TextBaseItem * pText, int ofs, int length ) const = 0;
-		virtual Rect	rectForCaret( const TextBaseItem * pText ) const = 0;
+		virtual Rect	rectForRange( const CText * pText, int ofs, int length ) const = 0;
+		virtual Rect	rectForCaret( const CText * pText ) const = 0;
 	
-		virtual String	tooltip( const TextBaseItem * pText ) const;
+		virtual String	tooltip( const CText * pText ) const;
 	
 	
 		// Methods for supporting a caret
 	
-		virtual Direction 	textDirection( TextBaseItem * pItem, int charOfs ) const = 0;
-		virtual int			caretToPos( TextBaseItem * pItem, Coord pos, int& wantedLineOfs ) const = 0;
-		virtual int			caretUp( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretDown( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretLeft( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretRight( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretHome( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretEnd( TextBaseItem * pItem, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual Direction 	textDirection( CText * pText, int charOfs ) const = 0;
+		virtual int			caretToPos( CText * pText, Coord pos, int& wantedLineOfs ) const = 0;
+		virtual int			caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretRight( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretHome( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretEnd( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
 
-		virtual int			caretPrevWord( TextBaseItem * pItem, int charOfs ) const = 0;
-		virtual int			caretNextWord( TextBaseItem * pItem, int charOfs ) const = 0;
+		virtual int			caretPrevWord( CText * pText, int charOfs ) const = 0;
+		virtual int			caretNextWord( CText * pText, int charOfs ) const = 0;
 		
 	
 	protected:
@@ -118,22 +118,22 @@ namespace wg
 		virtual ~TextMapper() {};
 	
 	
-		CharBuffer *  		_charBuffer( TextBaseItem * pItem ) const;
-		const CharBuffer *  _charBuffer( const TextBaseItem * pItem ) const;
-		const void *		_itemDataBlock( const TextBaseItem * pItem) const;
-		void *				_itemDataBlock( TextBaseItem * pItem) const;
-		int					_itemDataInt( const TextBaseItem * pItem ) const;
+		CharBuffer *  		_charBuffer( CText * pText ) const;
+		const CharBuffer *  _charBuffer( const CText * pText ) const;
+		const void *		_dataBlock( const CText * pText) const;
+		void *				_dataBlock( CText * pText) const;
+		int					_dataInt( const CText * pText ) const;
 
-		const TextStyle *	_baseStyle( const TextBaseItem * pItem ) const;
-		State				_state( const TextBaseItem * pItem ) const;
-		const EditState	* 	_editState( const TextBaseItem * pItem ) const;
+		const TextStyle *	_baseStyle( const CText * pText ) const;
+		State				_state( const CText * pText ) const;
+		const EditState	* 	_editState( const CText * pText ) const;
 		
-		void			_setItemDataBlock( TextBaseItem * pItem, void * pBlock );
-		void			_setItemDataInt( TextBaseItem * pItem, int data );
+		void			_setComponentDataBlock( CText * pText, void * pBlock );
+		void			_setComponentDataInt( CText * pText, int data );
 		
-		void			_setItemDirty( TextBaseItem * pItem );
-		void			_setItemDirty( TextBaseItem * pItem, const Rect& rect );
-		void			_requestItemResize( TextBaseItem * pItem );
+		void			_setComponentDirty( CText * pText );
+		void			_setComponentDirty( CText * pText, const Rect& rect );
+		void			_requestComponentResize( CText * pText );
 		
 	};
 	

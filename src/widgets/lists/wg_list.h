@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_selectablechildren.h>
+#include <wg_iselectablechildren.h>
 
 namespace wg 
 {

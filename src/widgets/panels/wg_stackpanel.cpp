@@ -25,7 +25,7 @@
 #include <wg_patches.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_paddedchildren.impl.h>
+#include <wg_ipaddedchildren.impl.h>
 
 namespace wg 
 {
@@ -36,14 +36,14 @@ namespace wg
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 		
 	
-	void StackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
+	void IStackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		//TODO: Assert!
 
 		_setSizePolicy( m_pSlotArray->slot(index), policy );
 	}
 
-	void StackPanelChildren::setSizePolicy( iterator it, SizePolicy2D policy )
+	void IStackPanelChildren::setSizePolicy( iterator it, SizePolicy2D policy )
 	{
 		//TODO: Assert!
 
@@ -51,14 +51,14 @@ namespace wg
 	}
 
 	
-	SizePolicy2D StackPanelChildren::sizePolicy( int index ) const
+	SizePolicy2D IStackPanelChildren::sizePolicy( int index ) const
 	{
 		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->sizePolicy;
 	}
 
-	SizePolicy2D StackPanelChildren::sizePolicy( iterator it ) const
+	SizePolicy2D IStackPanelChildren::sizePolicy( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -66,14 +66,14 @@ namespace wg
 	}
 
 
-	void StackPanelChildren::setOrigo( int index, Origo origo )
+	void IStackPanelChildren::setOrigo( int index, Origo origo )
 	{
 		//TODO: Assert!
 
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
-	void StackPanelChildren::setOrigo( iterator it, Origo origo )
+	void IStackPanelChildren::setOrigo( iterator it, Origo origo )
 	{
 		//TODO: Assert!
 
@@ -81,14 +81,14 @@ namespace wg
 	}
 
 	
-	Origo StackPanelChildren::origo( int index ) const
+	Origo IStackPanelChildren::origo( int index ) const
 	{
 		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
-	Origo StackPanelChildren::origo( iterator it ) const
+	Origo IStackPanelChildren::origo( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -96,7 +96,7 @@ namespace wg
 	}
 
 
-	void StackPanelChildren::_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy )
+	void IStackPanelChildren::_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy )
 	{
 		if( policy != pSlot->sizePolicy )
 		{
@@ -113,7 +113,7 @@ namespace wg
 		};		
 	}
 		
-	void StackPanelChildren::_setOrigo( StackPanelSlot * pSlot, Origo origo )
+	void IStackPanelChildren::_setOrigo( StackPanelSlot * pSlot, Origo origo )
 	{
 		if( origo != pSlot->origo )
 		{

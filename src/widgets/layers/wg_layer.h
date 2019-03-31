@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_child.h>
+#include <wg_ichild.h>
 
 
 namespace wg 
@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		Child<Slot,ChildHolder> base;
+		IChild<Slot,ChildHolder> base;
 
 
 		//.____ Identification __________________________________________

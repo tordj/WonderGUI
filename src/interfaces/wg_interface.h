@@ -36,10 +36,10 @@ namespace wg
 
 	
 	/**
-	 * @brief Provides access to items embedded into a Widget or Object.
+	 * @brief Provides access to a component of a widget or object.
 	 *
 	 * Interfaces are provided by Widgets and other reference counted Objects
-	 * to provide API access to their embedded items such as labels and
+	 * to provide API access to their embedded components such as labels and
 	 * icons.
 	 *
 	 * The interface concept of WonderGUI serves two purposes:
@@ -47,12 +47,11 @@ namespace wg
 	 * First it
 	 * provides a nice API-level abstraction to keep methods for accessing
 	 * different components of a widget logically separated while providing
-	 * an identical way to access embedded items in all widgets that
+	 * an identical way to access same type of component in all widgets that
 	 * contains them.
 	 *
 	 * Secondly it provides a safe way to pass around pointers to the embedded
-	 * items since interface pointers do reference counting on the object
-	 * providing the interface, while pointing at the interface directly.
+	 * components since interface pointers do reference counting on the object.
 	 *
 	 **/
 	

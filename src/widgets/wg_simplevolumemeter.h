@@ -86,7 +86,7 @@ namespace wg
 		
 		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect );
 		void 			_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
-		void			_updateIValues( Size sz );
+		void			_updateValueDisplays( Size sz );
 		int 			_calcIHold( float holdValue, Size canvas );
 
 		

@@ -26,7 +26,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_hideablechildren.h>
+#include <wg_ihideablechildren.h>
 
 namespace wg 
 {
@@ -58,18 +58,18 @@ namespace wg
 	};
 
 
-	class LambdaPanelChildren;
-	typedef	StrongInterfacePtr<LambdaPanelChildren>	LambdaPanelChildren_p;
-	typedef	WeakInterfacePtr<LambdaPanelChildren>	LambdaPanelChildren_wp;
+	class ILambdaPanelChildren;
+	typedef	StrongInterfacePtr<ILambdaPanelChildren>	ILambdaPanelChildren_p;
+	typedef	WeakInterfacePtr<ILambdaPanelChildren>		ILambdaPanelChildren_wp;
 
-	//____ LambdaPanelChildren ________________________________________________________
+	//____ ILambdaPanelChildren ________________________________________________________
 
-	class LambdaPanelChildren : public HideableChildren<LambdaPanelSlot,LambdaChildrenHolder>
+	class ILambdaPanelChildren : public IHideableChildren<LambdaPanelSlot,LambdaChildrenHolder>
 	{
 	public:
 		/** @private */
 
-		LambdaPanelChildren( SlotArray<LambdaPanelSlot> * pSlotArray, LambdaChildrenHolder * pHolder ) : HideableChildren<LambdaPanelSlot,LambdaChildrenHolder>(pSlotArray,pHolder) {}
+		ILambdaPanelChildren( SlotArray<LambdaPanelSlot> * pSlotArray, LambdaChildrenHolder * pHolder ) : IHideableChildren<LambdaPanelSlot,LambdaChildrenHolder>(pSlotArray,pHolder) {}
 
 		//.____ Content _______________________________________________________
 
@@ -88,7 +88,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline LambdaPanelChildren_p	ptr() { return LambdaPanelChildren_p(this); }
+		inline ILambdaPanelChildren_p	ptr() { return ILambdaPanelChildren_p(this); }
 	};
 
 
@@ -105,7 +105,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		LambdaPanelChildren	children;
+		ILambdaPanelChildren	children;
 
 		//.____ Identification __________________________________________
 	

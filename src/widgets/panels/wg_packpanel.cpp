@@ -27,7 +27,7 @@
 
 
 #include <wg_slotarray.impl.h>
-#include <wg_weightedchildren.impl.h>
+#include <wg_iweightedchildren.impl.h>
 
 namespace wg 
 {

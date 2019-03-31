@@ -40,7 +40,7 @@ namespace wg
 	class	Rect;
 	class	Border;
 	class	Surface;
-	class	LegacyTextItem;
+	class	LegacyCTextDisplay;
 	class	CaretInstance;
 	class 	Pen;
 

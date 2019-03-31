@@ -128,7 +128,7 @@ namespace wg
 	void Canvas::_setSize(const Size& size)
 	{
 		Widget::_setSize(size);
-		m_canvas.setItemSize(size);
+		m_canvas.setComponentSize(size);
 	}
 
 	//____ _setSkin() ____________________________________________________________
@@ -141,7 +141,7 @@ namespace wg
 
 		Size newPadding = m_pSkin ? m_pSkin->contentPadding() : Size();
 		if (newPadding != oldPadding)
-			m_canvas.setItemSize(m_size - newPadding);
+			m_canvas.setComponentSize(m_size - newPadding);
 	}
 
 	//____ _render() __________________________________________________________
@@ -152,23 +152,23 @@ namespace wg
 
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect itemCanvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		Rect componentCanvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
-		m_canvas.render(pDevice, itemCanvas); // , Rect(_clip, itemCanvas)); //TODO: Needs to clip against itemCanvas!!!
+		m_canvas.render(pDevice, componentCanvas); // , Rect(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool Canvas::_alphaTest(const Coord& ofs)
+	bool Canvas::_alphaTest(const Coord& _ofs)
 	{
-		if (Widget::_alphaTest(ofs))
+		if (Widget::_alphaTest(_ofs))
 			return true;
 
-		Coord itemOfs = ofs; 
+		Coord ofs;
 		if( m_pSkin )
-			itemOfs -= m_pSkin->contentOfs(m_state);
+			ofs -= m_pSkin->contentOfs(m_state);
 
-		return m_canvas.alphaTest(itemOfs, m_markOpacity);
+		return m_canvas.alphaTest(ofs, m_markOpacity);
 	}
 
 

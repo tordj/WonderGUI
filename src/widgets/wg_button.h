@@ -24,16 +24,16 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_textitem.h>
-#include <wg_modtext.h>
-#include <wg_icon.h>
+#include <wg_ctextdisplay.h>
+#include <wg_itextdisplay.h>
+#include <wg_iicondisplay.h>
 
 namespace wg 
 {
 	
 	class Button;
 	typedef	StrongPtr<Button>		Button_p;
-	typedef	WeakPtr<Button>	Button_wp;
+	typedef	WeakPtr<Button>			Button_wp;
 	
 	//____ Button ____________________________________________________________
 	/**
@@ -52,8 +52,8 @@ namespace wg
 	
 		//.____ Interfaces _______________________________________
 
-		ModText			label;
-		Icon			icon;
+		ITextDisplay		label;
+		IIconDisplay			icon;
 
 		//.____ Identification __________________________________________
 
@@ -88,18 +88,18 @@ namespace wg
 		void			_setState( State state );
 	
 	
-		void			_renderRequested( Item * pItem );
-		void			_renderRequested( Item * pItem, const Rect& rect );
-		void 			_resizeRequested( Item * pItem );
+		void			_renderRequested( Component * pComponent );
+		void			_renderRequested( Component * pComponent, const Rect& rect );
+		void 			_resizeRequested( Component * pComponent );
 	
-		Coord			_itemPos( const Item * pItem ) const;
-		Size			_itemSize( const Item * pItem ) const;
-		Rect			_itemGeo( const Item * pItem ) const;
+		Coord			_componentPos( const Component * pComponent ) const override;
+		Size			_componentSize( const Component * pComponent ) const override;
+		Rect			_componentGeo( const Component * pComponent ) const override;
 	
 	
 	
-		TextItem		m_text;
-		IconItem		m_icon;
+		CTextDisplay		m_text;
+		CIconDisplay		m_icon;
 	
 		bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 	

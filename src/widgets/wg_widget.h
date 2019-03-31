@@ -28,12 +28,11 @@
 #include <wg_string.h>
 #include <wg_skin.h>
 #include <wg_receiver.h>
-#include <wg_itemholder.h>
+#include <wg_componentholder.h>
 #include <wg_widgetholder.h>
 
 namespace wg 
 {
-	class Item;
 	class GfxDevice;
 	class Container;
 	class Panel;
@@ -63,7 +62,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 	
-	class Widget : public Receiver, protected ItemHolder
+	class Widget : public Receiver, protected ComponentHolder
 	{
 	friend class MsgRouter;
 	friend class InputHandler;
@@ -80,16 +79,16 @@ namespace wg
 	friend class Container;
 	friend class Panel;
 	friend class PackPanel;
-	friend class StackPanelChildren;
+	friend class IStackPanelChildren;
 	friend class ShaderCapsule;
 	friend class PopupLayer;
 	friend class ViewSlot;
 	friend class LambdaPanel;
 	friend class SplitPanel;
 		
-	friend class Item;
+	friend class Component;
 	friend class Slot;
-	template<class S, class H> friend class Children;
+	template<class S, class H> friend class IChildren;
 
 
 
@@ -177,7 +176,7 @@ namespace wg
 		inline void			refresh();
 	
 		inline Widget_p		clone() const { return _clone(); }
-		Widget_p			newOfMyType() const; 			///< @brief Create and return a new widget of the same type.
+		Widget_p			newOfMyType() const; 					///< @brief Create and return a new widget of the same type.
 
 		inline bool			isOpaque() const;
 	
@@ -230,26 +229,26 @@ namespace wg
 	
 		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
-		// Methods for items to access
+		// Methods for components to access
 
-		virtual Object * _itemObject();
-		virtual const Object * _itemObject() const;
+		virtual Object * _object();
+		virtual const Object * _object() const;
 
-		virtual Coord	_itemPos( const Item * pItem ) const;
-		virtual Size	_itemSize( const Item * pItem ) const;
-		virtual Rect	_itemGeo( const Item * pItem ) const;
-		virtual Coord	_itemGlobalPos( const Item * pItem ) const;
-		virtual Rect	_itemGlobalGeo( const Item * pItem ) const;
+		virtual Coord	_componentPos( const Component * pComponent ) const override;
+		virtual Size	_componentSize( const Component * pComponent ) const override;
+		virtual Rect	_componentGeo( const Component * pComponent ) const override;
+		virtual Coord	_globalComponentPos( const Component * pComponent ) const override;
+		virtual Rect	_globalComponentGeo( const Component * pComponent ) const override;
 
-		virtual void	_itemRenderRequested( const Item * pItem );
-		virtual void	_itemRenderRequested( const Item * pItem, const Rect& rect );
-		virtual void	_itemResizeRequested( const Item * pItem );
+		virtual void	_componentRequestRender( const Component * pComponent ) override;
+		virtual void	_componentRequestRender( const Component * pComponent, const Rect& rect ) override;
+		virtual void	_componentRequestResize( const Component * pComponent ) override;
 
- 		virtual void	_itemFocusRequested( const Item * pItem );
-		virtual void	_itemVisibilityRequested( const Item * pItem );
-		virtual void	_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio );
+ 		virtual void	_componentRequestFocus( const Component * pComponent ) override;
+		virtual void	_componentRequestInView( const Component * pComponent ) override;
+		virtual void	_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio ) override;
 		
-		virtual void	_itemNotified( Item * pItem, ItemNotif notification, void * pData );
+		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) override;
 	
 		//
 	

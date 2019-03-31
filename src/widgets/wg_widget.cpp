@@ -206,7 +206,7 @@ namespace wg
 	 * @param pSkin 	Pointer to the skin to be used.
 	 *
 	 * Specifies the skin to be used by this widget. The skin will cover the
-	 * whole widget and provide the background for any additional items placed
+	 * whole widget and provide the background for any components placed
 	 * on the widget (if any).
 	 *
 	 * A skin typically has different looks depending on the widgets state (normal,
@@ -611,51 +611,51 @@ namespace wg
 		return Size(0,0);
 	}
 
-	//____ _itemRenderRequested() _________________________________________________________
+	//____ _componentRequestRender() _________________________________________________________
 	
-	void Widget::_itemRenderRequested( const Item * pItem )
+	void Widget::_componentRequestRender( const Component * pComponent )
 	{
-		_requestRender( _itemGeo( pItem ) );
+		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_itemRenderRequested( const Item * pItem, const Rect& rect )
+	void Widget::_componentRequestRender( const Component * pComponent, const Rect& rect )
 	{
-		_requestRender( rect + _itemPos( pItem ) );
+		_requestRender( rect + _componentPos( pComponent ) );
 	}
 	
-	//____ _itemResizeRequested() ________________________________________________________
+	//____ _componentRequestResize() ________________________________________________________
 	
-	void Widget::_itemResizeRequested( const Item * pItem )
+	void Widget::_componentRequestResize( const Component * pComponent )
 	{
 		_requestResize();
 		_requestRender();
 	}
 
-	//____ _itemFocusRequested() ___________________________________________________
+	//____ _componentRequestFocus() ___________________________________________________
 
-	void Widget::_itemFocusRequested( const Item * pItem )
+	void Widget::_componentRequestFocus( const Component * pComponent )
 	{
 		grabFocus();
 	}
 
-	//____ _itemVisibilityRequested() ______________________________________________
+	//____ _componentRequestInView() ______________________________________________
 
-	void Widget::_itemVisibilityRequested( const Item * pItem )
+	void Widget::_componentRequestInView( const Component * pComponent )
 	{
-		Rect r = _itemPos( pItem );
+		Rect r = _componentPos( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_itemVisibilityRequested( const Item * pItem, const Rect& preferred, const Rect& prio )
+	void Widget::_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio )
 	{
-		Coord ofs = _itemPos( pItem );
+		Coord ofs = _componentPos( pComponent );
 		_requestInView( preferred + ofs, prio + ofs );
 	}
 
 	
-	//____ _itemPos() ______________________________________________________________
+	//____ _componentPos() ______________________________________________________________
 
-	Coord Widget::_itemPos( const Item * pItem ) const
+	Coord Widget::_componentPos( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentOfs( m_state );
@@ -663,9 +663,9 @@ namespace wg
 			return Coord();
 	}
 	
-	//____ _itemSize() ______________________________________________________________
+	//____ _componentSize() ______________________________________________________________
 	
-	Size Widget::_itemSize( const Item * pItem ) const
+	Size Widget::_componentSize( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->contentPadding();
@@ -673,9 +673,9 @@ namespace wg
 			return m_size;
 	}
 	
-	//____ _itemGeo() ______________________________________________________________
+	//____ _componentGeo() ______________________________________________________________
 	
-	Rect Widget::_itemGeo( const Item * pItem ) const
+	Rect Widget::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentRect( m_size, m_state );
@@ -683,36 +683,36 @@ namespace wg
 			return Rect( 0,0,m_size );			
 	}
 	
-	//____ _itemGlobalPos() ________________________________________________________
+	//____ _globalComponentPos() ________________________________________________________
 
-	Coord Widget::_itemGlobalPos( const Item * pItem ) const
+	Coord Widget::_globalComponentPos( const Component * pComponent ) const
 	{
-		return _itemPos( pItem ) + globalPos();
+		return _componentPos( pComponent ) + globalPos();
 	}
 	
-	//____ _itemGlobalGeo() ______________________________________________________________
+	//____ _globalComponentGeo() ______________________________________________________________
 	
-	Rect Widget::_itemGlobalGeo( const Item * pItem ) const
+	Rect Widget::_globalComponentGeo( const Component * pComponent ) const
 	{
-		return _itemGeo( pItem ) + globalPos();
+		return _componentGeo( pComponent ) + globalPos();
 	}
 
-	//____ _itemObject() ______________________________________________________
+	//____ _object() ______________________________________________________
 
-	Object * Widget::_itemObject()
+	Object * Widget::_object()
 	{
 		return this;
 	}
 
-	const Object * Widget::_itemObject() const
+	const Object * Widget::_object() const
 	{
 		return this;
 	}
 
 
-	//____ _itemNotified() __________________________________________________
+	//____ _receiveComponentNotif() __________________________________________________
 
-	void Widget::_itemNotified( Item * pItem, ItemNotif notification, void * pData )
+	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData )
 	{
 		// By default we do nothing
 	}

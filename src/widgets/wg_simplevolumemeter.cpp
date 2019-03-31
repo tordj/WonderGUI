@@ -52,7 +52,7 @@ namespace wg
 		m_fGap = 0.1f;
 		m_fSidePadding = 0.1f;
 		
-		_updateIValues( Size(0,0) );
+		_updateValueDisplays( Size(0,0) );
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -118,7 +118,7 @@ namespace wg
 
 			Size canvasSize = m_pSkin ? Size() - m_pSkin->contentPadding() : Size();
 
-			_updateIValues( canvasSize );
+			_updateValueDisplays( canvasSize );
 			_requestRender();
 		}
 	}
@@ -134,7 +134,7 @@ namespace wg
 			m_fHoldHeight = fraction;
 
 			Size size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
-			_updateIValues( size );
+			_updateValueDisplays( size );
 			_requestRender();
 		}
 	}
@@ -218,7 +218,7 @@ namespace wg
 			m_direction = direction;
 
 			Size size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
-			_updateIValues(size);
+			_updateValueDisplays(size);
 			_requestResize();
 			_requestRender();
 		}
@@ -332,7 +332,7 @@ namespace wg
 
 		Size canvasSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
 		
-		_updateIValues( canvasSize );
+		_updateValueDisplays( canvasSize );
 	}
 
 	//____ _setSkin() ________________________________________________________________
@@ -347,7 +347,7 @@ namespace wg
 		Widget::_setSkin( pSkin );
 		
 		if( oldCanvas != newCanvas )
-			_updateIValues( newCanvas );		
+			_updateValueDisplays( newCanvas );		
 	}
 
 	//____ _render() _____________________________________________________________________
@@ -503,9 +503,9 @@ namespace wg
 			
 	}
 
-	//____ _updateIValues() ______________________________________________________
+	//____ _updateValueDisplays() ______________________________________________________
 
-	void SimpleVolumeMeter::_updateIValues( Size sz )
+	void SimpleVolumeMeter::_updateValueDisplays( Size sz )
 	{
 		int length = sz.h;
 		int width = sz.w;
@@ -561,7 +561,7 @@ namespace wg
 		m_fHold[1] = pOrg->m_fHold[1];
 		
 		Size canvasSize = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
-		_updateIValues( canvasSize );
+		_updateValueDisplays( canvasSize );
 	}
 
 	//____ _alphaTest() ____________________________________________________________________
