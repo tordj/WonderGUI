@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:font_freetype/font_freetype.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:gfxdevice_stream/gfxdevice_stream.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:gfxdevice_opengl/gfxdevice_opengl.xcodeproj">
    </FileRef>
    <FileRef

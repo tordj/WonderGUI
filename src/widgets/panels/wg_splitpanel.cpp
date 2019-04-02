@@ -444,6 +444,9 @@ namespace wg
 				}
 				break;
 			}
+
+            default:
+                break;
 		}
 
 		if (handleState != m_handleState && m_pHandleSkin)

@@ -217,6 +217,8 @@ namespace wg
 				}
 				break;
 			}
+            default:
+                break;
 		}
 		return false;
 	}

@@ -36,7 +36,7 @@
 
 namespace wg
 {
-	class CCanvas;
+	class ICanvas;
 
 
 	//____ CCanvas _____________________________________________________________

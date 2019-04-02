@@ -463,7 +463,7 @@ namespace wg
 			return;
 	
 		BlendMode savedBlendMode;
-		if (m_blendMode != BlendMode::Ignore)
+		if (m_blendMode != BlendMode::Undefined)
 		{
 			savedBlendMode = pDevice->blendMode();
 			pDevice->setBlendMode(m_blendMode);
@@ -473,7 +473,7 @@ namespace wg
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(_canvas, m_frame, { blockOfs,m_dimensions }, m_frame );
 
-		if (m_blendMode != BlendMode::Ignore)
+		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
 	}
 	

@@ -48,28 +48,28 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static LineEditor_p	cast( Object * pObject );
 	
 	
 		//.____ Geometry ____________________________________________
 	
-		Size			preferredSize() const;
+		Size			preferredSize() const override;
 		
 	protected:
 		LineEditor();
 		virtual ~LineEditor();
-		virtual Widget* _newOfMyType() const { return new LineEditor(); };
+		virtual Widget* _newOfMyType() const override { return new LineEditor(); }
 	
-		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		void			_setSize( const Size& size );
-		void			_refresh();
-		void			_receive( Msg * pMsg );
-		void			_setState( State state );
-		void			_setSkin( Skin * pSkin );
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_setSize( const Size& size ) override;
+		void			_refresh() override;
+		void			_receive( Msg * pMsg ) override;
+		void			_setState( State state ) override;
+		void			_setSkin( Skin * pSkin ) override;
 
 		Coord			_componentPos( const Component * pComponent ) const override;
 		Size			_componentSize( const Component * pComponent ) const override;

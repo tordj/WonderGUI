@@ -7,13 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0C623A7B1D81906100DE671D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A7A1D81906100DE671D /* SDL2.framework */; };
-		0C623A7F1D81906D00DE671D /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A7D1D81906D00DE671D /* libWonderGUI.a */; };
-		0C623A811D81912500DE671D /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C623A801D81912500DE671D /* SDL2_image.framework */; };
-		0CC777DB1D8AC7B9006BD1BF /* testwidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */; };
-		0CDC6B211D86D6E80064A85B /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */; };
 		0CDC6B231D86D7000064A85B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDC6B221D86D7000064A85B /* OpenGL.framework */; };
-		0CEBB5531D82FC8B009F8C08 /* main_gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */; };
+		17F41BFA225364F5008D1DE7 /* testwidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F41BF7225364F5008D1DE7 /* testwidget.cpp */; };
+		17F41BFB225364F5008D1DE7 /* main_gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F41BF8225364F5008D1DE7 /* main_gl.cpp */; };
+		17F41C03225369A5008D1DE7 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C01225369A5008D1DE7 /* SDL2.framework */; };
+		17F41C04225369A5008D1DE7 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C02225369A5008D1DE7 /* SDL2_image.framework */; };
+		17F41C0622536C6B008D1DE7 /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */; };
+		17F41C0822536C6B008D1DE7 /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */; };
+		17F41C0A22536C6B008D1DE7 /* libgfxdevice_stream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */; };
+		17F41C0C22536C6B008D1DE7 /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,14 +32,18 @@
 
 /* Begin PBXFileReference section */
 		0C623A6C1D818F5B00DE671D /* workbench */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = workbench; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C623A7A1D81906100DE671D /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
-		0C623A7D1D81906D00DE671D /* libWonderGUI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libWonderGUI.a; path = "../../../../Library/Developer/Xcode/DerivedData/wondergui-fdnviihkiizttacsdyiljeesqbzi/Build/Products/Debug/libWonderGUI.a"; sourceTree = "<group>"; };
-		0C623A801D81912500DE671D /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
-		0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = testwidget.cpp; path = ../../../../workbench/testwidget.cpp; sourceTree = "<group>"; };
-		0CC777DA1D8AC7B9006BD1BF /* testwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testwidget.h; path = ../../../../workbench/testwidget.h; sourceTree = "<group>"; };
-		0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgfxdevice_opengl.a; path = "../../../../Library/Developer/Xcode/DerivedData/wondergui-fdnviihkiizttacsdyiljeesqbzi/Build/Products/Debug/libgfxdevice_opengl.a"; sourceTree = "<group>"; };
 		0CDC6B221D86D7000064A85B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_gl.cpp; path = ../../../../workbench/main_gl.cpp; sourceTree = "<group>"; };
+		17F41BF7225364F5008D1DE7 /* testwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = testwidget.cpp; path = ../../../../workbench/testwidget.cpp; sourceTree = "<group>"; };
+		17F41BF8225364F5008D1DE7 /* main_gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main_gl.cpp; path = ../../../../workbench/main_gl.cpp; sourceTree = "<group>"; };
+		17F41BF9225364F5008D1DE7 /* testwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testwidget.h; path = ../../../../workbench/testwidget.h; sourceTree = "<group>"; };
+		17F41BFD225366DB008D1DE7 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../SDL2/SDL2.framework; sourceTree = "<group>"; };
+		17F41BFF225366EF008D1DE7 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../SDL2_image/SDL2_image.framework; sourceTree = "<group>"; };
+		17F41C01225369A5008D1DE7 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		17F41C02225369A5008D1DE7 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_opengl.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_stream.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,11 +51,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17F41C0622536C6B008D1DE7 /* libgfxdevice_opengl.a in Frameworks */,
+				17F41C0822536C6B008D1DE7 /* libgfxdevice_software.a in Frameworks */,
+				17F41C0A22536C6B008D1DE7 /* libgfxdevice_stream.a in Frameworks */,
+				17F41C0C22536C6B008D1DE7 /* libWonderGUI.a in Frameworks */,
+				17F41C03225369A5008D1DE7 /* SDL2.framework in Frameworks */,
+				17F41C04225369A5008D1DE7 /* SDL2_image.framework in Frameworks */,
 				0CDC6B231D86D7000064A85B /* OpenGL.framework in Frameworks */,
-				0CDC6B211D86D6E80064A85B /* libgfxdevice_opengl.a in Frameworks */,
-				0C623A7B1D81906100DE671D /* SDL2.framework in Frameworks */,
-				0C623A811D81912500DE671D /* SDL2_image.framework in Frameworks */,
-				0C623A7F1D81906D00DE671D /* libWonderGUI.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,13 +67,10 @@
 		0C623A631D818F5B00DE671D = {
 			isa = PBXGroup;
 			children = (
-				0C623A801D81912500DE671D /* SDL2_image.framework */,
-				0C623A7A1D81906100DE671D /* SDL2.framework */,
+				17F41BF6225364D4008D1DE7 /* Code */,
 				0CDC6B221D86D7000064A85B /* OpenGL.framework */,
-				0CDC6B201D86D6E80064A85B /* libgfxdevice_opengl.a */,
-				0C623A6E1D818F5B00DE671D /* workbench */,
-				0C623A7D1D81906D00DE671D /* libWonderGUI.a */,
 				0C623A6D1D818F5B00DE671D /* Products */,
+				17F41BFC225366DA008D1DE7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,14 +82,29 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0C623A6E1D818F5B00DE671D /* workbench */ = {
+		17F41BF6225364D4008D1DE7 /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				0CC777D91D8AC7B9006BD1BF /* testwidget.cpp */,
-				0CC777DA1D8AC7B9006BD1BF /* testwidget.h */,
-				0CEBB5521D82FC8B009F8C08 /* main_gl.cpp */,
+				17F41BF8225364F5008D1DE7 /* main_gl.cpp */,
+				17F41BF7225364F5008D1DE7 /* testwidget.cpp */,
+				17F41BF9225364F5008D1DE7 /* testwidget.h */,
 			);
-			path = workbench;
+			path = Code;
+			sourceTree = "<group>";
+		};
+		17F41BFC225366DA008D1DE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */,
+				17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */,
+				17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */,
+				17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */,
+				17F41C02225369A5008D1DE7 /* SDL2_image.framework */,
+				17F41C01225369A5008D1DE7 /* SDL2.framework */,
+				17F41BFF225366EF008D1DE7 /* SDL2_image.framework */,
+				17F41BFD225366DB008D1DE7 /* SDL2.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,8 +163,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0CEBB5531D82FC8B009F8C08 /* main_gl.cpp in Sources */,
-				0CC777DB1D8AC7B9006BD1BF /* testwidget.cpp in Sources */,
+				17F41BFA225364F5008D1DE7 /* testwidget.cpp in Sources */,
+				17F41BFB225364F5008D1DE7 /* main_gl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

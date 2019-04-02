@@ -596,8 +596,11 @@ namespace wg
 						(m_selectMode == SelectMode::FlipOnSelect && keyCode == Key::Space ) )
 						_pMsg->swallow();
 					break;
-				}			
-			}	
+				}
+                default:
+                    break;
+			}
+            
 
 			List::_receive( _pMsg );
 		}

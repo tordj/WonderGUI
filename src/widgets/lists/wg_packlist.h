@@ -124,16 +124,16 @@ namespace wg
 
 		//.____ Identification __________________________________________
 	
-		virtual bool		isInstanceOf( const char * pClassName ) const;
-		virtual const char *className( void ) const;
+		virtual bool		isInstanceOf( const char * pClassName ) const override;
+		virtual const char *className( void ) const override;
 		static const char	CLASSNAME[];
 		static PackList_p	cast( Object * pObject );
 		
 		//.____ Geometry ____________________________________________
 
-		Size				preferredSize() const;
-		int					matchingHeight(int width) const;
-		int					matchingWidth(int height) const;
+		Size				preferredSize() const override;
+		int					matchingHeight(int width) const override;
+		int					matchingWidth(int height) const override;
 
 		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
@@ -155,77 +155,77 @@ namespace wg
 	protected:
 		PackList();
 		virtual ~PackList();
-		Widget*			_newOfMyType() const { return new PackList(); };
+		Widget*			_newOfMyType() const override { return new PackList(); }
 
 		// Overloaded from Widget
 
-		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
-		void			_cloneContent( const Widget * _pOrg );
-		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		void			_setSize( const Size& size );
-		void			_refresh();
+		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip ) override;
+		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode ) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_setSize( const Size& size ) override;
+		void			_refresh() override;
 	
-		void			_receive( Msg * pMsg );
-		Size			_windowPadding() const;
+		void			_receive( Msg * pMsg ) override;
+		Size			_windowPadding() const override;
 
 
 		// Overloaded from PackListChildrenHolder
 
-		void			_didAddSlots(Slot * pSlot, int nb);
-		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
-		void			_willRemoveSlots(Slot * pSlot, int nb);
+		void			_didAddSlots(Slot * pSlot, int nb) override;
+		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
+		void			_willRemoveSlots(Slot * pSlot, int nb) override;
 
-		void			_hideSlots(Slot * pSlot, int nb);
-		void			_unhideSlots(Slot * pSlot, int nb);
+		void			_hideSlots(Slot * pSlot, int nb) override;
+		void			_unhideSlots(Slot * pSlot, int nb) override;
 
-		void			_selectSlots(Slot * pSlot, int nb);
-		void			_unselectSlots(Slot * pSlot, int nb);
-		Object *		_object() { return this; }
-		const Object *	_object() const { return this; }
+		void			_selectSlots(Slot * pSlot, int nb) override;
+		void			_unselectSlots(Slot * pSlot, int nb) override;
+        Object *		_object() override { return this; }
+        const Object *	_object() const override { return this; }
 
-		WidgetHolder *	_widgetHolder() { return this; }
-		int				_getInsertionPoint(const Widget * pWidget) const;
-		bool			_hasSortFunction() const { return m_sortFunc != nullptr; }
-		bool			_sortEntries();
+        WidgetHolder *	_widgetHolder() override { return this; }
+		int				_getInsertionPoint(const Widget * pWidget) const override;
+        bool			_hasSortFunction() const override { return m_sortFunc != nullptr; }
+		bool			_sortEntries() override;
 
 
 		// Overloaded from List
 
-		ListSlot *		_findEntry(const Coord& ofs);
-		void			_getEntryGeo(Rect& geo, const ListSlot * pSlot) const;
+		ListSlot *		_findEntry(const Coord& ofs) override;
+		void			_getEntryGeo(Rect& geo, const ListSlot * pSlot) const override;
 
-		Rect			_listArea() const;
-		Rect			_listWindow() const;
-		Rect			_listCanvas() const;
+		Rect			_listArea() const override;
+		Rect			_listWindow() const override;
+		Rect			_listCanvas() const override;
 
-		void			_onEntrySkinChanged(Size oldPadding, Size newPadding);
-		void			_onLassoUpdated(const Rect& oldLasso, const Rect& newLasso);
+		void			_onEntrySkinChanged(Size oldPadding, Size newPadding) override;
+		void			_onLassoUpdated(const Rect& oldLasso, const Rect& newLasso) override;
 
-		ListSlot *		_beginSlots() const;
-		ListSlot *		_endSlots() const;
+		ListSlot *		_beginSlots() const override;
+		ListSlot *		_endSlots() const override;
 
 
 		// Overloaded from Container
 
-		void			_firstSlotWithGeo(SlotWithGeo& package) const;
-		void			_nextSlotWithGeo(SlotWithGeo& package) const;
+		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void			_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		Widget * 		_findWidget(const Coord& ofs, SearchMode mode);
+		Widget * 		_findWidget(const Coord& ofs, SearchMode mode) override;
 
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos(Slot * pSlot) const;
-		Size		_childSize(Slot * pSlot) const;
+		Coord		_childPos(Slot * pSlot) const override;
+		Size		_childSize(Slot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot);
-		void		_childRequestRender(Slot * pSlot, const Rect& rect);
-		void		_childRequestResize(Slot * pSlot);
+		void		_childRequestRender(Slot * pSlot) override;
+		void		_childRequestRender(Slot * pSlot, const Rect& rect) override;
+		void		_childRequestResize(Slot * pSlot) override;
 
-		Widget *	_prevChild(Slot * pSlot) const;
-		Widget *	_nextChild(Slot * pSlot) const;
+		Widget *	_prevChild(Slot * pSlot) const override;
+		Widget *	_nextChild(Slot * pSlot) const override;
 
 
 		// Overloaded from ComponentHolder

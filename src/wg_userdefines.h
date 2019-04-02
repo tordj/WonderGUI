@@ -30,8 +30,7 @@
 //=============================================================================
 
 	//#define	SAFE_UTF8		// Use slower, but more robust UTF-8 decoding
-									// that better handles broken unicode strings.
-									// Ignored if USE_UTF8 isn't defined.
+                                // that better handles broken unicode strings.
 
 
 namespace wg

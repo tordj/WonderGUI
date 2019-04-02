@@ -4,3 +4,5 @@ Release/
 log.txt
 *.user
 *.dll
+.DS_Store
+xcuserdata
