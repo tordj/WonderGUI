@@ -92,10 +92,13 @@ namespace wg
 
 		struct LayerData
 		{
-			Surface *		pSurface;
-			BlendMode		blendMode;
-			Coord			blockOfs[StateEnum_Nb];		// Block for each state
-			Color			tintColor[StateEnum_Nb];
+			Surface *		    pSurface;
+			BlendMode		    blendMode;
+            Bitmask<uint32_t>   stateBlockMask = 0;
+            Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
+
+			Coord			    blockOfs[StateEnum_Nb];		// Block for each state
+			Color			    tintColor[StateEnum_Nb];
 	//		Origo			placementOrigo;
 	//		Coord			placementOfs;
 	//		Size			dimensions;                   // Stored in pixels

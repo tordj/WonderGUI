@@ -97,6 +97,7 @@ namespace wg
 
 		layer.blendMode = BlendMode::Blend;
 		layer.pSurface = pSurf;
+        layer.stateBlockMask = 1;               // Only normal state is set.
 
 		if (pSurf->isOpaque())
 			m_bIsOpaque = true;
@@ -129,19 +130,15 @@ namespace wg
 
 		layer.blendMode = BlendMode::Blend;
 		layer.pSurface = pSurf;
+        layer.stateBlockMask = 0;
 
 		if (pSurf->isOpaque())
 			m_bIsOpaque = true;
 
 		//
 
-		bool	bSlotUsed[StateEnum_Nb];
-
 		for (int i = 0; i < StateEnum_Nb; i++)
-		{
 			layer.tintColor[i] = Color::White;
-			bSlotUsed[i] = false;
-		}
 
 		//
 
@@ -150,28 +147,22 @@ namespace wg
 		{
 			int index = _stateToIndex(state);
 
-			bSlotUsed[index] = true;
+            layer.stateBlockMask.setBit(index);
 			layer.blockOfs[index] = blockStartOfs + blockPitch*ofs;
 			ofs++;
 		}
 
 		//
 
-		assert(bSlotUsed[_stateToIndex(StateEnum::Normal)]);				// A block for state normal is required.
+		assert(layer.stateBlockMask.bit(0) == true);				// A block for state normal is required.
 
 		// Fill in fallback states and update opacity flag
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			if (!bSlotUsed[i])
+			if (!layer.stateBlockMask.bit(i))
 			{
-				State state = _indexToState(i);
-
-				int step = 0;
-				int fallbackIndex = _stateToIndex(fallbackState(state,step++));
-				while (!bSlotUsed[fallbackIndex])
-					fallbackIndex = _stateToIndex(fallbackState(state, step++));
-
+                int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
 				layer.blockOfs[i] = layer.blockOfs[fallbackIndex];
 			}
 
@@ -220,15 +211,9 @@ namespace wg
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
-		// 
-
-		bool	bSlotUsed[StateEnum_Nb];
+		// Set default color for normal state.
 
 		layer.tintColor[0] = Color::White;
-		bSlotUsed[0] = true;						// StateColor doesn't need to be specified for normal state, assumed to be white if not included
-
-		for (int i = 1; i < StateEnum_Nb; i++)
-			bSlotUsed[i] = false;
 
 		//
 
@@ -243,24 +228,18 @@ namespace wg
 			if (oldAlpha != stateColor.second.a)
 				_updateStateOpacity(index);
 
-			bSlotUsed[index] = true;
+            layer.stateColorMask.setBit(index);
 		}
 
 		// Fill in fallback states and update opacity flag
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			if (!bSlotUsed[i])
+			if (!layer.stateColorMask.bit(i))
 			{
-				State state = _indexToState(i);
+                uint8_t		oldAlpha = layer.tintColor[i].a;
 
-				int step = 0;
-				int fallbackIndex = _stateToIndex(fallbackState(state, step++));
-				while (!bSlotUsed[fallbackIndex])
-					fallbackIndex = _stateToIndex(fallbackState(state, step++));
-
-				uint8_t		oldAlpha = layer.tintColor[i].a;
-
+                int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
 				layer.tintColor[i] = layer.tintColor[fallbackIndex];
 
 				if (oldAlpha != layer.tintColor[i].a )
