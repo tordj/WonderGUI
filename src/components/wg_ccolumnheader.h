@@ -66,8 +66,8 @@ namespace wg
 
 	protected:
 		
-		Object *		_object();
-		const Object *	_object() const;
+		Object *		_object() override;
+		const Object *	_object() const override;
 
 		Coord	_componentPos( const Component * pComponent ) const override;
 		Size	_componentSize( const Component * pComponent ) const override;

@@ -73,7 +73,7 @@ namespace wg
 	CharSeq::CharSeq( const std::string& str, int ofs, int len )
 	{
 		const char * p = str.c_str();
-		int strlen = str.length();
+		int strlen = (int) str.length();
 	
 		if( ofs + len > strlen )
 		{
@@ -97,7 +97,7 @@ namespace wg
 	CharSeq::CharSeq( const std::wstring& str, int ofs, int len )
 	{
 		const wchar_t * p = str.c_str();
-		int strlen = str.length();
+		int strlen = (int) str.length();
 	
 		if( ofs + len > strlen )
 		{
@@ -223,7 +223,7 @@ namespace wg
 		{
 			const char * p = (const char *) m_pChar;
 			TextTool::forwardCharacters( p, m_nbChars );
-			return p - (const char *) m_pChar;
+			return int(p - (const char *) m_pChar);
 		}
 		case Type::Utf16:
 			return (int) TextTool::getTextSizeUTF8( (const uint16_t*) m_pChar, m_nbChars );
@@ -493,7 +493,7 @@ namespace wg
 				basket.ptr = (const char *) m_pChar;
 				const char * p = (const char *) m_pChar;
 				TextTool::forwardCharacters( p, m_nbChars );
-				basket.length = p - (const char *) m_pChar;
+				basket.length = int( p - (const char *) m_pChar );
 				basket.bIsOwner = false;
 				return basket;
 			}
@@ -549,7 +549,7 @@ namespace wg
 			{
 				const char * p = (const char *) m_pChar;
 				TextTool::forwardCharacters( p, m_nbChars );
-				int size = p - (const char *) m_pChar;
+				int size = int( p - (const char *) m_pChar );
 				return std::string( p, size );
 			}
 			case Type::Utf16:
@@ -623,13 +623,13 @@ namespace wg
 	{
 	    m_type      = Type::Utf8;
 	    m_pChar     = (void *) str.c_str();
-	    m_nbChars   = str.length();
+	    m_nbChars   = (int) str.length();
 	}
 	
 	CharSeqLiteral::CharSeqLiteral( const std::string& str, int ofs, int len )
 	{
 		const char * p = str.c_str();
-		int strlen = str.length();
+		int strlen = (int) str.length();
 	
 		if( ofs + len > strlen )
 		{
@@ -648,13 +648,13 @@ namespace wg
 	{
 	    m_type      = Type::Utf16;
 	    m_pChar     = (void *) str.c_str();
-	    m_nbChars   = str.length();
+	    m_nbChars   = (int) str.length();
 	}
 	
 	CharSeqLiteral::CharSeqLiteral( const std::wstring& str, int ofs, int len )
 	{
 		const wchar_t * p = str.c_str();
-		int strlen = str.length();
+		int strlen = (int) str.length();
 	
 		if( ofs + len > strlen )
 		{
@@ -676,7 +676,7 @@ namespace wg
 	{
 		m_type 		= Type::Codepage8;
 	    m_pChar		= (void *) pChar;
-	    m_nbChars	= strlen(pChar);
+	    m_nbChars	= (int) strlen(pChar);
 		m_codepage	= codePage;
 	}
 	
@@ -693,14 +693,14 @@ namespace wg
 	{
 		m_type 		= Type::Codepage8;
 	    m_pChar		= str.c_str();
-		m_nbChars	= str.length();
+		m_nbChars	= (int) str.length();
 		m_codepage	= codePage;
 	}
 	
 	CharSeq8::CharSeq8( const std::string& str, int ofs, int len, CodePage codePage )
 	{
 		const char * p = str.c_str();
-		int strlen = str.length();
+		int strlen = (int) str.length();
 	
 		if( ofs + len > strlen )
 		{

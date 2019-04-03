@@ -64,8 +64,8 @@ namespace wg
 		virtual void		_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
 	
 		
-		virtual Widget *	_prevChild( Slot * pSlot ) const = 0;
-		virtual Widget *	_nextChild( Slot * pSlot ) const = 0;
+		virtual Widget *	_prevChild( const Slot * pSlot ) const = 0;
+		virtual Widget *	_nextChild( const Slot * pSlot ) const = 0;
 	};
 	
 

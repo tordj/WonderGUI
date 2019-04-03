@@ -162,8 +162,6 @@ namespace wg
 		SlotWithGeo	child;
 		_firstSlotWithGeo(child);
 		
-		Widget * pResult = 0;
-	
 		while( child.pSlot )
 		{
 			if( child.geo.contains( ofs ) )
@@ -304,7 +302,7 @@ namespace wg
 	
 			// Go through WidgetRenderContexts and render the patches in reverse order (topmost child rendered last).
 	
-			for (int i = renderList.size() - 1; i >= 0; i--)
+			for (int i = int(renderList.size()) - 1; i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
 				p->pWidget->_renderPatches( pDevice, p->geo, p->geo, p->patches );

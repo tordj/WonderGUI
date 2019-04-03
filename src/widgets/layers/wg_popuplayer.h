@@ -152,8 +152,8 @@ namespace wg
 
 		// Overloaded from Layer
 
-		LayerSlot * 	_beginLayerSlots() const;
-		LayerSlot * 	_endLayerSlots() const;
+		const LayerSlot * 	_beginLayerSlots() const;
+		const LayerSlot * 	_endLayerSlots() const;
 		int				_sizeOfLayerSlot() const;
 
 		void			_onRequestRender(const Rect& rect, const LayerSlot * pSlot);	// rect is in our coordinate system.

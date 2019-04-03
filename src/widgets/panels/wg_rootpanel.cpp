@@ -463,12 +463,12 @@ namespace wg
 		// Do nothing, root ignores inView requests.
 	}
 
-	Widget * RootPanel::_prevChild( Slot * pSlot ) const
+	Widget * RootPanel::_prevChild( const Slot * pSlot ) const
 	{
 		return nullptr;
 	}
 
-	Widget * RootPanel::_nextChild( Slot * pSlot ) const
+	Widget * RootPanel::_nextChild( const Slot * pSlot ) const
 	{
 		return nullptr;
 	}

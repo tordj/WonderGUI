@@ -21,7 +21,6 @@
 =========================================================================*/
 #ifndef WG_GLSHADERS_DOT_H
 #define WG_GLSHADERS_DOT_H
-#pragma once
 
 #include <wg_glgfxdevice.h>
 
@@ -2987,4 +2986,4 @@ static const char segmentsFragmentShader15[] =
 
 }
 
-#endif WG_GLSHADERS_DOT_H
+#endif //WG_GLSHADERS_DOT_H

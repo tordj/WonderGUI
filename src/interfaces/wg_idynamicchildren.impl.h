@@ -138,7 +138,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		m_pHolder->_willRemoveSlots(beg._slot(), end._slot() - beg._slot());
+		m_pHolder->_willRemoveSlots(beg._slot(), int(end._slot() - beg._slot()) );
 		return iterator(m_pSlotArray->remove(beg._slot(), end._slot()));
 	}
 

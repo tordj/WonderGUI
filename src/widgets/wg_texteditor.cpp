@@ -137,8 +137,6 @@ namespace wg
 	
 	void TextEditor::_receive( Msg * pMsg )
 	{
-		MsgType type = pMsg->type();
-
 		Widget::_receive( pMsg );
 		m_text.receive( pMsg );	
 	}
@@ -170,8 +168,6 @@ namespace wg
 	{
 		Widget::_setSize( size );
 		
-		int width = size.w;
-	
 		if( m_pSkin )
 			m_text.setSize(size - m_pSkin->contentPadding());
 		else

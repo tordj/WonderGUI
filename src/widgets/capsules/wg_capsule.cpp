@@ -159,14 +159,14 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * Capsule::_prevChild( Slot * pSlot ) const
+	Widget * Capsule::_prevChild( const Slot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * Capsule::_nextChild( Slot * pSlot ) const
+	Widget * Capsule::_nextChild( const Slot * pSlot ) const
 	{
 		return nullptr;
 	}

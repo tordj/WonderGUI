@@ -677,9 +677,9 @@ namespace wg
 	 *
 	 * @return True if coordinate is within the bounds of the rectangle.
 	 **/
-	inline bool Rect::contains( int _x, int _y ) const
+	inline bool Rect::contains( int x, int y ) const
 	{
-		if( _x >= x && _x < x + w && _y >= y && _y < y + h )
+		if( x >= this->x && x < this->x + w && y >= this->y && y < this->y + h )
 			return true;
 		return false;
 	}
@@ -693,12 +693,12 @@ namespace wg
 	 *
 	 * @return True if coordinate is within the bounds of the rectangle.
 	 **/
-	inline bool Rect::contains( const Coord& _coord ) const
+	inline bool Rect::contains( const Coord& coord ) const
 	{
-		int a = _coord.x - x;
-		int b = _coord.y - y;
-		int c = (x + w) - (_coord.x);
-		int d = (y + h) - (_coord.y);
+		int a = coord.x - x;
+		int b = coord.y - y;
+		int c = (x + w) - (coord.x);
+		int d = (y + h) - (coord.y);
 
 		return (a | b | c | d) >= 0;
 
@@ -715,12 +715,12 @@ namespace wg
 	 *
 	 * @return True if the parameter rectangle is fully within the bounds of our rectangle.
 	 **/
-	inline bool Rect::contains( const Rect& _rect ) const
+	inline bool Rect::contains( const Rect& rect ) const
 	{
-		int a = _rect.x - x;
-		int b = _rect.y - y;
-		int c = (x + w) - (_rect.x + _rect.w);
-		int d = (y + h) - (_rect.y + _rect.h);
+		int a = rect.x - x;
+		int b = rect.y - y;
+		int c = (x + w) - (rect.x + rect.w);
+		int d = (y + h) - (rect.y + rect.h);
 
 		return (a | b | c | d) >= 0;
 
@@ -737,9 +737,9 @@ namespace wg
 	 *
 	 * @return Coordinate limited to the rectangles geometry.
 	 **/
-	 inline Coord Rect::limit( const Coord& _coord ) const
+	 inline Coord Rect::limit( const Coord& coord ) const
 	{
-		Coord out = _coord;
+		Coord out = coord;
 		if( out.x < x )
 			out.x = x;
 		if( out.y < y )
@@ -761,12 +761,12 @@ namespace wg
 	 *
 	 * @return True if rectangles intersects.
 	 **/
-	inline bool Rect::intersectsWith( const Rect& _rect ) const
+	inline bool Rect::intersectsWith( const Rect& rect ) const
 	{
-		if(left() >= _rect.right()) return false;
-		if(right() <= _rect.left()) return false;
-		if(top() >= _rect.bottom()) return false;
-		if(bottom() <= _rect.top()) return false;
+		if(left() >= rect.right()) return false;
+		if(right() <= rect.left()) return false;
+		if(top() >= rect.bottom()) return false;
+		if(bottom() <= rect.top()) return false;
 	
 		return true;
 	}

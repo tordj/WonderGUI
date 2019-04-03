@@ -111,7 +111,7 @@ namespace wg
 		}
 
 
-		return m_layers.size();
+		return (int) m_layers.size();
 	}
 
 	int MultiBlockSkin::addLayer(Surface * pSurf, Coord blockStartOfs, Coord blockPitch, const std::initializer_list<State>& stateBlocks)
@@ -180,7 +180,7 @@ namespace wg
 
 		//
 
-		return m_layers.size();
+		return (int) m_layers.size();
 	}
 
 	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, Coord blockStartOfs )

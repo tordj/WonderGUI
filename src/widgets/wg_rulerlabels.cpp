@@ -215,8 +215,6 @@ namespace wg
 	void RulerLabels::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
-		
-		const RulerLabels * pOrg = static_cast<const RulerLabels*>(_pOrg);
 	}
 	
 	//____ _alphaTest() ____________________________________________________________________

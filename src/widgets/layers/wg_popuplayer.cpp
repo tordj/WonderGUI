@@ -219,6 +219,10 @@ namespace wg
 				break;
 			}
 	
+            default:
+                assert(false);
+                break;
+                
 		}
 	
 		// Adjust geometry to fit inside parent.
@@ -487,7 +491,7 @@ namespace wg
 
 		// Go through WidgetRenderContexts and render the patches in reverse order (topmost popup rendered last).
 
-		for (int i = renderList.size() - 1; i >= 0; i--)
+		for (int i = int(renderList.size()) - 1; i >= 0; i--)
 		{
 			WidgetRenderContext * p = &renderList[i];
 
@@ -880,14 +884,14 @@ namespace wg
 
 	//____ _beginLayerSlots() __________________________________________________
 
-	LayerSlot * PopupLayer::_beginLayerSlots() const
+	const LayerSlot * PopupLayer::_beginLayerSlots() const
 	{
 		return m_popups.begin();
 	}
 
 	//____ _endLayerSlots() __________________________________________________
 
-	LayerSlot * PopupLayer::_endLayerSlots() const
+	const LayerSlot * PopupLayer::_endLayerSlots() const
 	{
 		return m_popups.end();
 	}

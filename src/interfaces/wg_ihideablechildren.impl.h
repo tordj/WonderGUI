@@ -69,7 +69,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_hideSlots(beg._slot(), end._slot() - beg._slot());
+		m_pHolder->_hideSlots(beg._slot(), int(end._slot() - beg._slot()) );
 	};
 
 	template < class SlotType, class HolderType>
@@ -107,7 +107,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_unhideSlots(beg._slot(), end._slot() - beg._slot());
+		m_pHolder->_unhideSlots(beg._slot(), int(end._slot() - beg._slot()) );
 	};
 
 	template < class SlotType, class HolderType>

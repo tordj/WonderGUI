@@ -264,12 +264,12 @@ namespace wg
 	
 				const static char outside[] = "outside";
 				const static char inside[] = "inside";
-				const char * pPress = outside;
+//				const char * pPress = outside;
 				const char * pRelease = outside;
 		
 				if( pMsg->releaseInside() )
 					pRelease = inside;
-	
+
 				snprintf( params, c_paramLen, " button=%s release=%s", _formatMouseButton(pMsg->button()).c_str(), pRelease );
 				break;
 			}

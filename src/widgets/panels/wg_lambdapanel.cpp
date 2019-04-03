@@ -427,9 +427,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * LambdaPanel::_prevChild( Slot * _pSlot ) const
+	Widget * LambdaPanel::_prevChild( const Slot * _pSlot ) const
 	{
-		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+		const LambdaPanelSlot * pSlot = static_cast<const LambdaPanelSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -440,9 +440,9 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * LambdaPanel::_nextChild( Slot * _pSlot ) const
+	Widget * LambdaPanel::_nextChild( const Slot * _pSlot ) const
 	{
-		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
+		const LambdaPanelSlot * pSlot = static_cast<const LambdaPanelSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

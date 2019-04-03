@@ -52,8 +52,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const;
-		const char *		className(void) const;
+		bool				isInstanceOf(const char * pClassName) const override;
+		const char *		className(void) const override;
 		static const char	CLASSNAME[];
 		static GfxStreamReader_p	cast(Object * pObject);
 
@@ -64,7 +64,7 @@ namespace wg
 		GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder );
 		~GfxStreamReader();
 
-		Object * _object() override { return this; }
+		Object *    _object() override { return this; }
 
 		bool		_hasChunk() override;
 		GfxStream::Header	_peekChunk() override;

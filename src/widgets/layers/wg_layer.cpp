@@ -131,7 +131,7 @@ namespace wg
 	
 	Widget* Layer::_firstChild() const
 	{		
-		LayerSlot * p = _beginLayerSlots();
+		const LayerSlot * p = _beginLayerSlots();
 		if (p != _endLayerSlots())
 			return p->pWidget;
 
@@ -146,7 +146,7 @@ namespace wg
 			return m_baseSlot.pWidget;
 		else
 		{
-			LayerSlot * pSlot = _endLayerSlots();
+			const LayerSlot * pSlot = _endLayerSlots();
 			if (pSlot > _beginLayerSlots())
 			{
 				pSlot = _decLayerSlot(pSlot, _sizeOfLayerSlot());
@@ -161,7 +161,7 @@ namespace wg
 	
 	void Layer::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		LayerSlot * p = _beginLayerSlots();
+		const LayerSlot * p = _beginLayerSlots();
 		if( p < _endLayerSlots() )
 		{
 			package.geo = p->geo;
@@ -180,7 +180,7 @@ namespace wg
 	
 	void Layer::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		LayerSlot * p = (LayerSlot*) package.pSlot;
+		const LayerSlot * p = (LayerSlot*) package.pSlot;
 
 		if (p == &m_baseSlot)
 		{
@@ -285,7 +285,7 @@ namespace wg
 */
 	//____ _prevChild() ________________________________________________________
 
-	Widget * Layer::_prevChild( Slot * pSlot ) const
+	Widget * Layer::_prevChild( const Slot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
 			pSlot = _endLayerSlots();
@@ -299,7 +299,7 @@ namespace wg
 
 	//____ _nextChild() ________________________________________________________
 
-	Widget * Layer::_nextChild( Slot * pSlot ) const
+	Widget * Layer::_nextChild( const Slot * pSlot ) const
 	{
 		if (pSlot == &m_baseSlot)
 			return nullptr;

@@ -172,8 +172,6 @@ namespace wg
 
 		Size sz;
 
-		int handleThickness = _handleThickness();
-
 		if (m_firstChild.pWidget)
 			firstSz = m_firstChild.pWidget->preferredSize();
 		
@@ -652,7 +650,7 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * SplitPanel::_prevChild(Slot * pSlot) const
+	Widget * SplitPanel::_prevChild(const Slot * pSlot) const
 	{
 		if (pSlot == &m_secondChild)
 			return m_secondChild.pWidget;
@@ -662,7 +660,7 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * SplitPanel::_nextChild(Slot * pSlot) const
+	Widget * SplitPanel::_nextChild(const Slot * pSlot) const
 	{
 		if (pSlot == &m_firstChild)
 			return m_secondChild.pWidget;

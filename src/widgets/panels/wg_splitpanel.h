@@ -148,8 +148,8 @@ namespace wg
 		void		_childRequestRender(Slot * pSlot, const Rect& rect);
 		void		_childRequestResize(Slot * pSlot);
 
-		Widget *	_prevChild(Slot * pSlot) const;
-		Widget *	_nextChild(Slot * pSlot) const;
+		Widget *	_prevChild(const Slot * pSlot) const;
+		Widget *	_nextChild(const Slot * pSlot) const;
 
 
 		bool			m_bHorizontal;

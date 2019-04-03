@@ -400,9 +400,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * StackPanel::_prevChild( Slot * pSlot ) const
+	Widget * StackPanel::_prevChild( const Slot * pSlot ) const
 	{
-		StackPanelSlot * p = (StackPanelSlot *) pSlot;
+		auto p = static_cast<const StackPanelSlot *>(pSlot);
 		
 		if( p > m_children.begin() )
 			return p[-1].pWidget;
@@ -412,9 +412,9 @@ namespace wg
 	
 	//____ _nextChild() __________________________________________________________
 
-	Widget * StackPanel::_nextChild( Slot * pSlot ) const
+	Widget * StackPanel::_nextChild( const Slot * pSlot ) const
 	{
-		StackPanelSlot * p = (StackPanelSlot *) pSlot;
+        auto p = static_cast<const StackPanelSlot *>(pSlot);
 		
 		if( p < m_children.last() )
 			return p[1].pWidget;		

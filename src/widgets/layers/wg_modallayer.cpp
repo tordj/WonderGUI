@@ -546,14 +546,14 @@ namespace wg
 
 	//____ _beginLayerSlots() __________________________________________________
 	
-	LayerSlot * ModalLayer::_beginLayerSlots() const
+	const LayerSlot * ModalLayer::_beginLayerSlots() const
 	{
 		return m_modals.begin();
 	}
 
 	//____ _endLayerSlots() ____________________________________________________
 
-	LayerSlot *  ModalLayer::_endLayerSlots() const
+	const LayerSlot *  ModalLayer::_endLayerSlots() const
 	{
 		return m_modals.end();
 	}

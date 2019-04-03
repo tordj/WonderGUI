@@ -270,9 +270,9 @@ namespace wg
 			{
 				case BUTTON_CENTERED:
 				{
-					Rect dest = (	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
+                    Rect dest = {	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
 									_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
-									pAnimFrame->rect.size() );
+                                    pAnimFrame->rect.size() };
 	
 					pDevice->setBlitSource(pAnimFrame->pSurf);
 					pDevice->stretchBlit( dest, pAnimFrame->rect );

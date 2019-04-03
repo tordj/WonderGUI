@@ -72,7 +72,7 @@ namespace wg
 
 		auto pBeg = beg._slot();
 		auto pEnd = end._slot();
-		m_pHolder->_repadSlots(pBeg, pEnd-pBeg, padding);
+		m_pHolder->_repadSlots(pBeg, int(pEnd-pBeg), padding);
 		return true;
 	}
 
@@ -92,7 +92,7 @@ namespace wg
 
 		auto pBeg = beg._slot();
 		auto pEnd = end._slot();
-		m_pHolder->_repadSlots(pBeg, pEnd - pBeg, padding.begin());
+		m_pHolder->_repadSlots(pBeg, int(pEnd - pBeg), padding.begin());
 		return true;
 	}
 

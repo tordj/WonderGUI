@@ -117,10 +117,7 @@ namespace wg
 	
 	void Canvas::_cloneContent( const Widget * _pOrg )
 	{
-		Widget::_cloneContent( _pOrg );
-
-		Canvas * pOrg = (Canvas*) _pOrg;
-	
+		Widget::_cloneContent( _pOrg );	
 	}
 
 	//____ _setSize() _________________________________________________________

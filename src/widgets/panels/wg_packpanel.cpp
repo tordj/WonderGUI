@@ -457,9 +457,9 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * PackPanel::_prevChild(Slot * _pSlot) const
+	Widget * PackPanel::_prevChild(const Slot * _pSlot) const
 	{
-		PackPanelSlot * pSlot = static_cast<PackPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackPanelSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -469,9 +469,9 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * PackPanel::_nextChild(Slot * _pSlot) const
+	Widget * PackPanel::_nextChild(const Slot * _pSlot) const
 	{
-		PackPanelSlot * pSlot = reinterpret_cast<PackPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackPanelSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;
@@ -811,7 +811,7 @@ namespace wg
 			}			
 		}
 		
-		return pI - pArray;
+		return int(pI - pArray);
 	}
 	
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
@@ -847,7 +847,7 @@ namespace wg
 			}			
 		}
 		
-		return pI - pArray;
+		return int(pI - pArray);
 	}
 
 } // namespace wg

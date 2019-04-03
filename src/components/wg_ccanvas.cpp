@@ -66,8 +66,6 @@ namespace wg
 		if (sz.w == 0 && sz.h == 0)
 			sz = _size();
 
-		bool bSurfaceLost = m_pSurface;
-
 		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
 		m_pSurface->fill(m_backColor);

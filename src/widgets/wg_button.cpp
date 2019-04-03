@@ -330,26 +330,6 @@ namespace wg
 	
 		return Widget::_alphaTest(ofs);
 	}
-	
-	//____ _renderRequested() _________________________________________________________
-	
-	void Button::_renderRequested( Component * pComponent )
-	{
-		_requestRender();		//TODO: Only requestRender on component
-	}
-
-	void Button::_renderRequested( Component * pComponent, const Rect& rect )
-	{
-		_requestRender();		//TODO: Only requestRender on rect of component.
-	}
-	
-	//____ _resizeRequested() ________________________________________________________
-	
-	void Button::_resizeRequested( Component * pComponent )
-	{
-		_requestResize();
-		_requestRender();
-	}
 
 	//____ _componentPos() ______________________________________________________________
 

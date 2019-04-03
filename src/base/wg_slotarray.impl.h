@@ -60,7 +60,7 @@ namespace wg
 			}
 			else
 			{
-				for (int i = pFrom - pTo; i > 0; i--)
+				for (int i = int(pFrom - pTo); i > 0; i--)
 					pTo[i] = std::move(pTo[i - 1]);
 			}
 			*pTo = std::move(temp);
@@ -132,7 +132,7 @@ namespace wg
 	template < class SlotType>
 	SlotType* SlotArray<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
-		int blocksToMove = end() - pEnd;
+		int blocksToMove = int(end() - pEnd);
 		if (SlotType::safe_to_relocate)
 		{
 			_killBlock(pBeg, pEnd);

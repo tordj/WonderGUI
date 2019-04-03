@@ -52,8 +52,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const;
-		const char *			className(void) const;
+		bool					isInstanceOf(const char * pClassName) const override;
+		const char *			className(void) const override;
 		static const char		CLASSNAME[];
 		static PopupOpener_p	cast(Object * pObject);
 
@@ -70,32 +70,28 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		virtual int		matchingHeight(int width) const;
-		//	virtual int		matchingWidth( int height ) const;
+		virtual int		matchingHeight(int width) const override;
+		//	virtual int		matchingWidth( int height ) const override;
 
-		Size			preferredSize() const;
+		Size			preferredSize() const override;
 
 
 	protected:
 		PopupOpener();
 		virtual ~PopupOpener();
-		virtual Widget* _newOfMyType() const { return new PopupOpener(); };
+		virtual Widget* _newOfMyType() const override { return new PopupOpener(); };
 
-		void			_cloneContent(const Widget * _pOrg);
-		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
-		void			_setSize(const Size& size);
-		void			_refresh();
-		void			_receive(Msg * pMsg);
-		void			_setState(State state);
-		void			_setSkin(Skin * pSkin);
+		void			_cloneContent(const Widget * _pOrg) override;
+		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void			_setSize(const Size& size) override;
+		void			_refresh() override;
+		void			_receive(Msg * pMsg) override;
+		void			_setState(State state) override;
+		void			_setSkin(Skin * pSkin) override;
 
 
 		void			_open();
 		void			_close();
-
-		void			_renderRequested(Component * pComponent);
-		void			_renderRequested(Component * pComponent, const Rect& rect);
-		void 			_resizeRequested(Component * pComponent);
 
 		Coord			_componentPos(const Component * pComponent) const override;
 		Size			_componentSize(const Component * pComponent) const override;

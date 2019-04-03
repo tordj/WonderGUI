@@ -154,8 +154,8 @@ namespace wg
 		void			_childRequestInView( Slot * pSlot );
 		void			_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea );
 
-		Widget *		_prevChild( Slot * pSlot ) const;
-		Widget *		_nextChild( Slot * pSlot ) const;
+		Widget *		_prevChild( const Slot * pSlot ) const;
+		Widget *		_nextChild( const Slot * pSlot ) const;
 	
 		// ChildHolder methods
 

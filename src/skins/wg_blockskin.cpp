@@ -68,7 +68,7 @@ namespace wg
 			return nullptr;
 
 		Size surfSize = pSurface->size();
-		int nBlocks = stateBlocks.size();
+		int nBlocks = (int) stateBlocks.size();
 		Rect blockArea = firstBlock;
 		if (orientation == Orientation::Horizontal)
 			blockArea.w += (nBlocks-1) * (firstBlock.w + spacing);

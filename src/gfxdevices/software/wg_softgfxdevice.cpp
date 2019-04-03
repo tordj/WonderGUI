@@ -2809,7 +2809,6 @@ namespace wg
 			pos.y -= 0.5f;
 		}
 
-		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		uint8_t * pDst = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * dstPixelBytes;
@@ -2833,7 +2832,6 @@ namespace wg
 		}
 
 
-		int srcPixelBytes = pSource->m_pixelDescription.bits / 8;
 		int dstPixelBytes = m_canvasPixelBits / 8;
 
 		Pitches pitchesPass2;

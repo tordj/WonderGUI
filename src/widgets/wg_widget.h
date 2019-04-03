@@ -64,40 +64,40 @@ namespace wg
 	
 	class Widget : public Receiver, protected ComponentHolder
 	{
-	friend class MsgRouter;
-	friend class InputHandler;
-	
-	friend class RootPanel;
-	friend class FlexPanel;
-	friend class ModalLayer;
-	friend class ScrollPanel;
-	friend class List;
-	friend class PackList;
-	friend class Capsule;
-	friend class Layer;
-	friend class StackPanel;
-	friend class Container;
-	friend class Panel;
-	friend class PackPanel;
-	friend class IStackPanelChildren;
-	friend class ShaderCapsule;
-	friend class PopupLayer;
-	friend class ViewSlot;
-	friend class LambdaPanel;
-	friend class SplitPanel;
-		
-	friend class Component;
-	friend class Slot;
-	template<class S, class H> friend class IChildren;
-
-
+        friend class MsgRouter;
+        friend class InputHandler;
+        
+        friend class RootPanel;
+        friend class FlexPanel;
+        friend class ModalLayer;
+        friend class ScrollPanel;
+        friend class List;
+        friend class PackList;
+        friend class Capsule;
+        friend class Layer;
+        friend class StackPanel;
+        friend class Container;
+        friend class Panel;
+        friend class PackPanel;
+        friend class IStackPanelChildren;
+        friend class ShaderCapsule;
+        friend class PopupLayer;
+        friend class ViewSlot;
+        friend class LambdaPanel;
+        friend class SplitPanel;
+        friend class DragNDropLayer;
+        
+        friend class Component;
+        friend class Slot;
+        
+        template<class S, class H> friend class IChildren;
 
 	public:
 	
 		//.____ Identification _________________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Widget_p		cast( Object * pObject );
 	
@@ -171,7 +171,7 @@ namespace wg
 		//.____ Misc _________________________________________________________________
 
 		virtual bool		markTest( const Coord& ofs );
-		void 				receive( Msg * pMsg );
+		void 				receive( Msg * pMsg ) override;
 
 		inline void			refresh();
 	
@@ -231,8 +231,8 @@ namespace wg
 
 		// Methods for components to access
 
-		virtual Object * _object();
-		virtual const Object * _object() const;
+		virtual Object * _object() override;
+		virtual const Object * _object() const override;
 
 		virtual Coord	_componentPos( const Component * pComponent ) const override;
 		virtual Size	_componentSize( const Component * pComponent ) const override;

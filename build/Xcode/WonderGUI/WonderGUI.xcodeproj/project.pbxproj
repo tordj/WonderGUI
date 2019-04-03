@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		0C6239961D81615000DE671D /* wg_userdefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239951D81615000DE671D /* wg_userdefines.h */; };
 		0C6239981D81616400DE671D /* wondergui.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239971D81616400DE671D /* wondergui.h */; };
+		179ECD442253837500A932B2 /* wg_dragndroplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 179ECD432253837500A932B2 /* wg_dragndroplayer.h */; };
+		179ECD462253890500A932B2 /* wg_dragndroplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179ECD452253890500A932B2 /* wg_dragndroplayer.cpp */; };
 		17F41A10225353E3008D1DE7 /* wg_childiterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F419A5225353D9008D1DE7 /* wg_childiterator.h */; };
 		17F41A11225353E3008D1DE7 /* wg_gfxstreamwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F419A6225353D9008D1DE7 /* wg_gfxstreamwriter.h */; };
 		17F41A12225353E3008D1DE7 /* wg_receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F419A7225353D9008D1DE7 /* wg_receiver.cpp */; };
@@ -278,6 +280,8 @@
 		0C62382D1D815B1400DE671D /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C6239951D81615000DE671D /* wg_userdefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_userdefines.h; path = ../../../src/wg_userdefines.h; sourceTree = "<group>"; };
 		0C6239971D81616400DE671D /* wondergui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wondergui.h; path = ../../../src/wondergui.h; sourceTree = "<group>"; };
+		179ECD432253837500A932B2 /* wg_dragndroplayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wg_dragndroplayer.h; sourceTree = "<group>"; };
+		179ECD452253890500A932B2 /* wg_dragndroplayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wg_dragndroplayer.cpp; sourceTree = "<group>"; };
 		17F419A5225353D9008D1DE7 /* wg_childiterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_childiterator.h; path = ../../../../src/base/wg_childiterator.h; sourceTree = "<group>"; };
 		17F419A6225353D9008D1DE7 /* wg_gfxstreamwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_gfxstreamwriter.h; path = ../../../../src/base/wg_gfxstreamwriter.h; sourceTree = "<group>"; };
 		17F419A7225353D9008D1DE7 /* wg_receiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_receiver.cpp; path = ../../../../src/base/wg_receiver.cpp; sourceTree = "<group>"; };
@@ -913,6 +917,8 @@
 				17F41B89225354EC008D1DE7 /* wg_modallayer.h */,
 				17F41B87225354EC008D1DE7 /* wg_popuplayer.cpp */,
 				17F41B8A225354EC008D1DE7 /* wg_popuplayer.h */,
+				179ECD432253837500A932B2 /* wg_dragndroplayer.h */,
+				179ECD452253890500A932B2 /* wg_dragndroplayer.cpp */,
 			);
 			path = Layers;
 			sourceTree = "<group>";
@@ -968,6 +974,7 @@
 				17F41A16225353E3008D1DE7 /* wg_slotarray.h in Headers */,
 				17F41AE122535411008D1DE7 /* wg_itexteditor.h in Headers */,
 				17F41BB22253551B008D1DE7 /* wg_packpanel.h in Headers */,
+				179ECD442253837500A932B2 /* wg_dragndroplayer.h in Headers */,
 				17F41B9A22535502008D1DE7 /* wg_packlist.h in Headers */,
 				17F41A73225353E3008D1DE7 /* wg_componentholder.h in Headers */,
 				17F41A22225353E3008D1DE7 /* wg_gfxinstream.h in Headers */,
@@ -1118,7 +1125,7 @@
 		0C6238251D815B1400DE671D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0730;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Lushcode;
 				TargetAttributes = {
 					0C62382C1D815B1400DE671D = {
@@ -1248,6 +1255,7 @@
 				17F41B232253545D008D1DE7 /* wg_timeformatter.cpp in Sources */,
 				17F41AA5225353FA008D1DE7 /* wg_ctexteditor.cpp in Sources */,
 				17F41B6322535477008D1DE7 /* wg_simplevolumemeter.cpp in Sources */,
+				179ECD462253890500A932B2 /* wg_dragndroplayer.cpp in Sources */,
 				17F41B222253545D008D1DE7 /* wg_standardformatter.cpp in Sources */,
 				17F41A24225353E3008D1DE7 /* wg_gfxstreamreader.cpp in Sources */,
 				17F41BB72253551B008D1DE7 /* wg_stackpanel.cpp in Sources */,
@@ -1276,13 +1284,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -1320,13 +1338,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";

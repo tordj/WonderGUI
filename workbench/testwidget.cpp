@@ -105,7 +105,6 @@ namespace wg
 
 	void TestWidget::_cloneContent( const Widget * _pOrg )
 	{
-		TestWidget * pOrg = (TestWidget*) _pOrg;
 	}
 
 	//____ _render() _____________________________________________________________

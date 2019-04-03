@@ -895,7 +895,6 @@ namespace wg
 	
 	ListSlot * PackList::_findEntry( const Coord& ofs )
 	{
-		Widget * pResult = 0;
 		Rect list = _listArea();
 	
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
@@ -1287,9 +1286,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * PackList::_prevChild( Slot * _pSlot ) const
+	Widget * PackList::_prevChild( const Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -1299,9 +1298,9 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * PackList::_nextChild( Slot * _pSlot ) const
+	Widget * PackList::_nextChild( const Slot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

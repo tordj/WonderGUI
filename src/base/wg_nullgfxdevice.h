@@ -47,19 +47,19 @@ namespace wg
 	
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static NullGfxDevice_p	cast( Object * pObject );
-		const char *			surfaceClassName( void ) const;
+		const char *			surfaceClassName( void ) const override;
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory();
+		SurfaceFactory_p		surfaceFactory() override;
 
 		//.____ Geometry _________________________________________________
 
-		bool		setCanvas(Surface * pCanvas);
+		bool		setCanvas(Surface * pCanvas) override;
 
 		//.____ Rendering ________________________________________________
 

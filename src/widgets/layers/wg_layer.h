@@ -103,8 +103,8 @@ namespace wg
 		void		_childRequestRender( Slot * pSlot, const Rect& rect );
 //		void		_childRequestResize( Slot * pSlot );
 
-		Widget *	_prevChild( Slot * pSlot ) const;
-		Widget *	_nextChild( Slot * pSlot ) const;
+		Widget *	_prevChild( const Slot * pSlot ) const;
+		Widget *	_nextChild( const Slot * pSlot ) const;
 
 
 		// Overloaded from Container
@@ -130,10 +130,13 @@ namespace wg
 
 		virtual	void	_onRequestRender( const Rect& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
 
-		virtual LayerSlot * _beginLayerSlots() const = 0;
-		virtual LayerSlot * _endLayerSlots() const = 0;
+		virtual const LayerSlot * _beginLayerSlots() const = 0;
+		virtual const LayerSlot * _endLayerSlots() const = 0;
 		virtual int			_sizeOfLayerSlot() const = 0;
 		
+        inline LayerSlot * _beginLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
+        inline LayerSlot * _endLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
+
 		inline LayerSlot * _incLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)+sizeOf); }
 		inline const LayerSlot * _incLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)+sizeOf); }
 

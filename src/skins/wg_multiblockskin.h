@@ -86,7 +86,7 @@ namespace wg
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
 	
-		bool	isStateIdentical( State state, State comparedTo ) const;
+		bool	isStateIdentical( State state, State comparedTo ) const override;
 
 	private:
 

@@ -224,8 +224,8 @@ namespace wg
 		void		_childRequestRender(Slot * pSlot, const Rect& rect) override;
 		void		_childRequestResize(Slot * pSlot) override;
 
-		Widget *	_prevChild(Slot * pSlot) const override;
-		Widget *	_nextChild(Slot * pSlot) const override;
+		Widget *	_prevChild(const Slot * pSlot) const override;
+		Widget *	_nextChild(const Slot * pSlot) const override;
 
 
 		// Overloaded from ComponentHolder

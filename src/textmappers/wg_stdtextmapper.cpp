@@ -573,8 +573,6 @@ namespace wg
 
 		Color		color = Color::Transparent;
 
-		bool bInSelection = false;
-
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{
 			if( pChar->styleHandle() != hStyle )
@@ -588,7 +586,7 @@ namespace wg
 				if( newColor != color )
 				{
 					if( color.a != 0 )
-						_renderBackSection( pText, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
+						_renderBackSection( pText, pDevice, canvas, int(pBeg - pCharArray), int(pChar - pCharArray), color );
 					color = newColor;
 					pBeg = pChar;
 				}
@@ -598,7 +596,7 @@ namespace wg
 		}
 		
 		if( color.a != 0 )
-			_renderBackSection( pText, pDevice, canvas, pBeg - pCharArray, pChar - pCharArray, color );
+			_renderBackSection( pText, pDevice, canvas, int(pBeg - pCharArray), int(pChar - pCharArray), color );
 	}
 
 	//____ _renderBackSection() ________________________________________________
@@ -768,7 +766,8 @@ namespace wg
 
 	void StdTextMapper::onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
-		State state = _state(pText);
+        //TODO: Optimize: only update line info if textsize possibly affected.
+        
 		void * pBlock = _dataBlock(pText);
 		
 		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
@@ -780,7 +779,6 @@ namespace wg
 
 	void StdTextMapper::onCharStyleChanged( CText * pText, int ofs, int len )
 	{
-		State state = _state(pText);
 		void * pBlock = _dataBlock(pText);
 		
 		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
@@ -1471,7 +1469,7 @@ namespace wg
 		int bpMaxDescendGap = 0;							// Including the line gap.
 
 
-		pLines->offset = pChars - pBuffer->chars();
+		pLines->offset = int(pChars - pBuffer->chars());
 
 		while (true)
 		{
@@ -1551,7 +1549,7 @@ namespace wg
 
 				// Finish this line
 
-				pLines->length = pChars - (pBuffer->chars() + pLines->offset) + 1; 		// +1 to include line terminator.
+				pLines->length = int(pChars - (pBuffer->chars() + pLines->offset)) + 1; 		// +1 to include line terminator.
 
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
@@ -1573,7 +1571,7 @@ namespace wg
 
 				pChars++;			// Line terminator belongs to previous line.
 
-				pLines->offset = pChars - pBuffer->chars();
+				pLines->offset = int(pChars - pBuffer->chars());
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
@@ -1602,7 +1600,7 @@ namespace wg
 
 					// Finish this line
 
-					pLines->length = pBreakpoint - (pBuffer->chars() + pLines->offset);
+					pLines->length = int(pBreakpoint - (pBuffer->chars() + pLines->offset));
 
 					pLines->width = bpWidth;
 					pLines->height = bpMaxAscend + bpMaxDescend;
@@ -1621,7 +1619,7 @@ namespace wg
 
 					pChars = pBreakpoint;
 
-					pLines->offset = pChars - pBuffer->chars();
+					pLines->offset = int(pChars - pBuffer->chars());
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
@@ -1690,7 +1688,7 @@ namespace wg
 		int spaceAdv = 0;
 		int width = 0;
 		
-		pLines->offset = pChars - pBuffer->chars();
+		pLines->offset = int(pChars - pBuffer->chars());
 
 		while( true )
 		{
@@ -1762,7 +1760,7 @@ namespace wg
 
 				// Finish this line
 				
-				pLines->length = pChars - (pBuffer->chars() + pLines->offset) +1; 		// +1 to include line terminator.
+				pLines->length = int(pChars - (pBuffer->chars() + pLines->offset)) +1; 		// +1 to include line terminator.
 					
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
@@ -1786,7 +1784,7 @@ namespace wg
 
 				pChars++;			// Line terminator belongs to previous line.
 
-				pLines->offset = pChars - pBuffer->chars();
+				pLines->offset = int(pChars - pBuffer->chars());
 				width = 0;
 				pPrevGlyph = nullptr;
 
@@ -2054,22 +2052,22 @@ namespace wg
 					case SelectMode::ClosestBegin:
 					{
 						if( posX - pCharBeg < distance - posX )
-							return pChar - pTextBegin;
+							return int(pChar - pTextBegin);
 						else
-							return pChar+1 - pTextBegin;
+							return int(pChar+1 - pTextBegin);
 					}
 					case SelectMode::ClosestEnd:
 					{
 						if( posX - pCharBeg < distance - posX )
-							return pChar == pTextBegin ? 0 : pChar-1 - pTextBegin;
+							return pChar == pTextBegin ? 0 : int(pChar-1 - pTextBegin);
 						else
-							return pChar - pTextBegin;
+							return int(pChar - pTextBegin);
 					}
 					break;
 					case SelectMode::Closest:
 					case SelectMode::Marked:
 					{
-						return pChar - pTextBegin;
+						return int(pChar - pTextBegin);
 					}
 				}
 			}

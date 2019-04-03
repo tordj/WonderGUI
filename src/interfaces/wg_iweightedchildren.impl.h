@@ -78,7 +78,7 @@ namespace wg
 
 		auto pBeg = beg._slot();
 		auto pEnd = beg._slot();
-		m_pHolder->_reweightSlots(pBeg, pEnd - pBeg, weight);
+		m_pHolder->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
 		return true;
 	}
 
@@ -100,7 +100,7 @@ namespace wg
 
 		auto pBeg = beg._slot();
 		auto pEnd = beg._slot();
-		m_pHolder->_reweightSlots(pBeg, pEnd - pBeg, weights.begin());
+		m_pHolder->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
 		return true;
 	}
 

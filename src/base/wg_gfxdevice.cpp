@@ -438,7 +438,7 @@ namespace wg
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, { src.x,src.y }, mtx);
+		transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -825,8 +825,8 @@ namespace wg
 				int xEnd = (centerOfs + radiusX[edge]) >> 8;				// Last pixel-edge inside curve.
 
 
-				int curveInc = (int)(((int64_t)65536) * 256 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
-				int curvePos = (((radiusX[edge] - centerOfs) & 0xFF) * ((int64_t)curveInc)) >> 8;
+				int curveInc = int(((int64_t)65536) * 256 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+				int curvePos = int((((radiusX[edge] - centerOfs) & 0xFF) * ((int64_t)curveInc)) >> 8);
 
 				if (clipLeft > 0)
 				{

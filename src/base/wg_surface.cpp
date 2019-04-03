@@ -167,6 +167,7 @@ namespace wg
 
 		if (m_pixelDescription.bIndexed )
 		{
+            pix = 0;                                                    // Just to avoid compiler warning.
             int closestValue = std::numeric_limits<int>::max();
 			for (int i = 0; i < 255; i++)
 			{

@@ -194,8 +194,6 @@ namespace wg
 	
 	void LineEditor::_receive( Msg * pMsg )
 	{
-		MsgType type = pMsg->type();
-
 		Widget::_receive( pMsg );
 		m_text.receive( pMsg );	
 	}
@@ -227,8 +225,6 @@ namespace wg
 	{
 		Widget::_setSize( size );
 		
-		int width = size.w;
-	
 		if( m_pSkin )
 			m_text.setSize( Size(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
 		else
@@ -286,9 +282,6 @@ namespace wg
 
 	void LineEditor::_componentRequestRender( const Component * pComponent, const Rect& rect )
 	{
-		if (rect.w > 1)
-			int x = 0;
-
 		Rect dirt = rect;
 		dirt.x -= m_textScrollOfs;
 		

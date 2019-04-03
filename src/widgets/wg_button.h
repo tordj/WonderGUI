@@ -57,8 +57,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Button_p	cast( Object * pObject );
 		
@@ -69,29 +69,25 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 		
-		virtual int		matchingHeight( int width ) const;
-	//	virtual int		matchingWidth( int height ) const;
+		virtual int		matchingHeight( int width ) const override;
+	//	virtual int		matchingWidth( int height ) const override;
 	
-		Size			preferredSize() const;	
+		Size			preferredSize() const override;
 	
 	protected:
 		Button();
 		virtual ~Button();
-		virtual Widget* _newOfMyType() const { return new Button(); };
+		virtual Widget* _newOfMyType() const override { return new Button(); };
 	
-		virtual void	_receive( Msg * pMsg );
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
-		void			_refresh();
-		virtual void	_cloneContent( const Widget * _pOrg );
-		bool			_alphaTest( const Coord& ofs );
-		virtual void	_setSize( const Size& size );
-		void			_setState( State state );
+		virtual void	_receive( Msg * pMsg ) override;
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void			_refresh() override;
+		virtual void	_cloneContent( const Widget * _pOrg ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
+		virtual void	_setSize( const Size& size ) override;
+		void			_setState( State state ) override;
 	
-	
-		void			_renderRequested( Component * pComponent );
-		void			_renderRequested( Component * pComponent, const Rect& rect );
-		void 			_resizeRequested( Component * pComponent );
-	
+		
 		Coord			_componentPos( const Component * pComponent ) const override;
 		Size			_componentSize( const Component * pComponent ) const override;
 		Rect			_componentGeo( const Component * pComponent ) const override;

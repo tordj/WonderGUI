@@ -1361,7 +1361,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * ScrollPanel::_prevChild( Slot * pSlot ) const
+	Widget * ScrollPanel::_prevChild( const Slot * pSlot ) const
 	{
 		if( pSlot == &m_scrollbarSlots[1] )
 			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_viewSlot.pWidget;
@@ -1374,7 +1374,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * ScrollPanel::_nextChild( Slot * pSlot ) const
+	Widget * ScrollPanel::_nextChild( const Slot * pSlot ) const
 	{
 		if (pSlot == &m_viewSlot)
 			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_scrollbarSlots[1].pWidget;

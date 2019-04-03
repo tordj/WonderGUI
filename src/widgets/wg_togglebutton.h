@@ -81,8 +81,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static ToggleButton_p	cast( Object * pObject );
 	
@@ -101,7 +101,7 @@ namespace wg
 	
 		//.____ Geometry ____________________________________________
 
-		Size				preferredSize() const;
+		Size				preferredSize() const override;
 	
 		//.____ Misc _________________________________________________________________
 
@@ -110,16 +110,16 @@ namespace wg
 	protected:
 		ToggleButton();
 		virtual ~ToggleButton();
-		virtual Widget* _newOfMyType() const { return new ToggleButton(); };
+		virtual Widget* _newOfMyType() const override { return new ToggleButton(); };
 	
-		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		void	_receive( Msg * pMsg );
-		void	_refresh();
-		void	_setSize( const Size& size );
-		bool	_alphaTest( const Coord& ofs );
-		void	_setState( State state );
-		void	_setSkin( Skin * pSkin );
+		void	_cloneContent( const Widget * _pOrg ) override;
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void	_receive( Msg * pMsg ) override;
+		void	_refresh() override;
+		void	_setSize( const Size& size ) override;
+		bool	_alphaTest( const Coord& ofs ) override;
+		void	_setState( State state ) override;
+		void	_setSkin( Skin * pSkin ) override;
 			
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }

@@ -72,7 +72,7 @@ namespace wg
 		SlotType*	prev( const SlotType* pSlot ) const { if( pSlot > m_pArray ) return const_cast<SlotType*>(pSlot)-1; return 0; }
 		SlotType*	next( const SlotType* pSlot ) const { if( pSlot < &m_pArray[m_size-1] ) return const_cast<SlotType*>(pSlot)+1; return 0; }
 	
-		int			index( const SlotType* pSlot ) const { return pSlot - m_pArray; }
+		int			index( const SlotType* pSlot ) const { return int(pSlot - m_pArray); }
 		int			isInArray( const SlotType* pSlot ) const { if( pSlot >= m_pArray && pSlot < &m_pArray[m_size] ) return true; return false; }
 
 		SlotType *	find(const Widget* pWidget) const;

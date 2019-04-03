@@ -206,7 +206,7 @@ namespace wg
 	
 	int ToggleGroup::size() const
 	{
-		return m_entries.size();
+		return (int) m_entries.size();
 	}
 	
 	//____ selected() ______________________________________________________________

@@ -1857,9 +1857,6 @@ namespace wg
 
 	GLuint GlGfxDevice::_createGLProgram(const char * pVertexShader, const char * pFragmentShader)
 	{
-		char log[1024];
-		GLsizei logLen;
-
 		GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 

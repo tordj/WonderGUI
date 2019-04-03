@@ -366,74 +366,8 @@ int main ( int argc, char** argv )
 		pText->text.caretLineEnd();
 	}
 */
-/*
-	{
-		VolumeMeter_p p = VolumeMeter::create();
-		
-		p->setSkin( pPressablePlateSkin );
-		
-		addResizablePanel( pFlexPanel, p, Base::msgRouter() );
-	}
-*/
 
 
-/*
-	SizeCapsule_p pCapsule = SizeCapsule::create();
-	pCapsule->setMaxSize( Size(100,1000));
-	pFlexPanel->addWidget( pCapsule );
-
-	StackPanel_p pStack = StackPanel::create();
-	pCapsule->setWidget( pStack );
-
-
-	TextDisplay_p pText = TextDisplay::create();
-	pText->text()->set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
-	pStack->addWidget(pText);
-*/
-	
-/*
-	CheckBoxPtr pCheckbox = CheckBox::create();
-	pCheckbox->Label()->set( "CHECKBOX" );
-	pCheckbox->Icon()->set( pCheckboxSkin );
-*/
-
-/*
-	ToggleGroup_p pGroup = ToggleGroup::create();
-	
-
-	for( int i = 0 ; i < 4 ; i++ )
-	{
-		ToggleButton_p pCheckbox = ToggleButton::create();
-		pCheckbox->label.set( "CHECKBOX" );
-		pCheckbox->setSkin( pStateButtonSkin );
-		pFlexPanel->addWidget( pCheckbox, Coord(10,20*i) );
-		pGroup->add( pCheckbox );
-	}
-*/
-
-/*
-	TextDisplay_p pText = TextDisplay::create();
-	pText->text.set( "THIS IS THE TEXT\nLINE TWO.\nAN EXTRA LONG LONG LONG LINE TO TEST THE CLIPPING AND RAND BEHAVIOURS." );
-	pFlexPanel->addWidget( pText, WG_NORTHWEST, WG_EAST );
-	
-
-	StandardPrinter_p pPrinter = StandardPrinter::create();
-	pPrinter->setAlignment( WG_CENTER );
-	pText->text.setPrinter( pPrinter );
-
-
-	ValueDisplay_p pValue = ValueDisplay::create();
-	pValue->value.setFormatter( TimeFormatter::create("%2H:%2M:%2S"));
-	pValue->value.set(3600+60+12);
-	pValue->value.setPrinter( pPrinter );
-	pFlexPanel->addWidget( pValue, WG_WEST, WG_SOUTHEAST );
-*/
-
-/*
-	FpsDisplay_p pFps = FpsDisplay::create();
-	pFps->setSkin( pPressablePlateSkin );
-	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
-*/	
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -460,24 +394,6 @@ int main ( int argc, char** argv )
 	glClear( GL_COLOR_BUFFER_BIT );
 	glFlush();
 
-	int		topWave[2001];
-	int		bottomWave[2001];
-
-	WaveLine	topLine, bottomLine;
-
-	topLine.color = { 255,0,0,128 };
-	topLine.thickness = 10.f;
-	topLine.pWave = topWave;
-	topLine.length = 2001;
-
-	bottomLine.color = Color::White;
-	bottomLine.thickness = 5.2f;
-	bottomLine.pWave = bottomWave;
-	bottomLine.length = 2001;
-
-
-
-
 	auto pMyCanvas = GlSurface::create({ 400,400 }, PixelFormat::BGR_8);
 //	pMyCanvas->setScaleMode(ScaleMode::Interpolate);
 	pMyCanvas->setScaleMode(ScaleMode::Nearest);
@@ -485,12 +401,6 @@ int main ( int argc, char** argv )
 
 	while( !bQuit ) 
 	{
-		for (int i = 0; i < 2001; i++)
-		{
-			topWave[i] = (int)(((sin((i + tick) / 10.0) * 60) * 256)+ ((sin((i + tick/3) / 20.0) * 80) * 256));
-			bottomWave[i] = (int)(((400 - i/4 + sin((i - tick/2) / 20.0) * 6) * 256) + ((sin(i*2 / 20.0) * 34) * 256) + ((sin(tick / 18.0 + i/200.0) * 100) * 256));
-		}
-
 
 		translateEvents( pInput, pRoot );
 
@@ -723,12 +633,12 @@ Blob_p loadBlob( const char * pPath )
 		return 0;
 
 	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
+	size_t size = ftell(fp);
 	fseek( fp, 0, SEEK_SET );
 
-	Blob_p pBlob = Blob::create( size );
+	Blob_p pBlob = Blob::create( int(size) );
 		
-	int nRead = fread( pBlob->data(), 1, size, fp );
+    size_t nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )
@@ -748,12 +658,12 @@ void * loadFile( const char * pPath )
 		return 0;
 
 	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
+	size_t size = ftell(fp);
 	fseek( fp, 0, SEEK_SET );
 
 	char * pMem = (char*) malloc( size+1 );
 	pMem[size] = 0;
-	int nRead = fread( pMem, 1, size, fp );
+	size_t nRead = fread( pMem, 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )
@@ -854,7 +764,7 @@ void cbMoveResize( const Msg * _pMsg )
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	auto it = pParent->children.add(pChild);
+	pParent->children.add(pChild);
 
 //	pHook->setSizePolicy(SizePolicy::Bound, SizePolicy::Bound);
 

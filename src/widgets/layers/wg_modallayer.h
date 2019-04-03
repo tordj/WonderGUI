@@ -178,8 +178,8 @@ namespace wg
 
 		// Overloaded from Layer
 	
-		LayerSlot * 	_beginLayerSlots() const;
-		LayerSlot * 	_endLayerSlots() const;
+		const LayerSlot * 	_beginLayerSlots() const;
+		const LayerSlot * 	_endLayerSlots() const;
 		int				_sizeOfLayerSlot() const;
 	
 		// Overloaded from Widget

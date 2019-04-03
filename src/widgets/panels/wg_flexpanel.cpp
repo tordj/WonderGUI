@@ -967,9 +967,9 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * FlexPanel::_prevChild( Slot * _pSlot ) const
+	Widget * FlexPanel::_prevChild( const Slot * _pSlot ) const
 	{
-		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const FlexPanelSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -979,9 +979,9 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * FlexPanel::_nextChild( Slot * _pSlot ) const
+	Widget * FlexPanel::_nextChild( const Slot * _pSlot ) const
 	{
-		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const FlexPanelSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;

@@ -44,21 +44,21 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
+		bool						isInstanceOf( const char * pClassName ) const override;
+		const char *				className( void ) const override;
 		static const char			CLASSNAME[];
 		static GlSurfaceFactory_p	cast( Object * pObject );
 
 		//.____ Geometry _________________________________________________
 
-		Size		maxSize() const;
+		Size		maxSize() const override;
 
 		//.____ Misc _______________________________________________________
 
 		Surface_p	createSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
         Surface_p	createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
         Surface_p	createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
-        Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const;
+        Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
 	};
 }
 

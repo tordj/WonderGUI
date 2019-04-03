@@ -381,7 +381,7 @@ namespace wg
 	{
 		for( size_t i = 0 ; i < list.size() ; i++ )
 			if( list[i].rawPtr() == pWidget )
-				return i;
+				return (int) i;
 	
 		return -1;
 	}

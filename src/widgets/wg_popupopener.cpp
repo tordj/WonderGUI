@@ -201,6 +201,9 @@ namespace wg
 				break;
 			}
 */
+                
+            default:
+                break;
 		}
 
 		if (pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left)
@@ -295,26 +298,6 @@ namespace wg
 		{
 			pLayer->popups.pop(m_pPopup.rawPtr());
 		}
-	}
-
-	//____ _renderRequested() _________________________________________________________
-
-	void PopupOpener::_renderRequested(Component * pComponent)
-	{
-		_requestRender();		//TODO: Only requestRender on component
-	}
-
-	void PopupOpener::_renderRequested(Component * pComponent, const Rect& rect)
-	{
-		_requestRender();		//TODO: Only requestRender on rect of component.
-	}
-
-	//____ _resizeRequested() ________________________________________________________
-
-	void PopupOpener::_resizeRequested(Component * pComponent)
-	{
-		_requestResize();
-		_requestRender();
 	}
 
 	//____ _componentPos() ______________________________________________________________

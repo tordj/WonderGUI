@@ -144,7 +144,7 @@ namespace wg
 			int hovered = int(StateEnum::Hovered);
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
 
-			if (state & hoverDependant != 0 ) 
+			if ((state & hoverDependant) != 0 )
 				state &= ~hovered;				// Don't remove hovered just because we remove a state dependant on it.
 			int s = (m_state & ~state); 
 			if ((s & hovered) == 0) 
@@ -159,7 +159,7 @@ namespace wg
 			int hovered = int(StateEnum::Hovered);
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
 
-			if (state & hoverDependant != 0)
+			if ((state & hoverDependant) != 0)
 				state &= ~hovered;				// Don't remove hovered just because we remove a state dependant on it.
 			m_state &= ~state;
 			if ((m_state & hovered) == 0)
