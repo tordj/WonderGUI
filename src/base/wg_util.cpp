@@ -490,14 +490,14 @@ double Util::powerOfTen(int num){
 	}
 
 	//____ fallbackState() ________________________________________________________
-
+/*
 	StateEnum Util::fallbackState(StateEnum state, int pass)
 	{
 		static int mask[12] = { 0x1E, 0xE, 0xD, 0xC, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x1, 0x0 };
 
 		return StateEnum((StateEnum)((int)state & mask[pass]));
 	}
-
+*/
 
 
 	//____ bestStateIndexMatch() ___________________________________________________
@@ -516,8 +516,12 @@ double Util::powerOfTen(int num){
 											256 + 128 + 64 + 32 + 4 + 2 + 1,
 											512 + 128 + 32 + 8 + 2,
 											1024 + 512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1,
-											2048,
-											4096 + 2048 + 32
+											2048 + 2,
+											4096 + 2048 + 4 + 2 + 1,
+											8192 + 2048 + 128 + 32 + 2,
+											16384 + 8192 + 4096 + 2048 + 256 + 128 + 64 + 32 + 4 + 2 + 1,
+											32768,
+											65536 + 32768 + 32
 										};
 
 		int candidates = uint32_t(availableStateIndices) & mask[wantedStateIndex];

@@ -91,12 +91,16 @@ namespace wg
 		SelectedHoveredFocused	= 8+4+1,
 		SelectedPressed			= 8+4+2,
 		SelectedPressedFocused	= 8+4+2+1,
-		Disabled				= 16,			///< Element is disabled and can't be focused or pressed.
-		DisabledSelected		= 16+8,
+		Targeted				= 16+4,
+		TargetedFocused			= 16+4+1,
+		TargetedSelected		= 16+8+4,
+		TargetedSelectedFocused = 16+8+4+1,
+		Disabled				= 32,			///< Element is disabled and can't be focused or pressed.
+		DisabledSelected		= 32+8,
 	};
 	
-	static const int	StateEnum_Nb	= 14;			// Number of states
-	static const int	StateEnum_MaxValue	= 24;		// Highest value for StateEnum
+	static const int	StateEnum_Nb	= 18;			// Number of states
+	static const int	StateEnum_MaxValue	= 40;		// Highest value for StateEnum
 	
 	class State 
 	{
@@ -112,16 +116,18 @@ namespace wg
 		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
 		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
 		bool	setFocused(bool bFocused) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
-		bool	setHovered(bool bHovered) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~((uint8_t)StateEnum::Pressed); return true; }
+		bool	setHovered(bool bHovered) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~(uint8_t(StateEnum::Pressed)|uint8_t(StateEnum::Targeted)); return true; }
 		bool	setPressed(bool bPressed) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
-	
+		bool	setTargeted(bool bTargeted) { if (m_state == ((uint8_t)StateEnum::Disabled)) return false; if (bTargeted) m_state |= ((uint8_t)StateEnum::Targeted); else m_state &= ~(((uint8_t)StateEnum::Targeted) - ((uint8_t)StateEnum::Hovered)); return true; }
+
 	
 		bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
 		bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
 		bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
 		bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
 		bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
-	
+		bool	isTargeted() const { return (m_state & ((uint8_t)StateEnum::Targeted)) == ((uint8_t)StateEnum::Targeted); }
+
 		//._____ Operators _____________________________________________________
 
 		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
@@ -132,10 +138,33 @@ namespace wg
 		operator StateEnum() const { return (StateEnum) m_state; }
 
         inline State operator+(StateEnum state) const { int s = m_state | (uint8_t) state; if (s & (int) StateEnum::Disabled) s &= (int) StateEnum::DisabledSelected; return (StateEnum) s; }
-        inline State operator-(StateEnum state) const { if ((int(state) & int(StateEnum::Pressed)) == int(StateEnum::Pressed)) state = (StateEnum)(int(state) & ~int(StateEnum::Hovered)); int s = (m_state & ~int(state)); if ((s & int(StateEnum::Hovered)) == 0) s &= ~int(StateEnum::Pressed);  return (StateEnum)s; }
+        inline State operator-(StateEnum _state) const 
+		{ 
+			int state = (int)_state;
+			int hovered = int(StateEnum::Hovered);
+			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
+
+			if (state & hoverDependant != 0 ) 
+				state &= ~hovered;				// Don't remove hovered just because we remove a state dependant on it.
+			int s = (m_state & ~state); 
+			if ((s & hovered) == 0) 
+				s &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
+			return (StateEnum)s; 
+		}
         
         inline State& operator+=(StateEnum state) { m_state |= (uint8_t) state; if (int(m_state) & int(StateEnum::Disabled)) m_state &= int(StateEnum::DisabledSelected); return *this; }
-        inline State& operator-=(StateEnum state) { if ((int(state) & int(StateEnum::Pressed)) == int(StateEnum::Pressed)) state = (StateEnum) (int(state) & ~int(StateEnum::Hovered)); m_state &= ~int(state); if ((m_state & int(StateEnum::Hovered)) == 0) m_state &= ~int(StateEnum::Pressed); return *this;
+        inline State& operator-=(StateEnum _state) 
+		{ 
+			int state = (int)_state;
+			int hovered = int(StateEnum::Hovered);
+			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
+
+			if (state & hoverDependant != 0)
+				state &= ~hovered;				// Don't remove hovered just because we remove a state dependant on it.
+			m_state &= ~state;
+			if ((m_state & hovered) == 0)
+				m_state &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
+			return *this;
         }
         
 	private:
