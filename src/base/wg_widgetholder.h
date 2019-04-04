@@ -68,9 +68,5 @@ namespace wg
 		virtual Widget *	_nextChild( const Slot * pSlot ) const = 0;
 	};
 	
-
-	
-}
-
-
+} // namespace wg
 #endif //WG_WIDGETHOLDER_DOT_H

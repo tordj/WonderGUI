@@ -36,7 +36,8 @@ namespace wg
 	
 	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
-						 m_bPressed(false), m_bSelectable(true), m_size(256,256)
+						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
+                        m_bPickable(false), m_bDropTarget(false)
 	{
 	}
 	
@@ -440,6 +441,14 @@ namespace wg
 		return Size(2<<24,2<<24);
 	}
 	
+    //____ setPickable() ____________________________________________________________
+    
+    void Widget::setPickable( bool bPickable, int category )
+    {
+        m_bPickable = bPickable;
+        m_pickCategory = category;
+    }
+    
 	//____ _getBlendMode() _________________________________________________________
 	
 	BlendMode Widget::_getBlendMode() const

@@ -11,6 +11,7 @@
 		0C6239981D81616400DE671D /* wondergui.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C6239971D81616400DE671D /* wondergui.h */; };
 		179ECD442253837500A932B2 /* wg_dragndroplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 179ECD432253837500A932B2 /* wg_dragndroplayer.h */; };
 		179ECD462253890500A932B2 /* wg_dragndroplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179ECD452253890500A932B2 /* wg_dragndroplayer.cpp */; };
+		179ECD4822560A8800A932B2 /* wg_payload.h in Headers */ = {isa = PBXBuildFile; fileRef = 179ECD4722560A8800A932B2 /* wg_payload.h */; };
 		17F41A10225353E3008D1DE7 /* wg_childiterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F419A5225353D9008D1DE7 /* wg_childiterator.h */; };
 		17F41A11225353E3008D1DE7 /* wg_gfxstreamwriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F419A6225353D9008D1DE7 /* wg_gfxstreamwriter.h */; };
 		17F41A12225353E3008D1DE7 /* wg_receiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F419A7225353D9008D1DE7 /* wg_receiver.cpp */; };
@@ -282,6 +283,7 @@
 		0C6239971D81616400DE671D /* wondergui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wondergui.h; path = ../../../src/wondergui.h; sourceTree = "<group>"; };
 		179ECD432253837500A932B2 /* wg_dragndroplayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wg_dragndroplayer.h; sourceTree = "<group>"; };
 		179ECD452253890500A932B2 /* wg_dragndroplayer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wg_dragndroplayer.cpp; sourceTree = "<group>"; };
+		179ECD4722560A8800A932B2 /* wg_payload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wg_payload.h; path = ../../../../src/base/wg_payload.h; sourceTree = "<group>"; };
 		17F419A5225353D9008D1DE7 /* wg_childiterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_childiterator.h; path = ../../../../src/base/wg_childiterator.h; sourceTree = "<group>"; };
 		17F419A6225353D9008D1DE7 /* wg_gfxstreamwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_gfxstreamwriter.h; path = ../../../../src/base/wg_gfxstreamwriter.h; sourceTree = "<group>"; };
 		17F419A7225353D9008D1DE7 /* wg_receiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_receiver.cpp; path = ../../../../src/base/wg_receiver.cpp; sourceTree = "<group>"; };
@@ -870,6 +872,7 @@
 				17F419CE225353DC008D1DE7 /* wg_weakinterfaceptr.h */,
 				17F419F8225353E1008D1DE7 /* wg_weakptr.h */,
 				17F419AC225353DA008D1DE7 /* wg_widgetholder.h */,
+				179ECD4722560A8800A932B2 /* wg_payload.h */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -954,6 +957,7 @@
 				17F41A69225353E3008D1DE7 /* wg_dummyfont.h in Headers */,
 				0C6239981D81616400DE671D /* wondergui.h in Headers */,
 				17F41AE522535411008D1DE7 /* wg_iselectablechildren.impl.h in Headers */,
+				179ECD4822560A8800A932B2 /* wg_payload.h in Headers */,
 				17F41B6A22535477008D1DE7 /* wg_simplevolumemeter.h in Headers */,
 				17F41B8F225354ED008D1DE7 /* wg_modallayer.h in Headers */,
 				17F41B5822535477008D1DE7 /* wg_animplayer.h in Headers */,

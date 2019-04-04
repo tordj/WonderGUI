@@ -167,7 +167,14 @@ namespace wg
 		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
 		bool				isTabLocked() const { return m_bTabLock; }
 
+        void                setPickable( bool bPickable, int category = 0 );
+        bool                isPickable() const { return m_bPickable; }
+        int                 pickCategory() const { return m_pickCategory; }
+        
+        void                setDropTarget( bool bDropTarget );
+        bool                isDropTarget() const { return m_bDropTarget; }
 
+        
 		//.____ Misc _________________________________________________________________
 
 		virtual bool		markTest( const Coord& ofs );
@@ -269,7 +276,12 @@ namespace wg
 	
 		State			m_state;
 		Size			m_size;
+        
+        bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
+        uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
 
+        bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
+        
 //	private:
 		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
 	

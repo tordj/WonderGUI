@@ -24,6 +24,7 @@
 #define WG_DRAGNDROPLAYER_DOT_H
 #pragma once
 
+#include <vector>
 #include <wg_layer.h>
 
 namespace wg 
@@ -54,7 +55,8 @@ namespace wg
         virtual ~DragNDropLayer();
         virtual Widget* _newOfMyType() const { return new DragNDropLayer(); };
         
-        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
+        
+//        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
         
         // Overloaded from Panel
         
@@ -78,6 +80,7 @@ namespace wg
         void            _receive( Msg * pMsg );
         
         LayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+        
     };
 
     

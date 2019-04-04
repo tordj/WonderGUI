@@ -411,6 +411,15 @@ namespace wg
 		EditCommand,
 		WheelRoll,
 	
+        DropPick,
+        DropProbe,
+        DropEnter,
+        DropMove,
+        DropLeave,
+        DropDeliver,
+        DropCancel,
+        DropComplete,
+                
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Toggle,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
 		ValueUpdate,					// Value of widget changed, like for editvalue, animations, sliders etc

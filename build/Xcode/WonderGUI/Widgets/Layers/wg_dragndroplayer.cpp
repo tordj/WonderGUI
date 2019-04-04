@@ -64,7 +64,7 @@ namespace wg
         
         return 0;
     }
-
+    
     //____ _findWidget() __________________________________________________________
     
     Widget * DragNDropLayer::_findWidget( const Coord& ofs, SearchMode mode )

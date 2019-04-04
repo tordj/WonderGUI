@@ -436,6 +436,9 @@ namespace wg
 			}
 			while( pMsg->doRepost() );
 	
+            if( pMsg->hasFinalRecipient() )
+                pMsg->finalRecipient()->receive( pMsg );
+            
 			m_msgQueue.pop_front();
 		}
 	

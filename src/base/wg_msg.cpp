@@ -24,6 +24,7 @@
 #include <wg_key.h>
 #include <wg_widget.h>
 #include <wg_itexteditor.h>
+#include <wg_payload.h>
 
 namespace wg 
 {
@@ -840,6 +841,95 @@ namespace wg
 		return 0;
 	}
 	
+    //____ DragNDropMsg _______________________________________________________
+  
+    const char DragNDropMsg::CLASSNAME[] = {"DragNDropMsg"};
+
+    DragNDropMsg::DragNDropMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
+    {
+        m_pSource = pSource;
+        m_pCopyTo = pSource;
+        m_pFinalRecipient = pFinalReceiver;
+        m_modKeys = modKeys;
+        m_pointerPos = pointerPos;
+
+        m_pPickedFrom = pPickedFrom;
+        m_pickCategory = pickCategory;
+        m_pPayload = pPayload;
+    }
+
+    bool DragNDropMsg::isInstanceOf( const char * pClassName ) const
+    {
+        if( pClassName==CLASSNAME )
+            return true;
+        
+        return Msg::isInstanceOf(pClassName);
+    }
+    
+    const char * DragNDropMsg::className( void ) const
+    {
+        return CLASSNAME;
+    }
+    
+    DragNDropMsg_p DragNDropMsg::cast( Object * pObject )
+    {
+        if( pObject && pObject->isInstanceOf(CLASSNAME) )
+            return DragNDropMsg_p( static_cast<DragNDropMsg*>(pObject) );
+        
+        return 0;
+    }
+    
+    Payload_p DragNDropMsg::payload() const
+    {
+        return m_pPayload;
+    };
+  
+    //____ DropPickMsg ___________________________________________________
+
+    const char DropPickMsg::CLASSNAME[] = {"DropPickMsg"};
+
+    DropPickMsg::DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
+    : DragNDropMsg( pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos )
+    {
+    }
+
+    bool DropPickMsg::isInstanceOf( const char * pClassName ) const
+    {
+        if( pClassName==CLASSNAME )
+            return true;
+        
+        return DragNDropMsg::isInstanceOf(pClassName);
+    }
+    
+    const char * DropPickMsg::className( void ) const
+    {
+        return CLASSNAME;
+    }
+    
+    DropPickMsg_p DropPickMsg::cast( Object * pObject )
+    {
+        if( pObject && pObject->isInstanceOf(CLASSNAME) )
+            return DropPickMsg_p( static_cast<DropPickMsg*>(pObject) );
+        
+        return 0;
+    }
+
+    void DropPickMsg::setPayload( Payload * pPayload )
+    {
+        m_pPayload = pPayload;
+    }
+    
+    void DropPickMsg::setDragWidget( Widget * pWidget )
+    {
+        m_pDragWidget = pWidget;
+    }
+    
+    Widget_p DropPickMsg::dragWidget() const
+    {
+        return m_pDragWidget;
+    }
+    
+    
 	//____ SelectMsg _________________________________________________________
 	
 	const char SelectMsg::CLASSNAME[] = {"SelectMsg"};
