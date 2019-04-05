@@ -23,8 +23,8 @@ namespace sdl_wglib
 	ResDB_p	LoadStdWidgets( const char * pImagePath, const SurfaceFactory_p& factory );
 
 	Font_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const SurfaceFactory_p& pFactory );
-	
+
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );
-	
+
 };

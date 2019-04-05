@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,11 +25,11 @@
 #include <wg_gfxstreamreader.h>
 #include <assert.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char GfxStreamReader::CLASSNAME[] = {"GfxStreamReader"};
-	
+
 	const int GfxStreamReader::c_bufferMargin;
 
 	//____ create() ___________________________________________________________
@@ -40,7 +40,7 @@ namespace wg
 	}
 
 	//____ Constructor _____________________________________________________________
-	
+
 	GfxStreamReader::GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder) : stream(this)
 	{
 		m_fetcher = dataFeeder;
@@ -50,7 +50,7 @@ namespace wg
 		m_writeOfs = 0;
 		m_bOpen = true;
 	}
-	
+
 	//____ Destructor _________________________________________________________
 
 	GfxStreamReader::~GfxStreamReader()
@@ -58,29 +58,29 @@ namespace wg
 	}
 
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool GfxStreamReader::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Object::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * GfxStreamReader::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	GfxStreamReader_p GfxStreamReader::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return GfxStreamReader_p( static_cast<GfxStreamReader*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -115,7 +115,7 @@ namespace wg
 	//____ _peekChunk() _______________________________________________________
 
 	GfxStream::Header GfxStreamReader::_peekChunk()
-	{	
+	{
 		int sizeOfs = (m_readOfs + 2) % c_bufferSize;
 
 		return { (GfxChunkId)(*(short*)&m_pBuffer[m_readOfs]), *(short*)&m_pBuffer[sizeOfs] };
@@ -125,17 +125,17 @@ namespace wg
 	//____ _pullChar() ________________________________________________________
 
 	char GfxStreamReader::_pullChar()
-	{ 
-		char x = m_pBuffer[m_readOfs]; 
-		m_readOfs = (m_readOfs + 1) % c_bufferSize; 
+	{
+		char x = m_pBuffer[m_readOfs];
+		m_readOfs = (m_readOfs + 1) % c_bufferSize;
 		return x;
 	}
 
 	//____ _pullShort() _______________________________________________________
 
-	short GfxStreamReader::_pullShort() 
-	{ 
-		short x = *(short*)&m_pBuffer[m_readOfs]; 
+	short GfxStreamReader::_pullShort()
+	{
+		short x = *(short*)&m_pBuffer[m_readOfs];
 		m_readOfs = (m_readOfs + 2) % c_bufferSize;
 		return x;
 	}
@@ -143,20 +143,20 @@ namespace wg
 	//____ _pullInt() _______________________________________________________
 
 	int GfxStreamReader::_pullInt()
-	{ 
-//		int x = *(int*)&m_pBuffer[m_readOfs]; 
-		int x = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
+	{
+//		int x = *(int*)&m_pBuffer[m_readOfs];
+		int x = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16);
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
 
 	//____ _pullFloat() _______________________________________________________
 
-	float GfxStreamReader::_pullFloat() 
-	{ 
-//		float x = *(float*)&m_pBuffer[m_readOfs]; 
+	float GfxStreamReader::_pullFloat()
+	{
+//		float x = *(float*)&m_pBuffer[m_readOfs];
 		float x;
-		*((int*)&x) = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16); 
+		*((int*)&x) = *(uint16_t*)&m_pBuffer[m_readOfs] + (*(uint16_t*)&m_pBuffer[m_readOfs+2]<<16);
 		m_readOfs = (m_readOfs + 4) % c_bufferSize;
 		return x;
 	}
@@ -192,7 +192,7 @@ namespace wg
 	{
 		return m_bOpen;
 	}
-	
+
 	//____ _openStream() ______________________________________________________
 
 	bool GfxStreamReader::_reopenStream()

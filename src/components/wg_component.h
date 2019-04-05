@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -30,9 +30,9 @@
 #include <wg_geo.h>
 
 
-namespace wg 
+namespace wg
 {
-		
+
 	//____ Component _________________________________________________________________
 
 	class Component		/** @private */
@@ -46,7 +46,7 @@ namespace wg
 		inline Coord	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
 		inline Rect		_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
 
-	
+
 		inline void		_requestRender() const { m_pHolder->_componentRequestRender(this); }
 		inline void		_requestRender( const Rect& rect ) const { m_pHolder->_componentRequestRender(this, rect); }
 		inline void		_requestResize() const { m_pHolder->_componentRequestResize(this); }
@@ -56,16 +56,16 @@ namespace wg
 
 		inline void		_notify( ComponentNotif notification, void * pData ) { m_pHolder->_receiveComponentNotif( this, notification, pData ); }
 
-		inline Object *			_object() { return m_pHolder->_object(); } 
-		inline const Object *	_object() const { return m_pHolder->_object(); } 
+		inline Object *			_object() { return m_pHolder->_object(); }
+		inline const Object *	_object() const { return m_pHolder->_object(); }
 
 	protected:
-	
+
 		ComponentHolder * m_pHolder;
 	};
-	
-	
-	
+
+
+
 
 } // namespace wg
 #endif //WG_COMPONENT_DOT_H

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -37,48 +37,48 @@
 #include <wg_caret.h>
 #include <wg_textstyle.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Font;
 	class ResLoader;
-	
-	
+
+
 	class ResDB;
 	typedef	StrongPtr<ResDB>	ResDB_p;
 	typedef	WeakPtr<ResDB>	ResDB_wp;
-	
+
 	class ResDB : public Object
 	{
 	public:
 		static ResDB_p	create() { return ResDB_p(new ResDB()); }
-	
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ResDB_p	cast( Object * pObject );
-	
-	
+
+
 		class MetaData
 		{
 		public:
 			virtual ~MetaData() {}
 			virtual MetaData* clone() const = 0;
-	
+
 			virtual std::string getAttribute(const std::string& name) const = 0;
 			virtual bool		setAttribute(const std::string& name, const std::string& value) = 0;
 			virtual bool		hasAttribute(const std::string& name) const = 0;
 		};
-	
+
 		struct Resource : public Link
 		{
 			Resource( const std::string& id, MetaData* meta) : id(id), meta(meta) {}
 			virtual ~Resource() { delete meta; }
-	
+
 			std::string		id;
 			MetaData*		meta;
 		};
-	
+
 		template<typename T>
 		struct ResWrapper : public Resource
 		{
@@ -86,7 +86,7 @@ namespace wg
 			ResWrapper(const std::string& id, T res, MetaData* meta) : Resource(id,meta), res(res) {}
 			T res;
 		};
-	
+
 		template<typename T>
 		struct ResWrapper2 : public Resource
 		{
@@ -95,7 +95,7 @@ namespace wg
 			T res;
 			std::string	file;
 		};
-	
+
 		struct LegoSource : public Resource
 		{
 			LegoSource(const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData* meta) : Resource(id, meta), surface(surface), rect(rect), nStates(nStates) { }
@@ -103,14 +103,14 @@ namespace wg
 			Rect rect;
 			uint32_t nStates;
 		};
-	
+
 		struct ConnectRes : public Resource
 		{
 			LINK_METHODS( ConnectRes );
 			ConnectRes( MetaData* meta) : Resource("", meta) {}
 		};
-	
-	
+
+
 		typedef ResWrapper2<ResDB_p>	ResDBRes;
 		typedef ResWrapper2<Surface_p>	SurfaceRes;
 		typedef ResWrapper<Font_p>		FontRes;
@@ -121,10 +121,10 @@ namespace wg
 		typedef ResWrapper<Skin_p>		SkinRes;
 		typedef ResWrapper<Widget_p>	WidgetRes;
 		typedef ResWrapper<void*>		DataSetRes;
-	
-	
+
+
 		//----
-	
+
 		static std::string	generateName( Surface * data );
 		static std::string	generateName( Font * data );
 		static std::string	generateName( GfxAnim * data );
@@ -133,21 +133,21 @@ namespace wg
 		static std::string	generateName( TextStyle * data );
 		static std::string	generateName( Skin * data );
 		static std::string	generateName( Widget * data );
-	
+
 		void				setResLoader( ResLoader * pLoader );
 		void				clear();
-	
+
 		void				clearSurfaces();
 		void				clearWidgets();
-	
+
 		std::string			loadString( const std::string& token );
-	
+
 		bool				addResDb( const std::string& file, MetaData * pMetaData = 0 );
 		bool				addResDb( ResDB * db, const std::string& file, MetaData * pMetaData = 0 );
-	
+
 		bool				addSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
 		bool				addSurface( const std::string& id, Surface * pSurf, const std::string& filename, MetaData * pMetaData = 0 );
-		
+
 		bool				addFont( const std::string& id, Font * pFont, MetaData * pMetaData = 0 );
 		bool				addGfxAnim( const std::string& id, GfxAnim * pAnim, MetaData * pMetaData = 0 );
 		bool				addCaret( const std::string& id, Caret * pCaret, MetaData * pMetaData = 0 );
@@ -158,7 +158,7 @@ namespace wg
 		bool				addConnect( MetaData * pMetaData );
 		bool				addWidget( const std::string& id, Widget * pWidget, MetaData * pMetaData = 0 );
 		bool				addDataSet( const std::string& id, MetaData * pMetaData );
-	
+
 		bool				removeSurface( const std::string& id );
 		bool				removeFont( const std::string& id );
 		bool				removeGfxAnim( const std::string& id );
@@ -171,7 +171,7 @@ namespace wg
 		bool				removeResDb( const std::string& id );
 		bool				removeWidget( const std::string& id );
 		bool				removeDataSet( const std::string& id );
-	
+
 		bool				removeSurface( SurfaceRes * pRes );
 		bool				removeFont( FontRes * pRes );
 		bool				removeGfxAnim( GfxAnimRes * pRes );
@@ -184,9 +184,9 @@ namespace wg
 		bool				removeResDb( ResDBRes* pRes );
 		bool				removeWidget( WidgetRes * pRes );
 		bool				removeDataSet( DataSetRes * pRes );
-	
-	
-	
+
+
+
 		Surface_p		getSurface( const std::string& id ) const;
 		Font_p			getFont( const std::string& id ) const;
 		GfxAnim_p		getGfxAnim( const std::string& id ) const;
@@ -197,8 +197,8 @@ namespace wg
 		Widget_p			getWidget( const std::string& id ) const;
 		MetaData*			getDataSet( const std::string& id ) const;
 		Widget_p			cloneWidget( const std::string& id ) const;
-	
-	
+
+
 		ResDBRes *			getResDbRes( const std::string& id ) const;
 		SurfaceRes *		getResSurface( const std::string& id ) const;
 		FontRes *			getResFont( const std::string& id ) const;
@@ -211,7 +211,7 @@ namespace wg
 		ConnectRes *		getResConnect( const std::string& id ) const;
 		WidgetRes *			getResWidget( const std::string& id ) const;
 		DataSetRes *		getResDataSet( const std::string& id ) const;
-	
+
 		ResDBRes *			findResDbRes( ResDB * data ) const;
 		SurfaceRes *		findResSurface( Surface * data ) const;
 		FontRes *			findResFont( Font * data ) const;
@@ -221,7 +221,7 @@ namespace wg
 		ColorRes *			findResColor( const Color col ) const;
 		SkinRes *			findResSkin( Skin * data ) const;
 		WidgetRes *			findResWidget( Widget * data ) const;
-	
+
 		std::string			findSurfaceId( Surface * data ) const		{ SurfaceRes * r =	findResSurface(data); return r ? r->id : ""; }
 		std::string			findFontId( Font * data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
 		std::string			findGfxAnimId( GfxAnim * data ) const		{ GfxAnimRes *	r =		findResGfxAnim(data); return r ? r->id : ""; }
@@ -230,7 +230,7 @@ namespace wg
 		std::string			findColorId( const Color data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
 		std::string			findSkinId( Skin * data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
 		std::string			findWidgetId( Widget * data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
-	
+
 		inline ResDBRes *		getFirstResDbRes() const { return m_resDbs.first(); }
 		inline SurfaceRes *		getFirstResSurface() const { return m_surfaces.first(); }
 		inline FontRes *		getFirstResFont() const { return m_fonts.first(); }
@@ -242,12 +242,12 @@ namespace wg
 		inline ConnectRes *		getFirstResConnect() const { return m_connects.first(); }
 		inline WidgetRes *		getFirstResWidget() const { return m_widgets.first(); }
 		inline DataSetRes *		getFirstResDataSet() const { return m_dataSets.first(); }
-	
-	
+
+
 	private:
 		ResDB();
 		virtual ~ResDB();
-	
+
 		typedef std::map<std::string, ResDBRes*>		ResDBMap;
 		typedef std::map<std::string, SurfaceRes*>		SurfMap;
 		typedef std::map<std::string, FontRes*>			FontMap;
@@ -260,7 +260,7 @@ namespace wg
 		typedef std::map<std::string, ConnectRes*>		ConnectMap;
 		typedef std::map<std::string, WidgetRes*>		WidgetMap;
 		typedef std::map<std::string, DataSetRes*>		DataSetMap;
-	
+
 		Chain<ResDBRes>		m_resDbs;
 		Chain<SurfaceRes>	m_surfaces;
 		Chain<FontRes>		m_fonts;
@@ -273,7 +273,7 @@ namespace wg
 		Chain<ConnectRes>	m_connects;
 		Chain<WidgetRes>	m_widgets;
 		Chain<DataSetRes>	m_dataSets;
-	
+
 		ResDBMap		m_mapResDBs;
 		ColMap			m_mapColors;
 		SurfMap			m_mapSurfaces;
@@ -286,12 +286,12 @@ namespace wg
 		ConnectMap		m_mapConnects;
 		WidgetMap		m_mapWidgets;
 		DataSetMap		m_mapDataSets;
-	
+
 		ResLoader *	m_pResLoader;
 	};
-	
-	
-	
+
+
+
 
 } // namespace wg
 #endif //WG_RESDB_DOT_H

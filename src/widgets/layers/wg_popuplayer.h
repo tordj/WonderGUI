@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,7 +27,7 @@
 #include <wg_layer.h>
 #include <wg_slotarray.h>
 
-namespace wg 
+namespace wg
 {
 
 	class PopupLayer;
@@ -51,7 +51,7 @@ namespace wg
 			Opening,				// Popup is opening (fading in).
 			PeekOpen,				// Popup is open until pointer leaves launcherGeo (mode only allowed if bAutoClose is set).
 			WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked (mode only allowed if bAutoClose is set).
-			FixedOpen,				// Popup is open until it is closed by a pop() call. 
+			FixedOpen,				// Popup is open until it is closed by a pop() call.
 			ClosingDelay,			// Popup is in countdown to closing mode (mode only allowed if bAutoClose is set).
 			Closing,				// Popup is closing (fading out).
 		};
@@ -95,22 +95,22 @@ namespace wg
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();
-		
+
 		Widget_p at(int index) const;
 
 	protected:
 		Object *		_object() const;
 		PopupLayer *	m_pHolder;
-		
+
 	};
 
-	
+
 	//____ PopupLayer ____________________________________________________________
-	
+
 	class PopupLayer : public Layer
 	{
 		friend class PopupChildren;
-	
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -127,8 +127,8 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static PopupLayer_p	cast( Object * pObject );
-	
-	
+
+
 	protected:
 		PopupLayer();
 		virtual ~PopupLayer();
@@ -145,7 +145,7 @@ namespace wg
 		// Overloaded from Panel
 
 		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
-	
+
 		// Overloaded from WidgetHolder
 
 		void			_childRequestResize(Slot * pSlot);
@@ -166,13 +166,13 @@ namespace wg
 
 
 		// Overloaded from Widget
-	
+
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const Size& size );
 		void			_receive( Msg * pMsg );
-	
-	
-		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.	
+
+
+		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
 		RouteId			m_tickRouteId = 0;
@@ -182,7 +182,7 @@ namespace wg
 		int				m_closingDelayMs = 200;
 		int				m_closingFadeMs = 200;
 	};
-	
+
 
 } // namespace wg
 #endif //WG_POPUPLAYER_DOT_H

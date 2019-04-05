@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,19 +27,19 @@
 #include <wg_widget.h>
 #include <wg_skin.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	class Surface;
 	class ScrollbarTarget;
 	class Menu;
-	
-	
+
+
 	class Scrollbar;
 	typedef	StrongPtr<Scrollbar>		Scrollbar_p;
 	typedef	WeakPtr<Scrollbar>		Scrollbar_wp;
-	
+
 	//____ Class: Scrollbar _____________________________________________________
 	/**
 	 * @brief Scrollbar widget.
@@ -61,12 +61,12 @@ namespace wg
 	 * the skin for the dragbar handle.
 	 *
 	 **/
-	
+
 	class	Scrollbar : public Widget
 	{
 		friend class ScrollbarTarget;
 		friend class Menu;
-	
+
 	public:
 
 		//____ Enums ____________________________________________
@@ -104,7 +104,7 @@ namespace wg
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
 		static Scrollbar_p	cast( Object * pObject );
-	
+
 
 		//.____ Geometry ____________________________________________
 
@@ -222,8 +222,8 @@ namespace wg
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
 	};
-	
-	
+
+
 	//______________________________________________________________________________
 	/**
 	 * Get the relative position of the scrollbar handle.
@@ -237,12 +237,12 @@ namespace wg
 	 *
 	 * @return The position of the scrollbar handle in the range 0.0-1.0.
 	 **/
-	
+
 	float Scrollbar::handlePos() const
 	{
 		return m_handlePos;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get the relative size of the scrollbar handle.
@@ -256,12 +256,12 @@ namespace wg
 	 *
 	 * @return A value in the range 0.0001-1.0 representing the specified size of the handle.
 	 **/
-	
+
 	float Scrollbar::handleSize() const
 	{
 		return m_handleSize;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get a pointer to the skin used as a background for the area of the handle.
@@ -275,24 +275,24 @@ namespace wg
 	 *
 	 * @return Pointer to skin used as a background for the area of the handle or null.
 	 **/
-	
+
 	Skin_p Scrollbar::backgroundSkin() const
 	{
 		return m_pBgSkin;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get a pointer to the skin used for the scrollbar handle.
 	 *
 	 * @return Pointer to the skin used for the scrollbar handle or null.
 	 **/
-	
+
 	Skin_p Scrollbar::handleSkin() const
 	{
 		return m_pHandleSkin;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get a pointer to the skin used by the backward button.
@@ -302,12 +302,12 @@ namespace wg
 	 *
 	 * @return Pointer to the skin used for the backward button or null.
 	 **/
-	
+
 	Skin_p Scrollbar::bwdButtonSkin() const
 	{
 		return m_pBtnBwdSkin;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get a pointer to the skin used by the forward button.
@@ -317,12 +317,12 @@ namespace wg
 	 *
 	 * @return Pointer to the skin used for the forward button or null.
 	 **/
-	
+
 	Skin_p Scrollbar::fwdButtonSkin() const
 	{
 		return m_pBtnFwdSkin;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get the layout of the scrollbar buttons
@@ -335,12 +335,12 @@ namespace wg
 	 *
 	 * @return enum/bitmask specifying what buttons are displayed.
 	 **/
-	
+
 	Scrollbar::BtnLayout Scrollbar::buttonLayout() const
 	{
 		return m_btnLayout;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Check if scrollbar is vertical or horizontal
@@ -350,12 +350,12 @@ namespace wg
 	 * @return 	Orientation::Horizontal if scrollbar is horizontal,
 	 * 		   	Orientation::Vertical if scrollbar is vertical.
 	 **/
-	
+
 	Orientation Scrollbar::orientation() const
 	{
 		return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical;
 	}
-	
+
 	//______________________________________________________________________________
 	/**
 	 * Get action for mouse press on scrollbar background.
@@ -370,13 +370,13 @@ namespace wg
 	 *
 	 * @return JUMP_PAGE or GOTO_POS.
 	 **/
-	
+
 	Scrollbar::BgPressMode Scrollbar::backgroundPressMode() const
 	{
 		return m_bgPressMode;
 	}
-	
-	
+
+
 
 } // namespace wg
 #endif //	WG_SCROLLBAR_DOT_H

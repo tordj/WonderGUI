@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,10 +27,10 @@
 #include <wg_gfxdevice.h>
 #include <wg_softsurface.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	struct SegmentEdge
 	{
 		int			begin;				// Pixeloffset, 24.8 format.
@@ -43,7 +43,7 @@ namespace wg
 	class SoftGfxDevice;
 	typedef	StrongPtr<SoftGfxDevice>	SoftGfxDevice_p;
 	typedef	WeakPtr<SoftGfxDevice>	SoftGfxDevice_wp;
-	
+
 	class SoftGfxDevice : public GfxDevice
 	{
 	public:
@@ -137,7 +137,7 @@ namespace wg
 		{
 			Color	baseTint;
 			Color * pTintX;
-			Color * pTintY;  
+			Color * pTintY;
 		};
 
 
@@ -174,14 +174,14 @@ namespace wg
 											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
-		inline static void _init_tint_color(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, 
+		inline static void _init_tint_color(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
-		inline static void _init_tint_color_line(int lineNb, TintMode tintMode, const ColTrans& tint, 
+		inline static void _init_tint_color_line(int lineNb, TintMode tintMode, const ColTrans& tint,
 											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
-		inline static void _tint_color(int columnNb, TintMode tintMode, const ColTrans& tint, 
-											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, 
+		inline static void _tint_color(int columnNb, TintMode tintMode, const ColTrans& tint,
+											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
 		inline static void _init_tint_texel(TintMode tintMode, const ColTrans& tint, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
@@ -271,7 +271,7 @@ namespace wg
 
 		static SimpleBlitOp_p	s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 		static SimpleBlitOp_p	s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
-			
+
 		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
 		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
@@ -297,7 +297,7 @@ namespace wg
 		ComplexBlitProxy_Op m_pComplexBlitOp			= nullptr;		// Function called to perform a complex blit.
 
 		// These are called by SimpleBlitProxy_Op and ComplexBlitProxy_Op.
-		
+
 		SimpleBlitOp_p		m_pSimpleBlitOnePassOp		= nullptr;
 		ComplexBlitOp_p		m_pComplexBlitOnePassOp		= nullptr;
 		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp	= nullptr;
@@ -307,18 +307,18 @@ namespace wg
 		//
 
 		int				m_lineThicknessTable[17];
-		
-		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked 
+
+		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
 		int				m_canvasPitch;
 
 		bool			m_bEnableCustomFunctions;	// Externally set.
 		bool			m_bUseCustomFunctions;		// Internally set, based on m_bEnableCustomFunctions and return values from custom calls to beginRender and setCanvas.
-													//Use overrided drawing primitives if available. 
+													//Use overrided drawing primitives if available.
 		CustomFunctionTable m_customFunctions;
 
 	};
-	
+
 
 } // namespace wg
 #endif //WG_SOFTGFXDEVICE_DOT_H

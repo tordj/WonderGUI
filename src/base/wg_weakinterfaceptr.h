@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -25,9 +25,9 @@
 
 #include <wg_object.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	template<class Cls> class WeakInterfacePtr		/** @private */
 	{
 	public:
@@ -45,17 +45,17 @@ namespace wg
 			m_pInterface = _p.m_pInterface;
 			m_pHub = _p.m_pHub;
 			if( m_pHub )
-				m_pHub->refCnt++;			
+				m_pHub->refCnt++;
 		};
 
-	
+
 		template<typename _Tp1> WeakInterfacePtr( const WeakInterfacePtr<_Tp1>& _p)
-	    {
+		{
 			m_pInterface = _p.m_pInterface;
 			m_pHub = _p.m_pHub;
 			if( m_pHub )
-				m_pHub->refCnt++;			
-	    }
+				m_pHub->refCnt++;
+		}
 
 		~WeakInterfacePtr()
 		{
@@ -78,33 +78,33 @@ namespace wg
 			return *this;
 		}
 
-	    WeakInterfacePtr<Cls>& operator=( const WeakInterfacePtr<Cls>& _p)
+		WeakInterfacePtr<Cls>& operator=( const WeakInterfacePtr<Cls>& _p)
 		{
 			m_pInterface = _p.m_pInterface;
 			if( m_pHub != _p.m_pHub )
 			{
-				WeakPtrHub::releaseHub(m_pHub);				
+				WeakPtrHub::releaseHub(m_pHub);
 				m_pHub = _p.m_pHub;
 				if( m_pHub )
-					m_pHub->refCnt++;			
+					m_pHub->refCnt++;
 			}
 			return *this;
 		}
 
-	    template<typename _Tp1> WeakInterfacePtr<Cls>& operator=( const WeakInterfacePtr<_Tp1>& _p)
+		template<typename _Tp1> WeakInterfacePtr<Cls>& operator=( const WeakInterfacePtr<_Tp1>& _p)
 		{
 			m_pInterface = _p.m_pInterface;
 			if( m_pHub != _p.m_pHub )
 			{
-				WeakPtrHub::releaseHub(m_pHub);				
+				WeakPtrHub::releaseHub(m_pHub);
 				m_pHub = _p.m_pHub;
 				if( m_pHub )
-					m_pHub->refCnt++;			
+					m_pHub->refCnt++;
 			}
 			return *this;
 		}
 
-	    template<typename _Tp1> WeakInterfacePtr<Cls>& operator=( _Tp1 * _p)
+		template<typename _Tp1> WeakInterfacePtr<Cls>& operator=( _Tp1 * _p)
 		{
 			m_pInterface = _p;
 
@@ -121,7 +121,7 @@ namespace wg
 		}
 
 		inline Cls * rawPtr() const	{ return m_pInterface; }
-	
+
 		operator  Cls*() const { return m_pInterface; }
 
 		inline Cls & operator*() const { return * m_pInterface; }
@@ -141,8 +141,8 @@ namespace wg
 
 	};
 
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_WEAKINTERFACEPTR_DOT_H

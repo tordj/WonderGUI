@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -32,12 +32,12 @@
 
 using namespace std;
 
-namespace wg 
+namespace wg
 {
 	using namespace Util;
-	
+
 	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
-	
+
 	int SoftGfxDevice::s_mulTab[256];
 
 	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
@@ -53,7 +53,7 @@ namespace wg
 	SoftGfxDevice::SimpleBlitOp_p		SoftGfxDevice::s_moveTo_BGR_8_OpTab[PixelFormat_size][2];
 
 	SoftGfxDevice::SimpleBlitOp_p		SoftGfxDevice::s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];
-	SoftGfxDevice::SimpleBlitOp_p		SoftGfxDevice::s_blendTo_BGR_8_OpTab[PixelFormat_size][2]; 
+	SoftGfxDevice::SimpleBlitOp_p		SoftGfxDevice::s_blendTo_BGR_8_OpTab[PixelFormat_size][2];
 
 	SoftGfxDevice::ComplexBlitOp_p		SoftGfxDevice::s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];
 	SoftGfxDevice::ComplexBlitOp_p		SoftGfxDevice::s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];
@@ -106,11 +106,11 @@ namespace wg
 											0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
 											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
 											0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
-											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff, 
+											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
 											0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
-											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff, 
+											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
 											0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
-											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff, 
+											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff,
 											0x00, 0x08, 0x10, 0x18, 0x20, 0x29, 0x31, 0x39, 0x41, 0x4a, 0x52, 0x5a, 0x62, 0x6a, 0x73, 0x7b,
 											0x83, 0x8b, 0x94, 0x9c, 0xa4, 0xac, 0xb4, 0xbd, 0xc5, 0xcd, 0xd5, 0xde, 0xe6, 0xee, 0xf6, 0xff };
 
@@ -410,7 +410,7 @@ namespace wg
 			outR = texR;
 			outA = texA;
 		}
-		
+
 		if( tintMode == TintMode::Color || tintMode == TintMode::MapY )
 		{
 			outB = (texB * s_mulTab[inB]) >> 16;
@@ -418,7 +418,7 @@ namespace wg
 			outR = (texR * s_mulTab[inR]) >> 16;
 			outA = (texA * s_mulTab[inA]) >> 16;
 		}
-		
+
 		if( tintMode == TintMode::MapX )
 		{
 			outB = (texB * s_mulTab[tint.pTintX[columnNb].b]) >> 16;
@@ -1062,7 +1062,7 @@ namespace wg
 						outA = backA;
 					}
 
-					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);		
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				pDst += pixelPitch;
 				offset += 256;
@@ -1167,7 +1167,7 @@ namespace wg
 		for (int y = 0; y < nLines; y++)
 		{
 			int ofsX = (int)(pos.x * 32768 + lineIncX * y);
-			int ofsY = (int)(pos.y * 32768 + lineIncY * y);		// We use 15 binals for all calculations 
+			int ofsY = (int)(pos.y * 32768 + lineIncY * y);		// We use 15 binals for all calculations
 
 			for (int x = 0; x < lineLength; x++)
 			{
@@ -1272,7 +1272,7 @@ namespace wg
 			tintA = s_mulTab[tint.baseTint.a];
 		}
 
-		int ofsY = (int)(pos.y * 32768);		// We use 15 binals for all calculations 
+		int ofsY = (int)(pos.y * 32768);		// We use 15 binals for all calculations
 
 		for (int y = 0; y < nLines; y++)
 		{
@@ -1362,20 +1362,20 @@ namespace wg
 
 
 	//____ create() _______________________________________________________________
-	
+
 	SoftGfxDevice_p SoftGfxDevice::create()
 	{
 		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
-	
+
 	SoftGfxDevice_p SoftGfxDevice::create( Surface * pCanvas )
 	{
 		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
 	}
-	
-	
+
+
 	//____ Constructor _____________________________________________________________
-	
+
 	SoftGfxDevice::SoftGfxDevice() : GfxDevice(Size(0,0))
 	{
 		m_bEnableCustomFunctions = false;
@@ -1386,9 +1386,9 @@ namespace wg
 		m_canvasPitch = 0;
 		_initTables();
 		_clearCustomFunctionTable();
-		
+
 	}
-	
+
 	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
 	{
 		m_bEnableCustomFunctions = false;
@@ -1400,61 +1400,61 @@ namespace wg
 		_initTables();
 		_clearCustomFunctionTable();
 	}
-	
+
 	//____ Destructor ______________________________________________________________
-	
+
 	SoftGfxDevice::~SoftGfxDevice()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool SoftGfxDevice::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return GfxDevice::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * SoftGfxDevice::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	SoftGfxDevice_p SoftGfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return SoftGfxDevice_p( static_cast<SoftGfxDevice*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ surfaceClassName() _______________________________________________________
-	
+
 	const char * SoftGfxDevice::surfaceClassName( void ) const
 	{
 		return SoftSurface::CLASSNAME;
 	}
-	
+
 	//____ surfaceClassName() _______________________________________________________
 
 	SurfaceFactory_p SoftGfxDevice::surfaceFactory()
 	{
 		if( !m_pSurfaceFactory )
 			m_pSurfaceFactory = SoftSurfaceFactory::create();
-	
+
 		return m_pSurfaceFactory;
 	}
-	
+
 	//____ setCanvas() _______________________________________________________________
-	
+
 	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
-	{	
+	{
 		if (m_pCanvas == pCanvas)
 			return true;			// Not an error.
 
@@ -1481,7 +1481,7 @@ namespace wg
 			format != PixelFormat::BGRX_8 && format != PixelFormat::BGRA_4 &&
 			format != PixelFormat::BGR_565 )
 			return false;
-	
+
 		if( m_pCanvasPixels )
 			m_pCanvas->unlock();
 
@@ -1510,7 +1510,7 @@ namespace wg
 				m_bUseCustomFunctions = retVal != 0;
 			}
 		}
-	
+
 	return true;
 	}
 
@@ -1557,14 +1557,14 @@ namespace wg
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
 		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 		m_canvasPitch = m_pCanvas->pitch();
-		
+
 		_updateBlitFunctions();
 
 		if( !m_pCanvasPixels )
 			return false;
 
 		// Call custom functions
-		
+
 		if( m_bEnableCustomFunctions )
 		{
 			if( m_customFunctions.beginRender )
@@ -1574,29 +1574,29 @@ namespace wg
 			{
 				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) m_pCanvas->pixelFormat(), m_canvasPitch );
 				m_bUseCustomFunctions = retVal != 0;
-			}			
+			}
 			else
 				m_bUseCustomFunctions = true;
 
 		}
-		
-		return true;	
+
+		return true;
 	}
 
 	//____ endRender() _________________________________________________________
-	
+
 	bool SoftGfxDevice::endRender()
 	{
 		if( !m_pCanvasPixels )
 			return false;
 
 		// Call custom function.
-		
+
 		if( m_bEnableCustomFunctions && m_customFunctions.endRender )
 			m_customFunctions.endRender();
-			
+
 		// Clean up.
-			
+
 		m_pCanvas->unlock();
 		m_pCanvasPixels = 0;
 		m_canvasPixelBits = 0;
@@ -1991,7 +1991,7 @@ namespace wg
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
-				} 
+				}
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
 					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
@@ -2230,7 +2230,7 @@ namespace wg
 
 			int clipBeg = rowOfs * 256;
 			int clipEnd  = clipBeg + (rows * 256);
-			 
+
 			for (int x = 0; x < columns; x++)
 			{
 				int nEdges = 0;
@@ -2902,7 +2902,7 @@ namespace wg
 			return;
 		}
 
-		// 
+		//
 
 		int				tintMode = m_colTrans.baseTint == Color::White ? 0 : 1;
 		ScaleMode		scaleMode = m_pBlitSource->scaleMode();
@@ -2965,16 +2965,16 @@ namespace wg
 	}
 
 	//____ _initTables() ___________________________________________________________
-	
+
 	void SoftGfxDevice::_initTables()
-	{	
+	{
 		// Init mulTab
 
 		for (int i = 0; i < 256; i++)
 			s_mulTab[i] = i * 256 + i + 1;
 
 		// Init lineThicknessTable
-		
+
 		for( int i = 0 ; i < 17 ; i++ )
 		{
 			double b = i/16.0;
@@ -3694,29 +3694,29 @@ namespace wg
 	void SoftGfxDevice::_clearCustomFunctionTable()
 	{
 		int * p = reinterpret_cast<int*>(&m_customFunctions);
-		
+
 		for( int i = 0 ; i < sizeof(CustomFunctionTable)/4 ; i++ )
 			p[i] = 0;
 	}
 
 
 	//____ _scaleLineThickness() ___________________________________________________
-	
+
 	int SoftGfxDevice::_scaleLineThickness( float thickness, int slope )
 	{
 		slope = std::abs(slope);
-		
+
 		int scale = m_lineThicknessTable[slope>>12];
-		
+
 		if( slope < (1 << 16) )
 		{
 			int scale2 = m_lineThicknessTable[(slope>>12)+1];
 			scale += ((scale2-scale)*(slope & 0xFFF)) >> 12;
 		}
-		
+
 		return (int) (thickness * scale);
 	}
-	
+
 
 
 

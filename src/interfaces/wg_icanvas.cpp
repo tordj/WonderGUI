@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -37,27 +37,27 @@ namespace wg
 	*	drawn is copied to the screen.
 	*
 	*	The device should be reserved for this CCanvas until replaced and not used for anything else. Calling this
-	*	method is likely to discard your current Surface. You will need to specify a GfxDevice or SurfaceFactory for 
+	*	method is likely to discard your current Surface. You will need to specify a GfxDevice or SurfaceFactory for
 	*	a Surface to be generated and displayed.
 	*
 	*	@return	True if successful, False if device could not be set.
 	**/
 
-	bool ICanvas::setDevice(GfxDevice * pDevice) 
-	{ 
-		return m_pComponent->setDevice(pDevice); 
+	bool ICanvas::setDevice(GfxDevice * pDevice)
+	{
+		return m_pComponent->setDevice(pDevice);
 	}
 
 	//____ device() ___________________________________________________________
 	/**
 	*	@brief	Gets the GfxDevice previously set.
 	*
-	*	
+	*
 	**/
 
-	GfxDevice_p ICanvas::device() const 
-	{ 
-		return m_pComponent->m_pDevice; 
+	GfxDevice_p ICanvas::device() const
+	{
+		return m_pComponent->m_pDevice;
 	}
 
 	//____ setSurfaceFactory() ________________________________________________
@@ -76,24 +76,24 @@ namespace wg
 	*	@return	True if successfull. False if pFactory can't be used as a canvas by the current GfxDevice.
 	**/
 
-	bool ICanvas::setSurfaceFactory(SurfaceFactory * pFactory) 
-	{ 
-		return m_pComponent->setSurfaceFactory(pFactory); 
+	bool ICanvas::setSurfaceFactory(SurfaceFactory * pFactory)
+	{
+		return m_pComponent->setSurfaceFactory(pFactory);
 	}
 
 	//____ surfaceFactory() ___________________________________________________
 	/**
 	*	@brief	Gets the specificly set SurfaceFactory.
 	*
-	*	Gets the SurfaceFactory specificly set using setSurfaceFactory(). 
+	*	Gets the SurfaceFactory specificly set using setSurfaceFactory().
 	*   This method will not return the SurfaceFactory implicitly provided by the GfxDevice.
 	*
 	*	@return SurfaceFactory specificly set using setSurfaceFactory() or nullptr if none.
 	**/
 
-	SurfaceFactory_p ICanvas::surfaceFactory() const 
-	{ 
-		return m_pComponent->m_pFactory; 
+	SurfaceFactory_p ICanvas::surfaceFactory() const
+	{
+		return m_pComponent->m_pFactory;
 	}
 
 	//____ setSurfaceLostCallback() ___________________________________________
@@ -105,15 +105,15 @@ namespace wg
 	*
 	*	Sets a function that will be called when the Surface for this component has been discarded.
 	*	The purpose is to redraw any graphics that has been lost.
-	* 
+	*
 	*	The new Surface has been created, filled with the background color and is ready to be
 	*	drawn upon when the function is called.
-	*  
+	*
 	**/
 
-	void ICanvas::setSurfaceLostCallback(std::function<void(ICanvas*)> func) 
-	{ 
-		m_pComponent->setLostCallback(func); 
+	void ICanvas::setSurfaceLostCallback(std::function<void(ICanvas*)> func)
+	{
+		m_pComponent->setLostCallback(func);
 	}
 
 	//____ surfaceLostCallback() ______________________________________________
@@ -122,9 +122,9 @@ namespace wg
 	*
 	**/
 
-	std::function<void(ICanvas*)> ICanvas::surfaceLostCallback() const 
-	{ 
-		return m_pComponent->m_surfaceLostCallback; 
+	std::function<void(ICanvas*)> ICanvas::surfaceLostCallback() const
+	{
+		return m_pComponent->m_surfaceLostCallback;
 	}
 
 	//____ setPixelFormat() _____________________________________________________
@@ -141,25 +141,25 @@ namespace wg
 	*	@return True if pixel format was accepted, otherwise false.
 	**/
 
-	bool ICanvas::setPixelFormat(PixelFormat format) 
-	{ 
-		return m_pComponent->setPixelFormat(format); 
+	bool ICanvas::setPixelFormat(PixelFormat format)
+	{
+		return m_pComponent->setPixelFormat(format);
 	}
 
 	//____ pixelFormat() ________________________________________________________
 	/**
 	*	@brief	Gets the pixel format of the surface.
 	*
-	*	Gets the pixel format of the surface. Please note that you will get a valid 
+	*	Gets the pixel format of the surface. Please note that you will get a valid
 	*   return value even if no surface exists due to lack of SurfaceFactory.
 	*
 	*	@return Pixel format of the surface, which is guaranteed to be one of BGR_8, BGRA_8, BGR_16
 	*	or BGRA_16.
 	**/
 
-	PixelFormat ICanvas::pixelFormat() const 
-	{ 
-		return m_pComponent->m_pixelFormat; 
+	PixelFormat ICanvas::pixelFormat() const
+	{
+		return m_pComponent->m_pixelFormat;
 	}
 
 	//____ setSize() __________________________________________________________
@@ -179,9 +179,9 @@ namespace wg
 	*	@return		False if specified size was out of allowed range.
 	**/
 
-	bool ICanvas::setSize(Size sz) 
-	{ 
-		return m_pComponent->setSurfaceSize(sz); 
+	bool ICanvas::setSize(Size sz)
+	{
+		return m_pComponent->setSurfaceSize(sz);
 	}
 
 	//____ isSizeFixed() ______________________________________________________
@@ -193,9 +193,9 @@ namespace wg
 	*	@return True if surface has a fixed size.
 	**/
 
-	bool ICanvas::isSizeFixed() const 
-	{ 
-		return m_pComponent->m_fixedSize == Size(0, 0) ? false : true; 
+	bool ICanvas::isSizeFixed() const
+	{
+		return m_pComponent->m_fixedSize == Size(0, 0) ? false : true;
 	}
 
 	//____ size() _____________________________________________________________
@@ -205,13 +205,13 @@ namespace wg
 	*	Gets the dimensions of the surface, which might be different from the dimensions
 	*	of this CCanvas component if a fixed size has been set.
 	*
-	*	@return Size of surface OR specified fixed size if no surface present and fixed 
+	*	@return Size of surface OR specified fixed size if no surface present and fixed
 	*			size has been set OR {0,0} if neither.
 	**/
 
-	Size ICanvas::size() const 
-	{ 
-		return m_pComponent->m_pSurface ? m_pComponent->m_pSurface->size() : m_pComponent->m_fixedSize; 
+	Size ICanvas::size() const
+	{
+		return m_pComponent->m_pSurface ? m_pComponent->m_pSurface->size() : m_pComponent->m_fixedSize;
 	}
 
 	//____ setBackColor() _____________________________________________________
@@ -226,9 +226,9 @@ namespace wg
 	*
 	*	Default back color is White (0xFFFFFFFF). Changing the back color will discard the current surface.
 	**/
-	void ICanvas::setBackColor(Color color) 
-	{ 
-		m_pComponent->setBackColor(color); 
+	void ICanvas::setBackColor(Color color)
+	{
+		m_pComponent->setBackColor(color);
 	}
 
 	//____ backColor() ________________________________________________________
@@ -241,9 +241,9 @@ namespace wg
 	*
 	*	@return	Back color as specified for the surface.
 	**/
-	Color ICanvas::backColor() const 
-	{ 
-		return m_pComponent->m_backColor; 
+	Color ICanvas::backColor() const
+	{
+		return m_pComponent->m_backColor;
 	}
 
 	//____ setPresentationScaling() ___________________________________________
@@ -252,14 +252,14 @@ namespace wg
 	*
 	*	@param	policy	Either Original, Stretch or Scale.
 	*
-	*	Specifies how a fixed size surface is stretched or scaled when the surface is 
+	*	Specifies how a fixed size surface is stretched or scaled when the surface is
 	*	of a different size than the CCanvas component.
 	*
 	*	Default value is SizePolicy2D::Original.
 	**/
-	void ICanvas::setPresentationScaling(SizePolicy2D policy) 
-	{ 
-		m_pComponent->setPresentationScaling(policy); 
+	void ICanvas::setPresentationScaling(SizePolicy2D policy)
+	{
+		m_pComponent->setPresentationScaling(policy);
 	}
 
 	//____ presentationScaling() ______________________________________________
@@ -269,9 +269,9 @@ namespace wg
 	*	Gets how a fixed size surface is scaled to cover the CCanvas components area.
 	**/
 
-	SizePolicy2D ICanvas::presentationScaling() const 
-	{ 
-		return m_pComponent->m_presentationScaling; 
+	SizePolicy2D ICanvas::presentationScaling() const
+	{
+		return m_pComponent->m_presentationScaling;
 	}
 
 	//____ setOrigo() _________________________________________________________
@@ -283,9 +283,9 @@ namespace wg
 	*
 	**/
 
-	void ICanvas::setOrigo(Origo origo) 
-	{ 
-		m_pComponent->setOrigo(origo); 
+	void ICanvas::setOrigo(Origo origo)
+	{
+		m_pComponent->setOrigo(origo);
 	}
 
 	//____ origo() ____________________________________________________________
@@ -296,9 +296,9 @@ namespace wg
 	*
 	*	@return	Origo used for alignment of surface
 	**/
-	Origo ICanvas::origo() const 
-	{ 
-		return m_pComponent->m_origo; 
+	Origo ICanvas::origo() const
+	{
+		return m_pComponent->m_origo;
 	}
 
 	//____ present() ____________________________________________________________
@@ -314,8 +314,8 @@ namespace wg
 	**/
 
 	void ICanvas::present()
-	{ 
-		m_pComponent->present(); 
+	{
+		m_pComponent->present();
 	}
 
 	/**
@@ -328,8 +328,8 @@ namespace wg
 	*
 	**/
 	void ICanvas::present(Rect area)
-	{ 
-		m_pComponent->present(area); 
+	{
+		m_pComponent->present(area);
 	}
 
 	//____ surface() ____________________________________________________________
@@ -347,9 +347,9 @@ namespace wg
 	*	@return	Pointer to surface or nullptr if no surface present.
 	**/
 
-	Surface_wp ICanvas::surface() const 
-	{ 
-		return m_pComponent->m_pSurface.rawPtr(); 
+	Surface_wp ICanvas::surface() const
+	{
+		return m_pComponent->m_pSurface.rawPtr();
 	}
 
 } // namespace wg

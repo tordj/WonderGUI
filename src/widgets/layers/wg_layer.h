@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,15 +27,15 @@
 #include <wg_ichild.h>
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Layer;
 	typedef	StrongPtr<Layer>	Layer_p;
 	typedef	WeakPtr<Layer>		Layer_wp;
-	
 
-	
+
+
 	//____ LayerSlot ___________________________________________________________
 
 	class LayerSlot : public Slot		/** @private */
@@ -44,8 +44,8 @@ namespace wg
 		Rect	geo;
 	};
 
-	
-	
+
+
 	/**
 	 * @brief	Base class for containers that provides layers of different kinds.
 	 *
@@ -66,10 +66,10 @@ namespace wg
 	 * Children that resides within the layer itself are usually referred to as layer children.
 	 *
 	 **/
-	
+
 	class Layer : public Container, protected ChildHolder
 	{
-	
+
 	public:
 
 		//.____ Interfaces _______________________________________
@@ -83,17 +83,17 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static Layer_p	cast( Object * pObject );
-	
+
 		//.____ Geometry ____________________________________________
-	
+
 		int					matchingHeight( int width ) const;
 		int					matchingWidth( int height ) const;
-	
+
 		Size				preferredSize() const;
-	
+
 	protected:
 		Layer();
-	
+
 		// Overloaded from WidgetHolder
 
 		Coord		_childPos( Slot * pSlot ) const;
@@ -108,7 +108,7 @@ namespace wg
 
 
 		// Overloaded from Container
-		
+
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
 
@@ -123,7 +123,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_setSize(const Size& size);		
+		void		_setSize(const Size& size);
 		void		_cloneContent( const Widget * _pOrg );
 
 		//
@@ -133,9 +133,9 @@ namespace wg
 		virtual const LayerSlot * _beginLayerSlots() const = 0;
 		virtual const LayerSlot * _endLayerSlots() const = 0;
 		virtual int			_sizeOfLayerSlot() const = 0;
-		
-        inline LayerSlot * _beginLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
-        inline LayerSlot * _endLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
+
+		inline LayerSlot * _beginLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
+		inline LayerSlot * _endLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
 
 		inline LayerSlot * _incLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)+sizeOf); }
 		inline const LayerSlot * _incLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)+sizeOf); }
@@ -143,10 +143,10 @@ namespace wg
 		inline LayerSlot * _decLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)-sizeOf); }
 		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
 
-	
+
 		Slot				m_baseSlot;
 	};
-	
+
 
 
 } // namespace wg

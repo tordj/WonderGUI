@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -413,14 +413,14 @@ namespace wg
 	bool IFlexPanelChildren::setSize( int index, const Size& size )
 	{
 		//TODO: Assert
-		
+
 		return _setSize(m_pSlotArray->slot(index), size );
 	}
 
 	bool IFlexPanelChildren::setSize( iterator it, const Size& size )
 	{
 		//TODO: Assert
-		
+
 		return _setSize(it._slot(), size );
 	}
 
@@ -1106,7 +1106,7 @@ namespace wg
 		}
 		else
 		{
-	        Rect geo = pSlot->placementGeo;
+			Rect geo = pSlot->placementGeo;
 
 			Coord hotspot = pSlot->hotspot.pos(geo.size());
 			Coord offset = geo.pos() + pSlot->origo.offset - hotspot;

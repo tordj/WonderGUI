@@ -189,7 +189,7 @@ namespace sdl_wglib
 
 		BlockSkin_p pFrameSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1, SPLITS_AND_FRAME_OFS), Size(10,0), Border(2) );
 		pFrameSkin->setContentPadding(Border(3));
-		
+
 //		WgBlocksetPtr pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, Rect(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
 //		pComboboxBlocks->setFrame(Border(1,1,20,1));
 //		pComboboxBlocks->setPadding(Border(2,2,21,2));
@@ -293,10 +293,10 @@ namespace sdl_wglib
 		pDB->addWidget( "combobox", pCombobox );
 */
 		// Create standard view
-		
+
 		{
 			ScrollPanel_p pView = ScrollPanel::create();
-			
+
 			Widget_p pHScrollbar = pDB->cloneWidget( "hscrollbar" );
 			Widget_p pVScrollbar = pDB->cloneWidget( "vscrollbar" );
 

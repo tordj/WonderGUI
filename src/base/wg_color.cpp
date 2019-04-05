@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -23,11 +23,11 @@
 #include <wg_color.h>
 #include <wg_util.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const Color Color::Transparent		( 0x00000000 );
-	
+
 	const Color Color::AliceBlue		( 0xFFF0F8FF );
 	const Color Color::AntiqueWhite		( 0xFFFAEBD7 );
 	const Color Color::Aqua				( 0xFF00ffff );
@@ -175,8 +175,8 @@ namespace wg
 	const Color Color::WhiteSmoke  		( 0xFFf5f5f5 );
 	const Color Color::Yellow  			( 0xFFffff00 );
 	const Color Color::YellowGreen 		( 0xFF9acd32 );
-	
-	
+
+
 	//-------------------------------------------------------------------
 	Color Color::operator+( const Color& k ) const
 	{
@@ -187,7 +187,7 @@ namespace wg
 		kNewColor.a = Util::limitUint8(((int)a) + k.a);
 		return kNewColor;
 	}
-	
+
 	//-------------------------------------------------------------------
 	Color Color::operator-( const Color& k ) const
 	{
@@ -198,7 +198,7 @@ namespace wg
 		kNewColor.a = Util::limitUint8(((int)a) - k.a);
 		return kNewColor;
 	}
-	
+
 	//-------------------------------------------------------------------
 	Color Color::operator*( float f ) const
 	{
@@ -209,7 +209,7 @@ namespace wg
 		kNewColor.a = (uint8_t)( (float)a * f );
 		return kNewColor;
 	}
-	
+
 	//-------------------------------------------------------------------
 	Color Color::operator*( const Color& k ) const
 	{
@@ -220,9 +220,9 @@ namespace wg
 		kNewColor.a = (uint8_t)(((int)a * (int)k.a )/255);
 		return kNewColor;
 	}
-	
+
 	//____ setCMYK ___________________________________________________________________
-	
+
 	void Color::setCMYK( float c, float m, float y, float k, uint8_t alpha )
 	{
 		r = (uint8_t) (255*(1.f-c)*(1.f-k));
@@ -230,49 +230,49 @@ namespace wg
 		b = (uint8_t) (255*(1.f-y)*(1.f-k));
 		a = alpha;
 	}
-	
-	
+
+
 	//____ getCMYK() _______________________________________________________________
-	
+
 	void Color::getCMYK( float* _c, float* _m, float* _y, float* _k )
 	{
 		float fr = r / 255.f;
 		float fg = r / 255.f;
 		float fb = r / 255.f;
-	
+
 		float k = 1.f - wg::max( fr, fg, fb );
 		* _c = (1.f-fr-k) / (1.f-k);
 		* _m = (1.f-fg-k) / (1.f-k);
 		* _y = (1.f-fb-k) / (1.f-k);
 		* _k = k;
 	}
-	
+
 	//____ blend() ________________________________________________________________
-	
+
 	Color Color::mix( Color color1, Color color2, uint8_t balance )
 	{
 		Color col;
-	
+
 		col.r = color1.r + (uint8_t) (((int)color2.r) - ((int)color1.r)*balance)/255;
 		col.g = color1.g + (uint8_t) (((int)color2.g) - ((int)color1.g)*balance)/255;
 		col.b = color1.b + (uint8_t) (((int)color2.b) - ((int)color1.b)*balance)/255;
 		col.a = color1.a + (uint8_t) (((int)color2.a) - ((int)color1.a)*balance)/255;
-	
+
 		return col;
 	}
-	
+
 	//____ invert()_________________________________________________________________
-	
+
 	Color Color::invert( Color color, uint8_t grade )
-	{		
+	{
 		color.r = ((255-color.r)*grade + color.r*(255-grade))/255;
 		color.g = ((255-color.g)*grade + color.g*(255-grade))/255;
 		color.b = ((255-color.b)*grade + color.b*(255-grade))/255;
 		return color;
 	}
-	
+
 	//____ blend()___________________________________________________________________
-	
+
 	Color Color::blend( Color baseColor, Color blendColor, BlendMode operation )
 	{
 		switch( operation )
@@ -293,10 +293,10 @@ namespace wg
 			case BlendMode::Replace:
 			default:
 				return blendColor;
-		}		
+		}
 	}
-	
-	
-	
+
+
+
 
 } // namespace wg

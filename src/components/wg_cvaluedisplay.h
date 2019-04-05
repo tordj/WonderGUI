@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,10 +25,10 @@
 
 #include <wg_cvalue.h>
 
-namespace wg 
+namespace wg
 {
-		
-	
+
+
 	//____ CValueDisplay ____________________________________________________________
 
 	class CValueDisplay : public CValue		/** @private */
@@ -36,24 +36,24 @@ namespace wg
 	public:
 		CValueDisplay(ComponentHolder * pHolder);
 		~CValueDisplay() {}
-	
+
 		// ModValue methods
-	
+
 		void				clear();
 		bool				set( int64_t value, int scale );
-		
+
 		bool				setRange( int64_t min, int64_t max );
 		inline int64_t		min() const { return m_minValue; }
-		inline int64_t		max() const { return m_maxValue; }	
+		inline int64_t		max() const { return m_maxValue; }
 
 		inline void			onValueModified() { _notify( ComponentNotif::ValueModified, nullptr ); }
-	
+
 	protected:
 		int64_t				m_minValue;
 		int64_t				m_maxValue;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_CVALUEDISPLAY_DOT_H

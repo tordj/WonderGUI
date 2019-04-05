@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -40,15 +40,15 @@ namespace wg
 
 
 	//____ create() _______________________________________________________________
-	
+
 	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport, int uboBindingPoint)
 	{
 		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
-		
+
 		GLenum err = glGetError();
 		if( err != 0 )
 			return GlGfxDevice_p(nullptr);
-		
+
 		return p;
 	}
 
@@ -314,7 +314,7 @@ namespace wg
 	//____ isInstanceOf() _________________________________________________________
 
 	bool GlGfxDevice::isInstanceOf( const char * pClassName ) const
-	{ 		
+	{
 		if( pClassName==CLASSNAME )
 			return true;
 
@@ -324,8 +324,8 @@ namespace wg
 	//____ className() ____________________________________________________________
 
 	const char * GlGfxDevice::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
 
 	//____ cast() _________________________________________________________________
@@ -339,19 +339,19 @@ namespace wg
 	}
 
 	//____ surfaceClassName() _______________________________________________________
-	
+
 	const char * GlGfxDevice::surfaceClassName( void ) const
 	{
 		return GlSurface::CLASSNAME;
 	}
-	
+
 	//____ surfaceFactory() ______________________________________________________
 
 	SurfaceFactory_p GlGfxDevice::surfaceFactory()
 	{
 		if( !m_pSurfaceFactory )
 			m_pSurfaceFactory = GlSurfaceFactory::create();
-	
+
 		return m_pSurfaceFactory;
 	}
 
@@ -383,7 +383,7 @@ namespace wg
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
 		}
-	
+
 		return true;
 	}
 
@@ -459,7 +459,7 @@ namespace wg
 			_beginStateCommand(Command::SetBlendMode, 1);
 			m_commandBuffer[m_commandOfs++] = (int) blendMode;
 		}
-		
+
 		return true;
 	}
 
@@ -498,7 +498,7 @@ namespace wg
 		// Remember GL states so we can restore in EndRender()
 
 		m_glDepthTest 		= glIsEnabled(GL_DEPTH_TEST);
-        m_glScissorTest 	= glIsEnabled(GL_SCISSOR_TEST);
+		m_glScissorTest 	= glIsEnabled(GL_SCISSOR_TEST);
 		m_glBlendEnabled  	= glIsEnabled(GL_BLEND);
 		glGetIntegerv(GL_BLEND_SRC, &m_glBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &m_glBlendDst);
@@ -511,10 +511,10 @@ namespace wg
 		//  Modify states
 
 		glDisable(GL_DEPTH_TEST);
-        glEnable(GL_SCISSOR_TEST);
+		glEnable(GL_SCISSOR_TEST);
 
 
-		// If there already is an active device, that needs to be flushed before we 
+		// If there already is an active device, that needs to be flushed before we
 		// take over the role as the active device.
 
 		if (s_pActiveDevice)
@@ -539,7 +539,7 @@ namespace wg
 		_setBlendMode(m_blendMode);
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
-        // Prepare for rendering
+		// Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
 
@@ -557,7 +557,7 @@ namespace wg
 
 	bool GlGfxDevice::endRender()
 	{
-    	assert( glGetError() == 0 );
+		assert( glGetError() == 0 );
 		if( m_bRendering == false )
 			return false;
 
@@ -576,8 +576,8 @@ namespace wg
 		if( m_glDepthTest )
 			glEnable(GL_DEPTH_TEST);
 
-        if( !m_glScissorTest )
-            glDisable(GL_SCISSOR_TEST);
+		if( !m_glScissorTest )
+			glDisable(GL_SCISSOR_TEST);
 
 		if( m_glBlendEnabled )
 			glEnable(GL_BLEND);
@@ -615,7 +615,7 @@ namespace wg
 
 		//
 
-        glFlush();
+		glFlush();
 	}
 
 
@@ -1313,7 +1313,7 @@ namespace wg
 
 		//
 
-		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for 
+		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
 
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
@@ -1517,7 +1517,7 @@ namespace wg
 					endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
 // 					endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
 				}
-				
+
 				*pExtras++ = edgeIn/256.f;					// Segment begin pixel
 				*pExtras++ = increment;						// Segment increment
 				*pExtras++ = beginAdder;					// Segment begin adder
@@ -1528,7 +1528,7 @@ namespace wg
 		}
 
 		m_extrasOfs += extrasSpaceNeeded;
-		  
+
 		assert(glGetError() == 0);
 
 
@@ -1573,7 +1573,7 @@ namespace wg
 		// Clear pending flags of active BlitSource and Canvas.
 
 		if (m_pActiveBlitSource)
-			m_pActiveBlitSource->m_bPendingReads = false;		
+			m_pActiveBlitSource->m_bPendingReads = false;
 
 		while (pCmd < pCmdEnd)
 		{
@@ -1895,7 +1895,7 @@ namespace wg
 
 		return programID;
 	}
-	
+
 	//____ _initTables() ___________________________________________________________
 
 	void GlGfxDevice::_initTables()
@@ -1926,6 +1926,6 @@ namespace wg
 
 		return thickness * scale;
 	}
-	
+
 } // namespace wg
 

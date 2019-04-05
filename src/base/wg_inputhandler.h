@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -32,29 +32,29 @@
 
 
 /* LEFT TO DO:
- * 
- * 
+ *
+ *
  * Automatic garbage collection on msgRouter.
- * 
+ *
  * Character handling.
  */
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class RootPanel;
 	typedef	StrongPtr<RootPanel>		RootPanel_p;
 	typedef	WeakPtr<RootPanel>		RootPanel_wp;
-	
+
 	class InputHandler;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	WeakPtr<InputHandler>		InputHandler_wp;
-	
+
 	class InputHandler : public Receiver
 	{
-		
-	friend class RootPanel;	
+
+	friend class RootPanel;
 	friend class PopupOpener;
 
 	public:
@@ -123,13 +123,13 @@ namespace wg
 
 		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
 
-		
+
 	protected:
 		InputHandler();
 		~InputHandler();
-	
+
 		Widget *	_updateEnteredWidgets( Widget * pMarkedWidget, int64_t timestamp );
-	
+
 		void		_processButtonPress( MouseButton button, int64_t timestamp );
 		void		_processButtonRelease( MouseButton button, int64_t timestamp );
 		void		_handleButtonRepeats( int64_t timestamp );
@@ -137,12 +137,12 @@ namespace wg
 		void 		_processKeyPress( int nativeKeyCode, int64_t timestamp );
 		void 		_processKeyRelease( int nativeKeyCode, int64_t timestamp );
 		void		_handleKeyRepeats( int64_t timestamp );
-		
+
 
 		bool		_focusChanged( RootPanel * pRoot, Widget * pOldFocused, Widget * pNewFocused );
-	
+
 		int			_widgetPosInList( const Widget * pWidget, const std::vector<Widget_wp>& list );
-	
+
 		void 		_setFocused( Widget * pWidget );
 		void 		_setUnfocused( Widget * pWidget );
 
@@ -150,34 +150,34 @@ namespace wg
 
 
 		Widget *	_focusedWidget() const;
-	
-	
+
+
 		char			m_inputId;
 		RouteId			m_tickRoute;
 		int64_t			m_timeStamp;
-		
+
 		Coord			m_pointerPos;
-		
-		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside". 
+
+		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside".
 		Widget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
 		RootPanel_wp	m_pFocusedRoot;		// RootPanel that is focused (has the focused widget).
-	
+
 		std::vector<Widget_wp>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
-		
-	
+
+
 		PointerStyle	m_pointerStyle;
 		ModifierKeys	m_modKeys;
-	
-	
+
+
 		// Current button states
-	
+
 		bool			m_bButtonPressed[MouseButton_size];
-	
+
 		Widget_wp		m_latestPressWidgets[MouseButton_size];		// Widget that received the latest press, for each button.
 		int64_t			m_latestPressTimestamps[MouseButton_size];	// Timestamp of the latest press, for each button.
 		Coord			m_latestPressPosition[MouseButton_size];	// Coord of the latest press, for each button.
-		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.	
+		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.
 
 		// Current key states
 
@@ -186,15 +186,15 @@ namespace wg
 		{
 			int			nativeKeyCode;
 			Key		translatedKeyCode;
-			int64_t		pressTimestamp;	
+			int64_t		pressTimestamp;
 			Widget_wp	pWidget;
 		};
-	
+
 		std::vector<KeyDownInfo>	m_keysDown;				// One entry for each currently depressed key, in order of being pressed.
 
 
 		// Settings for keyboard/pointer input
-	
+
 		int				m_doubleClickTimeTreshold;		// Maximum millseconds between first and second press to count as a doubleclick.
 		int				m_doubleClickDistanceTreshold;	// Maximum distance the pointer may move between first and second press to count as a doubleclick.
 
@@ -205,7 +205,7 @@ namespace wg
 		int				m_keyRepeatRate;
 
 		std::map<int,Key>	m_keycodeMap;		// Maps native keycodes to Key.
-	
+
 		struct CommandEntry
 		{
 			ModifierKeys	modKeys;
@@ -215,8 +215,8 @@ namespace wg
 		std::map<int,std::vector<CommandEntry>> m_commandMap;
 
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_INPUTHANDLER_DOT_H

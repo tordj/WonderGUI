@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -29,13 +29,13 @@
 #include <wg_icanvas.h>
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Canvas;
 	typedef	StrongPtr<Canvas>	Canvas_p;
 	typedef	WeakPtr<Canvas>		Canvas_wp;
-	
+
 
 
 
@@ -52,7 +52,7 @@ namespace wg
 	 * can also provide a SurfaceFactory and specify PixelFormat and size for the surface. Please see
 	 * the CCanvas interface documentation for details.
 	 *
-	 * Please note that "canvas" is not only the name of this widget, but used throughout 
+	 * Please note that "canvas" is not only the name of this widget, but used throughout
 	 * WonderGUI for surfaces and rectangular areas that are destinations for drawing operations.
 	 * To make a clearer distinction we try to write Canvas with a capital C when
 	 * referring to the widget and a small c everywhere else, but through
@@ -60,8 +60,8 @@ namespace wg
 	 * (like "setCanvas()" or "pCanvas").
 	 *
 	 **/
-	
-	
+
+
 	class Canvas : public Widget
 	{
 		friend class ICanvas;
@@ -91,12 +91,12 @@ namespace wg
 
 		Size			preferredSize() const;
 
-	
+
 	protected:
 		Canvas();
 		virtual ~Canvas();
 		virtual Widget* _newOfMyType() const { return new Canvas(); };
-	
+
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize(const Size& size);
 		virtual void	_setSkin(Skin * pSkin);
@@ -106,8 +106,8 @@ namespace wg
 
 		CCanvas	m_canvas;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_CANVAS_DOT_H

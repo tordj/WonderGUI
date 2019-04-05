@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,23 +29,23 @@
 
 #include <wg_pointers.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Coord;
-	
+
 	class TextStyle;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	WeakPtr<TextStyle>		TextStyle_wp;
-		
+
 	class TextLink;
 	typedef	StrongPtr<class TextLink> TextLink_p;
 	typedef	WeakPtr<class TextLink> TextLink_wp;
-	
-	
+
+
 	//____ TextLink _____________________________________________________________
-	
-	
+
+
 	class TextLink : public Object
 	{
 	public:
@@ -55,17 +55,17 @@ namespace wg
 		static TextLink_p create( const std::string& link, TextStyle * pStyle ) { return TextLink_p(new TextLink(link, pStyle)); }
 
 		//.____ Identification __________________________________________
-	
+
 		bool					isInstanceOf( const char * pClassName ) const;
 		const char *			className( void ) const;
 		static const char		CLASSNAME[];
 		static TextLink_p		cast( Object * pObject );
 
-		//.____ Misc ___________________________________________________________		
-		
+		//.____ Misc ___________________________________________________________
+
 		const std::string&		link() const { return m_link; }
 		TextStyle_p				style() const;
-	
+
 	private:
 		TextLink( const std::string& link );
 		TextLink( const std::string& link, TextStyle * style );
@@ -73,9 +73,9 @@ namespace wg
 
 		std::string				m_link;
 		TextStyle_p				m_pStyle;
-	
+
 	};
-	
+
 
 } // namespace wg
 #endif //WG_TEXTLINK_DOT_H

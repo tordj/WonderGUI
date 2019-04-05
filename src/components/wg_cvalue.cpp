@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -23,20 +23,20 @@
 #include <wg_widget.h>
 #include <wg_cvalue.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	//____ Constructor _____________________________________________________________
-	
+
 	CValue::CValue(ComponentHolder * pHolder) : CText(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
 	}
-	
+
 	//____ setFormatter() __________________________________________________________
-	
+
 	void CValue::setFormatter( ValueFormatter * pFormatter )
 	{
 		if( m_pFormatter.rawPtr() != pFormatter )
@@ -45,9 +45,9 @@ namespace wg
 			_regenText();
 		}
 	}
-	
+
 	//____ clearFormatter() ________________________________________________________
-	
+
 	void CValue::clearFormatter()
 	{
 		if( m_pFormatter )
@@ -56,9 +56,9 @@ namespace wg
 			_regenText();
 		}
 	}
-	
+
 	//____ clear() _________________________________________________________________
-	
+
 	void CValue::clear()
 	{
 		if( m_value != 0 )
@@ -68,16 +68,16 @@ namespace wg
 			_regenText();
 		}
 	}
-	
+
 	//____ set() ___________________________________________________________________
-	
+
 	bool CValue::set( int64_t value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
 			if( scale <= 0 )
 				return false;
-			
+
 			m_value = value;
 			m_scale = scale;
 			_regenText();
@@ -95,7 +95,7 @@ namespace wg
 			_regenText();
 		}
 	}
-	
+
 	void CValue::set( double value )
 	{
 		value *= m_scale;
@@ -107,17 +107,17 @@ namespace wg
 		}
 	}
 	*/
-	
+
 	//____ refresh() _____________________________________________________________
-	
+
 	void CValue::refresh()
-	{	
+	{
 		_regenText();
 		CText::refresh();
 	}
-	
+
 	//____ _regenText() ____________________________________________________________
-	
+
 	void CValue::_regenText()
 	{
 		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : Base::defaultValueFormatter().rawPtr();
@@ -125,7 +125,7 @@ namespace wg
 		if( m_pFormatter )
 			m_charBuffer = pFormatter->format(m_value, m_scale);
 		_requestRender();
-		
+
 		//TODO: Conditional call to _requestResize();
 	}
 

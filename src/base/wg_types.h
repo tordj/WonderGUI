@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,10 +29,10 @@
 #undef min
 #undef max
 
-namespace wg 
+namespace wg
 {
-		
-#if defined(_WIN32) 	
+
+#if defined(_WIN32)
 #	if defined(_M_X64) || defined(_M_IX86)
 #		define IS_BIG_ENDIAN 0
 #		define IS_LITTLE_ENDIAN 1
@@ -69,14 +69,14 @@ namespace wg
 	#define IS_BIG_ENDIAN 0
 	#define IS_LITTLE_ENDIAN 0
 	#endif
-	
+
 	template<typename T> inline T min(const T &a, const T &b) { return a < b ? a : b; }
 	template<typename T> inline T min(const T &a, const T &b, const T &c) { if( a < b ) return a < c ? a : c; else return b < c ? b : c; }
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
 	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
-	
+
 	template<typename T> inline void limit(T& x, T min, T max) { if( x < min) x = min; if( x > max) x = max; }
-			
+
 	enum class StateEnum : uint8_t
 	{
 		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
@@ -85,9 +85,9 @@ namespace wg
 		HoveredFocused			= 4+1,
 		Pressed					= 4+2,			///< Mouse button (usually left one) is pressed on element.
 		PressedFocused			= 4+2+1,
-		Selected				= 8,			///< Element is in a selected state, like a selected checkbox or item in a list. 
-		SelectedFocused			= 8+1,			
-		SelectedHovered			= 8+4,			
+		Selected				= 8,			///< Element is in a selected state, like a selected checkbox or item in a list.
+		SelectedFocused			= 8+1,
+		SelectedHovered			= 8+4,
 		SelectedHoveredFocused	= 8+4+1,
 		SelectedPressed			= 8+4+2,
 		SelectedPressedFocused	= 8+4+2+1,
@@ -98,11 +98,11 @@ namespace wg
 		Disabled				= 32,			///< Element is disabled and can't be focused or pressed.
 		DisabledSelected		= 32+8,
 	};
-	
+
 	static const int	StateEnum_Nb	= 18;			// Number of states
 	static const int	StateEnum_MaxValue	= 40;		// Highest value for StateEnum
-	
-	class State 
+
+	class State
 	{
 	public:
 
@@ -112,7 +112,7 @@ namespace wg
 		State( StateEnum state ) { m_state = (uint8_t) state; }
 
 		//.____ State __________________________________________________________
-	
+
 		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
 		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
 		bool	setFocused(bool bFocused) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
@@ -120,7 +120,7 @@ namespace wg
 		bool	setPressed(bool bPressed) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
 		bool	setTargeted(bool bTargeted) { if (m_state == ((uint8_t)StateEnum::Disabled)) return false; if (bTargeted) m_state |= ((uint8_t)StateEnum::Targeted); else m_state &= ~(((uint8_t)StateEnum::Targeted) - ((uint8_t)StateEnum::Hovered)); return true; }
 
-	
+
 		bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
 		bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
 		bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
@@ -132,29 +132,29 @@ namespace wg
 
 		inline bool operator==(StateEnum state) const { return m_state == ((uint8_t)state); }
 		inline bool operator!=(StateEnum state) const { return m_state != ((uint8_t)state); }
-	
+
 		inline StateEnum operator=(StateEnum state) { m_state = ((uint8_t)state); return *this; }
-	
+
 		operator StateEnum() const { return (StateEnum) m_state; }
 
-        inline State operator+(StateEnum state) const { int s = m_state | (uint8_t) state; if (s & (int) StateEnum::Disabled) s &= (int) StateEnum::DisabledSelected; return (StateEnum) s; }
-        inline State operator-(StateEnum _state) const 
-		{ 
+		inline State operator+(StateEnum state) const { int s = m_state | (uint8_t) state; if (s & (int) StateEnum::Disabled) s &= (int) StateEnum::DisabledSelected; return (StateEnum) s; }
+		inline State operator-(StateEnum _state) const
+		{
 			int state = (int)_state;
 			int hovered = int(StateEnum::Hovered);
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
 
 			if ((state & hoverDependant) != 0 )
 				state &= ~hovered;				// Don't remove hovered just because we remove a state dependant on it.
-			int s = (m_state & ~state); 
-			if ((s & hovered) == 0) 
+			int s = (m_state & ~state);
+			if ((s & hovered) == 0)
 				s &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
-			return (StateEnum)s; 
+			return (StateEnum)s;
 		}
-        
-        inline State& operator+=(StateEnum state) { m_state |= (uint8_t) state; if (int(m_state) & int(StateEnum::Disabled)) m_state &= int(StateEnum::DisabledSelected); return *this; }
-        inline State& operator-=(StateEnum _state) 
-		{ 
+
+		inline State& operator+=(StateEnum state) { m_state |= (uint8_t) state; if (int(m_state) & int(StateEnum::Disabled)) m_state &= int(StateEnum::DisabledSelected); return *this; }
+		inline State& operator-=(StateEnum _state)
+		{
 			int state = (int)_state;
 			int hovered = int(StateEnum::Hovered);
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
@@ -165,12 +165,12 @@ namespace wg
 			if ((m_state & hovered) == 0)
 				m_state &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
 			return *this;
-        }
-        
+		}
+
 	private:
 		uint8_t		m_state;
 	};
-	
+
 
 	template<typename T> class Bitmask
 	{
@@ -194,25 +194,25 @@ namespace wg
 		T	m_mask;
 	};
 
-	
+
 	typedef unsigned int	RouteId;
-	
+
 	typedef uint16_t		TextStyle_h;
-		
-	
+
+
 	//____ ExtChar __________________________________________________________
-		
+
 	enum class ExtChar : uint16_t
 	{
 		BreakPermitted			= 0x82,
 		HyphenBreakPermitted	= 0x83,
 		NoBreakSpace			= 0xA0,
-	
+
 		Ellipsis				= 0x2026
 	};
-	
+
 	//____ CodePage ______________________________________________________________
-	
+
 	enum class CodePage		//. autoExtras
 	{
 		Latin1,
@@ -227,9 +227,9 @@ namespace wg
 		_1258,		///< Windows Vietnam
 		_874,		///< Windows Thai
 	};
-		
+
 	//____ BreakRules ____________________________________________________________
-	
+
 	enum class BreakRules : uint8_t
 	{
 		NoBreak		= 0,
@@ -237,11 +237,11 @@ namespace wg
 		BreakOn		= 32,
 		BreakAfter	= 64
 	};
-	
+
 	//____ BlendMode ____________________________________________________________
-	
+
 	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.
-			
+
 	enum class BlendMode : uint8_t	//. autoExtras
 	{
 		Undefined,			///< Blitting: Defaults to Blend
@@ -264,7 +264,7 @@ namespace wg
 	};
 
 	//____ PointerStyle __________________________________________________________
-	
+
 	enum class PointerStyle : uint8_t	//. autoExtras
 	{
 		Arrow,						// default arrow
@@ -282,9 +282,9 @@ namespace wg
 		ResizeNS,						// double-pointed arrow pointing north and south
 		ResizeWE,						// double-pointed arrow pointing west and east
 	};
-	
+
 	//____ MouseButton _________________________________________________________
-	
+
 	enum class MouseButton : uint8_t	//. autoExtras
 	{
 		None = 0,
@@ -294,10 +294,10 @@ namespace wg
 		X1,
 		X2,
 	};
-	
-	
+
+
 	//____ AnimMode _____________________________________________________________
-	
+
 	enum class AnimMode : uint8_t	//. autoExtras
 	{
 		Forward,
@@ -307,23 +307,23 @@ namespace wg
 		PingPong,
 		BackwardPingPong
 	};
-		
-	
+
+
 	//____ SearchMode _____________________________________________________________
-	
+
 	enum class SearchMode	//. autoExtras
 	{
 		MarkPolicy,			///< Perform a mark test on Widget.
 		Geometry,				///< Goes strictly on geometry, ignores alpha.
 		ActionTarget,		///< Like MARKPOLICY, but takes modality into account.
 	};
-	
+
 	//____ Origo _____________________________________________________________
-	
+
 	enum class Origo : uint8_t	//. autoExtras
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
-	
+
 		NorthWest,
 		North,
 		NorthEast,
@@ -334,9 +334,9 @@ namespace wg
 		West,
 		Center
 	};
-	
+
 	//____ Direction ____________________________________________________________
-	
+
 	enum class Direction : uint8_t	//. autoExtras
 	{
 		Up,
@@ -344,21 +344,21 @@ namespace wg
 		Down,
 		Left
 	};
-	
+
 	//____ Orientation __________________________________________________________
-	
+
 	enum class Orientation : uint8_t	//. autoExtras
 	{
 		Horizontal,
 		Vertical
 	};
-	
+
 	//____ SizePolicy ___________________________________________________________
 	/**
-		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel, 
+		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,
 		to limit/control the geometry of children. Different SizePolicies can be set
 		for horizontal and vertical size.
-	
+
 		It is used in combination with a size specified by parent. In the case of
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified for the child.
@@ -370,7 +370,7 @@ namespace wg
 		Confined,			///< Childs size is limited to the size specified by parent.
 		Expanded,			///< Childs size is set to at least the size specified by parent.
 	};
-	
+
 
 	//____ SizePolicy2D ___________________________________________________________
 
@@ -383,51 +383,51 @@ namespace wg
 
 
 	//____ MsgType ______________________________________________________________
-	
+
 	enum class MsgType	//. autoExtras
 	{
 		Dummy = 0,
 		Tick,
 		PointerChange,
-	
+
 		FocusGained,
 		FocusLost,
-	
+
 		MouseEnter,
 		MouseMove,
 		MouseLeave,
-	
+
 		MousePress,
 		MouseRepeat,
 		MouseDrag,
 		MouseRelease,
 		MouseClick,
 		MouseDoubleClick,
-	
+
 		KeyPress,
 		KeyRepeat,
 		KeyRelease,
 		TextInput,
 		EditCommand,
 		WheelRoll,
-	
-        DropPick,
-        DropProbe,
-        DropEnter,
-        DropMove,
-        DropLeave,
-        DropDeliver,
-        DropCancel,
-        DropComplete,
-                
+
+		DropPick,
+		DropProbe,
+		DropEnter,
+		DropMove,
+		DropLeave,
+		DropDeliver,
+		DropCancel,
+		DropComplete,
+
 		Select,						// Non-value widget triggered, like a button being pressed.
 		Toggle,						// Boolean value widget toggled, like for checkboxes, radiobuttons etc.
 		ValueUpdate,					// Value of widget changed, like for editvalue, animations, sliders etc
 		RangeUpdate,					// Range widget updated, such as scrollbar, scrollpanel, rangesliders etc.
-	
+
 		TextEdit,						// Text widget edited, like texteditor, editline, etc.
-	
-	
+
+
 		ItemToggle,
 	//	ItemMouseEnter,
 	//	ItemMouseLeave,
@@ -439,27 +439,27 @@ namespace wg
 	//	ItemMouseDoubleClick,
 		ItemsSelect,
 		ItemsUnselect,
-	
+
 		PopupClosed,
-	
+
 		ModalMoveOutside,
 		ModalBlockedPress,
-		ModalBlockedRelease,		
+		ModalBlockedRelease,
 	};
-	
-	
+
+
 	//____ SortOrder ____________________________________________________________
-	
+
 	enum class SortOrder	//. autoExtras
 	{
 		None,
 		Ascending,
 		Descending
 	};
-	
-	
+
+
 	//____ SelectMode ___________________________________________________________
-	
+
 	enum class SelectMode : uint8_t	//. autoExtras
 	{
 		Unselectable,		///< Entries can not be selected.
@@ -467,16 +467,16 @@ namespace wg
 		MultiEntries,		///< Multiple entries can be selected at the same time.
 		FlipOnSelect		///< Multiple entries can be selected at the same time and are switched individually.
 	};
-	
+
 	//____ TextEditMode _________________________________________________________
-	
+
 	enum class TextEditMode : uint8_t	//. autoExtras
 	{
 		Static,
 		Selectable,
 		Editable
 	};
-	
+
 	//____ EditCmd _____________________________________________________________
 
 	enum class EditCmd
@@ -491,20 +491,20 @@ namespace wg
 		Escape,
 		Break
 	};
-		
+
 	//___  TextDecoration ________________________________________________________
-	
+
 	enum class TextDecoration
 	{
 		Undefined,
 		None,
 		Underline
 	};
-	
+
 
 	//____ ComponentNotif ___________________________________________________________
 
-	enum class ComponentNotif 
+	enum class ComponentNotif
 	{
 		SortOrderChanged,
 		ValueModified,
@@ -512,9 +512,9 @@ namespace wg
 		SpanModified,
 		Other
 	};
-	
+
 	//____ AccessMode ____________________________________________________________
-	
+
 	enum class AccessMode	//. autoExtras
 	{
 		None,
@@ -524,7 +524,7 @@ namespace wg
 	};
 
 	//____ ScaleMode ____________________________________________________________
-	
+
 	enum class ScaleMode	//. autoExtras
 	{
 		Nearest,
@@ -533,7 +533,7 @@ namespace wg
 
 
 	//____ SurfaceFlag ____________________________________________________________
-	
+
 	namespace SurfaceFlag
 	{
 		const int Static = 0;		// No content access/modification expected
@@ -541,9 +541,9 @@ namespace wg
 		const int WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 	};
 
-	
+
 	//____ PixelFormat _____________________________________________________________
-	
+
 	enum class PixelFormat	//. autoExtras
 	{
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
@@ -556,7 +556,7 @@ namespace wg
 		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).
 		A8					///< 8 bits of alpha only.
 	};
-	
+
 	//____ PixelDescription __________________________________________________________
 	/**
 	 * @brief Describes the format of a pixel.
@@ -606,13 +606,13 @@ namespace wg
 	 * This is essentially what the default implementation for Surface::colorToPixel() and Surface::pixelToColor() does.
 	 *
 	 **/
-	
-	
+
+
 	struct PixelDescription
 	{
-	public:	
+	public:
 		//.____ Properties _____________________________________________________
-		
+
 		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
@@ -621,7 +621,7 @@ namespace wg
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel
 		uint32_t	B_mask;			///< bitmask for getting the blue bits out of the pixel
 		uint32_t	A_mask;			///< bitmask for getting the alpha bits out of the pixel
-	
+
 		uint8_t		R_shift;		///< amount to shift the red bits to the right to get the value.
 		uint8_t		G_shift;		///< amount to shift the green bits to the right to get the value.
 		uint8_t		B_shift;		///< amount to shift the blue bits to the right to get the value.
@@ -638,17 +638,17 @@ namespace wg
 		uint8_t	B_bits;				///< number of bits for blue in the pixel
 		uint8_t	A_bits;				///< number of bits for alpha in the pixel
 	};
-	
-	
+
+
 	//____ MaskOp ____________________________________________________________
-	
+
 	enum class MaskOp	//. autoExtras
 	{
 		Recurse,		///< Recurse through children, let them mask background individually.
 		Skip,			///< Do not mask background against container or children.
 		Mask			///< Mask background against whole container.
 	};
-	
+
 	//____ GfxChunkId ____________________________________________________
 
 	enum class GfxChunkId : uint16_t	//. autoExtras
@@ -692,7 +692,7 @@ namespace wg
 		SimpleTransformBlit,
 		ComplexTransformBlit,
 
-		TransformDrawSegments, 
+		TransformDrawSegments,
 		EdgeSamples,
 
 //		BlitNinePatch,

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -76,7 +76,7 @@ namespace wg
 		void	fill( const Rect& rect, const Color& col ) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
-        void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
 
 		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
 		void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
@@ -125,9 +125,9 @@ namespace wg
 		void _addPatches(int nPatches, const Rect * pPatches);
 
 
-        SurfaceFactory_p	m_pSurfaceFactory;
+		SurfaceFactory_p	m_pSurfaceFactory;
 		GfxOutStream_p		m_pStream;
-	    bool	m_bRendering;
+		bool	m_bRendering;
 	};
 } // namespace wg
 #endif //WG_STREAMGFXDEVICE_DOT_H

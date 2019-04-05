@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -40,10 +40,10 @@ namespace wg
 	* this CCanvas instance) through setDevice() and call its beginRender(), followed by
 	* various render methods and endRender(). You can also retrieve a pointer to the surface,
 	* lock it and modify the pixels directly. Either way you should call one of
-	* the present() methods afterwards to make sure that the content of the canvas is 
+	* the present() methods afterwards to make sure that the content of the canvas is
 	* copied to the screen.
 	*
-	* The surface is replaced and all its content lost if its properties such as size and 
+	* The surface is replaced and all its content lost if its properties such as size and
 	* PixelFormat is changed. A callback can be set to alert you when this happens, in which case
 	* you should redraw the content.
 	*

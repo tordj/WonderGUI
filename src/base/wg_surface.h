@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -31,14 +31,14 @@
 #include <wg_pointers.h>
 #include <wg_blob.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	class Surface;
 	typedef	StrongPtr<Surface>	Surface_p;
 	typedef	WeakPtr<Surface>	Surface_wp;
-	
+
 	//____ Surface ______________________________________________________________
 	/**
 	 * @brief Simple abstract representation of a bitmap image.
@@ -51,11 +51,11 @@ namespace wg
 	 *
 	 *
 	 **/
-	
-	
+
+
 	class Surface : public Object
 	{
-	
+
 	public:
 		//.____ Identification __________________________________________
 
@@ -65,14 +65,14 @@ namespace wg
 		static Surface_p	cast( Object * pObject );
 
 		//.____ Geometry _________________________________________________
-	
+
 		virtual	Size		size() const = 0;					///< @brief Get the size of the surface.
 																///<
 																///< Get the width and height of the surface in a Size structure.
 																///< @return Size of the suface measured in pixels.
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
-	
+
 		//.____ Appearance ____________________________________________________
 
 		virtual void		setScaleMode( ScaleMode mode );
@@ -92,7 +92,7 @@ namespace wg
 																///< if it does contain (semi)transparent pixels or we simply just don't know.
 
 		//.____ Content _______________________________________________________
-	
+
 		virtual uint32_t	pixel( Coord coord ) const = 0;		///< @brief Get pixel at specified coordinate.
 																///<
 																///< Get the raw pixel value from the specified coordinate of the surface.
@@ -107,9 +107,9 @@ namespace wg
 																///< the rest of the bits cleared.
 																///<
 																///< @return Pixel value in surface's native format.
-	
+
 		inline uint32_t		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
-	
+
 		virtual uint8_t		alpha( Coord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
 																///<
 																///< Get the alpha value from the specified coordinate of the surface.
@@ -124,16 +124,16 @@ namespace wg
 																///< the surface will result in undefined behavior.
 																///<
 																///< @return Alpha value of pixel at coordinate.
-	
+
 		inline uint8_t		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
-	
+
 		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
 		inline const Color * clut() const { return m_pClut; }
 
 		//.____ Control _______________________________________________________
-	
+
 		virtual uint8_t *	lock( AccessMode mode ) = 0;		///< @brief Lock the surface for direct access to pixel data.
 																///<
 																///< Locks the surface to gain direct access to the pixel data.
@@ -162,7 +162,7 @@ namespace wg
 																///< and hardware architectures.
 																///<
 																///< @return Pointer to start of pixel data or null if failed.
-	
+
 		virtual uint8_t *	lockRegion( AccessMode mode, const Rect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
 																///<
 																///< Locks a limited region of the surface to gain direct access to its pixel data.
@@ -185,7 +185,7 @@ namespace wg
 		virtual void		unlock() = 0;						///< @brief Unlock a locked surface.
 																///<
 																///< Unlocks a surface that has previously been locked by a call to lock() or lockRegion().
-	
+
 		inline 	bool		isLocked() const { return (m_accessMode != AccessMode::None); }	///< @brief Check if surface is locked.
 																							///<
 																							///< Check if surface is locked.
@@ -208,45 +208,45 @@ namespace wg
 																			///< by the call to lock() or lockRegion().
 																			///< @return Pointer to the raw pixels of the locked region or
 																			///<		 null if surface is not locked.
-	
+
 		//.____  Rendering ____________________________________________________
-	
+
 		virtual bool		fill( Color col );						///< @brief Fill surface with specified color.
 		virtual bool		fill( Color col, const Rect& region );	///< @brief Fill section of surface with specified color
 		virtual bool		copyFrom( Surface * pSrcSurf, const Rect& srcRect, Coord dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, Coord dst );	///< @brief Copy other surface as a block
 
-	
+
 	protected:
 		Surface();
 		virtual ~Surface();
-	
+
 		static const uint8_t *	s_pixelConvTabs[9];
 
 		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT = nullptr );
-	
+
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
 
 		ScaleMode			m_scaleMode;
-	
+
 		AccessMode			m_accessMode;
 		Color *				m_pClut;			// Pointer at color lookup table. Always 256 entries long.
 		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.
 		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
 	};
-	
+
 	//____ Surface::pitch() _______________________________________________
 	/**
 	 * Get the pitch of the locked region.
 	 *
 	 * The pitch is the distance in bytes from the start of one line of raw pixels to the start of the next one.
 	 * This value must per definition be at least (bytes per raw pixel * width of locked region), but might be
-	 * higher if not the whole surface is locked or if the pixel lines are padded. 
+	 * higher if not the whole surface is locked or if the pixel lines are padded.
 	 *
-	 * Please note that pitch can be negative. This allows us to handle surfaces that for technical reasons are 
+	 * Please note that pitch can be negative. This allows us to handle surfaces that for technical reasons are
 	 * upside-down internally in a way that is transparent to the user.
 	 *
 	 * @return Pitch of a pixel line of the locked region, measured in bytes, or 0 if the surface is not locked.
@@ -256,10 +256,10 @@ namespace wg
 	{
 		if( m_accessMode == AccessMode::None )
 			return 0;
-	
+
 		return m_pitch;
 	}
-	
+
 	//____ pixel() ______________________________________________________________
 	/**
 	 * Get the raw pixel value from the specified coordinate of the surface.
@@ -280,7 +280,7 @@ namespace wg
 	{
 		return pixel( Coord(x,y) );
 	}
-	
+
 	//____ alpha() ____________________________________________________________
 	/**
 	 * Get the alpha value from the specified coordinate of the surface.
@@ -300,7 +300,7 @@ namespace wg
 	{
 		return alpha( Coord(x,y) );
 	}
-	
+
 	//____ regionLocked() _________________________________________________________
 	/**
 	 * Get the region that is locked of a locked surface.
@@ -317,8 +317,8 @@ namespace wg
 		else
 			return m_lockRegion;
 	}
-	
-	
+
+
 	//==============================================================================
 
 } // namespace wg

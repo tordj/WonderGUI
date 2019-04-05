@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -26,7 +26,7 @@
 #include <wg_cicondisplay.h>
 #include <wg_ctextdisplay.h>
 
-namespace wg 
+namespace wg
 {
 	//____ CColumnHeader ___________________________________________________
 
@@ -34,28 +34,28 @@ namespace wg
 	{
 	public:
 		CColumnHeader(ComponentHolder * pHolder);
-	
+
 		//____ Subcomponents __________________________________
-	
+
 		CIconDisplay		icon;
 		CIconDisplay		arrow;
 		CTextDisplay		label;
-	
+
 		//____ Methods _____________________________________
-	
+
 		void			setSortOrder( SortOrder order );
 		inline SortOrder sortOrder() const { return m_sortOrder; }
 
 		void			setSkin( Skin * pSkin );
 		inline Skin_p	skin() const { return m_pSkin; }
-	
+
 		void			setState( State state );
 		inline State	state() const { return m_state; }
 
-		void			setSize( Size size );	
+		void			setSize( Size size );
 		inline Size		size() const { return m_size; }
 
-		Size			preferredSize() const;	
+		Size			preferredSize() const;
 		int				matchingWidth( int height ) const;
 		int				matchingHeight( int width ) const;
 
@@ -65,7 +65,7 @@ namespace wg
 
 
 	protected:
-		
+
 		Object *		_object() override;
 		const Object *	_object() const override;
 
@@ -94,8 +94,8 @@ namespace wg
 		bool			m_bPressed;
 		SortOrder		m_sortOrder;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_CCOLUMNHEADER_DOT_H

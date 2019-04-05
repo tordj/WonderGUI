@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -37,11 +37,11 @@ namespace wg
 		m_sectionColors[0] = Color::Green;
 		m_sectionColors[1] = Color::Yellow;
 		m_sectionColors[2] = Color::Red;
-		
+
 		m_fSectionHeight[0] = 0.75f;
 		m_fSectionHeight[1] = 0.18f;
 		m_fSectionHeight[2] = 0.07f;
-		
+
 		m_fHoldHeight = 0.10f;
 		m_bStereo = false;
 		m_fPeak[0] = 0.f;
@@ -51,7 +51,7 @@ namespace wg
 
 		m_fGap = 0.1f;
 		m_fSidePadding = 0.1f;
-		
+
 		_updateValueDisplays( Size(0,0) );
 	}
 
@@ -62,29 +62,29 @@ namespace wg
 	}
 
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool SimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Widget::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * SimpleVolumeMeter::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	SimpleVolumeMeter_p SimpleVolumeMeter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return SimpleVolumeMeter_p( static_cast<SimpleVolumeMeter*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -107,9 +107,9 @@ namespace wg
 	{
 		limit( bottomFraction, 0.f, 1.f );
 		limit( topFraction, 0.f, 1.f - bottomFraction );
-			
+
 		float middleFraction = 1.f - bottomFraction - topFraction;
-		
+
 		if( bottomFraction != m_fSectionHeight[0] || topFraction != m_fSectionHeight[2] )
 		{
 			m_fSectionHeight[0] = bottomFraction;
@@ -128,7 +128,7 @@ namespace wg
 	void SimpleVolumeMeter::setHoldHeight( float fraction )
 	{
 		limit( fraction, 0.f, 0.25f );
-		
+
 		if( m_fHoldHeight != fraction )
 		{
 			m_fHoldHeight = fraction;
@@ -150,7 +150,7 @@ namespace wg
 		m_fHold[0] = hold;
 
 		Rect canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : Rect(size());
-		
+
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 		int  iPeak = (int) (peak * length);
 
@@ -195,7 +195,7 @@ namespace wg
 		if( !m_bStereo )
 		{
 			m_bStereo = true;
-			_requestRender();		
+			_requestRender();
 		}
 		else if( m_iPeak[0] != iPeakL || m_iHold[0] != iHoldL || m_iPeak[1] != iPeakR || m_iHold[1] != iHoldR )
 		{
@@ -230,7 +230,7 @@ namespace wg
 	void SimpleVolumeMeter::_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold )
 	{
 		int	beg = INT_MAX, end = INT_MIN;
-		
+
 		if( newLeftPeak != m_iPeak[0] )
 		{
 			beg = min(newLeftPeak,m_iPeak[0]);
@@ -260,7 +260,7 @@ namespace wg
 				if(end<e)
 					end = e;
 			}
-			
+
 			if( m_bStereo && newRightHold != m_iHold[1] )
 			{
 				int b = min(newRightHold,m_iHold[1]) - m_iHoldHeight;
@@ -272,7 +272,7 @@ namespace wg
 					end = e;
 			}
 		}
-		
+
 		switch (m_direction)
 		{
 		case Direction::Up:
@@ -299,7 +299,7 @@ namespace wg
 			return 0;					// Should not be visible.
 
 		int height = m_iHoldHeight;
-		
+
 		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;
 		int ofs = (int)(holdValue * canvasLength);
 
@@ -331,7 +331,7 @@ namespace wg
 		Widget::_setSize( size );
 
 		Size canvasSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
-		
+
 		_updateValueDisplays( canvasSize );
 	}
 
@@ -340,14 +340,14 @@ namespace wg
 	void SimpleVolumeMeter::_setSkin( Skin * pSkin )
 	{
 		Size sz = Size();
-		
+
 		Rect oldCanvas = m_pSkin ? m_pSkin->contentRect(sz,m_state) : Rect(sz);
 		Rect newCanvas = pSkin ? pSkin->contentRect(sz,m_state) : Rect(sz);
-				
+
 		Widget::_setSkin( pSkin );
-		
+
 		if( oldCanvas != newCanvas )
-			_updateValueDisplays( newCanvas );		
+			_updateValueDisplays( newCanvas );
 	}
 
 	//____ _render() _____________________________________________________________________
@@ -355,7 +355,7 @@ namespace wg
 	void SimpleVolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice, _canvas, _window);
-		
+
 		if( !m_state.isEnabled() )
 			return;
 
@@ -364,7 +364,7 @@ namespace wg
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
-		
+
 		if( m_bStereo )
 		{
 			Rect r = canvas;
@@ -388,9 +388,9 @@ namespace wg
 				r.y += r.h + m_iGap;
 
 			_renderBar( pDevice, 1, r );
-			
+
 		}
-		else 
+		else
 		{
 			Rect r = canvas;
 
@@ -414,20 +414,20 @@ namespace wg
 	{
 		int peakHeight 	= m_iPeak[nb];
 		int holdOfs 	= m_iHold[nb];
-		
+
 		// Possibly render Hold
-		
+
 		if( m_iHoldHeight > 0 )
 		{
 			if( holdOfs - m_iHoldHeight > peakHeight )				// Render Hold separately if separated from Peak
 			{
 				Color c;
-				
+
 				if( holdOfs <= m_iSectionHeight[0] )
 					c = m_sectionColors[0];
 				else if( holdOfs > m_iSectionHeight[0] + m_iSectionHeight[1] )
 					c = m_sectionColors[2];
-				else 
+				else
 					c = m_sectionColors[1];
 
 				Rect r = _rect;
@@ -456,20 +456,20 @@ namespace wg
 			else if( holdOfs > peakHeight )
 				peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
 		}
-		
+
 		// Render Peak
-			
+
 		int ofs = 0;
-		
+
 		for( int i = 0 ; i < 3 ; i++ )
 		{
 			if( peakHeight <= 0 )
 				break;
-			
+
 			int sectionHeight = m_iSectionHeight[i];
 			if( sectionHeight > peakHeight )
 				sectionHeight = peakHeight;
-			
+
 			Rect r = _rect;
 
 			switch (m_direction)
@@ -496,11 +496,11 @@ namespace wg
 			}
 
 			pDevice->fill( r, m_sectionColors[i] );
-			
+
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;
 		}
-			
+
 	}
 
 	//____ _updateValueDisplays() ______________________________________________________
@@ -520,7 +520,7 @@ namespace wg
 		m_iSidePadding = (int) (width * m_fSidePadding);
 		if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
 			m_iSidePadding = 1;
-					
+
 		m_iHoldHeight = (int) m_fHoldHeight * length;
 		if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
 			m_iHoldHeight = 1;
@@ -536,12 +536,12 @@ namespace wg
 		m_iHold[1] = _calcIHold(m_fHold[1], sz);
 	}
 
-	//____ _cloneContent() _________________________________________________________________ 
+	//____ _cloneContent() _________________________________________________________________
 
 	void SimpleVolumeMeter::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
-		
+
 		const SimpleVolumeMeter * pOrg = static_cast<const SimpleVolumeMeter*>(_pOrg);
 
 		for( int i = 0 ; i < 3 ; i++ )
@@ -549,7 +549,7 @@ namespace wg
 			m_sectionColors[i] 	= pOrg->m_sectionColors[i];
 			m_fSectionHeight[i] = pOrg->m_fSectionHeight[i];
 		}
-		
+
 		m_direction = pOrg->m_direction;
 		m_fHoldHeight = pOrg->m_fHoldHeight;
 		m_fGap = pOrg->m_fGap;
@@ -559,7 +559,7 @@ namespace wg
 		m_fPeak[1] = pOrg->m_fPeak[1];
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
-		
+
 		Size canvasSize = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
 		_updateValueDisplays( canvasSize );
 	}
@@ -569,7 +569,7 @@ namespace wg
 	bool SimpleVolumeMeter::_alphaTest( const Coord& ofs )
 	{
 		//TODO: Should we detect on the bars?
-		
+
 		return Widget::_alphaTest(ofs);
 	}
 } // namespace wg

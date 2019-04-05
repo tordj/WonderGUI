@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -24,7 +24,7 @@
 #pragma once
 
 
-namespace wg 
+namespace wg
 {
 	class Interface;
 	template<class T> class StrongInterfacePtr;
@@ -34,7 +34,7 @@ namespace wg
 	template<class T> class StrongPtr;
 	typedef StrongPtr<Object>				Object_p;
 
-	
+
 	/**
 	 * @brief Provides access to a component of a widget or object.
 	 *
@@ -54,7 +54,7 @@ namespace wg
 	 * components since interface pointers do reference counting on the object.
 	 *
 	 **/
-	
+
 	class Interface
 	{
 		template<class T> friend class StrongInterfacePtr;
@@ -65,12 +65,12 @@ namespace wg
 
 		Interface_p				ptr();
 		Object_p				object();
-	
+
 	protected:
 		virtual Object * 		_object() const = 0;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_INTERFACE_DOT_H

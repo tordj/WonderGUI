@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -34,9 +34,9 @@
 #include <wg_paddedslot.h>
 
 
-namespace wg 
+namespace wg
 {
-		
+
 	class ScrollPanel;
 	typedef	StrongPtr<ScrollPanel>	ScrollPanel_p;
 	typedef	WeakPtr<ScrollPanel>	ScrollPanel_wp;
@@ -202,7 +202,7 @@ namespace wg
 
 
 	//____ ScrollPanel ________________________________________________________
-	
+
 	class ScrollPanel : public Panel, protected ViewEntryHolder
 	{
 		friend class ViewEntry;
@@ -365,7 +365,7 @@ namespace wg
 
 		ViewSlot	m_viewSlot;
 		ScrollbarSlot	m_scrollbarSlots[2];			// xScroll and yScroll widgets in that order.
-	
+
 		Skin_p		m_pCornerSkin;
 		Rect		m_cornerGeo;
 
@@ -373,9 +373,9 @@ namespace wg
 		bool		m_bOverlayScrollbars;
 
 		MyScrollbarTarget	m_scrollbarTargets[2];		// Order: Vertical, horizontal
-		
+
 	};
-	
+
 
 } // namespace wg
 #endif //WG_SCROLLPANEL_DOT_H

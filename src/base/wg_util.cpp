@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -96,9 +96,9 @@ double Util::squareRoot(double a)
 
 		*** Babylonian method cannot get exact zero but approximately value of the square_root
 	*/
-	double z = a;	
+	double z = a;
 	double rst = 0.0;
-	int max = 8;	// to define maximum digit 
+	int max = 8;	// to define maximum digit
 	int i;
 	double j = 1.0;
 	for(i = max ; i > 0 ; i--){
@@ -109,17 +109,17 @@ double Util::squareRoot(double a)
 			{
 				j++;
 				if(j >= 10) break;
-				
+
 			}
 			j--; //correct the extra value by minus one to j
 			z -= (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)); //find value of z
 
 			rst += j * powerOfTen(i);	// find sum of a
-			
-			j = 1.0;
-		
 
-		}		
+			j = 1.0;
+
+
+		}
 
 	}
 
@@ -129,12 +129,12 @@ double Util::squareRoot(double a)
 			while( z - (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)) >= 0)
 			{
 				j++;
-				if(j >= 10) break;				
+				if(j >= 10) break;
 			}
 			j--;
 			z -= (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)); //find value of z
 
-			rst += j * powerOfTen(i);	// find sum of a			
+			rst += j * powerOfTen(i);	// find sum of a
 			j = 1.0;
 		}
 	}

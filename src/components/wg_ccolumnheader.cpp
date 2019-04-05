@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -24,7 +24,7 @@
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
 
-namespace wg 
+namespace wg
 {
 	//____ Constructor ___________________________________________________________
 
@@ -33,7 +33,7 @@ namespace wg
 		m_bPressed = false;
 		m_sortOrder = SortOrder::None;
 	}
-	
+
 	//____ setSortOrder() ________________________________________________________
 
 	void CColumnHeader::setSortOrder( SortOrder order )
@@ -43,7 +43,7 @@ namespace wg
 	}
 
 	//____ setSkin() _____________________________________________________________
-	
+
 	void CColumnHeader::setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
@@ -137,7 +137,7 @@ namespace wg
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				Coord ofs = pMsg->pointerPos();
 				Rect geo = _globalGeo();
-				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() || 
+				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() ||
 					(Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_bPressed));
 				if( bHovered != m_state.isHovered() )
 				{
@@ -217,8 +217,8 @@ namespace wg
 				}
 				break;
 			}
-            default:
-                break;
+			default:
+				break;
 		}
 		return false;
 	}
@@ -228,30 +228,30 @@ namespace wg
 	void CColumnHeader::render( GfxDevice * pDevice, const Rect& _canvas )
 	{
 		Rect canvas( _canvas );
-	
+
 		if( m_pSkin )
 		{
 			m_pSkin->render( pDevice, canvas, m_state );
 			canvas = m_pSkin->contentRect( canvas, m_state );
 		}
-	
+
 		Rect sortRect = arrow.getIconRect( canvas );
 		Rect labelRect = arrow.getTextRect( canvas, sortRect );
 		Rect iconRect = icon.getIconRect( labelRect );
 		labelRect = icon.getTextRect( labelRect, iconRect );
-	
+
 		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
 		{
 			State iconState = m_state;
 			iconState.setSelected( m_sortOrder == SortOrder::Descending );
 			arrow.skin()->render( pDevice, sortRect, iconState );
 		}
-	
+
 		if( !icon.isEmpty() )
 			icon.skin()->render( pDevice, iconRect, m_state );
-	
+
 		if( !label.isEmpty() )
-			label.render( pDevice, labelRect );	
+			label.render( pDevice, labelRect );
 	}
 
 
@@ -287,7 +287,7 @@ namespace wg
 		if( m_pSkin )
 			return m_pSkin->contentRect( m_size, m_state );
 		else
-			return Rect( 0,0,m_size );			
+			return Rect( 0,0,m_size );
 	}
 
 	Coord CColumnHeader::_globalComponentPos( const Component * pComponent ) const

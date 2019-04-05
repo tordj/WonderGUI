@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -47,13 +47,13 @@ namespace wg
 
 		m_nLinePoints = 0;
 		m_pLinePoints = 0;
-		
+
 		m_nDisplayPoints = 0;
 		m_pDisplayPoints = 0;
 
 		m_nMarkers = 0;
 		m_pMarkers = 0;
-		
+
 		m_nRenderSegments = 1;
 	}
 
@@ -70,29 +70,29 @@ namespace wg
 
 
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool Oscilloscope::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Widget::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * Oscilloscope::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	Oscilloscope_p Oscilloscope::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return Oscilloscope_p( static_cast<Oscilloscope*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -193,7 +193,7 @@ namespace wg
 	void Oscilloscope::setLinePoints( int nPoints, float pPointValues[] )
 	{
 		// Handle special case of no points (no line will be displayed)
-		
+
 		if( nPoints == 0 )
 		{
 			if( m_nLinePoints != 0 )
@@ -255,11 +255,11 @@ namespace wg
 		_resampleLinePoints( sz );
 		_updateRenderSegments( nSegments, pSegments );			// Expand dirty rects to include current line
 
-		for( int i = 0 ; i < nSegments ; i++ )			
+		for( int i = 0 ; i < nSegments ; i++ )
 			_requestRender( pSegments[i] );
-		
+
 		// Return memory allocated for render segments
-		
+
 		Base::memStackRelease(allocSize);
 	}
 
@@ -269,11 +269,11 @@ namespace wg
 	{
 
 		Rect * pSeg = pSegments;
-		
+
 		for( int seg = 0 ; seg < nSegments ; seg++ )
 		{
 			int point = pSeg->x;
-			
+
 			float min = m_pDisplayPoints[point > 0 ? point - 1 : 0];
 			float max = min;
 
@@ -286,7 +286,7 @@ namespace wg
 
 			int yBeg = ((int)min) - 2;		// Two pixels margin for the line drawing
 			int yEnd = ((int)max) + 3;		// Two pixels margin for the line drawing (+1 for cropping)
-			
+
 			if( pSeg->h == 0 )
 			{
 				pSeg->y = yBeg;
@@ -300,7 +300,7 @@ namespace wg
 					pSeg->y = yBeg;
 				}
 				if( yEnd > pSeg->y + pSeg->h )
-					pSeg->h = yEnd - pSeg->y;			
+					pSeg->h = yEnd - pSeg->y;
 			}
 
 			pSeg++;
@@ -311,7 +311,7 @@ namespace wg
 	//____ _resampleLinePoints()____________________________________________________
 
 	void Oscilloscope::_resampleLinePoints( Size sz )
-	{	
+	{
 		if( m_nLinePoints == 0 || sz.w == 0 )
 		{
 			if( m_nDisplayPoints != 0 )
@@ -322,7 +322,7 @@ namespace wg
 			}
 			return;
 		}
-		
+
 		if( m_nDisplayPoints != sz.w )
 		{
 			delete [] m_pDisplayPoints;
@@ -331,24 +331,24 @@ namespace wg
 		}
 
 		// Recalculate values for our display, possibly resample if display width != m_nLinePoints
-		
+
 		float centerY = sz.h/2.f;
 		float scaleY = (sz.h-1)/2.f;
 
-		
+
 		if (m_nLinePoints != sz.w )
 		{
 			int ip = 0;
 			float lam = 0;
 			float point = 0;
 			float ratio = m_nLinePoints/(float)sz.w;
-			
+
 			for( int i=0 ; i < sz.w ; i++ )
-			{			
+			{
 				point = i * ratio;
 				ip = (int)point;
 				lam = point - (float)ip;
-				
+
 				if(ip+1 < m_nLinePoints)
 					m_pDisplayPoints[i] = centerY + (m_pLinePoints[ip] * (1-lam) + m_pLinePoints[ip+1] * lam) * scaleY;
 				else
@@ -403,7 +403,7 @@ namespace wg
 	void Oscilloscope::_setSize( const Size& size )
 	{
 		Widget::_setSize( size );
-	
+
 		_resampleLinePoints( size );
 	}
 
@@ -422,7 +422,7 @@ namespace wg
 	void Oscilloscope::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-				
+
 		float centerX = _canvas.x + _canvas.w/2.f;
 		float centerY = _canvas.y + _canvas.h/2.f;
 		float scaleX = (_canvas.w-1)/2.f;
@@ -449,7 +449,7 @@ namespace wg
 		// Draw the oscilloscope line
 
 		m_iNextPixel = 0;
-			
+
 	//	antiAlias(_clip.w, _clip.x, m_pDisplayPoints + _clip.x - _canvas.x);
 
 		Rect clip = pDevice->clipBounds();
@@ -488,14 +488,14 @@ namespace wg
 		  m_pAAPix[m_iNextPixel] = Coord(x, y);
 		  m_pAACol[m_iNextPixel] = m_lineColor;
 		  m_pAACol[m_iNextPixel].a = (uint8_t) (255*alpha);
-		  
+
 		  ++m_iNextPixel;
 	  }
 	  else
 	  {
 		  //DBGM(DBG_FFT, ("-----WARNING!------- m_iNextPixel=%i", m_iNextPixel));
 	  }
-		
+
 	  //DBG_ASSERT(m_iNextPixel < WG_OSC_PIXEL_BUFFER_SIZE);
 	}
 
@@ -513,47 +513,47 @@ namespace wg
 		float xgap;
 		float xend;
 		float yend;
-		
+
 		yprev = pYval[0];
-		
+
 		for(x0i = 0; x0i < nPoints; x0i++)
 		{
 			x1i = x0i + 1;
 			y0 = yprev;
 			y1 = pYval[x1i];
 			yprev = y1;
-			
+
 			x0 = float(x0i);
 			x1 = float(x1i);
-			
+
 
 			// Check for NaN
 			if(!( y1 > 0.0f || y1 <= 0.0f ))
 				y1 = 0.0f;
-			
-			
+
+
 			bool steep = std::abs(y1 - y0) > std::abs(x1 - x0);
-			
+
 			if(steep) {
 				std::swap(x0,y0);
 				std::swap(x1,y1);
 			}
-			
+
 			if (x0>x1) {
 				std::swap(x0,x1);
 				std::swap(y0,y1);
 			}
-			
+
 			dx = (float)x1 - (float)x0;
 			dy = (float)y1 - (float)y0;
 			gradient = dy/dx;
-	   
+
 			xend = round(x0);
 			yend = y0 + gradient * (xend - x0);
 			xgap = rfpart(x0 + 0.5f);
 			xpxl1 = (int) xend;
 			ypxl1 = ipart(yend);
-			
+
 			if (steep) {
 				plot(ypxl1 +     ofs.x, xpxl1+ ofs.y, rfpart(yend) * xgap);
 				plot(ypxl1 + 1 + ofs.x, xpxl1+ ofs.y,  fpart(yend) * xgap);
@@ -562,14 +562,14 @@ namespace wg
 				plot(xpxl1 +     ofs.x, ypxl1 + 1 + ofs.y,  fpart(yend) * xgap);
 			}
 			intery = yend + gradient;
-			
+
 			// Second end point
 			xend = round(x1);
 			yend = y1 + gradient * (xend - x1);
 			xgap = fpart(x1 + 0.5f);
 			xpxl2 = (int) xend;
 			ypxl2 = ipart(yend);
-			
+
 			if (steep) {
 				plot(ypxl2 +     ofs.x, xpxl2 + ofs.y, rfpart(yend) * xgap);
 				plot(ypxl2 + 1 + ofs.x, xpxl2 + ofs.y,  fpart(yend) * xgap);
@@ -577,7 +577,7 @@ namespace wg
 				plot(xpxl2 +     ofs.x, ypxl2 + ofs.y,     rfpart(yend) * xgap);
 				plot(xpxl2 +     ofs.x, ypxl2 + 1 + ofs.y,  fpart(yend) * xgap);
 			}
-			
+
 			for (int x=xpxl1+1; x<xpxl2; x++) {
 				if (steep) {
 					plot(ipart(intery) +     ofs.x, x + ofs.y, rfpart(intery));
@@ -589,7 +589,7 @@ namespace wg
 				intery = intery + gradient;
 			}
 		}
-		
+
 		return;
 	}
 

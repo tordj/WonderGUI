@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -26,57 +26,57 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char LineEditor::CLASSNAME[] = {"LineEditor"};
-	
-	
-	
+
+
+
 	//____ LineEditor() _________________________________________________________________
-	
+
 	LineEditor::LineEditor() : m_text(this), text(&m_text), m_textScrollOfs(0)
 	{
 		m_text.setMaxLines(1);
 	}
-	
-	
+
+
 	//____ Destructor _____________________________________________________________
-	
+
 	LineEditor::~LineEditor()
 	{
 	}
-	
-	
+
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool LineEditor::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Widget::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * LineEditor::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	LineEditor_p LineEditor::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return LineEditor_p( static_cast<LineEditor*>(pObject) );
-	
+
 		return 0;
 	}
-		
+
 	//____ preferredSize() _____________________________________________________________
-	
+
 	Size LineEditor::preferredSize() const
 	{
 		//TODO: Use real text size as preferred size instead. They should use a SizeCapsule to limit the size if needed.
@@ -104,13 +104,13 @@ namespace wg
 		else
 			return contentSize;
 	}
-	
+
 	//____ _render() ________________________________________________________
-	
+
 	void LineEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-	
+
 		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect( _canvas, m_state );
@@ -170,9 +170,9 @@ namespace wg
 
 		m_text.render(pDevice, textCanvas );
 	}
-	
+
 	//____ _refresh() _______________________________________________________
-	
+
 	void LineEditor::_refresh( void )
 	{
 		m_text.refresh();
@@ -180,51 +180,51 @@ namespace wg
 	}
 
 	//____ _setState() ______________________________________________________
-	
+
 	void LineEditor::_setState( State state )
 	{
 		Widget::_setState(state);
-	
+
 		m_text.setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
-	
-	
+
+
 	//____ _receive() ______________________________________________________________
-	
+
 	void LineEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		m_text.receive( pMsg );	
+		m_text.receive( pMsg );
 	}
-	
-	
+
+
 	//____ _cloneContent() _______________________________________________________
-	
+
 	void LineEditor::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
 
 		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
-	
+
 		m_text = pOrg->m_text;
 	}
-	
+
 	//____ _setSkin() _______________________________________________________
-	
+
 	void LineEditor::_setSkin( Skin * pSkin )
 	{
 		//TODO: Possibly notify text about new canvas size.
-		
+
 		Widget::_setSkin(pSkin);
 	}
-	
+
 	//____ _setSize() ________________________________________________
-	
+
 	void LineEditor::_setSize( const Size& size )
 	{
 		Widget::_setSize( size );
-		
+
 		if( m_pSkin )
 			m_text.setSize( Size(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
 		else
@@ -232,11 +232,11 @@ namespace wg
 	}
 
 	//____ _componentPos() __________________________________________________________
-	
+
 	Coord LineEditor::_componentPos( const Component * pComponent ) const
 	{
 		Coord c(-m_textScrollOfs, 0);
-		
+
 		if( m_pSkin )
 			return m_pSkin->contentOfs( m_state ) + c;
 		else
@@ -244,7 +244,7 @@ namespace wg
 	}
 
 	//____ _componentSize() _________________________________________________________
-	
+
 	Size LineEditor::_componentSize( const Component * pComponent ) const
 	{
 		if( m_pSkin )
@@ -254,7 +254,7 @@ namespace wg
 	}
 
 	//____ _componentGeo() __________________________________________________________
-	
+
 	Rect LineEditor::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
@@ -284,22 +284,22 @@ namespace wg
 	{
 		Rect dirt = rect;
 		dirt.x -= m_textScrollOfs;
-		
-		Rect visible(0,0,m_size);		
+
+		Rect visible(0,0,m_size);
 
 		if( m_pSkin )
 		{
 			visible = m_pSkin->contentRect( m_size, m_state );
 			dirt += visible.pos();
 		}
-		
+
 		dirt.intersection( dirt, visible );
 		if( !dirt.isEmpty() )
-			_requestRender( dirt );		
+			_requestRender( dirt );
 	}
 
 	//____ _componentRequestResize() ______________________________________________
-	
+
 	void LineEditor::_componentRequestResize( const Component * pComponent )
 	{
 		Size preferred = m_text.preferredSize();

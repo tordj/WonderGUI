@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -23,10 +23,10 @@
 #define WG_KEY_DOT_H
 #pragma once
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	//____ enum ModifierKeys ____________________________________________________
 
 	enum ModifierKeys
@@ -51,27 +51,27 @@ namespace wg
 		MODKEY_SUPER_CTRL_ALT = 14,
 		MODKEY_SUPER_CTRL_ALT_SHIFT = 15,
 	};
-	
-	
+
+
 	enum class Key
 	{
 		Left = 1,
 		Right,
 		Up,
 		Down,
-	
+
 		Home,
 		End,
 		PageUp,
 		PageDown,
-	
+
 		Return,
 		Backspace,
 		Delete,
 		Tab,
 		Escape,
 		Space,
-	
+
 		F1,
 		F2,
 		F3,
@@ -84,16 +84,16 @@ namespace wg
 		F10,
 		F11,
 		F12,
-	
+
 		Shift,
 		Control,
 		Alt,
 		Super,
-	
+
 		Unmapped		// This one must always be last!
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif // WG_KEY_DOT_H

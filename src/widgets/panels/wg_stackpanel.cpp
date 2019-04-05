@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,15 +27,15 @@
 #include <wg_slotarray.impl.h>
 #include <wg_ipaddedchildren.impl.h>
 
-namespace wg 
+namespace wg
 {
 	INSTANTIATE_PADDEDCHILDREN(StackPanelSlot, StackPanelChildrenHolder)
 
 	template class SlotArray<StackPanelSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
-		
-	
+
+
 	void IStackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		//TODO: Assert!
@@ -50,7 +50,7 @@ namespace wg
 		_setSizePolicy( it._slot(), policy );
 	}
 
-	
+
 	SizePolicy2D IStackPanelChildren::sizePolicy( int index ) const
 	{
 		//TODO: Assert!
@@ -80,7 +80,7 @@ namespace wg
 		_setOrigo( it._slot(), origo );
 	}
 
-	
+
 	Origo IStackPanelChildren::origo( int index ) const
 	{
 		//TODO: Assert!
@@ -92,7 +92,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return it._slot()->origo;		
+		return it._slot()->origo;
 	}
 
 
@@ -110,9 +110,9 @@ namespace wg
 				((StackPanel*)m_pHolder)->_requestRender(newGeo);
 				pSlot->pWidget->_setSize(newGeo.size());
 			}
-		};		
+		};
 	}
-		
+
 	void IStackPanelChildren::_setOrigo( StackPanelSlot * pSlot, Origo origo )
 	{
 		if( origo != pSlot->origo )
@@ -120,60 +120,60 @@ namespace wg
 			m_pHolder->_childRequestRender( pSlot );
 			pSlot->origo = origo;
 			m_pHolder->_childRequestRender( pSlot );
-		};		
+		};
 	}
 
-	
-	
+
+
 	//____ Constructor ____________________________________________________________
-	
+
 	StackPanel::StackPanel() : children(&m_children,this)
 	{
 		m_bSiblingsOverlap = true;
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	StackPanel::~StackPanel()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool StackPanel::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Panel::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * StackPanel::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	StackPanel_p StackPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return StackPanel_p( static_cast<StackPanel*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ matchingHeight() _______________________________________________________
-	
+
 	int StackPanel::matchingHeight( int width ) const
 	{
 		int height = 0;
 
 		StackPanelSlot * pSlot = m_children.begin();
 		StackPanelSlot * pEnd = m_children.end();
-	
+
 		while( pSlot != pEnd )
 		{
 			int h = pSlot->pWidget->matchingHeight(width);
@@ -181,19 +181,19 @@ namespace wg
 				height = h;
 			pSlot++;
 		}
-	
+
 		return height;
 	}
-	
+
 	//____ matchingWidth() _______________________________________________________
-	
+
 	int StackPanel::matchingWidth( int height ) const
 	{
 		int width = 0;
-	
+
 		StackPanelSlot * pSlot = m_children.begin();
 		StackPanelSlot * pEnd = m_children.end();
-	
+
 		while( pSlot != pEnd )
 		{
 			int h = pSlot->pWidget->matchingWidth(height);
@@ -201,29 +201,29 @@ namespace wg
 				height = h;
 			pSlot++;
 		}
-	
+
 		return width;
 	}
-	
-	
+
+
 	//____ preferredSize() _____________________________________________________________
-	
+
 	Size StackPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
-	
+
 	//____ _cloneContent() ______________________________________________________
-	
+
 	void StackPanel::_cloneContent( const Widget * _pOrg )
 	{
 		Panel::_cloneContent( _pOrg );
 
-		//TODO: Implement		
+		//TODO: Implement
 	}
 
 	//____ _setSize() ___________________________________________________________
-	
+
 	void StackPanel::_setSize( const Size& size )
 	{
 		Panel::_setSize(size);
@@ -236,24 +236,24 @@ namespace wg
 	{
 		if( m_children.isEmpty() )
 			return nullptr;
-			
+
 		return m_children.first()->pWidget;
 	}
 
 	//____ _lastChild() ________________________________________________________
-	
+
 	Widget * StackPanel::_lastChild() const
 	{
 		if( m_children.isEmpty() )
 			return nullptr;
-			
+
 		return m_children.last()->pWidget;
-		
+
 	}
-	
-	
+
+
 	//____ _firstSlotWithGeo() _____________________________________________________
-	
+
 	void StackPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		if( m_children.isEmpty() )
@@ -262,23 +262,23 @@ namespace wg
 		{
 			StackPanelSlot * pSlot = m_children.first();
 			package.pSlot = pSlot;
-			package.geo = _childGeo(pSlot);			
-		}			
+			package.geo = _childGeo(pSlot);
+		}
 	}
 
 	//____ _nextSlotWithGeo() ______________________________________________________
-	
+
 	void StackPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		StackPanelSlot * pSlot = (StackPanelSlot*) package.pSlot;
-		
+
 		if( pSlot == m_children.last() )
 			package.pSlot = nullptr;
 		else
 		{
 			pSlot++;
 			package.pSlot = pSlot;
-			package.geo = _childGeo(pSlot);			
+			package.geo = _childGeo(pSlot);
 		}
 	}
 
@@ -344,9 +344,9 @@ namespace wg
 
 	Coord StackPanel::_childPos( Slot * pSlot ) const
 	{
-		return _childGeo((StackPanelSlot *)pSlot).pos();	
+		return _childGeo((StackPanelSlot *)pSlot).pos();
 	}
-	
+
 	//____ _childSize() _______________________________________________________
 
 	Size StackPanel::_childSize( Slot * pSlot ) const
@@ -360,7 +360,7 @@ namespace wg
 	{
 		_childRequestRender( pSlot, _childGeo((StackPanelSlot*) pSlot) );
 	}
-	
+
 	void StackPanel::_childRequestRender( Slot * _pSlot, const Rect& _rect )
 	{
 		StackPanelSlot * pSlot = (StackPanelSlot *) _pSlot;
@@ -388,14 +388,14 @@ namespace wg
 		// Make request render calls
 
 		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
-			_requestRender( * pRect );		
+			_requestRender( * pRect );
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
 	void StackPanel::_childRequestResize( Slot * pSlot )
 	{
-		_refreshPreferredSize();		
+		_refreshPreferredSize();
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -403,31 +403,31 @@ namespace wg
 	Widget * StackPanel::_prevChild( const Slot * pSlot ) const
 	{
 		auto p = static_cast<const StackPanelSlot *>(pSlot);
-		
+
 		if( p > m_children.begin() )
 			return p[-1].pWidget;
 
 		return nullptr;
 	}
-	
+
 	//____ _nextChild() __________________________________________________________
 
 	Widget * StackPanel::_nextChild( const Slot * pSlot ) const
 	{
-        auto p = static_cast<const StackPanelSlot *>(pSlot);
-		
+		auto p = static_cast<const StackPanelSlot *>(pSlot);
+
 		if( p < m_children.last() )
-			return p[1].pWidget;		
+			return p[1].pWidget;
 
 		return nullptr;
 	}
-	
+
 	//____ _unhideChildren() _____________________________________________________
-	
+
 	void StackPanel::_unhideChildren( StackPanelSlot * pSlot, int nb )
 	{
 		bool	bRequestResize = false;
-		
+
 		// Update m_preferredSize
 
 		for( int i = 0 ; i < nb ; i++ )
@@ -435,7 +435,7 @@ namespace wg
 			if( !pSlot[i].bVisible )
 			{
 				Size preferred = pSlot[i].paddedPreferredSize();
-	
+
 				if( preferred.w > m_preferredSize.w )
 				{
 					m_preferredSize.w = preferred.w;
@@ -451,9 +451,9 @@ namespace wg
 
 		if( bRequestResize )
 			_requestResize();
-	
+
 		// Make unhidden Widgets visible, adapt them to our size and force a render.
-	
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( !pSlot[i].bVisible )
@@ -462,17 +462,17 @@ namespace wg
 				pSlot[i].pWidget->_setSize(_childGeo(pSlot).size() );
 				_childRequestRender( pSlot + i );
 			}
-		}	
+		}
 	}
 
 	//____ _hideChildren() __________________________________________________
-	
+
 	void StackPanel::_hideChildren( StackPanelSlot * pRemove, int nb )
 	{
 		bool	bRequestResize = false;
-	
+
 		// Get dirty rectangles for all visible sections of widgets to be removed.
-	
+
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			if( pRemove[i].bVisible )
@@ -482,10 +482,10 @@ namespace wg
 			}
 		}
 		// Update m_preferredSize
-	
+
 		Size	preferredSize;
 		StackPanelSlot * p = m_children.begin();
-		
+
 		while( p != m_children.end() )
 		{
 			if( p->bVisible )
@@ -498,44 +498,44 @@ namespace wg
 				p++;
 			}
 		}
-	
+
 		if( preferredSize != m_preferredSize )
 			bRequestResize = true;
-	
+
 		m_preferredSize = preferredSize;
-	
+
 		// Check if removal might affect height for current width
-/*	
+/*
 		int height = pToBeRemoved->_widget()->matchingHeight(m_size.w);
 		if( height >= m_size.h )
 			bRequestResize = true;
-*/	
+*/
 		//
-	
+
 		if( bRequestResize )
 			_requestResize();
 	}
-	
-	
+
+
 	//____ _refreshAllWidgets() ____________________________________________________
-/*	
+/*
 	void StackPanel::_refreshAllWidgets()
 	{
 		_refreshPreferredSize();
 		_adaptChildrenToSize();
 		_requestRender();
 	}
-*/	
-	
+*/
+
 	//____ _refreshPreferredSize() _____________________________________________________
-	
+
 	void StackPanel::_refreshPreferredSize()
 	{
 		Size	preferredSize;
 
 		auto * pSlot = m_children.begin();
 		auto * pEnd = m_children.end();
-		
+
 		while( pSlot != pEnd )
 		{
 			if( pSlot->bVisible )
@@ -556,14 +556,14 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ _adaptChildrenToSize() ___________________________________________________________
-	
+
 	void StackPanel::_adaptChildrenToSize()
 	{
 		auto * pSlot = m_children.begin();
 		auto * pEnd = m_children.end();
-		
+
 		while( pSlot != pEnd )
 		{
 			if( pSlot->bVisible )
@@ -577,10 +577,10 @@ namespace wg
 	Rect StackPanel::_childGeo( const StackPanelSlot * pSlot ) const
 	{
 		Rect base = Rect( m_size ) - pSlot->padding;
-	
+
 		if( base.w <= 0 || base.h <= 0 )
 			return Rect(0,0,0,0);
-	
+
 		switch( pSlot->sizePolicy )
 		{
 			default:
@@ -588,13 +588,13 @@ namespace wg
 			{
 				Size	size = pSlot->pWidget->preferredSize();
 				Rect geo = Util::origoToRect( pSlot->origo, base, size );
-	
+
 				if( geo.w > base.w )
 				{
 					geo.x = 0;
 					geo.w = base.w;
 				}
-	
+
 				if( geo.h > base.h )
 				{
 					geo.y = 0;
@@ -610,10 +610,10 @@ namespace wg
 			{
 				Size	orgSize = pSlot->pWidget->preferredSize();
 				Size	size;
-	
+
 				float	fracX = orgSize.w / (float) base.w;
 				float	fracY = orgSize.h / (float) base.h;
-	
+
 				if( fracX > fracY )
 				{
 					size.w = base.w;
@@ -624,7 +624,7 @@ namespace wg
 					size.h = base.h;
 					size.w = (int) (orgSize.w / fracY);
 				}
-	
+
 				return Util::origoToRect( pSlot->origo, base, size );
 			}
 		}

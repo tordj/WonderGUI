@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -30,7 +30,7 @@
 #include <wg_slotarray.impl.h>
 
 
-namespace wg 
+namespace wg
 {
 	template class SlotArray<PopupSlot>;
 
@@ -39,32 +39,32 @@ namespace wg
 	//____ operator[] __________________________________________________________
 
 	Widget& PopupChildren::operator[](int index) const
-	{ 
-		return * m_pHolder->m_popups.slot(index)->pWidget; 
+	{
+		return * m_pHolder->m_popups.slot(index)->pWidget;
 	}
 
 	//____ size() ______________________________________________________________
-	
-	int PopupChildren::size() const 
-	{ 
-		return m_pHolder->m_popups.size(); 
-	} 
+
+	int PopupChildren::size() const
+	{
+		return m_pHolder->m_popups.size();
+	}
 
 	//____ at() _______________________________________________________________
-	
-	Widget_p PopupChildren::at( int index) const 
-	{ 
+
+	Widget_p PopupChildren::at( int index) const
+	{
 		if( index < 0 || index >= m_pHolder->m_popups.size() )
 			return nullptr;
 
-		return Widget_p(m_pHolder->m_popups.slot(index)->pWidget); 
+		return Widget_p(m_pHolder->m_popups.slot(index)->pWidget);
 	}
-	
+
 	//____ _object() ___________________________________________________________
-	
-	Object * PopupChildren::_object() const 
-	{	
-		return m_pHolder; 
+
+	Object * PopupChildren::_object() const
+	{
+		return m_pHolder;
 	}
 
 
@@ -81,10 +81,10 @@ namespace wg
 	{
 		if( nb <= 0 )
 			return;
-		
+
 		nb = min(nb, m_pHolder->m_popups.size());
-		
-		m_pHolder->_removeSlots(0,nb); 
+
+		m_pHolder->_removeSlots(0,nb);
 	}
 
 	//____ pop() ________________________________________________
@@ -100,67 +100,67 @@ namespace wg
 
 
 	//____ clear() ________________________________________________
-	
+
 	void PopupChildren::clear()
 	{
-		if( m_pHolder->m_popups.isEmpty() ) 
-			return; 
+		if( m_pHolder->m_popups.isEmpty() )
+			return;
 
-		m_pHolder->_removeSlots(0,m_pHolder->m_popups.size()); 
+		m_pHolder->_removeSlots(0,m_pHolder->m_popups.size());
 	}
 
 
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	PopupLayer::PopupLayer() : popups(this)
 	{
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	PopupLayer::~PopupLayer()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool PopupLayer::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Layer::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * PopupLayer::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	PopupLayer_p PopupLayer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return PopupLayer_p( static_cast<PopupLayer*>(pObject) );
-	
+
 		return 0;
 	}
 
 	//____ _updateGeo() __________________________________________________________
-	
+
 	bool PopupLayer::_updateGeo(PopupSlot* pSlot, bool bInitialUpdate )
 	{
 		// Get size of parent and correct launcherGeo
-	
-	
+
+
 		//
-	
+
 		Rect geo(0,0,Size::min(pSlot->pWidget->preferredSize(),Size::min(pSlot->maxSize,m_size)));
-	
+
 		switch( pSlot->attachPoint )
 		{
 			case Origo::NorthEast:					// Right side of launcherGeo, going down.
@@ -169,64 +169,64 @@ namespace wg
 				geo.y = pSlot->launcherGeo.top();
 				break;
 			}
-	
+
 			case Origo::SouthEast:					// Right side of launcherGeo, going up.
 			{
 				geo.x = pSlot->launcherGeo.right();
 				geo.y = pSlot->launcherGeo.bottom() - geo.h;
 				break;
 			}
-	
+
 			case Origo::NorthWest:					// Left-aligned above launcher.
 			{
 				geo.x = pSlot->launcherGeo.left();
 				geo.y = pSlot->launcherGeo.top() - geo.h;
 				break;
 			}
-	
+
 			case Origo::SouthWest:					// Left-aligned below launcher.
 			{
 				geo.x = pSlot->launcherGeo.left();
 				geo.y = pSlot->launcherGeo.bottom();
 				break;
 			}
-	
+
 			case Origo::West:						// Centered left of launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.left() - geo.w;
 				geo.y = pSlot->launcherGeo.top() + pSlot->launcherGeo.h/2 - geo.h/2;
 				break;
 			}
-	
+
 			case Origo::North:						// Centered above launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 + geo.w/2;
 				geo.y = pSlot->launcherGeo.top() - geo.h;
 				break;
 			}
-	
+
 			case Origo::East:						// Centered right of launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.right();
 				geo.y = pSlot->launcherGeo.top() + pSlot->launcherGeo.h/2 - geo.h/2;
 				break;
 			}
-	
+
 			case Origo::South:						// Centered below launcherGeo.
 			{
 				geo.x = pSlot->launcherGeo.left() + pSlot->launcherGeo.w/2 + geo.w/2;
 				geo.y = pSlot->launcherGeo.bottom();
 				break;
 			}
-	
-            default:
-                assert(false);
-                break;
-                
+
+			default:
+				assert(false);
+				break;
+
 		}
-	
+
 		// Adjust geometry to fit inside parent.
-	
+
 		if( geo.right() > m_size.w )
 		{
 			if( geo.left() == pSlot->launcherGeo.right() )
@@ -246,7 +246,7 @@ namespace wg
 			else
 				geo.x = m_size.w - geo.w;
 		}
-	
+
 		if( geo.left() < 0 )
 		{
 			if( geo.right() == pSlot->launcherGeo.left() )
@@ -262,12 +262,12 @@ namespace wg
 					geo.x = 0;
 					geo.w = pSlot->launcherGeo.left();
 				}
-	
+
 			}
 			else
 				geo.x = 0;
 		}
-	
+
 		if( geo.bottom() > m_size.h )
 		{
 			if( geo.top() == pSlot->launcherGeo.bottom() )
@@ -287,7 +287,7 @@ namespace wg
 			else
 				geo.y = m_size.h - geo.h;
 		}
-	
+
 		if( geo.top() < 0 )
 		{
 			if( geo.bottom() == pSlot->launcherGeo.top() )
@@ -307,15 +307,15 @@ namespace wg
 			else
 				geo.y = 0;
 		}
-	
+
 		// Update geometry if it has changed.
-	
+
 		if( geo != pSlot->geo )
 		{
 			if( !bInitialUpdate )
-				_onRequestRender(pSlot->geo,pSlot);	
+				_onRequestRender(pSlot->geo,pSlot);
 			pSlot->geo = geo;
-			_onRequestRender(pSlot->geo,pSlot);	
+			_onRequestRender(pSlot->geo,pSlot);
 
 			if( pSlot->pWidget->size() != geo.size() )
 				pSlot->pWidget->_setSize(geo.size());
@@ -328,19 +328,19 @@ namespace wg
 
 
 	//____ _findWidget() ____________________________________________________________
-	
+
 	Widget *  PopupLayer::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
-	
+
 		if( mode == SearchMode::ActionTarget && !m_popups.isEmpty() )
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
-	
+
 			PopupSlot * pSlot = m_popups.first();
 			Widget * pResult = 0;
-	
+
 			while( pSlot < m_popups.end() && !pResult )
 			{
 				if( pSlot->geo.contains( ofs ) )
@@ -352,25 +352,25 @@ namespace wg
 				}
 				pSlot++;
 			}
-	
+
 			if( pResult == 0 )
 			{
 				// Check the root opener
-				
+
 				PopupSlot * pSlot = m_popups.last();
 				if( pSlot->pOpener )
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
-	
+
 					Coord 	absPos 		= ofs + globalPos();
 					Rect	openerGeo 	= pOpener->globalGeo();
-	
+
 					if( openerGeo.contains(absPos) && pOpener->markTest( absPos - openerGeo.pos() ) )
 						pResult = pOpener;
 				}
-				
+
 				// Fall back to us.
-				
+
 				if( pResult == 0 )
 					pResult = this;
 			}
@@ -379,13 +379,13 @@ namespace wg
 		else
 		{
 			// For the rest of the modes we can rely on the default method.
-	
+
 			return Container::_findWidget( ofs, mode );
 		}
 	}
-	
+
 	//____ _onRequestRender() _____________________________________________________
-	
+
 	void PopupLayer::_onRequestRender( const Rect& rect, const LayerSlot * pSlot )
 	{
 		// Don not render anything if not visible
@@ -394,10 +394,10 @@ namespace wg
 			return;
 
 		// Clip our geometry and put it in a dirtyrect-list
-	
+
 		Patches patches;
 		patches.add( Rect( rect, Rect(0,0,m_size)) );
-	
+
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 
@@ -419,7 +419,7 @@ namespace wg
 			}
 		}
 		// Make request render calls
-	
+
 		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
@@ -534,25 +534,25 @@ namespace wg
 
 
 	//____ _setSize() ___________________________________________________________
-	
+
 	void PopupLayer::_setSize( const Size& sz )
 	{
 		Layer::_setSize(sz);
 	}
-	
+
 	//____ _cloneContent() ______________________________________________________
-	
+
 	void PopupLayer::_cloneContent( const Widget * _pOrg )
 	{
 		Layer::_cloneContent( _pOrg );
 	}
-	
+
 	//____ _receive() ______________________________________________________________
-	
+
 	void PopupLayer::_receive( Msg * _pMsg )
 	{
 		Layer::_receive(_pMsg);
-		
+
 		int ms = static_cast<TickMsg*>(_pMsg)->timediff();
 
 		switch( _pMsg->type() )
@@ -607,7 +607,7 @@ namespace wg
 					default:
 						break;
 					}
-					
+
 				}
 
 				// Close any popup that is due for closing.
@@ -641,7 +641,7 @@ namespace wg
 						pSlot->stateCounter = 0;
 					}
 				}
-			
+
 				// A popup in state ClosingDelay should be promoted to
 				// state PeekOpen if pointer has entered its launcherGeo and
 				// to state WeakOpen if pointer has entered its geo.
@@ -700,7 +700,7 @@ namespace wg
 				}
 
 
-			}				
+			}
 			break;
 
 /*
@@ -737,7 +737,7 @@ namespace wg
 					if (pOpener->markTest(absPos - openerGeo.pos()))
 						break;
 				}
-						
+
 				// DON'T BREAK! Continuing down to case MousePress on purpose.
 			}
 			case MsgType::MousePress:
@@ -760,12 +760,12 @@ namespace wg
 				_pMsg->swallow();
 			}
 			break;
-	
+
 			case MsgType::KeyPress:
 			case MsgType::KeyRepeat:
 			{
 				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
-	
+
 				if( pMsg->translatedKeyCode() == Key::Escape )
 				{
 					if( !m_popups.isEmpty() )
@@ -776,46 +776,46 @@ namespace wg
 				}
 			}
 			break;
-            
-            default:
-                break;
+
+			default:
+				break;
 		}
 	}
-	
+
 	//____ _stealKeyboardFocus() _________________________________________________
-	
+
 	void PopupLayer::_stealKeyboardFocus()
 	{
 		// Verify that we have a root
-	
+
 		if( !_root() )
 			return;
-	
+
 		// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
-	
+
 		if( m_popups.size() < 2 )
 			m_pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
 		else
 			m_popups[1].pKeyFocus = Base::inputHandler()->focusedWidget().rawPtr();
-	
+
 		// Steal keyboard focus to top menu
-	
+
 		Widget * pWidget = m_popups.begin()->pWidget;
 
 		_childRequestFocus( pWidget->_slot(), pWidget );
 	}
-	
+
 	//____ _restoreKeyboardFocus() _________________________________________________
-	
+
 	void PopupLayer::_restoreKeyboardFocus()
 	{
 		// Verify that we have a root
-	
+
 		if( !_root() )
 			return;
-	
+
 		//
-	
+
 		if( m_popups.isEmpty() )
 			_holder()->_childRequestFocus( _slot(), m_pKeyFocus.rawPtr() );
 		else
@@ -860,7 +860,7 @@ namespace wg
 	void PopupLayer::_removeSlots(int ofs, int nb)
 	{
 		MsgRouter * pEH = Base::msgRouter().rawPtr();
-	
+
 		PopupSlot * pSlot = m_popups.slot(ofs);
 
 		nb = min(nb, m_popups.size());
@@ -871,7 +871,7 @@ namespace wg
 				pEH->post( new PopupClosedMsg( pSlot[i].pWidget, pSlot[i].pOpener ) );
 			_requestRender(pSlot[i].geo);
 		}
-						
+
 		m_popups.remove(ofs, nb);
 		_restoreKeyboardFocus();
 

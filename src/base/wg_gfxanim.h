@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -29,17 +29,17 @@
 #include <wg_geo.h>
 #include	<wg_surface.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class GfxFrame;
-	
+
 	class GfxAnim;
 	typedef	StrongPtr<GfxAnim>		GfxAnim_p;
 	typedef	WeakPtr<GfxAnim>	GfxAnim_wp;
-	
+
 	//____ Class GfxAnim ________________________________________________________
-	
+
 	class	GfxAnim : public Anim
 	{
 	public:
@@ -58,41 +58,41 @@ namespace wg
 
 		void		setSize( Size size );
 		Size		size() const { return m_size; }
-	
+
 		bool		insertFrame( int pos, Surface * pSurf, Coord ofs, int duration );
 		bool		insertFrame( GfxFrame * pBefore, Surface * pSurf, Coord ofs, int duration );
 		bool		addFrame( Surface * pSurf, Coord ofs, int duration );
 		int			addFrames( Surface * pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames = 0, Size spacing = Size() );
 		int			addFrames(Surface * pSurf, int duration, int nFrames = 0, Size spacing = Size() );
-	
+
 		GfxFrame * getFrame( int64_t ticks, GfxFrame * pProximity = 0 ) const;
-	
+
 		GfxFrame * getFirstFrame(void) {return (GfxFrame *) Anim::_firstKeyFrame(); };
 		GfxFrame * getLastFrame(void) {return (GfxFrame *) Anim::_lastKeyFrame(); };
-	
+
 	protected:
 		GfxAnim();
 		GfxAnim( Size size );
-	
+
 		Size		m_size;
 	};
-	
+
 	//____ Class GfxFrame _______________________________________________________
-	
+
 	class GfxFrame : public KeyFrame
 	{
 	public:
 		// Derived from KeyFrame: uint32_t	timestamp
 
 		//.____ Misc ___________________________________________________________
-	
+
 		GfxFrame * getNext(void) {return (GfxFrame *) KeyFrame::next();};
 		GfxFrame * getPrev(void) {return (GfxFrame *) KeyFrame::prev();};
-	
+
 		Surface_p	pSurf;
 		Rect			rect;
 	};
-	
+
 
 } // namespace wg
 #endif //WG_GFXANIM_DOT_H

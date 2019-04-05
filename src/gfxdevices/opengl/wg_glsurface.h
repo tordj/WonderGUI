@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free Glware; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Glware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -58,11 +58,11 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        static GlSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
-       
+		static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -102,10 +102,10 @@ namespace wg
 		inline	GLuint	getClutTexture() const { return m_clutTexture; }
 
 	private:
-        GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-        GlSurface( Surface * pOther, int flags = SurfaceFlag::Static );
+		GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( Surface * pOther, int flags = SurfaceFlag::Static );
 		~GlSurface();
 
 
@@ -121,11 +121,11 @@ namespace wg
 		GLuint		m_clutBufferId = 0;
 
 
-        GLuint 		m_texture;			// GL texture handle.
+		GLuint 		m_texture;			// GL texture handle.
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
-        GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
-        Blob_p      m_pBlob;
-		
+		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
+		Blob_p      m_pBlob;
+
 		Size		m_size;				// Width and height in pixels.
 		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
 		GLenum		m_pixelDataType;

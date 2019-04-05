@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,25 +25,25 @@
 #include <wg_geo.h>
 #include <wg_util.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	using namespace Util;
-	
+
 	const char ColorSkin::CLASSNAME[] = {"ColorSkin"};
-	
+
 	//____ create() _______________________________________________________________
-	
+
 	ColorSkin_p ColorSkin::create()
 	{
 		return ColorSkin_p(new ColorSkin());
 	}
-	
+
 	ColorSkin_p ColorSkin::create(Color color)
 	{
 		return ColorSkin_p(new ColorSkin(color));
 	}
-	
+
 	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors )
 	{
 		ColorSkin_p p = new ColorSkin();
@@ -54,49 +54,49 @@ namespace wg
 
 
 	//____ Constructor ____________________________________________________________
-	
+
 	ColorSkin::ColorSkin()
 	{
 		m_stateColorMask = 1;
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_color[i] = Color::White;
-	
+
 		m_bOpaque = true;
 	}
-	
+
 	ColorSkin::ColorSkin(Color color )
 	{
 		setColor(color);
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool ColorSkin::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return ExtendedSkin::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * ColorSkin::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	ColorSkin_p ColorSkin::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return ColorSkin_p( static_cast<ColorSkin*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ setBlendMode() _____________________________________________________
 
 	void ColorSkin::setBlendMode(BlendMode mode)
@@ -151,7 +151,7 @@ namespace wg
 	}
 
 	//____ render() _______________________________________________________________
-		
+
 	void ColorSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
@@ -166,46 +166,46 @@ namespace wg
 		if (m_blendMode != oldBlendMode)
 			pDevice->setBlendMode(oldBlendMode);
 	}
-		
+
 	//____ markTest() _____________________________________________________________
-	
+
 	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
-	
+
 		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
 	}
-	
+
 	//____ isOpaque() _____________________________________________________________
-	
+
 	bool ColorSkin::isOpaque() const
 	{
 		return m_bOpaque;
 	}
-	
+
 	bool ColorSkin::isOpaque( State state ) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
-	
+
 	bool ColorSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
-	
+
 	//____ isStateIdentical() ____________________________________________________
-	
+
 	bool ColorSkin::isStateIdentical( State state, State comparedTo ) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
-	
+
 		return (m_color[i1] == m_color[i2] && ExtendedSkin::isStateIdentical(state, comparedTo));
 	}
-	
+
 	//____ _updateOpaqueFlag() ____________________________________________________
-	
+
 	void ColorSkin::_updateOpaqueFlag()
 	{
 		switch (m_blendMode)

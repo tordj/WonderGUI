@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -59,7 +59,7 @@ namespace wg
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
-	
+
 	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
@@ -150,25 +150,25 @@ namespace wg
 	bool LambdaPanel::setMinSize(Size min)
 	{
 		//TODO: Assert >= 0.
-		
+
 		if( m_minSize != min )
 		{
 			if( min.w > m_maxSize.w || min.h > m_maxSize.h )
 				return false;
-			
+
 			m_minSize = min;
 			if( m_preferredSize.w < min.w )
 				m_preferredSize.w = min.w;
 			if( m_preferredSize.h < min.h )
 				m_preferredSize.h = min.h;
-				
+
 			_requestResize();
 		}
 		return true;
 	}
-	
+
 	//____ setMaxSize() ________________________________________________________
-	
+
 	bool LambdaPanel::setMaxSize(Size max)
 	{
 		//TODO: Assert >= 0.
@@ -177,27 +177,27 @@ namespace wg
 		{
 			if( max.w < m_minSize.w || max.h < m_minSize.h )
 				return false;
-			
+
 			m_maxSize = max;
 			if( m_preferredSize.w > max.w )
 				m_preferredSize.w = max.w;
 			if( m_preferredSize.h > max.h )
 				m_preferredSize.h = max.h;
-				
+
 			_requestResize();
 		}
-		return true;		
+		return true;
 	}
 
 	//____ setSizeLimits() _____________________________________________________
-	
+
 	bool LambdaPanel::setSizeLimits( Size min, Size max )
 	{
 		//TODO: Assert >= 0.
 
 		if( min.w > max.w || min.h > max.h )
 			return false;
-			
+
 		m_minSize = min;
 		m_maxSize = max;
 		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
@@ -206,46 +206,46 @@ namespace wg
 		_requestResize();
 		return true;
 	}
-	
+
 	//____ setPreferredSize() __________________________________________________
-	
+
 	bool LambdaPanel::setPreferredSize(Size pref)
 	{
 		//TODO: Assert >= 0.
 
 		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
 			return false;
-			
+
 		m_preferredSize = pref;
 		_requestResize();
 		return true;
 	}
 
 	//____ preferredSize() _____________________________________________________
-	
+
 	Size LambdaPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
 
 	//____ _firstChild() _______________________________________________________
-	
+
 	Widget * LambdaPanel::_firstChild() const
 	{
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.first()->pWidget;		
+		return m_children.first()->pWidget;
 	}
 
 	//____ _lastChild() ________________________________________________________
-	
+
 	Widget * LambdaPanel::_lastChild() const
 	{
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.last()->pWidget;		
+		return m_children.last()->pWidget;
 	}
 
 	//____ _firstSlotWithGeo() _________________________________________________
@@ -260,9 +260,9 @@ namespace wg
 			package.pSlot = pSlot;
 			package.geo = pSlot->geo;
 		}
-		
+
 	}
-	
+
 	//____ _nextSlotWithGeo() _________________________________________________
 
 	void LambdaPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
@@ -276,7 +276,7 @@ namespace wg
 			pSlot++;
 			package.pSlot = pSlot;
 			package.geo = pSlot->geo;
-		}		
+		}
 	}
 
 	//____ _didAddSlots() ________________________________________________________
@@ -292,7 +292,7 @@ namespace wg
 	{
 		_hideSlots(static_cast<LambdaPanelSlot*>(pSlot), nb);
 	}
-	
+
 	//____ _hideSlots() __________________________________________________________
 
 	void LambdaPanel::_hideSlots( Slot * _pSlot, int nb )
@@ -306,9 +306,9 @@ namespace wg
 				pSlot[i].bVisible = false;
 				_onRequestRender(pSlot[i].geo, pSlot);
 			}
-		}		
+		}
 	}
-	
+
 	//____ _unhideSlots() ________________________________________________________
 
 	void LambdaPanel::_unhideSlots( Slot * _pSlot, int nb )
@@ -323,7 +323,7 @@ namespace wg
 				_updateGeo(&pSlot[i]);
 				_onRequestRender(pSlot[i].geo, pSlot);
 			}
-		}	
+		}
 	}
 
 
@@ -394,7 +394,7 @@ namespace wg
 
 	Coord LambdaPanel::_childPos( Slot * pSlot ) const
 	{
-		return ((LambdaPanelSlot*)pSlot)->geo.pos();		
+		return ((LambdaPanelSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
@@ -409,13 +409,13 @@ namespace wg
 	void LambdaPanel::_childRequestRender( Slot * _pSlot )
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( pSlot->geo, pSlot );		
+		_onRequestRender( pSlot->geo, pSlot );
 	}
-	
+
 	void LambdaPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
-		_onRequestRender( rect + pSlot->geo.pos(), pSlot );		
+		_onRequestRender( rect + pSlot->geo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -435,7 +435,7 @@ namespace wg
 			return pSlot[-1].pWidget;
 
 		return nullptr;
-		
+
 	}
 
 	//____ _nextChild() __________________________________________________________
@@ -447,7 +447,7 @@ namespace wg
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;
 
-		return nullptr;		
+		return nullptr;
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -504,7 +504,7 @@ namespace wg
 		}
 
 		pSlot->geo = geo;
-		
+
 		pSlot->pWidget->_setSize(geo.size());
 
 	}

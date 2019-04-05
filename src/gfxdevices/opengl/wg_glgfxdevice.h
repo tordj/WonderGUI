@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -161,7 +161,7 @@ namespace wg
 
 		static const int c_commandBufferSize = 256;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats. 
+		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
@@ -270,7 +270,7 @@ namespace wg
 
 		static GlGfxDevice *	s_pActiveDevice;	// Pointer at GL device currently in rendering state.
 
-		// 
+		//
 
 		static const char fillVertexShader[];
 		static const char fillFragmentShader[];

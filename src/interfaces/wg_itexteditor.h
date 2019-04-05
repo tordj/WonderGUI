@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -28,13 +28,13 @@
 #include <wg_ctexteditor.h>
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class IROTextDisplayEditor;
 	typedef	StrongInterfacePtr<IROTextDisplayEditor>	EditText_p;
 	typedef	WeakInterfacePtr<IROTextDisplayEditor>	EditText_wp;
-	
+
 	/**
 	 * @brief Interface for text which can be modified through the UI
 	 *
@@ -42,14 +42,14 @@ namespace wg
 	 * to get/set the text, modify its appearance, position caret and select region.
 	 *
 	 */
-	 
+
 	class IROTextDisplayEditor : public ITextDisplay
 	{
 	public:
 		/** @private */
 
 		IROTextDisplayEditor(CTextEditor * pComponent) : ITextDisplay(pComponent) {}
-	
+
 		//.____ State __________________________________________________
 
 		void			setEditMode(TextEditMode mode);
@@ -107,7 +107,7 @@ namespace wg
 		inline	CTextEditor * 	_comp() { return static_cast<CTextEditor*>(m_pComponent); }
 		inline	const CTextEditor * 	_comp() const { return static_cast<CTextEditor*>(m_pComponent); }
 	};
-	
+
 
 	//_____________________________________________________________________________
 	inline void IROTextDisplayEditor::setEditMode(TextEditMode mode)
@@ -122,20 +122,20 @@ namespace wg
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::isSelectable() const 
-	{ 
-		return !(_comp()->editMode() == TextEditMode::Static); 
+	inline bool IROTextDisplayEditor::isSelectable() const
+	{
+		return !(_comp()->editMode() == TextEditMode::Static);
 	}
-	
+
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::isEditable() const 
-	{ 
-		return (_comp()->editMode() == TextEditMode::Editable); 
+	inline bool IROTextDisplayEditor::isEditable() const
+	{
+		return (_comp()->editMode() == TextEditMode::Editable);
 	}
-	
+
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::append( const CharSeq& seq ) 
-	{ 
+	inline int IROTextDisplayEditor::append( const CharSeq& seq )
+	{
 		return _comp()->append( seq );
 	}
 
@@ -144,13 +144,13 @@ namespace wg
 	{
 		return _comp()->insert(ofs, seq);
 	}
-	
+
 	//_____________________________________________________________________________
 	inline int IROTextDisplayEditor::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		return _comp()->replace(ofs, nDelete, seq);
 	}
-	
+
 	//_____________________________________________________________________________
 	inline int IROTextDisplayEditor::erase( int ofs, int len )
 	{
@@ -162,7 +162,7 @@ namespace wg
 	{
 		return _comp()->select(begin,end);
 	}
-	
+
 	//_____________________________________________________________________________
 	inline bool IROTextDisplayEditor::selectAll()
 	{
@@ -210,19 +210,19 @@ namespace wg
 	{
 		return _comp()->caretOfs();
 	}
-	
+
 	//_____________________________________________________________________________
 	inline int IROTextDisplayEditor::caretPut( const CharSeq& seq )
 	{
 		return _comp()->caretPut(seq);
 	}
-	
+
 	//_____________________________________________________________________________
 	inline bool IROTextDisplayEditor::caretPut( uint16_t c )
 	{
 		return _comp()->caretPut(c);
 	}
-	
+
 	//_____________________________________________________________________________
 	inline bool IROTextDisplayEditor::caretLineBegin()
 	{
@@ -247,7 +247,7 @@ namespace wg
 		return _comp()->caretTextEnd();
 	}
 
-	
+
 
 } // namespace wg
 #endif //WG_ITEXTEDITOR_DOT_H

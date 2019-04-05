@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,50 +25,50 @@
 #include <wg_canvas.h>
 #include <wg_gfxdevice.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char Canvas::CLASSNAME[] = {"Canvas"};
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	Canvas::Canvas() : canvas(&m_canvas), m_canvas(this,&canvas)
 	{
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	Canvas::~Canvas()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool Canvas::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Widget::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ________________________________________________________
-	
+
 	const char * Canvas::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _____________________________________________________________
-	
+
 	Canvas_p Canvas::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return Canvas_p( static_cast<Canvas*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ matchingHeight() ___________________________________________________
 
 	int Canvas::matchingHeight(int width) const
@@ -114,10 +114,10 @@ namespace wg
 	}
 
 	//____ _cloneContent() ____________________________________________________
-	
+
 	void Canvas::_cloneContent( const Widget * _pOrg )
 	{
-		Widget::_cloneContent( _pOrg );	
+		Widget::_cloneContent( _pOrg );
 	}
 
 	//____ _setSize() _________________________________________________________

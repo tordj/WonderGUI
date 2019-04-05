@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -28,9 +28,9 @@
 #include <wg_paddedslot.h>
 #include <wg_iweightedchildren.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class PackPanel;
 	typedef	StrongPtr<PackPanel>		PackPanel_p;
 	typedef	WeakPtr<PackPanel>			PackPanel_wp;
@@ -42,34 +42,34 @@ namespace wg
 	{
 	public:
 		PackPanelSlot() : weight(1.f) {}
-	
+
 		float			weight;			// Weight for space allocation.
 		Rect			geo;			// Real geo of child (no padding included).
 		Size			preferredSize;	// Cached padded preferred size from the child.
 	};
-	
+
 
 
 	class IPackPanelChildren;
 	typedef	StrongInterfacePtr<IPackPanelChildren>	IPackPanelChildren_p;
 	typedef	WeakInterfacePtr<IPackPanelChildren>	IPackPanelChildren_wp;
-	
-	
+
+
 	/**
 	 * @brief	A widget for arranging children horizontally or vertically.
 	 *
 	 * A widget for arranging children horizontally or vertically.
 	 */
-	
+
 	class PackPanel : public Panel, protected WeightedChildrenHolder
 	{
-	
+
 	public:
 
 		//.____ Creation __________________________________________
 
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
-		
+
 		//.____ Interfaces _______________________________________
 
 		IWeightedChildren<PackPanelSlot,WeightedChildrenHolder>	children;
@@ -80,15 +80,15 @@ namespace wg
 		const char *className( void ) const;
 		static const char	CLASSNAME[];
 		static PackPanel_p	cast( Object * pObject );
-	
+
 		//.____ Geometry ____________________________________________
 
 		void			setOrientation( Orientation orientaiton );
 		Orientation		orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
-			
+
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
-	
+
 		Size			preferredSize() const;
 
 		//.____ Behavior ________________________________________________________
@@ -96,19 +96,19 @@ namespace wg
 		void			setSizeBroker( SizeBroker * pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
 
-	
+
 	protected:
 		PackPanel();
 		virtual ~PackPanel();
 		virtual Widget* _newOfMyType() const { return new PackPanel(); };
-	
-	    // Overloaded from Widget
-	    
+
+		// Overloaded from Widget
+
 		void			_setSize( const Size& size );
-	 
-	    
+
+
 		// Overloaded from Container
-		
+
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
 
@@ -144,9 +144,9 @@ namespace wg
 		Widget *	_prevChild( const Slot * pSlot ) const;
 		Widget *	_nextChild( const Slot * pSlot ) const;
 
-				
+
 		//
-		
+
 		void		_hideChildren(PackPanelSlot * pSlot, int nb);
 		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
@@ -157,14 +157,14 @@ namespace wg
 
 
 		SlotArray<PackPanelSlot> m_children;
-		
+
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
 		Size			m_preferredContentSize;
-	
+
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_PACKPANEL_DOT_H

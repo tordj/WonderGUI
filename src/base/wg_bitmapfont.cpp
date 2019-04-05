@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,20 +27,20 @@
 #include <wg_bitmapfont.h>
 #include <wg_texttool.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	const char BitmapFont::CLASSNAME[] = {"BitmapFont"};
-	
-	
+
+
 	//____ Constructor ____________________________________________________________
-	
+
 	BitmapFont::BitmapFont( Surface * pSurf, char * pGlyphSpec )
 	{
 		m_nKerningGlyphs= 0;
 		m_pKerningTable = 0;
-	
+
 		m_nGlyphs		= 0;
 		m_bMonospace	= true;
 		m_bMonochrome	= true;
@@ -51,24 +51,24 @@ namespace wg
 		m_maxAscend		= 0;
 		m_maxDescend	= 0;
 		m_size			= 0;
-	
-	
+
+
 		for( int i = 0 ; i < 256 ; i++ )
 			m_glyphTab[i] = 0;
-	
+
 		// Insert the glyphs
 		insertGlyphs(pSurf, pGlyphSpec);
 	/*
 		// Create an underline specification from the '_' character as default.
 		// It should be possible to specify something different in the spec file later on...
-	
+
 		const Glyph* pUnder = getGlyph('_', 0);
-	
+
 		m_underline.pSurf = pUnder->pSurf;
 		m_underline.rect = pUnder->rect;
 		m_underline.bearingX = pUnder->bearingX;
 		m_underline.bearingY = pUnder->bearingY;
-	
+
 		if( pUnder->rect.w > 2 )
 		{
 			m_underline.leftBorder = 1;
@@ -81,10 +81,10 @@ namespace wg
 		}
 	*/
 	}
-	
-	
+
+
 	//____ Destructor _____________________________________________________________
-	
+
 	BitmapFont::~BitmapFont()
 	{
 		for( int i = 0 ; i < 256 ; i++ )
@@ -92,102 +92,102 @@ namespace wg
 			if( m_glyphTab[i] )
 				delete [] m_glyphTab[i];
 		}
-	
+
 		if( m_pKerningTable )
 			delete [] m_pKerningTable;
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool BitmapFont::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Font::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * BitmapFont::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	BitmapFont_p BitmapFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return BitmapFont_p( static_cast<BitmapFont*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ hasGlyph() _________________________________________________
-	
+
 	inline bool BitmapFont::hasGlyph( uint16_t chr )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
-	
+
 		if( pGlyph )
 		{
 			pGlyph += (chr & 0xFF);
 			if( pGlyph->m_src.pSurface )
 				return true;
 		}
-	
+
 		return false;
 	}
-	
-	
+
+
 	//____ getGlyph() _________________________________________________________
-	
+
 	inline Glyph_p BitmapFont::getGlyph( uint16_t chr )
 	{
 		MyGlyph * pGlyph = m_glyphTab[chr >> 8];
-	
+
 		if( pGlyph )
 		{
 			pGlyph += (chr & 0xFF);
 			if( pGlyph->m_src.pSurface )
 				return pGlyph;
 		}
-	
+
 		return 0;
 	}
-	
-	
+
+
 	//____ kerning() _________________________________________________________
-	
-	
+
+
 	inline int BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !m_pKerningTable )
 			return 0;
-	
+
 		if( !pLeftGlyph || !pRightGlyph )
 			return 0;
-	
+
 		int indexLeft = pLeftGlyph->kerningIndex();
 		int indexRight = pRightGlyph->kerningIndex();
-	
+
 		if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
 			return 0;
-	
+
 		return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ];
 	}
-	
-	
+
+
 	//____ insertGlyphs() _________________________________________________________
-	
+
 	void BitmapFont::insertGlyphs( Surface * pSurf, char* pGlyphSpec )
 	{
 		// Multiply average spacing by glyph count so that we can continue to add widths..
 		m_avgAdvance *= m_nGlyphs;
-	
+
 		bool firstInsert = (0 == m_nGlyphs);
-	
+
 		// Old-style ascii fnt spec
 
 		// Fill in m_glyphTab
@@ -201,16 +201,16 @@ namespace wg
 		if(firstInsert)
 		{
 			nRead = sscanf( pGlyphSpec, "size: %d linegap: %d space: %d monochrome: %d", &m_size, &m_lineGap, &m_spaceAdvance, &monochrome );
-			
+
 			m_bMonochrome = (monochrome>0);
-			
+
 		}
 		else
 		{
 			int size, lineGap, spaceAdvance;
-			
+
 			nRead = sscanf( pGlyphSpec, "%d %d %d",  &size, &lineGap, &spaceAdvance );
-			
+
 			if( lineGap > m_lineGap ) m_lineGap = lineGap;
 			if( spaceAdvance > m_spaceAdvance ) m_spaceAdvance = spaceAdvance;
 		}
@@ -340,18 +340,18 @@ namespace wg
 				}
 			}
 		}
-	
+
 		// Divide back into average
 		m_avgAdvance /= m_nGlyphs;
 	}
-	
+
 	//____ BitmapFont::MyGlyph constructor ______________________________________
-	
+
 	BitmapFont::MyGlyph::MyGlyph()
 	{
 		m_src.pSurface = 0;
 	}
-	
+
 	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const Rect& rect )
 	: Glyph( advance, kerningIndex, pFont )
 	{

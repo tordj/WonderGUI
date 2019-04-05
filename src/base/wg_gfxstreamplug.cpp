@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,9 +25,9 @@
 #include <cstring>
 #include <cassert>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char GfxStreamPlug::CLASSNAME[] = {"GfxStreamPlug"};
 
 	//____ create() ___________________________________________________________
@@ -38,7 +38,7 @@ namespace wg
 	}
 
 	//____ Constructor ________________________________________________________
-	
+
 	GfxStreamPlug::GfxStreamPlug(int capacity) : input(this), output{ &m_outStream[0], &m_outStream[1], &m_outStream[2], &m_outStream[3] }
 	{
 		m_bufferSize = ((capacity+1)&0xFFFFFFFE)+2; // Enforce buffer size to even bytes, add 2-byte margin to prevent write pointer passing read pointer.
@@ -52,7 +52,7 @@ namespace wg
 			m_outStream[i].pObj = this;
 		}
 	}
-	
+
 	//____ Destructor _________________________________________________________
 
 	GfxStreamPlug::~GfxStreamPlug()
@@ -61,29 +61,29 @@ namespace wg
 	}
 
 	//____ isInstanceOf() _____________________________________________________
-	
+
 	bool GfxStreamPlug::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Object::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ________________________________________________________
-	
+
 	const char * GfxStreamPlug::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _____________________________________________________________
-	
+
 	GfxStreamPlug_p GfxStreamPlug::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return GfxStreamPlug_p( static_cast<GfxStreamPlug*>(pObject) );
-	
+
 		return 0;
 	}
 

@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -24,20 +24,20 @@
 #include <wg_skin.h>
 #include <wg_util.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	CIconDisplay::CIconDisplay( ComponentHolder * pHolder ) : Component(pHolder)
 	{
 		m_origo			= Origo::NorthWest;
 		m_scale			= 0.f;
 		m_bOverlap		= true;
 	}
-	
+
 	//____ set() ___________________________________________________________________
-	
+
 	bool CIconDisplay::set( Skin * pSkin, Origo origo, Border padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
@@ -45,13 +45,13 @@ namespace wg
 		m_padding 	= padding;
 		m_scale 	= scale;
 		m_bOverlap 	= bOverlap;
-	
+
 		_requestResize();
 		return true;
 	}
-	
+
 	//____ clear() _________________________________________________________________
-	
+
 	void CIconDisplay::clear()
 	{
 		m_pSkin 	= 0;
@@ -59,28 +59,28 @@ namespace wg
 		m_padding 	= Border(0);
 		m_scale 	= 0.f;
 		m_bOverlap 	= false;
-	
+
 		_requestResize();
 	}
-	
+
 	//____ setScale() _________________________________________________________
-	
+
 	bool CIconDisplay::setScale( float scaleFactor )
 	{
 		if( scaleFactor > 1.f || scaleFactor < 0.f )
 			return false;
-	
+
 		if( scaleFactor != m_scale )
 		{
 			m_scale = scaleFactor;
 			_requestResize();
 		}
-	
+
 		return true;
 	}
-	
+
 	//____ setOrigo() ___________________________________________________
-	
+
 	void CIconDisplay::setOrigo( Origo origo )
 	{
 		if( origo != m_origo )
@@ -89,9 +89,9 @@ namespace wg
 			_requestRender();
 		}
 	}
-	
+
 	//____ setPadding() _______________________________________________________
-	
+
 	void CIconDisplay::setPadding( Border borders )
 	{
 		if( borders != m_padding )
@@ -100,9 +100,9 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ setOverlap() _________________________________________________________
-	
+
 	void CIconDisplay::setOverlap( bool bOverlap )
 	{
 		if( bOverlap != m_bOverlap )
@@ -111,9 +111,9 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ setSkin() ______________________________________________________________
-	
+
 	void CIconDisplay::setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
@@ -122,14 +122,14 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ getIconRect() _________________________________________________________
-	
+
 	/*
 		Gets an icon-rect for the icon excluding borders, relative to upper left corner of content area.
-	
+
 	*/
-	
+
 	Rect CIconDisplay::getIconRect( const Rect& contentRect ) const
 	{
 		if( m_pSkin )
@@ -137,19 +137,19 @@ namespace wg
 		else
 			return Rect();
 	}
-	
+
 	Rect CIconDisplay::getIconRect( const Rect& contentRect, const Size& iconSize ) const
 	{
 		Rect rect;
-	
+
 		int w = iconSize.w;
 		int h = iconSize.h;
-	
+
 		if( w > 0 && h > 0 )
 		{
 			int bgW = contentRect.w - m_padding.width();
 			int bgH = contentRect.h - m_padding.height();
-	
+
 			if( m_scale != 0.f )
 			{
 				if( (w / (float) bgW) > (h / (float) bgH) )
@@ -163,28 +163,28 @@ namespace wg
 					h = (int) (bgH * m_scale);
 				}
 			}
-	
-			// 
-	
+
+			//
+
 			w += m_padding.width();
 			h += m_padding.height();
-	
+
 			rect = Util::origoToRect( m_origo, contentRect.size(), Size(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}
-	
+
 		return rect;
 	}
-	
-	
-	
+
+
+
 	//____ getTextRect() _____________________________________________________
-	
+
 	Rect CIconDisplay::getTextRect( const Rect& contentRect, const Rect& iconRect ) const
 	{
 		Rect textRect = contentRect;
-	
+
 		if( !m_bOverlap && iconRect.w > 0 && iconRect.h > 0 )
 		{
 			switch( m_origo )
@@ -209,7 +209,7 @@ namespace wg
 						textRect.w = 0;
 					break;
 				}
-	
+
 				case Origo::North:
 				case Origo::Center:
 				{
@@ -229,12 +229,12 @@ namespace wg
 				}
 			}
 		}
-	
+
 		return textRect;
 	}
-	
+
 	//____ onCloneContent() ________________________________________________________
-	
+
 	void CIconDisplay::onCloneContent( const CIconDisplay * _pOrg )
 	{
 		m_origo			= _pOrg->m_origo;
@@ -243,16 +243,16 @@ namespace wg
 		m_padding		= _pOrg->m_padding;
 		m_pSkin			= _pOrg->m_pSkin;
 	}
-	
+
 	//____ preferredSize() ________________________________________________________
-	
+
 	Size CIconDisplay::preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->preferredSize() + m_padding;
-	
+
 		return Size();
 	}
-	
+
 
 } // namespace wg

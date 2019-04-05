@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -54,32 +54,32 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
-    {
+	GlSurface_p	GlSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
+	{
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
-            return GlSurface_p();
-        
-        return GlSurface_p(new GlSurface(size,format,flags,pClut));
-    }
-    
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
-    {
+			return GlSurface_p();
+
+		return GlSurface_p(new GlSurface(size,format,flags,pClut));
+	}
+
+	GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	{
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return GlSurface_p();
-        
-        return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
-    }
-    
-    GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
-    {
+
+		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
+	}
+
+	GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	{
 		Size max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
@@ -87,12 +87,12 @@ namespace wg
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
 			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return GlSurface_p();
-        
-        return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
-    };
-    
-    GlSurface_p	GlSurface::create( Surface * pOther, int flags )
-    {
+
+		return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
+	};
+
+	GlSurface_p	GlSurface::create( Surface * pOther, int flags )
+	{
 		if (!pOther)
 			return GlSurface_p();
 
@@ -100,23 +100,23 @@ namespace wg
 		Size size = pOther->size();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
-		
-		return GlSurface_p(new GlSurface( pOther,flags ));
-    }
 
-    
-    
+		return GlSurface_p(new GlSurface( pOther,flags ));
+	}
+
+
+
 	//____ Constructor _____________________________________________________________
 
 
-    GlSurface::GlSurface( Size size, PixelFormat format, int flags, const Color * pClut )
-    {
+	GlSurface::GlSurface( Size size, PixelFormat format, int flags, const Color * pClut )
+	{
 		assert(glGetError() == 0);
 		_setPixelDetails(format);
-        m_size	= size;
-        m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-    	m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0));
-	
+		m_size	= size;
+		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0));
+
 		if (pClut)
 		{
 			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
@@ -127,34 +127,34 @@ namespace wg
 
 		_setupGlTexture(nullptr);
 
-        assert( glGetError() == 0 );
-    }
-    
-    
+		assert( glGetError() == 0 );
+	}
+
+
 	GlSurface::GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
-        // Set general information
-        
-        _setPixelDetails(format);
-        m_size	= size;
-        m_pitch = pitch;
+		// Set general information
+
+		_setPixelDetails(format);
+		m_size	= size;
+		m_pitch = pitch;
 		m_pBlob = pBlob;
 		m_pClut = const_cast<Color*>(pClut);
 
 		_setupGlTexture(m_pBlob->data());
 	}
-   
-    GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
-    {
-       _setPixelDetails(format);
-        m_size	= size;
-        m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-        m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0));
-        
-        m_pPixels = (uint8_t *) m_pBlob->data();
-        _copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
-        m_pPixels = 0;
-       
+
+	GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	{
+	   _setPixelDetails(format);
+		m_size	= size;
+		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0));
+
+		m_pPixels = (uint8_t *) m_pBlob->data();
+		_copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
+		m_pPixels = 0;
+
 		if (pClut)
 		{
 			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
@@ -164,20 +164,20 @@ namespace wg
 			m_pClut = nullptr;
 
 		_setupGlTexture(m_pBlob->data());
-    }
+	}
 
 
-    GlSurface::GlSurface( Surface * pOther, int flags )
-    {
-        _setPixelDetails(pOther->pixelFormat());
-        m_size	= pOther->size();
-        m_pitch = m_size.w * m_pixelSize;
-        m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
-        
-        m_pPixels = (uint8_t *) m_pBlob->data();
-        _copyFrom( pOther->pixelDescription(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
-        m_pPixels = 0;
-        
+	GlSurface::GlSurface( Surface * pOther, int flags )
+	{
+		_setPixelDetails(pOther->pixelFormat());
+		m_size	= pOther->size();
+		m_pitch = m_size.w * m_pixelSize;
+		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
+
+		m_pPixels = (uint8_t *) m_pBlob->data();
+		_copyFrom( pOther->pixelDescription(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
+		m_pPixels = 0;
+
 		if (pOther->clut())
 		{
 			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
@@ -187,8 +187,8 @@ namespace wg
 			m_pClut = nullptr;
 
 		_setupGlTexture(m_pBlob->data());
-    }
-    
+	}
+
 	void GlSurface::_setupGlTexture(void * pPixelsToUpload)
 	{
 		glGenTextures(1, &m_texture);
@@ -236,7 +236,7 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-    
+
 
 	void GlSurface::_setPixelDetails( PixelFormat format )
 	{
@@ -290,13 +290,13 @@ namespace wg
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
-            default:
-                assert(false);           // Should never get here, just avoiding compiler warnings.
-                break;
+			default:
+				assert(false);           // Should never get here, just avoiding compiler warnings.
+				break;
 
 		}
-        
-        Util::pixelFormatToDescription(format, m_pixelDescription);
+
+		Util::pixelFormatToDescription(format, m_pixelDescription);
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -318,7 +318,7 @@ namespace wg
 	//____ isInstanceOf() _________________________________________________________
 
 	bool GlSurface::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
 
@@ -328,8 +328,8 @@ namespace wg
 	//____ className() ____________________________________________________________
 
 	const char * GlSurface::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
 
 	//____ cast() _________________________________________________________________
@@ -346,7 +346,7 @@ namespace wg
 
 	void GlSurface::setScaleMode( ScaleMode mode )
 	{
-        assert( glGetError() == 0 );
+		assert( glGetError() == 0 );
 
 		if (m_pClut == nullptr)
 		{
@@ -366,9 +366,9 @@ namespace wg
 				break;
 			}
 		}
-		
+
 		Surface::setScaleMode(mode);
-        assert( glGetError() == 0 );
+		assert( glGetError() == 0 );
 	}
 
 	//____ size() ______________________________________________________________
@@ -405,7 +405,7 @@ namespace wg
 
 		//
 
-    	m_pPixels = (uint8_t*) m_pBlob->data();
+		m_pPixels = (uint8_t*) m_pBlob->data();
 		m_lockRegion = Rect(0,0,m_size);
 		m_accessMode = mode;
 		return m_pPixels;
@@ -431,7 +431,7 @@ namespace wg
 		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
 			return 0;
 
-    	m_pPixels = (uint8_t*) m_pBlob->data();
+		m_pPixels = (uint8_t*) m_pBlob->data();
 		m_lockRegion = region;
 		m_accessMode = mode;
 		return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
@@ -442,21 +442,21 @@ namespace wg
 
 	void GlSurface::unlock()
 	{
-        assert( glGetError() == 0 );
+		assert( glGetError() == 0 );
 		if(m_accessMode == AccessMode::None )
 			return;
 
 		if( m_accessMode != AccessMode::ReadOnly )
 		{
 			glBindTexture( GL_TEXTURE_2D, m_texture );
-        	glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, m_accessFormat, m_pixelDataType, m_pBlob->data() );
+			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, m_accessFormat, m_pixelDataType, m_pBlob->data() );
 	//		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 		}
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
 		m_lockRegion.w = 0;
 		m_lockRegion.h = 0;
-        assert( glGetError() == 0 );
+		assert( glGetError() == 0 );
 	}
 
 	//____ pixel() ______________________________________________________________
@@ -500,25 +500,25 @@ namespace wg
 //			_refreshBackingBuffer();
 
 		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
-        {
+		{
 			uint8_t * p = (uint8_t*) m_pBlob->data();
-			return p[coord.y*m_pitch+coord.x*4+3];            
+			return p[coord.y*m_pitch+coord.x*4+3];
 		}
 		else
-			return 255;            
+			return 255;
 	}
-                
+
 	//____ unload() ___________________________________________________________
 
 	bool GlSurface::unload()
 	{
 		if( m_texture == 0 )
 			return true;
-                
+
 		glDeleteTextures( 1, &m_texture );
 		m_texture = 0;
-                
-		assert(glGetError() == 0);	
+
+		assert(glGetError() == 0);
 		return true;
 	}
 
@@ -542,11 +542,11 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-	
+
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
 					 m_accessFormat, m_pixelDataType, m_pBlob->data() );
-    
-		assert( glGetError() == 0);	
+
+		assert( glGetError() == 0);
 	}
 
 	//____ _refreshBackingBuffer() ____________________________________________
@@ -585,9 +585,9 @@ namespace wg
 		case PixelFormat::I8:
 			type = GL_UNSIGNED_BYTE;
 			break;
-        default:
-            assert(false);   // Should never get here! This code is just to avoid compiler warnings.
-            break;
+		default:
+			assert(false);   // Should never get here! This code is just to avoid compiler warnings.
+			break;
 		}
 
 

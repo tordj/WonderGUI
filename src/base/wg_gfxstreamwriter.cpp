@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,11 +25,11 @@
 #include <wg_gfxstreamwriter.h>
 #include <assert.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char GfxStreamWriter::CLASSNAME[] = {"GfxStreamWriter"};
-	
+
 
 	//____ create() ___________________________________________________________
 
@@ -39,7 +39,7 @@ namespace wg
 	}
 
 	//____ Constructor _____________________________________________________________
-	
+
 	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize) : stream(this)
 	{
 		m_dispatcher = dispatcher;
@@ -47,7 +47,7 @@ namespace wg
 		m_capacity	= maxPackageSize;
 		m_size		= 0;
 	}
-	
+
 	//____ Destructor _________________________________________________________
 
 	GfxStreamWriter::~GfxStreamWriter()
@@ -56,29 +56,29 @@ namespace wg
 	}
 
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool GfxStreamWriter::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Object::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * GfxStreamWriter::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	GfxStreamWriter_p GfxStreamWriter::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return GfxStreamWriter_p( static_cast<GfxStreamWriter*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -142,41 +142,41 @@ namespace wg
 
 	//____ _pushChar() ________________________________________________________
 
-	void GfxStreamWriter::_pushChar(char c) 
-	{ 
-		m_pBuffer[m_size++] = c; 
+	void GfxStreamWriter::_pushChar(char c)
+	{
+		m_pBuffer[m_size++] = c;
 	}
 
 	//____ _pushShort() ________________________________________________________
 
-	void GfxStreamWriter::_pushShort(short s) 
-	{ 
-		*(short*)(&m_pBuffer[m_size]) = s; 
-		m_size += 2; 
+	void GfxStreamWriter::_pushShort(short s)
+	{
+		*(short*)(&m_pBuffer[m_size]) = s;
+		m_size += 2;
 	}
 
 	//____ _pushInt() _________________________________________________________
 
-	void GfxStreamWriter::_pushInt(int i) 
-	{ 
-//		*(int*)(&m_pBuffer[m_size]) = i; 
+	void GfxStreamWriter::_pushInt(int i)
+	{
+//		*(int*)(&m_pBuffer[m_size]) = i;
 
 		*(short*)(&m_pBuffer[m_size]) = (short)i;
 		*(short*)(&m_pBuffer[m_size+2]) = (short)(i >> 16);
-		m_size += 4; 
+		m_size += 4;
 	}
 
 	//____ _pushFloat() _______________________________________________________
 
-	void GfxStreamWriter::_pushFloat(float f) 
-	{ 
-//		*(float*)(&m_pBuffer[m_size]) = f; 
+	void GfxStreamWriter::_pushFloat(float f)
+	{
+//		*(float*)(&m_pBuffer[m_size]) = f;
 
 		int i = *((int*)&f);
 
 		*(short*)(&m_pBuffer[m_size]) = (short)i;
 		*(short*)(&m_pBuffer[m_size + 2]) = (short)(i >> 16);
-		m_size += 4; 
+		m_size += 4;
 	}
 
 	//____ _pushBytes() _________________________________________________________

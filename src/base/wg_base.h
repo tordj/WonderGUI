@@ -1,25 +1,25 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
- 
+
 #ifndef	WG_BASE_DOT_H
 #define	WG_BASE_DOT_H
 #pragma once
@@ -36,7 +36,7 @@
 
 
 
-namespace wg 
+namespace wg
 {
 	class Font;
 	class MemPool;
@@ -48,15 +48,15 @@ namespace wg
 	class TextMapper;
 	class Caret;
 	class TextStyle;
-	
+
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	StrongPtr<TextMapper>		TextMapper_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
-	
-	
+
+
 	/**
 	 * @brief	Static base class for WonderGUI.
 	 *
@@ -65,9 +65,9 @@ namespace wg
 	 *
 	 * The first thing that you need to do when starting WonderGUI is to call Base::init()
 	 * and the last thing you should do is to call Base::exit().
-	 * 
+	 *
 	 */
-	
+
 	class Base
 	{
 //		friend class Object_wp;
@@ -102,7 +102,7 @@ namespace wg
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
-		
+
 	private:
 
 		static WeakPtrHub *	_allocWeakPtrHub();
@@ -112,8 +112,8 @@ namespace wg
 		{
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
-			
-	
+
+
 			TextMapper_p		pDefaultTextMapper;
 			Caret_p				pDefaultCaret;
 			TextStyle_p			pDefaultStyle;
@@ -121,18 +121,18 @@ namespace wg
 
 
 			//
-	
+
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
-	
-	
+
+
 		};
-	
+
 		static Data *	s_pData;
-	
+
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_BASE_DOT_H

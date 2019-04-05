@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,12 +29,12 @@
 #include <initializer_list>
 #include <utility>
 
-namespace wg 
+namespace wg
 {
-	 
+
 	class ColorSkin;
 	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
-	
+
 	class ColorSkin : public ExtendedSkin
 	{
 	public:
@@ -45,7 +45,7 @@ namespace wg
 		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors );
 
 		//.____ Identification __________________________________________
-	
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
@@ -60,8 +60,8 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-	
-		void		setColor(Color fill);	
+
+		void		setColor(Color fill);
 		void		setColor(State state, Color fill);
 		void		setColor(std::initializer_list< std::tuple<State, Color> > stateColors);
 		Color		color(State state) const;
@@ -70,13 +70,13 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
-	
+
 		bool		isOpaque() const;
 		bool		isOpaque( State state ) const;
 		bool		isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
-	
+
 		bool		isStateIdentical( State state, State comparedTo ) const;
-	
+
 	private:
 		ColorSkin();
 		ColorSkin(Color color);
@@ -92,7 +92,7 @@ namespace wg
 
 		Color		m_color[StateEnum_Nb];
 	};
-	
+
 
 } // namespace wg
 #endif //WG_COLORSKIN_DOT_H

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -34,7 +34,7 @@ namespace wg
 
 	class SimpleVolumeMeter;
 	typedef	StrongPtr<SimpleVolumeMeter>		SimpleVolumeMeter_p;
-	typedef	WeakPtr<SimpleVolumeMeter>		SimpleVolumeMeter_wp;	
+	typedef	WeakPtr<SimpleVolumeMeter>		SimpleVolumeMeter_wp;
 
 
 	class SimpleVolumeMeter : public Widget
@@ -42,7 +42,7 @@ namespace wg
 	public:
 
 		//.____ Creation __________________________________________
-		
+
 		static SimpleVolumeMeter_p	create() { return SimpleVolumeMeter_p(new SimpleVolumeMeter()); }
 
 		//.____ Identification __________________________________________
@@ -61,7 +61,7 @@ namespace wg
 		void			setColors( Color bottom, Color middle, Color top );
 		void			setSections( float bottomFraction, float topFraction );
 		void			setHoldHeight( float fraction );
-		
+
 		void            setGaps(float fSides, float fGap) {m_fSidePadding = fSides; m_fGap = fGap; }
 
 		void				setDirection(Direction direction);
@@ -70,9 +70,9 @@ namespace wg
 		//.____ Control ____________________________________________
 
 		void			setValue( float peak, float hold );
-		void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );				
-		
-		
+		void			setValue( float leftPeak, float leftHold, float rightPeak, float rightHold );
+
+
 	protected:
 		SimpleVolumeMeter();
 		virtual ~SimpleVolumeMeter();
@@ -83,13 +83,13 @@ namespace wg
 		bool			_alphaTest( const Coord& ofs );
 		void			_setSize( const Size& size );
 		void			_setSkin( Skin * pSkin );
-		
+
 		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect );
 		void 			_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
 		void			_updateValueDisplays( Size sz );
 		int 			_calcIHold( float holdValue, Size canvas );
 
-		
+
 		Direction		m_direction;
 		Color			m_sectionColors[3];
 		float			m_fSectionHeight[3];
@@ -99,9 +99,9 @@ namespace wg
 		float 			m_fSidePadding;
 		float			m_fPeak[2];
 		float			m_fHold[2];
-			
+
 		// Pixel values calculated from relative values above
-			
+
 		int 			m_iGap;
 		int 			m_iSidePadding;
 		int				m_iHoldHeight;

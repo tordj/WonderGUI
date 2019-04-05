@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,48 +29,48 @@
 #include <wg_font.h>
 #include <wg_textlink.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class TextStyle;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	WeakPtr<TextStyle>		TextStyle_wp;
-	
+
 	struct TextAttr
 	{
 		public:
-		
+
 			//.____ Properties ___________________________________________________________
-		
+
 			Font_p			pFont;
 			int				size;
 			Color			color;
 			BlendMode		renderMode;
-			Color			bgColor;			
+			Color			bgColor;
 			BlendMode		bgRenderMode;
 			TextDecoration	decoration;
 			TextLink_p		pLink;
 
-			
+
 			// TODO: Add flags for showing linespace, tab, CR, NBSP and both BREAK PERMITTED CHARACTERS.
 	};
-	
-	
+
+
 	//TODO: Add support for subscript and superscript font-modifiers.
 	//TODO: Add support for extra spacing between characters.
-	
+
 	class TextStyle : public Object
 	{
 		friend class Char;
 		friend class CharBuffer;
 		friend class TextTool;
 
-		
+
 	public:
 		//.____ Creation __________________________________________
 
 		static TextStyle_p	create() { return TextStyle_p(new TextStyle()); }
-	
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -78,48 +78,48 @@ namespace wg
 		static const char	CLASSNAME[];
 		static TextStyle_p	cast( Object * pObject );
 
-	
+
 		//.____ Hierarchy _____________________________________________
 
 		bool			setParent( TextStyle * pParent );
 		void			cascade();
-	
+
 		//.____ Content _______________________________________________
 
 		void			setFont( Font * pFont );
 		void			setLink( TextLink * pLink );
-	
+
 		void			setColor( Color color, BlendMode operation = BlendMode::Replace );
 		void			setBgColor( Color color, BlendMode operation = BlendMode::Replace );
 		void			setSize( int size );
 		void			setDecoration( TextDecoration decoration );
 		void			setRenderMode( BlendMode mode );
 		void			setBgRenderMode( BlendMode mode );
-	
+
 		void			setColor( Color color, State state, BlendMode operation = BlendMode::Replace );
 		void			setBgColor( Color color, State state, BlendMode operation = BlendMode::Replace );
 		void			setSize( int size, State state );
 		void			setDecoration( TextDecoration decoration, State state );
 		void			setRenderMode( BlendMode mode, State state );
 		void			setBgRenderMode( BlendMode mode, State state );
-	
+
 		void			clearFont();
 		void			clearLink();
-	
+
 		void			clearColor();
 		void			clearBgColor();
 		void			clearSize();
 		void			clearDecoration();
 		void			clearRenderMode();
 		void			clearBgRenderMode();
-	
+
 		void			clearColor( State state );
 		void			clearBgColor( State state );
 		void			clearSize( State state );
 		void			clearDecoration( State state );
 		void			clearRenderMode( State state );
 		void			clearBgRenderMode( State state );
-	
+
 		inline Font_p			font() const;
 		inline TextLink_p		link() const;
 		inline Color			color( State state ) const;
@@ -130,7 +130,7 @@ namespace wg
 		inline BlendMode		bgColorBlendMode( State state ) const;
 		inline BlendMode		renderMode( State state ) const;
 		inline BlendMode		bgRenderMode( State state ) const;
-	
+
 		inline Font_p			combFont() const;
 		inline TextLink_p		combLink() const;
 		inline Color			combColor( State state ) const;
@@ -148,14 +148,14 @@ namespace wg
 
 		void			exportAttr( State state, TextAttr * pDest ) const;
 		void			addToAttr( State state, TextAttr * pDest ) const;
-		
+
 		bool			isIdentical( TextStyle * pOther );
 		bool			isIdenticalForState( TextStyle * pOther, State state );
-	
+
 	protected:
 		TextStyle();
 		virtual ~TextStyle();
-	
+
 		struct AttrSet
 		{
 			Font_p			pFont;
@@ -172,38 +172,38 @@ namespace wg
 
 
 		};
-	
+
 		bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
 		bool		_compareSetsForState( AttrSet * pSet1, AttrSet * pSet2, State state );
 		bool		_refreshComb();
 		void		_clearSet( AttrSet * pSet );
-	
+
 		TextStyle_p	m_pParent;
 		TextStyle *	m_pFirstChild;
 		TextStyle *	m_pNextSibling;
 		TextStyle *	m_pPrevSibling;
-	
-	
+
+
 		AttrSet		m_specAttr;
 		AttrSet		m_combAttr;
 
-	
+
 		TextStyle_h	m_handle;
 	};
-	
-	
+
+
 	//______________________________________________________________________________
 	inline Font_p TextStyle::font() const
 	{
 		return m_specAttr.pFont;
 	}
-	
+
 	//______________________________________________________________________________
 	inline TextLink_p TextStyle::link() const
 	{
 		return m_specAttr.pLink;
 	}
-	
+
 	//______________________________________________________________________________
 	inline BlendMode TextStyle::colorBlendMode( State state ) const
 	{
@@ -215,7 +215,7 @@ namespace wg
 	{
 		return m_specAttr.color[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline BlendMode TextStyle::bgColorBlendMode( State state ) const
 	{
@@ -227,19 +227,19 @@ namespace wg
 	{
 		return m_specAttr.bgColor[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline int TextStyle::size( State state ) const
 	{
 		return m_specAttr.size[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::decoration( State state ) const
 	{
 		return m_specAttr.decoration[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline BlendMode TextStyle::renderMode( State state ) const
 	{
@@ -253,42 +253,42 @@ namespace wg
 	}
 
 	//______________________________________________________________________________
-	
+
 	inline Font_p TextStyle::combFont() const
 	{
 		return m_combAttr.pFont;
 	}
-	
+
 	//______________________________________________________________________________
 	inline TextLink_p TextStyle::combLink() const
 	{
 		return m_combAttr.pLink;
 	}
-	
+
 	//______________________________________________________________________________
 	inline Color TextStyle::combColor( State state ) const
 	{
 		return m_combAttr.color[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline Color TextStyle::combBgColor( State state ) const
 	{
 		return m_combAttr.bgColor[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline int TextStyle::combSize( State state ) const
 	{
 		return m_combAttr.size[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::combDecoration( State state ) const
 	{
 		return m_combAttr.decoration[Util::_stateToIndex(state)];
 	}
-	
+
 	//______________________________________________________________________________
 	inline BlendMode TextStyle::combRenderMode( State state ) const
 	{
@@ -301,7 +301,7 @@ namespace wg
 		return m_combAttr.bgRenderMode[Util::_stateToIndex(state)];
 	}
 
-	
+
 
 } // namespace wg
 #endif //WG_TEXTSTYLE_DOT_H

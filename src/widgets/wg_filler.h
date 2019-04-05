@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -27,13 +27,13 @@
 #include <wg_widget.h>
 #include <wg_skin.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Filler;
 	typedef	StrongPtr<Filler>		Filler_p;
 	typedef	WeakPtr<Filler>	Filler_wp;
-	
+
 	//____ Filler ____________________________________________________________
 	/**
 	 * @brief Simplest kind of widget.
@@ -45,8 +45,8 @@ namespace wg
 	 * organized layouts.
 	 *
 	 **/
-	
-	
+
+
 	class Filler : public Widget
 	{
 	public:
@@ -54,7 +54,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static Filler_p	create() { return Filler_p(new Filler()); }
-	
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -63,22 +63,22 @@ namespace wg
 		static Filler_p		cast( Object * pObject );
 
 		//.____ Geometry ____________________________________________
-	
+
 		void	setPreferredSize( const Size& size );
 		Size	preferredSize() const;
-	
+
 	protected:
 		Filler();
 		virtual ~Filler();
 		virtual Widget* _newOfMyType() const { return new Filler(); };
-	
+
 		void	_cloneContent( const Widget * _pOrg );
-	
+
 	private:
 		Size			m_preferredSize;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_FILLER_DOT_H

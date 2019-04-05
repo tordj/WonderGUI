@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -31,20 +31,20 @@
 #include <wg_skin.h>
 #include <wg_cicondisplay.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class IIconDisplay;
 	typedef	StrongInterfacePtr<IIconDisplay>	IIconDisplay_p;
 	typedef	WeakInterfacePtr<IIconDisplay>		IIconDisplay_wp;
-	
+
 	class IIconDisplay : public Interface
 	{
 	public:
 		/** @private */
 
 		IIconDisplay(CIconDisplay* pComponent) : m_pComponent(pComponent) {}
-	
+
 		//.____ Content _____________________________________________
 
 		inline bool			set( Skin * pIconGfx, Origo origo = Origo::West, Border padding = Border(0),
@@ -58,7 +58,7 @@ namespace wg
 		inline void			setPadding( Border padding ) { m_pComponent->setPadding(padding); }
 		inline void			setOverlap( bool bOverlap ) { m_pComponent->setOverlap(bOverlap); }
 		inline void			setSkin( Skin * pSkin ) { m_pComponent->setSkin(pSkin); }
-	
+
 		inline float		scale() const { return m_pComponent->scale(); }
 		inline Origo		origo() const { return m_pComponent->origo(); }
 		inline Border		padding() const { return m_pComponent->padding(); }
@@ -72,10 +72,10 @@ namespace wg
 
 	protected:
 		Object * 			_object() const { return m_pComponent->_object(); };
-	
+
 		CIconDisplay *			m_pComponent;
 	};
-	
+
 
 } // namespace wg
 #endif	// WG_IICONDISPLAY_DOT_H

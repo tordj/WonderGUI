@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -26,25 +26,25 @@
 
 #include	<wg_types.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	//____ Class Color _______________________________________________________________________
-	
+
 	/**
-	
+
 		Specifies a color in ARGB-format, where the alpha component controls transparency.
 		Range for the individual color components is 0-255.
-		
+
 		Setting alpha to 0 gives full transparency while 255 gives full opacity.
-	
+
 		The different components can be accessed individually through the r, g, b, and a members,
 		or as a group through the argb member.
-	
+
 		For convenience, the color class also provides static, predefined colors matching the standard web-palette.
-	
+
 	**/
-	
+
 	class Color
 	{
 	public:
@@ -62,7 +62,7 @@ namespace wg
 		static Color	mix( Color color1, Color color2, uint8_t balance );
 		static Color	invert( Color color, uint8_t grade );
 		static Color	blend( Color baseColor, Color blendColor, BlendMode operation );
-	
+
 		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
 		void	getCMYK( float* c, float* m, float* y, float* k );
 
@@ -90,12 +90,12 @@ namespace wg
 			};
 			uint32_t argb;
 		};
-	
+
 		//.____ Definitions _________________________________________
-	
+
 		const static Color	Transparent;		// 0x00FFFFFF
 		const static Color	None;				// 0x00000000	// Handled differently than 'transparent' when cascading colors.
-	
+
 		const static Color 	AliceBlue;			// 0xF0F8FF
 		const static Color 	AntiqueWhite;		// 0xFAEBD7
 		const static Color 	Aqua;				// 0x00ffff
@@ -244,40 +244,40 @@ namespace wg
 		const static Color 	Yellow;  			// 0xffff00
 		const static Color 	YellowGreen; 		// 0x9acd32
 	};
-	
-	
+
+
 	//-------------------------------------------------------------------
 	inline bool Color::operator==( const Color& k ) const
 	{
 		if( argb == k.argb )
 			return true;
-	
+
 		return false;
 	}
-	
+
 	//-------------------------------------------------------------------
 	inline bool Color::operator!=( const Color& k ) const
 	{
 		if( argb != k.argb )
 			return true;
-	
+
 		return false;
 	}
-	
-	
-	
+
+
+
 	//____ Color::Color() _________________________________________________________________
-	
+
 	inline Color::Color( const Color& _col )
 	{
 		argb = _col.argb;
 	}
-	
+
 	inline Color::Color( uint32_t _argb )
 	{
 		argb = _argb;
 	}
-	
+
 	inline Color::Color( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
 	{
 		a = _a;
@@ -285,13 +285,13 @@ namespace wg
 		g = _g;
 		b = _b;
 	}
-	
+
 	inline Color::Color( uint32_t rgb, uint8_t _a )
 	{
 		argb = rgb;
 		a = _a;
 	}
-	
+
 
 } // namespace wg
 #endif // WG_COLOR_DOT_H

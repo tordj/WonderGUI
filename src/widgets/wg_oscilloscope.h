@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -35,8 +35,8 @@ namespace wg
 {
 	class Oscilloscope;
 	typedef	StrongPtr<Oscilloscope>	Oscilloscope_p;
-	typedef	WeakPtr<Oscilloscope>		Oscilloscope_wp;	
-	
+	typedef	WeakPtr<Oscilloscope>		Oscilloscope_wp;
+
 	//____ Oscilloscope ____________________________________________________________
 
 	class Oscilloscope : public Widget
@@ -58,7 +58,7 @@ namespace wg
 
 		void	setGridColor( Color color );
 		Color   gridColor() const { return m_gridColor; }
-		
+
 		void	setVGridLines( int nLines, float pLines[] );
 		void	setHGridLines( int nLines, float pLines[] );
 
@@ -86,7 +86,7 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		Size	preferredSize() const;
-		
+
 
 
 	protected:
@@ -122,7 +122,7 @@ namespace wg
 		Color			m_lineColor;
 		float			m_lineThickness;
 		int				m_nRenderSegments;
-		
+
 
 		int				m_nVGridLines;
 		float *			m_pVGridLines;
@@ -138,7 +138,7 @@ namespace wg
 
 		int				m_nMarkers;
 		Marker *		m_pMarkers;
-		
+
 		Skin_p			m_pMarkerSkin;
 
 		// Anti-alias

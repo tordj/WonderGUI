@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -22,55 +22,55 @@
 
 #include <wg_togglegroup.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char ToggleGroup::CLASSNAME[] = {"ToggleGroup"};
-	
-	
+
+
 	//____ Constructor _____________________________________________________________
-	
+
 	ToggleGroup::ToggleGroup()
 	{
 		m_bRequireSelected = true;
 		m_pSelected = 0;
 	}
-	
+
 	//____ Destructor ______________________________________________________________
-	
+
 	ToggleGroup::~ToggleGroup()
 	{
 		for( unsigned int i = 0 ; i < m_entries.size() ; i++ )
 			m_entries[i]->_setToggleGroup(0);
 }
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool ToggleGroup::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Object::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * ToggleGroup::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	ToggleGroup_p ToggleGroup::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return ToggleGroup_p( static_cast<ToggleGroup*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ setRequireSelected() _______________________________________________________
 	/**
 	 * Sets the requireSelected flag of this group, which means that there will always
@@ -89,15 +89,15 @@ namespace wg
 	 * the group is removed, the first member will be selected.
 	 *
 	 **/
-	
+
 	void ToggleGroup::setRequireSelected(bool bRequire)
 	{
 		m_bRequireSelected = bRequire;
-		
+
 		if( bRequire && !m_pSelected && !m_entries.empty() )
 			m_entries[0]->setSelected(true);
 	}
-	
+
 	//____ add() ___________________________________________________________________
 	/**
 	 * Add specified ToggleButton to this group, making it behave like a RadioButton
@@ -115,7 +115,7 @@ namespace wg
 	 * member is unselected.
 	 *
 	 **/
-	
+
 	void ToggleGroup::add( ToggleButton * pToggleButton )
 	{
 		ToggleButton * p = pToggleButton;
@@ -128,17 +128,17 @@ namespace wg
 				else
 					m_pSelected = p;
 			}
-	
+
 			p->_setToggleGroup(this);
 			m_entries.push_back( p );
 		}
-	
+
 		// Select first entry if none selected and we require one to be
-		
+
 		if( m_bRequireSelected && !m_pSelected  )
 			pToggleButton->setSelected(true);
 	}
-	
+
 	//____ remove() ________________________________________________________________
 	/**
 	 * Removes specified ToggleButton from this group.
@@ -148,8 +148,8 @@ namespace wg
 	 * of the group will be selected.
 	 *
 	 **/
-	
-	
+
+
 	bool ToggleGroup::remove( ToggleButton * pToggleButton )
 	{
 		if( pToggleButton && pToggleButton->_toggleGroup() == this )
@@ -158,10 +158,10 @@ namespace wg
 			_remove( pToggleButton );
 			return true;
 		}
-	
+
 		return false;
 	}
-	
+
 	//____ clear() _________________________________________________________________
 	/**
 	 * Removes all members from this group.
@@ -169,16 +169,16 @@ namespace wg
 	 * The selected member (if any) will keep its selected state upon removal.
 	 *
 	 **/
-	
+
 	void ToggleGroup::clear()
 	{
 		for( unsigned int i = 0 ; i < m_entries.size() ; i++ )
 			m_entries[i]->_setToggleGroup(0);
-	
+
 		m_pSelected = 0;
 		m_entries.clear();
 	}
-	
+
 	//____ get() ___________________________________________________________________
 	/**
 	 * Get a specific member of the group
@@ -188,27 +188,27 @@ namespace wg
 	 *
 	 * @return Pointer to member at index or null if index was out of bounds.
 	 **/
-	
+
 	ToggleButton_p ToggleGroup::get( int index )
 	{
 		if( index >= 0 && index < (int) m_entries.size() )
 			return ToggleButton_p(m_entries[index]);
-	
+
 		return ToggleButton_p();
 	}
-	
+
 	//____ size() __________________________________________________________________
 	/**
 	 * Get the number of members in the group.
 	 *
 	 * @return Number of members in this ToggleGroup.
 	 **/
-	
+
 	int ToggleGroup::size() const
 	{
 		return (int) m_entries.size();
 	}
-	
+
 	//____ selected() ______________________________________________________________
 	/**
 	 * Get the selected widget.
@@ -216,14 +216,14 @@ namespace wg
 	 * @return A pointer to the widget of the group that is selected or null if none.
 	 *
 	 **/
-	
+
 	ToggleButton_p ToggleGroup::selected() const
 	{
 		return ToggleButton_p(m_pSelected);
 	}
-	
+
 	//____ _remove() _______________________________________________________________
-	
+
 	void ToggleGroup::_remove( ToggleButton * pButton )
 	{
 		for( std::vector<ToggleButton*>::iterator it = m_entries.begin() ; it != m_entries.end() ; ++it )
@@ -234,37 +234,37 @@ namespace wg
 				break;
 			}
 		}
-		
+
 		if( pButton == m_pSelected )
 		{
 			m_pSelected = 0;
 			if( m_bRequireSelected && !m_entries.empty() )
-				m_entries[0]->setSelected(true);			
+				m_entries[0]->setSelected(true);
 		}
 	}
-	
+
 	//____ _select() _______________________________________________________________
-	
+
 	void ToggleGroup::_select( ToggleButton * pButton )
 	{
 		ToggleButton * pOldSelected = m_pSelected;
-	
+
 		m_pSelected = pButton;
-		
+
 		if( pOldSelected && pOldSelected != pButton )
 			pOldSelected->setSelected(false);
-	
+
 	}
-	
+
 	//____ _unselect() _____________________________________________________________
-	
+
 	bool ToggleGroup::_unselect( ToggleButton * pButton )
 	{
 		if( pButton ==  m_pSelected )
 		{
 			if( m_bRequireSelected )
 				return false;
-	
+
 			m_pSelected = 0;
 		}
 		return true;

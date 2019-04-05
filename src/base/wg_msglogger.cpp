@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,91 +25,91 @@
 #include <wg_msglogger.h>
 #include <wg_widget.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	using std::string;
 	using std::snprintf;
-	
+
 	const char MsgLogger::CLASSNAME[] = {"MsgLogger"};
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	MsgLogger::MsgLogger( std::ostream& stream ) : m_out(stream)
 	{
 		logAllMsgs();
 		ignoreMsg( MsgType::Tick );
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	MsgLogger::~MsgLogger()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool MsgLogger::isInstanceOf( const char * pClassName ) const
 	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Receiver::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * MsgLogger::className( void ) const
 	{
 		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	MsgLogger_p MsgLogger::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return MsgLogger_p( static_cast<MsgLogger*>(pObject) );
-	
+
 		return 0;
 	}
-	
-	
+
+
 	//____ IgnoreMsg ____________________________________________________________
-	
+
 	void MsgLogger::ignoreMsg( MsgType type )
 	{
 		m_msgFilter[(int)type] = false;
 	}
-	
+
 	//____ LogMsg _______________________________________________________________
-	
+
 	void MsgLogger::logMsg( MsgType type )
 	{
 		m_msgFilter[(int)type] = true;
 	}
-	
+
 	//____ IgnorePointerMsgs ____________________________________________________________
-	
+
 	void MsgLogger::ignorePointerMsgs()
 	{
 		m_msgFilter[(int)MsgType::MouseEnter] = false;
 		m_msgFilter[(int)MsgType::MouseMove] = false;
 		m_msgFilter[(int)MsgType::MouseLeave] = false;
 	}
-	
+
 	//____ LogPointerMsgs _______________________________________________________________
-	
+
 	void MsgLogger::logPointerMsgs()
 	{
 		m_msgFilter[(int)MsgType::MouseEnter] = true;
 		m_msgFilter[(int)MsgType::MouseMove] = true;
 		m_msgFilter[(int)MsgType::MouseLeave] = true;
 	}
-	
-	
+
+
 	//____ IgnoreMouseButtonMsgs ____________________________________________________________
-	
+
 	void MsgLogger::ignoreMouseButtonMsgs()
 	{
 		m_msgFilter[(int)MsgType::MousePress] = false;
@@ -119,9 +119,9 @@ namespace wg
 		m_msgFilter[(int)MsgType::MouseClick] = false;
 		m_msgFilter[(int)MsgType::MouseDoubleClick] = false;
 	}
-	
+
 	//____ LogMouseButtonMsgs _______________________________________________________________
-	
+
 	void MsgLogger::logMouseButtonMsgs()
 	{
 		m_msgFilter[(int)MsgType::MousePress] = true;
@@ -131,9 +131,9 @@ namespace wg
 		m_msgFilter[(int)MsgType::MouseClick] = true;
 		m_msgFilter[(int)MsgType::MouseDoubleClick] = true;
 	}
-	
+
 	//____ IgnoreKeyboardMsgs ____________________________________________________________
-	
+
 	void MsgLogger::ignoreKeyboardMsgs()
 	{
 		m_msgFilter[(int)MsgType::KeyPress] = false;
@@ -141,9 +141,9 @@ namespace wg
 		m_msgFilter[(int)MsgType::KeyRelease] = false;
 		m_msgFilter[(int)MsgType::TextInput] = false;
 	}
-	
+
 	//____ LogKeyboardMsgs _______________________________________________________________
-	
+
 	void MsgLogger::logKeyboardMsgs()
 	{
 		m_msgFilter[(int)MsgType::KeyPress] = true;
@@ -151,76 +151,76 @@ namespace wg
 		m_msgFilter[(int)MsgType::KeyRelease] = true;
 		m_msgFilter[(int)MsgType::TextInput] = true;
 	}
-	
+
 	//____ logMouseMsgs() _______________________________________________________
-	
+
 	void MsgLogger::logMouseMsgs()
 	{
 		logPointerMsgs();
 		logMouseButtonMsgs();
 		logMsg( MsgType::WheelRoll );
 	}
-	
+
 	//____ ignoreMouseMsgs() ____________________________________________________
-	
+
 	void MsgLogger::ignoreMouseMsgs()
 	{
 		ignorePointerMsgs();
 		ignoreMouseButtonMsgs();
 		ignoreMsg( MsgType::WheelRoll );
 	}
-	
-	
+
+
 	//____ logInputMsgs() _______________________________________________________
-	
+
 	void MsgLogger::logInputMsgs()
 	{
 		logMouseMsgs();
 		logKeyboardMsgs();
 	}
-	
+
 	//____ ignoreInputMsgs() ____________________________________________________
-	
+
 	void MsgLogger::ignoreInputMsgs()
 	{
 		ignoreMouseMsgs();
 		ignoreKeyboardMsgs();
 	}
-	
-	
-	
-	
+
+
+
+
 	//____ IgnoreAllMsgs ________________________________________________________
-	
+
 	void MsgLogger::ignoreAllMsgs()
 	{
 		for( int i = 0 ; i < (int) MsgType_size ; i++ )
 			m_msgFilter[i] = false;
 	}
-	
+
 	//____ LogAllMsgs ___________________________________________________________
 	void MsgLogger::logAllMsgs()
 	{
 		for( int i = 0 ; i < (int) MsgType_size ; i++ )
 			m_msgFilter[i] = true;
 	}
-	
-	
-	
+
+
+
 	//____ receive() ______________________________________________________________
-	
+
 	void MsgLogger::receive( Msg * _pMsg )
 	{
 		if( m_msgFilter[(int)_pMsg->type()] == false )
 			return;
-	
+
 		string	source;
 		string	copyTo;
 
 		const static int c_paramLen = 256;
 		char	params[c_paramLen]; params[0] = 0;			// Msg specific parameters
-	
-		
+
+
 		switch( _pMsg->type() )
 		{
 			case MsgType::Dummy:
@@ -246,14 +246,14 @@ namespace wg
 			case MsgType::MouseDrag:
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
-	
+
 				Coord	now		= pMsg->currPos();
 				Coord 	prev	= pMsg->prevPos();
 				Coord	start	= pMsg->startPos();
-	
+
 				Coord	dragNow	= pMsg->draggedNow();
 				Coord	dragTotal=pMsg->draggedTotal();
-	
+
 				snprintf( params, c_paramLen, " button=%s position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
 						_formatMouseButton(pMsg->button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 				break;
@@ -261,12 +261,12 @@ namespace wg
 			case MsgType::MouseRelease:
 			{
 				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
-	
+
 				const static char outside[] = "outside";
 				const static char inside[] = "inside";
 //				const char * pPress = outside;
 				const char * pRelease = outside;
-		
+
 				if( pMsg->releaseInside() )
 					pRelease = inside;
 
@@ -279,7 +279,7 @@ namespace wg
 			case MsgType::MouseDoubleClick:
 				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(MouseDoubleClickMsg::cast(_pMsg)->button()).c_str() );
 				break;
-	
+
 			case MsgType::KeyPress:
 			{
 				KeyPressMsg_p pMsg = KeyPressMsg::cast(_pMsg);
@@ -306,41 +306,41 @@ namespace wg
 			case MsgType::EditCommand:
 				snprintf( params, c_paramLen, " cmd=%s", _formatEditCommand(EditCommandMsg::cast(_pMsg)->command()).c_str() );
 				break;
-				
+
 			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
 				snprintf( params, c_paramLen, "wheel=%d distance=(%d,%d)", pMsg->wheel(), pMsg->distance().x, pMsg->distance().y );
 				break;
 			}
-	
+
 			case MsgType::Select:
 				break;
-	
+
 			case MsgType::Toggle:
 				snprintf( params, c_paramLen, " set=%d", (int) (ToggleMsg::cast(_pMsg)->isSet()) );
 				break;
-	
+
 			case MsgType::ValueUpdate:
 			{
 				ValueUpdateMsg_p pMsg = ValueUpdateMsg::cast(_pMsg);
 				snprintf( params, c_paramLen, " value=%lld fraction=%f", pMsg->value(), pMsg->fraction() );
 				break;
 			}
-	
+
 			case MsgType::RangeUpdate:
 			{
 				RangeUpdateMsg_p pMsg = RangeUpdateMsg::cast(_pMsg);
 				snprintf( params, c_paramLen, " offset=%d length=%d fracOfs=%f fracLen=%f final=%s", pMsg->offset(), pMsg->length(), pMsg->fracOffset(), pMsg->fracLength(), pMsg->isFinal()?"true":"false" );
 				break;
 			}
-	
+
 			case MsgType::TextEdit:
 			{
 				TextEditMsg_p pMsg = TextEditMsg::cast(_pMsg);
 				break;
 			}
-	
+
 			case MsgType::ItemToggle:
 			{
 				ItemToggleMsg_p pMsg = ItemToggleMsg::cast(_pMsg);
@@ -353,14 +353,14 @@ namespace wg
 				snprintf( params, c_paramLen, " id=%d mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
-					
+
 			case MsgType::ItemsSelect:
 			{
 				ItemsSelectMsg_p pMsg = ItemsSelectMsg::cast(_pMsg);
 				snprintf( params, c_paramLen, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
-	
+
 			case MsgType::ItemsUnselect:
 			{
 				ItemsUnselectMsg_p pMsg = ItemsUnselectMsg::cast(_pMsg);
@@ -376,11 +376,11 @@ namespace wg
 			case MsgType::ModalBlockedRelease:
 				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(ModalBlockedReleaseMsg::cast(_pMsg)->button()).c_str() );
 				break;
-	
+
 			default:
 				break;
 		};
-	
+
 		source = _formatSource( _pMsg );
 		copyTo = _formatCopyTo( _pMsg );
 
@@ -395,105 +395,105 @@ namespace wg
 			modkeys = _formatModkeys( p );
 			pointerPos = _formatPointerPos( p );
 		}
-		
+
 		m_out << " - " << _pMsg->className() << " - " << source << copyTo << pointerPos << modkeys << params;
 		m_out << std::endl;
 	}
-	
+
 	//____ _formatTimestamp() ______________________________________________________
-	
+
 	string MsgLogger::_formatTimestamp( int64_t ms ) const
 	{
 		char	temp[20];
-	
+
 		int milli	= (int) (ms % 1000);
 		int sec		= (int) ((ms/1000) % 60);
 		int min		= (int) ((ms/60000) % 60);
 		int hour	= (int) (ms/3600000);
-	
+
 		snprintf( temp, 20, "%d:%02d:%02d.%03d", hour, min, sec, milli );
 		return string( temp );
 	}
-	
+
 	//____ _formatSource() __________________________________________________________
-	
+
 	string MsgLogger::_formatSource( Msg * _pMsg ) const
 	{
 		std::string	out;
-	
+
 		if( _pMsg->sourceRawPtr() )
 		{
 			char	temp[64];
 			Object * pObject = _pMsg->sourceRawPtr();
-	
+
 			static const char def_type[] = "deleted";
 			const char * pType = def_type;
-	
+
 			if( pObject )
 				pType = pObject->className();
-	
+
 			snprintf( temp, 64, " source=%p (%s)", pObject, pType );
 			out = temp;
 		}
-	
+
 		return out;
 	}
-	
+
 	//____ _formatCopyTo() __________________________________________________________
-	
+
 	string MsgLogger::_formatCopyTo( Msg * _pMsg ) const
 	{
 		std::string	out;
-	
+
 		if( _pMsg->hasCopyTo() )
 		{
 			char	temp[64];
 			Receiver * pCopyTo = _pMsg->getCopyTo().rawPtr();
-	
+
 			const char * pType = pCopyTo->className();
-	
+
 			snprintf( temp, 64, " copyTo=%p (%s)", pCopyTo, pType );
 			out = temp;
 		}
-	
+
 		return out;
 	}
-	
-	
+
+
 	//____ _formatModkeys() __________________________________________________________
-	
+
 	string MsgLogger::_formatModkeys( InputMsg * _pMsg ) const
 	{
 		ModifierKeys keys = _pMsg->modKeys();
-	
+
 		string	out;
-	
+
 		if( keys != MODKEY_NONE )
 		{
 			char	temp[64];
 			snprintf( temp, 64, " modkeys=%X", keys );
 			out = temp;
 		}
-	
+
 		return out;
 	}
-	
+
 	//____ _formatPointerPos() _____________________________________________________
-	
+
 	string MsgLogger::_formatPointerPos( InputMsg * _pMsg ) const
 	{
 		Coord globalPos = _pMsg->pointerPos();
-	
-	
+
+
 		char	temp[64];
-	
+
 		snprintf( temp, 64, " pointer=%d,%d", globalPos.x, globalPos.y );
-	
+
 		return string(temp);
 	}
-	
+
 	//____ _formatPointerStyle() _____________________________________________________
-	
+
 	string MsgLogger::_formatPointerStyle( PointerChangeMsg * _pMsg ) const
 	{
 		switch( _pMsg->style() )
@@ -532,9 +532,9 @@ namespace wg
 			}
 		}
 	}
-	
+
 	//____ _formatMouseButton() ____________________________________________________
-	
+
 	std::string MsgLogger::_formatMouseButton( MouseButton button ) const
 	{
 		switch( button )
@@ -559,7 +559,7 @@ namespace wg
 	}
 
 	//____ _formatEditCommand() ____________________________________________________
-	
+
 	std::string MsgLogger::_formatEditCommand( EditCmd command ) const
 	{
 		switch( command )
@@ -591,16 +591,16 @@ namespace wg
 		}
 	}
 
-	
+
 	//____ _onRouteAdded() _________________________________________________________
-	
+
 	void  MsgLogger::_onRouteAdded()
-	{	
+	{
 		_incRefCount();
 	}
-	
+
 	//____ _onRouteRemoved() _______________________________________________________
-	
+
 	void  MsgLogger::_onRouteRemoved()
 	{
 		_decRefCount();

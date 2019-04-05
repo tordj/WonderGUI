@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,16 +27,16 @@
 #include <wg_panel.h>
 #include <wg_ihideablechildren.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class FlexPanel;
 	typedef	StrongPtr<FlexPanel>		FlexPanel_p;
 	typedef	WeakPtr<FlexPanel>	FlexPanel_wp;
-	
-	
+
+
 	//____ FlexPos ____________________________________________________________
-	
+
 
 	class FlexPos
 	{
@@ -66,9 +66,9 @@ namespace wg
 
 		CoordF	origo;
 		Coord	offset;
-			
+
 		//.____ Operators ______________________________________________________
-			
+
 		bool			operator==(const FlexPos& other) const { return origo == other.origo &&
 																			offset == other.offset; }
 		bool			operator!=(const FlexPos& other) const { return origo != other.origo ||
@@ -86,11 +86,11 @@ namespace wg
 	{
 	public:
 		FlexPanelSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
-	
-		bool			bPinned;		
+
+		bool			bPinned;
 		bool			bVisible;
 		Rect			realGeo;			// Widgets geo relative parent
-	
+
 //		union
 //		{
 //			struct // Positioned children
@@ -105,9 +105,9 @@ namespace wg
 				FlexPos			bottomRightPin;
 //			};
 //		};
-		
+
 	};
-	
+
 
 	//____ FlexChildrenHolder ____________________________________________________
 
@@ -119,11 +119,11 @@ namespace wg
 
 	};
 
-	
+
 	class IFlexPanelChildren;
 	typedef	StrongInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_p;
 	typedef	WeakInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_wp;
-	
+
 	//____ IFlexPanelChildren ________________________________________________________
 
 	class IFlexPanelChildren : public IHideableChildren<FlexPanelSlot,FlexChildrenHolder>
@@ -139,14 +139,14 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft, 
+		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest, 
+		iterator	addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
 									const FlexPos& hotspot = Origo::NorthWest );
-	
+
 		iterator	insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry, 
+		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry,
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
 		//.____ State _________________________________________________________
@@ -172,7 +172,7 @@ namespace wg
 		//.____ Geometry ______________________________________________________
 
 		// Methods for movable children
-	
+
 		bool		setOrigo( int index, const FlexPos& origo );
 		bool		setOrigo( iterator it, const FlexPos& origo);
 
@@ -206,9 +206,9 @@ namespace wg
 		bool		move( int index, const Coord& ofs );
 		bool		move( iterator it, const Coord& ofs);
 
-	
+
 		// Methods for pinned children
-	
+
 		FlexPos	topLeftCorner( int index ) const;
 		FlexPos	topLeftCorner( iterator it ) const;
 
@@ -251,22 +251,22 @@ namespace wg
 
 
 	};
-	
-	
-	
+
+
+
 	//____ FlexPanel _________________________________________________________
-	
+
 	/**
 	 * @brief	A widget for individual, flexible arrangement of children.
 	 *
 	 * A widget for individual, flexible arrangement of children.
-	 * 
+	 *
 	 */
-	
-	
+
+
 	class FlexPanel : public Panel, protected FlexChildrenHolder
 	{
-	
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -278,30 +278,30 @@ namespace wg
 		IFlexPanelChildren	children;
 
 		//.____ Identification __________________________________________
-	
+
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static FlexPanel_p	cast( Object * pObject );
-	
+
 		//.____ Behavior ________________________________________________________
 
 
 		void				setConfineWidgets( bool bConfineWidgets );
 		bool				isConfiningWidgets() const { return m_bConfineWidgets; }
-		
+
 		//.____ Geometry ____________________________________________
-		
+
 		Size				preferredSize() const;
-	
+
 	protected:
 		FlexPanel();
 		virtual ~FlexPanel();
 		virtual Widget* _newOfMyType() const { return new FlexPanel(); };
-	
+
 
 		// Overloaded from Container
-		
+
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
 
@@ -333,23 +333,23 @@ namespace wg
 		Widget *	_prevChild( const Slot * pSlot ) const;
 		Widget *	_nextChild( const Slot * pSlot ) const;
 
-	
+
 	private:
-	
+
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
 
 		void		_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot );
 
 		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
-	
-	
+
+
 		SlotArray<FlexPanelSlot>	m_children;
-	
+
 		bool			m_bConfineWidgets;
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_FLEXPANEL_DOT_H

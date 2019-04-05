@@ -2,49 +2,49 @@
 
 
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	const char DummyFont::CLASSNAME[] = {"DummyFont"};
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	DummyFont::DummyFont() : m_glyph(this)
 	{
 	}
-	
-	
+
+
 	//____ Destructor _____________________________________________________________
-	
+
 	DummyFont::~DummyFont()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool DummyFont::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Font::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * DummyFont::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	DummyFont_p DummyFont::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return DummyFont_p( static_cast<DummyFont*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -53,22 +53,22 @@ namespace wg
 	{
 		return 0;
 	}
-	
+
 	bool DummyFont::hasGlyphs()
 	{
 		return false;
 	}
-	
+
 	bool DummyFont::isMonospace()
 	{
 		return true;
 	}
-	
+
 	bool DummyFont::isMonochrome()
 	{
 		return true;
 	}
-	
+
 	bool DummyFont::hasGlyph( uint16_t chr )
 	{
 		return false;
@@ -78,7 +78,7 @@ namespace wg
 	{
 		return false;
 	}
-	
+
 	int DummyFont::size()
 	{
 		return 1;
@@ -88,7 +88,7 @@ namespace wg
 	{
 		return 0;
 	}
-	
+
 	Glyph_p DummyFont::getGlyph( uint16_t chr )
 	{
 		return &m_glyph;
@@ -98,27 +98,27 @@ namespace wg
 	{
 		return 1;
 	}
-	
+
 	int DummyFont::whitespaceAdvance()
 	{
 		return 1;
 	}
-	
+
 	int DummyFont::maxAdvance()
 	{
 		return 1;
 	}
-	
+
 	int DummyFont::maxAscend()
 	{
 		return 1;
 	}
-	
+
 	int DummyFont::maxDescend()
 	{
 		return 0;
 	}
-	
+
 	DummyFont::DummyGlyph::DummyGlyph( Font * pFont )
 	: Glyph( 1, 0, pFont )
 	{

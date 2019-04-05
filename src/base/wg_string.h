@@ -6,12 +6,12 @@
 #include <wg_charbuffer.h>
 #include <wg_charseq.h>
 
-namespace wg 
+namespace wg
 {
-	
-	
+
+
 	class Char;
-	
+
 	//____ String _____________________________________________________________
 	/**
 	 * @brief Decorated string.
@@ -20,13 +20,13 @@ namespace wg
 	 * in the string can have its own style.
 	 *
 	 **/
-	
-	
+
+
 	class String
 	{
 	public:
 		friend class CharBuffer;
-	
+
 		//.____ Creation ______________________________________________________
 
 		String();
@@ -48,17 +48,17 @@ namespace wg
 		void			set( const String& str );
 		void			set( const CharBuffer* pBuffer );
 		void			set( const CharSeq& seq );
-	
+
 		void			append( const String& str );
 		void			append( const CharBuffer* pBuffer );
 		void			append( const CharSeq& seq );
-	
+
 		void			prepend( const String& str );
 		void			prepend( const CharBuffer* pBuffer );
 		void			prepend( const CharSeq& seq );
-	
-		//.____ Operators _____________________________________________________	
-	
+
+		//.____ Operators _____________________________________________________
+
 		inline String& operator = ( const String& kSource )
 		{
 			set( kSource );
@@ -74,7 +74,7 @@ namespace wg
 			set( seq );
 			return *this;
 		}
-	
+
 		inline String& operator += ( const String& kSource )
 		{
 			append( kSource );
@@ -90,7 +90,7 @@ namespace wg
 			append( seq );
 			return *this;
 		}
-	
+
 		inline String operator + ( const String& kSource ) const
 		{
 			String str(*this);
@@ -109,16 +109,16 @@ namespace wg
 			str.append( seq );
 			return str;
 		}
-	
-	
+
+
 		bool operator == ( const String& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
-	
-	
+
+
 	private:
-	
+
 		CharBuffer	m_buffer;
 	};
-	
+
 
 } // namespace wg
 #endif //WG_STRING_DOT_H

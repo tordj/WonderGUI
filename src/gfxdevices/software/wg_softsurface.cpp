@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -25,13 +25,13 @@
 #include <wg_softsurface.h>
 #include <wg_util.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	using namespace std;
-	
+
 	const char SoftSurface::CLASSNAME[] = {"SoftSurface"};
-	
+
 	//____ maxSize() _______________________________________________________________
 
 	Size SoftSurface::maxSize()
@@ -40,49 +40,49 @@ namespace wg
 	}
 
 	//____ Create ______________________________________________________________
-	
+
 	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
-	{ 
+	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) )
-			return SoftSurface_p(); 
+			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface(size,format,pClut));
 	}
-	
+
 	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut)
-	{ 
+	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
-		
+
 		return SoftSurface_p(new SoftSurface(size,format,pBlob,pitch,pClut));
 	}
-		
+
 	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
-	{ 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || 
-		     (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr) 
+	{
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
+			 (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return SoftSurface_p();
 
-		return  SoftSurface_p(new SoftSurface(size,format,pPixels,pitch,pPixelDescription,pClut)); 
+		return  SoftSurface_p(new SoftSurface(size,format,pPixels,pitch,pPixelDescription,pClut));
 	};
 
 	SoftSurface_p SoftSurface::create( Surface * pOther, int flags )
 	{
 		if( !pOther )
 			return SoftSurface_p();
-			
-		return SoftSurface_p(new SoftSurface( pOther )); 
+
+		return SoftSurface_p(new SoftSurface( pOther ));
 	}
-	
-	
-	
+
+
+
 	//____ Constructor ________________________________________________________________
-	
+
 	SoftSurface::SoftSurface( Size size, PixelFormat format, const Color * pClut )
 	{
 		assert( format != PixelFormat::Unknown && format != PixelFormat::Custom );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
-	
+
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create( m_pitch*size.h + (pClut ? 1024 : 0) );
@@ -96,7 +96,7 @@ namespace wg
 		else
 			m_pClut = nullptr;
 	}
-	
+
 	SoftSurface::SoftSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, const Color * pClut )
 	{
 		assert(format != PixelFormat::Unknown && format != PixelFormat::Custom && pBlob );
@@ -108,7 +108,7 @@ namespace wg
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_pClut = const_cast<Color*>(pClut);
 	}
-	
+
 	SoftSurface::SoftSurface(Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
@@ -130,8 +130,8 @@ namespace wg
 		else
 			m_pClut = nullptr;
 	}
-	
-	
+
+
 	SoftSurface::SoftSurface( Surface * pOther )
 	{
 		assert( pOther );
@@ -140,14 +140,14 @@ namespace wg
 		uint8_t * pPixels = (uint8_t*) pOther->lock( AccessMode::ReadOnly );
 		int pitch = pOther->pitch();
 		Size size = pOther->size();
-		
+
 		Util::pixelFormatToDescription(format, m_pixelDescription);
-		
+
 		m_pitch = ((size.w+3)&0xFFFFFFFC)*m_pixelDescription.bits/8;
 		m_size = size;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
-		
+
 		m_pPixels = m_pData;	// Simulate a lock
 		_copyFrom( &m_pixelDescription, pPixels, pitch, Rect(size), Rect(size) );
 		m_pPixels = 0;
@@ -162,42 +162,42 @@ namespace wg
 
 		pOther->unlock();
 	}
-	
+
 	//____ Destructor ______________________________________________________________
-	
+
 	SoftSurface::~SoftSurface()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool SoftSurface::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Surface::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * SoftSurface::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	SoftSurface_p SoftSurface::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return SoftSurface_p( static_cast<SoftSurface*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ pixel() _________________________________________________________________
-	
+
 	uint32_t SoftSurface::pixel( Coord coord ) const
 	{
 		//TODO: Take endianess into account.
@@ -230,9 +230,9 @@ namespace wg
 				return 0;
 		}
 	}
-	
+
 	//____ alpha() _______________________________________________________________
-	
+
 	uint8_t SoftSurface::alpha( Coord coord ) const
 	{
 		//TODO: Take endianess into account.
@@ -269,23 +269,23 @@ namespace wg
 				return 0xFF;
 		}
 	}
-	
+
 	//____ size() __________________________________________________________________
-	
+
 	Size SoftSurface::size() const
 	{
 		return m_size;
 	}
-	
+
 	//____ isOpaque() ______________________________________________________________
-	
+
 	bool SoftSurface::isOpaque() const
 	{
 		return m_pixelDescription.A_bits==0?true:false;
 	}
-	
+
 	//____ lock() __________________________________________________________________
-	
+
 	uint8_t * SoftSurface::lock( AccessMode mode )
 	{
 		m_accessMode = AccessMode::ReadWrite;
@@ -293,9 +293,9 @@ namespace wg
 		m_lockRegion = Rect(0,0,m_size);
 		return m_pPixels;
 	}
-	
+
 	//____ lockRegion() ____________________________________________________________
-	
+
 	uint8_t * SoftSurface::lockRegion( AccessMode mode, const Rect& region )
 	{
 		m_accessMode = mode;
@@ -303,26 +303,26 @@ namespace wg
 		m_lockRegion = region;
 		return m_pPixels;
 	}
-	
+
 	//____ unlock() ________________________________________________________________
-	
+
 	void SoftSurface::unlock()
 	{
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
 		m_lockRegion.clear();
 	}
-		
+
 	//____ putPixels() _____________________________________________________________
-	
+
 	#define PCLIP(x,y) (((x)>(y))?(y):(x))
-	
+
 	void SoftSurface::putPixels(const vector<int> &x, const vector<int> &y, const vector<uint32_t> &col, int length, bool replace)
 	{
 		Color color1;
 		Color color2;
 		int ind;
-	
+
 		switch(m_pixelDescription.format)
 		{
 			case PixelFormat::BGR_8:
@@ -350,7 +350,7 @@ namespace wg
 				break;
 			default:
 				break;
-	    }
+		}
 	}
 
 } // namespace wg

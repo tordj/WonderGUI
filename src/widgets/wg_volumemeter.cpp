@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -31,7 +31,7 @@
 
 
 
-namespace wg 
+namespace wg
 {
 	const char	VolumeMeter::CLASSNAME[] = {"VolumeMeter"};
 
@@ -47,32 +47,32 @@ namespace wg
 		m_LEDColors[0][1] = Color::Green;
 		m_LEDColors[1][1] = Color::Yellow;
 		m_LEDColors[2][1] = Color::Red;
-		
+
 		m_nSectionLEDs[0] = 8;
 		m_nSectionLEDs[1] = 2;
 		m_nSectionLEDs[2] = 1;
-		
+
 		m_nLEDs = m_nSectionLEDs[0] + m_nSectionLEDs[1] + m_nSectionLEDs[2];
 		m_LEDSpacing = 0.33f;
 		m_direction = Direction::Up;
-		
+
 		m_iPeak = 0;
-		m_iHold = 0; 
+		m_iHold = 0;
 		m_fPeak = 0.0f;
-		
+
 		m_fSidePadding = 0.0f;
 		m_iSidePadding = 0;
-		
+
 		m_bZeroInMiddle = false;
 		d = 1.0f/(float)(m_nLEDs-1);
 		d2 = 0.5f/(float)(m_nLEDs);
-	   
+
 		m_LEDStates.resize(m_nLEDs);
-		for(int i=0;i<m_nLEDs;i++) 
+		for(int i=0;i<m_nLEDs;i++)
 			m_LEDStates[i] = 0.0f;
-		
+
 		m_bUseFades = false;
-		
+
 		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 	}
 
@@ -87,7 +87,7 @@ namespace wg
 	//____ isInstanceOf() _________________________________________________________
 
 	bool VolumeMeter::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
 
@@ -97,8 +97,8 @@ namespace wg
 	//____ className() ____________________________________________________________
 
 	const char * VolumeMeter::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
 
 	//____ cast() _________________________________________________________________
@@ -128,7 +128,7 @@ namespace wg
 
 	//____ setLEDColors() ___________________________________________________________
 
-	void VolumeMeter::setLEDColors(	Color bottomOn, Color middleOn, Color topOn, 
+	void VolumeMeter::setLEDColors(	Color bottomOn, Color middleOn, Color topOn,
 									Color bottomOff, Color middleOff, Color topOff )
 	{
 		m_LEDColors[0][0] = bottomOff;
@@ -139,7 +139,7 @@ namespace wg
 
 		m_LEDColors[2][0] = topOff;
 		m_LEDColors[2][1] = topOn;
-		
+
 		_requestRender();
 	}
 
@@ -153,7 +153,7 @@ namespace wg
 			middleSection = 0;
 		if( topSection < 0 )
 			topSection = 0;
-			
+
 		if( bottomSection != m_nSectionLEDs[0] || middleSection != m_nSectionLEDs[1] || topSection != m_nSectionLEDs[2] )
 		{
 			m_nSectionLEDs[0] = bottomSection;
@@ -164,12 +164,12 @@ namespace wg
 			_requestRender();
 		}
 
-		
+
 		d = 1.0f/(float)(m_nLEDs-1);
 		d2 = 0.5f/(float)(m_nLEDs);
-		
+
 		m_LEDStates.resize(m_nLEDs);
-		for(int i=0;i<m_nLEDs;i++) 
+		for(int i=0;i<m_nLEDs;i++)
 			m_LEDStates[i] = 0.0f;
 	}
 
@@ -179,7 +179,7 @@ namespace wg
 	{
 		if( spacing < 0.f )
 			spacing = 0.f;
-		
+
 		if( spacing != m_LEDSpacing )
 		{
 			m_LEDSpacing = spacing;
@@ -198,13 +198,13 @@ namespace wg
 
 		int iPeak = (int)round(fPeak * m_nLEDs);
 		int iHold = (int)round(fHold * m_nLEDs);
-		
+
 		if(iPeak != m_iPeak || iHold != m_iHold)
 		{
 			m_iPeak = iPeak;
 			m_iHold = iHold;
 		}
-		
+
 		m_fPeak = fPeak;
 
 	}
@@ -215,7 +215,7 @@ namespace wg
 	Size VolumeMeter::preferredSize() const
 	{
 		Size	sz = m_direction == Direction::Up || m_direction == Direction::Down ? Size(10,5*m_nLEDs) : Size( 5*m_nLEDs,10);
-		
+
 		if( m_pSkin )
 			return m_pSkin->sizeForContent( sz );
 		else
@@ -227,7 +227,7 @@ namespace wg
 	void VolumeMeter::_setSize( const Size& size )
 	{
 		Widget::_setSize( size );
-		
+
 		switch (m_direction)
 		{
 			case Direction::Left:
@@ -240,9 +240,9 @@ namespace wg
 				m_iSidePadding = (int) ((float)size.w * m_fSidePadding);
 				break;
 		}
-		
+
 		if(m_iSidePadding <= 0)
-			m_iSidePadding = 0;		
+			m_iSidePadding = 0;
 	}
 
 	//____ _onEvent() ______________________________________________________________
@@ -252,21 +252,21 @@ namespace wg
 		switch( pMsg->type() )
 		{
 			case MsgType::Tick:
-			{							
+			{
 				int firstRenderLED = -1;
 				int lastRenderLED = -1;
-							
+
 				for( int i = 0 ; i < m_nLEDs ; i++ )
 				{
 					bool 	on = false;
-					
+
 					// NB: Hold is not implemented for Zero In Middle
 					if(m_bZeroInMiddle)
 					{
 						float id = d*(float)i;
 
 						// This one is tricky...
-						
+
 						if(id < 0.5f)
 						{
 							if(m_fPeak < id + d2)
@@ -285,8 +285,8 @@ namespace wg
 						if( i < m_iPeak || i+1 == m_iHold )
 							on = true;
 					}
-					
-					
+
+
 					float	LEDState;
 
 					if( on )
@@ -302,7 +302,7 @@ namespace wg
 						}
 						else LEDState =0.f;
 					}
-					
+
 					if( LEDState != m_LEDStates[i] )
 					{
 						m_LEDStates[i] = LEDState;
@@ -310,21 +310,21 @@ namespace wg
 							firstRenderLED = i;
 						lastRenderLED = i;
 					}
-					
+
 				}
-			
+
 				// Possibly calculate a dirty rectangle
-				
+
 				if( firstRenderLED != -1 )
 				{
 					Size sz = Size();
 					Rect rect;
 
-					int meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w; 
+					int meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
 
 					int dirtBeg = firstRenderLED*meterLen/m_nLEDs;
 					int dirtLen = (lastRenderLED+1)*meterLen/m_nLEDs + 1 - dirtBeg;	// One pixels margin, due to subpixel precision one LED can end on same that the next start
-									
+
 					switch( m_direction )
 					{
 						case Direction::Up:
@@ -334,21 +334,21 @@ namespace wg
 							rect.w = sz.w;
 							rect.h = dirtLen;
 						break;
-						
+
 						case Direction::Down:
 							rect.x = 0;
 							rect.y = dirtBeg;
 							rect.w = sz.w;
 							rect.h = dirtLen;
 						break;
-						
+
 						case Direction::Left:
 							rect.x = sz.w - (dirtBeg+dirtLen);
 							rect.y = 0;
 							rect.w = dirtLen;
 							rect.h = sz.h;
 						break;
-						
+
 						case Direction::Right:
 							rect.x = dirtBeg;
 							rect.y = 0;
@@ -356,8 +356,8 @@ namespace wg
 							rect.h = sz.h;
 						break;
 					}
-					
-					_requestRender(rect);				
+
+					_requestRender(rect);
 				}
 			}
 			pMsg->swallow();
@@ -374,7 +374,7 @@ namespace wg
 	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice, _canvas, _window);
-		
+
 		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
@@ -382,14 +382,14 @@ namespace wg
 			canvas = _canvas;
 
 		int p = m_iSidePadding;
-		
+
 		float ledSize = ((m_direction == Direction::Up || m_direction == Direction::Down)?canvas.h:canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
 		float stepSize = ledSize * (1.f+m_LEDSpacing);
 
 		RectF ledRect;
 		float	stepX;
 		float	stepY;
-		
+
 		switch( m_direction )
 		{
 			case Direction::Up:
@@ -413,7 +413,7 @@ namespace wg
 				stepY = 0.f;
 				break;
 		}
-		
+
 		for( int i = 0 ; i < m_nLEDs ; i++ )
 		{
 			if( ledRect.w > 0.f && ledRect.h > 0.f )
@@ -426,7 +426,7 @@ namespace wg
 					section = 1;
 				else
 					section = 2;
-						
+
 				Color color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
 				pDevice->fill( ledRect, color);
@@ -435,7 +435,7 @@ namespace wg
 			ledRect.x += stepX;
 			ledRect.y += stepY;
 		}
-		
+
 	}
 
 	//____ _cloneContent() _________________________________________________________________
@@ -445,14 +445,14 @@ namespace wg
 		Widget::_cloneContent( _pOrg );
 
 		const VolumeMeter * pOrg = static_cast<const VolumeMeter*>(_pOrg);
-		
+
 		for( int i = 0 ; i < 3 ; i++ )
 		{
 			m_LEDColors[i][0] 	= pOrg->m_LEDColors[i][0];
 			m_LEDColors[i][1] 	= pOrg->m_LEDColors[i][1];
 			m_nSectionLEDs[i] = pOrg->m_nSectionLEDs[i];
 		}
-		
+
 		m_direction = pOrg->m_direction;
 		m_nLEDs = pOrg->m_nLEDs;
 		m_LEDSpacing = pOrg->m_LEDSpacing;

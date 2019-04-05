@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,13 +29,13 @@
 #include <wg_ipaddedchildren.h>
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class StackPanel;
 	typedef	StrongPtr<StackPanel>	StackPanel_p;
 	typedef	WeakPtr<StackPanel>		StackPanel_wp;
-	
+
 
 
 	//____ StackPanelSlot ____________________________________________________________
@@ -44,9 +44,9 @@ namespace wg
 	{
 	public:
 		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Original) {}
-	
+
 		Origo			origo;
-		SizePolicy2D	sizePolicy;		
+		SizePolicy2D	sizePolicy;
 	};
 
 
@@ -89,8 +89,8 @@ namespace wg
 
 		Origo		origo( int index ) const;
 		Origo		origo( iterator it ) const;
-		
-		
+
+
 	protected:
 		void		_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy );
 		void		_setOrigo( StackPanelSlot * pSlot, Origo origo );
@@ -99,7 +99,7 @@ namespace wg
 
 
 	//____ StackPanel ___________________________________________________________
-	
+
 	/**
 	*/
 
@@ -125,20 +125,20 @@ namespace wg
 		static StackPanel_p	cast( Object * pObject );
 
 		//.____ Geometry ____________________________________________
-	
+
 		int			matchingHeight( int width ) const;
 		int			matchingWidth( int height ) const;
-	
+
 		Size		preferredSize() const;
 
-	
+
 	protected:
 		StackPanel();
 		virtual ~StackPanel();
 		virtual Widget* _newOfMyType() const { return new StackPanel(); };
-	
+
 		// Overloaded from Widget
-	
+
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
 
@@ -146,7 +146,7 @@ namespace wg
 
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
-				
+
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
@@ -176,7 +176,7 @@ namespace wg
 		Widget *	_nextChild( const Slot * pSlot ) const;
 
 		// Internal to StackPanel
-	
+
 		void 	_refreshPreferredSize();
 		void	_adaptChildrenToSize();
 
@@ -185,12 +185,12 @@ namespace wg
 
 
 		Rect	_childGeo( const StackPanelSlot * pSlot ) const;
-	
-		Size	m_preferredSize;	
+
+		Size	m_preferredSize;
 
 		SlotArray<StackPanelSlot>	m_children;
 	};
-	
+
 
 } // namespace wg
 #endif //WG_STACKPANEL_DOT_H

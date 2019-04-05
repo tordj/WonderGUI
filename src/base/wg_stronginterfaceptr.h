@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -26,13 +26,13 @@
 #include <wg_interface.h>
 #include <wg_object.h>
 
-namespace wg 
+namespace wg
 {
-		
+
 	template<class Cls> class StrongInterfacePtr
 	{
 		template<class T> friend class StrongInterfacePtr;
-		
+
 	public:
 
 	//.____ Creation ___________________________________________________________
@@ -51,13 +51,13 @@ namespace wg
 				static_cast<Interface*>(_p)->_object()->_incRefCount();
 		};
 
-	
+
 		template<typename _Tp1> StrongInterfacePtr( const StrongInterfacePtr<_Tp1>& _p)
-	    { 
+		{
 			m_pInterface = _p.m_pInterface;
 			if (_p)
 				static_cast<Interface*>(_p)->_object()->_incRefCount();
-	    }
+		}
 
 		~StrongInterfacePtr()
 		{
@@ -81,13 +81,13 @@ namespace wg
 			return *this;
 		}
 
-	    StrongInterfacePtr<Cls>& operator=( const StrongInterfacePtr<Cls>& _p)
+		StrongInterfacePtr<Cls>& operator=( const StrongInterfacePtr<Cls>& _p)
 		{
 			if( m_pInterface != _p.m_pInterface )
 			{
 				if( m_pInterface )
 					static_cast<Interface*>(m_pInterface)->_object()->_decRefCount();
-				
+
 				m_pInterface = _p.m_pInterface;
 				if (m_pInterface)
 					static_cast<Interface*>(m_pInterface)->_object()->_incRefCount();
@@ -95,7 +95,7 @@ namespace wg
 			return *this;
 		}
 
-	    template<typename _Tp1> StrongInterfacePtr<Cls>& operator=( const StrongInterfacePtr<_Tp1>& _p)
+		template<typename _Tp1> StrongInterfacePtr<Cls>& operator=( const StrongInterfacePtr<_Tp1>& _p)
 		{
 			if (m_pInterface != _p.m_pInterface)
 			{
@@ -109,7 +109,7 @@ namespace wg
 			return *this;
 		}
 
-	    template<typename _Tp1> StrongInterfacePtr<Cls>& operator=( _Tp1 * _p)
+		template<typename _Tp1> StrongInterfacePtr<Cls>& operator=( _Tp1 * _p)
 		{
 			if (m_pInterface != _p)
 			{
@@ -122,7 +122,7 @@ namespace wg
 			}
 			return *this;
 		}
-	
+
 		operator  Cls*() const { return m_pInterface; }
 
 		inline Cls & operator*() const { return * this->m_pInterface; }
@@ -138,7 +138,7 @@ namespace wg
 		inline operator bool() const { return m_pInterface != 0; }
 
 		//.____ Misc ___________________________________________________________
-		
+
 		inline Cls* rawPtr() const { return m_pInterface; }
 
 
@@ -146,8 +146,8 @@ protected:
 		Cls *	m_pInterface;
 	};
 
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_STRONGINTERFACEPTR_DOT_H

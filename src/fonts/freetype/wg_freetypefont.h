@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -43,7 +43,7 @@ struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
 typedef struct  FT_Bitmap_ FT_Bitmap;
 
-namespace wg 
+namespace wg
 {
 	class FreeTypeFont;
 	typedef	StrongPtr<FreeTypeFont>		FreeTypeFont_p;
@@ -61,7 +61,7 @@ namespace wg
 		};
 
 		//.____ Creation __________________________________________
-		
+
 		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex)); }
 
 		//.____ Identification __________________________________________
@@ -85,7 +85,7 @@ namespace wg
 		int			maxAscend();
 		int			maxDescend();
 
-		//.____ Misc ___________________________________________________________		
+		//.____ Misc ___________________________________________________________
 
 		int			nbGlyphs();
 		bool		hasGlyphs();
@@ -117,7 +117,7 @@ namespace wg
 		~FreeTypeFont();
 
 		const static int	c_maxFontSize = 256;	// Max size (pixels) for font.
-		const static int	c_minGlyphPixelSize = 12;		
+		const static int	c_minGlyphPixelSize = 12;
 		const static int	c_maxGlyphPixelSize = c_maxFontSize*2;
 		const static int	c_glyphPixelSizeQuantization = 4;
 		const static int	c_glyphSlotSizes = ((c_maxGlyphPixelSize-c_minGlyphPixelSize)/c_glyphPixelSizeQuantization)+1;
@@ -146,7 +146,7 @@ namespace wg
 			CacheSurf( Surface * _pSurf ) { pSurf = _pSurf; access = 0; }
 			~CacheSurf();
 
-			LINK_METHODS( CacheSurf );		
+			LINK_METHODS( CacheSurf );
 
 			uint32_t			access;			// Timestamp of last access.
 			Surface_p	pSurf;
@@ -158,7 +158,7 @@ namespace wg
 		public:
 			CacheSlot( CacheSurf * _pSurf, const Rect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf, pGlyph = 0; }
 
-			LINK_METHODS( CacheSlot );		
+			LINK_METHODS( CacheSlot );
 
 			uint32_t			access;			// Timestamp of last access.
 

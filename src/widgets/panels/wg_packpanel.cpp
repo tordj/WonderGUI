@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,59 +29,59 @@
 #include <wg_slotarray.impl.h>
 #include <wg_iweightedchildren.impl.h>
 
-namespace wg 
+namespace wg
 {
 	INSTANTIATE_WEIGHTEDCHILDREN(PackPanelSlot, WeightedChildrenHolder)
 
 	template class SlotArray<PackPanelSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
-	
+
 
 	//____ Constructor ____________________________________________________________
-	
+
 	PackPanel::PackPanel() : children( &m_children, this )
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = true;
-	    m_pSizeBroker = 0;
+		m_pSizeBroker = 0;
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	PackPanel::~PackPanel()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool PackPanel::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Panel::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * PackPanel::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	PackPanel_p PackPanel::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return PackPanel_p( static_cast<PackPanel*>(pObject) );
-	
+
 		return 0;
 	}
-	
+
 	//____ setOrientation() ______________________________________________________
-	
+
 	void PackPanel::setOrientation( Orientation orientation )
 	{
 		bool bHorizontal = orientation==Orientation::Horizontal?true:false;
@@ -92,10 +92,10 @@ namespace wg
 			_refreshChildGeo();
 		}
 	}
-	
-	
+
+
 	//____ setSizeBroker() _______________________________________________________
-	
+
 	void PackPanel::setSizeBroker( SizeBroker * pBroker )
 	{
 		if( m_pSizeBroker.rawPtr() != pBroker )
@@ -105,9 +105,9 @@ namespace wg
 			_refreshChildGeo();
 		}
 	}
-	
+
 	//____ preferredSize() _______________________________________________________
-	
+
 	Size PackPanel::preferredSize() const
 	{
 		Size size = m_preferredContentSize;
@@ -116,30 +116,30 @@ namespace wg
 
 		return size;
 	}
-	
+
 	//____ matchingHeight() _______________________________________________________
-	
+
 	int PackPanel::matchingHeight( int width ) const
 	{
 		int height = 0;
-	
+
 		if( m_bHorizontal )
 		{
 			if( m_pSizeBroker )
 			{
 				// Allocate and populate SizeBroker array
-			
+
 				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-			
-				int nItems = _populateSizeBrokerArray(pItemArea);		
-			
+
+				int nItems = _populateSizeBrokerArray(pItemArea);
+
 				// Retrieve item lengths and find height of highest item.
-	
+
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, width );
-	
+
 				SizeBrokerItem * pI = pItemArea;
-	
+
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible )
@@ -148,19 +148,19 @@ namespace wg
 						if( itemHeight > height )
 							height = itemHeight;
 						pI++;
-					}	
+					}
 				}
-	
+
 				// Release temporary memory area
-			
+
 				Base::memStackRelease(arrayBytes);
 			}
-			else 
+			else
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible && pS->preferredSize.h > height )
-							height = pS->preferredSize.h;	
+							height = pS->preferredSize.h;
 				}
 			}
 		}
@@ -169,21 +169,21 @@ namespace wg
 			if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
 			{
 				// Allocate and populate SizeBroker array
-			
+
 				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-			
-				int nItems = _populateSizeBrokerArray(pItemArea, width);		
-			
+
+				int nItems = _populateSizeBrokerArray(pItemArea, width);
+
 				// Retrieve preferred length
-	
+
 				height = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
-					
+
 				// Release temporary memory area
-			
+
 				Base::memStackRelease(arrayBytes);
 			}
-			else 
+			else
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
@@ -198,30 +198,30 @@ namespace wg
 
 		return height;
 	}
-	
+
 	//____ matchingWidth() _______________________________________________________
-	
+
 	int PackPanel::matchingWidth( int height ) const
 	{
 		int width = 0;
-	
+
 		if( !m_bHorizontal )
 		{
 			if( m_pSizeBroker )
 			{
 				// Allocate and populate SizeBroker array
-			
+
 				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-			
-				int nItems = _populateSizeBrokerArray(pItemArea);		
-			
+
+				int nItems = _populateSizeBrokerArray(pItemArea);
+
 				// Retrieve item lengths and find height of highest item.
-	
+
 				m_pSizeBroker->setItemLengths( pItemArea, nItems, height );
-	
+
 				SizeBrokerItem * pI = pItemArea;
-	
+
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible )
@@ -230,19 +230,19 @@ namespace wg
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
-					}	
+					}
 				}
-	
+
 				// Release temporary memory area
-			
+
 				Base::memStackRelease(arrayBytes);
 			}
-			else 
+			else
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible && pS->preferredSize.w > width )
-							width = pS->preferredSize.w;	
+							width = pS->preferredSize.w;
 				}
 			}
 		}
@@ -251,26 +251,26 @@ namespace wg
 			if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
 			{
 				// Allocate and populate SizeBroker array
-			
+
 				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-			
-				int nItems = _populateSizeBrokerArray(pItemArea, height);		
-			
+
+				int nItems = _populateSizeBrokerArray(pItemArea, height);
+
 				// Retrieve preferred length
-	
+
 				width = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
-					
+
 				// Release temporary memory area
-			
+
 				Base::memStackRelease(arrayBytes);
 			}
-			else 
+			else
 			{
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible )
-						width += pS->paddedMatchingWidth( height );	
+						width += pS->paddedMatchingWidth( height );
 				}
 			}
 		}
@@ -280,7 +280,7 @@ namespace wg
 
 		return width;
 	}
-	
+
 	//____ _firstChild() __________________________________________________________
 
 	Widget * PackPanel::_firstChild() const
@@ -301,35 +301,35 @@ namespace wg
 		return m_children.last()->pWidget;
 	}
 
-	
+
 	//____ _firstSlotWithGeo() _____________________________________________________
-	
+
 	void PackPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
-	{	
+	{
 		if( m_children.isEmpty() )
 			package.pSlot = nullptr;
 		else
 		{
 			PackPanelSlot * pSlot = m_children.first();
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;			
-		}			
+			package.geo = pSlot->geo;
+		}
 	}
-	
+
 	//____ _nextSlotWithGeo() _____________________________________________________
-	
+
 	void PackPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
 		PackPanelSlot * pSlot = (PackPanelSlot*) package.pSlot;
-		
+
 		if( pSlot == m_children.last() )
 			package.pSlot = nullptr;
 		else
 		{
 			pSlot++;
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;			
-		}	
+			package.geo = pSlot->geo;
+		}
 	}
 
 	//____ _didAddSlots() _____________________________________________________
@@ -494,7 +494,7 @@ namespace wg
 
 		_refreshAllWidgets();
 	}
-	
+
 	//____ _hideChildren() _______________________________________________________
 
 	void PackPanel::_hideChildren(PackPanelSlot * pSlot, int nb)
@@ -504,54 +504,54 @@ namespace wg
 
 		_refreshAllWidgets();
 	}
-		
-	
+
+
 	//____ _onWidgetsReordered() ____________________________________________________
-/*	
+/*
 	void PackPanel::_onWidgetsReordered()
 	{
 		_refreshChildGeo();
 	}
 */
 	//____ _refreshAllWidgets() _____________________________________________________
-	
+
 	void PackPanel::_refreshAllWidgets()
 	{
 		_updatePreferredSize();
 		_refreshChildGeo();
 	}
-	
-	
-	
+
+
+
 	//____ _setSize() ____________________________________________________________
-	
+
 	void PackPanel::_setSize( const Size& size )
 	{
 		Panel::_setSize(size);
-	    _refreshChildGeo(false);
+		_refreshChildGeo(false);
 	}
-	
-	
+
+
 	//____ _updatePreferredSize() ______________________________________________________
-	
+
 	void PackPanel::_updatePreferredSize()
 	{
 		int length = 0;
 		int breadth = 0;
-	
+
 		if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
 		{
 			// Allocate and populate SizeBroker array
-			
+
 			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-			
-			int nItems = _populateSizeBrokerArray(pItemArea);		
-			
+
+			int nItems = _populateSizeBrokerArray(pItemArea);
+
 			// Retrieve preferred length and breadth
-			
+
 			length = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
-			
+
 			SizeBrokerItem * pI = pItemArea;
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
@@ -559,29 +559,29 @@ namespace wg
 				{
 					int b = m_bHorizontal?pS->paddedMatchingHeight(pI->output):pS->paddedMatchingWidth(pI->output);
 					if( b > breadth )
-						breadth = b;			
+						breadth = b;
 					pI++;
 				}
 			}
-			
+
 			// Release temporary memory area
-			
+
 			Base::memStackRelease(arrayBytes);
-			
+
 		}
 		else
 		{
 			if( m_bHorizontal )
 			{
 				for (auto p = m_children.begin(); p != m_children.end(); p++)
-	            {
+				{
 					if( p->bVisible )
 					{
 						length += p->preferredSize.w;
-		                if( p->preferredSize.h > breadth )
-		                    breadth = p->preferredSize.h;
+						if( p->preferredSize.h > breadth )
+							breadth = p->preferredSize.h;
 					}
-	            }
+				}
 			}
 			else
 			{
@@ -591,14 +591,14 @@ namespace wg
 					{
 						length += p->preferredSize.h;
 						if( p->preferredSize.w > breadth )
-						    breadth = p->preferredSize.w;
+							breadth = p->preferredSize.w;
 					}
-	            }
+				}
 			}
 		}
-	
+
 		//
-		
+
 		Size size = m_bHorizontal?Size(length,breadth):Size(breadth,length);
 
 
@@ -612,14 +612,14 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ _refreshChildGeo() _________________________________________________________
-	
+
 	void PackPanel::_refreshChildGeo( bool bRequestRender )
 	{
-	    if( m_children.isEmpty() )
-	        return;
-	    
+		if( m_children.isEmpty() )
+			return;
+
 		Size sz = size();
 		Coord contentOfs;
 
@@ -628,18 +628,18 @@ namespace wg
 			sz -= m_pSkin->contentPadding();
 			contentOfs = m_pSkin->contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
 		}
-		
+
 		int wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
 		int givenLength = m_bHorizontal?sz.w:sz.h;
 		int givenBreadth = m_bHorizontal?sz.h:sz.w;
-	
+
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
-	
+
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
 			Coord pos;
-	        Rect geo;
+			Rect geo;
 			for (auto p = m_children.begin(); p != m_children.end(); p++)
 			{
 				if( p->bVisible )
@@ -660,7 +660,7 @@ namespace wg
 					}
 					geo -= p->padding;
 					geo += contentOfs;
-	            
+
 					if( geo != p->geo )
 					{
 						if (bRequestRender)
@@ -674,14 +674,14 @@ namespace wg
 						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 							p->pWidget->_setSize( geo.size() );
-	                
+
 					}
 				}
 				else
 				{
 					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
 						_requestRender(p->geo);
-	
+
 					p->geo.x = pos.x + contentOfs.x;
 					p->geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
@@ -694,24 +694,24 @@ namespace wg
 						geo.w = sz.w;
 						geo.h = 0;
 					}
-				}	
+				}
 			}
 		}
 		else
 		{
 			// Allocate and populate SizeBroker array
-	
+
 			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
-	
-			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);		
-			
+
+			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);
+
 			// Retrieve length and set geo for all children, call _requestRender() and _setSize() where needed.
-			
+
 			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
-			
+
 			SizeBrokerItem * pI = pItemArea;
-	
+
 			Coord pos;
 			Rect geo;
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
@@ -721,22 +721,22 @@ namespace wg
 					geo.x = pos.x;
 					geo.y = pos.y;
 					if( m_bHorizontal )
-					{	
+					{
 						geo.w = pI->output;
 						geo.h = sz.h;
 						pos.x += pI->output;
 					}
 					else
-					{	
+					{
 						geo.w = sz.w;
 						geo.h = pI->output;
 						pos.y += pI->output;
 					}
 					geo -= pS->padding;
 					geo += contentOfs;
-				
+
 					if( geo != pS->geo )
-					{	
+					{
 						if( bRequestRender )
 						{
 							_requestRender(geo);
@@ -754,7 +754,7 @@ namespace wg
 				{
 					if( bRequestRender && pS->geo.w != 0 && pS->geo.h != 0 )
 						_requestRender(pS->geo);
-	
+
 					pS->geo.x = pos.x + contentOfs.x;
 					pS->geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
@@ -769,19 +769,19 @@ namespace wg
 					}
 				}
 			}
-			
+
 			// Release SizeBroker array
-			
+
 			Base::memStackRelease(arrayBytes);
 		}
 	}
-	
+
 	//____ _populateSizeBrokerArray() ___________________________________________
-	
+
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray ) const
 	{
 		SizeBrokerItem * pI = pArray;
-		
+
 		if( m_bHorizontal )
 		{
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
@@ -791,12 +791,12 @@ namespace wg
 					pI->preferred = pS->preferredSize.w;
 					pI->min = pS->paddedMinSize().w;
 					pI->max = pS->paddedMaxSize().w;
-					pI->weight = pS->weight;			
+					pI->weight = pS->weight;
 					pI++;
 				}
 			}
 		}
-		else 
+		else
 		{
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
@@ -805,19 +805,19 @@ namespace wg
 					pI->preferred = pS->preferredSize.h;
 					pI->min = pS->paddedMinSize().h;
 					pI->max = pS->paddedMaxSize().h;
-					pI->weight = pS->weight;			
+					pI->weight = pS->weight;
 					pI++;
 				}
-			}			
+			}
 		}
-		
+
 		return int(pI - pArray);
 	}
-	
+
 	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
 	{
 		SizeBrokerItem * pI = pArray;
-		
+
 		if( m_bHorizontal )
 		{
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
@@ -827,12 +827,12 @@ namespace wg
 					pI->preferred = pS->paddedMatchingWidth(forcedBreadth);
 					pI->min = pS->paddedMinSize().w;
 					pI->max = pS->paddedMaxSize().w;
-					pI->weight = pS->weight;			
+					pI->weight = pS->weight;
 					pI++;
 				}
 			}
 		}
-		else 
+		else
 		{
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
@@ -841,12 +841,12 @@ namespace wg
 					pI->preferred = pS->paddedMatchingHeight(forcedBreadth);
 					pI->min = pS->paddedMinSize().h;
 					pI->max = pS->paddedMaxSize().h;
-					pI->weight = pS->weight;			
+					pI->weight = pS->weight;
 					pI++;
 				}
-			}			
+			}
 		}
-		
+
 		return int(pI - pArray);
 	}
 

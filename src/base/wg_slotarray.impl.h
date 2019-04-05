@@ -136,7 +136,7 @@ namespace wg
 		if (SlotType::safe_to_relocate)
 		{
 			_killBlock(pBeg, pEnd);
-	
+
 			if (blocksToMove > 0)
 			{
 				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);

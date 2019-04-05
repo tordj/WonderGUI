@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -97,7 +97,7 @@ namespace wg
 
 		layer.blendMode = BlendMode::Blend;
 		layer.pSurface = pSurf;
-        layer.stateBlockMask = 1;               // Only normal state is set.
+		layer.stateBlockMask = 1;               // Only normal state is set.
 
 		if (pSurf->isOpaque())
 			m_bIsOpaque = true;
@@ -130,7 +130,7 @@ namespace wg
 
 		layer.blendMode = BlendMode::Blend;
 		layer.pSurface = pSurf;
-        layer.stateBlockMask = 0;
+		layer.stateBlockMask = 0;
 
 		if (pSurf->isOpaque())
 			m_bIsOpaque = true;
@@ -147,7 +147,7 @@ namespace wg
 		{
 			int index = _stateToIndex(state);
 
-            layer.stateBlockMask.setBit(index);
+			layer.stateBlockMask.setBit(index);
 			layer.blockOfs[index] = blockStartOfs + blockPitch*ofs;
 			ofs++;
 		}
@@ -162,7 +162,7 @@ namespace wg
 		{
 			if (!layer.stateBlockMask.bit(i))
 			{
-                int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
+				int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
 				layer.blockOfs[i] = layer.blockOfs[fallbackIndex];
 			}
 
@@ -228,7 +228,7 @@ namespace wg
 			if (oldAlpha != stateColor.second.a)
 				_updateStateOpacity(index);
 
-            layer.stateColorMask.setBit(index);
+			layer.stateColorMask.setBit(index);
 		}
 
 		// Fill in fallback states and update opacity flag
@@ -237,9 +237,9 @@ namespace wg
 		{
 			if (!layer.stateColorMask.bit(i))
 			{
-                uint8_t		oldAlpha = layer.tintColor[i].a;
+				uint8_t		oldAlpha = layer.tintColor[i].a;
 
-                int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
+				int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
 				layer.tintColor[i] = layer.tintColor[fallbackIndex];
 
 				if (oldAlpha != layer.tintColor[i].a )
@@ -309,7 +309,7 @@ namespace wg
 			// Shortcuts & optimizations for common special cases.
 
 			if (src.w == _canvas.w && src.h == _canvas.h /*&& scale == m_scale */)
-			{ 
+			{
 				pDevice->blit( _canvas.pos(), src );
 				continue;
 			}
@@ -342,7 +342,7 @@ namespace wg
 	{
 		Size content = ExtendedSkin::minSize();
 //		Size frame = m_frame.scale(scale).size();
-		Size frame = m_frame.size(); 
+		Size frame = m_frame.size();
 		return Size( max(content.w, frame.w), max(content.h, frame.h) );
 	}
 

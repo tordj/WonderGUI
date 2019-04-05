@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -37,19 +37,19 @@
 
 
 
-namespace wg 
+namespace wg
 {
 
 	class MsgRouter;
 	class Widget;
 	class PopupLayer;
 	class ModalLayer;
-    class DragNDropLayer;
+	class DragNDropLayer;
 
 	class IROTextDisplay;
 	class ITextDisplay;
 	class IROTextDisplayEditor;
-    class Payload;
+	class Payload;
 
 	typedef WeakPtr<Object>		Object_wp;
 
@@ -62,8 +62,8 @@ namespace wg
 	typedef	StrongInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_p;
 	typedef	WeakInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_wp;
 
-    typedef    StrongPtr<Payload>  Payload_p;
-    typedef    WeakPtr<Payload>    Payload_wp;
+	typedef    StrongPtr<Payload>  Payload_p;
+	typedef    WeakPtr<Payload>    Payload_wp;
 
 
 	typedef WeakPtr<Widget> Widget_wp;
@@ -161,43 +161,43 @@ namespace wg
 	typedef	StrongPtr<PointerChangeMsg>		PointerChangeMsg_p;
 	typedef	WeakPtr<PointerChangeMsg>	PointerChangeMsg_wp;
 
-    class DragNDropMsg;
-    typedef StrongPtr<DragNDropMsg>        DragNDropMsg_p;
-    typedef WeakPtr<DragNDropMsg>    DragNDropMsg_wp;
+	class DragNDropMsg;
+	typedef StrongPtr<DragNDropMsg>        DragNDropMsg_p;
+	typedef WeakPtr<DragNDropMsg>    DragNDropMsg_wp;
 
-    class DropPickMsg;
-    typedef StrongPtr<DropPickMsg>  DropPickMsg_p;
-    typedef WeakPtr<DropPickMsg>    DropPickMsg_wp;
-    
-    class DropProbeMsg;
-    typedef StrongPtr<DropProbeMsg>  DropProbeMsg_p;
-    typedef WeakPtr<DropProbeMsg>    DropProbeMsg_wp;
+	class DropPickMsg;
+	typedef StrongPtr<DropPickMsg>  DropPickMsg_p;
+	typedef WeakPtr<DropPickMsg>    DropPickMsg_wp;
 
-    class DropEnterMsg;
-    typedef StrongPtr<DropEnterMsg>        DropEnterMsg_p;
-    typedef WeakPtr<DropEnterMsg>    DropEnterMsg_wp;
-    
-    class DropMoveMsg;
-    typedef StrongPtr<DropMoveMsg>        DropMoveMsg_p;
-    typedef WeakPtr<DropMoveMsg>    DropMoveMsg_wp;
-    
-    class DropLeaveMsg;
-    typedef StrongPtr<DropLeaveMsg>        DropLeaveMsg_p;
-    typedef WeakPtr<DropLeaveMsg>    DropLeaveMsg_wp;
-    
-    class DropDeliverMsg;
-    typedef StrongPtr<DropDeliverMsg>        DropDeliverMsg_p;
-    typedef WeakPtr<DropDeliverMsg>    DropDeliverMsg_wp;
+	class DropProbeMsg;
+	typedef StrongPtr<DropProbeMsg>  DropProbeMsg_p;
+	typedef WeakPtr<DropProbeMsg>    DropProbeMsg_wp;
 
-    class DropCancelMsg;
-    typedef StrongPtr<DropCancelMsg>        DropCancelMsg_p;
-    typedef WeakPtr<DropCancelMsg>    DropCancelMsg_wp;
+	class DropEnterMsg;
+	typedef StrongPtr<DropEnterMsg>        DropEnterMsg_p;
+	typedef WeakPtr<DropEnterMsg>    DropEnterMsg_wp;
 
-    class DropCompleteMsg;
-    typedef StrongPtr<DropCompleteMsg>       DropCompleteMsg_p;
-    typedef WeakPtr<DropCompleteMsg>    DropCompleteMsg_wp;
-    
-    
+	class DropMoveMsg;
+	typedef StrongPtr<DropMoveMsg>        DropMoveMsg_p;
+	typedef WeakPtr<DropMoveMsg>    DropMoveMsg_wp;
+
+	class DropLeaveMsg;
+	typedef StrongPtr<DropLeaveMsg>        DropLeaveMsg_p;
+	typedef WeakPtr<DropLeaveMsg>    DropLeaveMsg_wp;
+
+	class DropDeliverMsg;
+	typedef StrongPtr<DropDeliverMsg>        DropDeliverMsg_p;
+	typedef WeakPtr<DropDeliverMsg>    DropDeliverMsg_wp;
+
+	class DropCancelMsg;
+	typedef StrongPtr<DropCancelMsg>        DropCancelMsg_p;
+	typedef WeakPtr<DropCancelMsg>    DropCancelMsg_wp;
+
+	class DropCompleteMsg;
+	typedef StrongPtr<DropCompleteMsg>       DropCompleteMsg_p;
+	typedef WeakPtr<DropCompleteMsg>    DropCompleteMsg_wp;
+
+
 	class SelectMsg;
 	typedef	StrongPtr<SelectMsg>		SelectMsg_p;
 	typedef	WeakPtr<SelectMsg>	SelectMsg_wp;
@@ -271,7 +271,7 @@ namespace wg
 	{
 
 		public:
-		
+
 			//.____ Identification __________________________________________
 
 			bool				isInstanceOf( const char * pClassName ) const;
@@ -289,17 +289,17 @@ namespace wg
 			Object *			originalSourceRawPtr() const { return m_bReposted? m_pOriginalSource.rawPtr() : m_pSource.rawPtr(); }
 			Object_p			originalSource() const { return m_bReposted? m_pOriginalSource : m_pSource; }
 
-			bool				hasSource() const { return m_pSource; } 
+			bool				hasSource() const { return m_pSource; }
 			Object *			sourceRawPtr() const { return m_pSource.rawPtr(); }
-			Object_p			source() const { return m_pSource; } 
-				
+			Object_p			source() const { return m_pSource; }
+
 			bool				hasCopyTo() { return m_pCopyTo; }
 			Receiver_p			getCopyTo() { return m_pCopyTo; }
 			bool				hasRepost() { return m_pRepostSource; }
 
-            bool                hasFinalRecipient() { return m_pFinalRecipient; }
-            Receiver_p          finalRecipient() { return m_pFinalRecipient; }
-        
+			bool                hasFinalRecipient() { return m_pFinalRecipient; }
+			Receiver_p          finalRecipient() { return m_pFinalRecipient; }
+
 			//.____ Control ____________________________________________________
 
 			void				setCopyTo( Receiver * pReceiver );
@@ -310,7 +310,7 @@ namespace wg
 		protected:
 			Msg() : m_type(MsgType::Dummy), m_bReposted(false) {}
 			virtual ~Msg() {}
-			
+
 			MsgType				m_type;				// Type of message
 			Object_p			m_pSource;			// The source of this message, if any. Not necessarily the sender.
 			bool				m_bReposted;		// Set if this is a repost.
@@ -318,14 +318,14 @@ namespace wg
 			Receiver_p			m_pCopyTo;			// Receiver to receive a copy of this message, if any.
 			Object_p			m_pRepostSource;	// Object to repost this message from, if any.
 			Receiver_p			m_pRepostCopyTo;	// Receiver to copy this message to when reposting, if any.
-            Receiver_p          m_pFinalRecipient;  // Final recipent of (possibly modified) message, if any.
+			Receiver_p          m_pFinalRecipient;  // Final recipent of (possibly modified) message, if any.
 	};
 
 
 	//____ InputMsg ______________________________________________________
 	/**
 	 * @brief Base class for all mouse and key messages.
-	 * 
+	 *
 	 */
 
 	class InputMsg : public Msg
@@ -359,7 +359,7 @@ namespace wg
 	//____ MouseButtonMsg ______________________________________________________
 	/**
 	 * @brief Base class for all mouse button messages.
-	 * 
+	 *
 	 */
 
 	class MouseButtonMsg : public InputMsg
@@ -706,240 +706,240 @@ namespace wg
 
 		PointerStyle	style() const;
 		inline char		inputId() const { return m_inputId; }
-			
+
 	protected:
 		PointerChangeMsg( char inputId, PointerStyle style );
-			
-		char			m_inputId;	
+
+		char			m_inputId;
 		PointerStyle	m_style;
 	};
 
 	//____ DragNDropMsg _______________________________________________________
 
    class DragNDropMsg : public Msg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                isInstanceOf( const char * pClassName ) const;
-        const char *        className( void ) const;
-        static const char   CLASSNAME[];
-        static DragNDropMsg_p	cast( Object * pObject );
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool                isInstanceOf( const char * pClassName ) const;
+		const char *        className( void ) const;
+		static const char   CLASSNAME[];
+		static DragNDropMsg_p	cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
 
 		Coord				pointerPos() const { return m_pointerPos; }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 
-        Payload_p			payload() const;
-        Widget_p 			pickedFrom() const { return m_pPickedFrom; }
-        int                 pickCategory() const { return m_pickCategory; }
+		Payload_p			payload() const;
+		Widget_p 			pickedFrom() const { return m_pPickedFrom; }
+		int                 pickCategory() const { return m_pickCategory; }
 
-    protected:
-    	DragNDropMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
-    
+	protected:
+		DragNDropMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+
 		Coord				m_pointerPos;		// Screen position of pointer.
    		ModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
 
-        Payload_p           m_pPayload;
-        Widget_p            m_pPickedFrom;
-        int                 m_pickCategory;
+		Payload_p           m_pPayload;
+		Widget_p            m_pPickedFrom;
+		int                 m_pickCategory;
 	 };
- 
+
 	//____ DropPickMsg ___________________________________________________
 
-    class DropPickMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                isInstanceOf( const char * pClassName ) const;
-        const char *        className( void ) const;
-        static const char   CLASSNAME[];
-        static DropPickMsg_p cast( Object * pObject );
+	class DropPickMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
-        
-        void				setPayload( Payload * pPayload );
-        void				setDragWidget( Widget * pWidget );
-        Widget_p            dragWidget() const;
+		bool                isInstanceOf( const char * pClassName ) const;
+		const char *        className( void ) const;
+		static const char   CLASSNAME[];
+		static DropPickMsg_p cast( Object * pObject );
 
-    protected:
-    	DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		//.____ Content ________________________________________________________
 
-        Widget_p            m_pDragWidget;
-    };
-    
+		void				setPayload( Payload * pPayload );
+		void				setDragWidget( Widget * pWidget );
+		Widget_p            dragWidget() const;
+
+	protected:
+		DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+
+		Widget_p            m_pDragWidget;
+	};
+
 	//____ DropProbeMsg ___________________________________________________
 
-    class DropProbeMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                	isInstanceOf( const char * pClassName ) const;
-        const char *        	className( void ) const;
-        static const char    	CLASSNAME[];
-        static DropProbeMsg_p   cast( Object * pObject );
+	class DropProbeMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static DropProbeMsg_p   cast( Object * pObject );
 
-        void			accept( bool bAccept = true );
-        bool			isAccepted() const { return m_bAccepted; }
-        
-    protected:
-    	DropProbeMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos  );
-  
+		//.____ Content ________________________________________________________
+
+		void			accept( bool bAccept = true );
+		bool			isAccepted() const { return m_bAccepted; }
+
+	protected:
+		DropProbeMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos  );
+
   		bool		m_bAccepted;
-    };
+	};
 
 
 	//____ DropEnterMsg ___________________________________________________
 
-    class DropEnterMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                	isInstanceOf( const char * pClassName ) const;
-        const char *        	className( void ) const;
-        static const char    	CLASSNAME[];
-        static DropEnterMsg_p   cast( Object * pObject );
+	class DropEnterMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static DropEnterMsg_p   cast( Object * pObject );
 
-        void                setDragWidget( Widget * pWidget );
-        Widget_p            dragWidget() const;
-        
-    protected:
-    	DropEnterMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
-        
-        Widget_p            m_pDragWidget;
-    };
+		//.____ Content ________________________________________________________
+
+		void                setDragWidget( Widget * pWidget );
+		Widget_p            dragWidget() const;
+
+	protected:
+		DropEnterMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+
+		Widget_p            m_pDragWidget;
+	};
 
 	//____ DropMoveMsg ___________________________________________________
 
-    class DropMoveMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                	isInstanceOf( const char * pClassName ) const;
-        const char *        	className( void ) const;
-        static const char    	CLASSNAME[];
-        static DropMoveMsg_p    cast( Object * pObject );
+	class DropMoveMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static DropMoveMsg_p    cast( Object * pObject );
 
-        void                setDragWidget( Widget * pWidget );
-        Widget_p            dragWidget() const;
+		//.____ Content ________________________________________________________
 
-    protected:
-    	DropMoveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
-        
-        Widget_p            m_pDragWidget;
-    };
+		void                setDragWidget( Widget * pWidget );
+		Widget_p            dragWidget() const;
+
+	protected:
+		DropMoveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+
+		Widget_p            m_pDragWidget;
+	};
 
 	//____ DropLeaveMsg ___________________________________________________
 
-    class DropLeaveMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                	isInstanceOf( const char * pClassName ) const;
-        const char *        	className( void ) const;
-        static const char    	CLASSNAME[];
-        static DropLeaveMsg_p   cast( Object * pObject );
+	class DropLeaveMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
-        
-    protected:
-    	DropLeaveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos );
-    };
+		bool					isInstanceOf( const char * pClassName ) const;
+		const char *			className( void ) const;
+		static const char		CLASSNAME[];
+		static DropLeaveMsg_p   cast( Object * pObject );
+
+		//.____ Content ________________________________________________________
+
+	protected:
+		DropLeaveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos );
+	};
 
 
-    //____ DropDeliverMsg ___________________________________________________
+	//____ DropDeliverMsg ___________________________________________________
 
-    class DropDeliverMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                isInstanceOf( const char * pClassName ) const;
-        const char *        className( void ) const;
-        static const char   CLASSNAME[];
-        static DropDeliverMsg_p cast( Object * pObject );
+	class DropDeliverMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool                isInstanceOf( const char * pClassName ) const;
+		const char *        className( void ) const;
+		static const char   CLASSNAME[];
+		static DropDeliverMsg_p cast( Object * pObject );
 
-        Widget_p 	deliveredTo() const;
-        void		accept( bool bAccept = true );
-        bool		isAccepted() const { return m_bAccepted; }
+		//.____ Content ________________________________________________________
 
-    protected:
-    	DropDeliverMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
-  
+		Widget_p 	deliveredTo() const;
+		void		accept( bool bAccept = true );
+		bool		isAccepted() const { return m_bAccepted; }
+
+	protected:
+		DropDeliverMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+
   		bool		m_bAccepted;
-    };
+	};
 
 
-    //____ DropCancelMsg ___________________________________________________
+	//____ DropCancelMsg ___________________________________________________
 
-    class DropCancelMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                isInstanceOf( const char * pClassName ) const;
-        const char *        className( void ) const;
-        static const char   CLASSNAME[];
-        static DropCancelMsg_p    cast( Object * pObject );
+	class DropCancelMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool                isInstanceOf( const char * pClassName ) const;
+		const char *        className( void ) const;
+		static const char   CLASSNAME[];
+		static DropCancelMsg_p    cast( Object * pObject );
 
-        
-    protected:
-    	DropCancelMsg( Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
-        
-    };
+		//.____ Content ________________________________________________________
+
+
+	protected:
+		DropCancelMsg( Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
+
+	};
 
 	//____ DropCompleteMsg ___________________________________________________
 
-    class DropCompleteMsg : public DragNDropMsg
-    {
-        friend class DragNDropLayer;
-    public:
-        //.____ Identification __________________________________________
-        
-        bool                isInstanceOf( const char * pClassName ) const;
-        const char *        className( void ) const;
-        static const char   CLASSNAME[];
-        static DropCompleteMsg_p    cast( Object * pObject );
+	class DropCompleteMsg : public DragNDropMsg
+	{
+		friend class DragNDropLayer;
+	public:
+		//.____ Identification __________________________________________
 
-        //.____ Content ________________________________________________________
+		bool                isInstanceOf( const char * pClassName ) const;
+		const char *        className( void ) const;
+		static const char   CLASSNAME[];
+		static DropCompleteMsg_p    cast( Object * pObject );
 
-        Widget_p 	deliveredTo() const;
-        
-    protected:
-    	DropCompleteMsg( Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
-  
+		//.____ Content ________________________________________________________
+
+		Widget_p 	deliveredTo() const;
+
+	protected:
+		DropCompleteMsg( Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
+
   		Widget_p 	m_pDeliveree;
-    };
+	};
 
 
 
 
-    
-    
+
+
 	//____ SelectMsg ___________________________________________________________
 
 	class SelectMsg : public Msg
@@ -955,9 +955,9 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static SelectMsg_p	cast( Object * pObject );
-	
+
 	protected:
-		SelectMsg( Object * pSource );	
+		SelectMsg( Object * pSource );
 	};
 
 	//____ ToggleMsg ___________________________________________________________
@@ -1023,8 +1023,8 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static RangeUpdateMsg_p create( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ) 
-										{ return new RangeUpdateMsg( pSource, intOfs, intLength, fracOfs, fracLength, bFinal ); } 
+		inline static RangeUpdateMsg_p create( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
+										{ return new RangeUpdateMsg( pSource, intOfs, intLength, fracOfs, fracLength, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -1042,7 +1042,7 @@ namespace wg
 		bool		isFinal() const;
 
 	protected:
-		RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal ); 
+		RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal );
 
 		int			m_ofs;
 		int			m_length;
@@ -1205,7 +1205,7 @@ namespace wg
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
 		static ItemsSelectMsg_p	cast( Object * pObject );
-		
+
 	protected:
 			ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
 	};
@@ -1306,7 +1306,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		inline static MouseDragMsg_p create( char inputId, MouseButton button, Object * pSource, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp )
-						{ return new MouseDragMsg( inputId, button, pSource, orgPos, prevPos, modKeys, pointerPos, timestamp ); }		
+						{ return new MouseDragMsg( inputId, button, pSource, orgPos, prevPos, modKeys, pointerPos, timestamp ); }
 
 		//.____ Identification __________________________________________
 

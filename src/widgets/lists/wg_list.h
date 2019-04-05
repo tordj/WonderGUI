@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,13 +29,13 @@
 #include <wg_skin.h>
 #include <wg_iselectablechildren.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class List;
 	typedef	StrongPtr<List>		List_p;
 	typedef	WeakPtr<List>		List_wp;
-		
+
 	//____ ListSlot ____________________________________________________________
 
 	class ListSlot : public Slot		/** @private */
@@ -47,13 +47,13 @@ namespace wg
 	};
 
 	//____ List _________________________________________________________________
-	
+
 	/**
 	* @brief	Base class for widgets providing lists of selectable entries.
-	* 
+	*
 	* List is the base class for widgets that provide lists of selectable entries.
-	* 
-	*/ 
+	*
+	*/
 
 	class List : public Container, protected SelectableChildrenHolder
 	{
@@ -72,7 +72,7 @@ namespace wg
 		virtual bool		setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin );
 		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
 		Skin_p				evenEntrySkin() const { return m_pEntrySkin[1]; }
-	
+
 		virtual void		setLassoSkin( Skin * pSkin );
 		Skin_p				lassoSkin() const { return m_pLassoSkin; }
 
@@ -80,17 +80,17 @@ namespace wg
 
 		virtual bool		setSelectMode( SelectMode mode );
 		SelectMode			selectMode() const { return m_selectMode; }
-	
-	
+
+
 	protected:
-	
+
 		List();
 		virtual ~List();
-	
+
 		virtual void	_receive( Msg * pMsg );
 
 		void			_cloneContent( const Widget * _pOrg );
-	
+
 		int				_selectSlot(ListSlot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
 		int				_selectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
 		int				_unselectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }
@@ -111,11 +111,11 @@ namespace wg
 
 		virtual ListSlot * _findEntry( const Coord& ofs ) = 0;
 		virtual void	_getEntryGeo( Rect& geo, const ListSlot * pSlot ) const = 0;
-	
+
 		virtual Rect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
 		virtual Rect	_listWindow() const = 0;
 		virtual Rect	_listCanvas() const = 0;
-	
+
 		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
@@ -135,16 +135,16 @@ namespace wg
 		Skin_p			m_pEntrySkin[2];
 		Skin_p			m_pLassoSkin;
 		bool			m_bOpaqueEntries;
-	
+
 		Coord			m_lassoBegin;
 		Coord			m_lassoEnd;
-	
+
 		Widget_wp		m_pFocusedChild;
 		Widget_wp		m_pHoveredChild;
 	};
-	
-	
-	
+
+
+
 
 } // namespace wg
 #endif //WG_LIST_DOT_H

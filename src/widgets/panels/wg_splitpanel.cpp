@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -174,7 +174,7 @@ namespace wg
 
 		if (m_firstChild.pWidget)
 			firstSz = m_firstChild.pWidget->preferredSize();
-		
+
 		if (m_secondChild.pWidget)
 			secondSz = m_secondChild.pWidget->preferredSize();
 
@@ -247,7 +247,7 @@ namespace wg
 		// Update geo rectangles
 
 		if( m_bHorizontal )
-		{ 
+		{
 			firstChildGeo = Rect(contentGeo.x, contentGeo.y, firstChildLength, contentGeo.h);
 			secondChildGeo = Rect(contentGeo.x + contentGeo.w - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
 			handleGeo = Rect(contentGeo.x + firstChildLength, contentGeo.y, handleThickness, contentGeo.h );
@@ -264,7 +264,7 @@ namespace wg
 		if (handleGeo != m_handleGeo || firstChildGeo != m_firstChild.geo || secondChildGeo != m_secondChild.geo)
 		{
 			_requestRender(contentGeo);
-			
+
 			m_firstChild.geo = firstChildGeo;
 			if( m_firstChild.pWidget )
 				m_firstChild.pWidget->_setSize(firstChildGeo);
@@ -286,7 +286,7 @@ namespace wg
 	int SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)
 	{
 		int firstLength;
-		
+
 		if (handleMovement == 0)
 		{
 			switch (m_scaleBehavior)
@@ -443,8 +443,8 @@ namespace wg
 				break;
 			}
 
-            default:
-                break;
+			default:
+				break;
 		}
 
 		if (handleState != m_handleState && m_pHandleSkin)

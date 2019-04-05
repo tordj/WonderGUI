@@ -2,12 +2,12 @@
  * This example uses SDL2 to setup a minimal framework for WonderGUI and
  * create a clickable button that closes the window. It has no
  * dependencies except SDL2 and WonderGUI.
- * 
+ *
  * The intention is to show how WonderGUI easily can be integrated  with
  * any development framework with some simple bindings and pure software
  * rendering. Although SDL2 is used, no WonderGUI code outside this file
  * is dependent on SDL in anyway.
- * 
+ *
  * In order to keep the example small, we are making some assumptions,
  * for example that the screen surface is either 24 or 32 bits graphics
  * with the RGB elements in the same order as SoftSurface keeps them,
@@ -16,12 +16,12 @@
  * will need to be provided or graphics needs to be rendered to an interim
  * surface from which blocks can be copied and translated to the output
  * format.
- * 
+ *
  * If you want to use WonderGUI with SDL2, there are better examples to use
  * as a template. Use the SDL2 specific Surface/GfxDevice classes that
  * better integrate with SDL2's video API, giving you better performance
  * and transparent support for images and windows of other pixel formats.
- * 
+ *
  * Also note that in order to keep this example short, it doesn't provide a full
  * initialization of WonderGUI. No font is initialized and no keyboard events
  * are translated. See other examples for a more full initialization of WonderGUI.
@@ -40,7 +40,7 @@
 #include <wg_softgfxdevice.h>
 
 using namespace wg;
-	
+
 void 			translateEvents( RootPanel_p pRoot );
 MouseButton 	translateMouseButton( uint8_t button );
 void 			updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow );
@@ -61,7 +61,7 @@ int main ( int argc, char** argv )
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
 
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
-	
+
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
@@ -80,9 +80,9 @@ int main ( int argc, char** argv )
 	else if( pWinSurf->format->BitsPerPixel == 24 )
 		format = PixelFormat::BGR_8;
 
-	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
-		
+
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
@@ -96,10 +96,10 @@ int main ( int argc, char** argv )
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 
 	//------------------------------------------------------
-	// Setup a simple GUI consisting of a filled background and 
+	// Setup a simple GUI consisting of a filled background and
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
-	
+
 	// First we load the 24-bit bmp containing the button graphics.
 	// No error handling or such to keep this example short and simple.
 
@@ -127,7 +127,7 @@ int main ( int argc, char** argv )
 	// expects the surface to be divided horizontally in four equal
 	// sections containing the graphics for the button states NORMAL,
 	// HOVERED, PRESSED and DISABLED. We specify that there are no
-	// spacing between these four graphics blocks and that they have 
+	// spacing between these four graphics blocks and that they have
 	// three pixel thick borders around that should not stretch.
 	// When adding it to the FlexPanel we specify its geometry in
 	// pixels and that it should be centered.
@@ -143,17 +143,17 @@ int main ( int argc, char** argv )
 	// Finally we add a callback to the click-event of the button.
 
 	Base::msgRouter()->addRoute(MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
-	
+
 
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
 
-	while( !bQuit ) 
+	while( !bQuit )
 	{
 		// Loop through SDL events, translate them to WonderGUI events
 		// and process them.
-		
+
 		translateEvents( pRoot );
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
@@ -187,16 +187,16 @@ void translateEvents( RootPanel_p pRoot )
 	// WonderGUI needs Tick-messages to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
 	// and post it.
-	
+
 	static unsigned int oldTicks = 0;
-	
+
 	unsigned int ticks = SDL_GetTicks();
 	int tickDiff;
 
 	if( oldTicks == 0 )
 		tickDiff = 0;
 	else
-		tickDiff = (int) (ticks - oldTicks);		
+		tickDiff = (int) (ticks - oldTicks);
 	oldTicks = ticks;
 
 
@@ -206,17 +206,17 @@ void translateEvents( RootPanel_p pRoot )
 
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
-		
+
 		switch( e.type )
 		{
 			case SDL_QUIT:
 				bQuit = true;
 				break;
-				
+
 			case SDL_MOUSEMOTION:
 				Base::inputHandler()->setPointer( pRoot, Coord(e.motion.x,e.motion.y));
 				break;
-				
+
 			case SDL_MOUSEBUTTONDOWN:
 				Base::inputHandler()->setButton( translateMouseButton(e.button.button), true );
 				break;
@@ -224,13 +224,13 @@ void translateEvents( RootPanel_p pRoot )
 			case SDL_MOUSEBUTTONUP:
 				Base::inputHandler()->setButton( translateMouseButton(e.button.button), false );
 				break;
-				
+
 			default:
 				break;
 		}
 	}
-	
-	Base::msgRouter()->dispatch();	
+
+	Base::msgRouter()->dispatch();
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -261,11 +261,11 @@ MouseButton translateMouseButton( uint8_t button )
 // Updates the rectangles of the SDL Window that WonderGUI has modified.
 //
 void updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow )
-{	
+{
 	int nRects = pRoot->nbUpdatedRects();
 	if( nRects == 0 )
 		return;
-	
+
 	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 

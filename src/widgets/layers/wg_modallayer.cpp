@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -32,22 +32,22 @@
 #include <wg_idynamicchildren.impl.h>
 
 
-namespace wg 
+namespace wg
 {
 	INSTANTIATE_DYNAMICCHILDREN(ModalSlot, ModalChildrenHolder)
 
 	template class SlotArray<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
-	
-	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.	
+
+	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
 	//____ add() _________________________________________________________________
 
 	IModalChildren::iterator IModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
-		
+
 		ModalSlot * pSlot = m_pSlotArray->add();
 		pSlot->geo = geometry;
 		pSlot->origo = origo;
@@ -62,14 +62,14 @@ namespace wg
 	void IModalChildren::setOrigo(int index, const Origo origo)
 	{
 		//TODO: Assert
-		
+
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
 	void IModalChildren::setOrigo(iterator it, const Origo origo)
 	{
 		//TODO: Assert
-		
+
 		_setOrigo( it._slot(), origo );
 	}
 
@@ -110,14 +110,14 @@ namespace wg
 	Rect IModalChildren::geo(int index) const
 	{
 		//TODO: Assert
-		
+
 		return m_pSlotArray->slot(index)->geo;
 	}
 
 	Rect IModalChildren::geo(iterator it) const
 	{
 		//TODO: Assert
-		
+
 		return it._slot()->geo;
 	}
 
@@ -174,15 +174,15 @@ namespace wg
 	Size IModalChildren::size( int index ) const
 	{
 		//TODO: Assert
-		
-		return m_pSlotArray->slot(index)->geo.size();			
+
+		return m_pSlotArray->slot(index)->geo.size();
 	}
 
 	Size IModalChildren::size( iterator it ) const
 	{
 		//TODO: Assert
-		
-		return it._slot()->geo.size();			
+
+		return it._slot()->geo.size();
 	}
 
 	//____ move() ______________________________________________________________
@@ -190,15 +190,15 @@ namespace wg
 	void IModalChildren::move( int index, const Coord& ofs )
 	{
 		//TODO: Assert
-		
-		_move(m_pSlotArray->slot(index), ofs);		
+
+		_move(m_pSlotArray->slot(index), ofs);
 	}
 
 	void IModalChildren::move( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
-		
-		_move(it._slot(), ofs);		
+
+		_move(it._slot(), ofs);
 	}
 
 	//____ _setOrigo() ______________________________________________________________
@@ -237,40 +237,40 @@ namespace wg
 	void IModalChildren::_move( ModalSlot * p, const Coord& ofs )
 	{
 		p->placementGeo += ofs;
-		m_pHolder->_refreshRealGeo(p);		
+		m_pHolder->_refreshRealGeo(p);
 	}
-	
+
 	//____ _refreshRealGeo() __________________________________________________
-	
+
 	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		Size sz = pSlot->placementGeo.size();
-	
+
 		if( sz.w == 0 && sz.h == 0 )
 			sz = pSlot->pWidget->preferredSize();
 		else if( sz.w == 0 )
 			sz.w = pSlot->pWidget->matchingWidth(sz.h);
 		else if( sz.h == 0 )
 			sz.h = pSlot->pWidget->matchingHeight(sz.w);
-	
+
 		if( sz.w <= 0 )
 			sz.w = 1;
 		if( sz.h <= 0 )
 			sz.h = 1;
-	
+
 		Coord ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
 		ofs += pSlot->placementGeo.pos();
-	
+
 		Rect newGeo( ofs, sz );
-	
+
 		if( newGeo != pSlot->geo )
 		{
 			_onRequestRender(pSlot->geo, pSlot);
 			pSlot->geo = Rect( ofs, sz );
 			_onRequestRender(pSlot->geo, pSlot);
-		}	
+		}
 	}
-	
+
 	//____ _childRequestResize() ______________________________________________
 	void ModalLayer::_childRequestResize( Slot * pSlot )
 	{
@@ -279,49 +279,49 @@ namespace wg
 		else
 			_refreshRealGeo( (ModalSlot *) pSlot );
 	}
-	
-	
+
+
 	//____ Constructor ____________________________________________________________
-	
+
 	ModalLayer::ModalLayer() : modals(&m_modals, this)
 	{
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	ModalLayer::~ModalLayer()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool ModalLayer::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Layer::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * ModalLayer::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	ModalLayer_p ModalLayer::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return ModalLayer_p( static_cast<ModalLayer*>(pObject) );
-	
+
 		return 0;
 	}
-		
+
 	//____ matchingHeight() _______________________________________________________
-	
+
 	int ModalLayer::matchingHeight( int width ) const
 	{
 		if( m_baseSlot.pWidget )
@@ -329,9 +329,9 @@ namespace wg
 		else
 			return Widget::matchingHeight(width);
 	}
-	
+
 	//____ matchingWidth() _______________________________________________________
-	
+
 	int ModalLayer::matchingWidth( int height ) const
 	{
 		if( m_baseSlot.pWidget )
@@ -339,9 +339,9 @@ namespace wg
 		else
 			return Widget::matchingWidth(height);
 	}
-	
+
 	//____ preferredSize() _____________________________________________________________
-	
+
 	Size ModalLayer::preferredSize() const
 	{
 		if( m_baseSlot.pWidget )
@@ -349,18 +349,18 @@ namespace wg
 		else
 			return Size(1,1);
 	}
-	
+
 	//____ _findWidget() ____________________________________________________________
-	
+
 	Widget *  ModalLayer::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
-	
+
 		if( mode == SearchMode::ActionTarget )
 		{
 			ModalSlot * pSlot = m_modals.last();
-	
+
 			if( pSlot )
 			{
 				if( pSlot->pWidget->isContainer() )
@@ -391,33 +391,33 @@ namespace wg
 			else
 				return 0;
 		}
-	
+
 		// For the rest of the modes we can rely on the default method.
-	
+
 		return Container::_findWidget( ofs, mode );
 	}
-	
+
 	//____ _updateKeyboardFocus() _______________________________________________________
-	
+
 	void ModalLayer::_updateKeyboardFocus()
 	{
 		// Get message handler, verify that we have a root
-	
+
 		if( !_holder() || !_holder()->_root() )
 			return;
-		
+
 		// Retrieve focused Widget and verify it being a descendant to us.
-	
+
 		Widget * pFocused = Base::inputHandler()->focusedWidget().rawPtr();
-	
+
 		Widget * p = pFocused;
 		while( p && p->parent() && p->parent().rawPtr() != this )
 			p = p->_parent();
-	
+
 		if( p && p->_parent() != this )
 			return;								// Focus belongs to a Widget that is not a descendant to us,
 												// so we can't save and shouldn't steal focus.
-	
+
 		// Save old focus so we can return it properly in the future.
 		if( p )
 		{
@@ -429,17 +429,17 @@ namespace wg
 				pSlot->pKeyFocus = pFocused;
 			}
 		}
-	
+
 		// Find which child-branch to focus and switch to our previously saved focus
-	
+
 		ModalSlot * pSlot = m_modals.last();
-	
+
 		Widget * 	pSavedFocus = nullptr;
 		Slot *		pBranch	= nullptr;
 
 		while( pSlot > m_modals.first() && pSlot->geo.isEmpty() )
 			pSlot--;
-	
+
 		if( pSlot > m_modals.first() )
 		{
 			pSavedFocus = pSlot->pKeyFocus.rawPtr();
@@ -452,9 +452,9 @@ namespace wg
 			m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
 			pBranch = &m_baseSlot;
 		}
-	
+
 		// Verify that saved focus still is within branch and is not hidden
-	
+
 		Widget * pW = pSavedFocus;
 		while( pW && pW->_parent() != this )
 			pW = pW->_parent();
@@ -465,7 +465,7 @@ namespace wg
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
-	
+
 		// Switch to previously saved focus, or null if not applicable
 
 		_holder()->_childRequestFocus( m_pSlot, pSavedFocus );
@@ -538,14 +538,14 @@ namespace wg
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			_childRequestRender(pSlot+i);
-			pSlot[i].geo = { 0,0,0,0 };			
+			pSlot[i].geo = { 0,0,0,0 };
 		}
 
 		_updateKeyboardFocus();
 	}
 
 	//____ _beginLayerSlots() __________________________________________________
-	
+
 	const LayerSlot * ModalLayer::_beginLayerSlots() const
 	{
 		return m_modals.begin();
@@ -564,37 +564,37 @@ namespace wg
 	{
 		return sizeof(ModalSlot);
 	}
-	
-	
+
+
 	//____ _setSize() ___________________________________________________________
-	
+
 	void ModalLayer::_setSize( const Size& sz )
 	{
 		Layer::_setSize(sz);
-				
+
 		// Refresh modal widgets geometry, their positions might have changed.
-	
+
 		for( auto pSlot = m_modals.begin() ; pSlot != m_modals.end() ; pSlot++ )
 			_refreshRealGeo( pSlot );
 	}
-	
+
 	//____ _cloneContent() ______________________________________________________
-	
+
 	void ModalLayer::_cloneContent( const Widget * _pOrg )
 	{
 		Layer::_cloneContent( _pOrg );
 	}
-	
+
 	//____ _receive() ______________________________________________________________
-	
+
 	void ModalLayer::_receive( Msg * _pMsg )
 	{
 		Layer::_receive(_pMsg);
-	
+
 		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
 		{
 			InputMsg_p pMsg = InputMsg::cast(_pMsg);
-			
+
 			if( !m_modals.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
@@ -605,26 +605,26 @@ namespace wg
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
-		
+
 					case MsgType::MouseRelease:
 					{
 						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
-		
+
 					case MsgType::MouseMove:
 					{
 						Base::msgRouter()->post( new ModalMoveOutsideMsg( pMsg->inputId(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
-                    
-                    default:
-                        break;
+
+					default:
+						break;
 				}
 			}
 		}
 	}
-	
+
 
 } // namespace wg

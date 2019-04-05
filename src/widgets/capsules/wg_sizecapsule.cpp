@@ -1,18 +1,18 @@
  /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -22,53 +22,53 @@
 
 #include <wg_sizecapsule.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char SizeCapsule::CLASSNAME[] = {"SizeCapsule"};
-	
+
 	//____ Constructor ____________________________________________________________
-	
+
 	SizeCapsule::SizeCapsule() : m_max(INT_MAX,INT_MAX)
 	{
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	SizeCapsule::~SizeCapsule()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool SizeCapsule::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Capsule::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * SizeCapsule::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	SizeCapsule_p SizeCapsule::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return SizeCapsule_p( static_cast<SizeCapsule*>(pObject) );
-	
+
 		return 0;
 	}
-	
-	
+
+
 	//____ setPreferredSize() _____________________________________________________
-	
+
 	void SizeCapsule::setPreferredSize( Size size )
 	{
 		if( size != m_preferred )
@@ -77,9 +77,9 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ setSizes() _____________________________________________________________
-	
+
 	void SizeCapsule::setSizes( Size min, Size preferred, Size max )
 	{
 		m_min = min;
@@ -87,9 +87,9 @@ namespace wg
 		m_max = max;
 		_requestResize();
 	}
-	
+
 	//____ setMinSize() ___________________________________________________________
-	
+
 	void SizeCapsule::setMinSize( Size size )
 	{
 		if( size != m_min )
@@ -98,9 +98,9 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ setMaxSize() ___________________________________________________________
-	
+
 	void SizeCapsule::setMaxSize( Size size )
 	{
 		if( size != m_max )
@@ -109,34 +109,34 @@ namespace wg
 			_requestResize();
 		}
 	}
-	
+
 	//____ preferredSize() ________________________________________________________
-	
-	Size SizeCapsule::preferredSize() const 
+
+	Size SizeCapsule::preferredSize() const
 	{
 		if( m_child.pWidget )
 		{
 			Size pref = m_child.pWidget->preferredSize();
-	
+
 			if( m_preferred.w != 0 )
 				pref.w = m_preferred.w;
 
 			if( m_preferred.h != 0 )
 				pref.h = m_preferred.h;
-	
+
 			// Constrain against min/max, taking MatchingWidth/MatchingHeight into account.
 			//TODO: Check so we don't have any corner cases that breaks the constraints and
 			// and that priorities between preferred height/width are reasonable.
-	
+
 			Size min = minSize();
 			Size max = maxSize();
-	
+
 			if( pref.w < min.w )
 			{
 				pref.w = min.w;
 				pref.h = matchingHeight(pref.w);
 			}
-	
+
 			if( pref.h < min.h )
 			{
 				pref.h = min.h;
@@ -144,7 +144,7 @@ namespace wg
 				if( pref.w < min.w )
 					pref.w = min.w;
 			}
-	
+
 			if( pref.w > max.w )
 			{
 				if( pref.h > max.h )
@@ -176,36 +176,36 @@ namespace wg
 			return m_preferred;
 		}
 	}
-	
+
 	//____ minSize() ______________________________________________________________
-	
-	Size SizeCapsule::minSize() const 
+
+	Size SizeCapsule::minSize() const
 	{
-	
+
 		if( m_child.pWidget )
 			return Size::max(m_min,m_child.pWidget->minSize());
 		else
 			return m_min;
 	}
-	
+
 	//____ maxSize() ______________________________________________________________
-	
-	Size SizeCapsule::maxSize() const 
+
+	Size SizeCapsule::maxSize() const
 	{
 		if( m_child.pWidget )
 			return Size::min(m_max,m_child.pWidget->maxSize());
 		else
-			return m_max; 
+			return m_max;
 	}
-	
+
 	//____ matchingHeight() _______________________________________________________
-	
+
 	int SizeCapsule::matchingHeight( int width ) const
 	{
 		if( m_preferred.h != 0 )
 		{
 			int h = m_preferred.h;
-				
+
 			if( m_child.pWidget )
 			{
 				int max = m_child.pWidget->maxSize().h;
@@ -223,15 +223,15 @@ namespace wg
 		else
 			return m_min.h;
 	}
-	
+
 	//____ matchingWidth() _______________________________________________________
-	
+
 	int SizeCapsule::matchingWidth( int height ) const
 	{
 		if( m_preferred.w != 0 )
 		{
-			int w = m_preferred.w;		
-		
+			int w = m_preferred.w;
+
 			if( m_child.pWidget )
 			{
 				int max = m_child.pWidget->maxSize().w;
@@ -249,6 +249,6 @@ namespace wg
 		else
 			return m_min.w;
 	}
-	
+
 
 } // namespace wg

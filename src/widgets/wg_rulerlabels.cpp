@@ -2,143 +2,143 @@
 #include <wg_rulerlabels.h>
 #include <wg_gfxdevice.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char RulerLabels::CLASSNAME[] = {"RulerLabels"};
-	
-	
+
+
 	//____ Constructor ____________________________________________________________
-	
+
 	RulerLabels::RulerLabels()
 	{
 		m_direction = Direction::Right;
 	}
-	
+
 	//____ Destructor _____________________________________________________________
-	
+
 	RulerLabels::~RulerLabels()
 	{
 	}
-	
+
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool RulerLabels::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Widget::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * RulerLabels::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	RulerLabels_p RulerLabels::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return RulerLabels_p( static_cast<RulerLabels*>(pObject) );
-	
+
 		return 0;
 	}
-	
-	
+
+
 	//____ addLabel() ____________________________________________________________
-	
+
 	void RulerLabels::addLabel( const CharSeq& text, TextStyle * pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
 		pLabel->text.set(text);
 		pLabel->text.setStyle(pStyle);
 		pLabel->offset = offset;
-	    
+
 		m_labels.pushBack(pLabel);
 		_requestResize();
 		_requestRender();
 	}
-	
+
 	//____ setDirection() __________________________________________________________
-	
+
 	void RulerLabels::setDirection( Direction direction )
 	{
 		m_direction = direction;
 		_requestResize();
 		_requestRender();
 	}
-	
+
 	//____ getLabel() ________________________________________________________________
-	
+
 	ITextDisplay_p	RulerLabels::getLabel(int index)
 	{
 		if( index >= m_labels.size() )
 			return ITextDisplay_p();
-	
+
 		return ITextDisplay_p(&m_labels.get(index)->interface);
 	}
-	
-	
-	
+
+
+
 	//____ preferredSize() ________________________________________________________________
-	
+
 	Size RulerLabels::preferredSize() const
 	{
-	    //TODO: calculation of length is not good.
-	    
-	    Size preferred;
-	 
-	    if( m_direction == Direction::Up || m_direction == Direction::Down )
-	    {
+		//TODO: calculation of length is not good.
+
+		Size preferred;
+
+		if( m_direction == Direction::Up || m_direction == Direction::Down )
+		{
 			Label * pLabel = m_labels.first();
 			while( pLabel )
-	        {
+			{
 				Size sz = pLabel->text.preferredSize();
-	            if( sz.w > preferred.w )
-	                preferred.w = sz.w;
-	  
-	            preferred.h += sz.h;
-	            pLabel = pLabel->next();
-	        }
-	    }
-	    else
-	    {
+				if( sz.w > preferred.w )
+					preferred.w = sz.w;
+
+				preferred.h += sz.h;
+				pLabel = pLabel->next();
+			}
+		}
+		else
+		{
 			Label * pLabel = m_labels.first();
 			while( pLabel )
-	        {
-	            Size sz = pLabel->text.preferredSize();
-	            preferred.w += sz.w;
-	            
-	            if( sz.h > preferred.h )
-	                preferred.h = sz.h;
-	            
-	            pLabel = pLabel->next();
-	        }
-	    }
-	    
+			{
+				Size sz = pLabel->text.preferredSize();
+				preferred.w += sz.w;
+
+				if( sz.h > preferred.h )
+					preferred.h = sz.h;
+
+				pLabel = pLabel->next();
+			}
+		}
+
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(preferred);
 		else
 			return preferred;
 	}
-	
-	
+
+
 	//____ _render() _____________________________________________________________________
-	
+
 	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-	
+
 		Rect canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 		else
 			canvas = _canvas;
-	
+
 		if( m_direction == Direction::Up || m_direction == Direction::Down )
 		{
 			Label * pLabel = m_labels.first();
@@ -150,12 +150,12 @@ namespace wg
 					ofs = canvas.h - ofs;
 	/*
 	TODO: Reinstate!!!
-				
+
 				switch( pLabel->text.alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::North:
-					case Origo::NorthEast:				
+					case Origo::NorthEast:
 						break;
 					case Origo::SouthEast:
 					case Origo::South:
@@ -168,7 +168,7 @@ namespace wg
 						ofs -= height/2;
 						break;
 				}
-	*/			
+	*/
 				pLabel->text.render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
@@ -182,9 +182,9 @@ namespace wg
 				int ofs = (int) (canvas.w * pLabel->offset);
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
-	/*			
+	/*
 	TODO: Reinstate!
-	
+
 				switch( pLabel->text.alignment() )
 				{
 					case Origo::NorthWest:
@@ -192,7 +192,7 @@ namespace wg
 					case Origo::West:
 						break;
 					case Origo::SouthEast:
-					case Origo::NorthEast:				
+					case Origo::NorthEast:
 					case Origo::East:
 						ofs -= width;
 						break;
@@ -207,30 +207,30 @@ namespace wg
 				pLabel = pLabel->next();
 			}
 		}
-		
+
 	}
-	
-	//____ _cloneContent() _________________________________________________________________ 
-	
+
+	//____ _cloneContent() _________________________________________________________________
+
 	void RulerLabels::_cloneContent( const Widget * _pOrg )
 	{
 		Widget::_cloneContent( _pOrg );
 	}
-	
+
 	//____ _alphaTest() ____________________________________________________________________
-	
+
 	bool RulerLabels::_alphaTest( const Coord& ofs )
 	{
 		return Widget::_alphaTest(ofs);
 	}
-	
-	
+
+
 	//____ _setState() ______________________________________________________
-	
+
 	void RulerLabels::_setState( State state )
 	{
 		Widget::_setState(state);
-	
+
 		Label * p = m_labels.first();
 		while( p )
 		{
@@ -247,9 +247,9 @@ namespace wg
 		//TODO: Implement!!!
 		return Coord();
 	}
-	
+
 	//____ _componentSize() _________________________________________________________
-	
+
 	Size RulerLabels::_componentSize( const Component * pComponent ) const
 	{
 		//TODO: Implement!!!
@@ -257,13 +257,13 @@ namespace wg
 	}
 
 	//____ _componentGeo() __________________________________________________________
-	
+
 	Rect RulerLabels::_componentGeo( const Component * pComponent ) const
 	{
 		//TODO: Implement!!!
 		return Rect();
 	}
-	
+
 	//____ _componentRequestResize() __________________________________________________
 
 	void RulerLabels::_componentRequestResize( const Component * pComponent )

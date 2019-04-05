@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -59,7 +59,7 @@ namespace wg
 		int *	pWave;      // Pixel offset in 24.8 format.
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
-	
+
 	//____ GfxDevice __________________________________________________________
 
 	class GfxDevice : public Object
@@ -78,7 +78,7 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		virtual SurfaceFactory_p	surfaceFactory() = 0;
-		
+
 		//.____ Geometry _________________________________________________
 
 		virtual bool		setCanvas(Surface * pCanvas) = 0;
@@ -105,17 +105,17 @@ namespace wg
 
 
 		//.____ Rendering ________________________________________________
-	
+
 		virtual bool	beginRender();
 		virtual bool	endRender();
-		
+
 		// Draw methods.
-	
+
 		virtual void	fill(const Color& col);
 		virtual void	fill( const Rect& rect, const Color& col ) = 0;
 		virtual void	fill(const RectF& rect, const Color& col) = 0;
 
-        virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
+		virtual void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) = 0;
 
 	 	virtual void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) = 0;
 		virtual void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f);
@@ -168,11 +168,11 @@ namespace wg
 		virtual void	blitHorrBar(		const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
-	
+
 		virtual void	blitVertBar(		const Rect& _src,
 											const Border& _borders, bool _bTile,
 											Coord dest, int _len );
-		
+
 		//
 
 		const static int	c_maxSegments = 16;
@@ -206,9 +206,9 @@ namespace wg
 		Color		m_tintColor;		// Current Tint color.
 		BlendMode	m_blendMode;		// Current BlendMode.
 		uint32_t	m_renderFlags;		// Current flags.
-	
-		Size		m_canvasSize;	
-	};	
+
+		Size		m_canvasSize;
+	};
 
 } // namespace wg
 #endif	// WG_GFXDEVICE_DOT_H

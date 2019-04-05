@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -34,13 +34,13 @@ namespace wg
 {
 	const char StreamGfxDevice::CLASSNAME[] = { "StreamGfxDevice" };
 
-    
-    
+
+
 	//____ create() _______________________________________________________________
-	
+
 	StreamGfxDevice_p StreamGfxDevice::create( Size canvas, GfxOutStream& stream )
 	{
-		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));		
+		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));
 		return p;
 	}
 
@@ -51,7 +51,7 @@ namespace wg
 	{
 		m_pStream = &stream;
 		m_bRendering = false;
-    }
+	}
 
 	//____ Destructor ______________________________________________________________
 
@@ -62,7 +62,7 @@ namespace wg
 	//____ isInstanceOf() _________________________________________________________
 
 	bool StreamGfxDevice::isInstanceOf( const char * pClassName ) const
-	{ 		
+	{
 		if( pClassName==CLASSNAME )
 			return true;
 
@@ -72,8 +72,8 @@ namespace wg
 	//____ className() ____________________________________________________________
 
 	const char * StreamGfxDevice::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
 
 	//____ cast() _________________________________________________________________
@@ -87,19 +87,19 @@ namespace wg
 	}
 
 	//____ surfaceClassName() _______________________________________________________
-	
+
 	const char * StreamGfxDevice::surfaceClassName( void ) const
 	{
 		return StreamSurface::CLASSNAME;
 	}
-	
+
 	//____ surfaceFactory() ______________________________________________________
 
 	SurfaceFactory_p StreamGfxDevice::surfaceFactory()
 	{
 		if( !m_pSurfaceFactory )
 			m_pSurfaceFactory = StreamSurfaceFactory::create(*m_pStream);
-	
+
 		return m_pSurfaceFactory;
 	}
 
@@ -160,17 +160,17 @@ namespace wg
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetTintColor, 2 };
 		(*m_pStream) << color;
-    }
+	}
 
 	//____ setBlendMode() __________________________________________________________
 
 	bool StreamGfxDevice::setBlendMode( BlendMode blendMode )
 	{
-		if( blendMode != BlendMode::Blend && blendMode != BlendMode::Replace && 
+		if( blendMode != BlendMode::Blend && blendMode != BlendMode::Replace &&
 			blendMode != BlendMode::Add && blendMode != BlendMode::Subtract && blendMode != BlendMode::Multiply &&
 			blendMode != BlendMode::Invert )
 				return false;
-	 
+
 		GfxDevice::setBlendMode(blendMode);
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetBlendMode, 2 };
@@ -199,7 +199,7 @@ namespace wg
 	bool StreamGfxDevice::beginRender()
 	{
 
-        if( m_bRendering == true )
+		if( m_bRendering == true )
 			return false;
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::BeginRender, 0 };
@@ -228,11 +228,11 @@ namespace wg
 	{
 		if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
 			return;
- 
+
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::Fill, 12 };
 		(*m_pStream) << _rect;
 		(*m_pStream) << _col;
-  
+
 		return;
 	}
 
@@ -302,7 +302,7 @@ namespace wg
 		(*m_pStream) << color;
 		(*m_pStream) << thickness;
 	}
-	
+
 	void StreamGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 16 };

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -32,7 +32,7 @@
 
 namespace wg
 {
-	
+
 	class MultiBlockSkin;
 	typedef	StrongPtr<MultiBlockSkin>	MultiBlockSkin_p;
 
@@ -42,7 +42,7 @@ namespace wg
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
-	
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -59,12 +59,12 @@ namespace wg
 		//.____ Rendering ________________________________________________
 
 		void	render( GfxDevice * pDevice, const Rect& _canvas, State state ) const override;
-	
+
 		//.____ Geometry _________________________________________________
 
 		Size	minSize() const override;
 		Size	preferredSize() const override;
-	
+
 		Size	sizeForContent( const Size contentSize ) const override;
 
 		//.____ Appearance _________________________________________________
@@ -77,35 +77,35 @@ namespace wg
 		bool	setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors);
 		bool	setLayerBlendMode(int layerIdx, BlendMode blendMode);
 
-	
-		//.____ Misc ____________________________________________________	
+
+		//.____ Misc ____________________________________________________
 
 		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
-	
+
 		bool	isOpaque() const override;
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
-	
+
 		bool	isStateIdentical( State state, State comparedTo ) const override;
 
 	private:
 
 		struct LayerData
 		{
-			Surface *		    pSurface;
-			BlendMode		    blendMode;
-            Bitmask<uint32_t>   stateBlockMask = 0;
-            Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
+			Surface *			pSurface;
+			BlendMode			blendMode;
+			Bitmask<uint32_t>   stateBlockMask = 0;
+			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
-			Coord			    blockOfs[StateEnum_Nb];		// Block for each state
-			Color			    tintColor[StateEnum_Nb];
+			Coord				blockOfs[StateEnum_Nb];		// Block for each state
+			Color				tintColor[StateEnum_Nb];
 	//		Origo			placementOrigo;
 	//		Coord			placementOfs;
 	//		Size			dimensions;                   // Stored in pixels
 	//		int				m_tiledSections;
 		};
 
-	
+
 		MultiBlockSkin(Size blockSize, Border frame);
 		~MultiBlockSkin() {};
 
@@ -122,7 +122,7 @@ namespace wg
 		bool			m_bStateOpaque[StateEnum_Nb];
 
 	};
-	
+
 }
 
 #endif //WG_MULTIBLOCKSKIN_DOT_H

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -31,15 +31,15 @@
 
 
 
-namespace wg 
+namespace wg
 {
 
 	class PackList;
 	typedef	StrongPtr<PackList>		PackList_p;
 	typedef	WeakPtr<PackList>		PackList_wp;
-	
-	
-	
+
+
+
 	//____ PackListSlot ____________________________________________________________
 
 	class PackListSlot : public ListSlot	/** @private */
@@ -96,11 +96,11 @@ namespace wg
 
 	/**
 	 * @brief	List widget aligning its entries horizontally or vertically.
-	 * 			
+	 *
 	 * PackList provides a standard list, where all contained children are
-	 * aligned ("packed") either vertically or horizontally and can be selected 
+	 * aligned ("packed") either vertically or horizontally and can be selected
 	 * using mouse or keyboard.
-	 * 
+	 *
 	 */
 
 	class PackList : public List, protected PackListChildrenHolder
@@ -116,19 +116,19 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static PackList_p	create() { return PackList_p(new PackList()); }
-	
+
 		//.____ Interfaces _______________________________________
 
 		IColumnHeader		header;
 		IPackListChildren	children;
 
 		//.____ Identification __________________________________________
-	
+
 		virtual bool		isInstanceOf( const char * pClassName ) const override;
 		virtual const char *className( void ) const override;
 		static const char	CLASSNAME[];
 		static PackList_p	cast( Object * pObject );
-		
+
 		//.____ Geometry ____________________________________________
 
 		Size				preferredSize() const override;
@@ -147,10 +147,10 @@ namespace wg
 
 		void				setSortOrder( SortOrder order );
 		SortOrder			sortOrder() const { return m_sortOrder; }
-	
+
 		void				setSortFunction( std::function<int(const Widget *, const Widget *)> func );
 		std::function<int(const Widget *, const Widget *)> sortFunction() const { return m_sortFunc; }
-	
+
 
 	protected:
 		PackList();
@@ -166,7 +166,7 @@ namespace wg
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_setSize( const Size& size ) override;
 		void			_refresh() override;
-	
+
 		void			_receive( Msg * pMsg ) override;
 		Size			_windowPadding() const override;
 
@@ -182,12 +182,12 @@ namespace wg
 
 		void			_selectSlots(Slot * pSlot, int nb) override;
 		void			_unselectSlots(Slot * pSlot, int nb) override;
-        Object *		_object() override { return this; }
-        const Object *	_object() const override { return this; }
+		Object *		_object() override { return this; }
+		const Object *	_object() const override { return this; }
 
-        WidgetHolder *	_widgetHolder() override { return this; }
+		WidgetHolder *	_widgetHolder() override { return this; }
 		int				_getInsertionPoint(const Widget * pWidget) const override;
-        bool			_hasSortFunction() const override { return m_sortFunc != nullptr; }
+		bool			_hasSortFunction() const override { return m_sortFunc != nullptr; }
 		bool			_sortEntries() override;
 
 
@@ -242,19 +242,19 @@ namespace wg
 		void			_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd);
 
 		void			_updateChildOfsFrom( PackListSlot* pSlot );
-	
-	
+
+
 		void			_getChildGeo( Rect& geo, const PackListSlot * pSlot ) const;
 		int				_getEntryAt( int pixelofs ) const;
 		Rect			_headerGeo() const;
-	
+
 		void			_refreshHeader();
 		void			_refreshList();
-	
+
 		Size			_paddedLimitedPreferredSize( Widget * pChild );
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
 		int				_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight );
-	
+
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);
 
@@ -262,25 +262,25 @@ namespace wg
 		SlotArray<PackListSlot>	m_children;
 
 		bool				m_bHorizontal;
-	
+
 		SortOrder			m_sortOrder;
 		std::function<int(const Widget *,const Widget *)> m_sortFunc;
-		
+
 		int					m_contentBreadth;
 		int					m_contentLength;
-	
+
 		Size				m_entryPadding;
 		Size				m_minEntrySize;
 		Size				m_maxEntrySize;
-	
+
 		//----
-	
+
 		int				m_contentPreferredLength;
 		int				m_contentPreferredBreadth;
-		int				m_nbPreferredBreadthEntries;			// Number of entries whose preferred breadth are the same as m_preferredSize.	
+		int				m_nbPreferredBreadthEntries;			// Number of entries whose preferred breadth are the same as m_preferredSize.
 	};
-	
-	
+
+
 
 } // namespace wg
 #endif //WG_PACKLIST_DOT_H

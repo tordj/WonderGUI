@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -29,14 +29,14 @@
 #include <wg_slot.h>
 
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Capsule;
 	typedef	StrongPtr<Capsule>	Capsule_p;
 	typedef	WeakPtr<Capsule>	Capsule_wp;
-	
-	
+
+
 	//____ Capsule ______________________________________________________________
 
 	/**
@@ -67,12 +67,12 @@ namespace wg
 		static Capsule_p	cast( Object * pObject );
 
 		//.____ Geometry _________________________________________________
-	
+
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
-	
+
 		Size			preferredSize() const;
-	
+
 	protected:
 		Capsule();
 		virtual ~Capsule();
@@ -103,20 +103,20 @@ namespace wg
 
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
-		
+
 		//
-	
+
 		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
 		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 		void		_cloneContent( const Widget * _pOrg );
 		void		_setSize( const Size& size );
-	
-	
-	
+
+
+
 		Slot		m_child;
-	
+
 	};
-	
+
 
 } // namespace wg
 #endif //WG_CAPSULE_DOT_H

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free Ioware; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Ioware Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -46,11 +46,11 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-        static StreamSurface_p	create( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
-       
+		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
+
 		//.____ Identification __________________________________________
 
 		bool				isInstanceOf( const char * pClassName ) const;
@@ -91,10 +91,10 @@ namespace wg
 
 
 	private:
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, int flags, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
-        StreamSurface( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
+		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 		~StreamSurface();
 
 		short		_sendCreateSurface(Size size, PixelFormat format, int flags, const Color * pClut);
@@ -105,7 +105,7 @@ namespace wg
 		GfxOutStream_p	m_pStream;
 		short			m_inStreamId;		// Id of this surface in the stream.
 
-        Blob_p			m_pBlob;			
+		Blob_p			m_pBlob;
 		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
 
 		Size			m_size;				// Width and height in pixels.
