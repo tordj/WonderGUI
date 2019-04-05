@@ -595,7 +595,13 @@ namespace wg
 			case MsgType::FocusLost:
 				state.setFocused(false);
 				break;
-            default:
+			case MsgType::DropEnter:
+				state.setTargeted(true);
+				break;
+			case MsgType::DropLeave:
+				state.setTargeted(false);
+				break;
+			default:
                 break;
 		}
 	

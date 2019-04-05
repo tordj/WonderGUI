@@ -34,7 +34,6 @@ namespace wg
 
   class Payload : public Object
   {
-
   };
 
 } // namespace wg

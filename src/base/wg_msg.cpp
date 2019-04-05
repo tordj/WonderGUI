@@ -929,7 +929,259 @@ namespace wg
         return m_pDragWidget;
     }
     
-    
+
+	//____ DropProbeMsg ___________________________________________________
+
+	const char DropProbeMsg::CLASSNAME[] = { "DropProbeMsg" };
+
+	DropProbeMsg::DropProbeMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	{
+	}
+
+	bool DropProbeMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropProbeMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropProbeMsg_p DropProbeMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropProbeMsg_p(static_cast<DropProbeMsg*>(pObject));
+
+		return 0;
+	}
+
+	void DropProbeMsg::accept(bool bAccepted)
+	{
+		m_bAccepted = bAccepted;
+	}
+
+	//____ DropEnterMsg ___________________________________________________
+
+	const char DropEnterMsg::CLASSNAME[] = { "DropEnterMsg" };
+
+	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	{
+	}
+
+	bool DropEnterMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropEnterMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropEnterMsg_p DropEnterMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropEnterMsg_p(static_cast<DropEnterMsg*>(pObject));
+
+		return 0;
+	}
+
+	void DropEnterMsg::setDragWidget(Widget * pWidget)
+	{
+		m_pDragWidget = pWidget;
+	}
+
+	Widget_p DropEnterMsg::dragWidget() const
+	{
+		return m_pDragWidget;
+	}
+
+
+	//____ DropMoveMsg ___________________________________________________
+
+	const char DropMoveMsg::CLASSNAME[] = { "DropMoveMsg" };
+
+	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	{
+	}
+
+	bool DropMoveMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropMoveMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropMoveMsg_p DropMoveMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropMoveMsg_p(static_cast<DropMoveMsg*>(pObject));
+
+		return 0;
+	}
+
+	void DropMoveMsg::setDragWidget(Widget * pWidget)
+	{
+		m_pDragWidget = pWidget;
+	}
+
+	Widget_p DropMoveMsg::dragWidget() const
+	{
+		return m_pDragWidget;
+	}
+
+	//____ DropLeaveMsg ___________________________________________________
+
+	const char DropLeaveMsg::CLASSNAME[] = { "DropLeaveMsg" };
+
+	DropLeaveMsg::DropLeaveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pSource, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
+	{
+	}
+
+	bool DropLeaveMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropLeaveMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropLeaveMsg_p DropLeaveMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropLeaveMsg_p(static_cast<DropLeaveMsg*>(pObject));
+
+		return 0;
+	}
+
+	//____ DropDeliverMsg ___________________________________________________
+
+	const char DropDeliverMsg::CLASSNAME[] = { "DropDeliverMsg" };
+
+	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	{
+	}
+
+	bool DropDeliverMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropDeliverMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropDeliverMsg_p DropDeliverMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropDeliverMsg_p(static_cast<DropDeliverMsg*>(pObject));
+
+		return 0;
+	}
+
+	Widget_p DropDeliverMsg::deliveredTo() const
+	{
+		return static_cast<Widget*>(m_pSource.rawPtr());
+	}
+
+	void DropDeliverMsg::accept(bool bAccept)
+	{
+		m_bAccepted = bAccept;
+	}
+
+	//____ DropCancelMsg ___________________________________________________
+
+	const char DropCancelMsg::CLASSNAME[] = { "DropCancelMsg" };
+
+	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
+	{
+	}
+
+	bool DropCancelMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropCancelMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropCancelMsg_p DropCancelMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropCancelMsg_p(static_cast<DropCancelMsg*>(pObject));
+
+		return 0;
+	}
+
+	//____ DropCompleteMsg ___________________________________________________
+
+	const char DropCompleteMsg::CLASSNAME[] = { "DropCompleteMsg" };
+
+	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg(pPicked, pickCategory, pPayload, pPicked, nullptr, modKeys, pointerPos),
+		m_pDeliveree(pDeliveree)
+	{
+	}
+
+	bool DropCompleteMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return DragNDropMsg::isInstanceOf(pClassName);
+	}
+
+	const char * DropCompleteMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	DropCompleteMsg_p DropCompleteMsg::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return DropCompleteMsg_p(static_cast<DropCompleteMsg*>(pObject));
+
+		return 0;
+	}
+
+	Widget_p DropCompleteMsg::deliveredTo() const
+	{
+		return m_pDeliveree;
+	}
+
 	//____ SelectMsg _________________________________________________________
 	
 	const char SelectMsg::CLASSNAME[] = {"SelectMsg"};
