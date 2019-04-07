@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <wg_layer.h>
+#include <wg_payload.h>
 
 namespace wg
 {
@@ -68,9 +69,9 @@ namespace wg
 
 		// Overloaded from Layer
 
-		const LayerSlot *     _beginLayerSlots() const;
-		const LayerSlot *     _endLayerSlots() const;
-		int             _sizeOfLayerSlot() const;
+		const LayerSlot *	_beginLayerSlots() const;
+		const LayerSlot *	_endLayerSlots() const;
+		int					_sizeOfLayerSlot() const;
 
 		void            _onRequestRender(const Rect& rect, const LayerSlot * pSlot);    // rect is in our coordinate system.
 
@@ -79,7 +80,24 @@ namespace wg
 		void            _cloneContent( const Widget * _pOrg );
 		void            _receive( Msg * pMsg );
 
+		enum DragState
+		{
+			Idle,
+			Picking,		// Mouse button pressed, awaiting drag to pass treshold
+			Picked,			// Drag passed treshold, DropPickMsg sent.
+			Dragging,		// We have a payload, a drag-widget and are dragging.
+		};
+
+		DragState		m_dragState = DragState::Idle;
+
 		LayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+
+		Widget_p		m_pPicked;
+		Payload_p		m_pPayload;
+
+		int				m_dragStartTreshold = 3;
+
+
 
 	};
 

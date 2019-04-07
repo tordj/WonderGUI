@@ -25,6 +25,7 @@
 #include <wg_rootpanel.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
+#include <wg_payload.h>
 
 namespace wg
 {
@@ -115,6 +116,14 @@ namespace wg
 	{
 		return m_pointerStyle;
 	}
+
+	//____ setDropTarget() ____________________________________________________
+
+	void Widget::setDropTarget(bool bDropTarget)
+	{
+		m_bDropTarget = bDropTarget;
+	}
+
 
 	//____ setEnabled() _______________________________________________________________
 	/**
@@ -567,7 +576,7 @@ namespace wg
 				break;
 			case MsgType::MousePress:
 			{
-				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
 					if( state.isHovered() )
@@ -579,7 +588,7 @@ namespace wg
 			}
 			case MsgType::MouseRelease:
 			{
-				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
+				auto pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
 				if( pMsg->button() == MouseButton::Left )
 				{
 					if( state.isHovered() )
@@ -595,6 +604,15 @@ namespace wg
 			case MsgType::FocusLost:
 				state.setFocused(false);
 				break;
+			case MsgType::DropPick:
+			{
+				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+				if (!pMsg->hasPayload())
+				{
+					pMsg->setPayload(Payload::create());
+				}
+				break;
+			}
 			case MsgType::DropEnter:
 				state.setTargeted(true);
 				break;

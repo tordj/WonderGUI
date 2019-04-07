@@ -26,6 +26,7 @@
 #include <testwidget.h>
 #include <wg_popupopener.h>
 #include <wg_multiblockskin.h>
+#include <wg_dragndroplayer.h>
 
 #	include <GL/glew.h>
 
@@ -41,15 +42,6 @@ Blob_p 			loadBlob( const char * pPath );
 void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
-void renderWaveThicknessTest(GfxDevice * pGfxDevice);
-
-void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
-void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
-void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf);
-void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf);
-void subPixelFillTest(GfxDevice * pGfxDevice);
-void lineTest(GfxDevice * pGfxDevice, Rect canvas );
-
 
 bool	bQuit = false;
 
@@ -69,14 +61,14 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 //____ main() _________________________________________________________________
 
-int main ( int argc, char** argv )
-{ 
-	printf( "SizeOf Filler: %d\n", (int) sizeof(Filler) );
+int main(int argc, char** argv)
+{
+	printf("SizeOf Filler: %d\n", (int) sizeof(Filler));
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
 
-	printf( "Slot is safe to relocate: %d\n", Slot::safe_to_relocate );
-	printf( "PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
+	printf("Slot is safe to relocate: %d\n", Slot::safe_to_relocate);
+	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 	printf("LambdaPanelSlot is safe to relocate: %d\n", LambdaPanelSlot::safe_to_relocate);
 
 
@@ -89,9 +81,9 @@ int main ( int argc, char** argv )
 	int posX = 100, posY = 100, width = 1024, height = 600;
 	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
 
-//	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
+	//	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
-	IMG_Init( IMG_INIT_JPG | IMG_INIT_PNG );
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -117,93 +109,93 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 
 	Base::init();
-	FreeTypeFont::init( SoftSurfaceFactory::create() );
+	FreeTypeFont::init(SoftSurfaceFactory::create());
 
 	InputHandler_p pInput = Base::inputHandler();
-	
-	pInput->mapKey( SDLK_LEFT, Key::Left );
-	pInput->mapKey( SDLK_RIGHT, Key::Right );
-	pInput->mapKey( SDLK_UP, Key::Up );
-	pInput->mapKey( SDLK_DOWN, Key::Down );
-	pInput->mapKey( SDLK_BACKSPACE, Key::Backspace );
-	pInput->mapKey( SDLK_DELETE, Key::Delete );
-	pInput->mapKey( SDLK_END, Key::End );
-	pInput->mapKey( SDLK_ESCAPE, Key::Escape );
-	pInput->mapKey( SDLK_HOME, Key::Home );
-	pInput->mapKey( SDLK_PAGEDOWN, Key::PageDown );
-	pInput->mapKey( SDLK_PAGEUP, Key::PageUp );
-	pInput->mapKey( SDLK_RETURN, Key::Return );
-	pInput->mapKey( SDLK_SPACE, Key::Space );
-	pInput->mapKey( SDLK_TAB, Key::Tab );
-	pInput->mapKey( SDLK_F1, Key::F1 );
-	pInput->mapKey( SDLK_F2, Key::F2 );
-	pInput->mapKey( SDLK_F3, Key::F3 );
-	pInput->mapKey( SDLK_F4, Key::F4 );
-	pInput->mapKey( SDLK_F5, Key::F5 );
-	pInput->mapKey( SDLK_F6, Key::F6 );
-	pInput->mapKey( SDLK_F7, Key::F7 );
-	pInput->mapKey( SDLK_F8, Key::F8 );
-	pInput->mapKey( SDLK_F9, Key::F9 );
-	pInput->mapKey( SDLK_F10, Key::F10 );
-	pInput->mapKey( SDLK_F11, Key::F11 );
-	pInput->mapKey( SDLK_F12, Key::F12 );
-	
-	
-	pInput->mapKey( SDLK_LCTRL, Key::Control );
-	pInput->mapKey( SDLK_RCTRL, Key::Control );
 
-	pInput->mapKey( SDLK_LSHIFT, Key::Shift );
-	pInput->mapKey( SDLK_RSHIFT, Key::Shift );
+	pInput->mapKey(SDLK_LEFT, Key::Left);
+	pInput->mapKey(SDLK_RIGHT, Key::Right);
+	pInput->mapKey(SDLK_UP, Key::Up);
+	pInput->mapKey(SDLK_DOWN, Key::Down);
+	pInput->mapKey(SDLK_BACKSPACE, Key::Backspace);
+	pInput->mapKey(SDLK_DELETE, Key::Delete);
+	pInput->mapKey(SDLK_END, Key::End);
+	pInput->mapKey(SDLK_ESCAPE, Key::Escape);
+	pInput->mapKey(SDLK_HOME, Key::Home);
+	pInput->mapKey(SDLK_PAGEDOWN, Key::PageDown);
+	pInput->mapKey(SDLK_PAGEUP, Key::PageUp);
+	pInput->mapKey(SDLK_RETURN, Key::Return);
+	pInput->mapKey(SDLK_SPACE, Key::Space);
+	pInput->mapKey(SDLK_TAB, Key::Tab);
+	pInput->mapKey(SDLK_F1, Key::F1);
+	pInput->mapKey(SDLK_F2, Key::F2);
+	pInput->mapKey(SDLK_F3, Key::F3);
+	pInput->mapKey(SDLK_F4, Key::F4);
+	pInput->mapKey(SDLK_F5, Key::F5);
+	pInput->mapKey(SDLK_F6, Key::F6);
+	pInput->mapKey(SDLK_F7, Key::F7);
+	pInput->mapKey(SDLK_F8, Key::F8);
+	pInput->mapKey(SDLK_F9, Key::F9);
+	pInput->mapKey(SDLK_F10, Key::F10);
+	pInput->mapKey(SDLK_F11, Key::F11);
+	pInput->mapKey(SDLK_F12, Key::F12);
 
-	pInput->mapKey( SDLK_LALT, Key::Alt );
-	pInput->mapKey( SDLK_RALT, Key::Alt );
-	
-	pInput->mapKey( SDLK_KP_ENTER, Key::Return );
-	
-	
-	pInput->mapCommand( SDLK_ESCAPE, MODKEY_NONE, EditCmd::Escape );
 
-	pInput->mapCommand( SDLK_x, MODKEY_CTRL, EditCmd::Cut );
-	pInput->mapCommand( SDLK_c, MODKEY_CTRL, EditCmd::Copy );
-	pInput->mapCommand( SDLK_v, MODKEY_CTRL, EditCmd::Paste );
+	pInput->mapKey(SDLK_LCTRL, Key::Control);
+	pInput->mapKey(SDLK_RCTRL, Key::Control);
 
-	pInput->mapCommand( SDLK_a, MODKEY_CTRL, EditCmd::SelectAll );
-	
-	pInput->mapCommand( SDLK_z, MODKEY_CTRL, EditCmd::Undo );
-	pInput->mapCommand( SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo );
+	pInput->mapKey(SDLK_LSHIFT, Key::Shift);
+	pInput->mapKey(SDLK_RSHIFT, Key::Shift);
+
+	pInput->mapKey(SDLK_LALT, Key::Alt);
+	pInput->mapKey(SDLK_RALT, Key::Alt);
+
+	pInput->mapKey(SDLK_KP_ENTER, Key::Return);
+
+
+	pInput->mapCommand(SDLK_ESCAPE, MODKEY_NONE, EditCmd::Escape);
+
+	pInput->mapCommand(SDLK_x, MODKEY_CTRL, EditCmd::Cut);
+	pInput->mapCommand(SDLK_c, MODKEY_CTRL, EditCmd::Copy);
+	pInput->mapCommand(SDLK_v, MODKEY_CTRL, EditCmd::Paste);
+
+	pInput->mapCommand(SDLK_a, MODKEY_CTRL, EditCmd::SelectAll);
+
+	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
+	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
 
 	PixelFormat format = PixelFormat::Unknown;
 
-//	if( pWinSurf->format->BitsPerPixel == 32 )
-//		format = PixelFormat::BGRA_8;
-//	else if( pWinSurf->format->BitsPerPixel == 24 )
-//		format = PixelFormat::BGR_8;
-		
-//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
-//	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+	//	if( pWinSurf->format->BitsPerPixel == 32 )
+	//		format = PixelFormat::BGRA_8;
+	//	else if( pWinSurf->format->BitsPerPixel == 24 )
+	//		format = PixelFormat::BGR_8;
 
-//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
-	
-	GlGfxDevice_p pGfxDevice = GlGfxDevice::create( Size(width, height) );
+	//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+	//	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+
+	//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+
+	GlGfxDevice_p pGfxDevice = GlGfxDevice::create(Size(width, height));
 
 	SurfaceFactory_p pSurfaceFactory = pGfxDevice->surfaceFactory();
 
-	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
+	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
 
-//	pRoot->setDebugMode(true);
-	
-	Base::inputHandler()->setFocusedWindow( pRoot );
+	//	pRoot->setDebugMode(true);
+
+	Base::inputHandler()->setFocusedWindow(pRoot);
 
 	// 
-	
-	MsgLogger_p pLogger = MsgLogger::create( std::cout );
-	pLogger->logAllMsgs();
-	pLogger->ignoreMsg( MsgType::Tick );
-//	pLogger->ignoreMsg( MsgType::MouseMove);
-//	pLogger->ignoreMsg(MsgType::MouseDrag);
-//	pLogger->ignoreMsg(MsgType::MouseRepeat);
 
-	Base::msgRouter()->broadcastTo( pLogger );
+	MsgLogger_p pLogger = MsgLogger::create(std::cout);
+	pLogger->logAllMsgs();
+	pLogger->ignoreMsg(MsgType::Tick);
+	pLogger->ignoreMsg( MsgType::MouseMove);
+	pLogger->ignoreMsg(MsgType::MouseDrag);
+	pLogger->ignoreMsg(MsgType::MouseRepeat);
+
+	Base::msgRouter()->broadcastTo(pLogger);
 
 	// Init font
 
@@ -211,39 +203,39 @@ int main ( int argc, char** argv )
 
 	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
 
-	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-//	convertSDLFormat( &pixelDesc, pFontSurf->format );
-	Surface_p pFontImg = pSurfaceFactory->createSurface( Size(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
-	SDL_FreeSurface( pFontSurf );
-		
-	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
+	SDL_Surface * pFontSurf = IMG_Load("../resources/anuvverbubbla_8x8.png");
+	//	convertSDLFormat( &pixelDesc, pFontSurf->format );
+	Surface_p pFontImg = pSurfaceFactory->createSurface(Size(pFontSurf->w, pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*)pFontSurf->pixels, pFontSurf->pitch);
+	SDL_FreeSurface(pFontSurf);
+
+	BitmapFont_p pBmpFont = BitmapFont::create(pFontImg, pFontSpec);
 
 
 	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
-	
-	FreeTypeFont_p pFont = FreeTypeFont::create( pFontFile, 1 );
+
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
 	Base::setDefaultStyle(pStyle);
 
-/*
-	StdTextMapper_p pMapper = StdTextMapper::create();
-	pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
-	Base::setDefaultTextMapper(pMapper);
-*/
+	/*
+		StdTextMapper_p pMapper = StdTextMapper::create();
+		pMapper->setSelectionBackColor(Color(0,0,255,128), BlendMode::Blend);
+		Base::setDefaultTextMapper(pMapper);
+	*/
 
-	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255,255,255,255), BlendMode::Invert);
+	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255, 255, 255, 255), BlendMode::Invert);
 
 	// Init skins
 
-	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pButtonSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
-	pSimpleButtonSkin->setContentPadding( Border(5) );
+	SDL_Surface * pSDLSurf = IMG_Load("../resources/simple_button.bmp");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pButtonSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, Border(3));
+	pSimpleButtonSkin->setContentPadding(Border(5));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -252,99 +244,133 @@ int main ( int argc, char** argv )
 	BlockSkin_p pBackgroundSkin = BlockSkin::createStaticFromSurface(pBackgroundSurface);
 
 
-	pSDLSurf = IMG_Load( "../resources/splash.png" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
+	pSDLSurf = IMG_Load("../resources/splash.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface(pSplashSurface);
 
 
-	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
-	pStateButtonSkin->setContentPadding( Border(5) );
+	pSDLSurf = IMG_Load("../resources/state_button.bmp");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface(pStateButtonSurface, 0, Border(3));
+	pStateButtonSkin->setContentPadding(Border(5));
 
-	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
-	pPressablePlateSkin->setContentPadding( Border(3) );
-	
-	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pListEntrySurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface( pListEntrySurface, 0, Border(2) );
+	pSDLSurf = IMG_Load("../resources/grey_pressable_plate.bmp");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface(pPressablePlateSurface, 0, Border(3));
+	pPressablePlateSkin->setContentPadding(Border(3));
 
-	pSDLSurf = IMG_Load( "../resources/splash.png" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pImgSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface );
+	pSDLSurf = IMG_Load("../resources/list_entry.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface(pListEntrySurface, 0, Border(2));
+
+	pSDLSurf = IMG_Load("../resources/splash.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pImgSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface(pImgSurface);
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 
-	pSDLSurf = IMG_Load( "../resources/up_down_arrow.png" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface( pUpDownArrowSurface, 0, Border(0) );
+	pSDLSurf = IMG_Load("../resources/up_down_arrow.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface(pUpDownArrowSurface, 0, Border(0));
 
-	pSDLSurf = IMG_Load( "../resources/simple_icon.png" );
-	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGRA_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
-	SDL_FreeSurface( pSDLSurf );
-	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface( pSimpleIconSurface, Border(0) );
+	pSDLSurf = IMG_Load("../resources/simple_icon.png");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, Border(0));
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
+	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
+	pRoot->child = pDnDLayer;
+
 	PopupLayer_p pPopupLayer = PopupLayer::create();
-	pRoot->child = pPopupLayer;
-
-
+	pDnDLayer->base = pPopupLayer;
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
-	pBasePanel->setSkin( pImgSkin /*ColorSkin::create(Color::Burlywood)*/ );
+	pBasePanel->setSkin(StaticColorSkin::create(Color::Burlywood));
 	pPopupLayer->base = pBasePanel;
 
-/*	Filler_p pBackground = Filler::create();
-	pBackground->setSkin( ColorSkin::create(Color::aqua) );
-	pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
-*/
+	/*	Filler_p pBackground = Filler::create();
+		pBackground->setSkin( ColorSkin::create(Color::aqua) );
+		pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
+	*/
 
 
-//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, Border(5), { {StateEnum::Hovered, Color::Green} });
-//	pTestSkin->setBlendMode(BlendMode::Add);
+	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, Border(5), { {StateEnum::Hovered, Color::Green} });
+	//	pTestSkin->setBlendMode(BlendMode::Add);
 
 	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
 
-	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal );
+	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
-//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
-//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
+	//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
+	//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
 
 	Button_p pImage0 = Button::create();
 	pImage0->setSkin(pTestSkin);
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2);});
+	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
 
-//	Image_p pImage = Image::create();
-//	pImage->setSkin( pSimpleButtonSkin );
-//	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
+	//	Image_p pImage = Image::create();
+	//	pImage->setSkin( pSimpleButtonSkin );
+	//	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
 
 
-//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
+	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
+
+
+		// Test drag n drop support
+
+	TextDisplay_p pPickable1 = TextDisplay::create();
+	pPickable1->setSkin(pTestSkin);
+	pPickable1->text.set( "Drag Me 1" );
+	pPickable1->setPickable(true, 1);
+	pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+
+	TextDisplay_p pPickable2 = TextDisplay::create();
+	pPickable2->setSkin(pTestSkin);
+	pPickable2->text.set("Drag Me 2");
+	pPickable2->setPickable(true, 2);
+	pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+
+	TextDisplay_p pDropTarget1 = TextDisplay::create();
+	pDropTarget1->setSkin(pTestSkin);
+	pDropTarget1->text.set("Drop 1 here");
+	pDropTarget1->setDropTarget(true);
+	pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+
+	TextDisplay_p pDropTarget2 = TextDisplay::create();
+	pDropTarget2->setSkin(pTestSkin);
+	pDropTarget2->text.set("Drop 2 here");
+	pDropTarget2->setDropTarget(true);
+	pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
+
+	TextDisplay_p pDropTargetAny = TextDisplay::create();
+	pDropTargetAny->setSkin(pTestSkin);
+	pDropTargetAny->text.set("Drop any here");
+	pDropTargetAny->setDropTarget(true);
+	pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
 
 
 	// Test transparency issue
@@ -827,42 +853,10 @@ int main ( int argc, char** argv )
 	pFps->setSkin( pPressablePlateSkin );
 	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
 */	
-/*
-	char heap[100000];
 
-	MemHeap::init(heap, 100000);
-	
-	void * p1 = MemHeap::malloc(128);
-	void * p2 = MemHeap::malloc(1024);
-	void * p3 = MemHeap::malloc(768+128);
-	MemHeap::free(p2);
-	MemHeap::malloc(1024);
-*/
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
-
-	int		topWave[2001];
-	int		bottomWave[2001];
-
-	WaveLine	topLine, bottomLine;
-
-	topLine.color = { 255,255,255,255 };
-	topLine.thickness = 1.f;
-	topLine.pWave = topWave;
-	topLine.length = 2001;
-
-	bottomLine.color = Color::White;
-	bottomLine.thickness = 1.f;
-	bottomLine.pWave = bottomWave;
-	bottomLine.length = 2001;
-
-	for (int i = 0; i < 2001; i++)
-	{
-		topWave[i] = (int) ((sin(i/10.0)*80)*256);
-		bottomWave[i] = (int) ((200+sin(i/20.0)*6)*256);
-	}
-
 
 	pSDLSurf = IMG_Load("../resources/flipping.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -885,28 +879,8 @@ int main ( int argc, char** argv )
 		translateEvents( pInput, pRoot );
 
 //		SDL_LockSurface(pWinSurf);
-//		pRoot->render();
+		pRoot->render();
 
-		pGfxDevice->beginRender();
-
-		pGfxDevice->fill( Rect{ 10,10,512,512 }, Color::Black);
-
-//		flipBlitTest(pGfxDevice, pFlippingSurface);
-//		stretchBlitTest(pGfxDevice, pFlippingSurface);
-//		stretchFlipBlitTest(pGfxDevice, pFlippingSurface);
-//		rotScaleTest(pGfxDevice, pClockSurface);
-//		subPixelFillTest(pGfxDevice );
-		lineTest(pGfxDevice, Rect(0,0,width,height) );
-
-//		pImgSkin->render(pGfxDevice, pCanvas->size(), StateEnum::Normal, pCanvas->size());
-
-//		Rect clip(50,50,400,300);
-
-//		renderWaveThicknessTest(pGfxDevice);
-
-//		pGfxDevice->clipDrawHorrWave({ 10,0,280,400 }, { 0,150 }, 1900, &topLine, &bottomLine, { 0,0,255,128 }, Color::Purple);
-
-		pGfxDevice->endRender();
 
 //		SDL_UnlockSurface(pWinSurf);
 
@@ -937,199 +911,6 @@ int main ( int argc, char** argv )
     return 0;
 }
 
-
-//____ flipBlitTest() _________________________________________________________
-
-void flipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf )
-{
-	Size sz = pSurf->size();
-
-//	pGfxDevice->setClip({ 15, 15, 150, 150 } );
-//	pGfxDevice->fill({ 0, 0, 300, 300 }, Color::Green);
-
-	pGfxDevice->setBlitSource(pSurf);
-
-	for (int i = 0; i < GfxFlip_size; i++)
-	{
-		pGfxDevice->flipBlit({ 10 + 90 * (i % 4),10 + 90 * (i / 4) }, (GfxFlip)i);
-	}
-}
-
-// ____ stretchFlipBlitTest() _________________________________________________________
-
-void stretchFlipBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
-{
-	float stretch = 2.f;
-
-	Size sz = pSurf->size();
-
-	//	pGfxDevice->setClip({ 15, 15, 150, 150 } );
-	//	pGfxDevice->fill({ 0, 0, 300, 300 }, Color::Green);
-
-	int inc = (int) (90 * stretch);
-	int size = (int) (86 * stretch);
-
-	pGfxDevice->setBlitSource(pSurf);
-
-	for (int i = 0; i < GfxFlip_size; i++)
-	{
-		pGfxDevice->stretchFlipBlit({ 10 + inc * (i % 4),10 + inc * (i / 4), size, size }, (GfxFlip)i);
-	}
-}
-
-
-//____ stretchBlitTest() _________________________________________________________
-
-void stretchBlitTest(GfxDevice * pGfxDevice, Surface * pSurf)
-{
-	Size sz = pSurf->size();
-
-	static int x = 0;
-
-	pGfxDevice->fill( Rect{ 0, 0, 1300, 1300 }, Color::Black);
-
-	pGfxDevice->setBlitSource(pSurf);
-	pGfxDevice->stretchBlit({ 10,10,x,x / 2 });
-
-	x++;
-
-	if (x > 1000)
-		x = 0;
-
-}
-
-
-//____ rotScaleTest() _________________________________________________________
-
-void rotScaleTest(GfxDevice * pGfxDevice, Surface * pSurf)
-{
-	Size sz = pSurf->size();
-
-	static float rot = 45;
-	static float scale = 1.f;
-	static float scaleInc = 0.001f;
-
-	pGfxDevice->fill(Rect{ 0, 0, 1300, 1300 }, Color::White);
-
-	CoordF center = { pSurf->size().w / 2.f, pSurf->size().h / 2.f };
-
-
-//	pGfxDevice->blit({ 10,10 }, pSurf, { ((int)center.x) - 256, (int)(center.y) - 256,512,512 });
-
-	pGfxDevice->setBlitSource(pSurf);
-	pGfxDevice->rotScaleBlit({ 10,10,512,512 }, center, rot, scale);
-
-	rot+=0.1f;
-	scale += scaleInc;
-
-	if (scale > 2 || scale < 0.3 )
-		scaleInc = -scaleInc;
-
-}
-
-//____ subPixelFillTest() ______________________________________________________
-
-void subPixelFillTest(GfxDevice * pGfxDevice)
-{
-	pGfxDevice->fill(Rect{ 0, 0, 1300, 1300 }, Color::Black);
-
-	for (int i = 0; i < 5; i++)
-	{
-		RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
-
-		for (int j = 0; j < 5; j++)
-		{
-			pGfxDevice->fill(rect, Color::White);
-			rect.y += 12.f;
-			rect.x += 0.25f;
-		}
-	}
-}
-
-//____ lineTest() ___________________________________________________________
-
-void lineTest(GfxDevice * pDevice, Rect canvas)
-{
-	pDevice->fill(canvas, Color::Black);
-
-	pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
-	pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
-
-	pDevice->drawLine(canvas.pos() + Coord(5, 100), canvas.pos() + Coord(40, 101), Color::Green, 3.f);
-	pDevice->drawLine(canvas.pos() + Coord(5, 105), canvas.pos() + Coord(6, 145), Color::Green, 3.f);
-
-	pDevice->drawLine(canvas.pos() + Coord(1, 150), Direction::Right, 30 , Color::Blue, 1.f);
-	pDevice->drawLine(canvas.pos() + Coord(1 + 30, 155), Direction::Left, 30, Color::Blue, 2.f);
-
-	pDevice->drawLine(canvas.pos() + Coord(1, 160), Direction::Down, 30, Color::Blue, 1.5f);
-	pDevice->drawLine(canvas.pos() + Coord(10, 160 + 30 ), Direction::Up, 30, Color::Blue, 3.f);
-
-}
-
-
-//____ renderWaveThicknessTest() ______________________________________________
-
-void renderWaveThicknessTest( GfxDevice * pGfxDevice )
-{
-	int		wave[2001];
-	int		wave2[2001];
-
-	WaveLine	line, bottom;
-
-	line.color = { 255,0,0,255 };
-	line.thickness = 0.1f;
-	line.pWave = wave;
-	line.length = 2001;
-
-	bottom.color = { 255,255,255,255 };
-	bottom.thickness = 0.1f;
-	bottom.pWave = wave2;
-	bottom.length = 2001;
-
-	float thickness[] = { 0.1f, 0.2f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.f, 2.25f, 2.5f, 2.75f, 3.f, 3.25f, 3.5f, 3.75f };
-
-
-	for (int ln = 0; ln < 16; ln++)
-	{
-		line.thickness = thickness[ln];
-		bottom.thickness = thickness[ln];
-
-
-		for (int i = 0; i < 200; i++)
-		{
-			wave[i] = (int)((sin(i / 20.0) * 60) * 256);
-//			wave2[i] = 0;
-			wave2[i] = wave[i];
-		}
-
-		for (int i = 200; i < 2001; i++)
-		{
-			wave[i] = wave[i-1];
-			//			wave2[i] = 0;
-			wave2[i] = wave[i];
-		}
-
-		for (int i = 480-ln*15; i < 2001; i++)
-		{
-			wave[i] = wave[i]+50*256;
-			//			wave2[i] = 0;
-			wave2[i] = wave[i];
-		}
-
-
-		int posX = 100, posY = 100, width = 512, height = 400;
-
-		const Rect * oldClipList = pGfxDevice->clipList();
-		int oldClipListSize = pGfxDevice->clipListSize();
-
-		Rect clipList = { 10,0,500,600 };
-
-		pGfxDevice->setClipList(1, &clipList);
-		pGfxDevice->drawWave({ 0,70 + ln * (15 + ln), 1900, 1000 }, &line, &bottom, Color::Red, Color::Green);
-		pGfxDevice->setClipList(oldClipListSize, oldClipList);
-	}
-
-}
 
 
 //____ translateEvents() ___________________________________________________________

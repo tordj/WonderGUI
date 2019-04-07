@@ -58,6 +58,7 @@ namespace wg
 		friend class FlexPanel;
 		friend class PopupLayer;
 		friend class ModalLayer;
+		friend class DragNDropLayer;
 		friend class ScrollPanel;
 		friend class StackPanel;
 		friend class Capsule;

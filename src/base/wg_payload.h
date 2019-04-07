@@ -34,6 +34,10 @@ namespace wg
 
   class Payload : public Object
   {
+  public:
+	  static Payload_p	create() { return Payload_p(new Payload()); }
+  protected:
+	  Payload() {}
   };
 
 } // namespace wg

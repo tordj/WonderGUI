@@ -497,6 +497,9 @@
     <ClInclude Include="..\..\..\src\base\wg_payload.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_dragndroplayer.h">
+      <Filter>widgets\layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -837,6 +840,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_ivaluedisplay.cpp">
       <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_dragndroplayer.cpp">
+      <Filter>widgets\layers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

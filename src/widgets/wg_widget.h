@@ -180,12 +180,12 @@ namespace wg
 		virtual bool		markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override;
 
-		inline void			refresh();
+		inline void			refresh() { _refresh(); }
 
 		inline Widget_p		clone() const { return _clone(); }
-		Widget_p			newOfMyType() const; 					///< @brief Create and return a new widget of the same type.
+		Widget_p			newOfMyType() const { return _newOfMyType(); } 					///< @brief Create and return a new widget of the same type.
 
-		inline bool			isOpaque() const;
+		inline bool			isOpaque() const { return m_bOpaque; }
 
 	protected:
 		Widget();

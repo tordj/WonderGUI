@@ -742,6 +742,9 @@ namespace wg
 			}
 			case MsgType::MousePress:
 			{
+				if (m_popups.isEmpty())
+					break;
+
 				auto pMsg = MousePressMsg::cast(_pMsg);
 
 				auto pSource = Widget::cast(_pMsg->originalSource());

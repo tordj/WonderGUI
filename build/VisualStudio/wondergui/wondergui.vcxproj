@@ -200,6 +200,7 @@
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_sizecapsule.h" />
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_dragndroplayer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_layer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_modallayer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_popuplayer.h" />
@@ -316,6 +317,7 @@
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_dragndroplayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_layer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_modallayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_popuplayer.cpp" />

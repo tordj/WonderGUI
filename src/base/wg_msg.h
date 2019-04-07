@@ -737,7 +737,7 @@ namespace wg
 		int                 pickCategory() const { return m_pickCategory; }
 
 	protected:
-		DragNDropMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Coord				m_pointerPos;		// Screen position of pointer.
    		ModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
@@ -763,13 +763,18 @@ namespace wg
 		//.____ Content ________________________________________________________
 
 		void				setPayload( Payload * pPayload );
-		void				setDragWidget( Widget * pWidget );
+		bool				hasPayload() const { return m_pPayload; }
+
+		void				setDragWidget( Widget * pWidget, Coord pixelPointerOfs );
+		bool				hasDragWidget() const { return m_pDragWidget; }
 		Widget_p            dragWidget() const;
+		Coord				dragWidgetPointerOfs() const;
 
 	protected:
 		DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
+		Coord				m_pixelPointerOfs;
 	};
 
 	//____ DropProbeMsg ___________________________________________________
