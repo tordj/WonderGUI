@@ -27,6 +27,7 @@
 #include <vector>
 #include <wg_layer.h>
 #include <wg_payload.h>
+#include <wg_key.h>
 
 namespace wg
 {
@@ -46,60 +47,75 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool                    isInstanceOf( const char * pClassName ) const;
-		const char *            className( void ) const;
+		bool                    isInstanceOf( const char * pClassName ) const override;
+		const char *            className( void ) const override;
 		static const char       CLASSNAME[];
 		static DragNDropLayer_p  cast( Object * pObject );
-
+        
 	protected:
 		DragNDropLayer();
 		virtual ~DragNDropLayer();
-		virtual Widget* _newOfMyType() const { return new DragNDropLayer(); };
+		virtual Widget* _newOfMyType() const override { return new DragNDropLayer(); };
 
 
 //        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
 
 		// Overloaded from Panel
 
-		Widget *        _findWidget( const Coord& ofs, SearchMode mode );
+		Widget *        _findWidget( const Coord& ofs, SearchMode mode ) override;
 
 		// Overloaded from WidgetHolder
 
-		void            _childRequestResize(Slot * pSlot);
+		void            _childRequestResize(Slot * pSlot) override;
 
 		// Overloaded from Layer
 
-		const LayerSlot *	_beginLayerSlots() const;
-		const LayerSlot *	_endLayerSlots() const;
-		int					_sizeOfLayerSlot() const;
+		const LayerSlot *	_beginLayerSlots() const override;
+		const LayerSlot *	_endLayerSlots() const override;
+		int					_sizeOfLayerSlot() const override;
 
-		void            _onRequestRender(const Rect& rect, const LayerSlot * pSlot);    // rect is in our coordinate system.
+		void            _onRequestRender(const Rect& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
 
 		// Overloaded from Widget
 
-		void            _cloneContent( const Widget * _pOrg );
-		void            _receive( Msg * pMsg );
+		void            _cloneContent( const Widget * _pOrg ) override;
+		void            _receive( Msg * pMsg ) override;
+        void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
 
+        //
+        
+        void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
+        void            _cancel( ModifierKeys modKeys, Coord pointerPos );
+        void            _replaceDragWidget( Widget * pNewWidget );
+
+        
+        
 		enum DragState
 		{
 			Idle,
 			Picking,		// Mouse button pressed, awaiting drag to pass treshold
 			Picked,			// Drag passed treshold, DropPickMsg sent.
 			Dragging,		// We have a payload, a drag-widget and are dragging.
+            Targeting,      // We are hovering a widget that has accepted our target probing.
+            Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
+        RouteId        m_tickRouteId;
+        
 		DragState		m_dragState = DragState::Idle;
 
 		LayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
-		Payload_p		m_pPayload;
+        Payload_p		m_pPayload;
 
 		int				m_dragStartTreshold = 3;
-
-
-
+        Coord           m_dragWidgetOfs;                // Drag widgets offset from pointer.
+        
+        Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
+        Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.
 	};
+    
 
 
 

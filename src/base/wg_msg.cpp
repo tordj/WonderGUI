@@ -889,8 +889,10 @@ namespace wg
 
 	const char DropPickMsg::CLASSNAME[] = {"DropPickMsg"};
 
-	DropPickMsg::DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
-	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos )
+	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
+	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
+    m_dragWidgetPointerOfs(Coord()-pickOfs),
+    m_pickOfs(pickOfs)
 	{
 	}
 
@@ -923,7 +925,7 @@ namespace wg
 	void DropPickMsg::setDragWidget( Widget * pWidget, Coord pixelPointerOfs )
 	{
 		m_pDragWidget = pWidget;
-		m_pixelPointerOfs = pixelPointerOfs;
+		m_dragWidgetPointerOfs = pixelPointerOfs;
 	}
 
 	Widget_p DropPickMsg::dragWidget() const
@@ -933,7 +935,7 @@ namespace wg
 
 	Coord DropPickMsg::dragWidgetPointerOfs() const
 	{
-		return m_pixelPointerOfs;
+		return m_dragWidgetPointerOfs;
 	}
 
 

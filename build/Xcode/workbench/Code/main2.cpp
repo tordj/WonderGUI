@@ -5,9 +5,10 @@
 #ifdef WIN32
 #	include <SDL.h>
 #	include <SDL_image.h>
+#    include <GL/glew.h>
 #else
 #	include <SDL2/SDL.h>
-#	include <SDL2/SDL_image.h>
+#	include <SDL2_image/SDL_image.h>
 #endif
 
 #include <wondergui.h>
@@ -28,7 +29,6 @@
 #include <wg_multiblockskin.h>
 #include <wg_dragndroplayer.h>
 
-#	include <GL/glew.h>
 
 
 using namespace wg;
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 1024, height = 600;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL);
 
 	//	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
@@ -109,7 +109,7 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	Base::init();
-	FreeTypeFont::init(SoftSurfaceFactory::create());
+//	FreeTypeFont::init(SoftSurfaceFactory::create());
 
 	InputHandler_p pInput = Base::inputHandler();
 
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
 
-	PixelFormat format = PixelFormat::Unknown;
+//	PixelFormat format = PixelFormat::Unknown;
 
 	//	if( pWinSurf->format->BitsPerPixel == 32 )
 	//		format = PixelFormat::BGRA_8;
@@ -210,15 +210,21 @@ int main(int argc, char** argv)
 
 	BitmapFont_p pBmpFont = BitmapFont::create(pFontImg, pFontSpec);
 
+    TextStyle_p pStyle = TextStyle::create();
+    pStyle->setFont(pBmpFont);
+    pStyle->setSize(8);
+    Base::setDefaultStyle(pStyle);
 
-	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
+    
 
-	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
+//	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 
-	TextStyle_p pStyle = TextStyle::create();
-	pStyle->setFont(pFont);
-	pStyle->setSize(16);
-	Base::setDefaultStyle(pStyle);
+//	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
+
+//	TextStyle_p pStyle = TextStyle::create();
+//	pStyle->setFont(pFont);
+//	pStyle->setSize(16);
+//	Base::setDefaultStyle(pStyle);
 
 	/*
 		StdTextMapper_p pMapper = StdTextMapper::create();

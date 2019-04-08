@@ -765,16 +765,19 @@ namespace wg
 		void				setPayload( Payload * pPayload );
 		bool				hasPayload() const { return m_pPayload; }
 
+        Coord               pickOfs() const { return m_pickOfs; }
+        
 		void				setDragWidget( Widget * pWidget, Coord pixelPointerOfs );
 		bool				hasDragWidget() const { return m_pDragWidget; }
 		Widget_p            dragWidget() const;
 		Coord				dragWidgetPointerOfs() const;
 
 	protected:
-		DropPickMsg( Widget * pSource, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
-		Coord				m_pixelPointerOfs;
+		Coord				m_dragWidgetPointerOfs;
+        Coord               m_pickOfs;
 	};
 
 	//____ DropProbeMsg ___________________________________________________

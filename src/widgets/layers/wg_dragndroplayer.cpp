@@ -24,6 +24,10 @@
 #include <wg_base.h>
 #include <wg_msgrouter.h>
 #include <wg_msg.h>
+#include <wg_gfxdevice.h>
+#include <wg_surfacefactory.h>
+#include <wg_patches.h>
+#include <wg_image.h>
 
 
 
@@ -44,6 +48,8 @@ namespace wg
 
 	DragNDropLayer::~DragNDropLayer()
 	{
+        if( m_tickRouteId )
+            Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -165,9 +171,13 @@ namespace wg
 
 		switch (_pMsg->type())
 		{
+            case MsgType::Tick:
+            {
+                break;
+            }
+                
 			case MsgType::MouseDrag:
 			{
-
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if (pMsg->button() != MouseButton::Left)
 					break;
@@ -177,9 +187,10 @@ namespace wg
 					case DragState::Picking:
 					{
 						Coord total = pMsg->draggedTotal();
-						if (total.x + total.y > m_dragStartTreshold)
+						if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
 						{
-							Base::msgRouter()->post(new DropPickMsg(m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                            Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
+							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Picked;
 						}
 						break;
@@ -189,15 +200,69 @@ namespace wg
 					{
 						// Move the drag-widget onscreen.
 
-						_childRequestRender(&m_dragSlot);
-						m_dragSlot.geo += pMsg->draggedNow();
-						_childRequestRender(&m_dragSlot);
+						_requestRender(m_dragSlot.geo);
+						m_dragSlot.geo.setPos( pMsg->pointerPos() + m_dragWidgetOfs );
+						_requestRender(m_dragSlot.geo);
 
-						// Check if we entered/left a (possible) target.
+// MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
+                        Coord ofs = toLocal(pMsg->pointerPos());
+                        
+                        Widget * pProbed = _findWidget(ofs, SearchMode::ActionTarget );
 
+                        while (pProbed && pProbed != this && !pProbed->isDropTarget())
+                            pProbed = pProbed->parent();
+                        
+                        if( pProbed && pProbed != m_pProbed )
+                        {
+                            m_pProbed = pProbed;
+                            Base::msgRouter()->post(new DropProbeMsg(pProbed, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                        }
+                        
 						break;
 					}
+                        
+                    case DragState::Targeting:
+                    {
+                        // Move the drag-widget onscreen.
+                        
+                        _requestRender(m_dragSlot.geo);
+                        m_dragSlot.geo.setPos( pMsg->pointerPos() + m_dragWidgetOfs );
+                        _requestRender(m_dragSlot.geo);
+                        
+
+// MOVE TO TICK!                        // Check if our target has changed
+                
+                        Coord ofs = toLocal(pMsg->pointerPos());
+                        
+                        Widget * pHovered = _findWidget(ofs, SearchMode::ActionTarget );
+
+                        while (pHovered && pHovered != this && !pHovered->isDropTarget())
+                            pHovered = pHovered->parent();
+                        
+                        if( pHovered != m_pTargeted )
+                        {
+                            // Untarget previous target. Probing possibly new target we leave for next round.
+                            
+                            if( m_pTargeted )
+                                Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
+                            
+                            m_pTargeted = nullptr;
+                            m_dragState = DragState::Dragging;
+                        }
+
+                        // Send move messages to targeted widget
+                        
+                        if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
+                        {
+                            Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                        }
+
+                        break;
+                    }
+                        
+                    default:
+                        break;
 				}
 
 				break;
@@ -218,6 +283,7 @@ namespace wg
 				{
 					m_pPicked = pSource;
 					m_pickCategory = pSource->pickCategory();
+                    m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 					m_dragState = DragState::Picking;
 				}
 				break;
@@ -240,15 +306,21 @@ namespace wg
 					}
 					case Dragging:
 					{
-						_requestRender(m_dragSlot.geo);
-						m_dragSlot.replaceWidget(this, nullptr);
-
-						m_pPicked = nullptr;
-						m_pPayload = nullptr;
-						m_dragState = DragState::Idle;
-						Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_pickCategory, nullptr, pMsg->modKeys(), pMsg->pointerPos()));
+                        _cancel( pMsg->modKeys(), pMsg->pointerPos());
 						break;
 					}
+                    case Targeting:
+                    {
+                        if( m_pTargeted )
+                        {
+                            Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                            m_dragState = DragState::Delivering;
+                            m_pTargeted = nullptr;
+                        }
+                        else
+                            _cancel( pMsg->modKeys(), pMsg->pointerPos());
+                        break;
+                    }
 					default:
 						break;
 				}
@@ -263,48 +335,201 @@ namespace wg
 
 				if (pMsg->hasPayload() && m_dragState == DragState::Picked )
 				{
+                    // Set payload
+                    
 					m_pPayload = pMsg->payload();
 
+                    // Set/generate drag widget (widget actually dragged across the screen)
+                    
 					auto pDragWidget = pMsg->dragWidget();
-					if (!pDragWidget)
+                    Size    dragWidgetSize;
+
+                    if (pDragWidget)
 					{
-						auto p = Filler::create();
-						p->setPreferredSize({ 16, 16 });
-						p->setSkin(BoxSkin::create( 1, Color::Navy, Color::White));
-
-						pDragWidget = p;
-
-						//TODO: Insert our own drag widget.
+                        m_dragWidgetOfs = pMsg->dragWidgetPointerOfs();
+                        dragWidgetSize = pDragWidget->preferredSize();
+                        m_dragSlot.replaceWidget(this, pDragWidget);
 					}
-
-					m_dragSlot.replaceWidget(this, pDragWidget);
+                    else
+                    {
+                        m_dragWidgetOfs = Coord(0,0) - pMsg->pickOfs();
+                        dragWidgetSize = m_pPicked->size();                             //TODO: Possible source of error, if picked widget changes size before the render call.
+                    }
 
 					Coord mousePos = toLocal(pMsg->pointerPos());
+					m_dragSlot.geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
 
-					m_dragSlot.geo = { mousePos + pMsg->dragWidgetPointerOfs(), pDragWidget->preferredSize() };
-
-					_childRequestRender(&m_dragSlot);
+					_requestRender(m_dragSlot.geo);
 					m_dragState = DragState::Dragging;
 				}
 				else
-				{
-					Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_pickCategory, nullptr, pMsg->modKeys(), pMsg->pointerPos()));
-					m_pPicked = nullptr;
-					m_pPayload = nullptr;
-					m_dragState = DragState::Idle;
-				}
-				break;
+                    _cancel( pMsg->modKeys(), pMsg->pointerPos());
+
+                break;
 			}
+                
+            case MsgType::DropProbe:
+            {
+                auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
 
+                // Check if our probe was acccepted and in that case start targeting.
+                
+                if( pMsg->isAccepted() )
+                {
+                    Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
+                    
+                    Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                    
+                    m_pProbed = nullptr;
+                    m_pTargeted = pTargeted;
+                    m_dragState = DragState::Targeting;
+                }
+                
+                break;
+            }
 
+            case MsgType::DropMove:
+            {
+                auto pMsg = static_cast<DropMoveMsg*>(_pMsg);
+                
+                // Check if we need to change drag widget
+                
+                if( pMsg->dragWidget() != m_dragSlot.pWidget )
+                    _replaceDragWidget(pMsg->dragWidget());
+                
+                break;
+            }
+
+            case MsgType::DropEnter:
+            {
+                auto pMsg = static_cast<DropEnterMsg*>(_pMsg);
+                
+                // Check if we need to change drag widget
+                
+                if( pMsg->dragWidget() != m_dragSlot.pWidget )
+                    _replaceDragWidget(pMsg->dragWidget());
+
+                break;
+            }
+
+            case MsgType::DropDeliver:
+            {
+                auto pMsg = static_cast<DropDeliverMsg*>(_pMsg);
+
+                // Check if our delivery was accepted and in that case complete, otherwise cancel.
+                
+                if( pMsg->isAccepted() )
+                    _complete( pMsg->deliveredTo(), pMsg->modKeys(), pMsg->pointerPos() );
+                else
+                    _cancel(pMsg->modKeys(), pMsg->pointerPos());
+                
+                break;
+            }
+                
+                
 			default:
 				break;
 		}
 
-
 		Layer::_receive(_pMsg);
 	}
 
+    //____ _cancel() ________________________________________________________________
+    
+    void DragNDropLayer::_cancel( ModifierKeys modKeys, Coord pointerPos )
+    {
+        if( m_tickRouteId )
+            Base::msgRouter()->deleteRoute( m_tickRouteId );
+
+        if( m_dragSlot.pWidget )
+        {
+            _requestRender(m_dragSlot.geo);
+            m_dragSlot.replaceWidget(this, nullptr);
+        }
+        
+        if( m_pTargeted )
+        {
+            Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, modKeys, pointerPos));
+            m_pTargeted = nullptr;
+        }
+        
+        Base::msgRouter()->post(new DropCancelMsg(m_pPicked, m_pickCategory, nullptr, modKeys, pointerPos));
+        m_pPicked = nullptr;
+        m_pPayload = nullptr;
+        m_dragState = DragState::Idle;
+    }
+    
+    //____ _complete() _______________________________________________________________
+    
+    void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
+    {
+        if( m_tickRouteId )
+            Base::msgRouter()->deleteRoute( m_tickRouteId );
+
+        _requestRender(m_dragSlot.geo);
+        m_dragSlot.replaceWidget(this, nullptr);
+        
+        Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_pickCategory, m_pPayload, modKeys, pointerPos));
+        m_pTargeted = nullptr;
+        m_pPicked = nullptr;
+        m_pPayload = nullptr;
+        m_dragState = DragState::Idle;
+    }
+    
+    //____ _replaceDragWidget() ______________________________________________________
+    
+    void DragNDropLayer::_replaceDragWidget( Widget * pNewWidget )
+    {
+        Size newSize = pNewWidget->preferredSize();
+        Size maxSize = Size::max(m_dragSlot.geo.size(),newSize);
+        
+        m_dragSlot.replaceWidget(this, pNewWidget );
+        m_dragSlot.geo.setSize(newSize);
+        
+        _requestRender(maxSize);
+    }
+    
+    
+    //____ _renderPatches() __________________________________________________________
+    
+    void DragNDropLayer::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
+    {
+        // Generate drag widget as an image of picked widget if missing and needed./*/*
+
+        if( m_dragState == DragState::Dragging && !m_dragSlot.pWidget )
+        {
+            Size sz = m_pPicked->size();
+
+            auto pFactory = pDevice->surfaceFactory();
+            auto pCanvas = pFactory->createSurface(sz,PixelFormat::BGRA_8);
+            pCanvas->fill( Color::Transparent );
+            
+            Patches patches;
+            patches.add( sz );
+            
+            auto pOldCanvas = pDevice->canvas();
+            Color oldTint = pDevice->tintColor();
+            pDevice->setCanvas(pCanvas);
+            
+            pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
+            m_pPicked->_renderPatches(pDevice, sz, sz, patches);
+            pDevice->setCanvas(pOldCanvas);
+            pDevice->setTintColor(oldTint);
+
+            auto pImage = Image::create();
+            pImage->setImage( pCanvas );
+            pImage->_setSize(sz);
+            
+//            auto pImage = Filler::create();
+//            pImage->setPreferredSize({16,16});
+//            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
+            
+            
+            m_dragSlot.replaceWidget(this, pImage);
+        }
+
+        Layer::_renderPatches(pDevice,_canvas,_window,patches);
+    }
 
 
 } // namespace wg

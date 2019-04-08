@@ -156,7 +156,7 @@ namespace wg
 		class CacheSlot : public Link
 		{
 		public:
-			CacheSlot( CacheSurf * _pSurf, const Rect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf, pGlyph = 0; }
+            CacheSlot( CacheSurf * _pSurf, const Rect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf; pGlyph = 0; }
 
 			LINK_METHODS( CacheSlot );
 
