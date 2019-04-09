@@ -978,8 +978,10 @@ namespace wg
 
 	const char DropEnterMsg::CLASSNAME[] = { "DropEnterMsg" };
 
-	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropEnter, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
+                               Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropEnter, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+        m_pDragWidget(pDragWidget)
 	{
 	}
 
@@ -1019,8 +1021,10 @@ namespace wg
 
 	const char DropMoveMsg::CLASSNAME[] = { "DropMoveMsg" };
 
-	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropMove, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
+                             Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+		: DragNDropMsg( MsgType::DropMove, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+        m_pDragWidget(pDragWidget)
 	{
 	}
 

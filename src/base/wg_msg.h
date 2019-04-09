@@ -824,7 +824,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropEnterMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropEnterMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
 	};
@@ -848,7 +848,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropMoveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropMoveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
 	};

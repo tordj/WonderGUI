@@ -255,7 +255,7 @@ namespace wg
                         
                         if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
                         {
-                            Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                            Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot.pWidget, this, pMsg->modKeys(), pMsg->pointerPos()));
                         }
 
                         break;
@@ -315,6 +315,7 @@ namespace wg
                         {
                             Base::msgRouter()->post(new DropDeliverMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
                             m_dragState = DragState::Delivering;
+                            Base::msgRouter()->post(new DropLeaveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, pMsg->modKeys(), pMsg->pointerPos()));
                             m_pTargeted = nullptr;
                         }
                         else
@@ -378,7 +379,7 @@ namespace wg
                 {
                     Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
                     
-                    Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pPayload, m_pPicked, this, pMsg->modKeys(), pMsg->pointerPos()));
+                    Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot.pWidget,  this, pMsg->modKeys(), pMsg->pointerPos()));
                     
                     m_pProbed = nullptr;
                     m_pTargeted = pTargeted;
@@ -463,14 +464,15 @@ namespace wg
     
     void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
     {
+        assert( m_dragSlot.pWidget && !m_pTargeted );
+        
         if( m_tickRouteId )
             Base::msgRouter()->deleteRoute( m_tickRouteId );
 
         _requestRender(m_dragSlot.geo);
         m_dragSlot.replaceWidget(this, nullptr);
-        
+
         Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_pickCategory, m_pPayload, modKeys, pointerPos));
-        m_pTargeted = nullptr;
         m_pPicked = nullptr;
         m_pPayload = nullptr;
         m_dragState = DragState::Idle;

@@ -346,38 +346,95 @@ int main(int argc, char** argv)
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
 
-		// Test drag n drop support
 
-	TextDisplay_p pPickable1 = TextDisplay::create();
-	pPickable1->setSkin(pTestSkin);
-	pPickable1->text.set( "Drag Me 1" );
-	pPickable1->setPickable(true, 1);
-	pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+    
+    
+    // Test drag n drop support
 
-	TextDisplay_p pPickable2 = TextDisplay::create();
-	pPickable2->setSkin(pTestSkin);
-	pPickable2->text.set("Drag Me 2");
-	pPickable2->setPickable(true, 2);
-	pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+    {
+        auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+        
+        int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+        pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
-	TextDisplay_p pDropTarget1 = TextDisplay::create();
-	pDropTarget1->setSkin(pTestSkin);
-	pDropTarget1->text.set("Drop 1 here");
-	pDropTarget1->setDropTarget(true);
-	pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+        
 
-	TextDisplay_p pDropTarget2 = TextDisplay::create();
-	pDropTarget2->setSkin(pTestSkin);
-	pDropTarget2->text.set("Drop 2 here");
-	pDropTarget2->setDropTarget(true);
-	pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
+        TextDisplay_p pPickable1 = TextDisplay::create();
+        pPickable1->setSkin(pTestSkin);
+        pPickable1->text.set( "Drag Me 1" );
+        pPickable1->setPickable(true, 1);
+        pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
 
-	TextDisplay_p pDropTargetAny = TextDisplay::create();
-	pDropTargetAny->setSkin(pTestSkin);
-	pDropTargetAny->text.set("Drop any here");
-	pDropTargetAny->setDropTarget(true);
-	pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
+        TextDisplay_p pPickable2 = TextDisplay::create();
+        pPickable2->setSkin(pTestSkin);
+        pPickable2->text.set("Drag Me 2");
+        pPickable2->setPickable(true, 2);
+        pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
 
+        TextDisplay_p pDropTarget1 = TextDisplay::create();
+        pDropTarget1->setSkin(pTestSkin);
+        pDropTarget1->text.set("Drop 1 here");
+        pDropTarget1->setDropTarget(true);
+        pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+
+        TextDisplay_p pDropTarget2 = TextDisplay::create();
+        pDropTarget2->setSkin(pDropTargetSkin);
+        pDropTarget2->text.set("Drop 2 here");
+        pDropTarget2->setDropTarget(true);
+        pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
+
+        TextDisplay_p pDropTargetAny = TextDisplay::create();
+        pDropTargetAny->setSkin(pDropTargetSkin);
+        pDropTargetAny->text.set("Drop any here");
+        pDropTargetAny->setDropTarget(true);
+        pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
+        
+        
+        Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropProbe, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            if( pMsg->pickCategory() == 1 )
+            {
+                pMsg->accept();
+            }
+        });
+
+        Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropDeliver, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            if( pMsg->pickCategory() == 1 )
+            {
+                pMsg->accept();
+            }
+        });
+
+        
+        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropProbe, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            if( pMsg->pickCategory() == 2 )
+            {
+                pMsg->accept();
+            }
+        });
+
+        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropDeliver, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            if( pMsg->pickCategory() == 2 )
+            {
+                pMsg->accept();
+            }
+        });
+
+        
+        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropProbe, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            pMsg->accept();
+        });
+
+        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropDeliver, [](Msg * _pMsg) {
+            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+            pMsg->accept();
+        });
+
+    }
 
 	// Test transparency issue
 
@@ -1063,12 +1120,12 @@ Blob_p loadBlob( const char * pPath )
 		return 0;
 
 	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
+	size_t size = ftell(fp);
 	fseek( fp, 0, SEEK_SET );
 
-	Blob_p pBlob = Blob::create( size );
+	Blob_p pBlob = Blob::create( (int) size );
 		
-	int nRead = fread( pBlob->data(), 1, size, fp );
+	size_t nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )
@@ -1088,12 +1145,12 @@ void * loadFile( const char * pPath )
 		return 0;
 
 	fseek( fp, 0, SEEK_END );
-	int size = ftell(fp);
+	size_t size = ftell(fp);
 	fseek( fp, 0, SEEK_SET );
 
 	char * pMem = (char*) malloc( size+1 );
 	pMem[size] = 0;
-	int nRead = fread( pMem, 1, size, fp );
+	size_t nRead = fread( pMem, 1, size, fp );
 	fclose( fp );
 
 	if( nRead < size )
