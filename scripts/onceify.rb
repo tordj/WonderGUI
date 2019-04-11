@@ -15,11 +15,11 @@ def onceify( lines )
 
   for line in lines
 
-    output << line
+	output << line
 
-    if( line =~ /^#define\s*WG_[A-Z]+_DOT_H/ )
-      output << '#pragma once'
-    end
+	if( line =~ /^#define\s*WG_[A-Z]+_DOT_H/ )
+	  output << '#pragma once'
+	end
   end
 
   return output

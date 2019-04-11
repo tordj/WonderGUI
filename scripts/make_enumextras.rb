@@ -2,10 +2,10 @@
 # Update wg_toString.h/cpp with functions for all enums in wg_types.h marked "autoExtras".
 
 
-	inputFiles = [ 'src\base\wg_types.h' ]
+	inputFiles = [ 'src/base/wg_types.h' ]
 
-	headerPath = 'src\base\wg_enumextras.h'
-	sourcePath = 'src\base\wg_enumextras.cpp'
+	headerPath = 'src/base/wg_enumextras.h'
+	sourcePath = 'src/base/wg_enumextras.cpp'
 
 
 def replaceAutoSection( path, newContent )
@@ -19,7 +19,7 @@ def replaceAutoSection( path, newContent )
 		f.puts lines[i]
 		i+=1
   end
- 
+
  	f.puts '//. startAutoSection'
 	f.puts '/*========================================================================='
 	f.puts ''
@@ -98,7 +98,7 @@ def processInputFile( path, header, source )
 				source << "\t{"
 				source << "\t\tstatic const char * names[] = { "
 
-				for i in 0..params.length-2 
+				for i in 0..params.length-2
 					source << "\t\t\t\"#{params[i]}\","
 				end
 				source << "\t\t\t\"#{params.last}\" };"
@@ -123,7 +123,7 @@ def processInputFile( path, header, source )
 		header << toStringDeclarations
 
 end
-  
+
 
 
 	headerContent = []

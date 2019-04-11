@@ -77,8 +77,8 @@ namespace wg
 
 	template<typename T> inline void limit(T& x, T min, T max) { if( x < min) x = min; if( x > max) x = max; }
 
-    //____ StateEnum ____________________________________________________
-    
+	//____ StateEnum ____________________________________________________
+
 	enum class StateEnum : uint8_t
 	{
 		Normal					= 0,			///< Element is neither hovered, pressed, selected or focused.
@@ -146,8 +146,8 @@ namespace wg
 			int hovered = int(StateEnum::Hovered);
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
 
-            if ((state & int(StateEnum::Pressed)) == int(StateEnum::Pressed))
-                state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
+			if ((state & int(StateEnum::Pressed)) == int(StateEnum::Pressed))
+				state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
 			int s = (m_state & ~state);
 			if ((s & hovered) == 0)
 				s &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
@@ -162,7 +162,7 @@ namespace wg
 			int hoverDependant = (int(StateEnum::Pressed) | int(StateEnum::Targeted)) & ~hovered;
 
 			if ((state & int(StateEnum::Pressed)) == int(StateEnum::Pressed))
-                state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
+				state &= ~hovered;				// Special case: Don't remove hovered just because we remove pressed.
 			m_state &= ~state;
 			if ((m_state & hovered) == 0)
 				m_state &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
@@ -173,8 +173,8 @@ namespace wg
 		uint8_t		m_state;
 	};
 
-    //____ Bitmask ____________________________________________________
-    
+	//____ Bitmask ____________________________________________________
+
 	template<typename T> class Bitmask
 	{
 	public:

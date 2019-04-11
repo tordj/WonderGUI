@@ -20,7 +20,7 @@ def generateRegexp( match, string )
 		return Regexp.new '\b' + Regexp.quote(string)
 	elsif match == 'end'
 		return Regexp.new Regexp.quote(string) + '\b'
-	end	
+	end
 end
 
 
@@ -63,7 +63,7 @@ def printUsage()
 	printf "usage: multirep [params] [statementFile] file1 [file2 [...]]\n\n"
 	puts "params:"
 	puts "-match [part]    Part of words to match (whole/begin/end/any)."
-	puts "-sep   [string]  Separator used in statementFile (default: '=')" 
+	puts "-sep   [string]  Separator used in statementFile (default: '=')"
 	puts
 	puts "Takes a statement-file containing lines with search/replace statements like"
 	puts "'searchterm = replacement' and performs all of them on all files specified."

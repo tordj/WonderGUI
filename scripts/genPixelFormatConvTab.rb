@@ -6,7 +6,7 @@ def genTab( entries )
 	print "char pixelConvTab_#{entries}[entries] = { 0"
 	for i in 1..entries-1
 		print ", 0x#{(i*255/(entries-1)).to_s(16)}"
-	end 
+	end
 
 
 	print " };\n"

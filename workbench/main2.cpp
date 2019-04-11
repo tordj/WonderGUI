@@ -94,7 +94,7 @@ int main(int argc, char** argv)
 	SDL_GLContext context = SDL_GL_CreateContext(pWin);
 
 
-#ifdef WIN32  
+#ifdef WIN32
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 #endif
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
 	//	else if( pWinSurf->format->BitsPerPixel == 24 )
 	//		format = PixelFormat::BGR_8;
 
-	//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
+	//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
 	//	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
 	//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 
 	Base::inputHandler()->setFocusedWindow(pRoot);
 
-	// 
+	//
 
 	MsgLogger_p pLogger = MsgLogger::create(std::cout);
 	pLogger->logAllMsgs();
@@ -210,12 +210,12 @@ int main(int argc, char** argv)
 
 	BitmapFont_p pBmpFont = BitmapFont::create(pFontImg, pFontSpec);
 
-    TextStyle_p pStyle = TextStyle::create();
-    pStyle->setFont(pBmpFont);
-    pStyle->setSize(8);
-    Base::setDefaultStyle(pStyle);
+	TextStyle_p pStyle = TextStyle::create();
+	pStyle->setFont(pBmpFont);
+	pStyle->setSize(8);
+	Base::setDefaultStyle(pStyle);
 
-    
+
 
 //	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 
@@ -298,7 +298,7 @@ int main(int argc, char** argv)
 	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, Border(0));
 
 	//------------------------------------------------------
-	// Setup a simple GUI consisting of a filled background and 
+	// Setup a simple GUI consisting of a filled background and
 	// a button using scaled bitmaps.
 	//------------------------------------------------------
 
@@ -347,94 +347,95 @@ int main(int argc, char** argv)
 
 
 
-    
-    
-    // Test drag n drop support
 
-    {
-        auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
-        
-        int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
-        pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
-        
+	// Test drag n drop support
 
-        TextDisplay_p pPickable1 = TextDisplay::create();
-        pPickable1->setSkin(pTestSkin);
-        pPickable1->text.set( "Drag Me 1" );
-        pPickable1->setPickable(true, 1);
-        pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+	{
+		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
 
-        TextDisplay_p pPickable2 = TextDisplay::create();
-        pPickable2->setSkin(pTestSkin);
-        pPickable2->text.set("Drag Me 2");
-        pPickable2->setPickable(true, 2);
-        pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
-        TextDisplay_p pDropTarget1 = TextDisplay::create();
-        pDropTarget1->setSkin(pTestSkin);
-        pDropTarget1->text.set("Drop 1 here");
-        pDropTarget1->setDropTarget(true);
-        pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
 
-        TextDisplay_p pDropTarget2 = TextDisplay::create();
-        pDropTarget2->setSkin(pDropTargetSkin);
-        pDropTarget2->text.set("Drop 2 here");
-        pDropTarget2->setDropTarget(true);
-        pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
 
-        TextDisplay_p pDropTargetAny = TextDisplay::create();
-        pDropTargetAny->setSkin(pDropTargetSkin);
-        pDropTargetAny->text.set("Drop any here");
-        pDropTargetAny->setDropTarget(true);
-        pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
-        
-        
-        Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropProbe, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            if( pMsg->pickCategory() == 1 )
-            {
-                pMsg->accept();
-            }
-        });
+		TextDisplay_p pPickable1 = TextDisplay::create();
+		pPickable1->setSkin(pTestSkin);
+		pPickable1->text.set( "Drag Me 1" );
+		pPickable1->setPickable(true, 1);
+		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
 
-        Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropDeliver, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            if( pMsg->pickCategory() == 1 )
-            {
-                pMsg->accept();
-            }
-        });
+		TextDisplay_p pPickable2 = TextDisplay::create();
+		pPickable2->setSkin(pTestSkin);
+		pPickable2->text.set("Drag Me 2");
+		pPickable2->setPickable(true, 2);
+		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
 
-        
-        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropProbe, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            if( pMsg->pickCategory() == 2 )
-            {
-                pMsg->accept();
-            }
-        });
+		TextDisplay_p pDropTarget1 = TextDisplay::create();
+		pDropTarget1->setSkin(pTestSkin);
+		pDropTarget1->text.set("Drop 1 here");
+		pDropTarget1->setDropTarget(true);
+		pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
 
-        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropDeliver, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            if( pMsg->pickCategory() == 2 )
-            {
-                pMsg->accept();
-            }
-        });
+		TextDisplay_p pDropTargetAny = TextDisplay::create();
+		pDropTargetAny->setSkin(pDropTargetSkin);
+		pDropTargetAny->text.set("Drop any here");
+		pDropTargetAny->setDropTarget(true);
+		pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
 
-        
-        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropProbe, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            pMsg->accept();
-        });
+		TextDisplay_p pDropTarget2 = TextDisplay::create();
+		pDropTarget2->setSkin(pDropTargetSkin);
+		pDropTarget2->text.set("Drop 2 here");
+		pDropTarget2->setDropTarget(true);
+		pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
 
-        Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropDeliver, [](Msg * _pMsg) {
-            auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
-            pMsg->accept();
-        });
 
-    }
+
+		Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropProbe, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			if( pMsg->pickCategory() == 1 )
+			{
+				pMsg->accept();
+			}
+		});
+
+		Base::msgRouter()->addRoute(pDropTarget1, MsgType::DropDeliver, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			if( pMsg->pickCategory() == 1 )
+			{
+				pMsg->accept();
+			}
+		});
+
+
+		Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropProbe, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			if( pMsg->pickCategory() == 2 )
+			{
+				pMsg->accept();
+			}
+		});
+
+		Base::msgRouter()->addRoute(pDropTarget2, MsgType::DropDeliver, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			if( pMsg->pickCategory() == 2 )
+			{
+				pMsg->accept();
+			}
+		});
+
+
+		Base::msgRouter()->addRoute(pDropTargetAny, MsgType::DropProbe, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			pMsg->accept();
+		});
+
+		Base::msgRouter()->addRoute(pDropTargetAny, MsgType::DropDeliver, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			pMsg->accept();
+		});
+
+	}
 
 	// Test transparency issue
 
@@ -443,15 +444,15 @@ int main(int argc, char** argv)
 	{
 		PackPanel_p pVert = PackPanel::create();
 		PackPanel_p pHorr = PackPanel::create();
-		
+
 		Filler_p pFillerEast = Filler::create();
 		pFillerEast->setSkin( pPressablePlateSkin );
 
 		Filler_p pFillerSouth = Filler::create();
 		pFillerSouth->setSkin( pPressablePlateSkin );
-		
+
 		pVert->setOrientation( Orientation::Vertical );
-		
+
 		PackPanel_p pHorr2 = PackPanel::create();
 
 		LineEditor_p pEditLine = LineEditor::create();
@@ -475,11 +476,11 @@ int main(int argc, char** argv)
 
 		TextEditor_p pText = TextEditor::create();
 		pText->setSkin( ColorSkin::create( Color::Black ) );
-		
-		
+
+
 		TextStyle_p pBig = TextStyle::create();
 		pBig->setSize( 16 );
-		
+
 		TextStyle_p pRed = TextStyle::create();
 		pRed->setColor( Color::Red );
 		pRed->setSize( 25 );
@@ -501,9 +502,9 @@ int main(int argc, char** argv)
 		pHorr->children.add( pText );
 		pHorr->children.add( pFillerEast );
 
-		
+
 		pFlexPanel->children.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
-	
+
 		pEditLine->grabFocus();
 		for (auto it = pVert->children.begin(); it != pVert->children.end(); it++ )
 			printf("%s\n", it->className());
@@ -579,7 +580,7 @@ int main(int argc, char** argv)
 		pSubMenuOpener->setPopup(pSubMenu);
 
 		auto pButtons = PackPanel::create();
-		
+
 		auto pBtn1 = Button::create();
 		pBtn1->setSkin(pPressablePlateSkin);
 		pBtn1->label.set("Button 1");
@@ -677,7 +678,7 @@ int main(int argc, char** argv)
 			p->text.set(temp);
 			widgets[i] = p;
 		}
-		
+
 
 //		auto it = pPanel->children.begin();
 //		for (int i = 0; i < 5; i++)
@@ -721,7 +722,7 @@ int main(int argc, char** argv)
 		pList->header.setSkin( pHeaderSkin );
 		pList->header.arrow.set( pUpDownArrowSkin, Origo::East );
 		pList->header.icon.set( pSimpleIconSkin );
-		
+
 		pList->setSortFunction( sortWidgets );
 		pList->setSelectMode( SelectMode::MultiEntries );
 
@@ -799,11 +800,11 @@ int main(int argc, char** argv)
 
 
  /*  {
-        TestWidget_p pTest = TestWidget::create();
-        pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
-        pTest->start();
-    }
-*/	
+		TestWidget_p pTest = TestWidget::create();
+		pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
+		pTest->start();
+	}
+*/
 
 /*
 	{
@@ -817,10 +818,10 @@ int main(int argc, char** argv)
 
 		pText->text.setTextMapper(pMapper);
 
-		
+
 		TextStyle_p pBig = TextStyle::create();
 		pBig->setSize( 16 );
-		
+
 		TextStyle_p pRed = TextStyle::create();
 		pRed->setColor( Color::Red );
 		pRed->setSize( 25 );
@@ -851,9 +852,9 @@ int main(int argc, char** argv)
 /*
 	{
 		VolumeMeter_p p = VolumeMeter::create();
-		
+
 		p->setSkin( pPressablePlateSkin );
-		
+
 		addResizablePanel( pFlexPanel, p, Base::msgRouter() );
 	}
 */
@@ -872,7 +873,7 @@ int main(int argc, char** argv)
 	pText->text()->set( "THIS IS THE LONG TEXT THAT SHOULD WRAP AND BE FULLY DISPLAYED." );
 	pStack->addWidget(pText);
 */
-	
+
 /*
 	CheckBoxPtr pCheckbox = CheckBox::create();
 	pCheckbox->Label()->set( "CHECKBOX" );
@@ -881,7 +882,7 @@ int main(int argc, char** argv)
 
 /*
 	ToggleGroup_p pGroup = ToggleGroup::create();
-	
+
 
 	for( int i = 0 ; i < 4 ; i++ )
 	{
@@ -897,7 +898,7 @@ int main(int argc, char** argv)
 	TextDisplay_p pText = TextDisplay::create();
 	pText->text.set( "THIS IS THE TEXT\nLINE TWO.\nAN EXTRA LONG LONG LONG LINE TO TEST THE CLIPPING AND RAND BEHAVIOURS." );
 	pFlexPanel->addWidget( pText, WG_NORTHWEST, WG_EAST );
-	
+
 
 	StandardPrinter_p pPrinter = StandardPrinter::create();
 	pPrinter->setAlignment( WG_CENTER );
@@ -915,7 +916,7 @@ int main(int argc, char** argv)
 	FpsDisplay_p pFps = FpsDisplay::create();
 	pFps->setSkin( pPressablePlateSkin );
 	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
-*/	
+*/
 
 	//------------------------------------------------------
 	// Program Main Loop
@@ -937,7 +938,7 @@ int main(int argc, char** argv)
 	printf("Sin(0): %f\n", cos(0));
 	printf("Sin(90): %f\n", cos(3.1415/2));
 
-	while( !bQuit ) 
+	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
 
@@ -960,7 +961,7 @@ int main(int argc, char** argv)
 //		updateWindowRects( pRoot, pWin );
 
 		SDL_Delay(16);
-    }
+	}
 
 	// Exit WonderGUI
 
@@ -971,7 +972,7 @@ int main(int argc, char** argv)
 	IMG_Quit();
 	SDL_Quit();
 
-    return 0;
+	return 0;
 }
 
 
@@ -983,16 +984,16 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 	// WonderGUI needs Tick-events to keep track of time passed for things such
 	// key-repeat, double-click detection, animations etc.  So we create one
 	// and put it on the event queue.
-	
+
 	static unsigned int oldTicks = 0;
-	
+
 	unsigned int ticks = SDL_GetTicks();
 	int tickDiff;
 
 	if( oldTicks == 0 )
 		tickDiff = 0;
-	else 
-		tickDiff = (int) (ticks - oldTicks);		
+	else
+		tickDiff = (int) (ticks - oldTicks);
 	oldTicks = ticks;
 
 	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
@@ -1001,17 +1002,17 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {
-		
+
 		switch( e.type )
 		{
 			case SDL_QUIT:
 				bQuit = true;
 				break;
-				
+
 			case SDL_MOUSEMOTION:
 				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
 				break;
-				
+
 			case SDL_MOUSEBUTTONDOWN:
 				pInput->setButton( translateMouseButton(e.button.button), true );
 				break;
@@ -1019,23 +1020,23 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 			case SDL_MOUSEBUTTONUP:
 				pInput->setButton( translateMouseButton(e.button.button), false );
 				break;
-				
+
 			case SDL_MOUSEWHEEL:
 			{
 				Coord distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 					distance *= -1;
-			
+
 				pInput->setWheelRoll( 1, distance );
 				break;
-			}	
-			
+			}
+
 			case SDL_KEYDOWN:
 			{
 				pInput->setKey( e.key.keysym.sym, true );
 				break;
 			}
-			
+
 			case SDL_KEYUP:
 			{
 				pInput->setKey( e.key.keysym.sym, false );
@@ -1046,13 +1047,13 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				pInput->putText( e.text.text );
 				break;
 
-			
+
 			default:
 				break;
 		}
 	}
-	
-	Base::msgRouter()->dispatch();	
+
+	Base::msgRouter()->dispatch();
 }
 
 //____ translateMouseButton() __________________________________________________
@@ -1082,11 +1083,11 @@ MouseButton translateMouseButton( Uint8 button )
 // Updates the rectangles of the SDL Window that WonderGUI has modified.
 //
 void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
-{	
+{
 	int nRects = pRoot->nbUpdatedRects();
 	if( nRects == 0 )
 		return;
-	
+
 	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
@@ -1124,7 +1125,7 @@ Blob_p loadBlob( const char * pPath )
 	fseek( fp, 0, SEEK_SET );
 
 	Blob_p pBlob = Blob::create( (int) size );
-		
+
 	size_t nRead = fread( pBlob->data(), 1, size, fp );
 	fclose( fp );
 
@@ -1187,7 +1188,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 {
 /*
 	Widget_p pWidget = Widget::cast(pObject);
-	
+
 	if( _pMsg->type() != MsgType::MouseDrag || !pWidget->parent() )
 		return;
 
@@ -1213,7 +1214,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 {
 /*
 	static Coord posAtPress[MouseButton_Max];
-	
+
 	auto	pWidget = Widget::cast(_pWidget);
 	FlexHook_p 	pHook = FlexHook::cast(pWidget->hook());
 
@@ -1223,7 +1224,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 		{
 			auto pMsg = MousePressMsg::cast(_pMsg);
 			posAtPress[(int)pMsg->button()] = pWidget->pos();
-			
+
 		}
 		break;
 		case MsgType::MouseDrag:
@@ -1241,7 +1242,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 		break;
 		case MsgType::MouseRelease:
 		break;
-		
+
 		default:
 		break;
 	}

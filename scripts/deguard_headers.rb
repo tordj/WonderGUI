@@ -14,7 +14,7 @@ def deguard_headers( lines, filename )
   ownGuard = filename.sub /.*wg_/, ''
   ownGuard.sub! /\.cpp/, ''
   ownGuard.sub! /\.h/, ''
-  ownGuard.upcase! 
+  ownGuard.upcase!
   ownGuard = 'WG_' + ownGuard + '_DOT_H'
   puts ownGuard
 
@@ -23,16 +23,16 @@ def deguard_headers( lines, filename )
   for line in lines
 
 
-    if( line =~ /^#ifndef\s*WG_[A-Z]+_DOT_H/ and !line[ownGuard] )
-        inConditional = true;
-    elsif( inConditional and line =~ /^#endif/ )
-        inConditional = false;
-    elsif( inConditional )
-        line.sub! /#\s+include/, "#include"
-        output << line
-    else
-      output << line
-    end
+	if( line =~ /^#ifndef\s*WG_[A-Z]+_DOT_H/ and !line[ownGuard] )
+		inConditional = true;
+	elsif( inConditional and line =~ /^#endif/ )
+		inConditional = false;
+	elsif( inConditional )
+		line.sub! /#\s+include/, "#include"
+		output << line
+	else
+	  output << line
+	end
   end
 
   return output
@@ -48,20 +48,20 @@ def despace_includes( lines )
 
   for line in lines
 
-    if( line =~ /^#include.*<wg_/ )
-        prevWasInclude = true;
-        if( spaceAfterInclude )
-          output.pop
-        end
-    elsif( prevWasInclude and line !~ /[A-Za-z0-9]/ )
-        spaceAfterInclude = true;
-        prevWasInclude = false;
-    else
-       prevWasInclude = false;
-       spaceAfterInclude = false;
-    end
+	if( line =~ /^#include.*<wg_/ )
+		prevWasInclude = true;
+		if( spaceAfterInclude )
+		  output.pop
+		end
+	elsif( prevWasInclude and line !~ /[A-Za-z0-9]/ )
+		spaceAfterInclude = true;
+		prevWasInclude = false;
+	else
+	   prevWasInclude = false;
+	   spaceAfterInclude = false;
+	end
 
-    output << line
+	output << line
   end
 
   return output

@@ -45,9 +45,9 @@ while( true )
 			f = File.open( filename, "rb")
 			f.seek( oldSize )
 			lines = f.readlines
-			lines.each do | line | 
-				if( exp == nil || line =~ exp ) 
-					printf( line ) 
+			lines.each do | line |
+				if( exp == nil || line =~ exp )
+					printf( line )
 				end
 			end
 			f.close

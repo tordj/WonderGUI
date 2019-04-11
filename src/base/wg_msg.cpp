@@ -891,8 +891,8 @@ namespace wg
 
 	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
 	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
-    m_dragWidgetPointerOfs(Coord()-pickOfs),
-    m_pickOfs(pickOfs)
+	m_dragWidgetPointerOfs(Coord()-pickOfs),
+	m_pickOfs(pickOfs)
 	{
 	}
 
@@ -979,9 +979,9 @@ namespace wg
 	const char DropEnterMsg::CLASSNAME[] = { "DropEnterMsg" };
 
 	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
-                               Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+							   Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropEnter, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
-        m_pDragWidget(pDragWidget)
+		m_pDragWidget(pDragWidget)
 	{
 	}
 
@@ -1022,9 +1022,9 @@ namespace wg
 	const char DropMoveMsg::CLASSNAME[] = { "DropMoveMsg" };
 
 	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
-                             Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
+							 Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropMove, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
-        m_pDragWidget(pDragWidget)
+		m_pDragWidget(pDragWidget)
 	{
 	}
 
@@ -1094,7 +1094,9 @@ namespace wg
 	const char DropDeliverMsg::CLASSNAME[] = { "DropDeliverMsg" };
 
 	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
-		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
+		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
+		m_bAccepted = false;
+
 	{
 	}
 

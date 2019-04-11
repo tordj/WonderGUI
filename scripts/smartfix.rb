@@ -10,23 +10,23 @@ end
 def smartfix( lines )
 
   output = []
- 
+
   for line in lines
 
-    ofs = line.index( /const\s+[A-Za-z]+_p&/ )
+	ofs = line.index( /const\s+[A-Za-z]+_p&/ )
 
-    while( ofs != nil )
+	while( ofs != nil )
 
-      length = line.index( '&', ofs ) - ofs + 1
+	  length = line.index( '&', ofs ) - ofs + 1
 
-      pointer = line[ofs, length-3].gsub( /const\s+/, '' ) + ' *'
+	  pointer = line[ofs, length-3].gsub( /const\s+/, '' ) + ' *'
 
-      line = line[0,ofs] + pointer + line[ofs+length,10000]
+	  line = line[0,ofs] + pointer + line[ofs+length,10000]
 
-      ofs = line.index( /const\s+[A-Za-z]+_p&/ )
-    end
+	  ofs = line.index( /const\s+[A-Za-z]+_p&/ )
+	end
 
-    output << line
+	output << line
   end
 
   return output

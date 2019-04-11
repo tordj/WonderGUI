@@ -34,30 +34,30 @@ end
 
 def memberTablePrio( memberTableNode )
 
-    header = memberTableHeader(memberTableNode)
+	header = memberTableHeader(memberTableNode)
 
-    prio = $prioTable[header]
-    if( prio == nil )
-        prio = 1000
-        $unknownHeaders[header] = $unknownHeaders[header]+1
-    end
+	prio = $prioTable[header]
+	if( prio == nil )
+		prio = 1000
+		$unknownHeaders[header] = $unknownHeaders[header]+1
+	end
 
-    return prio
+	return prio
 end
 
 def mergeMemberTables( tables )
   for index in 0..tables.size-1
-    for prev in 0..index-1
-      if( memberTableHeader( tables[prev]) == memberTableHeader( tables[index]) )
+	for prev in 0..index-1
+	  if( memberTableHeader( tables[prev]) == memberTableHeader( tables[index]) )
 #        puts 'Found duplicate ' + memberTableHeader( memberTables[prev] )
 
-        rows = tables[index].css('tr')
-        for row in 1..rows.size-1
-          rows[row].parent = tables[prev]
-        end
-        tables[index].remove
-      end
-    end
+		rows = tables[index].css('tr')
+		for row in 1..rows.size-1
+		  rows[row].parent = tables[prev]
+		end
+		tables[index].remove
+	  end
+	end
   end
 end
 
@@ -70,12 +70,12 @@ end
 
 def sortMemberTables( tables )
 
-    sorted_tables = tables.sort_by { |node| memberTablePrio( node ) }
+	sorted_tables = tables.sort_by { |node| memberTablePrio( node ) }
 
 
-    for i in 0..sorted_tables.length-2
+	for i in 0..sorted_tables.length-2
   		sorted_tables[i].add_next_sibling(sorted_tables[i+1])
-    end
+	end
 
 #  rows = tables[index].css('tr')
 #  rows.sort_by! { |row| row.}

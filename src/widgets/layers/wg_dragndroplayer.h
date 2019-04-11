@@ -51,7 +51,7 @@ namespace wg
 		const char *            className( void ) const override;
 		static const char       CLASSNAME[];
 		static DragNDropLayer_p  cast( Object * pObject );
-        
+
 	protected:
 		DragNDropLayer();
 		virtual ~DragNDropLayer();
@@ -80,42 +80,42 @@ namespace wg
 
 		void            _cloneContent( const Widget * _pOrg ) override;
 		void            _receive( Msg * pMsg ) override;
-        void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
+		void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
 
-        //
-        
-        void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
-        void            _cancel( ModifierKeys modKeys, Coord pointerPos );
-        void            _replaceDragWidget( Widget * pNewWidget );
+		//
 
-        
-        
+		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
+		void            _cancel( ModifierKeys modKeys, Coord pointerPos );
+		void            _replaceDragWidget( Widget * pNewWidget );
+
+
+
 		enum DragState
 		{
 			Idle,
 			Picking,		// Mouse button pressed, awaiting drag to pass treshold
 			Picked,			// Drag passed treshold, DropPickMsg sent.
 			Dragging,		// We have a payload, a drag-widget and are dragging.
-            Targeting,      // We are hovering a widget that has accepted our target probing.
-            Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
+			Targeting,      // We are hovering a widget that has accepted our target probing.
+			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-        RouteId        m_tickRouteId;
-        
+		RouteId        m_tickRouteId;
+
 		DragState		m_dragState = DragState::Idle;
 
 		LayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
-        Payload_p		m_pPayload;
+		Payload_p		m_pPayload;
 
 		int				m_dragStartTreshold = 3;
-        Coord           m_dragWidgetOfs;                // Drag widgets offset from pointer.
-        
-        Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
-        Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.
+		Coord           m_dragWidgetOfs;                // Drag widgets offset from pointer.
+
+		Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
+		Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.
 	};
-    
+
 
 
 
