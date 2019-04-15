@@ -595,7 +595,7 @@ namespace wg
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_glReadFrameBuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_glDrawFrameBuffer);
 
-		glBindVertexArray(NULL);
+		glBindVertexArray(0);
 
 
 		//

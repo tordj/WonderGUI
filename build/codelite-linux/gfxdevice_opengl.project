@@ -14,6 +14,7 @@
     <File Name="../../src/gfxdevices/opengl/wg_glsurface.h"/>
     <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.cpp"/>
     <File Name="../../src/gfxdevices/opengl/wg_glsurfacefactory.h"/>
+    <File Name="../../src/gfxdevices/opengl/wg_glshaders.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <GlobalSettings>

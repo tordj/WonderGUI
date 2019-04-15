@@ -6,3 +6,6 @@ log.txt
 *.dll
 .DS_Store
 xcuserdata
+debug/
+deps/
+build/codelite-linux/

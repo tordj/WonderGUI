@@ -32,8 +32,8 @@
     <File Name="../../workbench/main_gl.cpp" ExcludeProjConfig="Debug"/>
     <File Name="../../workbench/testwidget.cpp"/>
     <File Name="../../workbench/testwidget.h"/>
-    <File Name="../../workbench/main2.cpp" ExcludeProjConfig="Debug"/>
-    <File Name="../../workbench/main_streamtest.cpp"/>
+    <File Name="../../workbench/main2.cpp" ExcludeProjConfig=""/>
+    <File Name="../../workbench/main_streamtest.cpp" ExcludeProjConfig="Debug"/>
   </VirtualDirectory>
   <Dependencies Name="Release">
     <Project Name="gfxdevice_software"/>
@@ -61,8 +61,8 @@
         <IncludePath Value="../../workbench/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
+        <IncludePath Value="../../src/components/"/>
         <IncludePath Value="../../src/interfaces/"/>
-        <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textmappers/"/>
@@ -129,8 +129,8 @@
         <IncludePath Value="../../workbench/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
+        <IncludePath Value="../../src/components/"/>
         <IncludePath Value="../../src/interfaces/"/>
-        <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
         <IncludePath Value="../../src/textmappers/"/>

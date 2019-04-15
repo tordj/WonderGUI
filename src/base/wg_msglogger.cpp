@@ -283,19 +283,19 @@ namespace wg
 			case MsgType::KeyPress:
 			{
 				KeyPressMsg_p pMsg = KeyPressMsg::cast(_pMsg);
-				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRepeat:
 			{
 				KeyRepeatMsg_p pMsg = KeyRepeatMsg::cast(_pMsg);
-				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRelease:
 			{
 				KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
-				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
+				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::TextInput:
@@ -324,7 +324,7 @@ namespace wg
 			case MsgType::ValueUpdate:
 			{
 				ValueUpdateMsg_p pMsg = ValueUpdateMsg::cast(_pMsg);
-				snprintf( params, c_paramLen, " value=%lld fraction=%f", pMsg->value(), pMsg->fraction() );
+				snprintf( params, c_paramLen, " value=%lld fraction=%f", (long long int) pMsg->value(), pMsg->fraction() );
 				break;
 			}
 

@@ -63,12 +63,12 @@ DEPDIR = deps
 
 
 
-CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/items/ -I../../src/interfaces/   \
+CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ -I../../src/interfaces/   \
   -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/textmappers/ -I../../src/valueformatters/ \
   -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
-  -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/fonts/freetype/
+  -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/gfxdevices/stream/ -I../../src/fonts/freetype/
 
-VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/items:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
 
 BASE = wg_anim.o \
   wg_base.o \
@@ -81,11 +81,18 @@ BASE = wg_anim.o \
   wg_codepages.o \
   wg_color.o \
   wg_dummyfont.o \
-  wg_finalizer.o \
+  wg_enumextras.o \
   wg_font.o \
   wg_geo.o \
   wg_gfxanim.o \
   wg_gfxdevice.o \
+  wg_gfxinstream.o \
+  wg_gfxoutstream.o \
+  wg_gfxstreamlogger.o \
+  wg_gfxstreamplayer.o \
+  wg_gfxstreamplug.o \
+  wg_gfxstreamreader.o \
+  wg_gfxstreamwriter.o \
   wg_inputhandler.o \
   wg_mempool.o \
   wg_memstack.o \
@@ -108,23 +115,26 @@ BASE = wg_anim.o \
   wg_togglegroup.o \
   wg_util.o
 
-INTERFACES = wg_columnheader.o \
-  wg_interface.o \
-  wg_modvalue.o \
-  wg_slidespan.o \
-  wg_span.o \
-  wg_text.o \
-  wg_value.o
+COMPONENTS = wg_ccanvas.o \
+  wg_ccolumnheader.o \
+  wg_cicondisplay.o \
+  wg_cspan.o \
+  wg_ctext.o \
+  wg_ctextdisplay.o \
+  wg_ctexteditor.o \
+  wg_cvalue.o \
+  wg_cvaluedisplay.o \
+  wg_cvalueeditor.o
 
-ITEMS = wg_columnheaderitem.o \
-  wg_edittextitem.o \
-  wg_editvalueitem.o \
-  wg_iconitem.o \
-  wg_modvalueitem.o \
-  wg_spanitem.o \
-  wg_textbaseitem.o \
-  wg_textitem.o \
-  wg_valueitem.o
+INTERFACES = wg_icanvas.o \
+  wg_icolumnheader.o \
+  wg_interface.o \
+  wg_irotextdisplay.o \
+  wg_irovaluedisplay.o \
+  wg_islidespan.o \
+  wg_ispan.o \
+  wg_ivaluedisplay.o
+
 
 SIZEBROKERS = wg_scalepreferred_sizebroker.o \
   wg_sizebroker.o \
@@ -134,7 +144,9 @@ SKINS = wg_blockskin.o \
   wg_boxskin.o \
   wg_colorskin.o \
   wg_extendedskin.o \
-  wg_skin.o
+  wg_multiblockskin.o \
+  wg_skin.o \
+  wg_staticcolorskin.o
 
 TEXTMAPPERS = wg_stdtextmapper.o \
   wg_textmapper.o
@@ -145,12 +157,14 @@ VALUEFORMATTERS = wg_standardformatter.o \
 
 WIDGETS = wg_animplayer.o \
   wg_button.o \
+  wg_canvas.o \
   wg_container.o \
   wg_filler.o \
   wg_fpsdisplay.o \
   wg_image.o \
   wg_lineeditor.o \
   wg_oscilloscope.o \
+  wg_popupopener.o \
   wg_refreshbutton.o \
   wg_rulerlabels.o \
   wg_scrollbar.o \
@@ -167,7 +181,8 @@ CAPSULES = wg_capsule.o \
   wg_shadercapsule.o \
   wg_sizecapsule.o
 
-LAYERS = wg_layer.o \
+LAYERS = wg_dragndroplayer.o \
+  wg_layer.o \
   wg_modallayer.o \
   wg_popuplayer.o
 
@@ -183,19 +198,22 @@ PANELS = wg_flexpanel.o \
   wg_splitpanel.o \
   wg_stackpanel.o
 
-lib_files = $(BASE) $(INTERFACES) $(ITEMS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
+lib_files = $(BASE) $(INTERFACES) $(COMPONENTS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
 
 softgfx_files = wg_softgfxdevice.o wg_softsurface.o wg_softsurfacefactory.o
 
 glgfx_files = wg_glgfxdevice.o wg_glsurface.o wg_glsurfacefactory.o
 
+streamgfx_files = wg_streamgfxdevice.o wg_streamsurface.o wg_streamsurfacefactory.o
+
 freetype_files = wg_freetypefont.o
 
 default : lib softgfx example01
-all : lib softgfx glgfx freetype examples
+all : lib softgfx glgfx streamgfx freetype examples
 lib : libwondergui.a
 softgfx : libwg_gfx_software.a
 glgfx : libwg_gfx_opengl.a
+streamgfx : libwg_gfx_stream.a
 freetype : libwg_font_freetype.a
 examples : example01
 
@@ -208,6 +226,10 @@ libwg_gfx_software.a : $(softgfx_files)
 
 libwg_gfx_opengl.a : $(glgfx_files)
 	ar rcu $(OUTDIR)/libwg_gfx_opengl.a $(glgfx_files:%.o=$(OBJDIR)/%.o)
+
+libwg_gfx_stream.a : $(streamgfx_files)
+	ar rcu $(OUTDIR)/libwg_gfx_stream.a $(streamgfx_files:%.o=$(OBJDIR)/%.o)
+
 
 libwg_font_freetype.a : $(freetype_files)
 	ar rcu $(OUTDIR)/libwg_font_freetype.a $(freetype_files:%.o=$(OBJDIR)/%.o)
