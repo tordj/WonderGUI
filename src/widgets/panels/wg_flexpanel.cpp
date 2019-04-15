@@ -834,8 +834,8 @@ namespace wg
 		{
 			if( pSlot[i].bVisible == true )
 			{
-				pSlot[i].bVisible = false;
 				_onRequestRender(pSlot[i].realGeo, pSlot);
+				pSlot[i].bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
 	}
@@ -989,6 +989,13 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void FlexPanel::_releaseChild(Slot * pSlot)
+	{
+		_willRemoveSlots(pSlot, 1);
+		m_children.remove(static_cast<FlexPanelSlot*>(pSlot));
+	}
 
 	//____ _firstSlotWithGeo() _____________________________________________________
 

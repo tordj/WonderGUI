@@ -272,6 +272,7 @@ namespace wg
 	}
 
 	//____ _childRequestResize() ______________________________________________
+
 	void ModalLayer::_childRequestResize( Slot * pSlot )
 	{
 		if( pSlot == &m_baseSlot )
@@ -280,6 +281,15 @@ namespace wg
 			_refreshRealGeo( (ModalSlot *) pSlot );
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void ModalLayer::_releaseChild(Slot * pSlot)
+	{
+		if (pSlot == &m_baseSlot)
+			Layer::_releaseChild(pSlot);
+		else
+			_willRemoveSlots(pSlot, 1);
+	}
 
 	//____ Constructor ____________________________________________________________
 

@@ -110,6 +110,16 @@ namespace wg
 		return 0;
 	}
 
+
+	//____ releaseFromParent() ________________________________________________
+
+	void Widget::releaseFromParent()
+	{
+		if (m_pHolder)
+			m_pHolder->_releaseChild(m_pSlot);
+	}
+
+
 	//____ pointerStyle() ________________________________________
 
 	PointerStyle Widget::pointerStyle() const

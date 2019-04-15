@@ -234,6 +234,15 @@ namespace wg
 		package.pSlot = nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void Capsule::_releaseChild(Slot * pSlot)
+	{
+		pSlot->replaceWidget(this, nullptr);
+		_requestRender();
+		_requestResize();
+	}
+
 	//____ _setWidget() ____________________________________________________________
 
 	void Capsule::_setWidget( Slot * pSlot, Widget * pWidget )

@@ -93,6 +93,10 @@ namespace wg
 			if( pNewWidget )
 			{
 				pNewWidget->_incRefCount();
+
+				if (pNewWidget->m_pHolder)
+					pNewWidget->releaseFromParent();
+
 				pNewWidget->_setHolder( pHolder, this );
 			}
 		}

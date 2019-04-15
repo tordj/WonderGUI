@@ -227,6 +227,7 @@ namespace wg
 		Widget *	_prevChild(const Slot * pSlot) const override;
 		Widget *	_nextChild(const Slot * pSlot) const override;
 
+		void		_releaseChild(Slot * pSlot);
 
 		// Overloaded from ComponentHolder
 

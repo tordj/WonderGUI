@@ -1095,10 +1095,9 @@ namespace wg
 
 	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
-		m_bAccepted = false;
-
+		m_bAccepted(false)
 	{
-	}
+	} 
 
 	bool DropDeliverMsg::isInstanceOf(const char * pClassName) const
 	{

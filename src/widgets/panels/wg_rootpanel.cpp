@@ -473,5 +473,12 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void RootPanel::_releaseChild(Slot * pSlot)
+	{
+		_setWidget(pSlot, nullptr);
+	}
+
 
 } // namespace wg

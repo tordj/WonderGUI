@@ -422,6 +422,14 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void StackPanel::_releaseChild(Slot * pSlot)
+	{
+		_willRemoveSlots(pSlot, 1);
+		m_children.remove(static_cast<StackPanelSlot*>(pSlot));
+	}
+
 	//____ _unhideChildren() _____________________________________________________
 
 	void StackPanel::_unhideChildren( StackPanelSlot * pSlot, int nb )

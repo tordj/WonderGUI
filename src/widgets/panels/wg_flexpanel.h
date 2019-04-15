@@ -333,6 +333,7 @@ namespace wg
 		Widget *	_prevChild( const Slot * pSlot ) const;
 		Widget *	_nextChild( const Slot * pSlot ) const;
 
+		void		_releaseChild(Slot * pSlot);
 
 	private:
 

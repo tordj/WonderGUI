@@ -67,6 +67,7 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		void            _childRequestResize(Slot * pSlot) override;
+		void			_releaseChild(Slot * pSlot) override;
 
 		// Overloaded from Layer
 
@@ -82,7 +83,7 @@ namespace wg
 		void            _receive( Msg * pMsg ) override;
 		void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
 
-		//
+		// Internal
 
 		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
 		void            _cancel( ModifierKeys modKeys, Coord pointerPos );

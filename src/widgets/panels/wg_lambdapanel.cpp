@@ -303,8 +303,8 @@ namespace wg
 		{
 			if( pSlot[i].bVisible == true )
 			{
-				pSlot[i].bVisible = false;
 				_onRequestRender(pSlot[i].geo, pSlot);
+				pSlot[i].bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
 	}
@@ -449,6 +449,15 @@ namespace wg
 
 		return nullptr;
 	}
+
+	//____ _releaseChild() ____________________________________________________
+
+	void LambdaPanel::_releaseChild(Slot * pSlot)
+	{
+		_willRemoveSlots(pSlot, 1);
+		m_children.remove(static_cast<LambdaPanelSlot*>(pSlot));
+	}
+
 
 	//____ _cloneContent() _______________________________________________________
 

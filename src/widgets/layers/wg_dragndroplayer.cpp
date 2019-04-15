@@ -119,6 +119,16 @@ namespace wg
 		}
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void DragNDropLayer::_releaseChild(Slot * pSlot)
+	{
+		if (pSlot == &m_baseSlot)
+			Layer::_releaseChild(pSlot);
+		else
+			_replaceDragWidget(nullptr);
+	}
+
 	//____ _beginLayerSlots() _______________________________________________
 
 	const LayerSlot * DragNDropLayer::_beginLayerSlots() const
@@ -467,13 +477,16 @@ namespace wg
 
 	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
 	{
-		assert( m_dragSlot.pWidget && !m_pTargeted );
+		assert( !m_pTargeted );
 
 		if( m_tickRouteId )
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 
-		_requestRender(m_dragSlot.geo);
-		m_dragSlot.replaceWidget(this, nullptr);
+		if( m_dragSlot.pWidget )
+		{
+			_requestRender(m_dragSlot.geo);
+			m_dragSlot.replaceWidget(this, nullptr);
+		}
 
 		Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_pickCategory, m_pPayload, modKeys, pointerPos));
 		m_pPicked = nullptr;
@@ -485,13 +498,13 @@ namespace wg
 
 	void DragNDropLayer::_replaceDragWidget( Widget * pNewWidget )
 	{
-		Size newSize = pNewWidget->preferredSize();
+		Size newSize = pNewWidget ? pNewWidget->preferredSize() : Size(0,0);
 		Size maxSize = Size::max(m_dragSlot.geo.size(),newSize);
 
 		m_dragSlot.replaceWidget(this, pNewWidget );
 		m_dragSlot.geo.setSize(newSize);
 
-		_requestRender(maxSize);
+		_requestRender({ m_dragSlot.geo.pos(), maxSize });
 	}
 
 

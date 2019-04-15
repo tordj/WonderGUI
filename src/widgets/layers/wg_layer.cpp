@@ -210,6 +210,15 @@ namespace wg
 		Container::_cloneContent( _pOrg );
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void Layer::_releaseChild(Slot * pSlot)
+	{
+		pSlot->replaceWidget(this, nullptr);
+		_onRequestRender( Rect(0,0,m_size), 0 );
+		_requestResize();
+	}
+
 	//____ _setWidget() _______________________________________________________
 
 	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )

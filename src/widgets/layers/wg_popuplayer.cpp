@@ -835,6 +835,20 @@ namespace wg
 			_updateGeo( (PopupSlot *) pSlot );
 	}
 
+	//____ _releaseChild() _____________________________________________________
+
+	void PopupLayer::_releaseChild( Slot * pSlot )
+	{
+		if (pSlot == &m_baseSlot)
+			Layer::_releaseChild(pSlot);
+		else
+		{
+			// PopupLayer is stack-based, releasing a popup forces us to also close all ontop of it
+
+			_removeSlots(0, m_popups.index(static_cast<PopupSlot*>(pSlot)) + 1);
+		}
+	}
+
 	//____ _addSlot() ____________________________________________________________
 
 	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize)

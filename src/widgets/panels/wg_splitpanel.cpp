@@ -668,7 +668,10 @@ namespace wg
 			return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
 
-
-
+	void SplitPanel::_releaseChild(Slot * pSlot)
+	{
+		_setWidget(pSlot, nullptr);
+	}
 }

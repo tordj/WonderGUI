@@ -1308,6 +1308,15 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void PackList::_releaseChild(Slot * pSlot)
+	{
+		_willRemoveSlots(pSlot, 1);
+		m_children.remove(static_cast<PackListSlot*>(pSlot));
+	}
+
+
 	//____ _firstSlotWithGeo() ____________________________________________________
 
 	void PackList::_firstSlotWithGeo( SlotWithGeo& package ) const

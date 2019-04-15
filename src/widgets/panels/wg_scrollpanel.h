@@ -302,6 +302,8 @@ namespace wg
 
 		Rect		_childWindowSection(Slot * pSlot) const;
 
+		void		_releaseChild(Slot * pSlot);
+
 		// Overloaded from ChildHolder
 
 		void			_setWidget(Slot * pSlot, Widget * pWidget);

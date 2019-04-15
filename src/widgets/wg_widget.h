@@ -131,6 +131,7 @@ namespace wg
 		inline Widget_p		prevSibling() const;
 		Container_p			parent() const;
 
+		void				releaseFromParent();
 
 		//.____ State _________________________________________________
 

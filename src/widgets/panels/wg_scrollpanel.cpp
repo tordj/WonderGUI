@@ -1385,6 +1385,15 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ___________________________________________________
+
+	void ScrollPanel::_releaseChild(Slot * pSlot)
+	{
+		_setWidget(pSlot, nullptr);
+	}
+
+
+
 	//____ _childWindowSection() _________________________________________________
 
 	Rect ScrollPanel::_childWindowSection( Slot * _pSlot ) const

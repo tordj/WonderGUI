@@ -479,6 +479,14 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _releaseChild() ____________________________________________________
+
+	void PackPanel::_releaseChild(Slot * pSlot)
+	{
+		_willRemoveSlots(pSlot, 1);
+		m_children.remove(static_cast<PackPanelSlot*>(pSlot));
+	}
+
 	//____ _unhideChildren() _______________________________________________________
 
 	void PackPanel::_unhideChildren(PackPanelSlot * pSlot, int nb)

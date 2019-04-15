@@ -352,6 +352,68 @@ int main(int argc, char** argv)
 	// Test drag n drop support
 
 	{
+		static Widget_p s_pPicked = nullptr;
+		static Coord	s_pickOfs;
+
+		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
+
+
+		TextDisplay_p pPickable1 = TextDisplay::create();
+		pPickable1->setSkin(pTestSkin);
+		pPickable1->text.set( "Drag Me 1" );
+		pPickable1->setPickable(true, 1);
+		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+
+		TextDisplay_p pPickable2 = TextDisplay::create();
+		pPickable2->setSkin(pTestSkin);
+		pPickable2->text.set("Drag Me 2");
+		pPickable2->setPickable(true, 2);
+		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+
+		TextDisplay_p pTrash = TextDisplay::create();
+		pTrash->setSkin(pTestSkin);
+		pTrash->text.set("Trash Can");
+		pTrash->setDropTarget(true);
+		pBasePanel->children.add(pTrash, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+
+		pBasePanel->setDropTarget(true);
+
+		Base::msgRouter()->addRoute(MsgType::DropPick, [](Msg * _pMsg) {
+
+			auto pMsg = static_cast<DropPickMsg*>(_pMsg);
+			s_pPicked = pMsg->pickedFrom();
+			s_pickOfs = pMsg->pickOfs();
+			pMsg->setDragWidget(s_pPicked, Coord() - s_pickOfs );
+
+			pMsg->setPayload(Payload::create());
+		});
+
+		Base::msgRouter()->addRoute(pBasePanel, MsgType::DropProbe, [](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+			pMsg->accept();
+		});
+
+		Base::msgRouter()->addRoute(pBasePanel, MsgType::DropDeliver, [pBasePanel](Msg * _pMsg) {
+			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
+
+			Coord pos = pBasePanel->toLocal(pMsg->pointerPos()) - s_pickOfs;
+
+			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, Size size) {return Rect(pos, 100, 50); });
+			pMsg->accept();
+			
+		});
+
+
+
+	}
+
+	
+	
+/*
+	{
 		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
 
 		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
@@ -436,7 +498,7 @@ int main(int argc, char** argv)
 		});
 
 	}
-
+*/
 	// Test transparency issue
 
 

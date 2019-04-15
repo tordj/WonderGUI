@@ -167,6 +167,7 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		void			_childRequestResize( Slot * pSlot );
+		void			_releaseChild(Slot * pSlot);
 
 		// Methods for ModalChildren
 
