@@ -360,6 +360,7 @@ namespace wg
 
 					if (pDragWidget)
 					{
+						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = pMsg->dragWidgetPointerOfs();
 						dragWidgetSize = pDragWidget->preferredSize();
 						m_dragSlot.replaceWidget(this, pDragWidget);
@@ -501,6 +502,8 @@ namespace wg
 		Size newSize = pNewWidget ? pNewWidget->preferredSize() : Size(0,0);
 		Size maxSize = Size::max(m_dragSlot.geo.size(),newSize);
 
+		if (pNewWidget)
+			pNewWidget->releaseFromParent();
 		m_dragSlot.replaceWidget(this, pNewWidget );
 		m_dragSlot.geo.setSize(newSize);
 

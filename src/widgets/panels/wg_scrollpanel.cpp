@@ -289,6 +289,8 @@ namespace wg
 
 	ViewEntry ViewEntry::operator=(Widget * pWidget)
 	{
+		if (pWidget) 
+			pWidget->releaseFromParent();
 		m_pHolder->_setWidget(m_pSlot, pWidget);
 		return *this;
 	}
@@ -401,6 +403,8 @@ namespace wg
 
 	ScrollbarEntry ScrollbarEntry::operator=(Scrollbar * pWidget)
 	{
+		if (pWidget) 
+			pWidget->releaseFromParent();
 		m_pHolder->_setWidget(m_pSlot, pWidget);
 		return *this;
 	}

@@ -90,7 +90,7 @@ namespace wg
 		friend class Component;
 		friend class Slot;
 
-		template<class S, class H> friend class IChildren;
+		template<class S, class H> friend class IChildrenSubclass;
 
 	public:
 

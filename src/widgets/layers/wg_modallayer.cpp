@@ -52,9 +52,10 @@ namespace wg
 		pSlot->geo = geometry;
 		pSlot->origo = origo;
 
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	//____ setOrigo() ______________________________________________________________
@@ -481,7 +482,19 @@ namespace wg
 		_holder()->_childRequestFocus( m_pSlot, pSavedFocus );
 	}
 
+	//____ _incSlot() ____________________________________________________________
 
+	Slot * ModalLayer::_incSlot(Slot * pSlot) const
+	{
+		return (static_cast<ModalSlot*>(pSlot) + 1);
+	}
+
+	//____ _decSlot() ____________________________________________________________
+
+	Slot * ModalLayer::_decSlot(Slot * pSlot) const
+	{
+		return (static_cast<ModalSlot*>(pSlot) - 1);
+	}
 	//____ _didAddSlots() __________________________________________________
 
 	void ModalLayer::_didAddSlots(Slot * _pSlot, int nb)

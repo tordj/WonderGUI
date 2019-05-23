@@ -42,11 +42,12 @@ namespace wg
 	{
 		//TODO: Assert
 
+		pWidget->releaseFromParent();
 		LambdaPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
@@ -54,10 +55,11 @@ namespace wg
 		//TODO: Assert
 
 		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
@@ -65,10 +67,11 @@ namespace wg
 		//TODO: Assert
 
 		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	void ILambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
@@ -277,6 +280,20 @@ namespace wg
 			package.pSlot = pSlot;
 			package.geo = pSlot->geo;
 		}
+	}
+
+	//____ _incSlot() ____________________________________________________________
+
+	Slot * LambdaPanel::_incSlot(Slot * pSlot) const
+	{
+		return (static_cast<LambdaPanelSlot*>(pSlot) + 1);
+	}
+
+	//____ _decSlot() ____________________________________________________________
+
+	Slot * LambdaPanel::_decSlot(Slot * pSlot) const
+	{
+		return (static_cast<LambdaPanelSlot*>(pSlot) - 1);
 	}
 
 	//____ _didAddSlots() ________________________________________________________

@@ -50,9 +50,9 @@ namespace wg
 
 
 
-	class IPackPanelChildren;
-	typedef	StrongInterfacePtr<IPackPanelChildren>	IPackPanelChildren_p;
-	typedef	WeakInterfacePtr<IPackPanelChildren>	IPackPanelChildren_wp;
+//	class IPackPanelChildren;
+//	typedef	StrongInterfacePtr<IPackPanelChildren>	IPackPanelChildren_p;
+//	typedef	WeakInterfacePtr<IPackPanelChildren>	IPackPanelChildren_wp;
 
 
 	/**
@@ -118,6 +118,8 @@ namespace wg
 
 		// Overloaded from PackChildrenHolder
 
+		Slot *		_incSlot(Slot * pSlot) const;
+		Slot *		_decSlot(Slot * pSlot) const;
 		void		_didAddSlots( Slot * pSlot, int nb );
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void		_willRemoveSlots( Slot * pSlot, int nb );

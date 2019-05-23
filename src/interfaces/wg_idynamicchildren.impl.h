@@ -33,113 +33,129 @@
 
 namespace wg
 {
+	class Widget;
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::add(Widget * pWidget)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::add(Widget * pWidget)
 	{
 		SlotType * pSlot = m_pSlotArray->add();
+
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot,m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::add(const Widget_p pWidgets[], int amount)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::add(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
+
+		for (int i = 0; i < amount; i++)
+			pWidgets[i]->releaseFromParent();
 
 		SlotType * pSlot = m_pSlotArray->add(amount);
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::insert(int index, Widget * pWidget)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::insert(int index, Widget * pWidget)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(index);
+
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::insert(iterator pos, Widget * pWidget)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::insert(iterator pos, Widget * pWidget)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(pos._slot());
+
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::insert(int index, const Widget_p pWidgets[], int amount)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::insert(int index, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(index, amount);
 
 		for (int i = 0; i < amount; i++)
+		{
+			_releaseGuardPointer(pWidgets[i], &pSlot);
 			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
+		}
 		m_pHolder->_didAddSlots(pSlot, amount);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::insert(iterator pos, const Widget_p pWidgets[], int amount)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::insert(iterator pos, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(pos._slot(), amount);
 
 		for (int i = 0; i < amount; i++)
+		{
+			_releaseGuardPointer(pWidgets[i], &pSlot);
 			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
+		}
 		m_pHolder->_didAddSlots(pSlot, amount);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::remove(int index)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::remove(int index)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, 1);
-		return iterator(m_pSlotArray->remove(index));
+		return iterator(m_pSlotArray->remove(index), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::remove(iterator pos)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::remove(iterator pos)
 	{
 		//TODO: Add assert
 
 		m_pHolder->_willRemoveSlots(pos._slot(), 1);
-		return iterator(m_pSlotArray->remove(pos._slot()));
+		return iterator(m_pSlotArray->remove(pos._slot()), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::remove(int index, int amount)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::remove(int index, int amount)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, amount);
-		return iterator(m_pSlotArray->remove(index, amount));
+		return iterator(m_pSlotArray->remove(index, amount), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::remove(iterator beg, iterator end)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::remove(iterator beg, iterator end)
 	{
 		//TODO: Add assert
 
 		m_pHolder->_willRemoveSlots(beg._slot(), int(end._slot() - beg._slot()) );
-		return iterator(m_pSlotArray->remove(beg._slot(), end._slot()));
+		return iterator(m_pSlotArray->remove(beg._slot(), end._slot()), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
@@ -164,7 +180,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::moveToBack(iterator it)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::moveToBack(iterator it)
 	{
 		//TODO: Assert
 
@@ -173,7 +189,7 @@ namespace wg
 
 		m_pSlotArray->move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->last());
+		return iterator(m_pSlotArray->last(), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
@@ -189,7 +205,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::moveToFront(iterator it)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::moveToFront(iterator it)
 	{
 		//TODO: Assert
 
@@ -198,7 +214,7 @@ namespace wg
 
 		m_pSlotArray->move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->begin());
+		return iterator(m_pSlotArray->begin(), m_pHolder);
 	}
 
 	template < class SlotType, class HolderType>
@@ -220,7 +236,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	ChildIterator<SlotType> IDynamicChildren<SlotType, HolderType>::moveBefore(iterator it, iterator sibling)
+	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::moveBefore(iterator it, iterator sibling)
 	{
 		//TODO: Assert
 

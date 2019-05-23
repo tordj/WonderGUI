@@ -85,6 +85,8 @@ namespace wg
 
 		void		reorder(int order[]);
 
+		bool		contains(void * pPointer) const { return (pPointer >= m_pArray && pPointer <= last()); }
+
 	protected:
 
 		void	_reallocArray(int capacity);

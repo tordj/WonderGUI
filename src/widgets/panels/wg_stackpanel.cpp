@@ -282,6 +282,20 @@ namespace wg
 		}
 	}
 
+	//____ _incSlot() ____________________________________________________________
+
+	Slot * StackPanel::_incSlot(Slot * pSlot) const
+	{
+		return (static_cast<StackPanelSlot*>(pSlot) + 1);
+	}
+
+	//____ _decSlot() ____________________________________________________________
+
+	Slot * StackPanel::_decSlot(Slot * pSlot) const
+	{
+		return (static_cast<StackPanelSlot*>(pSlot) - 1);
+	}
+
 	//____ _didAddSlots() ________________________________________________________
 
 	void StackPanel::_didAddSlots( Slot * pSlot, int nb )

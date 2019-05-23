@@ -332,6 +332,19 @@ namespace wg
 		}
 	}
 
+	//____ _incSlot() ____________________________________________________________
+
+	Slot * PackPanel::_incSlot(Slot * pSlot) const
+	{
+		return (static_cast<PackPanelSlot*>(pSlot) + 1);
+	}
+
+	//____ _decSlot() ____________________________________________________________
+
+	Slot * PackPanel::_decSlot(Slot * pSlot) const
+	{
+		return (static_cast<PackPanelSlot*>(pSlot) - 1);
+	}
 	//____ _didAddSlots() _____________________________________________________
 
 	void PackPanel::_didAddSlots(Slot * pSlot, int nb)

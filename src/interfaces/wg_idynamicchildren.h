@@ -47,23 +47,26 @@ namespace wg
 
 	//____ IDynamicChildren _________________________________________________________
 
-	template<class SlotType, class HolderType> class IDynamicChildren : public IChildren<SlotType,HolderType>
+	template<class SlotType, class HolderType> class IDynamicChildren : public IChildrenSubclass<SlotType,HolderType>
 	{
 	public:
 
-		using		iterator = ChildIterator<SlotType>;
-		using		IChildren<SlotType,HolderType>::m_pSlotArray;
-		using		IChildren<SlotType,HolderType>::m_pHolder;
+		using		iterator = ChildIteratorSubclass<SlotType>;
+		using		IChildrenSubclass<SlotType,HolderType>::m_pSlotArray;
+		using		IChildrenSubclass<SlotType,HolderType>::m_pHolder;
 
 		/** @private */
 
-		IDynamicChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : IChildren<SlotType,HolderType>(pSlotArray,pHolder) {}
+		IDynamicChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : IChildrenSubclass<SlotType,HolderType>(pSlotArray,pHolder) {}
 
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
 
 		//.____ Content _______________________________________________________
+
+		inline int		capacity() const { return m_pSlotArray->capacity(); }
+		inline void		setCapacity(int capacity) { m_pSlotArray->setCapacity(capacity); }
 
 		iterator add(Widget * pWidget);
 		iterator add(const Widget_p pWidgets[], int amount);
@@ -94,7 +97,7 @@ namespace wg
 				add(*it++);
 			}
 
-			return iterator(nullptr);
+			return iterator(nullptr, m_pHolder);		//TODO: Correct return value!!! This one is tricky...
 		}
 
 

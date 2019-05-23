@@ -109,7 +109,7 @@ namespace wg
 		friend class ISelectableChildren<PackListSlot, PackList>;
 		friend class IHideableChildren<PackListSlot,PackList>;
 		friend class IDynamicChildren<PackListSlot,PackList>;
-		friend class IChildren<PackListSlot,PackList>;
+		friend class IChildrenSubclass<PackListSlot,PackList>;
 //		template<class T, class P> friend class Children;
 	public:
 
@@ -172,6 +172,9 @@ namespace wg
 
 
 		// Overloaded from PackListChildrenHolder
+
+		Slot *			_incSlot(Slot * pSlot) const;
+		Slot *			_decSlot(Slot * pSlot) const;
 
 		void			_didAddSlots(Slot * pSlot, int nb) override;
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;

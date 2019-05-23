@@ -39,41 +39,72 @@ namespace wg
 //	typedef	WeakInterfacePtr<Children<class SlotType, class HolderType>,Interface_wp>		Children_wp;
 
 
-	//____ ChildrenHolder ___________________________________________________
 
-	class ChildrenHolder /** @private */
+	//____ IChildren _________________________________________________________________
+
+	class IChildren;
+	typedef	StrongInterfacePtr<IChildren>	IChildren_p;
+	typedef	WeakInterfacePtr<IChildren>		IChildren_wp;
+
+	class IChildren : public Interface
 	{
 	public:
-		virtual Object * _object() = 0;
-	};
-
-
-	//____ IChildren _________________________________________________________
-
-	template<class SlotType, class HolderType> class IChildren : public Interface
-	{
-	public:
-
-		using		iterator = ChildIterator<SlotType>;
-
-		/** @private */
-
-		IChildren( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
-
+		using		iterator = ChildIterator;
 
 		//.____ Operators __________________________________________
 
-		inline Widget& operator[](int index) const { return * m_pSlotArray->slot(index)->pWidget; }
+		virtual Widget& operator[](int index) const = 0;
 
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const { return m_pSlotArray->size(); }
-		inline int 		isEmpty() const { return m_pSlotArray->isEmpty(); }
-		inline int		capacity() const { return m_pSlotArray->capacity(); }
-		inline void		setCapacity(int capacity) { m_pSlotArray->setCapacity(capacity);  }
+		virtual int		size() const = 0;
+		virtual int		isEmpty() const = 0;
 
-		inline Widget_p at(int index) const
+		virtual Widget_p at(int index) const = 0;
+		virtual int index(Widget * pChild) const = 0;
+
+		//.____ Misc _______________________________________________________
+
+		inline IChildren_p ptr() { return IChildren_p(this); }
+
+		inline iterator	begin() const { return _begin(); }
+		inline iterator	end() const { return _end(); }
+
+	protected:
+
+		// These are needed since we can't make begin/end virtual (shadowing related issues)
+
+		virtual iterator	_begin() const = 0;
+		virtual iterator	_end() const = 0;
+	};
+
+
+
+	//____ IChildrenSubclass _________________________________________________________
+
+	template<class SlotType, class HolderType> class IChildrenSubclass : public IChildren
+	{
+	public:
+
+		using		iterator = ChildIteratorSubclass<SlotType>;
+
+		/** @private */
+
+		IChildrenSubclass( SlotArray<SlotType> * pSlotArray, HolderType * pHolder ) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
+
+
+		//.____ Operators __________________________________________
+
+		inline Widget& operator[](int index) const override { return * m_pSlotArray->slot(index)->pWidget; }
+
+
+		//.____ Content _______________________________________________________
+
+		inline int		size() const override { return m_pSlotArray->size(); }
+		inline int 		isEmpty() const override { return m_pSlotArray->isEmpty(); }
+
+		inline Widget_p at(int index) const override
 		{
 			if (index < 0 || index >= m_pSlotArray->size())
 				return nullptr;
@@ -81,7 +112,7 @@ namespace wg
 			return Widget_p(m_pSlotArray->slot(index)->pWidget);
 		}
 
-		inline int index(Widget * pChild) const
+		inline int index(Widget * pChild) const override
 		{
 			if( pChild->_holder() && pChild->_holder()->_childParent() == m_pHolder->_object() )
 				return m_pSlotArray->index(static_cast<SlotType*>(pChild->_slot()));
@@ -92,16 +123,21 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline StrongInterfacePtr<IChildren<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<IChildren<SlotType, HolderType>>(this); }
+		inline StrongInterfacePtr<IChildrenSubclass<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<IChildrenSubclass<SlotType, HolderType>>(this); }
 
-		iterator	begin() const { return iterator(m_pSlotArray->begin()); }
-		iterator	end() const { return iterator(m_pSlotArray->end()); }
+		inline iterator	begin() const { return iterator(m_pSlotArray->begin(),m_pHolder); }
+		inline iterator	end() const { return iterator(m_pSlotArray->end(),m_pHolder); }
 
 	protected:
 		Object *	_object() const {	return m_pHolder->_object(); }
 
 		SlotArray<SlotType> *	m_pSlotArray;
 		HolderType *			m_pHolder;
+
+		ChildIterator	_begin() const override { return ChildIterator(m_pSlotArray->begin(),m_pHolder); }
+		ChildIterator	_end() const override { return ChildIterator(m_pSlotArray->end(),m_pHolder); }
+
+		void _releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);	// Release widget from its parent, update pointer slot one of our slots if it is affected.
 
 	};
 

@@ -348,9 +348,31 @@ int main(int argc, char** argv)
 
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
+	// Test IChild and IChildIterator baseclasses
+/*
+	{
+		auto pContainer = PackPanel::create();
+
+		std::vector<Widget_p>	children;
+
+		for (int i = 0; i < 10; i++)
+		{
+			auto p = Filler::create();
+			p->setId(i);
+			children.push_back(p);
+		}
+
+		pContainer->children.add(children.begin(), children.end());
+
+		IChildren_p pChildren = pContainer->children.ptr();
 
 
+		for (auto& child : *pChildren)
+			printf("%d\n", child.id());
 
+
+	}
+*/
 
 	// Test drag n drop support
 

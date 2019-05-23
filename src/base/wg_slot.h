@@ -84,6 +84,9 @@ namespace wg
 		{
 			if( pWidget )
 			{
+				if (pWidget == pNewWidget)
+					return;
+
 				pWidget->_setHolder( nullptr, nullptr );
 				pWidget->_decRefCount();
 			}
@@ -93,10 +96,6 @@ namespace wg
 			if( pNewWidget )
 			{
 				pNewWidget->_incRefCount();
-
-				if (pNewWidget->m_pHolder)
-					pNewWidget->releaseFromParent();
-
 				pNewWidget->_setHolder( pHolder, this );
 			}
 		}

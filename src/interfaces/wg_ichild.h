@@ -59,7 +59,7 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
-		inline IChild<SlotType,HolderType> operator=(Widget * pWidget ) { m_pHolder->_setWidget( m_pSlot, pWidget); return *this; }
+		inline IChild<SlotType, HolderType> operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
 		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }

@@ -54,6 +54,7 @@ namespace wg
 	{
 		//TODO: Assert
 
+		pWidget->releaseFromParent();
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
@@ -62,7 +63,7 @@ namespace wg
 		pSlot->bottomRightPin = bottomRight;
 
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot,m_pHolder);
 	}
 
 	//____ addMovable() ________________________________________________________
@@ -71,6 +72,7 @@ namespace wg
 	{
 		//TODO: Assert
 
+		pWidget->releaseFromParent();
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
@@ -79,7 +81,7 @@ namespace wg
 		pSlot->hotspot = hotspot;
 
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	//____ insertPinned() ________________________________________________________
@@ -89,6 +91,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->bPinned = true;
@@ -96,7 +99,7 @@ namespace wg
 		pSlot->bottomRightPin = bottomRight;
 
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	//____ insertMovable() ________________________________________________________
@@ -106,6 +109,7 @@ namespace wg
 		//TODO: Assert
 
 		FlexPanelSlot * pSlot = m_pSlotArray->insert(index);
+		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
 		pSlot->placementGeo = geometry;
@@ -113,7 +117,7 @@ namespace wg
 		pSlot->hotspot = hotspot;
 
 		m_pHolder->_didAddSlots(pSlot, 1);
-		return iterator(pSlot);
+		return iterator(pSlot, m_pHolder);
 	}
 
 	//____ setPinned() ________________________________________________________
@@ -808,6 +812,19 @@ namespace wg
 		}
 	}
 
+	//____ _incSlot() ____________________________________________________________
+
+	Slot * FlexPanel::_incSlot(Slot * pSlot) const
+	{
+		return (static_cast<FlexPanelSlot*>(pSlot) + 1);
+	}
+
+	//____ _decSlot() ____________________________________________________________
+
+	Slot * FlexPanel::_decSlot(Slot * pSlot) const
+	{
+		return (static_cast<FlexPanelSlot*>(pSlot) - 1);
+	}
 	//____ _didAddSlots() _____________________________________________________________
 
 	void FlexPanel::_didAddSlots( Slot * _pSlot, int nb )

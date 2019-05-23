@@ -171,6 +171,8 @@ namespace wg
 
 		// Methods for ModalChildren
 
+		Slot *			_incSlot(Slot * pSlot) const;
+		Slot *			_decSlot(Slot * pSlot) const;
 		void			_didAddSlots(Slot * pSlot, int nb);
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
 		void			_willRemoveSlots(Slot * pSlot, int nb);

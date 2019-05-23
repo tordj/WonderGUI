@@ -25,10 +25,35 @@
 #pragma once
 
 
-#define INSTANTIATE_CHILDREN(SlotType,HolderType)		template class IChildren< SlotType, HolderType >;
+#define INSTANTIATE_CHILDREN(SlotType,HolderType)		template class IChildrenSubclass< SlotType, HolderType >;
 
 namespace wg
 {
+
+	template < class SlotType, class HolderType>
+	void IChildrenSubclass<SlotType, HolderType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	{
+		Container * pParent = pToRelease->_parent();
+
+		if (pParent)
+		{
+			Slot * pReleaseFromSlot = pToRelease->_slot();
+
+			if (m_pSlotArray->contains(pReleaseFromSlot))
+			{
+				// We are releasing a widget from our own slot array, so we need to make sure pointer still is correct afterwards.
+
+				int ofs = (*pPointerToGuard) - m_pSlotArray->first();
+				if (*pPointerToGuard > pReleaseFromSlot)
+					ofs--;
+
+				pToRelease->releaseFromParent();
+				*pPointerToGuard = m_pSlotArray->first() + ofs;
+			}
+			else
+				pToRelease->releaseFromParent();
+		}
+	}
 
 } // namespace wg
 

@@ -24,29 +24,44 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #define WG_CHILDITERATOR_DOT_H
 #pragma once
 
+#include <wg_slot.h>
 
 namespace wg
 {
-
+	class Object;
 	class Widget;
 
-	template<class SlotType> class ChildIterator
+	//____ ChildrenHolder ___________________________________________________
+
+	class ChildrenHolder /** @private */
+	{
+	public:
+		virtual Object * _object() = 0;
+		virtual Slot *	_incSlot(Slot * pSlot) const = 0;
+		virtual Slot *	_decSlot(Slot * pSlot) const = 0;
+	};
+
+
+	//____ ChildIterator _______________________________________________________
+
+	class ChildIterator
 	{
 	public:
 
 		// Iterator traits, previously from std::iterator.
-		using value_type = SlotType;
+		using value_type = Slot;
 		using difference_type = std::ptrdiff_t;
-		using pointer = Widget*;
-		using reference = Widget&;
+		using pointer = Widget * ;
+		using reference = Widget & ;
 		using iterator_category = std::bidirectional_iterator_tag;
 
 		//.____ Creation ___________________________________________________
 
 		ChildIterator() = default;
-		explicit ChildIterator(SlotType* pSlot)
+		explicit ChildIterator(Slot* pSlot,ChildrenHolder* pHolder)
 		{
 			this->pSlot = pSlot;
+			this->pHolder = pHolder;
 		}
 
 		//.____ Operators ______________________________________________________
@@ -64,27 +79,27 @@ namespace wg
 
 		inline ChildIterator& operator++()
 		{
-			pSlot++;
+			pSlot = pHolder->_incSlot(pSlot);
 			return *this;
 		}
 
 		inline ChildIterator operator++(int)
 		{
 			ChildIterator tmp = *this;
-			pSlot++;
+			pSlot = pHolder->_incSlot(pSlot);
 			return tmp;
 		}
 
 		inline ChildIterator& operator--()
 		{
-			pSlot--;
+			pSlot = pHolder->_decSlot(pSlot);
 			return *this;
 		}
 
 		inline ChildIterator operator--(int)
 		{
 			ChildIterator tmp = *this;
-			pSlot--;
+			pSlot = pHolder->_decSlot(pSlot);
 			return tmp;
 		}
 
@@ -106,13 +121,75 @@ namespace wg
 
 		//.____ Internal _______________________________________________________
 
-		SlotType * _slot() const
+		Slot * _slot() const
 		{
 			return pSlot;
 		}
 
+	protected:
+
+		Slot *				pSlot;
+		ChildrenHolder *	pHolder;
+	};
+
+
+
+	//____ ChildIteratorSubclass _______________________________________________________
+
+	template<class SlotType> class ChildIteratorSubclass : public ChildIterator
+	{
+	public:
+
+		// Iterator traits, previously from std::iterator.
+		using value_type = SlotType;
+		using difference_type = std::ptrdiff_t;
+		using pointer = Widget*;
+		using reference = Widget&;
+		using iterator_category = std::bidirectional_iterator_tag;
+
+		//.____ Creation ___________________________________________________
+
+		ChildIteratorSubclass() = default;
+		explicit ChildIteratorSubclass(SlotType* pSlot, ChildrenHolder* pHolder ) : ChildIterator(pSlot,pHolder)
+		{
+		}
+
+		//.____ Operators ______________________________________________________
+
+		inline ChildIterator& operator++()
+		{
+			pSlot = (static_cast<SlotType*>(pSlot) + 1);
+			return *this;
+		}
+
+		inline ChildIterator operator++(int)
+		{
+			ChildIterator tmp = *this;
+			pSlot = (static_cast<SlotType*>(pSlot) + 1);
+			return tmp;
+		}
+
+		inline ChildIterator& operator--()
+		{
+			pSlot = (static_cast<SlotType*>(pSlot) - 1);
+			return *this;
+		}
+
+		inline ChildIterator operator--(int)
+		{
+			ChildIterator tmp = *this;
+			pSlot = (static_cast<SlotType*>(pSlot) - 1);
+			return tmp;
+		}
+
+		//.____ Internal _______________________________________________________
+
+		SlotType * _slot() const
+		{
+			return (SlotType*) pSlot;
+		}
+
 	private:
-		SlotType * pSlot;
 
 	};
 

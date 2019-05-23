@@ -46,9 +46,9 @@ namespace wg
 	template<class SlotType, class HolderType> class IWeightedChildren : public IPaddedChildren<SlotType, HolderType>
 	{
 	public:
-		using		iterator = ChildIterator<SlotType>;
-		using		IChildren<SlotType, HolderType>::m_pSlotArray;
-		using		IChildren<SlotType, HolderType>::m_pHolder;
+		using		iterator = ChildIteratorSubclass<SlotType>;
+		using		IChildrenSubclass<SlotType, HolderType>::m_pSlotArray;
+		using		IChildrenSubclass<SlotType, HolderType>::m_pHolder;
 
 		/** @private */
 

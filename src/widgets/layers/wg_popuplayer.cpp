@@ -72,6 +72,7 @@ namespace wg
 
 	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
+		_pPopup->releaseFromParent();
 		m_pHolder->_addSlot( _pPopup, _pOpener, _launcherGeo, _attachPoint, _bAutoClose, _maxSize);
 	}
 
