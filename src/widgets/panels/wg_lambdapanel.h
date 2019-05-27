@@ -109,8 +109,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static LambdaPanel_p	cast( Object * pObject );
 
@@ -121,54 +121,54 @@ namespace wg
 		bool				setSizeLimits( Size min, Size max );
 		bool				setPreferredSize(Size pref);
 
-		Size				preferredSize() const;
+		Size				preferredSize() const override;
 
 	protected:
 		LambdaPanel();
 		virtual ~LambdaPanel();
-		virtual Widget* _newOfMyType() const { return new LambdaPanel(); };
+		virtual Widget* _newOfMyType() const override { return new LambdaPanel(); };
 
 
 		// Overloaded from Container
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
 		// Methods for LambdaPanelChildren
 
-		Slot *		_incSlot(Slot * pSlot) const;
-		Slot *		_decSlot(Slot * pSlot) const;
-		void		_didAddSlots( Slot * pSlot, int nb );
-		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
-		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( Slot * pSlot, int nb );
-		void		_unhideSlots( Slot * pSlot, int nb );
-		void		_updateSlotGeo(Slot * pSlot, int nb);
-		Object *	_object() { return this; }
-		WidgetHolder *	_widgetHolder() { return this; }
+		Slot *		_incSlot(Slot * pSlot) const override;
+		Slot *		_decSlot(Slot * pSlot) const override;
+		void		_didAddSlots( Slot * pSlot, int nb ) override;
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
+		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
+		void		_hideSlots( Slot * pSlot, int nb ) override;
+		void		_unhideSlots( Slot * pSlot, int nb ) override;
+		void		_updateSlotGeo(Slot * pSlot, int nb) override;
+		Object *	_object() override { return this; }
+		WidgetHolder *	_widgetHolder() override { return this; }
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( Slot * pSlot ) const;
-		Size		_childSize( Slot * pSlot ) const;
+		Coord		_childPos( Slot * pSlot ) const override;
+		Size		_childSize( Slot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const Rect& rect );
-		void		_childRequestResize( Slot * pSlot );
+		void		_childRequestRender( Slot * pSlot ) override;
+		void		_childRequestRender( Slot * pSlot, const Rect& rect ) override;
+		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const;
-		Widget *	_nextChild( const Slot * pSlot ) const;
+		Widget *	_prevChild( const Slot * pSlot ) const override;
+		Widget *	_nextChild( const Slot * pSlot ) const override;
 
-		void		_releaseChild(Slot * pSlot);
+		void		_releaseChild(Slot * pSlot) override;
 
 	private:
 
-		void		_cloneContent( const Widget * _pOrg );
-		void		_setSize( const Size& size );
+		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_setSize( const Size& size ) override;
 		void		_updateGeo(LambdaPanelSlot * pSlot);
 
 		void		_onRequestRender( const Rect& rect, const LambdaPanelSlot * pSlot );

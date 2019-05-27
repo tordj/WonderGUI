@@ -27,7 +27,7 @@
 
 #include <wg_freetypefont.h>
 #include <wg_packlist.h>
-#include <testwidget.h>
+#include "testwidget.h"
 #include <wg_popupopener.h>
 #include <wg_multiblockskin.h>
 #include <wg_dragndroplayer.h>

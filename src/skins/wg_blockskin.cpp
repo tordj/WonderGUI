@@ -462,7 +462,7 @@ namespace wg
 		if( !m_pSurface )
 			return;
 
-		BlendMode savedBlendMode;
+		BlendMode savedBlendMode = BlendMode::Undefined;
 		if (m_blendMode != BlendMode::Undefined)
 		{
 			savedBlendMode = pDevice->blendMode();

@@ -176,9 +176,6 @@ namespace wg
 
 	void DragNDropLayer::_receive( Msg * _pMsg )
 	{
-		if (_pMsg->type() != MsgType::MouseMove)
-			int x = 0;
-
 		switch (_pMsg->type())
 		{
 			case MsgType::Tick:
