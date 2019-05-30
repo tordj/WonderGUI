@@ -43,7 +43,7 @@ namespace wg
 			{
 				// We are releasing a widget from our own slot array, so we need to make sure pointer still is correct afterwards.
 
-				int ofs = (*pPointerToGuard) - m_pSlotArray->first();
+				int ofs = (int)((*pPointerToGuard) - m_pSlotArray->first());
 				if (*pPointerToGuard > pReleaseFromSlot)
 					ofs--;
 

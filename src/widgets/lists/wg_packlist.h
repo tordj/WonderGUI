@@ -155,7 +155,7 @@ namespace wg
 	protected:
 		PackList();
 		virtual ~PackList();
-		Widget*			_newOfMyType() const override { return new PackList(); }
+		Widget*	    	_newOfMyType() const override { return new PackList(); }
 
 		// Overloaded from Widget
 
@@ -173,8 +173,8 @@ namespace wg
 
 		// Overloaded from PackListChildrenHolder
 
-		Slot *			_incSlot(Slot * pSlot) const;
-		Slot *			_decSlot(Slot * pSlot) const;
+		Slot *			_incSlot(Slot * pSlot) const override;
+		Slot *			_decSlot(Slot * pSlot) const override;
 
 		void			_didAddSlots(Slot * pSlot, int nb) override;
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
@@ -230,7 +230,7 @@ namespace wg
 		Widget *	_prevChild(const Slot * pSlot) const override;
 		Widget *	_nextChild(const Slot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot);
+		void		_releaseChild(Slot * pSlot) override;
 
 		// Overloaded from ComponentHolder
 

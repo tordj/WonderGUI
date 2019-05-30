@@ -129,7 +129,7 @@ namespace wg
 		inline iterator	end() const { return iterator(m_pSlotArray->end(),m_pHolder); }
 
 	protected:
-		Object *	_object() const {	return m_pHolder->_object(); }
+		Object *	_object() const override {	return m_pHolder->_object(); }
 
 		SlotArray<SlotType> *	m_pSlotArray;
 		HolderType *			m_pHolder;

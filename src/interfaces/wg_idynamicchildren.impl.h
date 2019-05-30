@@ -40,7 +40,7 @@ namespace wg
 	{
 		SlotType * pSlot = m_pSlotArray->add();
 
-		_releaseGuardPointer(pWidget, &pSlot);
+        this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot,m_pHolder);
@@ -69,7 +69,7 @@ namespace wg
 
 		SlotType * pSlot = m_pSlotArray->insert(index);
 
-		_releaseGuardPointer(pWidget, &pSlot);
+        this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot, m_pHolder);
@@ -82,7 +82,7 @@ namespace wg
 
 		SlotType * pSlot = m_pSlotArray->insert(pos._slot());
 
-		_releaseGuardPointer(pWidget, &pSlot);
+        this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot, m_pHolder);
@@ -97,7 +97,7 @@ namespace wg
 
 		for (int i = 0; i < amount; i++)
 		{
-			_releaseGuardPointer(pWidgets[i], &pSlot);
+            this->_releaseGuardPointer(pWidgets[i], &pSlot);
 			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);
@@ -113,7 +113,7 @@ namespace wg
 
 		for (int i = 0; i < amount; i++)
 		{
-			_releaseGuardPointer(pWidgets[i], &pSlot);
+            this->_releaseGuardPointer(pWidgets[i], &pSlot);
 			pSlot[i].replaceWidget(m_pHolder->_widgetHolder(), pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);

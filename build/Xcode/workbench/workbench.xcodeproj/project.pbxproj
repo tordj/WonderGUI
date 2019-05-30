@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0CDC6B231D86D7000064A85B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDC6B221D86D7000064A85B /* OpenGL.framework */; };
-		179ECD53225CB02300A932B2 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179ECD52225CB02300A932B2 /* main2.cpp */; };
-		17F41BFA225364F5008D1DE7 /* testwidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F41BF7225364F5008D1DE7 /* testwidget.cpp */; };
+		17169436229C6E7A00196AB0 /* testwidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17169433229C6E7A00196AB0 /* testwidget.cpp */; };
+		17169437229C6E7A00196AB0 /* main2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17169434229C6E7A00196AB0 /* main2.cpp */; };
 		17F41C03225369A5008D1DE7 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C01225369A5008D1DE7 /* SDL2.framework */; };
 		17F41C04225369A5008D1DE7 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C02225369A5008D1DE7 /* SDL2_image.framework */; };
 		17F41C0622536C6B008D1DE7 /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */; };
@@ -33,11 +33,9 @@
 /* Begin PBXFileReference section */
 		0C623A6C1D818F5B00DE671D /* workbench */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = workbench; sourceTree = BUILT_PRODUCTS_DIR; };
 		0CDC6B221D86D7000064A85B /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		179ECD52225CB02300A932B2 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main2.cpp; path = ../../../../workbench/main2.cpp; sourceTree = "<group>"; };
-		17F41BF7225364F5008D1DE7 /* testwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = testwidget.cpp; path = ../../../../workbench/testwidget.cpp; sourceTree = "<group>"; };
-		17F41BF9225364F5008D1DE7 /* testwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testwidget.h; path = ../../../../workbench/testwidget.h; sourceTree = "<group>"; };
-		17F41BFD225366DB008D1DE7 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../SDL2/SDL2.framework; sourceTree = "<group>"; };
-		17F41BFF225366EF008D1DE7 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../SDL2_image/SDL2_image.framework; sourceTree = "<group>"; };
+		17169433229C6E7A00196AB0 /* testwidget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = testwidget.cpp; path = ../../../workbench/testwidget.cpp; sourceTree = "<group>"; };
+		17169434229C6E7A00196AB0 /* main2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main2.cpp; path = ../../../workbench/main2.cpp; sourceTree = "<group>"; };
+		17169435229C6E7A00196AB0 /* testwidget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testwidget.h; path = ../../../workbench/testwidget.h; sourceTree = "<group>"; };
 		17F41C01225369A5008D1DE7 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		17F41C02225369A5008D1DE7 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_opengl.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -67,12 +65,15 @@
 		0C623A631D818F5B00DE671D = {
 			isa = PBXGroup;
 			children = (
-				17F41BF6225364D4008D1DE7 /* Code */,
+				17169434229C6E7A00196AB0 /* main2.cpp */,
+				17169433229C6E7A00196AB0 /* testwidget.cpp */,
+				17169435229C6E7A00196AB0 /* testwidget.h */,
 				0CDC6B221D86D7000064A85B /* OpenGL.framework */,
 				0C623A6D1D818F5B00DE671D /* Products */,
 				17F41BFC225366DA008D1DE7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		0C623A6D1D818F5B00DE671D /* Products */ = {
 			isa = PBXGroup;
@@ -80,16 +81,6 @@
 				0C623A6C1D818F5B00DE671D /* workbench */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		17F41BF6225364D4008D1DE7 /* Code */ = {
-			isa = PBXGroup;
-			children = (
-				179ECD52225CB02300A932B2 /* main2.cpp */,
-				17F41BF7225364F5008D1DE7 /* testwidget.cpp */,
-				17F41BF9225364F5008D1DE7 /* testwidget.h */,
-			);
-			path = Code;
 			sourceTree = "<group>";
 		};
 		17F41BFC225366DA008D1DE7 /* Frameworks */ = {
@@ -101,8 +92,6 @@
 				17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */,
 				17F41C02225369A5008D1DE7 /* SDL2_image.framework */,
 				17F41C01225369A5008D1DE7 /* SDL2.framework */,
-				17F41BFF225366EF008D1DE7 /* SDL2_image.framework */,
-				17F41BFD225366DB008D1DE7 /* SDL2.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -163,8 +152,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17F41BFA225364F5008D1DE7 /* testwidget.cpp in Sources */,
-				179ECD53225CB02300A932B2 /* main2.cpp in Sources */,
+				17169437229C6E7A00196AB0 /* main2.cpp in Sources */,
+				17169436229C6E7A00196AB0 /* testwidget.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
