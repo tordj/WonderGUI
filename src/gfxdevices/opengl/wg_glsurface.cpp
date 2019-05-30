@@ -85,7 +85,7 @@ namespace wg
 			return GlSurface_p();
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
+			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return GlSurface_p();
 
 		return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));

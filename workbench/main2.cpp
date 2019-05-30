@@ -66,6 +66,33 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 int main(int argc, char** argv)
 {
+	int scaleInteger = 7;
+	int scaleDivisor = 4;
+	int scaleShift = 2;
+
+
+	int pixel = -4;
+
+
+
+
+
+	int pointInteger = (pixel << scaleShift) / scaleInteger;
+	int pointFraction = (pixel << scaleShift) % scaleInteger;
+
+
+	int px = pixel << scaleShift;
+	int pointData = ((px / scaleInteger) << 6) + tab[(px%scaleInteger)];
+
+
+
+//	int pointFraction = (pixel << scaleShift) % scaleInteger;
+//	int pointInteger = ((pixel << scaleShift) - pointFraction) / scaleInteger;
+
+
+	int x = -4;
+	int y = x / 7;
+
 	printf("SizeOf Filler: %d\n", (int) sizeof(Filler));
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));

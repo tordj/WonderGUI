@@ -60,7 +60,7 @@ namespace wg
 	SoftSurface_p SoftSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			 (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
+			 (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return SoftSurface_p();
 
 		return  SoftSurface_p(new SoftSurface(size,format,pPixels,pitch,pPixelDescription,pClut));
