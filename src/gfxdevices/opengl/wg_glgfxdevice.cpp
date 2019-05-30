@@ -384,8 +384,8 @@ namespace wg
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
 		}
 
-        m_emptyCanvasSize = canvasSize;
-        
+		m_emptyCanvasSize = canvasSize;
+
 		return true;
 	}
 
@@ -394,9 +394,9 @@ namespace wg
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
 
-        if( pSurface == nullptr )
-            return setCanvas( m_emptyCanvasSize );
-        
+		if( pSurface == nullptr )
+			return setCanvas( m_emptyCanvasSize );
+
 		if (!pSurface || pSurface->className() != GlSurface::CLASSNAME)
 			return false;
 

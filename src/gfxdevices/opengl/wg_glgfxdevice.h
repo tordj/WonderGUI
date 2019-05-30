@@ -176,8 +176,8 @@ namespace wg
 		int				m_canvasYstart;
 		int				m_canvasYmul;
 
-        Size            m_emptyCanvasSize;
-        
+		Size            m_emptyCanvasSize;
+
 		// Device programs
 
 		GLuint  m_fillProg;

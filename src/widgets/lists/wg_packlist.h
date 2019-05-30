@@ -155,7 +155,7 @@ namespace wg
 	protected:
 		PackList();
 		virtual ~PackList();
-		Widget*	    	_newOfMyType() const override { return new PackList(); }
+		Widget*			_newOfMyType() const override { return new PackList(); }
 
 		// Overloaded from Widget
 

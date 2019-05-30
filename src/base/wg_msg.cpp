@@ -1097,7 +1097,7 @@ namespace wg
 		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_bAccepted(false)
 	{
-	} 
+	}
 
 	bool DropDeliverMsg::isInstanceOf(const char * pClassName) const
 	{
